@@ -24,6 +24,8 @@
 // KDE HTML Widget -- Forms
 // $Id$
 
+#include <strings.h>
+
 #include <qobject.h>
 #include <qlistbox.h>
 #include <qcombobox.h>
@@ -33,11 +35,12 @@
 #include <qlineedit.h>
 #include <qmultilinedit.h>
 #include <qfontmetrics.h>
-#include "khtmlform.h"
-#include <strings.h>
-#include "khtmlform.moc"
 
+#include "khtmlform.h"
+
+#include "khtmljscript.h"
 #include "khtml.h"
+
 //----------------------------------------------------------------------------
 
 
@@ -772,3 +775,4 @@ HTMLForm::~HTMLForm()
     }
 }
 
+#include "khtmlform.moc"

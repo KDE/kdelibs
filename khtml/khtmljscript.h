@@ -27,11 +27,20 @@
 #ifndef JSBUILTIN_H
 #define JSBUILTIN_H
 
-
 #include <qstring.h>
 #include <jsexec.h>
 
+//
+// External classes
+//
+///////////////////
 class KHTMLView;
+class KHTMLWidget;
+
+//
+// Internal classes
+//
+///////////////////
 class JSEnvironment;
 class JSDocumentObject;
 class JSDocumentWriteFunction;
@@ -55,9 +64,6 @@ protected:
     QString name;
     JSEnvironment *jsEnvironment;
 };
-
-class KHTMLWidget;
-class KHTMLView;
 
 #define TYPE_JSDocumentObject 1000
 #define TYPE_JSWindowObject 1001

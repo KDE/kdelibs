@@ -28,8 +28,10 @@
 #include <stdio.h>
 
 #include "khtmljscript.h"
+
 #include "khtml.h"
 #include "khtmlview.h"
+
 
 /**********************************************************
  *

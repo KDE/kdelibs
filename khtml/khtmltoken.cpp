@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget - Tokenizers
-// $Id:  $
+// $Id$
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -45,6 +45,9 @@
 
 // Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
 #define TOKEN_BUFFER_SIZE (32*1024)
+
+// String buffers are allocated in units of STRING_BUFFER_SIZE bytes.
+#define STRING_BUFFER_SIZE (32*1024)
 
 static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
@@ -78,13 +81,12 @@ const char *BlockingToken::tokenName()
 
 //-----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
+HTMLTokenizer::HTMLTokenizer( )
 {
     blocking.setAutoDelete( true );
     jsEnvironment = 0L;
-    widget = _widget;
-    last = next = curr = 0;
     buffer = 0;
+    reset();
 }
 
 void HTMLTokenizer::reset()
@@ -95,8 +97,19 @@ void HTMLTokenizer::reset()
         delete [] oldBuffer;
     }
 
-    last = next = curr = 0;
+    while (!stringBufferList.isEmpty())
+    {
+    	char *oldBuffer = (char *) stringBufferList.take(0);
+        delete [] oldBuffer;
+    }
+
+    last = 0;
+    next = 0;
+    curr = 0;
     tokenBufferSizeRemaining = 0; // No space allocated at all
+
+    nextString = 0;
+    stringBufferSizeRemaining = 0; // No space allocated at all
 
     if ( buffer )
 	delete [] buffer;
@@ -831,6 +844,21 @@ void HTMLTokenizer::appendTokenBuffer( int min_size)
        curr = tokenBufferList.at(0)->first();
        tokenBufferCurrIndex = 0;
     }
+}                                                                                         
+
+void HTMLTokenizer::appendStringBuffer( int min_size)
+{
+    int newBufSize = STRING_BUFFER_SIZE; 
+
+    if (min_size > newBufSize)
+    {
+        // Wow! This surely is a big string...
+        newBufSize += min_size; 
+    }
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize ];
+    stringBufferList.append( newBuffer);
+    nextString = newBuffer->first();
+    stringBufferSizeRemaining = newBufSize;
 }                                                                                         
 
 void HTMLTokenizer::nextTokenBuffer()

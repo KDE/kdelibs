@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Tables
-// $Id:  $
+// $Id$
 
 #ifndef HTMLTABLE_H
 #define HTMLTABLE_H
@@ -39,6 +39,9 @@
 
 #include <kurl.h>
 
+class HTMLChain;
+class HTMLObject;
+class HTMLCellInfo;
 class HTMLClueV;
 class HTMLImage;
 class HTMLClue;
@@ -46,8 +49,6 @@ class HTMLClueFlow;
 class HTMLClueAligned;
 class KHTMLWidget;
 
-#include "khtmlfont.h"
-#include "khtmlobj.h"
 #include "khtmlclue.h"
 
 //-----------------------------------------------------------------------------
@@ -155,8 +156,7 @@ public:
      * Create an iterator.
      * The returned iterator must be deleted by the caller.
      */
-    virtual HTMLIterator *getIterator()
-       { return totalRows ? new HTMLTableIterator( this ) : 0; }
+    virtual HTMLIterator *getIterator();
   
 protected:
     enum ColType { Fixed, Percent, Variable };

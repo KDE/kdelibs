@@ -37,47 +37,32 @@
 #include <qfont.h>
 #include <qtimer.h>
 #include <qlist.h>
-#include <kurl.h>
 #include <qdict.h>
 #include <qstring.h>
 #include <qbuffer.h>
 
-class KHTMLWidget;
-class KHTMLView;
-class HTMLIterator;
-class KHTMLCache;
-class HTMLObject;
-class HTMLMap;
-class HTMLClue;
-class HTMLClueV;
-class HTMLSettings;
-class HTMLChain;
-class HTMLFont;
-class HTMLSelect;
-class HTMLTextArea;
-class HTMLForm;
-class JSWindowObject;
-class JSEnvironment;
-class HTMLTokenizer;
-class HTMLFrameSet;
-class StringTokenizer;
-
 #include "drag.h"
-
-// Default borders between widgets frame and displayed text
-#define LEFT_BORDER 10
-#define RIGHT_BORDER 20
-#define TOP_BORDER 10
-#define BOTTOM_BORDER 10
-
-
-//#define TORBENSDEBUG
-//#define MARTINSDEBUG
+#include "kurl.h"
 
 class KCharsetConverter;
 
-void debugT( const char *msg , ...);
-void debugM( const char *msg , ...);
+class KHTMLCache;
+class HTMLObject;
+class HTMLClue;
+class HTMLChain;
+class HTMLIterator;
+class HTMLMap;
+class HTMLTokenizer;
+class HTMLSettings;
+class HTMLForm;
+class HTMLFrameSet;
+
+class JSEnvironment;
+class JSWindowObject;
+
+class KHTMLView;
+class KHTMLWidget;
+class KHTMLParser;
 
 struct HTMLPendingFile
 {
@@ -89,8 +74,6 @@ public:
   QString m_strURL;
   QList<HTMLObject> m_lstClients;
 };
-
-typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
 
 /**
  * @short Basic HTML Widget.  Does not handle scrollbars or frames.
@@ -116,6 +99,7 @@ typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
 class KHTMLWidget : public KDNDWidget
 {
     Q_OBJECT
+	friend KHTMLParser;
 public:
     /**
      * Create a new HTML widget.  The widget is empty by default.
@@ -551,14 +535,18 @@ public:
      */
     void calcAbsolutePos();
 
-    /*
-     * return the map matching mapurl
-     * For internal use only
-     */
-    HTMLMap *getMap( const char *mapurl );
-
     // Registers QImageIO handlers for JPEG and GIF
     static void registerFormats();
+
+	/*
+	 * Set background image
+	 */
+	void setBGImage( const char *_url); 
+
+	/*
+	 * Set background color
+	 */
+	void setBGColor( const QColor &_bgColor); 
 
     /**
      * @return a pointer to the @ref JSEnvironment instance used by this widget.
@@ -576,6 +564,12 @@ public:
      */
     JSWindowObject* getJSWindowObject();
 
+    /*
+     * return the image map matching mapurl
+     */
+    HTMLMap *getMap( const char *mapurl );
+
+                  
     /**
      * @return a list of all frames.
      *
@@ -583,7 +577,7 @@ public:
      */
     QList<KHTMLWidget>* getFrameList() { return &frameList; }
     
-     /**
+    /**
      * Set document charset. 
      *
      * Any <META ...> setting charsets overrides this setting
@@ -819,11 +813,12 @@ protected slots:
      */
     void slotFrameSelected( KHTMLView *_view );
   
-public:
-    enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
-    enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
-
 protected:
+
+	KHTMLParser *parser;
+	
+	QString charsetName;
+
     virtual void mousePressEvent( QMouseEvent * );
 
     /**
@@ -873,98 +868,6 @@ protected:
     // flush key presses from the event queue
     void flushKeys();
 
-    // do </a> if necessary
-    void closeAnchor()
-    {
-	if ( url )
-	{
-	    popColor();
-	    popFont();
-	}
-	url = 0;
-	target = 0;
-    }
-
-	/*
-	 * This function creates a new flow adds it to '_clue' and sets 'flow'
-	 */
-	void newFlow(HTMLClue *_clue);
-
-	void insertText(char *str, const HTMLFont * fp);
-
-    /*
-     * This function is called after &lt;body&gt; usually. You can
-     * call it for every rectangular area: For example a tables cell
-     * or for a menus <li> tag. ht gives you one token after another.
-     * _clue points to a VBox. All HTMLObjects created by this
-     * function become direct or indirect children of _clue.
-     * The last two parameters define which token signals the end
-     * of the section this function should parse, for example &lt;/body&gt;.
-     * You can specify two tokens, for example &lt;/li&gt; and &lt;/menu&gt;.
-     * You may even set the second one to "" if you dont need it.
-     */
-    const char* parseBody( HTMLClueV *_clue, const char *[], bool toplevel = FALSE );
-
-    const char* parseOneToken( HTMLClueV *_clue, const char *str );
-
-    /*
-     * Parse marks starting with character, e.g.
-     * &lt;img ...  is processed by KHTMLWidget::parseI()
-     * &lt;/ul&gt;     is processed by KHTMLWidget::parseU()
-     */
-    void parseA( HTMLClueV *_clue, const char *str );
-    void parseB( HTMLClueV *_clue, const char *str );
-    void parseC( HTMLClueV *_clue, const char *str );
-    void parseD( HTMLClueV *_clue, const char *str );
-    void parseE( HTMLClueV *_clue, const char *str );
-    void parseF( HTMLClueV *_clue, const char *str );
-    void parseG( HTMLClueV *_clue, const char *str );
-    void parseH( HTMLClueV *_clue, const char *str );
-    void parseI( HTMLClueV *_clue, const char *str );
-    void parseJ( HTMLClueV *_clue, const char *str );
-    void parseK( HTMLClueV *_clue, const char *str );
-    void parseL( HTMLClueV *_clue, const char *str );
-    void parseM( HTMLClueV *_clue, const char *str );
-    void parseN( HTMLClueV *_clue, const char *str );
-    void parseO( HTMLClueV *_clue, const char *str );
-    void parseP( HTMLClueV *_clue, const char *str );
-    void parseQ( HTMLClueV *_clue, const char *str );
-    void parseR( HTMLClueV *_clue, const char *str );
-    void parseS( HTMLClueV *_clue, const char *str );
-    void parseT( HTMLClueV *_clue, const char *str );
-    void parseU( HTMLClueV *_clue, const char *str );
-    void parseV( HTMLClueV *_clue, const char *str );
-    void parseW( HTMLClueV *_clue, const char *str );
-    void parseX( HTMLClueV *_clue, const char *str );
-    void parseY( HTMLClueV *_clue, const char *str );
-    void parseZ( HTMLClueV *_clue, const char *str );
- 
-    /*
-     * This function is called after the <cell> tag.
-     */
-    const char* parseCell( HTMLClue *_clue, const char *attr );
-
-    /*
-     * parse table
-     */
-    const char* parseTable( HTMLClue *_clue, int _max_width, const char * );
-
-    /*
-     * parse input
-     */
-    const char* parseInput( const char * );
-
-    /*
-     * This function is used for convenience only. It inserts a vertical space
-     * if this has not already been done. For example
-     * <h1>Hello</h1><p>How are you ?
-     * would insert a VSpace behind </h1> and one in front of <p>. This is one
-     * VSpace too much. So we use 'space_inserted' to avoid this. Look at
-     * 'parseBody' to see how to use this function.
-     * Assign the return value to 'space_inserted'.
-     */
-    bool insertVSpace( HTMLClueV *_clue, bool _space_inserted );
-
     /*
      * draw background area
      */
@@ -974,23 +877,6 @@ protected:
      * position form elements (widgets) on the page
      */
     void positionFormElements();
-
-    /*
-     * The <title>...</title>.
-     */
-    QString title;
-
-    /*
-     * If we are in an <a href=..> ... </a> tag then the href
-     * is stored in this string.
-     */
-    char *url;
-
-    /*
-     * If we are in an <a target=..> ... </a> tag then this points to the
-     * target.
-     */
-    char *target;
 
     /*
      * This is the URL that the cursor is currently over
@@ -1011,7 +897,7 @@ protected:
     /*
      * This is the pointer to the tree of HTMLObjects.
      */
-    HTMLClueV *clue;
+    HTMLClue *clue;
 
     /*
      * This is the scroll offset. The upper left corner is (0,0).
@@ -1046,77 +932,6 @@ protected:
      */
     HTMLTokenizer *ht;
 	
-	QArray<char *> memPool;
-	int memPoolMax;
-
-    /*
-     * This is used generally for processing the contents of < ... >
-     * We keep a class global instance of this object to reduce the
-     * number of new/deletes performed.  If your function may be
-     * called recursively, or somehow from a function using this
-     * tokenizer, you should construct your own.
-     */
-    StringTokenizer *stringTok;
-
-    /*
-     * Selects a new font adding _relative_font_size to fontBase
-     * to get the new size.
-     */
-    void selectFont( int _relative_font_size );
-
-    /*
-     * Selects a new font using current settings
-     */
-    void selectFont();
-
-    /*
-     * Makes the font specified by parameters the actual font
-     */
-    void selectFont( const char *_fontfamily, int _size, int _weight, bool _italic );
-
-    /*
-     * Pops the top font form the stack and makes the new
-     * top font the actual one. If the stack is empty ( should never
-     * happen! ) the default font is pushed on the stack.
-     */
-    void popFont();
-
-    const HTMLFont *currentFont()  { return font_stack.top(); }
-
-    void popColor();
-
-    /*
-     * The font stack. The font on top of the stack is the currently
-     * used font. Poping a font from the stack deletes the font.
-     * So use top() to get the actual font. There must always be at least
-     * one font on the stack.
-     */
-    QStack<HTMLFont> font_stack;
-
-    /*
-     * The weight currently selected. This is affected by <b>..</b>
-     * for example.
-     */
-    int weight;
-
-    /*
-     * The fonts italic flag. This is affected by <i>..</i>
-     * for example.
-     */
-    bool italic;
-
-    /*
-     * The fonts underline flag. This is affected by <u>..</u>
-     * for example.
-     */
-    bool underline;
-
-    /*
-     * The fonts underline flag. This is affected by <u>..</u>
-     * for example.
-     */
-    bool strikeOut;
-
     /*
      * Used for drag and drop.
      */
@@ -1173,93 +988,10 @@ protected:
     void setBaseURL( const char *_url);
 
     /*
-     * from <BASE TARGET="...">
-     */
-    QString baseTarget;
-
-    /*
-     * Current text color is at the top of the stack
-     */
-    QStack<QColor> colorStack;
-
-    /*
      * A color context for the current page so that we can free the colors
      * when we close the page.
      */
     int colorContext;
-
-	class HTMLStackElem;
-
-    typedef void (KHTMLWidget::*blockFunc)(HTMLClueV *_clue, HTMLStackElem *stackElem);
-
-	class HTMLStackElem
-	{
-	 public:
-		HTMLStackElem(		int _id, 
-		 					int _level, 
-		 				   	blockFunc _exitFunc, 
-		 				   	int _miscData1,
-		 				   	int _miscData2, 
-		 				   	HTMLStackElem * _next
-		 				  ) 
-		 				  :	id(_id), 
-		 				   	level(_level),
-		 				   	exitFunc(_exitFunc), 
-		 				   	miscData1(_miscData1), 
-		 				   	miscData2(_miscData2), 
-		 				   	next(_next) 
-	                 { }
-
-   	    int       id;
-	    int       level;
-   	 
-	    blockFunc exitFunc;
-    
-   	    int       miscData1;
-   	    int       miscData2;
-
-		HTMLStackElem *next;
-	 };
-
-	 HTMLStackElem *blockStack; 
-
-     void pushBlock( int _id, int _level, 
-    					  blockFunc _exitFunc = 0, 
-    					  int _miscData1 = 0,
-    					  int _miscData2 = 0);
-    					  
-     void popBlock( int _id, HTMLClueV *_clue);
- 
-	 void freeBlock( void);
-    
-	 /*
-	  * Code for closing-tag to restore font
-	  * miscData1: bool - if true terminate current flow
-	  */
-    void blockEndFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
-
-	 /*
-	  * Code for closing-tag to end PRE tag
-	  */
-    void blockEndPre(HTMLClueV *_clue, HTMLStackElem *stackElem);
-
-	 /*
-	  * Code for closing-tag to restore font and font-color
-	  */
-    void blockEndColorFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
-    
-	 /*
-	  * Code for closing-tag to restore indentation
-	  * miscData1: int - previous indentation
-	  */
-    void blockEndIndent(HTMLClueV *_clue, HTMLStackElem *stackElem);
-
-	 /*
-	  * Code for remove item from listStack and restore indentation
-	  * miscData1: int - previous indentation
-	  * miscData2: bool - if true insert vspace
-	  */
-    void blockEndList(HTMLClueV *_clue, HTMLStackElem *stackElem);
 
     /*
      * Timer to parse html in background
@@ -1272,84 +1004,19 @@ protected:
     bool writing;
 
     /*
-     * Is the widget currently parsing
-     */
-    bool parsing;
-
-    /*
-     * Have we parsed <body> yet?
-     */
-    bool bodyParsed;
-
-    /*
-     * size of current indenting
-     */
-    int indent;
-
-    class HTMLList
-    {
-	public:
-	    HTMLList( ListType t, ListNumType nt = Numeric )
-		{ type = t; numType = nt; itemNumber = 1; }
-	    ListType type;
-	    ListNumType numType;
-	    int itemNumber;
-    };
-
-    /*
-     * Stack of lists currently active.
-     * The top affects whether a bullet or numbering is used by <li>
-     */
-    QStack<HTMLList> listStack;
-
-    enum GlossaryEntry { GlossaryDL, GlossaryDD };
-
-    /*
-     * Stack of glossary entries currently active
-     */
-    QStack<GlossaryEntry> glossaryStack;
-
-    /*
-     * The current alignment, set by <DIV > or <CENTER>
-     */
-    // HTMLClue::HAlign divAlign;
-    int divAlign;
-
-    /*
      * Number of tokens parsed in the current time-slice
      */
     int parseCount;
     int granularity;
 
     /*
-     * Used to avoid inserting multiple vspaces
-     */
-    bool vspace_inserted;
-
-    /*
-     * The current flow box to add objects to
-     */
-    HTMLClue *flow;
-
-    /*
-     * Array of paser functions, e.g.
-     * <img ...  is processed by KHTMLWidget::parseI() - parseFuncArray[8]()
-     * </ul>     is processed by KHTMLWidget::parseU() - parseFuncArray[20]()
-     */
-    static parseFunc parseFuncArray[26];
-
-    /*
-     * This list holds strings which are displayed in the view,
-     * but are not actually contained in the HTML source.
-     * e.g. The numbers in an ordered list.
-     */
-    QStrList tempStrings;
-
-    /*
      * This list holds all <a href= urls in the document.
      */
     QStrList parsedURLs;
     QStrList parsedTargets;
+
+	void addParsedTarget( const char *_target);
+	void addParsedURL( const char *_url);
 
     QPixmap bgPixmap;
 
@@ -1359,15 +1026,15 @@ protected:
     QCursor linkCursor;
 
     /*
-     * Current fontbase, colors, etc.
-     */
-    HTMLSettings *settings;
-
-    /*
      * Default settings.
      */
     HTMLSettings *defaultSettings;
 
+	/*
+	 * Current settings for page
+	 */
+	HTMLSettings *settings; 
+	 
     // should the background be painted?
     bool bDrawBackground;
 
@@ -1380,37 +1047,42 @@ protected:
      */
     QString bgPixmapURL;
 
-    // true if the current text is destined for <title>
-    bool inTitle;
-
     // List of forms in the page
     QList<HTMLForm> formList;
 
-    // Current form
-    HTMLForm *form;
+	/*
+	 * Adds a new form to the formList
+	 */
+	void addForm( HTMLForm *_form );  
 
-    // Current select form element
-    HTMLSelect *formSelect;
-
-    // true if the current text is destined for a <SELECT><OPTION>
-    bool inOption;
-
-    // Current textarea form element
-    HTMLTextArea *formTextArea;
-
-    // true if the current text is destined for a <TEXTAREA>...</TEXTAREA>
-    bool inTextArea;
-
-    // true if the current text is destined for a <PRE>...</PRE>
-    bool inPre;
-
-    // the text to be put in a form element
-    QString formText;
+    // List of Image maps in the page
+    QList<HTMLMap> mapList;
 
     /*
-     * Image maps used in this document
+     * Add an image map
      */
-    QList<HTMLMap> mapList;
+    void addMap( const char *mapUrl);
+
+    /*
+     * Get last image map
+     */
+	HTMLMap * lastMap();
+
+	/*
+	 * Sets new title
+	 * (Called by parser only)
+	 */
+	void setNewTitle( const char *_title);
+
+	/*
+	 * Adds a new frame set
+	 */
+	void addFrameSet( HTMLFrameSet *_frameSet );  
+
+	/*
+	 * Show a frame set
+	 */
+	void showFrameSet( HTMLFrameSet *_frameSet );  
 
     /*
      * The toplevel frame set if we have frames otherwise 0L.
@@ -1418,13 +1090,7 @@ protected:
     HTMLFrameSet *frameSet;
 
     /*
-     * Stack of framesets used during parsing.
-     */
-    QList<HTMLFrameSet> framesetStack;
-
-    /*
      * List of all framesets we are currently showing.
-     * This list is not cleared after parsing like @ref #framesetStack.
      */
     QList<HTMLFrameSet> framesetList;  
 
@@ -1434,6 +1100,14 @@ protected:
      * frames array.
      */
     QList<KHTMLWidget> frameList;    
+
+	/*
+	 * Adds a new frame
+	 */
+	void addFrame( HTMLFrameSet *_frameSet, const char *_name, 
+				   bool _scrolling, bool _resize, 
+				   int _frameborder, int _marginwidth, int _marginheight,
+				   const char *_src);  
 
     /*
      * @return TRUE if the current document is a framed document.
@@ -1517,7 +1191,6 @@ protected:
      * to run java script.
      */
     JSEnvironment *jsEnvironment;      
-    KCharsetConverter *charsetConverter;
 
     /*
      * Iterator used to find text within the document

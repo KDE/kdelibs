@@ -216,3 +216,18 @@ In this case the text will overflow the Clue borders. This should only be
 possible to happen if the width of the Clue didn't take (for some reason 
 or the other) the minimumWidth of its contents into account.
 
+
+----------------------------------------------------------------------------
+Memory Management
+----------------------------------------------------------------------------
+
+Basically all strings used in a page are allocated through the tokenizer. 
+Strings passed to HTMLObjects are used as provided, no copy is
+made. The caller should ensure that the passed strings remain allocated during
+the lifetime of the HTMLObject. The simplest way to do that is to allocate the
+string through the tokenizer. All strings allocated this way are deleted when
+a new page is being loaded.
+
+By deleting the HTMLObjects before deleting the tokenizer, we ensure that the
+strings will not be used after they have been deleted.
+

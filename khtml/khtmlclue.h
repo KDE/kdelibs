@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Clues
-// $Id:  $
+// $Id$
 
 #ifndef HTMLCLUE_H
 #define HTMLCLUE_H
@@ -39,16 +39,27 @@
 
 #include <kurl.h>
 
+#include "khtmlobj.h"
+
+//
+// External Classes
+//
+///////////////////
+
+class KHTMLWidget;
+class HTMLIterator;
+
+
+//
+// Internal Classes
+//
+///////////////////
+
 class HTMLClueV;
-class HTMLImage;
 class HTMLClue;
 class HTMLClueFlow;
 class HTMLClueAligned;
-class KHTMLWidget;
 
-#include "khtmlfont.h"
-#include "khtmlobj.h"
-#include "khtmliter.h"
 
 // The border around an aligned object
 #define ALIGN_BORDER 0
@@ -176,9 +187,7 @@ public:
      * Create an iterator.
      * The returned iterator must be deleted by the caller.
      */
-    virtual HTMLIterator *getIterator()
-       { return head ? new HTMLListIterator( this ) : 0; }
-		        
+    virtual HTMLIterator *getIterator();
   
 protected:
     HTMLObject *head;

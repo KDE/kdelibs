@@ -27,8 +27,11 @@
 #include <kurl.h>
 #include <kapp.h>
 
-#include "khtmlchain.h"
 #include "khtmlobj.h"
+
+#include "khtmlchain.h"
+#include "khtmltoken.h"
+#include "khtmlfont.h"
 #include "khtml.h"
 #include "khtmlcache.h"
 #include "khtmltoken.h"
@@ -48,6 +51,10 @@
 #include <qregexp.h>
 
 #include "khtmlobj.moc"
+
+// Debug function
+void debugM( const char *msg , ...);
+
 
 // This will be constructed once and NEVER deleted.
 int HTMLObject::objCount = 0;
@@ -1230,7 +1237,7 @@ void HTMLImage::cacheImage( const char *_filename )
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
-	char *_url, char *_target,
+	const char *_url, const char *_target,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
@@ -1346,6 +1353,12 @@ void HTMLImage::changeImage( const char *_url )
 
   if ( bComplete && !isA( "HTMLJSImage" ) )
     htmlWidget->paintSingleObject( this );
+}
+
+void HTMLImage::setOverlay( const char *_ol )
+{
+    // overlays must be cached
+    overlay = HTMLImage::findImage( _ol );
 }
 
 void HTMLImage::setPixmap( QPixmap *p )
@@ -1754,7 +1767,7 @@ const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 //----------------------------------------------------------------------------
 
 HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
-	    char *_url, char *_target,
+	    const char *_url, const char *_target,
 	    int _max_width, int _width, int _height, int _percent, int bdr )
     : HTMLImage( widget, _filename, _url, _target, _max_width, _width,
 	    _height, _percent, bdr )
@@ -1779,14 +1792,14 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 			_y - ( y -ascent ) );
 		    if ( area )
 		    {
-			strcpy( url, area->getURL() );
-			strcpy( target, area->getTarget() );
+			dynamicURL = area->getURL();
+			dynamicTarget = area->getTarget();
 			return this;
 		    }
 		    else
 		    {
-			*url = '\0';
-			*target = '\0';
+			dynamicURL = 0;
+			dynamicTarget = 0;
 		    }
 		}
 	    }
@@ -1794,8 +1807,9 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 	    {
 		QString coords;
 		coords.sprintf( "?%d,%d", _x - x, _y - ( y -ascent ) );
-		strcpy( url, serverurl );
-		strcat( url, coords );
+		dynamicURL = serverurl;
+		dynamicTarget = url;
+		dynamicTarget += coords;
 		return this;
 	    }
 	}

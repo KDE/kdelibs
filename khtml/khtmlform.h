@@ -22,10 +22,26 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Forms
-// $Id:  $
+// $Id$
 
 #ifndef __HTMLFORM_H__
 #define __HTMLFORM_H__
+
+#include <qwidget.h>
+
+#include "khtmlobj.h"
+
+//
+// External Classes
+//
+///////////////////
+
+class JSEventHandler;
+
+//
+// Internal Classes
+//
+///////////////////
 
 class HTMLElement;
 class HTMLForm;
@@ -33,10 +49,6 @@ class HTMLSelect;
 class HTMLButton;
 class HTMLTextArea;
 
-#include <qwidget.h>
-
-#include "khtmlobj.h"
-#include "khtmljscript.h"
 
 class HTMLForm;
 

@@ -45,23 +45,27 @@ class QMovie;
 
 #include <kurl.h>
 
-class HTMLClueV;
+//
+// External Classes
+//
+///////////////////
+
+class HTMLFont;
 class HTMLImage;
 class HTMLClue;
+class HTMLClueV;
 class HTMLClueFlow;
 class HTMLClueAligned;
 class HTMLChain;
 class HTMLIterator;
 class KHTMLWidget;
 
-#include "khtmlfont.h"
-
 class HTMLCell;
 
 /**
  * Used by @ref HTMLObject::findCells
  */
-struct HTMLCellInfo
+class HTMLCellInfo
 {
 public:
   HTMLCell *pCell;
@@ -460,7 +464,7 @@ public:
     virtual const char* getTarget() const { return target; }
 
 protected:
-    char *url;
+    const char *url;
     const char *target;
 };
 
@@ -473,7 +477,7 @@ class HTMLLinkTextMaster : public HTMLTextMaster
 {
 public:
     HTMLLinkTextMaster( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    char *_url, const char *_target)
+	    const char *_url, const char *_target)
 	: HTMLTextMaster( _str, _font, _painter)
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkTextMaster() { }
@@ -482,7 +486,7 @@ public:
     virtual const char* getTarget() const { return target; }
 
 protected:
-    char *url;
+    const char *url;
     const char *target;
 };
 
@@ -565,8 +569,8 @@ class HTMLImage : public QObject, public HTMLObject
 {
     Q_OBJECT
 public:
-    HTMLImage( KHTMLWidget *widget, const char *, char *_url,
-		char *_target, int _max_width, int _width = -1,
+    HTMLImage( KHTMLWidget *widget, const char *, const char *_url,
+		const char *_target, int _max_width, int _width = -1,
 		int _height = -1, int _percent = 0, int bdr = 0 );
     virtual ~HTMLImage();
 
@@ -678,8 +682,8 @@ protected:
 
     QColor borderColor;
 
-    char *url;
-    char *target;
+    const char *url;
+    const char *target;
 
     // The absolute position of this object on the page
     int absX;
@@ -706,15 +710,15 @@ public:
     bool contains( const QPoint &_point ) const
 	    {	return region.contains( _point ); }
 
-    const QString &getURL() const
+    const char *getURL() const
 	    {	return url; }
     const char *getTarget() const
 	    {	return target; }
 
 protected:
     QRegion region;
-    QString url;
-    QString target;
+    const char *url;
+    const char *target;
 };
 
 //----------------------------------------------------------------------------
@@ -748,7 +752,7 @@ protected:
   
     QList<HTMLArea> areas;
     KHTMLWidget *htmlWidget;
-    QString mapurl;
+    const char *mapurl;
 };
 
 //----------------------------------------------------------------------------
@@ -756,16 +760,19 @@ protected:
 class HTMLImageMap : public HTMLImage
 {
 public:
-    HTMLImageMap( KHTMLWidget *widget, const char*, char *_url,
-	    char *_target, int _max_width, int _width = -1,
+    HTMLImageMap( KHTMLWidget *widget, const char*, const char *_url,
+	    const char *_target, int _max_width, int _width = -1,
 	    int _height = -1, int _percent = 0, int brd = 0 );
     virtual ~HTMLImageMap() {}
 
     virtual HTMLObject* checkPoint( int, int );
 
+    virtual const char* getURL() const { return dynamicURL.data(); }
+    virtual const char* getTarget() const { return dynamicTarget.data(); }
+     
     void setMapURL( const char *_url )
 	    {	mapurl = _url; }
-    const QString& mapURL() const
+    const char *mapURL() const
 	    {	return mapurl; }
 
     enum Type { ClientSide, ServerSide };
@@ -781,10 +788,20 @@ protected:
      */
     QString serverurl;
 
+	/*
+	 * The destination URL
+	 */
+	QString dynamicURL;
+
+	/*
+	 * The destination Target
+	 */
+	QString dynamicTarget;
+
     /*
      * The URL set by <img ... USEMAP=mapurl> for client side maps
      */
-    QString mapurl;
+    const char *mapurl;
 
     /*
      * ClientSide or ServerSide

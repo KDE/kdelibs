@@ -23,11 +23,12 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Clues
-// $Id:  $
+// $Id$
 
 #include <kurl.h>
 
 #include "khtmlchain.h"
+#include "khtmliter.h"
 #include "khtmlobj.h"
 #include "khtmlclue.h"
 #include "khtml.h"
@@ -256,6 +257,12 @@ void HTMLClue::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
     for ( obj = head; obj != 0; obj = obj->next() )
 	obj->findCells( _tx, _ty, _list );
 }
+
+HTMLIterator * HTMLClue::getIterator()
+{ 
+    return head ? new HTMLListIterator( this ) : 0; 
+}
+            
 
 bool HTMLClue::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty )

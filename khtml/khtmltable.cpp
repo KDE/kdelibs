@@ -23,11 +23,12 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Tables
-// $Id:  $
+// $Id$
 
 #include <kurl.h>
 
 #include "khtmlchain.h"
+#include "khtmliter.h"
 #include "khtmlobj.h"
 #include "khtmlclue.h"
 #include "khtmltable.h"
@@ -187,6 +188,11 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
     }
 }
 
+HTMLIterator *HTMLTable::getIterator()
+{ 
+    return totalRows ? new HTMLTableIterator( this ) : 0; 
+}
+            
 void HTMLTable::startRow()
 {
     col = 0;

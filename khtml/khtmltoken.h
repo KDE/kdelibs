@@ -23,10 +23,22 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Tokenizers
-// $Id:  $
+// $Id$
 
 #ifndef HTMLTOKEN_H
 #define HTMLTOKEN_H
+
+//
+// External Classes
+//
+///////////////////
+
+class JSEnvironment;
+
+//
+// Internal Classes
+//
+///////////////////
 
 class StringTokenizer;
 class HTMLTokenizer;
@@ -34,8 +46,6 @@ class HTMLTokenizer;
 #include <qlist.h>
 #include <qstrlist.h>
 #include <qarray.h>
-
-#include "khtmljscript.h"
 
 // Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
 // you can devide between tags and words.
@@ -80,7 +90,7 @@ protected:
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer( KHTMLWidget *_widget = 0L );
+    HTMLTokenizer();
     ~HTMLTokenizer();
 
     void begin();
@@ -92,12 +102,16 @@ public:
 
     void first();
 
+    char* newString( const char *str, int len=0);
+
 protected:
     void reset();
 	void addPending();
     void appendToken( const char *t, int len );
     void appendTokenBuffer( int min_size);
     void nextTokenBuffer(); // Move curr to next tokenBuffer
+
+    void appendStringBuffer( int min_size);
     
 protected:
     // Internal buffers
@@ -119,6 +133,13 @@ protected:
 
     TokenPtr curr;  // Token read next 
     unsigned int tokenBufferCurrIndex; // Index of HTMLTokenBuffer used by next read.
+
+	// String List
+	//////////////
+	QList<HTMLTokenBuffer> stringBufferList;
+
+	TokenPtr nextString; // String written next;
+	int stringBufferSizeRemaining; // The size remaining in the buffer written to
     
     // Tokenizer flags
     //////////////////
@@ -202,8 +223,6 @@ protected:
     // The string we are searching for
     const char *searchFor;
     
-    KHTMLWidget *widget;
-    
     /**
      * This pointer is 0L until used. The @ref KHTMLWidget has an instance of
      * this class for us. We ask for it when we see some JavaScript stuff for
@@ -233,6 +252,29 @@ inline void HTMLTokenizer::appendToken( const char *t, int len )
         *next++ = *t++;
     }
     *next++ = '\0';
+}
+
+inline char *HTMLTokenizer::newString( const char *str, int len )
+{
+	char * lastString;
+    if ( !len )
+        len = strlen(str);
+
+    if (len > stringBufferSizeRemaining)
+    {
+       // We need a new buffer
+       appendStringBuffer( len);
+    }
+
+    lastString = nextString; // Last points to the start of the string we are going to append
+    stringBufferSizeRemaining -= len+1; // One for the null-termination
+    while (len--)
+    {
+        *nextString++ = *str++;
+    }
+    *nextString++ = '\0';
+
+    return lastString;
 }
 
 inline char* HTMLTokenizer::nextToken()
