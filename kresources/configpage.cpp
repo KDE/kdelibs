@@ -171,27 +171,34 @@ void ConfigPage::load()
   mFamilyMap.clear();
   mInfoMap.clear();
 
-  KTrader::OfferList managers = KTrader::self()->query( "KResources/Manager" );
+  // KDE-3.3 compatibility code: get families from the plugins
+  QStringList compatFamilyNames;
+  const KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin" );
+  KTrader::OfferList::ConstIterator it = plugins.begin();
+  KTrader::OfferList::ConstIterator end = plugins.end();
+  for ( ; it != end; ++it ) {
+    const QString family = (*it)->property( "X-KDE-ResourceFamily" ).toString();
+    if ( compatFamilyNames.find( family ) == compatFamilyNames.end() )
+        compatFamilyNames.append( family );
+  }
+
+  const KTrader::OfferList managers = KTrader::self()->query( "KResources/Manager" );
   KTrader::OfferList::ConstIterator m_it;
   for( m_it = managers.begin(); m_it != managers.end(); ++m_it ) {
-    QVariant tmp = (*m_it)->property( "Name" );
-    QString displayName = tmp.toString();
+    QString displayName = (*m_it)->property( "Name" ).toString();
     mFamilyMap.append( displayName );
-    tmp = (*m_it)->property( "X-KDE-ResourceFamily" );
-    QString family = tmp.toString();
+    QString family = (*m_it)->property( "X-KDE-ResourceFamily" ).toString();
     if ( !family.isEmpty() ) {
-      mCurrentManager = new Manager<Resource>( family );
-      if ( mCurrentManager ) {
-        mCurrentManager->addObserver( this );
-
-        ResourcePageInfo *info = new ResourcePageInfo;
-        info->mManager = mCurrentManager;
-        info->mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
-        info->mManager->readConfig( info->mConfig );
-
-        mInfoMap.append( KSharedPtr<ResourcePageInfo>(info) );
-      }
+      compatFamilyNames.remove( family );
+      loadManager( family );
     }
+  }
+
+  // Rest of the kde-3.3 compat code
+  QStringList::ConstIterator cfit = compatFamilyNames.begin();
+  for ( ; cfit != compatFamilyNames.end(); ++cfit ) {
+      mFamilyMap.append( *cfit );
+      loadManager( *cfit );
   }
 
   mCurrentManager = 0;
@@ -203,6 +210,21 @@ void ConfigPage::load()
   mFamilyCombo->setCurrentItem( currentFamily );
   slotFamilyChanged( currentFamily );
   emit changed( false );
+}
+
+void ConfigPage::loadManager( const QString& family )
+{
+  mCurrentManager = new Manager<Resource>( family );
+  if ( mCurrentManager ) {
+      mCurrentManager->addObserver( this );
+
+      ResourcePageInfo *info = new ResourcePageInfo;
+      info->mManager = mCurrentManager;
+      info->mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
+      info->mManager->readConfig( info->mConfig );
+
+      mInfoMap.append( KSharedPtr<ResourcePageInfo>(info) );
+  }
 }
 
 void ConfigPage::save()

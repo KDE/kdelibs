@@ -85,6 +85,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     void changed( bool );
 
   private:
+    void loadManager( const QString& family );
     void saveResourceSettings();
 
     Manager<Resource>* mCurrentManager;
