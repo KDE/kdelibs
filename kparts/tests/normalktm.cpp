@@ -1,5 +1,5 @@
 
-#include "example.h"
+#include "normalktm.h"
 #include "parts.h"
 #include "notepad.h"
 
@@ -14,16 +14,10 @@
 #include <kaction.h>
 #include <klocale.h>
 
+#include <kmenubar.h>
+
 Shell::Shell()
 {
-  setXMLFile( "kpartstest_shell.rc" );
-
-  m_manager = new KParts::PartManager( this );
-
-  // When the manager says the active part changes, the builder updates (recreates) the GUI
-  connect( m_manager, SIGNAL( activePartChanged( Part * ) ),
-           this, SLOT( createGUI( Part * ) ) );
-
   // We can do this "switch active part" because we have a splitter with
   // two items in it.
   // I wonder what kdevelop uses/will use to embed kedit, BTW.
@@ -32,32 +26,35 @@ Shell::Shell()
   m_part1 = new Part1(m_splitter);
   m_part2 = new Part2(m_splitter);
 
-  QActionCollection *coll = actionCollection();
+  QPopupMenu * pFile = new QPopupMenu( this );
+  menuBar()->insertItem( i18n("File"), pFile );
+  QObject * coll = this;
+  KAction * paLocal = new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  paLocal->plug( pFile );
 
-  (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
-  (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  KAction * paRemote = new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  paRemote->plug( pFile );
 
   m_paEditFile = new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
+  m_paEditFile->plug( pFile );
+
   m_paCloseEditor = new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
   m_paCloseEditor->setEnabled(false);
+  m_paCloseEditor->plug( pFile );
+
   KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
   paQuit->setIconSet(QIconSet(BarIcon("exit")));
-
-  (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
-  (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
+  paQuit->plug( pFile );
 
   setView( m_splitter );
 
   m_splitter->show();
 
-  m_manager->addPart( m_part1 );
-  m_manager->addPart( m_part2 ); // sets part 2 as the active part
   m_editorpart = 0;
 }
 
 Shell::~Shell()
 {
-  disconnect( m_manager, 0, this, 0 );
 }
 
 void Shell::slotFileOpen()
@@ -75,27 +72,23 @@ void Shell::slotFileOpenRemote()
 
 void Shell::embedEditor()
 {
-  if ( m_manager->activePart() == m_part2 )
-    createGUI( 0L );
-
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
   m_editorpart = new NotepadPart( m_splitter );
-  m_manager->addPart( m_editorpart );
+  ////// m_manager->addPart( m_editorpart );
+  m_editorpart->widget()->show(); //// we need to do this in a normal KTM....
   m_paEditFile->setEnabled(false);
   m_paCloseEditor->setEnabled(true);
 }
 
 void Shell::slotFileCloseEditor()
 {
-  if ( m_manager->activePart() == m_editorpart )
-    createGUI( 0L );
-
   delete m_editorpart;
   m_editorpart = 0L;
   m_part2 = new Part2(m_splitter);
-  m_manager->addPart( m_part2 );
+  ////// m_manager->addPart( m_part2 );
+  m_part2->widget()->show(); //// we need to do this in a normal KTM....
   m_paEditFile->setEnabled(true);
   m_paCloseEditor->setEnabled(false);
 }
@@ -111,7 +104,7 @@ void Shell::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "kpartstest" );
+  KApplication app( argc, argv, "kpartstest" ); // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
 
   Shell *shell = new Shell;
 
@@ -122,4 +115,4 @@ int main( int argc, char **argv )
   return 0;
 }
 
-#include "example.moc"
+#include "normalktm.moc"

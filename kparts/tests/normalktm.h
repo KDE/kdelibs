@@ -1,14 +1,14 @@
 
-#ifndef __example_h__
-#define __example_h__
+#ifndef __normalktm_h__
+#define __normalktm_h__
 
-#include <kpartmanager.h>
-#include <kpartsmainwindow.h>
+#include <kpart.h>
+#include <ktmainwindow.h>
 
 class KAction;
 class QWidget;
 
-class Shell : public KParts::MainWindow
+class Shell : public KTMainWindow
 {
   Q_OBJECT
 public:
@@ -32,7 +32,6 @@ private:
   KParts::ReadOnlyPart *m_part1;
   KParts::Part *m_part2;
   KParts::ReadWritePart *m_editorpart;
-  KParts::PartManager *m_manager;
   QWidget *m_splitter;
 };
 

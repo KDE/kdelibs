@@ -51,7 +51,8 @@ bool NotepadPart::openFile()
   }
   m_edit->setText(s);
 
-  manager()->setWindowCaption( m_url.url() );
+  if (manager())
+    manager()->setWindowCaption( m_url.url() );
   // see comments
   //manager()->statusBar()->message( m_url.url() );
 

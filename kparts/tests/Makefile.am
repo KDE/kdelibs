@@ -3,9 +3,10 @@ INCLUDES= -I$(top_srcdir)/kparts -I$(top_srcdir)/libltdl $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
-check_PROGRAMS = kpartstest
+check_PROGRAMS = kpartstest normalktmtest
 
-kpartstest_SOURCES = example.cpp notepad.cpp
+kpartstest_SOURCES = example.cpp notepad.cpp parts.cpp
+normalktmtest_SOURCES = normalktm.cpp notepad.cpp parts.cpp
 
 lib_LTLIBRARIES = libspellcheck.la
 libspellcheck_la_LDFLAGS = -avoid-version -module
