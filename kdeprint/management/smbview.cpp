@@ -103,7 +103,7 @@ void SmbView::slotProcessExited(KProcess*)
 
 void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 {
-	m_buffer.append(QCString(buf,len));
+	m_buffer.append(QString::fromLocal8Bit(buf,len));
 }
 
 void SmbView::init()
