@@ -52,8 +52,6 @@ debian/tmp/usr/lib/kde3/kio_http.la
 debian/tmp/usr/lib/kde3/kio_http.so
 debian/tmp/usr/lib/kde3/kio_metainfo.la
 debian/tmp/usr/lib/kde3/kio_metainfo.so
-debian/tmp/usr/lib/kde3/kjs_html.la
-debian/tmp/usr/lib/kde3/kjs_html.so
 debian/tmp/usr/lib/kde3/ktexteditor_insertfile.la
 debian/tmp/usr/lib/kde3/ktexteditor_insertfile.so
 debian/tmp/usr/lib/kde3/ktexteditor_isearch.la
