@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,9 @@
 #include "kmcupsuimanager.h"
 #include "kcupsprinterimpl.h"
 
+#include <kglobal.h>
+#include <klocale.h>
+
 extern "C"
 {
 	void* init_libkdeprint_cups()
@@ -36,6 +39,7 @@ extern "C"
 KCupsFactory::KCupsFactory(QObject *parent, const char *name)
 : KLibFactory(parent,name)
 {
+	KGlobal::locale()->insertCatalogue("ppdtranslations");
 }
 
 KCupsFactory::~KCupsFactory()

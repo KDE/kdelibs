@@ -212,8 +212,11 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	keys.append("printer-uri-supported");
 	keys.append("job-sheets-default");
 	keys.append("job-sheets-supported");
-	if (p->isClass(false))
+	if (p->isClass(true))
+	{
 		keys.append("member-uris");
+		keys.append("member-names");
+	}
 	else
 		keys.append("device-uri");
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
@@ -227,7 +230,7 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		if (req.uri("printer-uri-supported",value)) p->setUri(KURL(value));
 		if (req.uri("device-uri",value)) p->setDevice(KURL(value));
 		QStringList	values;
-		if (req.uri("member-uris",values))
+/*		if (req.uri("member-uris",values))
 		{
 			QStringList	members;
 			for (QStringList::ConstIterator it=values.begin(); it!=values.end(); ++it)
@@ -237,7 +240,9 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 					members.append((*it).right((*it).length()-p-1));
 			}
 			p->setMembers(members);
-		}
+		}*/
+		if (req.name("member-names",values))
+			p->setMembers(values);
 		// banners
 		req.name("job-sheets-default",values);
 		while (values.count() < 2) values.append("none");
@@ -332,7 +337,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 		{
 			int	value = attr->values[0].integer;
 			printer->setType(0);
-			printer->addType((value & CUPS_PRINTER_CLASS ? KMPrinter::Class : KMPrinter::Printer));
+			printer->addType(((value & CUPS_PRINTER_CLASS) || (value & CUPS_PRINTER_IMPLICIT) ? KMPrinter::Class : KMPrinter::Printer));
 			if ((value & CUPS_PRINTER_REMOTE)) printer->addType(KMPrinter::Remote);
 			if ((value & CUPS_PRINTER_IMPLICIT)) printer->addType(KMPrinter::Implicit);
 		}
@@ -402,8 +407,8 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			{
 				ppd_group_t	*grp = ppd->groups+i;
 				DrGroup	*gr = new DrGroup();
-				gr->set("text",QString::fromLocal8Bit(grp->text));
-				bool 	fixed = gr->get("text").contains("install",false);
+				gr->set("text",i18n(grp->text));
+				bool 	fixed = QString::fromLocal8Bit(grp->text).contains("install",false);
 				driver->addGroup(gr);
 				for (int k=0;k<grp->num_options;k++)
 				{
@@ -422,7 +427,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 						continue;	// skip option
 					}
 					op->setName(QString::fromLocal8Bit(opt->keyword));
-					op->set("text",QString::fromLocal8Bit(opt->text));
+					op->set("text",i18n(opt->text));
 					op->set("default",QString::fromLocal8Bit(opt->defchoice));
 					if (fixed) op->set("fixed","1");
 					gr->addOption(op);
@@ -431,7 +436,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 						ppd_choice_t	*cho = opt->choices+n;
 						DrBase	*ch = new DrBase();
 						ch->setName(QString::fromLocal8Bit(cho->choice));
-						ch->set("text",QString::fromLocal8Bit(cho->text));
+						ch->set("text",i18n(cho->text));
 						op->addChoice(ch);
 					}
 					op->setValueText(QString::fromLocal8Bit(opt->defchoice));
@@ -478,7 +483,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 							if (!adjgrp)
 							{
 								adjgrp = new DrGroup();
-								adjgrp->set("text","Adjustments");
+								adjgrp->set("text",i18n("Adjustments"));
 								driver->addGroup(adjgrp);
 							}
 							DrBase	*opt(0);
@@ -489,7 +494,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 							else
 								opt = new DrStringOption();
 							opt->setName(it.current()->arg("name"));
-							opt->set("text",it.current()->arg("comment"));
+							opt->set("text",i18n(it.current()->arg("comment").local8Bit()));
 							if (type == "float" || type == "int")
 							{
 								opt->set("minval",it.current()->arg("min"));

@@ -55,12 +55,13 @@ KMPropBanners::~KMPropBanners()
 
 void KMPropBanners::setPrinter(KMPrinter *p)
 {
-	if (p && p->isPrinter() && p->isLocal())
+	if (p && p->isPrinter())
 	{
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
 		m_startbanner->setText((l.count() > 0 ? l[0] : QString::fromLatin1("none")));
 		m_stopbanner->setText((l.count() > 1 ? l[1] : QString::fromLatin1("none")));
 		emit enable(true);
+		emit enableChange(p->isLocal());
 	}
 	else
 	{

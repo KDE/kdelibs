@@ -62,12 +62,13 @@ KMPropDriver::~KMPropDriver()
 
 void KMPropDriver::setPrinter(KMPrinter *p)
 {
-	if (p && p->isPrinter() && p->isLocal())
+	if (p && p->isPrinter())
 	{
 		m_manufacturer->setText(p->manufacturer());
 		m_model->setText(p->model());
 		m_driverinfo->setText(p->driverInfo());
 		emit enable(true);
+		emit enableChange(p->isLocal());
 	}
 	else
 	{

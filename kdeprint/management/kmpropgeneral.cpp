@@ -68,7 +68,7 @@ void KMPropGeneral::setPrinter(KMPrinter *p)
 		m_name->setText(p->name());
 		m_location->setText(p->location());
 		m_description->setText(p->description());
-		emit enableChange(!p->isSpecial());
+		emit enableChange(!(p->isSpecial() || p->isRemote() || p->isImplicit()));
 	}
 	else
 	{

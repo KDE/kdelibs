@@ -79,7 +79,7 @@ void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 		// translations
 		if (!printer->option("kde-range").isEmpty())
 			printer->setOption("page-ranges",printer->option("kde-range"));
-		if (!printer->option("kde-pageorder").isEmpty())
+		if (printer->option("kde-pageorder") == "Reverse")
 			printer->setOption("OutputOrder",printer->option("kde-pageorder"));
 		o = printer->option("kde-pageset");
 		if (!o.isEmpty() && o != "0")

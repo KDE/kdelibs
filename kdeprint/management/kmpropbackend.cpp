@@ -57,7 +57,7 @@ KMPropBackend::~KMPropBackend()
 
 void KMPropBackend::setPrinter(KMPrinter *p)
 {
-	if (p && p->isPrinter() && p->isLocal())
+	if (p && p->isPrinter())
 	{
 		m_uri->setText(p->device().prettyURL());
 		QString	prot = p->device().protocol().lower();
@@ -72,6 +72,7 @@ void KMPropBackend::setPrinter(KMPrinter *p)
 		else if (prot == "fax") m_type->setText(i18n("Serial Fax/Modem printer"));
 		else m_type->setText(i18n("Unknown"));
 		emit enable(true);
+		emit enableChange(p->isLocal());
 	}
 	else
 	{
