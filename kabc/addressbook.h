@@ -415,8 +415,8 @@ class KABC_EXPORT AddressBook : public QObject
     AddressBookData *d;
 };
 
-QDataStream &operator<<( QDataStream &, const AddressBook & );
-QDataStream &operator>>( QDataStream &, AddressBook & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const AddressBook & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, AddressBook & );
 
 }
 
