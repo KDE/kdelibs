@@ -361,7 +361,8 @@ void SimpleJob::slotFinished( )
                 KURL src, dst;
                 QDataStream str( m_packedArgs, IO_ReadOnly );
                 str >> src >> dst;
-                allDirNotify.FileRenamed( src, dst );
+                if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
+                    allDirNotify.FileRenamed( src, dst );
             }
         }
         /*
