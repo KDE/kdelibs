@@ -93,13 +93,11 @@ class HTMLEmbedElementImpl : public LiveConnectElementImpl
 {
 public:
     HTMLEmbedElementImpl(DocumentPtr *doc);
-
     ~HTMLEmbedElementImpl();
 
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *attr);
-
     virtual void attach();
 
     QString url;
@@ -130,10 +128,13 @@ public:
 
     DocumentImpl* contentDocument() const;
 
+    void renderAlternative();
+
     QString serviceType;
     QString url;
     QString classId;
     bool needWidgetUpdate;
+    bool m_renderAlternative;
 };
 
 // -------------------------------------------------------------------------

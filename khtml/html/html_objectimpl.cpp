@@ -188,14 +188,20 @@ void HTMLAppletElementImpl::attach()
 
     KHTMLView *view = getDocument()->view();
 
-#ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
-    if( view->part()->javaEnabled() )
+#ifndef Q_WS_QWS // FIXME?
+    KURL url = getDocument()->baseURL();
+    DOMString codeBase = getAttribute( ATTR_CODEBASE );
+    DOMString code = getAttribute( ATTR_CODE );
+    if ( !codeBase.isEmpty() )
+        url = KURL( url, codeBase.string() );
+    if ( !code.isEmpty() )
+        url = KURL( url, code.string() );
+
+    if( view->part()->javaEnabled() && isURLAllowed( url.url() ) )
     {
 	QMap<QString, QString> args;
 
-        DOMString code = getAttribute(ATTR_CODE);
 	args.insert( "code", code.string());
-	DOMString codeBase = getAttribute(ATTR_CODEBASE);
 	if(!codeBase.isNull())
 	    args.insert( "codeBase", codeBase.string() );
 	DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
@@ -305,17 +311,18 @@ void HTMLEmbedElementImpl::attach()
 
     if (parentNode()->renderer()) {
         KHTMLView* w = getDocument()->view();
-        if (w->part()->pluginsEnabled()) {
-            if (parentNode()->id() != ID_OBJECT)
-                m_render = new RenderPartObject(this);
-        }
+        RenderStyle* _style = getDocument()->styleSelector()->styleForElement( this );
+        _style->ref();
 
-        if (m_render) {
-            m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        if (w->part()->pluginsEnabled() && isURLAllowed( url ) &&
+            parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
+            m_render = new RenderPartObject(this);
+            m_render->setStyle(_style );
             parentNode()->renderer()->addChild(m_render, nextRenderer());
             static_cast<RenderPartObject*>(m_render)->updateWidget();
             setLiveConnect(w->part()->liveConnectExtension(static_cast<RenderPartObject*>(m_render)));
         }
+        _style->deref();
     }
 
     NodeBaseImpl::attach();
@@ -326,6 +333,7 @@ void HTMLEmbedElementImpl::attach()
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
+    m_renderAlternative = false;
 }
 
 HTMLObjectElementImpl::~HTMLObjectElementImpl()
@@ -350,6 +358,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
   switch ( attr->id() )
   {
     case ATTR_TYPE:
+    case ATTR_CODETYPE:
       serviceType = val.lower();
       pos = serviceType.find( ";" );
       if ( pos!=-1 )
@@ -357,7 +366,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       needWidgetUpdate = true;
       break;
     case ATTR_DATA:
-      url = khtml::parseURL(  val ).string();
+      url = khtml::parseURL( val ).string();
       needWidgetUpdate = true;
       break;
     case ATTR_WIDTH:
@@ -399,7 +408,9 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    if (!w->part()->pluginsEnabled()) {
+    if ( !w->part()->pluginsEnabled() ||
+         ( url.isEmpty() && classId.isEmpty() ) ||
+         m_renderAlternative || !isURLAllowed( url ) ) {
         // render alternative content
         ElementImpl::attach();
         return;
@@ -410,14 +421,16 @@ void HTMLObjectElementImpl::attach()
 
     if (parentNode()->renderer() && _style->display() != NONE) {
         needWidgetUpdate=false;
-
-        if (serviceType.startsWith("image/"))
+        bool imagelike = serviceType.startsWith("image/");
+        if (imagelike)
             m_render = new RenderImage(this);
         else
             m_render = new RenderPartObject(this);
 
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
+        if (imagelike)
+            m_render->updateFromElement();
     }
 
     _style->deref();
@@ -435,6 +448,20 @@ void HTMLObjectElementImpl::detach()
         dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
   HTMLElementImpl::detach();
+}
+
+void HTMLObjectElementImpl::renderAlternative()
+{
+    // an unbelievable hack. FIXME!!
+
+    if ( m_renderAlternative ) return;
+
+    if ( attached() )
+        detach();
+
+    m_renderAlternative = true;
+
+    attach();
 }
 
 void HTMLObjectElementImpl::recalcStyle( StyleChange ch )

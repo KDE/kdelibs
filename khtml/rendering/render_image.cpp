@@ -42,6 +42,7 @@
 #include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_objectimpl.h"
 #include <math.h>
 
 using namespace DOM;
@@ -111,6 +112,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         if ( ih != intrinsicHeight() ) {
             setIntrinsicHeight( ih );
             iwchanged = true;
+        }
+        if ( element()->id() == ID_OBJECT ) {
+            static_cast<HTMLObjectElementImpl*>(  element() )->renderAlternative();
+            return;
         }
     }
     berrorPic = o->isErrorImage();
@@ -353,9 +358,12 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    if (!element()->getAttribute(ATTR_SRC).isEmpty()) {
+    DOMString u = element()->id() == ID_OBJECT ?
+                  element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
+
+    if (!u.isEmpty()) {
         CachedImage *new_image = element()->getDocument()->docLoader()->
-                                 requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
+                                 requestImage(khtml::parseURL(u));
 
         if(new_image && new_image != image && (!style() || !style()->contentObject())) {
             loadEventSent = false;
