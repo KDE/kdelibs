@@ -43,6 +43,68 @@ If you overwrite an existing update file with a new version that contains a
 new section, only the update instructions from this extra section will be 
 performed.
 
+File format of the update file
+==============================
+
+Empty lines or lines that start with '#' are considered comments.
+Commas (,) are use to seperate fields and may not occur as part of any
+field.
+
+For the rest the file is parsed from top to bottom. Each line can contain
+one entry. The following entries are recognized:
+
+
+Id=<id>
+
+With <id> identifying the group of update entries that follows. Once a group
+of entries have been applied, their <id> is stored and this group of entries
+will not be applied again.
+
+
+File=<oldfile>,<newfile>
+File=<oldfile>
+
+Specifies that configuration information is read from <oldfile> and written 
+to <newfile>. If you only specify <oldfile>, the information is read from
+as well as written to <oldfile>.
+
+
+Group=<oldgroup>,<newgroup>
+Group=<oldgroup>
+
+Specifies that configuration information is read from the group <oldgroup>
+and written to <newgroup>. If you only specify <oldgroup>, the information
+is read from as well as written to <oldgroup>.
+
+
+Options=<option1>, <option2>, ....
+
+With this entry you can specify options that apply to the next 
+"Key" or "AllKeys" entry (only to the first!). Possible options are:
+
+- "copy" Copy the configuration item instead of moving it. This means that 
+         the configuration item will not be deleted from <oldfile>/<oldgroup>.
+
+- "overwrite" Normally, a configuration item is not moved if a item with the
+         new name already exists. When this option is specified the old 
+         configuration item will overwrite any existing item.
+
+
+Key=oldkey,newkey
+Key=oldkey
+
+Specifies that configuration information is read from the key <oldkey>
+and written to <newkey>. If you only specify <oldkey>, the information
+is read from as well as written to <oldkey>.
+
+
+AllKeys
+
+Specifies that all configuration information in the selected group should
+be moved (All keys).
+
+
+
 Example update file
 ===================
 
@@ -76,7 +138,6 @@ keys "MaxCacheSize" and "UseCache" in the group "Cache" (!) in the
 
 Finally it takes all keys in the "UserAgent" group of the file "kioslaverc" 
 and moves then to the "UserAgent" group in the "kio_httprc" file.
-
 
 Have fun,
 Waldo

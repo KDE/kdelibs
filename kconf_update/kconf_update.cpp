@@ -54,6 +54,8 @@ public:
    void gotGroup(const QString &_group);
    void gotKey(const QString &_key);
    void gotAllKeys();
+   void gotOptions(const QString &_options);
+   void resetOptions();
 
 protected:
    KConfig *config;
@@ -70,6 +72,9 @@ protected:
    QString newGroup;
    QString oldKey;
    QString newKey;
+
+   bool m_bCopy;
+   bool m_bOverwrite;
 };
 
 KonfUpdate::KonfUpdate()
@@ -139,9 +144,10 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
  * Id=id
  * File=oldfile[,newfile]
  * Group=oldgroup[,newgroup]
+ * Options=[copy,][overwrite,]
  * Key=oldkey[,newkey]
  * AllKeys
- * Keys= AllKeys|(Keys*)
+ * Keys= ([Options]AllKeys)|([Options]Keys*)
  *
  * Sequence:
  * (Id,(File(Group,Keys)*)*)*
@@ -157,6 +163,7 @@ bool KonfUpdate::updateFile(const QString &filename)
    QTextStream ts(&file);
    ts.setEncoding(QTextStream::Latin1);
    int lineCount = 0;
+   resetOptions();
    while(!ts.atEnd())
    {
       QString line = ts.readLine().stripWhiteSpace();
@@ -167,14 +174,22 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotId(line.mid(3));
       else if (skip)
          continue;
+      else if (line.startsWith("Options="))
+         gotOptions(line.mid(8));
       else if (line.startsWith("File="))
          gotFile(line.mid(5));
       else if (line.startsWith("Group="))
          gotGroup(line.mid(6));
       else if (line.startsWith("Key="))
+      {
          gotKey(line.mid(4));
+         resetOptions();
+      }
       else if (line == "AllKeys")
+      {
          gotAllKeys();
+         resetOptions();
+      }
       else
          qWarning("%s:%d parse error '%s'", filename.latin1(), lineCount, line.latin1());
    }
@@ -317,10 +332,25 @@ void KonfUpdate::gotKey(const QString &_key)
    if (!oldConfig->hasKey(oldKey))
       return;
    QString value = oldConfig->readEntry(oldKey);
-   // oldConfig->deleteEntry(oldKey);
    newConfig->setGroup(newGroup);
+   if (!m_bOverwrite && newConfig->hasKey(newKey))
+   {
+      qWarning("Skipping %s", newKey.latin1());
+      return;
+   }
 qWarning("Write %s -> %s", newKey.latin1(), value.latin1());
    newConfig->writeEntry(newKey, value);
+
+   if (m_bCopy)
+      return; // Done.
+
+   // Delete old entry
+   if ((oldConfig == newConfig) && 
+       (oldGroup == newGroup) &&
+       (oldKey == newKey))
+      return; // Don't delete!
+   oldConfig->setGroup(oldGroup);
+   oldConfig->deleteEntry(oldKey, false);
 }
 
 void KonfUpdate::gotAllKeys()
@@ -336,6 +366,27 @@ void KonfUpdate::gotAllKeys()
    {
       gotKey(it.key());
    }
+}
+
+void KonfUpdate::gotOptions(const QString &_options)
+{
+   QStringList options = QStringList::split(',', _options);
+   for(QStringList::ConstIterator it = options.begin();
+       it != options.end();
+       ++it)
+   {
+       if ( (*it).lower().stripWhiteSpace() == "copy")
+          m_bCopy = true;
+
+       if ( (*it).lower().stripWhiteSpace() == "overwrite")
+          m_bOverwrite = true;
+   }
+}
+
+void KonfUpdate::resetOptions()
+{
+   m_bCopy = false;
+   m_bOverwrite = false;
 }
 
 
