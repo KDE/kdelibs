@@ -3785,7 +3785,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		}
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
-		if ( !httpequiv.isEmpty() )
+		if ( !httpequiv.isEmpty() && !content.isNull() )
 		{
 		    if ( strcasecmp(httpequiv.data(),"content-type") == 0 )
 		    {
