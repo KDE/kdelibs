@@ -41,6 +41,10 @@ BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
 {
 }
 
+BrowserRun::~BrowserRun()
+{
+}
+
 void BrowserRun::scanFile()
 {
   kdDebug(1000) << "BrowserRun::scanfile " << m_strURL.prettyURL() << endl;

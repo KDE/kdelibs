@@ -52,7 +52,7 @@ namespace KParts {
         BrowserRun( const KURL& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
                     bool removeReferrer, bool trustedSource );
-        virtual ~BrowserRun() {}
+        virtual ~BrowserRun();
 
         //KParts::URLArgs urlArgs() const { return m_args; }
         //KParts::ReadOnlyPart* part() const { return m_part; }
