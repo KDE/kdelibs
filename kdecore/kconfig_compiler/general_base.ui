@@ -1,0 +1,46 @@
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<class>GeneralBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>GeneralBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>AutoExampleDialog</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QCheckBox" row="0" column="1">
+            <property name="name">
+                <cstring>OneOption</cstring>
+            </property>
+            <property name="text">
+                <string>OneOption</string>
+            </property>
+        </widget>
+        <widget class="QSpinBox" row="1" column="1">
+            <property name="name">
+                <cstring>Another_Option</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="text">
+                <string>AnotherOption:</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+  <include>qdir.h</include>
+  <kcfgfile name="examplerc">
+    <parameter name="transport" />
+    <parameter name="folder" />
+  </kcfgfile>
+  <group name="General-$(folder)">
+    <entry name="OneOption" type="bool">
+      <label>One option</label>
+      <default>true</default>
+    </entry>
+    <entry name="AnotherOption" type="int" key="Another Option">
+      <label>Another option</label>
+      <default>5</default>
+    </entry>
+    <entry name="ListOption" type="int">
+      <values>
+        <value>One</value>
+        <value>Two</value>
+        <value>Three</value>
+      </values>
+      <default>One</default>
+    </entry>
+  </group>
+  <group name="MyOptions">
+    <entry name="MyString" type="QString">
+      <label>This is a string</label>
+      <default>Default String</default>
+    </entry>
+    <entry name="MyPath" type="Path">
+      <label>This is a path</label>
+      <default code="true">QDir::homeDirPath()+".hidden_file"</default>
+    </entry>
+    <entry name="AnotherOption2" type="int" key="Another Option">
+      <label>Another option</label>
+      <default>10</default>
+    </entry>
+    <entry name="MyStringList" type="QStringList">
+      <default>up,down</default>
+    </entry>
+    <entry name="MyNumber" type="int" key="List-$(transport)-$(folder)">
+      <label>List Number</label>
+      <default>1</default>
+    </entry>
+  </group>
+</kcfg>

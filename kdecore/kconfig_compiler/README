@@ -1,0 +1,26 @@
+cfgc - The Configuration Compiler
+---------------------------------
+
+cfgc generates C++ source code from an XML file containing information about
+configuration options. The generated class is bases on KPrefs and provides an
+API for the application to access its configuration data.
+
+[insert description of the class tag here]
+[insert description of the cfgfile tag here]
+
+The entries in the XML file are grouped by the tag <group> which takes an
+attribute for the config file group name.
+
+The individual entries must have at least a name or a key. The name if used to
+create accessor and modifier functions. It's also used as key in the config
+file. If <key> is given, but not <name>, the name is constructed by removing all
+spaces from <key>.
+
+An entry can optionally have a default value which is used as default when the
+value isn't specified in any config file.
+
+[insert description of the values tag here]
+
+
+If you have questions or comments please contact Cornelius Schumacher
+<schumacher@kde.org>.

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT kcfg (include,kcfgfile,group*)>
+
+<!ELEMENT include (#PCDATA)>
+
+<!ELEMENT kcfgfile (parameter*)>
+  <!ATTLIST kcfgfile name CDATA #IMPLIED>
+  
+<!ELEMENT parameter EMPTY>
+  <!ATTLIST parameter name CDATA #REQUIRED>
+
+<!ELEMENT group (entry*)>
+  <!ATTLIST group name CDATA #REQUIRED>
+
+<!ELEMENT entry (key?,name?,label,code,default,values)>
+  <!ATTLIST entry name CDATA #REQUIRED>
+  <!ATTLIST entry type CDATA #REQUIRED>
+  <!ATTLIST entry key CDATA #REQUIRED>
+
+<!ELEMENT label (#PCDATA)>
+
+<!ELEMENT default (#PCDATA)>
+  <!ATTLIST default code CDATA #IMPLIED>
+
+<!ELEMENT code (#PCDATA)>
+
+<!ELEMENT values (value*)>
+<!ELEMENT value (#PCDATA)>
