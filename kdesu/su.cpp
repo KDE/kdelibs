@@ -89,15 +89,15 @@ int SuProcess::exec(const char *password, int check)
           return check ? SuNotFound : -1;
     }
 
-    kdDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
+    // kdDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
     if (StubProcess::exec(command, args) < 0)
     {
 	return check ? SuNotFound : -1;
     }
-    kdDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
+    // kdDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
     
     SuErrors ret = (SuErrors) ConverseSU(password);
-    kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
+    // kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
 
     if (ret == error) 
     {
@@ -109,7 +109,7 @@ int SuProcess::exec(const char *password, int check)
     {
 	if (ret == killme)
 	{
-	    if (kill(m_Pid, SIGTERM) < 0) ret=error;
+	    if (kill(m_Pid, SIGKILL) < 0) ret=error;
 	    else 
 	    {
 		int iret = waitForChild();
@@ -129,7 +129,7 @@ int SuProcess::exec(const char *password, int check)
 
     if (ret == notauthorized)
     {
-	kill(m_Pid, SIGTERM);
+	kill(m_Pid, SIGKILL);
 	waitForChild();
 	return SuIncorrectPassword;
     }
@@ -142,7 +142,7 @@ int SuProcess::exec(const char *password, int check)
 	return iret;
     } else if (iret == 1)
     {
-	kill(m_Pid, SIGTERM);
+	kill(m_Pid, SIGKILL);
 	waitForChild();
 	return SuIncorrectPassword;
     }
@@ -168,7 +168,7 @@ int SuProcess::ConverseSU(const char *password)
     int colon;
     unsigned i, j;
     
-    kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
+    // kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
     QCString line;
     while (true)
@@ -176,7 +176,7 @@ int SuProcess::ConverseSU(const char *password)
 	line = readLine(); 
 	if (line.isNull())
 	    return ( state == HandleStub ? notauthorized : error);
-	kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
+	// kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
 
 	switch (state) 
 	{
