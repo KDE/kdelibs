@@ -387,6 +387,8 @@ public:
 
     virtual short baselinePosition( bool = false ) const;
 
+    virtual bool nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside);
+
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()->parent()); }
 

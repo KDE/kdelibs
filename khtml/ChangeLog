@@ -1,3 +1,8 @@
+2005-02-15  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_table.{cpp,h} (RenderCell::nodeAtPoint):
+	Including top and bottom extra space in hit testing.
+	
 2005-02-15  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement genererated content: counter and quotes

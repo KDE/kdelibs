@@ -1945,6 +1945,19 @@ void RenderTableCell::setStyle( RenderStyle *style )
     }
 }
 
+bool RenderTableCell::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
+{
+  int tx = _tx + m_x;
+  int ty = _ty + m_y;
+
+  // also include the top and bottom extra space
+  inside |= style()->visibility() != HIDDEN
+      && (_y >= ty) && (_y < ty + height() + _topExtra + _bottomExtra)
+      && (_x >= tx) && (_x < tx + width());
+
+  return RenderBlock::nodeAtPoint(info, _x, _y, _tx, _ty, hitTestAction, inside);
+}
+
 // The following rules apply for resolving conflicts and figuring out which border
 // to use.
 // (1) Borders with the 'border-style' of 'hidden' take precedence over all other conflicting
