@@ -42,6 +42,9 @@
 
 #include <qstring.h>
 #include <qfile.h>
+#include <qdatetime.h>
+#include <qfileinfo.h>
+#include <qtextstream.h>
 #include <kinstance.h>
 #include <kstddirs.h>
 
@@ -55,6 +58,7 @@ int X11fd;
 static Display *X11display = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
+static QTime* smModificationTime = 0;
 
 /* Group data */
 struct {
@@ -84,7 +88,7 @@ static void close_fds()
       close(d.deadpipe[0]);
    d.deadpipe[0] = -1;
 
-   if (d.deadpipe[1] != -1) 
+   if (d.deadpipe[1] != -1)
       close(d.deadpipe[1]);
    d.deadpipe[1] = -1;
 
@@ -106,6 +110,30 @@ static void close_fds()
    signal(SIGCHLD, SIG_DFL);
    signal(SIGPIPE, SIG_DFL);
 }
+
+static void checkSessionManagementEnvironment()
+{
+    QCString fName = ::getenv("HOME");
+    fName += "/.KSMserver";
+    bool check = !::getenv("SESSION_MANAGER");
+    if ( !check && smModificationTime ) {
+	 QFileInfo info( fName );
+	 QTime current = info.lastModified().time();
+	 check = current > *smModificationTime;
+    }
+    if ( check ) {
+	delete smModificationTime;
+	QFile f( fName );
+	if ( !f.open( IO_ReadOnly ) )
+	    return;
+	QFileInfo info ( f );
+	smModificationTime = new QTime( info.lastModified().time() );
+	QTextStream t(&f);
+	QString s = t.readLine();
+	f.close();
+	::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
+    }
+} 
 
 static pid_t launch(int argc, const char *_name, const char *args)
 {
@@ -149,6 +177,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
      perror("kdeinit: pipe() failed!\n");
      exit(255);
   }
+
+  checkSessionManagementEnvironment();
   
   d.fork = fork();
   switch(d.fork) {
@@ -160,12 +190,12 @@ static pid_t launch(int argc, const char *_name, const char *args)
      /** Child **/
      close(d.fd[0]);
      close_fds();
-     
+
 fprintf(stderr, "arg[0] = %s\n", name.data());
 
      /** Give the process a new name **/
      kdeinit_setproctitle( "%s", name.data() );
-         
+
      d.argv = (char **) malloc(sizeof(char *) * (argc+1));
      d.argv[0] = name.data();
      for (int i = 1;  i < argc; i++)
@@ -173,7 +203,7 @@ fprintf(stderr, "arg[0] = %s\n", name.data());
         d.argv[i] = (char *) args;
 fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         while(*args != 0) args++;
-        args++; 
+        args++;
      }
      d.argv[argc] = 0;
 
@@ -194,7 +224,7 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         close(d.fd[1]);
         exit(255);
      }
-     
+
      if (!launcher)
      {
         d.sym = lt_dlsym( d.handle, "main");
@@ -203,49 +233,49 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
            d.sym = lt_dlsym( d.handle, "kdemain");
            if (!d.sym )
            {
-              fprintf(stderr, "Could not find main: %s\n", lt_dlerror());        
+              fprintf(stderr, "Could not find main: %s\n", lt_dlerror());
               d.result = 1; // Error
               write(d.fd[1], &d.result, 1);
               close(d.fd[1]);
               exit(255);
            }
         }
-     
+
         d.result = 0; // Success
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
- 
+
         d.func = (int (*)(int, char *[])) d.sym;
 
         exit( d.func( argc, d.argv)); /* Launch! */
      }
      else
      {
-fprintf(stderr, "Starting klauncher.\n"); 
+fprintf(stderr, "Starting klauncher.\n");
         d.sym = lt_dlsym( d.handle, "start_launcher");
         if (!d.sym )
         {
-           fprintf(stderr, "Could not find start_launcher: %s\n", lt_dlerror());        
+           fprintf(stderr, "Could not find start_launcher: %s\n", lt_dlerror());
            d.result = 1; // Error
            write(d.fd[1], &d.result, 1);
            close(d.fd[1]);
            exit(255);
         }
-     
+
         d.result = 0; // Success
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
- 
+
         d.launcher_func = (int (*)(int)) d.sym;
 
         exit( d.launcher_func( d.launcher[1] )); /* Launch! */
      }
- 
+
      break;
   default:
      /** Parent **/
      close(d.fd[1]);
-     if (launcher) 
+     if (launcher)
      {
         d.launcher_pid = d.fork;
      }
@@ -253,7 +283,7 @@ fprintf(stderr, "Starting klauncher.\n");
      for(;;)
      {
        d.n = read(d.fd[0], &d.result, 1);
-       if (d.n == 1) 
+       if (d.n == 1)
        {
           if (d.result == 2)
           {
@@ -264,7 +294,7 @@ fprintf(stderr, "Starting klauncher.\n");
           // Finished
           break;
        }
-       if (d.n == -1) 
+       if (d.n == -1)
        {
           if (errno == ECHILD)
           {
@@ -294,7 +324,7 @@ fprintf(stderr, "Starting klauncher.\n");
        break;
      }
      close(d.fd[0]);
-     if (launcher && (d.result == 0)) 
+     if (launcher && (d.result == 0))
      {
         // Trader launched successfull
         d.launcher_pid = d.fork;
@@ -303,7 +333,7 @@ fprintf(stderr, "Starting klauncher.\n");
   return d.fork;
 }
 
-static void sig_child_handler(int) 
+static void sig_child_handler(int)
 {
    /*
     * Write into the pipe of death.
@@ -321,13 +351,13 @@ static void init_signals()
 {
   struct sigaction act;
   long options;
-   
+
   if (pipe(d.deadpipe) != 0)
   {
      perror("Aborting. Can't create pipe: ");
      exit(255);
   }
-  
+
   options = fcntl(d.deadpipe[0], F_GETFL);
   if (options == -1)
   {
@@ -357,7 +387,7 @@ static void init_signals()
 #ifdef SA_RESTART
   act.sa_flags |= SA_RESTART;
 #endif
-  sigaction( SIGCHLD, &act, 0L); 
+  sigaction( SIGCHLD, &act, 0L);
 
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
@@ -376,7 +406,7 @@ static void init_kdeinit_socket()
   {
      fprintf(stderr, "Aborting. $HOME not set!");
      exit(255);
-  }   
+  }
   chdir(home_dir);
   if (strlen(home_dir) > (MAX_SOCK_FILE-100))
   {
@@ -387,7 +417,7 @@ static void init_kdeinit_socket()
   /** Strip trailing '/' **/
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
-  
+
   strcat(sock_file, "/.kdeinit-");
   // GJ: This should be the fully qualified hostname, IMHO.
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
@@ -397,7 +427,7 @@ static void init_kdeinit_socket()
   }
   // GJ: Append $DISPLAY, too.
   char *display = getenv("DISPLAY");
-  if (!display) 
+  if (!display)
   {
      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
      exit(255);
@@ -427,8 +457,8 @@ static void init_kdeinit_socket()
       * create the socket stream
       */
      s = socket(PF_UNIX, SOCK_STREAM, 0);
-     if (s < 0) 
-     { 
+     if (s < 0)
+     {
         perror("socket() failed: ");
         exit(255);
      }
@@ -436,7 +466,7 @@ static void init_kdeinit_socket()
      strcpy(server.sun_path, sock_file);
      socklen = sizeof(server);
 
-     if(connect(s, (struct sockaddr *)&server, socklen) == 0) 
+     if(connect(s, (struct sockaddr *)&server, socklen) == 0)
      {
         fprintf(stderr, "kdeinit: Already running.\n");
         close(s);
@@ -474,7 +504,7 @@ static void init_kdeinit_socket()
   sa.sun_family = AF_UNIX;
   strcpy(sa.sun_path, sock_file);
   socklen = sizeof(sa);
-  if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0) 
+  if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
   {
      perror("Aborting. bind() failed: ");
      close(d.wrapper);
@@ -487,9 +517,9 @@ static void init_kdeinit_socket()
      perror("Aborting. Can't set permissions on socket: ");
      close(d.wrapper);
      exit(255);
-  }  
+  }
 
-  if(listen(d.wrapper, SOMAXCONN) < 0) 
+  if(listen(d.wrapper, SOMAXCONN) < 0)
   {
      perror("Aborting. listen() failed: ");
      close(d.wrapper);
@@ -541,7 +571,7 @@ static void kill_launcher()
    {
      close(d.launcher[0]);
      close(d.launcher[1]);
-    
+
      kill(d.launcher_pid, SIGTERM);
    }
    d.launcher_pid = 0;
@@ -566,7 +596,7 @@ static void handle_launcher_request(int sock = -1)
          kill_launcher();
       return;
    }
-   
+
    request_data = (char *) malloc(request_header.arg_length);
 
    result = read_socket(sock, request_data, request_header.arg_length);
@@ -606,16 +636,16 @@ static void handle_launcher_request(int sock = -1)
 printf("KInit: argc[%d] = '%s'\n", i, arg_n);
            arg_n = arg_n + strlen(arg_n) + 1;
            i++;
-         }   
+         }
          if ((arg_n - request_data) != request_header.arg_length)
          {
-           fprintf(stderr, "kdeinit: EXEC request has invalid format.\n"); 
+           fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
            free(request_data);
            return;
          }
       }
       pid = launch(argc, name, args);
-      
+
       if (pid && (d.result == 0))
       {
          response_header.cmd = LAUNCHER_OK;
@@ -630,7 +660,7 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
          response_header.arg_length = 0;
          write(sock, &response_header, sizeof(response_header));
       }
-   }   
+   }
    else if (request_header.cmd == LAUNCHER_SETENV)
    {
       char *env_name;
@@ -643,10 +673,10 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
       else
          printf("Got SETENV '%s=%s' from socket\n", env_name, env_value);
 
-      if ( request_header.arg_length != 
+      if ( request_header.arg_length !=
           (int) (strlen(env_name) + strlen(env_value) + 2))
       {
-         fprintf(stderr, "kdeinit: SETENV request has invalid format.\n"); 
+         fprintf(stderr, "kdeinit: SETENV request has invalid format.\n");
          free(request_data);
          return;
       }
@@ -712,7 +742,7 @@ static void handle_requests()
       printf("Entering select...\n");
       result = select(max_sock, &rd_set, &wr_set, &e_set, 0);
       printf("Select done...\n");
-      
+
 
       /* Handle wrapper request */
       if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
@@ -723,8 +753,8 @@ static void handle_requests()
          if (sock >= 0)
          {
             if (fork() == 0)
-            { 
-                close_fds(); 
+            {
+                close_fds();
                 handle_launcher_request(sock);
                 exit(255); /* Terminate process. */
             }
@@ -757,7 +787,7 @@ static void kdeinit_library_path()
    KInstance instance( "kdeinit" );
    QStringList candidates = instance.dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
-        it != candidates.end(); 
+        it != candidates.end();
         it++)
    {
       QCString dir = QFile::encodeName(*it);
@@ -834,7 +864,7 @@ int main(int argc, char **argv, char **envp)
 
    /** Save arguments first... **/
    d.argv = (char **) malloc( sizeof(char *) * argc);
-   for(i = 0; i < argc; i++) 
+   for(i = 0; i < argc; i++)
    {
       d.argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
       if (strcmp(d.argv[i], "--no-dcop") == 0)
@@ -850,7 +880,7 @@ int main(int argc, char **argv, char **envp)
       setsid();
 
    /** Prepare to change process name **/
-   kdeinit_initsetproctitle(argc, argv, envp);  
+   kdeinit_initsetproctitle(argc, argv, envp);
    kdeinit_setproctitle("Starting up...");
    kdeinit_library_path();
    unsetenv("LD_BIND_NOW");
@@ -907,7 +937,7 @@ int main(int argc, char **argv, char **envp)
    }
 
    /** Free arguments **/
-   for(i = 0; i < argc; i++) 
+   for(i = 0; i < argc; i++)
    {
       free(d.argv[i]);
    }
@@ -928,7 +958,7 @@ int main(int argc, char **argv, char **envp)
    X11fd = initXconnection();
 
    handle_requests();
-   
+
    return 0;
 }
 
