@@ -28,12 +28,14 @@
 #endif
 
 #include <ktoolboxmgr.h>
-#include <kwm.h>
 
 template class QList<QRect>;
 
  // $Id$
  // $Log$
+ // Revision 1.18  1999/12/13 23:01:49  kulow
+ // some "real C++" fixes. I wish gcc -ansi would serve real ANSI ;(
+ //
  // Revision 1.17  1999/10/31 19:44:47  bero
  // More template definitions for -frepo
  //
@@ -167,7 +169,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   dontmoveres=dontmove;
   hotspot_static = hot_static;
 
-  QRect rr = KWM::geometry(widget->winId(), true);
+  QRect rr = widget->frameGeometry();
   QPoint p(rr.topLeft());
 
   offX = QCursor::pos().x() - p.x();
@@ -199,7 +201,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
     drawRectangle(xp, yp, w, h);
 
   timer->start(0);
-  
+
   qApp->enter_loop();
 }
 
@@ -335,7 +337,7 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   dontmoveres=dontresize;
   mode = Resizing;
 
-  QRect rr = KWM::geometry(widget->winId(), true);
+  QRect rr = widget->frameGeometry();
   QPoint p(rr.topLeft());
 
   offX = QCursor::pos().x() - p.x();

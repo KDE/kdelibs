@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
+ *
  * You can Freely distribute this program under the GNU Library
- * General Public License. See the file "COPYING.LIB" for the exact 
+ * General Public License. See the file "COPYING.LIB" for the exact
  * licensing terms.
  */
 
@@ -87,13 +87,13 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     if (!m_bInit && (event->type() == QEvent::Paint))
     {
 	m_bInit = true;
-	m_Desk = KWin::currentDesktop();
+	m_Desk = 0; // ### KWin::currentDesktop();
     }
 
     if (!m_bActive)
 	return false;
 	
-    switch (event->type()) 
+    switch (event->type())
     {
     case QEvent::Resize:
     case QEvent::Move:
@@ -131,13 +131,13 @@ void KRootPixmap::repaint(bool force)
     // we have to reset the background pixmap.
     if ((p1 == m_Rect.topLeft()) && (m_pWidget->width() < m_Rect.width()) &&
 	(m_pWidget->height() < m_Rect.height())
-       ) 
+       )
     {
 	m_pWidget->setBackgroundPixmap(*m_pPixmap);
 	return;
     }
     m_Rect = QRect(p1, p2);
-    m_Desk = KWin::currentDesktop();
+    m_Desk = 0; //### KWin::currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
@@ -147,11 +147,12 @@ void KRootPixmap::repaint(bool force)
 
 bool KRootPixmap::checkAvailable(bool show_warning)
 {
-    QString name = QString("DESKTOP%1").arg(KWin::currentDesktop());
+    int desk = 0; // ####KWin::currentDesktop();
+    QString name = QString("DESKTOP%1").arg( desk );
     bool avail = m_pPixmap->isAvailable(name);
     if (!avail && show_warning)
     {
-	KMessageBox::sorry(0L, 
+	KMessageBox::sorry(0L,
 	    i18n("Cannot find the desktop background. Pseudo transparency\n"
 		 "cannot be used! To make the desktop background available,\n"
 		 "go to Preferences -> Display -> Advanced and enable\n"
@@ -164,7 +165,7 @@ bool KRootPixmap::checkAvailable(bool show_warning)
 
 void KRootPixmap::slotDone(bool success)
 {
-    if (!success) 
+    if (!success)
     {
 	kdWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
 	return;
@@ -172,7 +173,7 @@ void KRootPixmap::slotDone(bool success)
 
     QPixmap pm = *m_pPixmap;
 
-    if (m_Fade > 1e-6) 
+    if (m_Fade > 1e-6)
     {
 	KPixmapIO io;
 	QImage img = io.convertToImage(pm);
@@ -182,7 +183,7 @@ void KRootPixmap::slotDone(bool success)
 
     m_pWidget->setBackgroundPixmap(pm);
 }
-  
+
 
 void KRootPixmap::slotBackgroundChanged(int desk)
 {

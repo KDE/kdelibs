@@ -34,7 +34,6 @@
 #include <kmenubar.h>
 #include <kstyle.h>
 #include <kapp.h>
-#include <kwm.h>
 #include <kwin.h>
 #include <kglobal.h>
 
@@ -189,21 +188,22 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   recreate(0, 0, mapToGlobal(QPoint(0,0)), false);
   XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->
                         topLevelWidget()->winId());
-  KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar |
-                              KWM::noFocus);
-  KWM::moveToDesktop(winId(), KWM::currentDesktop());
-
-  QRect r =  KWM::windowRegion(KWM::currentDesktop());
+  KWin::setType( winId(), NET::Menu );
+  
+//###   QRect r =  KWM::windowRegion(KWM::currentDesktop());
+  QRect r = qApp->desktop()->geometry();
+  
   setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(),
               heightForWidth(r.width()) - 9);
+  
   setFixedWidth(r.width());
-
 
   setFrameStyle( NoFrame );
 
   // Tell the window manager we want to be avoided.
-  KWin::avoid(winId(), KWin::Top);
-
+  KWin::setStrut( winId(), 0, 0, height(), 0 );
+  
+  
   show();
 
   // in theory, this should reassign our top-level accelerators to our

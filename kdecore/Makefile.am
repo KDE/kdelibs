@@ -29,14 +29,14 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
 	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
-	kstdaccel.h kwinmodule.h kwm.h kwin.h krootprop.h kpixmap.h  \
+	kstdaccel.h kwinmodule.h kwin.h krootprop.h kpixmap.h  \
 	kaccel.h kglobalaccel.h kprotocolmanager.h \
 	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kglobal.h kglobalsettings.h ksharedptr.h kde_dmalloc.h \
 	kallocator.h kcrash.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h
+	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h netwm_def.h netwm_p.h
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h
 
@@ -46,7 +46,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp  \
 	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	fakes.cpp kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
-	kstdaccel.cpp kwin.cpp kwinmodule.cpp kwm.cpp krootprop.cpp kcharsets.cpp \
+	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
 	kprotocolmanager.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
@@ -54,7 +54,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp  \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
+	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp netwm.cpp \
 	kdatastream.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined

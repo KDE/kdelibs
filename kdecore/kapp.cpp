@@ -69,7 +69,7 @@
 
 #include "ltdl.h"
 
-#include "kwm.h"
+#include "kwin.h"
 
 #include <fcntl.h>
 #include <stdlib.h> // getenv(), srand(), rand()
@@ -1658,8 +1658,9 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the specified caption
     topWidget->setCaption( caption() );
     // set the specified icons
-    KWM::setIcon(topWidget->winId(), icon());
-    KWM::setMiniIcon(topWidget->winId(), miniIcon());
+    topWidget->setIcon( icon() ); //standard X11
+    KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
+    
     // set a short icon text
     // TODO: perhaps using .ascii() isn't right here as this may be seen by
     // a user?

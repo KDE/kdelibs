@@ -21,23 +21,18 @@
  */
 
 #include <stdlib.h>
+#define QT_CLEAN_NAMESPACE
 #include "kwin.h"
+#include <qapplication.h>
 #include "kapp.h"
-#include <dcopclient.h>   //
-#include <qcstring.h>     //  > for DCOP
-#include <qdatastream.h>  //
-#include <qrect.h>        // for clientArea() and edgeClientArea()
-#include <qwmatrix.h>
-#include "kdebug.h"
 #include <qbitmap.h>
+#include <qimage.h>
 #include <qwhatsthis.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 
-#undef WithdrawnState
-#undef IconicState
-#undef NormalState
+#include "netwm.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,59 +48,26 @@
 
 
 static bool atoms_created = FALSE;
-
-static Atom wm_protocols;
-static Atom net_number_of_desktops;
-static Atom net_current_desktop;
-static Atom net_active_window;
-static Atom net_wm_context_help;
-static Atom net_kde_docking_window_for;
-static Atom net_avoid_spec;
-static Atom net_map_notify;
-static Atom kwm_dock_window;
-
+extern Atom qt_wm_protocols;
 extern Atom qt_wm_state;
 
-static void createAtoms() {
-    if (!atoms_created){
-	net_number_of_desktops = XInternAtom(qt_xdisplay(), "_NET_NUMBER_OF_DESKTOPS", False);
-	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
-	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
-	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
-	net_avoid_spec = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
-	net_map_notify = XInternAtom(qt_xdisplay(), "_NET_MAP_NOTIFY", False);
-	kwm_dock_window = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
 
+Atom net_wm_context_help;
+Atom net_wm_kde_docking_window_for;
+void kwin_net_create_atoms() {
+    if (!atoms_created){
 	const int max = 20;
 	Atom* atoms[max];
 	const char* names[max];
 	Atom atoms_return[max];
 	int n = 0;
 	
-	atoms[n] = &wm_protocols;
-	names[n++] = "WM_PROTOCOLS";
-	
-	atoms[n] = &net_number_of_desktops;
-	names[n++] = "_NET_NUMBER_OF_DESKTOPS";
-
-	atoms[n] = &net_current_desktop;
-	names[n++] = "_NET_CURRENT_DESKTOP";
-
-	atoms[n] = &net_active_window;
-	names[n++] = "_NET_ACTIVE_WINDOW";
-
 	atoms[n] = &net_wm_context_help;
 	names[n++] = "_NET_WM_CONTEXT_HELP";
 
 	atoms[n] = &net_kde_docking_window_for;
 	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
 	
-  atoms[n] = &net_avoid_spec;
-	names[n++] = "_NET_AVOID_SPEC";
-
-  atoms[n] = &net_map_notify;
-	names[n++] = "_NET_MAP_NOTIFY";
-
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
 	for (int i = 0; i < n; i++ )
@@ -114,7 +76,27 @@ static void createAtoms() {
 	atoms_created = True;
     }
 }
+static void createAtoms() { kwin_net_create_atoms(); }
 
+/*
+  Sends a client message to the ROOT window.
+ */
+/*
+static void sendClientMessageToRoot(Window w, Atom a, long x){
+  XEvent ev;
+  long mask;
+
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = w;
+  ev.xclient.message_type = a;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = x;
+  ev.xclient.data.l[1] = CurrentTime;
+  mask = SubstructureRedirectMask;
+  XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
+}
+*/
 /*
   Send a client message to window w
  */
@@ -135,189 +117,24 @@ static void sendClientMessage(Window w, Atom a, long x){
   XSendEvent(qt_xdisplay(), w, False, mask, &ev);
 }
 
-/*
-  Sends a client message to the ROOT window.
- */
-static void sendClientMessageToRoot(Window w, Atom a, long x){
-  XEvent ev;
-  long mask;
-
-  memset(&ev, 0, sizeof(ev));
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = w;
-  ev.xclient.message_type = a;
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = x;
-  ev.xclient.data.l[1] = CurrentTime;
-  mask = SubstructureRedirectMask;
-  XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
-}
-
-
-
-int KWin::numberOfDesktops()
-{
-    createAtoms();
-    Atom type;
-    int format;
-    unsigned long length, after;
-    unsigned char *data;
-    int result = 0;
-    if ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), net_number_of_desktops, 0, 1,
-			     FALSE, XA_CARDINAL, &type, &format,
-			     &length, &after, &data ) == Success ) {
-	if ( data ) {
-	    result = ( (int*)data)[0];
-	}
-	XFree( data );
-    }
-    return result;
-}
-
-void KWin::setNumberOfDesktops(int num)
-{
-    createAtoms();
-    sendClientMessageToRoot( qt_xrootwin(), net_number_of_desktops, num );
-}
-
-int KWin::currentDesktop()
-{
-    createAtoms();
-    Atom type;
-    int format;
-    unsigned long length, after;
-    unsigned char *data;
-    int result = 0;
-    if ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), net_current_desktop, 0, 1,
-			     FALSE, XA_CARDINAL, &type, &format,
-			     &length, &after, &data ) == Success ) {
-	if ( data ) {
-	    result = ( (int*)data)[0];
-	}
-	XFree( data );
-    }
-    return result;
-}
-
-void KWin::setCurrentDesktop( int desktop )
-{
-    createAtoms();
-    ::sendClientMessageToRoot( qt_xrootwin(), net_current_desktop, desktop );
-}
-
-
-WId KWin::activeWindow()
-{
-    createAtoms();
-    Atom type;
-    int format;
-    unsigned long length, after;
-    unsigned char *data;
-    WId result = 0;
-    if ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), net_active_window, 0, 1,
-			     FALSE, XA_WINDOW, &type, &format,
-			     &length, &after, &data ) == Success ) {
-	if ( data ) {
-	    result = ( (WId*)data)[0];
-	    XFree( data );
-	}
-    }
-    return result;
-}
-
-
-void KWin::setActiveWindow( WId win)
-{
-    createAtoms();
-    ::sendClientMessageToRoot( win, net_active_window, 0);
-}
-
-
-void KWin::setDockWindow(WId dockWin, WId forWin ){
-    createAtoms();
-    XChangeProperty(qt_xdisplay(), dockWin, net_kde_docking_window_for, XA_WINDOW, 32,
-		    PropModeReplace, (unsigned char *)&forWin, 1);
-}
-
-
-bool KWin::isDockWindow( WId dockWin, WId *forWin )
-{
-    createAtoms();
-    Atom type;
-    int format;
-    unsigned long length, after;
-    unsigned char *data;
-    bool result = FALSE;
-    if ( forWin )
-	*forWin = 0;
-
-    bool netDocking =  XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
-					   FALSE, XA_WINDOW, &type, &format,
-					   &length, &after, &data ) == Success;
-
-    if ( netDocking ) {
-	if ( data ) {
-	    result = TRUE;
-	    if ( forWin && netDocking )
-	       *forWin = ( (WId*)data)[0];
-	    XFree( data );
-	}
-    }
-
-    // check for KDE1 docking
-    if ( !result )
-    {
-       bool kwmDocking =  XGetWindowProperty( qt_xdisplay(), dockWin, kwm_dock_window, 0, 1,
-					      FALSE, XA_WINDOW, &type, &format,
-					      &length, &after, &data ) == Success;
-       if ( kwmDocking ) {
-	  if ( data ) {
-	     result = TRUE;
-	     XFree( data );
-	  }
-       }
-    }
-
-    return result;
-}
-
-KWin::WindowState KWin::windowState( WId win )
-{
-    Atom type;
-    int format;
-    unsigned long length, after;
-    unsigned char *data;
-    WindowState result = KWin::WithdrawnState;
-    int r = XGetWindowProperty( qt_xdisplay(), win, qt_wm_state, 0, 2,
-				FALSE, AnyPropertyType, &type, &format,
-				&length, &after, &data );
-    if ( r == Success && data && format == 32 ) {
-	Q_UINT32 *wstate = (Q_UINT32*)data;
-	result = (WindowState) *wstate;
-	XFree( (char *)data );
-    }
-    return result;
-}
-
-
-
 class ContextWidget : public QWidget
 {
 public:
     ContextWidget()
 	: QWidget(0,0)
     {
-       kapp->installX11EventFilter( this );
-      QWhatsThis::enterWhatsThisMode();
-      QCursor c = *QApplication::overrideCursor();
-      QWhatsThis::leaveWhatsThisMode();
-      XGrabPointer( qt_xdisplay(), qt_xrootwin(), TRUE,
-		    (uint)( ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask | EnterWindowMask |
-			    LeaveWindowMask ),
-		    GrabModeAsync, GrabModeAsync,
-		    None, c.handle(), CurrentTime );
-      qApp->enter_loop();
+	createAtoms();
+	kapp->installX11EventFilter( this );
+	QWhatsThis::enterWhatsThisMode();
+	QCursor c = *QApplication::overrideCursor();
+	QWhatsThis::leaveWhatsThisMode();
+	XGrabPointer( qt_xdisplay(), qt_xrootwin(), TRUE,
+		      (uint)( ButtonPressMask | ButtonReleaseMask |
+			      PointerMotionMask | EnterWindowMask |
+			      LeaveWindowMask ),
+		      GrabModeAsync, GrabModeAsync,
+		      None, c.handle(), CurrentTime );
+	qApp->enter_loop();
     }
 
 
@@ -336,7 +153,7 @@ public:
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( child != None && child != w );
 	
-	    ::sendClientMessage(w, wm_protocols, net_wm_context_help);
+	    ::sendClientMessage(w, qt_wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
 	    e.xbutton.window = w;
 	    e.xbutton.subwindow = w;
@@ -355,171 +172,189 @@ void KWin::invokeContextHelp()
     ContextWidget w;
 }
 
-void KWin::avoid(WId win, AnchorEdge edge)
+void KWin::setDockWindowFor( WId dockWin, WId forWin )
 {
-//  kdDebug() << "KWin::avoid()" << endl;
-
-  Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
-
-  XTextProperty avoidProp;
-
-  const char * anchorEdge = "0";
-
-  switch (edge) {
-    case Top:     anchorEdge = "N"; break;
-    case Bottom:  anchorEdge = "S"; break;
-    case Right:   anchorEdge = "E"; break;
-    case Left:    anchorEdge = "W"; break;
-    default:                        break;
-  }
-
-  Status status = XStringListToTextProperty(const_cast<char**>(&anchorEdge), 1, &avoidProp);
-
-  if (0 != status)
-    XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
-  else
-    kdDebug() << "KWin::avoid(): Couldn't set text property" << endl;
+    NETWinInfo info( qt_xdisplay(), dockWin, qt_xrootwin(), 0 );
+    if ( !forWin )
+	forWin = qt_xrootwin();
+    info.setKDEDockWinFor( forWin );
+}
+void KWin::setActiveWindow( WId win)
+{
+    NETRootInfo info( qt_xdisplay(), 0 );
+    info.setActiveWindow( win );
 }
 
-void KWin::stopAvoiding(WId win)
+KWin::Info KWin::info( WId win )
 {
-  kdDebug() << "KWin::stopAvoiding()" << endl;
+    Info w;
+    NETWinInfo inf( qt_xdisplay(), win, qt_xrootwin(),
+		    NET::WMState |
+		    NET::WMStrut |
+		    NET::WMWindowType |
+		    NET::WMName |
+		    NET::WMVisibleName |
+		    NET::WMDesktop |
+		    NET::WMPid |
+		    NET::WMKDEFrameStrut |
+		    NET::XAWMState
+		    );
 
-  // This should go into createAtoms()
-  Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
-
-  XTextProperty avoidProp;
-
-  const char * anchorEdge = "0";
-
-  Status status = XStringListToTextProperty(const_cast<char**>(&anchorEdge), 1, &avoidProp);
-
-  if (0 != status)
-    XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
-  else
-    kdDebug() << "KWin::avoid(): Couldn't set text property" << endl;
-}
-
-QRect KWin::clientArea()
-{
-  QRect retval = QApplication::desktop()->geometry();
-
-  DCOPClient * c = kapp->dcopClient();
-
-  if (!c->isAttached())
-    if (!c->attach())
-      kdDebug() << "KWin::clientArea(): Could not attach to DCOP" << endl;
-
-  QCString replyType;
-  QByteArray reply, a;
-
-  if (c->call("kwin", "KWinInterface", "clientArea()", a, replyType, reply)) {
-
-    if (replyType == "QRect") {
-
-      QDataStream replys(reply, IO_ReadOnly);
-      replys >> retval;
-
+    w.win = win;
+    w.state = inf.state();
+    w.mappingState = inf.mappingState();
+    w.strut = inf.strut();
+    w.windowType = inf.windowType();
+    if ( inf.name() ) {
+	w.name = QString::fromUtf8( inf.name() );
     } else {
-
-      kdDebug() << "KWin::clientArea(): Unexpected return type from DCOP call" << endl;
+	char* c = 0;
+	if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
+	    w.name = QString::fromLocal8Bit( c );
+	    XFree( c );
+	}
     }
-  }
+    if ( inf.visibleName() )
+	w.visibleName = QString::fromUtf8( inf.visibleName() );
+    else
+	w.visibleName = w.name;
 
-  return retval;
+    w.desktop = inf.desktop();
+    w.onAllDesktops = inf.desktop() == NETWinInfo::OnAllDesktops;
+    w.pid = inf.pid();
+    NETRect geom, frame;
+    inf.kdeGeometry( geom, frame );
+    w.geometry.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    w.frameGeometry.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    return w;
 }
 
-QRect KWin::edgeClientArea()
+QPixmap KWin::icon( WId win, int width, int height, bool scale )
 {
-  QRect retval = QApplication::desktop()->geometry();
-
-  DCOPClient * c = kapp->dcopClient();
-
-  if (!c->isAttached())
-    if (!c->attach())
-      kdDebug() << "KWin::clientArea(): Could not attach to DCOP" << endl;
-
-  QCString replyType;
-  QByteArray reply, a;
-
-  if (c->call("kwin", "KWinInterface", "edgeClientArea()", a, replyType, reply))
-
-    if (replyType == "QRect") {
-
-      QDataStream replys(reply, IO_ReadOnly);
-      replys >> retval;
-
-    } else {
-
-      kdDebug() << "KWin::edgeClientArea(): Unexpected return type from DCOP call" << endl;
+    QPixmap result;
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
+    NETIcon ni = info.icon( width, height );
+    if ( ni.data ) {
+	QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
+	img.setAlphaBuffer( TRUE );
+	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) )
+	    img = img.smoothScale( width, height );
+	result.convertFromImage( img );
+	return result;
     }
 
-  kdDebug() << "KWin::edgeClientArea(): Rect I'm returning: (" << retval.left() << ", " << retval.top() << ") -> (" << retval.right() << ", " << retval.bottom() << ")" << endl;
+    Pixmap p = None;
+    Pixmap p_mask = None;
 
-  return retval;
+    XWMHints *hints = XGetWMHints(qt_xdisplay(), win );
+    if (hints && (hints->flags & IconPixmapHint)){
+	p = hints->icon_pixmap;
+    }
+    if (hints && (hints->flags & IconMaskHint)){
+	p_mask = hints->icon_mask;
+    }
+    if (hints)
+	XFree((char*)hints);
+
+    if (p != None){
+	Window root;
+	int x, y;
+	unsigned int w = 0;
+	unsigned int h = 0;
+	unsigned int border_w, depth;
+	XGetGeometry(qt_xdisplay(), p, &root,
+		     &x, &y, &w, &h, &border_w, &depth);
+	if (w > 0 && h > 0){
+	    QPixmap pm(w, h, depth);
+	    XCopyArea(qt_xdisplay(), p, pm.handle(),
+		      qt_xget_temp_gc(depth==1),
+		      0, 0, w, h, 0, 0);
+	    if (p_mask != None){
+		QBitmap bm(w, h);
+		XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
+			  qt_xget_temp_gc(true),
+			  0, 0, w, h, 0, 0);
+		pm.setMask(bm);
+	    }
+	    if ( scale && width > 0 && height > 0 &&
+		 ( (int) w != width || (int) h != height) ){
+		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+	    } else {
+		result = pm;
+	    }
+	}
+    }
+    return result;
 }
 
-void KWin::updateClientArea()
+void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 {
-  DCOPClient * client = kapp->dcopClient();
-
-  if (!client->isAttached())
-    client->attach();
-
-  if (!client->send("kwin", "KWinInterface", "updateClientArea()", "")) {
-    kdDebug() << "KWin::updateClientArea(): Could not send DCOP signal to kwin" << endl;
-  }
+    if ( icon.isNull() )
+	return;
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    QImage img = icon.convertToImage().convertDepth( 32 );
+    NETIcon ni;
+    ni.size.width = img.size().width();
+    ni.size.height = img.size().height();
+    ni.data = (CARD32*) img.bits();
+    info.setIcon( ni, true );
+    if ( miniIcon.isNull() )
+	return;
+    img = miniIcon.convertToImage().convertDepth( 32 );
+    ni.size.width = img.size().width();
+    ni.size.height = img.size().height();
+    ni.data = (CARD32*) img.bits();
+    info.setIcon( ni, false );
 }
 
-bool KWin::avoid(WId win)
+void KWin::setType( WId win, NET::WindowType windowType )
 {
-  XTextProperty avoidProp;
-
-  if (0 == XGetTextProperty(qt_xdisplay(), win, &avoidProp, net_avoid_spec))
-    return false;
-
-  char ** avoidList;
-  int avoidListCount;
-
-  if (0 == XTextPropertyToStringList(&avoidProp, &avoidList, &avoidListCount))
-    return false;
-
-  if (avoidListCount != 1) {
-    kdDebug() << "KWin::avoid(): avoid list count != 1" << endl;
-    return false;
-  }
-
-  bool avoid = (avoidList[0][0] != '\0');
-
-  XFreeStringList(avoidList);
-
-  return avoid;
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    info.setWindowType( windowType );
 }
 
-pid_t KWin::pid(WId win)
+void KWin::setState( WId win, int state )
 {
-  XTextProperty prop;
-
-  if (0 == XGetTextProperty(qt_xdisplay(), win, &prop, net_map_notify))
-    return -1;
-
-  char ** stringList;
-  int stringListCount;
-
-  if (0 == XTextPropertyToStringList(&prop, &stringList, &stringListCount))
-    return -1;
-
-  if (stringListCount != 1) {
-    kdDebug() << "KWin::pid(): string list count != 1" << endl;
-    return -1;
-  }
-
-  char * pidStr = stringList[0];
-
-  pid_t pid = static_cast<pid_t>(QString::fromUtf8(pidStr).toLong());
-
-  XFreeStringList(stringList);
-
-  return pid;
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMState );
+    info.setState( state, state );
 }
 
+void KWin::clearState( WId win, int state )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMState );
+    info.setState( 0, state );
+}
+
+void KWin::setOnAllDesktops( WId win, bool b )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMDesktop );
+    if ( b )
+	info.setDesktop( NETWinInfo::OnAllDesktops );
+    else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
+	NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
+	info.setDesktop( rinfo.currentDesktop() );
+    }
+}
+
+
+QString KWin::Info::visibleNameWithState() const
+{
+    QString s = visibleName;
+    if ( isIconified() ) {
+	s.prepend('(');
+	s.append(')');
+    }
+    return s;
+}
+
+
+void KWin::setStrut( WId win, int left, int right, int top, int bottom )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    NETStrut strut;
+    strut.left = left;
+    strut.right = right;
+    strut.top = top;
+    strut.bottom = bottom;
+    info.setStrut( strut );
+}

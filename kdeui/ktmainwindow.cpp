@@ -28,7 +28,6 @@
 #include <kmenubar.h>
 #include <ktmainwindow.h>
 #include <ktmlayout.h>
-#include <kwm.h>
 
 #include <klocale.h>
 #include <kstddirs.h>
@@ -473,7 +472,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
 	    break;
 	case KToolBar::Floating:
 	    entryList.append("Floating");
-	    entryList.append(KWM::properties(toolbar->winId()).ascii());
+//### 	    entryList.append(KWM::properties(toolbar->winId()).ascii());
 	    break;
 	}
 	toolKey.setNum(n);
@@ -525,7 +524,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	bool showmenubar = false;
 	entry = entryList.first();
 	if (entry==QString::fromLatin1("Enabled"))
-	    showmenubar = True;
+	    showmenubar = true;
 	else
 	    kmenubar->hide();
 	entryList.clear();
@@ -567,7 +566,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	    {
 		toolbar->setBarPos(KToolBar::Floating);
 		entry=entryList.next();
-		toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
+//### 		toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
 		toolbar->updateRects(TRUE);
 		toolbar->show();
 	    }
@@ -580,7 +579,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     s.setNum(number);
     config->setGroup(s);
     readProperties(config);
-    return True;
+    return true;
 }
 
 void KTMainWindow::setFrameBorderWidth(int size){

@@ -43,7 +43,6 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kcombobox.h>
-#include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
 #include <kpopupmenu.h>
@@ -2436,8 +2435,8 @@ void KToolBar::setBarPos(BarPosition bpos)
 
       recreate(0, 0, p, false);
       XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
-      KWM::setDecoration(winId(), 2);
-      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
+//###       KWM::setDecoration(winId(), 2);
+//       KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
       context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
       for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
         context->setItemEnabled(i, false);

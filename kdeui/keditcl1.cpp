@@ -34,7 +34,7 @@
 #include "keditcl.h"
 #include "keditcl.moc"
 
-KEdit::KEdit(QWidget *_parent, const char *name) 
+KEdit::KEdit(QWidget *_parent, const char *name)
    : QMultiLineEdit(_parent, name)
 {
     parent = _parent;
@@ -71,8 +71,8 @@ KEdit::insertText(QTextStream *stream)
    getCursorPosition(&line, &col);
    int saveline = line;
    int savecol = col;
-   QString textLine; 
-   // WABA/Bernd: Reading/inserting it in line by line kills performance 
+   QString textLine;
+   // WABA/Bernd: Reading/inserting it in line by line kills performance
    // with large files because this will take O(n^2) time.
    textLine = stream->read(); // Read all!
    // We might want to read it in slightly smaller chunks since
@@ -94,7 +94,7 @@ KEdit::insertText(QTextStream *stream)
    setFocus();
 
    QString str = text();
-   for (int i = 0; i < str.length(); i++)
+   for (int i = 0; i < (int) str.length(); i++)
      printf("KEdit: U+%04X\n", str[i].unicode());
 
 }
@@ -149,7 +149,7 @@ KEdit::cleanWhiteSpace()
          newText += ' ';
    }
 
-   if (oldText == newText) 
+   if (oldText == newText)
    {
       deselect();
       return;

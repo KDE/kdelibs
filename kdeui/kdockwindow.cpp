@@ -26,7 +26,7 @@
 KDockWindow::KDockWindow( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
-    KWin::setDockWindow( winId(), parent?parent->topLevelWidget()->winId():0 );
+    KWin::setDockWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
     hasQuit = 0;
     menu = new KPopupMenu( this );
     menu->setTitle( kapp->caption() );

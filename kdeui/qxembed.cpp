@@ -71,8 +71,10 @@ static Atom xembed = 0;
 class QXEmbedData
 {
 public:
-    QXEmbedData(){};
+    QXEmbedData(){ autoDelete = TRUE; }
     ~QXEmbedData(){};
+    
+    bool autoDelete;
 };
 
 class QXEmbedAppFilter : public QObject
@@ -124,7 +126,7 @@ static void send_xembed_message( WId window, long message, long detail = 0,
 
 bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 {
-    static bool obeyFocus = FALSE; 
+    static bool obeyFocus = FALSE;
     switch ( e->type() ) {
     case QEvent::MouseButtonPress:
 	if ( !((QWidget*)o)->isActiveWindow() )
@@ -136,7 +138,7 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 	    QFocusEvent* fe = (QFocusEvent*) e;
 
 	    if ( obeyFocus || fe->reason() == QFocusEvent::Mouse ||
-		 fe->reason() == QFocusEvent::Shortcut ) { 
+		 fe->reason() == QFocusEvent::Shortcut ) {
 		WId window = ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->parentWinId;
 		focusMap->remove( qApp->focusWidget()->topLevelWidget() );
 		send_xembed_message( window, XEMBED_REQUEST_FOCUS );
@@ -375,6 +377,7 @@ void QXEmbed::initialize()
 QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
   : QWidget(parent, name, f)
 {
+    d = new QXEmbedData;
     initialize();
     window = 0;
     setFocusPolicy(StrongFocus);
@@ -410,20 +413,27 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
 QXEmbed::~QXEmbed()
 {
 
+    qDebug("QXEmbed destructor");
     if ( window != 0 ) {
- 	XUnmapWindow(qt_xdisplay(), window );
+	qDebug("unmap window and reparent");
  	XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
+	XFlush( qt_xdisplay() );
 
- 	XEvent ev;
- 	memset(&ev, 0, sizeof(ev));
- 	ev.xclient.type = ClientMessage;
- 	ev.xclient.window = window;
- 	ev.xclient.message_type = qt_wm_protocols;
- 	ev.xclient.format = 32;
- 	ev.xclient.data.s[0] = qt_wm_delete_window;
- 	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+	if ( autoDelete() ) {
+	    qDebug("send window delete message");
+	    XEvent ev;
+	    memset(&ev, 0, sizeof(ev));
+	    ev.xclient.type = ClientMessage;
+	    ev.xclient.window = window;
+	    ev.xclient.message_type = qt_wm_protocols;
+	    ev.xclient.format = 32;
+	    ev.xclient.data.s[0] = qt_wm_delete_window;
+	    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+	}
      }
     window = 0;
+	
+    delete d;
 }
 
 
@@ -531,6 +541,7 @@ void QXEmbed::embed(WId w)
     if (!w)
 	return;
 
+    XAddToSaveSet( qt_xdisplay(), w );
     bool has_window =  w == window;
     window = w;
     if ( !has_window )
@@ -538,7 +549,6 @@ void QXEmbed::embed(WId w)
     QApplication::syncX();
     XResizeWindow(qt_xdisplay(), w, width(), height());
     XMapRaised(qt_xdisplay(), window);
-    XAddToSaveSet( qt_xdisplay(), w );
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
@@ -744,6 +754,16 @@ QSize QXEmbed::minimumSizeHint() const
     }
 
     return QSize( minw, minh );
+}
+
+void QXEmbed::setAutoDelete( bool b) 
+{
+    d->autoDelete = b;
+}
+
+bool QXEmbed::autoDelete() const
+{
+    return d->autoDelete;
 }
 
 

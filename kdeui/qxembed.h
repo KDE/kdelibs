@@ -1,6 +1,6 @@
 /****************************************************************************
     Definition of QXEmbed class
-    
+
    Copyright (C) 1999-2000 Troll Tech AS
 
     This library is free software; you can redistribute it and/or
@@ -54,6 +54,9 @@ public:
     QSizePolicy sizePolicy() const;
 
     bool eventFilter( QObject *, QEvent * );
+    
+    void setAutoDelete( bool );
+    bool autoDelete() const;
 
 signals:
     void embeddedWindowDestroyed();
