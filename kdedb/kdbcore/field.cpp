@@ -176,9 +176,9 @@ Field::value()
 void
 Field::setValue(const Value &v, bool init)
 {
-    m_val = v;
     if (!init)
-        m_changed = true;
+        m_changed = (m_val != v);
+    m_val = v;
 }
 
 bool
