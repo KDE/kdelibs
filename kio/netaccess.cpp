@@ -30,6 +30,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 
+#include <kapp.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/job.h>
@@ -45,7 +46,7 @@ bool NetAccess::download(const KURL& u, QString & target)
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
     target = u.path();
-    return true;
+    return checkAccess(target, R_OK);
   }
 
   if (target.isEmpty())
