@@ -166,8 +166,9 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         int fieldX = rect.x() - 1;
         int fieldW = p->columnWidth(col) + 2;
 
-        for ( int index = 0; index < col; index++ )
-            fieldX += p->columnWidth( col );
+        int pos = p->header()->mapToIndex(col);
+        for ( int index = 0; index < pos; index++ )
+            fieldX += p->columnWidth( p->header()->mapToSection( index ));
 
         if ( col == 0 ) {
             int d = i->depth() + (p->rootIsDecorated() ? 1 : 0);
@@ -185,7 +186,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         setGeometry(fieldX, rect.y() - 1, fieldW, rect.height() + 2);
         show();
         setFocus();
-//        grabMouse();
+        grabMouse();
 
 }
 
