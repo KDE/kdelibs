@@ -108,11 +108,13 @@ public:
      * @short Enable/Disable spell checking.
      *
      * If @p active is true then spell checking is enabled; otherwise it
-     * is disabled.
+     * is disabled. Note that you have to disable automatic (de)activation
+     * with @ref setAutomatic() before you change the state of spell checking
+     * if you want to persistently enable/disable spell checking.
      *
      * @param active if true, then spell checking is enabled
      *
-     * @see isActive()
+     * @see isActive(), setAutomatic()
      */
     void setActive( bool active );
 
@@ -124,6 +126,28 @@ public:
      * @see setActive()
      */
     bool isActive() const;
+
+    /**
+     * @short En-/Disable automatic (de)activation in case of too many errors.
+     *
+     * If @p automatic is true then spell checking will be deactivated if
+     * too many words were mispelled and spell checking will be activated
+     * again if the amount of mispelled words drop below a certain threshold.
+     *
+     * @param automatic if true, then automatic (de)activation is enabled
+     *
+     * @see automatic()
+     */
+    void setAutomatic( bool automatic );
+
+    /**
+     * Returns the state of automatic (de)activation.
+     *
+     * @return true if automatic (de)activation is enabled
+     * 
+     * @see setAutomatic()
+     */
+    bool automatic() const;
 
 signals:
     void activeChanged(const QString &);

@@ -431,6 +431,21 @@ bool KDictSpellingHighlighter::isActive() const
     return d->active;
 }
 
+void KDictSpellingHighlighter::setAutomatic( bool automatic )
+{
+    if ( automatic == d->automatic )
+        return;
+
+    d->automatic = automatic;
+    if ( d->automatic )
+        slotAutoDetection();
+}
+
+bool KDictSpellingHighlighter::automatic() const
+{
+    return d->automatic;
+}
+
 void KDictSpellingHighlighter::slotRehighlight()
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
