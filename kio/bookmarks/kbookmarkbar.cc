@@ -205,7 +205,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                 action->setProperty( "url", bm.url().url() );
                 action->setProperty( "address", bm.address() );
 
-                action->setToolTip( bm.url().prettyURL() );
+                action->setToolTip( bm.url().pathOrURL() );
 
                 action->plug(m_toolBar);
 

@@ -312,7 +312,7 @@ void RMB::slotRMBActionProperties( int val )
 
   KBookmark bookmark = atAddress(s_highlightedAddress);
 
-  QString folder = bookmark.isGroup() ? QString::null : bookmark.url().url();
+  QString folder = bookmark.isGroup() ? QString::null : bookmark.url().pathOrURL();
   KBookmarkEditDialog dlg( bookmark.fullText(), folder,
                            m_pManager, KBookmarkEditDialog::ModifyMode, 0,
                            0, 0, i18n("Bookmark Properties") );
@@ -321,7 +321,10 @@ void RMB::slotRMBActionProperties( int val )
 
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
   if ( !dlg.finalUrl().isNull() )
-    bookmark.internalElement().setAttribute("href", dlg.finalUrl());
+  {
+    KURL u = KURL::fromPathOrURL(dlg.finalUrl());
+    bookmark.internalElement().setAttribute("href", u.url(0, 106));
+  }
 
   kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
 
@@ -645,7 +648,7 @@ void KBookmarkMenu::fillBookmarkMenu()
         action->setProperty( "url", bm.url().url() );
         action->setProperty( "address", bm.address() );
 
-        action->setToolTip( bm.url().prettyURL() );
+        action->setToolTip( bm.url().pathOrURL() );
 
         action->plug( m_parentMenu );
         m_actions.append( action );
