@@ -1020,8 +1020,10 @@ QString iss = "";
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
-         untilDate->setText(x ? x->getExpires().toString()
+         if (x && !x->isPermanent())
+            untilDate->setText(x ? x->getExpires().toString()
                             : QDateTime::currentDateTime().toString());
+         else untilDate->setText("");
          untilDate->setEnabled(true);
          delete cert;
       } else {
