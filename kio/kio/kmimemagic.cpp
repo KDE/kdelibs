@@ -1074,8 +1074,6 @@ hextoint(int c)
 static int
 mconvert(union VALUETYPE *p, struct magic *m)
 {
-	char *rt;
-
 	switch (m->type) {
 		case BYTE:
 			return 1;
