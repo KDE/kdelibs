@@ -14,6 +14,7 @@
 class QBoxLayout;
 class QTimer;
 class QLabel;
+class QVBox;
 
 /**
  * A dialog-like popup that displays messages without interupting the user.
