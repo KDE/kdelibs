@@ -55,7 +55,7 @@ public:
     KLibrary( const QString& libname, const QString& filename, void * handle );
     /**
      * @internal
-     * Don't destruct KLibrary objects yourself. Instead use @ref KLibLoader::unloadLibrary.
+     * Don't destruct KLibrary objects yourself. Instead use @ref unload() instead.
      */
     ~KLibrary();
 
@@ -81,7 +81,9 @@ public:
     void* symbol( const char* name ) const;
 
     /**
-     * Unloads the library.
+     * Unloads the library. 
+     * This typically results in the deletion of this object. You should
+     * not reference its pointer after calling this function.
      */
     void unload() const;
 
