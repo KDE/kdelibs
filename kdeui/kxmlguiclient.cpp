@@ -29,6 +29,8 @@
 
 static void dump_xml(const QDomElement& elem)
 {
+  // ##### why not use kdDebug here? That would make it possible to turn it on/off via kdebugdialog (Simon)
+  // ##### (and why a separate static method? ;-)
   qDebug("%s", KXMLGUIFactory::elementToXML(elem).latin1());
 }
 
@@ -148,28 +150,32 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
 
 void KXMLGUIClient::setXML( const QString &document, bool merge )
 {
+  QDomDocument doc;
+  doc.setContent( document );
+  setDocument( doc, merge );
+}
+
+void KXMLGUIClient::setDocument( const QDomDocument &document, bool merge )
+{
   if ( merge )
   {
     QDomElement base = d->m_doc.documentElement();
-    QDomDocument doc;
-
-    if ( !document.isNull() )
-      doc.setContent( document );
 
     // merge our original (global) xml with our new one
-    mergeXML(base, doc.documentElement(), actionCollection());
-
+    mergeXML(base, document.documentElement(), actionCollection());
+    
     // reassign our pointer as mergeXML might have done something
     // strange to it
     base = d->m_doc.documentElement();
+    
     dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
-      d->m_doc.setContent( document );
+      d->m_doc = document;
   }
   else
-    d->m_doc.setContent( document );
+    d->m_doc = document;
 }
 
 bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )

@@ -194,6 +194,14 @@ protected:
   virtual void setXML( const QString &document, bool merge = false );
 
   /**
+   * Set the Document for the part, describing the layout of the GUI.
+   *
+   * Call this in the Part-inherited class constructor if you don't call
+   * @ref setXMLFile or @ref setXML .
+   */
+  virtual void setDocument( const QDomDocument &document, bool merge = false );
+
+  /**
    * This function will attempt to give up some memory after the GUI
    * is built.  It should never be used in apps where the GUI may be
    * rebuilt at some later time (components, for instance).
