@@ -650,6 +650,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
   KRegExp expr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
 
   QTextStream stream( xml, IO_ReadOnly );
+  stream.setEncoding( QTextStream::UnicodeUTF8 );
   QString line = stream.readLine();
   for (; !line.isNull(); line = stream.readLine() )
   {

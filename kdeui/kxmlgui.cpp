@@ -384,6 +384,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
 
     // write out our document
     QTextStream ts(&file);
+    ts.setEncoding( QTextStream::UnicodeUTF8 );
     ts << doc;
 
     file.close();
@@ -394,6 +395,7 @@ QString KXMLGUIFactory::documentToXML( const QDomDocument& doc )
 {
     QString str;
     QTextStream ts(&str, IO_WriteOnly);
+    ts.setEncoding( QTextStream::UnicodeUTF8 );
     ts << doc;
     return str;
 }
@@ -402,6 +404,7 @@ QString KXMLGUIFactory::elementToXML( const QDomElement& elem )
 {
     QString str;
     QTextStream ts(&str, IO_WriteOnly);
+    ts.setEncoding( QTextStream::UnicodeUTF8 );
     ts << elem;
     return str;
 }
