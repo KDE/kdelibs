@@ -1270,13 +1270,15 @@ void KFileDialog::fileCompletion( const QString& file )
     QString text = ops->makeCompletion( file );
     if ( !text.isEmpty() ) {
 	KCompletion *comp = ops->completionObject();
-	if ( comp->completionMode() == KGlobalSettings::CompletionPopup )
+	if ( comp->completionMode() == KGlobalSettings::CompletionPopup ||
+	     comp->completionMode() == KGlobalSettings::CompletionPopupAuto )
 	    locationEdit->setCompletedItems( comp->allMatches() );
 	else
 	    locationEdit->setCompletedText( text );
     }
     else
-        if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup)
+        if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup ||
+            locationEdit->completionMode() == KGlobalSettings::CompletionPopupAuto )
             locationEdit->completionBox()->hide();
 
     d->completionLock = false;

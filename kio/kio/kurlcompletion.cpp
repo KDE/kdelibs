@@ -683,7 +683,8 @@ bool KURLCompletion::isListedURL( int complType,
 bool KURLCompletion::isAutoCompletion()
 {
 	return completionMode() == KGlobalSettings::CompletionAuto
-	       || completionMode() == KGlobalSettings::CompletionPopup;
+	       || completionMode() == KGlobalSettings::CompletionPopup
+	       || completionMode() == KGlobalSettings::CompletionPopupAuto;
 }
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -886,7 +887,8 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 	
 		// Append '/' to directories in Popup mode?
 		bool append_slash = ( d->popup_append_slash
-	    	&& completionMode() == KGlobalSettings::CompletionPopup );
+	    	&& (completionMode() == KGlobalSettings::CompletionPopup ||
+		    completionMode() == KGlobalSettings::CompletionPopupAuto ) );
 
 		bool only_dir = ( d->mode == DirCompletion );
 		
