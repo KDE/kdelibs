@@ -93,11 +93,14 @@ static int kde_xio_errhandler( Display * )
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
     QApplication( argc, argv )
 {
-    QApplication::setName(rAppName.ascii());
+    if (!rAppName.isEmpty())
+	QApplication::setName(rAppName.ascii());
     init();
     parseCommandLine( argc, argv );
 
 }
+
+KConfig* KApplication::getConfig() const { return KGlobal::config(); }
 
 int KApplication::xioErrhandler()
 {

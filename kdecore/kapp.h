@@ -102,7 +102,7 @@ public:
 	* @return a pointer to the application's global KConfig object.
 	* @see KConfig
 	*/
-  KConfig* getConfig() const { return KGlobal::config(); }
+  KConfig* getConfig() const;
 
   /**
 	* Retrieve the application session config object.
@@ -571,6 +571,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.90  1999/06/18 20:23:07  kulow
+// some more cleanups of KApplication. the KConfig instance is controlled
+// by KGlobal to make it independent from KApplication.
+// KApplication::getConfig() just calls KGlobal::config()
+//
 // Revision 1.89  1999/06/18 19:25:21  kulow
 // getting rid of KApplication::findFile. I don't remember having seen this
 // function ever used :)
