@@ -15,7 +15,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!__lc) __lc=[[window],function(i,s,a,g){var r;var len=__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{__lc[0][len]=r;v=''+len+' '+(r==__lc?'[array]':r);}}}document[a].__lc_ret=v},0]";
+    private final String decls = "if(!__lc) __lc=[[window],function(i,s,a,g){var r;var len=__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{__lc[0][len]=r;v=''+len+' '+(r==__lc?'[array]':r);}}}document.applets[a].__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
