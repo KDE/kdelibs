@@ -17,6 +17,7 @@
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qiconset.h>
+#include <qmovie.h>
 
 #include <kglobal.h>
 #include <kinstance.h>
@@ -120,6 +121,15 @@ public:
     QString iconPath(const QString& name, int group_or_size,
 		     bool canReturnNull=false) const;
 
+    /**
+     * Loads an animated icon.
+     * @param name The name of the icon.
+     * @param group The icon group. See @ref loadIcon().
+     * @param size Override the default size for @p group.
+     * @return A QMovie object.
+     */
+    QMovie loadMovie(const QString& name, int group, int size=0) const;
+    
     /**
      * Loads an animated icon. In the future, this will be replaced by a
      * routine which loads an MNG animation and returns a QMovie.

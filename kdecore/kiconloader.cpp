@@ -23,6 +23,7 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <qiconset.h>
+#include <qmovie.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -649,6 +650,49 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
     d->imgDict.insert(key, image);
     return image;
 }
+
+
+
+QMovie KIconLoader::loadMovie(const QString& name, int group, int size) const
+{
+    if (!d->mpGroups) return QMovie();
+
+    if ((group < -1) || (group >= KIcon::LastGroup))
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	group = 0;
+    }
+    if ((size == 0) && (group < 0))
+    {
+	kdDebug(264) << "Neither size nor group specified!\n";
+	group = 0;
+    }
+
+    QString file = name + ".mng";
+    if (group == KIcon::User)
+    {
+	file = d->mpDirs->findResource("appicon", file);
+    } 
+    else
+    {
+	if (size == 0)
+	    size = d->mpGroups[group].size;
+
+        KIcon icon;
+        icon = d->mpThemeRoot->findIcon(file, size, KIcon::MatchExact);
+        if (!icon.isValid())
+        {
+           icon = d->mpThemeRoot->findIcon(file, size, KIcon::MatchBest);
+        }
+	file = icon.isValid() ? icon.path : QString::null;
+
+    }
+    if (file.isEmpty())
+	return QMovie();
+
+    return QMovie(file);
+}
+
 
 QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) const
 {
