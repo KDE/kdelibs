@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -62,7 +62,7 @@ void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, i
 
 	// highlight rectangle
 	if (isSelected())
-		p->fillRect(0, 0, 2+p->fontMetrics().width(text(0))+(pixmap(0) ? pixmap(0)->width()+2 : 0), height(), (m_conflict ? red : cg.highlight()));
+		p->fillRect(0, 0, /*2+p->fontMetrics().width(text(0))+(pixmap(0) ? pixmap(0)->width()+2 : 0)*/ width, height(), (m_conflict ? red : cg.highlight()));
 
 	// draw pixmap
 	int	w(0);
