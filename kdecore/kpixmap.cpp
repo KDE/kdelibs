@@ -191,6 +191,9 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
                            int ncols)
 {
+    warning("KPixmap: gradientFill(QColor, QColor, enum GradientMode, int) is obsolete");
+    warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
+
     int rca, gca, bca;
     int rDiff, gDiff, bDiff;
     float rat;
@@ -400,8 +403,8 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
 
 void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
 {
-    warning("KPixmap: gradientFill(QColor, QColor, bool, int) is obselete");
-    warning("KPixmap: use gradientFill(QColor, QColor, enum GradientMode, int)");
+    warning("KPixmap: gradientFill(QColor, QColor, bool, int) is obsolete");
+    warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
     if(upDown)
         gradientFill(ca, cb, Vertical, ncols);
     else

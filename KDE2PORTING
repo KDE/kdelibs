@@ -306,6 +306,7 @@ use QListView::setDecorativeRoot(true).
 
 Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
 
+
 /////////////////////////////////////////////////////////////////////////
 // * KMsgBox
 
@@ -332,3 +333,23 @@ when porting:
 - Please note too that it's recommended to use kapp->getCaption as second
   argument 
 
+////////////////////////////////////////////////////////////////////////
+// * KPixmap::gradientFill
+
+Use KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int) instead.
+
+Hence:
+
+pix.gradientFill(ca, cb, direction, ncols)
+
+becomes, for direction == true :
+
+KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::VerticalGradient, ncols)
+
+There are now: KPixmapEffect::[Vertical,Horizontal,Diagonal,CrossDiagonal,Rectangle,Pyramid,PipeCross,Elliptic]Gradient
+
+There is still some code in KPixmap::gradientFill() kept there because
+of the backwards compatibility and because we can't link kdecore to
+kdeui (as KPixmapEffect is in kdeui) but be warned it will be taken
+out (and supposedly replaced with a bare warning) ASA the applications
+in the base package have been corrected.
