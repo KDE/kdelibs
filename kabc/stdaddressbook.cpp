@@ -104,9 +104,9 @@ bool StdAddressBook::save()
 
   ab->deleteRemovedAddressees();
 
-  KRES::ResourceManager<Resource>::Iterator it;
+  KRES::ResourceManager<Resource>::ActiveIterator it;
   KRES::ResourceManager<Resource> *manager = ab->resourceManager();
-  for ( it = manager->begin(); it != manager->end(); ++it ) {
+  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
     if ( !(*it)->readOnly() ) {
       Ticket *ticket = ab->requestSaveTicket( *it );
       if ( !ticket ) {
@@ -147,8 +147,8 @@ void StdAddressBook::init( bool )
   KRES::ResourceManager<Resource> *manager = resourceManager();
   manager->load();
 
-  KRES::ResourceManager<Resource>::Iterator it;
-  for ( it = manager->begin(); it != manager->end(); ++it )
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it )
     (*it)->setAddressBook( this );
 
   Resource *res = standardResource();

@@ -220,9 +220,9 @@ bool AddressBook::load()
 
   clear();
 
-  KRES::ResourceManager<Resource>::Iterator it;
+  KRES::ResourceManager<Resource>::ActiveIterator it;
   bool ok = true;
-  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it )
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
     if ( !(*it)->load() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
@@ -288,8 +288,8 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   if ( !resource )
     resource = standardResource();
 
-  KRES::ResourceManager<Resource>::Iterator it;
-  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( (*it) == resource ) {
       if ( (*it)->readOnly() )
         return 0;
@@ -438,8 +438,8 @@ QString AddressBook::identifier()
   QStringList identifier;
 
 
-  KRES::ResourceManager<Resource>::Iterator it;
-  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( !(*it)->identifier().isEmpty() )
       identifier.append( (*it)->identifier() );
   }
@@ -529,8 +529,8 @@ QPtrList<Resource> AddressBook::resources()
 {
   QPtrList<Resource> list;
 
-  KRES::ResourceManager<Resource>::Iterator it;
-  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it )
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
     list.append( *it );
 
   return list;
@@ -582,8 +582,8 @@ KRES::ResourceManager<Resource> *AddressBook::resourceManager()
 
 void AddressBook::cleanUp()
 {
-  KRES::ResourceManager<Resource>::Iterator it;
-  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+  KRES::ResourceManager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( !(*it)->readOnly() )
       (*it)->cleanUp();
   }
