@@ -26,7 +26,7 @@
  *	$Id$
  */
 
-#include "emailsettings.h"
+#include "kemailsettings.h"
 
 #include <kconfig.h>
 
