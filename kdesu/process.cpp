@@ -33,15 +33,13 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/ioctl.h>
 
 #if defined(__SVR4) && defined(sun)
 #include <stropts.h>
 #include <sys/stream.h>
 #endif
 
-#ifdef __OpenBSD__
-#include <sys/ioctl.h>
-#endif
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>                // Needed on some systems.
@@ -454,8 +452,8 @@ int PtyProcess::SetupTTY(int fd)
 
 #endif
 
-#ifdef __OpenBSD__
-    ioctl(slave, TIOCSCTTY, (char *)NULL);
+#ifdef TIOCSCTTY
+    ioctl(slave, TIOCSCTTY, NULL);
 #endif
 
     // Connect stdin, stdout and stderr
