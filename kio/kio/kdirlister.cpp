@@ -139,8 +139,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->d->complete = false;
 
       emit lister->started( _url );
-      itemU->count++;
-
+      
       if ( !lister->d->rootFileItem && lister->d->url == _url )
         lister->d->rootFileItem = itemU->rootItem;
 
@@ -165,10 +164,8 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       kdDebug(7004) << "listDir: Entry in cache: " << _url << endl;
 
       Q_ASSERT( itemC->complete );
-      Q_ASSERT( itemC->count == 0 );
       Q_ASSERT( itemC->autoUpdates == 0 );
 
-      itemC->count++;
       itemsInUse.insert( _url.url(), itemC );
 
       bool oldState = lister->d->complete;
@@ -279,7 +276,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
              lister, SLOT( slotSpeed( KIO::Job *, unsigned long ) ) );
 
     Q_ASSERT( itemU );
-    itemU->count++;
 
     if ( !lister->d->rootFileItem && lister->d->url == _url )
       lister->d->rootFileItem = itemU->rootItem;
@@ -449,19 +445,12 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
   DirItem *item = itemsInUse[urlStr];
 
   Q_ASSERT( item );
-  Q_ASSERT( item->count );
-
-  // one lister less holding this dir
-  item->count--;
 
   if ( lister->d->autoUpdate && url.isLocalFile() && --item->autoUpdates == 0 )
   {
     kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << url.path() << endl;
     kdirwatch->removeDir( url.path() );
   }
-
-  if ( item->count == 0 )
-    Q_ASSERT( holders->isEmpty() );
 
   if ( holders->isEmpty() )
   {

@@ -181,7 +181,7 @@ public:
    * @param _dir the directory URL
    */
   virtual void updateDirectory( const KURL& _dir );
-  
+
   /**
    * Returns true if no io operation is currently in progress.
    */
@@ -257,8 +257,7 @@ public:
    * otherwise false.
    * @see #setNameFilter
    */
-  // remove this virtual
-  virtual bool matchesFilter( const QString& name ) const;
+  bool matchesFilter( const QString& name ) const;
 
   /**
    * @return true if @p name matches a filter in the list,
@@ -267,8 +266,7 @@ public:
    *
    * @param mime the mimetype to find in the filter list.
    */
-  // remove this virtual
-  virtual bool matchesMimeFilter( const QString& mime ) const;
+  bool matchesMimeFilter( const QString& mime ) const;
 
 signals:
   /**
@@ -407,8 +405,8 @@ protected:
    * actual filtering. Those methods may be reimplemented to customize
    * filtering.
    */
-  /*virtual*/ bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
-  /*virtual*/ bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
+  virtual bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
+  virtual bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
 
   /**
    * Checks if an url is malformed or not and displays an error message

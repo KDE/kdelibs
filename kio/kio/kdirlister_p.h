@@ -204,7 +204,6 @@ private:
   {
     DirItem() : rootItem(0), lstItems(new KFileItemList)
     {
-      count = 1;
       autoUpdates = 0;
       complete = false;
       lstItems->setAutoDelete( true );
@@ -216,16 +215,14 @@ private:
       delete lstItems;
     }
 
-    // number of KDirListers currently holding this dir
-    unsigned short count;
-
     // number of KDirListers using autoUpdate for this dir
     unsigned short autoUpdates;
 
     bool complete;
 
-    // KFileItem representing the root of this directory
-    // Remember that this is optional. FTP sites don't return '.' in the list, so they give no root item
+    // KFileItem representing the root of this directory.
+    // Remember that this is optional. FTP sites don't return '.' in 
+    // the list, so they give no root item
     KFileItem* rootItem;
     KFileItemList* lstItems;
   };
