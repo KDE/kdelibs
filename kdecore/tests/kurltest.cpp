@@ -43,8 +43,9 @@ int main(int argc, char *argv[])
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
 
-  KURL baseURL ("http://www.foo.bar:80" );
+  KURL baseURL ("hTTp://www.foo.bar:80" );
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
+  check( "KURL::protocol()", baseURL.protocol(), "http"); // lowercase
   KURL url1 ( baseURL, "//www1.foo.bar" );
   check( "KURL::url()", url1.url(), "http://www1.foo.bar");
 
