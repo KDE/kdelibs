@@ -108,8 +108,7 @@ void RenderFlow::setStyle(RenderStyle *_style)
 
 RenderFlow::~RenderFlow()
 {
-    if (specialObjects)
-        delete specialObjects;
+    delete specialObjects;
 }
 
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
@@ -345,7 +344,7 @@ void RenderFlow::layoutBlockChildren()
 	    child = child->nextSibling();
 	    continue;
 	}
-        
+
         child->calcVerticalMargins();
 
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
@@ -611,7 +610,7 @@ void RenderFlow::positionNewFloats()
             for (int n = 0 ; n < (isAnonymousBox()?2:1); n++ )
             {
                 obj = obj->containingBlock();
-                if (obj && obj->isFlow() )
+                if (obj && obj->isFlow() && !obj->isTable())
                 {
                     RenderFlow* par = static_cast<RenderFlow*>(obj);
 
@@ -1013,9 +1012,9 @@ void RenderFlow::calcMinMaxWidth()
 //    if(minMaxKnown())
 //        return;
 
-    
+
     int cw = containingBlock()->contentWidth();
-    
+
     // non breaking space
     const QChar nbsp = 0xa0;
 
@@ -1043,11 +1042,11 @@ void RenderFlow::calcMinMaxWidth()
                 int childMax = child->maxWidth() + margins;
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
-                    
+
                     int ti = cstyle->textIndent().minWidth(cw);
                     childMin+=ti;
                     childMax+=ti;
-        
+
                     if(!child->minMaxKnown())
                         child->calcMinMaxWidth();
                     bool hasNbsp=false;
@@ -1074,7 +1073,7 @@ void RenderFlow::calcMinMaxWidth()
                     {
                         if(inlineMin < currentMin) inlineMin = currentMin;
                         prevchild = child;
-                        child = next(child);	                
+                        child = next(child);
                         hasNbsp = false;
                         continue;
                     }
@@ -1382,7 +1381,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 //kdDebug( 6040 ) << "creating anonymous box" << endl;
                 RenderStyle *newStyle = new RenderStyle();
                 newStyle->inheritFrom(style());
-                
+
                 newStyle->setDisplay(BLOCK);
                 RenderFlow *newBox = new RenderFlow();
                 newBox->setStyle(newStyle);
@@ -1515,7 +1514,7 @@ void RenderFlow::printTree(int indent) const
         {
             QString s;
             s.fill(' ', indent);
-            kdDebug() << s << "     special -> (" << r->startY << " - " << r->endY << ")" << endl;
+            kdDebug() << s << renderName() << ":     special -> (" << r->startY << " - " << r->endY << ")" << endl;
         }
     }
 }
