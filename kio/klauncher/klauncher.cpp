@@ -358,6 +358,20 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
          return;
       }
    }
+
+   // also send a notification to taskbar, in case an app-start button
+   // is still lying around (maybe the app crashed, or didn't ever
+   // map a window)
+   {
+      QByteArray params;
+      QDataStream stream(params, IO_WriteOnly);
+      QCString replyType;
+      QByteArray replyData;
+      stream << (int)pid;
+      kapp->dcopClient()->call("kicker", "TaskbarApplet",
+        "clientDied(pid_t)", params, replyType,
+         replyData);
+    }  
 }
 
 void
