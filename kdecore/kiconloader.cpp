@@ -146,8 +146,8 @@ struct KIconLoaderPrivate
     QDict<QImage> imgDict;
     QImage lastImage; // last loaded image without effect applied
     QString lastImageKey; // key for icon without effect
-    bool lastIconType; // see KIcon::type
-    bool lastIconThreshold; // see KIcon::threshold
+    int lastIconType; // see KIcon::type
+    int lastIconThreshold; // see KIcon::threshold
 };
 
 /*** KIconLoader: the icon loader ***/
