@@ -295,20 +295,43 @@ protected:
   QWidget *parent;
   KSpellConfig *ksconfig;
   KSpellDlg *ksdlg;
-  QStrList *wordlist, ignorelist, replacelist, sugg;
+  QStrList *wordlist;
+  QStrList ignorelist;
+  QStrList replacelist;
+  QStrList sugg;
   
   char *temp;
 
-  bool cleaning, usedialog, texmode, dlgon, ok, personaldict, dialogwillprocess;
-  bool progressbar, dialogsetup;
+  bool cleaning;
+  bool usedialog;
+  bool texmode;
+  bool dlgon;
+  bool ok;
+  bool personaldict;
+  bool dialogwillprocess;
+  bool progressbar;
+  bool dialogsetup;
 
-  QString caption, orig;
-  QString origbuffer, newbuffer, cwword, dlgorigword;
-  QString dlgreplacement, dialog3slot;
+  QString caption;
+  QString orig;
+  QString origbuffer;
+  QString newbuffer;
+  QString cwword;
+  QString dlgorigword;
+  QString dlgreplacement;
+  QString dialog3slot;
 
-  int dlgresult, trystart, maxtrystart;
-  unsigned int lastpos, totalpos, lastline, posinline, lastlastline;
-  unsigned int offset, progres, curprog;
+  int dlgresult;
+  int trystart;
+  int maxtrystart;
+  unsigned int lastpos;
+  unsigned int totalpos;
+  unsigned int lastline;
+  unsigned int posinline;
+  unsigned int lastlastline;
+  unsigned int offset;
+  unsigned int progres;
+  unsigned int curprog;
 
   int parseOneResponse (const QString &_buffer, QString &word, QStrList *sugg);
   QString funnyWord (QString word);
