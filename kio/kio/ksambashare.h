@@ -39,9 +39,9 @@ public:
   static KSambaShare* instance();
 
   /**
-   * Wether or not the given path is shared by Samba.
+   * Whether or not the given path is shared by Samba.
    * @param path the path to check if it is shared by Samba.
-   * @return wether the given path is shared by Samba.
+   * @return whether the given path is shared by Samba.
    */
   bool isDirectoryShared( const QString & path ) const;
   
@@ -67,7 +67,7 @@ public:
   
 signals:
   /**
-   * Emitted when the /etc/exports file has changed
+   * Emitted when the smb.conf file has changed
    */
   void changed();  
   
