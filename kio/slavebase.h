@@ -31,30 +31,37 @@ class SlaveBasePrivate;
 /**
  * Structure to hold all authorization information.
  *
- * @param username          name as supplied and/or specified by user.
+ * @param url               url for which authentication is stored. [required]
  *
- * @param password          password specified by user.
+ * @param username          name as supplied and/or specified by user. [required for caching]
  *
- * @param prompt            information requested from user.
+ * @param password          password specified by user. [required for caching, but can be empty]
  *
- * @param caption           text displayed in the title bar of password dialog.
+ * @param prompt            information to display to user in password dialog. [optional]
  *
- * @param comment           optional field for additional comment to relay to user.
+ * @param caption           text displayed in the title bar of password dialog. [optional]
  *
- * @param commentLabel      optional label to for additional comment (ex:"Command:").
+ * @param comment           Additional comment to show to user. [optional]
+ *
+ * @param commentLabel      Label to for additional comment (ex:"Command:"). [optional]
  *
  * @param realmValue        optional field to specify "REALM" value for protocols that
- *                          use/support digest authentication.
+ *                          use/support digest authentication (RFC 2617).[optional]
  *
- * @param digestInfo        optional field to store any extra authorization string.  This
- *                          parameter is also only useful for digest authentication.
- * @param verifyPath
+ * @param digestInfo        optional field to store any extra authorization string for
+ *                          protocols that use/support digest authentication (RFC 2617). [optional]
+ *
+ * @param verifyPath        flag that indicates whether we should attempt to match the
+ *                          path of the requested URI to find a cached authentication.
+ *                          This is only useful for protocols that use/support digest
+ *                          or basic authenitcaiton protocol (RFC 2617). [optional]
  *
  * @param readOnly          flag that forces the username field to be read-only if true.
+ *                          This is set to false by default. [optional]
  *
  * @param keepPassword      flag that forces the password to be cached for the duration of
  *                          the KDE session instead of it being automatically removed when
- *                          the application is terminated.
+ *                          the application is terminated.  NOT YET IMPLEMENTED!! [optional]
  */
 struct AuthInfo
 {

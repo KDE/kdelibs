@@ -734,7 +734,7 @@ bool SlaveBase::pingCacheDaemon() const
     return true;
 }
 
-bool SlaveBase::checkCachedAuthentication(const KURL& url, QString& user, QString& passwd )
+bool SlaveBase::checkCachedAuthentication( const KURL& url, QString& user, QString& passwd )
 {
     AuthInfo info;
     info.url = url;
