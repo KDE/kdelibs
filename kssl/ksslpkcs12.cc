@@ -214,3 +214,8 @@ return (validate() == KSSLCertificate::Ok);
 }
 
 
+QString KSSLPKCS12::name() {
+   return _cert->getSubject();
+}
+
+

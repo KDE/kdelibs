@@ -22,13 +22,13 @@
 #define _KSSLCERTDLG_H
 
 #include <kdialog.h>
-
-#include "ksslx509map.h"
-#include "ksslcertificate.h"
-#include "kssl.h"
-#include <qscrollview.h>
+#include <qstringlist.h>
 
 class QWidget;
+class QCheckBox;
+class QRadioButton;
+class QListView;
+class QPushButton;
 
 class KSSLCertDlg : public KDialog {
 
@@ -38,12 +38,21 @@ public:
   KSSLCertDlg(QWidget *parent = 0, const char *name = 0, bool modal = false);
   virtual ~KSSLCertDlg();
 
-  void setup(  );
+  void setup(QStringList certs, bool saveChecked = false, bool sendChecked = false);
+
+  QString getChoice();
+
+  bool wantsToSend();
+
+  bool saveChoice();
 
 private:
   class KSSLCertDlgPrivate;
   KSSLCertDlgPrivate *d;
-
+  QCheckBox *_save;
+  QRadioButton *_send, *_dont;
+  QListView *_certs;
+  QPushButton *_ok;
 
 };
 

@@ -19,44 +19,9 @@
  */ 
 
 #include <ksslcertificatehome.h>
-#include <qstring.h>
 #include <ksslcertificate.h>
+#include <ksslpkcs12.h>
 
-
-KSSLCertificate* 
-KSSLCertificateHome::getCertificateByHost(QString& /*host*/) {
-  #ifdef HAVE_SSL
-
-  #endif
-  return NULL;
-}
-
-
-KSSLCertificate* 
-KSSLCertificateHome::getDefaultCertificate() {
-  #ifdef HAVE_SSL
-
-  #endif
-  return NULL;
-}
-
-
-void 
-KSSLCertificateHome::setDefaultCertificate(QString& /*filename*/, QString& /*host*/) {
-
-}
-
-
-void 
-KSSLCertificateHome::addCertificate(QString& /*filename*/, QString& /*host*/) {
-
-}
-
-
-void 
-KSSLCertificateHome::addCertificate(KSSLCertificate* /*cert*/, QString& /*host*/) {
-
-}
 
 
 

@@ -24,6 +24,9 @@
 
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qcheckbox.h>
+#include <qlistview.h>
 #include <qframe.h>
 #include <qlabel.h>
 
@@ -39,9 +42,28 @@ private:
 };
 
 KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
- : KDialog(parent, name, modal, Qt::WDestructiveClose), d(new KSSLCertDlgPrivate) {
+ : KDialog(parent, name, modal), d(new KSSLCertDlgPrivate) {
+   QGridLayout *grid = new QGridLayout(this, 8, 6, KDialog::marginHint(),
+                                                   KDialog::spacingHint() ); 
 
-    setCaption(i18n("KDE SSL Certificate Dialog"));
+   _send = new QRadioButton(i18n("Send certificate..."), this);
+   grid->addMultiCellWidget(_send, 0, 0, 0, 2);
+
+   _dont = new QRadioButton(i18n("Do not send a certificate"), this);
+   grid->addMultiCellWidget(_dont, 1, 1, 0, 2);
+
+   _certs = new QListView(this);
+   grid->addMultiCellWidget(_certs, 0, 4, 3, 5);
+   _certs->addColumn(i18n("Certificate"));
+
+   _save = new QCheckBox(i18n("Save selection for this host."), this);
+   grid->addMultiCellWidget(_save, 5, 5, 0, 3);
+
+   _ok = new QPushButton(i18n("&Ok"), this);
+   grid->addWidget(_ok, 7, 5);
+   connect(_ok, SIGNAL(clicked()), SLOT(accept()));
+
+   setCaption(i18n("KDE SSL Certificate Dialog"));
 }
 
 
@@ -50,9 +72,35 @@ KSSLCertDlg::~KSSLCertDlg() {
 }
 
 
-void KSSLCertDlg::setup() {
+void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
+  _save->setChecked(saveChecked);
+  _send->setChecked(sendChecked);
+  _dont->setChecked(!sendChecked);
+
+  for (QStringList::Iterator i = certs.begin();
+                             i != certs.end();
+                             ++i) {
+    if ((*i).isEmpty()) continue;
+
+    new QListViewItem(_certs, *i);
+  }
+
 }
 
+
+bool KSSLCertDlg::saveChoice() {
+  return _save->isChecked();
+}
+
+
+bool KSSLCertDlg::wantsToSend() {
+  return _send->isChecked();
+}
+
+
+QString KSSLCertDlg::getChoice() {
+   return _certs->selectedItem()->text(0);
+}
 
 
 #include "ksslcertdlg.moc"

@@ -24,16 +24,43 @@
 #define _KSSLCERTIFICATEHOME_H
 
 class KSSLCertificate;
-class QString;
+class KSSLPKCS12;
+#include <qstring.h>
+
 
 class KSSLCertificateHome {
  
 public:
-  static KSSLCertificate* getCertificateByHost(QString& host);
-  static KSSLCertificate* getDefaultCertificate();
-  static void setDefaultCertificate(QString& filename, QString& host);
-  static void addCertificate(QString& filename, QString& host);
-  static void addCertificate(KSSLCertificate* cert, QString& host);
+
+  /*
+   *  These methods dynamically allocate an object for you.  Be sure to
+   *  delete them when you are done.
+   */
+  static KSSLPKCS12* getCertificateByHost(QString host, QString password);
+  static QString getDefaultCertificateName(QString host);
+  static QString getDefaultCertificateName();
+  static KSSLPKCS12* getDefaultCertificate(QString password);
+
+
+  /*
+   *   These set the default certificate for hosts without a policy.
+   */
+  static void setDefaultCertificate(QString name);
+  static void setDefaultCertificate(KSSLPKCS12 *cert);
+
+
+  /*
+   *   These set the default certificate for a host.
+   */
+  static void setDefaultCertificate(QString name, QString host);
+  static void setDefaultCertificate(KSSLPKCS12 *cert, QString host);
+
+  /*
+   *   These add a certificate to the repository.
+   *   Returns: 0 on success, -1 on file error, -2 on password error
+   */
+  static int addCertificate(QString filename, QString password);
+  static void addCertificate(KSSLPKCS12 *cert);
  
 private:
  

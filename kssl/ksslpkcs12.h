@@ -54,6 +54,12 @@ public:
   virtual ~KSSLPKCS12();
 
   /*
+   *   The name of this certificate.  This can be used to refer to the
+   *   certificate instead of passing the object itself.
+   */
+  QString name();
+
+  /*
    *   Create a KSSLPKCS12 object from a Base64 in a QString.  Returns NULL
    *   on failure.
    */

@@ -43,6 +43,10 @@ class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef HAVE_SSL
 typedef struct x509_st X509;
 #else
