@@ -54,12 +54,12 @@ public:
 /** 
 * Set the state of the KLedLamp 
 */
-  void setState(State state) { s= state; paintEvent(0); }
+  void setState(State state) { s= state; repaint(FALSE); }
 
 /** 
 * Toggle the state of the KLedLamp 
 */
-  void toggleState() { if (s == On) s= Off; else if (s == Off) s= On; paintEvent(0); }
+  void toggleState() { if (s == On) s= Off; else if (s == Off) s= On; repaint(FALSE); }
 public slots:
   void toggle() { toggleState(); };
   void on() { setState(On); };
