@@ -1,9 +1,13 @@
+2004-10-16  Allan Sandfeld Jensen <kde@carewolf.com>
+        * html/html_formimpl.cpp: Escape otherwise unencodable characters.
+        Matches the behavior of Gecko.
+
 2004-10-15  Stephan Kulow  <coolo@kde.org>
 
         * rendering/render_form.cpp (updateFromElement): don't set assume <select>
         got items when we calculate a height for items (#87466)
 
-        * css/html4.css: changing default horizontal margins for H1-H6 from 
+        * css/html4.css: changing default horizontal margins for H1-H6 from
         auto to 0 (#91327)
 
 2004-10-15  Germain Garand  <germain@ebooksfrance.org>
@@ -32,7 +36,7 @@
 
         * rendering/render_block.cpp (layoutBlockChildren):
         simpler implementation for compact display: do not insert the
-        compact child within the next block anymore. 
+        compact child within the next block anymore.
         Solves lot of problems with host blocks having non-inline children.
 
         * rendering/render_object.{cpp,h} (getVerticalPosition): add

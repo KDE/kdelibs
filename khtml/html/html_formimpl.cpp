@@ -173,9 +173,27 @@ static QCString encodeCString(const QCString& e)
     return encoded;
 }
 
+// ### This function only encodes to numeric ampersand escapes,
+// ### we could use standard ampersand values as well.
+inline static QString escapeUnencodeable(const QTextCodec* codec, const QString& s) {
+    QString enc_string;
+    int len = s.length();
+    for(int i=0; i <len; i++) {
+        QChar c = s[i];
+        if (codec->canEncode(c))
+            enc_string.append(c);
+        else {
+            QString ampersandEscape;
+            ampersandEscape.sprintf("&#%u;", c.unicode());
+            enc_string.append(ampersandEscape);
+        }
+    }
+    return enc_string;
+}
+
 inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& s)
 {
-    QCString str = codec->fromUnicode(s);
+    QCString str = codec->fromUnicode(escapeUnencodeable(codec,s));
     str.truncate(str.length());
     return str;
 }
@@ -285,9 +303,9 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                     // append body
                     unsigned int old_size = form_data.size();
-		    form_data.resize( old_size + hstr.length() + (*it).size() + 1); 
+		    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
                     memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
-		    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size()); 
+		    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
                     form_data[form_data.size()-2] = '\r';
                     form_data[form_data.size()-1] = '\n';
 
@@ -295,7 +313,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                     if (current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT)
                         static_cast<HTMLInputElementImpl*>(current)->setUnsubmittedFormChange(false);
-                
+
                     if (current->id() == ID_TEXTAREA)
                         static_cast<HTMLTextAreaElementImpl*>(current)->setUnsubmittedFormChange(false);
 
@@ -1043,7 +1061,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_autocomplete = true;
     m_inited = false;
     m_unsubmittedFormChange = false;
-    
+
     xPos = 0;
     yPos = 0;
 
@@ -1568,7 +1586,7 @@ NodeImpl* HTMLLabelElementImpl::getFormElement()
 	        newNode=getDocument()->getElementById(formElementId);
     	    if (!newNode){
     		uint children=childNodeCount();
-    		if (children>1) 
+    		if (children>1)
     		    for (unsigned int i=0;i<children;i++){
 			uint nodeId=childNode(i)->id();
 			if (nodeId==ID_INPUT || nodeId==ID_SELECT || nodeId==ID_TEXTAREA){
