@@ -74,7 +74,6 @@ public:
     virtual bool isRendered() const  { return true; }
 
     virtual void calcMinMaxWidth();
-    virtual void layout();
 
     HTMLGenericFormElementImpl *element() { return m_element; }
 
@@ -88,6 +87,8 @@ public slots:
     virtual void slotClicked();
 
 protected:
+
+    void applyLayout(int iWidth, int iHeight);
 
     HTMLGenericFormElementImpl *m_element;
 };

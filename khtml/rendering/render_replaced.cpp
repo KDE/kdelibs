@@ -81,6 +81,7 @@ void RenderWidget::setQWidget(QWidget *widget)
     m_widget = widget;
     connect( m_widget, SIGNAL( destroyed()),
              this, SLOT( slotWidgetDestructed()));
+    m_widget->show();
 }
 
 void RenderWidget::slotWidgetDestructed()
@@ -107,10 +108,9 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
-    m_view->addChild(m_widget, _tx, _ty);
+    m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
 
-    if(!m_widget->isVisible())
-        m_widget->show();
+    m_widget->show();
 }
 
 short RenderWidget::verticalPositionHint() const
@@ -120,7 +120,7 @@ short RenderWidget::verticalPositionHint() const
     {
     case BASELINE:
         //kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return (contentHeight() - QFontMetrics(m_style->font()).descent());
+        return (m_height - QFontMetrics(m_style->font()).descent());
     case SUB:
         // ###
     case SUPER:

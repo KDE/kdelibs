@@ -61,13 +61,15 @@ RenderFormElement::~RenderFormElement()
 {
 }
 
-void RenderFormElement::layout()
+void RenderFormElement::applyLayout(int iWidth, int iHeight)
 {
     if(m_widget) {
-        m_widget->resize(m_width, m_height);
+        m_widget->resize(iWidth, iHeight);
         m_widget->setEnabled(!m_element->disabled());
     }
 
+    m_width  = iWidth  + borderLeft() + paddingLeft() + paddingRight() + borderRight();
+    m_height = iHeight + borderTop() + paddingTop() + paddingBottom() + borderBottom();
 }
 
 void RenderFormElement::calcMinMaxWidth()
@@ -127,10 +129,7 @@ void RenderButton::layout()
     if(m_widget)
         s = m_widget->sizeHint();
 
-    m_height = s.height();
-    m_width = s.width();
-
-    RenderFormElement::layout();
+    applyLayout(s.width(), s.height());
 
     setLayouted();
 }
@@ -451,10 +450,7 @@ void RenderLineEdit::layout()
         edit->setMaxLength(input->maxLength());
     edit->setReadOnly(m_element->readOnly());
 
-    m_height = s.height();
-    m_width = s.width();
-
-    RenderFormElement::layout();
+    applyLayout(s.width(), s.height());
     setLayouted();
 }
 
@@ -551,10 +547,7 @@ void RenderFileButton::layout( )
 
     m_edit->setReadOnly(m_element->readOnly());
 
-    m_height = s.height();
-    m_width  = s.width();
-
-    RenderFormElement::layout();
+    applyLayout(s.width(), s.height());
     setLayouted();
 }
 
@@ -832,17 +825,15 @@ void RenderSelect::layout( )
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         height = QMAX(m_size, 1)*height + 2*w->frameWidth();
 
-        m_width = width;
-        m_height = height;
+        applyLayout(width, height);
     }
     else
     {
         QSize s(m_widget->sizeHint());
-        m_width = s.width();
-        m_height = s.height();
+
+        applyLayout(s.width(), s.height());
     }
 
-    RenderFormElement::layout();
     setLayouted();
 
     m_ignoreSelectEvents = false;
@@ -1111,10 +1102,7 @@ void RenderTextArea::layout( )
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 
-    m_width  = size.width();
-    m_height = size.height();
-
-    RenderFormElement::layout();
+    applyLayout(size.width(), size.height());
 
     setLayouted();
 }
