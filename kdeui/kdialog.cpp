@@ -96,13 +96,13 @@ void KDialog::keyPressEvent(QKeyEvent *e)
 
 int KDialog::marginHint()
 {
-  return( mMarginSize );
+  return mMarginSize;
 }
 
 
 int KDialog::spacingHint()
 {
-  return( mSpacingSize );
+  return mSpacingSize;
 }
 
 // KDE4: Remove me

@@ -50,7 +50,7 @@ bool KContextMenuManager::showOnButtonPress( void )
 {
   if ( !manager )
 	manager = new KContextMenuManager;
-  return( manager->showOnPress );
+  return manager->showOnPress;
 }
 
 

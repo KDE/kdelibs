@@ -206,19 +206,19 @@ KJanusWidget::~KJanusWidget()
 
 bool KJanusWidget::isValid() const
 {
-  return( mValid );
+  return mValid;
 }
 
 
 QFrame *KJanusWidget::plainPage()
 {
-  return( mPlainPage );
+  return mPlainPage;
 }
 
 
 int KJanusWidget::face() const
 {
-  return( mFace );
+  return mFace;
 }
 
 QWidget *KJanusWidget::FindParent()
@@ -237,7 +237,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
   if( mValid == false )
   {
     kdDebug() << "addPage: Invalid object" << endl;
-    return( 0 );
+    return 0;
   }
 
   QFrame *page = new QFrame( FindParent(), "page" );
@@ -274,7 +274,7 @@ QVBox *KJanusWidget::addVBoxPage( const QStringList &items,
   if( mValid == false )
   {
     kdDebug() << "addPage: Invalid object" << endl;
-    return( 0 );
+    return 0;
   }
 
   QVBox *page = new QVBox(FindParent() , "page" );
@@ -299,7 +299,7 @@ QHBox *KJanusWidget::addHBoxPage( const QStringList &items,
 {
   if( mValid == false ) {
     kdDebug() << "addPage: Invalid object" << endl;
-    return( 0 );
+    return 0;
   }
 
   QHBox *page = new QHBox(FindParent(), "page");
@@ -326,7 +326,7 @@ QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
   if( mValid == false )
   {
     kdDebug() << "addPage: Invalid object" << endl;
-    return( 0 );
+    return 0;
   }
 
   QGrid *page = new QGrid( n, dir, FindParent(), "page" );
@@ -494,9 +494,9 @@ void KJanusWidget::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
 
 bool KJanusWidget::setSwallowedWidget( QWidget *widget )
 {
-  if( mFace != Swallow || mValid == false )
+  if( mFace != Swallow || !mValid )
   {
-    return( false );
+    return false;
   }
 
   //
@@ -541,20 +541,20 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
     mSwallowPage->setMinimumSize( widget->minimumSize() );
   }
 
-  return( true );
+  return true;
 }
 
 bool KJanusWidget::slotShowPage()
 {
   if( mValid == false )
   {
-    return( false );
+    return false;
   }
 
   if( mFace == TreeList )
   {
     QListViewItem *node = mTreeList->selectedItem();
-    if( node == 0 ) { return( false ); }
+    if( node == 0 ) { return false; }
 
     QWidget *stackItem = mTreeListToPageStack[node];
     // Make sure to call through the virtual function showPage(int)
@@ -563,21 +563,21 @@ bool KJanusWidget::slotShowPage()
   else if( mFace == IconList )
   {
     QListBoxItem *node = mIconList->item( mIconList->currentItem() );
-    if( node == 0 ) { return( false ); }
+    if( !node ) { return false; }
     QWidget *stackItem = mIconListToPageStack[node];
     // Make sure to call through the virtual function showPage(int)
     return showPage(d->mPageToInt[stackItem]);
   }
 
-  return( false );
+  return false;
 }
 
 
 bool KJanusWidget::showPage( int index )
 {
-  if( d == 0 || mValid == false )
+  if( !d || !mValid )
   {
-    return( false );
+    return false;
   }
   else
   {
@@ -588,9 +588,9 @@ bool KJanusWidget::showPage( int index )
 
 bool KJanusWidget::showPage( QWidget *w )
 {
-  if( w == 0 || mValid == false )
+  if( !w || !mValid )
   {
-    return( false );
+    return false;
   }
 
   if( mFace == TreeList || mFace == IconList )
@@ -632,10 +632,10 @@ bool KJanusWidget::showPage( QWidget *w )
   }
   else
   {
-    return( false );
+    return false;
   }
 
-  return( true );
+  return true;
 }
 
 
@@ -649,16 +649,16 @@ int KJanusWidget::activePageIndex() const
   }
   else if (mFace == IconList) {
     QListBoxItem *node = mIconList->item( mIconList->currentItem() );
-    if( node == 0 ) { return( false ); }
+    if( !node ) { return false; }
     QWidget *stackItem = mIconListToPageStack[node];
     return d->mPageToInt[stackItem];
   }
   else if( mFace == Tabbed ) {
     QWidget *widget = mTabControl->currentPage();
-    return( widget == 0 ? -1 : d->mPageToInt[widget] );
+    return ( widget == 0 ? -1 : d->mPageToInt[widget] );
   }
   else {
-    return( -1 );
+    return -1;
   }
 }
 
@@ -667,11 +667,11 @@ int KJanusWidget::pageIndex( QWidget *widget ) const
 {
   if( widget == 0 )
   {
-    return( -1 );
+    return -1;
   }
   else if( mFace == TreeList || mFace == IconList )
   {
-    return( d->mPageToInt[widget] );
+    return d->mPageToInt[widget];
   }
   else if( mFace == Tabbed )
   {
@@ -682,16 +682,16 @@ int KJanusWidget::pageIndex( QWidget *widget ) const
     //
     if( widget->isA("QFrame") )
     {
-      return( d->mPageToInt[widget->parentWidget()] );
+      return d->mPageToInt[widget->parentWidget()];
     }
     else
     {
-      return( d->mPageToInt[widget] );
+      return d->mPageToInt[widget];
     }
   }
   else
   {
-    return( -1 );
+    return -1;
   }
 }
 
@@ -781,23 +781,23 @@ QSize KJanusWidget::minimumSizeHint() const
     int h1 = s1.rheight() + s3.rheight() + s4.height();
     int h2 = QMAX( h1, s2.rheight() );
 
-    return( QSize( s1.width()+s2.width()+QMAX(s3.width(),s4.width()), h2 ) );
+    return QSize( s1.width()+s2.width()+QMAX(s3.width(),s4.width()), h2 );
   }
   else if( mFace == Tabbed )
   {
-    return( mTabControl->sizeHint() );
+    return mTabControl->sizeHint();
   }
   else if( mFace == Swallow )
   {
-    return( mSwallowPage->minimumSize() );
+    return mSwallowPage->minimumSize();
   }
   else if( mFace == Plain )
   {
-    return( mPlainPage->sizeHint() );
+    return mPlainPage->sizeHint();
   }
   else
   {
-    return( QSize( 100, 100 ) ); // Should never happen though.
+    return QSize( 100, 100 ); // Should never happen though.
   }
 
 }
@@ -805,7 +805,7 @@ QSize KJanusWidget::minimumSizeHint() const
 
 QSize KJanusWidget::sizeHint() const
 {
-  return( minimumSizeHint() );
+  return minimumSizeHint();
 }
 
 
@@ -1014,7 +1014,7 @@ KJanusWidget::IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixm
 int KJanusWidget::IconListItem::expandMinimumWidth( int width )
 {
   mMinimumWidth = QMAX( mMinimumWidth, width );
-  return( mMinimumWidth );
+  return mMinimumWidth;
 }
 
 
@@ -1039,7 +1039,7 @@ const QPixmap &KJanusWidget::IconListItem::defaultPixmap()
 
     pix->setMask( mask );
   }
-  return( *pix );
+  return *pix;
 }
 
 
@@ -1061,12 +1061,12 @@ int KJanusWidget::IconListItem::height( const QListBox *lb ) const
 {
   if( text().isEmpty() == true )
   {
-    return( mPixmap.height() );
+    return mPixmap.height();
   }
   else
   {
     int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
-    return( mPixmap.height() + ht + 10 );
+    return (mPixmap.height() + ht + 10);
   }
 }
 
@@ -1076,7 +1076,7 @@ int KJanusWidget::IconListItem::width( const QListBox *lb ) const
   int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
   int w  = QMAX( wt, wp );
-  return( QMAX( w, mMinimumWidth ) );
+  return QMAX( w, mMinimumWidth );
 }
 
 

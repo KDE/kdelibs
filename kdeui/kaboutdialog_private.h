@@ -138,7 +138,7 @@ class KAboutContainerBase : public QWidget
     QTabWidget *mPageTab;
     QFrame  *mPlainSpace;
 
-    KAboutContainerBasePrivate *d;
+    KAboutContainerBasePrivate* const d;
 };
 
 

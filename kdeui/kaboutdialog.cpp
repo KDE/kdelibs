@@ -152,25 +152,25 @@ void KAboutContributor::setWork( const QString &_text, const QString &_header,
 
 QString KAboutContributor::getName( void ) const
 {
-  return( mText[0]->text() );
+  return mText[0]->text();
 }
 
 
 QString KAboutContributor::getEmail( void ) const
 {
-  return( mText[1]->text() );
+  return mText[1]->text();
 }
 
 
 QString KAboutContributor::getURL( void ) const
 {
-  return( mText[2]->text() );
+  return mText[2]->text();
 }
 
 
 QString KAboutContributor::getWork( void ) const
 {
-  return( mText[3]->text() );
+  return mText[3]->text();
 }
 
 
@@ -274,7 +274,7 @@ void KAboutContributor::fontChange( const QFont &/*oldFont*/ )
 
 QSize KAboutContributor::sizeHint( void ) const
 {
-  return( minimumSizeHint() );
+  return minimumSizeHint();
 }
 
 
@@ -297,7 +297,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
 					  char *_name )
   : QWidget( _parent, _name ),
     mImageLabel(0), mTitleLabel(0), mIconLabel(0),mVersionLabel(0),
-    mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0)
+    mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0),d(0)
 {
   mTopLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
   if( !mTopLayout ) { return; }
@@ -489,7 +489,7 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
     vbox->addWidget( textEdit );
   }
 
-  return( page );
+  return page;
 }
 
 QFrame *KAboutContainerBase::addLicensePage( const QString &title,
@@ -508,7 +508,7 @@ QFrame *KAboutContainerBase::addLicensePage( const QString &title,
   textEdit->setText( text );
   textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
   vbox->addWidget( textEdit );
-  return( page );
+  return page;
 }
 
 
@@ -537,7 +537,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
   connect(container, SIGNAL(mailClick(const QString &,const QString &)),
 	  SLOT(slotMailClick(const QString &,const QString &)));
 
-  return( container );
+  return container;
 }
 
 
@@ -569,7 +569,7 @@ KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
   connect(container, SIGNAL(mailClick(const QString &,const QString &)),
 	  SLOT(slotMailClick(const QString &,const QString &)));
 
-  return( container );
+  return container;
 }
 
 
@@ -585,7 +585,7 @@ QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
   page->setFrameStyle( QFrame::NoFrame );
 
   mPageTab->addTab( page, title );
-  return( page );
+  return page;
 }
 
 
@@ -870,13 +870,13 @@ QSize KAboutContainer::sizeHint( void ) const
   {
     total_size = QSize( 1, 1 );
   }
-  return( total_size );
+  return total_size;
 }
 
 
 QSize KAboutContainer::minimumSizeHint( void ) const
 {
-  return( sizeHint() );
+  return sizeHint();
 }
 
 
@@ -1651,14 +1651,14 @@ QFrame *KAboutDialog::addTextPage( const QString &title, const QString &text,
 				   bool richText, int numLines )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addTextPage( title, text, richText, numLines ) );
+  return mContainerBase->addTextPage( title, text, richText, numLines );
 }
 
 QFrame *KAboutDialog::addLicensePage( const QString &title, const QString &text,
 				   int numLines )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addLicensePage( title, text, numLines ) );
+  return mContainerBase->addLicensePage( title, text, numLines );
 }
 
 
@@ -1666,8 +1666,8 @@ KAboutContainer *KAboutDialog::addContainerPage( const QString &title,
 				  int childAlignment, int innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addContainerPage( title, childAlignment,
-					    innerAlignment) );
+  return mContainerBase->addContainerPage( title, childAlignment,
+					    innerAlignment);
 }
 
 
@@ -1675,8 +1675,8 @@ KAboutContainer *KAboutDialog::addScrolledContainerPage( const QString &title,
 				  int childAlignment, int innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addScrolledContainerPage( title, childAlignment,
-						    innerAlignment) );
+  return mContainerBase->addScrolledContainerPage( title, childAlignment,
+						    innerAlignment);
 }
 
 
@@ -1684,7 +1684,7 @@ KAboutContainer *KAboutDialog::addScrolledContainerPage( const QString &title,
 QFrame *KAboutDialog::addPage( const QString &title )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addEmptyPage( title ) );
+  return mContainerBase->addEmptyPage( title );
 }
 
 
@@ -1692,7 +1692,7 @@ KAboutContainer *KAboutDialog::addContainer( int childAlignment,
 					     int innerAlignment )
 {
   if( !mContainerBase ) { return 0; }
-  return( mContainerBase->addContainer( childAlignment, innerAlignment ) );
+  return mContainerBase->addContainer( childAlignment, innerAlignment );
 }
 
 

@@ -82,27 +82,27 @@ KDualColorButton::~KDualColorButton()
 
 QColor KDualColorButton::foreground() const
 {
-    return(fg.color());
+    return fg.color();
 }
 
 QColor KDualColorButton::background() const
 {
-    return(bg.color());
+    return bg.color();
 }
 
 KDualColorButton::DualColor KDualColorButton::current() const
 {
-    return(curColor);
+    return curColor;
 }
 
 QColor KDualColorButton::currentColor() const
 {
-    return(curColor == Background ? bg.color() : fg.color());
+    return (curColor == Background ? bg.color() : fg.color());
 }
 
 QSize KDualColorButton::sizeHint() const
 {
-    return(QSize(34, 34));
+    return QSize(34, 34);
 }
 
 void KDualColorButton::setForeground(const QColor &c)

@@ -164,7 +164,7 @@ KPopupMenu* KHelpMenu::menu()
     }
   }
 
-  return( mMenu );
+  return mMenu;
 }
 
 

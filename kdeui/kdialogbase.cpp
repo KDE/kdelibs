@@ -50,7 +50,7 @@ KDialogBaseTile *KDialogBase::mTile = 0;
 
 int KDialogBaseButton::id()
 {
-    return( mKey );
+    return mKey;
 }
 
 template class QPtrList<KDialogBaseButton>;
@@ -221,7 +221,7 @@ KPushButton *SButton::append( int key, const KGuiItem &item )
 {
   KDialogBaseButton *p = new KDialogBaseButton( item, key, box );
   list.append( p );
-  return( p );
+  return p;
 }
 
 void SButton::resize( bool sameWidth, int margin,
@@ -274,10 +274,10 @@ KPushButton *SButton::button( int key )
   {
     if( p->id() == key )
     {
-      return( p );
+      return p;
     }
   }
-  return( 0 );
+  return 0;
 }
 
 void
@@ -423,7 +423,7 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 QFrame *KDialogBase::plainPage()
 {
-  return( mJanus == 0 ? 0 : mJanus->plainPage() );
+  return ( mJanus == 0 ? 0 : mJanus->plainPage() );
 }
 
 
@@ -833,7 +833,7 @@ void KDialogBase::setButtonStyle( int style )
 
 QPushButton *KDialogBase::actionButton( ButtonCode id )
 {
-  return( d->mButton.button(id) );
+  return d->mButton.button(id);
 }
 
 
@@ -1298,26 +1298,26 @@ void KDialogBase::setHelpLinkText( const QString &text )
 QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
 			      const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addPage( itemName, header, pixmap ) );
+  return ( mJanus == 0 ? 0 : mJanus->addPage( itemName, header, pixmap ) );
 }
 
 QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
 			      const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addPage( items, header, pixmap ) );
+  return ( mJanus == 0 ? 0 : mJanus->addPage( items, header, pixmap ) );
 }
 
 
 QVBox *KDialogBase::addVBoxPage( const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header, pixmap) );
+  return ( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header, pixmap) );
 }
 
 QVBox *KDialogBase::addVBoxPage( const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( items, header, pixmap) );
+  return ( mJanus == 0 ? 0 : mJanus->addVBoxPage( items, header, pixmap) );
 }
 
 
@@ -1325,14 +1325,14 @@ QHBox *KDialogBase::addHBoxPage( const QString &itemName,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header, pixmap ) );
+  return ( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header, pixmap ) );
 }
 
 QHBox *KDialogBase::addHBoxPage( const QStringList &items,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( items, header, pixmap ) );
+  return ( mJanus == 0 ? 0 : mJanus->addHBoxPage( items, header, pixmap ) );
 }
 
 
@@ -1340,7 +1340,7 @@ QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header,
+  return ( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header,
 						 pixmap) );
 }
 
@@ -1348,7 +1348,7 @@ QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
-  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, items, header,
+  return ( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, items, header,
 						 pixmap) );
 }
 
@@ -1365,12 +1365,12 @@ QFrame *KDialogBase::makeMainWidget()
   if( mJanus != 0 || mMainWidget != 0 )
   {
     printMakeMainWidgetError();
-    return( 0 );
+    return 0;
   }
 
   QFrame *mainWidget = new QFrame( this );
   setMainWidget( mainWidget );
-  return( mainWidget );
+  return mainWidget;
 }
 
 
@@ -1379,13 +1379,13 @@ QVBox *KDialogBase::makeVBoxMainWidget()
   if( mJanus != 0 || mMainWidget != 0 )
   {
     printMakeMainWidgetError();
-    return( 0 );
+    return 0;
   }
 
   QVBox *mainWidget = new QVBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
-  return( mainWidget );
+  return mainWidget;
 }
 
 
@@ -1394,13 +1394,13 @@ QHBox *KDialogBase::makeHBoxMainWidget()
   if( mJanus != 0 || mMainWidget != 0 )
   {
     printMakeMainWidgetError();
-    return( 0 );
+    return 0;
   }
 
   QHBox *mainWidget = new QHBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
-  return( mainWidget );
+  return mainWidget;
 }
 
 
@@ -1409,13 +1409,13 @@ QGrid *KDialogBase::makeGridMainWidget( int n, Orientation dir )
   if( mJanus != 0 || mMainWidget != 0 )
   {
     printMakeMainWidgetError();
-    return( 0 );
+    return 0;
   }
 
   QGrid *mainWidget = new QGrid( n, dir, this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
-  return( mainWidget );
+  return mainWidget;
 }
 
 
@@ -1467,25 +1467,25 @@ void KDialogBase::setMainWidget( QWidget *widget )
 
 QWidget *KDialogBase::mainWidget()
 {
-  return( mMainWidget );
+  return mMainWidget;
 }
 
 
 bool KDialogBase::showPage( int index )
 {
-  return( mJanus == 0 ? false : mJanus->showPage(index) );
+  return ( mJanus == 0 ? false : mJanus->showPage(index) );
 }
 
 
 int KDialogBase::activePageIndex() const
 {
-  return( mJanus == 0 ? -1 : mJanus->activePageIndex() );
+  return ( mJanus == 0 ? -1 : mJanus->activePageIndex() );
 }
 
 
 int KDialogBase::pageIndex( QWidget *widget ) const
 {
-  return( mJanus == 0 ? -1 : mJanus->pageIndex( widget) );
+  return ( mJanus == 0 ? -1 : mJanus->pageIndex( widget) );
 }
 
 
@@ -1506,7 +1506,7 @@ QRect KDialogBase::getContentsRect() const
     r.setBottom( height() - h );
   }
 
-  return(r);
+  return r;
 }
 
 
@@ -1533,13 +1533,13 @@ QSize KDialogBase::calculateSize(int w, int h) const
 {
   int ulx, uly, lrx, lry;
   getBorderWidths(ulx, uly, lrx, lry);
-  return( QSize(ulx+w+lrx,uly+h+lry) );
+  return QSize(ulx+w+lrx,uly+h+lry);
 }
 
 
 QString KDialogBase::helpLinkText() const
 {
-  return( mHelpLinkText.isNull() ? i18n("Get help...") : mHelpLinkText );
+  return ( mHelpLinkText.isNull() ? i18n("Get help...") : mHelpLinkText );
 }
 
 
@@ -1665,7 +1665,7 @@ void KDialogBase::cancel()
 
 bool KDialogBase::haveBackgroundTile()
 {
-  return( mTile == 0 || mTile->get() == 0 ? false : true );
+  return ( mTile == 0 || mTile->get() == 0 ? false : true );
 }
 
 // Deprecated. For compatibility only.
@@ -1673,7 +1673,7 @@ const QPixmap *KDialogBase::getBackgroundTile() { return backgroundTile(); }
 
 const QPixmap *KDialogBase::backgroundTile()
 {
-  return( mTile == 0 ? 0 : mTile->get() );
+  return ( mTile == 0 ? 0 : mTile->get() );
 }
 
 
@@ -1762,7 +1762,7 @@ QSize KDialogBase::configDialogSize( KConfig& config,
    w = config.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
    h = config.readNumEntry( QString::fromLatin1("Height %1").arg( desk.height()), h );
 
-   return( QSize( w, h ) );
+   return QSize( w, h );
 }
 
 
@@ -1835,7 +1835,7 @@ void KDialogBaseTile::set( const QPixmap *pix )
 
 const QPixmap *KDialogBaseTile::get() const
 {
-  return( mPixmap );
+  return mPixmap;
 }
 
 

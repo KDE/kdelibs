@@ -612,7 +612,7 @@ static const char * const *namedColorFilePath( void )
     "/usr/openwin/lib/X11/rgb.txt", // for Solaris.
     0
   };
-  return( path );
+  return path;
 }
 
 

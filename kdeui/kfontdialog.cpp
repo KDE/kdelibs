@@ -71,7 +71,7 @@ static int minimumListWidth( const QListBox *list )
   if( w == 0 ) { w = 40; }
   w += list->frameWidth() * 2;
   w += list->verticalScrollBar()->sizeHint().width();
-  return( w );
+  return w;
 }
 
 static int minimumListHeight( const QListBox *list, int numVisibleEntry )
@@ -81,7 +81,7 @@ static int minimumListHeight( const QListBox *list, int numVisibleEntry )
 
   if( w < 0 ) { w = 10; }
   if( numVisibleEntry <= 0 ) { numVisibleEntry = 4; }
-  return( w * numVisibleEntry + 2 * list->frameWidth() );
+  return ( w * numVisibleEntry + 2 * list->frameWidth() );
 }
 
 class KFontChooser::KFontChooserPrivate
@@ -408,7 +408,7 @@ QButton::ToggleState KFontChooser::sizeIsRelative() const
 
 QSize KFontChooser::sizeHint( void ) const
 {
-  return( minimumSizeHint() );
+  return minimumSizeHint();
 }
 
 
@@ -753,7 +753,7 @@ int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed,
     if( sizeIsRelativeState )
       *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
-  return( result );
+  return result;
 }
 
 int KFontDialog::getFont( QFont &theFont, bool onlyFixed,
@@ -771,7 +771,7 @@ int KFontDialog::getFont( QFont &theFont, bool onlyFixed,
     if( sizeIsRelativeState )
       *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
-  return( result );
+  return result;
 }
 
 
@@ -792,7 +792,7 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
     if( sizeIsRelativeState )
       *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
-  return( result );
+  return result;
 }
 
 void KFontChooser::virtual_hook( int, void* )

@@ -115,7 +115,7 @@ void KPopupTitle::paintEvent(QPaintEvent *)
 
 QSize KPopupTitle::sizeHint() const
 {
-    return(minimumSize());
+    return minimumSize();
 }
 
 class KPopupMenu::KPopupMenuPrivate
@@ -234,17 +234,17 @@ void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
 QString KPopupMenu::title(int id) const
 {
     if(id == -1) // obsolete
-        return(d->m_lastTitle);
+        return d->m_lastTitle;
     QMenuItem *item = findItem(id);
     if(item){
         if(item->widget())
-            return(((KPopupTitle *)item->widget())->title());
+            return ((KPopupTitle *)item->widget())->title();
         else
             qWarning("KPopupMenu: title() called with non-title id %d.", id);
     }
     else
         qWarning("KPopupMenu: title() called with invalid id %d.", id);
-    return(QString::null);
+    return QString::null;
 }
 
 QPixmap KPopupMenu::titlePixmap(int id) const
@@ -252,14 +252,14 @@ QPixmap KPopupMenu::titlePixmap(int id) const
     QMenuItem *item = findItem(id);
     if(item){
         if(item->widget())
-            return(((KPopupTitle *)item->widget())->icon());
+            return ((KPopupTitle *)item->widget())->icon();
         else
             qWarning("KPopupMenu: titlePixmap() called with non-title id %d.", id);
     }
     else
         qWarning("KPopupMenu: titlePixmap() called with invalid id %d.", id);
     QPixmap tmp;
-    return(tmp);
+    return tmp;
 }
 
 /**

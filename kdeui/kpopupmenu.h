@@ -68,11 +68,11 @@ public:
     /**
      * Returns the current title.
      */
-    QString title() const { return(titleStr); }
+    QString title() const { return titleStr; }
     /**
      * Returns the current icon.
      */
-    QPixmap icon() const { return(miniicon); }
+    QPixmap icon() const { return miniicon; }
 
     QSize sizeHint() const;
 
