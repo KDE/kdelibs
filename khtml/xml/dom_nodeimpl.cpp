@@ -526,6 +526,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
 
 NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 {
+    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
     checkReadOnly();
     checkSameDocument(newChild);
     checkNoOwner(newChild);
@@ -587,8 +588,10 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 // check for same source document:
 void NodeBaseImpl::checkSameDocument( NodeImpl *newChild )
 {
-  if(newChild->ownerDocument() != document)
-    throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+    if(newChild->ownerDocument() != document) {
+	kdDebug(6010)<< "not same document, newChild = " << newChild << "document = " << document << endl;
+	throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+    }
 }
 
 // check for being (grand-..)father:
