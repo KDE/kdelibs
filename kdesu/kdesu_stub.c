@@ -404,6 +404,7 @@ fprintf(stderr," before forking\n");
 	exit(xit);
     } else 
     {
+        setsid();
 	/* Child: exec command. */
 	sprintf(buf, "%s", params[P_COMMAND].value);
 	execl("/bin/sh", "sh", "-c", buf, 0L);
