@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.32  1999/03/10 15:21:34  kulow
+   going over sprintfs in kdelibs to find dangerous usings :)
+#include <qapplication.h>
    Revision 1.31  1999/03/09 16:39:48  dfaure
    Merging with 1.1 branch : initPath(), and header doc update.
 #include <qpainter.h>
@@ -104,19 +107,40 @@
 }
 void KIconLoader::initPath()
 {
+  // DF ---- Large icons --------------
+  // set the key depending on the current application
+  QString key = "KDE";
+  if (strcmp( kapp->name(), "kpanel" ) == 0)
+    key = "kpanel";
+  if (strcmp( kapp->name(), "kfm" ) == 0)
+    key = "kfm";
+  KConfig config; // read .kderc
+  config.setGroup("KDE");
+  QString setting = config.readEntry( key + "IconStyle", "Normal" );
+  //debug("App is %s - setting is %s", kapp->name(), setting.data());
+  // DF
+  
   // order is important! -- Bernd
   // higher priority at the end
 
   addPath( KApplication::kde_toolbardir() );
   addPath( KApplication::kde_icondir() );
+  if (setting == "Large")
+    addPath( KApplication::kde_icondir() + "/large" );
 
   addPath( KApplication::localkdedir() + "/share/toolbar" ); 
   addPath( KApplication::localkdedir() + "/share/icons" ); 
+  if (setting == "Large")
+    addPath( KApplication::localkdedir() + "/share/icons/large" );
 
   addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
   addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
   addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  if (setting == "Large")
+    addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics/large" );
   addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  if (setting == "Large")
+    addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics/large" ); 
 
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
 KIconLoader::KIconLoader( KConfig *conf, 
