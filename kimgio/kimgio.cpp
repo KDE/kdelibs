@@ -24,6 +24,7 @@ static int registered = 0;
 #include "kimgio-config.h"
 #include "kimgio.h"
 #include <klocale.h>
+#include <kglobal.h>
 
 #ifdef LINKED_png
 extern "C" void kimgio_init_png();
@@ -53,24 +54,25 @@ void kimgioRegister(void)
 
 	lt_dlinit();
 
-	// for the libraries that are installed in $KDEDIR/lib (kdesupport)
-	lt_dladdsearchdir( locate( "lib", "" ).ascii() );
-/*
-  Disabled by David, to fix compilation. No idea where this is defined - Stephan ?
+	QStringList list = KGlobal::dirs()->getResourceDirs("lib");
 	int rindex = 0;
 	while (kimgio_rpaths[rindex] != 0)
-	    lt_dladdsearchdir(kimgio_rpaths[rindex++]);
-*/
+	    list += kimgio_rpaths[rindex++];
 
-	QDir dir( locate( "lib", "" ), "kimg_*.la" );
-
-	for (uint index = 0; index < dir.count(); index++) {
+	QStringList::ConstIterator it;
 	
-	    QString libname = dir[index];
-	    if (libname.isNull())
-		break;
+	for (it = list.begin(); it != list.end(); it++)
+	    lt_dladdsearchdir( (*it).ascii() );
 
-	    libname = dir.path() + "/" + libname;
+	QRegExp reg("/kimg_[^.]*\\.la$");
+	list = KGlobal::dirs()->findAllResources("lib"); // TODO: use the regexp right away
+       
+	for (it = list.begin(); it != list.end(); it++) {
+	
+	    QString libname = *it;
+	    if (libname.isNull() || reg.match(libname) == -1)
+		continue;
+
 	    lt_dlhandle libhandle = lt_dlopen(libname.ascii());
 	    if (libhandle == 0) {
 		warning("couldn't dlopen %s (%s)",
