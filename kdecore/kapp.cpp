@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.96  1998/03/11 11:22:24  kulow
+// use readColorEntry instead of the old way. This is more consistent
+//
 // Revision 1.95  1998/03/09 20:20:11  kulow
 // - set KApp to 0, after the destructor has run. After that, nothing is for sure
 // - remove widgetList given by QApplication::topLevelWidgets. You can see this
@@ -497,14 +500,13 @@ void KApplication::aboutKDE()
 {
   QMessageBox::about( NULL, klocale->translate( "About KDE" ),
 					  klocale->translate( 
-										 "The KDE Desktop Environment was written by "
-										 "the KDE team.\n\n"
-										 "Please report bugs at http://buglist.kde.org.\n\n\n"
-										 "KDE was developed with Qt, a cross-platform GUI library.\n\n"
-										 "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
-										 "Qt may be used freely to develop free software on the X Window System.\n"
-										 )
-					  );
+"\nThe KDE Desktop Environment was written by the KDE Team,\n"
+"a world-wide network of software engineers commited to\n"
+"free software development.\n\n"
+"Visit http://www.kde.org for more information on the KDE\n"
+"Project. Please consider joining and supporting KDE.\n\n"
+"Please report bugs at http://buglist.kde.org.\n"
+));
 }
 
 void KApplication::aboutApp()
