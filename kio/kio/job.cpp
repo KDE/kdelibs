@@ -646,7 +646,7 @@ void StatJob::slotRedirection( const KURL &url)
 
 void StatJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed()) 
     {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
@@ -741,7 +741,7 @@ void TransferJob::slotRedirection( const KURL &url)
 void TransferJob::slotFinished()
 {
    //kdDebug(7007) << "TransferJob::slotFinished(" << this << ", " << m_url.prettyURL() << ")" << endl;
-    if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed())
         SimpleJob::slotFinished();
     else {
         //kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
