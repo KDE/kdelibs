@@ -1338,9 +1338,8 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
   while ( ( e = ftp.readdir() ) != 0L ) {
     kdebug( KDEBUG_INFO, 0, "#%s", e->name.ascii() );
     
-    //Return those as well
-    //if ( e->name == "." || e->name == ".." )
-    //  continue;
+    if ( e->name == "." || e->name == ".." )
+      continue;
     
     QString p2 = p;
     p2 += "/";
@@ -1431,8 +1430,9 @@ void FtpProtocol::slotListDir( const char *_url )
   FtpEntry* e;
   while ( ( e = ftp.readdir() ) )
   {
-    if ( e->name == "." || e->name == ".." )
-      continue;
+    //Return those as well
+    //if ( e->name == "." || e->name == ".." )
+    //  continue;
 
     kdebug( KDEBUG_INFO, 0, "Listing %s", e->name.ascii() );
 
