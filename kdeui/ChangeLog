@@ -2,6 +2,8 @@
 
 	* kquickhelp.*: changed 'tips' to be a pointer instead of an object.
 	This fixes the segfaults on HP/UX and probably the ones on NetBSD.
+	* kquickhelp.*: use setuid()/setgid() instead of the not-so-portable
+	seteuid()/setegid() pair. Reversed the order, too.
 
 1998-11-09  Alex Zepeda  <garbanzo@hooked.net>
 
