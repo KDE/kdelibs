@@ -47,8 +47,8 @@ private:
     QGridLayout *m_layout;
 };
 
-KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name)
- : KDialog(parent, name, false, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
+KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name, bool modal)
+ : KDialog(parent, name, modal, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
     d->m_secCon = secureConnection;
     d->m_layout = new QGridLayout(this, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
     d->m_layout->setColStretch(1, 1);

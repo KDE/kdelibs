@@ -36,7 +36,7 @@ class KSSLInfoDlg : public KDialog {
   Q_OBJECT
 
 public:
-  KSSLInfoDlg(bool secureConnection, QWidget *parent = 0, const char *name = 0);
+  KSSLInfoDlg(bool secureConnection, QWidget *parent = 0, const char *name = 0, bool modal = false);
   virtual ~KSSLInfoDlg();
 
   void setup(const QString& peername, const QString& issuer,
