@@ -1007,7 +1007,7 @@ bool VCardFormatImpl::writeToString( const Addressee &addressee, QString &vcard 
 
   vcardlist.append( v );
   vcards.setCardList( vcardlist );
-  vcard = vcards.asString();
+  vcard = QString::fromUtf8( vcards.asString() );
 
   return true;
 }
