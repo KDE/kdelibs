@@ -223,6 +223,8 @@ void KJSProxyImpl::clear() {
 
 DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code)
 {
+  initScript();
+
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::debugWindow())
     KJSDebugWin::debugWindow()->attach(m_script);
@@ -231,7 +233,6 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   Q_UNUSED(sourceUrl);
 #endif
 
-  initScript();
   //KJS::Constructor constr(KJS::Global::current().get("Function").imp());
   KJS::Object constr = m_script->builtinFunction();
   KJS::List args;
