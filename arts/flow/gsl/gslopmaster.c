@@ -22,91 +22,27 @@
 #include "gslopnode.h"
 #include "gsloputil.h"
 #include "gslopschedule.h"
+#include "gslieee754.h"
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/time.h>
-#include <fcntl.h>
 #include <errno.h>
 
 
-/* --- time stamping --- */
-#define TOYPROF_ABORT g_error
-#define TOYPROF_ASSERT g_assert
-
-#if	defined (__GNUC__) && defined (__i586__)
-#define ToyprofStamp 		unsigned long long int
-#define	toyprof_clock_name()	("Pentium(R) RDTSC - CPU clock cycle counter")
-/* capturing time stamps via rdtsc can produce inaccurate results due
- * to parallel instruction execution. so we issue cpuid as serializaion
- * barrier first.
- */
-#define toyprof_stamp(stamp)	({ unsigned int low, high;				\
-                                   __asm__ __volatile__ ("pushl %%ebx\n"		\
-							 "cpuid\n" /* serialization */	\
-							 "rdtsc\n"			\
-							 "popl %%ebx\n"			\
-							 : "=a" (low), "=d" (high)	\
-							 : "a" (0)			\
-							 : "cx", "cc");			\
-                                   (stamp) = high;					\
-                                   (stamp) <<= 32;					\
-                                   (stamp) += low;					\
-})
-#define toyprof_stamp_ticks()			(toyprof_stampfreq)
-/* special case (fstamp) > (lstamp), this should never happen
- * because we always stamp fstamp first, and invoke rdtsc after
- * a serialization barrier (cpuid). in case this still happens
- * that's probably due to running on an SMP system.
- */
-#define toyprof_elapsed(fstamp, lstamp)        ({ \
-  ToyprofStamp diff;								\
-  if ((fstamp) > (lstamp))							\
-  dprintf(2, "%llu > %llu\n",fstamp,lstamp); \
-  if ((fstamp) > (lstamp))							\
-    TOYPROF_ABORT ("pentium CPU clock warped backwards, running on SMP?");	\
-  diff = (lstamp) - (fstamp); diff;						\
-})
-static unsigned long long int toyprof_stampfreq = 0;
-static void
-toyprof_stampinit (void)
-{	/* grep "cpu MHz         : 551.256" from /proc/cpuinfo */
-  int fd = open ("/proc/cpuinfo", O_RDONLY);
-  if (fd >= 0) {
-    char *val, buf[8192]; unsigned int l;
-    l = read (fd, buf, sizeof (buf));
-    buf[CLAMP (l, 0, sizeof (buf) - 1)] = 0;
-    close (fd);
-    val = l > 10 ? strstr (buf, "cpu MHz") : NULL;
-    val = val ? strpbrk (val, "0123456789\n") : NULL;
-    if (val && *val >= '0' && *val <= '9') {
-      int frac = 6;
-      while (*val >= '0' && *val <= '9')
-	toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
-      if (*val++ == '.')
-	while (*val >= '0' && *val <= '9' && frac-- > 0)
-	  toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
-      while (frac-- > 0)
-	toyprof_stampfreq *= 10;
-    }
-  }
-  TOYPROF_ASSERT (toyprof_stampfreq > 0);
-}
-#else	/* !(GCC && PENTIUM) */
+/* --- time stamping (debugging) --- */
 #define	ToyprofStamp		struct timeval
 #define	toyprof_clock_name()	("Glibc gettimeofday(2)")
 #define toyprof_stampinit()	/* nothing */
 #define	toyprof_stamp(st)	gettimeofday (&(st), 0)
 #define	toyprof_stamp_ticks()	(1000000)
-static inline unsigned long long int
-toyprof_elapsed(ToyprofStamp fstamp, ToyprofStamp lstamp)
+static inline guint64
+toyprof_elapsed (ToyprofStamp fstamp,
+		 ToyprofStamp lstamp)
 {
-  unsigned long long int first = fstamp.tv_sec * toyprof_stamp_ticks ()
-                               + fstamp.tv_usec;
-  unsigned long long int last  = lstamp.tv_sec * toyprof_stamp_ticks ()
-                               + lstamp.tv_usec;
+  guint64 first = fstamp.tv_sec * toyprof_stamp_ticks () + fstamp.tv_usec;
+  guint64 last  = lstamp.tv_sec * toyprof_stamp_ticks () + lstamp.tv_usec;
   return last - first;
 }
-#endif  /* !(GCC && PENTIUM) */
 
 
 /* --- typedefs & structures --- */
@@ -142,7 +78,7 @@ static OpSchedule  *master_schedule = NULL;
 static void
 add_consumer (OpNode *node)
 {
-  g_return_if_fail (OP_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL);
+  g_return_if_fail (OP_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
 
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
@@ -153,7 +89,7 @@ remove_consumer (OpNode *node)
 {
   OpNode *tmp, *last = NULL;
 
-  g_return_if_fail (OP_NODE_IS_CONSUMER (node));
+  g_return_if_fail (!OP_NODE_IS_CONSUMER (node) || !node->integrated);
   
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
@@ -209,6 +145,7 @@ master_process_job (GslJob *job)
       Poll *poll, *poll_last;
       guint istream, ostream;
       GslFlowJob *fjob;
+      gboolean was_consumer;
     case OP_JOB_INTEGRATE:
       node = job->data.node;
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "integrate(%p)", node);
@@ -221,6 +158,7 @@ master_process_job (GslJob *job)
       master_need_reflow |= TRUE;
       break;
     case OP_JOB_DISCARD:
+      /* FIXME: free pending flow jobs */
       node = job->data.node;
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "discard(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
@@ -233,11 +171,30 @@ master_process_job (GslJob *job)
 	op_node_disconnect_outputs (node, node->output_nodes->data);
       /* remove from consumer list */
       if (OP_NODE_IS_CONSUMER (node))
-	remove_consumer (node);
-      _gsl_mnl_remove (node);
+	{
+	  _gsl_mnl_remove (node);
+	  remove_consumer (node);
+	}
+      else
+	_gsl_mnl_remove (node);
       node->counter = 0;
       master_need_reflow |= TRUE;
       master_schedule_discard ();	/* discard schedule so node may be freed */
+      break;
+    case GSL_JOB_SET_CONSUMER:
+    case GSL_JOB_UNSET_CONSUMER:
+      node = job->data.node;
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "toggle_consumer(%p)", node);
+      was_consumer = OP_NODE_IS_CONSUMER (node);
+      node->is_consumer = job->job_id == GSL_JOB_SET_CONSUMER;
+      if (was_consumer != OP_NODE_IS_CONSUMER (node))
+	{
+	  if (OP_NODE_IS_CONSUMER (node))
+	    add_consumer (node);
+	  else
+	    remove_consumer (node);
+	  master_need_reflow |= TRUE;
+	}
       break;
     case OP_JOB_CONNECT:
       node = job->data.connection.dest_node;
@@ -252,12 +209,13 @@ master_process_job (GslJob *job)
       node->inputs[istream].src_stream = ostream;
       node->module.istreams[istream].connected = TRUE;
       /* remove from consumer list */
-      if (OP_NODE_IS_CONSUMER (src_node))
-	remove_consumer (src_node);
+      was_consumer = OP_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       src_node->counter = 0;
+      if (was_consumer && !OP_NODE_IS_CONSUMER (src_node))
+	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
     case OP_JOB_DISCONNECT:
@@ -280,8 +238,7 @@ master_process_job (GslJob *job)
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "add flow_job(%p,%p)", node, fjob);
       g_return_if_fail (node->integrated == TRUE);
       job->data.flow_job.fjob = NULL;	/* ownership taken over */
-      fjob->any.next = node->flow_jobs;
-      node->flow_jobs = fjob;
+      _gsl_node_insert_flow_job (node, fjob);
       _gsl_mnl_reorder (node);
       break;
     case OP_JOB_DEBUG:
@@ -375,36 +332,73 @@ master_poll_check (glong   *timeout_p,
   master_need_process = need_processing;
 }
 
+static inline guint64
+master_handle_flow_jobs (OpNode *node,
+			 guint64 max_tick)
+{
+  GslFlowJob *fjob = _gsl_node_pop_flow_job (node, max_tick);
+  
+  if_reject (fjob)
+    do
+      {
+	g_print ("FJob: at:%lld from:%lld \n", node->counter, fjob->any.tick_stamp);
+	switch (fjob->fjob_id)
+	  {
+	  case GSL_FLOW_JOB_ACCESS:
+	    fjob->access.access_func (&node->module, fjob->access.data);
+	    break;
+	  default:
+	    g_assert_not_reached (); /* FIXME */
+	  }
+	fjob = _gsl_node_pop_flow_job (node, max_tick);
+      }
+    while (fjob);
+  
+  return _gsl_node_peek_flow_job_stamp (node);
+}
+
 static void
 master_process_locked_node (OpNode *node,
 			    guint   n_values)
 {
-  guint i;
-  guint64 new_counter = GSL_TICK_STAMP + n_values;
+  guint64 final_counter = GSL_TICK_STAMP + n_values;
 
-  for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
+  while (node->counter < final_counter)
     {
-      OpNode *inode = node->inputs[i].src_node;
+      guint64 next_counter = master_handle_flow_jobs (node, node->counter);
+      guint64 new_counter = MIN (next_counter, final_counter);
+      guint i, diff = node->counter - GSL_TICK_STAMP;
 
-      if (inode)
+      for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
 	{
-	  OP_NODE_LOCK (inode);
-	  if (inode->counter < new_counter)
-	    master_process_locked_node (inode, new_counter - node->counter);
-	  node->module.istreams[i].values = inode->module.ostreams[node->inputs[i].src_stream].values;
-	  OP_NODE_UNLOCK (inode);
+	  OpNode *inode = node->inputs[i].src_node;
+	  
+	  if (inode)
+	    {
+	      OP_NODE_LOCK (inode);
+	      if (inode->counter < final_counter)
+		master_process_locked_node (inode, final_counter - node->counter);
+	      node->module.istreams[i].values = inode->outputs[node->inputs[i].src_stream].buffer;
+	      node->module.istreams[i].values += diff;
+	      OP_NODE_UNLOCK (inode);
+	    }
+	  else
+	    node->module.istreams[i].values = gsl_engine_master_zero_block;
 	}
-      else
-	node->module.istreams[i].values = gsl_engine_master_zero_block;
+      for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
+	{
+	  node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+	}
+      node->module.klass->process (&node->module, new_counter - node->counter);
+      for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
+	{
+	  /* FIXME: this takes the worst possible performance hit to support virtualization */
+	  if (node->module.ostreams[i].values != node->outputs[i].buffer + diff)
+	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
+		    (new_counter - node->counter) * sizeof (gfloat));
+	}
+      node->counter = new_counter;
     }
-  for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
-    {
-      node->module.ostreams[i].values = node->outputs[i].buffer;
-      if (node->module.ostreams[i].zero_initialize)
-	memset (node->module.ostreams[i].values, 0, gsl_engine_block_size () * sizeof (gfloat));
-    }
-  node->module.klass->process (&node->module, n_values);
-  node->counter += n_values;
 }
 
 static GslLong gsl_trace_delay = 0;
@@ -418,6 +412,8 @@ master_process_flow (void)
   OpNode *trace_node = NULL;
   
   g_return_if_fail (master_need_process == TRUE);
+
+  g_assert (gsl_fpu_okround () == TRUE);
 
   OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "process_flow");
   if (master_schedule)
@@ -679,5 +675,3 @@ _gsl_master_thread (gpointer data)
       run = gsl_thread_sleep (0);
     }
 }
-
-/* vim:set ts=8 sts=2 sw=2: */

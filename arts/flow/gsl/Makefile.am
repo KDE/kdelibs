@@ -18,4 +18,4 @@ libgsl_la_LDFLAGS = -no-undefined
 
 noinst_PROGRAMS = $(GSL_NOINST_PROGS)
 
-progs_ldadd = libgsl.la
+GSL_progs_ldadd = libgsl.la

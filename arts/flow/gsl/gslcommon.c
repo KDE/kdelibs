@@ -26,6 +26,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/poll.h>
+#include <sys/stat.h>
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most propably just use EINTR,
@@ -398,11 +399,6 @@ gsl_ring_pop_tail (GslRing **head_p)
 
 
 /* --- GslThread --- */
-static GslMutex global_thread;
-static GslRing *global_thread_list = NULL;
-static GslCond *global_thread_cond = NULL;
-static GslRing *awake_tdata_list = NULL;
-
 typedef struct
 {
   GslThreadFunc func;
@@ -411,13 +407,18 @@ typedef struct
   volatile gint abort;
   guint64       awake_stamp;
 } ThreadData;
+static GslMutex    global_thread;
+static GslRing    *global_thread_list = NULL;
+static GslCond    *global_thread_cond = NULL;
+static GslRing    *awake_tdata_list = NULL;
+static ThreadData *main_thread_tdata = NULL;
 
 static inline ThreadData*
 thread_data_from_gsl_thread (GslThread *thread)
 {
   GThread *gthread = (GThread*) thread;
 
-  return gthread->data;
+  return gthread->data ? gthread->data : main_thread_tdata;
 }
 
 static gpointer
@@ -451,22 +452,16 @@ thread_wrapper (gpointer arg)
   return NULL;
 }
 
-GslThread*
-gsl_thread_new (GslThreadFunc func,
-		gpointer      user_data)
+static ThreadData*
+create_tdata (void)
 {
-  const gboolean joinable = TRUE;
-  gpointer gthread = NULL;
   ThreadData *tdata;
   glong d_long;
-  GError *gerror = NULL;
   gint error;
 
-  g_return_val_if_fail (func != NULL, FALSE);
-
   tdata = gsl_new_struct0 (ThreadData, 1);
-  tdata->func = func;
-  tdata->data = user_data;
+  tdata->func = NULL;
+  tdata->data = NULL;
   tdata->wpipe[0] = -1;
   tdata->wpipe[1] = -1;
   tdata->abort = FALSE;
@@ -474,22 +469,48 @@ gsl_thread_new (GslThreadFunc func,
   if (error == 0)
     {
       d_long = fcntl (tdata->wpipe[0], F_GETFL, 0);
-      g_print ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK);
+      /* g_printerr ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK); */
       d_long |= O_NONBLOCK;
       error = fcntl (tdata->wpipe[0], F_SETFL, d_long);
     }
   if (error == 0)
     {
       d_long = fcntl (tdata->wpipe[1], F_GETFL, 0);
-      g_print ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK);
+      /* g_printerr ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK); */
       d_long |= O_NONBLOCK;
       error = fcntl (tdata->wpipe[1], F_SETFL, d_long);
     }
+  if (error)
+    {
+      close (tdata->wpipe[0]);
+      close (tdata->wpipe[1]);
+      gsl_delete_struct (ThreadData, tdata);
+      tdata = NULL;
+    }
+  return tdata;
+}
 
-  if (error == 0)
-    gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
-				    G_THREAD_PRIORITY_NORMAL, &gerror);
-  
+GslThread*
+gsl_thread_new (GslThreadFunc func,
+		gpointer      user_data)
+{
+  const gboolean joinable = TRUE;
+  gpointer gthread = NULL;
+  ThreadData *tdata;
+  GError *gerror = NULL;
+
+  g_return_val_if_fail (func != NULL, FALSE);
+
+  tdata = create_tdata ();
+
+  if (tdata)
+    {
+      tdata->func = func;
+      tdata->data = user_data;
+      gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
+				      G_THREAD_PRIORITY_NORMAL, &gerror);
+    }
+
   if (gthread)
     {
       GSL_SYNC_LOCK (&global_thread);
@@ -499,9 +520,12 @@ gsl_thread_new (GslThreadFunc func,
     }
   else
     {
-      close (tdata->wpipe[0]);
-      close (tdata->wpipe[1]);
-      gsl_delete_struct (ThreadData, tdata);
+      if (tdata)
+	{
+	  close (tdata->wpipe[0]);
+	  close (tdata->wpipe[1]);
+	  gsl_delete_struct (ThreadData, tdata);
+	}
       g_warning ("Failed to create thread: %s", gerror->message);
       g_error_free (gerror);
     }
@@ -515,7 +539,13 @@ gsl_thread_self (void)
   gpointer gthread = g_thread_self ();
 
   if (!gthread)
-    g_error ("gsl_thread_self() failed");
+    {
+      static GThread main_dummy = { 0, };
+
+      /* probably main thread, outside GLib... */
+      main_dummy.data = NULL;
+      gthread = &main_dummy;
+    }
 
   return gthread;
 }
@@ -1062,16 +1092,20 @@ gsl_strerror (GslErrorType error)
     {
     case GSL_ERROR_NONE:		return "Everything went well";
     case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
+    case GSL_ERROR_LAST:
     case GSL_ERROR_UNKNOWN:		return "Unknown error";
     case GSL_ERROR_IO:			return "I/O error";
+    case GSL_ERROR_PERMS:		return "Insufficient permission";
     case GSL_ERROR_NOT_FOUND:		return "Not found";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
     case GSL_ERROR_READ_FAILED:		return "Read failed";
     case GSL_ERROR_WRITE_FAILED:	return "Write failed";
-    case GSL_ERROR_PREMATURE_EOF:	return "Premature EOF";
+    case GSL_ERROR_EOF:			return "File empty or premature EOF";
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
+    case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
     case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
+    case GSL_ERROR_CONTENT_GLITCH:      return "data glitch (junk) detected";
     case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
     default:				return NULL;
     }
@@ -1117,6 +1151,85 @@ gsl_message_send (const gchar *reporter,
 
   /* in current lack of a decent message queue, do nothing here */
   ;
+}
+
+
+/* --- misc --- */
+const gchar*
+gsl_byte_order_to_string (guint byte_order)
+{
+  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+
+  if (byte_order == G_LITTLE_ENDIAN)
+    return "little_endian";
+  if (byte_order == G_BIG_ENDIAN)
+    return "big_endian";
+
+  return NULL;
+}
+
+guint
+gsl_byte_order_from_string (const gchar *string)
+{
+  g_return_val_if_fail (string != NULL, 0);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "little", 6) == 0)
+    return G_LITTLE_ENDIAN;
+  if (strncasecmp (string, "big", 3) == 0)
+    return G_BIG_ENDIAN;
+  return 0;
+}
+
+GslErrorType
+gsl_check_file (const gchar *file_name,
+		const gchar *mode)
+{
+  guint access_mask = 0;
+  guint check_file, check_dir, check_link;
+  
+  if (strchr (mode, 'r'))	/* readable */
+    access_mask |= R_OK;
+  if (strchr (mode, 'w'))	/* writable */
+    access_mask |= W_OK;
+  if (strchr (mode, 'x'))	/* executable */
+    access_mask |= X_OK;
+
+  if (access_mask && access (file_name, access_mask) < 0)
+    goto have_errno;
+  
+  check_file = strchr (mode, 'f') != NULL;	/* open as file */
+  check_dir  = strchr (mode, 'd') != NULL;	/* open as directory */
+  check_link = strchr (mode, 'l') != NULL;	/* open as link */
+
+  if (check_file || check_dir || check_link)
+    {
+      struct stat st;
+      
+      if (stat (file_name, &st) < 0)
+	goto have_errno;
+      
+      if ((check_file && !S_ISREG (st.st_mode)) ||
+	  (check_dir && !S_ISDIR (st.st_mode)) ||
+	  (check_link && !S_ISLNK (st.st_mode)))
+	return GSL_ERROR_OPEN_FAILED;
+    }
+
+  return GSL_ERROR_NONE;
+  
+ have_errno:
+  switch (errno)
+    {
+    case ELOOP:
+    case ENAMETOOLONG:
+    case ENOENT:	return GSL_ERROR_NOT_FOUND;
+    case EROFS:
+    case EPERM:
+    case EACCES:	return GSL_ERROR_PERMS;
+    case EIO:		return GSL_ERROR_IO;
+    default:		return GSL_ERROR_OPEN_FAILED;
+    }
 }
 
 
@@ -1202,8 +1315,14 @@ gsl_init (const GslConfigValue values[])
   gsl_mutex_init (&global_memory);
   gsl_mutex_init (&global_thread);
   global_thread_cond = gsl_cond_new ();
+  main_thread_tdata = create_tdata ();
+  g_assert (main_thread_tdata != NULL);
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();
-  _gsl_init_wave_dsc ();
   _gsl_init_engine_utils ();
+  _gsl_init_loader_gslwave ();
+  _gsl_init_loader_wav ();
+#if 0 /* aRts: not yet */
+  _gsl_init_loader_oggvorbis ();
+#endif
 }

@@ -138,9 +138,14 @@ EXTC gpointer
 gsl_arts_thread_self ()
 {
   GslArtsThread *current = static_cast<GslArtsThread *>(Arts::SystemThreads::the()->getCurrentThread());
-  g_return_if_fail (current != 0);
-
-  return &current->gthread;
+ 
+  if(current)
+    return &current->gthread;
+  else
+    {
+      static GThread mainThread = { 0, };
+      return &mainThread;
+    }
 }
 
 EXTC void 

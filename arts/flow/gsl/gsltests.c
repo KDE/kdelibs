@@ -17,10 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <gsl/gslmath.h>
-#include <gsl/gslwavedsc.h>
 #include <gsl/gslcommon.h>
 #include <gsl/gslmath.h>
 #include <gsl/gslfilter.h>
+#include <gsl/gslloader.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -74,17 +74,24 @@ main (int   argc,
     usage ();
   
  restart:
-  if (strcmp (arg, "gslwave-scan") == 0)
+  if (strcmp (arg, "wave-scan") == 0)
     {
+      GslWaveFileInfo *fi;
+      GslErrorType error;
       gchar *file = pshift ();
-      GslRing *node, *ring = gsl_wave_file_scan (file);
-      guint i = 0;
-      
-      g_print ("waves scanned from \"%s\": ", file);
-      for (node = ring; node; node = gsl_ring_walk (ring, node), i++)
-	g_print ("%s%s", i % 4 ? " " : "\n  ", (gchar*) node->data);
-      g_print ("\n");
-      gsl_wave_file_scan_free (ring);
+
+      fi = gsl_wave_file_info_load (file, &error);
+      if (fi)
+	{
+	  guint i;
+
+	  g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
+	  for (i = 0; i < fi->n_waves; i++)
+	    g_print ("%u) %s\n", i + 1, fi->waves[i].name);
+	  gsl_wave_file_info_free (fi);
+	}
+      else
+	g_print ("Failed to scan \"%s\": %s\n", file, gsl_strerror (error));
     }
   else if (strcmp (arg, "file-test") == 0)
     {
@@ -509,30 +516,30 @@ main (int   argc,
     }
   else if (strcmp (arg, "fir") == 0)
     {
-      unsigned int iorder = atoi(pshift ());
-      unsigned int n_points = 0, i=0;
-
-      double *freq = g_newa (double, argc/2+1);
-      double *value = g_newa (double, argc/2+1);
+      unsigned int iorder = atoi (pshift ());
+      unsigned int n_points = 0, i = 0;
+      
+      double *freq = g_newa (double, argc / 2 + 1);
+      double *value = g_newa (double, argc / 2 + 1);
       double *a = g_newa (double, iorder);
-
       const char *f, *v;
-
+      
       do
-      {
-	f = pshift();
-	v = pshift();
-
-	if(f[0] && v[0])
 	{
-	  freq[n_points] = atof(f) * GSL_PI;
-	  value[n_points] = atof(v);
-	  n_points++;
+	  f = pshift ();
+	  v = pshift ();
+	  
+	  if (f[0] && v[0])
+	    {
+	      freq[n_points] = atof (f) * GSL_PI;
+	      value[n_points] = atof (v);
+	      n_points++;
+	    }
 	}
-      } while (f[0] && v[0]);
-
+      while (f[0] && v[0]);
+      
       gsl_filter_fir_approx (iorder, a, freq, value, n_points);
-      g_print ("FIR%u(z)=%s\n", iorder, gsl_poly_str (iorder-1, a, "z"));
+      g_print ("FIR%u(z)=%s\n", iorder, gsl_poly_str (iorder - 1, a, "z")); /* FIXME: order-1 ?? */
     }
   else if (strncmp (arg, "poly", 4) == 0)
     {
@@ -590,7 +597,7 @@ usage (void)
 {
   g_print ("usage: gsltests {test} [args...]\n");
   g_print ("tests:\n");
-  g_print ("  gslwave-scan <file>       scan a gslwave file for waves\n");
+  g_print ("  wave-scan <file>          scan a wave file for waves\n");
   g_print ("  file-test <file>          test file properties\n");
   g_print ("  rf <x> <y> <z>            Carlson's elliptic integral of the first kind\n");
   g_print ("  F <phi> <ak>              Legendre elliptic integral of the 1st kind\n");

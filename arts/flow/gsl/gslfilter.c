@@ -28,6 +28,13 @@ cotan (double x)
   return - tan (x + GSL_PI * 0.5);
 }
 
+static double
+gsl_db_invert (double x)
+{
+  /* db = 20*log(x)/log(10); */
+  return exp (x * log (10) / 20.0);
+}
+
 static void
 band_filter_common (unsigned int iorder,
 		    double       p_freq, /* 0..pi */
@@ -188,6 +195,14 @@ tschebyscheff_eval (unsigned int degree,
   return td;
 }
 
+static double
+tschebyscheff_inverse (unsigned int degree,
+		       double       x)
+{
+  /* note, that thebyscheff_eval(degree,x)=cosh(degree*acosh(x)) */
+  return cosh (acosh (x) / degree);
+}
+
 void
 gsl_filter_tscheb1_rp (unsigned int iorder,
 		       double       freq,  /* 1..pi */
@@ -281,6 +296,49 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 	root = gsl_complex (-1, 0);
       roots[i - 1] = root;
     }
+}
+
+/**
+ * gsl_filter_tscheb2_steepness_db
+ * @iorder:      filter order
+ * @c_freq:      passband cutoff frequency (0..pi)
+ * @epsilon:     fall off at passband frequency (0..1)
+ * @stopband_db: reduction in stopband in dB (>= 0)
+ * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
+ * based on the ripple residue in the stop band.
+ */
+double
+gsl_filter_tscheb2_steepness_db (unsigned int iorder,
+				 double       c_freq,
+				 double       epsilon,
+				 double       stopband_db)
+{
+  return gsl_filter_tscheb2_steepness (iorder, c_freq, epsilon, gsl_db_invert (-stopband_db));
+}
+
+/**
+ * gsl_filter_tscheb2_steepness
+ * @iorder:    filter order
+ * @c_freq:    passband cutoff frequency (0..pi)
+ * @epsilon:   fall off at passband frequency (0..1)
+ * @residue:   maximum of transfer function in stopband (0..1)
+ * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
+ * based on ripple residue in the stop band.
+ */
+double
+gsl_filter_tscheb2_steepness (unsigned int iorder,
+			      double       c_freq,
+			      double       epsilon,
+			      double       residue)
+{
+  double kappa_c, kappa_r, r_freq;
+
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  kappa_c = gsl_trans_freq2s (c_freq);
+  kappa_r = tschebyscheff_inverse (iorder, sqrt (1.0 / (residue * residue) - 1.0) / epsilon) * kappa_c;
+  r_freq = gsl_trans_freq2z (kappa_r);
+
+  return r_freq / c_freq;
 }
 
 
@@ -674,6 +732,7 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
 
 
 /* --- tschebyscheff type 1 via generic root-finding --- */
+#if 0
 static void
 tschebyscheff_poly (unsigned int degree,
 		    double      *v)
@@ -776,6 +835,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
     norm /= sqrt (1.0 / (1.0 + epsilon * epsilon));
   gsl_poly_scale (iorder, a, 1.0 / norm);
 }
+#endif
 
 
 /* --- windowed fir approximation --- */
@@ -865,6 +925,114 @@ gsl_filter_fir_approx (unsigned int  iorder,
       a[iorder / 2 + i] = c;
     }
 }
+
+
+/* --- filter evaluation --- */
+void
+gsl_iir_filter_setup (GslIIRFilter  *f,
+		      guint          order,
+		      const gdouble *a,
+		      const gdouble *b,
+		      gdouble       *buffer) /* 4*(order+1) */
+{
+  guint i;
+
+  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  g_return_if_fail (order > 0);
+
+  f->order = order;
+  f->a = buffer;
+  f->b = f->a + order + 1;
+  f->w = f->b + order + 1;
+
+  memcpy (f->a, a, sizeof (a[0]) * (order + 1));
+  for (i = 0; i <= order; i++)
+    f->b[i] = -b[i];
+  memset (f->w, 0, sizeof (f->w[0]) * (order + 1) * 2);
+}
+
+void
+gsl_iir_filter_change (GslIIRFilter  *f,
+		       guint          order,
+		       const gdouble *a,
+		       const gdouble *b,
+		       gdouble       *buffer)
+{
+  guint i;
+
+  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  g_return_if_fail (order > 0);
+  
+  /* there's no point in calling this function if f wasn't setup properly
+   * and it's only the As and Bs that changed
+   */
+  g_return_if_fail (f->a == buffer && f->b == f->a + f->order + 1 && f->w == f->b + f->order + 1);
+
+  /* if the order changed there's no chance preserving state */
+  if (f->order != order)
+    {
+      gsl_iir_filter_setup (f, order, a, b, buffer);
+      return;
+    }
+
+  memcpy (f->a, a, sizeof (a[0]) * (order + 1));
+  for (i = 0; i <= order; i++)
+    f->b[i] = -b[i];
+  /* leaving f->w to preserve state */
+}
+
+static inline gdouble /* Y */
+filter_step (GslIIRFilter *f,
+	     gdouble       X)
+{
+  register guint n = f->order;
+  gdouble *a = f->a, *b = f->b, *w = f->w;
+  gdouble x, y, v;
+
+  v = w[n];
+  x = b[n] * v;
+  y = a[n] * v;
+
+  while (--n)
+    {
+      gdouble t1, t2;
+
+      v = w[n];
+      t1 = v * b[n];
+      t2 = v * a[n];
+      w[n+1] = v;
+      x += t1;
+      y += t2;
+    }
+
+  x += X;
+  w[1] = x;
+  y += x * a[0];
+
+  return y;
+}
+
+void
+gsl_iir_filter_eval (GslIIRFilter *f,
+		     const gfloat *x,
+		     gfloat       *y,
+		     guint         n_values)
+{
+  const gfloat *bound;
+  
+  g_return_if_fail (f != NULL && x != NULL && y != NULL);
+  g_return_if_fail (f->order > 0);
+
+  bound = x + n_values;
+  while (x < bound)
+    {
+      *y = filter_step (f, *x);
+      x++;
+      y++;
+    }
+}
+
+
 
 
 /* vim:set ts=8 sts=2 sw=2: */

@@ -26,6 +26,12 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- transformations --- */
+static inline GslComplex gsl_trans_s2z          (GslComplex     s);
+static inline double     gsl_trans_freq2s       (double         w);
+static inline double     gsl_trans_zepsilon2ss  (double         epsilon);
+
+
 /* --- filter roots and poles --- */
 void	gsl_filter_butter_rp    (unsigned int iorder,
 				 double       freq,   /* 0..pi */
@@ -39,10 +45,21 @@ void	gsl_filter_tscheb1_rp	(unsigned int iorder,
 				 GslComplex  *poles);
 void	gsl_filter_tscheb2_rp	(unsigned int iorder,
 				 double       c_freq, /* 0..pi */
-				 double       r_freq, /* 0..pi */
+				 double       steepness,
 				 double       epsilon,
 				 GslComplex  *roots,  /* [0..iorder-1] */
 				 GslComplex  *poles);
+
+
+/* --- tschebyscheff type II steepness --- */
+double	gsl_filter_tscheb2_steepness_db	(unsigned int iorder,
+					 double       c_freq,
+					 double       epsilon,
+					 double       stopband_db);
+double	gsl_filter_tscheb2_steepness	(unsigned int iorder,
+					 double       c_freq,
+					 double       epsilon,
+					 double       residue);
 
 
 /* --- lowpass filters --- */
@@ -135,6 +152,62 @@ void	gsl_filter_fir_approx	(unsigned int  iorder,
 				 const double *value);
 
 
+/* --- filter evaluation --- */
+typedef struct {
+  guint order;
+  gdouble *a;   /* [0..order] */
+  gdouble *b;   /* [0..order] */
+  gdouble *w;   /* [0..2*order] */
+} GslIIRFilter;
+void	gsl_iir_filter_setup	(GslIIRFilter	*f,
+				 guint		 order,
+				 const gdouble	*a,
+				 const gdouble	*b,
+				 gdouble	*buffer); /* 4*(order+1) */
+void	gsl_iir_filter_change	(GslIIRFilter	*f,
+				 guint		 order,
+				 const gdouble	*a,
+				 const gdouble	*b,
+				 gdouble	*buffer); /* 4*(order+1) */
+void	gsl_iir_filter_eval	(GslIIRFilter	*f,
+				 const gfloat	*x,
+				 gfloat		*y,
+				 guint		 n_values);
+
+
+/* --- implementations --- */
+static inline GslComplex
+gsl_trans_s2z (GslComplex s)
+{
+  /*       1 + (Td/2) * s
+   *  z = ----------------
+   *       1 - (Td/2) * s
+   */
+  GslComplex one = { 1, 0 };
+  return gsl_complex_div (gsl_complex_add (one, s), gsl_complex_sub (one, s));
+  /* return gsl_complex_div (gsl_complex_sub (s, one), gsl_complex_add (s, one)); */
+}
+static inline double
+gsl_trans_freq2s (double w)
+{
+  return tan (w / 2.);
+}
+static inline double
+gsl_trans_zepsilon2ss (double zepsilon)
+{
+  double e2 = (1.0 - zepsilon) * (1.0 - zepsilon);
+  /* 1___                                      _________________
+   * |   \                                    |       1.0
+   * |-----\<---- 1 - zepsilon  zepsilon = \  | ----------------
+   * |_______\________________               \|  1 + sepsilon^2
+   */
+  return sqrt ((1.0 - e2) / e2);
+}
+static inline double
+gsl_trans_freq2z (double w)
+{
+  return atan (w) * 2.;
+}
 
 
 

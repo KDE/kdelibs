@@ -105,25 +105,7 @@ void		gsl_ring_free		(GslRing	*head);
 #define	GSL_MSG_NOTIFY		"Notify"
 #define	GSL_MSG_DATA_CACHE	"DataCache"
 #define	GSL_MSG_DATA_HANDLE	"DataHandle"
-typedef enum	/*< skip >*/
-{
-  GSL_ERROR_NONE,
-  GSL_ERROR_INTERNAL,
-  GSL_ERROR_UNKNOWN,
-  /* I/O errors */
-  GSL_ERROR_IO,
-  GSL_ERROR_NOT_FOUND,
-  GSL_ERROR_OPEN_FAILED,
-  GSL_ERROR_SEEK_FAILED,
-  GSL_ERROR_READ_FAILED,
-  GSL_ERROR_WRITE_FAILED,
-  GSL_ERROR_PREMATURE_EOF,
-  /* content errors */
-  GSL_ERROR_FORMAT_INVALID,
-  GSL_ERROR_DATA_CORRUPT,
-  /* miscellaneous errors */
-  GSL_ERROR_CODEC_FAILURE
-} GslErrorType;
+#define	GSL_MSG_LOADER		"GslLoader"
 void		gsl_message_send	(const gchar   *reporter, /* GSL_MSG_* */
 					 GslErrorType	error,	  /* maybe 0 */
 					 const gchar   *messagef,
@@ -150,6 +132,7 @@ void		gsl_thread_awake_before	(guint64	 tick_stamp);
 void		gsl_thread_get_pollfd	(GslPollFD	*pfd);
 guint64		gsl_tick_stamp		(void);
 #define		GSL_TICK_STAMP		(_GSL_TICK_STAMP_VAL ())
+#define		GSL_MAX_TICK_STAMP	(~((guint64) 0))
 
 
 /* --- GslMutex --- */
@@ -182,6 +165,13 @@ void	 gsl_cond_broadcast	(GslCond	*cond);
 void	 gsl_cond_destroy	(GslCond	*cond);
 
 
+/* --- misc --- */
+const gchar* gsl_byte_order_to_string   (guint           byte_order);
+guint        gsl_byte_order_from_string (const gchar    *string);
+GslErrorType gsl_check_file		(const gchar	*file_name,
+					 const gchar	*mode);
+
+
 /* --- implementation details --- */
 void		gsl_mutex_spin_lock	(GslMutex	*mutex);
 void		gsl_mutex_sync_lock	(GslMutex	*mutex);
@@ -193,12 +183,14 @@ void		gsl_free_memblock	(gsize		 size,
 void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);
 gboolean	gsl_rec_mutex_test_self	(GslRecMutex	*rec_mutex);
-void	       _gsl_init_data_handles	(void);
-void	       _gsl_init_data_caches	(void);
-void	       _gsl_init_wave_dsc	(void);
-void	       _gsl_init_engine_utils	(void);
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
+void	_gsl_init_data_handles		(void);
+void	_gsl_init_data_caches		(void);
+void	_gsl_init_engine_utils		(void);
+void	_gsl_init_loader_gslwave	(void);
+void	_gsl_init_loader_wav		(void);
+void	_gsl_init_loader_oggvorbis	(void);
 #define		GSL_N_IO_RETRIES	(5)
 #define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
 extern volatile guint64	gsl_externvar_tick_stamp;

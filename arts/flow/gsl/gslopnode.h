@@ -21,6 +21,7 @@
 
 #include "gslengine.h"
 #include "gsloputil.h"
+#include "gslcommon.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,9 +32,8 @@ extern "C" {
 #define	OP_NODE(module)			((OpNode*) (module))
 #define OP_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
 #define OP_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
-#define	OP_NODE_IS_CONSUMER(node)	((node)->module.klass->n_ostreams == 0 || \
-					 (((node)->module.klass->mflags & GSL_ALWAYS_PROCESS) && \
-					  (node)->output_nodes == NULL))
+#define	OP_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
+					 (node)->output_nodes == NULL)
 #define	OP_NODE_IS_DEFERRED(node)	(FALSE)
 #define	OP_NODE_IS_SCHEDULED(node)	(OP_NODE (node)->sched_tag)
 #define	OP_NODE_IS_CHEAP(node)		(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
@@ -51,6 +51,8 @@ typedef enum {
   OP_JOB_DISCARD,
   OP_JOB_CONNECT,
   OP_JOB_DISCONNECT,
+  GSL_JOB_SET_CONSUMER,
+  GSL_JOB_UNSET_CONSUMER,
   GSL_JOB_ACCESS,
   OP_JOB_ADD_POLL,
   OP_JOB_REMOVE_POLL,
@@ -155,14 +157,36 @@ struct _OpNode	/* fields sorted by order of processing access */
   OpNode	*mnl_next;
   OpNode	*mnl_prev;
   guint		 integrated : 1;
+
+  guint		 is_consumer : 1;
   
   /* scheduler */
   guint		 sched_tag : 1;
   guint		 sched_router_tag : 1;
   guint		 sched_leaf_level;
-  OpNode	*toplevel_next;	/* master-consumer-list */
+  OpNode	*toplevel_next;	/* master-consumer-list, FIXME: overkill, using a GslRing is good enough */
   GslRing	*output_nodes;	/* OpNode* ring of nodes in ->outputs[] */
 };
+
+static void
+_gsl_node_insert_flow_job (OpNode     *node,
+			   GslFlowJob *fjob)
+{
+  GslFlowJob *last = NULL, *tmp = node->flow_jobs;
+
+  /* find next position */
+  while (tmp && tmp->any.tick_stamp <= fjob->any.tick_stamp)
+    {
+      last = tmp;
+      tmp = last->any.next;
+    }
+  /* insert before */
+  fjob->any.next = tmp;
+  if (last)
+    last->any.next = fjob;
+  else
+    node->flow_jobs = fjob;
+}
 
 static inline GslFlowJob*
 _gsl_node_pop_flow_job (OpNode *node,
@@ -170,9 +194,9 @@ _gsl_node_pop_flow_job (OpNode *node,
 {
   GslFlowJob *fjob = node->flow_jobs;
 
-  if (fjob)
+  if_reject (fjob)
     {
-      if (tick_stamp >= fjob->any.tick_stamp)
+      if (fjob->any.tick_stamp <= tick_stamp)
 	{
 	  node->flow_jobs = fjob->any.next;
 	  
@@ -186,6 +210,17 @@ _gsl_node_pop_flow_job (OpNode *node,
     }
 
   return fjob;
+}
+
+static inline guint64
+_gsl_node_peek_flow_job_stamp (OpNode *node)
+{
+  GslFlowJob *fjob = node->flow_jobs;
+
+  if_reject (fjob)
+    return fjob->any.tick_stamp;
+
+  return GSL_MAX_TICK_STAMP;
 }
 
 #if defined(__GNUC__) || defined(__DECC__)

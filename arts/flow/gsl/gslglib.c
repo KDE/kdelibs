@@ -97,14 +97,30 @@ gsl_g_log (const gchar*msg,const char *format, va_list ap)
 }
 
 void
-gsl_g_print_fd (int fd,const char *format, va_list ap)
+gsl_g_print_fd (int fd, const char *format, va_list ap)
 {
   g_return_if_fail (fd == 1 || fd == 2);
   if (fd == 1)
-	vprintf(format, ap);
+    vprintf (format, ap);
   else
-	vfprintf(stderr, format, ap);
+    vfprintf (stderr, format, ap);
 }
+
+gchar*
+gsl_g_convert (const gchar  *str,
+	       gsize        len,            /* gssize */
+	       const gchar  *to_codeset,
+	       const gchar  *from_codeset,
+	       gsize        *bytes_read,
+	       gsize        *bytes_written,
+	       void         **error)        /* GError */
+{
+  g_error ("g_convert not implemented");
+  
+  /* not reached: */
+  return 0;
+}
+
 
 /* --- GScanner --- */
 
@@ -2204,19 +2220,88 @@ g_printf_string_upper_bound (const gchar *format,
   return printf_string_upper_bound (format, TRUE, args);
 }
 
-gchar*		     
-g_convert (const gchar  *str,
-	   gsize        len,            /* gssize */
-	   const gchar  *to_codeset,
-	   const gchar  *from_codeset,
-	   gsize        *bytes_read,     
-	   gsize        *bytes_written,  
-	   void         **error)        /* GError */
-{
-  g_error ("g_convert not implemented");
 
-  /* not reached: */
-  return 0;
+gchar *
+g_strescape (const gchar *source,
+	     const gchar *exceptions)
+{
+  const guchar *p;
+  gchar *dest;
+  gchar *q;
+  guchar excmap[256];
+  
+  g_return_val_if_fail (source != NULL, NULL);
+
+  p = (guchar *) source;
+  /* Each source byte needs maximally four destination chars (\777) */
+  q = dest = g_malloc (strlen (source) * 4 + 1);
+
+  memset (excmap, 0, 256);
+  if (exceptions)
+    {
+      guchar *e = (guchar *) exceptions;
+
+      while (*e)
+	{
+	  excmap[*e] = 1;
+	  e++;
+	}
+    }
+
+  while (*p)
+    {
+      if (excmap[*p])
+	*q++ = *p;
+      else
+	{
+	  switch (*p)
+	    {
+	    case '\b':
+	      *q++ = '\\';
+	      *q++ = 'b';
+	      break;
+	    case '\f':
+	      *q++ = '\\';
+	      *q++ = 'f';
+	      break;
+	    case '\n':
+	      *q++ = '\\';
+	      *q++ = 'n';
+	      break;
+	    case '\r':
+	      *q++ = '\\';
+	      *q++ = 'r';
+	      break;
+	    case '\t':
+	      *q++ = '\\';
+	      *q++ = 't';
+	      break;
+	    case '\\':
+	      *q++ = '\\';
+	      *q++ = '\\';
+	      break;
+	    case '"':
+	      *q++ = '\\';
+	      *q++ = '"';
+	      break;
+	    default:
+	      if ((*p < ' ') || (*p >= 0177))
+		{
+		  *q++ = '\\';
+		  *q++ = '0' + (((*p) >> 6) & 07);
+		  *q++ = '0' + (((*p) >> 3) & 07);
+		  *q++ = '0' + ((*p) & 07);
+		}
+	      else
+		*q++ = *p;
+	      break;
+	    }
+	}
+      p++;
+    }
+  *q = 0;
+  return dest;
 }
+
 
 /* vim:set ts=8 sw=2 sts=2: */

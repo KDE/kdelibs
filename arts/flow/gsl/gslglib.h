@@ -19,10 +19,19 @@
 #ifndef __GSL_GLIB_H__
 #define __GSL_GLIB_H__
 
+#ifndef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "GSL"
+#endif
+
+
 #include <limits.h>
 #include <float.h>
 #include <stddef.h>
 #include <stdarg.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -145,6 +154,24 @@ typedef struct _GString GString;
     (((guint32) (val) & (guint32) 0x0000ff00U) <<  8) | \
     (((guint32) (val) & (guint32) 0x00ff0000U) >>  8) | \
     (((guint32) (val) & (guint32) 0xff000000U) >> 24)))
+
+#ifdef WORDS_BIGENDIAN
+#define GUINT16_TO_LE(val) GUINT16_SWAP_LE_BE(val)
+#define GUINT32_TO_LE(val) GUINT32_SWAP_LE_BE(val)
+#define GUINT16_TO_BE(val) ((guint16) (val))
+#define GUINT32_TO_BE(val) ((guint32) (val))
+#else /* LITTLEENDIAN */
+#define GUINT16_TO_LE(val) ((guint16) (val))
+#define GUINT32_TO_LE(val) ((guint32) (val))
+#define GUINT16_TO_BE(val) GUINT16_SWAP_LE_BE(val)
+#define GUINT32_TO_BE(val) GUINT32_SWAP_LE_BE(val)
+#endif
+
+#define GUINT16_FROM_LE(val)	(GUINT16_TO_LE (val))
+#define GUINT16_FROM_BE(val)	(GUINT16_TO_BE (val))
+#define GUINT32_FROM_LE(val)	(GUINT32_TO_LE (val))
+#define GUINT32_FROM_BE(val)	(GUINT32_TO_BE (val))
+
 #define g_memmove memmove
 #define g_assert  GSL_ASSERT
 #define g_assert_not_reached()	g_assert(!G_STRLOC": should not be reached")
@@ -179,12 +206,20 @@ char *alloca ();
 #define g_newa(struct_type, n_structs)  ((struct_type*) g_alloca (sizeof (struct_type) * (gsize) (n_structs)))
 
 /* needs inline configure check */
-#if defined(__GNUC__)
+#if defined (__xlc__)
+#  if !defined (inline)
+#    define inline _Inline
+#  endif
+#elif defined (__GNUC__)
 #define inline __inline__
 #else
 #define inline /* no inline */
 #endif
 
+/* for -ansi -pedantic */
+#ifdef __GNUC__
+#define asm __asm__
+#endif
 
 /* --- inline functions --- */
 void
@@ -220,7 +255,7 @@ g_warning (const gchar *format,
 }
 static inline void
 g_print (const gchar *format,
-	   ...)
+	 ...)
 {
   va_list args;
   va_start (args, format);
@@ -357,6 +392,7 @@ typedef struct { int fd; short events, revents; } GPollFD;
 #define g_strtod	gsl_g_strtod
 #define g_stpcpy	gsl_g_stpcpy
 #define g_printf_string_upper_bound gsl_g_printf_string_upper_bound
+#define g_strescape gsl_g_strescape
 gpointer g_malloc         (gulong        n_bytes);
 gpointer g_malloc0        (gulong        n_bytes);
 gpointer g_realloc        (gpointer      mem,
@@ -375,14 +411,14 @@ gchar*                g_strndup        (const gchar *str,
 					gsize        n);
 gchar*                g_strconcat      (const gchar *string1,
 					...); /* NULL terminated */
-gchar*		      g_convert        (const gchar  *str,
-					gsize        len,           /* gssize */
+gchar*		      g_convert	       (const gchar  *str,
+					gsize        len,            /* gssize */
 					const gchar  *to_codeset,
 					const gchar  *from_codeset,
-					gsize        *bytes_read,     
-					gsize        *bytes_written,  
-					void         **error); /* GError */
- void g_usleep(unsigned long usec);
+					gsize        *bytes_read,
+					gsize        *bytes_written,
+					void         **error);        /* GError */
+void g_usleep(unsigned long usec);
 char* g_strerror(int e);
 guint g_direct_hash (gconstpointer v);
 gboolean g_direct_equal (gconstpointer v1, gconstpointer v2);
@@ -391,7 +427,8 @@ guint g_str_hash (gconstpointer key);
 gdouble	g_strtod (const gchar *nptr, 	  gchar **endptr);
 gsize g_printf_string_upper_bound (const gchar *format,  va_list      args);
 gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
-    
+gchar * g_strescape (const gchar *source, const gchar *exceptions);
+ 
 
 
 /* --- function defines --- */
