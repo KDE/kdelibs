@@ -34,6 +34,6 @@ EXTRA_DIST = netpbm.cpp netpbm.h
 servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio gif.kimgio pnm.kimgio xbm.kimgio \
                jpeg.kimgio xv.kimgio krl.kimgio eps.kimgio \
-               $(KIMGIO_TIFF_DATA) ico.kimgio
+               $(KIMGIO_TIFF_DATAFILES) ico.kimgio
 
 
