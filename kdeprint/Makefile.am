@@ -1,7 +1,7 @@
 
 SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd rlpr ext filters pics tests
 
-INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kio/kded -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kio -I$(top_srcdir)/kio/kded -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
 kde_module_LTLIBRARIES = libkded_kdeprintd.la
 
