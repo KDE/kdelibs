@@ -43,7 +43,22 @@ DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
-$(libartsflow_la_SOURCES:%=$(srcdir)/%): artsflow.h
+$(srcdir)/bus.h: artsflow.h
+$(srcdir)/stdsynthmodule.h: artsflow.h
+$(srcdir)/synthschedule.h: artsflow.h
+$(srcdir)/audiomanager_impl.cc: artsflow.h
+$(srcdir)/bytestreamtoaudio_impl.cc: artsflow.h
+$(srcdir)/stereoeffectstack_impl.cc: artsflow.h
+$(srcdir)/stereofftscope_impl.cc: artsflow.h
+$(srcdir)/stereovolumecontrol_impl.cc: artsflow.h
+$(srcdir)/synth_add_impl.cc: artsflow.h
+$(srcdir)/synth_frequency_impl.cc: artsflow.h
+$(srcdir)/synth_mul_impl.cc: artsflow.h
+$(srcdir)/synth_multi_add_impl.cc: artsflow.h
+$(srcdir)/synth_play_impl.cc: artsflow.h
+$(srcdir)/synth_play_wav_impl.cc: artsflow.h
+$(srcdir)/synth_record_impl.cc: artsflow.h
+$(srcdir)/synth_wave_sin_impl.cc: artsflow.h
 
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 	$(MCOPIDL) -t $<
