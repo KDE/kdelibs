@@ -259,6 +259,7 @@ static struct Builtin
     { "cp-1255", "cp 1255" },
     { "cp-1256", "cp 1256" },
     { "cp-1257", "cp 1257" },
+    { "cp-10000", "apple roman" },
     { "x-cp-850", "ibm850" },
     { "x-cp-866", "ibm866" },
     { "x-cp-1250", "cp 1250" },
@@ -269,6 +270,7 @@ static struct Builtin
     { "x-cp-1255", "cp 1255" },
     { "x-cp-1256", "cp 1256" },
     { "x-cp-1257", "cp 1257" },
+    { "x-cp-10000", "apple roman" },
     { "tis620", "iso 8859-11" },
     { "tis-620", "iso 8859-11" },
     { "thai-tis620", "iso 8859-11" },
@@ -299,6 +301,7 @@ static struct Builtin
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
     { "x-winsami2", "winsami2" },
+    { "x-mac-roman", "apple roman" },
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
