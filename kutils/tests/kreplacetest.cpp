@@ -144,7 +144,6 @@ static void testReplaceSimple( int options, int button = 0 )
 static void testReplaceBlank( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlank: " << options << endl;
-    // Standard test of a replacement string longer than the matched string
     KReplaceTest test( QString( "aaaaaa" ), button );
     test.replace( "a", "", options );
     QStringList textLines = test.textLines();
@@ -158,7 +157,6 @@ static void testReplaceBlank( int options, int button = 0 )
 static void testReplaceBlankSearch( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlankSearch: " << options << endl;
-    // Standard test of a replacement string longer than the matched string
     KReplaceTest test( QString( "bbbb" ), button );
     test.replace( "", "foo", options );
     QStringList textLines = test.textLines();
