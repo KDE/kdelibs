@@ -396,7 +396,13 @@ static struct names {
 		"all:", L_MAKE
 	},
 	{
-		".PRECIOUS", L_MAKE
+		".PHONY:", L_MAKE
+	},
+	{
+		"srcdir", L_MAKE
+	},
+	{
+		"exec_prefix", L_MAKE
 	},
 	/*
 	 * Too many files of text have these words in them.  Find another way
