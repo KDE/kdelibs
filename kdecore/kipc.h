@@ -23,32 +23,32 @@
 #define __KIPC_h_Included__
 
 /**
- * This class implements a very simple IPC mechanism for KDE. You can send 
- * a message of a predefined type to either a specific application, or to all 
+ * This class implements a very simple IPC mechanism for KDE. You can send
+ * a message of a predefined type to either a specific application, or to all
  * KDE application on the current display. The message can carry one integer of
  * data.
  *
  * KIPC is mainly used in KDE for sending "Change Messages", i.e. a message to
- * all KDE apps that a certain setting (the font, for example) has changed. 
- * For anything more complex it is recommended to use DCOP -- the Desktop 
+ * all KDE apps that a certain setting (the font, for example) has changed.
+ * For anything more complex it is recommended to use DCOP -- the Desktop
  * Communications Protocol.
  *
  * Messages with id code < 32 are called "System Messages". These are
  * directly handled by KApplication. Examples are: PaletteChanged and
- * StyleChanged. Messages with id code >= 32 are user messages. KApplication 
+ * StyleChanged. Messages with id code >= 32 are user messages. KApplication
  * emits the signal kipcMessage(id,arg) for each user message it receives.
  *
  * KIPC is implemented using X11 ClientMessage events.
  *
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
- */ 
+ */
 class KIPC
 {
 public:
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
-	    BackgroundChanged, SettingsChanged, IconChanged,
-	    UserMessage=32 };
+                   BackgroundChanged, SettingsChanged, IconChanged, ToolbarStyleChanged,
+                   UserMessage=32 };
 
     /**
      * Send a message to a specific application.

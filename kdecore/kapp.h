@@ -288,7 +288,7 @@ public:
    * @param subject Subject string. Can be QString::null.
    */
   void invokeMailer( const QString &address, const QString &subject );
-  
+
   /**
    * Invokes the standard email application.
    *
@@ -384,7 +384,7 @@ public:
   /**
    * Start a program via kdeinit.
    *
-   * program name and arguments are converted to according to the 
+   * program name and arguments are converted to according to the
    * local encoding and passed as is to kdeinit.
    *
    * @param prog Name of the program to start
@@ -641,6 +641,11 @@ public:
   void appearanceChanged();
 
   /**
+   * The settings for toolbars have been changed. KToolBar will know what to do.
+   */
+  void toolbarAppearanceChanged(int);
+
+  /**
    * The desktop background has been changed by @p kcmdisplay.
    *
    * @param desk The desktop whose background has changed.
@@ -783,6 +788,14 @@ private:
 #endif
 
 // $Log$
+// Revision 1.194  2000/10/22 20:12:11  hausmann
+// - removing the very last traces of the KDE-CORBA age from kdelibs ;-)
+//
+//   ..those were the times..
+//
+//   (removed the friend QTDispatcher; Steffen added years ago for some
+//    ORB-event-loop<>qt-event-loop stuff ;-)
+//
 // Revision 1.193  2000/10/22 13:06:55  faure
 // #define KDE_VERSION_STRING "2.0 >= 20001022" to be able to distinguish
 // bug reports (and blame Stephan for "file not found" on manpages :)

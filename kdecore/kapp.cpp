@@ -628,7 +628,8 @@ void KApplication::init(bool GUIenabled)
 
   // Initial KIPC event mask.
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
-                  (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
+                  (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
+                  (1 << KIPC::ToolbarStyleChanged);
 
   // Trigger creation of locale.
   (void) KGlobal::locale();
@@ -1038,7 +1039,7 @@ void KApplication::parseCommandLine( )
        {
           d->styleFile = styleFile;
        }
-    }   
+    }
 
     if (args->isSet("caption"))
     {
@@ -1198,6 +1199,12 @@ bool KApplication::x11EventFilter( XEvent *_event )
             case KIPC::StyleChanged:
                 KGlobal::config()->reparseConfiguration();
                 kdisplaySetStyle();
+                break;
+
+            case KIPC::ToolbarStyleChanged:
+                KGlobal::config()->reparseConfiguration();
+                if (useStyles)
+                    emit toolbarAppearanceChanged(arg);
                 break;
 
             case KIPC::PaletteChanged:
