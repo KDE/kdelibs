@@ -1078,6 +1078,9 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
 
 void RenderTextArea::layout( )
 {
+    if(layouted())
+        return;
+
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
