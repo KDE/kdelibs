@@ -69,30 +69,8 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 				  int _tx, int _ty, DOMString &_url,
                                         NodeImpl *&innerNode, long &offset)
 {
-    bool inside = false;
+    bool inside = HTMLElementImpl::mouseEvent( _x, _y, button, type, _tx, _ty, _url, innerNode, offset);
 
-    if(m_render->isInline() && m_render->parent()->isAnonymousBox())
-    {
-	//kdDebug( 6030 ) << "parent is anonymous!" << endl;
-	// we need to add the offset of the anonymous box
-	_tx += m_render->parent()->xPos();
-	_ty += m_render->parent()->yPos();
-    }
-
-    NodeImpl *child = firstChild();
-    while(child != 0)
-    {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url, innerNode, offset))
-	{
-	    inside = true;
-	    break;
-	}
-	child = child->nextSibling();
-    }
-    //kdDebug( 6030 ) << "Anchor::mouseEvent inside=" << inside << endl;
-
-    // check if child didn't set the url already
-    // i.e. <a href=".."><img usemap=".."..></a>
     if(inside && _url==0)
     {
 	// set the url
@@ -103,9 +81,6 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 	else
 	    _url = href;
     }
-
-    // dynamic HTML...
-    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
 
     return inside;
 }

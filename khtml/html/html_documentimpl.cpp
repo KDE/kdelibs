@@ -393,6 +393,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
     f.setPointSize(size);
+    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl; 
     KGlobal::charsets()->setQFont(f, settings->charset());
     m_style->setFont(f);
 
@@ -448,10 +449,10 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
         QFont f = KGlobalSettings::generalFont();
         f.setFamily(settings->stdFontName());
         f.setPointSize(size);
+	//kdDebug() << "HTMLDocumentImpl::applyChanges: setting to charset " << settings->charset() << endl; 
 	KGlobal::charsets()->setQFont(f, settings->charset());
-	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl;
-	QFontInfo fi(f);
-	//kdDebug() << "HTMLDocumentImpl::applyChanges " << fi.charSet() << fi.family() << endl;
+	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl; 
+	//kdDebug() << "HTMLDocumentImpl::applyChanges using " << f.rawName() << endl; 
         m_style->setFont(f);
     }
 
