@@ -132,6 +132,24 @@
 	(string->symbol (case-fold-up ctrycode))
 	#f)))
 
+;; Origin: common/dbl10n.dsl
+;; How: replace "_" by "-"
+;; Why: "-" complies with RFC1766, "_" doesn't
+;; Watch out: - if lang-fix is redefined in the source
+;; Note:   There are still problems with this: it seems to assume
+;;         that there is only one "[-_]" in the code
+(define (lang-fix language)
+  (let ((fixed-lang (if (> (string-index language "_") 0)
+			(let ((pos (string-index language "_")))
+			  (string-append
+			   (substring language 0 pos)
+			   "-"
+			   (substring language (+ pos 1)
+				      (string-length language))))
+			language)))
+    (case-fold-down fixed-lang)))
+
+
 ;; Output encoding when Tex, such that the script can determine what to convert
 ;; a text to.
 
@@ -151,6 +169,15 @@
 (define %graphic-default-extension% "eps")
 (define %graphic-extensions%            ;; default value + png - gif
   '("jpg" "jpeg" "tif" "tiff" "eps" "epsf" "png"))
+(define preferred-mediaobject-extensions
+  (list "jpeg" "jpg" "png" "avi" "mpg" "mpeg" "qt"))
+(define acceptable-mediaobject-extensions
+  (list "bmp"))                         ;; default value - gif
+(define preferred-mediaobject-notations
+  (list "JPG" "JPEG" "linespecific"))   ;; is PNG a notation?
+(define acceptable-mediaobject-notations
+  (list "BMP"))                         ;; default value - gif
+
 
 ; These are candidates to move to the general section
 ; Can also be set as -V image-library
