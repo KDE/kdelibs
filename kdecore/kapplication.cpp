@@ -76,7 +76,6 @@
 #include <qtextview.h>
 #include <qtabbar.h>
 
-#include <kstyle.h>
 #include <kdestyle.h>
 #include <kstartupinfo.h>
 

@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 291
-#define KDE_VERSION_STRING "2.91 (CVS >= 20011005)"
+#define KDE_VERSION_STRING "2.91 (CVS >= 20011012)"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 1
@@ -439,11 +439,6 @@ public:
    */
   QString caption() const;
 
-  /**
-   * @deprecated
-   */
-  KStyle* kstyle() const { return 0; }
-          
   /**
    * Build a caption that contains the application name along with the
    * @ref userCaption() using a standard layout.
