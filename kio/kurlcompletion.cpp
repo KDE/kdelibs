@@ -1097,7 +1097,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	// 4. auto or popup completion mode depending on settings
 
 	if ( url.kurl()->isMalformed()
-	       || !KProtocolInfo::supportsListing( url.protocol()  )
+	       || !KProtocolInfo::supportsListing( *url.kurl() )
 	          || url.dir().isEmpty()
 	             || (isAutoCompletion() && !d->url_auto_completion) )
 		return false;

@@ -33,6 +33,7 @@ namespace KIO {
 
     class Slave;
     class SlaveList;
+    class SlaveConfig;
     struct AuthKey;
 
     /**
@@ -210,6 +211,8 @@ namespace KIO {
 
     private:
         class ProtocolInfoDict;
+        class JobData;
+        class ExtraJobData;
 
 	Scheduler(const Scheduler&);
 
@@ -229,18 +232,43 @@ namespace KIO {
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
 
+	/**
+	 * Checks whether the password daemon kdesud is
+	 * running or if it can be started if it is not.
+	 *
+	 * @return true if password daemon is/can be started successfully.
+	 */
+	bool pingCacheDaemon() const;
+
+	/**
+	 * Increments the reference count for application using the
+	 * give authorization key.
+	 *
+	 * The reference counting is used by @ref delCachedAuthentication
+	 * to determine when it is safe to delete the key from the cache.
+	 *
+	 * A call to this function will fail, i.e. return false, if there
+	 * is no entry for the given @p groupname value and/or the cache
+	 * deamon, @p kdesud, cannot be contacted.
+	 *
+	 * @return true if the registration succeeds.
+	 */
+	bool regCachedAuthKey( const QCString&, const QCString& );
+
+	typedef QList<AuthKey> AuthKeyList;
+	typedef QListIterator<AuthKey> AuthKeyIterator;
+	/**
+	 * Deletes any cached keys for the given list.
+	 *
+	 * @param list list of cached authentication key to be deleted.
+	 */
+	void delCachedAuthKeys( const AuthKeyList& list );
+
 	QTimer slaveTimer;
 	QTimer coSlaveTimer;
 	QTimer cleanupTimer;
 	bool busy;
-	/* (Stephan) Of course this isn't meant to be
-	 * the final solution, the slaves should be handled
-	 * within the pool. I do a one slave per app first
-	 * though. Who feels brave enough - may do it
-	 */
-	/* (Waba) I feel lucky today. Let's see if we can make
-	 * it a list of slaves. Still not finished of course.
-	 */
+
 	SlaveList *slaveList;
 	SlaveList *idleSlaves;
 	SlaveList *coIdleSlaves;
@@ -250,44 +278,13 @@ namespace KIO {
 	Slave *slaveOnHold;
 	KURL urlOnHold;
 
+	AuthKeyList cachedAuthKeys;
 
-    typedef QList<AuthKey> AuthKeyList;
-    typedef QListIterator<AuthKey> AuthKeyIterator;
-    AuthKeyList cachedAuthKeys;
+	JobList newJobs;
 
-    JobList newJobs;
-    
-    QPtrDict<JobList> coSlaves;
-
-    /**
-     * Checks whether the password daemon kdesud is
-     * running or if it can be started if it is not.
-     *
-     * @return true if password daemon is/can be started successfully.
-     */
-    bool pingCacheDaemon() const;
-
-    /**
-     * Increments the reference count for application using the
-     * give authorization key.
-     *
-     * The reference counting is used by @ref delCachedAuthentication
-     * to determine when it is safe to delete the key from the cache.
-     *
-     * A call to this function will fail, i.e. return false, if there
-     * is no entry for the given @p groupname value and/or the cache
-     * deamon, @p kdesud, cannot be contacted.
-     *
-     * @return true if the registration succeeds.
-     */
-    bool regCachedAuthKey( const QCString&, const QCString& );
-
-    /**
-     * Deletes any cached keys for the given list.
-     *
-     * @param list list of cached authentication key to be deleted.
-     */
-    void delCachedAuthKeys( const AuthKeyList& list );
+	QPtrDict<JobList> coSlaves;
+	ExtraJobData *extraJobData;
+	SlaveConfig *slaveConfig;  
 };
 
 };

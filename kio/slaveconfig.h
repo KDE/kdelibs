@@ -43,9 +43,7 @@ namespace KIO {
         /**
          * Configure slaves of type @protocol by setting @p key to @p value.
          * If @p host is specified the configuration only applies when dealing
-         * with @p host. @p host can be a domain as well.
-         *
-         * Examples of valid values for host are "www.kde.org" and "kde.org".
+         * with @p host.
          *
          * Changes made to the slave configuration only apply to slaves
          * used by the current process.
@@ -55,9 +53,7 @@ namespace KIO {
         /**
          * Configure slaves of type @protocol with @p config.
          * If @p host is specified the configuration only applies when dealing
-         * with @p host. @p host can be a domain as well.
-         *
-         * Examples of valid values for host are "www.kde.org" and "kde.org".
+         * with @p host.
          *
          * Changes made to the slave configuration only apply to slaves
          * used by the current process.
@@ -67,16 +63,12 @@ namespace KIO {
         /**
          * Query slave configuration for slaves of type @p protocol when
          * dealing with @p host.
-         *
-         * Examples of valid values for host are "www.kde.org".
          */
         MetaData configData(const QString &protocol, const QString &host);
 
         /**
          * Query a specific configuration key for slaves of type @p protocol when
          * dealing with @p host.
-         *
-         * Examples of valid values for host are "www.kde.org".
          */
         QString configData(const QString &protocol, const QString &host, const QString &key);
 

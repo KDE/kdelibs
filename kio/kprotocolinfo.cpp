@@ -406,3 +406,191 @@ KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
   return prot->m_outputType;
 }
 
+
+KProtocolInfo::Type KProtocolInfo::inputType( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return T_NONE;
+  }
+
+  return prot->m_inputType;
+}
+
+KProtocolInfo::Type KProtocolInfo::outputType( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return T_NONE;
+  }
+
+  return prot->m_outputType;
+}
+
+
+bool KProtocolInfo::isSourceProtocol( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_isSourceProtocol;
+}
+
+bool KProtocolInfo::isFilterProtocol( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return !prot->m_isSourceProtocol;
+}
+
+bool KProtocolInfo::isHelperProtocol( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_isHelperProtocol;
+}
+
+bool KProtocolInfo::isKnownProtocol( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  return ( prot != 0);
+}
+
+bool KProtocolInfo::supportsListing( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsListing;
+}
+
+QStringList KProtocolInfo::listing( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return QStringList();
+  }
+
+  return prot->m_listing;
+}
+
+bool KProtocolInfo::supportsReading( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsReading;
+}
+
+bool KProtocolInfo::supportsWriting( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsWriting;
+}
+
+bool KProtocolInfo::supportsMakeDir( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsMakeDir;
+}
+
+bool KProtocolInfo::supportsDeleting( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsDeleting;
+}
+
+bool KProtocolInfo::supportsLinking( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsLinking;
+}
+
+bool KProtocolInfo::supportsMoving( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_supportsMoving;
+}
+
+bool KProtocolInfo::canCopyFromFile( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_canCopyFromFile;
+}
+
+
+bool KProtocolInfo::canCopyToFile( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_canCopyToFile;
+}

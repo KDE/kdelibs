@@ -88,22 +88,26 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
 
   int offset;
 
-  // Get the real protocol to be used to retreive the
-  // requested resource.
-  QString prot = KProtocolManager::slaveProtocol( protocol );
-
-  offset = m_sycocaDict->find_string( prot );
+  offset = m_sycocaDict->find_string( protocol );
 
   if (!offset) return 0; // Not found;
 
   KProtocolInfo *info = createEntry(offset);
 
-  if (info && (info->name() != prot))
+  if (info && (info->name() != protocol))
   {
      // No it wasn't...
      delete info;
      info = 0; // Not found
   }
   return info;
+}
+
+KProtocolInfo *
+KProtocolInfoFactory::findProtocol(const KURL &url)
+{
+  QString dummy;
+  QString protocol = KProtocolManager::slaveProtocol(url, dummy);
+  return findProtocol(protocol);
 }
 

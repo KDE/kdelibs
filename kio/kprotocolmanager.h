@@ -521,10 +521,15 @@ public:
   static void reparseConfiguration();
 
   /**
-   * Return the protocol to use in order to handle the given @p protocol
+   * Return the protocol to use in order to handle the given @p url
    * It's usually the same, except that FTP, when handled by a proxy,
    * needs an HTTP ioslave.
+   *
+   * When a proxy is to be used, proxy contains the URL for the proxy.
    */
+  static QString slaveProtocol(const KURL &url, QString &proxy);
+
+  // FIXME KDE 3.0: remove me.
   static QString slaveProtocol( const QString & protocol );
 
 private:

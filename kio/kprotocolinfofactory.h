@@ -25,6 +25,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <kurl.h>
 
 class KProtocolInfoPrivate;
 
@@ -38,6 +39,7 @@ public:
   virtual ~KProtocolInfoFactory();
 
   KProtocolInfo *findProtocol(const QString &protocol);
+  KProtocolInfo *findProtocol(const KURL &url);
 
   /**
    * @returns list of all known protocols

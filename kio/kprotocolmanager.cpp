@@ -55,6 +55,7 @@ KConfig *KProtocolManager::_config = 0;
 KPAC *KProtocolManager::_pac = 0;
 KStaticDeleter<KPAC> _pacDeleter;
 
+
 void KProtocolManager::reparseConfiguration()
 {
   delete _config;
@@ -273,6 +274,56 @@ QString KProtocolManager::slaveProtocol( const QString & protocol )
 {
   return ( useProxy() && !proxyFor(protocol).isEmpty() )
            ? QString::fromLatin1("http") : protocol;
+}
+
+/*
+    Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
+    nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
+    "localhost".
+*/
+static bool revmatch(const char *host, const char *nplist)
+{
+  const char *hptr = host + strlen( host ) - 1;
+  const char *nptr = nplist + strlen( nplist ) - 1;
+  const char *shptr = hptr;
+
+  while ( nptr >= nplist )
+  {
+    if ( *hptr != *nptr )
+    {
+      hptr = shptr;
+      // Try to find another domain or host in the list
+      while(--nptr>=nplist && *nptr!=',' && *nptr!=' ') ;
+      // Strip out multiple spaces and commas
+      while(--nptr>=nplist && (*nptr==',' || *nptr==' ')) ;
+    }
+    else
+    {
+      if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
+        return true;
+      hptr--; nptr--;
+    }
+  }
+
+  return false;
+}
+
+
+QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
+{
+  if (useProxy())
+  {
+     proxy = proxyForURL(url);
+     if ((proxy != "DIRECT") && (!proxy.isEmpty()))
+     {
+        QString noProxy = noProxyFor();
+        if (!revmatch( url.host().lower().latin1(),
+                       noProxy.lower().latin1() ))
+           return QString::fromLatin1("http");
+     }
+  }
+  proxy = QString::null;
+  return url.protocol();
 }
 
 void KProtocolManager::setReadTimeout( int _timeout )

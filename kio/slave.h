@@ -74,6 +74,11 @@ namespace KIO {
                       const QString &user, const QString &passwd);
 
         /**
+         * Clear host info.
+         */
+        void resetHost();
+
+        /**
          * Configure slave
          */                      
         void setConfig(const MetaData &config);
@@ -84,7 +89,8 @@ namespace KIO {
          * @return name of protocol handled by this slave, as seen by the user
          */
         QString protocol() { return m_protocol; }
-
+        
+        void setProtocol(const QString & protocol);
         /**
 	 * The actual protocol used to handle the request.
 	 * 
@@ -120,14 +126,18 @@ namespace KIO {
         QString passwd() { return m_passwd; }
 
 	/**
-	 * Creates a new slave if the @ref KIOSlavePool has no matching one.
-	 * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
+	 * Creates a new slave.
 	 *
 	 * @param _error is the error code on failure and undefined else.
 	 * @param _error_text is the error text on failure and undefined else.
 	 *
-	 * @return @ref m_pSlave on success or 0L on failure.
+	 * @return 0 on failure, or a pointer to a slave otherwise.
 	 */
+	static Slave* createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text );
+
+        /**
+         * @obsolete FIXME KDE 3.0: remove me
+         */
 	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
 
 	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }

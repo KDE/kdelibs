@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
 
@@ -81,6 +82,31 @@ public:
    */
   static QString exec( const QString& protocol );
 
+  static Type inputType( const KURL &url );
+  static Type outputType( const KURL &url );
+  /**
+   * @returns the list of fields this protocol returns when listing
+   * The current possibilities are
+   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
+   */
+  static QStringList listing( const KURL &url );
+  static bool isSourceProtocol( const KURL &url );
+  static bool isHelperProtocol( const KURL &url );
+  static bool isFilterProtocol( const KURL &url );
+  static bool isKnownProtocol( const KURL &url );
+  static bool supportsListing( const KURL &url );
+  static bool supportsReading( const KURL &url );
+  static bool supportsWriting( const KURL &url );
+  static bool supportsMakeDir( const KURL &url );
+  static bool supportsDeleting( const KURL &url );
+  static bool supportsLinking( const KURL &url );
+  static bool supportsMoving( const KURL &url );
+  static bool canCopyFromFile( const KURL &url );
+  static bool canCopyToFile( const KURL &url );
+
+  ////////////////////////// DEPRECATED /////////////////////////
+  // The following methods are deprecated:
+  
   static Type inputType( const QString& protocol );
   static Type outputType( const QString& protocol );
   /**
@@ -102,6 +128,7 @@ public:
   static bool supportsMoving( const QString& protocol );
   static bool canCopyFromFile( const QString& protocol );
   static bool canCopyToFile( const QString& protocol );
+  //////////////////////// END DEPRECATED ///////////////////////
 
   /**
    * @returns the name of the icon, associated with the specified protocol

@@ -984,13 +984,13 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     else
     {
        if (!m_move &&
-           (src.isLocalFile() && KProtocolInfo::canCopyFromFile(dest.protocol())) 
+           (src.isLocalFile() && KProtocolInfo::canCopyFromFile(dest)) 
           )
        {
           startCopyJob(dest);
        }
        else if (!m_move &&
-           (dest.isLocalFile() && KProtocolInfo::canCopyToFile(src.protocol())) 
+           (dest.isLocalFile() && KProtocolInfo::canCopyToFile(src)) 
           )
        {
           startCopyJob(src);

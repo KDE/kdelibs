@@ -121,9 +121,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 {
     m_refCount = 1;
     m_protocol = protocol;
-    // Store the real protocol handled by this slave (i.e. http for ftp proxy)
-    // Will be used later on, when trying to reuse the slave
-    m_slaveProtocol = KProtocolManager::slaveProtocol( protocol );
+    m_slaveProtocol = protocol;
     m_socket = socketname;
     dead = false;
     contact_started = time(0);
@@ -142,6 +140,11 @@ Slave::~Slave()
         serv = 0;
     }
     m_pid = 99999;
+}
+
+void Slave::setProtocol(const QString & protocol)
+{
+    m_protocol = protocol;
 }
 
 void Slave::setIdle()
@@ -250,6 +253,11 @@ void Slave::setHost( const QString &host, int port,
     slaveconn.send( CMD_HOST, data );
 }
 
+void Slave::resetHost()
+{ 
+    m_host = "<reset>";
+}
+
 void Slave::setConfig(const MetaData &config)
 {
     QByteArray data;
@@ -261,7 +269,12 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 {
-    kdDebug(7002) << "createSlave for " << url.prettyURL() << endl;
+   return createSlave(url.protocol(), url, error, error_text);
+}
+
+Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text )
+{
+    kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -272,12 +285,12 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
-    Slave *slave = new Slave(kss, url.protocol(), socketfile.name());
+    Slave *slave = new Slave(kss, protocol, socketfile.name());
 
     QByteArray params, reply;
     QCString replyType;
     QDataStream stream(params, IO_WriteOnly);
-    stream << url.protocol() << url.host() << socketfile.name();
+    stream << protocol << url.host() << socketfile.name();
 
     QCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",

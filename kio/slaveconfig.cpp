@@ -142,10 +142,33 @@ void SlaveConfig::setConfigData(const QString &protocol,
                                 const QString &key, 
                                 const QString &value )
 {
+   MetaData config;
+   config.insert(key, value);
+   setConfigData(protocol, host, config);
 }
 
 void SlaveConfig::setConfigData(const QString &protocol, const QString &host, const MetaData &config )
 {
+   if (protocol.isEmpty())
+      d->global += config;
+   else {
+      SlaveConfigProtocol *scp = d->findProtocolConfig(protocol);
+      if (host.isEmpty())
+      {
+         scp->global += config;
+      }
+      else
+      {
+         MetaData *hostConfig = scp->host.find(host);
+         if (!hostConfig)
+         {
+            d->readConfigProtocolHost(protocol, scp, host);
+            hostConfig = scp->host.find(host);
+            assert(hostConfig);
+         }
+         *hostConfig += config;
+      }
+   }
 }
 
 MetaData SlaveConfig::configData(const QString &protocol, const QString &host)
