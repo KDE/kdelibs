@@ -307,8 +307,11 @@ public:
 	OverrideMask = 1<<6,
         TopMenuMask  = 1<<7,
 	UtilityMask  = 1<<8,
-	SplashMask   = 1<<9
+	SplashMask   = 1<<9,
     };
+
+    // KDE4 move to WindowTypeMask
+    enum { AllTypesMask = -1LU };
 
     /**
        Window state.
