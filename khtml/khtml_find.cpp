@@ -25,10 +25,10 @@
 #include <kmessagebox.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
-: KEdFind( parent, name )
+: KEdFind( parent, name, false )
 {
-  connect( this, SIGNAL( done() ),
-	   this, SLOT( slotDone() ) );
+//  connect( this, SIGNAL( done() ),
+//           this, SLOT( slotDone() ) );
   connect( this, SIGNAL( search() ),
 	   this, SLOT( slotSearch() ) );
   m_first = true;

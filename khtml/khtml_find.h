@@ -31,6 +31,8 @@ public:
   KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name );
   virtual ~KHTMLFind();
 
+  KHTMLPart *part() const { return m_part; }
+
 private slots:
   void slotDone();
   void slotSearch();

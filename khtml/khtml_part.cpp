@@ -138,6 +138,7 @@ public:
     m_haveEncoding = false;
     m_activeFrame = 0L;
     keepCharset = false;
+    m_findDialog = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -234,6 +235,8 @@ public:
   unsigned long m_totalImageCount;
 
   QString m_userHeaders;
+
+  KHTMLFind *m_findDialog;
 
   struct findState
   {
@@ -368,10 +371,16 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
+  if ( d->m_findDialog )
+      disconnect( d->m_findDialog, SIGNAL( destroyed() ),
+                  this, SLOT( slotFindDialogDestroyed() ) );
+
   if ( d->m_manager )
   {
     d->m_manager->setActivePart( 0 );
     // Shouldn't we delete d->m_manager here ? (David)
+    // No need to, I would say. We specify "this" as parent qobject
+    // in ::partManager() (Simon)
   }
 
   stopAutoScroll();
@@ -2778,19 +2787,50 @@ void KHTMLPart::slotFind()
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
 
   assert( part->inherits( "KHTMLPart" ) );
+  assert( d->m_findDialog == 0 );
 
-  KHTMLFind *findDlg = new KHTMLFind( part, d->m_view, "khtmlfind" );
+  // use the part's (possibly frame) widget as parent widget, so that it gets
+  // properly destroyed when the (possible) frame dies
+  KHTMLFind *findDlg = new KHTMLFind( part, part->widget(), "khtmlfind" );
   findDlg->setText( part->d->m_lastFindState.text );
   findDlg->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
   findDlg->setDirection( part->d->m_lastFindState.direction );
 
-  findDlg->exec();
+  findDlg->show();
+  connect( findDlg, SIGNAL( done() ),
+           this, SLOT( slotFindDone() ) );
+  connect( findDlg, SIGNAL( destroyed() ),
+           this, SLOT( slotFindDialogDestroyed() ) );
 
-  part->d->m_lastFindState.text = findDlg->getText();
-  part->d->m_lastFindState.caseSensitive = findDlg->case_sensitive();
-  part->d->m_lastFindState.direction = findDlg->get_direction();
+  d->m_findDialog = findDlg;
 
-  delete findDlg;
+  d->m_paFind->setEnabled( false );
+}
+
+void KHTMLPart::slotFindDone()
+{
+    assert( d->m_findDialog );
+
+    KHTMLPart *part = d->m_findDialog->part();
+
+    // this code actually belongs into some saveState() method in
+    // KHTMLFind, but as we're saving into the private data section of
+    // the part we have to do it here (no way to access it from the outside
+    // as it is defined only in khtml_part.cpp) (Simon)
+    part->d->m_lastFindState.text = d->m_findDialog->getText();
+    part->d->m_lastFindState.caseSensitive = d->m_findDialog->case_sensitive();
+    part->d->m_lastFindState.direction = d->m_findDialog->get_direction();
+
+    // will trigger the method below
+    delete d->m_findDialog;
+}
+
+void KHTMLPart::slotFindDialogDestroyed()
+{
+    assert( sender() == d->m_findDialog );
+
+    d->m_findDialog = 0;
+    d->m_paFind->setEnabled( true );
 }
 
 void KHTMLPart::slotPrintFrame()

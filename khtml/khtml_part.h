@@ -666,7 +666,10 @@ private slots:
    */
   virtual void slotSetEncoding();
 
-  virtual void slotFind(); //BCI: make virtual
+  virtual void slotFind();
+
+  void slotFindDone(); // BCI: make virtual
+  void slotFindDialogDestroyed();
 
   void slotIncFontSizes();
   void slotDecFontSizes();
