@@ -3,7 +3,8 @@
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
-			  (C) 1999 Chris Schlaeger (cs@kde.org)
+              (C) 1999 Chris Schlaeger (cs@kde.org)
+              (C) 1999 Kurt Granroth (granroth@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,18 +21,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
-// $Id$
-// $Log$
-// Revision 1.3  1999/12/04 05:09:27  granroth
-// The three dots in icons or tooltips are just plain ugly...
-//
-// Revision 1.2  1999/10/31 19:44:47  bero
-// More template definitions for -frepo
-//
-// Revision 1.1  1999/09/21 11:03:53  waba
-// WABA: Clean up interface
-//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -280,16 +269,16 @@ void KToolBarButton::drawButton( QPainter *_painter )
   if(kapp->kstyle()){
     KStyle::KToolButtonType iconType;
     switch(icontext){
-    case 0:
+    case KToolBar::IconOnly:
         iconType = KStyle::Icon;
         break;
-    case 1:
+    case KToolBar::IconTextRight:
         iconType = KStyle::IconTextRight;
         break;
-    case 2:
+    case KToolBar::TextOnly:
         iconType = KStyle::Text;
         break;
-    case 3:
+    case KToolBar::IconTextBottom:
     default:
         iconType = KStyle::IconTextBottom;
         break;
@@ -319,8 +308,12 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   int dx, dy;
 
+  QFont tmp_font(KGlobal::generalFont());
+  if (toolBarButton)
+    tmp_font = buttonFont;
+  QFontMetrics fm(tmp_font);
 
-  if (icontext == 0) // icon only
+  if (icontext == KToolBar::IconOnly) // icon only
   {
     if (pixmap())
     {
@@ -334,11 +327,11 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
   }
-  else if (icontext == 1) // icon and text (if any)
+  else if (icontext == KToolBar::IconTextRight) // icon and text (if any)
   {
     if (pixmap())
     {
-      dx = 1;
+      dx = 4;
       dy = ( height() - pixmap()->height() ) / 2;
       if ( isDown() && style() == WindowsStyle )
       {
@@ -354,9 +347,9 @@ void KToolBarButton::drawButton( QPainter *_painter )
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
       if (pixmap())
-        dx= pixmap()->width();
+        dx = 4 + pixmap()->width() + 2;
       else
-        dx= 1;
+        dx = 4;
       dy = 0;
       if ( isDown() && style() == WindowsStyle )
       {
@@ -371,15 +364,15 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
     }
   }
-  else if (icontext == 2) // only text, even if there is a icon
+  else if (icontext == KToolBar::TextOnly)
   {
     if (!btext.isNull())
     {
-      int tf = AlignVCenter|AlignLeft;
+      int tf = AlignTop|AlignLeft;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
-      dx= 1;
-      dy= 0;
+      dx = (width() - fm.width(btext)) / 2;
+      dy = (height() - fm.lineSpacing()) / 2;
       if ( isDown() && style() == WindowsStyle )
       {
         ++dx;
@@ -390,15 +383,15 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setFont(buttonFont);
       if(raised)
         _painter->setPen(blue);
-      _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
+      _painter->drawText(dx, dy, fm.width(btext), fm.lineSpacing(), tf, btext);
     }
   }
-  else if (icontext == 3)
+  else if (icontext == KToolBar::IconTextBottom)
   {
     if (pixmap())
     {
       dx = (width() - pixmap()->width()) / 2;
-      dy = 1;
+      dy = (height() - fm.lineSpacing() - pixmap()->height()) / 2;
       if ( isDown() && style() == WindowsStyle )
       {
         ++dx;
@@ -412,8 +405,8 @@ void KToolBarButton::drawButton( QPainter *_painter )
       int tf = AlignBottom|AlignHCenter;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
-      dy= pixmap()->height();
-      dx = 2;
+      dx = (width() - fm.width(btext)) / 2;
+      dy = height() - fm.lineSpacing() - 4;
 
       if ( isDown() && style() == WindowsStyle )
       {
@@ -425,10 +418,9 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setFont(buttonFont);
       if(raised)
         _painter->setPen(blue);
-      _painter->drawText(0, 0, width(), height()-4, tf, btext);
+      _painter->drawText(dx, dy, fm.width(btext), fm.lineSpacing(), tf, btext);
     }
   }
-//#warning What about Icontext=3
 
   if (myPopup)
   {
@@ -456,90 +448,74 @@ void KToolBarButton::paletteChange(const QPalette &)
 
 void KToolBarButton::modeChange()
 {
-  int myWidth;
+  // grab a few global variables for use in this function and others
+  _size = parentWidget->item_size;
+  highlight = parentWidget->highlight;
 
-  myWidth = enabledPixmap.width();
+  // a KToolBarButton can be used either for a toolbar OR for a
+  // menubar.  we need to treat a few things differently based on this
+  icontext = toolBarButton ? parentWidget->icon_text : KToolBar::IconTextRight;
 
-  QFont fnt;
+  // we'll go with the size of our pixmap (plus a bit of padding) as
+  // the default size... but only if it's bigger then the given size
+  int my_width = enabledPixmap.width() + 4;
+  if (my_width < _size)
+    my_width = _size;
 
-  //Jesus, I must have been drunk...
-  if (toolBarButton) // I might be a menuBarButton
+  int my_height = enabledPixmap.height() + 4;
+  if (my_height < _size)
+    my_height = _size;
+
+  // handle the simplest case (Icon only) now so we don't do an
+  // unneccesary object instantiation and the like
+  if (icontext == KToolBar::IconOnly)
   {
+    QToolTip::remove(this);
+    QToolTip::add(this, btext);
+    resize(my_width, my_height);
+    return;
+  }
+
+  // okay, we have to deal with fonts.  let's get our information now
+  QFont tmp_font;
+
+  if (toolBarButton)
+  {
+    // we hard code the button font now... but this should be settable
+    // sometime soon (e.g, KGlobal::buttonFont())
     buttonFont.setFamily("Helvetica");
     buttonFont.setPointSize(10);
     buttonFont.setBold(false);
     buttonFont.setItalic(false);
     buttonFont.setCharSet(font().charSet());
 
-    fnt=buttonFont;
+    tmp_font = buttonFont;
   }
   else
-    fnt=KGlobal::generalFont();
+    tmp_font = KGlobal::generalFont();
 
-  QFontMetrics fm(fnt);
+  // now parse out our font sizes from our chosen font
+  QFontMetrics fm(tmp_font);
 
-  if (toolBarButton)
-    icontext=parentWidget->icon_text;
-  else
-    icontext = 1;
+  int text_height = fm.lineSpacing();
+  int text_width  = fm.width(btext);
 
-  _size=parentWidget->item_size;
-  if (myWidth < _size)
-    myWidth = _size;
-
-// Nice but doesn't work
-/*
-  if (_size > 28)
-  {
-    double factor=_size/26;
-    QImage i;
-    i = enabledPixmap.convertToImage();
-    i = i.smoothScale(enabledPixmap.width()*factor,
-                      enabledPixmap.height()*factor);
-    enabledPixmap.resize (i.width(), i.height());
-    enabledPixmap.convertFromImage(i );
-  }
-*/
-
-  highlight=parentWidget->highlight;
+  // none of the other modes want tooltips
+  QToolTip::remove(this);
   switch (icontext)
   {
-  case 0:
-    QToolTip::remove(this);
-    QToolTip::add(this, btext);
-    resize (myWidth, _size-2);
+  case KToolBar::IconTextRight:
+    resize((my_width + text_width) + 4, my_height);
     break;
 
-  case 1:
-    QToolTip::remove(this);
-    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
+  case KToolBar::TextOnly:
+    resize(text_width + 8, my_height);
     break;
 
-  case 2:
-    QToolTip::remove(this);
-    resize (fm.width(btext)+6, _size-2); // +2+_size-2
-    break;
-
-  case 3:
-    QToolTip::remove(this);
-    resize ((fm.width(btext)+6>myWidth)?fm.width(btext)+6:myWidth, _size-2);
+  case KToolBar::IconTextBottom:
+    resize((text_width + 6 > my_width) ? text_width + 6 : my_width, my_height);
     break;
   }
-
-  /*
-  if (icontext > 0) //Calculate my size
-  {
-    QToolTip::remove(this);
-    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
-  }
-  else
-  {
-    QToolTip::remove(this);
-    QToolTip::add(this, btext);
-    resize (myWidth, _size-2);
-  }
-  */
-
 }
 
 void KToolBarButton::makeDisabledPixmap()

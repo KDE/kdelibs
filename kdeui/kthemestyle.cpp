@@ -268,7 +268,10 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      KToolButtonType type, const QString &btext,
                                      const QPixmap *pixmap, QFont *font)
 {
-
+    QFont tmp_font("Helvetica", 10);
+    if (font)
+        tmp_font = *font;
+    QFontMetrics fm(tmp_font);
     WidgetType widget = sunken ? ToolButtonDown : ToolButton;
 
     drawBaseButton(p, x, y, w, h, *colorGroup(g, widget), sunken, false,
@@ -288,7 +291,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
     else if (type == IconTextRight){ // icon and text (if any)
         if (pixmap){
-            dx = 1;
+            dx = 4;
             dy = ( h - pixmap->height() ) / 2;
             if ( sunken ){
                 ++dx;
@@ -301,9 +304,9 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (!enabled)
                 p->setPen(g.dark());
             if (pixmap)
-                dx= pixmap->width();
+                dx= 4 + pixmap->width() + 2;
             else
-                dx= 1;
+                dx= 4;
             dy = 0;
             if ( sunken ){
                 ++dx;
@@ -318,11 +321,11 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
     else if (type == Text){ // only text, even if there is a icon
         if (!btext.isNull()){
-            int tf = AlignVCenter|AlignLeft;
+            int tf = AlignTop|AlignLeft;
             if (!enabled)
                 p->setPen(g.dark());
-            dx= 1;
-            dy= 0;
+            dx= (w - fm.width(btext)) / 2;
+            dy= (h - fm.lineSpacing()) / 2;
             if ( sunken ){
                 ++dx;
                 ++dy;
@@ -331,13 +334,13 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                 p->setFont(*font);
             if(raised)
                 p->setPen(Qt::blue);
-            p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
+            p->drawText(x+dx, y+dy, fm.width(btext), fm.lineSpacing(), tf, btext);
         }
     }
     else if (type == IconTextBottom){
         if (pixmap){
             dx = (w - pixmap->width()) / 2;
-            dy = 1;
+            dy = (h - fm.lineSpacing() - pixmap->height()) / 2;
             if ( sunken ){
                 ++dx;
                 ++dy;
@@ -348,8 +351,8 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             int tf = AlignBottom|AlignHCenter;
             if (!enabled)
                 p->setPen(g.dark());
-            dy= pixmap->height();
-            dx = 2;
+            dx= (w - fm.width(btext)) / 2;
+            dy= h - fm.lineSpacing() - 4;
             if ( sunken ){
                 ++dx;
                 ++dy;
@@ -358,7 +361,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                 p->setFont(*font);
             if(raised)
                 p->setPen(Qt::blue);
-            p->drawText(x, y, w, h-4, tf, btext);
+            p->drawText(x+dx, y+dy, fm.width(btext), fm.lineSpacing(), tf, btext);
         }
     }
     if (popup){
