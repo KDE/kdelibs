@@ -2,6 +2,7 @@ kdelibs4 (3.0-0.alpha1-2) unstable; urgency=low
   
   * sync
   * move modules into /usr/lib/kde3 instead of /usr/lib/kde2
+  * libarts-bin and libkmid-bin now exist to help with kde2/kde3 co-existance
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Oct 2001 10:18:00 -0700
 

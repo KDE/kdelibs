@@ -38,7 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa \
+	--includedir=/usr/include/kde3 --without-ssl --without-alsa \
 	--disable-cups
 
 	$(MAKE)
@@ -54,7 +54,7 @@ alsa-stamp:
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
-		--includedir=/usr/include/kde
+		--includedir=/usr/include/kde3
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 
@@ -142,6 +142,8 @@ binary-arch:  build install
 	dh_installdebconf -a
 	# musical chairs
 	dh_movefiles -plibarts1 --sourcedir=debian/kdelibs4
+	dh_movefiles -plibarts-bin --sourcedir=debian/kdelibs4
+	dh_movefiles -plibkmid-bin --sourcedir=debian/kdelibs4
 	dh_movefiles -plibarts1-dev --sourcedir=debian/kdelibs4
 	dh_movefiles -plibkmid0 --sourcedir=debian/kdelibs4
 	dh_movefiles -plibkmid0-dev --sourcedir=debian/kdelibs4
@@ -159,7 +161,7 @@ binary-arch:  build install
 	dh_fixperms -a
 	dh_makeshlibs -V
 	dh_installdeb -a
-	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib:`pwd`/debian/libarts1/usr/lib:`pwd`/debian/libkmid0/usr/lib:`pwd`/debian/kdelibs4-cups/usr/lib
+	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib/kde3:`pwd`/debian/libarts1/usr/lib/kde3:`pwd`/debian/libkmid0/usr/lib/kde3:`pwd`/debian/kdelibs4-cups/usr/lib/kde3
 	echo -n `cat debian/libarts1.substvars ` > debian/libarts1-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libarts1-alsa.substvars
 	echo -n `cat debian/libkmid0.substvars` > debian/libkmid0-alsa.substvars

@@ -15,7 +15,7 @@ dh-make
 
 You can now find a dh-make template for a single binary package under
 
-    /usr/share/doc/kdelibs-dev/dh-make/
+    /usr/share/doc/kdelibs4-dev/dh-make/
 
 Refer to the dh-make man package for information on how to use these templates.
 These templates include the bits mentioned in this file.
@@ -82,7 +82,7 @@ built for the arch they are building on.  In order to do this and actually
 be successful things like Build-Depends have to be accurate.  A typical 
 Build-Depends line for a KDE based application will look something like this:
 
-  Build-Depends: debhelper (>> 2.0.0), automake, autoconf, libtool, kdelibs-dev (>= 4:2.1.1-0)
+  Build-Depends: debhelper (>> 3.0.0), automake, autoconf, libtool, kdelibs4-dev (>= 3.0-0.alpha1-0)
 
 Your app may need alot more than that to actually build however first take a
 look at the Dependencies for kdelibs-dev:

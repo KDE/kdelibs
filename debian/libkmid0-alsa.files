@@ -1,9 +1,7 @@
-usr/bin/knotify
-usr/bin/artsmessage
-usr/lib/libartskde.so
-usr/lib/knotify.so
-usr/lib/knotify.la
-usr/lib/libkmid.so.*
-usr/lib/libkmid.la
-usr/lib/libqtmcop.so.*
-usr/lib/libqtmcop.la
+usr/lib/kde3/libartskde.so
+usr/lib/kde3/knotify.so
+usr/lib/kde3/knotify.la
+usr/lib/kde3/libkmid.so.*
+usr/lib/kde3/libkmid.la
+usr/lib/kde3/libqtmcop.so.*
+usr/lib/kde3/libqtmcop.la
