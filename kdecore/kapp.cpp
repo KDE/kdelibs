@@ -838,8 +838,11 @@ void KApplication::kdisplaySetPalette()
   KConfigBase* config;
   config  = kapp->config();
   config->setGroup( "General" );
+  QColor button =
+    config->readColorEntry( "buttonBackground", &lightGray );
+
   QColor buttonText =
-    config->readColorEntry( "foreground", &black );
+    config->readColorEntry( "buttonForeground", &black );
 
   QColor background =
     config->readColorEntry( "background", &lightGray );
@@ -880,6 +883,7 @@ void KApplication::kdisplaySetPalette()
 
   colgrp.setColor( QColorGroup::Highlight, highlight);
   colgrp.setColor( QColorGroup::HighlightedText, highlightedText);
+  colgrp.setColor( QColorGroup::Button, button);
   colgrp.setColor( QColorGroup::ButtonText, buttonText);
 
   setPalette( QPalette( colgrp, disabledgrp, colgrp), true );
