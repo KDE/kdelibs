@@ -1516,7 +1516,8 @@ static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
 
-    maxpmw = QMAX( maxpmw, 20 );
+    if (checkable)
+        maxpmw = QMAX( maxpmw, 20 );
 
     if ( p->font() == KGlobalSettings::generalFont() )
       p->setFont( KGlobalSettings::menuFont() );
@@ -1555,7 +1556,6 @@ static const int windowsRightBorder     = 12;
             pmr.moveCenter( cr.center() );
             p->setPen(itemg.highlightedText());
             p->drawPixmap(pmr.topLeft(), pixmap );
-
         }
         else if(checkable) {
             int mw = checkcol + motifItemFrame;
