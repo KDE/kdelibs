@@ -26,6 +26,7 @@
 #include <qdragobject.h>
 
 #include <kapp.h>
+#include <kmimetype.h>
 
 #include <kio_job.h>
 #include <kio_cache.h>
@@ -1252,7 +1253,7 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	KURL u(completeURL(m_strSelectedURL));
 	uris.append(u.url().ascii());
 	QDragObject *d = new QUriDrag(uris, this);
-	QPixmap p(locate( "data", "khtml/pics/khtml_dnd.png"));
+	QPixmap p = KMimeType::pixmapForURL(u, 0, KIconLoader::Medium);
 	if(p.isNull()) printf("null pixmap\n");
 	d->setPixmap(p);
 	d->drag();
