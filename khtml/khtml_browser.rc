@@ -1,6 +1,13 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="5">
+<kpartgui name="khtmlpart" version="6">
 <MenuBar>
+ <Menu name="file">
+  <Action name="saveBackground" />
+  <Action name="saveDocument" />
+  <Action name="saveFrame" />
+  <Separator />
+  <Action name="printFrame" group="print" />
+ </Menu>
  <Menu name="edit">
   <Action name="selectAll" />
   <Separator />
@@ -9,12 +16,8 @@
  <Menu name="view">
   <Action name="viewDocumentSource" />
   <Action name="viewFrameSource" />
-  <Action name="saveBackground" />
-  <Action name="saveDocument" />
-  <Action name="saveFrame" />
   <Action name="security" />
   <Action name="setEncoding" />
-  <Action name="printFrame" group="print" />
   <Separator />
   <Action name="debugRenderTree" />
   <Action name="debugDOMTree" />
