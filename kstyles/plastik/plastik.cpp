@@ -2339,20 +2339,26 @@ void PlastikStyle::drawControl(ControlElement element,
                 pos = Middle;
             }
 
+            bool mouseOver = false;
+            if (opt.tab() == hoverTab) {
+                mouseOver = true;
+                flags |= Style_MouseOver;
+            }
+
             switch (tbs) {
                 case QTabBar::TriangularAbove:
 //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, false, pos);
-                    renderTab(p, r, cg, (flags & Style_MouseOver), selected, false, pos, true, cornerWidget);
+                    renderTab(p, r, cg, mouseOver, selected, false, pos, true, cornerWidget);
                     break;
                 case QTabBar::RoundedAbove:
-                    renderTab(p, r, cg, (flags & Style_MouseOver), selected, false, pos, false, cornerWidget);
+                    renderTab(p, r, cg, mouseOver, selected, false, pos, false, cornerWidget);
                     break;
                 case QTabBar::TriangularBelow:
 //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, true, pos);
-                    renderTab(p, r, cg, (flags & Style_MouseOver), selected, true, pos, true, cornerWidget);
+                    renderTab(p, r, cg, mouseOver, selected, true, pos, true, cornerWidget);
                     break;
                 case QTabBar::RoundedBelow:
-                    renderTab(p, r, cg, (flags & Style_MouseOver), selected, true, pos, false, cornerWidget);
+                    renderTab(p, r, cg, mouseOver, selected, true, pos, false, cornerWidget);
                     break;
                     default:
                             KStyle::drawControl(element, p, widget, r, cg, flags, opt);
@@ -3535,27 +3541,10 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
 
                 bool repaint = true;
 
-                    // go through the tabbar and see which tabs are hovered by the mouse.
-                    // tabs are overlapping 1 px, so it's possible that 2 tabs are under the mouse.
-                    int tabCount = 0;
-                    for (int i = 0; i < tabbar->count(); ++i) {
-                        QTab *tab = tabbar->tab(i);
-                        if (tab && tab->rect().contains(me->pos() ) ) {
-                            ++ tabCount;
-    
-                            if (tabCount < 2) {
-                                // good, only one tab under the mouse.
-                                if (hoverTab==tab)
-                                    repaint = false; // has been updated before, no repaint necessary
-                                hoverTab = tab;
-                            } else {
-                                // uhh! there's another tab under the mouse, repaint...
-                                repaint = true;
-                                hoverTab = 0; // make sure the tabbar is repainted next time too.
-                            }
-    
-                        }
-                    }
+                QTab *tab = tabbar->selectTab(me->pos() );
+                if (hoverTab == tab)
+                    repaint = false;
+                hoverTab = tab;
 
                 if (repaint)
                     tabbar->repaint(false);
