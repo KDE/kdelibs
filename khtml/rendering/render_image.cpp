@@ -76,12 +76,14 @@ void RenderImage::setStyle(RenderStyle* _style)
     setInline( style()->display()==INLINE );
     //setOverhangingContents(style()->height().isPercent());
     setShouldPaintBackgroundOrBorder(true);
+}
 
-    CachedObject* co = style()->contentObject();
-    if (co && image != co ) {
+void RenderImage::setContentObject(CachedObject* co )
+{
+    if (co && image != co) {
+        co->ref( this );
         if (image) image->deref(this);
-        image = static_cast<CachedImage*>(style()->contentObject());
-        if (image) image->ref(this);
+        image = static_cast<CachedImage*>(co);
     }
 }
 
@@ -184,10 +186,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 }
 
 void RenderImage::paintObject(QPainter *p, int /*_x*/, int _y, int /*_w*/,
-int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
+int /*_h*/, int _tx, int _ty, PaintAction paintAction)
 {
-    if (paintPhase != PaintActionForeground)
-        return;
+     if (paintAction != PaintActionForeground)
+         return;
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
@@ -196,7 +198,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !canvas()->paintImages())
+    if (khtml::printpainter && !canvas()->printImages())
         return;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
@@ -362,9 +364,9 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
     }
 }
 
-bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
 {
-    bool inside = RenderReplaced::nodeAtPoint(info, _x, _y, _tx, _ty);
+    bool inside = RenderReplaced::nodeAtPoint(info, _x, _y, _tx, _ty, inBox);
 
     if (inside && element()) {
         int tx = _tx + m_x;
@@ -394,7 +396,11 @@ void RenderImage::updateFromElement()
         CachedImage *new_image = element()->getDocument()->docLoader()->
                                  requestImage(khtml::parseURL(u));
 
-        if(new_image && new_image != image && (!style() || !style()->contentObject())) {
+        if(new_image && new_image != image
+           // check appears redundant, as we only care about this when we're anonymous
+           // which can never happen here.
+           /*&& (!style() || !style()->contentObject())*/
+            ) {
             loadEventSent = false;
             CachedImage* oldimage = image;
             image = new_image;

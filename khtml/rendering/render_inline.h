@@ -1,7 +1,10 @@
 /*
  * This file is part of the render object implementation for KHTML.
  *
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,39 +41,42 @@ public:
     virtual bool isRenderInline() const { return true; }
     virtual bool isInlineFlow() const { return true; }
     virtual bool childrenInline() const { return true; }
-    
+
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
-    void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
-                      RenderObject* beforeChild, RenderFlow* oldCont);
-    void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
-                   RenderObject* newChild, RenderFlow* oldCont);
-    
+
     virtual void setStyle(RenderStyle* _style);
 
     virtual void layout() {} // Do nothing for layout()
-    
+
     virtual void paint(QPainter *, int x, int y, int w, int h,
                        int tx, int ty, PaintAction paintAction);
     virtual void paintObject(QPainter *, int x, int y, int w, int h,
                              int tx, int ty, PaintAction paintAction);
 
     virtual bool nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inside);
-    
+
     virtual void calcMinMaxWidth();
 
     // overrides RenderObject
-    virtual bool requiresLayer() { return isRelPositioned(); }
+    virtual bool requiresLayer() const { return isRelPositioned(); }
 
     virtual short width() const;
     virtual int height() const;
-    
+
     // used to calculate offsetWidth/Height.  Overridden by inlines (render_flow) to return
     // the remaining width on a given line (and the height of a single line).
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
+
+private:
+    void splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock, RenderBlock* middleBlock,
+                      RenderObject* beforeChild, RenderFlow* oldCont);
+    void splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
+                   RenderObject* newChild, RenderFlow* oldCont);
+
 };
 
-}; // namespace
+} // namespace
 
 #endif // RENDER_BLOCK_H
 

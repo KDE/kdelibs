@@ -1147,7 +1147,7 @@ void KHTMLView::doAutoScroll()
 	if (m_part->isExtendingSelection()) {
             RenderObject::NodeInfo renderInfo(true/*readonly*/, false/*active*/);
             m_part->xmlDocImpl()->renderer()->layer()
-				->nodeAtPoint(renderInfo, xm, ym, 0, 0);
+				->nodeAtPoint(renderInfo, xm, ym, 0, 0, false);
             innerNode = renderInfo.innerNode();
 	}/*end if*/
 

@@ -18,23 +18,21 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef render_canvas_h
 #define render_canvas_h
 
-#include "render_flow.h"
+#include "render_block.h"
 
 class KHTMLView;
 class QScrollView;
 
 namespace khtml {
 
-class RenderCanvas : public RenderFlow
+class RenderCanvas : public RenderBlock
 {
 public:
     RenderCanvas(DOM::NodeImpl* node, KHTMLView *view);
-    virtual ~RenderCanvas();
 
     virtual const char *renderName() const { return "RenderCanvas"; }
 
@@ -42,6 +40,7 @@ public:
 
     virtual void layout();
     virtual void calcWidth();
+    virtual void calcHeight();
     virtual void calcMinMaxWidth();
     virtual bool absolutePosition(int &xPos, int&yPos, bool f = false);
     virtual void close();
@@ -53,21 +52,34 @@ public:
 
     virtual void repaint(bool immediate=false);
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
-			PaintAction paintPhase);
+    virtual void paint(QPainter *, int x, int y, int w, int h, int tx, int ty,
+			PaintAction paintAction);
     void paintObject(QPainter *p, int _x, int _y,
-                     int _w, int _h, int _tx, int _ty, PaintAction paintPhase);
+                     int _w, int _h, int _tx, int _ty, PaintAction paintAction);
+
+    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
+                                     int _w, int _h, int _tx, int _ty);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection(bool doRepaint=true);
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
     virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
 
-    void setPrintingMode(bool print ) { m_printingMode = print; }
+    void setPrintingMode(bool print) { m_printingMode = print; }
     bool printingMode() const { return m_printingMode; }
-    void setPrintImages(bool enable) { m_paintImages = enable; }
-    bool paintImages() const { return m_paintImages; }
-    void setTruncatedAt(int y) { m_truncatedAt = y; }
+    void setPrintImages(bool enable) { m_printImages = enable; }
+    bool printImages() const { return m_printImages; }
+#ifdef APPLE_CHANGES
+    void setTruncatedAt(int y) { m_truncatedAt = y; m_bestTruncatedAt = m_truncatorWidth = 0; }
+    void setBestTruncatedAt(int y, RenderObject *forRenderer);
+    int bestTruncatedAt() const { return m_bestTruncatedAt; }
+private:
+    int m_bestTruncatedAt;
+    int m_truncatorWidth;
+public:
+#else
+     void setTruncatedAt(int y) { m_truncatedAt = y; }
+#endif
     int truncatedAt() const { return m_truncatedAt; }
 
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
@@ -99,7 +111,7 @@ protected:
 
     // used to ignore viewport width when painting to the printer
     bool m_printingMode;
-    bool m_paintImages;
+    bool m_printImages;
     int m_truncatedAt;
 };
 

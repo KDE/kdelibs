@@ -24,7 +24,7 @@
 #ifndef RENDER_LIST_H
 #define RENDER_LIST_H
 
-#include "render_flow.h"
+#include "rendering/render_block.h"
 
 // ### list-style-position, list-style-image is still missing
 
@@ -56,7 +56,7 @@ public:
     virtual void paint(QPainter *p, int x, int y, int w, int h,
                            int xoff, int yoff, PaintAction);
     virtual void paintObject(QPainter *p, int x, int y, int w, int h,
-                             int xoff, int yoff, PaintAction paintPhase);
+                             int xoff, int yoff, PaintAction paintAction);
     virtual void layout( );
     virtual void calcMinMaxWidth();
 
@@ -74,7 +74,7 @@ protected:
     long m_value;
 };
 
-class RenderListItem : public RenderFlow
+class RenderListItem : public RenderBlock
 {
 public:
     RenderListItem(DOM::NodeImpl*);

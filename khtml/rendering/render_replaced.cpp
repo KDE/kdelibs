@@ -59,9 +59,9 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
 }
 
 void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
-                            int _tx, int _ty, PaintAction paintPhase)
+                            int _tx, int _ty, PaintAction paintAction)
 {
-    if (paintPhase != PaintActionForeground)
+    if (paintAction != PaintActionForeground)
         return;
 
     // not visible or not even once layouted?
@@ -75,7 +75,7 @@ void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
     if(shouldPaintBackgroundOrBorder())
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
 }
 
 void RenderReplaced::calcMinMaxWidth()
@@ -331,9 +331,9 @@ void RenderWidget::setStyle(RenderStyle *_style)
 }
 
 void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx, int _ty,
-                               PaintAction paintPhase)
+                               PaintAction paintAction)
 {
-    if (!m_widget || !m_view || paintPhase != PaintActionForeground)
+    if (!m_widget || !m_view || paintAction != PaintActionForeground)
         return;
 
     // not visible or not even once layouted
@@ -411,8 +411,8 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
         }
         QPainter::redirect(widget, &pm);
         QPaintEvent e( widget->rect(), false );
-        QApplication::sendEvent( widget, &e ); 
-        QPainter::redirect(widget, 0); 
+        QApplication::sendEvent( widget, &e );
+        QPainter::redirect(widget, 0);
         QSharedDoubleBuffer::setDisabled(dsbld);
         p->drawPixmap(tx, ty, pm);
     } else {
@@ -605,15 +605,15 @@ void RenderWidget::deref()
 
 // -----------------------------------------------------------------------------
 
-RenderReplacedFlow::RenderReplacedFlow(DOM::NodeImpl* node)
-    : RenderFlow(node)
+RenderReplacedBlock::RenderReplacedBlock(DOM::NodeImpl* node)
+    : RenderBlock(node)
 {
     assert(node);
     m_intrinsicWidth = 100;
     setReplaced( true );
 }
 
-void RenderReplacedFlow::calcMinMaxWidth()
+void RenderReplacedBlock::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
@@ -622,7 +622,7 @@ void RenderReplacedFlow::calcMinMaxWidth()
     wi = maxw = 0;
 
     while(r) {
-        if(r->isSpecial())
+        if(r->isFloatingOrPositioned())
         {
             r = r->nextSibling();
             continue;
@@ -652,7 +652,7 @@ void RenderReplacedFlow::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-short RenderReplacedFlow::calcObjectWidth( RenderObject *o, short width )
+short RenderReplacedBlock::calcObjectWidth( RenderObject *o, short width )
 {
     for( o = o->firstChild(); o; o = o->nextSibling() )
     {

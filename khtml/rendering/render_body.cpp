@@ -33,7 +33,7 @@ using namespace khtml;
 using namespace DOM;
 
 RenderBody::RenderBody(HTMLBodyElementImpl* element)
-    : RenderFlow(element)
+    : RenderBlock(element)
 {
     scrollbarsStyled = false;
 }
@@ -49,7 +49,7 @@ void RenderBody::setStyle(RenderStyle* style)
     if (style->htmlHacks() && style->position() != STATIC)
         style->setPosition(STATIC);
 
-    RenderFlow::setStyle(style);
+    RenderBlock::setStyle(style);
     element()->getDocument()->setTextColor( style->color() );
     scrollbarsStyled = false;
 }
@@ -89,7 +89,7 @@ void RenderBody::repaint(bool immediate)
 
 void RenderBody::layout()
 {
-    RenderFlow::layout();
+    RenderBlock::layout();
 
     if (!scrollbarsStyled)
     {
@@ -105,7 +105,7 @@ void RenderBody::layout()
 
 int RenderBody::availableHeight() const
 {
-    int h = RenderFlow::availableHeight();
+    int h = RenderBlock::availableHeight();
 
     if( style()->marginTop().isFixed() )
         h  -= style()->marginTop().value();

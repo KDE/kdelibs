@@ -52,7 +52,7 @@ void RenderContainer::detach()
 
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
-	n->removeFromFloatingObjects();
+	n->removeFromObjectLists();
         n->setParent(0);
         next = n->nextSibling();
         n->detach();
@@ -141,25 +141,30 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
 
-    // Keep our layer hierarchy updated.
-    oldChild->removeLayers(enclosingLayer());
+    if ( document()->renderer() ) {
 
-    // if oldChild is the start or end of the selection, then clear
-    // the selection to avoid problems of invalid pointers
+        oldChild->setLayouted( false );
+        oldChild->setMinMaxKnown( false );
+        // Keep our layer hierarchy updated.
+        oldChild->removeLayers(enclosingLayer());
 
-    // ### This is not the "proper" solution... ideally the selection
-    // ### should be maintained based on DOM Nodes and a Range, which
-    // ### gets adjusted appropriately when nodes are deleted/inserted
-    // ### near etc. But this at least prevents crashes caused when
-    // ### the start or end of the selection is deleted and then
-    // ### accessed when the user next selects something.
+        // if oldChild is the start or end of the selection, then clear
+        // the selection to avoid problems of invalid pointers
 
-    if (oldChild->isSelectionBorder()) {
-        RenderObject *root = oldChild;
-        while (root && root->parent())
-            root = root->parent();
-        if (root->isCanvas()) {
-            static_cast<RenderCanvas*>(root)->clearSelection();
+        // ### This is not the "proper" solution... ideally the selection
+        // ### should be maintained based on DOM Nodes and a Range, which
+        // ### gets adjusted appropriately when nodes are deleted/inserted
+        // ### near etc. But this at least prevents crashes caused when
+        // ### the start or end of the selection is deleted and then
+        // ### accessed when the user next selects something.
+
+        if (oldChild->isSelectionBorder()) {
+            RenderObject *root = oldChild;
+            while (root && root->parent())
+                root = root->parent();
+            if (root->isCanvas()) {
+                static_cast<RenderCanvas*>(root)->clearSelection();
+            }
         }
     }
 
@@ -181,64 +186,74 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     setLayouted( false );
     setMinMaxKnown( false );
 
-#if 0
-    // this gives crashes when used with the continuation code. Never
-    // really was the right place to do the cleanup anyways.
-    if ( isAnonymous() && !firstChild() ) {
-	// we are an empty anonymous box. There is no reason for us to continue living.
-	detach( renderArena() );
-    }
-#endif
-
     return oldChild;
 }
 
-void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject* child, RenderObject* beforeChild)
+void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject* child)
 {
+    RenderStyle* pseudo = style()->getPseudoStyle(type);
+    if (!pseudo || pseudo->display() == NONE) {
+        if (child && child->style()->styleType() == type)
+            // The child needs to be removed.
+            removeChild(child);
+        return; // If we have no pseudo-style or if the pseudo's display type is NONE, then we
+                // have no generated content.
+    }
 
-    if (child->isText())
-        return;
+    // FIXME: need to detect when :before/:after content has changed, in addition
+    // to detecting addition/removal.
+    if (child && child->style()->styleType() == type)
+        return; // Generated content is already added.  No need to add more.
 
-    RenderStyle* pseudo = child->style()->getPseudoStyle(type);
+    RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? child : 0;
 
-    if (pseudo && pseudo->display() != NONE ) {
-        pseudo->ref();
+    // From the CSS2 specification:
+    // User agents must ignore the following properties with :before and :after
+    // pseudo-elements: 'position', 'float', list properties, and table properties.
+    // Basically we need to ensure that no RenderLayer gets made for generated
+    // content.
+    pseudo->setPosition(STATIC);
+    pseudo->setFloating(FNONE);
+    pseudo->setOverflow(OVISIBLE); // FIXME: Glazman's blog does this. Wacky.
+                                    // This property might need to be allowed if the
+                                    // generated content is a block.
 
-        // From the CSS2 specification:
-        // User agents must ignore the following properties with
-        // :before and :after pseudo-elements: 'position', 'float',
-        // list properties, and table properties.  Basically we need
-        // to ensure that no RenderLayer gets made for generated
-        // content.
-        pseudo->setPosition(STATIC);
-        pseudo->setFloating(FNONE);
-        pseudo->setOverflow(OVISIBLE); // FIXME: Glazman's blog does this. Wacky.
-                                       // This property might need to be allowed if the
-                                       // generated content is a block.
+    if (isInlineFlow() && pseudo->display() != INLINE)
+        // According to the CSS2 spec (the end of section 12.1), the only allowed
+        // display values for the pseudo style are NONE and INLINE.  Since we already
+        // determined that the pseudo is not display NONE, any display other than
+        // inline should be mutated to INLINE.
+        pseudo->setDisplay(INLINE);
 
-        if (pseudo->contentType()==CONTENT_TEXT)
+    // Now walk our list of generated content and create render objects for every type
+    // we encounter.
+    for (ContentData* contentData = pseudo->contentData();
+         contentData; contentData = contentData->_nextContent) {
+        if (contentData->_contentType == CONTENT_TEXT)
         {
-            RenderObject* po = new (renderArena()) RenderFlow(document() /* anonymous box */);
-            po->setStyle(pseudo);
-            addChild(po, beforeChild);
+            RenderObject* po = RenderFlow::createFlow(document() /* anonymous*/, pseudo, renderArena());
 
-            RenderText* t = new (renderArena()) RenderText(document() /*anonymous object */, pseudo->contentText());
+            RenderText* t = new (renderArena()) RenderText(document() /*anonymous object */, contentData->contentText());
             t->setStyle(pseudo);
             po->addChild(t);
 
-//            kdDebug() << DOM::DOMString(pseudo->contentText()).string() << endl;
+            // Add this after we've installed our text, so that addChild will be able to find the text
+            // inside the inline for e.g., first-letter styling.
+            addChild(po, insertBefore);
+
+//            kdDebug() << DOM::DOMString(contentData->contentText()).string() << endl;
 
             t->close();
             po->close();
         }
-        else if (pseudo->contentType()==CONTENT_OBJECT)
+        else if (contentData->_contentType == CONTENT_OBJECT)
         {
-            RenderObject* po = new (renderArena()) RenderImage(document());
+            RenderImage* po = new (renderArena()) RenderImage( document() /* anonymous */);
             po->setStyle(pseudo);
-            addChild(po, beforeChild);
+            po->setContentObject(contentData->contentObject());
+            addChild(po, insertBefore);
             po->close();
         }
-        pseudo->deref();
     }
 }
 
@@ -321,7 +336,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     while( child ) {
 	RenderObject *next = child->nextSibling();
 
-	if ( child->isFlow() && child->isAnonymous() && !child->continuation() &&
+	if ( child->isRenderBlock() && child->isAnonymous() && !child->continuation() &&
              !child->childrenInline() && !child->isTableCell() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();

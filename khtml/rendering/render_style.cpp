@@ -30,6 +30,7 @@
 #include "kdebug.h"
 
 using namespace khtml;
+using namespace DOM;
 
 /* CSS says Fixde for the default padding value, but we treat variable as 0 padding anyways, and like
  * this is works fine for table paddings aswell
@@ -53,7 +54,7 @@ bool StyleSurroundData::operator==(const StyleSurroundData& o) const
 }
 
 StyleBoxData::StyleBoxData()
-    : z_index( ZAUTO )
+    : z_index( 0 ), z_auto( true )
 {
 }
 
@@ -415,18 +416,6 @@ void RenderStyle::cleanup()
     _default = 0;
 }
 
-void RenderStyle::setContent(CachedObject* o)
-{
-    if ( !content )
-	content = new ContentData;
-    else
-	content->clearContent();
-
-    content->_content.object = o;
-    content->_contentType = o ? CONTENT_OBJECT : CONTENT_NONE;
-}
-
-
 void RenderStyle::setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c)
 {
     visual.access()->palette.setColor(g,r,c);
@@ -441,21 +430,77 @@ void RenderStyle::setClip( Length top, Length right, Length bottom, Length left 
     data->clip.left = left;
 }
 
-void RenderStyle::setContent(DOM::DOMStringImpl* s)
+void RenderStyle::setContent(CachedObject* o, bool add)
 {
-    if ( !content )
-	content = new ContentData;
-    else
-	content->clearContent();
+    if (!o)
+        return; // The object is null. Nothing to do. Just bail.
 
-    content->_content.text = s;
+    ContentData* lastContent = content;
+    while (lastContent && lastContent->_nextContent)
+        lastContent = lastContent->_nextContent;
 
-    if (s) {
-        content->_content.text->ref();
-        content->_contentType = CONTENT_TEXT;
+    bool reuseContent = !add;
+    ContentData* newContentData = 0;
+    if (reuseContent && content) {
+        content->clearContent();
+        newContentData = content;
     }
     else
-        content->_contentType = CONTENT_NONE;
+        newContentData = new ContentData;
+
+    if (lastContent && !reuseContent)
+        lastContent->_nextContent = newContentData;
+    else
+        content = newContentData;
+
+    //    o->ref();
+    newContentData->_content.object = o;
+    newContentData->_contentType = CONTENT_OBJECT;
+}
+
+void RenderStyle::setContent(DOM::DOMStringImpl* s, bool add)
+{
+    if (!s)
+        return; // The string is null. Nothing to do. Just bail.
+
+    ContentData* lastContent = content;
+    while (lastContent && lastContent->_nextContent)
+        lastContent = lastContent->_nextContent;
+
+    bool reuseContent = !add;
+    if (add) {
+        if (!lastContent)
+            return; // Something's wrong.  We had no previous content, and we should have.
+
+        if (lastContent->_contentType == CONTENT_TEXT) {
+            // We can augment the existing string and share this ContentData node.
+            DOMStringImpl* oldStr = lastContent->_content.text;
+            DOMStringImpl* newStr = oldStr->copy();
+            newStr->ref();
+            oldStr->deref();
+            newStr->append(s);
+            lastContent->_content.text = newStr;
+            return;
+        }
+    }
+
+    ContentData* newContentData = 0;
+    if (reuseContent && content) {
+        content->clearContent();
+        newContentData = content;
+    }
+    else
+        newContentData = new ContentData;
+
+    if (lastContent && !reuseContent)
+        lastContent->_nextContent = newContentData;
+    else
+        content = newContentData;
+
+    newContentData->_content.text = s;
+    newContentData->_content.text->ref();
+    newContentData->_contentType = CONTENT_TEXT;
+
 }
 
 ContentData::~ContentData()
@@ -465,6 +510,9 @@ ContentData::~ContentData()
 
 void ContentData::clearContent()
 {
+    delete _nextContent;
+    _nextContent = 0;
+
     switch (_contentType)
     {
         case CONTENT_OBJECT:

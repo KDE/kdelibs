@@ -23,8 +23,9 @@
 #ifndef render_replaced_h
 #define render_replaced_h
 
-#include "render_flow.h"
+#include "rendering/render_block.h"
 #include <qobject.h>
+
 class KHTMLView;
 class QWidget;
 
@@ -49,9 +50,9 @@ public:
     virtual void calcMinMaxWidth();
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintPhase);
+                        int tx, int ty, PaintAction paintAction);
     virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			     PaintAction paintPhase) = 0;
+			     PaintAction paintAction) = 0;
 
     virtual short intrinsicWidth() const { return m_intrinsicWidth; }
     virtual int intrinsicHeight() const { return m_intrinsicHeight; }
@@ -97,7 +98,7 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			     PaintAction paintPhase);
+			     PaintAction paintAction);
 
     virtual bool isWidget() const { return true; };
 
@@ -138,12 +139,12 @@ public:
 
 extern bool allowWidgetPaintEvents;
 
-class RenderReplacedFlow : public RenderFlow
+class RenderReplacedBlock : public RenderBlock
 {
 public:
-    RenderReplacedFlow(DOM::NodeImpl* node);
+    RenderReplacedBlock(DOM::NodeImpl* node);
 
-    virtual const char *renderName() const { return "RenderReplacedFlow"; }
+    virtual const char *renderName() const { return "RenderReplacedBlock"; }
 
 protected:
     virtual void calcMinMaxWidth();

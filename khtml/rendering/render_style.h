@@ -247,8 +247,6 @@ public:
 //------------------------------------------------
 // Box attributes. Not inherited.
 
-const int ZAUTO = 0xfeed4c4b;
-
 class StyleBoxData : public Shared<StyleBoxData>
 {
 public:
@@ -277,7 +275,8 @@ public:
 
     Length vertical_align;
 
-    int z_index;
+    Q_INT32 z_index :31;
+    bool z_auto     : 1;
 };
 
 //------------------------------------------------
@@ -456,16 +455,24 @@ enum ContentType {
 };
 
 struct ContentData {
+    ContentData() : _contentType( CONTENT_NONE ), _nextContent(0) {}
     ~ContentData();
     void clearContent();
 
     ContentType _contentType;
+
+    DOM::DOMStringImpl* contentText()
+    { if (_contentType == CONTENT_TEXT) return _content.text; return 0; }
+    CachedObject* contentObject()
+    { if (_contentType == CONTENT_OBJECT) return _content.object; return 0; }
 
     union {
         CachedObject* object;
         DOM::DOMStringImpl* text;
         // counters...
     } _content ;
+
+    ContentData* _nextContent;
 };
 
 //------------------------------------------------
@@ -875,9 +882,10 @@ public:
     bool flowAroundFloats() const { return  noninherited_flags.f._flowAroundFloats; }
     void setFlowAroundFloats(bool b=true) {  noninherited_flags.f._flowAroundFloats = b; }
 
-    int zIndex() const { return (box->z_index == ZAUTO)? 0 : box->z_index; }
-    void setZIndex(int v) { SET_VAR(box,z_index,v) }
-    bool hasAutoZIndex() const { return box->z_index == ZAUTO; }
+    int zIndex() const { return box->z_auto? 0 : box->z_index; }
+    void setZIndex(int v) { SET_VAR(box,z_auto,false ); SET_VAR(box, z_index, v); }
+    bool hasAutoZIndex() const { return box->z_auto; }
+    void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); }
 
     QPalette palette() const { return visual->palette; }
     void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c);
@@ -887,26 +895,10 @@ public:
     }
 
 
-    ContentType contentType() { return content ? content->_contentType : CONTENT_NONE; }
+    ContentData* contentData() const { return content; }
 
-    DOM::DOMStringImpl* contentText()
-    {
-	if (content && content->_contentType==CONTENT_TEXT)
-	    return content->_content.text;
-	else
-	    return 0;
-    }
-
-    CachedObject* contentObject()
-    {
-	if (content && content->_contentType==CONTENT_OBJECT)
-	    return content->_content.object;
-	else
-	    return 0;
-    }
-
-    void setContent(DOM::DOMStringImpl* s);
-    void setContent(CachedObject* o);
+    void setContent(DOM::DOMStringImpl* s, bool add);
+    void setContent(CachedObject* o, bool add);
 
     bool inheritedNotEqual( RenderStyle *other ) const;
 

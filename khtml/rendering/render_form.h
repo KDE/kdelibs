@@ -269,7 +269,7 @@ private:
 };
 // -------------------------------------------------------------------------
 
-class RenderCustomButton : public RenderReplacedFlow
+class RenderCustomButton : public RenderReplacedBlock
 {
 public:
     RenderCustomButton(DOM::HTMLGenericFormElementImpl *element);
@@ -279,7 +279,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderFieldset : public RenderFlow
+class RenderFieldset : public RenderBlock
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
@@ -342,7 +342,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderLegend : public RenderFlow
+class RenderLegend : public RenderBlock
 {
 public:
     RenderLegend(DOM::HTMLGenericFormElementImpl *element);

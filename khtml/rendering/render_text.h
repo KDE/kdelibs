@@ -114,11 +114,8 @@ public:
 
     /** returns the associated render text
      */
-    const RenderText *renderText() const
-    { return reinterpret_cast<RenderText *>(const_cast<InlineTextBox *>(this)->object()); }
-    /** returns the associated render text
-     */
-    RenderText *renderText() { return reinterpret_cast<RenderText *>(object()); }
+    const RenderText *renderText() const;
+    RenderText *renderText();
 
     int m_start;
     unsigned short m_len;
@@ -162,9 +159,9 @@ public:
 
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintPhase);
+                        int tx, int ty, PaintAction paintAction);
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintPhase);
+                        int tx, int ty, PaintAction paintAction);
 
     void deleteTextBoxes();
     void detach();
@@ -176,7 +173,7 @@ public:
 
     virtual void layout() {assert(false);}
 
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
@@ -201,6 +198,14 @@ public:
     virtual void calcMinMaxWidth();
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
+
+    void trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
+                            short& endMinW, bool& endWS,
+                            bool& hasBreakableChar, bool& hasBreak,
+                            short& beginMaxW, short& endMaxW,
+                            short& minW, short& maxW, bool& stripFrontSpaces);
+
+    bool containsOnlyWhitespace(unsigned int from, unsigned int len) const;
 
     ushort startMin() const { return m_startMin; }
     ushort endMin() const { return m_endMin; }
@@ -285,18 +290,27 @@ protected: // members
     short m_lineHeight;
     short m_minWidth;
     short m_maxWidth;
+    short m_beginMinWidth;
+    short m_endMinWidth;
 
     SelectionState m_selectionState : 3 ;
     bool m_hasReturn : 1;
     bool m_hasBreakableChar : 1;
-    uint unused : 1;
+    bool m_hasBreak : 1;
+    bool m_hasBeginWS : 1;
+    bool m_hasEndWS : 1;
 
-    ushort m_startMin : 9;
-    ushort m_endMin : 9;
+    ushort m_startMin : 8;
+    ushort m_endMin : 8;
     short m_minOfs : 8;		// forced minimum offset
     // all 32 bits used
 };
 
+inline const RenderText* InlineTextBox::renderText() const
+{ return static_cast<RenderText*>( object() ); }
+
+inline RenderText* InlineTextBox::renderText()
+{ return static_cast<RenderText*>( object() ); }
 
 }
 #endif

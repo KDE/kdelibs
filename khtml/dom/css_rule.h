@@ -72,7 +72,7 @@ public:
         MEDIA_RULE = 4,
         FONT_FACE_RULE = 5,
         PAGE_RULE = 6,
-	QUIRKS_RULE = 100
+	QUIRKS_RULE = 100 // KHTML CSS Extension
     };
 
     /**

@@ -2282,7 +2282,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    image = static_cast<CSSImageValueImpl *>(primitiveValue)->image();
 	}
         style->setBackgroundImage(image);
-        //kdDebug( 6080 ) << "setting image in style to " << image->image() << endl;
+        //kdDebug( 6080 ) << "setting image in style to " << image << endl;
         break;
     }
 //     case CSS_PROP_CUE_AFTER:
@@ -2742,13 +2742,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if (!primitiveValue)
                 return;
 
-            if (primitiveValue->getIdent() == CSS_VAL_AUTO) {
-                z_index = ZAUTO;
-            } else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+            if (primitiveValue->getIdent() == CSS_VAL_AUTO)
+                style->setHasAutoZIndex();
+            else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
                 return; // Error case.
-	    else {
+	    else
 		z_index = (int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER);
-	    }
 	}
 
         style->setZIndex(z_index);
@@ -2857,11 +2856,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
-#ifdef APPLE_CHANGES
                 style->setContent(val->getStringValue(), i != 0);
-#else
-                style->setContent(val->getStringValue());
-#endif
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
@@ -2875,13 +2870,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #else
                 int attrID = element->getDocument()->attrNames()->getId(val->getStringValue(), false);
                 if (attrID)
-                    style->setContent(element->getAttribute(attrID).implementation());
+                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
 #endif
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
                 CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
-                style->setContent(image->image());
+                style->setContent(image->image(), i != 0);
             }
 
         }

@@ -1,7 +1,10 @@
 /*
  * This file is part of the render object implementation for KHTML.
  *
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,20 +32,22 @@
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_layer.h"
+#include "rendering/render_block.h"
+
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_formimpl.h"
-#include "render_block.h"
+#include "misc/htmltags.h"
 
 #include "khtmlview.h"
-#include "misc/htmltags.h"
 
 using namespace DOM;
 
 namespace khtml {
 
 RenderBlock::RenderBlock(DOM::NodeImpl* node)
-:RenderFlow(node)
+    : RenderFlow(node)
 {
     m_childrenInline = true;
     m_floatingObjects = 0;
@@ -67,36 +72,33 @@ void RenderBlock::setStyle(RenderStyle* _style)
     RenderFlow::setStyle(_style);
     setInline(false);
 
-    m_pre = false;
-    if (_style->whiteSpace() == PRE)
-        m_pre = true;
+    m_pre = ( _style->whiteSpace() == PRE );
 
     // ### we could save this call when the change only affected
     // non inherited properties
     RenderObject *child = firstChild();
     while (child != 0)
     {
-        if (child->isAnonymousBox())
+        if (child->isAnonymous())
         {
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
             child->setStyle(newStyle);
-            child->setIsAnonymousBox(true);
         }
         child = child->nextSibling();
     }
 
     // Update pseudos for :before and :after now.
-    insertPseudoChild(RenderStyle::BEFORE, firstChild());
-    insertPseudoChild(RenderStyle::AFTER, lastChild());
+    updatePseudoChild(RenderStyle::BEFORE, firstChild());
+    updatePseudoChild(RenderStyle::AFTER, lastChild());
 }
 
 void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
 {
-    setLayouted( false );
+    setLayouted(false);
 
-    bool madeBoxesNonInline = false;
+    bool madeBoxesNonInline = FALSE;
 
     RenderStyle* pseudoStyle=0;
     if ((!firstChild() || firstChild() == beforeChild) &&
@@ -105,7 +107,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     {
         // Drill into inlines looking for our first text child.
         RenderObject* textChild = newChild;
-        while (textChild && !textChild->isText())
+        while (textChild && !( textChild->isText() && !textChild->isBR()) )
             textChild = textChild->firstChild();
 
         if (textChild) {
@@ -120,7 +122,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
             pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
 
-            RenderObject* firstLetter = RenderFlow::createFlow(0, pseudoStyle, renderArena()); // anonymous box
+            RenderObject* firstLetter = RenderFlow::createFlow(document() /* anonymous*/, pseudoStyle, renderArena() );
             firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
 
             DOMStringImpl* oldText = newTextChild->string();
@@ -131,7 +133,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                         ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
                     length++;
                 length++;
-                //kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
+                kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
                 newTextChild->setText(oldText->substring(length,oldText->l-length));
 
                 RenderText* letter = new (renderArena()) RenderText(newTextChild->element(), oldText->substring(0,length));
@@ -150,7 +152,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     if (beforeChild && beforeChild->parent() != this) {
 
         KHTMLAssert(beforeChild->parent());
-        KHTMLAssert(beforeChild->parent()->isAnonymousBox());
+        KHTMLAssert(beforeChild->parent()->isAnonymous());
 
         if (newChild->isInline()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
@@ -164,8 +166,8 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             return addChildToFlow(newChild, beforeChild->parent());
     }
 
-    // prevent non-layouted elements from getting painted by pushing them far above the top of the
-    // page
+    // prevent elements that haven't received a layout yet from getting painted by pushing
+    // them far above the top of the page
     if (!newChild->isInline())
         newChild->setPos(newChild->xPos(), -500000);
 
@@ -183,7 +185,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
         if (beforeChild && beforeChild->parent() != this) {
             beforeChild = beforeChild->parent();
-            KHTMLAssert(beforeChild->isAnonymousBox());
+            KHTMLAssert(beforeChild->isAnonymous());
             KHTMLAssert(beforeChild->parent() == this);
         }
     }
@@ -194,7 +196,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
         // a new one is created and inserted into our list of children in the appropriate position.
         if (newChild->isInline()) {
             if (beforeChild) {
-                if (beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBox()) {
+                if (beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymous()) {
                     beforeChild->previousSibling()->addChild(newChild);
                     newChild->setLayouted( false );
                     newChild->setMinMaxKnown( false );
@@ -202,7 +204,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 }
             }
             else {
-                if (m_last && m_last->isAnonymousBox()) {
+                if (m_last && m_last->isAnonymous()) {
                     m_last->addChild(newChild);
                     newChild->setLayouted( false );
                     newChild->setMinMaxKnown( false );
@@ -211,18 +213,10 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             }
 
             // no suitable existing anonymous box - create a new one
-            RenderStyle *newStyle = new RenderStyle();
-            newStyle->inheritFrom(style());
-            newStyle->setDisplay(BLOCK);
-
-            RenderBlock *newBox = new (renderArena()) RenderBlock(0 /* anonymous box */);
-            newBox->setStyle(newStyle);
-            newBox->setIsAnonymousBox(true);
-
+            RenderBlock* newBox = createAnonymousBlock();
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
             newBox->setPos(newBox->xPos(), -500000);
-
             newChild->setLayouted( false );
             newChild->setMinMaxKnown( false );
             return;
@@ -231,7 +225,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             // We are adding another block child... if the current last child is an anonymous box
             // then it needs to be closed.
             // ### get rid of the closing thing altogether this will only work during initial parsing
-            if (lastChild() && lastChild()->isAnonymousBox()) {
+            if (lastChild() && lastChild()->isAnonymous()) {
                 lastChild()->close();
             }
         }
@@ -306,14 +300,7 @@ void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
 
         child = inlineRunEnd->nextSibling();
 
-        RenderStyle *newStyle = new RenderStyle();
-        newStyle->inheritFrom(style());
-        newStyle->setDisplay(BLOCK);
-
-        RenderBlock *box = new (renderArena()) RenderBlock(0 /* anonymous box */);
-        box->setStyle(newStyle);
-        box->setIsAnonymousBox(true);
-
+        RenderBlock* box = createAnonymousBlock();
         insertChildNode(box, inlineRunStart);
         RenderObject* o = inlineRunStart;
         while(o != inlineRunEnd)
@@ -325,10 +312,10 @@ void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
         box->appendChildNode(removeChildNode(inlineRunEnd));
         box->close();
         box->setPos(box->xPos(), -500000);
-        box->setLayouted(false);
+        box->setLayouted( false );
     }
 
-    setLayouted(false);
+    setLayouted( false );
 }
 
 void RenderBlock::removeChild(RenderObject *oldChild)
@@ -339,9 +326,9 @@ void RenderBlock::removeChild(RenderObject *oldChild)
     RenderObject* prev = oldChild->previousSibling();
     RenderObject* next = oldChild->nextSibling();
     bool mergedBlocks = false;
-    if (!isInline() && !oldChild->isInline() && !oldChild->continuation() &&
-        prev && prev->isAnonymousBox() && prev->childrenInline() &&
-        next && next->isAnonymousBox() && next->childrenInline()) {
+    if (document()->renderer() && !isInline() && !oldChild->isInline() && !oldChild->continuation() &&
+        prev && prev->isAnonymous() && prev->childrenInline() &&
+        next && next->isAnonymous() && next->childrenInline()) {
         // Take all the children out of the |next| block and put them in
         // the |prev| block.
         RenderObject* o = next->firstChild();
@@ -349,14 +336,14 @@ void RenderBlock::removeChild(RenderObject *oldChild)
             RenderObject* no = o;
             o = no->nextSibling();
             prev->appendChildNode(next->removeChildNode(no));
-            no->setLayouted(false);
-            no->setMinMaxKnown(false);
+            no->setMinMaxKnown( false );
+            no->setLayouted( false );
         }
-        prev->setLayouted(false);
-        prev->setMinMaxKnown(false);
+        prev->setMinMaxKnown( false );
+        prev->setLayouted( false );
 
         // Nuke the now-empty block.
-        next->detach(renderArena());
+        next->detach();
 
         mergedBlocks = true;
     }
@@ -374,14 +361,14 @@ void RenderBlock::removeChild(RenderObject *oldChild)
             RenderObject* no = o;
             o = no->nextSibling();
             appendChildNode(anonBlock->removeChildNode(no));
-            no->setLayouted(false);
-            no->setMinMaxKnown(false);
+            no->setMinMaxKnown( false );
+            no->setLayouted( false );
         }
-        setLayouted(false);
-        setMinMaxKnown(false);
+        setMinMaxKnown( false );
+        setLayouted( false );
 
         // Nuke the now-empty block.
-        anonBlock->detach(renderArena());
+        anonBlock->detach();
     }
 }
 
@@ -394,30 +381,25 @@ void RenderBlock::layout()
 
 void RenderBlock::layoutBlock(bool relayoutChildren)
 {
-    //    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
+    //    kdDebug( 6040 ) << renderName() << " " << this << "::layoutBlock() start" << endl;
     //     QTime t;
     //     t.start();
-
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
+
     if (isInline()) // Inline <form>s inside various table elements can cause us to
-        return;		// come in here.  Just bail. -dwh
+        return;	    // come in here.  Just bail. -dwh
 
     int oldWidth = m_width;
 
     calcWidth();
     m_overflowWidth = m_width;
 
-    bool relayoutChildren = false;
     if ( oldWidth != m_width )
         relayoutChildren = true;
 
-    // need a small hack here, as tables are done a bit differently
-    if ( isTableCell() )
-        relayoutChildren = true;
-
     //     kdDebug( 6040 ) << floatingObjects << "," << oldWidth << ","
-    //                     << m_width << ","<< layouted() << "," << isAnonymousBox() << ","
+    //                     << m_width << ","<< needsLayout() << "," << isAnonymousBox() << ","
     //                     << overhangingContents() << "," << isPositioned() << endl;
 
 #ifdef DEBUG_LAYOUT
@@ -445,13 +427,26 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if (!isTableCell()) {
         initMaxMarginValues();
 
-        m_topMarginQuirk = style()->marginTop().quirk;
-        m_bottomMarginQuirk = style()->marginBottom().quirk;
+        m_topMarginQuirk = style()->marginTop().isQuirk();
+        m_bottomMarginQuirk = style()->marginBottom().isQuirk();
 
-        if (element() && element()->id() == ID_FORM && element()->isMalformed())
+#warning FIXME
+        if (element() && element()->id() == ID_FORM /*&& element()->isMalformed()*/)
             // See if this form is malformed (i.e., unclosed). If so, don't give the form
             // a bottom margin.
             m_maxBottomPosMargin = m_maxBottomNegMargin = 0;
+    }
+
+    if (style()->scrollsOverflow() && m_layer) {
+        // For overflow:scroll blocks, ensure we have both scrollbars in place always.
+        if (style()->overflow() == OSCROLL) {
+            m_layer->showScrollbar( Qt::Horizontal, true );
+            m_layer->showScrollbar( Qt::Vertical, true );
+        }
+
+        // Move the scrollbars aside during layout.  The layer will move them back when it
+        // does painting or event handling.
+        m_layer->moveScrollbarsAside();
     }
 
     // A quirk that has become an unfortunate standard.  Positioned elements, floating elements
@@ -460,10 +455,14 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     bool canCollapseOwnMargins = !isPositioned() && !isFloating() && !isTableCell();
 
     //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
-    if(childrenInline())
+    if (childrenInline())
         layoutInlineChildren( relayoutChildren );
     else
         layoutBlockChildren( relayoutChildren );
+
+    // Expand our intrinsic height to encompass floats.
+    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || style()->hidesOverflow()) )
+        m_height = floatBottom() + borderBottom() + paddingBottom();
 
     int oldHeight = m_height;
     calcHeight();
@@ -482,13 +481,13 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // blocks that have overflowed content.
         // Check for an overhanging float first.
         // FIXME: This needs to look at the last flow, not the last child.
-        if (lastChild() && lastChild()->hasOverhangingFloats() ) {
+        if (lastChild() && lastChild()->hasOverhangingFloats()) {
             KHTMLAssert(lastChild()->isRenderBlock());
             m_height = lastChild()->yPos() + static_cast<RenderBlock*>(lastChild())->floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
 
-        if (m_overflowHeight > m_height)
+        if (m_overflowHeight > m_height && !style()->hidesOverflow())
             m_height = m_overflowHeight + borderBottom() + paddingBottom();
     }
 
@@ -520,11 +519,10 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if (m_overflowWidth < m_width)
         m_overflowWidth = m_width;
 
-    // overflow:hidden will just clip, so we don't have overflow.
-    if (style()->overflow()==OHIDDEN) {
-        m_overflowHeight = m_height;
-        m_overflowWidth = m_width;
-    }
+    // Update our scrollbars if we're overflow:auto/scroll now that we know if
+    // we overflow or not.
+    if (style()->scrollsOverflow() && m_layer)
+        m_layer->checkScrollbarsAfterLayout();
 
     setLayouted();
 }
@@ -535,21 +533,19 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     kdDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren << endl;
 #endif
 
-    int xPos = 0;
-    int toAdd = 0;
+    int xPos = borderLeft() + paddingLeft();
+    if( style()->direction() == RTL )
+        xPos = m_width - paddingRight() - borderRight();
 
-    m_height = 0;
+    int toAdd = borderBottom() + paddingBottom();
+    m_height = borderTop() + paddingTop();
 
-    xPos += borderLeft() + paddingLeft();
-    m_height += borderTop() + paddingTop();
-    toAdd += borderBottom() + paddingBottom();
+    // Fieldsets need to find their legend and position it inside the border of the object.
+    // The legend then gets skipped during normal layout.
+    RenderObject* legend = layoutLegend(relayoutChildren);
 
     int minHeight = m_height + toAdd;
     m_overflowHeight = m_height;
-
-    if( style()->direction() == RTL ) {
-        xPos = marginLeft() + m_width - paddingRight() - borderRight();
-    }
 
     RenderObject *child = firstChild();
     RenderBlock *prevFlow = 0;
@@ -569,7 +565,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // For now we only worry about the top border/padding.  We will update the variable's
     // value when it comes time to check against the bottom border/padding.
     bool canCollapseWithChildren = !isCanvas() && !isRoot() && !isPositioned() &&
-        !isFloating() && !isTableCell() && (m_height == 0);
+        !isFloating() && !isTableCell() && !style()->hidesOverflow();
+    bool canCollapseTopWithChildren = canCollapseWithChildren && (m_height == 0);
 
     // Whether or not we are a quirky container, i.e., do we collapse away top and bottom
     // margins in our container.
@@ -588,8 +585,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     bool topMarginContributor = true;
 
     // These flags track the previous maximal positive and negative margins.
-    int prevPosMargin = canCollapseWithChildren ? maxTopMargin(true) : 0;
-    int prevNegMargin = canCollapseWithChildren ? maxTopMargin(false) : 0;
+    int prevPosMargin = canCollapseTopWithChildren ? maxTopMargin(true) : 0;
+    int prevNegMargin = canCollapseTopWithChildren ? maxTopMargin(false) : 0;
 
     // Whether or not we encountered an element with clear set that actually had to
     // be pushed down below a float.
@@ -602,37 +599,58 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     bool bottomChildQuirk = false;
     bool determinedTopQuirk = false;
 
-    bool strictMode = isAnonymousBox() ? true : (!element()->getDocument()->inQuirksMode());
+    bool strictMode = !style()->htmlHacks();
 
     //kdDebug() << "RenderBlock::layoutBlockChildren " << prevMargin << endl;
 
     // take care in case we inherited floats
     if (child && floatBottom() > m_height)
-        child->setLayouted(false);
+        child->setLayouted( false );
 
     //     QTime t;
     //     t.start();
 
     while( child != 0 )
     {
+        if (legend == child) {
+            child = child->nextSibling();
+            continue; // Skip the legend, since it has already been positioned up in the fieldset's border.
+        }
+
         // make sure we relayout children if we need it.
         if ( relayoutChildren || floatBottom() > m_y ||
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
-            child->setLayouted(false);
+            child->setLayouted( false );
 
-        //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+        //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->needsLayout() << endl;
         //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
 
         if (child->isPositioned())
         {
             child->containingBlock()->insertPositionedObject(child);
+            RenderStyle* s = child->style();
+
+            if ( child->isBox() &&
+                 ( ( s->left().isVariable() && s->right().isVariable() ) ||
+                 s->left().isStatic() || s->right().isStatic() ) ) {
+                if (style()->direction() == LTR)
+                    static_cast<RenderBox*>( child )->setStaticX(xPos);
+                else
+                    static_cast<RenderBox*>( child )->setStaticX(borderRight()+paddingRight());
+            }
+            if ( child->isBox() &&
+                 ( ( s->top().isVariable() && s->bottom().isVariable() ) ||
+                 s->top().isStatic() ) ) {
+                int yPosEstimate = m_height;
+                if (prevFlow)
+                    yPosEstimate += prevFlow->collapsedMarginBottom();
+                static_cast<RenderBox*>( child )->setStaticY( yPosEstimate );
+            }
             child = child->nextSibling();
             continue;
-        } else if ( child->isReplaced() ) {
-            if ( !child->layouted() )
-                child->layout();
-        }
+        } else if (child->isReplaced() && !child->layouted())
+            child->layout();
 
         if ( child->isFloating() ) {
             insertFloatingObject( child );
@@ -640,12 +658,15 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             // The float should be positioned taking into account the bottom margin
             // of the previous flow.  We add that margin into the height, get the
             // float positioned properly, and then subtract the margin out of the
-            // height again. -dwh
-            if (prevFlow)
-                m_height += prevFlow->collapsedMarginBottom();
+            // height again.  In the case of self-collapsing blocks, we always just
+            // use the top margins, since the self-collapsing block collapsed its
+            // own bottom margin into its top margin. -dwh
+            int marginOffset = prevFlow ? (prevFlow->isSelfCollapsingBlock() ?
+                                           prevFlow->collapsedMarginTop() :
+                                           prevFlow->collapsedMarginBottom()) : 0;
+            m_height += marginOffset;
             positionNewFloats();
-            if (prevFlow)
-                m_height -= prevFlow->collapsedMarginBottom();
+            m_height -= marginOffset;
 
             //kdDebug() << "RenderBlock::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
             child = child->nextSibling();
@@ -663,7 +684,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             RenderObject* curr = next;
             while (curr && curr->isFloatingOrPositioned())
                 curr = curr->nextSibling();
-            if (curr && curr->isRenderBlock() && !curr->isAnonymousBox() &&
+            if (curr && curr->isRenderBlock() && !curr->isAnonymous() &&
                 !curr->isCompact() && !curr->isRunIn()) {
                 curr->calcWidth(); // So that horizontal margins are correct.
                 // Need to compute margins for the child as though it is a block.
@@ -706,7 +727,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             RenderObject* curr = child->nextSibling();
             while (curr && curr->isFloatingOrPositioned())
                 curr = curr->nextSibling();
-            if (curr && (curr->isRenderBlock() && !curr->isAnonymousBox() && curr->childrenInline() &&
+            if (curr && (curr->isRenderBlock() && !curr->isAnonymous() && curr->childrenInline() &&
                          !curr->isCompact() && !curr->isRunIn())) {
                 // The block acts like an inline, so just null out its
                 // position.
@@ -727,7 +748,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // Note this occurs after the test for positioning and floating above, since
         // we want to ensure that we don't artificially increase our height because of
         // a positioned or floating child.
-        if ( child->style()->flowAroundFloats() && !child->isFloating() &&
+        if ( (child->style()->hidesOverflow() || child->style()->flowAroundFloats())
+             && !child->isFloating() &&
              style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
             m_height = kMax( m_height, floatBottom() );
             shouldCollapseChild = false;
@@ -746,11 +768,11 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         {
             yPosEstimate += kMax(prevFlow->collapsedMarginBottom(), child->marginTop());
             if (prevFlow->yPos()+prevFlow->floatBottom() > yPosEstimate)
-                child->setLayouted(false);
+                child->setLayouted( false );
             else
                 prevFlow=0;
         }
-        else if (!canCollapseWithChildren || !topMarginContributor)
+        else if (!canCollapseTopWithChildren || !topMarginContributor)
             yPosEstimate += child->marginTop();
 
         // Go ahead and position the child as though it didn't collapse with the top.
@@ -762,20 +784,15 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // values.
         if (shouldCollapseChild) {
             // Get our max pos and neg top margins.
-            int posTop = child->maxTopMargin(true);
-            int negTop = child->maxTopMargin(false);
-
-            // XXX A hack we have to put in to deal with the fact
-            // that KHTML morphs inlines with blocks
-            // inside them into blocks themselves. -dwh
-            if (!strictMode && child->style()->display() == INLINE && child->marginTop())
-                posTop = negTop = 0;
+            int posTop =  kMax( int( child->marginTop() ), 0 );
+            int negTop = -kMin( int( child->marginTop() ), 0 );
 
             // See if the top margin is quirky. We only care if this child has
             // margins that will collapse with us.
-            bool topQuirk = child->isTopMarginQuirk();
+            bool topQuirk = child->isBlockFlow() &&
+                            static_cast<RenderBlock*>( this )->m_topMarginQuirk;
 
-            if (canCollapseWithChildren && topMarginContributor && !clearOccurred) {
+            if (canCollapseTopWithChildren && topMarginContributor && !clearOccurred) {
                 // This child is collapsing with the top of the
                 // block.  If it has larger margin values, then we need to update
                 // our own maximal values.
@@ -826,7 +843,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             }
             else {
                 if (!topMarginContributor ||
-                    (!canCollapseWithChildren
+                    (!canCollapseTopWithChildren
                      && (strictMode || !quirkContainer || !topChildQuirk)
                      )) {
                     // We're collapsing with a previous sibling's margins and not
@@ -839,12 +856,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 }
                 prevPosMargin = child->maxBottomMargin(true);
                 prevNegMargin = child->maxBottomMargin(false);
-
-                // XXX A hack we have to put in to deal with the fact
-                // that KHTML morphs inlines with blocks
-                // inside them into blocks themselves.
-                if (!strictMode && child->style()->display() == INLINE && child->marginBottom())
-                    prevPosMargin = prevNegMargin = 0;
 
                 if (prevPosMargin-prevNegMargin) {
                     bottomChildQuirk = child->isBottomMarginQuirk();
@@ -860,14 +871,13 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                     // property set, when the child shifts to clear an item, its width can
                     // change (because it has more available line width).
                     // So go ahead an mark the item as dirty.
-                    child->setLayouted(false);
+                    child->setLayouted( false );
 
-                if (child->containsFloats() || containsFloats())
+                if (child->hasFloats() || hasFloats())
                     child->markAllDescendantsWithFloatsForLayout();
 
                 // Our guess was wrong. Make the child lay itself out again.
-                if (!child->layouted())
-                    child->layout();
+                if ( !child->layouted() ) child->layout();
             }
         }
 
@@ -897,11 +907,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 // property set, when the child shifts to clear an item, its width can
                 // change (because it has more available line width).
                 // So go ahead an mark the item as dirty.
-                child->setLayouted(false);
-            if (child->containsFloats())
+                child->setLayouted( false );
+            if (child->hasFloats())
                 child->markAllDescendantsWithFloatsForLayout();
-            if (!child->layouted())
-                child->layout();
+            if ( !child->layouted() ) child->layout();
         }
 
         // Reset the top margin contributor to false if we encountered
@@ -912,9 +921,11 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         int chPos = xPos + child->marginLeft();
 
-        if(style()->direction() == LTR) {
+        if (style()->direction() == LTR) {
             // html blocks flow around floats
-            if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() ) 			{
+            if (child->style()->hidesOverflow() ||
+                 (( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats()))
+            {
                 int leftOff = leftOffset(m_height);
                 if (leftOff != xPos) {
                     // The object is shifting right. The object might be centered, so we need to
@@ -930,31 +941,37 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 }
             }
         } else {
-            chPos -= child->width() + child->marginLeft() + child->marginRight();
-            if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
+            chPos -= child->width() + child->marginRight();
+            if (child->style()->hidesOverflow() ||
+                ((style()->htmlHacks() || child->isTable()) && child->style()->flowAroundFloats()))
                 chPos -= leftOffset(m_height);
         }
 
         child->setPos(chPos, child->yPos());
 
         m_height += child->height();
-        if (m_overflowHeight < m_height) {
-            int overflowDelta = child->overflowHeight() - child->height();
-            if (m_height + overflowDelta > m_overflowHeight)
-                m_overflowHeight = m_height + overflowDelta;
-        }
+        int overflowDelta = - child->height() ;
+        if ( child->isBlockFlow () && !child->isTable() && child->style()->hidesOverflow() )
+            overflowDelta += child->height();
+        else
+            overflowDelta += child->overflowHeight();
+
+        if (m_height + overflowDelta > m_overflowHeight)
+            m_overflowHeight = m_height + overflowDelta;
 
         if (child->isRenderBlock())
             prevFlow = static_cast<RenderBlock*>(child);
 
-        if ( child->hasOverhangingFloats() ) {
-            // need to add the float to our special objects
+        if (child->hasOverhangingFloats() && !child->style()->hidesOverflow()) {
+            // need to add the child's floats to our floating objects list, but not in the case where
+            // overflow is auto/scroll
             addOverHangingFloats( static_cast<RenderBlock *>(child), -child->xPos(), -child->yPos(), true );
         }
 
         // See if this child has made our overflow need to grow.
         // XXXdwh Work with left overflow as well as right overflow.
-        int rightChildPos = child->overflowWidth() + child->xPos();
+        int rightChildPos = child->xPos() + kMax(child->overflowWidth(),
+                                                 child->width() + child->marginRight());
         if (rightChildPos > m_overflowWidth)
             m_overflowWidth = rightChildPos;
 
@@ -983,18 +1000,16 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         child = child->nextSibling();
     }
 
-    bool autoHeight = style()->height().isVariable() && style()->height().value == 0;
-
     // If any height other than auto is specified in CSS, then we don't collapse our bottom
     // margins with our children's margins.  To do otherwise would be to risk odd visual
     // effects when the children overflow out of the parent block and yet still collapse
     // with it.  We also don't collapse if we had any bottom border/padding (represented by
     // |toAdd|).
-    if (canCollapseWithChildren && (toAdd || !autoHeight))
-        canCollapseWithChildren = false;
+    bool canCollapseBottomWithChildren = canCollapseWithChildren && (toAdd == 0) &&
+        (style()->height().isVariable() && style()->height().value() == 0);
 
     // If we can't collapse with children then go ahead and add in the bottom margins.
-    if (!canCollapseWithChildren
+    if (!canCollapseBottomWithChildren
         && (strictMode || !quirkContainer || !bottomChildQuirk))
         m_height += prevPosMargin - prevNegMargin;
 
@@ -1009,7 +1024,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     if (m_overflowHeight < m_height)
         m_overflowHeight = m_height;
 
-    if (canCollapseWithChildren && !topMarginContributor) {
+    if (canCollapseBottomWithChildren && !topMarginContributor) {
         // Update our max pos/neg bottom margins, since we collapsed our bottom margins
         // with our children.
         if (prevPosMargin > m_maxBottomPosMargin)
@@ -1029,8 +1044,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     }
 
     setLayouted();
-
-    // kdDebug( 6040 ) << "layouted = " << layouted_ << endl;
 }
 
 void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
@@ -1055,7 +1068,7 @@ void RenderBlock::paint(QPainter* p, int _x, int _y, int _w, int _h, int _tx, in
     _ty += m_y;
 
     // check if we need to do anything at all...
-    if (!isInlineFlow() && !overhangingContents() && !isRelPositioned() && !isPositioned() )
+    if (!isRoot() && !isInlineFlow() && !overhangingContents() && !isRelPositioned() && !isPositioned() )
     {
         int h = m_overflowHeight;
         int yPos = _ty;
@@ -1080,39 +1093,52 @@ void RenderBlock::paintObject(QPainter *p, int _x, int _y,
 {
 
 #ifdef DEBUG_LAYOUT
-    //    kdDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
+    //kdDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
     // If we're a repositioned run-in, don't paint background/borders.
     bool inlineFlow = isInlineFlow();
 
     // 1. paint background, borders etc
-    if (!inlineFlow && paintAction == PaintActionBackground &&
-        shouldPaintBackgroundOrBorder() && style()->visibility() == VISIBLE )
+    if (!inlineFlow &&
+        (paintAction == PaintActionElementBackground || paintAction == PaintActionChildBackground ) &&
+         shouldPaintBackgroundOrBorder() && style()->visibility() == VISIBLE)
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 2. paint contents
+    if ( paintAction == PaintActionElementBackground )
+        return;
+
+    if ( paintAction == PaintActionChildBackgrounds )
+        paintAction = PaintActionChildBackground;
+
     paintLineBoxBackgroundBorder(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+
+    // 2. paint contents
+    int scrolledX = _tx;
+    int scrolledY = _ty;
+    if (style()->hidesOverflow() && m_layer)
+        m_layer->subtractScrollOffset(scrolledX, scrolledY);
     RenderObject *child = firstChild();
     while(child != 0)
     {
         if(!child->layer() && !child->isFloating())
-            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+            child->paint(p, _x, _y, _w, _h, scrolledX, scrolledY, paintAction);
         child = child->nextSibling();
     }
-    paintLineBoxDecorations(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintLineBoxDecorations(p, _x, _y, _w, _h, scrolledX, scrolledY, paintAction);
 
     // 3. paint floats.
     if (!inlineFlow && (paintAction == PaintActionFloat || paintAction == PaintActionSelection))
-        paintFloats(p, _x, _y, _w, _h, _tx, _ty, paintAction == PaintActionSelection);
+        paintFloats(p, _x, _y, _w, _h, scrolledX, scrolledY, paintAction == PaintActionSelection);
 
-    if (!inlineFlow && paintAction == PaintActionBackground &&
+    // 4. paint outline.
+    if (!inlineFlow && paintAction == PaintActionForeground &&
         !childrenInline() && style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
     if ( style() && style()->visibility() == VISIBLE ) {
-        if(isAnonymousBox())
+        if(isAnonymous())
             outlineBox(p, _tx, _ty, "green");
         if(isFloating())
             outlineBox(p, _tx, _ty, "yellow");
@@ -1132,7 +1158,7 @@ void RenderBlock::paintFloats(QPainter *p, int _x, int _y,
     QPtrListIterator<FloatingObject> it(*m_floatingObjects);
     for ( ; (r = it.current()); ++it) {
         // Only paint the object if our noPaint flag isn't set.
-        if (r->node->isFloating() && !r->noPaint) {
+        if (r->node->isFloating() && !r->noPaint && !r->node->layer()) {
             if (paintSelection) {
                 r->node->paint(p, _x, _y, _w, _h,
                                _tx + r->left - r->node->xPos() + r->node->marginLeft(),
@@ -1143,7 +1169,11 @@ void RenderBlock::paintFloats(QPainter *p, int _x, int _y,
                 r->node->paint(p, _x, _y, _w, _h,
                                _tx + r->left - r->node->xPos() + r->node->marginLeft(),
                                _ty + r->startY - r->node->yPos() + r->node->marginTop(),
-                               PaintActionBackground);
+                               PaintActionElementBackground);
+                r->node->paint(p, _x, _y, _w, _h,
+                               _tx + r->left - r->node->xPos() + r->node->marginLeft(),
+                               _ty + r->startY - r->node->yPos() + r->node->marginTop(),
+                               PaintActionChildBackgrounds);
                 r->node->paint(p, _x, _y, _w, _h,
                                _tx + r->left - r->node->xPos() + r->node->marginLeft(),
                                _ty + r->startY - r->node->yPos() + r->node->marginTop(),
@@ -1364,9 +1394,28 @@ void RenderBlock::newLine()
 int
 RenderBlock::leftOffset() const
 {
-    int left = 0;
+    return borderLeft()+paddingLeft();
+}
 
-    left += borderLeft() + paddingLeft();
+int
+RenderBlock::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
+{
+    int left = fixedOffset;
+    if (m_floatingObjects) {
+        if ( heightRemaining ) *heightRemaining = 1;
+        FloatingObject* r;
+        QPtrListIterator<FloatingObject> it(*m_floatingObjects);
+        for ( ; (r = it.current()); ++it )
+        {
+            //kdDebug( 6040 ) <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+            if (r->startY <= y && r->endY > y &&
+                r->type == FloatingObject::FloatLeft &&
+                r->left + r->width > left) {
+                left = r->left + r->width;
+                if ( heightRemaining ) *heightRemaining = r->endY - y;
+            }
+        }
+    }
 
     if ( m_firstLine && style()->direction() == LTR ) {
         int cw=0;
@@ -1375,29 +1424,6 @@ RenderBlock::leftOffset() const
         left += style()->textIndent().minWidth(cw);
     }
 
-    return left;
-}
-
-int
-RenderBlock::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
-{
-    int left = fixedOffset;
-    if(!m_floatingObjects)
-        return left;
-
-    if ( heightRemaining ) *heightRemaining = 1;
-    FloatingObject* r;
-    QPtrListIterator<FloatingObject> it(*m_floatingObjects);
-    for ( ; (r = it.current()); ++it )
-    {
-        //kdDebug( 6040 ) <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
-        if (r->startY <= y && r->endY > y &&
-            r->type == FloatingObject::FloatLeft &&
-            r->left + r->width > left) {
-            left = r->left + r->width;
-            if ( heightRemaining ) *heightRemaining = r->endY - y;
-        }
-    }
     //kdDebug( 6040 ) << "leftOffset(" << y << ") = " << left << endl;
     return left;
 }
@@ -1405,17 +1431,9 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 int
 RenderBlock::rightOffset() const
 {
-    int right = m_width;
-
-    right -= borderRight() + paddingRight();
-
-    if ( m_firstLine && style()->direction() == RTL ) {
-        int cw=0;
-        if (style()->textIndent().isPercent())
-            cw = containingBlock()->contentWidth();
-        right += style()->textIndent().minWidth(cw);
-    }
-
+    int right = m_width - borderRight() - paddingRight();
+    if (style()->scrollsOverflow() && m_layer)
+        right -= m_layer->verticalScrollbarWidth();
     return right;
 }
 
@@ -1424,21 +1442,29 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 {
     int right = fixedOffset;
 
-    if (!m_floatingObjects) return right;
-
-    if (heightRemaining) *heightRemaining = 1;
-    FloatingObject* r;
-    QPtrListIterator<FloatingObject> it(*m_floatingObjects);
-    for ( ; (r = it.current()); ++it )
-    {
-        //kdDebug( 6040 ) << "right: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
-        if (r->startY <= y && r->endY > y &&
-            r->type == FloatingObject::FloatRight &&
-            r->left < right) {
-            right = r->left;
-            if ( heightRemaining ) *heightRemaining = r->endY - y;
+    if (m_floatingObjects) {
+        if (heightRemaining) *heightRemaining = 1;
+        FloatingObject* r;
+        QPtrListIterator<FloatingObject> it(*m_floatingObjects);
+        for ( ; (r = it.current()); ++it )
+        {
+            //kdDebug( 6040 ) << "right: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+            if (r->startY <= y && r->endY > y &&
+                r->type == FloatingObject::FloatRight &&
+                r->left < right) {
+                right = r->left;
+                if ( heightRemaining ) *heightRemaining = r->endY - y;
+            }
         }
     }
+
+    if ( m_firstLine && style()->direction() == RTL ) {
+        int cw=0;
+        if (style()->textIndent().isPercent())
+            cw = containingBlock()->contentWidth();
+        right += style()->textIndent().minWidth(cw);
+    }
+
     //kdDebug( 6040 ) << "rightOffset(" << y << ") = " << right << endl;
     return right;
 }
@@ -1463,8 +1489,7 @@ RenderBlock::nearestFloatBottom(int height) const
     return kMax(bottom, height);
 }
 
-int
-RenderBlock::floatBottom() const
+int RenderBlock::floatBottom() const
 {
     if (!m_floatingObjects) return 0;
     int bottom=0;
@@ -1476,18 +1501,13 @@ RenderBlock::floatBottom() const
     return bottom;
 }
 
-int
-RenderBlock::lowestPosition() const
+int RenderBlock::lowestPosition() const
 {
-    // We don't make any attempt to have this be correct for
-    // any single object, since this is only done for the entire
-    // render tree as a whole. Instead the focus is on visiting
-    // each object once. If we visit an object more than once,
-    // then this becomes an exponential algorithm.
-
-    // FIXME: Maybe we can use m_overflowHeight instead?
-
     int bottom = RenderFlow::lowestPosition();
+    if (!isCanvas() && style()->hidesOverflow())
+        return bottom;
+    if (m_overflowHeight > bottom)
+        bottom = m_overflowHeight;
 
     if (m_floatingObjects) {
         FloatingObject* r;
@@ -1500,7 +1520,9 @@ RenderBlock::lowestPosition() const
         }
     }
 
-    if (m_positionedObjects) {
+    // Fixed positioned objects do not scroll and thus should not constitute
+    // part of the lowest position.
+    if (m_positionedObjects && !isCanvas()) {
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
@@ -1512,17 +1534,13 @@ RenderBlock::lowestPosition() const
     return bottom;
 }
 
-int RenderBlock::rightmostPosition() const
+short RenderBlock::rightmostPosition() const
 {
-    // We don't make any attempt to have this be correct for
-    // any single object, since this is only done for the entire
-    // render tree as a whole. Instead the focus is on visiting
-    // each object once. If we visit an object more than once,
-    // then this becomes an exponential algorithm.
-
-    // FIXME: Maybe we can use m_overflowWidth instead?
-
     int right = RenderFlow::rightmostPosition();
+    if (!isCanvas() && style()->hidesOverflow())
+        return right;
+    if (m_overflowWidth > right)
+        right = m_overflowWidth;
 
     if (m_floatingObjects) {
         FloatingObject* r;
@@ -1535,7 +1553,7 @@ int RenderBlock::rightmostPosition() const
         }
     }
 
-    if (m_positionedObjects) {
+    if (m_positionedObjects && !isCanvas()) {
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
         for ( ; (r = it.current()); ++it ) {
@@ -1591,7 +1609,8 @@ RenderBlock::clearFloats()
     // pass fAF's unless they contain overhanging stuff
     bool parentHasFloats = false;
     while (prev) {
-        if (!prev->isRenderBlock() || prev->isFloating() ||
+        if (!prev->isRenderBlock() || prev->isFloating() || prev->isPositioned() ||
+            prev->style()->hidesOverflow() ||
             (prev->style()->flowAroundFloats() &&
              // A <table> or <ul> can have a height of 0, so its ypos may be the same
              // as m_y.  That's why we have a <= and not a < here. -dwh
@@ -1605,18 +1624,18 @@ RenderBlock::clearFloats()
     }
 
     int offset = m_y;
+    if (parentHasFloats)
+        addOverHangingFloats( static_cast<RenderBlock *>( parent() ),
+                              parent()->borderLeft() + parent()->paddingLeft(), offset, false );
 
-    if ( parentHasFloats ) {
-        addOverHangingFloats( static_cast<RenderBlock *>( parent() ), parent()->borderLeft() + parent()->paddingLeft() , offset, false );
-    }
-
-    if(prev ) {
+    int xoffset = 0;
+    if (prev) {
         if(prev->isTableCell()) return;
-
         offset -= prev->yPos();
     } else {
         prev = parent();
         if(!prev) return;
+        xoffset += prev->borderLeft() + prev->paddingLeft();
     }
     //kdDebug() << "RenderBlock::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev<< endl;
 
@@ -1624,11 +1643,11 @@ RenderBlock::clearFloats()
     if(!prev->isRenderBlock()) return;
     RenderBlock * flow = static_cast<RenderBlock *>(prev);
     if(!flow->m_floatingObjects) return;
-    if( ( style()->htmlHacks() || isTable() ) && style()->flowAroundFloats())
-        return; //html tables and lists flow as blocks
+    if (style()->hidesOverflow() || (( style()->htmlHacks() || isTable() ) && style()->flowAroundFloats()))
+        return; // these elements don't allow floats from previous blocks to intrude into their space.
 
     if(flow->floatBottom() > offset)
-        addOverHangingFloats( flow, 0, offset );
+        addOverHangingFloats( flow, xoffset, offset );
 }
 
 void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset, bool child )
@@ -1637,7 +1656,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     kdDebug( 6040 ) << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child << endl;
 #endif
 
-    // Prevent floats from being added to the root by <html>.
+    // Prevent floats from being added to the canvas by the root element, e.g., <html>.
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
 
@@ -1695,7 +1714,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     }
 }
 
-bool RenderBlock::containsFloat(RenderObject* o)
+bool RenderBlock::containsFloat(RenderObject* o) const
 {
     if (m_floatingObjects) {
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
@@ -1710,7 +1729,7 @@ bool RenderBlock::containsFloat(RenderObject* o)
 
 void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove)
 {
-    setLayouted(false);
+    setLayouted( false );
 
     if (floatToRemove)
         removeFloatingObject(floatToRemove);
@@ -1719,7 +1738,7 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
     if (!childrenInline()) {
         for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
             if (isBlockFlow() && !child->isFloatingOrPositioned() &&
-                (floatToRemove ? child->containsFloat(floatToRemove) : child->containsFloats()))
+                (floatToRemove ? child->containsFloat(floatToRemove) : child->hasFloats()))
                 child->markAllDescendantsWithFloatsForLayout();
         }
     }
@@ -1751,25 +1770,62 @@ bool RenderBlock::checkClear(RenderObject *child)
     return false;
 }
 
+bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
+{
+    if (!style()->scrollsOverflow() || !m_layer)
+        return false;
+
+    if (m_layer->verticalScrollbarWidth()) {
+        QRect vertRect(_tx + width() - borderRight() - m_layer->verticalScrollbarWidth(),
+                       _ty + borderTop(),
+                       m_layer->verticalScrollbarWidth(),
+                       height()-borderTop()-borderBottom());
+        if (vertRect.contains(_x, _y)) {
+#ifdef APPLE_CHANGES
+            RenderLayer::gScrollBar = m_layer->verticalScrollbar();
+#endif
+            return true;
+        }
+    }
+
+    if (m_layer->horizontalScrollbarHeight()) {
+        QRect horizRect(_tx + borderLeft(),
+                        _ty + height() - borderBottom() - m_layer->horizontalScrollbarHeight(),
+                        width()-borderLeft()-borderRight(),
+                        m_layer->horizontalScrollbarHeight());
+        if (horizRect.contains(_x, _y)) {
+#ifdef APPLE_CHANGES
+            RenderLayer::gScrollBar = m_layer->horizontalScrollbar();
+#endif
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
 {
-    if (m_floatingObjects) {
+    bool inScrollbar = isPointInScrollbar(_x, _y, _tx+xPos(), _ty+yPos());
+    if (inScrollbar)
+        inBox = true;
+
+    if (m_floatingObjects && !inScrollbar) {
         int stx = _tx + xPos();
         int sty = _ty + yPos();
+        if (style()->hidesOverflow() && m_layer)
+            m_layer->subtractScrollOffset(stx, sty);
         if (isCanvas()) {
-	    KHTMLView *view = static_cast<RenderCanvas*>(this)->view();
-	    if (view) {
-		stx += view->contentsX();
-		sty += view->contentsY();
-	    }
+            stx += static_cast<RenderCanvas*>(this)->view()->contentsX();
+            sty += static_cast<RenderCanvas*>(this)->view()->contentsY();
         }
         FloatingObject* o;
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for (it.toLast(); (o = it.current()); --it)
-            if (!o->noPaint)
+            if (!o->noPaint && !o->node->layer())
                 inBox |= o->node->nodeAtPoint(info, _x, _y,
                                               stx+o->left + o->node->marginLeft() - o->node->xPos(),
-                                              sty+o->startY + o->node->marginTop() - o->node->yPos());
+                                              sty+o->startY + o->node->marginTop() - o->node->yPos(), false);
     }
 
     inBox |= RenderFlow::nodeAtPoint(info, _x, _y, _tx, _ty, inBox);
@@ -1798,8 +1854,11 @@ void RenderBlock::calcMinMaxWidth()
     if (preOrNowrap && childrenInline())
         m_minWidth = m_maxWidth;
 
-    if (style()->width().isFixed() && style()->width().value > 0)
-        m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
+    if (style()->width().isFixed() && style()->width().value() > 0) {
+        m_maxWidth = KMAX(m_minWidth,short(style()->width().value()));
+        if (!isTableCell())
+            m_minWidth = m_maxWidth;
+    }
 
     int toAdd = 0;
     toAdd = borderLeft() + borderRight() + paddingLeft() + paddingRight();
@@ -1812,7 +1871,7 @@ void RenderBlock::calcMinMaxWidth()
     // We need to sanity-check our m_minWidth, and not let it exceed our clipped boundary. -dwh
     // FIXME: For now, punt on trying to apply this fix to table cells.  We don't know an accurate
     // width for the cell here, so we can't do a comparison.
-    if (style()->overflow() == OHIDDEN && m_minWidth > m_width && !isTableCell())
+    if (style()->hidesOverflow() && m_minWidth > m_width && !isTableCell())
         m_minWidth = m_width;
 
     setMinMaxKnown();
@@ -1891,8 +1950,8 @@ RenderObject* InlineMinMaxIterator::next()
 
 static int getBPMWidth(int childValue, Length cssUnit)
 {
-    if (cssUnit.type != Variable)
-        return (cssUnit.type == Fixed ? cssUnit.value : childValue);
+    if (!cssUnit.isVariable())
+        return (cssUnit.isFixed() ? cssUnit.value() : childValue);
     return 0;
 }
 
@@ -1985,14 +2044,14 @@ void RenderBlock::calcInlineMinMaxWidth()
                     inlineMax += childMax;
                 }
                 else {
-                    // Inline replaced elts add in their margins to their min/max values.
+                    // Inline replaced elements add in their margins to their min/max values.
                     int margins = 0;
-                    LengthType type = cstyle->marginLeft().type;
+                    LengthType type = cstyle->marginLeft().type();
                     if ( type != Variable )
-                        margins += (type == Fixed ? cstyle->marginLeft().value : child->marginLeft());
-                    type = cstyle->marginRight().type;
+                        margins += (type == Fixed ? cstyle->marginLeft().value() : child->marginLeft());
+                    type = cstyle->marginRight().type();
                     if ( type != Variable )
-                        margins += (type == Fixed ? cstyle->marginRight().value : child->marginRight());
+                        margins += (type == Fixed ? cstyle->marginRight().value() : child->marginRight());
                     childMin += margins;
                     childMax += margins;
                 }
@@ -2129,6 +2188,9 @@ void RenderBlock::calcInlineMinMaxWidth()
     // 			<< " m_maxWidth=" << m_maxWidth << endl;
 }
 
+// Use a very large value (in effect infinite).
+#define BLOCK_MAX_WIDTH 15000
+
 void RenderBlock::calcBlockMinMaxWidth()
 {
     bool nowrap = style()->whiteSpace() == NOWRAP;
@@ -2151,8 +2213,8 @@ void RenderBlock::calcBlockMinMaxWidth()
 
         if (style()->textAlign() == KONQ_CENTER)
         {
-            if (ml.type==Fixed) margin+=ml.value;
-            if (mr.type==Fixed) margin+=mr.value;
+            if (ml.isFixed()) margin+=ml.value();
+            if (mr.isFixed()) margin+=mr.value();
         }
         else
         {
@@ -2161,9 +2223,9 @@ void RenderBlock::calcBlockMinMaxWidth()
             // calculated its margins (which are computed inside calcWidth).
             child->calcWidth();
 
-            if (!(ml.type==Variable) && !(mr.type==Variable))
+            if (!(ml.isVariable()) && !(mr.isVariable()))
             {
-                if (!(child->style()->width().type==Variable))
+                if (!(child->style()->width().isVariable()))
                 {
                     if (child->style()->direction()==LTR)
                         margin = child->marginLeft();
@@ -2174,9 +2236,9 @@ void RenderBlock::calcBlockMinMaxWidth()
                     margin = child->marginLeft()+child->marginRight();
 
             }
-            else if (!(ml.type == Variable))
+            else if (!ml.isVariable())
                 margin = child->marginLeft();
-            else if (!(mr.type == Variable))
+            else if (!mr.isVariable())
                 margin = child->marginRight();
         }
 
@@ -2189,14 +2251,38 @@ void RenderBlock::calcBlockMinMaxWidth()
             m_maxWidth = w;
 
         w = child->maxWidth() + margin;
+
         if(m_maxWidth < w) m_maxWidth = w;
+
+        // A very specific WinIE quirk.
+        // Example:
+        /*
+           <div style="position:absolute; width:100px; top:50px;">
+              <div style="position:absolute;left:0px;top:50px;height:50px;background-color:green">
+                <table style="width:100%"><tr><td></table>
+              </div>
+           </div>
+        */
+        // In the above example, the inner absolute positioned block should have a computed width
+        // of 100px because of the table.
+        // We can achieve this effect by making the maxwidth of blocks that contain tables
+        // with percentage widths be infinite (as long as they are not inside a table cell).
+        if (style()->htmlHacks() && child->style()->width().isPercent() &&
+            !isTableCell() && child->isTable() && m_maxWidth < BLOCK_MAX_WIDTH) {
+            RenderBlock* cb = containingBlock();
+            while (!cb->isCanvas() && !cb->isTableCell())
+                cb = cb->containingBlock();
+            if (!cb->isTableCell())
+                m_maxWidth = BLOCK_MAX_WIDTH;
+        }
+
         child = child->nextSibling();
     }
 }
 
 void RenderBlock::close()
 {
-    if (lastChild() && lastChild()->isAnonymousBox())
+    if (lastChild() && lastChild()->isAnonymous())
         lastChild()->close();
 
     RenderFlow::close();
@@ -2242,13 +2328,13 @@ const char *RenderBlock::renderName() const
         return "RenderBlock (floating)";
     if (isPositioned())
         return "RenderBlock (positioned)";
-    if (isAnonymousBox())
+    if (isAnonymous())
         return "RenderBlock (anonymous)";
     if (isRelPositioned())
         return "RenderBlock (relative positioned)";
-    if (isCompact())
+    if (style() && isCompact())
         return "RenderBlock (compact)";
-    if (isRunIn())
+    if (style() && isRunIn())
         return "RenderBlock (run-in)";
     return "RenderBlock";
 }

@@ -120,7 +120,7 @@ static QString toHebrew( int number ) {
 // -------------------------------------------------------------------------
 
 RenderListItem::RenderListItem(DOM::NodeImpl* node)
-    : RenderFlow(node)
+    : RenderBlock(node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -131,7 +131,7 @@ RenderListItem::RenderListItem(DOM::NodeImpl* node)
 
 void RenderListItem::setStyle(RenderStyle *_style)
 {
-    RenderFlow::setStyle(_style);
+    RenderBlock::setStyle(_style);
 
     RenderStyle *newStyle = new RenderStyle();
     newStyle->inheritFrom(style());
@@ -189,7 +189,7 @@ void RenderListItem::layout( )
 
     if (m_marker && !m_marker->layouted())
         m_marker->layout();
-    RenderFlow::layout();
+    RenderBlock::layout();
 
     m_height = kMax ( m_height, int ( lineHeight( true ) ) );
     if (m_marker)
@@ -231,15 +231,15 @@ void RenderListMarker::setStyle(RenderStyle *s)
 
 
 void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                             int _tx, int _ty, PaintAction paintPhase)
+                             int _tx, int _ty, PaintAction paintAction)
 {
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
 }
 
 void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
-				   int _tx, int _ty, PaintAction paintPhase)
+				   int _tx, int _ty, PaintAction paintAction)
 {
-    if (paintPhase != PaintActionForeground || style()->visibility() != VISIBLE)
+    if (paintAction != PaintActionForeground || style()->visibility() != VISIBLE)
         return;
 
 #ifdef DEBUG_LAYOUT

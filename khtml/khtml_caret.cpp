@@ -279,7 +279,8 @@ static InlineFlowBox* generateDummyFlowBox(RenderArena *arena, RenderFlow *cb,
  */
 static RenderFlow* generateDummyBlock(RenderArena *arena, RenderObject *cb)
 {
-  RenderFlow *result = new(arena) RenderFlow(cb->element());
+    // ### will fail if positioned
+  RenderFlow *result = RenderFlow::createFlow(cb->element(), cb->style(), cb->renderArena());
   result->setParent(cb->parent());
   result->setPreviousSibling(cb->previousSibling());
   result->setNextSibling(cb->nextSibling());
@@ -290,8 +291,6 @@ static RenderFlow* generateDummyBlock(RenderArena *arena, RenderObject *cb)
   result->setFloating(cb->isFloating());
   result->setInline(cb->isInline());
   result->setMouseInside(cb->mouseInside());
-
-  result->setStyle(cb->style());	// ### will fail if positioned
 
   result->setPos(cb->xPos(), cb->yPos());
   result->setWidth(cb->width());
@@ -328,8 +327,8 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   // If we have a totally empty render block, we simply construct a
   // transient inline flow box, and be done with it.
   // This case happens only when the render block is a leaf object itself.
-  if (r->isFlow() && !static_cast<RenderFlow *>(r)->firstLineBox()) {
-    cb = static_cast<RenderFlow *>(r);
+  if (r->isRenderBlock() && !static_cast<RenderBlock *>(r)->firstLineBox()) {
+    cb = static_cast<RenderBlock *>(r);
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << "=================== end findFlowBox (dummy)" << endl;
 #endif
@@ -366,15 +365,15 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
     //Q_ASSERT(b->isRootInlineBox());
     Q_ASSERT(b->isInlineFlowBox());
     cb = static_cast<RenderFlow *>(b->object());
-    Q_ASSERT(cb->isFlow());
+    Q_ASSERT(cb->isRenderBlock());
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << "=================== end findFlowBox (renderText)" << endl;
 #endif
     return static_cast<InlineFlowBox *>(b);
   } while(false);/*end if*/
 
-  cb = static_cast<RenderFlow *>(r->containingBlock());
-  if (!cb->isFlow()) {
+  cb = r->containingBlock();
+  if (!cb->isRenderBlock()) {
     cb = generateDummyBlock(arena, cb);
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "dummy block created: " << cb << endl;
@@ -635,8 +634,8 @@ void LineIterator::nextBlock()
 
   // If we hit a leaf block (which can happen on empty blocks), use this
   // as its containing block
-  if (r->isFlow()) {
-    cb = static_cast<RenderFlow *>(r);
+  if (r->isRenderBlock()) {
+    cb = static_cast<RenderBlock *>(r);
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "r->isFlow is cb. continuation @" << cb->continuation() << endl;
 #endif
@@ -646,14 +645,14 @@ void LineIterator::nextBlock()
     // cont_a, and the caret will be placed there.
     RenderFlow *flow = static_cast<RenderFlow *>(cb->element()
     			? cb->element()->renderer() : 0);
-    if (cb->continuation() || flow && flow->isFlow() && flow != cb
+    if (cb->continuation() || flow && flow->isRenderBlock() && flow != cb
     		&& flow->continuation()) {
       nextBlock();
       return;
     }/*end if*/
   } else {
     cb = static_cast<RenderFlow *>(r->containingBlock());
-    if (!cb->isFlow()) {
+    if (!cb->isRenderBlock()) {
 #if DEBUG_CARETMODE > 0
       kdDebug(6200) << "dummy cb created " << cb << endl;
 #endif
@@ -702,7 +701,7 @@ void LineIterator::prevBlock()
 
   // If we hit a leaf block (which can happen on empty blocks), use this
   // as its containing block
-  if (r->isFlow()) {
+  if (r->isRenderBlock()) {
     cb = static_cast<RenderFlow *>(r);
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "r->isFlow is cb. continuation @" << cb->continuation() << endl;
@@ -713,14 +712,14 @@ void LineIterator::prevBlock()
     // cont_a, and the caret will be placed there.
     RenderFlow *flow = static_cast<RenderFlow *>(cb->element()
     			? cb->element()->renderer() : 0);
-    if (cb->continuation() || flow && flow->isFlow() && flow != cb
+    if (cb->continuation() || flow && flow->isRenderBlock() && flow != cb
     		&& flow->continuation()) {
       prevBlock();
       return;
     }/*end if*/
   } else {
     cb = static_cast<RenderFlow *>(r->containingBlock());
-    if (!cb->isFlow()) {
+    if (!cb->isRenderBlock()) {
 #if DEBUG_CARETMODE > 0
       kdDebug(6200) << "dummy cb created " << cb << endl;
 #endif
@@ -806,7 +805,7 @@ EditableCharacterIterator &EditableCharacterIterator::operator ++()
   // BRs have no extent, so their maximum offset must be their minimum.
   // A block element can only be the target if it is empty -- in this case
   // its extent is zero, too.
-  long maxofs = r->isBR() || r->isFlow() ? b->minOffset() : b->maxOffset();
+  long maxofs = r->isBR() || r->isRenderBlock() ? b->minOffset() : b->maxOffset();
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << "b->maxOffset() " << b->maxOffset() << " b->minOffset() " << b->minOffset() << endl;
 #endif
@@ -1377,7 +1376,7 @@ void ErgonomicEditableLineIterator::determineTopologicalElement(
       r = nextSuitableLeafRenderObject(r);
     } else
       r = prevSuitableLeafRenderObject(r);
-    newBlock = static_cast<RenderFlow *>(!r || r->isFlow() ? r : r->containingBlock());
+    newBlock = static_cast<RenderFlow *>(!r || r->isRenderBlock() ? r : r->containingBlock());
   }/*end if*/
 
   calcAndStoreNewLine(newBlock, toBegin);
@@ -1585,7 +1584,7 @@ static void moveIteratorByPage(LinearDocument &ld,
   int absx = 0, absy = 0;
 
   RenderFlow *lastcb = static_cast<RenderFlow *>(flowBox->object());
-  Q_ASSERT(lastcb->isFlow());
+  Q_ASSERT(lastcb->isRenderBlock());
   lastcb->absolutePosition(absx, absy, false);	// ### what about fixed?
 
   // ### actually flowBox->yPos() should suffice, but this is not ported
@@ -1601,7 +1600,7 @@ static void moveIteratorByPage(LinearDocument &ld,
     Q_ASSERT(flowBox->isInlineFlowBox());
 
     RenderFlow *cb = static_cast<RenderFlow *>(flowBox->object());
-    Q_ASSERT(cb->isFlow());
+    Q_ASSERT(cb->isRenderBlock());
 
     int diff = 0;
     // ### actually flowBox->yPos() should suffice, but this is not ported

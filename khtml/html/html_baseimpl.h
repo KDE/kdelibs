@@ -169,7 +169,6 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void attach();
 };
 
 

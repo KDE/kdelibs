@@ -610,7 +610,12 @@ void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 	    setClip(p, QRect(tx, ty, cw, ch));
 	renderer()->paint(p, x, y, w, h,
 			  tx - renderer()->xPos(), ty - renderer()->yPos(),
-			  PaintActionBackground);
+			  PaintActionElementBackground);
+#warning HACK HACK HACK HACK
+        renderer()->paint(p, x, y, w, h,
+                          tx - renderer()->xPos(), ty - renderer()->yPos(),
+  			  PaintActionChildBackgrounds);
+
 	if (clip2)
             p->restore();
     }
@@ -652,7 +657,10 @@ void RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 		    if (lclip)
 			setClip(p, QRect(tx + xOff, ty + yOff, cw, ch));
 		    r->paint(p, x, y, w, h,
-			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionBackground);
+			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionElementBackground);
+                    r->paint(p, x, y, w, h,
+			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionChildBackgrounds);
+
 		    if (clip2)
                         p->restore();
 		}
@@ -710,14 +718,13 @@ void RenderLayer::clearHoverAndActiveState(RenderObject* obj)
             clearHoverAndActiveState(child);
 }
 
-bool
-RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty)
+bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty, bool inBox)
 {
     tx += xPos();
     ty += yPos();
 
     if (!m_zOrderList)
-	return renderer()->nodeAtPoint(info, x, y, tx - renderer()->xPos(), ty - renderer()->yPos());
+	return renderer()->nodeAtPoint(info, x, y, tx - renderer()->xPos(), ty - renderer()->yPos(), inBox);
 
     bool inside = false;
     RenderLayer *insideLayer = 0;
@@ -736,9 +743,9 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
 
 // 	qDebug("   testing %p x=%d y=%d, w=%d, h=%d", r, tx+xOff, ty+yOff, l->width(), l->height());
 	if (l != this)
-	    inside = l->nodeAtPoint(info, x, y, tx + xOff - l->xPos(), ty + yOff - l->yPos());
+	    inside = l->nodeAtPoint(info, x, y, tx + xOff - l->xPos(), ty + yOff - l->yPos(), inBox);
 	else
-	    inside = r->nodeAtPoint(info, x, y, tx + xOff - r->xPos(), ty + yOff - r->yPos());
+	    inside = r->nodeAtPoint(info, x, y, tx + xOff - r->xPos(), ty + yOff - r->yPos(), inBox);
         if (inside) {
             insideLayer = l;
             break;

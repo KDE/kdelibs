@@ -38,7 +38,7 @@ in the khtml sourcecode.
   doesn't make sense anyway, as one might want to inherit from it. 
   if it is a speed problem more stuff has to be handled with DOMStringImpl*
 
-- html_document.cpp / .h setPolicyBaseURL for cooke handling. euhm?
+- html_document.cpp / .h setPolicyBaseURL for cookie handling. euhm?
 
 ===========================================================================
 # ecma

@@ -1,7 +1,10 @@
 /*
  * This file is part of the render object implementation for KHTML.
  *
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,10 +24,11 @@
  */
 
 #include <kglobal.h>
-#include "render_arena.h"
-#include "render_inline.h"
-#include "render_block.h"
-#include "xml/dom_nodeimpl.h"
+
+#include "rendering/render_arena.h"
+#include "rendering/render_inline.h"
+#include "rendering/render_block.h"
+#include "xml/dom_docimpl.h"
 
 using namespace khtml;
 
@@ -58,17 +62,17 @@ void RenderInline::setStyle(RenderStyle* _style)
     }
 
     // Update pseudos for :before and :after now.
-    insertPseudoChild(RenderStyle::BEFORE, firstChild());
-    insertPseudoChild(RenderStyle::AFTER, lastChild());
+    updatePseudoChild(RenderStyle::BEFORE, firstChild());
+    updatePseudoChild(RenderStyle::AFTER, lastChild());
 }
 
 void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeChild)
 {
     setLayouted( false );
-    
+
     if (!newChild->isText() && newChild->style()->position() != STATIC)
         setOverhangingContents();
-    
+
     if (!newChild->isInline() && !newChild->isFloatingOrPositioned() )
     {
         // We are placing a block inside an inline. We have to perform a split of this
@@ -88,7 +92,7 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
     }
 
     RenderBox::addChild(newChild,beforeChild);
-    
+
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
 }
@@ -186,9 +190,8 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
         newStyle = new RenderStyle();
         newStyle->inheritFrom(block->style());
         newStyle->setDisplay(BLOCK);
-        pre = new (renderArena()) RenderBlock(0 /* anonymous box */);
+        pre = new (renderArena()) RenderBlock(document() /* anonymous */);
         pre->setStyle(newStyle);
-        pre->setIsAnonymousBox(true);
         pre->setChildrenInline(true);
         madeNewBeforeBlock = true;
     }
@@ -196,9 +199,8 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     newStyle = new RenderStyle();
     newStyle->inheritFrom(block->style());
     newStyle->setDisplay(BLOCK);
-    RenderBlock *post = new (renderArena()) RenderBlock(0 /* anonymous box */);
+    RenderBlock *post = new (renderArena()) RenderBlock(document() /* anonymous */);
     post->setStyle(newStyle);
-    post->setIsAnonymousBox(true);
     post->setChildrenInline(true);
 
     RenderObject* boxFirst = madeNewBeforeBlock ? block->firstChild() : pre->nextSibling();
@@ -261,8 +263,15 @@ void RenderInline::paintObject(QPainter *p, int _x, int _y,
     //    kdDebug( 6040 ) << renderName() << "(RenderInline) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
+    if ( paintAction == PaintActionElementBackground )
+        return;
+
+    // let the children their backgrounds
+    if ( paintAction == PaintActionChildBackgrounds )
+        paintAction = PaintActionChildBackground;
+
     paintLineBoxBackgroundBorder(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-    
+
     RenderObject *child = firstChild();
     while(child != 0)
     {
@@ -300,7 +309,7 @@ short RenderInline::width() const
         if (curr == firstLineBox() || curr->xPos() + curr->width() > rightSide)
             rightSide = curr->xPos() + curr->width();
     }
-    
+
     return rightSide - leftSide;
 }
 
@@ -341,7 +350,7 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
 {
     // Always check our kids.
     for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-        if (!child->layer() && !child->isFloating() && child->nodeAtPoint(info, _x, _y, _tx, _ty))
+        if (!child->layer() && !child->isFloating() && child->nodeAtPoint(info, _x, _y, _tx, _ty, false))
             inside = true;
 
     // Check our line boxes if we're still not inside.
@@ -384,7 +393,7 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
                 p = p->parent();
             }
         }
-        
+
     }
 
     if (!info.readonly()) {
@@ -396,7 +405,7 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         if (!isInline() && continuation())
             continuation()->setHoverAndActive(info, oldinside, inside);
     }
-    
+
     return inside;
 }
 

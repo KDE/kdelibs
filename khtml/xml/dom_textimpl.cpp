@@ -236,13 +236,16 @@ long CharacterDataImpl::minOffset() const
   if (!r || !r->isText()) return 0;
 
   // take :first-letter into consideration
+#warning FIXME
+#if 0
   if (r->forcedMinOffset()) {
     RenderFlow *firstLetter = static_cast<RenderFlow *>(r->previousSibling());
     if (firstLetter && firstLetter->isFlow() && firstLetter->isFirstLetter()) {
       RenderText *letterText = static_cast<RenderText *>(firstLetter->firstChild());
       return letterText->minOffset();
-    }/*end if*/
-  }/*end if*/
+    }
+  }
+#endif
 
   return r->minOffset();
 }

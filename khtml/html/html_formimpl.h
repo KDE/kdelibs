@@ -34,6 +34,9 @@
 #include <qcstring.h>
 #include <qmemarray.h>
 
+#include <kdebug.h>
+
+
 class KHTMLView;
 class QTextCodec;
 

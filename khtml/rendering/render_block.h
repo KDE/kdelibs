@@ -1,7 +1,10 @@
 /*
  * This file is part of the render object implementation for KHTML.
  *
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,8 +52,8 @@ public:
     // The height (and width) of a block when you include overflow spillage out of the bottom
     // of the block (e.g., a <div style="height:25px"> that has a 100px tall image inside
     // it would have an overflow height of borderTop() + paddingTop() + 100px.
-    virtual int overflowHeight() const { return m_overflowHeight; }
-    virtual int overflowWidth() const { return m_overflowWidth; }
+    virtual int overflowHeight() const  { return m_overflowHeight; }
+    virtual int overflowWidth() const   { return m_overflowWidth; }
     virtual void setOverflowHeight(int h) { m_overflowHeight = h; }
     virtual void setOverflowWidth(int w) { m_overflowWidth = w; }
 
@@ -96,13 +99,16 @@ public:
     void insertPositionedObject(RenderObject *o);
     void removePositionedObject(RenderObject *o);
 
+    // Called to lay out the legend for a fieldset.
+    virtual RenderObject* layoutLegend(bool relayoutChildren) { return 0; };
+
     // the implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end);
     BidiIterator findNextLineBreak(BidiIterator &start);
     InlineFlowBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed);
-    void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
+    void computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed );
     // end bidi.cpp functions
 
     virtual void paint(QPainter *, int x, int y, int w, int h,
@@ -122,10 +128,10 @@ public:
     bool checkClear(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
-    virtual bool containsFloats() { return m_floatingObjects!=0; }
-    virtual bool containsFloat(RenderObject* o);
+    virtual bool containsFloats() const { return m_floatingObjects!=0; }
+    virtual bool containsFloat(RenderObject* o) const;
 
-    virtual bool hasOverhangingFloats() { return floatBottom() > m_height; }
+    virtual bool hasOverhangingFloats() const { return floatBottom() > m_height; }
     void addOverHangingFloats( RenderBlock *block, int xoffset, int yoffset, bool child = false );
 
     int nearestFloatBottom(int height) const;
@@ -145,7 +151,9 @@ public:
     int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inside=false);
+
+    bool isPointInScrollbar(int x, int y, int tx, int ty);
 
     virtual void calcMinMaxWidth();
     void calcInlineMinMaxWidth();
@@ -157,8 +165,8 @@ public:
     virtual InlineFlowBox* getFirstLineBox();
 
     // overrides RenderObject
-    virtual bool requiresLayer() { return !isTableCell() &&
-        (isPositioned() || isRelPositioned() || style()->overflow()==OHIDDEN); }
+    virtual bool requiresLayer() const { return isRoot() || (!isTableCell() &&
+        (isPositioned() || isRelPositioned() || style()->hidesOverflow())); }
 
 #ifndef NDEBUG
     virtual void printTree(int indent=0) const;

@@ -31,6 +31,7 @@
 #include <assert.h>
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
@@ -63,7 +64,9 @@ class KHTMLView;
  */
 
 typedef enum {
-    PaintActionBackground = 0,
+    PaintActionElementBackground = 0,
+    PaintActionChildBackground,
+    PaintActionChildBackgrounds,
     PaintActionFloat,
     PaintActionForeground,
     PaintActionSelection
@@ -89,6 +92,7 @@ namespace khtml {
     class RenderFrameSet;
     class RenderArena;
     class RenderLayer;
+    class RenderBlock;
     class InlineBox;
     class InlineFlowBox;
 
@@ -120,8 +124,8 @@ public:
     RenderLayer* findNextLayer(RenderLayer* parentLayer, RenderObject* startPoint,
                                bool checkParent=true);
     virtual void positionChildLayers() { }
-    virtual bool requiresLayer() {
-	return (isPositioned() || isRelPositioned()) && !isTableCell();
+    virtual bool requiresLayer() const {
+        return isRoot() || (!isTableCell() && (isPositioned() || isRelPositioned()));
     }
 
     // ### rename to overflowClipRect and clipRect
@@ -130,6 +134,9 @@ public:
     virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
     bool hasClip() { return isPositioned() &&  style()->hasClip(); }
     bool hasOverflowClip() { return style()->hidesOverflow(); }
+
+    virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
+    virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
 
     // Linear tree traversal
     RenderObject *objectBelow() const;
@@ -186,7 +193,7 @@ public:
     virtual bool isBlockFlow() const { return false; }
     virtual bool isInlineBlockOrInlineTable() const { return false; }
     virtual bool childrenInline() const { return false; }
-    virtual bool isFlow() const { return false; }
+    virtual bool isBox() const { return false; }
 
     virtual bool isListItem() const { return false; }
     virtual bool isCanvas() const { return false; }
@@ -206,12 +213,14 @@ public:
     void setIsAnonymous(bool b) { m_isAnonymous = b; }
 
     bool isFloating() const { return m_floating; }
-    bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
-    bool isRelPositioned() const { return m_relPositioned; } // relative positioning
-    bool isText() const  { return m_isText; }
-    bool isInline() const { return m_inline; }  // inline object
+    bool isPositioned() const { return m_positioned; }
+    bool isRelPositioned() const { return m_relPositioned; }
+    bool isText() const { return m_isText; }
+    bool isInline() const { return m_inline; }
+    bool isCompact() const { return style()->display() == COMPACT; }
+    bool isRunIn() const { return style()->display() == RUN_IN; }
     bool mouseInside() const;
-    bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
+    bool isReplaced() const { return m_replaced; }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
     bool layouted() const   { return m_layouted; }
     bool minMaxKnown() const{ return m_minMaxKnown; }
@@ -224,8 +233,6 @@ public:
     // don't even think about making this method virtual!
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }
-
-    void relativePositionOffset(int &tx, int &ty) const;
 
    /**
      * returns the object containing this one. can be different from parent for
@@ -288,6 +295,11 @@ public:
     virtual void paintBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
+    virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, CachedImage* /*bg*/,
+                                         int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {};
+
+
     /*
      * This function calculates the minimum & maximum width that the object
      * can be set to.
@@ -342,6 +354,7 @@ public:
     {
         friend class RenderImage;
         friend class RenderFlow;
+        friend class RenderInline;
         friend class RenderText;
         friend class RenderObject;
         friend class RenderFrameSet;
@@ -386,14 +399,14 @@ public:
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
     void setHoverAndActive(NodeInfo& info, bool oldinside, bool inside);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
 
     // returns the containing block level element for this element.
-    RenderObject *containingBlock() const;
+    RenderBlock *containingBlock() const;
 
     // return just the width of the containing block
     virtual short containingBlockWidth() const;
@@ -440,6 +453,17 @@ public:
     int clientHeight() const;
     short scrollWidth() const;
     int scrollHeight() const;
+
+    virtual bool isSelfCollapsingBlock() const { return false; }
+    short collapsedMarginTop() const { return kMax( int( marginTop() ), 0 ) + kMin( int( marginTop() ), 0 );  }
+    short collapsedMarginBottom() const { return kMax( int( marginBottom() ), 0 ) + kMin( int( marginBottom() ), 0 );  }
+
+    virtual bool isTopMarginQuirk() const { return false; }
+    virtual bool isBottomMarginQuirk() const { return false; }
+    virtual short maxTopMargin(bool positive) const
+    { return positive ? kMax( int( marginTop() ), 0 ) : - kMin( int( marginTop() ), 0 ); }
+    virtual short maxBottomMargin(bool positive) const
+    { return positive ? kMax( int( marginBottom() ), 0 ) : - kMin( int( marginBottom() ), 0 ); }
 
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }
@@ -489,8 +513,11 @@ public:
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
 
     // Special objects are objects that are neither really inline nor blocklevel
-    bool isSpecial() const { return (isFloating() || isPositioned()); };
-    virtual bool hasOverhangingFloats() { return false; }
+    bool isFloatingOrPositioned() const { return (isFloating() || isPositioned()); };
+    virtual bool hasOverhangingFloats() const { return false; }
+    virtual bool hasFloats() const { return false; }
+    virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
+    virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
 
     // positioning of inline children (bidi)
     virtual void position(InlineBox*, int, int, bool, int) {}
@@ -531,7 +558,7 @@ public:
     // unused: void invalidateLayout();
 
     virtual void calcVerticalMargins() {}
-    void removeFromFloatingObjects();
+    void removeFromObjectLists();
 
     virtual void detach( );
 
@@ -561,14 +588,7 @@ protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
     virtual QRect viewRect() const;
-    void remove() {
-        removeFromFloatingObjects();
-
-        if ( parent() )
-            //have parent, take care of the tree integrity
-            parent()->removeChild(this);
-    }
-
+    void remove();
     void invalidateVerticalPositions();
     short getVerticalPosition( bool firstLine ) const;
 

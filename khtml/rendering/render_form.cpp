@@ -117,7 +117,7 @@ short RenderButton::baselinePosition( bool f ) const
 
 
 RenderCustomButton::RenderCustomButton(HTMLGenericFormElementImpl *element)
-    : RenderReplacedFlow(element)
+    : RenderReplacedBlock(element)
 {
 }
 
@@ -553,7 +553,7 @@ void RenderLineEdit::select()
 // ---------------------------------------------------------------------------
 
 RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
-    : RenderFlow(element)
+    : RenderBlock(element)
 {
 }
 
@@ -566,7 +566,7 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
             r = r->firstChild();
     else
         return false;
-    if(!r->firstChild() || r->isSpecial())
+    if(!r->firstChild() || r->isFloatingOrPositioned())
         return false;
     ly = r->yPos();
     minx = r->width();
@@ -588,7 +588,7 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
             }
             r = next;
         }
-        if(r->isSpecial())
+        if(r->isFloatingOrPositioned())
             continue;
         curx += r->xPos();
         if(r->width() && curx<minx)
@@ -870,7 +870,7 @@ RenderLabel::RenderLabel(HTMLGenericFormElementImpl *element)
 // -------------------------------------------------------------------------
 
 RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
-    : RenderFlow(element)
+    : RenderBlock(element)
 {
     setInline(false);
 }

@@ -30,9 +30,10 @@
 #include <qcolor.h>
 #include <qptrvector.h>
 
-#include "render_box.h"
-#include "render_flow.h"
-#include "render_style.h"
+#include "rendering/render_box.h"
+#include "rendering/render_block.h"
+#include "rendering/render_style.h"
+
 #include "misc/khtmllayout.h"
 
 namespace DOM {
@@ -48,7 +49,7 @@ class RenderTableCell;
 class RenderTableCol;
 class TableLayout;
 
-class RenderTable : public RenderFlow
+class RenderTable : public RenderBlock
 {
 public:
     enum Rules {
@@ -95,7 +96,7 @@ public:
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintPhase);
+                        int tx, int ty, PaintAction paintAction);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -105,7 +106,7 @@ public:
 
     virtual void setCellWidths( );
 
-    virtual void position(InlineBox *, int from, int len, bool reverse, int);
+    virtual void position(InlineBox *, int from, int len, bool reverse, int) {}
 
     virtual void calcWidth();
 
@@ -187,7 +188,7 @@ protected:
     uint spacing                : 11;
     uint padding		: 11;
     uint needSectionRecalc	: 1;
-    
+
     friend class TableSectionIterator;
 };
 
@@ -242,7 +243,7 @@ public:
     }
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintPhase);
+                        int tx, int ty, PaintAction paintAction);
 
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
@@ -304,11 +305,12 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderTableCell : public RenderFlow
+class RenderTableCell : public RenderBlock
 {
 public:
     RenderTableCell(DOM::NodeImpl* node);
 
+    virtual void layout();
     virtual void detach();
 
     virtual const char *renderName() const { return "RenderTableCell"; }
@@ -341,7 +343,7 @@ public:
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
     virtual void paint( QPainter* p, int x, int y,
-                        int w, int h, int tx, int ty, PaintAction paintPhase);
+                        int w, int h, int tx, int ty, PaintAction paintAction);
 
     virtual void close();
 
@@ -446,7 +448,7 @@ public:
    * @param start table section to start with.
    */
   TableSectionIterator(RenderTableSection *start) : sec(start) {}
-  
+
   /**
    * Uninitialized iterator.
    */

@@ -544,7 +544,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
-    
+
     m_minOfs = 0;
 
 #ifdef DEBUG_LAYOUT
@@ -608,6 +608,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 
     // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
 
+#if 0
     if (checkFirstLetter && forcedMinOffset()) {
 //        kdDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset() << endl;
         RenderFlow *firstLetter = static_cast<RenderFlow *>(previousSibling());
@@ -618,9 +619,10 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
 	        InlineTextBox *result = letterText->findInlineTextBox(offset, pos, false);
             //kdDebug(6040) << "result: " << result << endl;
 		if (result) return result;
-	    }/*end if*/
-        }/*end if*/
-    }/*end if*/
+	    }
+        }
+    }
+#endif
 
     if ( m_lines.isEmpty() )
         return 0L;
@@ -655,7 +657,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     return s;
 }
 
-bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
 {
     assert(parent());
 
@@ -1059,9 +1061,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 }
 
 void RenderText::paint( QPainter *p, int x, int y, int w, int h,
-                      int tx, int ty, PaintAction paintPhase)
+                      int tx, int ty, PaintAction paintAction)
 {
-    if (paintPhase != PaintActionForeground || style()->visibility() != VISIBLE)
+    if (paintAction != PaintActionForeground || style()->visibility() != VISIBLE)
         return;
 
     int s = m_lines.count() - 1;
@@ -1071,7 +1073,7 @@ void RenderText::paint( QPainter *p, int x, int y, int w, int h,
     if ( ty + m_lines[0]->m_y > y + h + 64 ) return;
     if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < y ) return;
 
-    paintObject(p, x, y, w, h, tx, ty, paintPhase);
+    paintObject(p, x, y, w, h, tx, ty, paintAction);
 }
 
 void RenderText::calcMinMaxWidth()
@@ -1079,84 +1081,114 @@ void RenderText::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     // ### calc Min and Max width...
-    m_minWidth = 0;
+    m_minWidth = m_beginMinWidth = m_endMinWidth = 0;
     m_maxWidth = 0;
 
-    int add = (parent()->isInline() && parent()->firstChild()==this) ? paddingLeft() + borderLeft() : 0;
+    if (isBR())
+        return;
 
-    int currMinWidth = add;
-    int currMaxWidth = add;
-    m_hasReturn = false;
-    m_hasBreakableChar = false;
+    int currMinWidth = 0;
+    int currMaxWidth = 0;
+    m_hasBreakableChar = m_hasBreak = m_hasBeginWS = m_hasEndWS = false;
 
     // ### not 100% correct for first-line
     const Font *f = htmlFont( false );
+    int wordSpacing = style()->wordSpacing();
     int len = str->l;
-    m_startMin = 0;
-    m_endMin = 0;
+    bool ignoringSpaces = false;
+    bool isSpace = false;
     bool isPre = style()->whiteSpace() == PRE;
-    if ( len == 1 && str->s->latin1() == '\n' )
-	m_hasReturn = true;
-    bool first = true;
+    bool firstWord = true;
     for(int i = 0; i < len; i++)
     {
-        int wordlen = 0;
-        if (isPre)
-            while( i+wordlen < len && str->s[i+wordlen] != '\n' )
-                wordlen++;
-        else
-            while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
-                wordlen++;
+        bool isNewline = false;
+        // XXXdwh Wrong in the first stage.  Will stop mutating newlines
+        // in a second stage.
+        if (str->s[i] == '\n') {
+            if (isPre) {
+                m_hasBreak = true;
+                isNewline = true;
+            }
+            else
+                str->s[i] = ' ';
+        }
 
-        if (wordlen) {
+        bool previousCharacterIsSpace = isSpace;
+        isSpace = str->s[i].direction() == QChar::DirWS;
+
+        if ((isSpace || isNewline) && i == 0)
+            m_hasBeginWS = true;
+        if ((isSpace || isNewline) && i == len-1)
+            m_hasEndWS = true;
+
+        if (!ignoringSpaces && !isPre && previousCharacterIsSpace && isSpace)
+            ignoringSpaces = true;
+
+        if (ignoringSpaces && !isSpace)
+            ignoringSpaces = false;
+
+        if (ignoringSpaces)
+            continue;
+
+        int wordlen = 0;
+        while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
+            wordlen++;
+
+        if (wordlen)
+        {
+#ifndef APPLE_CHANGES
             int w = f->width(str->s, str->l, i, wordlen);
+#else
+            int w = widthFromCache(f, i, wordlen);
+#endif
             currMinWidth += w;
             currMaxWidth += w;
-        } else {
-	    first = false;
-	}
-        if(i+wordlen < len) {
-	    m_hasBreakableChar = true;
-            if ( (*(str->s+i+wordlen)).latin1() == '\n' ) {
-		m_hasReturn = true;
-		if ( first ) m_startMin = kMin( currMinWidth, 0x1ff );
-                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-                currMinWidth = 0;
+
+            // Add in wordspacing to our maxwidth, but not if this is the last word.
+            if (wordSpacing && !containsOnlyWhitespace(i+wordlen, len-(i+wordlen)))
+                currMaxWidth += wordSpacing;
+
+            if (firstWord) {
+                firstWord = false;
+                m_beginMinWidth = w;
+            }
+            m_endMinWidth = w;
+
+            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+            currMinWidth = 0;
+
+            i += wordlen-1;
+        }
+        else {
+            // Nowrap can never be broken, so don't bother setting the
+            // breakable character boolean.
+            if (style()->whiteSpace() != NOWRAP)
+                m_hasBreakableChar = true;
+
+            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+            currMinWidth = 0;
+
+            if (str->s[i] == '\n')
+            {
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
                 currMaxWidth = 0;
-            } else {
-		if ( first ) m_startMin = kMin( currMinWidth , 0x1ff );
-                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-                currMinWidth = 0;
+            }
+            else
+            {
                 currMaxWidth += f->width( str->s, str->l, i + wordlen );
             }
-            /* else if( c == '-')
-            {
-                currMinWidth += minus_width;
-                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-                currMinWidth = 0;
-                currMaxWidth += minus_width;
-            }*/
-	    first = false;
         }
-        i += wordlen;
     }
-    add = (parent()->isInline() && parent()->lastChild()==this) ? borderRight() + paddingRight() : 0;
-    currMinWidth += add;
-    currMaxWidth += add;
-    if ( first ) m_startMin = kMin( currMinWidth, 0x1ff );
+
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-    m_endMin = kMin( currMinWidth , 0x1ff );
 
-    if (style()->whiteSpace() == NOWRAP) {
-	m_startMin = kMin( m_minWidth, ( short )0x1ff );
-	m_endMin = m_startMin;
+    if (style()->whiteSpace() == NOWRAP)
         m_minWidth = m_maxWidth;
-    }
 
     setMinMaxKnown();
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): min = " << m_minWidth << " max = " << m_maxWidth << endl;
+
 }
 
 int RenderText::minXPos() const
@@ -1351,14 +1383,6 @@ short RenderText::width() const
 
     w = kMax(0, maxx-minx);
 
-    if(parent()->isInline())
-    {
-        if(parent()->firstChild() == static_cast<const RenderObject*>(this))
-            w += borderLeft() + paddingLeft();
-        if(parent()->lastChild() == static_cast<const RenderObject*>(this))
-            w += borderRight() + paddingRight();
-    }
-
     return w;
 }
 
@@ -1401,6 +1425,90 @@ const Font *RenderText::htmlFont(bool firstLine) const
     }
     return f;
 }
+
+bool RenderText::containsOnlyWhitespace(unsigned int from, unsigned int len) const
+{
+    unsigned int currPos;
+    for (currPos = from;
+         currPos < from+len && (str->s[currPos] == '\n' || str->s[currPos].direction() == QChar::DirWS);
+         currPos++);
+    return currPos >= (from+len);
+}
+
+void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
+                                    short& endMinW, bool& endWS,
+                                    bool& hasBreakableChar, bool& hasBreak,
+                                    short& beginMaxW, short& endMaxW,
+                                    short& minW, short& maxW, bool& stripFrontSpaces)
+{
+    int len = str->l;
+    bool isPre = style()->whiteSpace() == PRE;
+    if (isPre)
+        stripFrontSpaces = false;
+
+    minW = m_minWidth;
+    maxW = m_maxWidth;
+    beginWS = stripFrontSpaces ? false : m_hasBeginWS;
+    // Handle the case where all space got stripped.
+    endWS = stripFrontSpaces && len > 0 && str->containsOnlyWhitespace() ? false : m_hasEndWS;
+
+    beginMinW = m_beginMinWidth;
+    endMinW = m_endMinWidth;
+
+    hasBreakableChar = m_hasBreakableChar;
+    hasBreak = m_hasBreak;
+
+    if (len == 0)
+        return;
+
+    if (stripFrontSpaces && str->s[0].direction() == QChar::DirWS) {
+        const Font *f = htmlFont( false );
+        QChar space[1]; space[0] = ' ';
+        int spaceWidth = f->width(space, 1, 0);
+        maxW -= spaceWidth;
+    }
+
+    stripFrontSpaces = !isPre && endWS;
+
+    if (style()->whiteSpace() == NOWRAP)
+        minW = maxW;
+    else if (minW > maxW)
+        minW = maxW;
+
+    // Compute our max widths by scanning the string for newlines.
+    if (hasBreak) {
+        const Font *f = htmlFont( false );
+        bool firstLine = true;
+        beginMaxW = endMaxW = maxW;
+        for(int i = 0; i < len; i++)
+        {
+            int linelen = 0;
+            while( i+linelen < len && str->s[i+linelen] != '\n')
+                linelen++;
+
+            if (linelen)
+            {
+#ifndef APPLE_CHANGES
+                endMaxW = f->width(str->s, str->l, i, linelen);
+#else
+                endMaxW = widthFromCache(f, i, linelen);
+#endif
+                if (firstLine) {
+                    firstLine = false;
+                    beginMaxW = endMaxW;
+                }
+                i += linelen;
+                if (i == len-1)
+                    endMaxW = 0;
+            }
+            else if (firstLine) {
+                beginMaxW = 0;
+                firstLine = false;
+            }
+        }
+    }
+}
+
 
 void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
 {

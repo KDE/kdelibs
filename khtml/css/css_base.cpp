@@ -25,7 +25,8 @@
 
 //#define CSS_DEBUG
 
-#include "kdebug.h"
+#include <assert.h>
+#include <kdebug.h>
 
 #include "css_base.h"
 
@@ -237,6 +238,8 @@ bool CSSSelector::operator == ( const CSSSelector &other ) const
     const CSSSelector *sel2 = &other;
 
     while ( sel1 && sel2 ) {
+        //assert(sel1->_pseudoType != PseudoNotParsed);
+        //assert(sel2->_pseudoType != PseudoNotParsed);
 	if ( sel1->tag != sel2->tag || sel1->attr != sel2->attr ||
 	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
 	     sel1->nonCSSHint != sel2->nonCSSHint ||

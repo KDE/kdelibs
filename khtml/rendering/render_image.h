@@ -35,6 +35,7 @@
 namespace khtml {
 
 class DocLoader;
+class CachedObject;
 
 class RenderImage : public RenderReplaced
 {
@@ -58,12 +59,14 @@ public:
 
     bool complete() const;
 
+    void setContentObject( CachedObject* );
+
     // hook to keep RendeObject::m_inline() up to date
     virtual void setStyle(RenderStyle *style);
     virtual void updateFromElement();
 
     virtual void notifyFinished(CachedObject *finishedObj);
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
 
     virtual short calcReplacedWidth() const;
     virtual int   calcReplacedHeight() const;

@@ -312,6 +312,10 @@ public:
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
 
+    bool inCompatMode() const { return pMode == Compat; }
+    bool inTransitionalMode() const { return pMode == Transitional; }
+    bool inStrictMode() const { return pMode == Strict; }
+
     void setHTMLMode( HTMLMode m ) { hMode = m; }
     HTMLMode htmlMode() const { return hMode; }
 

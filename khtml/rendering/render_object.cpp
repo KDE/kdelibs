@@ -27,7 +27,13 @@
 #include "rendering/render_table.h"
 #include "rendering/render_list.h"
 #include "rendering/render_canvas.h"
-//#include "rendering/render_replaced.h"
+#include "rendering/render_block.h"
+#include "rendering/render_arena.h"
+#include "rendering/render_layer.h"
+#include "rendering/render_line.h"
+#include "rendering/render_inline.h"
+#include "rendering/render_text.h"
+
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmlhashes.h"
@@ -37,10 +43,6 @@
 #include <kglobal.h>
 #include <qpainter.h>
 #include "khtmlview.h"
-#include "render_arena.h"
-#include "render_layer.h"
-#include "render_line.h"
-#include "render_text.h"
 
 #include <assert.h>
 using namespace DOM;
@@ -74,14 +76,30 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         break;
     case INLINE:
     case BLOCK:
+        // In compat mode, if <td> has a display of block, build a table cell instead.
+        // This corrects erroneous HTML.  A better fix would be to implement full-blown
+        // CSS2 anonymous table render object construction, but until then, this will have
+        // to suffice. -dwh
+        if (style->display() == BLOCK && node->id() == ID_TD && style->htmlHacks())
+            o = new (arena) RenderTableCell(node);
+        // In quirks mode if <table> has a display of block, make a table. If it has
+        // a display of inline, make an inline-table.
+        else if (node->id() == ID_TABLE && style->htmlHacks())
+            o = new (arena) RenderTable(node);
+        else if (style->display() == INLINE)
+            o = new (arena) RenderInline(node);
+        else
+            o = new (arena) RenderBlock(node);
+        break;
     case TABLE_CAPTION:
-        o = new (arena) RenderFlow(node);
+        o = new (arena) RenderBlock(node);
         break;
     case LIST_ITEM:
         o = new (arena) RenderListItem(node);
         break;
     case RUN_IN:
     case COMPACT:
+        o = new (arena) RenderBlock(node);
         break;
     case INLINE_BLOCK:
 //        o = new (arena) RenderReplacedFlow(node);
@@ -186,9 +204,10 @@ RenderObject* RenderObject::objectAbove() const
     return obj;
 }
 
-bool RenderObject::isRoot() const {
-    return element() && element()->renderer() == this &&
-           element()->getDocument()->documentElement() == element();
+bool RenderObject::isRoot() const
+{
+    return !isAnonymous() &&
+        element()->getDocument()->documentElement() == element();
 }
 
 
@@ -217,26 +236,6 @@ void RenderObject::appendChildNode(RenderObject*)
 void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 {
     KHTMLAssert(0);
-}
-
-void RenderObject::relativePositionOffset(int &tx, int &ty) const
-{
-    if(!style()->left().isVariable())
-        tx += style()->left().width(containingBlockWidth());
-    else if(!style()->right().isVariable())
-        tx -= style()->right().width(containingBlockWidth());
-    if(!style()->top().isVariable())
-    {
-        if (!style()->top().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty += style()->top().width(containingBlockHeight());
-    }
-    else if(!style()->bottom().isVariable())
-    {
-        if (!style()->bottom().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty -= style()->bottom().width(containingBlockHeight());
-    }
 }
 
 void RenderObject::addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild)
@@ -340,7 +339,7 @@ int RenderObject::offsetLeft() const
     if (!isPositioned()) {
         if (isRelPositioned()) {
             int y = 0;
-            relativePositionOffset(x, y);
+            static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
         }
 
         RenderObject* offsetPar = offsetParent();
@@ -358,7 +357,7 @@ int RenderObject::offsetTop() const
     if (!isPositioned()) {
         if (isRelPositioned()) {
             int x = 0;
-            relativePositionOffset(x, y);
+            static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
         }
         RenderObject* offsetPar = offsetParent();
         for( RenderObject* curr = parent();
@@ -441,10 +440,10 @@ void RenderObject::setLayouted(bool b)
     }
 }
 
-RenderObject *RenderObject::containingBlock() const
+RenderBlock *RenderObject::containingBlock() const
 {
     if(isTableCell())
-        return parent()->parent()->parent();
+        return static_cast<RenderBlock*>( parent()->parent()->parent() );
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
@@ -452,17 +451,21 @@ RenderObject *RenderObject::containingBlock() const
             o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
-        while (o && o->style()->position() == STATIC && !o->isRoot() && !o->isCanvas())
+        while (o &&
+               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) &&
+               !o->isRoot() && !o->isCanvas())
             o = o->parent();
     } else {
-        while(o && o->isInline())
+        while(o && ( ( o->isInline() && !o->isReplaced() ) ||
+              o->isTableRow() || o->isTableSection() || o->isTableCol() ) )
             o = o->parent();
     }
     // this is just to make sure we return a valid element.
     // the case below should never happen...
-    if(!o) {
+    if(!o || !o->isRenderBlock()) {
         if(!isCanvas()) {
-#ifndef NDEBUG
+//#ifndef NDEBUG
+#if 0
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
             kdDebug( 6040 ) << kdBacktrace() << endl;
             const RenderObject* p = this;
@@ -470,9 +473,11 @@ RenderObject *RenderObject::containingBlock() const
             p->printTree();
 #endif
         }
-        return const_cast<RenderObject *>(this);
-    } else
-        return o;
+        return 0L;
+        return const_cast<RenderBlock *>( static_cast<const RenderBlock*>(this) );
+    }
+
+    return static_cast<RenderBlock*>( o );
 }
 
 short RenderObject::containingBlockWidth() const
@@ -794,9 +799,9 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 }
 
 void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
-                          PaintAction paintPhase )
+                          PaintAction paintAction )
 {
-    paintObject(p, x, y, w, h, tx, ty, paintPhase);
+    paintObject(p, x, y, w, h, tx, ty, paintAction);
 }
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
@@ -907,6 +912,15 @@ void RenderObject::setStyle(RenderStyle *style)
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
     //qDebug("new style, diff=%d", d);
+
+#warning FIXME - outline
+
+    if ( m_style &&
+         ( ( isFloating() && m_style->floating() != style->floating() ) ||
+           ( isPositioned() && m_style->position() != style->position() &&
+             style->position() != ABSOLUTE && style->position() != FIXED ) ) )
+        removeFromObjectLists();
+
     // reset style flags
     m_floating = false;
     m_positioned = false;
@@ -967,11 +981,12 @@ void RenderObject::setOverhangingContents(bool p)
     if (m_overhangingContents == p)
         return;
 
-    RenderObject *cb = containingBlock();
+    RenderBlock *cb = containingBlock();
     if (p)
     {
         m_overhangingContents = true;
-        if (cb!=this)
+        KHTMLAssert( cb != this );
+        if (cb)
             cb->setOverhangingContents();
     }
     else
@@ -990,7 +1005,8 @@ void RenderObject::setOverhangingContents(bool p)
         else
         {
             m_overhangingContents = false;
-            if (cb!=this)
+            KHTMLAssert( cb != this );
+            if (cb)
                 cb->setOverhangingContents(false);
         }
     }
@@ -1089,20 +1105,42 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-void RenderObject::removeFromFloatingObjects()
-{
-    if ( isFloating()) {
-        RenderObject *p;
-        for (p = parent(); p; p = p->parent()) {
-            if (p->isFlow())
-                static_cast<RenderFlow*>(p)->removeFloatingObject(this);
-        }
-    }
-}
-
 DOM::DocumentImpl* RenderObject::document() const
 {
     return m_node->getDocument();
+}
+
+void RenderObject::remove()
+{
+    removeFromObjectLists();
+
+    if ( parent() )
+        //have parent, take care of the tree integrity
+        parent()->removeChild(this);
+}
+
+void RenderObject::removeFromObjectLists()
+{
+    // in destruction mode, don't care.
+    if ( !document()->renderer() ) return;
+
+    if (isFloating()) {
+        RenderBlock* outermostBlock = containingBlock();
+        for (RenderBlock* p = outermostBlock;
+             p && !p->isCanvas() && p->containsFloat(this) && !p->isFloatingOrPositioned();
+             outermostBlock = p, p = p->containingBlock())
+            ;
+        if (outermostBlock)
+            outermostBlock->markAllDescendantsWithFloatsForLayout(this);
+    }
+
+    if (isPositioned()) {
+        RenderObject *p;
+        for (p = parent(); p; p = p->parent()) {
+            if (p->isRenderBlock())
+                static_cast<RenderBlock*>(p)->removePositionedObject(this);
+        }
+    }
 }
 
 RenderArena* RenderObject::renderArena() const
@@ -1241,7 +1279,7 @@ void RenderObject::setHoverAndActive(NodeInfo& info, bool oldinside, bool inside
     }
 }
 
-bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, bool inBox)
 {
     int tx = _tx + xPos();
     int ty = _ty + yPos();
@@ -1254,7 +1292,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     // ### table should have its own, more performant method
     if (overhangingContents() || isInline() || isCanvas() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty))
+            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, false))
                 inside = true;
     }
 
@@ -1282,7 +1320,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
                     info.setURLElement(p->element());
                     break;
                 }
-                if (!isSpecial()) break;
+                if (!isFloatingOrPositioned()) break;
                 p = p->parent();
             }
         }
@@ -1468,7 +1506,6 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
         RenderStyle *st = curr->style();
         int currDecs = st->textDecoration();
         if (currDecs) {
-	bool isValid = st->textDecorationColor().isValid();
             if (currDecs & UNDERLINE) {
                 decorations &= ~UNDERLINE;
                 underline = st->textDecorationColor().isValid()

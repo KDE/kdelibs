@@ -48,7 +48,7 @@ using namespace khtml;
 using namespace DOM;
 
 RenderTable::RenderTable(DOM::NodeImpl* node)
-    : RenderFlow(node)
+    : RenderBlock(node)
 {
 
     tCaption = 0;
@@ -81,7 +81,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     ETableLayout oldTableLayout = style() ? style()->tableLayout() : TAUTO;
     if ( _style->display() == INLINE ) _style->setDisplay( INLINE_TABLE );
     if ( _style->display() != INLINE_TABLE ) _style->setDisplay(TABLE);
-    RenderFlow::setStyle(_style);
+    RenderBlock::setStyle(_style);
 
     // init RenderObject attributes
     setInline(style()->display()==INLINE_TABLE && !isPositioned());
@@ -105,20 +105,13 @@ void RenderTable::setStyle(RenderStyle *_style)
     }
 }
 
-void RenderTable::position(InlineBox *box, int, int, bool, int)
-{
-    //for inline tables only
-    m_x = box->xPos() + marginLeft();
-    m_y = box->yPos() + marginTop();
-}
-
 short RenderTable::lineHeight(bool b) const
 {
     // Inline tables are replaced elements. Otherwise, just pass off to
     // the base class.
     if (isReplaced())
         return height()+marginTop()+marginBottom();
-    return RenderFlow::lineHeight(b);
+    return RenderBlock::lineHeight(b);
 }
 
 short RenderTable::baselinePosition(bool b) const
@@ -127,7 +120,7 @@ short RenderTable::baselinePosition(bool b) const
     // the base class.
     if (isReplaced())
         return height()+marginTop()+marginBottom();
-    return RenderFlow::baselinePosition(b);
+    return RenderBlock::baselinePosition(b);
 }
 
 
@@ -147,7 +140,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
     case TABLE_CAPTION:
-        tCaption = static_cast<RenderFlow *>(child);
+        tCaption = static_cast<RenderBlock *>(child);
         break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
@@ -209,7 +202,7 @@ void RenderTable::calcWidth()
         calcAbsoluteHorizontal();
     }
 
-    RenderObject *cb = containingBlock();
+    RenderBlock *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
     LengthType widthType = style()->width().type();
@@ -224,8 +217,8 @@ void RenderTable::calcWidth()
 
     // restrict width to what we really have in case we flow around floats
     // EXCEPT percent tables, which are still calculated as above
-    if ( style()->flowAroundFloats() && cb->isFlow() && widthType!=Percent ) {
-	availableWidth = static_cast<RenderFlow *>(cb)->lineWidth( m_y );
+    if ( style()->flowAroundFloats() && widthType!=Percent ) {
+	availableWidth = cb->lineWidth( m_y );
 	m_width = KMIN( short( availableWidth ), m_width );
     }
 
@@ -246,11 +239,7 @@ void RenderTable::layout()
     //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
 
     m_height = 0;
-
-#if 0
-    // enable once we merged in the margin handling from safari
     initMaxMarginValues();
-#endif
 
     //int oldWidth = m_width;
     calcWidth();
@@ -389,7 +378,7 @@ void RenderTable::setCellWidths()
 }
 
 void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
-			 int _tx, int _ty, PaintAction paintPhase)
+			 int _tx, int _ty, PaintAction paintAction)
 {
 
     if(!layouted()) return;
@@ -410,13 +399,20 @@ void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
     kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
-    if(paintPhase == PaintActionBackground && style()->visibility() == VISIBLE)
+    if(( paintAction == PaintActionElementBackground || paintAction == PaintActionChildBackground ) &&
+       style()->visibility() == VISIBLE)
 	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
+    if ( paintAction == PaintActionElementBackground )
+        return;
+
+    if ( paintAction == PaintActionChildBackgrounds )
+        paintAction = PaintActionChildBackground;
 
     RenderObject *child = firstChild();
     while( child ) {
 	if ( child->isTableSection() || child == tCaption )
-	    child->paint( p, _x, _y, _w, _h, _tx, _ty, paintPhase );
+	    child->paint( p, _x, _y, _w, _h, _tx, _ty, paintAction );
 	child = child->nextSibling();
     }
 
@@ -579,7 +575,7 @@ void RenderTable::recalcSections()
 	switch(child->style()->display()) {
 	case TABLE_CAPTION:
 	    if ( !tCaption) {
-		tCaption = static_cast<RenderFlow*>(child);
+		tCaption = static_cast<RenderBlock*>(child);
                 tCaption->setLayouted(false);
             }
 	    break;
@@ -645,7 +641,7 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 	*stream << " " << columns[i].span;
     *stream << endl << ind;
 
-    RenderFlow::dump(stream,ind);
+    RenderBlock::dump(stream,ind);
 }
 #endif
 
@@ -1205,7 +1201,7 @@ int RenderTableSection::layoutRows( int toAdd )
 
 
 void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
-				int tx, int ty, PaintAction paintPhase)
+				int tx, int ty, PaintAction paintAction)
 {
     unsigned int totalRows = grid.size();
     unsigned int totalCols = table()->columns.size();
@@ -1254,7 +1250,7 @@ void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
 #ifdef TABLE_PRINT
 		kdDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->paint( p, x, y, w, h, tx, ty, paintPhase);
+		cell->paint( p, x, y, w, h, tx, ty, paintAction);
 	    }
 	}
     }
@@ -1548,7 +1544,7 @@ void RenderTableRow::layout()
 // -------------------------------------------------------------------------
 
 RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
-  : RenderFlow(_node)
+  : RenderBlock(_node)
 {
   _col = -1;
   _row = -1;
@@ -1564,7 +1560,7 @@ void RenderTableCell::detach()
     if (parent() && section())
         section()->setNeedCellRecalc();
 
-    RenderFlow::detach();
+    RenderBlock::detach();
 }
 
 void RenderTableCell::updateFromElement()
@@ -1586,7 +1582,7 @@ void RenderTableCell::calcMinMaxWidth()
     kdDebug( 6040 ) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    RenderFlow::calcMinMaxWidth();
+    RenderBlock::calcMinMaxWidth();
     if (element() && style()->whiteSpace() == NORMAL) {
         // See if nowrap was set.
         DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
@@ -1614,9 +1610,15 @@ void RenderTableCell::setWidth( int width )
     }
 }
 
+void RenderTableCell::layout()
+{
+    layoutBlock( m_widthChanged );
+    m_widthChanged = false;
+}
+
 void RenderTableCell::close()
 {
-    RenderFlow::close();
+    RenderBlock::close();
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::close() total height =" << m_height << endl;
@@ -1627,12 +1629,12 @@ void RenderTableCell::close()
 void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
     y += _topExtra;
-    RenderFlow::repaintRectangle(x, y, w, h, immediate, f);
+    RenderBlock::repaintRectangle(x, y, w, h, immediate, f);
 }
 
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    bool ret = RenderFlow::absolutePosition(xPos, yPos, f);
+    bool ret = RenderBlock::absolutePosition(xPos, yPos, f);
     if (ret)
       yPos += _topExtra;
     return ret;
@@ -1656,7 +1658,7 @@ short RenderTableCell::baselinePosition( bool ) const
 void RenderTableCell::setStyle( RenderStyle *style )
 {
     style->setDisplay(TABLE_CELL);
-    RenderFlow::setStyle( style );
+    RenderBlock::setStyle( style );
     setShouldPaintBackgroundOrBorder(true);
 
     if (style->whiteSpace() == KHTML_NOWRAP) {
@@ -1682,11 +1684,11 @@ static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 #endif
 
 void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
-			    int _tx, int _ty, PaintAction paintPhase)
+			    int _tx, int _ty, PaintAction paintAction)
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
+    kdDebug( 6040 ) << renderName() << "(layouted: " << layouted() << ")::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
 #endif
 
     if (!layouted()) return;
@@ -1698,7 +1700,7 @@ void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
     if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
         || (_ty + m_height + _bottomExtra < _y))) return;
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());

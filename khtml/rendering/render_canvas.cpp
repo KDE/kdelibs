@@ -2,7 +2,7 @@
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include "xml/dom_docimpl.h"
 
 #include "khtmlview.h"
+#include "khtml_part.h"
 #include <kdebug.h>
 #include <kglobal.h>
 
@@ -35,7 +36,7 @@ using namespace khtml;
 //#define SPEED_DEBUG
 
 RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
-    : RenderFlow(node)
+    : RenderBlock(node)
 {
     // init RenderObject attributes
     setInline(false);
@@ -56,7 +57,7 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     setPositioned(true); // to 0,0 :)
 
     m_printingMode = false;
-    m_paintImages = true;
+    m_printImages = true;
 
     m_selectionStart = 0;
     m_selectionEnd = 0;
@@ -67,16 +68,30 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
 }
 
-RenderCanvas::~RenderCanvas()
+void RenderCanvas::calcHeight()
 {
+    if (!m_printingMode && m_view)
+    {
+        m_height = m_view->visibleHeight();
+    }
+    else if (!m_view)
+    {
+        m_height = m_rootHeight;
+    }
 }
 
 void RenderCanvas::calcWidth()
 {
-    RenderBox::calcWidth();
-    return;
+    // the width gets set by KHTMLView::print when printing to a printer.
+    if(m_printingMode || !m_view)
+    {
+        m_width = m_rootWidth;
+        return;
+    }
 
-    // exception: m_width is already known and set in layout()
+    m_width = m_view ?
+                m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
+                : m_minWidth;
 
     if (style()->marginLeft().isFixed())
         m_marginLeft = style()->marginLeft().value();
@@ -93,7 +108,7 @@ void RenderCanvas::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    RenderFlow::calcMinMaxWidth();
+    RenderBlock::calcMinMaxWidth();
 
     m_maxWidth = m_minWidth;
 
@@ -107,8 +122,8 @@ void RenderCanvas::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
-    if(firstChild())
-        firstChild()->setLayouted(false);
+    for(RenderObject* c = firstChild(); c; c = c->nextSibling())
+        c->setLayouted(false);
 
 #ifdef SPEED_DEBUG
     QTime qt;
@@ -136,7 +151,7 @@ void RenderCanvas::layout()
         m_height = m_rootHeight;
     }
 
-    RenderFlow::layout();
+    RenderBlock::layout();
 
     if (!m_printingMode) {
         m_view->resizeContents(docWidth(), docHeight());
@@ -172,33 +187,35 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
 }
 
 void RenderCanvas::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
-		       PaintAction paintPhase)
+		       PaintAction paintAction)
 {
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
 }
 
 void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty,  PaintAction paintPhase)
+			     int _tx, int _ty,  PaintAction paintAction)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
-    // add offset for relative positioning
-    if(isRelPositioned())
-        relativePositionOffset(_tx, _ty);
-
     // 1. paint background, borders etc
-    if(paintPhase == PaintActionBackground && shouldPaintBackgroundOrBorder() && !isInline())
+    if(paintAction == PaintActionElementBackground) {
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        return;
+    }
 
     // 2. paint contents
     RenderObject *child = firstChild();
     while(child != 0) {
         if(!child->layer() && !child->isFloating()) {
-            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
+            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintAction);
         }
         child = child->nextSibling();
     }
+
+    // 3. paint floats.
+    if (paintAction == PaintActionFloat)
+        paintFloats(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
     if (m_view)
@@ -212,6 +229,14 @@ void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
 
 }
 
+void RenderCanvas::paintBoxDecorations(QPainter *p,int _x, int _y,
+                                       int _w, int _h, int _tx, int _ty)
+{
+    if ((firstChild() && firstChild()->style()->visibility() == VISIBLE) || !view())
+        return;
+
+    p->fillRect(_x,_y,_w,_h, view()->palette().active().color(QColorGroup::Base));
+}
 
 void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
@@ -387,7 +412,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     if (m_selectionEnd)
         m_selectionEnd->setIsSelectionBorder(true);
     m_selectionEndPos = ep;
-           
+
 #if 0
     kdDebug( 6040 ) << "old selection (" << oldStart << "," << oldStartPos << "," << oldEnd << "," << oldEndPos << ")" << endl;
     kdDebug( 6040 ) << "new selection (" << s << "," << sp << "," << e << "," << ep << ")" << endl;

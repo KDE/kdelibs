@@ -61,7 +61,7 @@ public:
     virtual bool isInlineTextBox() const { return false; }
     virtual bool isRootInlineBox() const { return false; }
 
-    bool isConstructed() { return m_constructed; }
+    bool isConstructed() const { return m_constructed; }
     virtual void setConstructed() {
         m_constructed = true;
         if (m_next)
@@ -72,7 +72,7 @@ public:
 
     InlineBox* nextOnLine() { return m_next; }
     InlineBox* prevOnLine() { return m_prev; }
-    RenderObject* object() { return m_object; }
+    RenderObject* object() const { return m_object; }
 
     InlineFlowBox* parent() { return m_parent; }
     void setParent(InlineFlowBox* par) { m_parent = par; }
@@ -97,11 +97,7 @@ public:
     virtual int topOverflow() const { return yPos(); }
     virtual int bottomOverflow() const { return yPos()+height(); }
 
-    /** Returns the minimum offset this inline box contains. Defaults to 0.
-     */
     virtual long minOffset() const { return 0; }
-    /** Returns the maximum offset this inline box contains. Defaults to 1.
-     */
     virtual long maxOffset() const { return 1; }
 
 public: // FIXME: Would like to make this protected, but methods are accessing these
@@ -138,9 +134,9 @@ public:
     void setNextLineBox(InlineRunBox* n) { m_nextLine = n; }
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
-    virtual void paintBackgroundAndBorder(QPainter */*p*/, int /*_x*/, int /*_y*/,
+    virtual void paintBackgroundAndBorder(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                        int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {};
-    virtual void paintDecorations(QPainter */*p*/, int /*_x*/, int /*_y*/,
+    virtual void paintDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                        int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {};
 
 protected:
@@ -162,8 +158,8 @@ public:
 
     virtual bool isInlineFlowBox() const { return true; }
 
-    InlineBox* firstChild() { return m_firstChild; }
-    InlineBox* lastChild() { return m_lastChild; }
+    InlineBox* firstChild() const  { return m_firstChild; }
+    InlineBox* lastChild() const { return m_lastChild; }
 
     virtual void setConstructed() {
         InlineBox::setConstructed();
@@ -189,17 +185,17 @@ public:
     virtual void paintDecorations(QPainter *p, int _x, int _y,
                        int _w, int _h, int _tx, int _ty);
 
-    int marginBorderPaddingLeft();
-    int marginBorderPaddingRight();
-    int marginLeft();
-    int marginRight();
-    int borderLeft() { if (includeLeftEdge()) return object()->borderLeft(); return 0; }
-    int borderRight() { if (includeRightEdge()) return object()->borderRight(); return 0; }
-    int paddingLeft() { if (includeLeftEdge()) return object()->paddingLeft(); return 0; }
-    int paddingRight() { if (includeRightEdge()) return object()->paddingRight(); return 0; }
+    int marginBorderPaddingLeft() const;
+    int marginBorderPaddingRight() const;
+    int marginLeft() const;
+    int marginRight( )const;
+    int borderLeft() const { if (includeLeftEdge()) return object()->borderLeft(); return 0; }
+    int borderRight() const { if (includeRightEdge()) return object()->borderRight(); return 0; }
+    int paddingLeft() const { if (includeLeftEdge()) return object()->paddingLeft(); return 0; }
+    int paddingRight() const { if (includeRightEdge()) return object()->paddingRight(); return 0; }
 
-    bool includeLeftEdge() { return m_includeLeftEdge; }
-    bool includeRightEdge() { return m_includeRightEdge; }
+    bool includeLeftEdge() const { return m_includeLeftEdge; }
+    bool includeRightEdge() const { return m_includeRightEdge; }
     void setEdges(bool includeLeft, bool includeRight) {
         m_includeLeftEdge = includeLeft;
         m_includeRightEdge = includeRight;
@@ -208,7 +204,7 @@ public:
 
     // Helper functions used during line construction and placement.
     void determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject);
-    int getFlowSpacingWidth();
+    int getFlowSpacingWidth() const;
     bool nextOnLineExists();
     bool prevOnLineExists();
     bool onEndChain(RenderObject* endObject);

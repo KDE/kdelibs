@@ -1102,10 +1102,15 @@ void DocumentImpl::detach()
     delete m_tokenizer;
     m_tokenizer = 0;
 
+    QTime t;
+    t.start();
+
     NodeBaseImpl::detach();
 
     if ( render )
         render->detach();
+
+    qDebug( "*** DETACH TOOK %d", t.elapsed() );
 
     m_view = 0;
 
@@ -1577,7 +1582,7 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
     if ( m_render ) {
         assert(m_render->isCanvas());
         RenderObject::NodeInfo renderInfo(readonly, ev->type == MousePress);
-        bool isInside = m_render->layer()->nodeAtPoint(renderInfo, _x, _y, 0, 0);
+        bool isInside = m_render->layer()->nodeAtPoint(renderInfo, _x, _y, 0, 0, false);
         ev->innerNode = renderInfo.innerNode();
 
         if (renderInfo.URLElement()) {

@@ -476,7 +476,12 @@ public:
 
     ~DocumentStyle();
 
+    // KDE 4:: make const
     StyleSheetList styleSheets();
+
+    DOMString preferredStylesheetSet() const;
+    DOMString selectedStylesheetSet() const;
+    void setSelectedStylesheetSet( const DOMString& aString );
 
     bool isNull() const { return !impl; }
 

@@ -41,10 +41,11 @@ public:
     virtual ~RenderBox();
 
     virtual const char *renderName() const { return "RenderBox"; }
+    virtual bool isBox() const { return true; }
 
     virtual void setStyle(RenderStyle *style);
     virtual void paint(QPainter *p, int _x, int _y, int _w, int _h,
-                       int _tx, int _ty, PaintAction paintPhase);
+                       int _tx, int _ty, PaintAction paintAction);
 
     virtual void close();
 
@@ -85,6 +86,7 @@ public:
     virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
 
     virtual short containingBlockWidth() const;
+    void relativePositionOffset(int &tx, int &ty) const;
 
     virtual void calcWidth();
     virtual void calcHeight();
@@ -98,12 +100,21 @@ public:
 
     virtual RenderLayer* layer() const { return m_layer; }
 
+    void setStaticX(short staticX);
+    void setStaticY(int staticY);
+
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+
+    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
                                        int _w, int _h, int _tx, int _ty);
     void paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h);
+
+    void paintRootBoxDecorations( QPainter *p,int, int _y,
+                                                int, int _h, int _tx, int _ty );
+
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
     virtual int borderTopExtra() { return 0; }
@@ -115,7 +126,6 @@ protected:
     QRect getOverflowClipRect(int tx, int ty);
     QRect getClipRect(int tx, int ty);
 
-    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 
     // the actual height of the contents + borders + padding
     int m_height;
@@ -140,12 +150,16 @@ protected:
      * ( = the width of the element with line breaking disabled)
      */
     short m_maxWidth;
-    
+
     /*
      *  The transitional width of the overlap that must be added when repainting
      *  to account for surrounding outlines
      */
     short m_overlapWidth;
+
+    // Cached normal flow values for absolute positioned elements with static left/top values.
+    short m_staticX;
+    int m_staticY;
 
     RenderLayer *m_layer;
 };

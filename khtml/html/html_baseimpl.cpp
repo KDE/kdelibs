@@ -30,7 +30,6 @@
 #include "khtml_part.h"
 
 #include "rendering/render_frames.h"
-#include "rendering/render_html.h"
 #include "rendering/render_body.h"
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
@@ -542,20 +541,6 @@ void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )
 NodeImpl::Id HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
-}
-
-void HTMLHtmlElementImpl::attach()
-{
-    assert(!m_render);
-    assert(parentNode());
-    assert(parentNode()->renderer());
-
-    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
-    // ignore display: none
-    m_render = new (getDocument()->renderArena()) RenderHtml(this);
-    m_render->setStyle(style);
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
-    NodeBaseImpl::attach();
 }
 
 // -------------------------------------------------------------------------

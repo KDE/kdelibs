@@ -160,7 +160,7 @@ public:
     // front.  The nodeAtPoint method looks for mouse events by walking
     // layers that intersect the point from front to back.
     void paint(QPainter *p, int x, int y, int w, int h, int tx, int ty, bool selectionOnly=false);
-    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty);
+    bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int ty, bool inBox);
 
     void clearOtherLayersHoverActiveState();
     void clearHoverAndActiveState(RenderObject* obj);
