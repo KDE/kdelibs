@@ -132,7 +132,7 @@ KSpell::startIspell(void)
     {
       if (ksconfig->dictionary()[0]!='\0')
 	{
-	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary());
+	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary().data());
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}

@@ -70,11 +70,9 @@ public:
    */
   void setNoRootAffix (bool);
   void setRunTogether(bool);
-  void setDictionary (const char *);
-  void setDictionary (const QString qs)
-    { setDictionary ((const char *)qs); }
+  void setDictionary (const QString qs);
   void setDictFromList (bool dfl);
-  //  void setPersonalDict (const char *);
+  //  void setPersonalDict (const char *s);
   void setEncoding (int enctype);
   void setIgnoreList (QStrList _ignorelist);
 
@@ -83,7 +81,7 @@ public:
    */
   bool noRootAffix (void) const;
   bool runTogether(void) const;
-  const char *dictionary (void) const;
+  const QString dictionary (void) const;
   bool dictFromList (void) const;
   //char *personalDict (void) const;
   int encoding (void) const;

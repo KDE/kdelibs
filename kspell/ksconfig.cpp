@@ -398,7 +398,7 @@ void KSpellConfig::fillInDialog (void)
   if (dictFromList())
     for (unsigned i=0;i<langfnames->count();i++)
       {
-	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary());
+	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
 	if (!strcmp(langfnames->at(i),dictionary()))
 	  whichelement=i;
       }
@@ -406,7 +406,7 @@ void KSpellConfig::fillInDialog (void)
   kdebug (KDEBUG_INFO, 750, "whiche=%d", whichelement);
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
-  if (dictionary()[0]=='\0' ||  whichelement!=-1)
+  if (dictionary().isEmpty() ||  whichelement!=-1)
     {
       setDictFromList (TRUE);
       if (whichelement!=-1)
@@ -436,7 +436,7 @@ void KSpellConfig::setRunTogether(bool b)
   bruntogether=b;
 }
 
-void KSpellConfig::setDictionary (const char *s)
+void KSpellConfig::setDictionary (const QString s)
 {
   qsdict=s; //.copy();
 
@@ -480,9 +480,9 @@ bool KSpellConfig::runTogether(void) const
   return bruntogether;
 }
 
-const char *KSpellConfig::dictionary (void) const
+const QString KSpellConfig::dictionary (void) const
 {
-  return qsdict.data();
+  return qsdict;
 }
 
 /*
