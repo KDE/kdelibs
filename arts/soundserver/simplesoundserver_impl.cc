@@ -230,7 +230,8 @@ StereoEffectStack SimpleSoundServer_impl::outstack()
 
 Object SimpleSoundServer_impl::createObject(const string& name)
 {
-	return Object(SubClass(name));
+	// don't use SubClass(name) as this will abort if the object is not found
+	return Object::_from_base(ObjectManager::the()->create(name));
 }
 
 void SimpleSoundServer_impl::notifyTime()
