@@ -81,7 +81,7 @@ autostartdir = $(prefix)/share/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
 
-kde_module_LTLIBRARIES = kcm_kabc.la kabc_sql.la
+kde_module_LTLIBRARIES = kcm_kabc.la kabc_sql.la kabc_directory.la
 
 kcm_kabc_la_SOURCES = kcmkabc.cpp resourceconfigdlg.cpp
 kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
@@ -90,8 +90,23 @@ kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
 data_DATA = kabc.desktop
 datadir = $(kde_appsdir)/Settings/Personalization
 
+include ../Doxyfile.am
+
 ###########
 # plugins
+
+linkdir                   = $(kde_datadir)/kabc/
+link_DATA                 = sql.plugin directory.plugin
+
+EXTRA_DIST = $(data_DATA) $(link_DATA)
+
+# directory plugin
+kabc_directory_la_SOURCES = \
+    resourcedir.cpp \
+    resourcedirconfig.cpp
+
+kabc_directory_la_LIBADD      = $(LIB_KDEUI) libkabc.la
+kabc_directory_la_LDFLAGS     = $(all_libraries) $(KDE_PLUGIN) -module
 
 # sql plugin
 kabc_sql_la_SOURCES = \
@@ -100,9 +115,3 @@ kabc_sql_la_SOURCES = \
 
 kabc_sql_la_LIBADD      = $(LIB_KDEUI) libkabc.la
 kabc_sql_la_LDFLAGS     = $(all_libraries) $(KDE_PLUGIN) -module
-
-linkdir                   = $(kde_datadir)/kabc/
-link_DATA                 = sql.plugin
-EXTRA_DIST = $(data_DATA) $(link_DATA)
-
-include ../Doxyfile.am

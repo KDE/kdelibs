@@ -16,10 +16,23 @@
 #include "binaryformat.h"
 #include "vcardformat.h"
 #include "stdaddressbook.h"
+#include "resourcedirconfig.h"
 
 #include "resourcedir.h"
 
 using namespace KABC;
+
+extern "C"
+{
+  ResourceConfigWidget *config_widget( QWidget *parent ) {
+    return new ResourceDirConfig( parent, "ResourceSqlConfig" );
+  }
+
+  Resource *resource( AddressBook *ab, const KConfig *config ) {
+    return new ResourceDir( ab, config );
+  }
+}
+
 
 ResourceDir::ResourceDir( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
@@ -159,7 +172,7 @@ bool ResourceDir::save( Ticket *ticket )
       continue;
     }
 
-    bool success = mFormat->save( &(*it), &file );
+    bool success = mFormat->save( *it, &file );
 
     if ( !success ) {
       ok = false;
