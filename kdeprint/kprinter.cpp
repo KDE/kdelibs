@@ -190,6 +190,12 @@ bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 	if (dlg)
 	{
 		state = dlg->exec();
+		if (state)
+			// call preparePrinting() also here, to be sure that everything is OK
+			// just after calling KPrinter::setup(). Problems may occur if an application
+			// uses the KPrinter object between setup() and QPainter::begin(). Anyway,
+			// preparePrinting() will only be effective once in the print process.
+			preparePrinting();
 		delete dlg;
 	}
 	return state;
@@ -740,8 +746,9 @@ int KPrinter::toPage() const
 void KPrinter::setFromTo(int m, int M)
 { setOption("kde-frompage",QString::number(m)); setOption("kde-topage",QString::number(M)); setOption("kde-range",(m>0 && M>0 ? QString("%1-%2").arg(m).arg(M) : QString::fromLatin1(""))); }
 
+// if no page size defined, use the localized one
 KPrinter::PageSize KPrinter::pageSize() const
-{ return (option("kde-pagesize").isEmpty() ? A4 : (PageSize)option("kde-pagesize").toInt()); }
+{ return (option("kde-pagesize").isEmpty() ? (PageSize)KGlobal::locale()->pageSize() : (PageSize)option("kde-pagesize").toInt()); }
 
 KPrinter::PageSetType KPrinter::pageSet() const
 { return (option("kde-pageset").isEmpty() ? AllPages : (PageSetType)(option("kde-pageset").toInt())); }
