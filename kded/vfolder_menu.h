@@ -64,6 +64,7 @@ signals:
 
 public:
   class SubMenu;
+  class appsInfo;
   struct MenuItem 
   {
     enum Type { MI_Service, MI_SubMenu, MI_Separator };
@@ -76,7 +77,7 @@ public:
 
   class SubMenu {
   public:
-     SubMenu() : items(43),isDeleted(false) { }
+     SubMenu() : items(43),isDeleted(false),apps_info(0) { }
      ~SubMenu() { subMenus.setAutoDelete(true); }
   
   public:
@@ -89,6 +90,7 @@ public:
      QDomElement layoutNode;
      bool isDeleted;
      QStringList layoutList;
+     appsInfo *apps_info;
   };
 
 public:  
@@ -129,7 +131,7 @@ public:
   
   appsInfo *m_appsInfo; // appsInfo for current menu
   QPtrList<appsInfo> m_appsInfoStack; // All applicable appsInfo for current menu
-  QDict<appsInfo> m_appsInfoDict; // menu -> appsInfo
+  QPtrList<appsInfo> m_appsInfoList; // List of all appsInfo objects.
   QDict<KService> m_usedAppsDict; // all applications that have been allocated
   
   QDomDocument m_doc;
@@ -160,19 +162,19 @@ private:
   void buildApplicationIndex(bool unusedOnly);
   
   /**
-   * Create a appsInfo frame for this menu
+   * Create a appsInfo frame for current menu
    */
-  void createAppsInfo(const QString &menuName);
+  void createAppsInfo();
 
   /**
-   * Load additional appsInfo frame for this menu
+   * Load additional appsInfo frame for current menu
    */
-  void loadAppsInfo(const QString &menuName);
+  void loadAppsInfo();
 
   /**
-   * Unload additional appsInfo frame for this menu
+   * Unload additional appsInfo frame for current menu
    */
-  void unloadAppsInfo(const QString &menuName);
+  void unloadAppsInfo();
 
   QDomDocument loadDoc();
   void mergeMenus(QDomElement &docElem, QString &name);
