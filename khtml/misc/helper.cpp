@@ -28,6 +28,9 @@
 #include <qlist.h>
 #include <khtmllayout.h>
 #include <kstaticdeleter.h>
+#include <kapp.h>
+#include <qtooltip.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -54,6 +57,37 @@ using namespace khtml;
         map["aqua"] = "#00ffff";
 	map["crimson"] = "#dc143c";
 	map["indigo"] = "#4b0082";
+        // ### react to style changes
+        // see http://www.richinstyle.com for details
+        QColorGroup cg = kapp->palette().active();
+        map["activeborder"] = cg.light(); // bordercolor of an active window
+        map["activecaption"] = cg.text(); // caption color of an active window
+        map["appworkspace"] = cg.background(); // background color of an MDI interface
+        map["highlight"] = cg.highlight();
+        map["highlighttext"] = cg.highlightedText();
+        cg = kapp->palette().inactive();
+        map["background"] = cg.background(); // desktop background color
+        map["buttonface"] = cg.button(); // Button background color
+        map["buttonhighlight"] =  cg.light();
+        map["buttonshadow"] = cg.shadow();
+        map["buttontext"] = cg.buttonText();
+        map["captiontext"] = cg.text();
+        map["infobackground"] = QToolTip::palette().inactive().background();
+        map["menu"] = cg.background();
+        map["menutext"] = cg.foreground();
+        map["scrollbar"] = cg.background();
+        map["threeddarkshadow"] = cg.dark();
+        map["threedface"] = cg.button();
+        map["threedhighlight"] = cg.light();
+        map["threedlightshadow"] = cg.midlight();
+        map["window"] = cg.background();
+        map["windowframe"] = cg.background();
+        map["text"] = cg.text();
+        cg = kapp->palette().disabled();
+        map["inactiveborder"] = cg.background();
+        map["inactivecaption"] = cg.background();
+        map["inactivecaptiontext"] = cg.text();
+        map["graytext"] = cg.text();
     };
 };
 
@@ -67,14 +101,14 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         htmlColors = hcsd.setObject( new HTMLColors );
 
     int pos;
-    QString name = _name.lower();
+    QString name = _name;
     // remove white spaces for those broken websites out there :-(
     while ( ( pos = name.find( ' ' ) ) != -1 )  name.remove( pos, 1 );
 
     int len = name.length();
     char ch = name[0].latin1();
 
-    if(len == 0 || (len == 11 && name == "transparent"))
+    if(len == 0 || (len == 11 && name.find("transparent", 0, false) == 0) )
     {
         color = QColor(); // invalid color == transparent
         return;
@@ -100,15 +134,15 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
                 return;
             }
         }
-        if ( name[0] < 'a' || name[0] > 'z' ) {
+        if ( !name[0].isLetter() ) {
 	    color = QColor();
 	    return;
 	}
     }
 
-    if ( len > 4 && ch == 'r' && name[1].latin1() == 'g' &&
-         name[2].latin1() == 'b' && name[3].latin1() == '(' &&
-         name[len-1].latin1() == ')')
+    if ( len > 4 && ch == 'r' && name[1].lower() == 'g' &&
+         name[2].lower() == 'b' && name[3].cell() == '(' &&
+         name[len-1].cell() == ')')
     {
         // CSS like rgb(r, g, b) style
         DOMString rgb = name.mid(4, name.length()-5);
@@ -135,11 +169,27 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     }
     else
     {
-        const QColor& tc = htmlColors->map[name];
+        QColor tc = htmlColors->map[name];
+        if ( !tc.isValid() )
+            tc = htmlColors->map[name.lower()];
+
         if (tc.isValid())
             color = tc;
-        else
+        else {
             color.setNamedColor(name);
+            if ( !color.isValid() )  color.setNamedColor( name.lower() );
+            if(!color.isValid()) {
+                bool hasalpha = false;
+                for(unsigned int i = 0; i < name.length(); i++)
+                    if(name[i].isLetterOrNumber()) {
+                        hasalpha = true;
+                        break;
+                    }
+
+                if(!hasalpha)
+                  color = Qt::black;
+            }
+        }
     }
 }
 
