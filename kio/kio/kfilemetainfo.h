@@ -924,7 +924,10 @@ public:
     /**
      * This method should create an appropriate validator for the specified
      * item if it's editable or return a null pointer if not. If you don't
-     * have any editable items, you don't need this method
+     * have any editable items, you don't need this method.
+     *
+     * If you you don't need any validation, e.g. you accept any input,
+     * you can simply return 0L, or not reimplement this method at all.
      **/
     virtual QValidator* createValidator( const QString& /* mimeType */,
                                          const QString& /* group */,
