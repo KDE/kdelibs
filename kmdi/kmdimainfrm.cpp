@@ -261,12 +261,17 @@ KMdiMainFrm::~KMdiMainFrm()
 {
    delete d;
    d=0;
+   //save the children first to a list, as removing invalidates our iterator
+   QValueList<KMdiChildView *> children;
+   for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
+     children.append(w);
+   }
    // safely close the windows so properties are saved...
-   KMdiChildView *pWnd = 0L;
-   while((pWnd = m_pDocumentViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
-#ifdef __GNUC__
-#warning fixme    while((pWnd = m_pToolViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
-#endif
+   QValueListIterator<KMdiChildView *> childIt;
+   for (childIt = children.begin(); childIt != children.end(); ++childIt)
+   {
+       closeWindow(*childIt, false); // without re-layout taskbar!
+   }
    emit lastChildViewClosed();
    delete m_pDocumentViews;
    delete m_pToolViews;
