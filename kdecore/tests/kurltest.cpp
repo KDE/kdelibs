@@ -168,8 +168,11 @@ int main(int argc, char *argv[])
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
   check("KURL::path()", carsten.path(), "/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
 
-  KURL charles("file:/home/charles/foo%20moo");
-  check("KURL::path()", charles.path(), "/home/charles/foo moo");
+  KURL charles;
+  charles.setPath( "/home/charles/foo%20moo" );
+  check("KURL::path()", charles.path(), "/home/charles/foo%20moo");
+  KURL charles2("file:/home/charles/foo%20moo");
+  check("KURL::path()", charles2.path(), "/home/charles/foo moo");
 
   KURL udir;
   printf("\n* Empty URL\n");
