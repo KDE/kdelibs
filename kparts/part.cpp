@@ -614,6 +614,8 @@ bool ReadWritePart::saveToURL()
     }
     KTempFile tempFile;
     QString uploadFile = tempFile.name();
+    KURL uploadUrl;
+    uploadUrl.setPath( uploadFile );
     tempFile.unlink();
     // Create hardlink
     if (::link(QFile::encodeName(m_file), QFile::encodeName(uploadFile)) != 0)
@@ -621,7 +623,7 @@ bool ReadWritePart::saveToURL()
        // Uh oh, some error happened.
        return false;
     }
-    d->m_uploadJob = KIO::file_move( uploadFile, m_url, -1, true /*overwrite*/ );
+    d->m_uploadJob = KIO::file_move( uploadUrl, m_url, -1, true /*overwrite*/ );
     d->m_uploadJob->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     connect( d->m_uploadJob, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
