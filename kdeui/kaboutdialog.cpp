@@ -140,25 +140,25 @@ void KAboutContributor::setWork( const QString &_text, const QString &_header,
 }
 
 
-QString KAboutContributor::getName( void )
+QString KAboutContributor::getName( void ) const
 {
   return( mText[0]->text() );
 }
 
 
-QString KAboutContributor::getEmail( void )
+QString KAboutContributor::getEmail( void ) const
 {
   return( mText[1]->text() );
 }
 
 
-QString KAboutContributor::getURL( void )
+QString KAboutContributor::getURL( void ) const
 {
   return( mText[2]->text() );
 }
 
 
-QString KAboutContributor::getWork( void )
+QString KAboutContributor::getWork( void ) const
 {
   return( mText[3]->text() );
 }

@@ -110,10 +110,10 @@ class KAboutContributor : public QFrame
 		 bool update = true );
     void setWork( const QString &text, const QString &header=QString::null,
 		  bool update = true );
-    QString getName( void );
-    QString getEmail( void );
-    QString getURL( void );
-    QString getWork( void );
+    QString getName( void ) const;
+    QString getEmail( void ) const;
+    QString getURL( void ) const;
+    QString getWork( void ) const;
 
     virtual QSize sizeHint( void ) const;
 
