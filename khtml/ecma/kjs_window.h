@@ -203,6 +203,7 @@ namespace KJS {
     int installTimeout(const Value &func, List args, int t, bool singleShot);
     void clearTimeout(int timerId);
     void mark();
+    bool hasTimers() const;
   public slots:
     void timeoutClose();
   protected slots:

@@ -99,6 +99,7 @@ PartMonitor::PartMonitor(KHTMLPart *_part)
     m_completed = false;
     m_ownLoopLevel = 0;
     connect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
+    m_timer_waits = 200;
 }
 
 void PartMonitor::waitForCompletion()
@@ -112,14 +113,29 @@ void PartMonitor::waitForCompletion()
 
 	if (--sm_loopLevel) {
 	    assert(m_previousMonitor);
-	    QTimer::singleShot( visual ? 100 : 20 , m_previousMonitor, SLOT( timeout() ) );
+	    QTimer::singleShot( visual ? 100 : 10 , m_previousMonitor, SLOT( timeout() ) );
 	}
 	sm_highestMonitor = m_previousMonitor;
     }
+
+    QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
+    kapp->enter_loop();
 }
 
 void PartMonitor::timeout()
 {
+    kapp->exit_loop();
+}
+
+void PartMonitor::finishTimers()
+{
+    KJS::Window *w = KJS::Window::retrieveWindow( m_part );
+    --m_timer_waits;
+    if ( m_timer_waits && w && w->winq->hasTimers() ) {
+        // wait a bit
+        QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
+        return;
+    }
     kapp->exit_loop();
 }
 
@@ -131,7 +147,7 @@ void PartMonitor::partCompleted()
     else if (m_ownLoopLevel == sm_loopLevel)
     {
         RenderWidget::flushWidgetResizes();
-        QTimer::singleShot( visual ? 100 : 20, this, SLOT( timeout() ) );
+        QTimer::singleShot( visual ? 100 : 2, this, SLOT( timeout() ) );
     }
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }

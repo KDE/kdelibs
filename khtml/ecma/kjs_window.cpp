@@ -1101,7 +1101,7 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   if (!listenerObject.implementsCall() && part && part->jScript() && part->jScript()->interpreter())
   {
     Interpreter *interpreter = part->jScript()->interpreter();
-    
+
     // 'listener' probably is an EventListener object containing a 'handleEvent' function.
     Value handleEventValue = listenerObject.get(interpreter->globalExec(), Identifier("handleEvent"));
     Object handleEventObject = Object::dynamicCast(handleEventValue);
@@ -1112,7 +1112,7 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
       listenerObjectImp = handleEventObject.imp();
     }
   }
-  
+
   JSEventListener *existingListener = jsEventListeners[listenerObjectImp];
   if (existingListener)
     return existingListener;
@@ -1858,6 +1858,11 @@ void WindowQObject::clearTimeout(int timerId)
       return;
     }
   }
+}
+
+bool WindowQObject::hasTimers() const
+{
+  return scheduledActions.count();
 }
 
 void WindowQObject::mark()
