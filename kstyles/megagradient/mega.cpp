@@ -69,7 +69,6 @@ bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
         p->setBackgroundPixmap(pix);
     }
     else if(ev->type() == QEvent::Hide){
-        p->move(-1000, -1000);
         QApplication::syncX();
         p->setBackgroundPixmap(QPixmap());
 
@@ -535,7 +534,7 @@ void MegaStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 	x1 += pixw + 8;
 	w -= pixw + 8;
     }
-    
+
     if(act || btn->isDefault()){
         QFont font = btn->font();
         font.setBold(true);
@@ -686,7 +685,7 @@ void MegaStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         sliderStart = sliderMax;
 
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
-    
+
     QColorGroup g = sb->colorGroup();
     QRect addB, subHC, subB;
     QRect addPageR, subPageR, sliderR;
@@ -707,7 +706,7 @@ void MegaStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     {
 	len    = sb->height();
 	extent = sb->width();
-	
+
         subX = addX = ( extent - buttonDim ) / 2;
         subY = 0;
         addY = len - buttonDim;
@@ -755,18 +754,18 @@ void MegaStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                    false, addB.x()+4, addB.y()+4,
                    addB.width()-8, addB.height()-8, g, !maxed);
     }
-    
+
     if ( controls & SubLine )
     {
 	// Draw scroll up buttons
 	bool isSubLine = activeControl == SubLine;
 	Qt::ArrowType arrowType = horiz ? LeftArrow : UpArrow;
-	
+
         drawSBButton(p, subB, g, isSubLine);
         drawArrow( p, arrowType,
                    false, subB.x() + 4, subB.y() + 4,
                    subB.width() - 8, subB.height() - 8, g, !maxed );
-		   
+
 	if( numButtons == 3 )
 	{
             drawSBButton( p, subHC, g, isSubLine );
@@ -1040,7 +1039,7 @@ QStyle::ScrollControl MegaStyle::scrollBarPointOver(const QScrollBar *sb,
 	len    = sb->width();
     else
 	len    = sb->height();
-    if( len < buttonDim * 4 )
+    if( len < ( unsigned ) buttonDim * 4 )
 	numButtons = 2;
     else
 	numButtons = 3;
@@ -2032,21 +2031,39 @@ void MegaStyle::adjustHSV(QPixmap &pix, int h, int s)
 {
     QBitmap maskBmp(*pix.mask());
     QImage img = pix.convertToImage();
-    if(img.depth() != 32)
-        img.convertDepth(32);
-    unsigned int *data = (unsigned int *)img.bits();
-    int total = img.width()*img.height();
-    int current;
-    QColor c;
-    int oldH, oldS, oldV;
-    for(current=0; current<total; ++current){
-        c.setRgb(data[current]);
-        c.hsv(&oldH, &oldS, &oldV);
-        c.setHsv(h, s, oldV);
-        data[current] = c.rgb();
+
+    if ( img.depth() == 32 ) {
+        QRgb *data = (QRgb *)img.bits();
+        int total = img.width()*img.height();
+        int current;
+        QColor c;
+        int oldH, oldS, oldV;
+        for(current=0; current<total; ++current){
+            QRgb curpixel = data[current];
+            c.setRgb(qRed(curpixel ), qGreen( curpixel ), qBlue( curpixel ));
+            c.hsv(&oldH, &oldS, &oldV);
+            c.setHsv(h, s, oldV);
+            data[current] = c.rgb();
+        }
+        pix.convertFromImage(img);
+        pix.setMask(maskBmp);
     }
-    pix.convertFromImage(img);
-    pix.setMask(maskBmp);
+    else if ( img.depth() == 8 ) {
+        QColor c;
+        int oldH, oldS, oldV;
+        for ( int i = 0; i < img.numColors(); i++ ) {
+            QRgb cur = img.color( i );
+            c.setRgb(qRed(cur ), qGreen( cur ), qBlue( cur ));
+            c.hsv(&oldH, &oldS, &oldV);
+            c.setHsv(h, s, oldV);
+            img.setColor( i, c.rgb() );
+        }
+        pix.convertFromImage( img );
+        pix.setMask( maskBmp );
+    }
+    else {
+        // hmm,  somebody still using 1-Bit displays ? :-)
+    }
 }
 
 /* vim: set noet sw=8 ts=8: */
