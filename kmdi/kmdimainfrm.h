@@ -270,7 +270,7 @@ public:
    */
    virtual ~KMdiMainFrm();
 
-   void setStandardMDIMenuEnabled();
+   void setStandardMDIMenuEnabled(bool showModeMenu=true);
 
    void setManagedDockPositionModeEnabled(bool enabled);
 

@@ -229,9 +229,9 @@ public:
    connect(m_pDragEndTimer, SIGNAL(timeout()), this, SLOT(dragEndTimeOut()));
 }
 
-void KMdiMainFrm::setStandardMDIMenuEnabled() {
+void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
   setMenuForSDIModeSysButtons(menuBar());
-  m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this);
+  m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this,showModeMenu);
   connect(m_mdiGUIClient,SIGNAL(toggleTop()),this,SIGNAL(toggleTop()));
   connect(m_mdiGUIClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
   connect(m_mdiGUIClient,SIGNAL(toggleRight()),this,SIGNAL(toggleRight()));

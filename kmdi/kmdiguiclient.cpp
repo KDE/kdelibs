@@ -100,7 +100,8 @@ void ToggleToolViewAction::slotWidgetDestroyed()
 }
 
 
-KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject( mdiMainFrm,name ), KXMLGUIClient( mdiMainFrm )
+KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ), 
+KXMLGUIClient( mdiMainFrm )
 {
    m_mdiMode=KMdi::ChildframeMode;
    m_mdiMainFrm=mdiMainFrm;
@@ -124,13 +125,15 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
     if (actionCollection()->kaccel()==0)
 	    actionCollection()->setWidget(mdiMainFrm);
     m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
-    m_mdiModeAction=new KSelectAction(i18n("MDI Mode"),0,actionCollection());
-    QStringList modes;
-    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
-    m_mdiModeAction->setItems(modes);
-    connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
-    connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
-	this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
+    if (showMDIModeAction) {
+	    m_mdiModeAction=new KSelectAction(i18n("MDI Mode"),0,actionCollection());
+	    QStringList modes;
+	    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
+	    m_mdiModeAction->setItems(modes);
+	    connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
+	    connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
+		this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
+    } else m_mdiModeAction=0;
 
     m_gotoToolDockMenu=new KActionMenu(i18n("Tool &Docks"),actionCollection(),"kmdi_tooldock_menu");
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),ALT+CTRL+SHIFT+Key_T,this,SIGNAL(toggleTop()),
@@ -208,7 +211,7 @@ void KMDIGUIClient::setupActions()
       else
         addList.append(m_toolMenu);
       if (m_mdiMode==KMdi::IDEAlMode) addList.append(m_gotoToolDockMenu);
-      //addList.append(m_mdiModeAction);
+      if (m_mdiModeAction) addList.append(m_mdiModeAction);
       kdDebug()<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
 
