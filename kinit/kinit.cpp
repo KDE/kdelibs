@@ -728,6 +728,9 @@ int main(int argc, char **argv, char **envp)
     */
    init_kinit_socket();
 
+   if (fork() > 0) // Go into background
+      exit(0);
+
    handle_requests();
    
    return 0;
