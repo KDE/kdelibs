@@ -617,8 +617,8 @@ void HTMLBlockElementImpl::printObject(QPainter *p, int _x, int _y,
 
 void HTMLBlockElementImpl::layout( bool deep )
 {
-    if (layouted())
-   	return;
+  //if (layouted())
+  //	return;
 
     width = availableWidth;
 #ifdef DEBUG_LAYOUT
