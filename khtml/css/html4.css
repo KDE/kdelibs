@@ -50,7 +50,7 @@ script {
 body {
 	display: block;
 	color: black;
-	margin: 5px;
+	margin: 10px;
 } 
 
 p {
@@ -455,7 +455,7 @@ acronym {
 	font-style: italic;
 }
 
-      :focus          { outline: thin dotted invert }
+:focus          { outline: thin dotted invert }
 
 /* ### :before is not supported at the moment
       BR:before       { content: "\n" }
