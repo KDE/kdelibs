@@ -55,6 +55,7 @@ public:
 
     DOMString referrer() const;
     DOMString domain() const;
+    void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
 
     HTMLElementImpl *body();
@@ -87,6 +88,8 @@ protected slots:
      * Repaints, so that all links get the proper color
      */
     void slotHistoryChanged();
+private:
+    DOMString m_domain;
 };
 
 }; //namespace
