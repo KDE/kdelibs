@@ -694,10 +694,13 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     pConfig.setGroup("KDE");
     QString styleStr = pConfig.readEntry("widgetStyle", "Platinum");
 
+    warning("In KApplication::applyGUIStyle");
+    
     if(styleHandle){
-        // warning("KApp: Unloading previous style plugin.");
+        warning("KApplication: Unloading previous style plugin.");
         lt_dlclose((lt_dlhandle*)styleHandle);
         styleHandle = 0;
+        warning("KApplication: Style plugin unloaded.");
     }
 
     if(styleStr == "Platinum"){
@@ -721,6 +724,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         setStyle(new QMotifStyle);
     }
     else if(useStyles){
+        warning("KApplication: Checking plugin styles.");
         if(!dlregistered){
             dlregistered = true;
             lt_dlinit();
@@ -729,6 +733,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         if(!locate("lib", styleStr).isNull()) {
             styleStr = locate("lib", styleStr);
             styleHandle = lt_dlopen(styleStr.ascii());
+            warning("KApplication: Found and dlopened style.");
         }
         else {
             warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
@@ -748,29 +753,32 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         else{
             lt_ptr_t alloc_func = lt_dlsym(styleHandle,
                                            "allocate");
-                if(!alloc_func){
-                    warning("KApp: Unable to init style plugin %s (%s).",
-                            styleStr.ascii(), lt_dlerror());
-                    pKStyle = 0;
-                    lt_dlclose(styleHandle);
-                    styleHandle = 0;
-                    setStyle(new QPlatinumStyle);
+
+            if(!alloc_func){
+                warning("KApp: Unable to init style plugin %s (%s).",
+                        styleStr.ascii(), lt_dlerror());
+                pKStyle = 0;
+                lt_dlclose(styleHandle);
+                styleHandle = 0;
+                setStyle(new QPlatinumStyle);
+            }
+            else{
+                warning("KApplication: Resolved allocate function.");
+                KStyle* (*alloc_ptr)();
+                alloc_ptr = (KStyle* (*)())alloc_func;
+                pKStyle = alloc_ptr();
+                if(pKStyle){
+                    setStyle(pKStyle);
+                    warning("KApplication: Applied plugin style.");
                 }
                 else{
-                    KStyle* (*alloc_ptr)();
-                    alloc_ptr = (KStyle* (*)())alloc_func;
-                    pKStyle = alloc_ptr();
-                    if(pKStyle){
-                        setStyle(pKStyle);
-                    }
-                    else{
-                        warning("KApp: Style plugin unable to allocate style.");
-                        pKStyle = 0;
-                        setStyle(new QPlatinumStyle);
-                        lt_dlclose(styleHandle);
-                        styleHandle = 0;
-                    }
+                    warning("KApp: Style plugin unable to allocate style.");
+                    pKStyle = 0;
+                    setStyle(new QPlatinumStyle);
+                    lt_dlclose(styleHandle);
+                    styleHandle = 0;
                 }
+            }
         }
     }
     else{
