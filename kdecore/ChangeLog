@@ -1,3 +1,7 @@
+1999-04-19  Jochen Küpper  <jochen@uni-duesseldorf.de>
+
+	* kdebug.cpp (showHelp): Corrected path.
+
 1999-04-07  Harri Porten  <porten@kde.org>
 
 	* kprocess.cpp: restore default SIGPIPE handler in forked child process 
