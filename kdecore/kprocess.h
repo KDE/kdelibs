@@ -48,25 +48,20 @@ class KPty;
  * @li  DontCare -- The child process is invoked and both the child
  * process and the parent process continue concurrently.
  *
- * Starting a  DontCare child process means that the application is
- * not interested in any notification to determine whether the
- * child process has already exited or not. No communication between the
- * processes is possible. The KProcess object can be "recycled" immediately
- * after starting the process.
+ * The process is started in an own session (see setsid(2)).
  *
  * @li  NotifyOnExit -- The child process is invoked and both the
  * child and the parent process run concurrently.
  *
  * When the child process exits, the KProcess instance
  * corresponding to it emits the Qt signal @ref processExited().
- *
  * Since this signal is @em not emitted from within a UN*X
  * signal handler, arbitrary function calls can be made.
  *
  * Be aware: When the KProcess object gets destructed, the child
  * process will be killed if it is still running!
- * This means in particular, that you cannot use a KProcess on the stack
- * with NotifyOnExit.
+ * This means in particular, that it usually makes no sense to use
+ * a KProcess on the stack with NotifyOnExit.
  *
  * @li  Block -- The child process starts and the parent process
  * is suspended until the child process exits. (@em Really not recommended

@@ -199,9 +199,8 @@ KProcess::runPrivileged() const
 
 KProcess::~KProcess()
 {
-  // this will kill the child process unless it has terminated
-  // already or was started with DontCare, because we detached() before
-  kill(SIGKILL);
+  if (run_mode != DontCare)
+    kill(SIGKILL);
   detach();
 
   delete d->pty;
@@ -216,10 +215,8 @@ void KProcess::detach()
   if (runs) {
     KProcessController::theKProcessController->addProcess(pid_);
     runs = false;
-    pid_t opid = pid_; // backwards compat
     pid_ = 0; // close without draining
     commClose(); // Clean up open fd's and socket notifiers.
-    pid_ = opid;
   }
 }
 
@@ -447,9 +444,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
     // why do we do this? i think this signal should be emitted _only_
     // after the process has successfully run _asynchronously_ --ossi
     emit processExited(this);
-    break;
-  case DontCare:
-    detach();
     break;
   default: // NotifyOnExit
     input_data = 0; // Discard any data for stdin that might still be there
@@ -742,7 +736,8 @@ void KProcess::processHasExited(int state)
 
     commClose(); // cleanup communication sockets
 
-    emit processExited(this);
+    if (run_mode != DontCare)
+      emit processExited(this);
 }
 
 
