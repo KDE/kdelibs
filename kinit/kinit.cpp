@@ -96,6 +96,10 @@ static void close_fds()
    {
       close(d.wrapper);
    }
+   if (X11fd >= 0)
+   {
+      close(X11fd);
+   }
 
    signal(SIGCHLD, SIG_DFL);
    signal(SIGPIPE, SIG_DFL);
@@ -155,8 +159,6 @@ static pid_t launch(int argc, const char *_name, const char *args)
      close(d.fd[0]);
      close_fds();
      
-     setsid(); 
-
 fprintf(stderr, "arg[0] = %s\n", name.data());
 
      /** Give the process a new name **/
@@ -682,15 +684,15 @@ static void handle_requests()
          handle_launcher_request();
       }
 
-	  /* Look for incoming X11 events */
+      /* Look for incoming X11 events */
       if((result > 0) && (X11fd >= 0))
-	  {
-	    if(FD_ISSET(X11fd,&rd_set))
-	    {
-	      XEvent event_return;
+      {
+        if(FD_ISSET(X11fd,&rd_set))
+        {
+          XEvent event_return;
           if (X11display != 0) XNextEvent(X11display, &event_return);
-		}
-	  }
+        }
+      }
    }
 }
 
@@ -724,6 +726,17 @@ static void kdeinit_library_path()
 int kdeinit_xio_errhandler( Display * )
 {
     qWarning( "kdeinit: Fatal IO error: client killed" );
+
+    /* this should remove all children we started */
+    signal(SIGHUP, SIG_IGN);
+    kill(0, SIGHUP);
+
+    sleep(2);
+
+    /* and if they don't listen to us, this should work */
+    signal(SIGTERM, SIG_IGN);
+    kill(0, SIGTERM);
+
     exit( 1 );
     return 0;
 }
@@ -739,7 +752,7 @@ static int initXconnection()
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)) );
     qDebug("kdeinit: opened connection to %s", DisplayString(X11display));
-	return XConnectionNumber( X11display );
+    return XConnectionNumber( X11display );
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
      "kdeinit: Might not terminate at end of session.\n");
@@ -767,7 +780,11 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(d.argv[i], "--exit") == 0)
          keep_running = 0;
    }
-   
+
+   /** Make process group leader (for shutting down children later) **/
+   if(keep_running == 0)
+      setsid();
+
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);  
    kdeinit_setproctitle("Starting up...");
@@ -783,9 +800,9 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_dcop)
    {
-      pid = launch( 1, "dcopserver", 0 );
+      pid = launch( 2, "dcopserver", "--nofork" );
       printf("DCOPServer: pid = %d result = %d\n", pid, d.result);
-      WaitPid(pid); /* Wait for dcopserver to fork() */
+      sleep(1);  /* give dcopserver some time to start up */
    }
 
    if (launch_klauncher)
