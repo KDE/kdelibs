@@ -24,7 +24,10 @@ lib_LTLIBRARIES = libkjs.la
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp
 
-libkjs_la_METASOURCES = AUTO
+include_HEADERS = kjs.h
+
+noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
+	kjsstring.h grammar.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
 libkjs_la_LIBADD = $(LIB_KDECORE)
@@ -37,7 +40,6 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
-EXTRA_DIST = kjs.h lexer.h object.h
 
 ## test program
 bin_PROGRAMS 	= testkjs

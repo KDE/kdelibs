@@ -21,7 +21,6 @@
 #ifndef _KJS_H_
 #define _KJS_H_
 
-#include <qobject.h>
 #include <qstring.h>
 
 class KHTMLWidget;
@@ -39,8 +38,7 @@ namespace KJS {
  * This library implements ECMAScript. Currently its main aim is to add
  * JavaScript support to KHTMLWidget.
  */
-class KJSWorld : public QObject {
-  Q_OBJECT
+class KJSWorld {
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete
@@ -48,7 +46,7 @@ public:
    * @param w is pointing to the KHTMLWidget you wish the script to operate on.
    */
   KJSWorld(KHTMLWidget *w);
-public slots:
+public:
   /**
    * Asks the interpreter to evaluate a piece of code. If called more than
    * once the state (global variables, functions etc.) will be preserved

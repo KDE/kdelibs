@@ -49,10 +49,6 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
   assert(context == 0);
   assert(global == 0);
   assert(prog == 0);
-
-  if(htmlw)
-    connect((QObject *)htmlw, SIGNAL(executeScript(const QString &)),
-	    this, SLOT(evaluate(const QString &)));
 }
 
 void KJSWorld::evaluate(const QString &code)
