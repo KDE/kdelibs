@@ -145,6 +145,8 @@ public:
     DOMString name() const;
     void setName(const DOMString& name);
 
+    virtual bool isGenericFormElement() const { return true; }
+
     /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
