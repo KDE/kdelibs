@@ -122,6 +122,15 @@ public:
     void setPreviewSize( int size );
 
     /**
+     * Disables the "Maximum file size" configuration option for previews
+     *
+     * Set this before calling showPreviews()
+     *
+     * @since 3.4
+     **/
+    void setIgnoreMaximumSize(bool ignoreSize=true);
+
+    /**
      * @returns the current size used for icons.
      */
     int iconSize() const { return myIconSize; }
@@ -147,6 +156,8 @@ public slots:
     /**
      * Starts loading previews for all files shown and shows them. Switches
      * into 'large rows' mode, if that isn't the current mode yet.
+     * 
+     * @sa setIgnoreMaximumSize
      */
     void showPreviews();
 

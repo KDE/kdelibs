@@ -111,6 +111,7 @@ struct KIO::PreviewJobPrivate
     bool succeeded;
     // Root of thumbnail cache
     QString thumbRoot;
+    bool ignoreMaximumSize;
 };
 
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
@@ -136,6 +137,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->succeeded = false;
     d->currentItem.item = 0;
     d->thumbRoot = QDir::homeDirPath() + "/.thumbnails/";
+    d->ignoreMaximumSize = false;
 
     // Return to event loop first, determineNextFile() might delete this;
     QTimer::singleShot(0, this, SLOT(startPreview()));
@@ -230,6 +232,11 @@ void PreviewJob::removeItem( const KFileItem *item )
     }
 }
 
+void PreviewJob::setIgnoreMaximumSize(bool ignoreSize)
+{
+    d->ignoreMaximumSize = ignoreSize;
+}
+
 void PreviewJob::determineNextFile()
 {
     if (d->currentItem.item)
@@ -288,6 +295,7 @@ void PreviewJob::slotResult( KIO::Job *job )
                 else if ( (*it).m_uds == KIO::UDS_SIZE )
                     {
                     if ( filesize_t((*it).m_long) > d->maximumSize &&
+                         !d->ignoreMaximumSize &&
                          !d->currentItem.plugin->property("IgnoreMaximumSize").toBool() )
                     {
                         determineNextFile();
