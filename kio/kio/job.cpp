@@ -639,8 +639,9 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "StatJob::slotRedirection(" << url.prettyURL() << ")" << endl;
-
      m_redirectionURL = url; // We'll remember that when the job finishes
+     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+        m_redirectionURL.setUser(m_url.user()); // Preserve user
      // Tell the user that we haven't finished yet
      emit redirection(this, m_redirectionURL);
 }
@@ -734,6 +735,8 @@ void TransferJob::slotRedirection( const KURL &url)
     else
     {
        m_redirectionURL = url; // We'll remember that when the job finishes
+       if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+          m_redirectionURL.setUser(m_url.user()); // Preserve user
        m_redirectionList.append(url);
        m_outgoingMetaData["ssl_was_in_use"] = m_incomingMetaData["ssl_in_use"];
        // Tell the user that we haven't finished yet
@@ -1626,6 +1629,8 @@ void ListJob::slotResult( KIO::Job * job )
 void ListJob::slotRedirection( const KURL & url )
 {
     m_redirectionURL = url; // We'll remember that when the job finishes
+    if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+        m_redirectionURL.setUser(m_url.user()); // Preserve user
     emit redirection( this, url );
 }
 
@@ -3431,6 +3436,8 @@ void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
   m_redirectionURL = url;
+  if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().lower() == url.host().lower()))
+      m_redirectionURL.setUser(m_currentEntry->url.user()); // Preserve user
   get(m_currentEntry->id, m_redirectionURL, m_currentEntry->metaData); // Try again
 }
 
