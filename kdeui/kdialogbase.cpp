@@ -157,12 +157,12 @@ void KDialogBase::setupLayout()
 
   if( mButtonOrientation == Horizontal )
   {
-    mTopLayout = new QBoxLayout( this, QBoxLayout::TopToBottom, 
+    mTopLayout = new QBoxLayout( this, QBoxLayout::TopToBottom,
 				 marginHint(), spacingHint() );
   }
   else
   {
-    mTopLayout = new QBoxLayout( this, QBoxLayout::LeftToRight, 
+    mTopLayout = new QBoxLayout( this, QBoxLayout::LeftToRight,
 				 marginHint(), spacingHint() );
   }
 
@@ -200,7 +200,7 @@ void KDialogBase::setButtonBoxOrientation( int orientation )
     mButtonOrientation = orientation;
     if( mActionSep != 0 )
     {
-      mActionSep->setOrientation( mButtonOrientation == Horizontal ? 
+      mActionSep->setOrientation( mButtonOrientation == Horizontal ?
 				  QFrame::HLine : QFrame::VLine );
     }
     if( mButtonOrientation == Vertical )
@@ -247,7 +247,7 @@ void KDialogBase::enableButtonSeparator( bool state )
     }
     mActionSep = new KSeparator( this );
     mActionSep->setFocusPolicy(QWidget::NoFocus);
-    mActionSep->setOrientation( mButtonOrientation == Horizontal ? 
+    mActionSep->setOrientation( mButtonOrientation == Horizontal ?
 				QFrame::HLine : QFrame::VLine );
     mActionSep->show();
   }
@@ -334,7 +334,7 @@ void KDialogBase::adjustSize()
     s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
     s1.rheight() += s2.rheight();
   }
-  else 
+  else
   {
     s1.rwidth() += s2.rwidth();
     s1.rheight() = QMAX( s1.rheight(), s2.rheight() );
@@ -532,12 +532,12 @@ void KDialogBase::setButtonStyle( int style )
   QBoxLayout *lay;
   if( mButtonOrientation == Horizontal )
   {
-    lay = new QBoxLayout( mButton.box, QBoxLayout::LeftToRight, 0, 
+    lay = new QBoxLayout( mButton.box, QBoxLayout::LeftToRight, 0,
 			  spacingHint());
   }
   else
   {
-    lay = new QBoxLayout( mButton.box, QBoxLayout::TopToBottom, 0, 
+    lay = new QBoxLayout( mButton.box, QBoxLayout::TopToBottom, 0,
 			  spacingHint());
   }
 
@@ -1266,15 +1266,13 @@ void KDialogBase::hideEvent( QHideEvent *ev )
 
 void KDialogBase::closeEvent( QCloseEvent *e )
 {
-  QPushButton *pb = actionButton( mEscapeButton );
-  if( pb != 0 )
-  {
-    pb->animateClick();
-  }
-  else
-  {
-    QDialog::closeEvent(e);
-  }
+    QPushButton *pb = actionButton( mEscapeButton );
+    if( pb != 0 ) {
+	pb->animateClick();
+	hide();
+    } else {
+	QDialog::closeEvent( e );
+    }
 }
 
 
