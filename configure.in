@@ -196,7 +196,7 @@ AC_OUTPUT(Makefile \
 	corba/kded/Makefile \
 	corba/partsui/Makefile \
 	corba/parts/Makefile \
-	corba/idl/Makefile \
+	corba/interfaces/Makefile \
 	corba/tutorials/Makefile \
 	corba/tutorials/composing/Makefile \
 	corba/tutorials/signals/Makefile \
