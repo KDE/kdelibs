@@ -646,8 +646,32 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
+// BCI: remove in KDE 4
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
+{
+    m_direction = direction;
+    m_part = part;
+
+    m_popup = new QPopupMenu;
+    m_popup->insertItem( i18n( "Default Font Size" ) );
+
+    int m = m_direction ? 1 : -1;
+
+    for ( int i = 1; i < 5; ++i )
+    {
+        int num = i * m;
+        QString numStr = QString::number( num );
+        if ( num > 0 ) numStr.prepend( '+' );
+
+        m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
+    }
+
+    connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
+}
+
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+    : KAction( text, icon, cut, receiver, slot, parent, name )
 {
     m_direction = direction;
     m_part = part;

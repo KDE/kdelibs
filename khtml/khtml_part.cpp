@@ -303,13 +303,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
 
   if ( prof == BrowserViewGUI ) {
-      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
-      d->m_paIncZoomFactor->setShortcut( CTRL + Key_Plus );
+      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n(
+                  "Increase Font Sizes" ), "viewmag+", CTRL + Key_Plus, this,
+              SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
-      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
-      d->m_paDecZoomFactor->setShortcut( CTRL + Key_Minus );
+      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n(
+                  "Decrease Font Sizes" ), "viewmag-", CTRL + Key_Minus, this,
+              SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
