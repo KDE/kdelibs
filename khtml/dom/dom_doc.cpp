@@ -425,6 +425,12 @@ DOMString Document::completeURL(const DOMString& url)
     return static_cast<DocumentImpl*>( impl )->completeURL( url.string() );
 }
 
+void Document::updateRendering()
+{
+    if ( !impl ) return;
+    static_cast<DocumentImpl*>( impl )->updateRendering(  );
+}
+
 CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMString &pseudoElt)
 {
     if (!impl)

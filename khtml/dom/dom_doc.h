@@ -781,6 +781,14 @@ public:
      */
     DOMString completeURL(const DOMString& url);
 
+    /**
+     * not part of the DOM
+     *
+     * Updates the rendered display after one or more changes to
+     * the DOM structure
+     */
+    void updateRendering();
+
 protected:
     Document( DocumentImpl *i);
 
