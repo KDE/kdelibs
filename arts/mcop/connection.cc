@@ -88,7 +88,8 @@ void Connection::receive(unsigned char *data, long len)
 			remaining = rcbuf->readLong() - 12;
 			messageType = rcbuf->readLong();
 
-			if(_connState != Connection::established && remaining >= 4096)
+			if(_connState != Connection::established
+			&& (remaining >= 4096 || remaining < 0))
 			{
 				/*
 				 * don't accept large amounts of data on unauthenticated
