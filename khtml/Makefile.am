@@ -29,7 +29,7 @@ SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma . kmultipart
 CLEANFILES = dummy.cpp
 
 lib_LTLIBRARIES = libkhtml.la
-kde_module_LTLIBRARIES = khtmlimagepart.la
+kde_module_LTLIBRARIES = libkhtmlpart.la khtmlimagepart.la
 
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
@@ -61,6 +61,10 @@ dummy.cpp:
 khtmlimagepart_la_SOURCES = dummy.cpp
 khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
 khtmlimagepart_la_LIBADD = libkhtml.la 
+
+libkhtmlpart_la_SOURCES = dummy.cpp
+libkhtmlpart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
+libkhtmlpart_la_LIBADD = libkhtml.la
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
