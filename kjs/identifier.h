@@ -22,7 +22,7 @@
 #ifndef KJS_IDENTIFIER_H
 #define KJS_IDENTIFIER_H
 
-#include "ustring.h"
+#include <ustring.h>
 
 namespace KJS {
 
