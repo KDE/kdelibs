@@ -355,7 +355,7 @@ class KAboutDialog : public KDialogBase
     * @param caption The dialog caption. The text you specify is prepended
     *        by i18n("About").
     * @param buttonMask Specifies what buttons will be visible.
-    * @param defaultButton Specifies what button we be marked as the default.
+    * @param defaultButton Specifies what button will be marked as the default.
     * @param parent Parent of the dialog.
     * @param name Dialog name (for internal use only)
     * @param modal Sets dialog modality. If false, the rest of the
@@ -369,8 +369,8 @@ class KAboutDialog : public KDialogBase
     *
     */
     KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
-		  int defaultButton, QWidget *parent=0, const char *name=0,
-		  bool modal=false, bool separator = false,
+		  ButtonCode defaultButton, QWidget *parent=0, 
+		  const char *name=0, bool modal=false, bool separator = false,
 		  const QString &user1 = QString::null,
 		  const QString &user2 = QString::null,
 		  const QString &user3 = QString::null );

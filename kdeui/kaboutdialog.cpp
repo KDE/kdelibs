@@ -1461,7 +1461,7 @@ KAboutDialog::KAboutDialog(QWidget* parent, const char* name, bool modal)
 
 
 KAboutDialog::KAboutDialog( int layoutType, const QString &caption,
-			    int buttonMask, int defaultButton,
+			    int buttonMask, ButtonCode defaultButton,
 			    QWidget *parent, const char *name, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
