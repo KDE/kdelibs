@@ -76,7 +76,9 @@ long HTMLFormElementImpl::length() const
 
 QCString HTMLFormElementImpl::encodeByteArray(const QByteArray& e)
 {
-    static const char *safe = "$-._!*(),"; /* RFC 1738 */
+    // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
+    // safe characters like NS handles them for compatibility
+    static const char *safe = "-._*";
     unsigned pos = 0;
     QCString encoded;
 
@@ -1251,7 +1253,7 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             if (option->selected()) {
                 if (option->value().isNull() || option->value() == "")
-                    encoded_values += option->text().string().local8Bit();
+                    encoded_values += option->text().string().stripWhiteSpace().local8Bit();
                 else
                     encoded_values += option->value().string().local8Bit();
                 successful = true;
@@ -1263,20 +1265,14 @@ bool HTMLSelectElementImpl::encoding(khtml::encodingList& encoded_values)
     // necessary
     if (!successful && (m_listItems[0]->id() == ID_OPTION) ) {
         HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[0]);
-        if (option->value().isNull() || option->value() == "") {
-            // HACK HACK
-            // sometimes, the text label has an extra space after it.
-            // this should really be fixed somewhere else...
-            QString str(option->text().string());
-            encoded_values += str.simplifyWhiteSpace().local8Bit();
-        }
+        if (option->value().isNull() || option->value() == "")
+            encoded_values += option->text().string().stripWhiteSpace().local8Bit();
         else
             encoded_values += option->value().string().local8Bit();
         successful = true;
     }
 
     return successful;
-
 }
 
 int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
