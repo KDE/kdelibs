@@ -154,9 +154,8 @@ KDB::RowList ConnectorImpl::fields(const QString &tableName)
 	KDB::RowList res;
 
 	for (KDB::RowList::Iterator i = lst.begin(); i != lst.end(); i++) {
-		KDB::Row orig = *i;
+		KDB::Row row, orig = *i;
 
-		KDB::Row row;
 		row << orig[0]; //name
 		row << orig[1]; //type
 
@@ -200,7 +199,7 @@ KDB::RowList ConnectorImpl::fields(const QString &tableName)
 	return res;
 }
 
-bool ConnectorImpl::createDatabase(const QString & name)
+bool ConnectorImpl::createDatabase(const QString &name)
 {
 	QString sql(QString::fromLatin1("CREATE DATABASE %1").arg(name));
 	execute(sql);
@@ -394,14 +393,14 @@ bool ConnectorImpl::createTable(const KDB::Table &t)
 	return (!DBENGINE->error());
 }
 
-bool ConnectorImpl::dropDatabase(const QString & name)
+bool ConnectorImpl::dropDatabase(const QString &name)
 {
 	QString sql(QString::fromLatin1("DROP DATABASE %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
 
-bool ConnectorImpl::dropTable(const QString & name)
+bool ConnectorImpl::dropTable(const QString &name)
 {
 	QString sql(QString::fromLatin1("DROP TABLE %1").arg(name));
 	execute(sql);
