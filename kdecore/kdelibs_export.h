@@ -62,9 +62,9 @@
 
 #endif
 
-#endif /*_KDELIBS_H*/
+#endif /*_KDELIBS_EXPORT_H*/
 
-/* workaround for kdecore: stupid moc's grammar doesn't accept two macros 
+/* workaround for kdecore: stupid moc's grammar doesn't accept two macros
    between 'class' keyword and <classname>: */
 #ifdef KDE_DEPRECATED
 # ifndef KDECORE_EXPORT_DEPRECATED

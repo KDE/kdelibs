@@ -577,9 +577,10 @@ public:
 	QString localxdgconfdir() const;
 
 	/**
-	 * Checks for existence and accessability.
+	 * Checks for existence and accessability of a file or directory.
 	 * Faster than creating a QFileInfo first.
-	 * @param fullPath the path to check
+	 * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
+	 *                 (and no slash for a file, obviously).
 	 * @return true if the directory exists
 	 */
 	static bool exists(const QString &fullPath);
