@@ -209,7 +209,7 @@ class Object_skel_private;
 class Object_skel : virtual public Object_base {
 private:
 	friend class Object_base;
-	Object_skel_private *d;		// do not use until there is a very big problem
+	Object_skel_private *_d_skel;// do not use until there is a very big problem
 
 	long _objectID;
 
@@ -291,7 +291,7 @@ class Object_stub : virtual public Object_base {
 private:
 	friend class Object_base;
 
-	Object_stub_private *d;		// do not use until there is a very big problem
+	Object_stub_private *_d_stub;// do not use until there is a very big problem
 
 protected:
 	long _objectID,_lookupCacheRandom;
