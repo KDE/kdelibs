@@ -183,7 +183,11 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
-    KToolBar *bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
+    KToolBar *bar = 0;
+    if ( d->m_widget->inherits( "KTMainWindow" ) )
+	bar = new KToolBar( ( (KTMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor);
+    else
+	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
 
     QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
     if (text.isEmpty())  // try with capital T
@@ -368,7 +372,7 @@ void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
 
 KXMLGUIClient *KXMLGUIBuilder::builderClient() const
 {
-  return d->m_client; 
+  return d->m_client;
 }
 
 void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
@@ -376,7 +380,7 @@ void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
   d->m_client = client;
   if ( client )
     setBuilderInstance( client->instance() );
-} 
+}
 
 KInstance *KXMLGUIBuilder::builderInstance() const
 {

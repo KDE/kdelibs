@@ -25,7 +25,6 @@
 
 #include "ktoolbarradiogroup.h"
 #include "ktoolbar.h"
-#include "ktoolbaritem.h"
 #include "ktoolbarbutton.h"
 
 /*************************************************************************
@@ -48,13 +47,9 @@ KToolBarRadioGroup::~KToolBarRadioGroup()
 
 void KToolBarRadioGroup::addButton (int id)
 {
-  KToolBarItemList::Iterator it(tb->items()->begin());
-  for ( ; it != tb->items()->end(); ++it)
-    if ((*it)->ID() == id )
-    {
-      buttons->insert(id, (KToolBarButton *) (*it)->getItem());
-      ((KToolBarButton *) (*it)->getItem())->setRadio(true);
-    }
+    KToolBarButton *b = tb->getButton( id );
+    b->setRadio( TRUE );
+    buttons->insert( id, b );
 }
 
 void KToolBarRadioGroup::removeButton (int id)

@@ -127,13 +127,14 @@ KToolBarButton::KToolBarButton( QWidget *_parent, const char *_name )
 KToolBarButton::KToolBarButton( const QString& _icon, int _id,
                                 QWidget *_parent, const char *_name,
                                 const QString &_txt, KInstance *_instance )
-    : QButton( _parent, _name )
+    : QButton( _parent, _name ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
   d->m_id     = _id;
   d->m_parent = (KToolBar*)_parent;
   d->setText(_txt);
+  QButton::setText( _txt );
   d->m_instance = _instance;
 
   setFocusPolicy( NoFocus );
@@ -160,13 +161,14 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
                                 const QString& txt)
-    : QButton( _parent, name )
+    : QButton( _parent, name ), d( 0 )
 {
   d = new KToolBarButtonPrivate;
 
   d->m_id       = _id;
   d->m_parent   = (KToolBar *) _parent;
   d->setText(txt);
+  QButton::setText( txt );
 
   setFocusPolicy( NoFocus );
 
@@ -220,7 +222,8 @@ void KToolBarButton::modeChange()
     QToolTip::remove(this);
     QToolTip::add(this, d->m_text);
     mysize = QSize(pix_width, pix_height);
-    resize(mysize);
+    setMinimumSize( mysize );
+    updateGeometry();
     return;
   }
 
@@ -259,7 +262,8 @@ void KToolBarButton::modeChange()
   if (mysize.height() > mysize.width())
     mysize.setWidth(mysize.height());
 
-  resize(mysize);
+  setMinimumSize( mysize );
+  updateGeometry();
 }
 
 void KToolBarButton::setEnabled( bool enabled )
@@ -272,6 +276,7 @@ void KToolBarButton::setText( const QString& text)
 {
   d->setText(text);
   repaint (false);
+  QButton::setText( text );
 }
 
 void KToolBarButton::setIcon( const QString &icon )
@@ -755,7 +760,8 @@ void KToolBarButton::setNoStyle(bool no_style)
 
 void KToolBarButton::setRadio (bool f)
 {
-  d->m_isRadio = f;
+    if ( d )
+	d->m_isRadio = f;
 }
 
 void KToolBarButton::on(bool flag)

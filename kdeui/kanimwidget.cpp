@@ -136,9 +136,9 @@ void KAnimWidget::drawContents( QPainter *p )
   QPixmap pm(QSize(this->width(), this->height()));
   QPainter p2 (&pm);
   int x, y;
-    
+
   pm.fill (p->backgroundColor());
-  
+
   if ( d->pixmap.width() != width() || d->pixmap.height() != height() )
   {
     x = (width()  - d->pixmap.width()) / 2;
@@ -148,8 +148,8 @@ void KAnimWidget::drawContents( QPainter *p )
   {
     x = 0;
     y = 0;
-  }  
-  
+  }
+
   p2.drawPixmap(x, y, d->pixmap);
   p->drawPixmap( 0, 0, pm);
 }
@@ -169,8 +169,10 @@ void KAnimWidget::updateIcons()
 
   d->iter   = d->pixmaps.begin();
   d->pixmap = *d->iter;
-  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) )
-    resize(d->pixmap.width()+2, d->pixmap.height()+2);
+  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) ) {
+      setFixedSize( d->pixmap.width()+2, d->pixmap.height()+2);
+      resize(d->pixmap.width()+2, d->pixmap.height()+2);
+  }
 }
 
 #include "kanimwidget.moc"

@@ -35,11 +35,11 @@ pics_DATA = aboutkde.png keys.png
 include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopupmenu.h \
 		ktabctl.h kstatusbar.h kimageeffect.h \
-		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
+		ktmainwindow.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
 		krestrictedline.h kcolorbutton.h kcolorbtn.h \
 		ksystemtray.h kdockwindow.h kbuttonbox.h \
-		kcontainer.h keditcl.h ktoolboxmgr.h kled.h \
+		kcontainer.h keditcl.h kled.h \
 		kdbtn.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kwidgetid.h kthemebase.h \
@@ -64,10 +64,10 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kimageeffect.cpp kcolordlg.cpp kselect.cpp kdatepik.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
-		ktmlayout.cpp kmenubar.cpp \
+		kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbtn.cpp ksystemtray.cpp \
-		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp \
+		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
 		klineeditdlg.cpp kthemebase.cpp ksharedpixmap.cpp \
@@ -75,7 +75,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
-		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
+		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
 		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp kdrawutil.cpp \
 		kiconview.cpp klistbox.cpp kbugreport.cpp \
