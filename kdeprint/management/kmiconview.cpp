@@ -48,7 +48,7 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 	QIconViewItem::paintItem(p,cg);
 }
 
-void KMIconViewItem::calcRect(const QString& r)
+void KMIconViewItem::calcRect(const QString&)
 {
 	QRect	ir(rect()), pr, tr;
 
