@@ -1,14 +1,6 @@
 #ifndef __interface_h__
 #define __interface_h__ "$Id$"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <netdb.h>
-
 #include "kio_connection.h"
 
 #include <list>
