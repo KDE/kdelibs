@@ -317,7 +317,6 @@ void KKeyChooser::init( KAccelActions& actions,
   // and fill up the split list box with the action/key pairs.
   //
   d->pList = new KListView( this );
-  d->pList->setAlternateBackground( QColor(0xb0, 0xb0, 0xff) );
   d->pList->setFocus();
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
