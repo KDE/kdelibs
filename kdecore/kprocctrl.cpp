@@ -130,7 +130,6 @@ void KProcessController::removeKProcess( KProcess* p )
 
 void KProcessController::theSigCHLDHandler(int arg)
 {
-    return;
   int status;
   pid_t this_pid;
   int saved_errno;
