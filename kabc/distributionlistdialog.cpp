@@ -53,12 +53,15 @@ DistributionListDialog::~DistributionListDialog()
 {
 }
 
+static QMap<QWidget*,QString> *sEmailMap = 0;
 
 EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
                                       QWidget *parent ) :
   KDialogBase( KDialogBase::Plain, i18n("Select Email Address"), Ok, Ok,
                parent )
 {
+  if (!sEmailMap)
+     sEmailMap = new QMap<QWidget*,QString>();
   QFrame *topFrame = plainPage();
   QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
@@ -69,8 +72,9 @@ EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
   QStringList::ConstIterator it;
   for( it = emails.begin(); it != emails.end(); ++it ) {
     QRadioButton *button = new QRadioButton( *it, mButtonGroup );
+    sEmailMap->insert( button, *it );
     if ( (*it) == current ) {
-      button->setDown( true );
+      mButtonGroup->setButton(mButtonGroup->id(button));
     }
   }
 }
@@ -78,7 +82,7 @@ EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
 QString EmailSelector::selected()
 {
   QButton *button = mButtonGroup->selected();
-  if ( button ) return button->text();
+  if ( button ) return (*sEmailMap)[button];
   return QString::null;
 }
 
