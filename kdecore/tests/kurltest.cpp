@@ -9,7 +9,7 @@
 #include <kcharsets.h>
 #include <qtextcodec.h>
 
-bool check(QString txt, QString a, QString b)
+static bool check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
      a = QString::null;
@@ -31,6 +31,7 @@ extern void qt_set_locale_codec( QTextCodec *codec );
 
 int main(int argc, char *argv[])
 {
+  KApplication::disableAutoDcopRegistration();
   KApplication app(argc,argv,"kurltest",false,false);
 
   KURL::List lst;
