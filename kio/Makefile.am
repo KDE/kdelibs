@@ -25,7 +25,7 @@ lib_LTLIBRARIES = libkio.la libksycoca.la #libkioslave.la
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
 #libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
 
-libksycoca_la_LDFLAGS = -version-info 3:0
+libksycoca_la_LDFLAGS = -version-info 3:0 -no-undefined
 libksycoca_la_LIBADD = ./libkio.la
 
 libksycoca_la_SOURCES = \
@@ -45,7 +45,7 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
 	kshred.h ktar.h ktrader.h kopenwith.h
 
-libkio_la_LDFLAGS = -version-info 3:0
+libkio_la_LDFLAGS = -version-info 3:0 -no-undefined
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \

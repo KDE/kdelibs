@@ -33,6 +33,7 @@
 #include <kinstance.h>
 #include <qfile.h>
 #include "file.h"
+#include <limits.h>
 
 using namespace KIO;
 
