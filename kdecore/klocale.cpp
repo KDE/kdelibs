@@ -817,7 +817,7 @@ QString KLocale::translateQt( const char *context, const char *source,
 			      const char *message) const
 {
   if (!source || !source[0]) {
-    kdWarning() << "KLocale: trying to look up \"\" in catalouge. "
+    kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
 		<< "Fix the program" << endl;
     return QString::null;
   }
