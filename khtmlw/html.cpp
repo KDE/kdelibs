@@ -107,6 +107,22 @@ QString toRoman( int number, bool upper )
     return roman;
 }
 
+void setNamedColor(QColor &color, const char *name)
+{
+    char *endP;
+    if ((*name != '#') && (strlen(name) == 6) &&
+        (strtoul(name, &endP, 16), (endP == name+6)) )
+    {
+        QString col("#");
+        col += name;
+        color.setNamedColor(col.data());
+    }
+    else
+    {
+        color.setNamedColor(name);
+    }
+}
+
 //----------------------------------------------------------------------------
 
 HTMLFontManager* pFontManager = 0;
@@ -2707,14 +2723,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    const char* token = stringTok->nextToken();
 	    if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 	    {
-		if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-		{
-		    QString col = "#";
-		    col += token+8;
-		    bgColor.setNamedColor( col );
-		}
-		else
-		    bgColor.setNamedColor( token+8 );
+		setNamedColor( bgColor, token+8 );
 		bgColorSet = TRUE;
 	    }
 	    else if ( strncasecmp( token, "background=", 11 ) == 0 &&
@@ -2738,19 +2747,19 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    else if ( strncasecmp( token, "text=", 5 ) == 0 &&
                     !defaultSettings->forceDefault )
 	    {
-		settings->fontBaseColor.setNamedColor( token+5 );
+		setNamedColor(settings->fontBaseColor, token+5 );
 		*(colorStack.top()) = settings->fontBaseColor;
 		selectFont();
 	    }
 	    else if ( strncasecmp( token, "link=", 5 ) == 0 &&
                     !defaultSettings->forceDefault )
 	    {
-		settings->linkColor.setNamedColor( token+5 );
+		setNamedColor(settings->linkColor, token+5 );
 	    }
 	    else if ( strncasecmp( token, "vlink=", 6 ) == 0 &&
                     !defaultSettings->forceDefault )
 	    {
-		settings->vLinkColor.setNamedColor( token+6 );
+		setNamedColor(settings->vLinkColor, token+6 );
 	    }
 	}
 
@@ -3040,14 +3049,7 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 		    else if ( strncasecmp( token, "color=", 6 ) == 0 &&
                         !defaultSettings->forceDefault )
 		    {
-			if ( *(token+6) != '#' && strlen( token+6 ) == 6 )
-			{
-			    QString col = "#";
-			    col += token+6;
-			    color->setNamedColor( col );
-			}
-			else
-			    color->setNamedColor( token+6 );
+			setNamedColor( *color, token+6 );
 		    }
 		    else if ( strncasecmp( token, "face=", 5 ) == 0 )
 		    {
@@ -4403,14 +4405,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
                 !defaultSettings->forceDefault )
 	{
-	    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-	    {
-		QString col = "#";
-		col += token+8;
-		tableColor.setNamedColor( col );
-	    }
-	    else
-		tableColor.setNamedColor( token+8 );
+	    setNamedColor( tableColor, token+8 );
 	    rowColor = tableColor;
 	}
     }
@@ -4520,14 +4515,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
                         !defaultSettings->forceDefault )
 			{
-			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-			    {
-				QString col = "#";
-				col += token+8;
-				rowColor.setNamedColor( col );
-			    }
-			    else
-				rowColor.setNamedColor( token+8 );
+			    setNamedColor(rowColor, token+8 );
 			}
 		    }
 		    break; // Get next token from 'ht'
@@ -4624,14 +4612,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 &&
                         !defaultSettings->forceDefault )
 			{
-			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-			    {
-				QString col = "#";
-				col += token+8;
-				bgcolor.setNamedColor( col );
-			    }
-			    else
-				bgcolor.setNamedColor( token+8 );
+			    setNamedColor(bgcolor, token+8 );
 			}
 		    } // while (hasMoreTokens)
 		    } // if(tableEntry)
