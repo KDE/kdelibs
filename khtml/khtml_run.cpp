@@ -54,12 +54,13 @@ void KHTMLRun::foundMimeType( const QString &_type )
         if ( res == KParts::BrowserRun::Delayed )
             return;
         m_bFinished = ( res == KParts::BrowserRun::Handled );
+        if ( m_bFinished ) // saved or canceled -> stop the wheel
+            emit static_cast<KHTMLPart *>(m_part)->canceled(QString::null);
     }
 
     if ( m_bFinished )
     {
         m_timer.start( 0, true );
-        emit static_cast<KHTMLPart *>(m_part)->canceled(QString::null);
         return;
     }
 
