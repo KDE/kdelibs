@@ -222,6 +222,7 @@ KConfig *cfg;
    }
 #else
    libpaths << "/usr/lib/"
+	    << "/usr/ssl/lib/"
             << "/usr/local/lib/"
             << "/usr/local/openssl/lib/"
             << "/usr/local/ssl/lib/"
