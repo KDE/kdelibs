@@ -418,7 +418,7 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry DOMCounterTableEntries[] = {
-   { "identifier", DOMCounter::Identifier, DontDelete|ReadOnly, 0, 0 },
+   { "identifier", DOMCounter::_Identifier, DontDelete|ReadOnly, 0, 0 },
    { "listStyle", DOMCounter::ListStyle, DontDelete|ReadOnly, 0, 0 },
    { "separator", DOMCounter::Separator, DontDelete|ReadOnly, 0, 0 }
 };

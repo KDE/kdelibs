@@ -191,7 +191,7 @@ void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
     }
 }
 
-KJS::HTMLDocument::HTMLDocument(ExecState *exec, DOM::HTMLDocument d)
+KJS::HTMLDocument::HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d)
   /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
   : DOMDocument(exec, d) { }
 
@@ -893,6 +893,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   useMap	KJS::HTMLElement::ImageUseMap		DontDelete
   vspace	KJS::HTMLElement::ImageVspace		DontDelete
   width		KJS::HTMLElement::ImageWidth		DontDelete
+  x     	KJS::HTMLElement::ImageX		DontDelete|ReadOnly
+  y     	KJS::HTMLElement::ImageY		DontDelete|ReadOnly
 @end
 @begin HTMLObjectElementTable 20
   form		  KJS::HTMLElement::ObjectForm		  DontDelete|ReadOnly
@@ -1070,14 +1072,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 
 class EmbedLiveConnect : public ObjectImp {
 public:
-    EmbedLiveConnect(DOM::HTMLElement elm, UString n, KParts::LiveConnectExtension::Type t, int id)
+    EmbedLiveConnect(const DOM::HTMLElement& elm, UString n, KParts::LiveConnectExtension::Type t, int id)
         : element (elm), name(n), objtype(t), objid(id) {}
     ~EmbedLiveConnect() {
         DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
         if (elm)
             elm->unregister(objid);
     }
-    static Value getValue(const DOM::HTMLElement elm, const QString & name,
+    static Value getValue(const DOM::HTMLElement& elm, const QString & name,
                           const KParts::LiveConnectExtension::Type t,
                           const QString & value, int id)
     {
@@ -1636,6 +1638,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageUseMap:          return getString(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
+    case ImageX:               return Number(image.x());
+    case ImageY:               return Number(image.y());
     }
   }
   break;
@@ -2897,7 +2901,7 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
+KJS::HTMLCollection::HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
   : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
 
 KJS::HTMLCollection::~HTMLCollection()
@@ -3335,12 +3339,12 @@ Image::~Image()
       m_onLoadListener->deref();
 }
 
-Value KJS::getHTMLCollection(ExecState *exec,DOM::HTMLCollection c)
+Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
 {
   return cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
 }
 
-Value KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
 {
   DOMObject *ret;
   if (c.isNull())
