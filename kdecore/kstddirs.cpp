@@ -140,12 +140,14 @@ QString KStandardDirs::findResourceDir( const QString& type,
 #endif
 
     QStringList candidates = getResourceDirs(type);
+    QString fullPath;
     const char *testfile;
     struct stat buff;
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) 
     {
-      testfile = (*it + filename).ascii();
+      fullPath = *it + filename; // workaround for (*it + filename).ascii()
+      testfile = fullPath.ascii();
       if (access(testfile, R_OK) == 0 && stat( testfile, &buff ) == 0)
 	if ( S_ISREG( buff.st_mode ))
 	  return *it;
