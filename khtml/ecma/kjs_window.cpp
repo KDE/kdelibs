@@ -280,9 +280,12 @@ Object Window::retrieve(KHTMLPart *p)
 {
   assert(p);
   KJSProxy *proxy = KJSProxy::proxy( p );
-  if (proxy)
+  if (proxy) {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "Window::retrieve part=" << p << " interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject().imp() << endl;
+#endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
-  else
+  } else
     return Object();
 }
 
@@ -326,7 +329,7 @@ UString Window::toString(ExecState *) const
 Value Window::get(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Window::get " << p.qstring() << endl;
+  kdDebug(6070) << "Window("<<this<<")::get " << p.qstring() << endl;
 #endif
   if ( p == "closed" )
     return Boolean(m_part.isNull());
@@ -424,7 +427,7 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Boolean(true);
     case Opener:
       if (!m_part->opener())
-        return Null(); 	// ### a null Window might be better, but == null
+        return Null();    // ### a null Window might be better, but == null
       else                // doesn't work yet
         return retrieve(m_part->opener());
     case OuterHeight:
@@ -658,7 +661,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
   if (entry)
   {
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "Window::put " << propertyName.qstring() << endl;
+    kdDebug(6070) << "Window("<<this<<")::put " << propertyName.qstring() << endl;
 #endif
     switch( entry->value ) {
     case Status: {
@@ -779,8 +782,10 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       break;
     }
   }
-  if (isSafeScript(exec))
+  if (isSafeScript(exec)) {
+    //kdDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring() << endl;
     ObjectImp::put(exec, propertyName, value, attr);
+  }
 }
 
 bool Window::toBoolean(ExecState *) const
@@ -928,13 +933,21 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
     part->xmlDocImpl()->updateRendering();
+    bool ok;
     if (args.size() >= 2)
-      str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str),
+      str2 = QInputDialog::getText(i18n("Konqueror: Prompt"),
+                                   QStyleSheet::convertFromPlainText(str),
                                    QLineEdit::Normal,
-                                   args[1].toString(exec).qstring());
+                                   args[1].toString(exec).qstring(), &ok);
     else
-      str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str));
-    return String(str2);
+      str2 = QInputDialog::getText(i18n("Konqueror: Prompt"),
+                                   QStyleSheet::convertFromPlainText(str),
+                                   QLineEdit::Normal,
+                                   QString::null, &ok);
+    if ( ok )
+        return String(str2);
+    else
+        return Null();
   case Window::Open:
   {
     KConfig *config = new KConfig("konquerorrc");
@@ -998,7 +1011,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
             winargs.menuBarVisible = (val == "1" || val == "yes");
           else if (key == "toolbar")
             winargs.toolBarsVisible = (val == "1" || val == "yes");
-          else if (key == "location")	// ### missing in WindowArgs
+          else if (key == "location")  // ### missing in WindowArgs
             winargs.toolBarsVisible = (val == "1" || val == "yes");
           else if (key == "status" || key == "statusbar")
             winargs.statusBarVisible = (val == "1" || val == "yes");
