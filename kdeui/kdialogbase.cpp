@@ -255,7 +255,7 @@ void KDialogBase::makeButtonBox( int buttonMask, int defaultButton,
 				 const QString &user1,const QString &user2,
 				 const QString &user3 )
 {
-  if( (buttonMask & (Cancel|Close)) == 0 ) { buttonMask |= Cancel; }
+  //if( (buttonMask & (Cancel|Close)) == 0 ) { buttonMask |= Cancel; }
   if( buttonMask & Cancel ) { buttonMask &= ~Close; }
   if( buttonMask & Apply ) { buttonMask &= ~Try; }
 
@@ -819,15 +819,9 @@ QRect KDialogBase::getContentsRect( void )
   r.setLeft( marginHint() );
   r.setTop( marginHint() + mUrlHelp->isVisible() ? mUrlHelp->height() : 0 );
   r.setRight( width() - marginHint() );
-  if( mButton.mask & Cancel )
-  {
-    r.setBottom( width() - marginHint() - mButton.cancel->height() );
-  }
-  else
-  {
-    r.setBottom( width() - marginHint() - mButton.close->height() );
-  }
-  return( r );
+  int h = (mActionSep==0?0:mActionSep->minimumSize().height()+marginHint());
+  r.setBottom( height() - mButton.box->minimumSize().height() - h );
+  return(r);
 }
 
 
