@@ -274,7 +274,7 @@ void RenderRoot::updateHeight()
     {
         if( h < m_view->visibleHeight() )
             h = m_view->visibleHeight();
-        m_view->resizeContents(docWidth(), h);
+        m_view->resizeContents(w, h);
     }
     m_view->repaintContents( 0, 0, w, h, FALSE );       //sync repaint!
 

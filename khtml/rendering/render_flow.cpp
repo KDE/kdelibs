@@ -810,14 +810,12 @@ int RenderFlow::rightmostPosition() const
 {
     int right = RenderBox::rightmostPosition();
 
-    if ( !m_childrenInline ) {
-        RenderObject *c;
-        for (c = firstChild(); c; c = c->nextSibling()) {
-	    if (!c->isPositioned() && !c->isFloating()) {
-		int childRight = xPos() + c->rightmostPosition();
-		if (childRight > right)
-		    right = childRight;
-	    }
+    RenderObject *c;
+    for (c = firstChild(); c; c = c->nextSibling()) {
+	if (!c->isPositioned() && !c->isFloating()) {
+	    int childRight = xPos() + c->rightmostPosition();
+	    if (childRight > right)
+		right = childRight;
 	}
     }
 
