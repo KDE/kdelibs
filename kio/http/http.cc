@@ -233,11 +233,6 @@ void HTTPProtocol::setHost( const QString& host, int port,
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
 
-  // Store user agent for this host.
-  if ( config()->readBoolEntry("SendUserAgent", true) )
-     m_strUserAgent = metaData("UserAgent");
-  else
-     m_strUserAgent = QString::null;
 
   if ( m_bUseCache ) { cleanCache(); }
 
@@ -313,6 +308,12 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
   m_request.disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
   m_request.allowCompressedPage = config()->readBoolEntry("AllowCompressedPage", true);
   m_request.id = metaData("request-id");
+
+  // Store user agent for this host.
+  if ( config()->readBoolEntry("SendUserAgent", true) )
+     m_request.user_agent = metaData("UserAgent");
+  else
+     m_request.user_agent = QString::null;
 
   return true;
 }
@@ -839,8 +840,8 @@ bool HTTPProtocol::http_open()
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
     // Identify who you are to the proxy server!
-    if (!m_strUserAgent.isEmpty())
-        header += "User-Agent: " + m_strUserAgent + "\r\n";
+    if (!m_request.user_agent.isEmpty())
+        header += "User-Agent: " + m_request.user_agent + "\r\n";
 
     header += proxyAuthenticationHeader();
   }
@@ -869,8 +870,8 @@ bool HTTPProtocol::http_open()
     else
       header += "Connection: Keep-Alive\r\n";
 
-    if (!m_strUserAgent.isEmpty())
-        header += "User-Agent: " + m_strUserAgent + "\r\n";
+    if (!m_request.user_agent.isEmpty())
+        header += "User-Agent: " + m_request.user_agent + "\r\n";
 
     if (!m_request.referrer.isEmpty())
     {

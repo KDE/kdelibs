@@ -93,6 +93,7 @@ public:
     QString languages;
     bool allowCompressedPage;
     bool disablePassDlg;
+    QString user_agent;
     QString id;
   } HTTPRequest;
 
@@ -342,8 +343,6 @@ protected:
   long m_cacheExpireDateOffset; // Position in the cache entry where the
                                 // 16 byte expire date is stored.
   time_t m_expireDate;
-
-  QString m_strUserAgent;
 
   // Language/Encoding
   QStringList m_qTransferEncodings;
