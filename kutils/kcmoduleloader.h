@@ -36,11 +36,11 @@ class KCModuleLoader
    * @internal
    **/
 public:
-  static KCModule *loadModule(const KCModuleInfo &mod, bool withfallback=true);
+  static KCModule *loadModule(const KCModuleInfo &mod, bool withfallback=true, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
   static void unloadModule(const KCModuleInfo &mod);
   static void showLastLoaderError(QWidget *parent);
 private:
-  static KCModule* load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader);
+  static KCModule* load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
 
 };
 

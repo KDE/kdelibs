@@ -29,7 +29,7 @@
 
 #include "kcmoduleloader.h"
 
-KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader)
+KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader, QWidget * parent, const char * name, const QStringList & args )
 {
   // attempt to load modules with ComponentFactory, only if the symbol init_<lib> exists
   // (this is because some modules, e.g. kcmkio with multiple modules in the library,
@@ -46,7 +46,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, 
       KLibFactory *factory = lib->factory();
       if ( factory )
       {
-        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory );
+        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory, parent, name, args );
         if (module)
           return module;
       }
@@ -63,7 +63,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, 
       // create the module
       KCModule* (*func)(QWidget *, const char *);
       func = (KCModule* (*)(QWidget *, const char *)) create;
-      return  func(0, 0);
+      return  func( parent, name );
     }
 
     lib->unload();
@@ -72,7 +72,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, 
 }
 
 
-KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback)
+KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback, QWidget * parent, const char * name, const QStringList & args )
 {
   /*
    * Simple libraries as modules are the easiest case:
@@ -86,9 +86,9 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback)
 
     KLibLoader *loader = KLibLoader::self();
 
-    KCModule *module = load(mod, "kcm_%1", loader);
+    KCModule *module = load(mod, "kcm_%1", loader, parent, name, args );
     if (!module)
-      module = load(mod, "libkcm_%1", loader);
+      module = load(mod, "libkcm_%1", loader, parent, name, args );
     if (module)
       return module;
   }
