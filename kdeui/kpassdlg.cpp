@@ -102,20 +102,23 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
     case Key_Backspace:
     case Key_Delete:
     case 0x7f: // Delete
-	if (m_Length) {
+	if (e->state() & (ControlButton | AltButton))
+	    e->ignore();
+	else if (m_Length) {
 	    m_Password[--m_Length] = '\000';
 	    showPass();
 	}
 	break;
     default:
-	if (m_Length < (PassLen - 1)) {
-	    char ke = e->text().local8Bit()[0];
-	    if (ke >= 32) {
+	char ke = e->text().local8Bit()[0];
+	if (ke >= 32) {
+	    if (m_Length < (PassLen - 1)) {
 		m_Password[m_Length] = ke;
 		m_Password[++m_Length] = '\000';
 		showPass();
 	    }
-	}
+	} else
+	    e->ignore();
 	break;
     }
 }
