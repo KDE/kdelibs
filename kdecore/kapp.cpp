@@ -1880,16 +1880,6 @@ startServiceInternal( const QCString &function,
    QCString replyType;
    QByteArray replyData;
    QCString _launcher = KApplication::launcher();
-   if (int desktop=KWin::currentDesktop()) {
-      QByteArray params2;
-      QDataStream stream2(params2, IO_WriteOnly);
-      QCString desktopStr;
-      desktopStr.setNum( desktop );
-      stream2 << QCString("KDE_INITIAL_DESKTOP")
-              << desktopStr;
-      dcopClient->call(_launcher, _launcher,
-         "setLaunchEnv(QCString,QCString)", params2, replyType, replyData);
-   }
 
    if (qt_xdisplay()) {
        QByteArray dpyarray;

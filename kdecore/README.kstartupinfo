@@ -1,0 +1,48 @@
+$Id$
+
+Application startup notification
+Lubos Lunak <l.lunak@kde.org>
+-----------------------------------------
+
+after this thing stabilizes a bit, I'll put a real description here
+
+
+
+
+grrr, NET::Dock windows don't have _NET_WM_PID ... ah, Qt-2.3.0 actually happily ignores
+the existence of the NET_WM spec :(
+
+empty KDE_STARTUP_ID property means ignore
+
+new:
+remove:     - only ID
+            - only PID&HOSTNAME - will be really removed only if compliant==1 and has no other PIDs
+            
+compliant   - has ID
+            - has PID
+            - has CLASS ?
+
+----
+
+ID          - unique id
+            - int32
+COMPLIANT   - is app compliant
+            - 1/0
+            - is only _NET_WM_PID ok ? // CHECKME
+BIN         - name of the binary ( without path )
+            - e.g. "kmail"
+            - quoted
+NAME        - "pretty" name of the application
+            - e.g. "KDE Mail Client"
+            - quoted
+ICON        - icon name
+            - handled like in .desktop files
+DESKTOP     - start on desktop value
+            - like in NET_WM _NET_WM_DESKTOP
+
+
+PID         - _NET_WM_PID
+            - is needed ? // CHECKME
+            - new ones are added to the list
+HOSTNAME    - WM_CLIENT_MACHINE
+            - is needed ? // CHECKME

@@ -38,8 +38,10 @@
 #include <kstddirs.h>
 #include <kaboutdata.h>
 #include <kwin.h>
+#include <kstartupinfo.h>
 #include "kdebug.h"
 #include "kuniqueapp.h"
+#include <X11/Xlib.h>
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 bool KUniqueApplication::s_nofork = false;
@@ -173,10 +175,35 @@ KUniqueApplication::start()
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
+           // say we're up and running ( probably no new window will appear )
+           KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
+           if( id.valid())
+           {
+               Display* disp = XOpenDisplay( NULL );
+               if( disp != NULL ) // use extra X connection
+               {
+                   KStartupInfo::sendFinishX( disp, id );
+                   XCloseDisplay( disp );
+               }
+           }
            return false;
         }
      }
 
+     {
+         KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
+         if( id.valid())
+         { // notice about pid change
+            Display* disp = XOpenDisplay( NULL );
+            if( disp != NULL ) // use extra X connection
+               {
+               KStartupInfoData data;
+               data.addPid( getpid());
+               KStartupInfo::sendStartupX( disp, id, data );
+               XCloseDisplay( disp );
+               }
+         }
+     }
      s_DCOPClient = dc;
      result = 0;
      ::write(fd[1], &result, 1);

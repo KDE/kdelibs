@@ -41,7 +41,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h kprocio.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h \
-	ksycoca.h ksycocaentry.h ksycocatype.h 
+	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 3:0
@@ -68,7 +68,8 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp \
         kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
-	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel
+	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
+	kxmessages.cpp kstartupinfo.cpp kstartupinfo.skel
 
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined

@@ -12,6 +12,7 @@
 160        kdecore (KNotifyClient)
 170        kdecore (KSocket)
 171        kdecore (KSocks)
+172        kdecore (KStartupInfo)
 200        kdeui (KMainWindow)
 220        kdeui (KToolBar)
 230        kdeui (KCommand)
