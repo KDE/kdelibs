@@ -26,6 +26,7 @@
 
 #include "dom_node.h"
 #include "dom_string.h"
+#include "dom_exception.h"
 
 #include "misc/htmlhashes.h"
 #include "html/html_headimpl.h"
