@@ -93,6 +93,7 @@ public:
     ElementImpl *originalNode;
 
     bool borderTouched;
+    bool borderStart;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -607,6 +608,16 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
     scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
 
+    if (contentsX() + scrollX < 0)
+	scrollX = -contentsX();
+    else if (contentsWidth() - visibleWidth() - contentsX() < scrollX)
+	scrollX = contentsWidth() - visibleWidth() - contentsX();
+
+    if (contentsY() + scrollY < 0)
+	scrollY = -contentsY();
+    else if (contentsHeight() - visibleHeight() - contentsY() < scrollY)
+	scrollY = contentsHeight() - visibleHeight() - contentsY();
+
     scrollBy(scrollX, scrollY);
 
     // generate abs(scroll.)
@@ -626,57 +637,56 @@ bool KHTMLView::gotoLink(bool forward)
     if (!m_part->xmlDocImpl())
         return false;
 
+    ElementImpl *currentNode = m_part->xmlDocImpl()->focusNode();
     ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(forward);
+    QRect nextRect;
     if (!nextTarget)
+	nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
+    else if (!currentNode && !d->borderTouched)
     {
-	//kdDebug(6000)<<"A"<<endl;
-	if (scrollTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
+	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
+	    d->borderStart = forward;
+	    d->borderTouched = true;
+
+	    nextRect = nextTarget->getRect();
+
+	    if (nextRect.top()  < contentsY() ||
+		nextRect.bottom() > contentsY()+visibleHeight())
+		return true;
+    }
+    else if ( !currentNode && d->borderTouched )
+    {
+	if (d->borderStart == forward)
+	    nextRect = nextTarget->getRect();
+	else
+	    nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
+    }
+    else
+	nextRect = nextTarget->getRect();
+
+    if (scrollTo(nextRect))
+    {
+	if (!nextTarget)
 	{
 	    if (m_part->xmlDocImpl()->focusNode()) m_part->xmlDocImpl()->setFocusNode(0);
 	    d->borderTouched = false;
 	    return false;
 	}
-	return true;
-    }
-    else if (!m_part->xmlDocImpl()->focusNode())
-    {
-	if (!d->borderTouched)
-	{
-	    kdDebug(6000)<<"B"<<endl;
-	    // we're just about to enter the view, so let's set reasonable initial values.
-	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
-	    d->borderTouched = true;
-	}
 	else
 	{
-	    //kdDebug(6000)<<"C"<<endl;
-	    // we've already inside the view, so let's scroll until we reach the document borders or the first link becomes visible.
-	    if (scrollTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
-	    {
-		d->borderTouched = false;
-		return false;
-	    }
+	    HTMLAnchorElementImpl *anchor = 0;
+	    if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
+		anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
+
+	    if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
+	    else m_part->overURL(QString(), 0);
+
+	    kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
+
+	    m_part->xmlDocImpl()->setFocusNode(nextTarget);
+	    emit m_part->nodeActivated(Node(nextTarget));
 	}
-	if (nextTarget->getRect().top()  < contentsY() ||
-	    nextTarget->getRect().bottom() > contentsY()+visibleHeight())
-	    return true;
     }
-
-    if (scrollTo(nextTarget->getRect()))
-    {
-	HTMLAnchorElementImpl *anchor = 0;
-        if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
-            anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
-
-	if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
-	else m_part->overURL(QString(), 0);
-
-	kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
-
-	m_part->xmlDocImpl()->setFocusNode(nextTarget);
-	emit m_part->nodeActivated(Node(nextTarget));
-    }
-    else kdDebug(6000)<<"did not reach the link."<<endl;
     return true;
 }
 
