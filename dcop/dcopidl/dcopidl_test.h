@@ -17,6 +17,14 @@ class Test2;
 typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 class Test3;
 
+// Those namespaces are opened and closed, so they should be just ignored
+namespace Kpgp {
+	  class Config;
+}
+namespace KMail {
+	  class IdentityDialog;
+}
+
 /**
  * This is a stupid comment that might help 
  * geiseri at some point in the near future.
