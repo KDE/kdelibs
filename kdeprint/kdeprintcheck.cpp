@@ -41,7 +41,7 @@
 #include <kstandarddirs.h>
 #include <kextsock.h>
 
-static char* config_stddirs[] = {
+static const char* const config_stddirs[] = {
 	"/etc/",
 	"/usr/etc/",
 	"/usr/local/etc/",
@@ -92,7 +92,7 @@ bool KdeprintChecker::checkConfig(const KURL& url)
 	else
 	// otherwise check in standard UNIX config directories
 	{
-		char	**p = config_stddirs;
+		const char* const *p = config_stddirs;
 		while (*p)
 		{
 			if (KStandardDirs::exists(QString::fromLatin1(*p)+f))
