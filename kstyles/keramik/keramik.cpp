@@ -609,6 +609,12 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			p->setPen( cg.mid() );
 			p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
 			p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
+			p->setPen( cg.light() );
+			p->drawLine( x + w - 1, y, x + w - 1, y + h - 1 );
+			p->drawLine( x, y + h - 1, x + w - 1, y + h - 1);
+			p->setPen( cg.light().dark( 110 ) );
+			p->drawLine( x + w - 2, y + 1, x + w - 2, y + h - 2 );
+			p->drawLine( x + 1, y + h - 2, x + w - 2, y + h - 2);
 			break;
 		}
 
@@ -1339,29 +1345,18 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		case CC_SpinWidget:
 		{
 			const QSpinWidget* sw = static_cast< const QSpinWidget* >( widget );
-			if ( controls & SC_SpinWidgetFrame )
-			{
-				QRect frameRect = r;
-				frameRect.addCoords( -3, -3, 0, 0 );
-				p->fillRect( frameRect, cg.background() );
-				drawPrimitive( PE_ButtonCommand, p, frameRect, cg, flags );
-			}
-
+			QRect br = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetButtonField ), widget );
 			if ( controls & SC_SpinWidgetButtonField )
 			{
-				QRect br = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetButtonField ), widget );
-				Keramik::CenteredPainter( "spinbox" ).draw( p, br );
+				QString name( "spinbox" );
+				if ( active & SC_SpinWidgetUp ) name += "-pressed-up";
+				else if ( active & SC_SpinWidgetDown ) name += "-pressed-down";
+				Keramik::CenteredPainter( name ).draw( p, br );
 			}
 
-			Keramik::CenteredPainter( "spinbox" ).draw( p, r );
-			if ( controls & SC_SpinWidgetEditField )
-			{
-				QRect er = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetEditField ), widget );
-				er.addCoords( -3, -3, 3, 3 );
-				p->fillRect( er, cg.base() );
-				drawPrimitive( PE_PanelLineEdit, p, er, cg );
-				Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
-			}
+			if ( controls & SC_SpinWidgetFrame )
+				drawPrimitive( PE_PanelLineEdit, p, r, cg );
+
 			break;
 		}
 		case CC_ScrollBar:
