@@ -557,7 +557,7 @@ void RenderBox::calcWidth()
                 else
                     w = Length(intrinsicWidth(), Fixed);
             }
-            else
+            else if(!w.isFixed())
             {
                 RenderObject* cb = containingBlock();
                 if(cb->isBody())
@@ -568,7 +568,6 @@ void RenderBox::calcWidth()
                     w = Length(w.width(cb->contentWidth()), Fixed);
                 else
                     w = Length(intrinsicWidth(), Fixed);
-
             }
         }
 
@@ -704,7 +703,7 @@ void RenderBox::calcHeight()
                     h = Length(intrinsicHeight(), Fixed);
 
             }
-            else
+            else if(!h.isFixed())
             {
                 RenderObject* cb = containingBlock();
                 if(cb->isBody())

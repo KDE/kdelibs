@@ -42,7 +42,8 @@ using namespace khtml;
 // -------------------------------------------------------------------------
 
 RenderImage::RenderImage()
-    : RenderReplaced()
+    : RenderReplaced(),
+      pixSize(0, 0)
 {
     setLayouted(false);
     setParsing(false);
@@ -58,10 +59,6 @@ RenderImage::~RenderImage()
 void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
-
-    if(style()->width().isFixed())  pixSize.setWidth(style()->width().value);
-    if(style()->height().isFixed()) pixSize.setHeight(style()->height().value);
-
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
 }
@@ -86,15 +83,35 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
     berrorPic = o->isErrorImage();
 
-    // Image dimensions have been changed, recalculate layout
+    bool needlayout = false;
+
+    // Image dimensions have been changed, see what needs to be done
     if(o->pixmap_size() !=  pixSize)
     {
-        //qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
-        //       o->pixmap_size().width(), o->pixmap_size().height());
+        //Debug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+        //     o->pixmap_size().width(), o->pixmap_size().height());
 
-        pix = p;
         if(!o->isErrorImage())
             pixSize = o->pixmap_size();
+
+        // lets see if we need to relayout at all..
+        bool needlayout = false;
+        int oldwidth = m_width;
+        int oldheight = m_height;
+        calcWidth();
+        calcHeight();
+
+        if(m_width != oldwidth || m_height != oldheight)
+            needlayout = true;
+
+        m_width = oldwidth;
+        m_height = oldheight;
+    }
+
+    pix = p;
+
+    if(needlayout)
+    {
         setLayouted(false);
         setMinMaxKnown(false);
         //kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
@@ -110,7 +127,6 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
     else
     {
-        pix = p;
         bool completeRepaint = !resizeCache.isNull(); // HACK
         int cHeight = contentHeight();
         int scaledHeight = pixSize.height() ? ((o->valid_rect().height()*cHeight)/pixSize.height()) : 0;
@@ -277,11 +293,13 @@ void RenderImage::layout()
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     CachedImage *new_image = docLoader->requestImage(url, baseUrl);
-    if(new_image) new_image->ref(this);
-    if(image) image->deref(this);
-
-    image = new_image;
-    berrorPic = image ? image->isErrorImage() : true;
+    if(new_image && new_image != image)
+    {
+        if(image) image->deref(this);
+        image = new_image;
+        image->ref(this);
+        berrorPic = image->isErrorImage();
+    }
 }
 
 void RenderImage::setAlt(DOM::DOMString text)
