@@ -181,7 +181,14 @@ public:
 
   /**
    * Constructor
+   * @since 3.2
    */
+  KProcess( QObject* parent );
+
+  /**
+   * Constructor
+   * @obsolete
+   */ // KDE4 merge with the above
   KProcess();
 
   /**

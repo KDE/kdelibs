@@ -263,6 +263,31 @@ public:
 // public member functions //
 /////////////////////////////
 
+KProcess::KProcess( QObject* parent )
+  : QObject( parent ),
+    run_mode(NotifyOnExit),
+    runs(false),
+    pid_(0),
+    status(0),
+    keepPrivs(false),
+    innot(0),
+    outnot(0),
+    errnot(0),
+    communication(NoCommunication),
+    input_data(0),
+    input_sent(0),
+    input_total(0),
+    d(0)
+{
+  d = new KProcessPrivate;
+
+  KProcessController::create();
+  KProcessController::theKProcessController->addKProcess(this);
+  out[0] = out[1] = -1;
+  in[0] = in[1] = -1;
+  err[0] = err[1] = -1;
+}
+
 KProcess::KProcess()
   : QObject(),
     run_mode(NotifyOnExit),
