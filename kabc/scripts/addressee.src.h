@@ -28,12 +28,14 @@
 #include <ksharedptr.h>
 #include <kurl.h>
 
-#include "phonenumber.h"
 #include "address.h"
 #include "geo.h"
+#include "phonenumber.h"
 #include "timezone.h"
 
 namespace KABC {
+
+class Resource;
 
 /**
   @short address book entry
@@ -232,6 +234,16 @@ class Addressee
       Debug output.
     */
     void dump() const;
+
+    /**
+      Set resource where the addressee is from
+    */
+    void setResource( Resource *resource );
+
+    /**
+      Return pointer to resource
+    */
+    Resource *resource() const;
   
   private:
     Addressee copy();

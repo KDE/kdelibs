@@ -22,8 +22,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 
-#include "phonenumber.h"
-
+#include "resource.h"
 #include "addressee.h"
 
 using namespace KABC;
@@ -38,6 +37,8 @@ struct Addressee::AddresseeData : public KShared
   QStringList categories;
   QStringList custom;
 
+  Resource *resource;
+
   bool empty;
 };
 
@@ -46,6 +47,7 @@ Addressee::Addressee()
   mData = new AddresseeData;
   mData->uid = KApplication::randomString( 10 );
   mData->empty = true;
+  mData->resource = 0;
 }
 
 Addressee::~Addressee()
@@ -519,6 +521,16 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
         fullName = fullName.mid(1, len-2);
     }
   }
+}
+
+void Addressee::setResource( Resource *resource )
+{
+    mData->resource = resource;
+} 
+
+Resource *Addressee::resource() const
+{
+    return mData->resource;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
