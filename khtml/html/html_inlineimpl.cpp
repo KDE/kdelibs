@@ -39,12 +39,16 @@ using namespace DOM;
 using namespace khtml;
 
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)
-: HTMLAreaElementImpl(doc)
+    : HTMLElementImpl(doc)
 {
+    href = 0;
+    target = 0;
 }
 
 HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
 {
+    if( href ) href->deref();
+    if( target ) target->deref();
 }
 
 const DOMString HTMLAnchorElementImpl::nodeName() const
@@ -91,8 +95,18 @@ void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_HREF:
+    {
+        DOMString s = khtml::parseURL(attr->val());
+        href = s.implementation();
+        if(href) href->ref();
+        break;
+    }
+    case ATTR_TARGET:
+    	target = attr->val();
+        target->ref();
+	break;
     default:
-	HTMLAreaElementImpl::parseAttribute(attr);
+	HTMLElementImpl::parseAttribute(attr);
     }
 }
 

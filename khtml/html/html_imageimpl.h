@@ -24,7 +24,7 @@
 #ifndef HTML_IMAGEIMPL_H
 #define HTML_IMAGEIMPL_H
 
-#include "html_elementimpl.h"
+#include "html_inlineimpl.h"
 
 #include <qregion.h>
 
@@ -79,34 +79,24 @@ protected:
 
 
 
-class HTMLAreaElementImpl : public HTMLElementImpl
+class HTMLAreaElementImpl : public HTMLAnchorElementImpl
 {
 public:
 
     enum Shape { Default, Poly, Rect, Circle, Unknown };
 
     HTMLAreaElementImpl(DocumentImpl *doc);
-
     ~HTMLAreaElementImpl();
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual DOMString areaHref() const {
-    	return href;
-    }
-
-    virtual DOMString targetRef() const
-    {
-      return target;
-    }
 
     virtual tagStatus startTag() { return AREAStartTag; }
     virtual tagStatus endTag() { return AREAEndTag; }
 
     void parseAttribute(AttrImpl *attr);
 
-    bool isDefault() { return shape==Default; }
+    bool isDefault() const { return shape==Default; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );
@@ -114,14 +104,10 @@ public:
 protected:
 
     QRegion getRegion(int width_, int height);
-
-    QList<khtml::Length>* coords;
-    DOMStringImpl *href;
-    DOMStringImpl *target;
-
     QRegion region;
-    Shape shape;
+    QList<khtml::Length>* coords;
     int lastw, lasth;
+    Shape shape  : 3;
     bool nohref  : 1;
 };
 

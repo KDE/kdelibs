@@ -509,7 +509,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 	    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
 	    if (e && e==d->originalNode && (e->id()==ID_A || e->id()==ID_AREA))
 	    {
-		HTMLAreaElementImpl *a = static_cast<HTMLAreaElementImpl *>(e);
+		HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(e);
 		emit m_part->urlSelected( a->areaHref().string(),
 					  LeftButton, 0,
 					  a->targetRef().string() );
@@ -576,9 +576,6 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     y = bounds.top();
     xe = bounds.right();
     ye = bounds.bottom();
-
-    kdDebug(6000)<<"gotoLink: destination coords=("<<x<<"/"<<y<<":"<<xe<<"/"<<ye<<")"<<endl;
-    kdDebug(6000)<<"gotoLink: document dimensions("<<contentsWidth()<<"/"<<contentsHeight()<<")"<<endl;
 
     int deltax;
     int deltay;
@@ -663,9 +660,9 @@ bool KHTMLView::gotoLink(bool forward)
 
     if (scrollTo(nextTarget->getRect()))
     {
-	HTMLAreaElementImpl *anchor = 0;
+	HTMLAnchorElementImpl *anchor = 0;
         if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
-            anchor = static_cast<HTMLAreaElementImpl *>( nextTarget );
+            anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
 
 	if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
 	else m_part->overURL(QString(), 0);

@@ -25,18 +25,18 @@
 #ifndef HTML_INLINEIMPL_H
 #define HTML_INLINEIMPL_H
 
-#include "html_imageimpl.h"
+#include "html_elementimpl.h"
 
 namespace DOM {
 
 class DOMString;
 
-class HTMLAnchorElementImpl : public HTMLAreaElementImpl
+class HTMLAnchorElementImpl : public HTMLElementImpl
 {
 public:
     HTMLAnchorElementImpl(DocumentImpl *doc);
 
-    ~HTMLAnchorElementImpl();
+    virtual ~HTMLAnchorElementImpl();
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -47,12 +47,16 @@ public:
     void blur (  );
     void focus (  );
 
+    DOMString areaHref() const { return href; }
+    DOMString targetRef() const { return target; }
+
     virtual void parseAttribute(AttrImpl *attr);
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,
                              MouseEvent *ev);
-
-    //virtual void attach(KHTMLView *);
+protected:
+    DOMStringImpl *href;
+    DOMStringImpl *target;
 };
 
 // -------------------------------------------------------------------------

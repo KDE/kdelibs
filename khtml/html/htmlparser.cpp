@@ -232,7 +232,7 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
 #ifdef SPEED_DEBUG
     qt.start();
 #endif
-    
+
     HTMLWidget    = _parent;
     document      = doc;
 
@@ -262,7 +262,7 @@ KHTMLParser::~KHTMLParser()
 #ifdef SPEED_DEBUG
     kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
 #endif
-    
+
     freeBlock();
 
     delete [] forbiddenTag;
@@ -511,7 +511,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #ifndef SPEED_DEBUG
                     if(!n->attached() && HTMLWidget)
                         n->attach(HTMLWidget);
-#endif		    
+#endif
                 } else {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
@@ -1301,7 +1301,7 @@ void KHTMLParser::popOneBlock()
     if(Elem->node != current)
         if(current->renderer()) current->renderer()->close();
 #endif
-    
+
     removeForbidden(Elem->id, forbiddenTag);
 
     blockStack = Elem->next;

@@ -333,22 +333,17 @@ void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
 // -------------------------------------------------------------------------
 
 HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
-    : HTMLElementImpl(doc)
+    : HTMLAnchorElementImpl(doc)
 {
     coords=0L;
-    href = 0;
     nohref = false;
-    target = 0;
     shape = Unknown;
     lasth = lastw = -1;
 }
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
 {
-    if( href ) href->deref();
-    if( target ) target->deref();
-    if (coords)
-    	delete coords;
+    delete coords;
 }
 
 const DOMString HTMLAreaElementImpl::nodeName() const
@@ -381,23 +376,12 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_NOHREF:
         nohref = true;
 	break;
-    case ATTR_HREF:
-    {
-        DOMString s = khtml::parseURL(attr->val());
-        href = s.implementation();
-        if(href) href->ref();
-        break;
-    }
-    case ATTR_TARGET:
-    	target = attr->val();
-        target->ref();
-	break;
     case ATTR_ALT:
 	break;
     case ATTR_ACCESSKEY:
 	break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+	HTMLAnchorElementImpl::parseAttribute(attr);
     }
 }
 

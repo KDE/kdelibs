@@ -34,7 +34,7 @@
 #include "dom/dom_element.h"
 #include "html/html_documentimpl.h"
 #include "html/html_miscimpl.h"
-#include "html/html_inlineimpl.h"
+#include "html/html_imageimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_image.h"
@@ -280,6 +280,7 @@ public:
   QString m_baseTarget;
 
   QTimer m_redirectionTimer;
+  QTime m_parsetime;
   int m_delayRedirect;
   QString m_redirectURL;
 
@@ -603,6 +604,7 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
+  d->m_parsetime.start();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
 
@@ -1548,7 +1550,9 @@ void KHTMLPart::checkCompleted()
   else
     emit completed();
 
-  emit setStatusBarText(i18n("Loading complete"));
+  emit setStatusBarText( i18n("Loading complete") );
+  // ###
+  kdDebug() << "DONE: " <<d->m_parsetime.elapsed() << endl;
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
