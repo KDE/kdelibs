@@ -20,7 +20,6 @@
 #include <qstring.h>
 
 class KInstance;
-#undef None // X11 headers...
 
 /**
  * This namespace provides a method for issuing events to a KNotifyServer

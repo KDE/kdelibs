@@ -58,11 +58,6 @@ extern Time qt_x_last_input_time;
 extern Time qt_x_time;
 #endif
 
-// Fix for --enable-final. This gets undefined at the end of this file.
-#ifndef None
-#define	None	0L
-#endif
-
 static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
 static void kwin_net_create_atoms() {
@@ -717,6 +712,4 @@ bool KWin::icccmCompliantMappingState()
     return wm_is_1_2_compliant == yes;
 }
 
-// Fix for --enable-final. This gets defined at the top of this file.
-#undef	None
 #endif

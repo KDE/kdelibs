@@ -35,10 +35,6 @@
 #include <ctype.h>
 #include <assert.h>
 
-#ifdef Bool // the enable-final X11-hate mode
-#undef Bool
-#endif
-
 class KDCOPPropertyProxyPrivate
 {
 public:

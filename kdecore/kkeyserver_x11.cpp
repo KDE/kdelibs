@@ -21,12 +21,6 @@
 #include <X11/Xutil.h>
 #include <X11/keysymdef.h>
 
-#undef NONE
-
-#ifndef KeyPress // for --enable-final
-#define KeyPress XKeyPress
-#endif
-
 namespace KKeyServer
 {
 
@@ -863,7 +857,6 @@ void Variations::init( const KKey& key, bool bQt )
 }
 
 } // end of namespace KKeyServer block
-#undef KeyPress
 
 // FIXME: This needs to be moved to kshortcut.cpp, and create a 
 //  KKeyServer::method which it will call.

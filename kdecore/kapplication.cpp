@@ -25,7 +25,6 @@
 #undef QT_NO_TRANSLATION
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
-#undef Unsorted
 #include <qdir.h>
 #include <qptrcollection.h>
 #include <qwidgetlist.h>
@@ -111,15 +110,9 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/SM/SMlib.h>
+#include <fixx11h.h>
 #endif
 #include <KDE-ICE/ICElib.h>
-
-#if defined(Q_WS_X11)
-// defined by X11 headers
-const int XKeyPress = KeyPress;
-const int XKeyRelease = KeyRelease;
-#undef KeyPress
-#endif
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -2612,4 +2605,3 @@ void KSessionManaged::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kapplication.moc"
-#define KeyPress XKeyPress

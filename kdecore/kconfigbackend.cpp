@@ -33,7 +33,6 @@
 #include <fcntl.h>
 #include <signal.h>
 
-#undef Unsorted
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>

@@ -33,11 +33,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 
-#include <X11/Xlibint.h>
 #include <X11/Xmd.h>
-
-typedef Bool X11Bool;
 
 #include "netwm_p.h"
 
@@ -124,6 +122,8 @@ static Bool netwm_atoms_created      = False;
 const unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
 					     SubstructureNotifyMask);
 
+
+const long MAX_PROP_SIZE = 100000;
 
 static char *nstrdup(const char *s1) {
     if (! s1) return (char *) 0;
@@ -389,7 +389,7 @@ static void readIcon(NETWinInfoPrivate *p) {
     // read data
     do {
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
-			       BUFSIZE, False, XA_CARDINAL, &type_ret,
+			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret, &after_ret, &data_ret)
 	    == Success) {
             if (!bufsize)
@@ -490,7 +490,7 @@ Z &NETRArray<Z>::operator[](int index) {
 	// allocate space for the new data
 	// open table has amortized O(1) access time
 	// when N elements appended consecutively -- exa
-        int newcapacity = max(2*capacity,  index+1);
+        int newcapacity = 2*capacity > index+1 ? 2*capacity : index+1; // max
 	// copy into new larger memory block using realloc
         d = (Z*) realloc(d, sizeof(Z)*newcapacity);
         memset( (void*) &d[capacity], 0, sizeof(Z)*(newcapacity-capacity) );
@@ -1735,7 +1735,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
         for( int i = 0; i < PROPERTIES_SIZE; ++i )
             p->properties[ i ] = 0;
         if( XGetWindowProperty(p->display, p->root, net_supported,
-                               0l, (long)BUFSIZE, False, XA_ATOM, &type_ret,
+                               0l, MAX_PROP_SIZE, False, XA_ATOM, &type_ret,
                                &format_ret, &nitems_ret, &unused, &data_ret)
             == Success ) {
             if( type_ret == XA_ATOM && format_ret == 32 ) {
@@ -1751,7 +1751,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
     if (dirty & ClientList) {
         bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, net_client_list,
-			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
+			       0l, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
@@ -1822,7 +1822,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
     if (dirty & KDESystemTrayWindows) {
         bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, kde_net_system_tray_windows,
-			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
+			       0l, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
@@ -1888,7 +1888,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
         delete[] p->stacking;
         p->stacking = NULL;
 	if (XGetWindowProperty(p->display, p->root, net_client_list_stacking,
-			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
+			       0, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
@@ -2009,7 +2009,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
             delete[] p->desktop_names[ i ];
         p->desktop_names.reset();
 	if (XGetWindowProperty(p->display, p->root, net_desktop_names,
-			       0l, (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       0l, MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8) {
@@ -2096,7 +2096,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 
 		unsigned char *name_ret;
 		if (XGetWindowProperty(p->display, p->supportwindow,
-				       net_wm_name, 0l, (long) BUFSIZE, False,
+				       net_wm_name, 0l, MAX_PROP_SIZE, False,
 				       UTF8_STRING, &type_ret, &format_ret,
 				       &nitems_ret, &unused, &name_ret)
 		    == Success) {
@@ -2123,7 +2123,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
         delete[] p->virtual_roots;
         p->virtual_roots = NULL;
 	if (XGetWindowProperty(p->display, p->root, net_virtual_roots,
-			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
+			       0, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
@@ -3327,7 +3327,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         delete[] p->name;
         p->name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_name, 0l,
-			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
@@ -3343,7 +3343,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         delete[] p->visible_name;
         p->visible_name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_name, 0l,
-			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
@@ -3360,7 +3360,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         p->icon_name = NULL;
 	char* text_ret = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
-			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
@@ -3384,7 +3384,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         delete[] p->visible_icon_name;
         p->visible_icon_name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_icon_name, 0l,
-			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
@@ -3548,7 +3548,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         delete[] p->startup_id;
         p->startup_id = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_startup_id, 0l,
-			       (long) BUFSIZE, False, XA_STRING, &type_ret,
+			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
 #ifdef KWIN_FOCUS
 // SELI FOCUS HACK
 #endif

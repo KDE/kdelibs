@@ -35,7 +35,6 @@
 #include "kconfigbackend.h"
 #include "kdebug.h"
 #include "kstandarddirs.h"
-#undef Bool
 
 static bool isUtf8(const char *buf) {
   int i, n;

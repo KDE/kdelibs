@@ -53,15 +53,6 @@ DEALINGS IN THE SOFTWARE.
 #include <signal.h>
 #include <kwinmodule.h>
 #include <kxmessages.h>
-#ifndef KDE_USE_FINAL
-#include <X11/Xlibint.h> // cannot be included multiple times
-#endif
-
-#undef Data // crappy X11
-
-#ifndef None  // CHECKME
-#define None 0
-#endif
 
 static const char* const KDE_STARTUP_INFO = "_KDE_STARTUP_INFO";
 static const char* const KDE_STARTUP_ID = "_KDE_STARTUP_ID";
@@ -637,7 +628,7 @@ QCString KStartupInfo::windowStartupId( WId w_P )
     Atom type_ret;
     int format_ret;
     unsigned long nitems_ret = 0, after_ret = 0;
-    if( XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom, 0l, (long) BUFSIZE,
+    if( XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom, 0l, 4096,
             False, XA_STRING, &type_ret, &format_ret, &nitems_ret, &after_ret, &name_ret )
 	    == Success )
         {
@@ -646,7 +637,7 @@ QCString KStartupInfo::windowStartupId( WId w_P )
         if ( name_ret != NULL )
             XFree( name_ret );
         }
-    if( ret.isNull() && XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom_2, 0l, (long) BUFSIZE,
+    if( ret.isNull() && XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom_2, 0l, 4096,
             False, XA_STRING, &type_ret, &format_ret, &nitems_ret, &after_ret, &name_ret )
 	    == Success )
         {
@@ -1249,8 +1240,6 @@ static QString escape_str( const QString& str_P )
 	}
     return ret;
     }
-
-#undef None
 
 #include "kstartupinfo.moc"
 #endif

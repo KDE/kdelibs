@@ -33,10 +33,6 @@ DEALINGS IN THE SOFTWARE.
 #include <X11/Xlib.h>
 #include <kdebug.h>
 
-#ifndef None  // CHECKME
-#define None 0
-#endif
-
 // for broadcasting
 const long BROADCAST_MASK = PropertyChangeMask;
 // CHECKME
@@ -163,8 +159,6 @@ bool KXMessages::x11Event( XEvent* ev_P )
         }
     return false; // lets other KXMessages instances get the event too
     }
-
-#undef None
 
 #include "kxmessages.moc"
 #endif

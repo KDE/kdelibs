@@ -38,16 +38,6 @@
 #include <X11/Xutil.h>
 #include <X11/keysymdef.h>
 #include <ctype.h>
-#undef NONE
-
-#ifdef Q_WS_X11
-#ifndef KDE_USE_FINAL
-// defined by X11 headers
-const int XKeyPress = KeyPress;
-const int XKeyRelease = KeyRelease;
-#undef KeyPress
-#endif
-#endif
 
 //---------------------------------------------------------------------
 
