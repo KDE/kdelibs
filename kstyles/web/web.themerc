@@ -41,6 +41,7 @@ Name[xh]=Uhlobo lwe Web
 Name[xx]=xx
 Name[zh_CN.GB2312]=网站风格
 Name[zh_TW.Big5]=網站風格
+Name[zu]=Uhlobo lwe Web
 Comment=Web widget style
 Comment[af]=web gui-element styl
 Comment[ar]=مظهر ويدجات الويب
@@ -82,5 +83,6 @@ Comment[xh]=Uhlobo lwe widget ye Web
 Comment[xx]=xx
 Comment[zh_CN.GB2312]=Web 部件风格
 Comment[zh_TW.Big5]=Web 元件風格
+Comment[zu]=Uhlobo lwe widget ye Web
 [KDE]
 widgetStyle=webstyle.la

@@ -244,6 +244,7 @@ Name[sl]=Sistem++
 Name[tr]=Sistem++
 Name[xh]=Indlela esetyenziswayo++
 Name[xx]=xx
+Name[zu]=Indlela esetshenziswayo++
 Comment=System themed style
 Comment[af]=stelsel getemade styl
 Comment[az]=Sistem örtülü tərz
@@ -290,6 +291,7 @@ Comment[xh]=Uhlobo lwendlela yokusebenza enomxholo wokuxoxwa
 Comment[xx]=xx
 Comment[zh_CN.GB2312]=系统主题风格
 Comment[zh_TW.Big5]=系統主題風格
+Comment[zu]=Isistimu sesitayela esinebizo gama
 
 [General]
 foreground=0,0,0
