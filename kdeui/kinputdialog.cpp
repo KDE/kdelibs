@@ -146,22 +146,29 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_comboBox = new KComboBox( editable, frame );
-  d->m_comboBox->insertStringList( list );
-  d->m_comboBox->setCurrentItem( current );
-  layout->addWidget( d->m_comboBox );
-
-  layout->addStretch();
-
   if ( editable )
   {
+    d->m_comboBox = new KComboBox( editable, frame );
+    d->m_comboBox->insertStringList( list );
+    d->m_comboBox->setCurrentItem( current );
+    layout->addWidget( d->m_comboBox );
+
     connect( d->m_comboBox, SIGNAL( textChanged( const QString & ) ),
       SLOT( slotUpdateButtons( const QString & ) ) );
     connect( this, SIGNAL( user1Clicked() ),
       d->m_comboBox, SLOT( clearEdit() ) );
+
+    d->m_comboBox->setFocus();
+  } else {
+    d->m_listBox = new KListBox( frame );
+    d->m_listBox->insertStringList( list );
+    d->m_listBox->setSelected( current, true );
+    d->m_listBox->ensureCurrentVisible();
+    layout->addWidget( d->m_listBox );
   }
 
-  d->m_comboBox->setFocus();
+  layout->addStretch();
+
   setMinimumWidth( 320 );
 }
 
@@ -313,7 +320,10 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
 
   QString result;
   if ( _ok )
-    result = dlg->comboBox()->currentText();
+    if ( editable )
+      result = dlg->comboBox()->currentText();
+    else
+      result = dlg->listBox()->currentText();
 
   delete dlg;
   return result;
