@@ -60,6 +60,8 @@ class QVBox;
 class KPassivePopup : public QFrame
 {
     Q_OBJECT
+    Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )
+    Q_PROPERTY (int timeout READ timeout WRITE setTimeout )
 
 public:
     /**
