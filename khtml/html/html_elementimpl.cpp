@@ -288,7 +288,7 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
     // value twice!
     if ( value.implementation() ) {
         // match \s*[+-]?\d*(\.\d*)?[%\*]?
-        unsigned i = 0;
+        unsigned i = 0, j = 0;
         QChar* s = value.implementation()->s;
         unsigned l = value.implementation()->l;
 
@@ -297,8 +297,11 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
         if (i < l && (s[i] == '+' || s[i] == '-'))
             ++i;
         while (i < l && s[i].isDigit())
-            ++i;
+            ++i,++j;
 
+        // no digits!
+        if (j == 0) return;
+        
         int v = kClamp( QConstString(s, i).string().toInt(), -8192, 8191 ) ;
         const char* suffix = "px";
         if (!numOnly || multiLength) {
