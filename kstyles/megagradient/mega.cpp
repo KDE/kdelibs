@@ -1420,9 +1420,9 @@ void MegaStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         // sync with drawKToolBar
         if(toolbar->orientation() == Qt::Horizontal)
             // should be background fill?
-            drawVGradient(p, g, QColorGroup::Background, x, y, w, h, x, y, toolbar->width(), toolbar->height());
+            drawVGradient(p, g, QColorGroup::Background, x, y, w, h, x, y, toolbar->width()-2, toolbar->height()-2);
         else
-            drawHGradient(p, g, QColorGroup::Background, x, y, w, h, x, y, toolbar->width(), toolbar->height());
+            drawHGradient(p, g, QColorGroup::Background, x, y, w, h, x, y, toolbar->width()-2, toolbar->height()-2);
     }
 
     if(raised || sunken) {
