@@ -75,7 +75,6 @@ KDatePicker::~KDatePicker()
 void
 KDatePicker::resizeEvent(QResizeEvent*)
 {
-    int cx, cy; // counters for storing size hint values
     QWidget *buttons[] = {
 	yearBackward,
 	    monthBackward,
@@ -94,7 +93,6 @@ KDatePicker::resizeEvent(QResizeEvent*)
 	sizes[count]=buttons[count]->sizeHint();
 	buttonHeight=QMAX(buttonHeight, sizes[count].height());
     }
-    cy=buttonHeight;
     // ----- calculate size of the month button:
     w=0;
     for(count=0; count<NoOfButtons; ++count) {
@@ -105,7 +103,6 @@ KDatePicker::resizeEvent(QResizeEvent*)
 	    x=count;
 	}
     }
-    cx=w+sizes[count].width(); // sum of all recommended button widths
     sizes[x].setWidth(width()-w); // stretch the month button
     // ----- place the buttons:
     x=0;
@@ -266,7 +263,7 @@ KDatePicker::selectMonthClicked()
     } else {
       kapp->beep();
     }
-  delete popup;  
+  delete popup;
 }
 
 void
@@ -295,7 +292,7 @@ KDatePicker::selectYearClicked()
     } else {
       kapp->beep();
     }
-  delete popup;  
+  delete popup;
 }
 
 void

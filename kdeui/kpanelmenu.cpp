@@ -86,7 +86,7 @@ void KPanelMenu::init(const QPixmap &icon, const QString &title)
 KPanelMenu::~KPanelMenu()
 {
     DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData, reply;
+    QByteArray sendData;
     QDataStream stream(sendData, IO_WriteOnly);
     stream << realObjId;
     client->send("kicker", "kickerMenuManager", "removeMenu", sendData );

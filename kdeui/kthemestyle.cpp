@@ -33,8 +33,8 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-KThemeStyle::KThemeStyle(const QString &configFile )  
-    :  KThemeBase(configFile) 
+KThemeStyle::KThemeStyle(const QString &configFile )
+    :  KThemeBase(configFile)
 {
     setScrollBarExtent(getSBExtent(), getSBExtent());
     setButtonDefaultIndicatorWidth(0); // We REALLY should support one, see drawPushButton() below!
@@ -867,7 +867,6 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
     if(arrowType() == MotifArrow)
         qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, *cg, enabled);
     else if(arrowType() == SmallArrow){
-        QBrush oldBrush = g.brush(QColorGroup::Button);
         QColorGroup tmp(*cg);
         tmp.setBrush(QColorGroup::Button, QBrush(NoBrush));
         QPlatinumStyle::drawArrow(p, type, false, x, y, w, h,

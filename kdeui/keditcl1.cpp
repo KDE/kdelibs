@@ -243,7 +243,7 @@ void KEdit::computePosition(){
   pos = pos + coltemp - mem ;  // add the number of characters behind the
                                // last tab on the line.
 
-  if (found_one){	
+  if (found_one){
     pos = pos - 1;
   }
 
@@ -402,11 +402,7 @@ bool KEdit::isModified(){
     return edited();
 }
 
-bool KEdit::eventFilter(QObject *o, QEvent *ev){
-
-  static QPoint tmp_point;
-
-  (void) o;
+bool KEdit::eventFilter(QObject *, QEvent *ev){
 
   if (ev->type() == QEvent::Paint)
 	{
