@@ -1,6 +1,5 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
-    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -39,7 +38,6 @@ class QTextCodec;
  * in languages which use non iso-8859-1 charsets.
  *
  * @author Lars Knoll <knoll@kde.org>
- * @version $Id$
  */
 class KCharsets
 {
