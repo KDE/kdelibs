@@ -230,6 +230,10 @@ int main(int argc, char *argv[])
      check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
   }
   {
+     KURL waba2( waba1, "?query=test&name=harry");
+     check("http: Relative URL, with query and no filename", waba2.url(), "http://www.website.com/directory/?query=test&name=harry");
+  }
+  {
      KURL waba2( waba1, "relative.html#with_reference");
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
   }
