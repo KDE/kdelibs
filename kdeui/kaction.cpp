@@ -353,8 +353,10 @@ void KToggleAction::setChecked( bool c )
 	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), c );
 	else if ( w->inherits( "KMenuBar" ) )
 	    ((KMenuBar*)w)->setItemChecked( menuId( i ), c );
+#if 0
 	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
+#endif
     }
 
     if ( c && parent() && !exclusiveGroup().isEmpty() ) {
@@ -481,8 +483,11 @@ void KSelectAction::setCurrentItem( int id )
 		QComboBox *b = (QComboBox*)r;
 		b->setCurrentItem( currentItem() );
 	    }
-	} else if ( w->inherits( "QActionWidget" ) )
+	}
+#if 0
+	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
+#endif
     }
 	
     emit activate();
@@ -507,8 +512,10 @@ void KSelectAction::setItems( const QStringList& lst )
 		    b->insertItem( *it );
 	    }
 	}
+#if 0
 	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
+#endif
     }
 }
 
@@ -585,8 +592,10 @@ void KSelectAction::clear()
 		b->clear();
 	    }
 	}
+#if 0
 	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
+#endif
     }
 }
 
