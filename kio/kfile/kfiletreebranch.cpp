@@ -75,7 +75,7 @@ void KFileTreeBranch::slotListerStarted( const KURL &url )
 {
    /* set the parent correct if it is zero. */
    kdDebug( 250) << "Find parent for " << url.prettyURL() << endl;
-
+   kdDebug(250) << "Root URL is " << m_root->url().prettyURL() << endl;
    KFileItem *fi = findByURL( url );
 
    m_currParent = 0;
@@ -86,7 +86,7 @@ void KFileTreeBranch::slotListerStarted( const KURL &url )
       kdDebug(250) << "Current parent changed!" << endl;
    }
 
-   if( !fi && url == m_root->url())
+   if( !fi && url.cmp(m_root->url(), true )) // compare and ignore trailing /
    {
       m_currParent = m_root;
       kdDebug(250) << "slotListerStarted: Parent is branch-root!" << endl;
@@ -289,7 +289,7 @@ void KFileTreeBranch::slCompleted()
 	 while( m_nextChild && !m_nextChild->isDir())
 	 {
 	    m_nextChild = static_cast<KFileTreeViewItem*>(static_cast<QListViewItem*>(m_nextChild->nextSibling()));
-	    kdDebug(250) << "Next child " << m_nextChild << endl;
+	    // kdDebug(250) << "Next child " << m_nextChild << endl;
 	 }
 
 	 /* at this point, m_nextChildren is a dir if defined or m_nextChild is zero, both OK. */

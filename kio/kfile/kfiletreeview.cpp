@@ -253,7 +253,6 @@ QDragObject * KFileTreeView::dragObject()
     QDragObject *drag = 0L;
     if ( !urls.isEmpty() )
         drag = new KURLDrag( urls, viewport(), "url drag" );
-    qDebug("*** DRAGOBJECT: %p!", drag);
     return drag;
 }
 
@@ -276,7 +275,7 @@ void KFileTreeView::leaveEvent( QEvent *e )
 void KFileTreeView::slotCollapsed( QListViewItem *item )
 {
    KFileTreeViewItem *kftvi = static_cast<KFileTreeViewItem*>(item);
-
+   kdDebug(250) << "hit slotCollapsed" << endl;
    if( kftvi->isDir())
    {
       item->setPixmap( 0, itemIcon(kftvi));
@@ -359,6 +358,7 @@ void KFileTreeView::slotSelectionChanged()
     {
     }
 }
+
 
 #if 0
 void KFileTreeView::FilesAdded( const KURL & dir )
@@ -492,7 +492,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
       {
 	 KURL url = (*it)->url();
 	 
-	 if( m_nextUrlToSelect == url )
+	 if( m_nextUrlToSelect.cmp(url, true ))   // ignore trailing / on dirs
 	 {
 	    setCurrentItem( static_cast<QListViewItem*>(*it) );
 	    m_nextUrlToSelect = KURL();
