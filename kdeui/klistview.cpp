@@ -469,7 +469,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 
 void KListView::focusInEvent( QFocusEvent *fe )
 {
-   kdDebug()<<"KListView::focusInEvent()"<<endl;
+ //   kdDebug()<<"KListView::focusInEvent()"<<endl;
   QListView::focusInEvent( fe );
 
   if ((d->selectedBySimpleMove)
