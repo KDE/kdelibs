@@ -27,6 +27,8 @@
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
 #define KDE_DEFAULT_LARGE_CURSOR false
+#define KDE_DEFAULT_VISUAL_ACTIVATE true
+#define KDE_DEFAULT_VISUAL_ACTIVATE_SPEED 50
 
 /**
  * Access the KDE global configuration.
@@ -102,6 +104,13 @@ class KGlobalSettings
      * @return the KDE setting for "change cursor over icon"
      */
     static bool changeCursorOverIcon();
+
+    /**
+     * @return whether to show some feedback when an item (specifically an
+     * icon) is activated.
+     */
+    static bool visualActivate();
+    static unsigned int visualActivateSpeed();
 
     /**
      * Returns the KDE setting for the auto-select option

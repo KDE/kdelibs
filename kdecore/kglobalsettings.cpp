@@ -64,6 +64,26 @@ bool KGlobalSettings::changeCursorOverIcon()
     return c->readBoolEntry("ChangeCursor", KDE_DEFAULT_CHANGECURSOR);
 }
 
+bool KGlobalSettings::visualActivate()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readBoolEntry("VisualActivate", KDE_DEFAULT_VISUAL_ACTIVATE);
+}
+
+unsigned int KGlobalSettings::visualActivateSpeed()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return
+        c->readNumEntry(
+            "VisualActivateSpeed",
+            KDE_DEFAULT_VISUAL_ACTIVATE_SPEED
+        );
+}
+
+
+
 int KGlobalSettings::autoSelectDelay()
 {
     KConfig *c = KGlobal::config();
