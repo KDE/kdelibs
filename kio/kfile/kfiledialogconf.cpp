@@ -50,7 +50,7 @@ enum Fields { B_STATUSLINE=10, B_FILTER, B_SINGLECLICK, B_HIDDEN,
 
 KFileDialogConfigureDlg::KFileDialogConfigureDlg( QWidget *parent,
 						  const char *name )
-  :KDialogBase( Tabbed, i18n("Configure file selector"), Ok|Cancel, Ok,
+  :KDialogBase( Tabbed, i18n("Configure File Selector"), Ok|Cancel, Ok,
 	        parent, name, true, false )
 {
   setupConfigPage( i18n("Look and Feel") );

@@ -49,7 +49,7 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent, const char *name,
 
 KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, const char *name, bool modal )
-    : KDialogBase( dialogFace, i18n("Acquire image"), buttonMask, Close,
+    : KDialogBase( dialogFace, i18n("Acquire Image"), buttonMask, Close,
 		   parent, name, modal, true ),
       m_currentId( 1 )
 {
@@ -92,7 +92,7 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent, const char *name,
 
 KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, const char *name, bool modal )
-    : KDialogBase( dialogFace, i18n("OCR image"), buttonMask, Close,
+    : KDialogBase( dialogFace, i18n("OCR Image"), buttonMask, Close,
 		   parent, name, modal, true ),
       m_currentId( 1 )
 {
