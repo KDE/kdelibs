@@ -124,7 +124,7 @@ class KAboutData
      */
     KAboutData( const QString &programName,
 		const QString &version,
-		const QString &shortDescription,
+		const QString &shortDescription = QString::null,
 		int licenseType = 0,
 		const QString &copyrightStatement = QString::null,
 		const QString &text = QString::null,
