@@ -234,11 +234,22 @@ namespace KJS {
     static const TypeInfo info;
   };
 
+  // Prototype object DOMException
+  class DOMExceptionPrototype : public DOMObject {
+  public:
+    DOMExceptionPrototype() { }
+    virtual KJSO tryGet(const UString &p) const;
+    // no put - all read-only
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+  };
+
   KJSO getDOMNode(DOM::Node n);
   KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
   KJSO getDOMNodeList(DOM::NodeList l);
   KJSO getDOMDOMImplementation(DOM::DOMImplementation i);
   KJSO getNodePrototype();
+  KJSO getDOMExceptionPrototype();
 
 }; // namespace
 

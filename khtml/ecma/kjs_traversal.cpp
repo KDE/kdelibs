@@ -299,3 +299,27 @@ DOM::NodeFilter KJS::toNodeFilter(const KJSO& obj)
   const DOMNodeFilter *dobj = static_cast<const DOMNodeFilter*>(obj.imp());
   return dobj->toNodeFilter();
 }
+
+// -------------------------------------------------------------------------
+
+JSNodeFilter::JSNodeFilter(KJSO _filter) : CustomNodeFilter()
+{
+    filter = _filter;
+}
+
+JSNodeFilter::~JSNodeFilter()
+{
+}
+
+short JSNodeFilter::acceptNode(const DOM::Node &n)
+{
+    KJSO acceptNodeFunc = filter.get("acceptNode");
+    if (acceptNodeFunc.implementsCall()) {
+	List args;
+	args.append(getDOMNode(n));
+	KJSO result = acceptNodeFunc.executeCall(filter,&args);
+	return result.toNumber().intValue();
+    }
+    else
+	return DOM::NodeFilter::FILTER_REJECT;
+}

@@ -237,6 +237,9 @@ public:
 
     unsigned long index() const;
 
+    virtual DocumentImpl *getDocument()
+	{ return document; } // different from ownerDocument() in that it is never null
+
 protected:
     DocumentImpl *document;
     khtml::RenderObject *m_render;

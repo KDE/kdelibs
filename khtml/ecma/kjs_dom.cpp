@@ -394,11 +394,20 @@ Completion DOMDocFunction::tryExecute(const List &args)
     result = getDOMRange(doc.createRange());
     break;
   case CreateNodeIterator:
-    result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),args[1].toNumber().intValue(),
-             toNodeFilter(args[2]),args[3].toBoolean().value()));
+    if (args[2].isA(NullType)) {
+        DOM::NodeFilter filter;
+	result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),(long unsigned int)(args[1].toNumber().value()),
+				    filter,args[3].toBoolean().value()));
+    }
+    else {
+	DOM::CustomNodeFilter *customFilter = new JSNodeFilter(args[2]);
+	DOM::NodeFilter filter = DOM::NodeFilter::createCustom(customFilter);
+	result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),(long unsigned int)(args[1].toNumber().value()),
+				    filter,args[3].toBoolean().value()));
+    }
     break;
   case CreateTreeWalker:
-    result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),args[1].toNumber().intValue(),
+    result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber().value()),
              toNodeFilter(args[2]),args[3].toBoolean().value()));
     break;
   default:
@@ -851,6 +860,59 @@ KJSO KJS::getNodePrototype()
         Object nodeProto( new NodePrototype );
         Global::current().put("[[node.prototype]]", nodeProto);
         return nodeProto;
+    }
+}
+
+// -------------------------------------------------------------------------
+
+const TypeInfo DOMExceptionPrototype::info = { "DOMExceptionPrototype", HostType, 0, 0, 0 };
+
+KJSO DOMExceptionPrototype::tryGet(const UString &p) const
+{
+  if (p == "INDEX_SIZE_ERR")
+    return Number((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
+  if (p == "DOMSTRING_SIZE_ERR")
+    return Number((unsigned int)DOM::DOMException::DOMSTRING_SIZE_ERR);
+  if (p == "HIERARCHY_REQUEST_ERR")
+    return Number((unsigned int)DOM::DOMException::HIERARCHY_REQUEST_ERR);
+  if (p == "WRONG_DOCUMENT_ERR")
+    return Number((unsigned int)DOM::DOMException::WRONG_DOCUMENT_ERR);
+  if (p == "INVALID_CHARACTER_ERR")
+    return Number((unsigned int)DOM::DOMException::INVALID_CHARACTER_ERR);
+  if (p == "NO_DATA_ALLOWED_ERR")
+    return Number((unsigned int)DOM::DOMException::NO_DATA_ALLOWED_ERR);
+  if (p == "NO_MODIFICATION_ALLOWED_ERR")
+    return Number((unsigned int)DOM::DOMException::NO_MODIFICATION_ALLOWED_ERR);
+  if (p == "NOT_FOUND_ERR")
+    return Number((unsigned int)DOM::DOMException::NOT_FOUND_ERR);
+  if (p == "NOT_SUPPORTED_ERR")
+    return Number((unsigned int)DOM::DOMException::NOT_SUPPORTED_ERR);
+  if (p == "INUSE_ATTRIBUTE_ERR")
+    return Number((unsigned int)DOM::DOMException::INUSE_ATTRIBUTE_ERR);
+  if (p == "INVALID_STATE_ERR")
+    return Number((unsigned int)DOM::DOMException::INVALID_STATE_ERR);
+  if (p == "SYNTAX_ERR")
+    return Number((unsigned int)DOM::DOMException::SYNTAX_ERR);
+  if (p == "INVALID_MODIFICATION_ERR")
+    return Number((unsigned int)DOM::DOMException::INVALID_MODIFICATION_ERR);
+  if (p == "NAMESPACE_ERR")
+    return Number((unsigned int)DOM::DOMException::NAMESPACE_ERR);
+  if (p == "INVALID_ACCESS_ERR")
+    return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
+
+  return DOMObject::tryGet(p);
+}
+
+KJSO KJS::getDOMExceptionPrototype()
+{
+    KJSO proto = Global::current().get("[[DOMException.prototype]]");
+    if (proto.isDefined())
+        return proto;
+    else
+    {
+        Object domExceptionProto( new DOMExceptionPrototype );
+        Global::current().put("[[DOMException.prototype]]", domExceptionProto);
+        return domExceptionProto;
     }
 }
 

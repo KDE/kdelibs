@@ -3,6 +3,8 @@
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
+ * (C) 2001 Peter Kelly (pmk@post.com)
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -34,97 +36,42 @@ namespace DOM {
 class NodeIteratorImpl : public DomShared
 {
 public:
-    NodeIteratorImpl();
-    NodeIteratorImpl(const NodeIteratorImpl &other);
-    NodeIteratorImpl(Node n, NodeFilter *f=0);
-    NodeIteratorImpl(Node n, long _whatToShow, NodeFilter *f=0);
-
-    NodeIteratorImpl & operator = (const NodeIteratorImpl &other);
-
+    NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow, NodeFilter _filter, bool _entityReferenceExpansion);
     ~NodeIteratorImpl();
 
 
-    Node getRoot();
-    unsigned long getWhatToShow();
-    NodeFilter getFilter();
-    bool getExpandEntityReferences();
+    NodeImpl *root();
+    unsigned long whatToShow();
+    NodeFilter filter();
+    bool expandEntityReferences();
 
-    Node nextNode();
-    Node previousNode();
-
-    void detach();
-
-
-    // ### remove "get" from attribute read methods
+    NodeImpl *nextNode(int &exceptioncode);
+    NodeImpl *previousNode(int &exceptioncode);
+    void detach(int &exceptioncode);
 
 
-    void setWhatToShow(long _whatToShow);
-    void setFilter(NodeFilter *_filter);
-    void setExpandEntityReferences(bool value);
+
 
     /**
      * This function has to be called if you delete a node from the
      * document tree and you want the Iterator to react if there
      * are any changes concerning it.
      */
-    void deleteNode(Node n);
+    void notifyBeforeNodeRemoval(NodeImpl *removed);
 
-    /**
-     *  Move the Iterators referenceNode within the subtree. Does not set a new root node.
-     */
-    void moveReferenceNode(Node n);
-    /**
-     * Sets the iterators referenceNode and sets a new root node
-     */
-    void setReferenceNode(Node n);
-    short isAccepted(Node n);
-    Node getNextNode(Node n);
-    Node getPreviousNode(Node n);
- protected:
+    short isAccepted(NodeImpl *n);
+    NodeImpl *getNextNode(NodeImpl *n);
+    NodeImpl *getPreviousNode(NodeImpl *n);
+protected:
+    NodeImpl *m_root;
+    long m_whatToShow;
+    NodeFilter m_filter;
+    bool m_expandEntityReferences;
 
-    /**
-     * This attribute determines which node types are presented via
-     * the Iterator.
-     *
-     */
-    long whatToShow;
-
-    /**
-     * The filter used to screen nodes.
-     *
-     */
-    NodeFilter *filter;
-
-    /**
-     * The value of this flag determines whether entity reference
-     * nodes are expanded. To produce a view of the document that has
-     * entity references expanded and does not expose the entity
-     * reference node itself, use the whatToShow flags to hide the
-     * entity reference node and set expandEntityReferences to true
-     * when creating the iterator. To produce a view of the document
-     * that has entity reference nodes but no entity expansion, use
-     * the whatToShow flags to show the entity reference node and set
-     * expandEntityReferences to true.
-     *
-     */
-    bool expandEntityReferences;
-
-    /**
-     * internal, used to determine if the iterator is in front or to the back
-     * of the referenceNode
-     */
-    bool inFront;
-    /**
-     * Internal, not specified by the dom
-     * The current referenceNode
-     */
-    Node referenceNode;
-
-    /**
-     * Internal, not specified by the dom
-     * The initial referenceNode for this Iterator
-     */
-    Node rootNode;
+    bool m_inFront;
+    NodeImpl *m_referenceNode;
+    bool m_detached;
+    DocumentImpl *m_doc;
 };
 
 class NodeFilterImpl : public DomShared
@@ -134,6 +81,12 @@ public:
     ~NodeFilterImpl();
 
     virtual short acceptNode(const Node &n);
+
+    void setCustomNodeFilter(CustomNodeFilter *custom);
+    CustomNodeFilter *customNodeFilter();
+protected:
+    CustomNodeFilter *m_customNodeFilter;
+
 };
 
 class TreeWalkerImpl : public DomShared

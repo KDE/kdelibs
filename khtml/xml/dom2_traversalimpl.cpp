@@ -3,6 +3,8 @@
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
+ * (C) 2001 Peter Kelly (pmk@post.com)
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -25,151 +27,87 @@
 #include "dom_node.h"
 #include "dom_exception.h"
 #include "dom2_traversalimpl.h"
+#include "dom_docimpl.h"
 
 using namespace DOM;
 
-NodeIteratorImpl::NodeIteratorImpl()
+NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,
+				   NodeFilter _filter, bool _entityReferenceExpansion)
 {
-  filter = 0;
-}
+    m_root = _root;
+    m_whatToShow = _whatToShow;
+    m_filter = _filter;
+    m_expandEntityReferences = _entityReferenceExpansion;
 
-NodeIteratorImpl::NodeIteratorImpl(const NodeIteratorImpl &other)
-    : DomShared(other)
-{
-  referenceNode = other.referenceNode;
-  rootNode = other.rootNode;
-  whatToShow = other.whatToShow;
-  filter = other.filter;
-  inFront = other.inFront;
-  expandEntityReferences = other.expandEntityReferences;
-}
+    m_referenceNode = _root;
+    m_inFront = false;
 
-NodeIteratorImpl::NodeIteratorImpl(Node n, NodeFilter *f)
-{
-  if( !n.isNull() )
-    {
-      rootNode = n;
-      referenceNode = n;
-      whatToShow = 0x0000FFFF;
-      filter = f;
-    }
-//   else
-//     throw DOMException(DOMException::NOT_FOUND_ERR); // ### should we go into an invalid state instead?
-}
+    if (_root->nodeType() == Node::DOCUMENT_NODE)
+	m_doc = static_cast<DocumentImpl*>(m_root);
+    else
+	m_doc = m_root->ownerDocument();
+    m_doc->attachNodeIterator(this);
+    m_doc->ref();
 
-NodeIteratorImpl::NodeIteratorImpl(Node n, long _whatToShow , NodeFilter *f)
-{
-    filter = f;
-    whatToShow = _whatToShow;
-    referenceNode = n;
-    rootNode = n;
-}
-
-NodeIteratorImpl &NodeIteratorImpl::operator = (const NodeIteratorImpl &other)
-{
-  referenceNode = other.referenceNode;
-  rootNode = other.rootNode;
-  whatToShow = other.whatToShow;
-  filter = other.filter;
-  inFront = other.inFront;
-  expandEntityReferences = other.expandEntityReferences;
-  return *this;
+    m_detached = false;
 }
 
 NodeIteratorImpl::~NodeIteratorImpl()
 {
-  if(filter)
-    {
-    delete filter;
-    filter = 0;
+    m_doc->detachNodeIterator(this);
+    m_doc->deref();
+}
+
+NodeImpl *NodeIteratorImpl::root()
+{
+    return m_root;
+}
+
+unsigned long NodeIteratorImpl::whatToShow()
+{
+    return m_whatToShow;
+}
+
+NodeFilter NodeIteratorImpl::filter()
+{
+    return m_filter;
+}
+
+bool NodeIteratorImpl::expandEntityReferences()
+{
+    return m_expandEntityReferences;
+}
+
+NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode )
+{
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
     }
-}
 
-void NodeIteratorImpl::setWhatToShow(long _whatToShow)
-{
-  whatToShow = _whatToShow;
-}
-
-void NodeIteratorImpl::moveReferenceNode(Node n)
-{
-  if( !n.isNull() )
-    {
-      // cheching if they are in the same subtree??
-      referenceNode = n;
-      inFront = true;
+    if (!m_referenceNode) {
+	m_inFront = true;
+	return 0;
     }
-}
 
-void NodeIteratorImpl::setReferenceNode(Node n)
-{
-  if( !n.isNull() )
-    {
-      rootNode = n;
-      referenceNode = n;
-      inFront = true;
+    if (!m_inFront) {
+	m_inFront = true;
+	if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
+	    return m_referenceNode;
     }
-}
 
-void NodeIteratorImpl::setFilter(NodeFilter *_filter)
-{
-  if(_filter != 0)
-    {
-      if( filter != 0 )
-        delete filter;
-
-      filter = _filter;
-    }
-}
-
-void NodeIteratorImpl::setExpandEntityReferences(bool value)
-{
-  expandEntityReferences = value;
-}
-
-Node NodeIteratorImpl::getRoot()
-{
-    // ###
-    return 0;
-}
-
-unsigned long NodeIteratorImpl::getWhatToShow()
-{
-    // ###
-    return 0;
-}
-
-NodeFilter NodeIteratorImpl::getFilter()
-{
-    // ###
-    return NodeFilter();
-}
-
-bool NodeIteratorImpl::getExpandEntityReferences()
-{
-    // ###
-    return 0;
-}
-
-Node NodeIteratorImpl::nextNode(  )
-{
-  short _result;
-  Node _tempCurrent = getNextNode(referenceNode);
-  while( !_tempCurrent.isNull() )
-    {
-      _result =  isAccepted(_tempCurrent);
-
-      if(_result == NodeFilter::FILTER_ACCEPT)
-        {
-          referenceNode = _tempCurrent;
-          return referenceNode;
-        }
+    NodeImpl *_tempCurrent = getNextNode(m_referenceNode);
+    while( _tempCurrent ) {
+	m_referenceNode = _tempCurrent;
+	if(isAccepted(_tempCurrent) == NodeFilter::FILTER_ACCEPT)
+	    return m_referenceNode;
       _tempCurrent = getNextNode(_tempCurrent);
     }
 
-  return Node();
+    return 0;
 }
 
-Node NodeIteratorImpl::getNextNode(Node n)
+NodeImpl *NodeIteratorImpl::getNextNode(NodeImpl *n)
 {
   /*  1. my first child
    *  2. my next sibling
@@ -177,73 +115,81 @@ Node NodeIteratorImpl::getNextNode(Node n)
    *  4. not found
    */
 
-  if( n.isNull() )
-    return n;
+  if( !n )
+    return 0;
 
-  inFront = true;
+  if( n->hasChildNodes() )
+    return n->firstChild();
 
-  if( n.hasChildNodes() )
-    return n.firstChild();
+  if( n->nextSibling() )
+    return n->nextSibling();
 
-  if( !n.nextSibling().isNull() )
-    return n.nextSibling();
+  if( m_root == n)
+     return 0;
 
-  if( rootNode == n)
-     return Node();
-
-  Node parent = n.parentNode();
-  while( !parent.isNull() )
+  NodeImpl *parent = n->parentNode();
+  while( parent )
     {
-      n = parent.nextSibling();
-      if( !n.isNull() )
+      n = parent->nextSibling();
+      if( n )
         return n;
 
-      if( rootNode == parent )
-        return Node();
+      if( m_root == parent )
+        return 0;
 
-      parent = parent.parentNode();
+      parent = parent->parentNode();
     }
-  return Node();
+  return 0;
 }
 
-Node NodeIteratorImpl::previousNode(  )
+NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
 {
-  short _result;
-  Node _tempCurrent = getPreviousNode(referenceNode);
-  while( !_tempCurrent.isNull() )
-    {
-      _result = isAccepted(_tempCurrent);
-      if(_result == NodeFilter::FILTER_ACCEPT)
-        {
-          referenceNode = _tempCurrent;
-          return referenceNode;
-        }
-      _tempCurrent = getPreviousNode(_tempCurrent);
+    if (m_detached) {
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return 0;
     }
 
-  return Node();
+    if (!m_referenceNode) {
+	m_inFront = false;
+	return 0;
+    }
+
+    if (m_inFront) {
+	m_inFront = false;
+	if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
+	    return m_referenceNode;
+    }
+
+    short _result;
+    NodeImpl *_tempCurrent = getPreviousNode(m_referenceNode);
+    while( _tempCurrent ) {
+	m_referenceNode = _tempCurrent;
+	if(isAccepted(_tempCurrent) == NodeFilter::FILTER_ACCEPT)
+	    return m_referenceNode;
+	_tempCurrent = getPreviousNode(_tempCurrent);
+    }
+
+    return 0;
 }
 
-Node NodeIteratorImpl::getPreviousNode(Node n)
+NodeImpl *NodeIteratorImpl::getPreviousNode(NodeImpl *n)
 {
 /* 1. my previous sibling.lastchild
  * 2. my previous sibling
  * 3. my parent
  */
-  Node _tempCurrent;
+  NodeImpl *_tempCurrent;
 
-  if( n.isNull() )
-    return Node();
+  if( !n )
+    return 0;
 
-    inFront = false;
-
-  _tempCurrent = n.previousSibling();
-  if( !_tempCurrent.isNull() )
+  _tempCurrent = n->previousSibling();
+  if( _tempCurrent )
     {
-      if( _tempCurrent.hasChildNodes() )
+      if( _tempCurrent->lastChild() )
         {
-          while( _tempCurrent.hasChildNodes() )
-            _tempCurrent = _tempCurrent.lastChild();
+          while( _tempCurrent->lastChild() )
+            _tempCurrent = _tempCurrent->lastChild();
           return _tempCurrent;
         }
       else
@@ -251,54 +197,76 @@ Node NodeIteratorImpl::getPreviousNode(Node n)
     }
 
 
-  if(n == rootNode)
-    return Node();
+  if(n == m_root)
+    return 0;
 
-  return n.parentNode();
+  return n->parentNode();
+
 
 }
 
-void NodeIteratorImpl::detach()
+void NodeIteratorImpl::detach(int &/*exceptioncode*/)
 {
+    m_doc->detachNodeIterator(this);
+    m_detached = true;
 }
 
 
-void NodeIteratorImpl::deleteNode(Node n)
+void NodeIteratorImpl::notifyBeforeNodeRemoval(NodeImpl *removed)
 {
-    if( n.isNull() )
-        return;  // someone tried to delete a null node :)
+    // make sure the deleted node is with the root (but not the root itself)
+    if (removed == m_root)
+	return;
 
-    Node _tempDeleted = referenceNode;
-    while( !_tempDeleted.isNull() && _tempDeleted != n) // did I get deleted, or one of my parents?
-        _tempDeleted = _tempDeleted.parentNode();
+    NodeImpl *maybeRoot = removed->parentNode();
+    while (maybeRoot && maybeRoot != m_root)
+	maybeRoot = maybeRoot->parentNode();
+    if (!maybeRoot)
+	return;
 
-    if( _tempDeleted.isNull() )  // someone that did consern me got deleted
+    // did I get deleted, or one of my parents?
+    NodeImpl *_tempDeleted = m_referenceNode;
+    while( _tempDeleted && _tempDeleted != removed)
+        _tempDeleted = _tempDeleted->parentNode();
+
+    if( !_tempDeleted )  // someone that didn't consern me got deleted
         return;
 
-    if( !inFront)
+    if( !m_inFront)
     {
-        Node _next = getNextNode(_tempDeleted);
-        if( !_next.isNull() )
-            referenceNode = _next;
+        NodeImpl *_next = getNextNode(_tempDeleted);
+        if( _next )
+            m_referenceNode = _next;
         else
         {
-            inFront = false;
-            referenceNode = getPreviousNode(_tempDeleted);
-            return;
+	    // deleted node was at end of list
+            m_inFront = true;
+            m_referenceNode = getPreviousNode(_tempDeleted);
         }
     }
-    referenceNode = getPreviousNode(_tempDeleted);
+    else {
+	NodeImpl *_prev = getPreviousNode(_tempDeleted);
+	if ( _prev )
+	    m_referenceNode = _prev;
+	else
+	{
+	    // deleted node was at start of list
+	    m_inFront = false;
+	    m_referenceNode = getNextNode(_tempDeleted);
+	}
+    }
+
 }
 
-short NodeIteratorImpl::isAccepted(Node n)
+short NodeIteratorImpl::isAccepted(NodeImpl *n)
 {
   // if XML is implemented we have to check expandEntityRerefences in this function
-  if( ( ( 1 << n.nodeType()-1) & whatToShow) != 0 )
+  if( ( ( 1 << n->nodeType()-1) & m_whatToShow) != 0 )
     {
-        if(filter)
-            return filter->acceptNode(n);
+        if(!m_filter.isNull())
+            return m_filter.acceptNode(n);
         else
-            return NodeFilter::FILTER_ACCEPT;
+	    return NodeFilter::FILTER_ACCEPT;
     }
     return NodeFilter::FILTER_SKIP;
 }
@@ -308,15 +276,29 @@ short NodeIteratorImpl::isAccepted(Node n)
 
 NodeFilterImpl::NodeFilterImpl()
 {
+    m_customNodeFilter = 0;
 }
 
 NodeFilterImpl::~NodeFilterImpl()
 {
 }
 
-short NodeFilterImpl::acceptNode(const Node &)
+short NodeFilterImpl::acceptNode(const Node &n)
 {
-    return NodeFilter::FILTER_ACCEPT;
+    if (m_customNodeFilter)
+	return m_customNodeFilter->acceptNode(n);
+    else
+	return NodeFilter::FILTER_ACCEPT;
+}
+
+void NodeFilterImpl::setCustomNodeFilter(CustomNodeFilter *custom)
+{
+    m_customNodeFilter = custom;
+}
+
+CustomNodeFilter *NodeFilterImpl::customNodeFilter()
+{
+    return m_customNodeFilter;
 }
 
 // --------------------------------------------------------------

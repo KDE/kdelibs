@@ -146,7 +146,7 @@ public:
     RangeImpl *createRange();
 
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                    NodeFilterImpl *filter, bool entityReferenceExpansion);
+                                    NodeFilter filter, bool entityReferenceExpansion, int &exceptioncode);
 
     TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
                             bool entityReferenceExpansion);
@@ -234,6 +234,14 @@ public:
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);
 
+    virtual DocumentImpl *getDocument()
+	{ return this; }
+
+    void attachNodeIterator(NodeIteratorImpl *ni);
+    void detachNodeIterator(NodeIteratorImpl *ni);
+    void notifyBeforeNodeRemoval(NodeImpl *n);
+
+
 signals:
     virtual void finishedParsing();
 
@@ -278,6 +286,7 @@ protected:
     QList<StyleSheetImpl> m_xmlStyleSheets;
 
     ElementImpl *m_focusNode;
+    QList<NodeIteratorImpl> m_nodeIterators;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

@@ -37,6 +37,8 @@ class NodeImpl;
 class NodeIteratorImpl;
 class NodeFilterImpl;
 class TreeWalkerImpl;
+class CustomNodeFilter;
+class CustomNodeFilterImpl;
 
 /**
  * NodeIterators are used to step through a set of nodes, e.g. the set
@@ -173,6 +175,10 @@ protected:
  * with a number of different kinds of Iterators, encouraging code
  * reuse.
  *
+ * To create your own cutsom NodeFilter, define a subclass of
+ * CustomNodeFilter which overrides the acceptNode() method and assign
+ * an instance of it to the NodeFilter. For more details see the
+ * CustomNodeFilter class
  */
 class NodeFilter
 {
@@ -245,12 +251,59 @@ public:
     virtual NodeFilterImpl *handle() const;
     virtual bool isNull() const;
 
+    void setCustomNodeFilter(CustomNodeFilter *custom);
+    CustomNodeFilter *customNodeFilter();
+    static NodeFilter createCustom(CustomNodeFilter *custom);
 
 protected:
     NodeFilter(NodeFilterImpl *i);
     NodeFilterImpl *impl;
 };
 
+/**
+ * CustomNodeFilter can be used to define your own NodeFilter for use
+ * with NodeIterators and TreeWalkers. You can create a custom filter
+ * by doing the follwing:
+ *
+ * class MyCustomNodeFilter {
+ *  .....
+ *  virtual short acceptNode (const Node &n);
+ *  .....
+ * }
+ *
+ * Then in your program:
+ *
+ * short MyCustomNodeFilter::acceptNode (const Node &n)
+ * {
+ *   if (condition)
+ *     return NodeFilter::FILTER_ACCEPT;
+ *   else
+ *    ....
+ * }
+ *
+ *
+ * MyCustomFilter *filter = new MyCustomFilter();
+ * NodeFilter nf = NodeFilter::createCutsom(filter);
+ * NodeIterator ni = document.createNodeIterator(document,NodeFilter.SHOW_ALL,nf,false);
+ *
+ * The default implementation of acceptNode() returns NodeFilter::FILTER_ACCEPT
+ * for all nodes.
+ *
+ */
+
+class CustomNodeFilter {
+public:
+    CustomNodeFilter();
+    virtual ~CustomNodeFilter();
+    virtual short acceptNode (const Node &n);
+    virtual void isNull();
+protected:
+    /**
+     * @internal
+     * Reserved. Do not use in your subclasses.
+     */
+    CustomNodeFilterImpl *impl;
+};
 
 /**
  * <code> TreeWalker </code> objects are used to navigate a document

@@ -275,8 +275,15 @@ Range Document::createRange()
 NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
                                     NodeFilter filter, bool entityReferenceExpansion)
 {
-    if (impl) return ((DocumentImpl *)impl)->createNodeIterator(root.handle(),whatToShow,filter.handle(),entityReferenceExpansion);
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+	
+    int exceptioncode = 0;
+    NodeIteratorImpl *r = static_cast<DocumentImpl*>(impl)->createNodeIterator(root.handle(),
+			  whatToShow,filter,entityReferenceExpansion,exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 TreeWalker Document::createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,

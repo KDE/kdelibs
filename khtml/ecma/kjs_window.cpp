@@ -159,6 +159,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "Node" ||
       p == "Range" ||
       p == "NodeFilter" ||
+      p == "DOMException" ||
       p == "frames" ||
       p == "history" ||
       p == "innerHeight" ||
@@ -245,6 +246,8 @@ KJSO Window::get(const UString &p) const
     return getRangePrototype();
   else if (p == "NodeFilter")
     return getNodeFilterPrototype();
+  else if (p == "DOMException")
+    return getDOMExceptionPrototype();
   else if (p == "frames")
     return new FrameArray(part);
   else if (p == "history")

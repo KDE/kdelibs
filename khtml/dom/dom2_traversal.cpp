@@ -63,43 +63,61 @@ NodeIterator::~NodeIterator()
 
 Node NodeIterator::root()
 {
-    if (impl) return impl->getRoot();
+    if (impl) return impl->root();
     return 0;
 }
 
 unsigned long NodeIterator::whatToShow()
 {
-    if (impl) return impl->getWhatToShow();
+    if (impl) return impl->whatToShow();
     return 0;
 }
 
 NodeFilter NodeIterator::filter()
 {
-    if (impl) return impl->getFilter();
+    if (impl) return impl->filter();
     return 0;
 }
 
 bool NodeIterator::expandEntityReferences()
 {
-    if (impl) return impl->getExpandEntityReferences();
+    if (impl) return impl->expandEntityReferences();
     return 0;
 }
 
 Node NodeIterator::nextNode(  )
 {
-    if (impl) return impl->nextNode();
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = impl->nextNode(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 Node NodeIterator::previousNode(  )
 {
-    if (impl) return impl->previousNode();
-    return 0;
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    NodeImpl *r = impl->previousNode(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
+    return r;
 }
 
 void NodeIterator::detach()
 {
-    if (impl) impl->detach();
+    if (!impl)
+	throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode = 0;
+    impl->detach(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
 }
 
 NodeIteratorImpl *NodeIterator::handle() const
@@ -152,6 +170,17 @@ short NodeFilter::acceptNode(const Node &n)
     return 0;
 }
 
+void NodeFilter::setCustomNodeFilter(CustomNodeFilter *custom)
+{
+    if (impl) impl->setCustomNodeFilter(custom);
+}
+
+CustomNodeFilter *NodeFilter::customNodeFilter()
+{
+    if (impl) return impl->customNodeFilter();
+    return 0;
+}
+
 NodeFilterImpl *NodeFilter::handle() const
 {
     return impl;
@@ -160,6 +189,33 @@ NodeFilterImpl *NodeFilter::handle() const
 bool NodeFilter::isNull() const
 {
     return (impl == 0);
+}
+
+NodeFilter NodeFilter::createCustom(CustomNodeFilter *custom)
+{
+    NodeFilterImpl *i = new NodeFilterImpl();
+    i->setCustomNodeFilter(custom);
+    return i;
+}
+
+// --------------------------------------------------------------
+CustomNodeFilter::CustomNodeFilter()
+{
+    impl = 0;
+}
+
+CustomNodeFilter::~CustomNodeFilter()
+{
+}
+
+short CustomNodeFilter::acceptNode (const Node &/*n*/)
+{
+    return NodeFilter::FILTER_ACCEPT;
+}
+
+void CustomNodeFilter::isNull()
+{
+    return false;
 }
 
 // --------------------------------------------------------------

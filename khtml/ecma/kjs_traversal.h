@@ -118,6 +118,15 @@ namespace KJS {
    */
   DOM::NodeFilter toNodeFilter(const KJSO&);
 
+  class JSNodeFilter : public DOM::CustomNodeFilter {
+  public:
+    JSNodeFilter(KJSO _filter);
+    virtual ~JSNodeFilter();
+    virtual short acceptNode (const DOM::Node &n);
+  protected:
+    KJSO filter;
+  };
+
 }; // namespace
 
 #endif

@@ -601,6 +601,8 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     if( checkIsChild(oldChild, exceptioncode) )
 	return 0;
 
+    getDocument()->notifyBeforeNodeRemoval(oldChild);
+
     NodeImpl *prev, *next;
     prev = oldChild->previousSibling();
     next = oldChild->nextSibling();

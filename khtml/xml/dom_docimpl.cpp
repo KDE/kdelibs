@@ -512,12 +512,16 @@ RangeImpl *DocumentImpl::createRange()
     return new RangeImpl(this);
 }
 
-NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long /*whatToShow*/,
-						   NodeFilterImpl */*filter*/, bool /*entityReferenceExpansion*/)
+NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
+						   NodeFilter filter, bool entityReferenceExpansion,
+						   int &exceptioncode)
 {
- // ###
-    return new NodeIteratorImpl;
-//    return 0;
+    if (!root) {
+	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+	return 0;
+    }
+
+    return new NodeIteratorImpl(root,whatToShow,filter,entityReferenceExpansion);
 }
 
 TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter /*filter*/,
@@ -1329,6 +1333,24 @@ ElementImpl *DocumentImpl::focusNode()
 {
     return m_focusNode;
 }
+
+void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
+{
+    m_nodeIterators.append(ni);
+}
+
+void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
+{
+    m_nodeIterators.remove(ni);
+}
+
+void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
+{
+    QListIterator<NodeIteratorImpl> it(m_nodeIterators);
+    for (; it.current(); ++it)
+	it.current()->notifyBeforeNodeRemoval(n);
+}
+
 
 // ----------------------------------------------------------------------------
 
