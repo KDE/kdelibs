@@ -328,7 +328,7 @@ void KFileDialog::setFilter(const QString& filter)
     ops->setNameFilter(filterWidget->currentFilter());
 }
 
-const QString& KFileDialog::currentFilter() const 
+QString KFileDialog::currentFilter() const 
 {
     return filterWidget->currentFilter();
 }
@@ -667,14 +667,6 @@ void KFileDialog::locationChanged(const QString& txt, KComboBox *combo)
 }
 
 
-#if 0
-void KFileDialog::setURL(const QString& _pathstr, bool clearforward)
-{
-    d->selection = QString::null;
-    ops->setURL(_pathstr, clearforward);
-}
-#endif
-
 void KFileDialog::setURL(const KURL& url, bool clearforward)
 {
     d->selection = QString::null;
@@ -934,7 +926,6 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     d->myStatusLine->setText(lStatusText);
 }
 
-#if 0
 QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 				     QWidget *parent, const QString& caption)
 {
@@ -967,7 +958,6 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
 
     return list;
 }
-#endif
 
 KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
 				QWidget *parent, const QString& caption)
@@ -1080,7 +1070,6 @@ KURL KFileDialog::baseURL() const
     return ops->url();
 }
 
-#if 0
 QString KFileDialog::selectedFile() const
 {
     if ( result() == QDialog::Accepted )
@@ -1129,7 +1118,6 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 
     return filename;
 }
-#endif
 
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 				     QWidget *parent,

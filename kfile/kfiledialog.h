@@ -110,7 +110,6 @@ public:
      */
     KURL baseURL() const;
 
-#if 0
     /**
      * @return Full path in local filesystem. (Local files only)
      */
@@ -121,15 +120,6 @@ public:
      */
     QStringList selectedFiles() const;
 
-    /**
-     * Set the directory to view.
-     *
-     * @param name URL to show
-     * @param clearforward Indicate whether the forward queue
-     * should be cleared.
-     */
-    void setURL(const QString& name, bool clearforward = true);
-#endif
     /**
      * Set the directory to view.
      *
@@ -177,7 +167,7 @@ public:
      * @see #setFilter
      * @see #filterChanged
      */
-    const QString& currentFilter() const;
+    QString currentFilter() const;
 
     /**
      * Add a preview widget and enter the preview mode.
@@ -191,7 +181,6 @@ public:
      */
     void setPreviewWidget(const QWidget *w);
 
-#if 0
     /**
      * This method creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
@@ -227,7 +216,6 @@ public:
 					QWidget *parent = 0,
 					const QString& caption= QString::null);
 
-#endif
     /**
      * This method creates a modal file dialog and returns the selected
      * URL or an empty string if none was chosen.
@@ -263,7 +251,6 @@ public:
 				  QWidget *parent = 0,
 				  const QString& caption= QString::null);
 
-#if 0
     /**
      * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
@@ -281,7 +268,6 @@ public:
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
 
-#endif
     /**
      * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
