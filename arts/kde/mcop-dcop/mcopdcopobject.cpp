@@ -74,7 +74,7 @@ bool MCOPDCOPObject::processDynamic(const QCString &fun, const QByteArray &data,
 				replyType = type;
 				
 				QDataStream reply(replyData, IO_WriteOnly);
-				reply << "-1";
+				reply << -1;
 			}
 			
 			return true;
