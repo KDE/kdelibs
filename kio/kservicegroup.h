@@ -115,7 +115,6 @@ protected:
   QString m_strCaption;
   QString m_strIcon;
   QString m_strComment;
-  QString m_configFile;
 
   List m_serviceList;
   bool m_bDeep;

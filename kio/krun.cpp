@@ -45,14 +45,14 @@
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
-bool KRun::runURL( const KURL& u, const QString& _mimetype )
+pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
             i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.url()) );
-    return false;
+    return 0;
   }
   else if ( _mimetype == "application/x-desktop" )
   {
@@ -63,7 +63,7 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
 	    _mimetype == "application/x-shellscript")
    {
     if ( u.isLocalFile() )
-      return (KRun::run( u.path() ) != -1); // just execute the url as a command
+      return KRun::run(u.path()); // just execute the url as a command
   }
 
   KURL::List lst;
@@ -89,7 +89,7 @@ void KRun::shellQuote( QString &_str )
     _str = res;
 }
 
-bool KRun::run( const KService& _service, const KURL::List& _urls )
+pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 {
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
   if (!_urls.isEmpty())
@@ -117,25 +117,23 @@ bool KRun::run( const KService& _service, const KURL::List& _urls )
       kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
       // App-starting notification
       clientStarted( binaryName(exec), miniicon, pid);
-      return true;
+      return pid;
     }
     else
     {
       kdDebug(7010) << error << endl;
       KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( exec ) );
-      return false;
+      return 0;
     }
   }
 
   // Fall back on normal running
   QString name = _service.name();
   QString icon = _service.icon();
-  bool ret = run( _service.exec(), _urls, name, icon, miniicon );
-  kdDebug(7010) << "KRun::run returned " << ret << endl;
-  return ret;
+  return KRun::run( _service.exec(), _urls, name, icon, miniicon );
 }
 
-bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
+pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
 		const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
 {
   bool b_local_files = true;
@@ -152,7 +150,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       tmp += "\n";
       tmp += (*it).url();
       KMessageBoxWrapper::error( 0L, tmp);
-      return false;
+      return 0;
     }
 
     if ( !url.isLocalFile() )
@@ -237,7 +235,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       return runOldApplication( exec, _urls, b_allow_multiple );
   }
 
-  bool retval = true;
+  pid_t retval = 0;
 
   if ( b_allow_multiple || _urls.isEmpty() )
   {
@@ -259,7 +257,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 
-    retval = runCommand( exec, _bin_name, mini_icon );
+    retval = KRun::runCommand( exec, _bin_name, mini_icon );
   }
   else
   {
@@ -287,25 +285,22 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       while ( ( pos = e.find( "%u" )) != -1 )
         e.replace( pos, 2, u );
 
-      if ( !runCommand( e, _bin_name, mini_icon ) )
-        retval = false; // should we abort, instead ?
+      retval = KRun::runCommand( e, _bin_name, mini_icon );
     }
   }
 
   return retval;
 }
 
-bool KRun::runCommand( const QString& cmd, const QString & execName, const QString & iconName )
+pid_t KRun::runCommand( const QString& cmd, const QString & execName, const QString & iconName )
 {
-  pid_t pid = run( cmd );
+  pid_t pid = KRun::run( cmd );
 
   // App starting notification.
 
-  if (pid == -1)
-    return false;
-  else
+  if (pid != 0)
     clientStarted(execName, iconName, pid);
-  return true;
+  return pid;
 }
 
 pid_t KRun::run( const QString& _cmd )
@@ -340,7 +335,7 @@ pid_t KRun::run( const QString& _cmd )
   return proc.getPid();
 }
 
-bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
+pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
@@ -359,16 +354,16 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 
     pid_t pid = proc.getPid();
 
-    if ( pid != -1 )
+    if ( pid != 0 )
       clientStarted(app, "" /* mini_icon */, pid);
 
-    return (pid != -1);
+    return pid;
   }
   else
   {
     kdDebug(7010) << "Not multiple" << endl;
     KURL::List::ConstIterator it = _urls.begin();
-    bool retval = true;
+    pid_t retval = 0;
     for( ; it != _urls.end(); ++it )
     {
         KProcess proc;
@@ -377,11 +372,9 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
         proc << (*it).url();
         proc.start(KProcess::DontCare);
 
-        pid_t pid = proc.getPid();
-        if (pid == -1)
-          retval = false;
-        else
-          clientStarted(app, "" /* mini_icon */, pid);
+        retval = proc.getPid();
+        if (retval != 0)
+          clientStarted(app, "" /* mini_icon */, retval);
     }
 
     return retval;
@@ -759,7 +752,7 @@ bool KOpenWithHandler::displayOpenWithDialog( const KURL::List& )
 {
     kdError(7010) << "displayOpenWithDialog : Application " << kapp->name()
                   << " - should create a KFileOpenWithHandler !" << endl;
-    return false;
+    return 0;
 }
 
 #include "krun.moc"

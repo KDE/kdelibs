@@ -331,16 +331,16 @@ public:
    * @see KRun::runURL
    */
 
-  static bool run( const KURL& _url, bool _is_local );
+  static pid_t run( const KURL& _url, bool _is_local );
 
 protected:
   virtual QPixmap pixmap(int a, int b, int c, QString *d) const
      { return KMimeType::pixmap(a, b, c, d); }
 
-  static bool runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
-  static bool runApplication( const KURL& _url, const QString & _serviceFile );
-  static bool runLink( const KURL& _url, const KSimpleConfig &cfg );
-  static bool runMimeType( const KURL& _url, const KSimpleConfig &cfg );
+  static pid_t runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
+  static pid_t runApplication( const KURL& _url, const QString & _serviceFile );
+  static pid_t runLink( const KURL& _url, const KSimpleConfig &cfg );
+  static pid_t runMimeType( const KURL& _url, const KSimpleConfig &cfg );
 };
 
 /**

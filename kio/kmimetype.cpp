@@ -42,6 +42,7 @@
 #include <kmessageboxwrapper.h>
 
 #include <kapp.h>
+#include <kprocess.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
@@ -513,12 +514,12 @@ QString KDEDesktopMimeType::comment( const KURL& _url, bool _is_local ) const
   return comment;
 }
 
-bool KDEDesktopMimeType::run( const KURL& u, bool _is_local )
+pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
 {
   // It might be a security problem to run external untrusted desktop
   // entry files
   if ( !_is_local )
-    return false;
+    return 0;
 
   KSimpleConfig cfg( u.path(), true );
   cfg.setDesktopGroup();
@@ -528,7 +529,7 @@ bool KDEDesktopMimeType::run( const KURL& u, bool _is_local )
     QString tmp = i18n("The desktop entry file\n%1\n"
 		       "has no Type=... entry").arg(u.path() );
     KMessageBoxWrapper::error( 0, tmp);
-    return false;
+    return 0;
   }
 
   //kdDebug(7009) << "TYPE = " << type.data() << endl;
@@ -549,18 +550,20 @@ bool KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   QString tmp = i18n("The desktop entry of type\n%1\nis unknown").arg( type );
   KMessageBoxWrapper::error( 0, tmp);
 
-  return false;
+  return 0;
 }
 
-bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg )
+pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg )
 {
+  pid_t retval = 0;
+
   QString dev = cfg.readEntry( "Dev" );
 
   if ( dev.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
     KMessageBoxWrapper::error( 0, tmp);
-    return false;
+    return retval;
   }
 
   QString mp = KIO::findDeviceMountPoint( dev.ascii() );
@@ -570,7 +573,7 @@ bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg
     KURL mpURL;
     mpURL.setPath( mp );
     // Open a new window
-    KRun::runURL( mpURL, QString::fromLatin1("inode/directory") );
+    retval = KRun::runURL( mpURL, QString::fromLatin1("inode/directory") );
   }
   else
   {
@@ -578,17 +581,18 @@ bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg
     QString fstype = cfg.readEntry( "FSType" );
     QString point = cfg.readEntry( "MountPoint" );
     (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
+    retval = -1; // we don't want to return 0, but we don't want to return a pid
   }
 
-  return true;
+  return retval;
 }
 
-bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceFile )
+pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceFile )
 {
   KService s( _serviceFile );
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
-    return false;
+    return 0;
 
   QString user = s.username();
   QString opts = s.terminalOptions();
@@ -612,35 +616,35 @@ bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceF
   }
 
   KURL::List empty;
-  bool res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon(), _serviceFile );
+  pid_t res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon(), _serviceFile );
 
   return res;
 }
 
-bool KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
+pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
 {
   QString url = cfg.readEntry( "URL" );
   if ( url.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry").arg( _url.url() );
     KMessageBoxWrapper::error( 0, tmp );
-    return false;
+    return 0;
   }
 
   (void)new KRun( url );
 
-  return true;
+  return -1; // we don't want to return 0, but we don't want to return a pid
 }
 
-bool KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
+pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
 {
   // Hmm, can't really use keditfiletype since we might be looking
   // at the global file, or at a file not in share/mimelnk...
-  QCString cmd = "kfmclient openProperties \"";
-  cmd += url.path().local8Bit();
-  cmd += "\"";
-  system(cmd.data());
-  return true;
+
+  KShellProcess p;
+  p << "kfmclient" << "openProperties" << url.path().local8Bit();
+  p.start(KProcess::DontCare);
+  return p.getPid();
 }
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )

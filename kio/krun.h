@@ -92,7 +92,7 @@ public:
    * @param _urls the list of URLs, can be empty (app launched
    *        without argument)
    */
-  static bool run( const KService& _service, const KURL::List& _urls );
+  static pid_t run( const KService& _service, const KURL::List& _urls );
 
   /**
    * Open a list of URLs with.
@@ -104,7 +104,7 @@ public:
    * @param _icon The icon which should be used by the application.
    * @param _miniicon The icon which should be used by the application.
    */
-  static bool run( const QString& _exec, const KURL::List& _urls,
+  static pid_t run( const QString& _exec, const KURL::List& _urls,
 		   const QString& _name = QString::null,
 		   const QString& _icon = QString::null,
 		   const QString& _mini_icon = QString::null,
@@ -117,7 +117,7 @@ public:
    * is found out. It will search for all services which can handle
    * the mime type and call @ref run() afterwards.
    */
-  static bool runURL( const KURL& _url, const QString& _mimetype );
+  static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
   /**
    * Run the given command and notifies kicker of the starting
@@ -129,7 +129,7 @@ public:
    * @param execName Dhe name of the executable (usually the first 'word' of the command).
    * @param iconName The name of the (mini) icon to show in kicker.
    */
-  static bool runCommand( const QString& cmd, const QString & execName, const QString & iconName );
+  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
   /**
    * Returns the location of the LD_PRELOAD library that makes app
@@ -191,7 +191,7 @@ protected:
    * For remote URLs to be opened with apps that don't support
    * remote URLs. Uses kfmexec.
    */
-  static bool runOldApplication( const QString& _exec,
+  static pid_t runOldApplication( const QString& _exec,
                                  const KURL::List& _urls,
 				 bool _allow_multiple );
 

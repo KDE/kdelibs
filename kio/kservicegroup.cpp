@@ -19,6 +19,8 @@
 // $Id$
 
 #include <kiconloader.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include "kservicefactory.h"
 #include "kservicegroupfactory.h"
 #include "kservicegroup.h"
@@ -26,14 +28,13 @@
 #include "ksycoca.h"
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(_relpath),
-   m_configFile(configFile)
+ : KSycocaEntry(_relpath)
 {
   m_bDeleted = false;
 
-  if (!m_configFile.isEmpty())
+  if (!configFile.isEmpty())
   {
-     KDesktopFile config( m_configFile );
+     KDesktopFile config( configFile );
 
      config.setDesktopGroup();
 
@@ -131,60 +132,56 @@ void KServiceGroup::save( QDataStream& s )
 }
 
 KServiceGroup::List 
-KServiceGroup::entries(bool sorted)
+KServiceGroup::entries(bool sort)
 {
-   KServiceGroup *group = this;
-   // If the entries haven't been loaded yet, we have to reload ourselves
-   // together with the entries. We can't only load the entries afterwards
-   // since the offsets could have been changed if the database has changed.
-   if (!m_bDeep)
-   {
-      group = KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
-      if (!group) // No guarantee that we still exist!
-         return List();
-   }
+  KServiceGroup *group = this;
 
-   if (!sorted || m_configFile.isEmpty())
-     return group->m_serviceList;
+  // If the entries haven't been loaded yet, we have to reload ourselves
+  // together with the entries. We can't only load the entries afterwards
+  // since the offsets could have been changed if the database has changed.
 
-   else {
+  if (!m_bDeep) {
 
-     KDesktopFile config( m_configFile );
-     QStringList sortSpec = config.readEntry("SortOrder");
+    group =
+      KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
 
-     List sortedList;
+    if (0 == group) // No guarantee that we still exist!
+      return List();
+  }
 
-     QStringList::ConstIterator it(sortSpec.begin());
+  if (!sort)
+    return group->m_serviceList;
 
-     for (; it != sortSpec.end(); ++it) {
+  QStringList order =
+    KDesktopFile(relPath() + QString::fromUtf8(".directory")).sortOrder();
 
-       QString name = *it;
+  if (order.isEmpty())
+    return group->m_serviceList;
 
-       bool found = false;
+  // Iterate through the sort spec list. If we find an entry that matches one
+  // in the original list, take it out of the original list and add it to the
+  // sorted list. Finally, add all entries that are still in the original list
+  // to the end of the sorted list.
 
-       KServiceGroup::List::Iterator sit(group->m_serviceList.begin());
+  List sorted;
+  List orig = group->m_serviceList;
 
-       for (; sit != group->m_serviceList.end(); ++sit) {
+  for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
+    for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
+      if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
+      {
+        sorted.append(*sit);
+        orig.remove(sit);
+        break;
+      }
 
-         KSycocaEntry * p  = *sit;
+  for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
+    sorted.append(*sit);
 
-         if (p->name() == name) {
-           found = true;
-           sortedList.append(p);
-           break;
-         }
-       }
-
-       if (!found) {
-         qDebug("!found!");
-       }
-     }
-
-     return sortedList;
-   }
+  return sorted;
 }
 
-KServiceGroup::Ptr 
+  KServiceGroup::Ptr 
 KServiceGroup::root()
 {
    return KServiceGroupFactory::self()->findGroupByDesktopPath("/", true);
