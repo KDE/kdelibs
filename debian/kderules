@@ -9,7 +9,6 @@ $_ = <CHANGELOG>;
 close(CHANGELOG);
 /^(.*) \((.*)\) /;
 $package = $1;
-$version = $2;
 
 # Find documentation and install it
 sub docwanted {
@@ -33,31 +32,6 @@ if (! -d "debian/tmp/usr/X11R6/include/X11/pixmaps") {
 }
 
 cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
-
-# copy shlibs to local directory
-$shlibsfile = "../../kdeusr/shlibs.local" ;
-if (-f $shlibsfile ) {
-	cp($shlibsfile, "debian/shlibs.local") ;
-}
-
-# Create a shlib file for library packages
-
-sub findlibs {
-	/^(lib.*)\.so\.([0-9])$/ and 
-		print SHLIBS "$1 $2 $lib (=$version)\n" ;
-}
-
-chdir "debian" ;
-
-while (<$package*files>) {
-	($lib = $_) =~ s/.files$// ;
-	$file= $lib . ".shlibs" ;
-	open SHLIBS, ">$file";
-	find(\&findlibs,"tmp");
-	close SHLIBS;
-}
-
-chdir "..";
 
 # Create debian/menu files
 
