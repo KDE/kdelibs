@@ -346,6 +346,7 @@ protected:
   const char *id;
   KCmdLineParsedOptions *parsedOptionList;
   KCmdLineParsedArgs *parsedArgList;
+  bool isQt;
 
   static KCmdLineArgsList *argsList; // All options.
   static const KAboutData *about;

@@ -444,6 +444,15 @@ KCmdLineArgs::parseAllArgs()
 int *
 KCmdLineArgs::qt_argc()
 {
+   if (!argsList)
+      KApplication::addCmdLineOptions(); // Lazy bastards!
+
+   KCmdLineArgs *args = parsedArgs("qt");
+
+   assert(args); // No qt options have been added!
+
+   assert(argc >= (args->count()+1));
+   argc = args->count() +1;
    return &argc;
 }
 
@@ -461,7 +470,12 @@ KCmdLineArgs::qt_argv()
    KCmdLineArgs *args = parsedArgs("qt");
    assert(args); // No qt options have been added!
 
-   delete args; // Clean up Qt specific arguments.
+   int i = 0;
+   for(; i < args->count(); i++)
+   {
+      argv[i+1] = (char *) args->arg(i);
+   }
+   argv[i+1] = 0;
 
    return &argv;
 }
@@ -662,6 +676,7 @@ KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions *_options,
 {
   parsedOptionList = 0;
   parsedArgList = 0;
+  isQt = (strcmp(id, "qt") == 0);
 }
 
 /**
@@ -730,6 +745,14 @@ KCmdLineArgs::load( QDataStream &ds)
 void
 KCmdLineArgs::setOption(const char *opt, bool enabled)
 {
+   if (isQt)
+   {
+      // Qt does it own parsing.
+      QCString arg = "-";
+      arg += opt;
+      addArgument(arg);
+      return;
+   }
    if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
 
    if (enabled)
@@ -741,6 +764,15 @@ KCmdLineArgs::setOption(const char *opt, bool enabled)
 void
 KCmdLineArgs::setOption(const char *opt, const char *value)
 {
+   if (isQt)
+   {
+      // Qt does it's own parsing.
+      QCString arg = "-";
+      arg += opt;
+      addArgument(arg);
+      addArgument(value);
+      return;
+   }
    if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
 
    parsedOptionList->replace( opt, new QCString(value) );
