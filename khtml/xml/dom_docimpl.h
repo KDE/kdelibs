@@ -379,10 +379,16 @@ public:
     LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
 
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual void setWindowEventListener(int id, EventListener *listener);
-    EventListener *getWindowEventListener(int id);
-    virtual void removeWindowEventListener(int id);
+    virtual void setHTMLWindowEventListener(int id, EventListener *listener);
+    EventListener *getHTMLWindowEventListener(int id);
+    virtual void removeHTMLWindowEventListener(int id);
     EventListener *createHTMLEventListener(QString code, QString name);
+
+    void addWindowEventListener(int id, EventListener *listener, const bool useCapture);
+    void removeWindowEventListener(int id, EventListener *listener, bool useCapture);
+    bool hasWindowEventListener(int id);
+
+    EventListener *createHTMLEventListener(QString code);
 
     /**
      * Searches through the document, starting from fromNode, for the next selectable element that comes after fromNode.

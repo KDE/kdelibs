@@ -1,5 +1,7 @@
 2004-10-22  Stephan Kulow  <coolo@kde.org>
 
+        * ecma/kjs_window.cpp (tryCall): merging handling of event handlers
+
         * css/cssparser.cpp (parseValue): implementing CSS 2.1 compliant parsing
         of background-position (#91572)
 

@@ -1066,7 +1066,7 @@ void Window::setListener(ExecState *exec, int eventId, Value func)
   if (!doc)
     return;
 
-  doc->setWindowEventListener(eventId,getJSEventListener(func,true));
+  doc->setHTMLWindowEventListener(eventId,getJSEventListener(func,true));
 }
 
 Value Window::getListener(ExecState *exec, int eventId) const
@@ -1078,8 +1078,8 @@ Value Window::getListener(ExecState *exec, int eventId) const
   if (!doc)
     return Undefined();
 
-  DOM::EventListener *listener = doc->getWindowEventListener(eventId);
-  if (listener)
+  DOM::EventListener *listener = doc->getHTMLWindowEventListener(eventId);
+  if (listener && static_cast<JSEventListener*>(listener)->listenerObjImp())
     return static_cast<JSEventListener*>(listener)->listenerObj();
   else
     return Null();
@@ -1708,27 +1708,21 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     break;
   case Window::AddEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        DOM::Document doc = part->document();
-        if (doc.isHTMLDocument()) {
-            DOM::HTMLDocument htmlDoc = doc;
-            htmlDoc.body().addEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        if (listener) {
+	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
+            docimpl->addWindowEventListener(DOM::EventImpl::typeToId(args[0].toString(exec).string()),listener,args[2].toBoolean(exec));
         }
-        else
-            doc.addEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
         return Undefined();
     }
   case Window::RemoveEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        DOM::Document doc = part->document();
-        if (doc.isHTMLDocument()) {
-            DOM::HTMLDocument htmlDoc = doc;
-            htmlDoc.body().removeEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        if (listener) {
+	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
+            docimpl->removeWindowEventListener(DOM::EventImpl::typeToId(args[0].toString(exec).string()),listener,args[2].toBoolean(exec));
         }
-        else
-            doc.removeEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
         return Undefined();
     }
-    break;
+
   }
   return Undefined();
 }
