@@ -499,7 +499,6 @@ public:
      **/
     int readData( QByteArray &buffer );
 
-protected:
     /**
      * internal function to be called by the slave.
      * It collects entries and emits them via listEntries
