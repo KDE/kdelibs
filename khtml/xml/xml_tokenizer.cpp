@@ -443,7 +443,7 @@ void XMLTokenizer::executeScripts()
         DOMString scriptSrc = m_scriptsIt->current()->getAttribute(ATTR_SRC);
         QString charset = m_scriptsIt->current()->getAttribute(ATTR_CHARSET).string();
 
-        if (scriptSrc != "") {
+        if (!scriptSrc.isEmpty()) {
             // we have a src attribute
             m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);

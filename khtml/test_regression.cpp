@@ -448,7 +448,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	QDir sourceDir(m_sourceFilesDir+"/"+relPath);
 	for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
 	    QString filename = sourceDir[fileno];
-	    QString relFilename = relPath == "" ? filename : relPath+"/"+filename;
+	    QString relFilename = relPath.isEmpty() ? filename : relPath+"/"+filename;
 	    if (filename != "." && filename != ".." && !ignoreFiles.contains(filename))
 		runTests(relFilename,false);
 	}
@@ -689,12 +689,12 @@ void RegressionTest::reportResult(bool passed, QString description)
 	m_failures++;
     }
 
-    if (m_currentCategory != "")
+    if (!m_currentCategory.isEmpty())
 	printf("%s ",m_currentCategory.latin1());
 
     printf("[%s]",m_currentTest.latin1());
 
-    if (description != "")
+    if (!description.isEmpty())
 	printf(" %s",description.latin1());
 
     printf("\n");

@@ -1665,7 +1665,7 @@ DOMText::DOMText(ExecState *exec, const DOM::Text& t)
 
 Value DOMText::tryGet(ExecState *exec, const Identifier &p) const
 {
-  if (p == "")
+  if (p.isEmpty())
     return Undefined(); // ### TODO
   else
     return DOMCharacterData::tryGet(exec, p);

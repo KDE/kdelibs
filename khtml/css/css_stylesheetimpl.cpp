@@ -367,7 +367,7 @@ void MediaListImpl::setMediaText(const DOM::DOMString &value)
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {
         DOMString medium = (*it).stripWhiteSpace();
-        if( medium != "" )
+        if( !medium.isEmpty() )
             m_lstMedia.append( medium );
     }
 }
