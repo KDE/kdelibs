@@ -623,7 +623,7 @@ void KAccelAction::decConnections()
 	{ if( d->m_nConnections > 0 ) d->m_nConnections--; }
 
 // Indicate whether to default to the 3- or 4- modifier keyboard schemes
-static int KAccelAction::g_bUseFourModifierKeys = -1;
+int KAccelAction::g_bUseFourModifierKeys = -1;
 
 bool KAccelAction::useFourModifierKeys()
 {
