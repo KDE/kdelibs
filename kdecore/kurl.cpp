@@ -325,7 +325,7 @@ KURL::KURL( const char* _protocol, const char* _host,
 
 bool KURL::hasSubProtocol()
 {
-    return ( path_part.isNull() && 
+    return ( !path_part.isNull() && 
 	     strchr( path_part, '#' ) != 0L );
 }
 
