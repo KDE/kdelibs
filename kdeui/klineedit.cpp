@@ -1283,5 +1283,14 @@ QString KLineEdit::originalText() const
     return text();
 }
 
+void KLineEdit::focusInEvent( QFocusEvent* ev)
+{
+    // Don't selectAll() in QLineEdit::focusInEvent if selection exists
+    if ( ev->reason() == QFocusEvent::Tab && inputMask().isNull() && hasSelectedText() )
+        return;
+    
+    QLineEdit::focusInEvent(ev);
+}
+
 void KLineEdit::virtual_hook( int id, void* data )
 { KCompletionBase::virtual_hook( id, data ); }

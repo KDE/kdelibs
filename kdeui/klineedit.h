@@ -540,6 +540,13 @@ protected:
     virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QLineEdit::focusInEvent().
+    */
+    virtual void focusInEvent( QFocusEvent* );
+
 private slots:
     void completionMenuActivated( int id );
     void tripleClickTimeout();  // resets possibleTripleClick
