@@ -272,7 +272,7 @@ Q_LONG KTar::readHeader(char *buffer,QString &name,QString &symlink) {
 bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
     if ( ! tmpFile )
         return true;
-        
+
     kdDebug( 7041 ) <<
         "KTar::openArchive: filling tmpFile of mimetype '" << mimetype <<
         "' ... " << endl;
@@ -300,8 +300,12 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
             return false;
         }
         Q_LONG len;
-        while ( ! filterDev->atEnd()) {
+        while ( !filterDev->atEnd() ) {
             len = filterDev->readBlock(buffer.data(),buffer.size());
+            if ( len <= 0 ) { // corrupted archive
+                delete filterDev;
+                return false;
+            }
             file->writeBlock(buffer.data(),len);
         }
         filterDev->close();
@@ -310,7 +314,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
         file->close();
         if ( ! file->open( IO_ReadOnly ) )
             return false;
-    }      
+    }
     else
         kdDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
 
@@ -326,7 +330,7 @@ bool KTar::openArchive( int mode )
 
     if ( !d->fillTempFile( m_filename ) )
         return false;
-    
+
     // We'll use the permission and user/group of d->rootDir
     // for any directory we emulate (see findOrCreate)
     //struct stat buf;
