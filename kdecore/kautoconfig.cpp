@@ -142,6 +142,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     config->setGroup(d->groups[widget]);
     usingDefaultValues |= parseChildren(widget, d->autoWidgets[widget], trackChanges);
   }
+  if(usingDefaultValues && trackChanges) emit void widgetModified();
   return usingDefaultValues;
 }
 
@@ -274,6 +275,7 @@ void KAutoConfig::resetSettings(){
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
   QWidget *widget;
+  bool modified = false;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -286,10 +288,13 @@ void KAutoConfig::resetSettings(){
       QVariant defaultValue = d->defaultValues[groupWidget];
       if(defaultValue != propertyMap->property(groupWidget)){
         propertyMap->setProperty(groupWidget, defaultValue);
-        emit widgetModified();
-        d->changed = true;
+        modified = true;
       }
     }
+  }
+  if(modified) {
+    emit (widgetModified());
+    d->changed = true;
   }
 }
 
@@ -328,7 +333,6 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
 	if(setting != defaultSetting){
 	  propertyMap->setProperty(childWidget, setting);
 	  valueChanged = true;
-	  if(trackChanges) emit widgetModified();
         }
 
 	if(trackChanges && changedMap.find(childWidget->className()) != changedMap.end())
