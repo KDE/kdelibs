@@ -37,6 +37,7 @@
 #include <kglobal.h>
 #include <kshortcut.h>
 #include <kstandarddirs.h>
+#include <kkeydialog.h>
 
 using namespace KXMLGUI;
 
@@ -536,6 +537,21 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
 }
+
+
+int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSettings )
+{
+	KKeyDialog dlg( bAllowLetterShortcuts, dynamic_cast<QWidget*>(parent()) );
+	QPtrListIterator<KXMLGUIClient> it( d->m_clients );
+	KXMLGUIClient *client;
+	while( (client=it.current()) !=0 )
+	{
+		++it;
+		dlg.insert( client->actionCollection() );
+	}
+	return dlg.configure(bSaveSettings);
+}
+
 
 void KXMLGUIFactory::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
