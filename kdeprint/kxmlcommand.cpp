@@ -504,6 +504,7 @@ QDomElement KXmlCommand::createElement(QDomDocument& doc, DrBase *opt)
 	elem.setAttribute("format", opt->get("format"));
 	elem.setAttribute("description", opt->get("text"));
 	elem.setAttribute("default", opt->get("default"));
+	elem.setAttribute( "persistent", opt->get( "persistent" ) == "1" ? "1" : "0");
 
 	switch (opt->type())
 	{

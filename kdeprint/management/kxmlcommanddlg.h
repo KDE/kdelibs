@@ -34,6 +34,7 @@ class QToolButton;
 class KListBox;
 class QListBoxItem;
 class QTextEdit;
+class QCheckBox;
 
 class DrGroup;
 class DrBase;
@@ -84,6 +85,7 @@ private:
 	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
 	QToolButton	*m_addval, *m_delval;
 	QTextEdit *m_comment;
+	QCheckBox *m_persistent;
 
 	KXmlCommand	*m_xmlcmd;
 	QMap<QString, DrBase*>	m_opts;

@@ -31,6 +31,7 @@
 #include <qtoolbutton.h>
 #include <kpushbutton.h>
 #include <qtooltip.h>
+#include <qcheckbox.h>
 #include <ktextedit.h>
 #include <qregexp.h>
 #include <klistview.h>
@@ -119,6 +120,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_typelab->setBuddy(m_type);
 	m_defaultlab->setBuddy(m_default);
 	m_commandlab->setBuddy(m_command);
+	m_persistent = new QCheckBox( i18n( "&Persistent option" ), m_dummy );
 
 	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Va&lues"), m_dummy);
 	m_stack = new QWidgetStack(gb);
@@ -194,7 +196,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	l7->addWidget(m_down);
 	l7->addStretch(1);
 	l0->addWidget(m_dummy, 1);
-	QGridLayout	*l1 = new QGridLayout(m_dummy, 8, 2, 0, KDialog::spacingHint());
+	QGridLayout	*l1 = new QGridLayout(m_dummy, 9, 2, 0, KDialog::spacingHint());
 	l1->addWidget(m_desclab, 0, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_desc, 0, 1);
 	l1->addMultiCellWidget(sep1, 1, 1, 0, 1);
@@ -206,8 +208,9 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	l1->addWidget(m_format, 4, 1);
 	l1->addWidget(m_defaultlab, 5, 0, Qt::AlignRight|Qt::AlignVCenter);
 	l1->addWidget(m_default, 5, 1);
-	l1->addMultiCellWidget(gb, 6, 6, 0, 1);
-	l1->setRowStretch(7, 1);
+	l1->addWidget( m_persistent, 6, 1 );
+	l1->addMultiCellWidget(gb, 7, 7, 0, 1);
+	l1->setRowStretch(8, 1);
 
 	QHBoxLayout	*l4 = new QHBoxLayout(w2, 0, KDialog::spacingHint());
 	l4->addWidget(m_values);
@@ -267,6 +270,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	connect(m_type, SIGNAL(activated(int)), SLOT(slotChanged()));
 	connect(m_addval, SIGNAL(clicked()), SLOT(slotChanged()));
 	connect(m_delval, SIGNAL(clicked()), SLOT(slotChanged()));
+	connect( m_persistent, SIGNAL( toggled(bool) ), SLOT( slotChanged() ) );
 	m_dummy->setEnabled(false);
 	viewItem(0);
 
@@ -376,6 +380,7 @@ void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
 	m_values->clear();
 	m_edit1->setText("");
 	m_edit2->setText("");
+	m_persistent->setChecked( false );
 	int	typeId(-1);
 	if (item)
 	{
@@ -430,6 +435,8 @@ void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
 			DrBase	*nextOpt = (nextItem && m_opts.contains(nextItem->text(1)) ? m_opts[nextItem->text(1)] : 0);
 			m_up->setEnabled(prevOpt && !(prevOpt->type() < DrBase::String && opt->type() >= DrBase::String));
 			m_down->setEnabled(nextOpt && !(isgroup && nextOpt->type() >= DrBase::String));
+
+			m_persistent->setChecked( opt->get( "persistent" ) == "1" );
 		}
 
 		m_delopt->setEnabled(true);
@@ -553,6 +560,7 @@ void KXmlCommandAdvancedDlg::slotApplyChanges()
 
 		opt->setName((m_name->text().isEmpty() ? generateId(m_opts) : m_name->text()));
 		opt->set("text", m_desc->text());
+		opt->set( "persistent", m_persistent->isChecked() ? "1" : "0" );
 
 		m_opts[opt->name()] = opt;
 	}
