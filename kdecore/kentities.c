@@ -1,5 +1,35 @@
-/* ANSI-C code produced by gperf version 2.7.2 */
-/* Command-line: gperf -a -L ANSI-C -C -G -c -o -t -k '*' -Nkde_findEntity -D -s 2 kentities.gperf  */
+/* ANSI-C code produced by gperf version 3.0.1 */
+/* Command-line: gperf -a -L ANSI-C -E -C -c -o -t -k '*' -Nkde_findEntity -Hhash_Entity -Wwordlist_Entity -D -s 2 kentities.gperf  */
+
+#if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
+      && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
+      && (')' == 41) && ('*' == 42) && ('+' == 43) && (',' == 44) \
+      && ('-' == 45) && ('.' == 46) && ('/' == 47) && ('0' == 48) \
+      && ('1' == 49) && ('2' == 50) && ('3' == 51) && ('4' == 52) \
+      && ('5' == 53) && ('6' == 54) && ('7' == 55) && ('8' == 56) \
+      && ('9' == 57) && (':' == 58) && (';' == 59) && ('<' == 60) \
+      && ('=' == 61) && ('>' == 62) && ('?' == 63) && ('A' == 65) \
+      && ('B' == 66) && ('C' == 67) && ('D' == 68) && ('E' == 69) \
+      && ('F' == 70) && ('G' == 71) && ('H' == 72) && ('I' == 73) \
+      && ('J' == 74) && ('K' == 75) && ('L' == 76) && ('M' == 77) \
+      && ('N' == 78) && ('O' == 79) && ('P' == 80) && ('Q' == 81) \
+      && ('R' == 82) && ('S' == 83) && ('T' == 84) && ('U' == 85) \
+      && ('V' == 86) && ('W' == 87) && ('X' == 88) && ('Y' == 89) \
+      && ('Z' == 90) && ('[' == 91) && ('\\' == 92) && (']' == 93) \
+      && ('^' == 94) && ('_' == 95) && ('a' == 97) && ('b' == 98) \
+      && ('c' == 99) && ('d' == 100) && ('e' == 101) && ('f' == 102) \
+      && ('g' == 103) && ('h' == 104) && ('i' == 105) && ('j' == 106) \
+      && ('k' == 107) && ('l' == 108) && ('m' == 109) && ('n' == 110) \
+      && ('o' == 111) && ('p' == 112) && ('q' == 113) && ('r' == 114) \
+      && ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) \
+      && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
+      && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126))
+/* The character set is not based on ISO-646.  */
+#error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
+#endif
+
+#line 1 "kentities.gperf"
+
 /*   This file is part of the KDE libraries
   
      Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
@@ -28,17 +58,12 @@
 
     $Id$     
 */  
+#line 31 "kentities.gperf"
 struct entity {
     const char *name;
     int code;
 };
-
-#define TOTAL_KEYWORDS 276
-#define MIN_WORD_LENGTH 2
-#define MAX_WORD_LENGTH 8
-#define MIN_HASH_VALUE 4
-#define MAX_HASH_VALUE 1886
-/* maximum key range = 1883, duplicates = 1 */
+/* maximum key range = 889, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -48,56 +73,62 @@ inline
 #endif
 #endif
 static unsigned int
-hash (register const char *str, register unsigned int len)
+hash_Entity (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,    5,
-        15,   10,    0, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887,  115,    0,   40,   50,   90,
-      1887,    0,    0,   45, 1887,    5,   25,    0,   20,  225,
-        10,    0,   30,   60,   10,   20, 1887, 1887,   20,   30,
-        55, 1887, 1887, 1887, 1887, 1887, 1887,    0,  285,    5,
-        75,   25,   55,  390,  335,   10,    5,    0,   30,  120,
-       205,   40,  430,  110,    0,  580,  320,    5,  100,    0,
-         5,   75,   15, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887, 1887,
-      1887, 1887, 1887, 1887, 1887, 1887
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897,   5,
+       60,  50,  25, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 230, 285,  45,  20,  95,
+       15,  10,   0,  90, 897,  20,  60,   5,  65, 105,
+       35,   5,  35,  60,  70, 140,   5, 897,   0,  65,
+       50, 897, 897, 897, 897, 897, 897,   0,  20,  10,
+        0,  30, 180, 130, 350,  10, 395,   0, 100, 130,
+       15,   5,  60, 330,   5,  55,  25,  15, 115,  15,
+       30, 190,  40,   0, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897, 897, 897, 897,
+      897, 897, 897, 897, 897, 897, 897
     };
   register int hval = len;
 
   switch (hval)
     {
       default:
-      case 8:
         hval += asso_values[(unsigned char)str[7]];
+      /*FALLTHROUGH*/
       case 7:
         hval += asso_values[(unsigned char)str[6]];
+      /*FALLTHROUGH*/
       case 6:
         hval += asso_values[(unsigned char)str[5]];
+      /*FALLTHROUGH*/
       case 5:
         hval += asso_values[(unsigned char)str[4]];
+      /*FALLTHROUGH*/
       case 4:
         hval += asso_values[(unsigned char)str[3]];
+      /*FALLTHROUGH*/
       case 3:
         hval += asso_values[(unsigned char)str[2]];
+      /*FALLTHROUGH*/
       case 2:
-        hval += asso_values[(unsigned char)str[1]];
+        hval += asso_values[(unsigned char)str[1]+1];
+      /*FALLTHROUGH*/
       case 1:
         hval += asso_values[(unsigned char)str[0]];
         break;
@@ -105,535 +136,676 @@ hash (register const char *str, register unsigned int len)
   return hval;
 }
 
-static const struct entity wordlist[] =
-  {
-    {"rarr", 0x2192},
-    {"Mu", 0x039c},
-    {"uarr", 0x2191},
-    {"crarr", 0x21b5},
-    {"GT", 62},
-    {"xi", 0x03be},
-    {"Tau", 0x03a4},
-    {"Pi", 0x03a0},
-    {"zwj", 0x200d},
-    {"circ", 0x02c6},
-    {"acirc", 0x00e2},
-    {"Nu", 0x039d},
-    {"ucirc", 0x00fb},
-    {"Xi", 0x039e},
-    {"larr", 0x2190},
-    {"icirc", 0x00ee},
-    {"LT", 60},
-    {"or", 0x22a6},
-    {"Ucirc", 0x00db},
-    {"ecirc", 0x00ea},
-    {"le", 0x2264},
-    {"real", 0x211c},
-    {"ocirc", 0x00f4},
-    {"Icirc", 0x00ce},
-    {"frac14", 0x00bc},
-    {"euro", 0x20ac},
-    {"rceil", 0x2309},
-    {"frac34", 0x00be},
-    {"darr", 0x2193},
-    {"iexcl", 0x00a1},
-    {"frac12", 0x00bd},
-    {"loz", 0x25ca},
-    {"radic", 0x221a},
-    {"ETH", 0x00d0},
-    {"lceil", 0x2308},
-    {"Ecirc", 0x00ca},
-    {"rArr", 0x21d2},
-    {"uArr", 0x21d1},
-    {"mu", 0x03bc},
-    {"AMP", 38},
-    {"macr", 0x00af},
-    {"Acirc", 0x00c2},
-    {"lArr", 0x21d0},
-    {"cedil", 0x00b8},
-    {"lrm", 0x200e},
-    {"rlm", 0x200f},
-    {"ccedil", 0x00e7},
-    {"uml", 0x00a8},
-    {"auml", 0x00e4},
-    {"raquo", 0x00bb},
-    {"forall", 0x2200},
-    {"uuml", 0x00fc},
-    {"iuml", 0x00ef},
-    {"Prime", 0x2033},
-    {"rfloor", 0x230b},
-    {"ordf", 0x00aa},
-    {"Uuml", 0x00dc},
-    {"micro", 0x00b5},
-    {"euml", 0x00eb},
-    {"Yuml", 0x0178},
-    {"laquo", 0x00ab},
-    {"Ccedil", 0x00c7},
-    {"dArr", 0x21d3},
-    {"ouml", 0x00f6},
-    {"lfloor", 0x230a},
-    {"Iuml", 0x00cf},
-    {"nu", 0x03bd},
-    {"ni", 0x220b},
-    {"zwnj", 0x200c},
-    {"ne", 0x2260},
-    {"yuml", 0x00ff},
-    {"rdquo", 0x201d},
-    {"ordm", 0x00ba},
-    {"Gamma", 0x0393},
-    {"curren", 0x00a4},
-    {"Euml", 0x00cb},
-    {"Ocirc", 0x00d4},
-    {"equiv", 0x2261},
-    {"rcaron", 0x0159},
-    {"QUOT", 34},
-    {"ccaron", 0x010d},
-    {"ldquo", 0x201c},
-    {"Tcaron", 0x0164},
-    {"zcaron", 0x017e},
-    {"Auml", 0x00c4},
-    {"Ncaron", 0x0147},
-    {"ecaron", 0x011b},
-    {"and", 0x22a5},
-    {"Rcaron", 0x0158},
-    {"THORN", 0x00de},
-    {"Ccaron", 0x010c},
-    {"divide", 0x00f7},
-    {"Dcaron", 0x010e},
-    {"yen", 0x00a5},
-    {"Zcaron", 0x017d},
-    {"oline", 0x203e},
-    {"Scaron", 0x0160},
-    {"tau", 0x03c4},
-    {"dcaron", 0x10f},
-    {"harr", 0x2194},
-    {"Ecaron", 0x011a},
-    {"eta", 0x03b7},
-    {"Beta", 0x0392},
-    {"lt", 60},
-    {"chi", 0x03c7},
-    {"bull", 0x2022},
-    {"Phi", 0x03a6},
-    {"fnof", 0x0192},
-    {"acute", 0x00b4},
-    {"aacute", 0x00e1},
-    {"zeta", 0x03b6},
-    {"uacute", 0x00fa},
-    {"iacute", 0x00ed},
-    {"iota", 0x03b9},
-    {"rho", 0x03c1},
-    {"Uacute", 0x00da},
-    {"Ouml", 0x00d6},
-    {"eacute", 0x00e9},
-    {"Chi", 0x03a7},
-    {"Yacute", 0x00dd},
-    {"oacute", 0x00f3},
-    {"Zeta", 0x0396},
-    {"Iacute", 0x00cd},
-    {"Rho", 0x03a1},
-    {"Iota", 0x0399},
-    {"Eta", 0x0397},
-    {"ge", 0x2265},
-    {"reg", 0x00ae},
-    {"trade", 0x2122},
-    {"omicron", 0x03bf},
-    {"Delta", 0x0394},
-    {"para", 0x00b6},
-    {"yacute", 0x00fd},
-    {"cap", 0x2229},
-    {"pi", 0x03c0},
-    {"cup", 0x222a},
-    {"Eacute", 0x00c9},
-    {"hArr", 0x21d4},
-    {"delta", 0x03b4},
-    {"aelig", 0x00e6},
-    {"ncaron", 0x0148},
-    {"tilde", 0x02dc},
-    {"atilde", 0x00e3},
-    {"Aacute", 0x00c1},
-    {"quot", 34},
-    {"Ntilde", 0x00d1},
-    {"infin", 0x221e},
-    {"deg", 0x00b0},
-    {"weierp", 0x2118},
-    {"oelig", 0x0153},
-    {"otilde", 0x00f5},
-    {"Lambda", 0x039b},
-    {"lambda", 0x03bb},
-    {"bdquo", 0x201e},
-    {"agrave", 0x00e0},
-    {"nabla", 0x2207},
-    {"ugrave", 0x00f9},
-    {"igrave", 0x00ec},
-    {"int", 0x222b},
-    {"Ugrave", 0x00d9},
-    {"piv", 0x03d6},
-    {"egrave", 0x00e8},
-    {"prod", 0x220f},
-    {"image", 0x2111},
-    {"amp", 38},
-    {"copy", 0x00a9},
-    {"cent", 0x00a2},
-    {"ograve", 0x00f2},
-    {"Igrave", 0x00cc},
-    {"not", 0x00ac},
-    {"tcaron", 0x0165},
-    {"omega", 0x03c9},
-    {"Atilde", 0x00c3},
-    {"Sigma", 0x03a3},
-    {"Oacute", 0x00d3},
-    {"prime", 0x2032},
-    {"ang", 0x2220},
-    {"rang", 0x232a},
-    {"Psi", 0x03a8},
-    {"aring", 0x00e5},
-    {"Egrave", 0x00c8},
-    {"Omicron", 0x039f},
-    {"uring", 0x016f},
-    {"permil", 0x2030},
-    {"lang", 0x2329},
-    {"Uring", 0x016e},
-    {"beta", 0x03b2},
-    {"gamma", 0x03b3},
-    {"Agrave", 0x00c0},
-    {"AElig", 0x00c6},
-    {"cong", 0x2245},
-    {"middot", 0x00b7},
-    {"frasl", 0x2044},
-    {"ntilde", 0x00f1},
-    {"brvbar", 0x00a6},
-    {"eth", 0x00f0},
-    {"Otilde", 0x00d5},
-    {"Theta", 0x0398},
-    {"sum", 0x2211},
-    {"there4", 0x2234},
-    {"gt", 62},
-    {"sim", 0x223c},
-    {"Aring", 0x00c5},
-    {"rsquo", 0x2019},
-    {"rsaquo", 0x203a},
-    {"Ograve", 0x00d2},
-    {"OElig", 0x0152},
-    {"part", 0x2202},
-    {"pound", 0x00a3},
-    {"Omega", 0x03a9},
-    {"lsquo", 0x2018},
-    {"lsaquo", 0x2039},
-    {"phi", 0x03c6},
-    {"notin", 0x2209},
-    {"diams", 0x2666},
-    {"alpha", 0x03b1},
-    {"isin", 0x2208},
-    {"scaron", 0x0161},
-    {"Dagger", 0x2021},
-    {"kappa", 0x03ba},
-    {"hellip", 0x2026},
-    {"Kappa", 0x039a},
-    {"sub", 0x2282},
-    {"dagger", 0x2020},
-    {"perp", 0x22a5},
-    {"alefsym", 0x2135},
-    {"sube", 0x2286},
-    {"prop", 0x221d},
-    {"thorn", 0x00fe},
-    {"clubs", 0x2663},
-    {"Alpha", 0x0391},
-    {"minus", 0x2212},
-    {"sect", 0x00a7},
-    {"exist", 0x2203},
-    {"empty", 0x2205},
-    {"lowast", 0x2217},
-    {"percnt", 0x0025},
-    {"shy", 0x00ad},
-    {"theta", 0x03b8},
-    {"sup", 0x2283},
-    {"sdot", 0x22c5},
-    {"psi", 0x03c8},
-    {"sup1", 0x00b9},
-    {"sbquo", 0x201a},
-    {"sup3", 0x00b3},
-    {"szlig", 0x00df},
-    {"sup2", 0x00b2},
-    {"supe", 0x2287},
-    {"apos", 0x0027},
-    {"iquest", 0x00bf},
-    {"times", 0x00d7},
-    {"nsub", 0x2284},
-    {"oplus", 0x2295},
-    {"otimes", 0x2297},
-    {"sigma", 0x03c3},
-    {"mdash", 0x2014},
-    {"emdash", 0x2014},
-    {"emsp", 0x2003},
-    {"sigmaf", 0x03c2},
-    {"ndash", 0x2013},
-    {"asymp", 0x2248},
-    {"endash", 0x2013},
-    {"ensp", 0x2002},
-    {"hearts", 0x2665},
-    {"upsilon", 0x03c5},
-    {"Upsilon", 0x03a5},
-    {"epsilon", 0x03b5},
-    {"upsih", 0x03d2},
-    {"plusmn", 0x00b1},
-    {"Epsilon", 0x0395},
-    {"nbsp", 0x00a0},
-    {"oslash", 0x00f8},
-    {"spades", 0x2660},
-    {"Oslash", 0x00d8},
-    {"thetasym", 0x03d1},
-    {"thinsp", 0x2009}
-  };
-
-static const short lookup[] =
-  {
-      -1,   -1,   -1,   -1,    0,   -1,   -1,    1,
-      -1,    2,    3,   -1,    4,   -1,   -1,   -1,
-      -1,    5,    6,   -1,   -1,   -1,    7,    8,
-       9,   10,   -1,   11,   -1,   -1,   12,   -1,
-      13,   -1,   14,   15,   -1,   16,   -1,   -1,
-      -1,   -1,   17,   -1,   -1,   18,   -1,   -1,
-      -1,   -1,   19,   -1,   -1,   -1,   -1,   -1,
-      -1,   20,   -1,   21,   -1,   -1,   -1,   -1,
-      -1,   22,   -1,   -1,   -1,   -1,   23,   24,
-      -1,   -1,   25,   26,   27,   -1,   -1,   28,
-      29,   -1,   -1,   -1,   -1,   -1,   30,   -1,
-      31,   -1,   -1,   -1,   -1,   -1,   -1,   32,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   33,
-      -1,   34,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   35,   -1,   -1,   -1,   36,
-      -1,   -1,   -1,   -1,   37,   -1,   -1,   38,
-      39,   40,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   41,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   42,   43,   -1,
-      -1, -431, -232,   -2,   46,   -1,   47,   48,
-      49,   50,   -1,   -1,   51,   -1,   -1,   -1,
-      -1,   52,   53,   54,   -1,   -1,   55,   -1,
-      -1,   -1,   -1,   56,   57,   -1,   -1,   -1,
-      58,   -1,   -1,   -1,   -1,   59,   60,   61,
-      -1,   -1,   62,   -1,   -1,   -1,   -1,   63,
-      -1,   64,   -1,   -1,   65,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   66,   -1,   -1,   -1,
-      -1,   67,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   68,   -1,   -1,
-      69,   -1,   70,   71,   -1,   -1,   -1,   72,
-      -1,   -1,   -1,   -1,   -1,   73,   74,   -1,
-      -1,   75,   76,   -1,   -1,   -1,   -1,   77,
-      78,   -1,   -1,   79,   -1,   80,   -1,   -1,
-      -1,   81,   82,   -1,   -1,   -1,   -1,   83,
-      -1,   -1,   84,   -1,   85,   -1,   -1,   -1,
-      -1,   86,   -1,   87,   -1,   -1,   88,   -1,
-      -1,   -1,   89,   -1,   -1,   -1,   -1,   -1,
-      90,   -1,   -1,   -1,   -1,   91,   -1,   -1,
-      -1,   -1,   92,   -1,   93,   -1,   -1,   94,
-      -1,   -1,   -1,   95,   96,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      97,   -1,   -1,   98,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   99,   -1,   -1,   -1,   -1,
-      -1,   -1,  100,   -1,  101,  102,   -1,   -1,
-     103,  104,  105,   -1,   -1,   -1,  106,  107,
-     108,  109,   -1,   -1,  110,   -1,  111,   -1,
-      -1,   -1,   -1,  112,   -1,   -1,  113,   -1,
-      -1,   -1,  114,   -1,   -1,  115,   -1,   -1,
-     116,   -1,  117,   -1,  118,   -1,   -1,  119,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,  120,   -1,   -1,  121,   -1,  122,   -1,
-     123,  124,   -1,   -1,   -1,  125,   -1,   -1,
-      -1,  126,  127,   -1,   -1,   -1,   -1,   -1,
-      -1,  128,   -1,  129,   -1,   -1,  130,   -1,
-      -1,   -1,  131,   -1,  132,   -1,  133,   -1,
-      -1,   -1,  134,  135,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,  136,   -1,   -1,  137,  138,
-      -1,   -1,   -1,   -1,  139,  140,   -1,   -1,
-      -1,  141,  142,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  143,   -1,   -1,  144,
-      -1,   -1,   -1,   -1,   -1,   -1,  145,   -1,
-      -1,   -1,  146,   -1,   -1,  147,   -1,   -1,
-     148,   -1,   -1,   -1,  149,   -1,   -1,   -1,
-      -1,   -1,  150,   -1,   -1,   -1,   -1,  151,
-      -1,   -1,   -1,   -1,  152,   -1,   -1,   -1,
-     153,  154,   -1,   -1,   -1,  155,  156,   -1,
-      -1,   -1,   -1,  157,   -1,   -1,   -1,   -1,
-      -1,   -1,  158,   -1,   -1,  159,   -1,  160,
-      -1,   -1,  161,   -1,   -1,  162,  163,   -1,
-      -1,  164,  165,   -1,   -1,   -1,   -1,  166,
-      -1,  167,   -1,   -1,   -1,   -1,  168,   -1,
-     169,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     170,   -1,   -1,   -1,  171,  172,   -1,   -1,
-      -1,  173,  174,   -1,   -1,   -1,  175,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  176,  177,
-      -1,   -1,   -1,  178,   -1,   -1,   -1,   -1,
-      -1,   -1,  179,  180,  181,   -1,   -1,  182,
-      -1,   -1,   -1,   -1,   -1,  183,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  184,  185,   -1,
-      -1,   -1,  186,  187,  188,   -1,   -1,   -1,
-     189,   -1,   -1,   -1,  190,   -1,  191,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  192,  193,
-      -1,   -1,   -1,   -1,  194,   -1,   -1,   -1,
-      -1,   -1,   -1,  195,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,  196,   -1,   -1,   -1,  197,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  198,   -1,   -1,  199,
-     200,  201,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  202,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  203,  204,   -1,   -1,
-      -1,   -1,  205,   -1,   -1,   -1,  206,   -1,
-      -1,   -1,  207,   -1,   -1,   -1,   -1,   -1,
-     208,   -1,   -1,   -1,   -1,  209,   -1,   -1,
-      -1,   -1,  210,  211,   -1,   -1,   -1,   -1,
-      -1,   -1,  212,   -1,   -1,   -1,   -1,   -1,
-      -1,  213,   -1,   -1,   -1,   -1,  214,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     215,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,  216,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  217,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  218,   -1,   -1,
-      -1,  219,  220,   -1,   -1,   -1,  221,   -1,
-      -1,  222,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  223,   -1,
-      -1,  224,   -1,   -1,  225,   -1,   -1,   -1,
-      -1,   -1,   -1,  226,   -1,   -1,   -1,   -1,
-     227,  228,   -1,   -1,   -1,   -1,  229,   -1,
-      -1,   -1,   -1,  230,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  231,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  232,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,  233,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,  234,
-     235,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,  236,
-      -1,  237,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  238,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  239,  240,   -1,   -1,   -1,  241,
-     242,  243,   -1,   -1,   -1,  244,  245,   -1,
-      -1,   -1,  246,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  247,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  248,   -1,
-     249,   -1,   -1,   -1,  250,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,  251,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  252,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  253,   -1,   -1,
-      -1,  254,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,  255,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  256,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,  257,
-      -1,  258,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     259,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  260,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  261,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  262,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  263,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,  264,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,  265,   -1,   -1,   -1,   -1,  266,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,  267,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     268,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     269,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     270,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,  271,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-     272,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,  273,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,  274,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-      -1,   -1,   -1,   -1,   -1,   -1,  275
-  };
-
 #ifdef __GNUC__
 __inline
 #endif
 const struct entity *
 kde_findEntity (register const char *str, register unsigned int len)
 {
+  enum
+    {
+      TOTAL_KEYWORDS = 277,
+      MIN_WORD_LENGTH = 2,
+      MAX_WORD_LENGTH = 8,
+      MIN_HASH_VALUE = 8,
+      MAX_HASH_VALUE = 896
+    };
+
+  static const struct entity wordlist_Entity[] =
+    {
+#line 115 "kentities.gperf"
+      {"and", 0x22a5},
+#line 262 "kentities.gperf"
+      {"rho", 0x03c1},
+#line 108 "kentities.gperf"
+      {"acirc", 0x00e2},
+#line 142 "kentities.gperf"
+      {"dcaron", 0x10f},
+#line 131 "kentities.gperf"
+      {"chi", 0x03c7},
+#line 141 "kentities.gperf"
+      {"darr", 0x2193},
+#line 222 "kentities.gperf"
+      {"ocirc", 0x00f4},
+#line 256 "kentities.gperf"
+      {"rcaron", 0x0159},
+#line 255 "kentities.gperf"
+      {"rarr", 0x2192},
+#line 178 "kentities.gperf"
+      {"icirc", 0x00ee},
+#line 127 "kentities.gperf"
+      {"ccaron", 0x010d},
+#line 183 "kentities.gperf"
+      {"int", 0x222b},
+#line 297 "kentities.gperf"
+      {"ucirc", 0x00fb},
+#line 212 "kentities.gperf"
+      {"ncaron", 0x0148},
+#line 159 "kentities.gperf"
+      {"eta", 0x03b7},
+#line 296 "kentities.gperf"
+      {"uarr", 0x2191},
+#line 252 "kentities.gperf"
+      {"radic", 0x221a},
+#line 50 "kentities.gperf"
+      {"Dcaron", 0x010e},
+#line 89 "kentities.gperf"
+      {"Rho", 0x03a1},
+#line 285 "kentities.gperf"
+      {"tcaron", 0x0165},
+#line 83 "kentities.gperf"
+      {"Phi", 0x03a6},
+#line 150 "kentities.gperf"
+      {"ecirc", 0x00ea},
+#line 149 "kentities.gperf"
+      {"ecaron", 0x011b},
+#line 229 "kentities.gperf"
+      {"or", 0x22a6},
+#line 284 "kentities.gperf"
+      {"tau", 0x03c4},
+#line 186 "kentities.gperf"
+      {"isin", 0x2208},
+#line 290 "kentities.gperf"
+      {"thorn", 0x00fe},
+#line 88 "kentities.gperf"
+      {"Rcaron", 0x0158},
+#line 48 "kentities.gperf"
+      {"Chi", 0x03a7},
+#line 309 "kentities.gperf"
+      {"zcaron", 0x017e},
+#line 227 "kentities.gperf"
+      {"omicron", 0x03bf},
+#line 86 "kentities.gperf"
+      {"Psi", 0x03a8},
+#line 109 "kentities.gperf"
+      {"acute", 0x00b4},
+#line 46 "kentities.gperf"
+      {"Ccaron", 0x010c},
+#line 114 "kentities.gperf"
+      {"amp", 38},
+#line 218 "kentities.gperf"
+      {"nsub", 0x2284},
+#line 136 "kentities.gperf"
+      {"crarr", 0x21b5},
+#line 105 "kentities.gperf"
+      {"Zcaron", 0x017d},
+#line 241 "kentities.gperf"
+      {"phi", 0x03c6},
+#line 267 "kentities.gperf"
+      {"scaron", 0x0161},
+#line 236 "kentities.gperf"
+      {"para", 0x00b6},
+#line 90 "kentities.gperf"
+      {"Scaron", 0x0160},
+#line 126 "kentities.gperf"
+      {"cap", 0x2229},
+#line 287 "kentities.gperf"
+      {"theta", 0x03b8},
+#line 71 "kentities.gperf"
+      {"Ncaron", 0x0147},
+#line 249 "kentities.gperf"
+      {"psi", 0x03c8},
+#line 184 "kentities.gperf"
+      {"iota", 0x03b9},
+#line 94 "kentities.gperf"
+      {"Tcaron", 0x0164},
+#line 216 "kentities.gperf"
+      {"not", 0x00ac},
+#line 107 "kentities.gperf"
+      {"aacute", 0x00e1},
+#line 93 "kentities.gperf"
+      {"Tau", 0x03a4},
+#line 221 "kentities.gperf"
+      {"oacute", 0x00f3},
+#line 58 "kentities.gperf"
+      {"Eta", 0x0397},
+#line 237 "kentities.gperf"
+      {"part", 0x2202},
+#line 293 "kentities.gperf"
+      {"trade", 0x2122},
+#line 177 "kentities.gperf"
+      {"iacute", 0x00ed},
+#line 203 "kentities.gperf"
+      {"lt", 60},
+#line 268 "kentities.gperf"
+      {"sdot", 0x22c5},
+#line 63 "kentities.gperf"
+      {"Icirc", 0x00ce},
+#line 295 "kentities.gperf"
+      {"uacute", 0x00fa},
+#line 70 "kentities.gperf"
+      {"Mu", 0x039c},
+#line 247 "kentities.gperf"
+      {"prod", 0x220f},
+#line 55 "kentities.gperf"
+      {"Ecirc", 0x00ca},
+#line 54 "kentities.gperf"
+      {"Ecaron", 0x011a},
+#line 217 "kentities.gperf"
+      {"notin", 0x2209},
+#line 286 "kentities.gperf"
+      {"there4", 0x2234},
+#line 220 "kentities.gperf"
+      {"nu", 0x03bd},
+#line 299 "kentities.gperf"
+      {"uml", 0x00a8},
+#line 193 "kentities.gperf"
+      {"larr", 0x2190},
+#line 76 "kentities.gperf"
+      {"Ocirc", 0x00d4},
+#line 148 "kentities.gperf"
+      {"eacute", 0x00e9},
+#line 116 "kentities.gperf"
+      {"ang", 0x2220},
+#line 95 "kentities.gperf"
+      {"Theta", 0x0398},
+#line 211 "kentities.gperf"
+      {"nbsp", 0x00a0},
+#line 188 "kentities.gperf"
+      {"kappa", 0x03ba},
+#line 185 "kentities.gperf"
+      {"iquest", 0x00bf},
+#line 172 "kentities.gperf"
+      {"gt", 62},
+#line 257 "kentities.gperf"
+      {"rceil", 0x2309},
+#line 61 "kentities.gperf"
+      {"GT", 62},
+#line 156 "kentities.gperf"
+      {"ensp", 0x2002},
+#line 245 "kentities.gperf"
+      {"pound", 0x00a3},
+#line 128 "kentities.gperf"
+      {"ccedil", 0x00e7},
+#line 162 "kentities.gperf"
+      {"euro", 0x20ac},
+#line 210 "kentities.gperf"
+      {"nabla", 0x2207},
+#line 120 "kentities.gperf"
+      {"atilde", 0x00e3},
+#line 147 "kentities.gperf"
+      {"dol", 0x0024},
+#line 154 "kentities.gperf"
+      {"emsp", 0x2003},
+#line 67 "kentities.gperf"
+      {"Kappa", 0x039a},
+#line 233 "kentities.gperf"
+      {"otilde", 0x00f5},
+#line 204 "kentities.gperf"
+      {"macr", 0x00af},
+#line 97 "kentities.gperf"
+      {"Ucirc", 0x00db},
+#line 103 "kentities.gperf"
+      {"Yacute", 0x00dd},
+#line 79 "kentities.gperf"
+      {"Omicron", 0x039f},
+#line 253 "kentities.gperf"
+      {"rang", 0x232a},
+#line 219 "kentities.gperf"
+      {"ntilde", 0x00f1},
+#line 65 "kentities.gperf"
+      {"Iota", 0x0399},
+#line 158 "kentities.gperf"
+      {"equiv", 0x2261},
+#line 289 "kentities.gperf"
+      {"thinsp", 0x2009},
+#line 73 "kentities.gperf"
+      {"Nu", 0x039d},
+#line 248 "kentities.gperf"
+      {"prop", 0x221d},
+#line 226 "kentities.gperf"
+      {"omega", 0x03c9},
+#line 138 "kentities.gperf"
+      {"curren", 0x00a4},
+#line 137 "kentities.gperf"
+      {"cup", 0x222a},
+#line 87 "kentities.gperf"
+      {"QUOT", 34},
+#line 181 "kentities.gperf"
+      {"image", 0x2111},
+#line 47 "kentities.gperf"
+      {"Ccedil", 0x00c7},
+#line 275 "kentities.gperf"
+      {"sub", 0x2282},
+#line 231 "kentities.gperf"
+      {"ordm", 0x00ba},
+#line 225 "kentities.gperf"
+      {"oline", 0x203e},
+#line 62 "kentities.gperf"
+      {"Iacute", 0x00cd},
+#line 214 "kentities.gperf"
+      {"ne", 0x2260},
+#line 53 "kentities.gperf"
+      {"Eacute", 0x00c9},
+#line 69 "kentities.gperf"
+      {"LT", 60},
+#line 199 "kentities.gperf"
+      {"loz", 0x25ca},
+#line 75 "kentities.gperf"
+      {"Oacute", 0x00d3},
+#line 118 "kentities.gperf"
+      {"aring", 0x00e5},
+#line 134 "kentities.gperf"
+      {"cong", 0x2245},
+#line 124 "kentities.gperf"
+      {"brvbar", 0x00a6},
+#line 276 "kentities.gperf"
+      {"sube", 0x2286},
+#line 182 "kentities.gperf"
+      {"infin", 0x221e},
+#line 72 "kentities.gperf"
+      {"Ntilde", 0x00d1},
+#line 123 "kentities.gperf"
+      {"beta", 0x03b2},
+#line 302 "kentities.gperf"
+      {"uring", 0x016f},
+#line 281 "kentities.gperf"
+      {"sup", 0x2283},
+#line 130 "kentities.gperf"
+      {"cent", 0x00a2},
+#line 133 "kentities.gperf"
+      {"clubs", 0x2663},
+#line 68 "kentities.gperf"
+      {"Lambda", 0x039b},
+#line 52 "kentities.gperf"
+      {"ETH", 0x00d0},
+#line 278 "kentities.gperf"
+      {"sup1", 0x00b9},
+#line 230 "kentities.gperf"
+      {"ordf", 0x00aa},
+#line 194 "kentities.gperf"
+      {"lceil", 0x2308},
+#line 96 "kentities.gperf"
+      {"Uacute", 0x00da},
+#line 209 "kentities.gperf"
+      {"mu", 0x03bc},
+#line 310 "kentities.gperf"
+      {"zeta", 0x03b6},
+#line 234 "kentities.gperf"
+      {"otimes", 0x2297},
+#line 261 "kentities.gperf"
+      {"rfloor", 0x230b},
+#line 270 "kentities.gperf"
+      {"shy", 0x00ad},
+#line 106 "kentities.gperf"
+      {"Zeta", 0x0396},
+#line 38 "kentities.gperf"
+      {"Acirc", 0x00c2},
+#line 198 "kentities.gperf"
+      {"lowast", 0x2217},
+#line 282 "kentities.gperf"
+      {"supe", 0x2287},
+#line 85 "kentities.gperf"
+      {"Prime", 0x2033},
+#line 81 "kentities.gperf"
+      {"Otilde", 0x00d5},
+#line 263 "kentities.gperf"
+      {"rlm", 0x200f},
+#line 191 "kentities.gperf"
+      {"lang", 0x2329},
+#line 269 "kentities.gperf"
+      {"sect", 0x00a7},
+#line 190 "kentities.gperf"
+      {"lambda", 0x03bb},
+#line 167 "kentities.gperf"
+      {"frac14", 0x00bc},
+#line 196 "kentities.gperf"
+      {"le", 0x2264},
+#line 280 "kentities.gperf"
+      {"sup3", 0x00b3},
+#line 78 "kentities.gperf"
+      {"Omega", 0x03a9},
+#line 200 "kentities.gperf"
+      {"lrm", 0x200e},
+#line 259 "kentities.gperf"
+      {"real", 0x211c},
+#line 246 "kentities.gperf"
+      {"prime", 0x2032},
+#line 279 "kentities.gperf"
+      {"sup2", 0x00b2},
+#line 60 "kentities.gperf"
+      {"Gamma", 0x0393},
+#line 306 "kentities.gperf"
+      {"yacute", 0x00fd},
+#line 139 "kentities.gperf"
+      {"dArr", 0x21d3},
+#line 283 "kentities.gperf"
+      {"szlig", 0x00df},
+#line 238 "kentities.gperf"
+      {"percnt", 0x0025},
+#line 277 "kentities.gperf"
+      {"sum", 0x2211},
+#line 251 "kentities.gperf"
+      {"rArr", 0x21d2},
+#line 129 "kentities.gperf"
+      {"cedil", 0x00b8},
+#line 304 "kentities.gperf"
+      {"weierp", 0x2118},
+#line 240 "kentities.gperf"
+      {"perp", 0x22a5},
+#line 144 "kentities.gperf"
+      {"delta", 0x03b4},
+#line 171 "kentities.gperf"
+      {"ge", 0x2265},
+#line 143 "kentities.gperf"
+      {"deg", 0x00b0},
+#line 294 "kentities.gperf"
+      {"uArr", 0x21d1},
+#line 163 "kentities.gperf"
+      {"exist", 0x2203},
+#line 166 "kentities.gperf"
+      {"frac12", 0x00bd},
+#line 260 "kentities.gperf"
+      {"reg", 0x00ae},
+#line 140 "kentities.gperf"
+      {"dagger", 0x2020},
+#line 135 "kentities.gperf"
+      {"copy", 0x00a9},
+#line 153 "kentities.gperf"
+      {"empty", 0x2205},
+#line 168 "kentities.gperf"
+      {"frac34", 0x00be},
+#line 51 "kentities.gperf"
+      {"Delta", 0x0394},
+#line 41 "kentities.gperf"
+      {"AMP", 38},
+#line 179 "kentities.gperf"
+      {"iexcl", 0x00a1},
+#line 37 "kentities.gperf"
+      {"Aacute", 0x00c1},
+#line 125 "kentities.gperf"
+      {"bull", 0x2022},
+#line 49 "kentities.gperf"
+      {"Dagger", 0x2021},
+#line 121 "kentities.gperf"
+      {"auml", 0x00e4},
+#line 197 "kentities.gperf"
+      {"lfloor", 0x230a},
+#line 235 "kentities.gperf"
+      {"ouml", 0x00f6},
+#line 100 "kentities.gperf"
+      {"Uring", 0x016e},
+#line 187 "kentities.gperf"
+      {"iuml", 0x00ef},
+#line 303 "kentities.gperf"
+      {"uuml", 0x00fc},
+#line 74 "kentities.gperf"
+      {"OElig", 0x0152},
+#line 92 "kentities.gperf"
+      {"THORN", 0x00de},
+#line 164 "kentities.gperf"
+      {"fnof", 0x0192},
+#line 161 "kentities.gperf"
+      {"euml", 0x00eb},
+#line 254 "kentities.gperf"
+      {"raquo", 0x00bb},
+#line 174 "kentities.gperf"
+      {"harr", 0x2194},
+#line 265 "kentities.gperf"
+      {"rsquo", 0x2019},
+#line 264 "kentities.gperf"
+      {"rsaquo", 0x203a},
+#line 307 "kentities.gperf"
+      {"yen", 0x00a5},
+#line 258 "kentities.gperf"
+      {"rdquo", 0x201d},
+#line 43 "kentities.gperf"
+      {"Atilde", 0x00c3},
+#line 117 "kentities.gperf"
+      {"apos", 0x0027},
+#line 169 "kentities.gperf"
+      {"frasl", 0x2044},
+#line 102 "kentities.gperf"
+      {"Xi", 0x039e},
+#line 160 "kentities.gperf"
+      {"eth", 0x00f0},
+#line 189 "kentities.gperf"
+      {"lArr", 0x21d0},
+#line 122 "kentities.gperf"
+      {"bdquo", 0x201e},
+#line 119 "kentities.gperf"
+      {"asymp", 0x2248},
+#line 244 "kentities.gperf"
+      {"plusmn", 0x00b1},
+#line 215 "kentities.gperf"
+      {"ni", 0x220b},
+#line 104 "kentities.gperf"
+      {"Yuml", 0x0178},
+#line 170 "kentities.gperf"
+      {"gamma", 0x03b3},
+#line 266 "kentities.gperf"
+      {"sbquo", 0x201a},
+#line 132 "kentities.gperf"
+      {"circ", 0x02c6},
+#line 110 "kentities.gperf"
+      {"aelig", 0x00e6},
+#line 305 "kentities.gperf"
+      {"xi", 0x03be},
+#line 223 "kentities.gperf"
+      {"oelig", 0x0153},
+#line 84 "kentities.gperf"
+      {"Pi", 0x03a0},
+#line 66 "kentities.gperf"
+      {"Iuml", 0x00cf},
+#line 59 "kentities.gperf"
+      {"Euml", 0x00cb},
+#line 42 "kentities.gperf"
+      {"Aring", 0x00c5},
+#line 155 "kentities.gperf"
+      {"endash", 0x2013},
+#line 165 "kentities.gperf"
+      {"forall", 0x2200},
+#line 82 "kentities.gperf"
+      {"Ouml", 0x00d6},
+#line 213 "kentities.gperf"
+      {"ndash", 0x2013},
+#line 152 "kentities.gperf"
+      {"emdash", 0x2014},
+#line 242 "kentities.gperf"
+      {"pi", 0x03c0},
+#line 311 "kentities.gperf"
+      {"zwj", 0x200d},
+#line 288 "kentities.gperf"
+      {"thetasym", 0x03d1},
+#line 192 "kentities.gperf"
+      {"laquo", 0x00ab},
+#line 274 "kentities.gperf"
+      {"spades", 0x2660},
+#line 250 "kentities.gperf"
+      {"quot", 34},
+#line 202 "kentities.gperf"
+      {"lsquo", 0x2018},
+#line 201 "kentities.gperf"
+      {"lsaquo", 0x2039},
+#line 312 "kentities.gperf"
+      {"zwnj", 0x200c},
+#line 195 "kentities.gperf"
+      {"ldquo", 0x201c},
+#line 101 "kentities.gperf"
+      {"Uuml", 0x00dc},
+#line 36 "kentities.gperf"
+      {"AElig", 0x00c6},
+#line 239 "kentities.gperf"
+      {"permil", 0x2030},
+#line 45 "kentities.gperf"
+      {"Beta", 0x0392},
+#line 111 "kentities.gperf"
+      {"agrave", 0x00e0},
+#line 228 "kentities.gperf"
+      {"oplus", 0x2295},
+#line 224 "kentities.gperf"
+      {"ograve", 0x00f2},
+#line 180 "kentities.gperf"
+      {"igrave", 0x00ec},
+#line 298 "kentities.gperf"
+      {"ugrave", 0x00f9},
+#line 151 "kentities.gperf"
+      {"egrave", 0x00e8},
+#line 301 "kentities.gperf"
+      {"upsilon", 0x03c5},
+#line 308 "kentities.gperf"
+      {"yuml", 0x00ff},
+#line 232 "kentities.gperf"
+      {"oslash", 0x00f8},
+#line 113 "kentities.gperf"
+      {"alpha", 0x03b1},
+#line 206 "kentities.gperf"
+      {"micro", 0x00b5},
+#line 157 "kentities.gperf"
+      {"epsilon", 0x03b5},
+#line 291 "kentities.gperf"
+      {"tilde", 0x02dc},
+#line 146 "kentities.gperf"
+      {"divide", 0x00f7},
+#line 207 "kentities.gperf"
+      {"middot", 0x00b7},
+#line 205 "kentities.gperf"
+      {"mdash", 0x2014},
+#line 243 "kentities.gperf"
+      {"piv", 0x03d6},
+#line 44 "kentities.gperf"
+      {"Auml", 0x00c4},
+#line 273 "kentities.gperf"
+      {"sim", 0x223c},
+#line 145 "kentities.gperf"
+      {"diams", 0x2666},
+#line 64 "kentities.gperf"
+      {"Igrave", 0x00cc},
+#line 56 "kentities.gperf"
+      {"Egrave", 0x00c8},
+#line 77 "kentities.gperf"
+      {"Ograve", 0x00d2},
+#line 208 "kentities.gperf"
+      {"minus", 0x2212},
+#line 57 "kentities.gperf"
+      {"Epsilon", 0x0395},
+#line 175 "kentities.gperf"
+      {"hearts", 0x2665},
+#line 292 "kentities.gperf"
+      {"times", 0x00d7},
+#line 80 "kentities.gperf"
+      {"Oslash", 0x00d8},
+#line 98 "kentities.gperf"
+      {"Ugrave", 0x00d9},
+#line 173 "kentities.gperf"
+      {"hArr", 0x21d4},
+#line 99 "kentities.gperf"
+      {"Upsilon", 0x03a5},
+#line 271 "kentities.gperf"
+      {"sigma", 0x03c3},
+#line 91 "kentities.gperf"
+      {"Sigma", 0x03a3},
+#line 112 "kentities.gperf"
+      {"alefsym", 0x2135},
+#line 39 "kentities.gperf"
+      {"Agrave", 0x00c0},
+#line 300 "kentities.gperf"
+      {"upsih", 0x03d2},
+#line 40 "kentities.gperf"
+      {"Alpha", 0x0391},
+#line 176 "kentities.gperf"
+      {"hellip", 0x2026},
+#line 272 "kentities.gperf"
+      {"sigmaf", 0x03c2}
+    };
+
+  static const short lookup[] =
+    {
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,   0,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,   1,  -1,  -1,  -1,  -1,  -1,  -1,
+        2,   3,  -1,   4,   5,   6,   7,  -1,  -1,   8,
+        9,  10,  -1,  11,  -1,  12,  13,  -1,  14,  15,
+       16,  17,  -1,  18,  -1,  -1,  19,  -1,  20,  -1,
+       21,  22,  23,  24,  25,  26,  27,  -1,  28,  -1,
+       -1,  29,  30,  31,  -1,  32,  33,  -1,  34,  35,
+       36,  37,  -1,  38,  -1,  -1,  39,  -1,  -1,  40,
+       -1,  41,  -1,  42,  -1,  43,  44,  -1,  45,  46,
+       -1,  47,  -1,  48,  -1,  -1,  49,  -1,  50,  -1,
+       -1,  51,  -1,  52,  53,  54,  55,  56,  -1,  57,
+       58,  59,  60,  -1,  61,  62,  63,  -1,  -1,  -1,
+       64,  65,  66,  67,  68,  69,  70,  -1,  71,  -1,
+       72,  -1,  -1,  -1,  73,  74,  75,  76,  -1,  -1,
+       77,  -1,  78,  -1,  79,  80,  81,  -1,  -1,  82,
+       83,  84,  -1,  85,  86,  87,  88,  -1,  -1,  89,
+       90,  91,  92,  -1,  93,  -1,  94,  -1,  -1,  95,
+       96,  97,  98,  -1,  99, 100, 101,  -1, 102, 103,
+      104, 105,  -1, 106, 107, 108, 109, 110,  -1,  -1,
+       -1, 111, 112, 113,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1, 114,  -1,  -1,  -1, 115,  -1,  -1,  -1, 116,
+       -1, 117,  -1,  -1, 118, 119, 120,  -1,  -1, 121,
+      122,  -1,  -1, 123, 124, 125, 126,  -1, 127, 128,
+       -1,  -1,  -1,  -1, 129, 130, 131, 132,  -1, 133,
+       -1, 134,  -1,  -1,  -1,  -1, 135,  -1, 136, 137,
+      138, 139,  -1,  -1, 140, 141, 142,  -1, 143, 144,
+       -1,  -1,  -1,  -1, 145,  -1, 146,  -1,  -1,  -1,
+       -1, 147, 148,  -1, 149, 150,  -1,  -1, 151, 152,
+      153,  -1,  -1,  -1, 154, 155, 156,  -1,  -1, 157,
+      158, 159,  -1, 160, 161, 162, 163,  -1,  -1, 164,
+      165,  -1, 166, 167, 168, 169, 170,  -1, 171,  -1,
+       -1, 172,  -1,  -1, 173, 174, 175,  -1,  -1,  -1,
+      176,  -1,  -1, 177,  -1, 178, 179,  -1,  -1, 180,
+       -1, 181,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 182,
+       -1, 183,  -1,  -1, 184, 185,  -1,  -1,  -1, 186,
+       -1,  -1,  -1,  -1, 187, 188,  -1,  -1,  -1,  -1,
+      189,  -1,  -1,  -1, 190,  -1,  -1,  -1,  -1, 191,
+      192,  -1,  -1,  -1, 193, 194, 195,  -1, 196,  -1,
+      197, 198,  -1,  -1, 199, 200,  -1, 201, 202, 203,
+       -1,  -1,  -1,  -1,  -1, 204,  -1,  -1,  -1,  -1,
+      205, 206, 207,  -1, 208, 209,  -1,  -1,  -1,  -1,
+      210,  -1,  -1,  -1, 211, 212,  -1, 213,  -1,  -1,
+      214,  -1, 215,  -1,  -1,  -1,  -1,  -1,  -1, 216,
+       -1,  -1,  -1,  -1, 217, 218, 219,  -1,  -1,  -1,
+       -1, 220,  -1,  -1, 221, 222, 223, 224,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 225,  -1,
+       -1,  -1,  -1, 226,  -1, 227, 228,  -1,  -1, 229,
+      230, 231,  -1,  -1, 232, 233,  -1,  -1,  -1, 234,
+      235, 236,  -1,  -1, 237,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 238,  -1,  -1,  -1,
+      239, 240,  -1,  -1,  -1,  -1, 241,  -1,  -1,  -1,
+       -1, 242,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 243, 244,  -1, 245,
+       -1, 246,  -1,  -1,  -1, 247,  -1,  -1,  -1,  -1,
+      248,  -1, 249,  -1,  -1, 250, 251,  -1,  -1,  -1,
+       -1, 252,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      253,  -1,  -1, 254,  -1,  -1,  -1,  -1,  -1, 255,
+       -1,  -1,  -1, 256,  -1, 257,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 258,  -1,  -1,  -1,
+       -1, 259,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1, 260,  -1,  -1,  -1, 261,  -1, 262,  -1,  -1,
+       -1, 263,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      264, 265,  -1,  -1,  -1,  -1, 266,  -1,  -1, 267,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1, 268,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 269,  -1,  -1,  -1,  -1,
+      270,  -1, 271,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 272,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 273,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 274,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 275,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 276
+    };
+
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
-      register int key = hash (str, len);
+      register int key = hash_Entity (str, len);
 
       if (key <= MAX_HASH_VALUE && key >= 0)
         {
@@ -641,28 +813,15 @@ kde_findEntity (register const char *str, register unsigned int len)
 
           if (index >= 0)
             {
-              register const char *s = wordlist[index].name;
+              register const char *s = wordlist_Entity[index].name;
 
               if (*str == *s && !strncmp (str + 1, s + 1, len - 1) && s[len] == '\0')
-                return &wordlist[index];
-            }
-          else if (index < -TOTAL_KEYWORDS)
-            {
-              register int offset = - 1 - TOTAL_KEYWORDS - index;
-              register const struct entity *wordptr = &wordlist[TOTAL_KEYWORDS + lookup[offset]];
-              register const struct entity *wordendptr = wordptr + -lookup[offset + 1];
-
-              while (wordptr < wordendptr)
-                {
-                  register const char *s = wordptr->name;
-
-                  if (*str == *s && !strncmp (str + 1, s + 1, len - 1) && s[len] == '\0')
-                    return wordptr;
-                  wordptr++;
-                }
+                return &wordlist_Entity[index];
             }
         }
     }
   return 0;
 }
+#line 313 "kentities.gperf"
+
 
