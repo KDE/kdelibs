@@ -80,7 +80,7 @@ public:
     virtual void focus();
     virtual void blur();
 
-    virtual void setPos( int /*xPos*/, int /*yPos*/ );
+    void placeWidget(int x, int y);
 
 public slots:
     void slotWidgetDestructed();

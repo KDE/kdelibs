@@ -1311,7 +1311,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 RenderFlow *newBox = new RenderFlow();
                 newBox->setStyle(newStyle);
                 newBox->setIsAnonymousBox(true);
-                RenderObject::addChild(newBox,beforeChild);
+                RenderBox::addChild(newBox,beforeChild);
                 newBox->addChild(newChild);
                 newBox->setPos(newBox->xPos(), -100000);
                 if (beforeChild)
@@ -1353,7 +1353,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     }
 
     setLayouted(false);
-    RenderObject::addChild(newChild,beforeChild);
+    RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
 }
 

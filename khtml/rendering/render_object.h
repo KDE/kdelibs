@@ -157,6 +157,7 @@ public:
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
+    bool containsWidget() const { return m_containsWidget; }
 
     RenderRoot *root() const { return m_root; }
 
@@ -178,6 +179,7 @@ public:
     void setVisible(bool b=true) { m_visible = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
+    void setContainsWidget(bool b=true) { m_containsWidget = b; }
 
     virtual short baselineOffset() const { return 0; }
     virtual short verticalPositionHint() const { return 0; }
@@ -497,7 +499,7 @@ private:
     bool m_isText         : 1;
     bool m_inline         : 1;
     bool m_replaced       : 1;
-    bool m_useJumpTable   : 1;
+    bool m_containsWidget : 1;
     bool m_containsOverhangingFloats : 1;
 };
 

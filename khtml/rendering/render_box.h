@@ -44,6 +44,7 @@ public:
     virtual const char *renderName() const { return "RenderBox"; }
 
     virtual void setStyle(RenderStyle *style);
+    virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
                        int _tx, int _ty);
@@ -65,7 +66,7 @@ public:
 
     virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
-    virtual void setPos( int xPos, int yPos ) { m_x = xPos; m_y = yPos; }
+    virtual void setPos( int xPos, int yPos );
 
     virtual int xPos() const { return m_x; }
     virtual int yPos() const { return m_y; }

@@ -81,6 +81,7 @@ void RenderWidget::setQWidget(QWidget *widget, bool show)
             disconnect( m_widget, SIGNAL( destroyed()),
                         this, SLOT( slotWidgetDestructed()));
             delete m_widget;
+            m_widget = 0;
         }
 	widget->setFocusPolicy(QWidget::ClickFocus);
         m_widget = widget;
@@ -89,6 +90,8 @@ void RenderWidget::setQWidget(QWidget *widget, bool show)
     }
     if( show )
 	m_widget->show();
+
+    setContainsWidget(widget);
 }
 
 void RenderWidget::slotWidgetDestructed()
@@ -148,17 +151,14 @@ short RenderWidget::verticalPositionHint() const
     return 0;
 }
 
-void RenderWidget::setPos( int xPos, int yPos )
+void RenderWidget::placeWidget(int xPos, int yPos)
 {
-    RenderReplaced::setPos(xPos, yPos);
-
     // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(xPos, yPos);
 
     if(!(m_widget && m_view)) return;
-    m_view->addChild(m_widget, xPos+borderLeft()+paddingLeft(), yPos+borderTop()+paddingTop());
-    m_widget->hide();
+    m_view->addChild(m_widget,  xPos+borderLeft()+paddingLeft(), yPos+borderTop()+paddingTop());
 }
 
 short RenderWidget::intrinsicWidth() const

@@ -43,7 +43,7 @@
 #include "render_style.h"
 #include "render_object.h"
 #include "render_text.h"
-
+#include "render_replaced.h"
 #include "render_root.h"
 
 #include <kdebug.h>
@@ -140,6 +140,22 @@ int RenderBox::contentHeight() const
         h -= paddingTop() + paddingBottom();
 
     return h;
+}
+
+void RenderBox::setPos( int xPos, int yPos )
+{
+    m_x = xPos; m_y = yPos;
+    if(containsWidget())
+    {
+        int x,y;
+        absolutePosition(x,y);
+
+        // propagate position change to childs
+        for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
+            if(child->isWidget())
+                static_cast<RenderWidget*>(child)->placeWidget(m_x+child->xPos(),m_y+child->yPos());
+        }
+    }
 }
 
 QSize RenderBox::contentOffset() const
@@ -308,7 +324,7 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     if ( style()->position() == FIXED )
 	f = true;
     RenderObject *o = container();
-    if( o && o->absolutePosition(xPos, yPos, f)) 
+    if( o && o->absolutePosition(xPos, yPos, f))
     {
         if(!isInline() || isReplaced())
             xPos += m_x, yPos += m_y;
@@ -321,6 +337,20 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     {
         xPos = yPos = 0;
         return false;
+    }
+}
+
+void RenderBox::addChild(RenderObject *newChild, RenderObject *beforeChild)
+{
+    RenderObject::addChild(newChild, beforeChild);
+
+    if(newChild->isWidget())
+    {
+        RenderObject* o = this;
+        while(o) {
+            o->setContainsWidget();
+            o = o->parent();
+        }
     }
 }
 
@@ -370,7 +400,7 @@ void RenderBox::updateHeight()
             setLayouted(false);
             if(cb != this) cb->updateHeight();
         } else
-            root()->updateHeight();            
+            root()->updateHeight();
 
         return;
     }

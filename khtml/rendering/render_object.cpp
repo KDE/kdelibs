@@ -120,6 +120,7 @@ RenderObject::RenderObject()
     m_inline = true;
     m_replaced = false;
     m_visible = true;
+    m_containsWidget = false;
     m_containsOverhangingFloats = false;
 
     m_bgImage = 0;
@@ -221,6 +222,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // just add it...
     insertChildNode(newChild, beforeChild);
     newChild->calcWidth();
+
 }
 
 RenderObject* RenderObject::removeChildNode(RenderObject* oldChild)
@@ -246,6 +248,19 @@ void RenderObject::removeChild(RenderObject *oldChild)
 {
     removeChildNode(oldChild);
     setLayouted(false);
+    if(containsWidget()) {
+        bool anotherone = false;
+        for(RenderObject* o = firstChild(); o; o = o->nextSibling()) {
+            if(o->isWidget() || o->containsWidget()) {
+                anotherone = true;
+                break;
+            }
+        }
+        if(!anotherone) {
+            setContainsWidget(false);
+            // ### propagate to parent!!
+        }
+    }
 }
 
 void RenderObject::appendChildNode(RenderObject* newChild)
@@ -598,7 +613,8 @@ void RenderObject::printTree(int indent) const
                  << " an=" << (int)isAnonymousBox()
                  << " ps=" << (int)isPositioned()
                  << " cp=" << (int)containsPositioned()
-                 << " laytd=" << (int)layouted()
+                 << " lt=" << (int)layouted()
+                 << " cw=" << (int)containsWidget()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
