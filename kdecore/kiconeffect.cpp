@@ -111,6 +111,9 @@ void KIconEffect::init()
 
 QString KIconEffect::fingerprint(int group, int state)
 {
+    if ( mEffect[group][state] == NoEffect )
+        return QString::null;
+    
     QString s, tmp;
     s += tmp.setNum(mEffect[group][state]);
     s += ":";
