@@ -1160,10 +1160,7 @@ void Ftp::stat( const KURL &url)
     kdDebug(7102) << e->name << endl;
   }
 
-  if ( !ftpCloseDir() )
-    return; // error ?
-
-  if ( !bFound )
+  if ( !ftpCloseDir() || !bFound )
   {
     error( ERR_DOES_NOT_EXIST, path );
     return;
