@@ -316,6 +316,8 @@ void ArrayInstanceImp::sort(ExecState *exec)
     execForCompareByStringForQSort = 0;
 }
 
+namespace KJS {
+
 struct CompareWithCompareFunctionArguments {
     CompareWithCompareFunctionArguments(ExecState *e, ObjectImp *cf)
         : exec(e)
@@ -331,6 +333,8 @@ struct CompareWithCompareFunctionArguments {
     List arguments;
     Object globalObject;
 };
+
+}
 
 static CompareWithCompareFunctionArguments *compareWithCompareFunctionArguments;
 
