@@ -73,7 +73,7 @@ public:
   static bool canDisplay( KFileItemList _items );
 
   /**
-   * Bring up a Properties dialog. Normal constructor for
+   * Brings up a Properties dialog. Normal constructor for
    * file-manager-like applications.  Normally you will use this
    * method rather than the one below.
    *
@@ -87,7 +87,7 @@ public:
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
   /**
-   * Bring up a Properties dialog. Normal constructor for
+   * Brings up a Properties dialog. Normal constructor for
    * file-manager-like applications.
    *
    * @param _items list of file items whose properties should be
@@ -103,7 +103,7 @@ public:
                      bool modal = false, bool autoShow = true);
 
   /**
-   * Bring up a Properties dialog. Convenience constructor for
+   * Brings up a Properties dialog. Convenience constructor for
    * non-file-manager applications.
    *
    * @param _url the URL whose properties should be displayed
@@ -118,7 +118,7 @@ public:
                      bool modal = false, bool autoShow = true);
 
   /**
-   * Create a properties dialog for a new .desktop file (whose name
+   * Creates a properties dialog for a new .desktop file (whose name
    * is not known yet), based on a template. Special constructor for
    * "File / New" in file-manager applications.
    *
@@ -137,7 +137,7 @@ public:
                      bool modal = false, bool autoShow = true);
 
   /**
-   * Create an empty properties dialog (for applications that want use
+   * Creates an empty properties dialog (for applications that want use
    * a standard dialog, but for things not doable via the plugin-mechanism.
    *
    * @param title is the string display as the "filename" in the caption of the dialog.
@@ -226,7 +226,7 @@ public:
   void rename( const QString& _name );
 
   /**
-   * To abort applying changes
+   * To abort applying changes.
    */
   void abortApplying();
 
@@ -239,7 +239,7 @@ public slots:
 
 signals:
   /**
-   * Notify that we have finished with the properties (be it Apply or Cancel)
+   * Emitted when we have finished with the properties (be it Apply or Cancel)
    */
   void propertiesClosed();
   void applied();
@@ -302,7 +302,7 @@ public:
   virtual ~KPropsDlgPlugin();
 
   /**
-   * Apply all changes to the file.
+   * Applies all changes to the file.
    * This function is called when the user presses 'Ok'. The last plugin inserted
    * is called first.
    */
@@ -322,9 +322,9 @@ public slots:
 
 signals:
   /**
-   * Emit this event when the user changed anything the plugin's tabs.
+   * Emit this signal when the user changed anything the plugin's tabs.
    * The hosting PropertiesDialog will call @ref applyChanges only if the
-   * PropsPlugin emits the changed event.
+   * PropsPlugin has emitted this signal before.
    */
   void changed();
 

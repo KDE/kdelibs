@@ -75,7 +75,7 @@ private:
 
 /**
  * Dialog for interactive selection of icons. Use the function
- * selectIcon() let the user select an icon.
+ * getIcon() let the user select an icon.
  *
  * @short An icon selection dialog.
  */

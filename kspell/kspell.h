@@ -62,7 +62,7 @@ public:
   enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed };
   
   /**
-   * Start spellchecker.
+   * Starts the spellchecker.
    *
    * KSpell emits @ref ready() when it has verified that 
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
@@ -84,14 +84,14 @@ public:
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
   /**
-   * Retrieve the status of KSpell.
+   * Returns the status of KSpell.
    *
    * @see spellStatus()
    */
   spellStatus status() { return m_status; }
 
   /**
-   * Clean up ISpell.
+   * Cleans up ISpell.
    *
    * Write out the personal dictionary and close ISpell's
    *  stdin.  A @ref death() signal will be emitted when the cleanup is
@@ -100,12 +100,13 @@ public:
   virtual void cleanUp ();
 
   /** 
-   * Auto-delete the KSpell object after emitting @ref death().
+   * Sets the auto-delete flag. If this is set, the KSpell object
+   * is automatically deleted after emitting @ref death().
    */
   void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
 
   /**
-   *  Spellcheck a buffer of many words in plain text 
+   *  Spellchecks a buffer of many words in plain text 
    *  format.
    *
    * The @p _buffer is not modified.  The signal @ref done() will be
@@ -120,7 +121,7 @@ public:
   virtual bool check (const QString &_buffer);
 
   /**
-   * Retrieve the position (when using @ref check())  or word 
+   * Returns the position (when using @ref check())  or word 
    * number (when using @ref checkList()) of
    * the last word checked.
    **/
@@ -128,7 +129,7 @@ public:
     { return lastpos;}
 
   /**
-   * Spellcheck a list of words.
+   * Spellchecks a list of words.
    *
    * @ref checkList() is more flexible than @ref check().  You could parse
    *  any type
@@ -140,7 +141,7 @@ public:
   virtual bool checkList (QStringList *_wordlist);
 
   /**
-   * Spellcheck a single word.
+   * Spellchecks a single word.
    *
    * checkWord() is the most flexible function.  Some applications
    *  might need this flexibility but will sacrifice speed when
@@ -164,14 +165,14 @@ public:
   virtual bool checkWord (QString _buffer,  bool usedialog=FALSE);
 
   /**
-   * Hide the dialog box.
+   * Hides the dialog box.
    *
    * You'll need to do this when you are done with @ref checkWord();
    */
   void hide ()   { ksdlg->hide(); }
 
   /**
-   * Retrieve list of suggested word replacements.
+   * Returns list of suggested word replacements.
    *
    * After calling @ref checkWord() (an in response to
    *  a @ref misspelled() signal you can
@@ -181,7 +182,7 @@ public:
   inline QStringList *suggestions ()	{ return &sugg; }
 
   /**
-   * Get the result code of the dialog box.
+   * Gets the result code of the dialog box.
    *
    * After calling checkWord, you can use this to get the dialog box's
    *  result code.
@@ -200,7 +201,7 @@ public:
     { return dlgresult; }
 
   /**
-   * Move the dialog.
+   * Moves the dialog.
    *
    * If the dialog is not currently visible, it will
    *   be placed at this position when it becomes visible.
@@ -210,23 +211,23 @@ public:
   void moveDlg (int x, int y);
 
   /**
-   * Retrieve the height of the dialog box.
+   * Returns the height of the dialog box.
    **/
   inline int heightDlg () {return ksdlg->height();}
   /**
-   * Retrieve the width of the dialog box.
+   * Returns the width of the dialog box.
    **/
   inline int widthDlg () {return ksdlg->width();}
 
   /**
-   * Retrieve the partially spellchecked buffer.
+   * Returns the partially spellchecked buffer.
    *
    * You might want the full buffer in its partially-checked state.
    */
   const QString *intermediateBuffer () {return &newbuffer;}
 
   /**
-   * Tell ISpell/ASpell to ignore this word for the life of this KSpell instance.
+   * Tells ISpell/ASpell to ignore this word for the life of this KSpell instance.
    *
    *  @ref ignore() returns @p false if word is not a word or there was an error
    *  communicating with ISpell/ASpell.
@@ -234,7 +235,7 @@ public:
   virtual bool ignore (QString word);
 
   /**
-   * Add a word to the user's personal dictionary. 
+   * Adds a word to the user's personal dictionary. 
    *
    * Returns @p false if @p word
    *  is not a word or there was an error communicating with ISpell/ASpell.
@@ -242,12 +243,12 @@ public:
   virtual bool addPersonal (QString word);
 
   /**
-   * Retrieve the @ref KSpellConfig object being used by this KSpell instance.
+   * Retrurns the @ref KSpellConfig object being used by this KSpell instance.
    */
   KSpellConfig ksConfig () const;
 
   /**
-   * Set the resolution (in percent) of the @ref progress() signals.
+   * Sets the resolution (in percent) of the @ref progress() signals.
    *
    * E.g. @ref setProgressResolution (10) instructs KSpell to send progress
    *  signals (at most) every 10% (10%, 20%, 30%...).
@@ -262,7 +263,7 @@ public:
   virtual ~KSpell();
 
   /**
-   * Perform a sychronous spellcheck.
+   * Performs a sychronous spellcheck.
    *
    * This method does not return until spellchecking is done or canceled.
    * Your application's GUI will still be updated, however.

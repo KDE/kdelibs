@@ -18,7 +18,7 @@
 #include "stub.h"
 
 /**
- * Execute a command under elevated privileges, using su.
+ * Executes a command under elevated privileges, using su.
  */
 
 class SuProcess: public StubProcess
@@ -29,11 +29,11 @@ public:
 
     enum Errors { SuNotFound=1, SuNotAllowed, SuIncorrectPassword };
 
-    /** Execute the command. This will wait for the command to finish. */
+    /** Executes the command. This will wait for the command to finish. */
     int exec(const char *password, int check=0);
 
     /** 
-     * Check if the stub is installed and the password is correct.
+     * Checks if the stub is installed and the password is correct.
      * @return Zero if everything is correct, nonzero otherwise.
      */
     int checkInstall(const char *password);

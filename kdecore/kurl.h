@@ -61,12 +61,12 @@ public:
       QStringList toStringList() const;
   };
   /**
-   * Construct an empty URL.
+   * Constructs an empty URL.
    */
   KURL();
 
   /**
-   * destruktor
+   * Destructs the KURL object.
    */
   ~KURL();
 
@@ -93,7 +93,7 @@ public:
    */
   KURL( const char * url, int encoding_hint = 0 );
   /**
-   * Copy constructor
+   * Copy constructor.
    */
   KURL( const KURL& u );
   /**
@@ -317,14 +317,14 @@ public:
    *         attached to it.
    */
   bool isLocalFile() const;
-  
+
   /**
-   * Add encoding information to url.
+   * Adds encoding information to url.
    */
   void setFileEncoding(const QString &encoding);
-  
+
   /**
-   * Query encoding information from url.
+   * Returns encoding information from url.
    * @return An encoding suitable for QTextCodec::codecForName()
    *         or an empty string if not encoding was specified.
    */
@@ -469,7 +469,7 @@ public:
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
-   * Compares this url with @p u
+   * Compares this url with @p u.
    * @param ignore_trailing set to true to ignore trailing '/' characters.
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
@@ -512,7 +512,7 @@ public:
   static KURL join( const List& _list );
 
   /**
-   * Convenience function
+   * Convenience function.
    *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
@@ -522,7 +522,7 @@ public:
   static QString encode_string(const QString &str, int encoding_hint = 0);
 
   /**
-   * Convenience function
+   * Convenience function.
    *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters
@@ -533,7 +533,7 @@ public:
   static QString encode_string_no_slash(const QString &str, int encoding_hint = 0);
 
   /**
-   * Convenience function
+   * Convenience function.
    *
    * Decode %-style encoding and convert from local encoding to unicode.
    *
@@ -544,7 +544,7 @@ public:
   static QString decode_string(const QString &str, int encoding_hint = 0);
 
   /**
-   * Convenience function
+   * Convenience function.
    *
    * Returns whether '_url' is likely to be a "relative" URL instead of
    * an "absolute" URL.

@@ -18,7 +18,7 @@
 #include "stub.h"
 
 /**
- * Execute a remote command, using ssh.
+ * Executes a remote command, using ssh.
  */
 
 class SshProcess: public StubProcess
@@ -29,26 +29,26 @@ public:
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
 
-    /** Set the target host. */
+    /** Sets the target host. */
     void setHost(QCString host) { m_Host = host; }
 
-    /** Set the localtion of the remote stub. */
+    /** Sets the localtion of the remote stub. */
     void setStub(QCString stub);
 
     /** 
-     * Check if the current user@host needs a password. 
+     * Checks if the current user@host needs a password. 
      * @return The prompt for the password if a password is required. A null
      * string otherwise.
      */
     int checkNeedPassword();
 
     /**
-     * Check if the stub is installed and if the password is correct.
+     * Checks if the stub is installed and if the password is correct.
      * @return Zero if everything is correct, nonzero otherwise.
      */
     int checkInstall(const char *password);
 
-    /** Execute the command. */
+    /** Executes the command. */
     int exec(const char *password, int check=0);
 
     QCString prompt() { return m_Prompt; }

@@ -37,7 +37,7 @@ class KCommand
 {
 protected:
     /**
-     * Creates a command
+     * Creates a command.
      * @param name the name of this command, translated, since it will appear
      * in the menus.
      */

@@ -35,7 +35,7 @@ class KSaveFilePrivate;
  *   All changes have been written successfully to the file.
  *
  * b)
- *   Some error occured, no changes have been written whatsoever and the 
+ *   Some error occured, no changes have been written whatsoever and the
  *   old file is still in place.
  */
 class KSaveFile
@@ -49,10 +49,10 @@ public:
    ~KSaveFile();
 
    /**
-    * Returns the status of the file based on errno. (see errno.h) 
+    * Returns the status of the file based on errno. (see errno.h)
     * 0 means OK.
     *
-    * You should check the status after object creation to check 
+    * You should check the status after object creation to check
     * whether a file could be created in the first place.
     *
     * You may check the status after closing the file to verify that
@@ -65,42 +65,42 @@ public:
     * The name of the file as passed to the constructor.
     **/
    QString name() const;
-   
+
    /**
-    * An integer file descriptor open for writing to the file 
+    * An integer file descriptor open for writing to the file.
     **/
    int handle()	const
    	{ return mTempFile.handle(); }
-   
+
    /**
-    * A FILE* stream open for writing to the file
+    * A FILE* stream open for writing to the file.
     **/
-   FILE *fstream() 
+   FILE *fstream()
    	{ return mTempFile.fstream(); }
 
    /**
-    * A QFile* open for writing to the file
+    * A QFile* open for writing to the file.
     **/
-   QFile *file() 
+   QFile *file()
    	{ return mTempFile.file(); }
 
    /**
-    * A QTextStream* open for writing to the file
+    * A QTextStream* open for writing to the file.
     **/
    QTextStream *textStream()
    	{ return mTempFile.textStream(); }
 
    /**
-    * A QDataStream* open for writing to the file
+    * A QDataStream* open for writing to the file.
     **/
    QDataStream *dataStream()
    	{ return mTempFile.dataStream(); }
 
    /**
-    * Aborts the write operation and removes any intermediate files 
+    * Aborts the write operation and removes any intermediate files
     * This implies a close.
     **/
-   void abort();   
+   void abort();
 
    /**
     * Closes the file and makes the changes definitive.

@@ -41,7 +41,7 @@ namespace KIO
   typedef unsigned long long int filesize_t;
 
   /**
-   * Convert size from bytes to the string representation.
+   * Converts @p size from bytes to the string representation.
    *
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
@@ -49,7 +49,7 @@ namespace KIO
   QString convertSize( KIO::filesize_t size );
 
   /**
-   * Convert a size to a string representation
+   * Converts a size to a string representation
    * Not unlike QString::number(...)
    *
    * @param size size in bytes
@@ -58,7 +58,7 @@ namespace KIO
   QString number( KIO::filesize_t size );
 
   /**
-   * Convert size from kilo-bytes to the string representation.
+   * Converts size from kilo-bytes to the string representation.
    * Don't use convertSize( size * 1024 ), this easily goes off the 32-bit limit.
    *
    * ### KDE 3.0 : add support for long long
@@ -69,7 +69,7 @@ namespace KIO
     QString convertSizeFromKB( unsigned long kbSize );
 
   /**
-   * Calculate remaining time from total size, processed size and speed.
+   * Calculates remaining time from total size, processed size and speed.
    *
    * @param  totalSize      total size in bytes
    * @param  processedSize  processed size in bytes
@@ -87,13 +87,13 @@ namespace KIO
   QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
 
   /**
-   * Encode (from the text displayed to the real filename)
+   * Encodes (from the text displayed to the real filename)
    * This translates % into %% and / into %2f
    * Used by KIO::link, for instance.
    */
   QString encodeFileName( const QString & str );
   /**
-   * Decode (from the filename to the text displayed)
+   * Decodes (from the filename to the text displayed)
    * This translates %2[fF] into / and %% into %
    */
   QString decodeFileName( const QString & str );
@@ -169,7 +169,7 @@ namespace KIO
   };
 
   /*
-   * Return a translated error message for @p errorCode using the
+   * Returns a translated error message for @p errorCode using the
    * additional error information provided by @p errorText.
    */
   QString buildErrorString(int errorCode, const QString &errorText);

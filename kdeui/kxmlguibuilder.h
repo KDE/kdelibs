@@ -54,7 +54,7 @@ class KXMLGUIBuilder
   virtual QStringList containerTags() const;
 
   /**
-   * Create a container (menubar/menu/toolbar/statusbar/separator/...)
+   * Creates a container (menubar/menu/toolbar/statusbar/separator/...)
    * from an element in the XML file
    *
    * @param parent The parent for the container
@@ -72,7 +72,7 @@ class KXMLGUIBuilder
           const QDomElement &element, int &id );
 
   /**
-   * Remove the given (and previously via @ref createContainer )
+   * Removes the given (and previously via @ref createContainer )
    * created container.
    *
    * @return A buffer containing state information about the deleted

@@ -37,7 +37,7 @@ class KArchive
 {
 protected:
     /**
-     * Base constructor (protected since this is a pure virtual class)
+     * Base constructor (protected since this is a pure virtual class).
      * @param dev the I/O device where the archive reads its data
      * Note that this can be a file, but also a data buffer, a compression filter, etc.
      */
@@ -54,7 +54,7 @@ public:
     virtual bool open( int mode );
 
     /**
-     * Closes the archive
+     * Closes the archive.
      * Inherited classes might want to reimplement openArchive instead.
      *
      * @see #open
@@ -72,7 +72,7 @@ public:
     int mode() const { return m_mode; }
 
     /**
-     * The underlying device
+     * The underlying device.
      */
     QIODevice * device() const { return m_dev; }
 
@@ -105,26 +105,26 @@ public:
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
 
     /**
-     * Call @ref doneWriting after writing the data
+     * Call @ref doneWriting after writing the data.
      * @see prepareWriting
      */
     virtual bool doneWriting( uint size ) = 0;
 
 protected:
     /**
-     * Open an archive for reading or writing.
+     * Opens an archive for reading or writing.
      * Called by @ref open.
      */
     virtual bool openArchive( int mode ) = 0;
 
     /**
-     * Close the archive.
+     * Closes the archive.
      * Called by @ref close.
      */
     virtual bool closeArchive() = 0;
 
     /**
-     * Retrieve or create the root directory
+     * Retrieves or create the root directory.
      * The default implementation assumes that openArchive() did the parsing,
      * so it creates a dummy rootdir if none was set (write mode, or no '/' in the archive).
      * Reimplement this to provide parsing/listing on demand.
@@ -132,7 +132,7 @@ protected:
     virtual KArchiveDirectory* rootDir();
 
     /**
-     * Ensure path exists, create otherwise.
+     * Ensures that @p path exists, create otherwise.
      * This handles e.g. tar files missing directory entries, like mico-2.3.0.tar.gz :)
      */
     KArchiveDirectory * findOrCreate( const QString & path );

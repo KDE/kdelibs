@@ -41,7 +41,7 @@ class KURLRequesterDlg : public KDialogBase
 
 public:
     /**
-     * Constructs a KURLRequesterDlg
+     * Constructs a KURLRequesterDlg.
      *
      * @param urlName   The url of the directory to start in. Use QString::null
      *                  to start in the current working directory, or the last
@@ -50,49 +50,55 @@ public:
      *                  or not.
      */
     KURLRequesterDlg( const QString& urlName, QWidget *parent,
-            const char *name, bool modal = true );
+                      const char *name, bool modal = true );
 
     /**
-     * Constructs a KURLRequesterDlg
+     * Constructs a KURLRequesterDlg.
      * 
      * @param urlName   The url of the directory to start in. Use QString::null
      *                  to start in the current working directory, or the last
      *                  directory where a file has been selected.
-     * @param _text     Text of the label
+     * @param text      Text of the label
      * @param modal     Specifies whether the dialog should be opened as modal
      *                  or not.
      */
-    KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal=true );
+    KURLRequesterDlg( const QString& urlName, const QString& text,
+                      QWidget *parent, const char *name, bool modal=true );
     /**
-     * Destructs the dialog
+     * Destructs the dialog.
      */
     ~KURLRequesterDlg();
 
     /**
-     * Retrieve the fully qualified filename.
+     * Returns the fully qualified filename.
      */
     KURL selectedURL() const;
 
     /**
-     * Create a modal dialog and return the selected URL.
+     * Creates a modal dialog, executes it and returns the selected URL.
      *
      * @param url This specifies the initial path of the input line.
      * @param parent The widget the dialog will be centered on initially.
      */
     static KURL getURL(const QString& url = QString::null,
             QWidget *parent= 0, const QString& caption = QString::null);
-    
+
+    /**
+     * Returns a pointer to the file dialog used by the KURLRequester.
+     */
     KFileDialog * fileDialog();
+    /**
+     * Returns a pointer to the KURLRequester.
+     */
+    KURLRequester *urlRequester();
 
-protected slots:
-      void slotClear();
- void initDialog(const QString &_text,const QString &urlName,bool modal);
+private slots:
+    void slotClear();
  
-protected:
-
-    KURLRequester *     urlRequester_;
-
 private:
+    void initDialog(const QString &_text,const QString &urlName,bool modal);
+    KURLRequester *urlRequester_;
+
     class KURLRequesterDlgPrivate;
     KURLRequesterDlgPrivate *d;
 

@@ -36,7 +36,7 @@ public:
     virtual ~PtyProcess();
 
     /**
-     * Fork off and execute a command. The command's standard in and output 
+     * Forks off and execute a command. The command's standard in and output 
      * are connected to the pseudo tty. They are accessible with @ref #readLine 
      * and @ref #writeLine.
      * @param command The command to execute.
@@ -45,7 +45,7 @@ public:
     int exec(QCString command, QCStringList args);
 
     /**
-     * Read a line from the program's standard out. Depending on the @em block 
+     * Reads a line from the program's standard out. Depending on the @em block 
      * parameter, this call blocks until a single, full line is read. 
      * @param block Block until a full line is read?
      * @return The output string.
@@ -53,32 +53,32 @@ public:
     QCString readLine(bool block=true);
 
     /**
-     * Write a line of text to the program's standard in.
+     * Writes a line of text to the program's standard in.
      * @param line The text to write.
      * @param addNewline Adds a '\n' to the line.
      */
     void writeLine(QCString line, bool addNewline=true);
 
     /**
-     * Put back a line of input.
+     * Puts back a line of input.
      * @param line The line to put back.
      * @param addNewline Adds a '\n' to the line.
      */
     void unreadLine(QCString line, bool addNewline=true);
 
     /**
-     * Set exit string. If a line of program output matches this,
+     * Sets the exit string. If a line of program output matches this,
      * @ref #waitForChild() will terminate the program and return.
      */
     void setExitString(QCString exit) { m_Exit = exit; }
 
     /**
-     * Wait for the child to exit. See also @ref #setExitString.
+     * Waits for the child to exit. See also @ref #setExitString.
      */
     int waitForChild();
 
     /**
-     * Wait until the pty has cleared the ECHO flag. This is usefull 
+     * Waits until the pty has cleared the ECHO flag. This is usefull 
      * when programs write a password prompt before they disable ECHO.
      * Disabling it might flush any input that was written.
      */
@@ -87,17 +87,17 @@ public:
     /** Enables/disables local echo on the pseudo tty. */
     int enableLocalEcho(bool enable=true);
 
-    /** Enable/disable terminal output. Relevant only to some subclasses. */
+    /** Enables/disables terminal output. Relevant only to some subclasses. */
     void setTerminal(bool terminal) { m_bTerminal = terminal; }
 
-    /** Overwritte the password as soon as it is used. Relevant only to
+    /** Overwrites the password as soon as it is used. Relevant only to
      * some subclasses. */
     void setErase(bool erase) { m_bErase = erase; }
 
-    /** Return the filedescriptor of the process. */
+    /** Returns the filedescriptor of the process. */
     int fd() {return m_Fd;};
 
-    /** Return the pid of the process. */
+    /** Returns the pid of the process. */
     int pid() {return m_Pid;};
 
 protected:

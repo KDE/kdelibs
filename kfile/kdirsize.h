@@ -24,7 +24,7 @@
 #include <kfileitem.h>
 
 /**
- * Compute directory size (similar to "du", but doesn't give the same results
+ * Computes a directory size (similar to "du", but doesn't give the same results
  * since we simply sum up the dir and file sizes, whereas du speaks disk blocks)
  */
 class KDirSize : public KIO::Job

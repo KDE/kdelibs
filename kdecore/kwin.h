@@ -57,7 +57,7 @@ class KWin
 public:
 
     /**
-     * Set window win to be the active window.
+     * Sets window @p win to be the active window.
      *
      * This is a request to the window manager. It may or may not be
      * obeyed.
@@ -65,7 +65,7 @@ public:
     static void setActiveWindow( WId win);
 
     /**
-     * Invoke interactive context help.
+     * Invokes interactive context help.
      */
     static void invokeContextHelp();
 
@@ -94,7 +94,7 @@ public:
 	bool isIconified() const { return mappingState == NET::Iconic; }
 	QRect geometry;
 	QRect frameGeometry;
-	
+
 	/** Returns a visible name with state.
 	 *
 	 * This is a simple convenience function that returns the
@@ -160,12 +160,12 @@ public:
     static void setOnAllDesktops( WId win, bool b );
 
     /**
-     * Move window @p win to desktop @p desktop.
+     * Moves window @p win to desktop @p desktop.
      */
     static void setOnDesktop( WId win, int desktop);
 
     /**
-     * Sets the strut  of window @p win to @p left, @right, @top, @bottom.
+     * Sets the strut of window @p win to @p left, @right, @top, @bottom.
      *
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );

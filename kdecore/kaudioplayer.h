@@ -57,13 +57,13 @@ private:
 
 public:
 	/**
-	 * Constructor. 
+	 * Constructor.
 	 *
 	 * @param filename Absolute path to the filename of the sound file to play
-     * @param parent A parent QObject for this KAudioPlayer
-     * @param name An internal name for this KAudioPlayer
-     */
-    KAudioPlayer( const QString& filename,
+	 * @param parent A parent QObject for this KAudioPlayer
+	 * @param name An internal name for this KAudioPlayer
+	 */
+	KAudioPlayer( const QString& filename,
 			QObject* parent = 0, const char* name = 0 );
 
 	/**

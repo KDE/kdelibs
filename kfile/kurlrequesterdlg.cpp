@@ -58,12 +58,12 @@ KURLRequesterDlg::~KURLRequesterDlg()
 {
 }
 
-void KURLRequesterDlg::initDialog(const QString &_text,const QString &urlName,bool modal)
+void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName,bool modal)
 {
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
 
-    QLabel * label = new QLabel( _text , plainPage() );
+    QLabel * label = new QLabel( text , plainPage() );
     topLayout->addWidget( label );
 
     urlRequester_ = new KURLRequester( urlName, plainPage(),
@@ -113,6 +113,11 @@ KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
 KFileDialog * KURLRequesterDlg::fileDialog()
 {
     return urlRequester_->fileDialog();
+}
+
+KURLRequester * KURLRequesterDlg::urlRequester()
+{
+    return urlRequester_;
 }
 
 #include "kurlrequesterdlg.moc"

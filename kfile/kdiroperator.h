@@ -115,7 +115,7 @@ class KDirOperator : public QWidget
     virtual ~KDirOperator();
 
     /**
-     * Enable/disable showing hidden files.
+     * Enables/disables showing hidden files.
      */
     void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
 

@@ -60,8 +60,10 @@ namespace KIO {
      * a job from the queue.
      *
      * Example:
+     * <pre>
      *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
      *    KIO::Scheduler::scheduleJob(job);
+     * </pre>
      *
      * 3) Connection Oriented
      * For some operations it is important that multiple jobs use
@@ -74,6 +76,7 @@ namespace KIO {
      * one after the other.
      *
      * Example:
+     * <pre>
      *    Slave *slave = KIO::Scheduler::getConnectedSlave(
      *            KURL("pop3://bastian:password@mail.kde.org"));
      *    TransferJob *job1 = KIO::get(
@@ -86,9 +89,10 @@ namespace KIO {
      *            KURL("pop3://bastian:password@mail.kde.org/msg3"));
      *    KIO::Scheduler::assignJobToSlave(slave, job3);
      *
-     *    ... Wait for jobs to finish...
+     *    // ... Wait for jobs to finish...
      *
      *    KIO::Scheduler::disconnectSlave(slave);
+     * </pre>
      **/
 
     class Scheduler : public QObject, virtual public DCOPObject {
@@ -122,7 +126,7 @@ namespace KIO {
         { self()->_removeSlaveOnHold(); }
 
         /**
-         * Request a slave for use in connection-oriented mode.
+         * Requests a slave for use in connection-oriented mode.
          *
          * @param url This defines the username,password,host & port to
          *            connect with.
@@ -136,7 +140,7 @@ namespace KIO {
         { return self()->_getConnectedSlave(url, config); }
 
         /*
-         * Use @p slave to do @p job.
+         * Uses @p slave to do @p job.
          *
          * @param slave The slave to use. The slave must have been obtained
          *              with a call to @ref getConnectedSlave and must not
@@ -156,7 +160,7 @@ namespace KIO {
         { return self()->_assignJobToSlave(slave, job); }
 
         /*
-         * Disconnect @p slave.
+         * Disconnects @p slave.
          *
          * @param slave The slave to disconnect. The slave must have been
          *              obtained with a call to @ref getConnectedSlave

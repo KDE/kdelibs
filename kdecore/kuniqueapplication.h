@@ -27,7 +27,7 @@
 class KUniqueApplicationPrivate;
 
 /**
- * Maintain only a single
+ * Maintains only a single
  * instance of a running application at a time.
  *
  * If another instance
@@ -48,25 +48,25 @@ public:
    * @p configUnique If true, the uniqueness of the application will
    *                 depend on the value of the "MultipleInstances"
    *                 key in the "KDE" group of the application config file.
-   *                 
+   *
    */
-  KUniqueApplication( bool allowStyles, 
+  KUniqueApplication( bool allowStyles,
 		      bool GUIenabled,
 		      bool configUnique);
   // KDE 3.0: Remove me
-  KUniqueApplication( bool allowStyles=true, 
+  KUniqueApplication( bool allowStyles=true,
 		      bool GUIenabled=true);
 
   /**
-   * Add command line options specific for KUniqueApplication
-   * 
+   * Adds command line options specific for KUniqueApplication.
+   *
    * Should be called before calling KUniqueApplication constructor
    * and / or start().
    */
   static void addCmdLineOptions();
-  
+
   /**
-   * Fork and register with dcop.
+   * Forks and registers with dcop.
    *
    * The command line arguments are being sent via DCOP to @ref newInstance()
    * and will be received once the application enters the event loop.
@@ -103,24 +103,24 @@ public:
    *    a.exec();
    * }
    * </pre>
-   * Although it is not necassery to call @ref start() before creating a
+   * Although it is not necessary to call @ref start() before creating a
    * KUniqueApplication, it is adviced to so because it is about
-   * 40% faster if the application was already running: 
-   * If you use @ref start() the @ref KApplication constructor will not be 
+   * 40% faster if the application was already running:
+   * If you use @ref start() the @ref KApplication constructor will not be
    * called if this isn't necessary.
    */
   static bool start();
-  
+
   /** Destructor */
   virtual ~KUniqueApplication();
 
   /**
-   * Retrieve the DCOP client object.
+   * Returns the DCOP client object.
    **/
   virtual DCOPClient *dcopClient();
-  
-  /** 
-   * Dispatch any incoming DCOP message for a new instance.
+
+  /**
+   * Dispatches any incoming DCOP message for a new instance.
    *
    * If it is not a request for a new instance, return @p false.
    */
@@ -128,7 +128,7 @@ public:
 	       QCString &replyType, QByteArray &replyData);
 
   /**
-   * Create a new "instance" of the application.
+   * Creates a new "instance" of the application.
    *
    * Usually this will involve making some calls into the GUI portion of your
    * application asking for a new window to be created, possibly with
@@ -148,7 +148,7 @@ private:
   virtual int newInstance(QValueList<QCString>);
 
   /**
-   * Delay the processing of a DCOP request.
+   * Delays the processing of a DCOP request.
    */
   void delayRequest(const QCString &fun, const QByteArray &data);
 
