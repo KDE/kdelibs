@@ -22,9 +22,8 @@ class QFont;
 class KGlobal
 {
 public:
-
-	static KApplication	*kApp();
-	static KStandardDirs	*dirs();
+        static KApplication	*kApp();
+        static KStandardDirs	*dirs();
 	
 	static KConfig		*config();
 	static KConfig		*instanceConfig();
@@ -37,6 +36,7 @@ public:
 	static QFont            generalFont();
 	static QFont            fixedFont();
 
+        static  int             dndEventDelay();
 		
 	KGlobal();
 	KGlobal( const KGlobal& );
@@ -52,7 +52,7 @@ public:
 	static 	KCharsets	*_charsets;
 
 	static  QFont           *_generalFont;
-	static  QFont           *_fixedFont;
+        static  QFont           *_fixedFont;
 
 protected:
 	friend class KApplication;

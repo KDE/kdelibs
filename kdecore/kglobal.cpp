@@ -114,6 +114,17 @@ QFont KGlobal::fixedFont()
     }
     return *_fixedFont;
 }
+
+int KGlobal::dndEventDelay()
+{
+    static int delay = -1;
+    if(delay == -1){
+        KConfig *c = KGlobal::config();
+        c->setGroup("General");
+        delay = c->readNumEntry("DndDelay", 2);
+    }
+    return(delay);
+}
  
 
 
