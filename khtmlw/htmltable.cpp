@@ -1185,6 +1185,7 @@ void HTMLTable::calcRowHeights()
 
 int HTMLTable::calcMinWidth()
 {
+    calcColInfo();
 //    return columnPos[totalCols] + border;
     return _minWidth;
 }
