@@ -1694,7 +1694,6 @@ void DocumentImpl::recalcStyleSelector()
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
-    StyleSheetImpl* altsheet = 0;
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed : QString();
     NodeImpl *n;
     for (;;) {
