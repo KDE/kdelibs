@@ -359,19 +359,16 @@ static pid_t launch(int argc, const char *_name, const char *args)
           }
           if (d.result == 3)
           {
-             fprintf(stderr, "We got an error message.,..\n");
              int l = 0;
              d.n = read(d.fd[0], &l, sizeof(int));
              if (d.n == sizeof(int))
              {
-                fprintf(stderr, "Message is %d bytes long..\n", l);
                 QCString tmp;
                 tmp.resize(l+1);
                 d.n = read(d.fd[0], tmp.data(), l);
                 tmp[l] = 0;
                 if (d.n == l)
                    d.errorMsg = tmp;
-                fprintf(stderr, "Message reads: '%s'\n", tmp.data());
              }
           }
           // Finished
