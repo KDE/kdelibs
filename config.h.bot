@@ -83,6 +83,9 @@ int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
 
 #if !defined(HAVE_SETENV)
 int setenv(const char *name, const char *value, int overwrite);
+#endif
+
+#if !defined(HAVE_UNSETENV)
 int unsetenv(const char *name);
 #endif
 
