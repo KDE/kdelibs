@@ -8,14 +8,10 @@ fi
 
 CATALOG=$ksgmldir/kde.cat
 DB_STYLESHEET=$ksgmldir/stylesheets/kde.dsl
-SGML_CATALOG_FILES_TMP=@SGML_CATALOGS@
-# Only override SGML_CATALOG_FILES if configure found something
-# Otherwise, keep current value (maybe a global system setting)
-if [ -n "$SGML_CATALOG_FILES_TMP" ]
-then
-    SGML_CATALOG_FILES=$SGML_CATALOG_FILES_TMP
-    export SGML_CATALOG_FILES
-fi
+
+# This keeps all system and user variable settings untouched, but
+# consults them when needed - IMHO the best solution
+SP_C_SWITCHES=@SGML_CATALOGS@
 
 output=HTML
 TMPDIR=DBTOHTML_OUTPUT_DIR$$
@@ -40,8 +36,8 @@ SAVE_PWD=`pwd`
   else
     input_file=$1
   fi
-  echo jade -c $CATALOG -t sgml -d ${DB_STYLESHEET}\#html $input_file 
-  jade -c $CATALOG -t sgml -d ${DB_STYLESHEET}\#html $input_file
+  echo jade -c $CATALOG $SP_C_SWITCHES -t sgml -d ${DB_STYLESHEET}\#html $input_file 
+  jade -c $CATALOG $SP_C_SWITCHES -t sgml -d ${DB_STYLESHEET}\#html $input_file
   cd $SAVE_PWD
 )
 

@@ -16,4 +16,3 @@ install-data-local:
 
 uninstall-local:
 	-rm -f $(bindir)/db2ps
-
