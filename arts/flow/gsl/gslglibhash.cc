@@ -82,7 +82,7 @@ void        g_hash_table_insert            (GHashTable     *hash_table,
     }
 
   if (value)
-    hash_table->nodes[hashvalue].push_back(make_pair (key, value));
+    hash_table->nodes[hashvalue].push_back(std::make_pair (key, value));
 }
 
 gpointer    g_hash_table_lookup            (GHashTable     *hash_table,
