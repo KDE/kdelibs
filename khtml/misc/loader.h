@@ -133,6 +133,8 @@ namespace khtml
 	void setStatus(Status s) { m_status = s; }
 	Status status() const { return m_status; }
 
+        QTextCodec* codecForBuffer( const QString& charset, const QByteArray& buffer ) const;
+
 	int size() const { return m_size; }
 
 	/**
@@ -216,7 +218,7 @@ namespace khtml
         void checkNotify();
 
 	DOM::DOMString m_sheet;
-        QTextCodec* m_codec;
+        QString m_charset;
 	int m_err;
 	QString m_errText;
     };
@@ -246,8 +248,8 @@ namespace khtml
         bool isLoaded() const { return !m_loading; }
 
     protected:
+        QString m_charset;
 	DOM::DOMString m_script;
-        QTextCodec* m_codec;
     };
 
     class ImageSource;

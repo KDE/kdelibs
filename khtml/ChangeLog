@@ -1,3 +1,8 @@
+2003-11-29  Dirk Mueller  <mueller@kde.org>
+
+	* misc/loader.cpp (CachedCSSStyleSheet/CachedScript::data): add some utf8/utf16 encoding
+	handling. Workaround Qt bugs (#69115). Initial investigation and patch by Harri.
+
 2003-11-29  Stephan Kulow  <coolo@kde.org>
 
 	* html/html_elementimpl.cpp (addHTMLAlignment): readding floating for input type="image"

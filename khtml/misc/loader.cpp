@@ -155,6 +155,38 @@ void CachedObject::setSize(int size)
         Cache::insertInLRUList(this);
 }
 
+QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArray& buffer ) const
+{
+    // we don't use heuristicContentMatch here since it is a) far too slow and
+    // b) having too much functionality for our case.
+
+    uchar* d = ( uchar* ) buffer.data();
+    int s = buffer.size();
+
+    if ( s >= 3 &&
+         d[0] == 0xef && d[1] == 0xbb && d[2] == 0xbf) {
+        qDebug( "*** detected UTF8!!!" );
+         return QTextCodec::codecForMib( 106 ); // UTF-8
+    }
+
+    if ( s >= 2 && ((d[0] == 0xff && d[1] == 0xfe) ||
+                    (d[0] == 0xfe && d[1] == 0xff)))
+        return QTextCodec::codecForMib( 1000 ); // UCS-2
+
+    if(!charset.isEmpty())
+    {
+	QTextCodec* c = KGlobal::charsets()->codecForName(charset);
+        if(c->mibEnum() == 11)  {
+            // iso8859-8 (visually ordered)
+            c = QTextCodec::codecForName("iso8859-8-i");
+        }
+        return c;
+    }
+
+
+    return QTextCodec::codecForMib(4); // latin-1
+}
+
 // -------------------------------------------------------------------------------------------
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy,
@@ -172,17 +204,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
-    bool b;
-    if(!charset.isEmpty())
-    {
-	m_codec = KGlobal::charsets()->codecForName(charset, b);
-        if(m_codec->mibEnum() == 11)  {
-            // iso8859-8 (visually ordered)
-            m_codec = QTextCodec::codecForName("iso8859-8-i");
-        }
-    }
-    else
-        m_codec = QTextCodec::codecForMib(4); // latin-1
+    m_charset = charset;
 }
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const QString &stylesheet_data)
@@ -190,7 +212,6 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const QString &st
 {
     m_loading = false;
     m_status = Persistent;
-    m_codec = 0;
     m_sheet = DOMString(stylesheet_data);
 }
 
@@ -222,8 +243,12 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     if(!eof) return;
     buffer.close();
     setSize(buffer.buffer().size());
-    QString data = m_codec->toUnicode( buffer.buffer().data(), m_size );
-    m_sheet = DOMString(data);
+
+    QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
+    QString data = c->toUnicode( buffer.buffer().data(), m_size );
+    qDebug( "data is >%s<", data.latin1() );
+    // workaround Qt bugs
+    m_sheet = data[0] == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
     m_loading = false;
 
     checkNotify();
@@ -269,16 +294,7 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
-    bool b;
-    if(!charset.isEmpty()) {
-        m_codec = KGlobal::charsets()->codecForName(charset, b);
-        if(m_codec->mibEnum() == 11)  {
-            // iso8859-8 (visually ordered)
-            m_codec = QTextCodec::codecForName("iso8859-8-i");
-        }
-    }
-    else
-	m_codec = QTextCodec::codecForMib(4); // latin-1
+    m_charset = charset;
 }
 
 CachedScript::CachedScript(const DOMString &url, const QString &script_data)
@@ -286,7 +302,6 @@ CachedScript::CachedScript(const DOMString &url, const QString &script_data)
 {
     m_loading = false;
     m_status = Persistent;
-    m_codec = 0;
     m_script = DOMString(script_data);
 }
 
@@ -312,8 +327,10 @@ void CachedScript::data( QBuffer &buffer, bool eof )
     if(!eof) return;
     buffer.close();
     setSize(buffer.buffer().size());
-    QString data = m_codec->toUnicode( buffer.buffer().data(), m_size );
-    m_script = DOMString(data);
+
+    QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
+    QString data = c->toUnicode( buffer.buffer().data(), m_size );
+    m_script = data[0] == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
     m_loading = false;
     checkNotify();
 }
@@ -1093,7 +1110,7 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
     m_requestsPending.append(req);
 
     emit requestStarted( req->m_docLoader, req->object );
-    
+
     m_timer.start(0, true);
 }
 
