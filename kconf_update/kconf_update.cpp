@@ -362,7 +362,7 @@ void KonfUpdate::gotId(const QString &_id)
        }
        else
        {
-          qDebug("Id '%s' was already in done-list!", _id.latin1());
+          //qDebug("Id '%s' was already in done-list", _id.latin1());
           if (!m_bUseConfigInfo)
           {
              skip = true;
