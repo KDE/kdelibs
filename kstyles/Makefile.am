@@ -1,4 +1,5 @@
 
 #SUBDIRS=utils themes highcolor pics \
 #	basicplugin klegacy riscos megagradient stepplugin web
-SUBDIRS = highcolor light kthemestyle themes
+SUBDIRS = highcolor themes  light kthemestyle pics riscos
+
