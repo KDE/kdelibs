@@ -315,7 +315,7 @@
 <!ENTITY Pamela.Roberts '<personname><firstname>Pamela</firstname><surname>Roberts</surname></personname>'>
 <!ENTITY Pamela.Roberts.mail '<email>pamroberts@blueyonder.co.uk</email>'>
 <!ENTITY Hamish.Rodda '<personname><firstname>Hamish</firstname><surname>Rodda</surname></personname>'>
-<!ENTITY Hamish.Rodda.mail '<email>meddie@yoyo.cc.monash.edu.au</email>'>
+<!ENTITY Hamish.Rodda.mail '<email>rodda@kde.org</email>'>
 <!ENTITY Philip.Rodrigues '<personname><firstname>Philip</firstname><surname>Rodrigues</surname></personname>'>
 <!ENTITY Philip.Rodrigues.mail '<email>phil.rod@ntlworld.com</email>'>
 <!ENTITY Seth.Rothberg '<personname><firstname>Seth</firstname><surname>Rothberg</surname></personname>'>
