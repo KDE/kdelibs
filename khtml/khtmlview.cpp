@@ -92,8 +92,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
 
     viewport()->setMouseTracking(true);
-    //viewport()->setBackgroundMode(PaletteBase);
-    viewport()->setBackgroundMode(NoBackground);
+    viewport()->setBackgroundMode(PaletteBase);
+    //viewport()->setBackgroundMode(NoBackground);
 
     KImageIO::registerFormats();
 
@@ -786,7 +786,7 @@ void KHTMLView::print()
             pageWidth = (int) (pageWidth/scale);
         }
         int top = 0;
-        while(top < root->height()) {
+        while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
             p->translate(0,-pageHeight);

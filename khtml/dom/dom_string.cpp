@@ -36,52 +36,20 @@ DOMString::DOMString(int)
     impl = 0;
 }
 
-DOMString::DOMString(QChar *str, uint len, bool copy)
-{
-    if (!str) {
-	impl = 0;
-	return;
-    }
-
-    QChar *c;
-    if(copy)
-    {
-	c = new QChar[len];
-	memcpy(c, str, len*sizeof(QChar));
-    }
-    else
-    {
-	c = str;
-    }
-    impl = new DOMStringImpl( c, len );
-    impl->ref();
-}
-
 DOMString::DOMString(const QChar *str, uint len)
 {
-    if (!str) {
-	impl = 0;
-	return;
-    }
-
-    QChar *c;
-    c = new QChar[len];
-    memcpy(c, str, len*sizeof(QChar));
-    impl = new DOMStringImpl( c, len );
+    impl = new DOMStringImpl( str, len );
     impl->ref();
 }
 
 DOMString::DOMString(const QString &str)
 {
-    if (!str) {
+    if (str.isNull()) {
 	impl = 0;
 	return;
     }
 
-    QChar *c;
-    c = new QChar[str.length()];
-    memcpy(c, str.unicode(), str.length()*sizeof(QChar));
-    impl = new DOMStringImpl( c, str.length() );
+    impl = new DOMStringImpl( str.unicode(), str.length() );
     impl->ref();
 }
 
@@ -92,16 +60,7 @@ DOMString::DOMString(const char *str)
 	return;
     }
 
-    int len = 0;
-    for(const char* p = str; *p; p++) len++;
-    QChar *m_str = new QChar[len];
-    int i = 0;
-    while(i<len)
-    {
-	m_str[i] = str[i];
-	i++;
-    }
-    impl = new DOMStringImpl( m_str, len );
+    impl = new DOMStringImpl( str );
     impl->ref();
 }
 

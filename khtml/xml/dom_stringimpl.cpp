@@ -29,6 +29,8 @@
 #include <qlist.h>
 #include <kdebug.h>
 
+#include <string.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -37,9 +39,22 @@ using namespace khtml;
 
 template class QList<Length>;
 
-DOMStringImpl::DOMStringImpl(QChar *str, uint len)
+DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
 {
-    s = str, l = len;
+    s = QT_ALLOC_QCHAR_VEC( len );
+    memcpy( s, str, len * sizeof(QChar) );
+    l = len;
+}
+
+DOMStringImpl::DOMStringImpl(const char *str)
+{
+    l = strlen(str);
+    s = QT_ALLOC_QCHAR_VEC( l );
+    int i = 0;
+    while( i < l ) {
+	s[i] = str[i];
+	i++;
+    }
 }
 
 DOMStringImpl::DOMStringImpl(const QChar &ch)
@@ -51,7 +66,7 @@ DOMStringImpl::DOMStringImpl(const QChar &ch)
 
 DOMStringImpl::~DOMStringImpl()
 {
-    if(s) delete [] s;
+    if(s) QT_DELETE_QCHAR_VEC(s);
 }
 
 void DOMStringImpl::append(DOMStringImpl *str)
@@ -122,15 +137,14 @@ DOMStringImpl *DOMStringImpl::split(uint pos)
   QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
   memcpy(c, s+pos, newLen*sizeof(QChar));
 
+  DOMStringImpl *str = new DOMStringImpl(s + pos, newLen);
   truncate(pos);
-  return new DOMStringImpl(c, newLen);
+  return str;
 }
 
 DOMStringImpl *DOMStringImpl::copy() const
 {
-    QChar *c = QT_ALLOC_QCHAR_VEC(l);
-    memcpy(c, s, l*sizeof(QChar));
-    return new DOMStringImpl(c, l);
+    return new DOMStringImpl(s, l);
 }
 
 DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
@@ -139,10 +153,7 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
   if(pos+len > l)
     len = l - pos;
 
-  QChar *c = QT_ALLOC_QCHAR_VEC(len);
-  memcpy(c, s+pos, len*sizeof(QChar));
-
-  return new DOMStringImpl(c, len);
+  return new DOMStringImpl(s + pos, len);
 }
 
 static Length parseLength(QChar *s, unsigned int l)

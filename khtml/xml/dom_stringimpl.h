@@ -37,7 +37,8 @@ class DOMStringImpl : public DomShared
 protected:
     DOMStringImpl() { s = 0, l = 0; }
 public:
-    DOMStringImpl(QChar *str, unsigned int len);
+    DOMStringImpl(const QChar *str, unsigned int len);
+    DOMStringImpl(const char *str);
     DOMStringImpl(const QChar &ch);
     virtual ~DOMStringImpl();
 

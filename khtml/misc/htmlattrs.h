@@ -136,6 +136,6 @@ using namespace DOM;
 #define ATTR_VSPACE 126
 #define ATTR_WIDTH 127
 #define ATTR_WRAP 128
-const DOMString &getAttrName(unsigned short id);
+DOMString getAttrName(unsigned short id);
 
 #endif

@@ -121,7 +121,7 @@ public:
 
     virtual unsigned short valueType() const;
 
-    void append(CSSValueImpl *val) { m_values.append(val); }
+    void append(CSSValueImpl *val);
 
 protected:
     QList<CSSValueImpl> m_values;

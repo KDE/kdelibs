@@ -102,6 +102,7 @@ protected:
     void layoutInlineChildren();
     void layoutSpecialObjects();
 
+public:
     int floatBottom();
     inline int leftBottom();
     inline int rightBottom();

@@ -341,7 +341,7 @@ findAttr (register const char *str, register unsigned int len)
 }
 
 
-static const DOMString attrList[] = {
+static const char *attrList[] = {
     "ABBR",
     "ACCEPT-CHARSET",
     "ACCEPT",
@@ -472,7 +472,7 @@ static const DOMString attrList[] = {
     "WRAP",
     0
 };
-const DOMString &getAttrName(unsigned short id)
+DOMString getAttrName(unsigned short id)
 {
     return attrList[id-1];
 };

@@ -294,13 +294,6 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 void RenderListMarker::layout()
 {
     calcMinMaxWidth();
-
-    if(listImage) {
-	m_height = listImage->pixmap().height();
-	return;
-    }
-
-    m_height = 1;
 }
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
@@ -344,6 +337,7 @@ void RenderListMarker::calcMinMaxWidth()
     if(listImage) {
 	if(m_style->listStylePosition() == INSIDE)
 	    m_width = listImage->pixmap().width() + 5;
+	m_height = listImage->pixmap().height();
 	return;
     }
 
@@ -352,13 +346,16 @@ void RenderListMarker::calcMinMaxWidth()
     case DISC:
     case CIRCLE:
     case SQUARE:
+    {
+	QFontMetrics fm(m_style->font());
 	if(m_style->listStylePosition() == INSIDE) {
-	    QFontMetrics fm(m_style->font());
 	    m_width = fm.ascent();
 	}
 	else
 	    m_width = 0;
-	goto end;
+	m_height = fm.ascent();
+    }
+    goto end;
     case HEBREW:
     case ARMENIAN:
     case GEORGIAN:
@@ -392,11 +389,14 @@ void RenderListMarker::calcMinMaxWidth()
 	break;
     }
     item += QString::fromLatin1(". ");
-    if(m_style->listStylePosition() != INSIDE)
-	m_width = 0;
-    else {
+
+    {
 	QFontMetrics fm(m_style->font());
-	m_width = fm.width(item);
+	if(m_style->listStylePosition() != INSIDE)
+	    m_width = 0;
+	else 
+	    m_width = fm.width(item);
+	m_height = fm.ascent();
     }
  end:
 

@@ -275,7 +275,7 @@ findTag (register const char *str, register unsigned int len)
 }
 
 
-static const DOMString tagList[] = {
+static const char * tagList[] = {
 "",
     "A",
     "ABBR",
@@ -471,8 +471,8 @@ static const DOMString tagList[] = {
     "/VAR",
     0
 };
-const DOMString &getTagName(unsigned short id)
+DOMString getTagName(unsigned short id)
 {
-    if(id > ID_CLOSE_TAG*2) return tagList[ID_CLOSE_TAG+1];
-    return tagList[id];
+    if(id > ID_CLOSE_TAG*2) id = ID_CLOSE_TAG+1;
+    return DOMString(tagList[id]);
 };

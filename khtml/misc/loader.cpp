@@ -712,15 +712,12 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DO
 
 Loader::Loader() : QObject()
 {
+    m_requestsPending.setAutoDelete( true );
+    m_requestsLoading.setAutoDelete( true );
 }
 
 Loader::~Loader()
 {
-    m_requestsPending.setAutoDelete( true );
-    m_requestsLoading.setAutoDelete( true );
-
-    m_requestsPending.clear();
-    m_requestsLoading.clear();
 }
 
 void Loader::load(CachedObject *object, const DOMString &baseURL, bool incremental)

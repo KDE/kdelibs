@@ -283,11 +283,22 @@ CSSValueListImpl::CSSValueListImpl()
 
 CSSValueListImpl::~CSSValueListImpl()
 {
+    CSSValueImpl *val = m_values.first();
+    while( val ) {
+	val->deref();
+	val = m_values.next();
+    }
 }
 
 unsigned short CSSValueListImpl::valueType() const
 {
     return CSSValue::CSS_VALUE_LIST;
+}
+
+void CSSValueListImpl::append(CSSValueImpl *val)
+{
+    m_values.append(val);
+    val->ref();
 }
 
 // -------------------------------------------------------------------------------------

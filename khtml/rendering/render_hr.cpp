@@ -122,7 +122,7 @@ short RenderHR::intrinsicWidth() const
     while(prev && !prev->isFlow())
 	prev = prev->previousSibling();
     int w;
-    if(prev)
+    if(prev && static_cast<RenderFlow *>(prev)->floatBottom() > prev->height() )
 	w = static_cast<RenderFlow *>(prev)->lineWidth( prev->height() );
     else
 	w =containingBlockWidth();

@@ -315,7 +315,12 @@ void RenderFlow::layoutBlockChildren()
         m_height += paddingTop();
         toAdd += paddingBottom();
     }
+    xPos += marginLeft();
 
+    if( m_style->direction() == RTL ) {
+	xPos = marginLeft() + m_width - paddingRight() - borderRight();
+    }
+    
     RenderObject *child = firstChild();
     int prevMargin = 0;
     if(isTableCell())
@@ -353,11 +358,17 @@ void RenderFlow::layoutBlockChildren()
 
         child->layout();
 
-        // html blocks flow around floats
-        if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-            child->setXPos(leftOffset(m_height) + child->marginLeft());
-        else
-            child->setXPos(xPos + child->marginLeft());
+	int chPos = xPos;
+	if(m_style->direction() == LTR) {
+	    // html blocks flow around floats
+	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+		chPos += leftOffset(m_height);
+	} else {
+	    chPos -= child->width() + child->marginLeft() + child->marginRight();
+	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+		chPos -= leftOffset(m_height);
+	}	    
+	child->setXPos(chPos);
 
         m_height += child->height();
 

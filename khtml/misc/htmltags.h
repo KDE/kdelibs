@@ -7,7 +7,7 @@ htmltags.in by maketags, do not edit */
 
 #include "dom_string.h"
 
-const DOM::DOMString &getTagName(unsigned short id);
+DOM::DOMString getTagName(unsigned short id);
 #define ID_A 1
 #define ID_ABBR 2
 #define ID_ACRONYM 3

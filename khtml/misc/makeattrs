@@ -55,7 +55,7 @@ while (<IN>) {
 print out "%%\n";
 close out;
 
-print header "const DOMString &getAttrName(unsigned short id);\n";
+print header "DOMString getAttrName(unsigned short id);\n";
 
 print header "\n#endif\n";
 close header;
@@ -63,13 +63,13 @@ close header;
 system("/bin/sh", "-c", "gperf -a -L 'ANSI-C' -E -C -c -o -t -k '*' -NfindAttr -Hhash_attr -Wwordlist_attr -D -s 2 htmlattrs.gperf > htmlattrs.c");
 
 open(OUT, ">>htmlattrs.c");
-print OUT "\n\nstatic const DOMString attrList[$len] = {\n";
+print OUT "\n\nstatic const char *attrList[$len] = {\n";
 while(defined ($line = shift @a))
 {
     print OUT $line."\n";
 }
 print OUT "    0\n};\n";
-print OUT "const DOMString &getAttrName(unsigned short id)\n{\n";
+print OUT "DOMString getAttrName(unsigned short id)\n{\n";
 print OUT "    return attrList[id-1];\n";
 print OUT "};\n";
 

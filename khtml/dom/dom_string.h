@@ -52,10 +52,7 @@ public:
     DOMString();
     /* constructs an empty DOMString. Like this assignment to 0 works */
     DOMString(int);
-    /** if copy == false, takes over the QChar * array. It'll get deleted,
-     * when the string gets deleted...
-     */
-    DOMString(QChar *str, uint len, bool copy = true);
+
     DOMString(const QChar *str, uint len);
     DOMString(const QString &);
     DOMString(const char *str);

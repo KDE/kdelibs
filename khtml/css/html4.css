@@ -106,9 +106,9 @@
       OL, UL, DIR,
       MENU, DD        { margin-left: 40px }	
 	/* for right to left */
-      UL *[dir="rtl"], 
-      OL *[dir="rtl"],  DIR *[dir="rtl"], 
-      MENU *[dir="rtl"], DD *[dir="rtl"]  { margin-right:40px; margin-left: auto }
+      *[dir="rtl"] UL, 
+      *[dir="rtl"] OL,  *[dir="rtl"] DIR, 
+      *[dir="rtl"] MENU, *[dir="rtl"] DD { margin-right:40px; margin-left: auto }
       OL              { list-style-type: decimal }
       UL              { list-style-type: disc }
       UL UL           { list-style-type: circle }
@@ -119,7 +119,7 @@
       LI > DIV        { margin-top: auto; margin-bottom: auto }
       U, INS          { text-decoration: underline }
       CENTER          { text-align: center; }
-      CENTER > *      { margin-left: auto; margin-right: auto; } /* center all children of CENTER */
+      CENTER  > *    { margin-left: auto; margin-right: auto; } /* center all children of CENTER */
 
       /* ### :before is not supported at the moment */
       BR:before       { content: "\n" }

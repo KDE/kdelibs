@@ -205,6 +205,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if ( reset || config->hasKey( "AutoLoadImages" ) )
       m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+
+    // The global setting for JavaScript
+    if ( reset || config->hasKey( "EnableCSS" ) )
+        m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
+
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
@@ -217,10 +222,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
-
-        // The global setting for JavaScript
-    if ( reset || config->hasKey( "EnableCSS" ) )
-        m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
 
         // The domain-specific settings.
         if( reset || config->hasKey( "JavaScriptDomainAdvice" ) ) {

@@ -51,7 +51,7 @@ public:
     virtual void updateSize();
     virtual void updateHeight();
     virtual void close();
-
+    
     int docHeight() const;
     int docWidth() const;
 
