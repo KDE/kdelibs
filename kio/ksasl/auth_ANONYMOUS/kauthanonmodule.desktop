@@ -1,15 +1,7 @@
 [Desktop Entry]
 Icon=
-InitialPreference=4
-Name=Plain Authenication
-Name[cs]=Prostá autorizace
-Name[eo]=Plena Aŭtentigo
-Name[it]=AutSemplice
-Name[ko]=쉬운 인증
-Name[pl]=Zwykła autoryzacja
-Name[ro]=Autentificare simplă
-Name[sl]=NavadnaOver
-Name[sv]=Enkel autentisering
+InitialPreference=2
+Name=Anonymous Authenication
 ServiceTypes=KSASL/Module
 Type=Service
-X-KDE-Library=ksasl_auth_plain
+X-KDE-Library=ksasl_auth_anon
