@@ -99,10 +99,9 @@ return rc;
 
 
 void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObject) {
-	DCOPClient *dc = callingDcopClient();
 	int rc = open(wallet);
-
-	DCOPRef(dc->senderId(), returnObject).send("walletOpenResult", rc);
+	QCString appid = friendlyDCOPPeerName();
+	DCOPRef(appid, returnObject).send("walletOpenResult", rc);
 }
 
 
@@ -111,7 +110,6 @@ int KWalletD::open(const QString& wallet) {
 		return -1;
 	}
 
-	DCOPClient *dc = callingDcopClient();
 	int rc = -1;
 	bool brandNew = false;
 
@@ -119,90 +117,102 @@ int KWalletD::open(const QString& wallet) {
 		return -1;
 	}
 
-	if (dc) {
-		for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
-			if (i.current()->walletName() == wallet) {
-				rc = i.currentKey();
+	QCString appid = friendlyDCOPPeerName();
+	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
+		if (i.current()->walletName() == wallet) {
+			rc = i.currentKey();
+			break;
+		}
+	}
+
+	if (rc == -1) {
+		if (_wallets.count() > 20) {
+			kdDebug() << "Too many wallets open." << endl;
+			return -1;
+		}
+
+		KWallet::Backend *b = new KWallet::Backend(wallet);
+		KPasswordDialog *kpd;
+		if (KWallet::Backend::exists(wallet)) {
+			kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet), false);
+			brandNew = false;
+			kpd->setButtonOKText(i18n("&Open"));
+		} else if (wallet == KWallet::Wallet::LocalWallet() ||
+				wallet == KWallet::Wallet::NetworkWallet()) {
+			// Auto create these wallets.
+			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion.  Please enter a password to use with this wallet.").arg(appid), false);
+			brandNew = true;
+			kpd->setButtonOKText(i18n("&Open"));
+		} else {
+			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet), false);
+			brandNew = true;
+			kpd->setButtonOKText(i18n("&Create"));
+		}
+
+		kpd->setCaption(i18n("KDE Wallet Service"));
+		const char *p = 0L;
+		while (!b->isOpen()) {
+			if (kpd->exec() == KDialog::Accepted) {
+				p = kpd->password();
+				b->open(QByteArray().duplicate(p, strlen(p)));
+				if (!b->isOpen()) {
+					kpd->setPrompt(i18n("Invalid password for wallet '%1'.  Please try again.").arg(wallet));
+				}
+			} else {
 				break;
 			}
 		}
 
-		QCString appid = dc->senderId();
-		if (rc == -1) {
-			if (_wallets.count() > 20) {
-				kdDebug() << "Too many wallets open." << endl;
-				return -1;
-			}
-
-			KWallet::Backend *b = new KWallet::Backend(wallet);
-			KPasswordDialog *kpd;
-			if (KWallet::Backend::exists(wallet)) {
-				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet), false);
-				brandNew = true;
-				kpd->setButtonOKText(i18n("&Open"));
-			} else {
-				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet), false);
-				kpd->setButtonOKText(i18n("&Create"));
-			}
-
-			kpd->setCaption(i18n("KDE Wallet Service"));
-			const char *p = 0L;
-			while (!b->isOpen()) {
-				if (kpd->exec() == KDialog::Accepted) {
-					p = kpd->password();
-					b->open(QByteArray().duplicate(p, strlen(p)));
-					if (!b->isOpen()) {
-						kpd->setPrompt(i18n("Invalid password for wallet '%1'.  Please try again.").arg(wallet));
-					}
-				} else {
-					break;
-				}
-			}
-
-			if (!p || !b->isOpen()) {
-				delete b;
-				delete kpd;
-				return -1;
-			}
-			_wallets.insert(rc = generateHandle(), b);
-			_passwords[wallet] = p;
-			_handles[appid].append(rc);
-			b->ref();
+		if (!p || !b->isOpen()) {
+			delete b;
 			delete kpd;
-			QByteArray data;
-			QDataStream ds(data, IO_WriteOnly);
-			ds << wallet;
-			if (brandNew) {
-				emitDCOPSignal("walletCreated(QString)", data);
-			}
-			emitDCOPSignal("walletOpened(QString)", data);
-			if (_wallets.count() == 1 && _launchManager) {
-				KApplication::startServiceByDesktopName("kwalletmanager");
+			return -1;
+		}
+
+		_wallets.insert(rc = generateHandle(), b);
+		_passwords[wallet] = p;
+		_handles[appid].append(rc);
+		
+		if (brandNew) {
+			createFolder(rc, KWallet::Wallet::PasswordFolder);
+			createFolder(rc, KWallet::Wallet::FormDataFolder);
+		}
+
+		b->ref();
+		delete kpd;
+		QByteArray data;
+		QDataStream ds(data, IO_WriteOnly);
+		ds << wallet;
+		if (brandNew) {
+			emitDCOPSignal("walletCreated(QString)", data);
+		}
+		emitDCOPSignal("walletOpened(QString)", data);
+		if (_wallets.count() == 1 && _launchManager) {
+			KApplication::startServiceByDesktopName("kwalletmanager");
+		}
+	} else {
+		int response = KMessageBox::Yes;
+
+		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
+			response = KMessageBox::questionYesNoCancel(0L, i18n("The application '%1' has requested access to the open wallet '%2'.").arg(appid).arg(wallet), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+		}
+
+		if (response == KMessageBox::Yes || response == KMessageBox::No) {
+			_handles[appid].append(rc);
+			_wallets.find(rc)->ref();
+			if (response == KMessageBox::No) {
+				KConfig cfg("kwalletrc");
+				cfg.setGroup("Auto Allow");
+				QStringList apps = cfg.readListEntry(wallet);
+				if (!apps.contains(appid)) {
+					apps += appid;
+					_implicitAllowMap[wallet] += appid;
+					cfg.writeEntry(wallet, apps);
+					cfg.sync();
+				}
 			}
 		} else {
-			int response = KMessageBox::Yes;
-			
-			if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
-				response = KMessageBox::questionYesNoCancel(0L, i18n("The application '%1' has requested access to the open wallet '%2'.").arg(appid).arg(wallet), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
-			}
-
-			if (response == KMessageBox::Yes || response == KMessageBox::No) {
-				_handles[appid].append(rc);
-			 	_wallets.find(rc)->ref();
-				if (response == KMessageBox::No) {
-					KConfig cfg("kwalletrc");
-					cfg.setGroup("Auto Allow");
-					QStringList apps = cfg.readListEntry(wallet);
-					if (!apps.contains(appid)) {
-						apps += appid;
-						_implicitAllowMap[wallet] += appid;
-						cfg.writeEntry(wallet, apps);
-						cfg.sync();
-					}
-				}
-			} else {
-				return -1;
-			}
+			return -1;
 		}
 	}
 
@@ -327,18 +337,18 @@ return -1;
 
 
 int KWalletD::close(int handle, bool force) {
-DCOPClient *dc = callingDcopClient();
+QCString appid = friendlyDCOPPeerName();
 KWallet::Backend *w = _wallets.find(handle);
 bool contains = false;
 
-	if (dc && w) { // the handle is valid and we have a client
-		if (_handles.contains(dc->senderId())) { // we know this app
-			if (_handles[dc->senderId()].contains(handle)) {
+	if (w) { // the handle is valid
+		if (_handles.contains(appid)) { // we know this app
+			if (_handles[appid].contains(handle)) {
 				// the app owns this handle
-				_handles[dc->senderId()].remove(_handles[dc->senderId()].find(handle));
+				_handles[appid].remove(_handles[appid].find(handle));
 				contains = true;
-				if (_handles[dc->senderId()].isEmpty()) {
-					_handles.remove(dc->senderId());
+				if (_handles[appid].isEmpty()) {
+					_handles.remove(appid);
 				}
 			}
 		}
@@ -661,12 +671,12 @@ void KWalletD::invalidateHandle(int handle) {
 
 
 KWallet::Backend *KWalletD::getWallet(int handle) {
-DCOPClient *dc = callingDcopClient();
 KWallet::Backend *w = _wallets.find(handle);
 
-	if (dc && w) { // the handle is valid and we have a client
-		if (_handles.contains(dc->senderId())) { // we know this app
-			if (_handles[dc->senderId()].contains(handle)) {
+	if (w) { // the handle is valid
+		QCString appid = friendlyDCOPPeerName();
+		if (_handles.contains(appid)) { // we know this app
+			if (_handles[appid].contains(handle)) {
 				// the app owns this handle
 				_failed = 0;
 				return w;
@@ -851,6 +861,16 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 bool KWalletD::implicitAllow(const QString& wallet, const QCString& app) {
 	return _implicitAllowMap[wallet].contains(QString::fromLocal8Bit(app));
 }
+
+
+QCString KWalletD::friendlyDCOPPeerName() {
+	DCOPClient *dc = callingDcopClient();
+	if (!dc) {
+		return "";
+	}
+	return dc->senderId().replace(QRegExp("-[0-9]+$"), "");
+}
+
 
 
 #include "kwalletd.moc"

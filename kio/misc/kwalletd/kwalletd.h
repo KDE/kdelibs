@@ -140,6 +140,7 @@ class KWalletD : public KDEDModule {
 		int closeWallet(KWallet::Backend *w, int handle, bool force);
 		// Implicitly allow access for this application
 		bool implicitAllow(const QString& wallet, const QCString& app);
+		QCString friendlyDCOPPeerName();
 
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
