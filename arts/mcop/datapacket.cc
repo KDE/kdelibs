@@ -20,6 +20,7 @@
 
     */
 
+#include <string.h>
 #include "datapacket.h"
 #include "buffer.h"
 
