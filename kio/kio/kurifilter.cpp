@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <kdebug.h>
+#include <kiconloader.h>
 #include <ktrader.h>
 #include <kmimetype.h>
 #include <klibloader.h>
@@ -157,12 +158,14 @@ QString KURIFilterData::iconName()
             }
             case KURIFilterData::EXECUTABLE:
             {
-                QString tmp = m_pURI.url();
-                tmp = tmp.mid( tmp.findRev( '/' ) + 1 ); // strip path if given
-                KService::Ptr service = KService::serviceByDesktopName( tmp );
+                QString exeName = m_pURI.url();
+                exeName = exeName.mid( exeName.findRev( '/' ) + 1 ); // strip path if given
+                KService::Ptr service = KService::serviceByDesktopName( exeName );
                 if (service)
                     m_strIconName = service->icon();
-                else
+                // Try to find an icon with the same name as the binary (useful for non-kde apps)
+                else if ( KGlobal::iconLoader()->loadIcon( exeName, KIcon::NoGroup, 16, KIcon::DefaultState, &m_strIconName, true ).isNull() )
+                    // not found, use default
                     m_strIconName = QString::fromLatin1("exec");
                 break;
             }
