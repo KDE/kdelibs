@@ -241,13 +241,14 @@ int main(int argc, char **argv)
     filter( "KDE", "http://www.google.com/search?q=KDE&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "FTP", "http://www.google.com/search?q=FTP&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
-    // Typing 'ls' or any other valid unix command in konq's location bar should result in
+    // Typing 'cp' or any other valid unix command in konq's location bar should result in
     // a search using the default search engine
-    filter( "ls", "http://www.google.com/search?q=ls&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL,
+    // 'ls' is a bit of a special case though, due to the toplevel domain called 'ls'
+    filter( "cp", "http://www.google.com/search?q=cp&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL,
             QStringList(), 0, false /* don't check for executables, see konq_misc.cc */ );
 
     // Executable tests - No IKWS in minicli
-    filter( "ls", "ls", KURIFilterData::EXECUTABLE, minicliFilters );
+    filter( "cp", "cp", KURIFilterData::EXECUTABLE, minicliFilters );
     filter( "kfmclient", "kfmclient", KURIFilterData::EXECUTABLE, minicliFilters );
     filter( "xwininfo", "xwininfo", KURIFilterData::EXECUTABLE, minicliFilters );
     filter( "KDE", "KDE", NO_FILTERING, minicliFilters );
