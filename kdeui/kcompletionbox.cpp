@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
    Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
    Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -21,11 +21,13 @@
 */
 
 
-#include "kcompletionbox.h"
 #include <qapplication.h>
 #include <qevent.h>
+#include <qstyle.h>
 
 #include <knotifyclient.h>
+
+#include "kcompletionbox.h"
 
 class KCompletionBox::KCompletionBoxPrivate
 {
@@ -33,27 +35,33 @@ public:
     QWidget *m_parent; // necessary to set the focus back
     QString cancelText;
     bool tabHandling;
+    bool down_workaround;
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool | WStyle_NoBorder )
+    : KListBox( parent, name, WType_Popup )
 {
     d = new KCompletionBoxPrivate;
-    d->m_parent = parent;
-    d->tabHandling = false;
+    d->m_parent        = parent;
+    d->tabHandling     = false;
+    d->down_workaround = false;
 
-    setFocusPolicy( NoFocus );
     setColumnMode( 1 );
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
+
+    if ( parent )
+        setFocusProxy( parent );
+    else
+        setFocusPolicy( NoFocus );
 
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
     connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
              SLOT( slotActivated( QListBoxItem * )) );
-
-    installEventFilter( this );
+    connect( this, SIGNAL( currentChanged( QListBoxItem * )),
+             SLOT( slotCurrentChanged() ));
 }
 
 KCompletionBox::~KCompletionBox()
@@ -83,6 +91,7 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
+
     if ( o == d->m_parent ) {
         if ( isVisible() ) {
             if ( type == QEvent::KeyPress ) {
@@ -153,11 +162,11 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
+
             // parent loses focus or gets a click -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
-                      type == QEvent::Close || type == QEvent::Hide ||
-                      type == QEvent::Move ||
-                      type == QEvent::MouseButtonPress) {
+                      type == QEvent::Close || type == QEvent::Hide || 
+                      type == QEvent::Move ) {
                 hide();
             }
             else if ( type == QEvent::Move )
@@ -166,14 +175,14 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 resize( sizeHint() );
         }
     }
-    else { // any other object received an event while we're visible
-        if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
-             (type == QEvent::Move && d->m_parent &&
-              o == d->m_parent->topLevelWidget() ))
-            hide();                    // allow presses on the scrollbar
-            // cancelled();
-    }
 
+    // any mouse-click on something else than "this" makes us hide
+    else if ( type == QEvent::MouseButtonPress ) {
+        QMouseEvent *ev = static_cast<QMouseEvent *>( e );
+        if ( !rect().contains( ev->pos() )) // this widget
+            hide();
+    }
+        
     return KListBox::eventFilter( o, e );
 }
 
@@ -202,7 +211,7 @@ void KCompletionBox::show()
     // ### we shouldn't need to call this, but without this, the scrollbars
     // are pretty b0rked.
     triggerUpdate( true );
-    
+
     KListBox::show();
 }
 
@@ -227,8 +236,16 @@ QSize KCompletionBox::sizeHint() const
 
 void KCompletionBox::down()
 {
-    if ( currentItem() < (int)count() - 1 )
-        setCurrentItem( currentItem() + 1 );
+    int i = currentItem();
+    
+    if ( i == 0 && d->down_workaround ) {
+        d->down_workaround = false;
+        setCurrentItem( 0 );
+        setSelected( 0, true );
+    }
+    
+    else if ( i < (int) count() - 1 )
+        setCurrentItem( i + 1 );
 }
 
 void KCompletionBox::up()
@@ -287,6 +304,20 @@ void KCompletionBox::cancelled()
         emit userCancelled( d->cancelText );
     if ( isVisible() )
         hide();
+}
+
+void KCompletionBox::insertItems( const QStringList& items, int index )
+{
+    bool block = signalsBlocked();
+    blockSignals( true );
+    insertStringList( items, index );
+    blockSignals( block );
+    d->down_workaround = true;
+}
+
+void KCompletionBox::slotCurrentChanged()
+{
+    d->down_workaround = false;
 }
 
 #include "kcompletionbox.moc"

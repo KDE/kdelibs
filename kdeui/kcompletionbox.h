@@ -44,7 +44,7 @@ class KCompletionBox : public KListBox
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
     Q_PROPERTY(QString cancelledText READ cancelledText WRITE setCancelledText)
-    
+
 public:
     /**
      * Constructs a KCompletionBox.
@@ -73,6 +73,13 @@ public slots:
     QStringList items() const;
 
     /**
+     * Inserts @p items into the box. Does not clear the items before.
+     * @p index determines at which position @p items will be inserted.
+     * (defaults to appending them at the end)
+     */
+    void insertItems( const QStringList& items, int index = -1 );
+
+    /**
      * Adjusts the size of the box to fit the width of the parent given in the
      * constructor and pops it up at the most appropriate place, relative to
      * the parent.
@@ -95,7 +102,7 @@ public slots:
      * @see #isTabHandling
      */
     void setTabHandling( bool enable );
-    
+
     /**
      * @returns true if this widget is handling Tab-key events to traverse the
      * items in the dropdown list, otherwise false.
@@ -122,7 +129,7 @@ public slots:
      * @returns the text set via @ref setCancelledText() or QString::null.
      */
     QString cancelledText() const;
-    
+
     /**
      * Move the selection one line down or select the first item if nothing is selected yet.
      */
@@ -192,6 +199,7 @@ protected slots:
 
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
+    void slotCurrentChanged();
     void cancelled();
 
 private:
