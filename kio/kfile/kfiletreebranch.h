@@ -152,7 +152,6 @@ private:
    KFileTreeViewItem    *m_currParent;
    KFileTreeViewItem    *m_nextChild;
 
-   bool 		m_wantDotFiles    :1;
    bool                 m_recurseChildren :1;
    bool                 m_showExtensions  :1;
    

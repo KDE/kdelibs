@@ -43,7 +43,6 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
       m_rootIcon( pix ),
       m_currParent( 0L ),
       m_nextChild( 0L ),
-      m_wantDotFiles( showHidden ),
       m_recurseChildren( false )
 {
    m_root = createBranchRoot( parent, url );
@@ -52,6 +51,8 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
    m_root->setText( 0, name );
    m_root->setOpen( true );
    m_currParent= m_root;
+
+   setShowingDotFiles( showHidden );
 
    connect( this, SIGNAL( newItems(const KFileItemList&)),
 	    this, SLOT  ( addItems( const KFileItemList& )));
@@ -306,7 +307,7 @@ void KFileTreeBranch::slCompleted()
 		*/
 	       m_nextChild = static_cast<KFileTreeViewItem*>(static_cast<QListViewItem*>(m_nextChild->nextSibling()));
 	       if( kfi->isReadable() )
-		  openURL( url, m_wantDotFiles, true );
+		  openURL( url, true );
 	       else
 		  kdDebug(250) << "Can not recurse to " << url.prettyURL() << endl;
 	    }
@@ -338,7 +339,7 @@ void KFileTreeBranch::populate( const KURL& url,  KFileTreeViewItem *currItem )
    /* Recurse to the first row of children of the new files to get info about children */
    m_recurseChildren = true;
 
-   openURL( url, m_wantDotFiles, true );
+   openURL( url, true );
 }
 
 void KFileTreeBranch::populate( )

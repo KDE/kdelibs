@@ -65,7 +65,6 @@
 template class QPtrStack<KURL>;
 template class QDict<KFileItem>;
 
-KURL *KDirOperator::lastDirectory = 0; // to set the start path
 
 class KDirOperator::KDirOperatorPrivate
 {
@@ -89,7 +88,7 @@ public:
     KActionSeparator *viewActionSeparator;
 };
 
-KDirOperator::KDirOperator(const KURL& url,
+KDirOperator::KDirOperator(const KURL& _url,
                            QWidget *parent, const char* _name)
     : QWidget(parent, _name),
       dir(0),
@@ -102,21 +101,21 @@ KDirOperator::KDirOperator(const KURL& url,
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
     d = new KDirOperatorPrivate;
 
-    if (url.isEmpty()) { // no dir specified -> current dir
+    if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentDirPath();
         strPath.append('/');
-        lastDirectory = new KURL;
-        lastDirectory->setProtocol(QString::fromLatin1("file"));
-        lastDirectory->setPath(strPath);
+        currUrl = KURL();
+        currUrl.setProtocol(QString::fromLatin1("file"));
+        currUrl.setPath(strPath);
     }
     else {
-        lastDirectory = new KURL(url);
-        if ( lastDirectory->protocol().isEmpty() )
-            lastDirectory->setProtocol(QString::fromLatin1("file"));
+        currUrl = _url;
+        if ( currUrl.protocol().isEmpty() )
+            currUrl.setProtocol(QString::fromLatin1("file"));
     }
 
     setDirLister( new KDirLister( true ) );
-    dir->setURL( *lastDirectory );
+
     connect(&myCompletion, SIGNAL(match(const QString&)),
             SLOT(slotCompletionMatch(const QString&)));
 
@@ -128,7 +127,6 @@ KDirOperator::KDirOperator(const KURL& url,
     connect( d->progressDelayTimer, SIGNAL( timeout() ),
 	     SLOT( slotShowProgress() ));
 
-    finished = false;
     myCompleteListDirty = false;
 
     backStack.setAutoDelete( true );
@@ -179,9 +177,7 @@ void KDirOperator::readNextMimeType()
 
 void KDirOperator::resetCursor()
 {
-    if (!finished)
-        QApplication::restoreOverrideCursor();
-    finished = false;
+    QApplication::restoreOverrideCursor();
     progress->hide();
 }
 
@@ -241,7 +237,7 @@ void KDirOperator::slotSimpleView()
 void KDirOperator::slotToggleHidden( bool show )
 {
     dir->setShowingDotFiles( show );
-    rereadDir();
+    updateDir();
 }
 
 void KDirOperator::slotSingleView()
@@ -368,7 +364,7 @@ void KDirOperator::mkdir()
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 {
     bool writeOk = false;
-    KURL url( dir->url());
+    KURL url( currUrl );
     url.addPath(directory);
 
     if ( url.isLocalFile() ) {
@@ -470,7 +466,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     // if the argument is no URL (the check is quite fragil) and it's
     // no absolute path, we add the current directory to get a correct url
     if (text.find(':') < 0 && text[0] != '/')
-        text.insert(0, dir->url());
+        text.insert(0, currUrl);
 
     // in case we have a selection defined and someone patched the file-
     // name, we check, if the end of the new name is changed.
@@ -504,9 +500,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
         filename_ = u.url();
         emit fileSelected(filename_);
 
-        if (!finished)
-            QApplication::restoreOverrideCursor();
-        finished = false;
+        QApplication::restoreOverrideCursor();
 
         accept();
     }
@@ -526,10 +520,9 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     QString pathstr = newurl.path(+1);
     newurl.setPath(pathstr);
 
-    if (finished && newurl == dir->url()) // already set
+    // already set
+    if ( newurl.cmp( currUrl, true ) )
         return;
-
-    pendingMimeTypes.clear();
 
     if ( !isReadable( newurl ) ) {
         // maybe newurl is a file? check its parent directory
@@ -544,16 +537,19 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 
     if (clearforward) {
         // autodelete should remove this one
-	backStack.push(new KURL(dir->url()));
+        backStack.push(new KURL(currUrl));
         forwardStack.clear();
     }
 
-    dir->setURL(newurl);
-    d->lastURL = dir->url().url(-1);
-    myCompletion.clear();
-    myDirCompletion.clear();
-    emit urlEntered(dir->url());
+    d->lastURL = newurl.url(-1);
+
     pathChanged();
+    emit urlEntered(newurl);
+
+kdDebug(250) << k_funcinfo << "OPEN THE URL " << newurl.prettyURL() << endl;
+    dir->openURL( newurl );
+
+    currUrl = newurl;
 
     // enable/disable actions
     forwardAction->setEnabled( !forwardStack.isEmpty() );
@@ -561,10 +557,16 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     upAction->setEnabled( !isRoot() );
 }
 
+void KDirOperator::updateDir()
+{
+    dir->emitChanges();
+}
+
 void KDirOperator::rereadDir()
 {
-    dir->setURLDirty( true );
     pathChanged();
+kdDebug(250) << k_funcinfo << "RELOAD THE URL " << currUrl.prettyURL() << endl;
+    dir->openURL( currUrl, false, true );
 }
 
 // Protected
@@ -579,19 +581,12 @@ void KDirOperator::pathChanged()
     myDirCompletion.clear();
 
     // it may be, that we weren't ready at this time
-    if (!finished)
-        QApplication::restoreOverrideCursor();
-
-    finished = false;
+    QApplication::restoreOverrideCursor();
 
     // when KIO::Job emits finished, the slot will restore the cursor
     QApplication::setOverrideCursor( waitCursor );
 
-    // lastDirectory is used to set the start path next time
-    // we select a file
-    *lastDirectory = dir->url();
-
-    if ( !isReadable( *lastDirectory )) {
+    if ( !isReadable( currUrl )) {
         KMessageBox::error(viewWidget(),
                            i18n("The specified directory does not exist "
                                 "or was not readable."));
@@ -600,8 +595,6 @@ void KDirOperator::pathChanged()
         else
             back();
     }
-
-    dir->listDirectory();
 }
 
 void KDirOperator::slotRedirected( const KURL& newURL )
@@ -619,7 +612,7 @@ void KDirOperator::back()
     if ( backStack.isEmpty() )
         return;
 
-    forwardStack.push( new KURL(dir->url()) );
+    forwardStack.push( new KURL(currUrl) );
 
     KURL *s = backStack.pop();
 
@@ -633,7 +626,7 @@ void KDirOperator::forward()
     if ( forwardStack.isEmpty() )
         return;
 
-    backStack.push(new KURL(dir->url()));
+    backStack.push(new KURL(currUrl));
 
     KURL *s = forwardStack.pop();
     setURL(*s, false);
@@ -642,12 +635,12 @@ void KDirOperator::forward()
 
 KURL KDirOperator::url() const
 {
-    return dir->url();
+    return currUrl;
 }
 
 void KDirOperator::cdUp()
 {
-    KURL tmp( dir->url() );
+    KURL tmp( currUrl );
     tmp.cd(QString::fromLatin1(".."));
     setURL(tmp, true);
 }
@@ -843,7 +836,6 @@ void KDirOperator::connectView(KFileView *view)
 
     if (fileView) {
         QApplication::setOverrideCursor( waitCursor );
-        finished = false;
         fileView->widget()->hide();
         delete fileView;
     }
@@ -886,12 +878,13 @@ void KDirOperator::connectView(KFileView *view)
         fileView->setSelectionMode( KFile::Extended );
     else
         fileView->setSelectionMode( KFile::Single );
-
-    dir->listDirectory();
-
+ 
     updateViewActions();
     fileView->widget()->show();
     fileView->widget()->resize(size());
+
+kdDebug(250) << k_funcinfo << "OPEN THE URL " << currUrl.prettyURL() << endl;
+    dir->openURL( currUrl );
 }
 
 KFile::Mode KDirOperator::mode() const
@@ -932,7 +925,9 @@ void KDirOperator::setDirLister( KDirLister *lister )
     dir = lister;
 
     dir->setAutoUpdate( true );
-
+    
+    connect( dir, SIGNAL( percent( unsigned long )),
+             SLOT( slotProgress( unsigned long ) ));
     connect( dir, SIGNAL(started( const KURL& )), SLOT(slotStarted()));
     connect( dir, SIGNAL(newItems(const KFileItemList &)),
              SLOT(insertNewFiles(const KFileItemList &)));
@@ -976,7 +971,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    KURL tmp( dir->url() );
+    KURL tmp( currUrl );
     tmp.cd(item->name());
     setURL(tmp, true);
 }
@@ -990,9 +985,7 @@ void KDirOperator::itemDeleted(KFileItem *item)
 
 void KDirOperator::selectFile(const KFileItem *item)
 {
-    if (!finished)
-        QApplication::restoreOverrideCursor();
-    finished = false;
+    QApplication::restoreOverrideCursor();
 
     emit fileSelected( item );
 }
@@ -1074,10 +1067,8 @@ void KDirOperator::setupActions()
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    KAction * deleteAction = new KAction( i18n( "Delete" ), "editdelete",
-                                          Key_Delete, this,
-                                          SLOT( deleteSelected() ),
-                                          myActionCollection, "delete" );
+    new KAction( i18n( "Delete" ), "editdelete", Key_Delete, this,
+                  SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
 
@@ -1153,8 +1144,8 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    KAction *props = new KAction( i18n("Properties..."), ALT+Key_Return, this,
-                                  SLOT(slotProperties()), myActionCollection, "properties" );
+    new KAction( i18n("Properties..."), ALT+Key_Return, this,
+                 SLOT(slotProperties()), myActionCollection, "properties" );
 }
 
 void KDirOperator::setupMenu()
@@ -1369,17 +1360,9 @@ bool KDirOperator::onlyDoubleClickSelectsFiles() const
 
 void KDirOperator::slotStarted()
 {
-    if ( !dir->job() )
-	return;
-
-    dir->job()->disconnect( this );
-
     progress->setProgress( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );
-
-    connect( dir->job(), SIGNAL( percent( KIO::Job *, unsigned long )),
-	     this, SLOT( slotProgress( KIO::Job *, unsigned long ) ));
 }
 
 void KDirOperator::slotShowProgress()
@@ -1389,11 +1372,8 @@ void KDirOperator::slotShowProgress()
     QApplication::flushX();
 }
 
-void KDirOperator::slotProgress( KIO::Job * job, unsigned long percent )
+void KDirOperator::slotProgress( unsigned long percent )
 {
-    if ( dir->job() != job )
-	return;
-
     progress->setProgress( percent );
     // we have to redraw this in as fast as possible
     if ( progress->isVisible() )
@@ -1404,7 +1384,7 @@ void KDirOperator::slotProgress( KIO::Job * job, unsigned long percent )
 void KDirOperator::slotIOFinished()
 {
     d->progressDelayTimer->stop();
-    slotProgress( dir->job(), 100 );
+    slotProgress( 100 );
     progress->hide();
     emit finishedLoading();
     resetCursor();

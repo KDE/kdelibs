@@ -955,7 +955,7 @@ void KFileDialog::slotFilterChanged()
     else
         ops->setNameFilter( filter );
 
-    ops->rereadDir();
+    ops->updateDir();
     emit filterChanged( filter );
 }
 

@@ -133,7 +133,7 @@ class KDirOperator : public QWidget
 
     /**
      * Sets a filter like "*.cpp *.h *.o". Only files matching that filter
-     * will be shown. Call @ref rereadDir() to apply it.
+     * will be shown. Call @ref updateDir() to apply it.
      *
      * @see KDirLister::setNameFilter
      * @see #nameFilter
@@ -555,6 +555,11 @@ public slots:
     void cdUp();
 
     /**
+     * to update the view after changing the settings
+     */
+    void updateDir();
+
+    /**
      * Re-reads the current url.
      */
     void rereadDir();
@@ -695,9 +700,8 @@ private:
      */
     QPtrStack<KURL> forwardStack;
 
-    static KURL *lastDirectory;
-
     KDirLister *dir;
+    KURL currUrl;
 
     KCompletion myCompletion;
     KCompletion myDirCompletion;
@@ -717,9 +721,6 @@ private:
     void checkPath(const QString& txt, bool takeFiles = false);
 
     void connectView(KFileView *);
-
-    // for the handling of the cursor
-    bool finished;
 
     KFileView *fileView;
     KFileItemList pendingMimeTypes;
@@ -783,7 +784,7 @@ private slots:
     void slotToggleIgnoreCase();
 
     void slotStarted();
-    void slotProgress( KIO::Job *, unsigned long );
+    void slotProgress( unsigned long );
     void slotShowProgress();
     void slotIOFinished();
     void slotRedirected( const KURL& );
