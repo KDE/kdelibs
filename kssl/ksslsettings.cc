@@ -29,6 +29,7 @@
 #include <pwd.h>
 #include <unistd.h>
 
+#include <qfile.h>
 
 #include "ksslsettings.h"
 #include <kglobal.h>
@@ -217,9 +218,9 @@ void KSSLSettings::save() {
   m_cfg->sync();
  
   // insure proper permissions -- contains sensitive data
-  QString cfgName(KGlobal::dirs()->findResource("config", "kcmcryptorc"));
+  QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
   if (!cfgName.isEmpty())
-    ::chmod(cfgName.utf8(), 0600);
+    ::chmod(QFile::encodeName(cfgName), 0600);
 #endif
 }
 
