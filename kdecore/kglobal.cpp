@@ -50,7 +50,6 @@ KInstance *KGlobal::instance()
 KLocale	*KGlobal::locale()
 {	
     if( _locale == 0 ) {
-        init();
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
     }
@@ -61,7 +60,6 @@ KLocale	*KGlobal::locale()
 KCharsets *KGlobal::charsets()
 {
     if( _charsets == 0 ) {
-        init();
         _charsets =new KCharsets();
     }
     
@@ -72,8 +70,6 @@ QFont KGlobal::generalFont()
 {
     if(_generalFont)
         return *_generalFont;
-    
-    init();
     
     _generalFont = new QFont("helvetica", 12, QFont::Normal);
     charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
@@ -88,8 +84,6 @@ QFont KGlobal::fixedFont()
     if(_fixedFont) {
         return *_fixedFont;
     }
-
-    init();
 
     KConfig *c = KGlobal::config();
     c->setGroup( "General" );
@@ -109,8 +103,6 @@ int KGlobal::dndEventDelay()
 {
     static int delay = -1;
 
-    init();
-
     if(delay == -1){
         KConfig *c = KGlobal::config();
         c->setGroup("General");
@@ -123,8 +115,9 @@ void KGlobal::init()
 {
     if (_instance)
         return;
-    
-    _instance = new KInstance(QString::null);
+
+    debug("using unknown");
+    _instance = new KInstance("unknown");
     qAddPostRoutine( freeAll );
 }
 

@@ -935,12 +935,13 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
 
   QString aCharset = "default";
   if( rFont.charSet() != QFont::AnyCharSet )
-      aCharset.setNum( rFont.charSet() );
+      aCharset.setNum( static_cast<int>(rFont.charSet()) );
   
   QTextOStream ts( &aValue );
   ts << rFont.family() << "," << rFont.pointSize() << "," 
-     << rFont.styleHint() << "," << aCharset << "," << rFont.weight() << "," 
-     << nFontBits;
+     << static_cast<int>(rFont.styleHint()) << "," 
+     << aCharset << "," << rFont.weight() << "," 
+     << static_cast<int>(nFontBits);
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }

@@ -9,9 +9,10 @@
 
 #include <qfont.h>
 
-KInstance::KInstance( const QString& name )
+KInstance::KInstance( const QCString& name )
     : _name( name )
 {
+    ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
       KGlobal::_instance = this;
     _iconLoader = 0;
@@ -61,7 +62,7 @@ KIconLoader *KInstance::iconLoader() const
     return _iconLoader;
 }
 
-QString KInstance::instanceName() const
+QCString KInstance::instanceName() const
 {
     return _name;
 }

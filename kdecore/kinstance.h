@@ -20,7 +20,7 @@ class KInstance
 {
  public:
     
-    KInstance( const QString& libname );
+    KInstance( const QCString& libname );
     /**
      * Destructor
      */
@@ -43,7 +43,7 @@ class KInstance
     
     KCharsets	     *charsets() const;
     
-    QString          instanceName() const;
+    QCString          instanceName() const;
 
 protected:
     /**
@@ -57,7 +57,7 @@ public:
     mutable KConfig		*_config;
     mutable KIconLoader	        *_iconLoader;
     
-    QString                     _name;
+    QCString                     _name;
 
 };
 
