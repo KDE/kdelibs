@@ -4,6 +4,7 @@
 #include <libxslt/xsltutils.h>
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
+#include <libxml/catalog.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <qdir.h>
@@ -174,6 +175,7 @@ QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
     return parsed;
 }
 
+/*
 xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
 					   xmlParserCtxtPtr ctxt) {
     xmlParserInputPtr ret = NULL;
@@ -190,10 +192,6 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
         URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
     if (!qstrcmp(ID, "-//OASIS//DTD XML DocBook V4.1.2//EN"))
 	URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
-    if (!qstrcmp(ID, "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"))
-        URL = "customization/dtd/kdex.dtd";
-    if (!qstrcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
-        URL = "customization/dtd/kdex.dtd";
 
     QString file;
     if (KStandardDirs::exists( QDir::currentDirPath() + "/" + URL ) )
@@ -210,6 +208,7 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
     }
     return(ret);
 }
+*/
 
 QString splitOut(const QString &parsed, int index)
 {
@@ -261,10 +260,23 @@ QString splitOut(const QString &parsed, int index)
 }
 
 void fillInstance(KInstance &ins) {
+    QString catalogs;
+
     if ( !getenv( "KDELIBS_UNINSTALLED" ) ) {
-        ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2/");
+        catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
+        catalogs += ":";
+        catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.1.2/docbook.cat");
+        ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
+    } else {
+        catalogs += SRCDIR;
+        catalogs += "/customization/catalog";
+        catalogs += ":";
+        catalogs += SRCDIR;
+        catalogs += "/docbook/xml-dtd-4.1.2/docbook.cat";
+        ins.dirs()->addResourceDir("dtd", SRCDIR);
     }
-    ins.dirs()->addResourceDir( "dtd", SRCDIR );
+
+    xmlLoadCatalogs(catalogs.latin1());
 }
 
 static KFilterBase *filter = 0;

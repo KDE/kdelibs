@@ -168,7 +168,6 @@ int main(int argc, char **argv) {
 
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
-    xmlSetExternalEntityLoader(meinExternalEntityLoader);
 
     bool index = args->isSet( "htdig" );
     QString tss = args->getOption( "stylesheet" );

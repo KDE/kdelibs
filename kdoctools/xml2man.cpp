@@ -57,7 +57,6 @@ int main(int argc, char **argv) {
     LIBXML_TEST_VERSION
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
-    xmlSetExternalEntityLoader(meinExternalEntityLoader);
 
     QString tss = locate( "dtd", "db2man.xsl" );
 

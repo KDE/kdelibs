@@ -39,11 +39,11 @@ messages:
 
 install-data-local:
 	@(for subdir in customization docbook; do \
-	   for dir in `find $(srcdir)/$$subdir -type d ! -name CVS `; do \
-		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$dir ;\
-		for file in `ls -1 $$dir/*`; do \
-		    if test -f $$file; then \
-			$(INSTALL_DATA) $$file  $(DESTDIR)$(kde_datadir)/ksgmltools2/$$file; fi ;\
+	   for dir in `(cd $(srcdir)/$$subdir && find . -type d ! -name CVS )`; do \
+		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$subdir/$$dir ;\
+		for file in `(cd $(srcdir)/$$subdir && ls -1 $$dir/*)`; do \
+		    if test -f $(srcdir)/$$subdir/$$file; then \
+			$(INSTALL_DATA) $(srcdir)/$$subdir/$$file  $(DESTDIR)$(kde_datadir)/ksgmltools2/$$subdir/$$file; fi ;\
 	   	done ;\
 	   done ;\
 	done )
