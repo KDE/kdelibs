@@ -32,6 +32,7 @@
 #endif
 #include <fcntl.h>
 #include <signal.h>
+#include <setjmp.h>
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -367,13 +368,14 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
 #ifdef HAVE_MMAP
 #ifdef SIGBUS
-static const char **mmap_pEof;
+static sigjmp_buf mmap_jmpbuf;
+struct sigaction mmap_old_sigact;
 
-static void mmap_sigbus_handler(int)
-{
-   *mmap_pEof = 0;
-   write(2, "SIGBUS\n", 7);
-   signal(SIGBUS, mmap_sigbus_handler);
+extern "C" {
+   static void mmap_sigbus_handler(int)
+   {
+      siglongjmp (mmap_jmpbuf, 1);
+   }
 }
 #endif
 #endif
@@ -382,7 +384,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					      KEntryMap *pWriteBackMap,
 					      bool bGlobal, bool bDefault)
 {
-   void (*old_sighandler)(int) = 0;
+   const char *s; // May get clobbered by sigsetjump, but we don't use them afterwards.
+   const char *eof; // May get clobbered by sigsetjump, but we don't use them afterwards.
+   QByteArray data;
 
    if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
@@ -394,23 +398,32 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
    QCString aCurrentGroup("<default>");
 
-   const char *s, *eof;
-   QByteArray data;
-
    unsigned int ll = localeString.length();
 
 #ifdef HAVE_MMAP
-   const char *map = ( const char* ) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE,
+   static volatile const char *map;
+   map = ( const char* ) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE,
                                           rFile.handle(), 0);
 
    if (map)
    {
-      s = map;
+      s = (const char*) map;
       eof = s + rFile.size();
 
 #ifdef SIGBUS
-      mmap_pEof = &eof;
-      old_sighandler = signal(SIGBUS, mmap_sigbus_handler);
+      struct sigaction act;
+      act.sa_handler = mmap_sigbus_handler;
+      sigemptyset( &act.sa_mask );
+      act.sa_flags = SA_ONESHOT;
+      sigaction( SIGBUS, &act, &mmap_old_sigact );
+
+      if (sigsetjmp (mmap_jmpbuf, 1))
+      {
+qWarning("SIGBUS while reading %s", rFile.name().latin1());
+         munmap(( char* )map, rFile.size());
+         sigaction (SIGBUS, &mmap_old_sigact, 0);
+         return;
+      }
 #endif
    }
    else
@@ -645,7 +658,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    {
       munmap(( char* )map, rFile.size());
 #ifdef SIGBUS
-      signal(SIGBUS, old_sighandler);
+      sigaction (SIGBUS, &mmap_old_sigact, 0);
 #endif
    }
 #endif
