@@ -109,6 +109,11 @@ void KColorButton::drawButtonLabel( QPainter *painter )
   qDrawShadePanel( painter, x, y, w, h, colorGroup(), true, 1, NULL);
   if ( fillCol.isValid() )
     painter->fillRect( x+1, y+1, w-2, h-2, fillCol );
+
+  if ( hasFocus() ) {
+    QRect focusRect = style().subRect( QStyle::SR_PushButtonFocusRect, this );
+    style().drawPrimitive( QStyle::PE_FocusRect, painter, focusRect, colorGroup() );
+  }
 }
 
 QSize KColorButton::sizeHint() const
