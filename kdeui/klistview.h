@@ -66,7 +66,7 @@ class KDEUI_EXPORT KListView : public QListView
   Q_PROPERTY( int dropVisualizerWidth READ dropVisualizerWidth WRITE  setDropVisualizerWidth )
   Q_PROPERTY( QColor alternateBackground READ alternateBackground WRITE  setAlternateBackground )
   Q_PROPERTY( bool shadeSortColumn READ shadeSortColumn WRITE setShadeSortColumn )
-  
+
   Q_OVERRIDE( SelectionModeExt selectionMode READ selectionModeExt WRITE setSelectionModeExt )
 
 public:
@@ -393,7 +393,7 @@ public:
    * @since 3.4
    */
   void setShadeSortColumn(bool shadeSortColumn);
-  
+
   /**
    * See if the sort column should be drawn shaded
    * @return true if the sort column should be shaded
@@ -1064,8 +1064,9 @@ public:
    * ### could be merged with above (column = -1) to be source compatible
    * ### but will only work if sort-shading is not used or the listView has
    * ### only 1 column
+   * @since 3.4
    */
-  QColor backgroundColor(int column);
+  const QColor backgroundColor(int column);
 
   virtual void paintCell(QPainter *p, const QColorGroup &cg,
     int column, int width, int alignment);

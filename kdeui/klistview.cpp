@@ -146,7 +146,7 @@ public:
   bool fullWidth:1;
   bool sortAscending:1;
   bool tabRename:1;
-  
+
   int sortColumn;
 
   //+1 means downwards (y increases, -1 means upwards, 0 means not selected), aleXXX
@@ -2198,9 +2198,9 @@ const QColor &KListViewItem::backgroundColor()
   return listView()->viewport()->colorGroup().base();
 }
 
-QColor KListViewItem::backgroundColor(int column)
+const QColor KListViewItem::backgroundColor(int column)
 {
-  KListView* view = static_cast< KListView* >(listView());  
+  KListView* view = static_cast< KListView* >(listView());
   QColor color = isAlternate() ?
                  view->alternateBackground() :
                  view->viewport()->colorGroup().base();
