@@ -486,11 +486,6 @@ bool KHTMLPart::openURL( const KURL &url )
 {
   kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
-  // If the hostnames are different, we definitely don't want to use the old
-  // session ID so that we can prompt for a client certificate, etc.
-  if (url.host() != m_url.host())
-    d->m_ssl_session_id = QString::null;
-
   d->m_redirectionTimer.stop();
 
   // check to see if this is an "error://" URL. This is caused when an error
@@ -581,26 +576,10 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
   if (d->m_restored)
+  {
      args.metaData().insert("referrer", d->m_pageReferrer);
-
-  // If we don't already have a session ID, look up for one that matches
-  if (d->m_ssl_session_id.isEmpty()) {
-    KHTMLPart *p = parentPart();
-    while (p && (p->d->m_ssl_session_id.isEmpty() ||
-		 p->m_url.host() != url.host())) {
-      p = p->parentPart();
-    }
-
-    if (p) {
-      d->m_ssl_session_id = p->d->m_ssl_session_id;
-      args.metaData().insert("ssl_session_id", d->m_ssl_session_id);
-      kdDebug(6050) << "Using a cached SSL session ID" << endl;
-    }
-  }
-
-
-  if (d->m_restored)
      d->m_cachePolicy = KIO::CC_Cache;
+  }
   else if (args.reload)
      d->m_cachePolicy = KIO::CC_Refresh;
   else
@@ -1379,7 +1358,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
-    d->m_ssl_session_id = d->m_job->queryMetaData("ssl_session_id");
 
     if (d->m_statusBarIconLabel) {
       QToolTip::remove(d->m_statusBarIconLabel);
@@ -3253,22 +3231,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
-  if (m_url.host() != cURL.host())
-    d->m_ssl_session_id = QString::null;
-  // If we don't already have a session ID, look up for one that matches
-  if (d->m_ssl_session_id.isEmpty()) {
-    KHTMLPart *p = parentPart();
-    while (p && (p->d->m_ssl_session_id.isEmpty() ||
-		 p->m_url.host() != cURL.host())) {
-      p = p->parentPart();
-    }
-
-    if (p) {
-      d->m_ssl_session_id = p->d->m_ssl_session_id;
-      args.metaData().insert("ssl_session_id", d->m_ssl_session_id);
-      kdDebug(6050) << "Using a cached SSL session ID" << endl;
-    }
-  }
 
   if ( hasTarget )
   {
@@ -3681,18 +3643,6 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_args.metaData().insert("ssl_was_in_use",
                                   d->m_ssl_in_use ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
-  {
-    KHTMLPart *p = this;
-    while (p && (p->d->m_ssl_session_id.isEmpty() ||
-		 p->m_url.host() != url.host())) {
-      p = p->parentPart();
-    }
-
-    if (p) {
-      child->m_args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
-      kdDebug(6050) << "Trying to use a cached SSL session ID in the child frame." << endl;
-    }
-  }
 
   // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
   if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
@@ -4082,24 +4032,6 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
   args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
-
-  // posting elsewhere
-  if (u.host() != m_url.host())
-    d->m_ssl_session_id = QString::null;
-
-  if (d->m_ssl_session_id.isEmpty()) {
-    KHTMLPart *p = parentPart();
-    while (p && (p->d->m_ssl_session_id.isEmpty() ||
-		 p->m_url.host() != u.host())) {
-      p = p->parentPart();
-    }
-
-    if (p) {
-      d->m_ssl_session_id = p->d->m_ssl_session_id;
-      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
-      kdDebug(6050) << "Using a cached SSL session ID for form post" << endl;
-    }
-  }
 
   // Handle mailto: forms
   if (u.protocol() == "mailto") {
@@ -4525,8 +4457,7 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_bits
          << d->m_ssl_cert_state
          << d->m_ssl_parent_ip
-         << d->m_ssl_parent_cert
-         << d->m_ssl_session_id;
+         << d->m_ssl_parent_cert;
 
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
@@ -4608,8 +4539,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_cipher_bits
          >> d->m_ssl_cert_state
          >> d->m_ssl_parent_ip
-         >> d->m_ssl_parent_cert
-         >> d->m_ssl_session_id;
+         >> d->m_ssl_parent_cert;
 
   setPageSecurity( d->m_ssl_in_use ? Encrypted : NotCrypted );
 

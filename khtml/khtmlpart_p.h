@@ -287,8 +287,7 @@ public:
           m_ssl_cipher_bits,
           m_ssl_cert_state,
           m_ssl_parent_ip,
-          m_ssl_parent_cert,
-          m_ssl_session_id;
+          m_ssl_parent_cert;
 
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
