@@ -6,11 +6,11 @@
 namespace KABC {
 
 /**
-  @short Helper class for handling coordinated save of address books.
-  
-  This class is used as helper class for saving address book.
-  @see requestSaveTicket(), save().
-*/
+ * @short Helper class for handling coordinated save of address books.
+ * 
+ * This class is used as helper class for saving address book.
+ * @see requestSaveTicket(), save().
+ */
 class Ticket
 {
     friend class Resource;
@@ -25,8 +25,8 @@ class Ticket
 
 
 /**
-  @internal
-*/
+ * @internal
+ */
 class Resource {
   public:
     Resource( AddressBook * );

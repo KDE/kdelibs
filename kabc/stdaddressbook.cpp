@@ -61,6 +61,23 @@ StdAddressBook::StdAddressBook()
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
 
+  init( false );
+}
+
+StdAddressBook::StdAddressBook( bool onlyFastResources )
+{
+  kdDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
+
+  init( onlyFastResources );
+}
+
+StdAddressBook::~StdAddressBook()
+{
+  save();
+}
+
+void StdAddressBook::init( bool onlyFastResources )
+{
   KSimpleConfig config( "kabcrc", true );
   ResourceFactory *factory = ResourceFactory::self();
   config.setGroup( "General" );
@@ -70,10 +87,10 @@ StdAddressBook::StdAddressBook()
     config.setGroup( "Resource_" + (*it) );
     QString type = config.readEntry( "ResourceType" );
 
-/*
-    if ( onlyFastResource && !config.readBoolEntry( "ResourceIsFast" ) )
+
+    if ( onlyFastResources && !config.readBoolEntry( "ResourceIsFast" ) )
         continue;
-*/
+
     Resource *resource = factory->resource( type, this, &config );
 
     if ( !resource ) continue;
@@ -98,9 +115,4 @@ StdAddressBook::StdAddressBook()
   }
 
   load();
-}
-
-StdAddressBook::~StdAddressBook()
-{
-  save();
 }

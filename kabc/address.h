@@ -37,175 +37,194 @@ class Address
 
   public:
     /**
-      List of addresses.
-    */
+     * List of addresses.
+     */
     typedef QValueList<Address> List;
   
     /**
-      Address type:
-      Dom domestic
-      Intl international
-      postal postal
-      parcel parcel
-      home home address
-      work address at work
-      pref preferred address
+     * Address types:
+     *
+     * @li @p Dom -    domestic
+     * @li @p Intl -   international
+     * @li @p Postal - postal
+     * @li @p Parcel - parcel
+     * @li @p Home -   home address
+     * @li @p Work -   address at work
+     * @li @p Pref -   preferred address
     */
     enum Type { Dom = 1, Intl = 2, Postal = 4, Parcel = 8, Home = 16, Work = 32,
            Pref = 64 };
 
     /**
-      Construct an empty address. It is initialized with a unique id (see @ref
-      id()).
-    */
+     * Constructor that creates an empty Address, which is initialized
+     * with a unique id (see @ref id()).
+     */
     Address();
   
     /**
-      Construct an empty address of the given type. It is initialized with a
-      n unique id (see @ref id()).
-    */
+     * This is like @ref Address() just above, with the difference
+     * that you can specify the type.
+     */
     Address( int );
 
     bool operator==( const Address & ) const;
     bool operator!=( const Address & ) const;
   
     /**
-      Return, if the address is empty.
-    */
+     * Returns, if the address is empty.
+     */
     bool isEmpty() const;
 
     /**
-      Clear all entries of the address.
-    */
+     * Clears all entries of the address.
+     */
     void clear();
 
     /**
-      Set unique id.
-    */
+     * Sets the unique id.
+     */
     void setId( const QString & );
+
     /*
-      Return unique id.
-    */
+     * Returns the unique id.
+     */
     QString id() const;
 
     /**
-      Set type of address. See enum for definiton of types. 
-    
-      @param type type, can be a bitwise or of multiple types.
-    */
+     * Sets the type of address. See enum for definiton of types. 
+     *
+     * @param type type, can be a bitwise or of multiple types.
+     */
     void setType( int type );
+
     /**
-      Return type of address. Can be a bitwise or of multiple types.
-    */
+     * Returns the type of address. Can be a bitwise or of multiple types.
+     */
     int type() const;
 
     /**
-      Set post office box.
-    */
+     * Sets the post office box.
+     */
     void setPostOfficeBox( const QString & );
+
     /**
-      Return post office box.
-    */
+     * Returns the post office box.
+     */
     QString postOfficeBox() const;
+
     /**
-      Return translated label for post office box field.
-    */
+     * Returns the translated label for post office box field.
+     */
     QString postOfficeBoxLabel() const;
 
     /**
-      Set extended address information.
-    */
+     * Sets the extended address information.
+     */
     void setExtended( const QString & );
+
     /**
-      Return extended address information.
-    */
+     * Returns the extended address information.
+     */
     QString extended() const;
+
     /**
-      Return translated label for extended field.
-    */
+     * Returns the translated label for extended field.
+     */
     QString extendedLabel() const;
     
     /**
-      Set street (including number).
-    */
+     * Sets the street (including number).
+     */
     void setStreet( const QString & );
+
     /**
-      Return street.
-    */
+     * Returns the street.
+     */
     QString street() const;
+
     /**
-      Return translated label for street field.
-    */
+     * Returns the translated label for street field.
+     */
     QString streetLabel() const;
 
     /**
-      Set locality, e.g. city.
-    */
+     * Sets the locality, e.g. city.
+     */
     void setLocality( const QString & );
+
     /**
-      Return locality.
-    */
+     * Returns the locality.
+     */
     QString locality() const;
+
     /**
-      Return translated label for locality field.
-    */
+     * Returns the translated label for locality field.
+     */
     QString localityLabel() const;
 
     /**
-      Set region, e.g. state.
-    */
+     * Sets the region, e.g. state.
+     */
     void setRegion( const QString & );
+
     /**
-      Return region.
-    */
+     * Returns the region.
+     */
     QString region() const;
+
     /**
-      Return translated label for region field.
-    */
+     * Returns the translated label for region field.
+     */
     QString regionLabel() const;
  
     /**
-      Set postal code.
-    */
+     * Sets the postal code.
+     */
     void setPostalCode( const QString & );
+
     /**
-      Return postal code.
-    */
+     * Returns the postal code.
+     */
     QString postalCode() const;
+
     /**
-      Return translated label for postal code field.
-    */
+     * Returns the translated label for postal code field.
+     */
     QString postalCodeLabel() const;
 
     /**
-      Set country.
-    */
+     * Sets the country.
+     */
     void setCountry( const QString & );
+
     /**
-      Return country.
-    */
+     * Returns the country.
+     */
     QString country() const;
+
     /**
-      Return translated label for country field.
-    */
+     * Returns the translated label for country field.
+     */
     QString countryLabel() const;
 
     /**
-      Set delivery label. This is the literal text to be used as label.
-    */
+     * Sets the delivery label. This is the literal text to be used as label.
+     */
     void setLabel( const QString & );
+
     /**
-      Return delivery label.
-    */
+     * Returns the delivery label.
+     */
     QString label() const;
+
     /**
-      Return translated label for delivery label field.
-    */
+     * Returns the translated label for delivery label field.
+     */
     QString labelLabel() const;
 
     /**
-      Debug output.
-    */
+     * Used for debug output.
+     */
     void dump() const;
 
   private:

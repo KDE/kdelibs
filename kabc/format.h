@@ -30,29 +30,40 @@ class AddressBook;
 class Addressee;
 
 /**
-  @short Base class for address book formats.
-
-  This class provides an abstract interface for address book file formats.
-
-  @internal
-*/
+ * @short Base class for address book formats.
+ *
+ * This class provides an abstract interface for ResourceFile formats.
+ *
+ * @internal
+ */
 class Format {
   public:
 
-    enum Type { VCard, Binary, Simple };
+    /**
+     * @li @p VCard -  VCard format according to rfc2426
+     * @li @p Binary - Binary format
+     * @li @p Simple - Simple format stored with KConfig
+     */
+    enum Type
+    {
+      VCard,
+      Binary,
+      Simple
+    };
 
     /**
-      Load addressbook from file.
-    */
+     * Load addressbook from file.
+     */
     virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
+
     /**
-      Save addressbook to file.
-    */
+     * Save a single Addressee to file.
+     */
     virtual bool save( Addressee *, QFile *file ) = 0;
 	
     /**
-      Check if given file contains the right format
-    */
+     * Checks if given file contains the right format
+     */
     virtual bool checkFormat( QFile *file ) const = 0;
 };
 

@@ -46,57 +46,61 @@ class AddresseeItem : public QListViewItem
 };
 
 /**
-  @short Dialog for selecting address book entries.
-
-  This class provides a dialog for selecting entries from the standard KDE
-  address book. Use the @ref getAddressee() function to open a modal dialog,
-  returning an address book entry.
-
-  In the dialog you can select an entry from the list with the mouse or type in
-  the first letters of the name or email address you are searching for. The
-  entry matching best is automatically selected. Use double click, pressing
-  return or pressing the ok button to return the selected addressee to the
-  application.
-*/
+ * @short Dialog for selecting address book entries.
+ *
+ * This class provides a dialog for selecting entries from the standard KDE
+ * address book. Use the @ref getAddressee() function to open a modal dialog,
+ * returning an address book entry.
+ *
+ * In the dialog you can select an entry from the list with the mouse or type in
+ * the first letters of the name or email address you are searching for. The
+ * entry matching best is automatically selected. Use double click, pressing
+ * return or pressing the ok button to return the selected addressee to the
+ * application.
+ */
 class AddresseeDialog : public KDialogBase {
     Q_OBJECT
   public:
     /**
-      Construct addressbook entry select dialog.
-
-      @param parent parent widget
-    */
+     * Construct addressbook entry select dialog.
+     *
+     * @param parent parent widget
+     */
     AddresseeDialog( QWidget *parent=0, bool multiple=false );
+
+    /**
+     * Destructor.
+     */
     virtual ~AddresseeDialog();
 
     /**
-      Return the address chosen.
-
-      If it is a multiple select, this will return only the first address chosen
-    */
+     * Return the address chosen.
+     *
+     * If it is a multiple select, this will return only the first address chosen
+     */
     Addressee addressee();
 
     /**
-      Return the list of addresses chosen
-      */
+     * Return the list of addresses chosen
+     */
     Addressee::List addressees();
 
     /**
-      Select a single address book entry.
-    
-      Open addressee select dialog and return the entry selected by the user.
-      If the user doesn't select an entry or presses cancel, the returned
-      addressee is empty.
-    */
+     * Select a single address book entry.
+     *
+     * Open addressee select dialog and return the entry selected by the user.
+     * If the user doesn't select an entry or presses cancel, the returned
+     * addressee is empty.
+     */
     static Addressee getAddressee( QWidget *parent );
 
     /**
-      Select multiple adress book entries.
-      
-      Open addressee select dialog and return the entries selected by the user.
-      If the user doesn't select an entry or presses cancel, the returned
-      addressee list is empty.
-    */
+     * Select multiple adress book entries.
+     * 
+     * Open addressee select dialog and return the entries selected by the user.
+     * If the user doesn't select an entry or presses cancel, the returned
+     * addressee list is empty.
+     */
     static Addressee::List getAddressees( QWidget *parent );
 
   private slots:

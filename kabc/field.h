@@ -36,61 +36,119 @@ class Field
 
   public:
     typedef QValueList<Field *> List;
-  
-    enum FieldCategory { All = 0x0,
-                         Frequent = 0x01,
-                         Address = 0x02,
-                         Email = 0x04,
-                         Personal = 0x08,
-                         Organization = 0x10,
-                         CustomCategory = 0x20 };
 
     /**
-      Return translated label for this field.
-    */
-    virtual QString label();
+     * @li @p All -
+     * @li @p Frequent -
+     * @li @p Address -
+     * @li @p Email -
+     * @li @p Personal -
+     * @li @p Organization -
+     * @li @p CustomCategory -
+     */  
+    enum FieldCategory
+    {
+      All = 0x0,
+      Frequent = 0x01,
+      Address = 0x02,
+      Email = 0x04,
+      Personal = 0x08,
+      Organization = 0x10,
+      CustomCategory = 0x20
+    };
+
     /**
-      Return ored categories the field belongs to.
-    */
+     * Returns the translated label for this field.
+     */
+    virtual QString label();
+
+    /**
+     * Returns the  ored categories the field belongs to.
+     */
     virtual int category();
 
     /**
-      Return label translated label for field category.
-    */
+     * Returns the translated label for field category.
+     */
     static QString categoryLabel( int category );
 
     /**
-      Return a string representation of the value the field has in the given
-      Addressee. Returns QString::null, if it is not possible to convert the
-      value to a string.
-    */
+     * Returns a string representation of the value the field has in the given
+     * Addressee. Returns QString::null, if it is not possible to convert the
+     * value to a string.
+     */
     virtual QString value( const KABC::Addressee & );
+
     /**
-      Set the value of the field in the given Addressee. Returns true on success
-      or false, if the given string couldn't be converted to a valid value.
-    */
+     * Sets the value of the field in the given Addressee. Returns true on success
+     * or false, if the given string couldn't be converted to a valid value.
+     */
     virtual bool setValue( KABC::Addressee &, const QString & );
 
     /**
-      Returns, if the field is a user-defined field.
-    */
+     * Returns, if the field is a user-defined field.
+     */
     virtual bool isCustom();
 
-    virtual bool equals( Field * );
+    /**
+     * Returns, if the field is equal with @param field.
+     */
+    virtual bool equals( Field *field );
 
+    /**
+     * Returns a list of all fields.
+     */
     static Field::List allFields();
+
+    /**
+     * Returns a list of the default fields.
+     */
     static Field::List defaultFields();
 
+    /**
+     * Creates a custom field.
+     *
+     * @param label    The label for this field
+     * @param category The category of this field
+     * @param key      Unique key for this field
+     * @param app      Unique app name for this field
+     */
     static Field *createCustomField( const QString &label, int category,
                                      const QString &key, const QString &app );
 
+    /**
+     * Delete all fields from list.
+     */
     static void deleteFields();
 
-    static void saveFields( KConfig *, const QString &identifier,
+    /**
+     * Save the field settings to a config file.
+     *
+     * @param cfg        The config file object
+     * @param identifier The unique identifier
+     * @param fields     The list of the fields
+     */
+    static void saveFields( KConfig *cfg, const QString &identifier,
                             const Field::List &fields );
+    /**
+     * This is the same as above, with the difference, that
+     * the list is stored in KGlobal::config() in group "KABCFields".
+     */
     static void saveFields( const QString &identifier,
                             const Field::List &fields );
-    static Field::List restoreFields( KConfig *,const QString &identifier );
+
+    /**
+     * Load the field settings from a config file.
+     *
+     * @param cfg        The config file object
+     * @param identifier The unique identifier
+     */
+    static Field::List restoreFields( KConfig *cfg, const QString &identifier );
+
+    /**
+     * This is the same as above, with the difference, that
+     * the list is loaded from KGlobal::config() from group "KABCFields".
+     */
     static Field::List restoreFields( const QString &identifier );
 
   protected:

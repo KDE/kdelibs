@@ -31,23 +31,46 @@
 
 namespace KABC {
 
+/**
+ * Frontend for selecting a resource.
+ * 
+ * Example:
+ *
+ * <pre>
+ * KABC::ResourceDialog dlg( KABC::StdAddressBook::self(), this );
+ *
+ * KABC::Resource *res;
+ * if ( !( res = dlg.exec() ) ) {
+ *   // no resource selected
+ * } else {
+ *   // do something with resource
+ * }
+ * </pre>
+ */
 class ResourceDlg : KDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    ResourceDlg( AddressBook *ab, QWidget *parent = 0, const char *name = 0);
-
-    KListBox *resourceId;
+  /**
+   * Constructor.
+   *
+   * @param ab     The address book you want to select the resource from
+   * @param parent The parent widget
+   * @param name   The name of the dialog
+   */
+  ResourceDlg( AddressBook *ab, QWidget *parent = 0, const char *name = 0);
 
 public slots:
-    Resource *exec();
+  Resource *exec();
 
 protected slots:
-    void accept();
+  void accept();
 
 private:
-    QMap<int, Resource*> resourceMap;
-    Resource *mResource;
+  KListBox *mResourceId;
+
+  QMap<int, Resource*> mResourceMap;
+  Resource *mResource;
 };
 
 }

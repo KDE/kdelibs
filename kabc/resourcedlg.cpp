@@ -40,7 +40,7 @@ ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
     QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
     groupBox->setTitle( i18n( "Resources" ) );
 
-    resourceId = new KListBox( groupBox );
+    mResourceId = new KListBox( groupBox );
 
     mainLayout->addWidget( groupBox );
 
@@ -62,8 +62,8 @@ ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
     for ( uint i = 0; i < list.count(); ++i ) {
 	Resource *resource = list.at( i );
 	if ( resource && !resource->readOnly() ) {
-	    resourceMap.insert( counter, resource );
-	    resourceId->insertItem( resource->name() + " " +
+	    mResourceMap.insert( counter, resource );
+	    mResourceId->insertItem( resource->name() + " " +
 		    ( resource->fastResource() ? i18n( "(search)" ) : "" ) );
 	    counter++;
 	}
@@ -71,7 +71,7 @@ ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
 
     mResource = 0;
 
-    resourceId->setCurrentItem( 0 );
+    mResourceId->setCurrentItem( 0 );
 }
 
 Resource *ResourceDlg::exec()
@@ -82,8 +82,8 @@ Resource *ResourceDlg::exec()
 
 void ResourceDlg::accept()
 {
-    if ( resourceId->currentItem() != -1 )
-	mResource = resourceMap[ resourceId->currentItem() ];
+    if ( mResourceId->currentItem() != -1 )
+	mResource = mResourceMap[ mResourceId->currentItem() ];
     else
 	mResource = 0;
 

@@ -25,32 +25,66 @@
 namespace KABC {
 
 /**
-  @short Standard KDE address book
-  
-  This class provides access to the standard KDE address book shared by all
-  applications.
-  
-  It's implemented as a singleton. Use @ref self() to get the address book
-  object.
+ * Standard KDE address book
+ *
+ * This class provides access to the standard KDE address book shared by all
+ * applications.
+ *
+ * It's implemented as a singleton. Use @ref self() to get the address book
+ * object.
+ * 
+ * Example:
+ *
+ * <pre>
+ * KABC::AddressBook *ab = KABC::StdAddressBook::self();
+ *
+ * if ( !ab->load() ) {
+ *   // error
+ * }
+ *
+ * KABC::AddressBook::Iterator it;
+ * for ( it = ab->begin(); it != ab->end(); ++it ) {
+ *   kdDebug() << "UID=" << (*it).uid() << endl;
+ *
+ *   // do some other stuff
+ * }
+ *
+ * KABC::StdAddressBook::save();
+ * </pre>
 */
 class StdAddressBook : public AddressBook
 {
   public:
     /**
-      Get the standard addressbook object.
-    */
+     * Return the standard addressbook object.
+     */
     static AddressBook *self();
+
     /**
-      Save the standard address book to disk.
-    */
+     * This is the same as above, but with specified
+     * behaviour of resource loading.
+     *
+     * @param onlyFastResource Only resources marked as 'fast' should be loaded
+     */
+    static AddressBook *self( bool onlyFastResources );
+
+    /**
+     * Save the standard address book to disk.
+     */
     static bool save();
 
+    /**
+     * Returns the default file name for vcard-based addressbook
+     */
     static QString fileName();
 
   protected:
     StdAddressBook();
+    StdAddressBook( bool onlyFastResources );
     ~StdAddressBook();
-    
+   
+    void init( bool onlyFastResources );
+
   private:
     static AddressBook *mSelf;
 };

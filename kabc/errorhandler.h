@@ -31,7 +31,7 @@ namespace KABC {
  * and provide user friendly error messages on the other side.
  * Use @p ConsoleErrorHandler or @p GUIErrorHandler in your
  * application.
-*/
+ */
 class ErrorHandler
 {
 public:
@@ -41,7 +41,7 @@ public:
 /**
  * This class prints the error messages to
  * stderr via kdError().
-*/
+ */
 class ConsoleErrorHandler : public ErrorHandler
 {
 public:
@@ -49,9 +49,9 @@ public:
 };
 
 /**
- * This class show messages boxes for every
+ * This class shows messages boxes for every
  * error message.
-*/
+ */
 class GUIErrorHandler : public ErrorHandler
 {
 public:

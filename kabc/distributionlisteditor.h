@@ -34,17 +34,47 @@ class AddressBook;
 class DistributionListManager;
 class DistributionListEditorWidget;
 
+/**
+ * @short Frontend to create distribution lists
+ *
+ * Creating a new DistributionListEditor does automatically
+ * load all addressees and distribution lists from the config
+ * files. The changes will be saved when clicking the 'OK'
+ * button.
+ *
+ * Example:
+ *
+ * <pre>
+ * KABC::DistributionListEditor *editor = new
+ *         KABC::DistributionListEditor( KABC::StdAddressBook::self(), this );
+ *
+ * editor->exec();
+ * </pre>
+ */
 class DistributionListEditor : public KDialogBase
 {
     Q_OBJECT
 public:
-    DistributionListEditor( AddressBook *, QWidget *parent );
+    /**
+     * Constructor.
+     *
+     * @param ab     The addressbook, the addressees should be used from
+     * @param parent The parent widget
+     */
+    DistributionListEditor( AddressBook *ab, QWidget *parent );
+
+    /**
+     * Destructor.
+     */
     virtual ~DistributionListEditor();
 
 private:
     DistributionListEditorWidget *mEditor;
 };
 
+/**
+ * @short Helper class
+ */
 class EmailSelectDialog : public KDialogBase
 {
   public:
@@ -60,6 +90,9 @@ class EmailSelectDialog : public KDialogBase
     QButtonGroup *mButtonGroup;
 };
 
+/**
+ * @short Helper class
+ */
 class DistributionListEditorWidget : public QWidget
 {
     Q_OBJECT

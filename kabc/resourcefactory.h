@@ -37,37 +37,62 @@ struct ResourceInfo {
     QString desc;
 };
 
+/**
+ * Class for loading resource plugins.
+ *
+ * Example:
+ *
+ * <pre>
+ * KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
+ *
+ * QStringList list = factory->resources();
+ * QStringList::Iterator it;
+ * for ( it = list.begin(); it != list.end(); ++it ) {
+ *   Resource *resource = factory->resource( (*it),
+ *        KABC::StdAddressBook::self(), 0 );
+ *   // do something with resource
+ * }
+ * </pre>
+ */
 class ResourceFactory
 {
 public:
     
     /**
-     * Get the global resource factory.
+     * Returns the global resource factory.
      */
     static ResourceFactory *self();
 
-
     /**
-     * Return the config widget for the
-     * given resource name, or a null pointer
-     * if resource doesn't exist.
+     * Returns the config widget for the given resource type,
+     * or a null pointer if resource type doesn't exist.
+     *
+     * @param type   The type of the resource, returned by @ref resources()
+     * @param parent The parent widget
      */
-    ResourceConfigWidget *configWidget( const QString& resName, QWidget *parent = 0 );
+    ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
 
     /**
-     * Return a pointer to a resource object
+     * Returns a pointer to a resource object or a null pointer
+     * if resource type doesn't exist.
+     *
+     * @param type   The type of the resource, returned by @ref resources()
+     * @param ab     The address book, the resource should belong to
+     * @param config The config object where the resource get it settings from
      */
-    Resource *resource( const QString& resName, AddressBook *ab, const KConfig *config );
+    Resource *resource( const QString& type, AddressBook *ab, const KConfig *config );
 
     /**
-     * Return a list of all available resources.
+     * Returns a list of all available resources.
      */
     QStringList resources();
 
     /**
-     * Return info to a resource.
+     * Returns infos to a resource of a special type.
+     *
+     * @param type The type of the resource, returned by @ref resources()
      */
-    ResourceInfo *info( const QString& resName );
+    ResourceInfo *info( const QString& type );
 
 protected:
     ResourceFactory();
