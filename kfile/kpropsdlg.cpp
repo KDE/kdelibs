@@ -2295,26 +2295,28 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   if ( !fstabFile.isEmpty() )
   {
     QFile f( fstabFile );
-    f.open( IO_ReadOnly );
-    QTextStream stream( &f );
-    while ( !stream.eof() )
+    if ( f.open( IO_ReadOnly ) )
     {
-      QString line = stream.readLine();
-      line = line.simplifyWhiteSpace();
-      if (!line.isEmpty() && line[0] == '/') // skip comments but also
+      QTextStream stream( &f );
+      while ( !stream.eof() )
       {
-        QStringList lst = QStringList::split( ' ', line );
-        if ( lst.count() > 2 && lst[indexDevice] != QString::fromLatin1("/proc")
-            && lst[indexMountPoint] != QString::fromLatin1("none")
-            && lst[indexMountPoint] != QString::fromLatin1("-") )
+        QString line = stream.readLine();
+        line = line.simplifyWhiteSpace();
+        if (!line.isEmpty() && line[0] == '/') // skip comments but also
         {
-          devices.append( lst[indexDevice]+QString::fromLatin1(" (")
-                           +lst[indexMountPoint]+QString::fromLatin1(")") );
-          m_devicelist.append( line );
+          QStringList lst = QStringList::split( ' ', line );
+          if ( lst.count() > 2 && lst[indexDevice] != QString::fromLatin1("/proc")
+              && lst[indexMountPoint] != QString::fromLatin1("none")
+              && lst[indexMountPoint] != QString::fromLatin1("-") )
+          {
+            devices.append( lst[indexDevice]+QString::fromLatin1(" (")
+                             +lst[indexMountPoint]+QString::fromLatin1(")") );
+            m_devicelist.append( line );
+          }
         }
       }
+      f.close();
     }
-    f.close();
   }
 
 
