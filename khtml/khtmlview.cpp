@@ -876,6 +876,8 @@ void KHTMLView::focusNextPrevNode(bool next)
     // used is that specified in the HTML spec (see DocumentImpl::nextFocusNode() and DocumentImpl::previousFocusNode()
     // for details).
 
+    d->scrollBarMoved = false;
+
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
     NodeImpl *newFocusNode;
@@ -888,7 +890,10 @@ void KHTMLView::focusNextPrevNode(bool next)
 
     // If there was previously no focus node and the user has scrolled the document, then instead of picking the first
     // focusable node in the document, use the first one that lies within the visible area (if possible).
-    if (!oldFocusNode && newFocusNode) {
+    if (!oldFocusNode && newFocusNode && d->scrollBarMoved) {
+
+      kdDebug(6000) << " searching for visible link" << endl;
+
         bool visible = false;
         NodeImpl *toFocus = newFocusNode;
         while (!visible && toFocus) {
@@ -911,18 +916,29 @@ void KHTMLView::focusNextPrevNode(bool next)
             newFocusNode = toFocus;
     }
 
+    if (!newFocusNode)
+      {
+        // No new focus node, scroll to bottom or top depending on next
+        if (next)
+            scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+        else
+            scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+    }
+    else
+    // Scroll the view as necessary to ensure that the new focus node is visible
+    if (!scrollTo(newFocusNode->getRect()))
+        return;
+
     // Set focus node on the document
     m_part->xmlDocImpl()->setFocusNode(newFocusNode);
     emit m_part->nodeActivated(Node(newFocusNode));
 
+#if 0
     if (newFocusNode) {
-        // Scroll the view as necessary to ensure that the new focus node is visible
-        scrollTo(newFocusNode->getRect());
 
         // this does not belong here. it should run a query on the tree (Dirk)
         // I'll fix this very particular part of the code soon when I cleaned
         // up the positioning code
-#if 0
         // If the newly focussed node is a link, notify the part
 
         HTMLAnchorElementImpl *anchor = 0;
@@ -933,15 +949,8 @@ void KHTMLView::focusNextPrevNode(bool next)
             m_part->overURL(anchor->areaHref().string(), 0);
         else
             m_part->overURL(QString(), 0);
+    }
 #endif
-    }
-    else {
-        // No new focus node, scroll to bottom or top depending on next
-        if (next)
-            scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
-        else
-            scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
-    }
 }
 
 void KHTMLView::setMediaType( const QString &medium )
