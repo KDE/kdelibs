@@ -54,6 +54,7 @@
 #include <kdialogbase.h>
 #include <qcheckbox.h>
 #include <kurldrag.h>
+#include <kconfig.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -92,21 +93,31 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 	m_printers.setAutoDelete(false);
 	m_type = KMJobManager::ActiveJobs;
 	m_stickybox = 0;
+	m_standalone = ( parent == NULL );
 
 	setToolBarsMovable(false);
 	init();
 
-	if (!parent)
+	if (m_standalone)
 	{
 		setCaption(i18n("No Printer"));
-		resize(550,250);
+		KConfig *conf = KMFactory::self()->printConfig();
+		QSize defSize( 550, 250 );
+		conf->setGroup( "Jobs" );
+		resize( conf->readSizeEntry( "Size", &defSize ) );
 	}
 }
 
 KMJobViewer::~KMJobViewer()
 {
-	if (!parentWidget())
+	if (m_standalone)
+	{
+		kdDebug( 500 ) << "Destroying stand-alone job viewer window" << endl;
+		KConfig *conf = KMFactory::self()->printConfig();
+		conf->setGroup( "Jobs" );
+		conf->writeEntry( "Size", size() );
 		emit viewerDestroyed(this);
+	}
 	removeFromManager();
 }
 
@@ -133,7 +144,7 @@ void KMJobViewer::setPrinter(const QString& prname)
 
 void KMJobViewer::updateCaption()
 {
-	if (parentWidget())
+	if (!m_standalone)
 		return;
 
 	QString	pixname("fileprint");
@@ -153,7 +164,7 @@ void KMJobViewer::updateCaption()
 
 void KMJobViewer::updateStatusBar()
 {
-	if (parentWidget())
+	if (!m_standalone)
 		return;
 
 	int	limit = m_manager->limit();
@@ -293,7 +304,7 @@ void KMJobViewer::initActions()
 	connect(fact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 	connect(fact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowPrinterMenu()));
 
-	if (parentWidget())
+	if (!m_standalone)
 	{
 		KToolBar	*toolbar = toolBar();
 		hact->plug(toolbar);
@@ -541,7 +552,7 @@ void KMJobViewer::triggerRefresh()
 	// to update itself. Otherwise, it's standalone
 	// kjobviewer and we need to synchronize all possible
 	// opened windows -> do the job on higher level.
-	if (parentWidget())
+	if (!m_standalone)
 		refresh(true);
 	else
 		emit refreshClicked();
@@ -562,10 +573,10 @@ void KMJobViewer::slotClose()
 
 void KMJobViewer::loadPluginActions()
 {
-	int	mpopindex(7), toolbarindex(parentWidget()?7:8), menuindex(7);
+	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
 	QMenuData	*menu(0);
 
-	if (!parentWidget())
+	if (m_standalone)
 	{
 		// standalone window, insert actions into main menubar
 		KAction	*act = actionCollection()->action("job_restart");
@@ -640,7 +651,7 @@ void KMJobViewer::reload()
 
 void KMJobViewer::closeEvent(QCloseEvent *e)
 {
-	if (!parentWidget())
+	if (m_standalone)
 	{
 		hide();
 		e->ignore();

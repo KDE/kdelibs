@@ -109,6 +109,7 @@ private:
 	QString	m_username;
 	QLineEdit	*m_userfield;
 	QCheckBox	*m_stickybox;
+	bool m_standalone;
 };
 
 inline QString KMJobViewer::printer() const
