@@ -34,6 +34,7 @@ klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kurltest_SOURCES = kurltest.cpp
+kurltest_LDADD = $(LIB_KDECORE)
 kstddirstest_SOURCES = kstddirstest.cpp
 kstddirstest_LDADD = $(LIB_KDECORE)
 kprocesstest_SOURCES = kprocess.cpp
