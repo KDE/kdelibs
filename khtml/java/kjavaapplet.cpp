@@ -1,5 +1,7 @@
 #include "kjavaapplet.moc"
 
+template class QDict<char>;
+
 KJavaApplet::KJavaApplet( KJavaAppletContext *context )
 {
     if ( context != 0 )

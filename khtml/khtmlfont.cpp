@@ -31,6 +31,8 @@
 #include <klocale.h>
 #include "kglobal.h"
 
+template class QList<HTMLFont>;
+
 HTMLFontManager* pFontManager = 0;
 
 HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7],

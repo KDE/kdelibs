@@ -28,6 +28,8 @@ using namespace DOM;
 
 #include <stdio.h>
 
+template class QList<khtml::Length>;
+
 DOMStringImpl::DOMStringImpl(QChar *str, uint len)
 {
     s = str, l = len;

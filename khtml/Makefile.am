@@ -76,7 +76,7 @@ noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
 	html_objectimpl.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la
+libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la 
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes)
@@ -106,6 +106,8 @@ check_PROGRAMS 	= testkhtml
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
+testkhtml_LDADD = $(LIB_KHTML) $(LIB_QT)
 testkhtml_LDADD = $(LIB_KHTML)
 #testcss_SOURCES = testcss.cpp
 #testcss_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
+

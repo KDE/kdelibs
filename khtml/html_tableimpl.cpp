@@ -59,6 +59,10 @@ using namespace DOM;
 #include <stdio.h>
 #include <assert.h>
 
+template class QArray<khtml::LengthType>;
+template class QVector<DOM::HTMLTableElementImpl::ColInfoLine>;
+template class QVector<DOM::HTMLTableElementImpl::ColInfo>;
+
 #define FOR_EACH_CELL(r,c,cell) \
     for ( unsigned int r = 0; r < totalRows; r++ )                    \
     {                                                                 \

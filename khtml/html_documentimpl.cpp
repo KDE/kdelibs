@@ -50,6 +50,8 @@
 
 using namespace DOM;
 
+template class QStack<DOM::NodeImpl>;
+
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
     printf("HTMLDocumentImpl constructor this = %p\n",this);

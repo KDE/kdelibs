@@ -53,8 +53,10 @@
 #include <stdio.h>
 #include <assert.h>
 
-using namespace DOM;
+template class QList<DOM::NodeImpl>;
+template class QList<DOM::HTMLBlockElementImpl::MarginRange>;
 
+using namespace DOM;
 
 inline int MAX(int a, int b)
 {

@@ -65,6 +65,14 @@
 
 #define PAINT_BUFFER_HEIGHT 150
 
+template class QList<HTMLURLRequester>;
+template class QList<HTMLImageRequester>;
+template class QDict<HTMLURLRequest>;
+template class QDict<KHTMLCachedImage>;
+template class QList<HTMLURLRequestJob>;
+template class QList<KHTMLWidget>;
+template class QList<KHTMLWidget::Child>;
+
 QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
 
 using namespace DOM;

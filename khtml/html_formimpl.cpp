@@ -45,9 +45,12 @@
 #include "html_documentimpl.h"
 
 #include "khtmlattrs.h"
+
 using namespace DOM;
 
 #include "html_formimpl.moc"
+
+template class QList<DOM::HTMLGenericFormElementImpl>;
 
 HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     : HTMLBlockElementImpl(doc)
