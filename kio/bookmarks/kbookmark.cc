@@ -404,6 +404,9 @@ static QDomNode findOrCreateMetadata( QDomNode& parent )
 
 bool KBookmark::hasMetaData() const
 {
+    // ### NOTE: this code creates <info> and <metadata>, despite its name and the const.
+    // It doesn't matter much in practice since it's only called for newly-created bookmarks,
+    // which will get metadata soon after anyway.
     QDomNode n = cd_or_create( internalElement(), "info" );
     return findOrCreateMetadata( n ).hasChildNodes();
 }
