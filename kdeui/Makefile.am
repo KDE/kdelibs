@@ -37,7 +37,7 @@ pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
 include_HEADERS = kprogress.h kcolordlg.h \
 		kcolordialog.h kselect.h \
 		kdatepik.h kdatepicker.h kdatetbl.h kfontdialog.h kpopupmenu.h \
-		ktabctl.h kstatusbar.h \
+		kfontrequester.h ktabctl.h kstatusbar.h \
 		kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
 		krestrictedline.h kcolorbutton.h kcolorbtn.h \
@@ -82,7 +82,7 @@ libkdeui_la_SOURCES = \
 		kurllabel.cpp kmenubar.cpp \
 		knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
-		kdatetbl.cpp kfontdialog.cpp ktabctl.cpp \
+		kdatetbl.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
 		keditlistbox.cpp \
 		kseparator.cpp krestrictedline.cpp  \
