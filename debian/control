@@ -1,14 +1,14 @@
 Source: kdelibs-cvs
-Build-Depends: automake, debhelper, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev, libqt2.1-dev, libpng2-dev, kdoc, qt2.1-doc
+Build-Depends: automake, debhelper, libjpeg62-dev, mico-2.3.0-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libstdc++2.10-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libaudiofile-dev, libssl09-dev, kdoc, qt2.1-doc
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
-Standards-Version: 3.1.0
+Standards-Version: 3.1.1
 
 Package: kdelibs3-cvs
 Architecture: any
 Section: libs
-Depends: ${shlibs:Depends}, libjpeg62, xlib6g, mico-2.3.0 (>= 2.3.0)
+Depends: ${shlibs:Depends}, mico-2.3.0 (>= 2.3.0)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.

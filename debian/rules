@@ -35,8 +35,11 @@ clean: debian-clean
 	-rm -f debian/debiandirs
 	if test -d CVS; then \
 	  make -f admin/Makefile.common cvs-clean ;\
+	else \
+	  -rm -rf $(BUILDDIR) ;\
+	  -rm -rf debian/debiandirs ;\
+	  dh_clean ; \
 	fi
-	dh_clean 
 
 binary-indep:	build
 	dh_testdir
@@ -78,7 +81,7 @@ binary-arch:  build
 	dh_compress 
 	dh_fixperms 
 	dh_suidregister 
-	dh_makeshlibs -V 
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol
