@@ -180,7 +180,7 @@ void CSSSelector::extractPseudoType() const
             case 'c':
                 if (value == "checked")
                     _pseudoType = PseudoChecked;
-                else if (value == "contains")
+                else if (value == "contains(")
                     _pseudoType = PseudoContains;
                 break;
             case 'd':

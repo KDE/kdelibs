@@ -1,3 +1,7 @@
+2005-01-12  Allan Sandfeld Jensen <kde@carewolf.com>
+        
+        * css/cssstyleselector.cpp: Match :contains() against innerText on HTMLElements
+
 2005-01-11  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_text.cpp (caretPos): Calculate absolute position

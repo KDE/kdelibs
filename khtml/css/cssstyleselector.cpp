@@ -1374,13 +1374,27 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
+        case CSSSelector::PseudoContains: {
+            if (e->isHTMLElement()) {
+                if (!e->closed()) {
+                    e->setRestyleSelfLate();
+                    return false;
+                }
+                HTMLElementImpl *elem;
+                elem = static_cast<HTMLElementImpl*>(e);
+                DOMString s = elem->innerText();
+                QString selStr = sel->string_arg.string();
+//                kdDebug(6080) << ":contains(\"" << selStr << "\")" << " on \"" << s << "\"" << endl;
+                return s.string().contains(selStr);
+            } 
+            break;
+        }
 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
 	case CSSSelector::PseudoChecked:
 	case CSSSelector::PseudoIndeterminate:
-        case CSSSelector::PseudoContains:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
