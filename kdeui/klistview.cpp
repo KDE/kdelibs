@@ -68,7 +68,9 @@ class KListView::KListViewPrivate
 {
 public:
   KListViewPrivate (KListView* listview)
-    : pCurrentItem (0L),
+    : pCurrentItem (0),
+      autoSelectDelay(0),
+      dragOverItem(0),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
       cursorInExecuteArea(false),
@@ -87,7 +89,7 @@ public:
       wasShiftEvent (false),
       fullWidth (false),
       sortAscending(true),
-	    tabRename(true),
+      tabRename(true),
       sortColumn(0),
       selectionDirection(0),
       tooltipColumn (0),
