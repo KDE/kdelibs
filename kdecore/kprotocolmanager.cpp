@@ -19,7 +19,7 @@ KProtocolManager::KProtocolManager()
   
   s_pManager = this;
 
-  QStringList list = KGlobal::dirs()->findAllResources("config", "protocols");
+  QStringList list = KGlobal::dirs()->findDirs("config", "protocols");
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
     scanConfig( *it , true);
 }
@@ -42,9 +42,9 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
   
     Protocol p;
     QString exec = config.readEntry( "exec" );
-    if ( _islocal )
-      p.executable = KApplication::localkdedir() + "/" + exec;
-    else
+//    if ( _islocal )
+//      p.executable = KApplication::localkdedir() + "/" + exec;
+//    else
       p.executable = locate("exe", exec);
     p.isSourceProtocol = config.readBoolEntry( "source", TRUE );
     p.supportsReading = config.readBoolEntry( "reading", FALSE );
