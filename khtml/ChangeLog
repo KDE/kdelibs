@@ -1,3 +1,14 @@
+2004-02-04  Zack Rusin  <zack@kde.org>
+
+	* dom/dom2_traversal : Making NodeFilter( NodeFilterImpl* ) 
+	constructor public. Making setFilter method take arg by
+	reference
+	* dom/dom_doc.cpp (createTreeWalker): implementing the 
+	method
+	* xml/dom2_traversalimpl : Implementing TreeWalkerImpl
+	* xml/dom_docimpl (createTreeWalker): Implementing the
+	method
+
 2004-02-04  Stephan Kulow  <coolo@kde.org>
 
 	* html/html_tableimpl.cpp (insertRow): append to tbody if 
