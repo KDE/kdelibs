@@ -63,6 +63,7 @@ public:
    *        such a case use the EUID for checking permissions, and the RUID 
    *        for displaying information about the user.
    */
+  // XXX KDE4: Make this explicit
   KUser(UIDMode mode = UseEffectiveUID);
 
   /**
@@ -70,6 +71,7 @@ public:
    * If the user does not exist isValid() will return false.
    * @param uid the user id
    */
+  // XXX KDE4: Make this explicit
   KUser(long uid);
 
   /**
@@ -78,6 +80,7 @@ public:
    *
    * @param name the name of the user
    */
+  // XXX KDE4: Make this explicit
   KUser(const QString& name);
 
   /**
@@ -86,6 +89,7 @@ public:
    *
    * @param name the name of the user
    */
+  // XXX KDE4: Make this explicit
   KUser(const char *name);
 
   /**
@@ -94,6 +98,7 @@ public:
    *
    * @param p the passwd structure to create the user from
    */
+  // XXX KDE4: Make this explicit
   KUser(struct passwd *p);
 
   /**
