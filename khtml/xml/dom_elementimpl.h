@@ -21,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef _DOM_ELEMENTImpl_h_
 #define _DOM_ELEMENTImpl_h_
@@ -54,8 +53,8 @@ class AttributeImpl : public khtml::Shared<AttributeImpl>
 
 public:
     // null value is forbidden !
-    AttributeImpl(NodeImpl::Id id, DOMStringImpl* value)
-        : m_id(id), _prefix(0), _value(value), _impl(0)
+    AttributeImpl(NodeImpl::Id _id, DOMStringImpl* value)
+        : m_id(_id), _prefix(0), _value(value), _impl(0)
         { _value->ref(); };
     ~AttributeImpl() {
         if (_prefix) _prefix->deref();
