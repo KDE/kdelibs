@@ -426,6 +426,10 @@ public slots:
      * no item is selected.
      */
     void setCurrentItem( const QString& item, bool insert = false, int index = -1 );
+    /**
+     * Simply calls the parents default implementation
+     * KDE4: remove this
+     */
     void setCurrentItem(int index) { QComboBox::setCurrentItem(index); }
 
 protected slots:
