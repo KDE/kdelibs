@@ -17,10 +17,12 @@ img[align="right"] {
 }
 
 /* Tables reset both line-height and white-space in quirks mode.
-   Compatible with WinIE. */
+   Compatible with WinIE. For some reason they don't reset font-family */
 TABLE {
     white-space: normal;
     line-height: normal;
+    color: \2d konq-text;
+    font-size: medium;
 }
 
 /* NN3+, IE don't have a top margin on <p> if it's the first child element.
