@@ -221,13 +221,36 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
                                            )
 {
   kdDebug(7007) << "Observer::open_RenameDlg" << endl;
+  /*
   QByteArray resultArgs = m_uiserver->open_RenameDlg( job ? job->progressId() : 0, caption, src, dest, mode,
                                                       sizeSrc, sizeDest,
                                                       (unsigned long) ctimeSrc, (unsigned long) ctimeDest,
                                                       (unsigned long) mtimeSrc, (unsigned long) mtimeDest );
-  if ( m_uiserver->ok() )
-  {
+  if ( m_uiserver->ok() )  [...]
     QDataStream stream( resultArgs, IO_ReadOnly );
+  */
+
+  // We have to do it manually, to set useEventLoop to true.
+
+  QByteArray result;
+  QByteArray data, replyData;
+  QCString replyType;
+  QDataStream arg( data, IO_WriteOnly );
+  arg << (job ? job->progressId() : 0);
+  arg << caption;
+  arg << src;
+  arg << dest;
+  arg << mode;
+  arg << sizeSrc;
+  arg << sizeDest;
+  arg << (unsigned long) ctimeSrc;
+  arg << (unsigned long) ctimeDest;
+  arg << (unsigned long) mtimeSrc;
+  arg << (unsigned long) mtimeDest;
+  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_RenameDlg(int,QString,QString,QString,int,unsigned long int,unsigned long int,unsigned long int,unsigned long int,unsigned long int,unsigned long int)", data, replyType, replyData, true ) &&
+       replyType == "QByteArray" )
+  {
+    QDataStream stream( replyData, IO_ReadOnly );
     Q_UINT8 result;
     stream >> result >> newDest;
     kdDebug(7007) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
@@ -242,9 +265,19 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
                                        const QString& _error_text )
 {
   kdDebug(7007) << "Observer::open_SkipDlg" << endl;
-  int result = m_uiserver->open_SkipDlg( job ? job->progressId() : 0, (int)_multi, _error_text );
-  if ( m_uiserver->ok() )
+  //int result = m_uiserver->open_SkipDlg( job ? job->progressId() : 0, (int)_multi, _error_text );
+  int result;
+  QByteArray data, replyData;
+  QCString replyType;
+  QDataStream arg( data, IO_WriteOnly );
+  arg << ( job ? job->progressId() : 0 );
+  arg << (int)_multi;
+  arg << _error_text;
+  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_SkipDlg(int,int,QString)", data, replyType, replyData, true )
+       && replyType == "int" )
   {
+    QDataStream stream( replyData, IO_ReadOnly );
+    stream >> result;
     kdDebug(7007) << "UIServer::open_SkipDlg returned " << result << endl;
     return (SkipDlg_Result) result;
   }
