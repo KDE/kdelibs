@@ -1083,11 +1083,11 @@ protected:
    */
   virtual void khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * );
   /**
-   * Eventhandler for the khtml::MouseDoubleMoveEvent.
+   * Eventhandler for the khtml::MouseMouseMoveEvent.
    */
   virtual void khtmlMouseMoveEvent( khtml::MouseMoveEvent *event );
   /**
-   * Eventhandler for the khtml::MouseMoveEvent.
+   * Eventhandler for the khtml::MouseMouseReleaseEvent.
    */
   virtual void khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event );
   /**
