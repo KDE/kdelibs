@@ -98,8 +98,9 @@ class UIServerSystemTray:public KSystemTray
          KPopupMenu* pop= contextMenu();
          pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
          pop->insertItem(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
-         setPixmap(UserIcon("I_need_an_icon"));
-         actionCollection()->action("file_quit")->setEnabled(false);
+         setPixmap(SmallIcon("filesave"));
+         //actionCollection()->action("file_quit")->setEnabled(true);
+         KStdAction::quit(uis, SLOT(slotQuit()), actionCollection());
       }
 };
 
@@ -565,6 +566,7 @@ UIServer::UIServer()
 ,m_configDialog(0)
 ,m_contextMenu(0)
 ,m_systemTray(0)
+,m_shuttingDown(false)
 {
 
   readSettings();
@@ -983,15 +985,6 @@ void UIServer::killJob( QCString observerAppId, int progressId )
     observer.killJob( progressId );
 }
 
-
-void UIServer::closeEvent( QCloseEvent * e){
-#ifndef Q_WS_QWS //FIXME(E): Implement for QT Embedded
-   KWin::iconifyWindow(winId());
-#endif
-   e->accept();
-}
-
-
 void UIServer::slotJobCanceled( ProgressItem *item ) {
   kdDebug(7024) << "UIServer::slotJobCanceled appid=" << item->appId() << " jobid=" << item->jobId() << endl;
   // kill the corresponding job
@@ -1002,6 +995,12 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
   delete item;
 }
 
+
+void UIServer::slotQuit()
+{
+  m_shuttingDown = true;
+  kapp->quit();
+}
 
 void UIServer::slotUpdate() {
   // don't do anything if we don't have any inserted progress item
@@ -1313,6 +1312,14 @@ void UIServer::hideEvent(QHideEvent* e)
   KMainWindow::hideEvent(e);
   m_bShowList=false;
   writeSettings();
+}
+
+bool UIServer::queryClose()
+{
+  if ( !m_shuttingDown ) {
+    hide();
+    return false;
+  }
 }
 
 UIServer* UIServer::createInstance()

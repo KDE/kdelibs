@@ -359,6 +359,7 @@ public slots:
 protected slots:
 
   void slotUpdate();
+  void slotQuit();
 
   void slotCancelCurrent();
 
@@ -374,9 +375,9 @@ protected:
   ProgressItem* findItem( int id );
 
   virtual void resizeEvent(QResizeEvent* e);
-  virtual void closeEvent( QCloseEvent * );
   virtual void showEvent(QShowEvent*);
   virtual void hideEvent(QHideEvent*);
+  virtual bool queryClose();
 
   void setItemVisible( ProgressItem * item, bool visible );
 
@@ -400,6 +401,7 @@ private:
   bool m_showToolBar;
   bool m_keepListOpen;
   bool m_showSystemTray;
+  bool m_shuttingDown;
 
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
