@@ -253,7 +253,7 @@ public:
     SignPosition negativeMonetarySignPosition() const;
 
     /**
-     * Given an double, convert that to a numeric string containing
+     * Given a double, convert that to a numeric string containing
      * the localized monetary equivalent.
      *
      * e.g. given 123456, return "$ 123,456.00".
@@ -277,7 +277,7 @@ public:
     QString formatMoney(const QString &numStr) const;
 
     /**
-     * Given an double, convert that to a numeric string containing
+     * Given a double, convert that to a numeric string containing
      * the localized numeric equivalent.
      *
      * e.g. given 123456.78, return "123,456.78" (for some European country).
@@ -465,9 +465,9 @@ public:
     QString charset() const { return chset; }
 
     /**
-     * adds anther catalogue to search for translation lookup.
+     * adds another catalogue to search for translation lookup.
      * This function is useful for extern libraries and/or code,
-     * that provides it's own messages.
+     * that provides its own messages.
      *
      * If the catalogue does not exist for the chosen language,
      * it will be ignored and C will be used.
