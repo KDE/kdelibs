@@ -1411,13 +1411,14 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        break;
     default:
 
-       if (d->selectedBySimpleMove)
+       bool selectCurrentItem((d->selectedBySimpleMove) && (item->isSelected()));
+       if (selectCurrentItem)
           item->setSelected(false);
        //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
        setSelectionMode (QListView::Multi);
        QListView::keyPressEvent (e);
        setSelectionMode (QListView::Extended);
-       if (d->selectedBySimpleMove)
+       if (selectCurrentItem)
        {
           currentItem()->setSelected(true);
           emitSelectionChanged=TRUE;
