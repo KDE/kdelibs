@@ -140,14 +140,19 @@
    <l:gentext key="listoffigures" text="Lista de Figuras"/>
    <l:gentext key="listoftables" text="Lista de Tabelas"/>
    <l:gentext key="ListofTables" text="Lista de Tabelas"/>
-   <l:gentext key="ListofUnknown" text="List of ???"/>
-   <l:gentext key="listofunknown" text="List of ???"/>
-   <l:gentext key="nav-home" text="Home"/>
-   <l:gentext key="nav-next" text="Next"/>
-   <l:gentext key="nav-next-sibling" text="Fast Forward"/>
-   <l:gentext key="nav-prev" text="Prev"/>
-   <l:gentext key="nav-prev-sibling" text="Fast Backward"/>
-   <l:gentext key="nav-up" text="Up"/>
+   <l:gentext key="ListofUnknown" text="Lista de Desconhecido"/>
+   <l:gentext key="listofunknown" text="Lista de Desconhecido"/>
+   <l:gentext key="nav-home" text="In&#237;cio"/>
+   <l:gentext key="nav-next" text="Pr&#243;ximo"/>
+   <l:gentext key="nav-next-sibling" text="Pr&#243;xima Parte"/>
+   <l:gentext key="nav-prev" text="Anterior"/>
+   <l:gentext key="nav-prev-sibling" text="Parte Anterior"/>
+   <l:gentext key="nav-up" text="Subir"/>
+   <l:gentext key="sectioncalled" text="a sec&#231;&#227;o chamada"/>
+   <l:gentext key="Draft" text="Rascunho"/>
+   <l:gentext key="above" text="acima"/>
+   <l:gentext key="below" text="abaixo"/>
+   <l:gentext key="index symbols" text="S&#237;mbolos"/>
    <l:dingbat key="startquote" text="&#8220;"/>
    <l:dingbat key="endquote" text="&#8221;"/>
    <l:dingbat key="nestedstartquote" text="&#8216;"/>
@@ -197,6 +202,7 @@
       <l:template name="partintro" text="%t"/>
       <l:template name="preface" text="%t"/>
       <l:template name="procedure" text="%t"/>
+      <l:template name="procedure.formal" text="Procedimento&#160;%n.&#160;%t"/>
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaset" text="%t"/>
       <l:template name="question" text="Pergunta %n"/>
@@ -215,6 +221,7 @@
       <l:template name="tip" text="%t"/>
       <l:template name="toc" text="%t"/>
       <l:template name="variablelist" text="%t"/>
+      <l:template name="varlistentry"/>
       <l:template name="warning" text="%t"/>
    </l:context>
 
@@ -297,6 +304,7 @@
       <l:template name="listitem" text="%n"/>
       <l:template name="part" text="Parte %n. %t"/>
       <l:template name="preface" text="%t"/>
+      <l:template name="question" text="P:&#160;%n"/>
       <l:template name="reference" text="%t"/>
       <l:template name="set" text="%t"/>
       <l:template name="setindex" text="%t"/>
