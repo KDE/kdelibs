@@ -367,11 +367,7 @@ static KStaticDeleter<KFileMetaInfo::Data> sd_KFileMetaInfoData;
 KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
 {
     if (!null)
-    {
-        KFileMetaInfo::Data* data = new KFileMetaInfo::Data(QString::null):
-        sd_KFileMetaInfoItemData.setObject( null, data );
-        data->supportsVariableKeys = false;
-    }
+	sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null) );
     return null;
 }
 
