@@ -3139,6 +3139,10 @@ void KDesktopPropsPlugin::slotAdvanced()
            this, SIGNAL( changed() ) );
   connect( w->suidEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
+  connect( w->startupInfoCheck, SIGNAL( toggled( bool ) ),
+           this, SIGNAL( changed() ) );
+  connect( w->dcopCombo, SIGNAL( highlighted( int ) ),
+           this, SIGNAL( changed() ) );
 
   if ( dlg.exec() == QDialog::Accepted )
   {
