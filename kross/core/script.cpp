@@ -1,5 +1,5 @@
 /***************************************************************************
- * interpreter.cpp
+ * script.cpp
  * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -16,23 +16,59 @@
  * Boston, MA 02111-1307, USA.
  ***************************************************************************/
 
-#include "interpreter.h"
+#include "script.h"
+#include "../api/object.h"
+#include "../api/list.h"
 #include "../main/manager.h"
+
+#include "../api/interpreter.h"
 
 using namespace Kross::Api;
 
-Interpreter::Interpreter(Manager* manager, const QString& interpretername)
-    : m_manager(manager)
-    , m_interpretername(interpretername)
+Script::Script(Manager* manager)
+    : QObject()
+    , m_manager(manager)
 {
 }
 
-Interpreter::~Interpreter()
+Script::~Script()
 {
 }
 
-const QString& Interpreter::getInterpretername()
+const QString& Script::getCode()
 {
-    return m_interpretername;
+    return m_code;
+}
+
+void Script::setCode(const QString& code)
+{
+    m_code = code;
+}
+
+const QString& Script::getInterpreter()
+{
+    return m_interpreter;
+}
+
+void Script::setInterpreter(const QString& interpreter)
+{
+    m_interpreter = interpreter;
+}
+
+bool Script::execute()
+{
+    Interpreter* interpreter = m_manager->getInterpreter(m_interpreter);
+    if(! interpreter) return false;
+    return interpreter->execute(m_code);
+}
+
+const QVariant& execute(const QString& name, const QVariant& args)
+{
+    //TODO
+}
+
+Kross::Api::Object* execute(const QString& name, Kross::Api::List* args)
+{
+    //TODO
 }
 
