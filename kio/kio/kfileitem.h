@@ -370,7 +370,7 @@ public:
    */
   const KFileMetaInfo & metaInfo(bool autoget = true,
                                  int what = KFileMetaInfo::Fastest) const;
-      
+
   /**
    * Somewhat like an assignment operator, but more explicit.
    * Note: extra-data set with @ref setExtraData() is not copied, so be careful
@@ -454,6 +454,16 @@ private:
   bool m_bIsLocalURL:1;
 
   bool m_bMimeTypeKnown:1;
+
+   // For special case like link to dirs over FTP
+  QString m_guessedMimeType;
+  mutable QString m_access;
+  QMap<const void*, void*> m_extra;
+  mutable KFileMetaInfo m_metaInfo;
+
+  enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
+  mutable time_t m_time[3];
+  mutable KIO::filesize_t m_size;
 
 protected:
   virtual void virtual_hook( int id, void* data );

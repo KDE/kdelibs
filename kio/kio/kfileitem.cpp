@@ -43,42 +43,6 @@
 #include <krun.h>
 #include <kfilemetainfo.h>
 
-class KFileItem::KFileItemPrivate
-{
-public:
-  KFileItemPrivate() {
-    refresh();
-  }
-
-  void operator=( const KFileItemPrivate& d ) {
-      guessedMimeType   = d.guessedMimeType;
-      access            = d.access;
-      for ( int i = 0; i < NumFlags; i++ )
-          time[i] = d.time[i];
-      size              = d.size;
-      // note: extra is NOT copied, as we'd have no control over who is
-      // deleting the data or not.
-  }
-
-  void refresh() {
-    access = QString::null;
-    size = (KIO::filesize_t) -1;
-//    metaInfo = KFileMetaInfo();
-    for ( int i = 0; i < NumFlags; i++ )
-      time[i] = (time_t) -1;
-  }
-
-   // For special case like link to dirs over FTP
-  QString guessedMimeType;
-  QString access;
-  QMap<const void*, void*> extra;
-  KFileMetaInfo metaInfo;
-
-  enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
-  time_t time[3];
-  KIO::filesize_t size;
-};
-
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
@@ -90,7 +54,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
-  d(new KFileItemPrivate)
+  d(0L)
 {
   bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
@@ -130,7 +94,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
           break;
 
         case KIO::UDS_GUESSED_MIME_TYPE:
-          d->guessedMimeType = (*it).m_str;
+          m_guessedMimeType = (*it).m_str;
           break;
 
         case KIO::UDS_LINK_DEST:
@@ -157,7 +121,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
-  d(new KFileItemPrivate)
+  d(0L)
 {
   init( _determineMimeTypeOnDemand );
 }
@@ -172,25 +136,30 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
-  d(new KFileItemPrivate)
+  d(0L)
 {
   m_pMimeType = KMimeType::mimeType( mimeType );
   init( false );
 }
 
 KFileItem::KFileItem( const KFileItem & item ) :
-  d(new KFileItemPrivate)
+  d(0L)
 {
     assign( item );
 }
 
 KFileItem::~KFileItem()
 {
-  delete d;
 }
 
 void KFileItem::init( bool _determineMimeTypeOnDemand )
 {
+  m_access = QString::null;
+  m_size = (KIO::filesize_t) -1;
+  //  metaInfo = KFileMetaInfo();
+  for ( int i = 0; i < NumFlags; i++ )
+      m_time[i] = (time_t) -1;
+
   // determine mode and/or permissions if unknown
   if ( m_fileMode == KFileItem::Unknown || m_permissions == KFileItem::Unknown )
   {
@@ -244,7 +213,12 @@ void KFileItem::refresh()
   m_permissions = KFileItem::Unknown;
   m_user = QString::null;
   m_group = QString::null;
-  d->refresh();
+  m_access = QString::null;
+  m_size = (KIO::filesize_t) -1;
+//  metaInfo = KFileMetaInfo();
+  for ( int i = 0; i < NumFlags; i++ )
+      m_time[i] = (time_t) -1;
+
   // Basically, we can't trust any information we got while listing.
   // Everything could have changed...
   // Clearing m_entry makes it possible to detect changes in the size of the file,
@@ -289,15 +263,15 @@ QString KFileItem::linkDest() const
 
 KIO::filesize_t KFileItem::size() const
 {
-  if ( d->size != (KIO::filesize_t) -1 )
-    return d->size;
+  if ( m_size != (KIO::filesize_t) -1 )
+    return m_size;
 
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
     if ( (*it).m_uds == KIO::UDS_SIZE ) {
-      d->size = (*it).m_long;
-      return d->size;
+      m_size = (*it).m_long;
+      return m_size;
     }
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
@@ -315,25 +289,25 @@ time_t KFileItem::time( unsigned int which ) const
 
   switch( which ) {
     case KIO::UDS_MODIFICATION_TIME:
-      mappedWhich = KFileItemPrivate::Modification;
+      mappedWhich = Modification;
       break;
     case KIO::UDS_ACCESS_TIME:
-      mappedWhich = KFileItemPrivate::Access;
+      mappedWhich = Access;
       break;
     case KIO::UDS_CREATION_TIME:
-      mappedWhich = KFileItemPrivate::Creation;
+      mappedWhich = Creation;
       break;
   }
 
-  if ( d->time[mappedWhich] != (time_t) -1 )
-    return d->time[mappedWhich];
+  if ( m_time[mappedWhich] != (time_t) -1 )
+    return m_time[mappedWhich];
 
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
     if ( (*it).m_uds == which ) {
-      d->time[mappedWhich] = static_cast<time_t>((*it).m_long);
-      return d->time[mappedWhich];
+      m_time[mappedWhich] = static_cast<time_t>((*it).m_long);
+      return m_time[mappedWhich];
     }
 
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
@@ -341,11 +315,11 @@ time_t KFileItem::time( unsigned int which ) const
   {
     KDE_struct_stat buf;
     KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
+    m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                            buf.st_mtime :
                            (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
                            static_cast<time_t>(0); // We can't determine creation time for local files
-    return d->time[mappedWhich];
+    return m_time[mappedWhich];
   }
   return static_cast<time_t>(0);
 }
@@ -408,7 +382,7 @@ bool KFileItem::isMimeTypeKnown() const
   // The mimetype isn't known if determineMimeType was never called (on-demand determination)
   // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
   // it always remains "not fully determined"
-  return m_bMimeTypeKnown && d->guessedMimeType.isEmpty();
+  return m_bMimeTypeKnown && m_guessedMimeType.isEmpty();
 }
 
 QString KFileItem::mimeComment()
@@ -460,8 +434,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one hasn't been determined for sure
-  if ( !m_bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
-      mime = KMimeType::mimeType( d->guessedMimeType );
+  if ( !m_bMimeTypeKnown && !m_guessedMimeType.isEmpty() )
+      mime = KMimeType::mimeType( m_guessedMimeType );
   else
       mime = m_pMimeType;
 
@@ -504,7 +478,7 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::isDir() const
 {
-  if ( !m_bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
+  if ( !m_bMimeTypeKnown && !m_guessedMimeType.isEmpty() )
   {
     kdDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
@@ -580,8 +554,8 @@ QString KFileItem::getToolTipText(int maxcount)
 {
   // we can return QString::null if no tool tip should be shown
   QString tip;
-  
-  
+
+
   KFileMetaInfo info = metaInfo();
 
   tip = "<table cellspacing=0 cellpadding=0>";
@@ -592,7 +566,7 @@ QString KFileItem::getToolTipText(int maxcount)
     //kdDebug() << "Found no meta info" << endl;
 
     tip += "<tr><td><nobr>" + i18n("Type:") + "</nobr></td><td><nobr>";
-        
+
     QString type = QStyleSheet::escape(determineMimeType()->comment());
     if ( m_bLink )
       tip += i18n("Link to %1").arg(type) + "</nobr></td></tr><tr><td><nobr>";
@@ -614,7 +588,7 @@ QString KFileItem::getToolTipText(int maxcount)
   {
     // first the title in bold and centered
       QStringList keys = info.preferredKeys();
-    
+
     // now the rest
     QStringList::Iterator it = keys.begin();
     for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
@@ -665,10 +639,10 @@ QString KFileItem::getToolTipText(int maxcount)
     }
     tip += "</table>";
   }
-  
+
   //kdDebug() << "making this the tool tip rich text:\n";
   //kdDebug() << tip << endl;
-  
+
   return tip;
 }
 
@@ -708,7 +682,14 @@ void KFileItem::assign( const KFileItem & item )
     m_pMimeType = item.m_pMimeType;
     m_strLowerCaseName = item.m_strLowerCaseName;
     m_bMimeTypeKnown = item.m_bMimeTypeKnown;
-    *d = *item.d; // Note: d->extra is just a shallow copy...
+    m_guessedMimeType   = item.m_guessedMimeType;
+    m_access            = item.m_access;
+    for ( int i = 0; i < NumFlags; i++ )
+        m_time[i] = item.m_time[i];
+    m_size = item.m_size;
+    // note: m_extra is NOT copied, as we'd have no control over who is
+    // deleting the data or not.
+
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
 }
@@ -718,36 +699,36 @@ void KFileItem::setExtraData( const void *key, void *value )
     if ( !key )
         return;
 
-    d->extra.replace( key, value );
+    m_extra.replace( key, value );
 }
 
 const void * KFileItem::extraData( const void *key ) const
 {
-    QMapConstIterator<const void*,void*> it = d->extra.find( key );
-    if ( it != d->extra.end() )
+    QMapConstIterator<const void*,void*> it = m_extra.find( key );
+    if ( it != m_extra.end() )
         return it.data();
     return 0L;
 }
 
 void * KFileItem::extraData( const void *key )
 {
-    QMapIterator<const void*,void*> it = d->extra.find( key );
-    if ( it != d->extra.end() )
+    QMapIterator<const void*,void*> it = m_extra.find( key );
+    if ( it != m_extra.end() )
         return it.data();
     return 0L;
 }
 
 void KFileItem::removeExtraData( const void *key )
 {
-    d->extra.remove( key );
+    m_extra.remove( key );
 }
 
 QString KFileItem::permissionsString() const
 {
-    if (d->access.isNull())
-      d->access = parsePermissions( m_permissions );
+    if (m_access.isNull())
+      m_access = parsePermissions( m_permissions );
 
-    return d->access;
+    return m_access;
 }
 
 QString KFileItem::parsePermissions(mode_t perm) const
@@ -793,17 +774,18 @@ QString KFileItem::timeString( unsigned int which ) const
 
 void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 {
-    d->metaInfo = info;
+    m_metaInfo = info;
 }
 
 const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
-    if ( autoget && !d->metaInfo.isValid() && m_url.isLocalFile() )
+    if ( autoget && m_url.isLocalFile() && !m_metaInfo.isValid() )
     {
-        d->metaInfo = KFileMetaInfo( m_url.path() );
-        Q_ASSERT(d->metaInfo.isValid());
+        m_metaInfo = KFileMetaInfo( m_url.path() );
+        Q_ASSERT(m_metaInfo.isValid());
     }
-    return d->metaInfo;
+
+    return m_metaInfo;
 }
 
 void KFileItem::virtual_hook( int, void* )
