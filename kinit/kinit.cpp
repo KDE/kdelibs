@@ -191,7 +191,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
         d.handle = lt_dlopen( lib.data() );
      if (!d.handle )
      {
-        fprintf(stderr, "Could not dlopen library: %s\n", lt_dlerror());
+        fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), lt_dlerror());
         d.result = 2; // Try execing
         write(d.fd[1], &d.result, 1);
 
