@@ -148,7 +148,7 @@ KJSO ArrayNode::evaluate()
   KJSO array;
   int length;
   int elisionLen = elision ? elision->evaluate().toInt32() : 0;
-  
+
   if (element) {
     array = element->evaluate();
     length = opt ? array.get("length").toInt32() : 0;
@@ -280,7 +280,7 @@ KJSO NewExprNode::evaluate()
 
   if (!argList)
     argList = new List;
-  
+
   KJSO res = constr.construct(*argList);
 
   delete argList;
@@ -374,13 +374,13 @@ KJSO RelationalNode::evaluate()
     if (r < 0)
       b = false;
     else
-      b = (oper == OpLess) ? r : !r;
+      b = (oper == OpLess) ? (r == 1) : (r == 0);
   } else if (oper == OpGreater || oper == OpLessEq) {
     int r = relation(v2, v1);
     if (r < 0)
       b = false;
     else
-      b = (oper == OpGreater) ? r : !r;
+      b = (oper == OpGreater) ? (r == 1) : (r == 0);
   } else if (oper == OpIn) {
       /* Is all of this OK for host objects? */
       if (!v2.isObject())
@@ -488,7 +488,7 @@ KJSO AssignNode::evaluate()
       /* TODO */
     default:
       v = Undefined();
-    } 
+    }
     err = l.putValue(v);
   };
 

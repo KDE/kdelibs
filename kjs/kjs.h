@@ -24,7 +24,7 @@
 class QChar;
 
 namespace KJS {
-  class UChar;
+  struct UChar;
   class UString;
   class Lexer;
   class Context;

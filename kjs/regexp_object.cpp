@@ -120,7 +120,7 @@ Completion RegExpProtoFunc::execute(const List &args)
     }
     str = re->match(s.value(), i);
     if (id == Test) {
-      result = Boolean(str.size());
+      result = Boolean(str.size() != 0);
       break;
     }
     /* TODO complete */
