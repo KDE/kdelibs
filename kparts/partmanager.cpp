@@ -300,8 +300,6 @@ void PartManager::addPart( Part *part, bool setActive )
     if ( d->m_parts.findRef( part ) != -1 ) // don't add parts more than once :)
       return;
 
-  connect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
-
   d->m_parts.append( part );
 
   part->setManager( this );
@@ -335,11 +333,11 @@ void PartManager::removePart( Part *part )
     kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) << endl;
     return;
   }
-  disconnect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
   //Warning. The part could be already deleted
   //kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   d->m_parts.removeRef( part );
+  part->setManager(0);
 
   emit partRemoved( part );
 
@@ -358,9 +356,10 @@ void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
     kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
     return;
   }
-  disconnect( oldPart, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
   d->m_parts.removeRef( oldPart );
+  oldPart->setManager(0);
+
   emit partRemoved( oldPart );
 
   addPart( newPart, setActive );
@@ -508,7 +507,7 @@ void PartManager::slotWidgetDestroyed()
   kdDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
   if ( static_cast<const QWidget *>( sender() ) == d->m_activeWidget )
     setActivePart( 0L ); //do not remove the part because if the part's widget dies, then the
-                         //part will delete itself anyway (which ends up in a slotObjectDestroyed() call
+                         //part will delete itself anyway, invoking removePart() in its destructor
 }
 
 const QPtrList<Part> *PartManager::parts() const

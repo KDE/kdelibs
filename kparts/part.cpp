@@ -126,13 +126,16 @@ Part::Part( QObject *parent, const char* name )
 Part::~Part()
 {
   kdDebug(1000) << "Part::~Part " << this << endl;
+  if ( m_manager )
+    m_manager->removePart(this);
+
   if ( m_widget )
   {
     // We need to disconnect first, to avoid calling it !
     disconnect( m_widget, SIGNAL( destroyed() ),
                 this, SLOT( slotWidgetDestroyed() ) );
     kdDebug(1000) << "deleting widget " << m_widget << " " << m_widget->name() << endl;
-    delete (QWidget *)m_widget;
+    delete (QWidget*) m_widget;
   }
 
   delete d;
