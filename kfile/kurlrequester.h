@@ -27,6 +27,7 @@
 
 class KFileDialog;
 class KLineEdit;
+class KURLCompletion;
 class QString;
 class QTimer;
 class QToolButton;
@@ -133,6 +134,7 @@ protected:
 
     KLineEdit *		myEdit;
     QToolButton *	myButton;
+    KURLCompletion *    myCompletion;
     bool 		myModal;
 
 

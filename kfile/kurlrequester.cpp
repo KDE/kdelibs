@@ -30,6 +30,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <klineedit.h>
+#include <kurlcompletion.h>
 
 #include "kurlrequester.h"
 
@@ -54,6 +55,7 @@ KURLRequester::KURLRequester( const KURL& url, QWidget *parent,
 
 KURLRequester::~KURLRequester()
 {
+    delete myCompletion;
 }
 
 
@@ -65,13 +67,15 @@ void KURLRequester::init()
     myEdit = new KLineEdit( this, "line edit" );
     myButton = new QToolButton( this, "kfile button" );
     myButton->setPixmap(
-		 KGlobal::iconLoader()->loadIcon(QString::fromLatin1("folder"),
+		KGlobal::iconLoader()->loadIcon(QString::fromLatin1("folder"),
 						 KIconLoader::Small,
 						 0L, false ) );
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
-			    myEdit->sizeHint().height() );
+    			    myEdit->sizeHint().height() );
+
+    setFocusProxy( myEdit );
 
     connect( myEdit, SIGNAL( textChanged( const QString& )),
 	     this, SIGNAL( textChanged( const QString& )));
@@ -81,6 +85,17 @@ void KURLRequester::init()
 	     this, SIGNAL( returnPressed() ));
     connect( myEdit, SIGNAL( returnPressed( const QString& ) ),
 	     this, SIGNAL( returnPressed( const QString& ) ));
+
+    myCompletion = new KURLCompletion();
+    
+    connect( myEdit, SIGNAL( urlCompletion_() ),
+	     myCompletion, SLOT( make_urlCompletion_() ) );
+    connect( myEdit, SIGNAL( rotation() ),
+	     myCompletion, SLOT( make_rotation() ) );
+    connect( myEdit, SIGNAL( textChanged( const QString& ) ),
+	     myCompletion, SLOT( myEdited( const QString& ) ) );
+    connect( myCompletion, SIGNAL( setText( const QString& ) ),
+	     myEdit, SLOT( setText( const QString& ) ) );
 
     KAccel *accel = new KAccel( this );
     accel->connectItem( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
@@ -94,6 +109,7 @@ void KURLRequester::setURL( const KURL& url )
 	myEdit->setText( url.path() );
     else
 	myEdit->setText( url.url() );
+    myEdit->setSelection( 0, myEdit->text().length() );
 }
 
 
