@@ -19,6 +19,11 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.14  1998/05/08 16:09:59  kulow
+ * undef Color and GrayScale after including X11/X.h. This stupid header breaks
+ * everything!
+ * How about typedef Window unsigned long instead of X11/X.h?
+ *
  * Revision 1.13  1998/01/18 14:38:29  kulow
  * reverted the changes, Jacek commited.
  * Only the RCS comments were affected, but to keep them consistent, I
@@ -127,14 +132,6 @@
 
 #define Dnd_X_Precision 2
 #define Dnd_Y_Precision 2
-
-#ifdef Color
-#undef Color
-#endif
-
-#ifdef GrayScale
-#undef GrayScale
-#endif
 
 #define kapp KApplication::getKApplication()
 
