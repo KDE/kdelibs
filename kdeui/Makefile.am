@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= $(QT_INCLUDES) $(X_INCLUDES) -I../kdecore
+INCLUDES= -I../kdecore $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
 DISTCLEANFILES = $(BUILT_SOURCES)
 
