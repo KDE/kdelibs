@@ -267,10 +267,10 @@ protected:
    * called to create a KFileItem - you may subclass and reimplement this
    * method if you use "special KFileItems", i.e. a subclass like KonqFileItem
    * Must return a valid KFileItem
+   * @param url the URL of the DIRECTORY where this item is.
    */
-  virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&,
-				      bool determineMimeTypeOnDemand,
-				      bool urlIsDirectory = false );
+  virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&url,
+				      bool determineMimeTypeOnDemand );
 
   /**
    * Called for every item after @ref #createFileItem().

@@ -202,7 +202,7 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     else
     {
       //kdDebug(7003)<< "Adding " << u.url() << endl;
-      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes, true);
+      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes);
       assert( item != 0L );
       if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
       {
@@ -277,7 +277,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   {
     if ( (*kit)->url().directory( false /* keep trailing slash */, false ) == sPath )
     {
-      //kdDebug(7003) << "slotUpdateFinished : unmarking " << (*kit)->url().url() << endl;
+      kdDebug(7003) << "slotUpdateFinished : unmarking " << (*kit)->url().url() << endl;
       (*kit)->unmark();
     } else
       (*kit)->mark(); // keep the other items
@@ -325,7 +325,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
       if ( !done )
       {
-        //kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
+        kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
         KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
 	
 	if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
@@ -334,6 +334,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 	  continue;
 	}
 
+        kdDebug(7003) << "slotUpdateFinished : URL= " << item->url().url() << endl;
         m_lstFileItems.append( item );
         lstNewItems.append( item );
         item->mark();
@@ -438,11 +439,10 @@ void KDirLister::forgetDirs()
 
 KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
 					const KURL& url,
-					bool determineMimeTypeOnDemand,
-					bool urlIsDirectory )
+					bool determineMimeTypeOnDemand )
 {
     return new KFileItem( entry, url, determineMimeTypeOnDemand,
-			  urlIsDirectory );
+			  true /* url is the directory */ );
 }
 
 bool KDirLister::matchesFilter( const KFileItem *item )
