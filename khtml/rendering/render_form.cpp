@@ -178,7 +178,8 @@ void RenderFormElement::slotClicked()
         QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
         element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-        element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+        //already done by NodeImpl::dispatchGenericEvent
+        //element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
         m_isDoubleClick = false;
         deref();
     }
