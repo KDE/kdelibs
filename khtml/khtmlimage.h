@@ -67,6 +67,8 @@ private slots:
     void slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u, const QString &mime, mode_t mode );
     void slotImageJobFinished( KIO::Job *job );
 
+    void updateWindowCaption();
+
 private:
     QGuardedPtr<KHTMLPart> m_khtml;
     KParts::BrowserExtension *m_ext;

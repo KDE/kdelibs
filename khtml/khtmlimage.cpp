@@ -22,15 +22,21 @@
 #include "khtmlview.h"
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
+#include "html/html_documentimpl.h"
+#include "html/html_elementimpl.h"
+#include "rendering/render_image.h"
 #include "misc/loader.h"
 
 #include <qvbox.h>
+#include <qtimer.h>
 
 #include <kparts/factory.h>
 #include <kio/job.h>
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaction.h>
+#include <kmimetype.h>
+#include <klocale.h>
 
 extern "C"
 {
@@ -174,7 +180,47 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
         }
 
         emit completed();
+
+        QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
     }
+}
+
+void KHTMLImage::updateWindowCaption()
+{
+    if ( !m_khtml )
+        return;
+
+    DOM::HTMLDocumentImpl *impl = dynamic_cast<DOM::HTMLDocumentImpl *>( m_khtml->document().handle() );
+    if ( !impl )
+        return;
+
+    DOM::HTMLElementImpl *body = impl->body();
+    if ( !body )
+        return;
+
+    DOM::NodeImpl *image = body->firstChild();
+    if ( !image )
+        return;
+
+    khtml::RenderImage *renderImage = dynamic_cast<khtml::RenderImage *>( image->renderer() );
+    if ( !renderImage )
+        return;
+
+    QPixmap pix = renderImage->pixmap();
+
+    QString caption;
+
+    KMimeType::Ptr mimeType;
+    if ( !m_mimeType.isEmpty() )
+        mimeType = KMimeType::mimeType( m_mimeType );
+
+    if ( mimeType )
+        caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
+                  .arg( pix.width() ).arg( pix.height() );
+    else
+        caption = i18n( "Image - %2x%3 Pixels" ).arg( pix.width() ).arg( pix.height() );
+
+    emit setWindowCaption( caption );
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
