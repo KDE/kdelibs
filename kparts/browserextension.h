@@ -529,6 +529,12 @@ signals:
    * Used when a set of URLs is selected.
    */
   void selectionInfo( const KURL::List &urls );
+  
+  /**
+   * Inform the hosting application that the user moved the mouse over an item.
+   * Used when the mouse is on an URL.
+   */
+  void mouseOverInfo( const KFileItem* item );
 
 private slots:
   void slotCompleted();
