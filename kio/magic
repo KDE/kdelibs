@@ -456,6 +456,8 @@
 #0	string		CP		color pointer
 #0	string		BA		bitmap array
 
+# Gimp's XCF
+0	string	gimp\ xcf	image/x-xcf-gimp
 
 #------------------------------------------------------------------------------
 # lisp:  file(1) magic for lisp programs
