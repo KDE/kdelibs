@@ -356,8 +356,8 @@ void KHTMLView::viewportResizeEvent (QResizeEvent* e)
 {
     QScrollView::viewportResizeEvent(e);
 
-     int w = visibleWidth();
-     int h = visibleHeight();
+    //int w = visibleWidth();
+    //int h = visibleHeight();
 
     if (d->layoutSchedulingEnabled)
         layout();
