@@ -21,6 +21,9 @@
 #ifndef __KDIALOG_H
 #define __KDIALOG_H
 
+
+class QLayoutItem;
+
 #include <qdialog.h>
 
 /**
@@ -65,6 +68,26 @@ class KDialog : public QDialog
      */
     int spacingHint( void ) const;
 
+    /**
+     * Resizes every layout manager used in w and its nested children.  
+     *
+     * @param margin The new layout margin
+     *
+     * @param margin The new layout spacing
+     *
+     */
+    static void resizeLayout( QWidget *w, int margin, int spacing );
+
+    /**
+     * Reszies every layout associated with 'lay' and its children. 
+     *
+     * @param margin The new layout margin
+     *
+     * @param margin The new layout spacing
+     *
+     */
+    static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
+
   public slots:
     /**
      * Makes a KDE compliant caption.
@@ -89,6 +112,16 @@ class KDialog : public QDialog
      * @internal
      */
     virtual void keyPressEvent(QKeyEvent*);
+
+
+   signals:
+    /**
+     * This signal is emitted when the margin size and/or spacing size 
+     * have changed. Use @ref #marginHint and  @ref #spacingHint in your slot
+     * to get the new values.
+     */
+    void layoutHintChanged( void );
+
 
   private:
     static int mMarginSize;
