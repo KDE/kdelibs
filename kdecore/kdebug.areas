@@ -189,6 +189,8 @@
 9023        kdevelop (regexptest)
 9024        kdevelop (trollproject)
 9025        kdevelop (customproject)
+9026        kdevelop (doxygen)
+9027        kdevelop (cvs)
 
 # toys and games
 10000        amor
