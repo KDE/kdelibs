@@ -24,42 +24,34 @@
 #include <qlistbox.h>
 #include <qpopupmenu.h>
 
+#include <kcompletionbox.h>
 #include <kcursor.h>
+#include <kiconloader.h>
+#include <kicontheme.h>
+#include <klineedit.h>
 #include <klocale.h>
+#include <knotifyclient.h>
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
-#include <kicontheme.h>
-#include <kdebug.h>
-#include <kcompletionbox.h>
 #include <kurl.h>
 #include <kurldrag.h>
-#include <knotifyclient.h>
-#include <kiconloader.h>
+
+#include <kdebug.h>
 
 #include "kcombobox.h"
-#include "kcombobox.moc"
-
 
 class KComboBox::KComboBoxPrivate
 {
 public:
     KComboBoxPrivate()
     {
-        handleURLDrops = true;
-        completionBox = 0L;
-        popupMenu = 0L;
-        subMenu = 0L;
+        klineEdit = 0L;
     }
     ~KComboBoxPrivate()
     {
-        delete popupMenu;
-        delete completionBox;
     }
 
-    bool handleURLDrops;
-    KCompletionBox *completionBox;
-    QPopupMenu* popupMenu;
-    QPopupMenu* subMenu;
+    KLineEdit *klineEdit;
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
@@ -74,11 +66,13 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 {
     m_trapReturnKey = false;
 
-    if ( rw ) {
-        KCursor::setAutoHideCursor( lineEdit(), true, true );
-        lineEdit()->installEventFilter( this );
-    }
     init();
+
+    if ( rw ) {
+        KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
+        setLineEdit( edit );
+        setDelegate( edit );
+    }
 }
 
 KComboBox::~KComboBox()
@@ -118,94 +112,54 @@ bool KComboBox::contains( const QString& _text ) const
 
 void KComboBox::setAutoCompletion( bool autocomplete )
 {
-    setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto:
-                                      KGlobalSettings::completionMode() );
-}
-
-void KComboBox::setCompletionMode( KGlobalSettings::Completion mode )
-{
-    KGlobalSettings::Completion oldMode = completionMode();
-    if ( oldMode != mode && oldMode == KGlobalSettings::CompletionPopup &&
-         d->completionBox )
-        d->completionBox->hide();
-
-    KCompletionBase::setCompletionMode( mode );
+    if ( d->klineEdit ) {
+        d->klineEdit->setCompletionMode( autocomplete ?
+                                         KGlobalSettings::CompletionAuto :
+                                         KGlobalSettings::completionMode() );
+        setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto:
+                                          KGlobalSettings::completionMode() );
+    }
 }
 
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
-    if( lineEdit() )
+    if( d->klineEdit ) {
+        d->klineEdit->setContextMenuEnabled( showMenu );
         m_bEnableMenu = showMenu;
+    }
 }
 
 
-void KComboBox::setURLDropsEnabled(bool enable)
+void KComboBox::setURLDropsEnabled( bool enable )
 {
-    d->handleURLDrops=enable;
+    if ( d->klineEdit )
+        d->klineEdit->setURLDropsEnabled( enable );
 }
 
 bool KComboBox::isURLDropsEnabled() const
 {
-    return d->handleURLDrops;
+    return d->klineEdit && d->klineEdit->isURLDropsEnabled();
 }
 
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-    if ( lineEdit() )
-    {
-        QString txt = currentText();
-        if ( text != txt )
-        {
-            int curpos = marked ? txt.length() : text.length();
-            lineEdit()->validateAndSet( text, curpos, curpos, text.length() );
-        }
-    }
+    if ( d->klineEdit )
+        d->klineEdit->setCompletedText( text, marked );
 }
 
 void KComboBox::setCompletedText( const QString& text )
 {
-    KGlobalSettings::Completion mode = completionMode();
-    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                    mode == KGlobalSettings::CompletionMan ||
-                    mode == KGlobalSettings::CompletionPopup );
-    setCompletedText( text, marked );
+    if ( d->klineEdit )
+        d->klineEdit->setCompletedText( text );
 }
 
 void KComboBox::makeCompletion( const QString& text )
 {
-    if( lineEdit() )
-    {
-        KCompletion *comp = compObj();
-        if( !comp )
-            return; // No Completion object or empty completion text allowed!
+    if( d->klineEdit )
+        d->klineEdit->makeCompletion( text );
 
-        QString match = comp->makeCompletion( text );
-        KGlobalSettings::Completion mode = completionMode();
-        if ( mode == KGlobalSettings::CompletionPopup )
-        {
-            if ( match.isNull() )
-            {
-                if ( d->completionBox )
-                {
-                    d->completionBox->hide();
-                    d->completionBox->clear();
-                }
-            }
-            else
-                setCompletedItems( comp->allMatches() );
-        }
-
-        else // all other completion modes
-        {
-            // If no match or the same text, simply return without completing.
-            if( match.isNull() || match == text )
-                return;
-
-            setCompletedText( match );
-        }
-    }
-    else
+    else // read-only combo completion
     {
         if( text.isNull() || !listBox() )
             return;
@@ -219,189 +173,9 @@ void KComboBox::makeCompletion( const QString& text )
 
 void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 {
-    if( lineEdit() )
-    {
-        // Support for rotating through highlighted text!  This means
-        // that if there are multiple matches for the portion of text
-        // entered into the combo box,  one can simply rotate through
-        // all the other possible matches using the previous/next match
-        // keys.  BTW this feature only works if there is a completion
-        // object available to begin with.
-        KCompletion* comp = compObj();
-        if( comp &&
-            ( type == KCompletionBase::PrevCompletionMatch ||
-              type == KCompletionBase::NextCompletionMatch ) )
-        {
-            QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
-            // Ignore rotating to the same text
-            if( input.isNull() || input == currentText() )
-               return;
-
-            bool marked = lineEdit()->hasMarkedText();
-            setCompletedText( input, marked );
-        }
-    }
+    if ( d->klineEdit )
+        d->klineEdit->rotateText( type );
 }
-
-void KComboBox::keyPressEvent ( QKeyEvent * e )
-{
-    QLineEdit *edit = lineEdit();
-
-    if ( edit && edit->hasFocus() )
-    {
-            // ### this will most probably need fixing when Qt3 is used.
-            // QCombBox in Qt2 is buggy, so here are some hacks that might
-            // break with Qt3.
-            KGlobalSettings::Completion mode = completionMode();
-            KeyBindingMap keys = getKeyBindings();
-            bool noModifier = (e->state() == NoButton ||
-                               e->state() == ShiftButton);
-            if ( (mode == KGlobalSettings::CompletionAuto ||
-                  mode == KGlobalSettings::CompletionMan) && noModifier )
-            {
-                QString keycode = e->text();
-                if ( !keycode.isNull() && keycode.unicode()->isPrint() )
-                {
-                    // This is completely useless since all
-                    // QComboBox::keyPressEvent does is simply call
-                    // e->ignore()!!  For now we differ this to the last call,
-                    // but this needs to be re-addressed if the Troll's fix
-                    // QComboBox in Qt 3.x..
-                    // QComboBox::keyPressEvent ( e );
-                    QString txt = currentText();
-                    int len = txt.length();
-                    if ( !edit->hasMarkedText() &&
-                         len && cursorPosition() == len )
-                    {
-                        kdDebug(292) << "Automatic Completion" << endl;
-                        if ( emitSignals() )
-                            emit completion( txt );
-                        if ( handleSignals() )
-                            makeCompletion( txt );
-                    }
-                    // return;
-                }
-            }
-            else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
-            {
-                // This is completely useless since all
-                // QComboBox::keyPressEvent does is simply call e->ignore()!!
-                // For now we differ this to the last call, but this needs to
-                // be re-addressed if the Troll's fix QComboBox in Qt 3.x.
-                // QComboBox::keyPressEvent( e );
-                QString keycode = e->text();
-                QString txt = currentText();
-                int len = txt.length();
-                int key = e->key();
-                if ( len && edit->cursorPosition() == len &&
-                     ((!keycode.isNull() && keycode.unicode()->isPrint()) ||
-                      key == Key_BackSpace || key == Key_Delete) )
-                {
-                    kdDebug(292) << "Popup Completion" << endl;
-                    if ( emitSignals() )
-                        emit completion( txt );
-                    if ( handleSignals() )
-                        makeCompletion( txt );
-                }
-                else
-                {
-                    if ( !len && d->completionBox &&
-                         d->completionBox->isVisible() )
-                        d->completionBox->hide();
-                }
-                // return;
-            }
-            else if ( mode == KGlobalSettings::CompletionShell )
-            {
-                int key = ( keys[TextCompletion] == 0 ) ?
-                          KStdAccel::key(KStdAccel::TextCompletion) :
-                          keys[TextCompletion];
-                if ( KStdAccel::isEqual( e, key ) )
-                {
-                    // Emit completion if there is a completion object
-                    // present, the current text is not the same as the
-                    // previous and the cursor is at the end of the string.
-                    QString txt = currentText();
-                    int len = txt.length();
-                    if ( edit->cursorPosition() == len && len != 0 )
-                    {
-                        kdDebug(292) << "Shell Completion" << endl;
-                        if ( emitSignals() )
-                            emit completion( txt );
-                        if ( handleSignals() )
-                            makeCompletion( txt );
-                        return;
-                    }
-                }
-                else if ( d->completionBox )
-                    d->completionBox->hide();
-            }
-
-
-            // substring completion
-            if ( compObj() ) {
-                int key = ( keys[SubstringCompletion] == 0 ) ?
-                          KStdAccel::key(KStdAccel::SubstringCompletion) :
-                          keys[SubstringCompletion];
-                if ( KStdAccel::isEqual( e, key ) ) {
-                    if ( emitSignals() )
-                        emit substringCompletion( currentText() );
-                    if ( handleSignals() ) {
-                        setCompletedItems( compObj()->substringCompletion( currentText() ) );
-                        e->accept();
-                    }
-                    return;
-                }
-            }
-
-
-            // handle rotation
-            if ( mode != KGlobalSettings::CompletionNone )
-            {
-                // Handles previousMatch.
-                int key = ( keys[PrevCompletionMatch] == 0 ) ?
-                          KStdAccel::key(KStdAccel::PrevCompletion) :
-                          keys[PrevCompletionMatch];
-                if ( KStdAccel::isEqual( e, key ) )
-                {
-                    if ( emitSignals() )
-                        emit textRotation( KCompletionBase::PrevCompletionMatch );
-                    if ( handleSignals() )
-                        rotateText( KCompletionBase::PrevCompletionMatch );
-                    return;
-                }
-
-                // Handles nextMatch.
-                key = ( keys[NextCompletionMatch] == 0 ) ?
-                      KStdAccel::key(KStdAccel::NextCompletion) :
-                      keys[NextCompletionMatch];
-                if ( KStdAccel::isEqual( e, key ) )
-                {
-                    if ( emitSignals() )
-                        emit textRotation( KCompletionBase::NextCompletionMatch );
-                    if ( handleSignals() )
-                        rotateText( KCompletionBase::NextCompletionMatch );
-                    return;
-                }
-            }
-    }
-
-//     // read-only combobox
-//     else if ( !edit )
-//     {
-//         QString keycode = e->text();
-//         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
-//         {
-//             emit completion ( keycode );
-//             if ( handleSignals() )
-//                 makeCompletion( keycode );
-//             return;
-//         }
-//     }
-
-    QComboBox::keyPressEvent( e );
-}
-
 
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
@@ -412,45 +186,9 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         KCursor::autoHideEventFilter( edit, ev );
 
         int type = ev->type();
-        if ( type == QEvent::AccelOverride )
+        if ( type == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-            KeyBindingMap keys = getKeyBindings();
-            int tc_key = ( keys[TextCompletion] == 0 ) ?
-                           KStdAccel::key(KStdAccel::TextCompletion) :
-                           keys[TextCompletion];
-            int nc_key = ( keys[NextCompletionMatch] == 0 ) ?
-                           KStdAccel::key(KStdAccel::NextCompletion) :
-                           keys[NextCompletionMatch];
-            int pc_key = ( keys[PrevCompletionMatch] == 0 ) ?
-                           KStdAccel::key(KStdAccel::PrevCompletion) :
-                           keys[PrevCompletionMatch];
-
-            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack() ) ||
-                 KStdAccel::isEqual( e, KStdAccel::deleteWordForward() ) ||
-                 KStdAccel::isEqual( e, tc_key ) ||
-                 KStdAccel::isEqual( e, nc_key ) ||
-                 KStdAccel::isEqual( e, pc_key ) )
-            {
-                e->accept();
-                return true;
-            }
-        }
-        else if ( type == QEvent::KeyPress )
-        {
-            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
-                deleteWordBack();  // to be replaced with QT3 function
-                e->accept();
-                return true;
-            }
-            else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward())) {
-                deleteWordForward(); // to be replaced with QT3 function
-                e->accept();
-                return true;
-            }
-
 
             if ( e->key() == Key_Return || e->key() == Key_Enter)
             {
@@ -458,135 +196,15 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 // returnPressed(const QString&) and returnPressed() signals
                 emit returnPressed();
                 emit returnPressed( currentText() );
-                if ( d->completionBox && d->completionBox->isVisible() )
-                    d->completionBox->hide();
+                if ( d->klineEdit && d->klineEdit->completionBox(false) && 
+                     d->klineEdit->completionBox()->isVisible() )
+                    d->klineEdit->completionBox()->hide();
 
                 return m_trapReturnKey;
             }
         }
-
-        else if ( type == QEvent::ContextMenu )
-        {
-            QContextMenuEvent* e = static_cast<QContextMenuEvent*>( ev );
-
-	    if( !m_bEnableMenu )
-		return true;
-
-	    KGlobalSettings::Completion oldMode = completionMode();
-
-	    d->popupMenu = contextMenuInternal();
-	    initPopup();
-	    emit aboutToShowContextMenu( d->popupMenu );
-	    QPoint pos = e->reason() == QContextMenuEvent::Mouse ? e->globalPos() :
-		mapToGlobal( QPoint(e->pos().x(), 0) ) + QPoint( width() / 2, height() / 2
-);
-	    int result = d->popupMenu->exec( pos );
-
-	    if ( result == Cut )
-		edit->cut();
-	    else if ( result == Copy )
-		edit->copy();
-	    else if ( result == Paste )
-		edit->paste();
-	    else if ( result == Clear )
-		edit->clear();
-	    else if ( result == Unselect )
-		edit->deselect();
-	    else if ( result == SelectAll )
-		edit->selectAll();
-	    else if ( result == Default )
-		setCompletionMode( KGlobalSettings::completionMode() );
-	    else if ( result == NoCompletion )
-		setCompletionMode( KGlobalSettings::CompletionNone );
-	    else if ( result == AutoCompletion )
-		setCompletionMode( KGlobalSettings::CompletionAuto );
-	    else if ( result == SemiAutoCompletion )
-		setCompletionMode( KGlobalSettings::CompletionMan );
-	    else if ( result == ShellCompletion )
-		setCompletionMode( KGlobalSettings::CompletionShell );
-	    else if ( result == PopupCompletion )
-		setCompletionMode( KGlobalSettings::CompletionPopup );
-
-	    // Delete the on demand popup menu :)
-	    delete d->popupMenu;
-	    d->popupMenu = 0L;
-
-	    if ( oldMode != completionMode() )
-	    {
-		if ( oldMode == KGlobalSettings::CompletionPopup &&
-			d->completionBox )
-		    d->completionBox->hide();
-		emit completionModeChanged( completionMode() );
-	    }
-            e->accept();
-	    return true;
-        }
-        else if(type == QEvent::Drop)
-        {
-            QDropEvent *e = static_cast<QDropEvent *>( ev );
-            KURL::List urlList;
-            if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
-            {
-                QString dropText = currentText();
-                KURL::List::ConstIterator it;
-                for( it = urlList.begin() ; it != urlList.end() ; ++it)
-                {
-                    if(!dropText.isEmpty())
-                        dropText+=' ';
-
-                    dropText += (*it).prettyURL();
-                }
-
-                edit->validateAndSet( dropText, dropText.length(), 0, 0);
-
-                return true;
-            }
-        }
     }
     return QComboBox::eventFilter( o, ev );
-}
-
-void KComboBox::initPopup()
-{
-    if( compObj() )
-    {
-        d->subMenu->clear();
-
-        d->subMenu->insertItem( i18n("None"), NoCompletion );
-        d->subMenu->insertItem( i18n("Manual"), ShellCompletion );
-        d->subMenu->insertItem( i18n("Popup"), PopupCompletion );
-        d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
-        d->subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
-
-        KGlobalSettings::Completion mode = completionMode();
-        d->subMenu->setItemChecked( NoCompletion,
-                                    mode == KGlobalSettings::CompletionNone );
-        d->subMenu->setItemChecked( ShellCompletion,
-                                    mode == KGlobalSettings::CompletionShell );
-        d->subMenu->setItemChecked( PopupCompletion,
-                                    mode == KGlobalSettings::CompletionPopup );
-        d->subMenu->setItemChecked( AutoCompletion,
-                                    mode == KGlobalSettings::CompletionAuto );
-        d->subMenu->setItemChecked( SemiAutoCompletion,
-                                    mode == KGlobalSettings::CompletionMan );
-        if ( mode != KGlobalSettings::completionMode() )
-        {
-            d->subMenu->insertSeparator();
-            d->subMenu->insertItem( i18n("Default"), Default );
-        }
-    }
-
-    QLineEdit *edit = lineEdit();
-    bool flag = ( edit->echoMode() == QLineEdit::Normal &&
-                  !edit->isReadOnly() );
-    bool allMarked =(edit->markedText().length() == currentText().length());
-    d->popupMenu->setItemEnabled( Cut, flag && edit->hasMarkedText() );
-    d->popupMenu->setItemEnabled( Copy, flag && edit->hasMarkedText() );
-    d->popupMenu->setItemEnabled( Paste, flag &&
-                                 !QApplication::clipboard()->text().isEmpty());
-    d->popupMenu->setItemEnabled( Clear, flag && !currentText().isEmpty() );
-    d->popupMenu->setItemEnabled( Unselect, edit->hasMarkedText() );
-    d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
 }
 
 void KComboBox::setTrapReturnKey( bool grab )
@@ -625,91 +243,16 @@ void KComboBox::changeURL( const QPixmap& pixmap, const KURL& url, int index )
     QComboBox::changeItem( pixmap, url.prettyURL(), index );
 }
 
-void KComboBox::makeCompletionBox()
-{
-    if ( d->completionBox )
-        return;
-
-    d->completionBox = new KCompletionBox( lineEdit(), "completion box" );
-    if ( handleSignals() )
-    {
-        connect( d->completionBox, SIGNAL( highlighted( const QString& )),
-                 SLOT( setEditText( const QString& )));
-        connect( d->completionBox, SIGNAL( userCancelled( const QString& )),
-                 SLOT( setEditText( const QString& )));
-        connect( d->completionBox, SIGNAL( activated( const QString& )),
-                 SIGNAL( activated( const QString & )));
-    }
-}
-
-// FIXME: make pure virtual in KCompletionBase!
 void KComboBox::setCompletedItems( const QStringList& items )
 {
-    QString txt = currentText();
-    if ( !items.isEmpty() && !(items.count() == 1 && txt == items.first()) )
-    {
-        if ( !d->completionBox )
-            makeCompletionBox();
-
-        if ( !txt.isEmpty() )
-            d->completionBox->setCancelledText( txt );
-        d->completionBox->clear();
-        d->completionBox->insertItems( items );
-        d->completionBox->popup();
-    }
-    else
-    {
-        if ( d->completionBox && d->completionBox->isVisible() )
-            d->completionBox->hide();
-    }
+    if ( d->klineEdit )
+        d->klineEdit->setCompletedItems( items );
 }
 
 KCompletionBox * KComboBox::completionBox( bool create )
 {
-    if ( create )
-	makeCompletionBox();
-
-    return d->completionBox;
-}
-
-void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
-{
-    KCompletion *oldComp = compObj();
-    if ( oldComp && handleSignals() )
-      disconnect( oldComp, SIGNAL( matches( const QStringList& )),
-                  this, SLOT( setCompletedItems( const QStringList& )));
-
-    if ( comp && hsig )
-      connect( comp, SIGNAL( matches( const QStringList& )),
-               this, SLOT( setCompletedItems( const QStringList& )));
-
-    KCompletionBase::setCompletionObject( comp, hsig );
-}
-
-QPopupMenu* KComboBox::contextMenuInternal()
-{
-    d->popupMenu = new QPopupMenu( this );
-    d->popupMenu->insertItem( SmallIconSet("editcut"),
-                              i18n( "Cut" ), Cut );
-    d->popupMenu->insertItem( SmallIconSet("editcopy"),
-                              i18n( "Copy" ), Copy );
-    d->popupMenu->insertItem( SmallIconSet("editpaste"),
-                              i18n( "Paste" ), Paste );
-    d->popupMenu->insertItem( SmallIconSet("editclear"),
-                              i18n( "Clear" ), Clear );
-    // Create and insert the completion sub-menu if a
-    // completion object is present.
-    if ( compObj() )
-    {
-        d->subMenu = new QPopupMenu( d->popupMenu );
-        d->popupMenu->insertSeparator();
-        d->popupMenu->insertItem( SmallIconSet("completion"),
-                                  i18n("Completion"), d->subMenu );
-    }
-    d->popupMenu->insertSeparator();
-    d->popupMenu->insertItem( i18n( "Unselect" ), Unselect );
-    d->popupMenu->insertItem( i18n( "Select All" ), SelectAll );
-    return d->popupMenu;
+    if ( d->klineEdit )
+        return d->klineEdit->completionBox( create );
 }
 
 // QWidget::create() turns off mouse-Tracking which would break auto-hiding
@@ -719,6 +262,11 @@ void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
     KCursor::setAutoHideCursor( lineEdit(), true, true );
 }
 
+void KComboBox::setLineEdit( QLineEdit *edit )
+{
+    QComboBox::setLineEdit( edit );
+    d->klineEdit = dynamic_cast<KLineEdit*>( edit );
+}
 
 // Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
 void KComboBox::deleteWordForward()
@@ -996,3 +544,5 @@ void KHistoryCombo::slotClear()
     clearHistory();
     emit cleared();
 }
+
+#include "kcombobox.moc"

@@ -318,11 +318,6 @@ public:
     virtual bool eventFilter( QObject *, QEvent * );
 
     /**
-    * Re-implemented from @ref KCompletionBase for internal reasons.
-    */
-    virtual void setCompletionMode( KGlobalSettings::Completion mode );
-
-    /**
      * @returns the completion-box, that is used in completion mode
      * @ref KGlobalSettings::CompletionPopup.
      * This method will create a completion-box by calling
@@ -333,11 +328,8 @@ public:
      */
     KCompletionBox * completionBox( bool create = true );
 
-    /**
-     * Reimplemented for internal reasons, the API is not affected.
-     */
-    virtual void setCompletionObject( KCompletion *, bool hsig = true );
-
+    virtual void setLineEdit( QLineEdit * );
+    
 signals:
     /**
     * Emitted when the user presses the Enter key.
@@ -378,7 +370,7 @@ signals:
      * Emitted when the shortcut for substring completion is pressed.
      */
     void substringCompletion( const QString& );
-    
+
     /**
     * Emitted when the text rotation key-bindings are pressed.
     *
@@ -481,11 +473,6 @@ protected slots:
     void slotCancelled() {}
 
 protected:
-    /**
-    * @reimplemented
-    */
-    virtual void keyPressEvent ( QKeyEvent* );
-
     /*
     * This function simply sets the lineedit text and
     * highlights the text appropriately if the boolean
@@ -523,13 +510,6 @@ private:
 
     /** Initializes the variables upon construction. */
     void init();
-    /** Creates the completion box */
-    void makeCompletionBox();
-    /** Returns the context menu, creates a new one if did not exist. */
-    QPopupMenu* contextMenuInternal();
-    /** initializes the context menu */
-    void initPopup();
-
     /**
      * Temporary functions to delete words back and foward until
      * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
@@ -538,9 +518,6 @@ private:
     void deleteWordForward();
 
     bool m_bEnableMenu;
-
-    // Pointer to the line editor.
-    QGuardedPtr<QLineEdit> m_pEdit; // ### remove, don't use, use lineEdit()!
 
     // indicating if we should stop return-key events from propagating
     bool m_trapReturnKey;
