@@ -19,7 +19,6 @@
 */
 #include <qfile.h>
 #include <qregexp.h>
-#include <qtextstream.h>
 
 #include <kdebug.h>
 #include <kmdcodec.h>
@@ -36,13 +35,9 @@ using namespace VCARD;
 bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::load()" << endl;
-  QString data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
-  
-  VCardEntity e( data.utf8() );
+  QCString data( file->readAll() );
+  VCardEntity e( data );
   
   VCardListIterator it( e.cardList() );
 
@@ -58,13 +53,9 @@ bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::loadAll()" << endl;
-  QString data;
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  data = t.read();
-  
-  VCardEntity e( data.utf8() );
+  QCString data( file->readAll() );
+  VCardEntity e( data );
   
   VCardListIterator it( e.cardList() );
 
@@ -92,9 +83,8 @@ void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
   vcardlist.append( v );
   vcards.setCardList( vcardlist );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << QString::fromUtf8( vcards.asString() );
+  QCString vcardData = vcards.asString();
+  file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
 void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file )
@@ -115,9 +105,8 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
 
   vcards.setCardList( vcardlist );
 
-  QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
-  t << QString::fromUtf8( vcards.asString() );
+  QCString vcardData = vcards.asString();
+  file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
 bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
