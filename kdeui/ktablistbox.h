@@ -29,6 +29,7 @@
 #include <qcolor.h>
 #include <qpixmap.h>
 #include <stdlib.h>
+#include <qstrlist.h>
 
 #define MAX_SEP_CHARS 16
 

@@ -57,7 +57,7 @@ public:
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dirname, QString filter);
-  QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list.at(sel_id); }
+  QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list[sel_id]; }
   void cancelLoad();
 
 signals:
@@ -83,8 +83,8 @@ protected:
   int            max_height;
   int            curr_indx;
   QList<QPixmap> pixmap_list;
-  QStrList       file_list;
-  QStrList       name_list;
+  QStringList    file_list;
+  QStringList    name_list;
   QTimer         *timer;
   QString        dir_name;
 };

@@ -43,7 +43,6 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const QString& name )
   setFrameStyle(Panel | Sunken);
   setTableFlags(Tbl_autoScrollBars);
   pixmap_list.setAutoDelete(TRUE);
-  name_list.setAutoDelete(TRUE);
   sel_id = 0;
   timer = new QTimer( this );
   connect( timer, SIGNAL( timeout() ), SLOT( process() ) );
@@ -97,12 +96,12 @@ void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
 void KIconLoaderCanvas::process()
 {
   KPixmap *new_xpm = 0;
-  const char *current = file_list.at( curr_indx );
+  QStringList::Iterator current = file_list.at( curr_indx );
 
-  for( int i = 0; i < 10 && current != 0; i++, curr_indx++ )
+  for( int i = 0; i < 10 && current != file_list.end(); i++, curr_indx++ )
     {
       new_xpm = new KPixmap;
-      new_xpm->load( dir_name + '/' + current, QString::null, KPixmap::LowColor );
+      new_xpm->load( dir_name + '/' + *current, QString::null, KPixmap::LowColor );
       if( new_xpm->isNull() )
         {
           delete new_xpm;
@@ -125,12 +124,12 @@ void KIconLoaderCanvas::process()
 	 }
        max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
        max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
-       name_list.append(current);
+       name_list.append( *current );
        pixmap_list.append(new_xpm);
-       current = file_list.next();
+       ++current;
     }
 
-  if ( !current )
+  if ( current == file_list.end() )
     {
       QApplication::restoreOverrideCursor();
       file_list.clear();
@@ -198,7 +197,7 @@ void KIconLoaderCanvas::mouseMoveEvent( QMouseEvent *e)
       emit nameChanged("");
       return;
     }
-  QString name = name_list.at(item_nr);
+  QString name = name_list[item_nr];
   emit nameChanged( name );
 }
 
