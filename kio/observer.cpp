@@ -251,8 +251,12 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
        replyType == "QByteArray" )
   {
     QDataStream stream( replyData, IO_ReadOnly );
+    QByteArray res;
+    stream >> res;
+    
+    QDataStream stream2( res, IO_ReadOnly );
     Q_UINT8 result;
-    stream >> result >> newDest;
+    stream2 >> result >> newDest;
     kdDebug(7007) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
     return (RenameDlg_Result) result;
   }
