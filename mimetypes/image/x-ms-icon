@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=image/x-ms-icon
+Icon=image
+Patterns=*.ico;*.ICO;
+Comment=Windows Icon
