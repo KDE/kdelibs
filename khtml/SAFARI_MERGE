@@ -17,7 +17,23 @@ in the khtml sourcecode.
 # dom
 ===========================================================================
 
+- dom2_events.cpp / .h: layer and page extensions to event interface. 
+  to be merged with changes in rendering, ecma and xml
 
+- dom2_range.cpp / .h: createContextualFragment, requires merging of the
+  changes xml / html
+
+- dom_doc.cpp / .h: preferred Stylesheet stuff. how does this correlate
+  to the changes in css_stylesheet.h / cpp ?
+  requires merging of the impl in xml/html first
+
+- weird change in dom_doc.cpp: doctype()
+
+- dom_string.h: removal of virtual destructor can't be merged, BIC. 
+  doesn't make sense anyway, as one might want to inherit from it. 
+  if it is a speed problem more stuff has to be handled with DOMStringImpl*
+
+- html_document.cpp / .h setPolicyBaseURL for cooke handling. euhm?
 
 ===========================================================================
 # ecma
