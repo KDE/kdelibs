@@ -54,6 +54,7 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	$(LIB_KPARTS) \
+	$(LIBTHAI) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
 	$(top_builddir)/kutils/libkutils.la \
 	$(top_builddir)/kwallet/client/libkwalletclient.la

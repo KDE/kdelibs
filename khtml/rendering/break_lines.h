@@ -116,7 +116,10 @@ namespace khtml {
         }
     }
     
-    inline bool isBreakable( const QChar *str, const int pos, int /*len*/ )
+    bool isBreakableThai( const QChar *string, const int pos, const int len);
+    void cleanup_thaibreaks();
+
+    inline bool isBreakable( const QChar *str, const int pos, int len )
     {
 	const QChar *c = str+pos;
 	unsigned short ch = c->unicode();
@@ -126,9 +129,8 @@ namespace khtml {
 	    if ( row == 0x0e ) {
 		// 0e00 - 0e7f == Thai
 		if ( c->cell() < 0x80 ) {
-		    // we don't a have a thai line breaking lib at the moment, allow
-		    // breaks everywhere except directly before punctuation.
-		    return true;
+		    // consult libthai
+		    return isBreakableThai(str, pos, len);
 		} else
 		    return false;
 	    }

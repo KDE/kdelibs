@@ -25,6 +25,7 @@
 #include "css/cssstyleselector.h"
 #include "html/html_imageimpl.h"
 #include "rendering/render_style.h"
+#include "rendering/break_lines.h"
 #include "misc/loader.h"
 
 #include <kinstance.h>
@@ -94,6 +95,7 @@ KHTMLFactory::~KHTMLFactory()
         khtml::CSSStyleSelector::clear();
         khtml::RenderStyle::cleanup();
         khtml::Cache::clear();
+        khtml::cleanup_thaibreaks();
     }
     else
         deref();

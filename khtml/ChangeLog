@@ -1,3 +1,8 @@
+2004-11-16  Stephan Kulow  <coolo@kde.org>
+
+        * rendering/break_lines.cpp (khtml): adding patch by Otto Pattara to support
+        libthai for correct line breaks
+        
 2004-11-09  Germain Garand  <germain@ebooksfrance.org>
 
         fix globeandmail.com famlily of crashes (#65715)
