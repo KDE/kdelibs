@@ -69,13 +69,13 @@ to delegate the services of a port to another module onto another port.
 
 - masquerading: in our case, for instance the user could call
 
-    m._node()->virtualize("inputport",a,"inputport");
+    m._node()->virtualize("inputport",a._node(),"inputport");
 
   which would forward all input m gets on "inputport" to a's "inputport"
 
 - forwarding: in the same way, the user could call
 
-    m._node()->virtualize("inputport",m,"outputport");
+    m._node()->virtualize("inputport",m._node(),"outputport");
 
   which would make m forward its input directly to its output
 
@@ -113,10 +113,6 @@ know where the "real" connections where real data will flow must be made.
 VPortConnection::VPortConnection(VPort *source, VPort *dest, Style style)
 		:source(source),dest(dest),style(style)
 {
-	// add to the connection lists
-	source->outgoing.push_back(this);
-	dest->incoming.push_back(this);
-
 	if(style != vcTransport)
 	{
 		list<VPortConnection *>::iterator i;
@@ -146,16 +142,23 @@ VPortConnection::VPortConnection(VPort *source, VPort *dest, Style style)
 			}
 			else i++;
 		}
-
-		source->makeTransport(this);
 	}
-	else
+
+	// add to the connection lists
+	source->outgoing.push_back(this);
+	dest->incoming.push_back(this);
+
+	if(style == vcTransport)
 	{
 #ifdef VPORT_DEBUG
 		printf("emit a connection consumer = %s, producer = %s\n",
 			dest->name(), source->name());
 #endif
 		dest->port->connect(source->port);
+	}
+	else
+	{
+		source->makeTransport(this);
 	}
 }
 
