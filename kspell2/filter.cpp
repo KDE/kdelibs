@@ -61,6 +61,7 @@ Filter::Filter()
     : m_currentPosition( 0 )
 {
     d = new Private;
+    d->settings = 0;
 }
 
 Filter::~Filter()
