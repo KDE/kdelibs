@@ -212,10 +212,10 @@ void KByteSoundProducer::streamEnd() { outdata.endPull(); }
 
 void KByteSoundProducer::request_outdata( Arts::DataPacket<Arts::mcopbyte> *packet )
 {
-	//kdDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << endl;
-	_impl->fillData( packet );
-	//kdDebug( 400 ) << k_funcinfo << "packet->size=" << packet->size << "Sending it..." << endl;
-	packet->send();
+	if ( _impl->running() ) {
+		_impl->fillData( packet );
+		packet->send();
+	}
 }
 
 // vim: sw=4 ts=4 tw=80
