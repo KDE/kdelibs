@@ -84,9 +84,9 @@
  * However, this is based on the original QTabDialog.
  */
 
-    tabs->move(2, 1);
+#include "qtabbar.h"
 #include "qpushbt.h"
-    setFont(QFont("helvetica"));
+#include "qpainter.h"
 #include "qpixmap.h"
 
 #include "ktabctl.h"
@@ -163,7 +163,7 @@ void KTabCtl::setTabEnabled(const char * name, bool state)
         return;
     
     for(i = 0; i < pages.size(); i++)
-    int th = min.height();          /* the height of the tabbar itself (without pages and stuff) */
+	if(!qstrcmp(pages[i]->name(), name))
 	    tabs->setTabEnabled(i, state);
 }
 
@@ -181,7 +181,8 @@ void KTabCtl::setSizes()
     for (i = 0; i < pages.size(); i++) {
 
         /*
-    min.setHeight(min.height() + th);
+         * check the actual minimum and maximum sizes
+         */
         
 	if (pages[i]->maximumSize().height() < max.height())
 	    max.setHeight(pages[i]->maximumSize().height());
@@ -197,6 +198,10 @@ void KTabCtl::setSizes()
     // min.setHeight(min.height() + th);
 
     if (max.width() < min.width())
+	max.setWidth(min.width());
+    if (max.height() < min.height())
+	max.setHeight(min.height());
+
     /*
      * now, apply the calculated size values to all of the pages
      */
@@ -220,7 +225,7 @@ void KTabCtl::setSizes()
     }
 }
 
-    p.setPen( white );
+void KTabCtl::paintEvent(QPaintEvent *)
 {
     if (!tabs)
 	return;
@@ -276,6 +281,8 @@ QRect KTabCtl::getChildRect() const
  * in most cases, w will be a QWidget and will only act as parent for the
  * actual widgets on this page
  * NOTE: w is not required to be of class QWidget, but expect strange results with
+ * other types of widgets
+ */
 
 void KTabCtl::addTab(QWidget *w, const char *name)
 {
