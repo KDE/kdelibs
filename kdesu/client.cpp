@@ -28,6 +28,7 @@
 #include <qglobal.h>
 #include <qcstring.h>
 #include <qfile.h>
+#include <qregexp.h>
 
 #include <kdebug.h>
 #include <kstddirs.h>
