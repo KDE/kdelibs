@@ -139,18 +139,18 @@ void KCompletionBase::insertCompletionItems( QObject* parent, const char* member
     if( parent )
     {
         m_pCompletionMenu->clear();
-        m_pCompletionMenu->insertItem( i18n("N&one"), parent, member, 0, KGlobalSettings::CompletionNone );
+        m_pCompletionMenu->insertItem( i18n("None"), parent, member, 0, KGlobalSettings::CompletionNone );
         m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionNone, m_iCompletionMode == KGlobalSettings::CompletionNone );
-        m_pCompletionMenu->insertItem( i18n("Ma&nual"), parent, member, 0, KGlobalSettings::CompletionShell );
+        m_pCompletionMenu->insertItem( i18n("Manual"), parent, member, 0, KGlobalSettings::CompletionShell );
         m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionShell, m_iCompletionMode == KGlobalSettings::CompletionShell );
-        m_pCompletionMenu->insertItem( i18n("&Automatic"), parent, member, 0, KGlobalSettings::CompletionAuto );
+        m_pCompletionMenu->insertItem( i18n("Automatic"), parent, member, 0, KGlobalSettings::CompletionAuto );
         m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionAuto, m_iCompletionMode == KGlobalSettings::CompletionAuto );
-        m_pCompletionMenu->insertItem( i18n("Sem&i-Automatic"), parent, member, 0, KGlobalSettings::CompletionMan );
+        m_pCompletionMenu->insertItem( i18n("Semi-Automatic"), parent, member, 0, KGlobalSettings::CompletionMan );
         m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionMan, m_iCompletionMode == KGlobalSettings::CompletionMan );
         if( m_iCompletionMode != KGlobalSettings::completionMode() )
         {
             m_pCompletionMenu->insertSeparator();
-            m_pCompletionMenu->insertItem( i18n("D&efault"), parent, member, 0, 0 );
+            m_pCompletionMenu->insertItem( i18n("Default"), parent, member, 0, KGlobalSettings::completionMode() );
         }
     }
 }
