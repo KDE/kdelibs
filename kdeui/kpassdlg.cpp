@@ -136,7 +136,7 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 	}
 	break;
     default:
-	char ke = e->text().local8Bit()[0];
+	unsigned char ke = e->text().local8Bit()[0];
 	if (ke >= 32) {
 	    if (m_Length < (PassLen - 1)) {
 		m_Password[m_Length] = ke;
