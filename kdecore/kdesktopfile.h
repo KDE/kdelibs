@@ -21,7 +21,7 @@
 #ifndef _KDESKTOPFILE_H
 #define _KDESKTOPFILE_H
 
-#include "ksimpleconfig.h"
+#include "kconfig.h"
 
 /** 
  * KDE Desktop File Management
@@ -31,7 +31,7 @@
  * @see KConfigBase KConfig
  * @short KDE Desktop File Management class
  */
-class KDesktopFile : public KSimpleConfig
+class KDesktopFile : public KConfig
 {
   Q_OBJECT 
 
@@ -43,8 +43,12 @@ public:
    * @param pFileName The file used for saving the data. The
    *                  full path must be specified.
    * @param bReadOnly Whether the object should be read-only.
+   * @param resType   allows you to change what sort of resource
+   *                  to search for if pFileName is not absolute.  For
+   *                  instance, you might want to specify "config".
    */
-  KDesktopFile( const QString& pFileName, bool bReadOnly = false );
+  KDesktopFile( const QString &pFileName, bool bReadOnly = false,
+		const QString &resType = "apps");
 
   /** 
    * Destructor. 
@@ -107,7 +111,6 @@ public:
    * Returns true if there is an entry "Type=FSDev".
    */
   bool hasDeviceType();
-
 
 private:
 

@@ -1,6 +1,7 @@
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Pietro Iglio <iglio@kde.org>
+  Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -20,18 +21,26 @@
 
 // $Id$
 
+#include "kconfigbackend.h"
+
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
 
-KDesktopFile::KDesktopFile(const QString& pFileName, bool bReadOnly)
-  : KSimpleConfig(pFileName, bReadOnly)
+KDesktopFile::KDesktopFile(const QString &pFileName, bool bReadOnly,
+			   const QString &resType)
+  : KConfig("", bReadOnly, false)
 {
+  // KConfigBackEnd will try to locate the filename that is provided
+  // based on the resource type specified, _only_ if the filename
+  // is not an absolute path.
+  backEnd->changeFileName(pFileName, resType, false);
+  parseConfigFiles();
   setDesktopGroup();
 }
 
 KDesktopFile::~KDesktopFile()
 {
-  // Nothing to be done
+  // no need to do anything
 }
 
 bool KDesktopFile::isDesktopFile(const QString& path)

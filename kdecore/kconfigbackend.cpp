@@ -95,55 +95,58 @@ static QString stringToPrintable(const QString& s){
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, 
 			       const QString &_fileName, 
+			       const QString &_resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), fileName(_fileName), useKDEGlobals(_useKDEGlobals)
-{}
+  : pConfig(_config), fileName(_fileName), 
+    resType(_resType), useKDEGlobals(_useKDEGlobals)
+{
+}
 
 bool KConfigINIBackEnd::parseConfigFiles()
 {
-    // Parse all desired files from the least to the most specific.
+  // Parse all desired files from the least to the most specific.
+  
+  // Parse the general config files
+  if (useKDEGlobals) {
     
-    // Parse the general config files
-    if (useKDEGlobals) {
-
-	QStringList kdercs = KGlobal::dirs()->
-	    findAllResources("config", "kdeglobals");
-	
-	if (!access("/etc/kderc", R_OK)) 
-	    kdercs += "/etc/kderc";
-	
-	kdercs += KGlobal::dirs()->
-	    findAllResources("config", "system.kdeglobals");
-	
-	QStringList::ConstIterator it;
-	
-	for (it = kdercs.fromLast(); it != kdercs.end(); it--) {
-	    
-	    QFile aConfigFile( *it );
-	    aConfigFile.open( IO_ReadOnly );
-	    parseSingleConfigFile( aConfigFile, 0L, true );
-	    aConfigFile.close();
-	}
+    QStringList kdercs = KGlobal::dirs()->
+      findAllResources("config", "kdeglobals");
+    
+    if (!access("/etc/kderc", R_OK)) 
+      kdercs += "/etc/kderc";
+    
+    kdercs += KGlobal::dirs()->
+      findAllResources("config", "system.kdeglobals");
+    
+    QStringList::ConstIterator it;
+    
+    for (it = kdercs.fromLast(); it != kdercs.end(); it--) {
+      
+      QFile aConfigFile( *it );
+      aConfigFile.open( IO_ReadOnly );
+      parseSingleConfigFile( aConfigFile, 0L, true );
+      aConfigFile.close();
     }
+  }
+  
+  if (!fileName.isEmpty()) {
     
-    if (!fileName.isEmpty()) {
-
-	QStringList list = KGlobal::dirs()->
-	    findAllResources("config", fileName);
-
-	QStringList::ConstIterator it;
-	
-	for (it = list.fromLast(); it != list.end(); it--) {
-	    
-	    QFile aConfigFile( *it );
-	    // we can already be sure that this file exists
-	    aConfigFile.open( IO_ReadOnly );
-	    parseSingleConfigFile( aConfigFile, 0L, false );
-	    aConfigFile.close();
-	}
+    QStringList list = KGlobal::dirs()->
+      findAllResources(resType, fileName, true);
+    
+    QStringList::ConstIterator it;
+    
+    for (it = list.fromLast(); it != list.end(); it--) {
+      
+      QFile aConfigFile( *it );
+      // we can already be sure that this file exists
+      aConfigFile.open( IO_ReadOnly );
+      parseSingleConfigFile( aConfigFile, 0L, false );
+      aConfigFile.close();
     }
-    
-    return true;
+  }
+  
+  return true;
 }
 
 KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const

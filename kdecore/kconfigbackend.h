@@ -54,12 +54,14 @@ public:
    * @param _fileName The name of the file in which config
    *        data is stored.  All registered configuration directories
    *        will be looked in in order of decreasing relevance.
+   * @param _resType the resource type of the fileName specified, _if_
+   *        it is not an absolute path (otherwise this parameter is ignored).
    * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
    *        will be imported into the config object.  If false, only 
    *        the filename specified will be dealt with.
    */
-  KConfigBackEnd(KConfigBase *_config, const QString &_fileName, 
-		 bool _useKDEGlobals);
+  KConfigBackEnd(KConfigBase *_config, const QString &_fileName,
+		 const QString &_resType, bool _useKDEGlobals);
   
   /**
    * Destructor.
@@ -88,10 +90,19 @@ public:
   /**
    * change the filenames associated with this back end.  You should
    * probably reparse your config info after doing this.
+   *
+   * @param _fileName the new filename to use
+   * @param _resType the resource type of the fileName specified, _if_
+   *        it is not an absolute path (otherwise this parameter is ignored).
+   * @param _useKDEGlobals specifies whether or not to also parse the
+   *        global KDE configuration files.
    */
-  void changeFileName(const QString &_fileName, 
-		      bool _useKDEGlobals) 
-      { fileName = _fileName; useKDEGlobals = _useKDEGlobals; }
+  void changeFileName(const QString &_fileName, const QString &_resType,
+		      bool _useKDEGlobals)
+      { 
+	fileName = _fileName; resType = _resType;
+	useKDEGlobals = _useKDEGlobals;
+      }
 
   /**
    * Retrieve the state of the app-config object.
@@ -105,6 +116,7 @@ protected:
   KConfigBase *pConfig;
 
   QString fileName;
+  QString resType;
   bool useKDEGlobals;
 };
 
@@ -128,13 +140,15 @@ public:
    * @param _fileName The name of the file in which config
    *        data is stored.  All registered configuration directories
    *        will be looked in in order of decreasing relevance.
+   * @param _resType the resource type of the fileName specified, _if_
+   *        it is not an absolute path (otherwise this parameter is ignored).
    * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
    *        will be imported into the config object.  If false, only 
    *        the filename specified will be dealt with.
    */
   KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
-		    bool _useKDEGlobals = true)
-    : KConfigBackEnd(_config, _fileName, _useKDEGlobals) {}
+		    const QString &_resType, bool _useKDEGlobals = true)
+    : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals) {}
   
   /**
    * Destructor.

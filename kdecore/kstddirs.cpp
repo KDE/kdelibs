@@ -276,7 +276,7 @@ KStandardDirs::findAllResources( const QString& type,
 			         bool uniq,
                                  QStringList &relList) const
 {    
-printf("findAllResources( %s, %s )\n", type.ascii(), filter.ascii());
+debug("findAllResources( %s, %s )", type.ascii(), filter.ascii());
 
     QStringList list;
     if (filter.at(0) == '/') // absolute paths we return
@@ -309,15 +309,15 @@ printf("findAllResources( %s, %s )\n", type.ascii(), filter.ascii());
 	 it != candidates.end(); it++) 
       lookupPrefix(*it, filterPath, "", regExp, list, relList, recursive, uniq);
 
-printf("List:\n");
+debug("List:");
     for (QStringList::ConstIterator it = list.begin();
 	 it != list.end(); it++)
-      printf("%s\n", (*it).ascii());
-printf("relList:\n");
+      debug("%s", (*it).ascii());
+debug("relList:");
     for (QStringList::ConstIterator it = relList.begin();
 	 it != relList.end(); it++)
-      printf("%s\n", (*it).ascii());
-printf("Done\n");
+      debug("%s", (*it).ascii());
+debug("Done");
 
     return list;
 }
