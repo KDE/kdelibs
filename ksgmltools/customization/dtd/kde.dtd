@@ -69,6 +69,10 @@
 <!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
 %edbsyn; -->
 
+<!-- Temporary solution -->
+<!ENTITY copy  "(c)"--=copyright sign-->
+<!ENTITY trade "(TM)"--=trade mark sign-->
+<!ENTITY reg   "(R)"--/circledR =registered sign-->
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->

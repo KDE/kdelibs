@@ -57,6 +57,11 @@
   "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"     >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
+<!-- Temporary solution -->
+<!ENTITY copy  "(c)"--=copyright sign-->
+<!ENTITY trade "(TM)"--=trade mark sign-->
+<!ENTITY reg   "(R)"--/circledR =registered sign-->
+
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
