@@ -279,28 +279,28 @@ bool KProtocolManager::persistentConnections() const
 bool KProtocolManager::useProxy() const
 {
   KConfig config("kioslaverc", true, false);
-  config.setGroup( QString::null );
+  config.setGroup( "Proxy Settings" );
   return config.readBoolEntry( "UseProxy", false );
 }
 
 QString KProtocolManager::ftpProxy() const
 {
   KConfig config("kioslaverc", true, false);
-  config.setGroup( QString::null );
+  config.setGroup( "Proxy Settings" );
   return config.readEntry( "FtpProxy" );
 }
 
 QString KProtocolManager::httpProxy() const
 {
   KConfig config("kioslaverc", true, false);
-  config.setGroup( QString::null );
+  config.setGroup( "Proxy Settings" );
   return config.readEntry( "HttpProxy" );
 }
 
 QString KProtocolManager::noProxyFor() const
 {
   KConfig config("kioslaverc", true, false);
-  config.setGroup( QString::null );
+  config.setGroup( "Proxy Settings" );
   return config.readEntry( "NoProxyFor" );
 }
 
