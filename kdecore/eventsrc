@@ -48,6 +48,7 @@ Comment[zh_TW.Big5]=KDE 系統通知
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
+Name[af]=TEKSVOLTOOIïNG: ROTERING
 Name[az]=Textcompletion: döndərmə
 Name[br]=KlokadurSrid : troerezh
 Name[bs]=Textcompletion: rotacija
@@ -96,7 +97,7 @@ Comment[bg]=Достигнат е край на списъка от съвпад
 Comment[br]=Tizhet eo diwezh roll ar gendoareoÃ¹
 Comment[bs]=Došao sam do kraja popisa podudarnosti.
 Comment[ca]=S'ha arribat al final de la llista de coincidències.
-Comment[cs]=Dosaženo konce seznamu odpovídajích položek.
+Comment[cs]=Dosaženo konce seznamu odpovídajících položek.
 Comment[da]=Slutningen på liste af tilpasninger nået.
 Comment[de]=Das Ende der Übereinstimmungsliste wurde erreicht.
 Comment[el]=Έφτασα το τέλος της λίστας με τα ταιριάσματα.
@@ -138,6 +139,7 @@ default_presentation=1
 
 [Textcompletion: no match]
 Name=Textcompletion: no match
+Name[af]=TEKSVOLTOOIïNG: GEEN OOREENSTEM
 Name[az]=Textcompletion: oxşarı Yoxdur
 Name[bg]=Автозавършване: няма съвпадение
 Name[br]=KlokadurSrid : kendoare ebet
@@ -230,6 +232,7 @@ default_presentation=1
 
 [Textcompletion: partial match]
 Name=Textcompletion: partial match
+Name[af]=TEKSVOLTOOIïNG: GEDEELTELIKE OOREENSTEM
 Name[az]=Textcompletion: qismi oxşar
 Name[bg]=Автозавършване: частично съвпадение
 Name[br]=KlokadurSrid : kendoare darnek
@@ -464,7 +467,7 @@ Name[uk]=Фатальна помилка
 Name[zh_CN.GB2312]=致命错误
 Name[zh_TW.Big5]=致命錯誤
 Comment=There was a serious error causing the program to exit.
-Comment[af]=DAAR WAS 'N ERNSTIGE FOUT VEROORSAAK DAT DIE PROGRAM NA BEïENDIG.
+Comment[af]=DAAR WAS 'N ERNSTIGE FOUT VEROORSAAK DAT DIE PROGRAM AAN BEïENDIG.
 Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu.
 Comment[bg]=Сериозна грешка предизвикваща излизане от програмата
 Comment[br]=Ur fazi grevus a voe pennabeg mont er-maez ar goulev.
@@ -750,11 +753,12 @@ Name[uk]=Катастрофа
 Name[zh_CN.GB2312]=严重问题
 Name[zh_TW.Big5]=大災難
 Comment=A very serious error occured, at least causing the program to exit
+Comment[af]=A BAIE ERNSTIGE FOUT VOORGEKOM, NA MINSTE VEROORSAAK DAT DIE PROGRAM AAN BEïENDIG
 Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu və programdan çıxıldı.
 Comment[bg]=Възникна много сериозен проблем причиняващ излизане от програмата
 Comment[br]=Ur fazi grevus-tre a c'hoarvezas, a lakas d'an nebeutaÃ± ar goulev da vont er-maez
 Comment[ca]=Hi ha hagut un error molt seriós, com a mínim ha causat la sortida del programa
-Comment[cs]=Nastala velmi závažná chyba, která přinejmenšim způsobila ukončení programu.
+Comment[cs]=Nastala velmi závažná chyba, která přinejmenším způsobila ukončení programu.
 Comment[da]=Der var et meget alvorligt problem, i det mindste fik det programmet til at afslutte.
 Comment[de]=Es ist ein schwerer Fehler aufgetreten, der mindestens zum Abbruch des Programms führte.
 Comment[el]=Συνέβη σοβαρότατο σφάλμα, στην καλύτερη περίπτωση  έκλεισε το πρόγραμμα
@@ -883,7 +887,7 @@ default_sound=KDE_Startup.wav
  
 [exitkde]
 Name=Logout
-Name[af]=AFTEKEN
+Name[af]=TEKEN AF
 Name[az]=Çıxış
 Name[bg]=Излизане от KDE
 Name[bs]=Odjava
@@ -1005,6 +1009,7 @@ Name[sv]=Skrivarfel
 Name[ta]=«îÍò ¾ÅÚ
 Name[tr]=Yazdırma hatası
 Name[uk]=Помилка друку
+Name[zh_CN.GB2312]=打印错误
 Comment=A print error has occured
 Comment[af]=A DRUK FOUT HET VOORGEKOM
 Comment[az]=Çap Edici xətasi oldu
@@ -1036,5 +1041,6 @@ Comment[sl]=Prišlo je do napake pri tiskanju
 Comment[sv]=Ett utskriftsfel har inträffat
 Comment[tr]=Bir yazdırma hatası oluştu
 Comment[uk]=Сталася помилка друку
+Comment[zh_CN.GB2312]=出现打印错误
 default_presentation=2
 level=8
