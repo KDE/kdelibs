@@ -96,6 +96,7 @@ KIcon KIconThemeNode::findIcon(const QString& name, int size,
     icon = theme->iconPath(name, size, match);
     if (icon.isValid())
 	return icon;
+
     QListIterator <KIconThemeNode> it(links);
     for (; it.current(); ++it)
     {
@@ -149,8 +150,10 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
     d->mThemeList = KIconTheme::list();
     if (!d->mThemeList.contains("hicolor") || !d->mThemeList.contains("locolor"))
     {
-        kdFatal(264) << "Error: standard icon themes: \"locolor\" and "
-                     << "hicolor not found!\n";
+        kdError(264) << "Error: standard icon themes: \"locolor\" and "
+                     << "\"hicolor\" not found!\n";
+        d->mpGroups=0L;
+
         return;
     }
 
@@ -277,7 +280,6 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
     static const QString &png_ext = KGlobal::staticQString(".png");
-
     icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
     if (icon.isValid())
       return icon;
@@ -608,6 +610,8 @@ KIconTheme *KIconLoader::theme()
 
 int KIconLoader::currentSize(int group)
 {
+    if (!d->mpGroups) return -1;
+
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
@@ -689,7 +693,7 @@ QPixmap BarIcon(const QString& name, int force_size, int state,
 	KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, KIcon::Toolbar, force_size, state);
+    return loader->loadIcon(name, KIcon::Toolbar, force_size, state); 
 }
 
 QPixmap BarIcon(const QString& name, KInstance *instance)
