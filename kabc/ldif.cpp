@@ -174,16 +174,18 @@ LDIF::ParseVal LDIF::processLine()
 
   splitLine( line, mAttr, mVal );
 
+  QString attrLower = mAttr.lower();
+
   switch ( mEntryType ) {
     case Entry_None:
-      if ( mAttr.lower() == "version" ) {
+      if ( attrLower == "version" ) {
         if ( !mDn.isEmpty() ) retval = Err;
-      } else if ( mAttr.lower() == "dn" ) {
+      } else if ( attrLower == "dn" ) {
         kdDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
         mDn = QString::fromUtf8( mVal, mVal.size() );
         mModType = Mod_None;
         retval = NewEntry;
-      } else if ( mAttr.lower() == "changetype" ) {
+      } else if ( attrLower == "changetype" ) {
         if ( mDn.isEmpty() )
           retval = Err;
         else {
@@ -200,7 +202,7 @@ LDIF::ParseVal LDIF::processLine()
           else if ( tmpval == "modify" ) mEntryType = Entry_Mod;
           else retval = Err;
         }
-      } else if ( mAttr.lower() == "control" ) {
+      } else if ( attrLower == "control" ) {
       //TODO
       } else if ( !mAttr.isEmpty() && mVal.size() > 0 ) {
         mEntryType = Entry_Add;
@@ -224,14 +226,14 @@ LDIF::ParseVal LDIF::processLine()
         kdDebug(5700) << "kio_ldap: new modtype " << mAttr << endl;
         if ( mAttr.isEmpty() && mVal.size() == 0 ) {
           retval = EndEntry;
-        } else if ( mAttr.lower() == "add" ) {
+        } else if ( attrLower == "add" ) {
           mModType = Mod_Add;
-        } else if ( mAttr.lower() == "replace" ) {
+        } else if ( attrLower == "replace" ) {
           mModType = Mod_Replace;
           mAttr = QString::fromUtf8( mVal, mVal.size() );
           mVal.resize( 0 );
           retval = Item;
-        } else if ( mAttr.lower() == "delete" ) {
+        } else if ( attrLower == "delete" ) {
           mModType = Mod_Del;
           mAttr = QString::fromUtf8( mVal, mVal.size() );
           mVal.resize( 0 );
@@ -254,11 +256,11 @@ LDIF::ParseVal LDIF::processLine()
     case Entry_Modrdn:
       if ( mAttr.isEmpty() && mVal.size() == 0 )
         retval = EndEntry;
-      else if ( mAttr.lower() == "newrdn" )
+      else if ( attrLower == "newrdn" )
         mNewRdn = QString::fromUtf8( mVal, mVal.size() );
-      else if ( mAttr.lower() == "newsuperior" )
+      else if ( attrLower == "newsuperior" )
         mNewSuperior = QString::fromUtf8( mVal, mVal.size() );
-      else if ( mAttr.lower() == "deleteoldrdn" ) {
+      else if ( attrLower == "deleteoldrdn" ) {
         if ( mVal.size() > 0 && mVal[0] == '0' )
           mDelOldRdn = false;
         else if ( mVal.size() > 0 && mVal[0] == '1' )
