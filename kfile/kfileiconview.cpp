@@ -34,6 +34,7 @@
 #include "kfileiconview.h"
 #include "config-kfile.h"
 
+
 KFileIconViewItem::~KFileIconViewItem()
 {
     const_cast<KFileViewItem*>(fileInfo())->
@@ -100,6 +101,11 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 		 SLOT( highlighted( QIconViewItem * )));
 }
 
+KFileIconView::~KFileIconView()
+{
+    removeToolTip();
+}
+
 void KFileIconView::removeToolTip()
 {
     delete toolTip;
@@ -139,11 +145,6 @@ void KFileIconView::slotRightButtonPressed( QIconViewItem* item )
     }
     KFileIconViewItem *i = (KFileIconViewItem*)item;
     activateMenu( i->fileInfo() );
-}
-
-KFileIconView::~KFileIconView()
-{
-    removeToolTip();
 }
 
 void KFileIconView::hideEvent( QHideEvent *e )
