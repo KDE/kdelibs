@@ -28,7 +28,7 @@
 #include <qimage.h>
 #include <qwhatsthis.h>
 #include <qcstring.h>
-#include <qdatastream.h>
+#include <kdatastream.h>
 #include <dcopclient.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
