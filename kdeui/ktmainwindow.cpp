@@ -713,7 +713,8 @@ KToolBar *KTMainWindow::toolBar( int ID )
   if (ID < int(toolbars.count()))
     result = toolbars.at( ID );
   if (!result) {
-    result  = new KToolBar(this);
+    bool honor_mode = (ID == 0) ? true : false;
+    result  = new KToolBar(this, 0, -1, honor_mode);
     toolbars.append( result );
     while (int(toolbars.count()) < ID){
       toolbars.append( result );
