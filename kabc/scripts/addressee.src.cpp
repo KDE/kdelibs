@@ -254,13 +254,23 @@ void Addressee::setNameFromString( const QString &str )
 
 QString Addressee::realName() const
 {
-  QString n = prefix() + " " + givenName() + " " + additionalName() + " " +
-              familyName() + " " + suffix();
-  n = n.simplifyWhiteSpace();             
+  if ( !formattedName().isEmpty() )
+    return formattedName();
 
-  if ( n.isEmpty() ) n = name();
+  QString n = assembledName();
+
+  if ( n.isEmpty() )
+    n = name();
   
   return n;
+}
+
+QString Addressee::assembledName() const
+{
+  QString name = prefix() + " " + givenName() + " " + additionalName() + " " +
+              familyName() + " " + suffix();
+
+  return name.simplifyWhiteSpace();
 }
 
 QString Addressee::fullEmail( const QString &email ) const

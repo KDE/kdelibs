@@ -118,6 +118,12 @@ public:
    */
   void removeAddressee( const Addressee& addr );
 
+  /**
+   * This method is called by an error handler if the application
+   * crashed
+   */
+  virtual void cleanUp();
+
 protected slots:
   void fileChanged();
 

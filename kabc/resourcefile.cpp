@@ -214,4 +214,9 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/sounds/" ) + addr.uid() ) );
 }
 
+void ResourceFile::cleanUp()
+{
+  unlock( mFileName );
+}
+
 #include "resourcefile.moc"

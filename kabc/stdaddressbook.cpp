@@ -19,9 +19,12 @@
 */
 
 #include <kapplication.h>
+#include <kcrash.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksimpleconfig.h>
+
+#include <signal.h>
 
 #include "stdaddressbook.h"
 
@@ -30,6 +33,40 @@
 #include "vcardformatplugin.h"
 
 using namespace KABC;
+
+extern "C" {
+
+static void setSignalHandler( void (*handler)(int) );
+
+// Crash recovery signal handler
+static void signalHandler( int sigId )
+{
+  setSignalHandler( SIG_DFL );
+  fprintf( stderr, "*** libkabc got signal %d (Exiting)\n", sigId );
+  // try to cleanup all lock files
+  StdAddressBook::self()->cleanUp();
+  ::exit(-1);
+}
+
+// Crash recovery signal handler
+static void crashHandler( int sigId )
+{
+  setSignalHandler( SIG_DFL );
+  fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
+  // try to cleanup all lock files
+  StdAddressBook::self()->cleanUp();
+  // Return to DrKonqi.
+}
+
+static void setSignalHandler( void (*handler)(int) )
+{
+  signal( SIGKILL, handler );
+  signal( SIGTERM, handler );
+  signal( SIGHUP,  handler );
+  KCrash::setEmergencySaveFunction( crashHandler );
+}
+
+}
 
 AddressBook *StdAddressBook::mSelf = 0;
 
@@ -47,9 +84,18 @@ AddressBook *StdAddressBook::self()
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
-  if ( !mSelf ) {
+  if ( !mSelf )
     mSelf = new StdAddressBook;
-  }
+
+  return mSelf;
+}
+
+AddressBook *StdAddressBook::self( bool onlyFastResources )
+{
+  kdDebug(5700) << "StdAddressBook::self()" << endl;
+
+  if ( !mSelf )
+    mSelf = new StdAddressBook( onlyFastResources );
 
   return mSelf;
 }
@@ -129,6 +175,8 @@ void StdAddressBook::init( bool onlyFastResources )
   }
 
   load();
+
+  setSignalHandler( signalHandler );
 }
 
 void StdAddressBook::close()

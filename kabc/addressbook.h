@@ -277,6 +277,11 @@ class AddressBook : public QObject
     */
     void error( const QString& );
 
+    /**
+      Query all resources to clean up their lock files
+     */
+    void cleanUp();
+
   signals:
     /**
       Emitted, when the address book has changed on disk.

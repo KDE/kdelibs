@@ -256,4 +256,9 @@ void ResourceDir::removeAddressee( const Addressee& addr )
     QFile::remove( mPath + "/" + addr.uid() );
 }
 
+void ResourceDir::cleanUp()
+{
+  unlock( mPath );
+}
+
 #include "resourcedir.moc"

@@ -426,8 +426,8 @@ QString AddressBook::identifier()
   QString identifier;
 
     for ( uint i = 0; i < d->mResources.count(); ++i ) {
-	Resource *resource = d->mResources.at( i );
-	identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
+      Resource *resource = d->mResources.at( i );
+      identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
     }
 
   return identifier;
@@ -588,4 +588,13 @@ void AddressBook::setStandardResource( Resource *resource )
 Resource *AddressBook::standardResource()
 {
   return d->mStandardResource;
+}
+
+void AddressBook::cleanUp()
+{
+  for ( uint i = 0; i < d->mResources.count(); ++i ) {
+    Resource *resource = d->mResources.at( i );
+    if ( !resource->readOnly() )
+      resource->cleanUp();
+  }
 }

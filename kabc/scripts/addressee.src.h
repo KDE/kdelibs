@@ -105,6 +105,11 @@ class Addressee
       fields.
      */
     QString realName() const;
+
+    /**
+      Return the name that consists of all name parts.
+     */
+    QString assembledName() const;
     
     /**
       Return email address including real name.

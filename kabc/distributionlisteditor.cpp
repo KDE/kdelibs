@@ -117,7 +117,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   QWidget( parent ),
   mAddressBook( addressBook )
 {
-  kdDebug() << "DistributionListEditor()" << endl;
+  kdDebug(5700) << "DistributionListEditor()" << endl;
 
   QBoxLayout *topLayout = new QVBoxLayout( this );
   topLayout->setMargin( KDialog::marginHint() );
@@ -174,7 +174,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
 
 DistributionListEditor::~DistributionListEditor()
 {
-  kdDebug() << "~DistributionListEditor()" << endl;
+  kdDebug(5700) << "~DistributionListEditor()" << endl;
 
   mManager->save();
   delete mManager;
@@ -220,13 +220,13 @@ void DistributionListEditor::addEntry()
       dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
 
   if( !addresseeItem ) {
-    kdDebug() << "DLE::addEntry(): No addressee selected." << endl;
+    kdDebug(5700) << "DLE::addEntry(): No addressee selected." << endl;
     return;
   }
 
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) {
-    kdDebug() << "DLE::addEntry(): No dist list '" << mNameCombo->currentText() << "'" << endl;
+    kdDebug(5700) << "DLE::addEntry(): No dist list '" << mNameCombo->currentText() << "'" << endl;
     return;
   }
 

@@ -74,6 +74,11 @@ void Resource::removeAddressee( const Addressee& )
   // do nothing
 }
 
+void Resource::cleanUp()
+{
+  // do nothing
+}
+
 void Resource::setReadOnly( bool value )
 {
   mReadOnly = value;

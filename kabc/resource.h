@@ -105,6 +105,12 @@ public:
   virtual void removeAddressee( const Addressee& addr );
 
   /**
+   * This method is called by an error handler if the application
+   * crashed
+   */
+  virtual void cleanUp();
+
+  /**
    * Mark the resource to read-only.
    */
   virtual void setReadOnly( bool value );
