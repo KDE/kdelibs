@@ -56,7 +56,7 @@ KLocale kl;
  
   // did I just defeat the purpose of klocale by calling ascii()?  No time to
   // check this right now.
-  qstr.sprintf("%s %2d %02d:%02d:%02d %d%s", kl.monthName(1,true).ascii(),d,h,m,s,y+1900,(gmt)?" GMT":""); 
+  qstr.sprintf("%s %2d %02d:%02d:%02d %d%s", kl.monthName(M,true).ascii(),d,h,m,s,y+1900,(gmt)?" GMT":""); 
   return qstr;
 auq_err:
   qstr = "(Bad time value)";
