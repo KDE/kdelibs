@@ -176,8 +176,8 @@ int main(int argc, char **argv)
     filter( "ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "ftp.kde.org:21", "ftp://ftp.kde.org:21", KURIFilterData::NET_PROTOCOL );
     filter( "cr.yp.to", "http://cr.yp.to", KURIFilterData::NET_PROTOCOL );
-    filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );        
-    filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
     filter( "foo@bar.com", "mailto:foo@bar.com", KURIFilterData::NET_PROTOCOL );
     filter( "www.123.foo", "http://www.123.foo", KURIFilterData::NET_PROTOCOL );
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
     filter( "127.0.1", "http://127.0.1", KURIFilterData::NET_PROTOCOL );
 
     // Local domain filter territory - If you uncomment this test, make sure
-		// you adjust this based on the localhost entry in /etc/hosts.
+    // you adjust this based on the localhost entry in /etc/hosts.
     // filter( "localhost:3128", "http://localhost.localdomain:3128", KURIFilterData::NET_PROTOCOL );
     filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
 
