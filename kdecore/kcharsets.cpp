@@ -186,21 +186,27 @@ public:
         db = 0;
         availableCharsets = 0;
         kc = _kc;
-        conf = new KConfig( "charsets", true, false );
+	_conf = 0;
     }
     ~KCharsetsPrivate()
     {
         delete db;
         delete availableCharsets;
-        delete conf;
+        delete _conf;
     }
+    KConfig* conf()
+	{
+	if( _conf == NULL )
+            _conf = new KConfig( "charsets", true, false );
+	return _conf;
+	}
     QFontDatabase *db;
     QMap<QFont::CharSet, QStrList> *availableCharsets;
     QMap<QCString, QFont::CharSet> charsetForEncodingMap;
     QMap<QString, QFont::CharSet> nameToIDMap;
     QAsciiDict<QTextCodec> codecForNameDict;
     KCharsets* kc;
-    KConfig* conf;
+    KConfig* _conf;
 
     void getAvailableCharsets();
 };
@@ -375,15 +381,15 @@ QStringList KCharsets::availableEncodingNames()
 {
     QStringList available;
 
-    QMap<QString, QString> map = d->conf->entryMap("charsetsForEncoding");
-    d->conf->setGroup("charsetsForEncoding");
+    QMap<QString, QString> map = d->conf()->entryMap("charsetsForEncoding");
+    d->conf()->setGroup("charsetsForEncoding");
 
     QMap<QString, QString>::ConstIterator it;
     for( it = map.begin(); it != map.end(); ++it ) {
         //kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
 
         //kdDebug(0) << "list is: " << d->conf->readEntry(it.key()) << endl;
-        QStringList charsets = d->conf->readListEntry(it.key());
+        QStringList charsets = d->conf()->readListEntry(it.key());
 
         // iterate thorugh the list and find the first charset that is available
         for ( QStringList::ConstIterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
@@ -400,9 +406,9 @@ QStringList KCharsets::availableEncodingNames()
 
 QString KCharsets::languageForEncoding( const QString &encoding )
 {
-    d->conf->setGroup("LanguageForEncoding");
+    d->conf()->setGroup("LanguageForEncoding");
 
-    int lang = d->conf->readNumEntry(encoding, 0 );
+    int lang = d->conf()->readNumEntry(encoding, 0 );
     return i18n( languages[lang] );
 }
 
@@ -738,9 +744,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognise it.
-    d->conf->setGroup("builtin");
+    d->conf()->setGroup("builtin");
 
-    QString cname = d->conf->readEntry(name.data());
+    QString cname = d->conf()->readEntry(name.data());
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
 
@@ -750,15 +756,15 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    d->conf->setGroup("general");
-    QString dir = d->conf->readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
+    d->conf()->setGroup("general");
+    QString dir = d->conf()->readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
     dir += "/";
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap
     // is available in the charmap directory.
-    d->conf->setGroup("aliases");
+    d->conf()->setGroup("aliases");
 
-    cname = d->conf->readEntry(name.data());
+    cname = d->conf()->readEntry(name.data());
     if(cname.isNull() || cname.isEmpty())
         cname = name;
     cname = cname.upper();
@@ -772,9 +778,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // this also failed, the last resort is now to take some compatibility charmap
 
-    d->conf->setGroup("conversionHints");
+    d->conf()->setGroup("conversionHints");
     cname = cname.lower();
-    cname = d->conf->readEntry(cname);
+    cname = d->conf()->readEntry(cname);
 
     if(!cname.isEmpty() && !cname.isNull())
         codec = QTextCodec::codecForName(cname.latin1());
@@ -801,21 +807,21 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e, bool noUnicode) c
     if(!noUnicode && d->charsetForEncodingMap.contains(encoding))
         return d->charsetForEncodingMap[encoding]; // cache hit
 
-    d->conf->setGroup("charsetsForEncoding");
+    d->conf()->setGroup("charsetsForEncoding");
 
     //kdDebug(0) << "list for " << encoding << " is: " << d->conf->readEntry(encoding) << endl;
 
-    QString enc = d->conf->readEntry(encoding.data());
+    QString enc = d->conf()->readEntry(encoding.data());
     if(enc.isEmpty()) {
-	d->conf->setGroup("builtin");
-	enc = d->conf->readEntry(encoding.data());
+	d->conf()->setGroup("builtin");
+	enc = d->conf()->readEntry(encoding.data());
 	encoding = enc.lower().latin1();
-	d->conf->setGroup("charsetsForEncoding");
+	d->conf()->setGroup("charsetsForEncoding");
 	//kdDebug(0) << "list for " << encoding << " is: " << d->conf->readEntry(encoding) << endl <<endl;
     }
 
     QStringList charsets;
-    charsets = d->conf->readListEntry(encoding.data());
+    charsets = d->conf()->readListEntry(encoding.data());
 
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
