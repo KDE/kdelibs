@@ -43,6 +43,7 @@
 #include "khtml_part.h"
 #include "htmlparser.h"
 #include "html_documentimpl.h"
+#include "css/csshelper.h"
 #include "dtd.h"
 #include "htmlhashes.h"
 #include <kcharsets.h>
@@ -1060,9 +1061,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs ) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
-                        scriptSrc = a->value().string().stripWhiteSpace();
+                        scriptSrc = khtml::parseURL( a->value() ).string();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
-                        scriptSrcCharset = a->value().string();
+                        scriptSrcCharset = a->value().string().stripWhiteSpace();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
                 }
                 javascript = true;
@@ -1154,7 +1155,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
 
             if ( pending ) {
-                if (!( pre || textarea) && !parser->noSpaces() )  addPending();
+                if ( !parser->noSpaces() ) addPending();
                 discard = AllDiscard;
                 pending = NonePending;
             }
