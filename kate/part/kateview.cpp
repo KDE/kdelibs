@@ -121,7 +121,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
 
   // update the enabled state of the undo/redo actions...
   slotNewUndo();
-  
+
   m_viewInternal->show ();
 }
 
@@ -245,7 +245,7 @@ void KateView::setupActions()
   a=new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()), ac, "decFontSizes");
   a->setWhatsThis(i18n("This decreases the display font size."));
 
-  a=new KAction(i18n("T&oggle Block Selection"), Key_F4, m_doc, SLOT(toggleBlockSelectionMode()), ac, "set_verticalSelect");
+  a=new KAction(i18n("T&oggle Block Selection"), CTRL + SHIFT + Key_B, m_doc, SLOT(toggleBlockSelectionMode()), ac, "set_verticalSelect");
   a->setWhatsThis(i18n("This command allows switching between the normal (line based) selection mode and the block selection mode."));
 
   a=new KAction(i18n("Toggle &Insert"), Key_Insert, this, SLOT(toggleInsert()), ac, "set_insert" );
@@ -545,6 +545,11 @@ void KateView::slotStatusMsg ()
 
 
   emit viewStatusMsg (" " + s1 + " " + s2 + " " + ovrstr + " " + blockstr+ " " + modstr);
+}
+
+void KateView::slotSelectionTypeChanged()
+{
+  emit newStatus();
 }
 
 void KateView::reloadFile()
