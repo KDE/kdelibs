@@ -2100,8 +2100,10 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         }
 
         // Offer overwrite only if the existing thing is a file
+        // If src==dest, use "overwrite-itself"
         RenameDlg_Mode mode = (RenameDlg_Mode)
-            ( m_conflictError == ERR_FILE_ALREADY_EXIST ? M_OVERWRITE : 0 );
+            ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
+             ( (*it).uSource == (*it).uDest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
         if ( files.count() > 0 ) // Not last one
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
@@ -2205,11 +2207,16 @@ void CopyJob::copyNextFile()
     {
         // Do we set overwrite ?
         bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
-        // or if on the overwrite list
-        QStringList::Iterator sit = m_overwriteList.begin();
-        for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
-            if ( *sit == destFile.left( (*sit).length() ) )
-                bOverwrite = true;
+        if ( (*it).uDest == (*it).uSource )
+            bOverwrite = false;
+        else
+        {
+            // or if on the overwrite list
+            QStringList::Iterator sit = m_overwriteList.begin();
+            for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
+                if ( *sit == destFile.left( (*sit).length() ) )
+                    bOverwrite = true;
+        }
 
         m_bCurrentOperationIsLink = false;
         KIO::Job * newjob;
@@ -2282,7 +2289,7 @@ void CopyJob::copyNextFile()
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
                     m_error = ERR_CANNOT_SYMLINK;
-                    m_errorText = (*it).uDest.url();
+                    m_errorText = (*it).uDest.prettyURL();
                     emitResult();
                     return;
                 }

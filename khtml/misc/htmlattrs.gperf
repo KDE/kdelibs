@@ -67,6 +67,7 @@ ismap, ATTR_ISMAP
 label, ATTR_LABEL
 lang, ATTR_LANG
 language, ATTR_LANGUAGE
+left, ATTR_LEFT
 link, ATTR_LINK
 longdesc, ATTR_LONGDESC
 marginheight, ATTR_MARGINHEIGHT
@@ -100,6 +101,8 @@ onselect, ATTR_ONSELECT
 onsubmit, ATTR_ONSUBMIT
 onunload, ATTR_ONUNLOAD
 oversrc, ATTR_OVERSRC
+pagex, ATTR_PAGEX
+pagey, ATTR_PAGEY
 plain, ATTR_PLAIN
 pluginpage, ATTR_PLUGINPAGE
 pluginspage, ATTR_PLUGINSPAGE
@@ -128,6 +131,7 @@ tabindex, ATTR_TABINDEX
 target, ATTR_TARGET
 text, ATTR_TEXT
 title, ATTR_TITLE
+top, ATTR_TOP
 type, ATTR_TYPE
 unknown, ATTR_UNKNOWN
 usemap, ATTR_USEMAP
@@ -135,8 +139,10 @@ valign, ATTR_VALIGN
 value, ATTR_VALUE
 valuetype, ATTR_VALUETYPE
 version, ATTR_VERSION
+visibility, ATTR_VISIBILITY
 vlink, ATTR_VLINK
 vspace, ATTR_VSPACE
 width, ATTR_WIDTH
 wrap, ATTR_WRAP
+z-index, ATTR_Z_INDEX
 %%

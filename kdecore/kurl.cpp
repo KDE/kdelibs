@@ -493,6 +493,7 @@ void KURL::reset()
   m_strHost = QString::null;
   m_strPath = QString::null;
   m_strPath_encoded = QString::null;
+  m_strQuery_encoded = QString::null;
   m_strRef_encoded = QString::null;
   m_bIsMalformed = true;
   m_iPort = 0;
@@ -566,14 +567,15 @@ void KURL::parse( const QString& _url, int encoding_hint )
   // Node 4: Accept any amount of characters.
   if (buf[pos] == '[')     // An IPv6 host follows.
       goto Node8;  
-  // Terminate or / or @
-  while( buf[pos] != ':' && buf[pos] != '@' && buf[pos] != '/' && pos < len ) pos++;
+  // Terminate on / or @ or ? or #
+  x = buf[pos];
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len) ) 
+     x = buf[++pos];
   if ( pos == len )
     {
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
       goto NodeOk;
     }
-  x = buf[pos];
   if ( x == '@' )
     {
       m_strUser = decode(QString( buf + start, pos - start ), 0, encoding_hint);
@@ -586,10 +588,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
      pos++;
      goto Node8a;
      } */
-  else if ( x == '/' )
+  else if ( (x == '/') || (x == '?') || (x == '#'))
     {
       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
-      start = pos++;
+      start = pos;
       goto Node9;
     }
   else if ( x != ':' )

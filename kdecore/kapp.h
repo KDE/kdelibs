@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.1"
+#define KDE_VERSION 212
+#define KDE_VERSION_STRING "2.1.2"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 0
+#define KDE_VERSION_RELEASE 2
 
 class KConfig;
 class KCharsets;
@@ -413,16 +413,9 @@ public:
   KStyle* kstyle() const {return pKStyle;}
 
   /**
-   * Get the KDE font list.
-   *
-   * This method allows you to get the KDE font list which was
-   * composed by the user with kfontmanager. Usually you should
-   * work only with those fonts in your KDE application.
-   *
-   * @param fontlist A reference to a list to fill with fonts.
-   * @return true on success.
+   * @deprecated Don't use.
    */
-  bool kdeFonts(QStringList &fontlist) const;
+  bool kdeFonts(QStringList &) const;
 
   /**
    * Return a text for the window caption.
@@ -800,6 +793,18 @@ private:
 #endif
 
 // $Log$
+// Revision 1.210.2.3  2001/03/20 11:08:00  faure
+// Version 2.1.1
+//
+// Revision 1.210.2.2  2001/03/10 15:41:11  faure
+// Make kdeFonts always return false.
+//
+// Revision 1.210.2.1  2001/03/06 23:17:59  mueller
+// new version number to distinguish from 2.1 release
+//
+// Revision 1.210  2001/02/19 11:05:10  faure
+// 2.1, and fixing a docu bug found by werner
+//
 // Revision 1.209  2001/02/16 23:54:27  pfeiffer
 // KDoc fixes from Otto Bruggeman <bruggie@home.nl>
 //

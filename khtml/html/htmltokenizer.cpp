@@ -140,6 +140,7 @@ void HTMLTokenizer::begin()
     listing = false;
     processingInstruction = false;
     script = false;
+    escaped = false;
     style = false;
     skipLF = false;
     select = false;
@@ -264,7 +265,10 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         checkScriptBuffer();
 
         char ch = src[0].latin1();
-        if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( script && !escaped && ch == '\\' )
+            escaped = true;
+
+        if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -341,11 +345,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             const QChar& cmp = src[0];
             // broken HTML: "--->"
             // be tolerant: skip spaces before the ">", i.e "</script >"
-            if (cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            if (!escaped &&  cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
                 ++src;
             }
-            else if ( searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
+            else if (!escaped && searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
                 ++src;
@@ -371,7 +375,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( ch == '<' || ch == '-' )
+        else if ( !escaped && ( ch == '<' || ch == '-' ) )
         {
             searchCount = 1;
             searchBuffer[ 0 ] = src[0];
@@ -379,22 +383,25 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 	else
         {
-	    if (textarea && ch == '&') {
+	    if (textarea && !escaped && ch == '&') {
 		QChar *scriptCodeDest = scriptCode+scriptCodeSize;
 		++src;
 		parseEntity(src,scriptCodeDest,true);
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
-                if(script && ch == '\"')
-                    tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-                else if(script && ch == '\'')
-                    tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-                else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
-                    tquote = NoQuote; // HACK!!!
+                if ( !escaped ) {
+                    if(script && ch == '\"')
+                        tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
+                    else if(script && ch == '\'')
+                        tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
+                    else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
+                        tquote = NoQuote;
+                }
 
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
+                escaped = false;
 	    }
         }
     }
@@ -508,23 +515,22 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
     while ( src.length() )
     {
         char chbegin = src[0].latin1();
-        // Look for '?>'
-        if ( chbegin == '?' )
-        {
-            if (searchCount < 1)        // Watch out for '--->'
-                searchCount++;
+        if(chbegin == '\'') {
+            tquote = tquote == SingleQuote ? NoQuote : SingleQuote;
         }
-        else if ((searchCount == 1) && (chbegin == '>'))
+        else if(chbegin == '\"') {
+            tquote = tquote == DoubleQuote ? NoQuote : DoubleQuote;
+        }
+        // Look for '?>'
+        // some crappy sites omit the "?" before it, so
+        // we look for an unquoted '>' instead. (IE compatible)
+        else if ( !tquote && chbegin == '>' )
         {
             // We got a '?>' sequence
             processingInstruction = false;
             ++src;
             discard=LFDiscard;
             return; // Finished parsing comment!
-        }
-        else
-        {
-            searchCount = 0;
         }
         ++src;
     }
@@ -591,9 +597,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             charEntity = false;
             return;
         }
-        if( (entityPos && *entityBuffer == '#' && (cc >= '0' && cc <= '9')) || // numeric entity
-            (entityPos && *entityBuffer != '#' && (cc >= 'a' && cc <= 'z')) || // alpha entity
-            (!entityPos && ((cc >= 'a' && cc <= 'z') || (cc >= '0' && cc <= '9') || cc == '#')))  // first character
+        if( (entityPos && *entityBuffer == '#' && ((cc >= '0' && cc <= '9') || cc == 'x')) || // numeric entity
+            ((cc >= 'a' && cc <= 'z') || (cc >= '0' && cc <= '9') || cc == '#')) // other entity
         {
             entityBuffer[entityPos] = src[0];
             entityPos++;
@@ -1266,6 +1271,7 @@ void HTMLTokenizer::write( const QString &str )
             {
                 // xml processing instruction
                 processingInstruction = true;
+                tquote = NoQuote;
                 parseProcessingInstruction(src);
                 continue;
 
@@ -1287,8 +1293,6 @@ void HTMLTokenizer::write( const QString &str )
                         addPending();
                     *dest = '<';
                     dest++;
-                    *dest++ = src[0];
-                    ++src;
                     continue;
                 }
             }

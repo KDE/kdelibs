@@ -491,6 +491,7 @@ QStringList KImageIO::mimeTypes( Mode _mode )
           KImageIOFormat *format = (*it);
           if (((_mode == Reading) && format->bRead) ||
               ((_mode == Writing) && format->bWrite))
+            if ( !format->mMimetype.isEmpty() )
               mimeList.append ( format->mMimetype );
       }
   }

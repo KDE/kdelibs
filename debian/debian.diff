@@ -1,5 +1,25 @@
---- kdelibs-2.1-final.orig/kssl/ksslinfodlg.cc
-+++ kdelibs-2.1-final/kssl/ksslinfodlg.cc
+--- kdelibs-2.1.0.orig/ksgmltools/configure.in.in
++++ kdelibs-2.1.0/ksgmltools/configure.in.in
+@@ -11,7 +11,7 @@
+   IFS=$ac_save_IFS])
+ 
+ dnl The order of the directories in this list matters
+-dtd_paths="/usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/sgml-dtd-3.1 /usr/share/sgml/docbook/dsssl-stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /etc/sgml /usr/share/sgml /usr/share/sgml/docbk31 /usr/local/lib/sgml $USER_SGML_CAT_PATH"
++dtd_paths="/usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/sgml-dtd-3.1 /usr/share/sgml/docbook/dsssl-stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /etc/sgml /usr/share/sgml /usr/share/sgml/docbk31 /usr/local/lib/sgml $USER_SGML_CAT_PATH /usr/share/sgml-data"
+ 
+ AC_DEFUN(KDE_FIND_CAT,
+ [
+@@ -28,7 +28,7 @@
+ KDE_FIND_CAT(nwalsh-modular.cat)
+ KDE_FIND_CAT(stylesheets.cat)
+ KDE_FIND_CAT(dsssl.cat)
+-KDE_FIND_CAT(sgml.catalog)
++KDE_FIND_CAT(sgml/catalog)
+ dnl These three lines were added for the FreeBSD setup together with /usr/local/share/sgml
+ KDE_FIND_CAT(docbook/3.1/catalog)
+ KDE_FIND_CAT(jade/catalog)
+--- kdelibs-2.1.0.orig/kssl/ksslinfodlg.cc
++++ kdelibs-2.1.0/kssl/ksslinfodlg.cc
 @@ -67,7 +67,7 @@
          }
      } else {
@@ -9,14 +29,3 @@
      }
      d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
  
---- kdelibs-2.1-final.orig/admin/debianrules
-+++ kdelibs-2.1-final/admin/debianrules
-@@ -74,7 +74,7 @@
-   print STDOUT "export KDB2HTML=$KDB2HTML\n";
-   print STDOUT "export MCOPIDL=$MCOPIDL\n";
-   print STDOUT "export ARTSCCONFIG=$ARTSCCONFIG\n";
--  print STDOUT "configkde=--disable-rpath --prefix=\$(kde_prefix) --libexecdir=\$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --infodir=\$(infodir)\n";
-+  print STDOUT "configkde=--disable-debug --disable-rpath --prefix=\$(kde_prefix) --libexecdir=\$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --infodir=\$(infodir)\n";
-   print STDOUT "configkdevelop=--enable-docbase --enable-kdoc2 --disable-rpath --libdir=\$(kde_libdir) --includedir=\$(kde_includedir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --with-kdelibsdoc-dir=/usr/share/doc/kdelibs3-doc/html\n";
-   print STDOUT "configkdepim=--with-extra-includes=/usr/include/libpisock --enable-shared --disable-rpath --prefix=\$(kde_prefix) --libexecdir=\$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --infodir=\$(infodir)\n";
-   exit

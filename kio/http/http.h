@@ -362,6 +362,8 @@ protected:
   HTTP_AUTH Authentication;
   HTTP_AUTH ProxyAuthentication;
   bool m_bUnauthorized;
+  short unsigned int m_iProxyAuthCount;
+  short unsigned int m_iWWWAuthCount;
 
   // Persistant connections
   bool m_bKeepAlive;

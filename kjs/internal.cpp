@@ -53,7 +53,7 @@ UndefinedImp::UndefinedImp()
 
 KJSO UndefinedImp::toPrimitive(Type) const
 {
-  return KJSO(new UndefinedImp);
+  return (Imp*)this;
 }
 
 Boolean UndefinedImp::toBoolean() const
@@ -82,7 +82,7 @@ NullImp::NullImp()
 
 KJSO NullImp::toPrimitive(Type) const
 {
-  return KJSO(new NullImp);
+  return (Imp*)this;
 }
 
 Boolean NullImp::toBoolean() const
@@ -107,12 +107,12 @@ Object NullImp::toObject() const
 
 KJSO BooleanImp::toPrimitive(Type) const
 {
-  return KJSO(new BooleanImp(val));
+  return (Imp*)this;
 }
 
 Boolean BooleanImp::toBoolean() const
 {
-  return Boolean(val);
+  return Boolean((BooleanImp*)this);
 }
 
 Number BooleanImp::toNumber() const
@@ -127,7 +127,7 @@ String BooleanImp::toString() const
 
 Object BooleanImp::toObject() const
 {
-  return Object::create(BooleanClass, Boolean(val));
+  return Object::create(BooleanClass, Boolean((BooleanImp*)this));
 }
 
 NumberImp::NumberImp(double v)
@@ -137,7 +137,7 @@ NumberImp::NumberImp(double v)
 
 KJSO NumberImp::toPrimitive(Type) const
 {
-  return KJSO(new NumberImp(val));
+  return (Imp*)this;
 }
 
 Boolean NumberImp::toBoolean() const
@@ -149,18 +149,17 @@ Boolean NumberImp::toBoolean() const
 
 Number NumberImp::toNumber() const
 {
-  return Number(val);
+  return Number((NumberImp*)this);
 }
 
 String NumberImp::toString() const
 {
-  UString s = UString::from(val);
-  return String(s);
+  return String(UString::from(val));
 }
 
 Object NumberImp::toObject() const
 {
-  return Object::create(NumberClass, Number(val));
+  return Object::create(NumberClass, Number((NumberImp*)this));
 }
 
 StringImp::StringImp(const UString& v)
@@ -170,7 +169,7 @@ StringImp::StringImp(const UString& v)
 
 KJSO StringImp::toPrimitive(Type) const
 {
-  return KJSO(new StringImp(val));
+  return (Imp*)this;
 }
 
 Boolean StringImp::toBoolean() const
@@ -185,13 +184,12 @@ Number StringImp::toNumber() const
 
 String StringImp::toString() const
 {
-  //  return String(this);
-  return String(val);
+  return String((StringImp*)this);
 }
 
 Object StringImp::toObject() const
 {
-  return Object::create(StringClass, String(val));
+  return Object::create(StringClass, String((StringImp*)this));
 }
 
 ReferenceImp::ReferenceImp(const KJSO& b, const UString& p)
@@ -293,10 +291,6 @@ Context::Context(CodeType type, Context *callingContext,
 Context::~Context()
 {
   delete scopeChain;
-#if 0
-  scopeChain->deref();
-
-#endif
 }
 
 void Context::mark()

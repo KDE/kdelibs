@@ -30,6 +30,8 @@
 #include "css/cssproperties.h"
 #include "misc/htmlhashes.h"
 
+#include <kdebug.h>
+
 using namespace khtml;
 using namespace DOM;
 
@@ -285,5 +287,67 @@ long HTMLPreElementImpl::width() const
 void HTMLPreElementImpl::setWidth( long /*w*/ )
 {
     // ###
+}
+
+// ------------------------------------------------------------------------
+
+HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentImpl *doc)
+    : HTMLDivElementImpl( doc )
+{
+    addCSSProperty(CSS_PROP_POSITION, "absolute" );
+    fixed = false;
+}
+
+HTMLLayerElementImpl::~HTMLLayerElementImpl()
+{
+}
+    
+const DOMString HTMLLayerElementImpl::nodeName() const
+{
+    return "LAYER";
+}
+
+ushort HTMLLayerElementImpl::id() const
+{
+    return ID_LAYER;
+}
+    
+
+void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
+{
+    int cssprop;
+    bool page = false;
+    switch(attr->attrId) {
+	case ATTR_PAGEX:
+	    page = true;
+	case ATTR_LEFT:
+	    cssprop = CSS_PROP_LEFT;
+	    break;
+	case ATTR_PAGEY:
+	    page = true;
+	case ATTR_TOP:
+	    cssprop = CSS_PROP_TOP;
+	    break;
+	case ATTR_WIDTH:
+	    cssprop = CSS_PROP_WIDTH;
+	    break;
+	case ATTR_HEIGHT:
+	    cssprop = CSS_PROP_HEIGHT;
+	    break;
+	case ATTR_Z_INDEX:
+	    cssprop = CSS_PROP_Z_INDEX;
+	    break;
+	case ATTR_VISIBILITY:
+	    cssprop = CSS_PROP_VISIBILITY;
+	    break;
+	default:
+	    HTMLDivElementImpl::parseAttribute(attr);
+	    return;
+    }
+    addCSSProperty(cssprop, attr->value());
+    if ( !fixed && page ) {
+	addCSSProperty(CSS_PROP_POSITION, "fixed");
+	fixed = true;
+    }
 }
 

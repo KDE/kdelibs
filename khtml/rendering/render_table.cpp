@@ -1157,6 +1157,7 @@ void RenderTable::calcColWidth(void)
     toAdd = distributeRest(toAdd,Variable,maxVar);
     toAdd = distributeRest(toAdd,Relative,maxRel);
     toAdd = distributeRest(toAdd,Percent,maxPercent);
+    toAdd = distributeRest(toAdd,Fixed,maxFixed);
 
     /*
      * If something remains, put it to the last column

@@ -38,7 +38,7 @@ public:
 };
 
 MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
-	                const DOM::Node &innerNode )
+	                const DOM::Node &innerNode, long )
 : KParts::Event( name ), m_qmouseEvent( qmouseEvent ), m_x( x ), m_y( y ),
   m_url( url ), m_innerNode( innerNode )
 {
@@ -76,7 +76,7 @@ void MouseEvent::setURLHandlingEnabled( bool enable )
     d->urlHandling = enable;
 }
 
-int MouseEvent::offset() const
+long MouseEvent::offset() const
 {
     int offset = 0;
     DOM::Node tempNode = 0;

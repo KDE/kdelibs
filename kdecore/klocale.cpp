@@ -192,6 +192,8 @@ KLocale::KLocale( const QString& _catalogue )
         if(!ok)
             qWarning("** Warning: charset %s is not known. using ISO 8859-1 instead.", chset.latin1());
 
+        if (!strcmp(nc->name(), "ISO-10646-UCS-2"))
+            nc = QTextCodec::codecForName( "UTF-8" );
         qt_set_locale_codec(nc);
     }
 

@@ -209,6 +209,14 @@ int main(int argc, char **argv)
       p++;
    start = p;
 
+   if (strcmp(start, "kdeinit_shutdown") == 0)
+   {
+     header.cmd = LAUNCHER_TERMINATE_KDE;
+     header.arg_length = 0;
+     write_socket(sock, (char *) &header, sizeof(header));
+     return 0;
+   }
+ 
    if (strcmp(start, "kdeinit_wrapper") == 0)
    {
       argv++;

@@ -56,6 +56,8 @@ namespace KJS {
     Boolean(bool b = false);
     virtual ~Boolean();
     bool value() const;
+  private:
+    Boolean(BooleanImp *i);
   };
 
   /**
@@ -126,6 +128,8 @@ namespace KJS {
      * @return True if Number is either +Infinity or -Infinity.
      */
     bool isInf() const;
+  private:
+    Number(NumberImp *i);
   };
 
   /**
@@ -137,6 +141,8 @@ namespace KJS {
     String(const UString &s = "");
     virtual ~String();
     UString value() const;
+  private:
+    String(StringImp *i);
   };
 
   /**

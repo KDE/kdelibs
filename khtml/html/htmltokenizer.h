@@ -244,6 +244,9 @@ protected:
     // Are we in a <textarea> ... </textarea> block
     bool textarea;
 
+    // was the previous character escaped ?
+    bool escaped;
+
     // name of an unknown attribute
     QString attrName;
 

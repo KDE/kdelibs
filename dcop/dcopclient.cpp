@@ -44,7 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qsocketnotifier.h>
 
 #include <dcopglobal.h>
@@ -521,6 +521,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 		return false;
 	    }
 	    QTextStream t(&f);
+	    t.setEncoding( QTextStream::Latin1 );
 	    dcopSrv = t.readLine();
 	}
 	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );

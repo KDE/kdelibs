@@ -22,16 +22,16 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <ctype.h>
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
 
+#undef Unsorted
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>
 #include <qtextstream.h>
-
-#include <kapp.h>
 
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
@@ -40,6 +40,7 @@
 #include <ksavefile.h>
 #include <kurl.h>
 
+extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */
 static QCString printableToString(const char *str, int l)
 {
@@ -72,6 +73,9 @@ static QCString printableToString(const char *str, int l)
         }
         switch(*str)
         {
+           case 's':
+              *r++ = ' ';
+              break;
            case 't':
               *r++ = '\t';
               break;
@@ -103,8 +107,17 @@ static QCString stringToPrintable(const QCString& str){
   register char *r = (char *) result.data();
   register char *s = (char *) str.data();
 
-  while(*s)
+  // Escape leading space
+  if (*s == ' ')
   {
+     *r++ = '\\'; *r++ = 's';
+     s++;
+  }
+
+  if (*s)
+  {
+   while(*s)
+   {
     if (*s == '\n')
     {
       *r++ = '\\'; *r++ = 'n';
@@ -126,7 +139,14 @@ static QCString stringToPrintable(const QCString& str){
       *r++ = *s;
     }
     s++;
+   }
+   // Escape trailing space
+   if (*(r-1) == ' ')
+   {
+      *(r-1) = '\\'; *r++ = 's';
+   }
   }
+
   result.truncate(r - result.data());
   return result;
 }
@@ -207,128 +227,178 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     return KConfigBase::NoAccess;
 }
 
+//#include <iostream.h>
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
-					   KEntryMap *pWriteBackMap,
-					   bool bGlobal)
+					      KEntryMap *pWriteBackMap,
+					      bool bGlobal)
 {
-  if (!rFile.isOpen()) // come back, if you have real work for us ;->
-    return;
+   if (!rFile.isOpen()) // come back, if you have real work for us ;->
+      return;
 
-  QCString aCurrentGroup("<default>");
+   //using kdDebug() here leads to an infinite loop
+   //remove this for the release, aleXXX
+   //cout<<"******** parsing "<<rFile.name().latin1()<<endl;
 
-  const char *map = 0;
+   QCString aCurrentGroup("<default>");
+
+   const char *s, *eof;
+   QByteArray data;
 #ifdef HAVE_MMAP
-  map = (const char *) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0);
+   const char *map = (const char *) 
+	mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0);
+   if (map)
+   {
+      s = map;
+      eof = s + rFile.size();
+   }
+   else
 #endif
-  const char *s;
-  const char *eof;
-  QByteArray data;
-  if (map)
-  {
-     s = map;
-     eof = s+rFile.size();
-  }
-  else
-  {
-     rFile.at(0);
-     data = rFile.readAll();
-     s = data.data();
-     eof = s+data.size();
-  }
-  for(;s < eof;s++)
-  {
-     const char *startLine = s;
-     while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
-     if (*startLine == '[')
-     {
-        if (*(s-1) != ']')
-        {
-          const char *e = s-1;
-          while ((e > startLine) && (*e != ']'))
-            e--;
-          if (e <= startLine)
-          {
-            fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
+   {
+      rFile.at(0);
+      data = rFile.readAll();
+      s = data.data();
+      eof = s + data.size();
+   }
+
+   int line = 0;
+   for(; s < eof; s++)
+   {
+      line++;
+
+      while((s < eof) && isspace(*s) && (*s != '\n'))
+         s++; //skip leading whitespace, shouldn't happen too often
+
+      //skip empty lines, lines starting with #
+      if ((s < eof) && ((*s == '\n') || (*s == '#')))
+      {
+    sktoeol:	//skip till end-of-line
+         while ((s < eof) && (*s != '\n'))
+            s++;
+         continue; // Empty or comment or no keyword
+      }
+      const char *startLine = s;
+
+      if (*s == '[')  //group
+      {
+         while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
+         const char *e = s - 1;
+         while ((e > startLine) && isspace(*e)) e--;
+         if (*e != ']')
+         {
+            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
             continue;
+         }
+         // group found; get the group name by taking everything in
+         // between the brackets
+         aCurrentGroup = QCString(startLine + 1, e - startLine);
+         //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
+
+         // Backwards compatibility
+         if (aCurrentGroup == "KDE Desktop Entry")
+            aCurrentGroup = "Desktop Entry";
+
+         if (pWriteBackMap)
+         {
+            // add the special group key indicator
+            KEntryKey groupKey(aCurrentGroup, 0);
+            pWriteBackMap->insert(groupKey, KEntry());
+         }
+
+         continue;
+      }
+
+      const char *endOfKey = 0, *locale = 0, *elocale = 0;
+      for (; (s < eof) && (*s != '\n'); s++)
+      {
+         if (*s == '=') //find the equal sign
+         {
+	    if (!endOfKey)
+        	endOfKey = s;
+            goto haveeq;
+	 }
+	 if (*s == '[') //find the locale
+	 {
+	    if (locale) {
+		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
+		goto sktoeol;
+	    }
+	    endOfKey = s;
+	    locale = ++s;
+	    for (;; s++)
+	    {
+		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
+		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.name().latin1(), line);
+		    goto sktoeol;
+		}
+		if (*s == ']')
+		    break;
+	    }
+	    elocale = s;
+	 }
+      }
+      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.name().latin1(), line);
+      continue;
+
+   haveeq:
+      for (endOfKey--; ; endOfKey--)
+      {
+	 if (endOfKey < startLine)
+	 {
+	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.name().latin1(), line);
+	   goto sktoeol;
+	 }
+	 if (!isspace(*endOfKey))
+	    break;
+      }
+
+      const char *st = ++s;
+      while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
+
+      if (locale) {
+	  uint ll = localeString.length();
+          if ((ll != (uint) (elocale - locale)) || 
+	      memcmp(locale, localeString.data(), ll))
+          {
+            //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
+            // We can ignore this one
+            if (!pWriteBackMap)
+               continue; // We just ignore it
+            // We just store it as is to be able to write it back later.
+	    endOfKey = elocale;
+            locale = 0;
           }
-          aCurrentGroup = QCString(startLine+1, e - startLine);
-        }
-        else
-        {
-          // group found; get the group name by taking everything in
-          // between the brackets
-          aCurrentGroup = QCString(startLine+1, s - startLine - 1);
-        }
-
-        // Backwards compatibility
-        if (aCurrentGroup == "KDE Desktop Entry")
-           aCurrentGroup = "Desktop Entry";
-
-        if (pWriteBackMap) {
-	    // add the special group key indicator
-	    KEntryKey groupKey(aCurrentGroup, 0);
-	    pWriteBackMap->insert(groupKey, KEntry());
-        }
-        continue;
-     }
-     if ((*startLine == '#') || (*startLine == '\n'))
-        continue; // Empty or comment.
-
-     const char *equal = startLine;
-     const char *locale = 0;
-     while ((*equal != '=') && (equal != s))
-     {
-        if (*equal == '[') locale = equal;
-        equal++;
-     }
-     if (*equal != '=')
-        continue; // Missing equal sign, skip.
-
-     int keyLength = equal-startLine;
-     if (locale)
-     {
-        if (((int) localeString.length() != (equal - locale - 2)) ||
-            (strncmp(locale+1, localeString.data(), localeString.length())!=0))
-        {
-           // We can ignore this one
-           if (!pWriteBackMap)
-              continue; // We just ignore it
-           // We just store it as is to be able to write it back later.
-           locale = 0;
-        }
-        else
-        {
-           // We don't store the localized part.
-           keyLength = locale-startLine;
-        }
-     }
+      }
 
       // insert the key/value line
-      QCString key(startLine, keyLength+1); // TODO: strip whitespace
-      QCString val = printableToString(equal+1, s-equal-1);
+      QCString key(startLine, endOfKey - startLine + 2);
+      QCString val = printableToString(st, s - st);
+      //cout<<"found key '"<<key<<"' with value '"<<val<<"'"<<endl;
+
       KEntryKey aEntryKey(aCurrentGroup, key);
       aEntryKey.bLocal = (locale != 0);
+
       KEntry aEntry;
       aEntry.mValue = val;
       aEntry.bGlobal = bGlobal;
       aEntry.bNLS = (locale != 0);
 
       if (pWriteBackMap) {
-        // don't insert into the config object but into the temporary
-        // scratchpad map
-        pWriteBackMap->insert(aEntryKey, aEntry);
+         // don't insert into the config object but into the temporary
+         // scratchpad map
+         pWriteBackMap->insert(aEntryKey, aEntry);
       } else {
-        // directly insert value into config object
-        // no need to specify localization; if the key we just
-        // retrieved was localized already, no need to localize it again.
+         // directly insert value into config object
+         // no need to specify localization; if the key we just
+         // retrieved was localized already, no need to localize it again.
         pConfig->putData(aEntryKey, aEntry);
       }
-  }
+   }
 #ifdef HAVE_MMAP
-  if (map)
-     munmap((char *)map,rFile.size());
+   if (map)
+      munmap((char *)map, rFile.size());
 #endif
 }
+
 
 void KConfigINIBackEnd::sync(bool bMerge)
 {
@@ -492,8 +562,10 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       continue;
 
     if ( currentGroup != aWriteIt.key().mGroup ) {
+	if (!currentGroup.isEmpty())
+	    fprintf(pStream, "\n");
 	currentGroup = aWriteIt.key().mGroup;
-        fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
+	fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
     }
 
     if (aWriteIt.key().mKey.isEmpty()) {

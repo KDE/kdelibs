@@ -432,11 +432,12 @@ void SlaveBase::sigsegv_handler (int)
 
 void SlaveBase::sigpipe_handler (int)
 {
-    // TODO: maybe access the only instance of SlaveBase and call abort() on it
-    // Default implementation of abort would exit(1), but specific slaves can
-    // abort in a nicer way and be ready for more invocations
+    // We ignore a SIGPIPE in slaves.
+    // A SIGPIPE can happen in two cases:
+    // 1) Communication error with application.
+    // 2) Communication error with network.
+
     kdDebug(7019) << "SIGPIPE" << endl;
-    exit(1);
 }
 
 void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)

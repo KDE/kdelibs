@@ -28,7 +28,6 @@
 #include <kfilepreview.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
-#include <config-kfile.h>
 #include <kfile.h>
 
 #include <qsplitter.h>

@@ -1,3 +1,162 @@
+kdelibs (4:2.1.2-1) unstable; urgency=low
+ 
+  * New upstream version
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 30 Apr 2001 01:00:00 -0700
+
+kdelibs (4:2.1.1-9) unstable; urgency=high
+ 
+  * kdesu fix for /tmp file security
+  * Also fix shlibdeps bit
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Apr 2001 14:00:00 -0700
+
+kdelibs (4:2.1.1-8) unstable; urgency=low
+ 
+  * Update config.sub/guess files for hppa/ia64 and whatever else...
+  * Merge with upstream CVS
+  * Update Build-Depends
+  * Update Standards Version
+  * Removing old hacks in debian/rules
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Apr 2001 08:42:00 -0700
+
+kdelibs (4:2.1.1-7) unstable; urgency=low
+ 
+  * Adding in a dh-make template tree under /usr/share/doc/kdelibs-dev/dh-make
+    It is for a single binary package.  
+  * More upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 13 Apr 2001 14:37:00 -0700
+
+kdelibs (4:2.1.1-6) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Locale updates
+    More http fixes
+  * Update build-depends to include real | virtual
+  * Adding in a Packaging.txt document to kdelibs-dev the goal of which is to
+    answer any question one might have about packaging a KDE app for Debian.
+  * Fixing docs file for libarts
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
+
+kdelibs (4:2.1.1-5) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Several more http fixes
+  * Removing old AA bits 
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Apr 2001 04:33:00 -0700
+
+kdelibs (4:2.1.1-4) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Proxy Authentication fix...round 2.
+  * Oh..and Happy Birthday to my wife Audra.  :)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Apr 2001 18:04:00 -0700
+
+kdelibs (4:2.1.1-3) unstable; urgency=low
+ 
+  * Sync with upstream.  
+    Includes several khtml fixes
+    Memory leak fix
+    Proxy Authentication fix
+  * Update pam file for kde, add more documentation in it and modify defaults
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Apr 2001 10:18:00 -0700
+
+kdelibs (4:2.1.1-2) unstable; urgency=low
+ 
+  * 2 birds with 1 debuild.  
+    Rebuild against older libc6
+    Couple upstream fixes in kjs
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 13:39:00 -0700
+
+kdelibs (4:2.1.1-1) unstable; urgency=low
+ 
+  * New upstream release
+  * Dropping provides for kdelibs3-dev
+  * don't allow POST data to dump to the debug output...
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 10:26:00 -0700
+
+kdelibs (4:2.1.0.1-5) unstable; urgency=low
+ 
+  * Several fixes moving us towards 2.1.1
+  * Several "don't crash when..." fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 15 Mar 2001 10:26:00 -0700
+
+kdelibs (4:2.1.0.1-4) unstable; urgency=low
+ 
+  * More upstream fixes
+  * Add in a pam_env statement to kde pam file.  This *should* fix problems
+    people have had with kde not reading in their environment settings
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 13 Mar 2001 16:24:00 -0700
+
+kdelibs (4:2.1.0.1-3) unstable; urgency=low
+ 
+  * More upstream fixes
+    location object fixes for JavaScript
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
+
+kdelibs (4:2.1.0.1-2) unstable; urgency=low
+ 
+  * More upstream fixes
+    several khtml fixes especially with css
+    more font fixes
+    more session fixes..hopefully solving some of the reports
+  * built with new kdoc
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 11 Mar 2001 02:43:00 -0700
+
+kdelibs (4:2.1.0.1-1) unstable; urgency=low
+ 
+  * Fix proxy authentication
+  * Several other upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 08 Mar 2001 15:22:00 -0700
+
+kdelibs (4:2.1.0-3) unstable; urgency=low
+ 
+  * More upstream fixes
+   Fix for URLs like "http://www.kde.org?query=bla" and "http://www.kde.org#ref"
+   Fix for crashes opening http://www.radiocomercial.pt
+   Fix for accessing cookies via javascript
+   Fix for problem with filenames getting cut with umlauts
+   Fix for problem with permission changes in properties dialog
+   Don't unzip if the filename ends with .gz
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 07 Mar 2001 01:54:00 -0700
+
+kdelibs (4:2.1.0-2) unstable; urgency=low
+ 
+  * Adding libbz2-dev and libsasl-dev into Build-Depends so that the ioslaves
+    will be built on other archs.  Other archs probably didn't even notice. 
+  * dcopserver freeze fix
+  * Several other http fixes along with hopefully proper fixes to
+    the url entry problems
+  * Applying patch for Simplified Chinese support
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 04 Mar 2001 09:09:00 -0700
+
+kdelibs (4:2.1.0-1) unstable; urgency=low
+ 
+   * Re-pulling from CVS instead of using the official tarballs.  The
+     official tarballs had problems which made it hard to handle patches
+   * Version changed to 2.1.0 instead of 2.1-final as we are post 2.1-final
+     and pre 2.1.1 which will be released in about a month.  This also allows
+     for the source upload.
+   * Modified ksgmltools configure.in.in to handle new location of sgml files
+   * Updating build-depends
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Feb 2001 19:00:00 -0700
+
 kdelibs (4:2.1-final-1) unstable; urgency=low
  
    * New upstream version

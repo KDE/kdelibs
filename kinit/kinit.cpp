@@ -60,8 +60,23 @@
 
 #include <X11/Xlib.h>
 
-int waitForPid;
-int X11fd = -1;
+#ifdef HAVE_DLFCN_H
+# include <dlfcn.h>
+#endif
+
+#ifdef RTLD_GLOBAL
+# define LTDL_GLOBAL	RTLD_GLOBAL
+#else
+# ifdef DL_GLOBAL
+#  define LTDL_GLOBAL	DL_GLOBAL
+# else
+#  define LTDL_GLOBAL	0
+# endif
+#endif
+
+
+extern int lt_dlopen_flag;
+static int X11fd = -1;
 static Display *X11display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
@@ -85,6 +100,7 @@ struct {
   char **argv;
   int (*func)(int, char *[]);
   int (*launcher_func)(int);
+  int lt_dlopen_flag;
 } d;
 
 extern "C" {
@@ -212,6 +228,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
            }
         }
      }
+     lt_dlopen_flag = d.lt_dlopen_flag;
      if (!d.handle )
      {
         d.result = 2; // Try execing
@@ -883,15 +900,21 @@ int kdeinit_xio_errhandler( Display * )
       unlink(sock_file);
     }
 
+    qWarning( "kdeinit: sending SIGHUP to children." );
+
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
     kill(0, SIGHUP);
 
     sleep(2);
 
+    qWarning( "kdeinit: sending SIGTERM to children." );
+
     /* and if they don't listen to us, this should work */
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
+
+    qWarning( "kdeinit: Exit." );
 
     exit( 1 );
     return 0;
@@ -970,6 +993,8 @@ int main(int argc, char **argv, char **envp)
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
    d.wrapper = 0;
+   d.lt_dlopen_flag = lt_dlopen_flag;
+   lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
 
 

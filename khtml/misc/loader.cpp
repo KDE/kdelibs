@@ -428,7 +428,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
     // for mouseovers, dynamic changes
     if( m_status != Pending && !valid_rect().isNull())
-        do_notify( pixmap(), valid_rect());
+        c->setPixmap( pixmap(), valid_rect(), this, 0L);
 
 }
 
@@ -547,12 +547,12 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
     }
     for ( c = updateList.first(); c != 0; c = updateList.next() ) {
         bool manualUpdate = true; // Update!
-            // Actually we want to do c->updateSize()
-            // This is a terrible hack which does the same.
-            // updateSize() does not exist in CachecObjectClient only
-            // in RenderBox()
-            c->setPixmap( p, r, this, &manualUpdate);
-        }
+        // Actually we want to do c->updateSize()
+        // This is a terrible hack which does the same.
+        // updateSize() does not exist in CachecObjectClient only
+        // in RenderBox()
+        c->setPixmap( p, r, this, &manualUpdate);
+    }
 }
 
 
@@ -665,8 +665,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
     if ( imgSource )
     {
-        imgSource->maybeReady();
         imgSource->setEOF(eof);
+        imgSource->maybeReady();
     }
 
     if(eof)

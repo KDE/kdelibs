@@ -169,14 +169,14 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const Q
         if (mDomain[0] == '.')
             return false;
 
-	    // Maybe the domain needs an extra dot.
+        // Maybe the domain needs an extra dot.
         QString domain = "." + mDomain;
-        if (!domains.contains(domain))
+        if ( !domains.contains( domain ) )
             return false;   // Domain of cookie does not match with host of URL
     }
 
     // Cookie path match check
-    if( !path.startsWith(mPath) )
+    if( !path.isEmpty() && !path.startsWith(mPath) )
         return false; // Path of URL does not start with cookie-path
 
     return true;
@@ -245,6 +245,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 
     extractDomains(fqdn, domains);
     bool secureRequest = (_url.find( "https://", 0, false) == 0);
+    // kdDebug(7104) << "KCookieJar::findCookies: IsSecure: " << secureRequest << endl;
     for(QStringList::ConstIterator it = domains.begin();
         it != domains.end();
         ++it)
@@ -270,7 +271,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
           if (useDOMFormat)
           {
              if (cookieCount > 0)
-                cookieStr += ";";
+                cookieStr += "; ";
              cookieStr += cookie->cookieStr(true);
           }
           else if (protVersion == 0)
@@ -311,22 +312,8 @@ static const char * parseNameValue(const char *header,
 {
     const char *s = header;
 
-    // Skip any whitespace
-    for(; (*s == ' ') || (*s == '\t'); s++)
-    {
-        if ((*s=='\0') || (*s==';') || (*s=='\n'))
-        {
-            // End of header
-            Name = "";
-            Value = "";
-            return (s);
-        }
-    }
-
-    header = s;
-
     // Parse 'my_name' part
-    for(; (*s != '=') && (*s != ' ') && (*s != '\t'); s++)
+    for(; (*s != '='); s++)
     {
         if ((*s=='\0') || (*s==';') || (*s=='\n'))
         {
@@ -334,23 +321,14 @@ static const char * parseNameValue(const char *header,
             Value = "";
             Name = header;
             Name.truncate( s - header );
+            Name = Name.stripWhiteSpace();
             return (s);
         }
     }
 
     Name = header;
     Name.truncate( s - header );
-
-    // Skip any whitespace
-    for(; (*s != '='); s++)
-    {
-        if ((*s=='\0') || (*s==';') || (*s=='\n'))
-        {
-            // End of Name
-            Value = "";
-            return (s);
-        }
-    }
+    Name = Name.stripWhiteSpace();
 
     // *s == '='
     s++;
@@ -435,7 +413,6 @@ bool KCookieJar::parseURL(const QString &_url,
        return false;
 
     _fqdn = kurl.host().lower();
-
     // Home Insurance policy:  You might not really need it
     // but you (or rather I) feel better knowing I have it
     // just in case it is needed...  This is what the code
@@ -613,6 +590,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
                 lastCookie->mSecure = true;
             }
         }
+/*
         // We have to default the path if the server did not
         // provide one according to RFC 2109 sec 4.3.1 as well
         // as the original Netscape spec.  Otherwise, we will
@@ -631,7 +609,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             }
             lastCookie->mPath = dir;
         }
-
+*/
         if (*cookieStr == '\0')
             break; // End of header
 
@@ -694,7 +672,7 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
             cookieChain = cookie;
 
         lastCookie = cookie;
-
+/*
         // We have to default the path.
         // Is this right for script cookies?
         QString dir = path;
@@ -708,7 +686,7 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
         }
         lastCookie->mPath = dir;
         kdDebug(7104) << "Setting path for script cookie to: " << dir << endl;
-
+*/
         if (*cookieStr != '\0')
             cookieStr++;         // Skip ';' or '\n'
      }
@@ -748,8 +726,11 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     // They are removed
     for ( KHttpCookiePtr cookie=cookieList->first(); cookie != 0; )
     {
+        // The name and path must match.
+        // Also, either the domain name, or the host name must match.
         if ((cookie->name() == cookiePtr->name()) &&
-            (cookie->domain() == cookiePtr->domain()) &&
+            ((cookie->domain() == cookiePtr->domain()) ||
+            (cookie->host() == cookiePtr->host())) &&
             (cookie->path() == cookiePtr->path()))
         {
             KHttpCookiePtr old_cookie = cookie;

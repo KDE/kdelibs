@@ -132,6 +132,7 @@ const unsigned short tagPriority[] = {
     0, // ID_ISINDEX
     1, // ID_KBD
     1, // ID_LABEL
+    1, // ID_LAYER
     1, // ID_LEGEND
     3, // ID_LI
     0, // ID_LINK
@@ -141,6 +142,7 @@ const unsigned short tagPriority[] = {
     0, // ID_META
     9, // ID_NOEMBED
     9, // ID_NOFRAMES
+    3, // ID_NOLAYER
     3, // ID_NOSCRIPT
     7, // ID_OBJECT
     4, // ID_OL
@@ -644,11 +646,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
            }
            break;
-	    case ID_FONT:
-		if ( current->id() == ID_OPTION || current->id() == ID_OPTGROUP )
-		    return false;
-		break;
-	    default:
+        default:
             break;
         }
 
@@ -834,10 +832,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 		// IE treats a nested select as </select>. Let's do the same
 		popBlock( ID_SELECT );
                 break;
-            }
-            else {
-                popBlock(ID_SELECT);
-                handled = true;
             }
             break;
             // head elements in the body should be ignored.
@@ -1031,6 +1025,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_DIV:
         n = new HTMLDivElementImpl(document);
         break;
+    case ID_LAYER:
+        n = new HTMLLayerElementImpl(document);
+        break;
     case ID_H1:
     case ID_H2:
     case ID_H3:
@@ -1183,6 +1180,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_NOSCRIPT:
         if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
+        return 0;
+    case ID_NOLAYER:
+        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
         return 0;
         // Waldo's plaintext stuff
     case ID_PLAIN:

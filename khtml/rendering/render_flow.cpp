@@ -1076,7 +1076,7 @@ void RenderFlow::calcMinMaxWidth()
                 else
                 {
                     currentMin = childMin;
-                    if(inlineMin < currentMin) inlineMin = currentMin;                    
+                    if(inlineMin < currentMin) inlineMin = currentMin;
                     inlineMax += childMax;
                 }
 
@@ -1111,15 +1111,15 @@ void RenderFlow::calcMinMaxWidth()
 
             int margin=0;
             //  auto margins don't affect minwidth
-            
+
             Length ml = child->style()->marginLeft();
             Length mr = child->style()->marginRight();
-            
+
             if (style()->textAlign() == KONQ_CENTER)
             {
-                if (ml.type==Fixed) margin+=ml.value;   
-                if (mr.type==Fixed) margin+=mr.value;   
-            } 
+                if (ml.type==Fixed) margin+=ml.value;
+                if (mr.type==Fixed) margin+=mr.value;
+            }
             else
             {
                 if (ml.type!=Variable && mr.type!=Variable)
@@ -1189,7 +1189,7 @@ void RenderFlow::close()
 
     if ( isInline() )
 	return;
-    
+
     if(containingBlockWidth() < m_minWidth && parent())
         containingBlock()->updateSize();
     else
@@ -1235,11 +1235,13 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
             DOMStringImpl* oldText = newTextChild->string();
 
-            newTextChild->setText(oldText->substring(1,oldText->l-1));
+            if(oldText->l > 1) {
+                newTextChild->setText(oldText->substring(1,oldText->l-1));
 
-            RenderText* letter = new RenderText(oldText->substring(0,1));
-            letter->setStyle(new RenderStyle(pseudoStyle));
-            firstLetter->addChild(letter);
+                RenderText* letter = new RenderText(oldText->substring(0,1));
+                letter->setStyle(new RenderStyle(pseudoStyle));
+                firstLetter->addChild(letter);
+            }
             firstLetter->close();
         }
 

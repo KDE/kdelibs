@@ -360,23 +360,14 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
 
 DOMString HTMLElementImpl::stripAttributeGarbage( const DOMString &value )
 {
-    QChar *ch = value.unicode();
-    QChar *endP = ch + value.length();
-    for ( ; ch != endP; ++ch )
-    {
-        if ( ( *ch < '0' || *ch > '9' ) &&
-             *ch != '.' &&
-             *ch != '%' &&
-             *ch != ' ' &&
-             *ch != '*' )
-        {
-            DOMString res = value;
-            res.split( ch - value.unicode() );
-            return res;
-        }
-    }
+    unsigned int realLength = value.length();
+    unsigned int l = DOMStringImpl::stripAttributeGarbage( value.unicode(), realLength );
 
+    if ( l == realLength )
     return value;
+
+    DOMString res( value );
+    return res.split( l );
 }
 
 // -------------------------------------------------------------------------

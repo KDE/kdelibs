@@ -287,6 +287,7 @@ ElementImpl::~ElementImpl()
 
     if (m_styleDecls) {
 	m_styleDecls->setNode(0);
+        m_styleDecls->setParent(0);
 	m_styleDecls->deref();
     }
 }

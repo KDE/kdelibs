@@ -263,7 +263,6 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       QCString name;
       QCString value;
       stream >> name >> value;
-      kdDebug(7016) << "setLaunchEnv " << name << "="<< value << endl;
       setLaunchEnv(name, value);
       replyType = "void";
       return true;
@@ -303,8 +302,11 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    return false;
 }
 
-void KLauncher::setLaunchEnv(const QCString &name, const QCString &value)
+void KLauncher::setLaunchEnv(const QCString &name, const QCString &_value)
 {
+   QCString value(_value);
+   if (value.isNull())
+      value = "";
    klauncher_header request_header;
    QByteArray requestData(name.length()+value.length()+2);
    memcpy(requestData.data(), name.data(), name.length()+1);

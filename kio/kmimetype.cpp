@@ -823,6 +823,8 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
 
       bool ro = cfg.readBoolEntry( "ReadOnly", false );
       QString fstype = cfg.readEntry( "FSType" );
+      if ( fstype == "Default" ) // KDE-1 thing
+          fstype = QString::null;
       QString point = cfg.readEntry( "MountPoint" );
       (void)new KAutoMount( ro, fstype, dev, point, path, false );
     }

@@ -109,6 +109,7 @@ public:
     DOMString m_enctype;
     DOMString m_boundary;
     DOMString m_acceptcharset;
+    QString m_encCharset;
     KHTMLView *view;
     bool m_post;
     bool m_multipart;
@@ -306,6 +307,11 @@ protected:
     bool m_defaultChecked : 1;
     bool m_checked : 1;
     bool m_haveType : 1;
+    bool m_firstAttach : 1;
+
+private:
+
+    void init();
 };
 
 // -------------------------------------------------------------------------
@@ -319,6 +325,8 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
+
+    virtual bool isSelectable() const { return false; };
 
     virtual tagStatus startTag() const { return LABELStartTag; }
     virtual tagStatus endTag() const { return LABELEndTag; }

@@ -21,7 +21,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qpainter.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qwmatrix.h>
 #include <qtooltip.h>
 

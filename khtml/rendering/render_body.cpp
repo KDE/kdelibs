@@ -21,20 +21,32 @@
  * $Id$
  */
 #include "render_body.h"
+#include "render_root.h"
+#include "html/html_baseimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include <qpainter.h>
+#include <qscrollview.h>
 
 #include <kdebug.h>
 
 using namespace khtml;
+using namespace DOM;
 
-RenderBody::RenderBody()
+RenderBody::RenderBody(HTMLBodyElementImpl* _element)
     : RenderFlow()
 {
+    m_element = _element;
 }
 
 RenderBody::~RenderBody()
 {
+}
+
+void RenderBody::setStyle(RenderStyle* style)
+{
+    RenderFlow::setStyle(style);
+    m_element->ownerDocument()->setTextColor( DOMString( style->color().name() ) );
 }
 
 void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
@@ -45,7 +57,7 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     if( parent()->style()->backgroundColor().isValid() )
 	c =  style()->backgroundColor();
     CachedImage *bg = 0;
-    if( parent() ->backgroundImage() )
+    if( parent()->backgroundImage() )
 	bg = backgroundImage();
 
     int w = width();

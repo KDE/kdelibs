@@ -156,36 +156,6 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
     return false;
 }
 
-// the implementation, when objects are different is not efficient.
-// on the other hand, this case should be rare
-inline bool operator > ( const BidiIterator &it1, const BidiIterator &it2 )
-{
-    if(!it1.obj) return true;
-    if(it1.obj != it2.obj)
-    {
-#if BIDI_DEBUG > 1
-        kdDebug( 6041 ) << "BidiIterator operator >: objects differ" << endl;
-#endif
-
-        RenderObject *o = it2.obj;
-        while(o)
-        {
-            if(o == it1.obj) return true;
-            o = it1.par->next(o);
-        }
-#if BIDI_DEBUG > 1
-        kdDebug( 6041 ) << "BidiIterator operator >: false" << endl;
-#endif
-        return false;
-    }
-    return (it1.pos > it2.pos);
-}
-
-inline bool operator < ( const BidiIterator &it1, const BidiIterator &it2 )
-{
-    return (it2 > it1);
-}
-
 // -------------------------------------------------------------------------------------------------
 
 void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
@@ -232,7 +202,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #if 1
     BidiIterator current = start;
     BidiIterator last = current;
-    while(current < end) {
+    while(current != end) {
 
         QChar::Direction dirCurrent;
         if(current.atEnd()) {
@@ -633,10 +603,12 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #endif
     eor = last;
 
-    if(!(eor < sor))
+    
 #else
     eor = end;
 #endif
+    
+    if(sor != end)
         appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;

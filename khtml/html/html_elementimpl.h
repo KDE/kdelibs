@@ -60,9 +60,9 @@ public:
     bool setInnerHTML( const DOMString &html );
     bool setInnerText( const DOMString &text );
 
-protected:
-    // strips away anything after [0-9.%*]
-    DOMString stripAttributeGarbage( const DOMString &value );
+private:
+    // strips anything after [0-9.%*]
+    static DOMString stripAttributeGarbage( const DOMString &value );
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl

@@ -31,6 +31,7 @@
 
 #include <kdebug.h>
 #include <kstddirs.h>
+#include <kapp.h>
 
 #include "client.h"
 
@@ -385,7 +386,9 @@ int KDEsuClient::startServer()
 
     // kdesud only forks to the background after it is accepting
     // connections.
-    int ret = system(QFile::encodeName(d->daemon));
+    // We start it via kdeinit to make sure that it doesn't inherit
+    // any fd's from the parent process.
+    int ret = kapp->kdeinitExecWait(d->daemon);
     connect();
     return ret;
 }

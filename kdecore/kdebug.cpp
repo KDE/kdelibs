@@ -80,6 +80,9 @@ static QString getDescrFromNum(unsigned short _num)
   KDebugEntry *ent = KDebugCache->find( _num );
   if ( ent )
     return ent->descr;
+  
+  if ( !KDebugCache->isEmpty() ) // areas already loaded
+    return QString::null;
 
   QString data, filename(locate("config","kdebug.areas"));
   QFile file(filename);
