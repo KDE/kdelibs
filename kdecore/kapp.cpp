@@ -1027,6 +1027,7 @@ void KApplication::readSettings()
   config->reparseConfiguration();
 
   QString str;
+  int     num;
 	
   config->setGroup( "WM");
   // this default is Qt lightGray
@@ -1056,6 +1057,19 @@ void KApplication::readSettings()
   config->setGroup( "General" );
   generalFont_ = config->readFontEntry( "font", &generalFont_ );
   fixedFont_ = config->readFontEntry( "fixedFont", &fixedFont_ );
+
+  // cursor blink rate
+
+  num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
+  // filter out bogus numbers
+  if ( num < 200 ) num = 200;
+  if ( num > 2000 ) num = 2000;
+
+  // setCusorFlashTime() is obviously bogus
+  // when this is fixed in QT, somebody gets to fix it here ;-)
+  setCusorFlashTime(num);
+//  setCursorFlashTime(num);
+
 
   // Finally, read GUI style from config.
 	
