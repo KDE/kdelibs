@@ -28,6 +28,7 @@
 #undef NDEBUG
 #endif
 #include "kdebug.h"
+#include "kdebug2.h"
 #ifdef NODEBUG
 #define NDEBUG
 #undef NODEBUG
@@ -35,7 +36,6 @@
 
 // Other includes needed by kDebug* functions.
 
-#include "kdebug2.h"
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstddirs.h"
