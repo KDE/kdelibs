@@ -1179,7 +1179,35 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( url.isEmpty() )
     return;
-
+    
+  // Basice security check on hyper-links.  This makes sure
+  // that invalid links and remote files with local links
+  // are forbidden.  This replaces the check commented out
+  // below because it caused SEGFAULT since it tried to
+  // verify the protocol for a relative URL that might not
+  // have one!!  It also would forbid relative links that
+  // began with "/" since it tries to build a fully qualified
+  // URL from a relative one.  Lastly it did not forbid a file
+  // "file:/" URL in a remote file from being executed.(DA)
+  if( !cURL.isMalformed() )
+  {
+    if(( cURL.protocol().lower() == "cgi" || cURL.protocol().lower() == "file" ) &&
+         m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
+    {
+        KMessageBox::error( 0,
+            i18n( "This page is untrusted\nbut it contains a link to your local file system."),
+            i18n( "Security Alert" ));
+        return;    
+    }
+  }
+  else
+  {
+    KMessageBox::error( 0, i18n( "The link points to an invalid URL."),
+                           i18n( "Hyper Link Error" ) );
+    return;
+  }    
+  
+/*
   // Security
   KURL u( url );
   if ( !u.protocol().isEmpty() && !m_url.protocol().isEmpty() &&
@@ -1193,6 +1221,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
+*/
 
   KParts::URLArgs args;
   args.frameName = target;
