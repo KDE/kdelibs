@@ -41,6 +41,7 @@
 #include "kurl.h"
 #include "khtmlclue.h"
 #include "khtmltags.h"
+#include "khtmlstyle.h"
 
 //
 // External Classes
@@ -81,40 +82,6 @@ class HTMLFrameSet;
 // Internal Classes
 //
 ///////////////////
-
-class KHTMLParser;
-class HTMLStackElem;
-
-typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
-
-class HTMLStackElem
-{
-public:
-	HTMLStackElem(		int _id, 
-	 					int _level, 
-	 				   	blockFunc _exitFunc, 
-	 				   	int _miscData1,
-	 				   	int _miscData2, 
-	 				   	HTMLStackElem * _next
-	 				  ) 
-	 				  :	id(_id), 
-	 				   	level(_level),
-	 				   	exitFunc(_exitFunc), 
-	 				   	miscData1(_miscData1), 
-	 				   	miscData2(_miscData2), 
-	 				   	next(_next) 
-                 { }
-
-    int       id;
-    int       level;
-   	 
-    blockFunc exitFunc;
-   
-    int       miscData1;
-    int       miscData2;
-
-	HTMLStackElem *next;
-};
 
 // Default borders between widgets frame and displayed text
 #define LEFT_BORDER 10
@@ -161,18 +128,6 @@ protected:
 
     enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
-
-    // do </a> if necessary
-    void closeAnchor()
-    {
-	if ( url )
-	{
-	    popColor();
-	    popFont();
-	}
-	url = 0;
-	target = 0;
-    }
 
 	/*
 	 * This function creates a new flow adds it to '_clue' and sets 'flow'
@@ -336,66 +291,34 @@ protected:
      * called recursively, or somehow from a function using this
      * tokenizer, you should construct your own.
      */
-    StringTokenizer *stringTok;
+    StringTokenizer *stringTok; 
 
     /*
-     * Selects a new font adding _relative_font_size to fontBase
-     * to get the new size.
+     * Current style sheet
      */
-    void selectFont( int _relative_font_size );
+    CSSStyleSheet *styleSheet; 
 
     /*
-     * Selects a new font using current settings
+     * Current style
      */
-    void selectFont();
+    CSSStyle *currentStyle; 
 
     /*
-     * Makes the font specified by parameters the actual font
+     * Set new font based on currentStyle
      */
-    void selectFont( const char *_fontfamily, int _size, int _weight, bool _italic );
+    void setFont();
 
     /*
-     * Pops the top font form the stack and makes the new
-     * top font the actual one. If the stack is empty ( should never
-     * happen! ) the default font is pushed on the stack.
+     * Restore font based on info in currentStyle
      */
-    void popFont();
-
-    const HTMLFont *currentFont()  { return font_stack.top(); }
-
-    void popColor();
+    void restoreFont();
+     
+    const HTMLFont *currentFont()  { return currentStyle->font.fp; }
 
     /*
-     * The font stack. The font on top of the stack is the currently
-     * used font. Poping a font from the stack deletes the font.
-     * So use top() to get the actual font. There must always be at least
-     * one font on the stack.
+     * Current fontbase, colors, etc.
      */
-    QStack<HTMLFont> font_stack;
-
-    /*
-     * The weight currently selected. This is affected by <b>..</b>
-     * for example.
-     */
-    int weight;
-
-    /*
-     * The fonts italic flag. This is affected by <i>..</i>
-     * for example.
-     */
-    bool italic;
-
-    /*
-     * The fonts underline flag. This is affected by <u>..</u>
-     * for example.
-     */
-    bool underline;
-
-    /*
-     * The fonts underline flag. This is affected by <u>..</u>
-     * for example.
-     */
-    bool strikeOut;
+    HTMLSettings *settings;
 
     /*
      * is true if are between <noframes> and </noframes>
@@ -407,44 +330,31 @@ protected:
      */
     const char *baseTarget;
 
-    /*
-     * Current text color is at the top of the stack
-     */
-    QStack<QColor> colorStack;
 
+	HTMLStackElem *blockStack; 
 
-	 HTMLStackElem *blockStack; 
-
-     void pushBlock( int _id, int _level, 
-    					  blockFunc _exitFunc = 0, 
-    					  int _miscData1 = 0,
-    					  int _miscData2 = 0);
+    void pushBlock( int _id, int _level, 
+    				  blockFunc _exitFunc = 0, 
+    				  int _miscData1 = 0);
     					  
-     void popBlock( int _id );
+    void popBlock( int _id );
  
-	 void freeBlock( void);
+	void freeBlock( void);
     
 	 /*
-	  * Code for closing-tag to restore font
-	  * miscData1: bool - if true terminate current flow
+	  * Code for closing-tag to restore block
 	  */
-    void blockEndFont(HTMLStackElem *stackElem);
+    void blockEnd(HTMLStackElem *stackElem);
+
+	 /*
+	  * Code for closing-tag to close anchor
+	  */
+    void blockEndAnchor(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for closing-tag to end PRE tag
 	  */
     void blockEndPre(HTMLStackElem *stackElem);
-
-	 /*
-	  * Code for closing-tag to restore font and font-color
-	  */
-    void blockEndColorFont(HTMLStackElem *stackElem);
-    
-	 /*
-	  * Code for closing-tag to restore indentation
-	  * miscData1: int - previous indentation
-	  */
-    void blockEndIndent(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for closing-tag to restore alignment
@@ -454,8 +364,7 @@ protected:
 
 	 /*
 	  * Code for remove item from listStack and restore indentation
-	  * miscData1: int - previous indentation
-	  * miscData2: bool - if true insert vspace
+	  * miscData1: bool - if true insert vspace
 	  */
     void blockEndList(HTMLStackElem *stackElem);
 
@@ -540,10 +449,6 @@ protected:
      */
     static tagFunc tagJumpTable[ID_MAX+1];
 
-    /*
-     * Current fontbase, colors, etc.
-     */
-    HTMLSettings *settings;
 
     // true if the current text is destined for <title>
     bool inTitle;

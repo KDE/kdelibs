@@ -121,7 +121,7 @@ QString toRoman( int number, bool upper )
 tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 {
         0,              0,		// (NULL) / (NULL)
-&KHTMLParser::parseTagA,	&KHTMLParser::closeAnchor,	// ID_A
+&KHTMLParser::parseTagA,	&KHTMLParser::parseTagEnd,	// ID_A
 &KHTMLParser::parseTagAbbr,		0,			// ID_ABBR
 &KHTMLParser::parseTagAcronym,		0,			// ID_ACRONYM
 &KHTMLParser::parseTagAddress,	&KHTMLParser::parseTagEnd,	// ID_ADDRESS
@@ -234,30 +234,22 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 
     listStack.setAutoDelete( true );
     glossaryStack.setAutoDelete( true );
-    colorStack.setAutoDelete( true );
 
-    // Initialize the font stack with the default font.
-    italic = false;
-    underline = false;
-    strikeOut = false;
-    weight = QFont::Normal;
-    inNoframes = false;
-
-    colorStack.clear();
-    colorStack.push( new QColor( settings->fontBaseColor ) );
+    divAlign = HTMLClue::Left;
 
     if (!pFontManager)
     	pFontManager = new HTMLFontManager();
 
     charsetConverter = 0;
     
-    HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, settings->fontSizes );
-    f.setCharset(settings->charset);
-    f.setTextColor( settings->fontBaseColor );
-
-    const HTMLFont *fp = pFontManager->getFont( f );
-    font_stack.push( fp );
+    // Style stuff
     
+    styleSheet = new CSSStyleSheet(_settings);
+    
+    currentStyle = styleSheet->newStyle(NULL);
+
+    setFont();
+
     // reset form related stuff
     form = 0;
     formSelect = 0;
@@ -273,6 +265,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     url = 0;
     title = 0;
     formText = 0;
+    inNoframes = false;
 
     flow = 0;
     frameSet = 0;
@@ -285,9 +278,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     parseCount = 0;
     granularity = 1000;
 
-    indent = 0;
     vspace_inserted = true;
-    divAlign = HTMLClue::Left;
 
     stringTok = new StringTokenizer;
 
@@ -300,120 +291,49 @@ KHTMLParser::~KHTMLParser()
     if ( stringTok )
 	delete stringTok;
 
-    font_stack.clear();
-
     freeBlock();
 }
 
-// changes a current font
-// needed for headings, and whenever the font family change is necessery
-void KHTMLParser::selectFont( const char *_fontfamily, int _fontsize, int _weight, bool _italic )
+// Set font according to currentStyle
+void KHTMLParser::setFont(void)
 {
-    if ( _fontsize < 0 )
-	_fontsize = 0;
-    else if ( _fontsize >= MAXFONTSIZES )
-	_fontsize = MAXFONTSIZES - 1;
-
-    HTMLFont f( _fontfamily, _fontsize, settings->fontSizes, 
-                _weight, _italic, settings->charset );
-    f.setTextColor( *(colorStack.top()) );
-    const HTMLFont *fp = pFontManager->getFont( f );
-
-    font_stack.push( fp );
-    painter->setFont( *(font_stack.top()) );
-}
-
-void KHTMLParser::selectFont( int _relative_font_size )
-{
-    int fontsize = settings->fontBaseSize + _relative_font_size;
-
-    if ( !currentFont() )
-    {
-	fontsize = settings->fontBaseSize;
-	debug( "aarrrgh - no font" );
-    }
-
+    int fontsize = currentStyle->font.size;
     if ( fontsize < 0 )
 	fontsize = 0;
     else if ( fontsize >= MAXFONTSIZES )
 	fontsize = MAXFONTSIZES - 1;
+    
+    currentStyle->font.size = fontsize;
 
-    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes,
-        weight, italic, font_stack.top()->charset() );
-
-    f.setUnderline( underline );
-    f.setStrikeOut( strikeOut );
-    f.setTextColor( *(colorStack.top()) );
-
-    const HTMLFont *fp = pFontManager->getFont( f );
-
-    font_stack.push( fp );
-    painter->setFont( *(font_stack.top()) );
-}
-
-void KHTMLParser::selectFont()
-{
-    int fontsize;
-	
-    if ( currentFont() )
-	fontsize = currentFont()->size();
-    else
-    {
-	fontsize = settings->fontBaseSize;
-	debug( "aarrrgh - no font" );
-	assert(0);
-    }
-
-    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes,
-                weight, italic,  font_stack.top()->charset() );
-
-    f.setUnderline( underline );
-    f.setStrikeOut( strikeOut );
-    f.setTextColor( *(colorStack.top()) );
+    HTMLFont f( currentStyle->font.family, 
+                fontsize, settings->fontSizes, 
+                currentStyle->font.weight / 10, 
+                (currentStyle->font.style != CSSStyleFont::stNormal), 
+                settings->charset );
+    f.setTextColor( currentStyle->font.color );
+    f.setUnderline( currentStyle->font.decoration == CSSStyleFont::decUnderline );
+    f.setStrikeOut( currentStyle->font.decoration == CSSStyleFont::decLineThrough );
 
     const HTMLFont *fp = pFontManager->getFont( f );
 
-    font_stack.push( fp );
-    painter->setFont( *(font_stack.top()) );
+    currentStyle->font.fp = fp;
+    painter->setFont( *fp );
 }
 
-void KHTMLParser::popFont()
+void KHTMLParser::restoreFont(void)
 {
-    font_stack.pop();
-    if ( font_stack.isEmpty() )
-    {
-	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, 
-		    settings->fontSizes );
-	f.setCharset(settings->charset);
-	const HTMLFont *fp = pFontManager->getFont( f );
-	font_stack.push( fp );
-    }
-
-    // we keep the current font color
-    font_stack.top()->setTextColor( *(colorStack.top()) );
-
-    painter->setFont( *(font_stack.top()) );
-    weight = font_stack.top()->weight();
-    italic = font_stack.top()->italic();
-    underline = font_stack.top()->underline();
-    strikeOut = font_stack.top()->strikeOut();
-}
-
-void KHTMLParser::popColor()
-{
-    colorStack.remove();
-
-    if ( colorStack.isEmpty() )
-	colorStack.push( new QColor( settings->fontBaseColor ) );
+    painter->setFont( *(currentStyle->font.fp) );
 }
 
 void KHTMLParser::pushBlock(int _id, int _level,
                             blockFunc _exitFunc, 
-                            int _miscData1, int _miscData2)
+                            int _miscData1)
 {
-    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, _exitFunc, 
-    					    _miscData1, _miscData2, 
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, currentStyle, 
+    					    _exitFunc, _miscData1, 
     					    blockStack);
+
+    currentStyle = styleSheet->newStyle(currentStyle);    					    
     blockStack = Elem;
 }    					     
 
@@ -448,6 +368,14 @@ void KHTMLParser::popBlock( int _id)
 
     	if (Elem->exitFunc != 0)
     		(this->*(Elem->exitFunc))( Elem );
+    		
+    	if (Elem->style)
+    	{
+    	    delete currentStyle;
+    	    currentStyle = Elem->style;
+    	    restoreFont();
+    	}
+    		
     	if (Elem->id == _id)
     	{
     	    blockStack = Elem->next;
@@ -474,14 +402,16 @@ void KHTMLParser::freeBlock()
     blockStack = 0;
 }
 
-void KHTMLParser::blockEndFont( HTMLStackElem *Elem)
+void KHTMLParser::blockEnd( HTMLStackElem *Elem)
 {
-    popFont();
-    if (Elem->miscData1)
-    {
-	vspace_inserted = insertVSpace( vspace_inserted );
-	flow = 0;
-    }
+    vspace_inserted = insertVSpace( vspace_inserted );
+    flow = 0;
+}
+
+void KHTMLParser::blockEndAnchor( HTMLStackElem *Elem)
+{  
+    url = 0;
+    target = 0;
 }
 
 void KHTMLParser::blockEndPre( HTMLStackElem *Elem)
@@ -493,22 +423,9 @@ void KHTMLParser::blockEndPre( HTMLStackElem *Elem)
    
     flow->append(new HTMLHSpace( currentFont(), painter, true ));
 
-    popFont();
     vspace_inserted = insertVSpace( vspace_inserted );
     flow = 0;
     inPre = false;
-}
-
-void KHTMLParser::blockEndColorFont( HTMLStackElem *Elem)
-{
-    popColor();
-    popFont();
-}
-
-void KHTMLParser::blockEndIndent( HTMLStackElem *Elem)
-{
-    indent = Elem->miscData1;
-    flow = 0;
 }
 
 void KHTMLParser::blockEndAlign( HTMLStackElem *Elem)
@@ -519,7 +436,7 @@ void KHTMLParser::blockEndAlign( HTMLStackElem *Elem)
 
 void KHTMLParser::blockEndList( HTMLStackElem *Elem)
 {
-    if (Elem->miscData2)
+    if (Elem->miscData1)
     {
 	vspace_inserted = insertVSpace( vspace_inserted );
     }
@@ -528,7 +445,6 @@ void KHTMLParser::blockEndList( HTMLStackElem *Elem)
     	fprintf(stderr, "%s : List stack corrupt!\n", __FILE__);
     }
     
-    indent = Elem->miscData1;
     flow = 0;
 }
 
@@ -586,7 +502,7 @@ void KHTMLParser::newFlow()
 	    else
          flow = new HTMLClueFlow();
 
-    flow->setIndent( indent );
+    flow->setIndent( currentStyle->text.indent );
     flow->setHAlign( divAlign );
     _clue->append( flow );
 }
@@ -773,7 +689,7 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
     {
 	parseCount = granularity;
 	// Be sure to set the painter to the current font.
-        painter->setFont( *font_stack.top() );
+        restoreFont();
     }
 
     while ( ht->hasMoreTokens() )
@@ -1038,7 +954,8 @@ void KHTMLParser::parseTagA(void)
     // charset, type, hreflang, rel, rev, accesskey, shape, coords,
     // tabindex, onfocus, onblur
 
-    closeAnchor();
+    popBlock(ID_A); // Close still open tags.
+    
     QString tmpurl;
     target = 0;
     bool visited = false;
@@ -1081,13 +998,14 @@ void KHTMLParser::parseTagA(void)
     if ( !tmpurl.isEmpty() )
     {
         vspace_inserted = false;
-        if ( visited )
-            colorStack.push( new QColor( settings->vLinkColor ) );
+        pushBlock(tagID, 2, &KHTMLParser::blockEndAnchor);
+	if ( visited )
+	    currentStyle->font.color = settings->vLinkColor;
 	else
-	    colorStack.push( new QColor( settings->linkColor ) );
+	    currentStyle->font.color = settings->linkColor;
 	if ( settings->underlineLinks )
-	    underline = true;
-	selectFont();
+	    currentStyle->font.decoration = CSSStyleFont::decUnderline;
+	setFont();
         url = ht->newString( tmpurl.data(), tmpurl.length() );
     }
 }
@@ -1104,11 +1022,11 @@ void KHTMLParser::parseTagAcronym(void)
 
 void KHTMLParser::parseTagAddress(void)
 {
+    pushBlock(tagID, 2, &KHTMLParser::blockEnd);
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();
     flow = 0;
-    italic = TRUE;
-    weight = QFont::Normal;
-    selectFont();
-    pushBlock(tagID, 2, &KHTMLParser::blockEndFont, true);
 }
 
 void KHTMLParser::parseTagApplet(void)
@@ -1228,9 +1146,9 @@ void KHTMLParser::parseTagArea(void)
 void KHTMLParser::parseTagB(void)
 {
     // attrs: %attrs
-    weight = QFont::Bold;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1);
+    currentStyle->font.weight = CSSStyleFont::Bold;
+    setFont();
 }
 
 void KHTMLParser::parseTagBase(void)
@@ -1263,16 +1181,17 @@ void KHTMLParser::parseTagBig(void)
 {
     // attrs %attrs
 
-    selectFont( +2 );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1);
+    currentStyle->font.size += 2;
+    setFont();
 }
 
 void KHTMLParser::parseTagBlockQuote(void)
 {
     // attrs: cite, %attrs
 
-    pushBlock(tagID, 2, &KHTMLParser::blockEndIndent, indent);
-    indent += INDENT_SIZE;
+    pushBlock(tagID, 2, &KHTMLParser::blockEnd);
+    currentStyle->text.indent += INDENT_SIZE;
     flow = 0; 
 }
 
@@ -1310,8 +1229,8 @@ void KHTMLParser::parseTagBody(void)
 	else if ( strncasecmp( token, "text=", 5 ) == 0 )
 	{
 	    settings->fontBaseColor.setNamedColor( token+5 );
-            *(colorStack.top()) = settings->fontBaseColor;
-	    font_stack.top()->setTextColor( settings->fontBaseColor );
+	    currentStyle->font.color = settings->fontBaseColor;
+	    setFont();
 	}
 	else if ( strncasecmp( token, "link=", 5 ) == 0 )
 	{
@@ -1366,7 +1285,7 @@ void KHTMLParser::parseTagCell(void)
     HTMLClue *oldFlow = flow;
     HTMLClue *__clue = flow;
     HTMLClue *oldClue = _clue;
-    int oldindent = indent;
+    int oldindent = currentStyle->text.indent;
 
     HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
     int cell_width = 90;
@@ -1397,7 +1316,7 @@ void KHTMLParser::parseTagCell(void)
     vc->setHAlign( halign );
 
     flow = 0;
-    indent = 0;
+    currentStyle->text.indent = 0;
     divAlign = HTMLClue::Left;
     _clue = vc;             
     
@@ -1409,7 +1328,7 @@ void KHTMLParser::parseTagCell(void)
 //    vc = new HTMLClueV( 0, 0 ); // fixed width
 //    _clue->append( vc );
 
-    indent = oldindent;
+    currentStyle->text.indent = oldindent;
     divAlign = olddivalign;
     flow = oldFlow;
     _clue = oldClue;
@@ -1428,17 +1347,20 @@ void KHTMLParser::parseTagCenter(void)
 
 void KHTMLParser::parseTagCite(void)
 {
-    italic = TRUE;
-    weight = QFont::Normal;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();
 }
 
 void KHTMLParser::parseTagCode(void)
 {
-    selectFont( settings->fixedFontFace, settings->fontBaseSize,
-		    QFont::Normal, FALSE );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.style = CSSStyleFont::stNormal;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();
 }
 
 void KHTMLParser::parseTagDD(void)
@@ -1451,7 +1373,7 @@ void KHTMLParser::parseTagDD(void)
     if ( *glossaryStack.top() != GlossaryDD )
     {
         glossaryStack.push( new GlossaryEntry( GlossaryDD ) );
-        indent += INDENT_SIZE;
+        currentStyle->text.indent += INDENT_SIZE;
     }
     flow = 0;
 }
@@ -1492,11 +1414,11 @@ void KHTMLParser::parseTagDL(void)
 {
     // attrs: %attrs
 
+    popBlock(ID_A); // Close any <A..> tags
     vspace_inserted = insertVSpace( vspace_inserted );
-    closeAnchor();
     if ( glossaryStack.top() )
     {
-        indent += INDENT_SIZE;
+        currentStyle->text.indent += INDENT_SIZE;
     }
     glossaryStack.push( new GlossaryEntry( GlossaryDL ) );
     flow = 0;
@@ -1510,16 +1432,22 @@ void KHTMLParser::parseTagDLEnd(void)
     if ( *glossaryStack.top() == GlossaryDD )
     {
         glossaryStack.remove();
-        indent -= INDENT_SIZE;
-        if (indent < 0)
-            indent = 0;
+        currentStyle->text.indent -= INDENT_SIZE;
+        if (currentStyle->text.indent < 0)
+        {
+            printf("Error in indentation! </DL>\n");
+            currentStyle->text.indent = 0;
+        }
     }
     glossaryStack.remove();
     if ( glossaryStack.top() )
     {
-        indent -= INDENT_SIZE;
-        if (indent < 0)
-	    indent = 0;
+        currentStyle->text.indent -= INDENT_SIZE;
+        if (currentStyle->text.indent < 0)
+        {
+            printf("Error in indentation! </DL>\n");
+            currentStyle->text.indent = 0;
+        }
     }
     vspace_inserted = insertVSpace( vspace_inserted );
 }
@@ -1534,9 +1462,12 @@ void KHTMLParser::parseTagDT(void)
     if ( *glossaryStack.top() == GlossaryDD )
     {
         glossaryStack.pop();
-	indent -= INDENT_SIZE;
-	if (indent < 0)
-	    indent = 0;
+        currentStyle->text.indent -= INDENT_SIZE;
+        if (currentStyle->text.indent < 0)
+        {
+            printf("Error in indentation! </DL>\n");
+            currentStyle->text.indent = 0;
+        }
     }
     vspace_inserted = false;
     flow = 0;
@@ -1544,9 +1475,9 @@ void KHTMLParser::parseTagDT(void)
 
 void KHTMLParser::parseTagEM(void)
 {
-    italic = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    setFont();
 }
 
 void KHTMLParser::parseTagFieldset(void)
@@ -1556,10 +1487,7 @@ void KHTMLParser::parseTagFieldset(void)
 
 void KHTMLParser::parseTagFont(void)
 {
-    int newSize = currentFont()->size() - settings->fontBaseSize;
-    QString newFace;
-    QColor *color = new QColor( *(colorStack.top()) );
-
+    pushBlock(tagID, 1 );
     char *token;
     while ( 0 != (token = ht->nextOption()) )
     {
@@ -1567,9 +1495,9 @@ void KHTMLParser::parseTagFont(void)
 	{
 	    int num = atoi( token + 5 );
 	    if ( *(token + 5) == '+' || *(token + 5) == '-' )
-		newSize = num;
+		currentStyle->font.size = settings->fontBaseSize + num;
 	    else
-		newSize = num - 3;
+		currentStyle->font.size = num;
 	}
 	else if ( strncasecmp( token, "color=", 6 ) == 0 )
 	{
@@ -1577,11 +1505,11 @@ void KHTMLParser::parseTagFont(void)
 	    {
                 QString col = "#";
 		col += token+6;
-		color->setNamedColor( col );
+		currentStyle->font.color.setNamedColor( col );
 	    }
 	    else
 	    {
-   	        color->setNamedColor( token+6 );
+   	        currentStyle->font.color.setNamedColor( token+6 );
    	    }
 	}
 	else if ( strncasecmp( token, "face=", 5 ) == 0 )
@@ -1598,20 +1526,13 @@ void KHTMLParser::parseTagFont(void)
 		if ( strcmp( tryFont.family(), fi.family() ) == 0 )
 		{
 		    // we found a matching font
-		    newFace = fname;
+		    currentStyle->font.family = fname;
 		    break;
                 }
 	    }
         }
     }
-    colorStack.push( color );
-    if ( !newFace.isEmpty() )
-	selectFont( newFace, newSize + settings->fontBaseSize,
-	    currentFont()->weight(), currentFont()->italic() );
-    else
-	selectFont( newSize );
-
-    pushBlock(tagID, 1, &KHTMLParser::blockEndColorFont);
+    setFont();
 }
 
 void KHTMLParser::parseTagForm(void)
@@ -1772,6 +1693,8 @@ void KHTMLParser::parseTagFrameset(void)
 
 void KHTMLParser::parseTagHeader(void)
 {
+    pushBlock(ID_H1, 2, &KHTMLParser::blockEnd );
+
     char *token;
     vspace_inserted = insertVSpace( vspace_inserted );
     HTMLClue::HAlign align = divAlign;
@@ -1795,43 +1718,44 @@ void KHTMLParser::parseTagHeader(void)
     switch ( tagID )
     {
         case ID_H1:
-		weight = QFont::Bold;
-		selectFont( +3 );
+        	currentStyle->font.weight = CSSStyleFont::Bold;
+        	currentStyle->font.style = CSSStyleFont::stNormal;
+		currentStyle->font.size = settings->fontBaseSize+3;
 		break;
 
 	case ID_H2:
-		weight = QFont::Bold;
-		italic = FALSE;
-		selectFont( +2 );
+        	currentStyle->font.weight = CSSStyleFont::Bold;
+        	currentStyle->font.style = CSSStyleFont::stNormal;
+		currentStyle->font.size = settings->fontBaseSize+2;
 		break;
 
 	case ID_H3:
-		weight = QFont::Bold;
-		italic = FALSE;
-		selectFont( +1 );
+        	currentStyle->font.weight = CSSStyleFont::Normal;
+        	currentStyle->font.style = CSSStyleFont::stItalic;
+		currentStyle->font.size = settings->fontBaseSize+1;
 		break;
 
 	case ID_H4:
-		weight = QFont::Bold;
-		italic = FALSE;
-		selectFont( +0 );
+        	currentStyle->font.weight = CSSStyleFont::Bold;
+        	currentStyle->font.style = CSSStyleFont::stNormal;
+		currentStyle->font.size = settings->fontBaseSize;
 		break;
 
 	case ID_H5:
-		weight = QFont::Normal;
-		italic = TRUE;
-		selectFont( +0 );
+        	currentStyle->font.weight = CSSStyleFont::Normal;
+        	currentStyle->font.style = CSSStyleFont::stItalic;
+		currentStyle->font.size = settings->fontBaseSize;
 		break;
 
 	case ID_H6:
-		weight = QFont::Bold;
-		italic = FALSE;
-		selectFont( -1 );
+        	currentStyle->font.weight = CSSStyleFont::Bold;
+        	currentStyle->font.style = CSSStyleFont::stNormal;
+		currentStyle->font.size = settings->fontBaseSize-1;
 		break;
     }
+    setFont();
     // Insert a vertical space and restore the old font at the 
     // closing tag
-    pushBlock(ID_H1, 2, &KHTMLParser::blockEndFont, true );
 }
 
 void KHTMLParser::parseTagHeaderEnd(void)
@@ -1907,9 +1831,9 @@ printf("HR: length = %d, percent = %d, size = %d, shade = %d\n",
 
 void KHTMLParser::parseTagI(void)
 {
-    italic = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    setFont();
 }
 
 void KHTMLParser::parseTagIframe(void)
@@ -2016,7 +1940,7 @@ void KHTMLParser::parseTagImg(void)
 	if ( overlay )
 	    image->setOverlay( overlay );
 
-	image->setBorderColor( *(colorStack.top()) );
+	image->setBorderColor( currentStyle->box.borderColor );
 
         if ( valign != HTMLClue::VNone)
 	    image->setVAlign( valign );
@@ -2259,9 +2183,11 @@ void KHTMLParser::parseTagIsindex(void)
 
 void KHTMLParser::parseTagKbd(void)
 {
-    selectFont( settings->fixedFontFace, settings->fontBaseSize,
-		    QFont::Normal, FALSE );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.style = CSSStyleFont::stNormal;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();
 }
 
 void KHTMLParser::parseTagLabel(void)
@@ -2276,7 +2202,7 @@ void KHTMLParser::parseTagLegend(void)
 
 void KHTMLParser::parseTagLi(void)
 {
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     QString item;
     ListType listType = Unordered;
     ListNumType listNumType = Numeric;
@@ -2289,7 +2215,7 @@ void KHTMLParser::parseTagLi(void)
         listNumType = listStack.top()->numType;
         itemNumber = listStack.top()->itemNumber;
         listLevel = listStack.count();
-        indentSize = indent;
+        indentSize = currentStyle->text.indent;
     }
     HTMLClueFlow *f = new HTMLClueFlow();
     _clue->append( f );
@@ -2311,7 +2237,7 @@ void KHTMLParser::parseTagLi(void)
 	flow = new HTMLClueFlow();
 	flow->setHAlign( HTMLClue::Right );
 	vc->append( flow );
-	flow->append( new HTMLBullet( font_stack.top()->pointSize(),
+	flow->append( new HTMLBullet( currentStyle->font.fp->pointSize(),
 		listLevel, settings->fontBaseColor ) );
 	break;
 
@@ -2472,15 +2398,15 @@ void KHTMLParser::parseTagObject(void)
 
 void KHTMLParser::parseTagOl(void)
 {
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     if ( listStack.isEmpty() )
     {
         vspace_inserted = insertVSpace( vspace_inserted );
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, indent, true);
+	pushBlock( tagID, 2, &KHTMLParser::blockEndList, true);
     }
     else
     {
-        pushBlock( tagID, 2, &KHTMLParser::blockEndList, indent, false);
+        pushBlock( tagID, 2, &KHTMLParser::blockEndList, false);
     }
 
     ListNumType listNumType = Numeric;
@@ -2512,7 +2438,7 @@ void KHTMLParser::parseTagOl(void)
     }
 
     listStack.push( new HTMLList( Ordered, listNumType ) );
-    indent += INDENT_SIZE;
+    currentStyle->text.indent += INDENT_SIZE;
 }
 
 void KHTMLParser::parseTagOptgroup(void)
@@ -2560,7 +2486,7 @@ void KHTMLParser::parseTagOptionEnd(void)
 
 void KHTMLParser::parseTagP(void)
 {
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     vspace_inserted = insertVSpace( vspace_inserted );
     HTMLClue::HAlign align = divAlign;
 
@@ -2586,7 +2512,7 @@ void KHTMLParser::parseTagP(void)
 
 void KHTMLParser::parseTagPEnd(void)
 {
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     vspace_inserted = insertVSpace( vspace_inserted );
 }
 
@@ -2598,28 +2524,34 @@ void KHTMLParser::parseTagParam(void)
 void KHTMLParser::parseTagPre(void)
 {
     // Used by PRE and LISTING!!
-
     vspace_inserted = insertVSpace( vspace_inserted );
-    selectFont( settings->fixedFontFace, settings->fontBaseSize,
-    			QFont::Normal, FALSE );
+
+    pushBlock(tagID, 2, &KHTMLParser::blockEndPre);
+
+    currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.style = CSSStyleFont::stNormal;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();    
+
     flow = 0;
     inPre = true;
-    pushBlock(tagID, 2, &KHTMLParser::blockEndPre);
 }
 
 void KHTMLParser::parseTagQ(void)
 {
-    italic = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    setFont();
 }
 
 
 void KHTMLParser::parseTagSamp(void)
 {
-    selectFont( settings->fixedFontFace, settings->fontBaseSize,
-		    QFont::Normal, FALSE );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.style = CSSStyleFont::stNormal;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();    
 }
 
 void KHTMLParser::parseTagScript()
@@ -2679,8 +2611,9 @@ void KHTMLParser::parseTagSelectEnd()
 
 void KHTMLParser::parseTagSmall()
 {
-    selectFont( -1 );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.size = settings->fontBaseSize - 1;
+    setFont();
 }
 
 void KHTMLParser::parseTagSpan()
@@ -2691,16 +2624,16 @@ void KHTMLParser::parseTagSpan()
 void KHTMLParser::parseTagStrike(void)
 {
     // used by S and STRIKE
-    strikeOut = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.decoration = CSSStyleFont::decLineThrough;
+    setFont();
 }
 
 void KHTMLParser::parseTagStrong()
 {
-    weight = QFont::Bold;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.weight = CSSStyleFont::Bold;
+    setFont();
 }
 
 void KHTMLParser::parseTagStyle()
@@ -2720,7 +2653,7 @@ void KHTMLParser::parseTagSup()
 
 void KHTMLParser::parseTagTable(void)
 {
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     if ( !vspace_inserted || !flow )
         newFlow();
 
@@ -2766,7 +2699,7 @@ void KHTMLParser::parseTagTable(void)
     HTMLClue *__clue = flow;
     HTMLClue *oldFlow = flow;
     HTMLClue *oldClue = _clue;
-    int oldindent = indent;
+    int oldindent = currentStyle->text.indent;
     QColor tableColor;
     QColor rowColor;
 
@@ -2824,7 +2757,7 @@ void KHTMLParser::parseTagTable(void)
     //       __clue->append( table ); 
     // CC: Moved at the end since we might decide to discard the table while parsing...
 
-    indent = 0;
+    currentStyle->text.indent = 0;
     
     bool done = false;
 
@@ -2937,7 +2870,7 @@ void KHTMLParser::parseTagTable(void)
 		
 		if ( tagID == (ID_TABLE + ID_CLOSE_TAG))
 		{
-		    closeAnchor();
+		    popBlock(ID_A); // Close any <A..> tags
 		    done = true;
 		    break;
 		}
@@ -3047,9 +2980,9 @@ void KHTMLParser::parseTagTable(void)
 		    _clue = cell;
 		    if ( heading )
 		    {
-			weight = QFont::Bold;
-			selectFont();
-			pushBlock( ID_TH, 3, &KHTMLParser::blockEndFont);
+			pushBlock( ID_TH, 3 );
+		        currentStyle->font.weight = CSSStyleFont::Bold;
+			setFont();
 		        tagID = parseBody( _clue, endthtd );
                         popBlock( ID_TH );
 		    }
@@ -3180,7 +3113,7 @@ void KHTMLParser::parseTagTable(void)
 	delete table;
     }
 
-    indent = oldindent;
+    currentStyle->text.indent = oldindent;
     divAlign = olddivalign;
     flow = oldFlow;
     _clue = oldClue;
@@ -3240,30 +3173,32 @@ void KHTMLParser::parseTagTitle(void)
 
 void KHTMLParser::parseTagTT(void)
 {
-    selectFont( settings->fixedFontFace, settings->fontBaseSize,
-		    QFont::Normal, FALSE );
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.style = CSSStyleFont::stNormal;
+    currentStyle->font.weight = CSSStyleFont::Normal;
+    setFont();    
 }
 
 void KHTMLParser::parseTagU(void)
 {
-    underline = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.decoration = CSSStyleFont::decUnderline;
+    setFont();
 }
 
 void KHTMLParser::parseTagUL(void)
 {
     // Used by DIR, MENU and UL!
-    closeAnchor();
+    popBlock(ID_A); // Close any <A..> tags
     if ( listStack.isEmpty() )
     {
 	vspace_inserted = insertVSpace( vspace_inserted );
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, indent, true);
+	pushBlock( tagID, 2, &KHTMLParser::blockEndList, true);
     }
     else
     {
-	pushBlock( tagID, 2, &KHTMLParser::blockEndList, indent, false);
+	pushBlock( tagID, 2, &KHTMLParser::blockEndList, false);
     }
 
     ListType type = Unordered;
@@ -3277,15 +3212,15 @@ void KHTMLParser::parseTagUL(void)
     }
 
     listStack.push( new HTMLList( type ) );
-    indent += INDENT_SIZE;
+    currentStyle->text.indent += INDENT_SIZE;
     flow = 0;
 }
 
 void KHTMLParser::parseTagVar(void)
 {
-    italic = TRUE;
-    selectFont();
-    pushBlock(tagID, 1, &KHTMLParser::blockEndFont);
+    pushBlock(tagID, 1 );
+    currentStyle->font.style = CSSStyleFont::stItalic;
+    setFont();
 }
 
 
@@ -3323,19 +3258,7 @@ bool KHTMLParser::setCharset(const char *name)
  	debugM("Setting charset to: %s\n",charset.name());
 	settings->charset=charset;
         if (currentFont()!=0){	
-          HTMLFont f( *font_stack.top());
-	  debugM("Original font: face: %s qtCharset: %i\n"
-	                              ,QFont(f).family(),(int)QFont(f).charSet());
-	  f.setCharset(charset);
-	  debugM("Changed font: face: %s qtCharset: %i\n"
-	                              ,QFont(f).family(),(int)QFont(f).charSet());
-          const HTMLFont *fp = pFontManager->getFont( f );
-	  debugM("Got font: %p\n",fp);
-	  debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());
-          font_stack.push( fp );
-	  debugM("painter: %p\n",painter);
-	  debugM("Font stack top: %p\n",font_stack.top());
-          if (painter) painter->setFont( *font_stack.top() );
+          setFont();
 	}
 	return TRUE;
 }
