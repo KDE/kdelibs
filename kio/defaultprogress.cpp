@@ -28,6 +28,8 @@
 #include <kstringhandler.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kiconloader.h>
+#include <kwin.h>
 
 #include "jobclasses.h"
 #include "defaultprogress.h"
@@ -44,13 +46,18 @@ DefaultProgress::DefaultProgress( bool showNow )
   m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
 {
   d = new DefaultProgressPrivate;
+
+  // Set a useful icon for this window!
+  KWin::setIcons( winId(),
+          KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 32 ),
+          KGlobal::iconLoader()->loadIcon( "filesave", KIcon::NoGroup, 16 ) );
+  
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
                                             KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
 
-  QGridLayout *grid = new QGridLayout(3, 3);
+  QGridLayout *grid = new QGridLayout( 2, 3 );
   topLayout->addLayout(grid);
-  grid->setColStretch(2, 1);
   grid->addColSpacing(1, KDialog::spacingHint());
   // filenames or action name
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
@@ -64,9 +71,6 @@ DefaultProgress::DefaultProgress( bool showNow )
   destLabel = new KSqueezedTextLabel(this);
   grid->addWidget(destLabel, 1, 2);
 
-  progressLabel = new QLabel(this);
-  grid->addWidget(progressLabel, 2, 2);
-
   m_pProgressBar = new KProgress(0, 100, 0, KProgress::Horizontal, this);
   topLayout->addWidget( m_pProgressBar );
 
@@ -74,14 +78,28 @@ DefaultProgress::DefaultProgress( bool showNow )
   QHBoxLayout *hBox = new QHBoxLayout();
   topLayout->addLayout(hBox);
 
-  speedLabel = new QLabel(this);
-  hBox->addWidget(speedLabel, 1);
-
   sizeLabel = new QLabel(this);
   hBox->addWidget(sizeLabel);
 
   resumeLabel = new QLabel(this);
   hBox->addWidget(resumeLabel);
+
+  progressLabel = new QLabel( this );
+/*  progressLabel->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding,
+                                             QSizePolicy::Preferred ) );*/
+  progressLabel->setAlignment( QLabel::AlignRight );
+  hBox->addWidget( progressLabel );
+  
+  hBox = new QHBoxLayout();
+  topLayout->addLayout(hBox);
+  
+  speedLabel = new QLabel(this);
+  hBox->addWidget(speedLabel, 1);
+
+  QFrame *line = new QFrame( this );
+  line->setFrameShape( QFrame::HLine );
+  line->setFrameShadow( QFrame::Sunken );
+  topLayout->addWidget( line );
 
   hBox = new QHBoxLayout();
   topLayout->addLayout(hBox);
