@@ -6,7 +6,7 @@
 #include "lexer.h"
 
 extern int yylex();
-int yyerror (char *);
+int yyerror (const char *);
 
 using namespace KJS;
 
@@ -309,7 +309,7 @@ VariableDeclarationList:
 ;
 
 VariableDeclaration:
-    IDENT                          { $$ = new VarDeclNode($1); delete $1; }
+    IDENT                          { $$ = new VarDeclNode($1, 0); delete $1; }
   | IDENT Initializer              { $$ = new VarDeclNode($1, $2); delete $1; }
 ;
 
@@ -400,7 +400,7 @@ SourceElement:
 
 %%
 
-int yyerror (char *s)  /* Called by yyparse on error */
+int yyerror (const char *s)  /* Called by yyparse on error */
 {
   fprintf (stderr, "ERROR: %s at line %d\n", s, KJSWorld::lexer->lineNo());
   return 1;

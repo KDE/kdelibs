@@ -65,7 +65,7 @@
 #include "lexer.h"
 
 extern int yylex();
-int yyerror (char *);
+int yyerror (const char *);
 
 using namespace KJS;
 
@@ -1299,7 +1299,7 @@ case 105:
     break;}
 case 106:
 #line 312 "grammar.y"
-{ yyval.decl = new VarDeclNode(yyvsp[0].cstr); delete yyvsp[0].cstr; ;
+{ yyval.decl = new VarDeclNode(yyvsp[0].cstr, 0); delete yyvsp[0].cstr; ;
     break;}
 case 107:
 #line 313 "grammar.y"
@@ -1616,7 +1616,7 @@ yyerrhandle:
 #line 401 "grammar.y"
 
 
-int yyerror (char *s)  /* Called by yyparse on error */
+int yyerror (const char *s)  /* Called by yyparse on error */
 {
   fprintf (stderr, "ERROR: %s at line %d\n", s, KJSWorld::lexer->lineNo());
   return 1;

@@ -126,8 +126,8 @@ private:
 
 class ArgumentListNode : public Node {
 public:
-  ArgumentListNode(Node *e) : list(0L), expr(e) {}
-  ArgumentListNode(ArgumentListNode *l, Node *e) :  list(l), expr(e) {}
+  ArgumentListNode(Node *e);
+  ArgumentListNode(ArgumentListNode *l, Node *e);
   KJSO *evaluate() { return 0L; }
   KJSArgList *evaluateList();
 private:
@@ -137,7 +137,7 @@ private:
 
 class ArgumentsNode : public Node {
 public:
-  ArgumentsNode(ArgumentListNode *l) : list(l) {}
+  ArgumentsNode(ArgumentListNode *l);
   KJSO *evaluate() { return 0L; }
   KJSArgList *evaluateList();
 private:
@@ -350,8 +350,7 @@ private:
 
 class VarDeclNode : public Node {
 public:
-  VarDeclNode(const CString &id, AssignExprNode *in = 0L)
-    : ident(id), init(in) { }
+  VarDeclNode(const CString &id, AssignExprNode *in);
   KJSO *evaluate();
 private:
   CString ident;
