@@ -38,7 +38,7 @@
 #define CHARSETS_COUNT 32
 
 static const char * const language_names[] = {
-    I18N_NOOP( "other" ),
+    I18N_NOOP( "Other" ),
 	I18N_NOOP( "Arabic" ),
 	I18N_NOOP( "Baltic" ),
 	I18N_NOOP( "Central European" ),
