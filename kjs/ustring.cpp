@@ -18,7 +18,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -284,10 +283,9 @@ char *UString::ascii() const
     delete [] statBuffer;
 
   statBuffer = new char[size()+1];
-  const UChar *dat = data();
   for(int i = 0; i < size(); i++)
-    *statBuffer++ = (dat++)->low();
-  *statBuffer = '\0';
+    statBuffer[i] = data()[i].low();
+  statBuffer[size()] = '\0';
 
   return statBuffer;
 }
@@ -298,7 +296,7 @@ UString &UString::operator=(const char *c)
   int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
-    (d++)->uc = *c++;
+    d[i].uc = c[i];
   rep = Rep::create(d, l);
 
   return *this;
