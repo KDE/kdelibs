@@ -451,7 +451,7 @@ int RenderRoot::docWidth() const
     RenderObject *fc = firstChild();
     if(fc) {
         int dw = fc->width() + fc->marginLeft() + fc->marginRight();
-        int rightmostPos = firstChild()->rightmostPosition();
+        int rightmostPos = fc->rightmostPosition();
         if( rightmostPos > dw )
             dw = rightmostPos;
         if( dw > w )
