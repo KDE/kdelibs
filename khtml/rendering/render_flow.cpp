@@ -247,20 +247,26 @@ void RenderFlow::layout()
 
     calcHeight();
 
-    if(hasOverhangingFloats())
-    {
-        if(isFloating() || isTableCell())
-        {
-            m_height = floatBottom();
-            m_height += borderBottom() + paddingBottom();
-        }
-        else if( m_next)
-        {
-            assert(!m_next->isInline());
-            m_next->setLayouted(false);
-        }
+    if(isFloating() || isTableCell()) {
+	int lp = floatBottom();
+	if ( !m_childrenInline ) {
+	    RenderObject *last = lastChild();
+	    while( last && (last->isPositioned() || last->isFloating()) )
+		last = last->previousSibling();
+	    if( last && last->isFlow() ) {
+		int h = yPos() + static_cast<RenderFlow *>(last)->floatBottom();
+		if( h > lp ) lp = h;
+	    }
+	}
+	if ( lp > m_height )
+	    m_height = lp;
+	m_height += borderBottom() + paddingBottom();
+    } else if( hasOverhangingFloats() && m_next ) {
+	assert(!m_next->isInline());
+	m_next->setLayouted(false);
     }
-
+    
+    
     layoutSpecialObjects();
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl; 
@@ -372,7 +378,8 @@ void RenderFlow::layoutBlockChildren()
         child = child->nextSibling();
     }
 
-    if(!isTableCell()) m_height += prevMargin;
+    if(!isTableCell())
+	m_height += prevMargin;
     m_height += toAdd;
 
     setLayouted(_layouted);
@@ -940,13 +947,12 @@ void RenderFlow::calcMinMaxWidth()
             if( !child->isBR() )
             {
                 int margins = 0;
-                if (child->style()->marginLeft().isVariable())
+                if (!child->style()->marginLeft().isVariable())
                     margins += child->marginLeft();
-                if (child->style()->marginRight().isVariable())
+                if (!child->style()->marginRight().isVariable())
                     margins += child->marginRight();
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
-
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
                     if(!child->minMaxKnown())
