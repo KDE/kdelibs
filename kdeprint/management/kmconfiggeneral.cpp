@@ -48,9 +48,9 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
 	m_timer->setSpecialValueText(i18n("Disabled"));
-	QWhatsThis::add(m_timer, "<qt>"+i18n("This time controls the refresh rate of various "
-			                     "<b>KDE Print</b> components like the print manager "
-					     "and the job viewer.")+"</qt>");
+	QWhatsThis::add(m_timer, i18n("This time controls the refresh rate of various "
+			              "<b>KDE Print</b> components like the print manager "
+				      "and the job viewer."));
 
 	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
 	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page:"), m_testpagebox, "TestPageCheck");
@@ -65,6 +65,9 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), this);
 	m_embedfonts->setChecked(QSettings().readBoolEntry("/qt/embedFonts"));
+	QWhatsThis::add(m_embedfonts, i18n("This option allows you to embed the missing fonts into the PostScript data generated "
+				           "by KDE applications. Font embedding will produce better print results "
+					   "(closer to what you see on the screen), but larger print data as well."));
 
 	//layout
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
