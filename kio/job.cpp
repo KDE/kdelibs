@@ -1479,7 +1479,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
         m_reportTimer->start(REPORT_TIMEOUT,false);
     }
     // Stat the dest
-    KIO::Job * job = KIO::stat( m_dest, false, false );
+    KIO::Job * job = KIO::stat( m_dest, false, true, false );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.prettyURL() << endl;
     addSubjob(job);
 }
@@ -1764,7 +1764,7 @@ void CopyJob::statNextSrc()
         else
         {
             // Stat the next src url
-            Job * job = KIO::stat( *m_currentStatSrc, true, false );
+            Job * job = KIO::stat( *m_currentStatSrc, true, true, false );
             //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
             state = STATE_STATING;
             addSubjob(job);
@@ -1838,7 +1838,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
 
                 // We need to stat the existing dir, to get its last-modification time
                 KURL existingDest( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingDest, false, false );
+                SimpleJob * newJob = KIO::stat( existingDest, false, true, false );
 		Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
                 state = STATE_CONFLICT_CREATING_DIRS;
@@ -2042,7 +2042,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 assert ( subjobs.isEmpty() );
                 // We need to stat the existing file, to get its last-modification time
                 KURL existingFile( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingFile, false, false );
+                SimpleJob * newJob = KIO::stat( existingFile, false, true, false );
                 Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingFile.prettyURL() << endl;
                 state = STATE_CONFLICT_COPYING_FILES;
@@ -2736,7 +2736,7 @@ void DeleteJob::startNextJob()
     if (it != m_srcList.end())
     {
         // Stat first
-        KIO::SimpleJob * job = KIO::stat( *it, true, false );
+        KIO::SimpleJob * job = KIO::stat( *it, true, false, false );
         Scheduler::scheduleJob(job);
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).prettyURL() << endl;
         state = STATE_STATING;
