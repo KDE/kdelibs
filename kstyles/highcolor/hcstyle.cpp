@@ -861,17 +861,17 @@ void HCStyle::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
         }
         else{
             if(r.width() > r.height())
-                drawVGradient(p, g, QColorGroup::Background, r.x()+1, r.y()+1,
+                drawVGradient(p, g, QColorGroup::Button, r.x()+1, r.y()+1,
                               r.width()-2, r.height()-2, 0, 0, r.width()-2, r.height()-2);
             else
-                drawHGradient(p, g, QColorGroup::Background, r.x()+1, r.y()+1,
+                drawHGradient(p, g, QColorGroup::Button, r.x()+1, r.y()+1,
                               r.width()-2, r.height()-2, 0, 0, r.width()-2, r.height()-2);
         }
 
     }
     else
         p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
-                    g.brush(down ? QColorGroup::Midlight : QColorGroup::Background));
+                    g.brush(down ? QColorGroup::Midlight : QColorGroup::Button));
 
     p->setPen(down ? g.light() : g.mid());
     p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
@@ -1175,7 +1175,7 @@ void HCStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
     static const QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
     static const QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
 
-    p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
+    p->setPen(enabled ? on ? g.light() : g.buttonText() : g.mid());
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;

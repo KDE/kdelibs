@@ -606,7 +606,7 @@ void KDEStyle::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
     p->setPen(g.dark());
     p->drawRect(r);
     p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
-                g.brush(down ? QColorGroup::Midlight : QColorGroup::Background));
+                g.brush(down ? QColorGroup::Midlight : QColorGroup::Button));
 
     p->setPen(down ? g.light() : g.mid());
     p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
@@ -893,7 +893,7 @@ void KDEStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
     static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
     static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
 
-    p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
+    p->setPen(enabled ? on ? g.light() : g.buttonText() : g.mid());
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;
