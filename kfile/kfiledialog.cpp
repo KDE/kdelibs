@@ -230,12 +230,13 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     connect(locationEdit, SIGNAL(textChanged(const QString&)),
 	    SLOT(locationChanged(const QString&)));
+/*
     connect(locationEdit, SIGNAL(completion()), SLOT(completion()));
     connect(locationEdit, SIGNAL( previous()),
     	    &(ops->myCompletion), SLOT( slotPreviousMatch() ) );
     connect(locationEdit, SIGNAL( next()),
     	    &(ops->myCompletion), SLOT( slotNextMatch() ) );
-
+*/
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->filterLabel->adjustSize();
     d->filterLabel->setMinimumWidth(d->filterLabel->width());
