@@ -619,29 +619,29 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 {
   if (this == target)
     return 0L;  // docking to itself not possible
-  kdDebug()<<"manualDock called "<<endl;
+//  kdDebug()<<"manualDock called "<<endl;
   bool succes = true; // tested flag
 
   // check allowed this dock submit this operations
   if ( !(eDocking & (int)dockPos) ){
     succes = false;
-  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;  
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;  
   }
 
   // check allowed target submit this operations
   if ( target && !(target->sDocking & (int)dockPos) ){
     succes = false;
-  kdDebug()<<"KDockWidget::manualDock(): success = false (2)"<<endl;      
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (2)"<<endl;      
   }
 
   if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() &&
   	!(parent()->qt_cast("KDockContainer")) && !parentDockContainer()){
-  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;  	
-  kdDebug()<<parent()->name()<<endl;
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;  	
+//  kdDebug()<<parent()->name()<<endl;
     succes = false;
   }
 
-  kdDebug()<<"KDockWidget::manualDock(): success == false "<<endl;
+//  kdDebug()<<"KDockWidget::manualDock(): success == false "<<endl;
   if ( !succes ){
     // try to make another manualDock
     KDockWidget* dock_result = 0L;
@@ -671,7 +671,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     return this;
   }
 
-  kdDebug()<<"Looking for  KDockTabGroup"<<endl;
+//  kdDebug()<<"Looking for  KDockTabGroup"<<endl;
   KDockTabGroup* parentTab = target->parentDockTabGroup();
   if ( parentTab ){
     // add to existing TabGroup
@@ -688,7 +688,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   }
   else
   {
-  	kdDebug()<<"Looking for  KDockContainer"<<endl;
+//  	kdDebug()<<"Looking for  KDockContainer"<<endl;
   	QWidget *contWid=target->parentDockContainer();
 	  if (!contWid) contWid=target->widget;
 	  if (contWid)
@@ -698,7 +698,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 		  {
 			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) 
 				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
-			kdDebug()<<"KDockContainerFound"<<endl;
+//			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
 			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
 						tabPageLabel(), tabIndex );
@@ -894,7 +894,7 @@ void KDockWidget::restoreFromForcedFixedSize()
 
 void KDockWidget::undock()
 {
-  kdDebug()<<"KDockWidget::undock()"<<endl;
+//  kdDebug()<<"KDockWidget::undock()"<<endl;
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
@@ -975,7 +975,7 @@ void KDockWidget::undock()
   bool undockedFromContainer=false;
   if (d->container)
   {
-  		  kdDebug()<<"undocked from dockcontainer"<<endl;
+//  		  kdDebug()<<"undocked from dockcontainer"<<endl;
   		  undockedFromContainer=true;
 		  static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->undockWidget(this);
 		  applyToWidget( 0L );
@@ -1947,12 +1947,12 @@ void KDockManager::writeConfig( KConfig* c, QString group )
       c->writeEntry( "Main:view", obj->name() );
   }
   
-  kdDebug()<<QString("list size: %1").arg(nList.count())<<endl;
+//  kdDebug()<<QString("list size: %1").arg(nList.count())<<endl;
   for (QObjectListIt it(d->containerDocks);it.current();++it)
   {
   	static_cast<KDockContainer*>(((KDockWidget*)it.current())->widget->qt_cast("KDockContainer"))->prepareSave(nList);
   }
-  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
+//  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
   
   QStringList::Iterator nListIt=nList.begin();
   while ( nListIt!=nList.end() ){
@@ -2400,7 +2400,7 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
   QWidget::resizeEvent(rsize);
   if (children()){
 #ifndef NO_KDE2
-    kdDebug()<<"KDockArea::resize"<<endl;
+//    kdDebug()<<"KDockArea::resize"<<endl;
 #endif
     QObjectList *list=queryList("QWidget",0,false);
 

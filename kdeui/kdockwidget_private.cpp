@@ -99,15 +99,15 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 //		setupMinMaxSize();
 		savedXPos=xpos;
 		setSeparatorPos(w*factor/width(),true);
-		kdDebug()<<"Set forced fixed width for widget 0 :"<<w<<endl;
+//		kdDebug()<<"Set forced fixed width for widget 0 :"<<w<<endl;
 	}
         else
 	{
                 fixedWidth1=w;
 		savedXPos=xpos;
 		setSeparatorPos((width()-w)*factor/width(),true);
-		kdDebug()<<"Set forced fixed width for widget 1 :"<<w<<endl;
-		kdDebug()<<"Width() :"<<width()<<endl;
+//		kdDebug()<<"Set forced fixed width for widget 1 :"<<w<<endl;
+//		kdDebug()<<"Width() :"<<width()<<endl;
 	}
 }
 
@@ -120,14 +120,14 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 //		setupMinMaxSize();
 		savedXPos=xpos;
 		setSeparatorPos(h*factor/height(),true);
-		kdDebug()<<"Set forced fixed width for widget 0 :"<<h<<endl;
+//		kdDebug()<<"Set forced fixed width for widget 0 :"<<h<<endl;
 	}
         else
 	{
                 fixedHeight1=h;
 		savedXPos=xpos;
 		setSeparatorPos((height()-h)*factor/height(),true);
-		kdDebug()<<"Set forced fixed height for widget 1 :"<<h<<endl;
+//		kdDebug()<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
 }
 
@@ -198,13 +198,13 @@ int KDockSplitter::separatorPos() const
 
 void KDockSplitter::resizeEvent(QResizeEvent *ev)
 {
-  kdDebug()<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
-	", "<<(isVisible() ?"visible":"")<<endl;
+//  kdDebug()<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
+//	", "<<(isVisible() ?"visible":"")<<endl;
   if (initialised){
     int factor = (mHighResolution)? 10000:100;
     // real resize event, recalculate xpos
     if (ev && mKeepSize && isVisible()) {
-	kdDebug()<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+//	kdDebug()<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 
       if (ev->oldSize().width() != ev->size().width())
       {
@@ -218,7 +218,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
       }
           else
           {
-	kdDebug()<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+//	kdDebug()<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 	if (ev && isVisible()) {
 		if (m_orientation == Horizontal) {
 			if (ev->oldSize().height() != ev->size().height())
@@ -242,7 +242,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 			}
 		}
 	}
-	else kdDebug()<<"Something else happened"<<endl;
+//	else kdDebug()<<"Something else happened"<<endl;
    }
 
     int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos/factor );
