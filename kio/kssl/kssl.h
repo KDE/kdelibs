@@ -91,6 +91,7 @@ public:
   void setPeerHost(QString realHost = QString::null);
 
   int connect(int sock);
+  int accept(int sock);
 
   int read(void *buf, int len);
   int peek(void *buf, int len);  // standard peek method

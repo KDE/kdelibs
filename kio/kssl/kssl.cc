@@ -240,6 +240,43 @@ bool KSSL::setVerificationLogic() {
 }
 
 
+int KSSL::accept(int sock) {
+#ifdef HAVE_SSL
+  // kdDebug(7029) << "KSSL accept" << endl;
+  int rc;
+  if (!m_bInit) return -1;
+  d->m_ssl = d->kossl->SSL_new(d->m_ctx);
+  if (!d->m_ssl) return -1;
+
+/*
+  if (!setVerificationLogic())
+    return -1;
+*/
+
+  if (!d->lastInitTLS)
+    d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+  d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
+
+  rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
+  if (rc == 0) return rc;
+
+  rc = d->kossl->SSL_accept(d->m_ssl);
+  if (rc == 1) {
+    setConnectionInfo();
+    setPeerInfo();
+    kdDebug(7029) << "KSSL connected OK" << endl;
+  } else {
+    kdDebug(7029) << "KSSL accept failed - rc = " << rc << endl;
+    kdDebug(7029) << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
+    return -1;
+  }
+  return rc;
+#else
+  return -1;
+#endif
+}
+
+
 int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
   // kdDebug(7029) << "KSSL connect" << endl;
@@ -248,8 +285,10 @@ int KSSL::connect(int sock) {
   d->m_ssl = d->kossl->SSL_new(d->m_ctx);
   if (!d->m_ssl) return -1;
 
+/*
   if (!setVerificationLogic())
     return -1;
+*/
 
   if (!d->lastInitTLS)
     d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
@@ -363,7 +402,7 @@ bool KSSL::doesSSLWork() {
 void KSSL::setConnectionInfo() {
 #ifdef HAVE_SSL
   SSL_CIPHER *sc;
-  char buf[1024];
+  char buf[1024];   // WARNING - is this making us non-thread-safe?  FIXME
 
   buf[0] = 0;  // for safety.
   sc = d->kossl->SSL_get_current_cipher(d->m_ssl);

@@ -30,6 +30,7 @@
 extern "C" {
 #ifdef HAVE_SSL
 static int (*K_SSL_connect)     (SSL *) = NULL;
+static int (*K_SSL_accept)      (SSL *) = NULL;
 static int (*K_SSL_read)        (SSL *, void *, int) = NULL;
 static int (*K_SSL_write)       (SSL *, const void *, int) = NULL;
 static SSL *(*K_SSL_new)        (SSL_CTX *) = NULL;
@@ -425,6 +426,7 @@ KConfig *cfg;
 #ifdef HAVE_SSL 
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
+      K_SSL_accept = (int (*)(SSL *)) _sslLib->symbol("SSL_accept");
       K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
       K_SSL_write = (int (*)(SSL *, const void *, int)) 
                             _sslLib->symbol("SSL_write");
@@ -516,6 +518,12 @@ KOpenSSLProxy *KOpenSSLProxy::self() {
 
 int KOpenSSLProxy::SSL_connect(SSL *ssl) {
    if (K_SSL_connect) return (K_SSL_connect)(ssl);
+   return -1;
+}
+
+
+int KOpenSSLProxy::SSL_accept(SSL *ssl) {
+   if (K_SSL_accept) return (K_SSL_accept)(ssl);
    return -1;
 }
 
