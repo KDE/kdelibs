@@ -643,6 +643,8 @@ void RenderTableSection::detach()
     // stored that point to this RenderTableSection.
     if (table())
         table()->setNeedSectionRecalc();
+
+    RenderBox::detach();
 }
 
 void RenderTableSection::setStyle(RenderStyle* _style)
