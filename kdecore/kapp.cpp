@@ -1600,7 +1600,8 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     XWMHints * hints = XAllocWMHints();
     hints->window_group = leader;
-    hints->flags = WindowGroupHint;
+    hints->input = True;
+    hints->flags = WindowGroupHint | InputHint;
     XSetWMHints(display, leader, hints);
     XFree( (char*)hints);
 
