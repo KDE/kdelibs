@@ -812,4 +812,19 @@ QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText )
 }
 
 
+void KTMainWindow::appHelpActivated( void )
+{
+  if( mHelpMenu == 0 )
+  {
+    mHelpMenu = new KHelpMenu( this );
+    if( mHelpMenu == 0 ) { return( 0 ); }
+  }
+  mHelpMenu->appHelpActivated();
+}
+
+
+
+
+
+
 #include "ktmainwindow.moc"

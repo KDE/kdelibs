@@ -326,11 +326,19 @@ public:
     bool restore(int number);
 
     /**
-     * Get the standard help menu.
+     * Returns the standard help menu which contains entires for the 
+     * help system (activated by F1), an application specific dialog box
+     * and an "About KDE" dialog box. 
      *
-     * @param aboutAppText User definable string that is used in the
-     *        appication specific dialog box. Note: The help menu will
-     *        not open this dialog box if you don't define a string.
+     * Example (adding a standard help menu to your application):
+     * <pre>
+     * QPopupMenu *help = helpMenu( <myTextString> );
+     * menuBar()->insertItem( i18n("&Help"), help );
+     * </pre>
+     *
+     * @param aboutAppText The string that is used in the application
+     *        specific dialog box. Note: The help menu will not open
+     *        this dialog box if you don't define a string.
      *
      * @return A standard help menu.
      */
@@ -500,6 +508,27 @@ public slots:
      * displayed in the window title.
      */
     virtual void setPlainCaption( const QString &caption );
+
+    /**
+     * Opens the help page for the application. The application name is 
+     * used as a key to determine what to display and the system will attempt
+     * to open <appName>/index.html. 
+     *
+     * This method is intended for use by a help button in the toolbar or 
+     * components outside the regular help menu. Use @ref helpMenu when you
+     * want to provide access to the help system from the help menu.
+     *
+     * Example (adding a help button to the first toolbar):
+     *
+     * <pre>
+     * KIconLoader &loader = *KGlobal::iconLoader();
+     * QPixmap pixmap = loader.loadIcon( "help" );
+     * toolBar(0)->insertButton( pixmap, 0, SIGNAL(clicked()),
+     *   this, SLOT(appHelpActivated()), true, i18n("Help") );
+     * </pre>
+     *
+     */
+    void appHelpActivated( void );
 
 
 protected slots:
