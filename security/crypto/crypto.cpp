@@ -2308,9 +2308,13 @@ SSL_METHOD *meth;
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
-    QString cname;
     sc = (meth->get_cipher)(i);
-    if (!sc) break;
+    if (!sc)
+      break;
+    // Leak of sc*?
+    if (QString(sc->name).left(3) == "ADH") {
+      continue;
+    }
     k = SSL_CIPHER_get_bits(sc, &j);
 
     item = new CipherItem( SSLv2Box, sc->name, k, j, this );
@@ -2331,9 +2335,13 @@ SSL_METHOD *meth;
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
-    QString cname;
     sc = (meth->get_cipher)(i);
-    if (!sc) break;
+    if (!sc)
+      break;
+    // Leak of sc*?
+    if (QString(sc->name).left(3) == "ADH") {
+      continue;
+    }
     k = SSL_CIPHER_get_bits(sc, &j);
 
     item = new CipherItem( SSLv3Box, sc->name, k, j, this );
