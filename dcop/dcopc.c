@@ -319,7 +319,7 @@ dcop_send_signal(
 
   struct DCOPMsg * pMsgPtr = 0;
 
-  static const char sAnonymous = "anonymous";
+  static const char* sAnonymous = "anonymous";
 
   if (0 == dcop_ice_conn) {
     fprintf(stderr, "Try running dcop_attach(), moron\n");
