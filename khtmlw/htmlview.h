@@ -630,6 +630,9 @@ signals:
     void documentDone( KHTMLView *_view );
     
 public slots:
+    void slotScrollVert( int _dy );
+    void slotScrollHorz( int _dx );
+  
     /** Call this slot if an requested image is available.
      * The rquested image is named '_url' and is stored on the local disk
      * in the file named '_filename'.
@@ -810,12 +813,12 @@ protected slots:
     /**
      * Connected to the HTML widget.
      */
-    void slotScrollVert( int );
+    void slotInternScrollVert( int );
 
     /**
      * Connected to the HTML widget
      */
-    void slotScrollHorz( int );
+    void slotInternScrollHorz( int );
     
 protected:
     virtual void resizeEvent( QResizeEvent* _ev );
@@ -907,6 +910,9 @@ protected:
      * @see #getCookie
      */
     QString cookie;              
+
+    int scrollToX;
+    int scrollToY;
 };
 
 #endif

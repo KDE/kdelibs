@@ -141,6 +141,9 @@ void KHTMLView::begin( const char *_url, int _dx, int _dy )
     if ( _url )
 	url = _url;
     
+    scrollToX = _dx;
+    scrollToY = _dy;
+    
     view->begin( _url, _dx, _dy );
 }
 
@@ -181,8 +184,8 @@ void KHTMLView::initGUI()
     view->setView( this );
     setFocusProxy( view );
     
-    connect( view, SIGNAL( scrollVert( int ) ), SLOT( slotScrollVert( int ) ) );
-    connect( view, SIGNAL( scrollHorz( int ) ), SLOT( slotScrollHorz( int ) ) );
+    connect( view, SIGNAL( scrollVert( int ) ), SLOT( slotInternScrollVert( int ) ) );
+    connect( view, SIGNAL( scrollHorz( int ) ), SLOT( slotInternScrollHorz( int ) ) );
 
     connect( vert, SIGNAL(valueChanged(int)), view, SLOT(slotScrollVert(int)) );
     connect( horz, SIGNAL(valueChanged(int)), view, SLOT(slotScrollHorz(int)) );
@@ -244,12 +247,32 @@ void KHTMLView::closeEvent( QCloseEvent *e )
     
 void KHTMLView::slotScrollVert( int _y )
 {
-    vert->setValue( _y );
+  if ( !view )
+    return;
+      
+  view->slotScrollVert( _y );
+  vert->setValue( view->yOffset() );
 }
 
 void KHTMLView::slotScrollHorz( int _x )
 {
-    horz->setValue( _x );
+  if ( !view )
+    return;
+      
+  view->slotScrollHorz( _x );
+  horz->setValue( view->xOffset() );
+}
+
+void KHTMLView::slotInternScrollVert( int _y )
+{
+  // Update the scrollbar only
+  vert->setValue( _y );
+}
+
+void KHTMLView::slotInternScrollHorz( int _x )
+{
+  // Update the scrollbar only
+  horz->setValue( _x );
 }
 
 void KHTMLView::slotDocumentChanged()
@@ -346,7 +369,19 @@ void KHTMLView::slotDocumentDone( KHTMLView *_view )
 
 void KHTMLView::slotDocumentDone()
 {
-    emit documentDone( this );
+  // Scroll to where we want to go
+  if ( scrollToX )
+  {    
+    slotScrollHorz( scrollToX );
+    scrollToX = 0;
+  }
+  if ( scrollToY )
+  {    
+    slotScrollVert( scrollToY );
+    scrollToY = 0;
+  }
+  
+  emit documentDone( this );
 }
 
 void KHTMLView::slotDocumentRequest( KHTMLView *_view, const char *_url )

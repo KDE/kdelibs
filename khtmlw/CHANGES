@@ -1,6 +1,16 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.15 - 21 Mar 1998 (Torben)
+---------------
+
+KHTMLView now handles the x/y offsets in KHTMLView::begin(...) correct.
+  Once the document is completely displayed it scrolls to the demanded
+  position.
+Added "slotScrollVert" and "slotScrollHorz" and renamed the protected
+  slots of the same name to "slotInternScrollVert" and "slotInternScrollHorz"
+  in KHTMLView.
+
 Version 0.12.14 - 21 Mar 1998 (Martin)
 ---------------
 
