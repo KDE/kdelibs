@@ -31,6 +31,7 @@
 #include "kcombobox.h"
 #include "kicondialog.h"
 #include "kiconview.h"
+#include "kimagefilepreview.h"
 #include "knuminput.h"
 #include "knuminput.h"
 #include "kkeybutton.h"
@@ -294,6 +295,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KIconView", widget);
 
+	widget.group = "Display (KDE)";
+	widget.iconSet = "kimagefilepreview.png";
+	widget.includeFile = "kimagefilepreview.h";
+	widget.toolTip = "A widget that provides a image preview of a URL";
+	widget.whatsThis = "KImageFilePreview";
+	widget.isContainer = false;
+	m_widgets.insert("KImageFilePreview", widget);
+
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kintnuminput.png";
 	widget.includeFile = "knuminput.h";
@@ -509,6 +518,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KIconButton(parent, name);
 	if (key == "KIconView")
 		return new KIconView(parent, name);
+	if (key == "KImageFilePreview")
+		return new KImageFilePreview(parent);
 	if (key == "KIntNumInput")
 		return new KIntNumInput(parent, name);
 	if (key == "KIntSpinBox")

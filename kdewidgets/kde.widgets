@@ -228,3 +228,9 @@ ToolTip=A widget for selecting a language
 WhatsThis=A combobox suitable for selecting a language
 Group=Input (KDE)
 
+[KImageFilePreview]
+IncludeFile=kimagefilepreview.h
+ToolTip=A widget that provides a image preview of a URL
+Group=Display (KDE)
+ConstructorArgs=(parent)
+
