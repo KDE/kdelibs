@@ -46,10 +46,8 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
       m_wantDotFiles( showHidden ),
       m_recurseChildren( false )
 {
-   m_root = new KFileTreeViewItem( parent,
-				   new KFileItem( url, "inode/directory",
-                                                  S_IFDIR  ),
-				   this );
+   m_root = createBranchRoot( parent, url );
+   
    m_root->setPixmap( 0, pix );
    m_root->setText( 0, name );
    m_root->setOpen( true );
@@ -118,16 +116,14 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 
       if( ! newKFTVI )
       {
-	 newKFTVI = new KFileTreeViewItem( m_currParent,
-					   currItem,
-					   this);
-      
+	 newKFTVI = createTreeViewItem( m_currParent, currItem );
+	 
 	 currItem->setExtraData( this, newKFTVI );
 
+	 /* Cut off the file extension */
 	 if( !m_showExtensions && !currItem->isDir() )
 	 {
 	    QString n = currItem->text();
-	    kdDebug(1202) << "cutting off extension from " << n << endl;
 	    int mPoint = n.findRev( '.' );
 	    if( mPoint > 0 ) n = n.left( mPoint );
 	    newKFTVI->setText( 0, n );
@@ -170,6 +166,23 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
    emit( newTreeViewItems( this, treeViewItList ));
    
 }
+
+KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *parent,
+							KFileItem *fileItem )
+{
+   return( new KFileTreeViewItem( parent,
+				  fileItem,
+				  this ));
+}
+
+KFileTreeViewItem* KFileTreeBranch::createBranchRoot( KFileTreeView *parent, const KURL& url )
+{
+   return( new KFileTreeViewItem( parent,
+				  new KFileItem( url, "inode/directory",
+                                                  S_IFDIR  ),
+				  this ));
+}
+
 
 void KFileTreeBranch::setShowExtensions( bool visible )
 {

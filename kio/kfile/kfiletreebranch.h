@@ -113,6 +113,16 @@ public slots:
     * @param visible flags if the extensions should be visible or not.
     */
    void setShowExtensions( bool visible = true );
+
+protected:
+   /**
+    * virtual method that allocates a @ref KFileTreeViewItem for the branch
+    * for new items. 
+    */ 
+   virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
+						  KFileItem *fileItem );
+
+   virtual KFileTreeViewItem *createBranchRoot( KFileTreeView *parent, const KURL& url );
    
 signals:
    /**
