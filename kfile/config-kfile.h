@@ -1,3 +1,7 @@
+#ifndef CONFIG_KFILE_H
+#define CONFIG_KFILE_H
+
+
 // #define COOLOS 1
 
 #if defined(COOLOS)
@@ -17,3 +21,6 @@ inline void debugC(const char *,...) {};
 #define DefaultKeepDirsFirst true
 #define DefaultFindCommand "kfind"
 #define DefaultShowDirsLeft true
+
+
+#endif
