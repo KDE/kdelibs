@@ -399,23 +399,6 @@ signals:
   void executed( QListViewItem *item, const QPoint &pos, int c );
 
   /**
-   * This signal gets emitted whenever the user double clicks into the
-   * listview.
-   * @param item is the pointer to the clicked listview item.
-   * @param pos is the position where the user has clicked, and
-   * @param c is the column into which the user clicked.
-   *
-   * Note that you may not delete any QListViewItem objects in slots
-   * connected to this signal.
-   *
-   * This signal is more or less here for the sake of completeness.
-   * You should normally not need to use this. In most cases it´s better
-   * to use executed() instead.
-   */
-  // KDE 4: Remove this signal...already in QListView
-  void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
-
-  /**
    * This signal gets emitted whenever something acceptable is
    * dropped onto the listview.
    *
@@ -890,6 +873,13 @@ protected:
    * @since 3.2
    */
   void resetAutoSelection();
+
+  /**
+   * @deprecated This is just here for binary compatibility.  Use the signal
+   * in QListView instead.
+   */
+  // KDE 4: remove
+  void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
 protected slots:
   /**

@@ -2036,7 +2036,10 @@ void KListView::resetAutoSelection()
   d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 }
 
-
+void KListView::doubleClicked( QListViewItem *item, const QPoint &pos, int c )
+{
+  emit QListView::doubleClicked( item, pos, c );
+}
 
 KListViewItem::KListViewItem(QListView *parent)
   : QListViewItem(parent)
