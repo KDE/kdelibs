@@ -158,6 +158,7 @@ public:
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
 	{
+	    UNKNOWN   = 0x0000,
 	    INTEGER   = 0x0001,
 	    NUMBER    = 0x0002,  // real numbers
 	    PERCENT   = 0x0004,

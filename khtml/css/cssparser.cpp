@@ -1466,7 +1466,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             kdDebug( 6080 ) << "empty image " << endl;
 #endif
         } else {
-			const QString str(value.stripWhiteSpace()); // ### Optimize
+            const QString str(value.stripWhiteSpace()); // ### Optimize
             if (str.left(4).lower() == "url(") {
 				DOMString value(curP, endP - curP);
 				value = khtml::parseURL(value);
@@ -2262,13 +2262,13 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     }
 
     CSSPrimitiveValue::UnitTypes type = CSSPrimitiveValue::CSS_UNKNOWN;
-    int unit = 0;
+    StyleBaseImpl::Units unit = StyleBaseImpl::UNKNOWN;
 
     switch(split->latin1())
     {
     case '%':
         type = CSSPrimitiveValue::CSS_PERCENTAGE;
-        unit = PERCENT;
+        unit =StyleBaseImpl:: PERCENT;
         break;
     case 'e':
         split++;
@@ -2277,11 +2277,11 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 	{
 	case 'm':
             type = CSSPrimitiveValue::CSS_EMS;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
 	case 'x':
             type = CSSPrimitiveValue::CSS_EXS;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
         }
         break;
@@ -2292,15 +2292,15 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 	{
 	case 'x':
             type = CSSPrimitiveValue::CSS_PX;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
 	case 't':
             type = CSSPrimitiveValue::CSS_PT;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
 	case 'c':
             type = CSSPrimitiveValue::CSS_PC;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
         }
         break;
@@ -2310,7 +2310,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         if(split->latin1() == 'm')
         {
             type = CSSPrimitiveValue::CSS_CM;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
         }
         break;
     case 'm':
@@ -2320,11 +2320,11 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 	{
 	case 'm':
             type = CSSPrimitiveValue::CSS_MM;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
             break;
 	case 's':
             type = CSSPrimitiveValue::CSS_MS;
-            unit = TIME;
+            unit = StyleBaseImpl::TIME;
             break;
         }
         break;
@@ -2334,32 +2334,32 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         if(split->latin1() == 'n')
         {
             type = CSSPrimitiveValue::CSS_IN;
-            unit = LENGTH;
+            unit = StyleBaseImpl::LENGTH;
         }
         break;
     case 'd':
         type = CSSPrimitiveValue::CSS_DEG;
-        unit = ANGLE;
+        unit = StyleBaseImpl::ANGLE;
         break;
     case 'r':
         type = CSSPrimitiveValue::CSS_RAD;
-        unit = ANGLE;
+        unit = StyleBaseImpl::ANGLE;
         break;
     case 'g':
         type = CSSPrimitiveValue::CSS_GRAD;
-        unit = ANGLE;
+        unit = StyleBaseImpl::ANGLE;
         break;
     case 's':
         type = CSSPrimitiveValue::CSS_S;
-        unit = TIME;
+        unit = StyleBaseImpl::TIME;
         break;
     case 'h':
         type = CSSPrimitiveValue::CSS_HZ;
-        unit = FREQUENCY;
+        unit = StyleBaseImpl::FREQUENCY;
         break;
     case 'k':
         type = CSSPrimitiveValue::CSS_KHZ;
-        unit = FREQUENCY;
+        unit = StyleBaseImpl::FREQUENCY;
         break;
     }
 
