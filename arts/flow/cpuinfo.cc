@@ -167,6 +167,14 @@ void CpuInfoStartup::startup()
 		"testl $0x80000000, %%edx              \n\t" // test for 3DNow!
 		"jz    Return                          \n\t"
 		"addl  $4, %0                          \n\t" // has 3DNow!
+		// Athlon(tm) XP has both 3DNow! and SSE
+		"pushl %%eax                           \n\t"
+		"movl  $1, %%eax                       \n\t"
+		"cpuid                                 \n\t"
+		"popl  %%eax                           \n\t"
+		"testl $0x02000000, %%edx              \n\t" // test for SSE
+		"jz    Return                          \n\t" // no SSE
+		"addl  $8, %0                          \n\t" // has SSE
 		"jmp   Return                          \n\t"
 
 		// Intel Section
