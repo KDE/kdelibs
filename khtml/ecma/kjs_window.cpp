@@ -375,9 +375,9 @@ Value Window::get(ExecState *exec, const UString &p) const
       if (isSafeScript(exec))
       {
         if (m_part->document().isNull()) {
-          kdDebug(6070) << "Document.write: adding <HTML> to create document" << endl;
+          kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
           m_part->begin();
-          m_part->write("<HTML>");
+          m_part->write("<HTML><BODY>");
           m_part->end();
         }
         Value val = getDOMNode(exec,m_part->document());
@@ -1089,7 +1089,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         khtmlpart->setOpenedByJS(true);
         if (khtmlpart->document().isNull()) {
           khtmlpart->begin();
-          khtmlpart->write("<HTML>");
+          khtmlpart->write("<HTML><BODY>");
           khtmlpart->end();
 	  if ( part->docImpl() ) {
 	    khtmlpart->docImpl()->setDomain( part->docImpl()->domain(), true );
