@@ -425,6 +425,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         else {
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget)  n->attach();
+	    if(n->renderer()) n->renderer()->close();
 #endif
             flat = false;
         }
