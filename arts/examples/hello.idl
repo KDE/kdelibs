@@ -19,8 +19,11 @@
 */
 
 // Test stuff:
+interface HelloBase {
+	void hellobase(string s);
+};
 
-interface Hello {
+interface Hello : HelloBase {
 	attribute long myValue;
 	void constructor(long i);
 	void hello(string s);

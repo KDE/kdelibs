@@ -40,6 +40,7 @@ public:
 	string concat(const string& s1, const string& s2);
 	long sum(long a);
 	long total();
+	void hellobase(const string& s);
 };
 
 #endif /* HELLO_IMPL_H */

@@ -26,6 +26,11 @@
 #include "hello_impl.h"
 #include <stdio.h>
 
+void Hello_impl::hellobase(const string& s)
+{
+	printf("Hellobase '%s'!\n",s.c_str());
+}
+
 void Hello_impl::hello(const string& s)
 {
 	printf("Hello '%s'!\n",s.c_str());

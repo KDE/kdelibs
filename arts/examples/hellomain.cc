@@ -37,11 +37,25 @@ int main()
 	// creation from MCOP reference
 	Hello client( Reference( server.toString() ) );
 	if (!client.isNull()) client.hello("local test");
+	else cout << "fatal: a valid reference can't be decoded" << endl;
+
+	// creation from wrong reference
+	Hello xclient( Reference("fdshjkhdsf") );
+
+	// check result => should be null
+	if (xclient.isNull()) cout << "passed invalid reference test" << endl;
+	else cout << "fatal: an invalid reference can be decoded" << endl;
 
 	// using a constructor	
 	Hello hint(3);
 	cout << hint.myValue() << endl;
-	
+
+	Hello castsrc;
+	HelloBase casthint = castsrc;
+	casthint.hellobase("cast test passed");
+	if(castsrc.isNull()) cout << "cast problem with auto creation" << endl;
+	castsrc.hello("second cast test passed");
+
 	// Can copy (or here copy constructor) the objects
 	Hello hcopy = hint;
 	hcopy.sum(5);
@@ -50,6 +64,7 @@ int main()
 	// dynamic creation is OK
 	Hello* dyn = new Hello;
 	cout << dyn->concat("I am"," a dynamic hello") << endl;
+	dyn->hellobase("dynamic hellobase hello");
 	delete dyn;
 
 	// The old CORBA-like syntax is still accepted
