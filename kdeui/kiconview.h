@@ -114,7 +114,7 @@ signals:
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
-   * You should normally not need to use this. In most cases it´s better
+   * You should normally not need to use this. In most cases it's better
    * to use executed() instead.
    */
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
