@@ -89,6 +89,72 @@ class ResourceManager : private ManagerImplListener
       return it;
     }
 
+    class ActiveIterator
+    {
+        friend class ResourceManager;
+      public:
+        ActiveIterator() : mList( 0 ) {};
+        ActiveIterator( const ActiveIterator &it )
+        {
+          mIt = it.mIt;
+          mList = it.mList;
+        }
+
+        T *operator*() { return static_cast<T *>( *mIt ); }
+        ActiveIterator &operator++()
+        {
+          do { mIt++; } while ( checkActive() );
+          return *this;
+        }
+        ActiveIterator &operator++(int)
+        {
+          do { mIt++; } while ( checkActive() );
+          return *this;
+        }
+        ActiveIterator &operator--()
+        {
+          do { mIt--; } while ( checkActive() );
+          return *this;
+        }
+        ActiveIterator &operator--(int)
+        {
+          do { mIt--; } while ( checkActive() );
+          return *this;
+        }
+        bool operator==( const ActiveIterator &it ) { return mIt == it.mIt; }
+        bool operator!=( const ActiveIterator &it ) { return mIt != it.mIt; }
+
+      private:
+        /**
+          Check if iterator needs to be advanced once more.
+        */
+        bool checkActive()
+        {
+          if ( !mList || mIt == mList->end() ) return false;
+          return !(*mIt)->isActive();
+        }
+
+        Resource::List::Iterator mIt;
+        Resource::List *mList;
+    };
+
+    ActiveIterator activeBegin()
+    {
+      ActiveIterator it;
+      it.mIt = mManager->resourceList()->begin();
+      it.mList = mManager->resourceList();
+      if ( !(*it)->isActive() ) it++;
+      return it;
+    }
+
+    ActiveIterator activeEnd()
+    {
+      ActiveIterator it;
+      it.mIt = mManager->resourceList()->end();
+      it.mList = mManager->resourceList();
+      return it;
+    }
+
     bool isEmpty() { return begin() == end(); }
   
     ResourceManager( const QString& family )
@@ -113,6 +179,10 @@ class ResourceManager : private ManagerImplListener
       mManager->sync();
     }
 
+    /**
+      Add resource to manager. This passes ownership of the Resource object
+      to the manager.
+    */
     void add( Resource *resource )
     {
       if ( resource ) mManager->add( resource );
