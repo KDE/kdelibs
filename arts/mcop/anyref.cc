@@ -71,6 +71,7 @@ string AnyRefBase::type() const
 	static const string tsFloat("*float");
 	static const string tString("string");
 	static const string tsString("*string");
+	static const string tBool("bool");
 
 	switch(rep)
 	{
@@ -84,6 +85,7 @@ string AnyRefBase::type() const
 		case repDouble:		return tFloat;
 		case repString:
 		case repCString:	return tString;
+		case repBool:		return tBool;
 
 		// sequences of primitive types
 		case repByteSeq:	return tsByte;
@@ -123,6 +125,9 @@ void AnyRefBase::_write(Buffer *b) const
 			break;
 
 		case repCString:	b->writeString((const char *)data);
+			break;
+
+		case repBool:		b->writeBool(*(bool *)data);
 			break;
 
 		// sequences of primitive types
@@ -169,6 +174,9 @@ void AnyRefBase::_read(Buffer *b) const
 			break;
 
 		case repString:		b->readString(*(string *)data);
+			break;
+
+		case repBool:		*(bool *)data = b->readBool();
 			break;
 
 		// sequences of primitive types

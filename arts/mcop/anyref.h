@@ -63,6 +63,7 @@ protected:
 		repLong = 20, repInt = 21 /* treated as long */,
 		repFloat = 30, repDouble = 31 /* treated as float */,
 		repString = 40, repCString = 41 /* string */,
+		repBool = 50,
 		repByteSeq = 510,
 		repLongSeq = 520,
 		repFloatSeq = 530,
@@ -93,6 +94,7 @@ public:
 	AnyConstRef(const double& 	value)	: AnyRefBase(&value,repDouble) { };
 	AnyConstRef(const std::string& value) : AnyRefBase(&value,repString) { };
 	AnyConstRef(const char *value)		: AnyRefBase(value,repCString) { };
+	AnyConstRef(const bool& 	value)	: AnyRefBase(&value,repBool) { };
 
 	AnyConstRef(const std::vector<mcopbyte>& v)
 										: AnyRefBase(&v,repByteSeq) { };
@@ -120,6 +122,7 @@ public:
 	AnyRef(float& 	value)				: AnyRefBase(&value,repFloat) { };
 	AnyRef(double& 	value)				: AnyRefBase(&value,repDouble) { };
 	AnyRef(std::string&	value)			: AnyRefBase(&value,repString) { };
+	AnyRef(bool& 	value)				: AnyRefBase(&value,repBool) { };
 
 	// sequence of primitive types
 	AnyRef(std::vector<mcopbyte>& value)	: AnyRefBase(&value,repByteSeq) { };
