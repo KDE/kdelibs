@@ -24,7 +24,7 @@
 */
 
 #undef CACHE_DEBUG
-#define CACHE_DEBUG
+//#define CACHE_DEBUG
 
 #include "loader.h"
 
@@ -89,6 +89,8 @@ void CachedObject::setExpireDate(int _expireDate)
 
 void CachedObject::setRequest(Request *_request)
 {
+    if ( _request && !m_request )
+        m_status = Pending;
     m_request = _request;
     if (canDelete() && m_free)
         delete this;
@@ -817,8 +819,9 @@ void DocLoader::setAutoloadImages( bool enable )
 
     m_bautoloadImages = enable;
 
-    const CachedObject* co;
-    for ( co=m_docObjects.first(); co; co=m_docObjects.next() )
+    if ( !m_bautoloadImages ) return;
+
+    for ( const CachedObject* co=m_docObjects.first(); co; co=m_docObjects.next() )
         if ( co->type() == CachedObject::Image )
         {
             CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( co ) );
@@ -829,6 +832,7 @@ void DocLoader::setAutoloadImages( bool enable )
                  status == CachedObject::Uncacheable ||
                  status == CachedObject::Pending )
                 continue;
+
             Cache::loader()->load(img, img->baseURL(), true);
         }
 }
