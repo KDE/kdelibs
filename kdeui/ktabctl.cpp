@@ -253,7 +253,7 @@ void KTabCtl::paintEvent(QPaintEvent *)
 /*
  * return the client rect. This is the maximum size for any child
  * widget (page).
-    return QRect(2, tabs->height(), width() - 4,
+ */
 
 QRect KTabCtl::getChildRect() const
 {

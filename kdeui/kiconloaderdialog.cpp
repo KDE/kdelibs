@@ -191,7 +191,6 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
 void KIconLoaderDialog::init()
 {
   setCaption(klocale->translate("Select Icon"));
-  QFont font("Helvetica", 12, QFont::Bold);
   //---
   i_filter = new QLineEdit(this);
   i_filter->setGeometry(310, 8, 150, 24);
@@ -210,8 +209,6 @@ void KIconLoaderDialog::init()
   //---
   ok = new QPushButton( klocale->translate("Ok"), this );
   cancel = new QPushButton( klocale->translate("Cancel"), this );
-  ok->setFont(font);
-  cancel->setFont(font);
   ok->setGeometry(65, 200, 80, 30);
   cancel->setGeometry(325, 200, 80, 30);
   connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );
