@@ -259,15 +259,7 @@ signals:
     */
     void rotateDown();
 
-
 public slots:
-
-    /*
-    * Re-implemented from QComboBox for internal reasons.
-    *
-    * See @ref QComobBox::setEditText.
-    */
-    virtual void setEditText( const QString& );
 
     /**
     * Iterates in the up (previous match) direction through the
@@ -325,12 +317,6 @@ protected slots:
     virtual void aboutToShowMenu();
 
     /**
-    * Deals with text changing in the line edit in
-    * editable mode.
-    */
-    virtual void entryChanged( const QString& );
-
-    /**
     * Deals with highlighting the seleted item when
     * return is pressed in the list box (editable-mode only).
     */
@@ -342,13 +328,16 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
 protected:
+
     /**
     * Initializes the variables upon construction.
     */
     virtual void init();
 
-    /*
-    * Rotates the text on rotation events
+    /**
+    * Rotates the text on rotation events.
+    *
+    * @param string the text to replace the current one with.
     */
     void rotateText( const QString& );
 
@@ -363,17 +352,20 @@ protected:
     virtual void connectSignals( bool handle ) const;
 
     /**
-    * Overridden from QComboBox to provide automatic selection
-    * in "select-only" mode.
+    * Re-implemented for internal reasons.  API is not affected.
+    *
+    * See @ref QComboBox::keyPressEvent.
     */
     virtual void keyPressEvent ( QKeyEvent* );
 
-private :
-    // Holds the length of the entry.
-    int m_iPrevlen;
-    // Holds the current cursor position.
-    int m_iPrevpos;
+    /**
+    * Re-implemented for internal reasons.  API is not affected.
+    *
+    * See @ref QComboBox::mousePressEvent.
+    */
+    virtual void mousePressEvent( QMouseEvent* );
 
+private :
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
     bool m_bEnableMenu;
@@ -385,9 +377,6 @@ private :
     QLineEdit* m_pEdit;
     // Context Menu items.
     QPopupMenu *m_pContextMenu;
-
-    // Event Filter to trap events
-    virtual bool eventFilter( QObject* o, QEvent* e );
 
 };
 

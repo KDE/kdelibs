@@ -49,13 +49,6 @@ KLineEdit::~KLineEdit ()
 
 void KLineEdit::init()
 {
-    // Initalize Variables used in auto-completion mode.
-    // These values greatly simplify the logic used to
-    // determine whether completion is needed when the
-    // widget is in in auto-completion mode.
-    m_iPrevpos = 0; // keeps cursor position whenever it changes.
-    m_iPrevlen = 0; // keeps length of text as it changes.
-
     // Hack and recover the built-in popup-menu to add
     // your own item to it.  What a piece of work :))
     QObjectList *list = queryList( "QPopupMenu" );
@@ -65,9 +58,6 @@ void KLineEdit::init()
 
     m_bEnableMenu = false;
     setEnableContextMenu( true ); // Enable the context menu by default
-
-    // Connect the signals and slots.
-    connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
 }
 
 void KLineEdit::setEnableContextMenu( bool showMenu )
@@ -108,7 +98,7 @@ void KLineEdit::rotateText( const QString& input )
     if( input.length() == 0 )
         return;
 
-    if( m_pCompObj != 0 && m_pCompObj->hasMultipleMatches() )
+    if( m_pCompObj != 0 )
     {
         if( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
@@ -116,36 +106,16 @@ void KLineEdit::rotateText( const QString& input )
         }
         else
         {
-            m_iPrevlen = input.length();
-            m_iPrevpos = cursorPosition();
-            validateAndSet( input, m_iPrevpos, m_iPrevpos, m_iPrevlen );
+            int pos = cursorPosition();
+            validateAndSet( input, pos, pos, input.length() );
         }
     }
-}
-
-void KLineEdit::setText( const QString& text )
-{
-    // Stops signals from being handles by completion while
-    // the text is manually set.
-    disconnect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
-    QLineEdit::setText( text );
-    connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
 }
 
 void KLineEdit::iterateUpInList()
 {
     if( m_pCompObj != 0 )
-
     {
-        // This clears KCompletion so that if the user
-        // deleted the current text and pressed the rotation
-        // keys,  KCompletion will properly rotate through
-        // all enteries :)))
-        if( displayText().length() == 0 &&
-            m_pCompObj->lastMatch().length() != 0 )
-        {
-            m_pCompObj->makeCompletion( QString::null );
-        }
         rotateText( m_pCompObj->previousMatch() );
     }
 }
@@ -154,30 +124,7 @@ void KLineEdit::iterateDownInList()
 {
     if( m_pCompObj != 0 )
     {
-        // This clears KCompletion so that if the user
-        // deleted the current text and pressed the rotation
-        // keys,  KCompletion will properly rotate through
-        // all enteries.  Hack to the max :)
-        if( displayText().length() == 0 &&
-            m_pCompObj->lastMatch().length() != 0 )
-        {
-            m_pCompObj->makeCompletion( QString::null );
-        }
         rotateText(  m_pCompObj->nextMatch() );
-    }
-}
-
-void KLineEdit::entryChanged( const QString& text )
-{
-    if( m_iCompletionMode == KGlobalSettings::CompletionAuto &&
-        echoMode() == QLineEdit::Normal && m_bEmitSignals )
-    {
-        int pos = cursorPosition();
-        int len = text.length();
-        if( pos > m_iPrevpos && len >= m_iPrevlen )
-            emit completion( text );
-        m_iPrevpos = pos;
-        m_iPrevlen = len;
     }
 }
 
@@ -186,7 +133,6 @@ void KLineEdit::makeCompletion( const QString& text )
     if( m_pCompObj != 0 )
     {
         QString match = m_pCompObj->makeCompletion( text );
-
         // If no match or the same match, simply return
         // without completing.
         if( match.length() == 0 || match == text )
@@ -198,9 +144,9 @@ void KLineEdit::makeCompletion( const QString& text )
         }
         else
         {
-            m_iPrevlen = match.length();
-            m_iPrevpos = cursorPosition();
-            validateAndSet( match, m_iPrevpos, m_iPrevpos, m_iPrevlen );
+            debug ( "Matching : %s\nFound Match : %s", text.latin1(), match.latin1() );
+            int pos = cursorPosition();
+            validateAndSet( match, pos, pos, match.length() );
         }
     }
 }
@@ -229,15 +175,21 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     // propagated up-stream.  This is also consistent with
     // KLineEdit.
     if( ev->key() == Qt::Key_Return || ev->key() == Qt::Key_Enter )
-    {
-        emit QLineEdit::returnPressed();
         emit returnPressed( displayText() );
-        return;
-    }
     // Filter key-events if EchoMode is normal
     if( echoMode() == QLineEdit::Normal &&
         m_iCompletionMode != KGlobalSettings::CompletionNone )
     {
+        if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
+        {
+            QString keycode = ev->text();
+            if( !keycode.isNull() && keycode.unicode()->isPrint() && m_bEmitSignals )
+            {
+                QLineEdit::keyPressEvent ( ev );
+                emit completion( text() );
+                return;
+            }
+        }
         // Handles completion.
         int len = text().length();
         int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: m_iCompletionKey;
@@ -267,25 +219,16 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
     }
-    // Always update the position variable in auto completion
-    // mode whenu user moves the cursor to EOL using the END key.
-    if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
-    {
-        int pos = cursorPosition();
-        int len = text().length();
-        if( m_iPrevpos != pos && pos == len )
-            m_iPrevpos = pos;
-    }
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( ev );
 }
 
-void KLineEdit::mousePressEvent( QMouseEvent *ev )
+void KLineEdit::mousePressEvent( QMouseEvent* e )
 {
-    if( ev->button() == Qt::RightButton )
+    if( e->button() == Qt::RightButton )
     {
         if( !m_bEnableMenu )
             return;
     }
-    QLineEdit::mousePressEvent( ev );
+    QLineEdit::mousePressEvent( e );
 }

@@ -244,13 +244,6 @@ signals:
 public slots:
 
     /*
-    * Re-implemented from QLineEdit for internal reasons.
-    *
-    * See @ref QLineEdit::setText.
-    */
-    virtual void setText ( const QString & );
-
-    /*
     * Iterates in the up (previous match) direction through
     * the completion list if it is available.
     *
@@ -306,11 +299,6 @@ protected slots:
     virtual void aboutToShowMenu();
 
     /**
-    * Deals with text changes in auto completion mode.
-    */
-    virtual void entryChanged( const QString& );
-
-    /**
     * Completes the remaining text with a matching one from
     * a given list.
     */
@@ -323,8 +311,10 @@ protected:
     */
     virtual void init();
 
-    /*
-    * Rotates the text on rotation events
+    /**
+    * Rotates the text on rotation events.
+    *
+    * @param string the text to replace the current one with.
     */
     void rotateText( const QString& );
 
@@ -338,24 +328,23 @@ protected:
     */
     virtual void connectSignals( bool handle ) const;
 
-    /*
-    * Re-implemented from QLineEdit to filter key-events.
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See @ref QLineEdit::keyPressEvent.
     */
     virtual void keyPressEvent( QKeyEvent * );
 
-    /*
-    * Re-implemented from QLineEdit to filter key-events.
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See @ref QLineEdit::mousePressEvent.
     */
     virtual void mousePressEvent( QMouseEvent * );
 
 private :
     // Pointers to the context & sub menus.
     QPopupMenu *m_pContextMenu;
-
-    // Holds the length of the entry.
-    int m_iPrevlen;
-    // Holds the current cursor position.
-    int m_iPrevpos;
 
     // Indicates whether the context menu is enabled
     // or disabled

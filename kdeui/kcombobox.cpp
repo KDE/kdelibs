@@ -42,7 +42,6 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     if ( rw )
     {
         m_pEdit = QComboBox::lineEdit();
-        m_pEdit->installEventFilter( this );
         QObjectList *list = queryList( "QPopupMenu" );
         QObjectListIt it ( *list );
         m_pContextMenu = (QPopupMenu*) it.current();
@@ -58,12 +57,9 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 
 KComboBox::~KComboBox()
 {
-    m_pContextMenu = 0; // Reset the pointer to NULL;
+    m_pContextMenu = 0; // Reset the pointer to NULL
     if( m_pEdit != 0 )
-    {
-        m_pEdit->removeEventFilter( this );
-        m_pEdit = 0;
-    }
+        m_pEdit = 0; // Reset the pointer to NULL
 }
 
 void KComboBox::init()
@@ -81,15 +77,7 @@ void KComboBox::init()
     if( m_pEdit != 0 )
         setEnableContextMenu( true );
 
-    // Initalize Variables used in auto-completion mode.
-    // These values greatly simplify the logic used to
-    // determine whether completion is needed when the
-    // widget is in in auto-completion mode.
-    m_iPrevpos = 0; // keeps cursor position whenever it changes.
-    m_iPrevlen = 0; // keeps length of text as it changes.
-
     // Connect the signals and slots.
-    connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
     connect( listBox(), SIGNAL( returnPressed( QListBoxItem* ) ), this, SLOT( itemSelected( QListBoxItem* ) ) );
     connect( listBox(), SIGNAL( clicked( QListBoxItem* ) ), this, SLOT( itemSelected( QListBoxItem* ) ) );
 }
@@ -128,30 +116,6 @@ void KComboBox::aboutToShowMenu()
     }
 }
 
-void KComboBox::setEditText( const QString& text )
-{
-    // Stops signals from being handles by completion
-    // while the text is being manually set.
-    bool lock = m_bEmitSignals;
-    m_bEmitSignals = false;
-    QComboBox::setEditText( text );
-    m_bEmitSignals = lock;
-}
-
-void KComboBox::entryChanged( const QString& text )
-{
-    if( m_bEmitSignals &&
-        m_iCompletionMode == KGlobalSettings::CompletionAuto )
-    {
-        int pos = cursorPosition();
-        int len = text.length();
-        if( pos > m_iPrevpos && len >= m_iPrevlen )
-            emit completion( text );
-        m_iPrevpos = pos;
-        m_iPrevlen = len;
-    }
-}
-
 void KComboBox::makeCompletion( const QString& text )
 {
     if( m_pEdit != 0 && m_pCompObj != 0 )
@@ -169,9 +133,8 @@ void KComboBox::makeCompletion( const QString& text )
         }
         else
         {
-            m_iPrevlen = match.length();
-            m_iPrevpos = cursorPosition();
-            m_pEdit->validateAndSet( match, m_iPrevpos, m_iPrevpos, m_iPrevlen );
+            int pos = cursorPosition();
+            m_pEdit->validateAndSet( match, pos, pos, match.length() );
         }
     }
     else if( m_pEdit == 0 )
@@ -198,9 +161,8 @@ void KComboBox::rotateText( const QString& input )
         }
         else
         {
-            m_iPrevpos = cursorPosition();
-            m_iPrevlen = input.length();
-            m_pEdit->validateAndSet( input, m_iPrevpos, m_iPrevpos, m_iPrevlen );
+            int pos = cursorPosition();
+            m_pEdit->validateAndSet( input, pos, pos, input.length() );
         }
     }
     else if( m_pEdit == 0 )
@@ -253,74 +215,57 @@ void KComboBox::connectSignals( bool handle ) const
     }
 }
 
-bool KComboBox::eventFilter( QObject *o, QEvent *ev )
-{
-    if ( o == m_pEdit && m_iCompletionMode != KGlobalSettings::CompletionNone )
-    {
-        if( ev->type() == QEvent::KeyPress )
-        {
-            QKeyEvent *e = (QKeyEvent *) ev;
-            // On Return pressed event, emit returnPressed( const QString& )
-            if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-            {
-                emit returnPressed( m_pEdit->text() );
-            }
-            int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : m_iCompletionKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
-            {
-                // Emit completion if the completion mode is NOT
-                // CompletionAuto and if the mode is CompletionShell,
-                // the cursor is at the end of the string.
-                if( (m_iCompletionMode == KGlobalSettings::CompletionMan &&
-                    (m_pCompObj != 0 && m_pCompObj->lastMatch() != m_pEdit->displayText()) ) ||
-                    (m_iCompletionMode == KGlobalSettings::CompletionShell &&
-                    m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ))
-                {
-                    emit completion( m_pEdit->text() );
-                    return true;
-                }
-            }
-            // Handles rotateUp.
-            key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : m_iRotateUpKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
-            {
-                emit rotateUp ();
-                return true;
-            }
-            // Handles rotateDown.
-            key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : m_iRotateDnKey;
-            if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
-            {
-                emit rotateDown();
-                return true;
-            }
-            // Always update the position holder if the user
-            // pressed the END key in auto completion mode.
-            if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
-            {
-                int pos = cursorPosition();
-                int len = m_pEdit->text().length();
-                if( m_iPrevpos != pos && pos == len )
-                    m_iPrevpos = pos;
-            }
-        }
-        else if ( ev->type() == QEvent::MouseButtonPress )
-        {
-            QMouseEvent *e = (QMouseEvent *) ev;
-            if( e->button() == Qt::RightButton )
-            {
-                if( m_bEnableMenu )
-                    return false;
-                return true;
-            }
-        }
-    }
-    return QComboBox::eventFilter( o, ev );
-}
-
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
-    if( m_pEdit == 0 )
+    if( m_pEdit != 0 && m_pEdit->hasFocus() &&
+        m_iCompletionMode != KGlobalSettings::CompletionNone )
+    {
+        // On Return pressed event, emit returnPressed( const QString& )
+        if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+        {
+            emit returnPressed( m_pEdit->text() );
+        }
+        if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
+        {
+            QString keycode = e->text();
+            if( !keycode.isNull() && keycode.unicode()->isPrint() && m_bEmitSignals )
+            {
+                QComboBox::keyPressEvent ( e );
+                emit completion( m_pEdit->text() );
+                return;
+            }
+        }
+        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : m_iCompletionKey;
+        if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
+        {
+            // Emit completion if the completion mode is NOT
+            // CompletionAuto and if the mode is CompletionShell,
+            // the cursor is at the end of the string.
+            if( (m_iCompletionMode == KGlobalSettings::CompletionMan &&
+                 (m_pCompObj != 0 && m_pCompObj->lastMatch() != m_pEdit->displayText()) ) ||
+                 (m_iCompletionMode == KGlobalSettings::CompletionShell &&
+                  m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ))
+            {
+                emit completion( m_pEdit->text() );
+                return true;
+            }
+        }
+        // Handles rotateUp.
+        key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : m_iRotateUpKey;
+        if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
+        {
+            emit rotateUp ();
+            return true;
+        }
+        // Handles rotateDown.
+        key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : m_iRotateDnKey;
+        if( KStdAccel::isEqual( e, key ) && m_bEmitSignals )
+        {
+            emit rotateDown();
+            return true;
+        }
+    }
+    else if( m_pEdit == 0 )
     {
         QString keycode = e->text();
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -331,4 +276,16 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         }
     }
     QComboBox::keyPressEvent( e );
+}
+
+void KComboBox::mousePressEvent( QMouseEvent* e )
+{
+    if( m_pEdit != 0 && m_pEdit->hasFocus() &&
+        e->button() == Qt::RightButton )
+    {
+        if( m_bEnableMenu )
+            return false;
+        return true;
+    }
+    QComboBox::mousePressEvent( e );
 }
