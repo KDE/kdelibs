@@ -85,6 +85,42 @@ extern IceIOErrorHandler _KDE_IceIOErrorHandler;
 void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr);
 }
 
+static QCString readQCString(QDataStream &ds)
+{
+   QCString result;
+   Q_UINT32 len;
+   ds >> len;
+   QIODevice *device = ds.device();
+   int bytesLeft = device->size()-device->at();
+   if ((bytesLeft < 0 ) || (len > (uint) bytesLeft))
+   {
+      qWarning("Corrupt data!\n");
+      return result;
+   }
+   result.QByteArray::resize( (uint)len );
+   if (len > 0)
+      ds.readRawBytes( result.data(), (uint)len);
+   return result;
+}
+
+static QByteArray readQByteArray(QDataStream &ds)
+{
+   QByteArray result;
+   Q_UINT32 len;
+   ds >> len;
+   QIODevice *device = ds.device();
+   int bytesLeft = device->size()-device->at();
+   if ((bytesLeft < 0 ) || (len > (uint) bytesLeft))
+   {
+      qWarning("Corrupt data!\n");
+      return result;
+   }
+   result.resize( (uint)len );
+   if (len > 0)
+      ds.readRawBytes( result.data(), (uint)len);
+   return result;
+}
+
 static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *ptr)
 {
     int fd = IceConnectionNumber(iceConn);
@@ -672,8 +708,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( ba, IO_ReadOnly );
-	    QCString fromApp, toApp;
-	    ds >> fromApp >> toApp;
+	    QCString fromApp = readQCString(ds);
+            QCString toApp = readQCString(ds);
+
 	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
 	    if ( opcode == DCOPReplyDelayed ) {
@@ -690,8 +727,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 #ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-   QCString obj, fun;
-   ds >> obj >> fun;
+   QCString obj = readQCString(obj);
+   QCString fun = readQCString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -703,9 +740,10 @@ if (opcode == DCOPSend)
 		DCOPIceSendData(target->iceConn, ba);
                 _DCOPIceSendEnd();
 	    } else if ( toApp == "DCOPServer" ) {
-		QCString obj, fun;
-		QByteArray data;
-		ds >> obj >> fun >> data;
+		QCString obj = readQCString(ds);
+		QCString fun = readQCString(ds);
+		QByteArray data = readQByteArray(ds);
+                
 		QCString replyType;
 		QByteArray replyData;
 		if ( !receive( toApp, obj, fun, data, replyType, replyData, iceConn ) ) {
@@ -715,8 +753,8 @@ if (opcode == DCOPSend)
 #ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-   QCString obj, fun;
-   ds >> obj >> fun;
+   QCString obj = readQCString(obj);
+   QCString fun = readQCString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -748,8 +786,8 @@ if (opcode == DCOPSend)
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( ba, IO_ReadOnly );
-	    QCString fromApp, toApp;
-	    ds >> fromApp >> toApp;
+	    QCString fromApp = readQCString(ds);
+	    QCString toApp = readQCString(ds);
 	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
 
@@ -757,8 +795,8 @@ if (opcode == DCOPSend)
 #ifdef DCOP_DEBUG
 if (opcode == DCOPCall)
 {
-   QCString obj, fun;
-   ds >> obj >> fun;
+   QCString obj = readQCString(obj);
+   QCString fun = readQCString(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPCall %s", length, fromApp.data(), toApp.data(), fun.data());
 }
 #endif
@@ -778,9 +816,9 @@ if (opcode == DCOPCall)
 		bool b = FALSE;
 		// DCOPServer itself does not do DCOPFind.
 		if ( (opcode == DCOPCall) && (toApp == "DCOPServer") ) {
-		    QCString obj, fun;
-		    QByteArray data;
-		    ds >> obj >> fun >> data;
+   		    QCString obj = readQCString(ds);
+		    QCString fun = readQCString(ds);
+		    QByteArray data = readQByteArray(ds);
 		    b = receive( toApp, obj, fun, data, replyType, replyData, iceConn );
 		    if ( !b )
 			qWarning("%s failure: object '%s' has no function '%s'", toApp.data(), obj.data(), fun.data() );
@@ -830,8 +868,8 @@ if (opcode == DCOPCall)
 	    QByteArray ba( length );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( ba, IO_ReadOnly );
-	    QCString fromApp, toApp;
-	    ds >> fromApp >> toApp;
+            QCString fromApp = readQCString(ds);
+            QCString toApp = readQCString(ds);
 
 	    DCOPConnection* connreply = findApp( toApp );
 	    int datalen = ba.size();
@@ -1344,8 +1382,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     if ( fun == "registerAs(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
-	    QCString app2;
-	    args >> app2;
+	    QCString app2 = readQCString(args);
 	    QDataStream reply( replyData, IO_WriteOnly );
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( conn && !app2.isEmpty() ) {
@@ -1431,8 +1468,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     } else if ( fun == "isApplicationRegistered(QCString)" ) {
 	QDataStream args( data, IO_ReadOnly );
 	if (!args.atEnd()) {
-	    QCString s;
-	    args >> s;
+	    QCString s = readQCString(args);
 	    QDataStream reply( replyData, IO_WriteOnly );
 	    int b = ( findApp( s ) != 0 );
 	    replyType = "bool";
@@ -1453,11 +1489,15 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCString,bool)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
-        QCString sender, senderObj, signal, receiverObj, slot;
-        Q_INT8 Volatile;
         QDataStream args(data, IO_ReadOnly );
         if (args.atEnd()) return false;
-        args >> sender >> senderObj >> signal >> receiverObj >> slot >> Volatile;
+        QCString sender = readQCString(args);
+        QCString senderObj = readQCString(args);
+        QCString signal = readQCString(args);
+        QCString receiverObj = readQCString(args);
+        QCString slot = readQCString(args);
+        Q_INT8 Volatile;
+        args >> Volatile;
         //qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->connectSignal(sender, senderObj, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
@@ -1467,10 +1507,13 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
-        QCString sender, senderObj, signal, receiverObj, slot;
         QDataStream args(data, IO_ReadOnly );
         if (args.atEnd()) return false;
-        args >> sender >> senderObj >> signal >> receiverObj >> slot;
+        QCString sender = readQCString(args);
+        QCString senderObj = readQCString(args);
+        QCString signal = readQCString(args);
+        QCString receiverObj = readQCString(args);
+        QCString slot = readQCString(args);
         //qDebug("DCOPServer: disconnectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->disconnectSignal(sender, senderObj, signal, conn, receiverObj, slot);
         replyType = "bool";
