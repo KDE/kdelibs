@@ -482,6 +482,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_extension = new KHTMLPartBrowserExtension( this );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
 
+  d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
   d->m_bMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
@@ -2915,8 +2916,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   // This causes crashes... needs to be fixed.
-#if 0
-  if (u.protocol().left(5) != "https") {
+  if (u.protocol() != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
 					"\nA third party may be able to intercept and view this information."
@@ -2943,13 +2943,12 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 				config->sync();
 				kss.setWarnOnUnencrypted(false);
 				kss.save();
-        }
-        if (rc == KMessageBox::Cancel)
-          return;
-      }
+        		}
+		        if (rc == KMessageBox::Cancel)
+		          return;
+      	}
     }
   }
-#endif
 
   // End form security checks
   //
