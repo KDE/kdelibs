@@ -885,8 +885,7 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 		FlowSystemReceiver receiver;
 		FlowSystem remoteFs;
 
-		ASyncNetSend *netsend = new ASyncNetSend();
-		ap->sendNet(netsend);
+		ASyncNetSend *netsend = new ASyncNetSend(ap);
 
 		sender = FlowSystemSender::_from_base(netsend); // don't release netsend
 		remoteFs = destObject._flowSystem();

@@ -38,14 +38,17 @@
 
 namespace Arts {
 
+class ASyncPort;
 class ASyncNetSend : public FlowSystemSender_skel
 {
 protected:
+	ASyncPort *ap;
 	std::queue<GenericDataPacket *> pqueue;
 	FlowSystemReceiver receiver;
 	long receiveHandlerID;
 
 public:
+	ASyncNetSend(ASyncPort *ap);
 	~ASyncNetSend();
 	long notifyID();
 
@@ -111,9 +114,10 @@ public:
 	ASyncPort *asyncPort();
 
 	// Network transparency
-	
-	void sendNet(ASyncNetSend *netsend);
-	long receiveNetNotifyID();
+	void addSendNet(ASyncNetSend *netsend);			// send
+	void removeSendNet(ASyncNetSend *netsend);
+
+	long receiveNetNotifyID();						// receive
 	GenericAsyncStream *receiveNetCreateStream();
 	NotificationClient *receiveNetObject();
 };

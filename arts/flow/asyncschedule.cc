@@ -206,13 +206,34 @@ long ASyncPort::receiveNetNotifyID()
 }
 
 // Network transparency
-void ASyncPort::sendNet(ASyncNetSend *netsend)
+void ASyncPort::addSendNet(ASyncNetSend *netsend)
 {
 	Notification n;
 	n.receiver = netsend;
 	n.ID = netsend->notifyID();
 	subscribers.push_back(n);
 	sender = FlowSystemSender::_from_base(netsend->_copy());
+}
+
+void ASyncPort::removeSendNet(ASyncNetSend *netsend)
+{
+	arts_return_if_fail(netsend != 0);
+
+	vector<Notification>::iterator si;
+	for(si = subscribers.begin(); si != subscribers.end(); si++)
+	{
+		if(si->receiver == netsend)
+		{
+			subscribers.erase(si);
+			return;
+		}
+	}
+	arts_warning("Failed to remove ASyncNetSend (%p) from ASyncPort", netsend);
+}
+
+ASyncNetSend::ASyncNetSend(ASyncPort *ap) : ap(ap)
+{
+	ap->addSendNet(this);
 }
 
 ASyncNetSend::~ASyncNetSend()
@@ -222,6 +243,7 @@ ASyncNetSend::~ASyncNetSend()
 		pqueue.front()->processed();
 		pqueue.pop();
 	}
+	ap->removeSendNet(this);
 }
 
 long ASyncNetSend::notifyID()
