@@ -8,11 +8,11 @@ As a start you should have a look at doc/porting.doc in the Qt package.
 //////////////////////////////////////////////////////////////////////
 // * General
 
-We did our best to clean up the header files out of kdelibs, so they do
-not include unnessary bloat for your application. As a consequence you
+We did our best to clean up the header files of kdelibs, so they do
+not include unnecessary bloat for your application. As a consequence, you
 may notice that some header files are missing from your source files as
 they have been included before by kapp.h for example. There is a script
-in kdesdk/scripts called fixheaders that takes care of most of these
+in kdesdk/scripts called "fixheaders" that takes care of most of these
 cases. Just call "make -k 2>&1 | perl .../fixheaders" and it will try
 to look after the error messages and add includes as it recognize the
 errors.
@@ -22,7 +22,7 @@ errors.
 // * kdelibs/khtmlw
 
 khtmlw has been replaced with khtml.
-- KHTMLView has vaished. Just use KHTMLWidget, which does scrollbar
+- KHTMLView has vanished. Just use KHTMLWidget, which does scrollbar
   managing for free.
 - A lot of the API has changed. If you just want to open a file/URL,
   you just need to do:
@@ -53,25 +53,25 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KIntegerLine, KIntLineEdit
 
-  KIntegerLine and KIntLineEdit  has been replaced by KIntNumInput.
+  KIntegerLine and KIntLineEdit  have been replaced by KIntNumInput.
   The new header file is called knuminput.h.
 
   The new KIntNumInput can have an optional slider attached, ensures
-  that the entered value is in a given range (use MAX_INT or similiar
+  that the entered value is in a given range (use MAX_INT or similar
   if you don't care about the range) and can maintain a descriptive
   label and also a unit for the edited value.
 
-  The API is almost the same and it simplifies exisiting code a bit,
+  The API is almost the same and it simplifies existing code a bit,
   so give it a try. If you need more functionality, please contact
   me (Dirk A. Mueller <mueller@kde.org>).
 
-  The additional class KDoubleNumInput gives you the same look&feel,
-  but allows to edit floating point numbers.
+  The additional class KDoubleNumInput gives you the same look & feel,
+  but allows you to edit floating point numbers.
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale
 
-- i18n is no longer a macro to
+- i18n is no longer a macro
 
   KApplication::getApplication()->getLocale()->translate
 
@@ -92,7 +92,7 @@ khtmlw has been replaced with khtml.
   has been removed. Replace kapp->getIconLoader()->loadIcon() with
   BarIcon() or use KGlobal::iconLoader() instead of getIconLoader()
 
-  kde_*dir() have been removed as they require a unique toplevel directory
+  kde_*dir() have been removed as they require a unique top level directory
   for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
   any more.
 
@@ -160,7 +160,7 @@ are necessary to convert your old KDND-based stuff to Qt DND.
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
 
-  These classes have been largely reimplemented.  The external API
+  These classes have been largely re-implemented.  The external API
   remains mostly the same, with the single notable change that
   the groupIterator and entryIterator methods have been removed and
   instead replaced by groupList (which returns a QStringList of groups)
@@ -226,32 +226,19 @@ must have created a KApplication object before the methods can be used.
 // * KIconLoader
 
 KIconLoader in 1.1 used to mix icons for applications and for toolbars.
-Now, the icons are grouped by type: apps, devices, filesys, mimetype,
-toolbar.  They are also grouped by size (small, medium, large) and by
-color depth (locolor, hicolor).
-
-There are now two ways to access the icons.  loadIcon *may* be used to
-access all icons but it's not recommended.  Rather, it should be used
-only for apps, devices, filesys, and mimetype icons.  Toolbar (and
-application "pics") icons should be accessed using the BarIcon
-function.
-
-To reiterate, use the functions like so:
-
-loadIcon - ALL icons except toolbar and application "pics"
-BarIcon  - Toolbar and application "pics"
-
-The loadMiniIcon and loadApplicationMiniIcon functions have been
-removed.  In their place, use 'loadIcon' and specify the size of the
-icon you wish to load.
-
-The ICON and Icon functions have also been removed.  BarIcon may be
-used as a replacement for ICON.
-
-The loadIcon function no longer needs the extension of the icon if the
-icon is a "standard" type (png, xpm).  If you hardcode .xpm, loadIcon
-will issue a warning at runtime, but will still work in stripping off
-the .xpm part
+This has changed, so you may notice that your application doesn't find
+the right icons. loadIcon (used by BarIcon) returns only toolbar icons.
+If you need icons for applications, use loadApplicationIcon.
+loadMiniIcon and loadApplicationMiniIcon have been removed, instead
+loadApplicationIcon now takes a "size" argument where you can specify the
+size of the icon (small, medium, large).
+The other big change you may notice, is that ICON and Icon have been
+removed as they caused big confusion for not loading application icons
+(see above). For this we added BarIcon which does the same as ICON before.
+The third change in this row is that loadIcon doesn't need the extension
+anymore, but looks for standard extensions (png, xpm) itself. If you hard-
+coded .xpm, loadIcon will issue a warning at runtime, but will still work
+in stripping off the .xpm part
 
 ////////////////////////////////////////////////////////////////////////
 // * KDialog
@@ -349,7 +336,7 @@ need to add a Column (QListView::addColum) before QListView is useable.
 QListView has no addChild(), insertItem() and removeItem() calls. Inserting
 a root item is done by constructing a QListViewItem with the QListView
 passed as the parent widget. adding a child item is done by constructing
-a QListViewItem with the parent item as paremeter. removeItem() should
+a QListViewItem with the parent item as parameter. removeItem() should
 be replaced by delete <pointer to item>.
 
 The root items are not shown in a tree fashion by default. to get this,
@@ -361,13 +348,13 @@ Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
 /////////////////////////////////////////////////////////////////////////
 // * KMsgBox
 
-KMsgBox has been superceded by QMessageBox. Which has been superceded
+KMsgBox has been superseded by QMessageBox. Which has been superseded
 by KMessageBox.
 
 - KMsgBox had return codes starting with 1 for the first button, 2 for
   the second, and so on.  KMessageBox defines an enum which you should
   use instead.
-- Please note that you shouldn't add the name of your applicarion
+- Please note that you shouldn't add the name of your application
   to the caption argument. It is already added automatically.
 
 ////////////////////////////////////////////////////////////////////////
@@ -465,26 +452,25 @@ KIOFilter <- Filter;
 ////////////////////////////////////////////////////////////////////////
 // * kstring.h / KString
 
-The KString class is obsolete and has, actually, no more been defined in
-kstring.h anymore, the header file only existed for compatability.
-The file has been removed completly, use QString instead, it provides
-anything that is needed. (mirko@kde.org)
+The KString class is obsolete and is not defined in
+kstring.h anymore. The header file only existed for compatibility reasons.
+The file has been removed completely, use QString instead. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * ktopwidget.h / KTopWidget
 
 KTMainWindow replaces this class completly. In most cases, it should be
-enough to simply replace the declaration of your former KTopWidget to be
-a KTMainWindow, as it is source compatible. ktopwidget.h does no more
+enough to simply replace the declaration of your former KTopWidget with
+KTMainWindow, as it is source compatible. ktopwidget.h does not
 exist in KDE 2. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * kbutton.h / KButton
 
 Since Qt 2.0, the class QToolButton provides the functionality of
-buttons that raise when the mouse is moved over it, so there is no
-reason to have a class providing the same in the KDE libs. All
-occurences of KButton in the KDE CVS have been replaced by QToolButtons,
+buttons that raise when the mouse is moved over them, so there is no
+reason to have a class providing the same feature in KDE libs. All
+occurrences of KButton in the KDE CVS have been replaced by QToolButtons,
 but for applications not in the CVS it has to be done by the respective
 developer. (mirko@kde.org)
 
@@ -500,7 +486,7 @@ removed. (mirko@kde.org)
 
 This functionality is removed from the KDE core and used from Qt, so it
 has been removed. Use QStrings (unicode) for this
-purposes. (mirko@kde.org)
+purpose. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * Methods for getting the value of a member object named
@@ -508,7 +494,7 @@ purposes. (mirko@kde.org)
 
 If your code does not compile and complains about missing member
 functions, you should check for methods that started with get...().
-This methods have been renamed to xy*().
+These methods have been renamed to xy*().
 
 ////////////////////////////////////////////////////////////////////////
 // * kled.h, kledlamp.h / KLed, KLedLamp
@@ -516,7 +502,7 @@ This methods have been renamed to xy*().
 There where two different classes for showing an LED lamp. Both are
 merged to the KLed class, but THE USER INTERFACE IS DIFFERENT, as both
 where more or less broken.
-Please adjust your code to it.
+Please adjust your code accordingly.
 
 ////////////////////////////////////////////////////////////////////////
 // * KTMainWindow
@@ -526,10 +512,10 @@ helpMenu() has been moved to KTMainWindow from KApplication (kapp).
 Both the "About KDE" and the "About <Application>" dialog boxes
 are now modeless. "About KDE" is a completely new widget.
 
-If you in the toplevel window (that is derived from KTMainWindow)
-have used "kapp->helpMenu( bool, QString )" to get the help menu
-you must now change to "helpMenu( QString )". The QString defaults
-to QString::null so it is sufficient to write helpMenu()
+If you used in the toplevel window (that is derived from KTMainWindow)
+"kapp->helpMenu( bool, QString )" to get the help menu
+you must now change this to "helpMenu( QString )". The QString defaults
+to QString::null so it is sufficient to write helpMenu().
 
 The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
 have all been removed. If you need direct access to these or need
@@ -572,7 +558,8 @@ The KWMModuleApplication has been removed. Instead, use the class
 KWinModule in libkdecore. The API is a bit cleaner but very similar,
 so you will feel comfortable immediately. One of the advantages of
 KWinModule is that it doesn't require a special KApplication
-subclass. This lead to many problems and missunderstandings in the
-past. KWinModule is now just an object that emitts fancy signals (and
+subclass. This lead to many problems and misunderstandings in the
+past. KWinModule is now just an object that emits fancy signals (and
 provides some useful lists, like the list of all managed windows).
 (ettrich@kde.org)
+
