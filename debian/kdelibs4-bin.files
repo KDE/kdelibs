@@ -5,8 +5,6 @@ usr/bin/cupsdoprint
 usr/bin/dcop
 usr/bin/dcopclient
 usr/bin/dcopfind
-usr/bin/dcopidl
-usr/bin/dcopidl2cpp
 usr/bin/dcopobject
 usr/bin/dcopref
 usr/bin/dcopserver
@@ -42,7 +40,6 @@ usr/bin/kwrapper
 usr/bin/lnusertemp
 usr/bin/make_driver_db_cups
 usr/bin/make_driver_db_lpr
-usr/bin/meinproc
 usr/bin/preparetips
 usr/bin/xml2man
 usr/bin/xmlizer

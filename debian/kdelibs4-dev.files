@@ -1,3 +1,6 @@
+usr/bin/dcopidl
+usr/bin/dcopidl2cpp
+usr/bin/meinproc
 usr/include/kde
 usr/lib/libDCOP.la
 usr/lib/libDCOP.so

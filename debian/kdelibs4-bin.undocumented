@@ -5,8 +5,6 @@ cupsdoprint.1
 dcop.1
 dcopclient.1
 dcopfind.1
-dcopidl.1
-dcopidl2cpp.1
 dcopobject.1
 dcopref.1
 dcopserver.1
@@ -42,7 +40,6 @@ kwrapper.1
 lnusertemp.1
 make_driver_db_cups.1
 make_driver_db_lpr.1
-meinproc.1
 preparetips.1
 xml2man.1
 xmlizer.1

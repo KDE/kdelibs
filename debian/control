@@ -15,7 +15,7 @@ Description: KDE core libraries metapackage
 Package: kdelibs4
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version})
+Depends: ${shlibs:Depends}
 Replaces: kdelibs3
 Description: KDE core libraries
  KDE core libraries.
@@ -24,7 +24,7 @@ Description: KDE core libraries
 Package: kdelibs4-bin
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version})
 Provides: kdelibs-bin
 Replaces: kdelibs-bin
 Description: KDE core binaries
@@ -34,7 +34,6 @@ Description: KDE core binaries
 Package: kdelibs4-data
 Section: libs
 Architecture: all
-Depends: kdelibs4 (= ${Source-Version})
 Provides: kdelibs-data
 Replaces: kdelibs-data
 Description: KDE core shared data
@@ -43,8 +42,8 @@ Description: KDE core shared data
 
 Package: kdelibs4-dev
 Section: devel
-Architecture: all
-Depends: kdelibs4 (= ${Source-Version}), libc6-dev
+Architecture: any
+Depends: kdelibs4 (= ${Source-Version}), kdelibs4-bin (= ${Source-Version}), libc6-dev
 Provides: kdelibs-dev
 Replaces: kdelibs-dev
 Description: KDE core libraries (development files)
