@@ -1949,7 +1949,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     if ( !parsing )
     {
         debugM("Yes\n");
-	debug( "Parsing done" );
+	debugM( "Parsing done" );
 
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
