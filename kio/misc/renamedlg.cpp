@@ -206,7 +206,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       gridLayout->setColStretch(0,0);
       gridLayout->setColStretch(1,10);
 
-      QString sentence1 = (mtimeDest < mtimeSrc)
+      QString sentence1 = (mtimeDest <= mtimeSrc)
                          ? i18n("An older item named '%1' already exists.")
                          : i18n("A newer item named '%1' already exists.");
       QLabel * lb1 = new QLabel( sentence1.arg(KStringHandler::csqueeze(d->dest,100)), this );
@@ -275,7 +275,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   {
       // I wonder when this happens (David). And 'dest' isn't shown at all here...
       QString sentence1;
-      if (mtimeDest < mtimeSrc)
+      if (mtimeDest <= mtimeSrc)
 	  sentence1 = i18n("An older item than '%1' already exists.\n").arg(d->src);
       else
 	  sentence1 = i18n("A newer item than '%1' already exists.\n").arg(d->src);
