@@ -76,12 +76,14 @@ void KGzipFilter::init( int mode )
     if ( mode == IO_ReadOnly )
     {
         int result = inflateInit2(&d->zStream, -MAX_WBITS); // windowBits is passed < 0 to suppress zlib header
-        kdDebug() << "inflateInit returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "inflateInit returned " << result << endl;
         // No idea what to do with result :)
     } else if ( mode == IO_WriteOnly )
     {
         int result = deflateInit2(&d->zStream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
-        kdDebug() << "deflateInit returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "deflateInit returned " << result << endl;
     } else {
         kdWarning() << "KGzipFilter: Unsupported mode " << mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
     }
@@ -94,11 +96,13 @@ void KGzipFilter::terminate()
     if ( m_mode == IO_ReadOnly )
     {
         int result = inflateEnd(&d->zStream);
-        kdDebug() << "inflateEnd returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "inflateEnd returned " << result << endl;
     } else if ( m_mode == IO_WriteOnly )
     {
         int result = deflateEnd(&d->zStream);
-        kdDebug() << "deflateEnd returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "deflateEnd returned " << result << endl;
     }
 }
 
@@ -108,10 +112,12 @@ void KGzipFilter::reset()
     if ( m_mode == IO_ReadOnly )
     {
         int result = inflateReset(&d->zStream);
-        kdDebug() << "inflateReset returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "inflateReset returned " << result << endl;
     } else if ( m_mode == IO_WriteOnly ) {
         int result = deflateReset(&d->zStream);
-        kdDebug() << "deflateReset returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "deflateReset returned " << result << endl;
     }
 }
 
@@ -168,7 +174,7 @@ bool KGzipFilter::readHeader()
     d->zStream.avail_in = i;
     d->zStream.next_in = p;
     d->bCompressed = true;
-    kdDebug() << "header OK" << endl;
+    //kdDebug() << "header OK" << endl;
     return true;
 }
 
