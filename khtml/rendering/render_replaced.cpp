@@ -169,8 +169,10 @@ void RenderWidget::setQWidget(QWidget *widget)
             // if we're already layouted, apply the calculated space to the
             // widget immediately
             if (layouted()) {
-                m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-                                  m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
+		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+		int w = QMIN( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 2000 );
+		int h = QMIN( m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 3072 );
+		m_widget->resize( w, h );
             }
             else
                 setPos(xPos(), -500000);
@@ -182,9 +184,13 @@ void RenderWidget::layout( )
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
-    if ( m_widget )
-        m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-                          m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
+    if ( m_widget ) {
+	// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
+	int w = QMIN( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 2000 );
+	int h = QMIN( m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight(), 3072 );
+        m_widget->resize( w, h );
+    } 
+    
     setLayouted();
 }
 
