@@ -48,7 +48,7 @@ fi
 
 if test -z "$LIBXSLT_CFLAGS"; then
   echo ""
-  echo "You're missing libxslt 1.0.7 or later."
+  echo "You're missing libxslt 1.0.6 or later."
   echo "KDE won't be able to provide a help ioslave (help://) without it,"
   echo "so if you want helpfiles you should consider installing it."
   echo "Have a look at ftp://xmlsoft.org/ for sources, or find a binary"
