@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=application/x-siag
+Comment=Siag Spreadsheet
+Icon=
+Type=MimeType
+Patterns=*.siag;*.csv;*.wk1;
