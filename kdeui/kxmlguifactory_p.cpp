@@ -1,6 +1,8 @@
 
 #include "kxmlguifactory_p.h"
 
+#include <kglobal.h>
+
 using namespace KXMLGUI;
 
 void ActionList::plug( QWidget *container, int index )
@@ -155,6 +157,94 @@ ContainerClient *ContainerNode::findChildContainerClient( KXMLGUIClient *current
     clients.append( client );
 
     return client;
+}
+
+void ContainerNode::plugActionList( BuildState &state )
+{
+    MergingIndexList::Iterator mIt( mergingIndices.begin() );
+    MergingIndexList::Iterator mEnd( mergingIndices.end() );
+    for (; mIt != mEnd; ++mIt )
+        plugActionList( state, mIt );
+
+    QPtrListIterator<ContainerNode> childIt( children );
+    for (; childIt.current(); ++childIt )
+        childIt.current()->plugActionList( state );
+}
+
+void ContainerNode::plugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt )
+{
+    static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
+
+    MergingIndex mergingIdx = *mergingIdxIt;
+
+    QString k( mergingIdx.mergingName );
+
+    if ( k.find( tagActionList ) == -1 )
+        return;
+
+    k = k.mid( tagActionList.length() );
+
+    if ( mergingIdx.clientName != state.clientName )
+        return;
+
+    if ( k != state.actionListName )
+        return;
+
+    ContainerClient *client = findChildContainerClient( state.guiClient, 
+                                                        QString::null, 
+                                                        mergingIndices.end() );
+
+    client->actionLists.insert( k, state.actionList );
+
+    state.actionList.plug( container, mergingIdx.value );
+
+    adjustMergingIndices( state.actionList.count(), mergingIdxIt );
+}
+
+void ContainerNode::unplugActionList( BuildState &state )
+{
+    MergingIndexList::Iterator mIt( mergingIndices.begin() );
+    MergingIndexList::Iterator mEnd( mergingIndices.end() );
+    for (; mIt != mEnd; ++mIt )
+        unplugActionList( state, mIt );
+
+    QPtrListIterator<ContainerNode> childIt( children );
+    for (; childIt.current(); ++childIt )
+        childIt.current()->unplugActionList( state );
+}
+
+void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt )
+{
+    static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
+
+    MergingIndex mergingIdx = *mergingIdxIt;
+
+    QString k = mergingIdx.mergingName;
+
+    if ( k.find( tagActionList ) == -1 )
+        return;
+
+    k = k.mid( tagActionList.length() );
+
+    if ( mergingIdx.clientName != state.clientName )
+        return;
+
+    if ( k != state.actionListName )
+        return;
+
+    ContainerClient *client = findChildContainerClient( state.guiClient, 
+                                                        QString::null, 
+                                                        mergingIndices.end() );
+
+    ActionListMap::Iterator lIt( client->actionLists.find( k ) );
+    if ( lIt == client->actionLists.end() )
+        return;
+
+    lIt.data().unplug( container );
+
+    adjustMergingIndices( -lIt.data().count(), mergingIdxIt );
+
+    client->actionLists.remove( lIt );
 }
 
 void ContainerNode::adjustMergingIndices( int offset,

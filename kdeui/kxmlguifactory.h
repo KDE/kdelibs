@@ -176,9 +176,6 @@ class KXMLGUIFactory : public QObject
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
                             KXMLGUIBuilder **builder );
 
-  void plugActionListRecursive( KXMLGUI::ContainerNode *node );
-  void unplugActionListRecursive( KXMLGUI::ContainerNode *node );
-
   void processStateElement( const QDomElement &element );
 
   void applyActionProperties( const QDomElement &element );

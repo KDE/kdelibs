@@ -13,6 +13,8 @@ class KXMLGUIBuilder;
 namespace KXMLGUI
 {
 
+struct BuildState;
+
 class ActionList : public QPtrList<KAction>
 {
 public:
@@ -125,6 +127,12 @@ struct ContainerNode
     ContainerClient *findChildContainerClient( KXMLGUIClient *currentGUIClient, 
                                                const QString &groupName, 
                                                const MergingIndexList::Iterator &mergingIdx );
+
+    void plugActionList( BuildState &state );
+    void plugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt );
+
+    void unplugActionList( BuildState &state );
+    void unplugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt );
 
     void adjustMergingIndices( int offset, const MergingIndexList::Iterator &it );
 };
