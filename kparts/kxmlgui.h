@@ -6,7 +6,32 @@
 #include <qaction.h>
 #include <qdom.h>
 
-class KXMLGUIBuilder;
+class KPart;
+
+/**
+ * This file contains all the "kernel" of KParts.
+ * You shouldn't have to look in here unless you want to hack KParts.
+ */
+
+/**
+ * Abstract interface for a "GUI builder", used by the GUIFactory
+ */
+class KXMLGUIBuilder
+{
+ public:
+
+  KXMLGUIBuilder() {}
+  virtual ~KXMLGUIBuilder() {}
+
+  /**
+   * Create a container (menubar/menu/toolbar/statusbar/...) from an
+   * element in the XML file
+   * @param parent the parent for the widget (why not a widget ?)
+   * @return 0L if you handled the element yourself (like for Separators for
+   * example)
+   */
+  virtual QWidget *createContainer( QObject *parent, const QDomElement &element) = 0;
+};
 
 /**
  * Abstract interface for serving actions and xml to the GUI factory

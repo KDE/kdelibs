@@ -1,7 +1,6 @@
 
 #include "example.h"
 #include "notepad.h"
-#include <kguibuilder.cpp>
 
 #include <qsplitter.h>
 #include <qlayout.h>
@@ -19,9 +18,7 @@
 
 Shell::Shell()
 {
-  m_builder = new KTMainWindowGUIBuilder( this );
-
-  m_builder->setXMLFile( "example_shell.rc" );
+  setXMLFile( "example_shell.rc" );
 
   // We can do this "switch active part" because we have a splitter with
   // two items in it.
@@ -31,7 +28,7 @@ Shell::Shell()
   m_part1 = new Part1(m_splitter);
   m_part2 = new Part2(m_splitter);
 
-  QActionCollection *coll = m_builder->actionCollection();
+  QActionCollection *coll = actionCollection();
 
   (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
@@ -49,7 +46,7 @@ Shell::Shell()
 
   // When the manager says the active part changes, the builder updates (recreates) the GUI
   connect( m_manager, SIGNAL( activePartChanged( KPart * ) ),
-           m_builder, SLOT( createGUI( KPart * ) ) );
+           this, SLOT( createGUI( KPart * ) ) );
 
   setView( m_splitter );
 

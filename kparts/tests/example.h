@@ -4,14 +4,13 @@
 
 #include <kpart.h>
 #include <kpartmanager.h>
-#include <ktmainwindow.h>
+#include <kpartsmainwindow.h>
 
 class KAction;
 class QSplitter;
 class QMultiLineEdit;
-class KTMainWindowGUIBuilder;
 
-class Shell : public KTMainWindow
+class Shell : public KPartsMainWindow
 {
   Q_OBJECT
 public:
@@ -37,7 +36,6 @@ private:
   KReadWritePart *m_editorpart;
   KPartManager *m_manager;
   QWidget *m_splitter;
-  KTMainWindowGUIBuilder *m_builder;
 };
 
 class Part1 : public KReadOnlyPart

@@ -1,7 +1,6 @@
 
 #include "kpartmanager.h"
 #include "kpart.h"
-#include "kguibuilder.h"
 
 #include <qapplication.h>
 

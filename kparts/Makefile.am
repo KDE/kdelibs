@@ -8,9 +8,9 @@ libkparts2_la_LIBADD  = $(LIB_KIO)
 
 lib_LTLIBRARIES = libkparts2.la
 
-libkparts2_la_SOURCES = kpart.cpp kplugin.cpp kpartmanager.cpp kguibuilder.cpp kxmlgui.cpp
+libkparts2_la_SOURCES = kpart.cpp kplugin.cpp kpartmanager.cpp kpartsmainwindow.cpp kxmlgui.cpp
 
-include_HEADERS = kpart.h kplugin.h kpartmanager.h kguibuilder.h kxmlgui.h
+include_HEADERS = kpart.h kplugin.h kpartmanager.h kpartsmainwindow.h kxmlgui.h
 
 libkparts2_la_METASOURCES = AUTO
 
