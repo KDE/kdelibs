@@ -3327,7 +3327,8 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			}
 		}
 		// Start a new flow box
-		newFlow(_clue);
+		if(!flow)
+		    newFlow(_clue);
 
 		flow->setHAlign( align );
 
@@ -3716,6 +3717,7 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 	vc->append( flow );
 	if ( listStack.count() > 0 )
 		listStack.top()->itemNumber++;
+	vspace_inserted = true;
     }
 }
 
