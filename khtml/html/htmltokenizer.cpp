@@ -482,7 +482,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     {
 	checkBuffer();
 
-	const QChar curChar = src[0];
+	const QChar &curChar = src[0];
 	
 	// decide if quoted or not....
 	if ( curChar == '\"' || curChar == '\'' )
@@ -504,6 +504,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		tquote = NoQuote;
                 discard = NoneDiscard;
 		pending = NonePending; // remove space at the end of value
+
+		// we remove additional quotes directly following the
+		// end of the quoted section. Helps with bad html as
+		// <tag attr="value"" nextattr="..." ...>
+		while(src.length() > 1 && 
+		      (src[1] == '\'' || src[1] == '\"'))
+		    ++src;
 	    }
 	    else
 	    {
