@@ -114,7 +114,7 @@
      remain valid, while new ones can only use the new declarations.
  -->
 
-<!ENTITY AIX	"<trademark>AIX</trademark>">
+<!ENTITY AIX	"<trademark class='registered'>AIX</trademark>">
 <!ENTITY aktion	"<application>aKtion</application>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
@@ -226,7 +226,7 @@
 <!ENTITY kmail	"<application>KMail</application>">
 <!ENTITY kmenuedit	"<application>kmenuedit</application>">
 <!ENTITY kmessedwords	"<application>KMessedWords</application>">
-<!ENTITY kmid	"<application>kmid</application>">
+<!ENTITY kmid	"<application>KMid</application>">
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
@@ -313,6 +313,7 @@
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
 <!ENTITY Microsoft	'<trademark
  class="registered">Microsoft</trademark>'>
+<!ENTITY MIDI	"<acronym>MIDI</acronym>">
 <!ENTITY MIME	"<acronym>MIME</acronym>">
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
 <!ENTITY MRU	"<acronym>MRU</acronym>">
