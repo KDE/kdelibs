@@ -50,6 +50,11 @@ class KArrowButton : public QPushButton
 		 */
 		virtual ~KArrowButton();
 
+		/**
+		 * Reimplemented from @ref QPushButton.
+		 */
+		virtual QSize sizeHint() const;
+
 	public slots:
 		/**
 		 * Defines in what direction the arrow is pointing to. Will repaint the

@@ -39,6 +39,11 @@ KArrowButton::~KArrowButton()
 	delete d;
 }
 
+QSize KArrowButton::sizeHint() const
+{
+	return QSize( 12, 12 );
+}
+
 void KArrowButton::setArrowType(Qt::ArrowType a)
 {
 	if (arrow() != a) {
