@@ -938,9 +938,9 @@ QString KLocale::formatMoney(const QString &numStr) const
   return numStr;
 }
 
-QString KLocale::formatNumber(double num, int = -1) const
+QString KLocale::formatNumber(double num, int precision) const
 {
-  return QString().setNum(num);
+  return QString().setNum(num, precision==-1?2:precision);
 }
 
 QString KLocale::formatNumber(const QString &numStr) const
