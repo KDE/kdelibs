@@ -2555,6 +2555,13 @@ KAction* KActionCollection::take( KAction* action )
   return a;
 }
 
+void KActionCollection::clear()
+{
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  while ( it.current() )
+    remove( it.current() );
+}
+
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
   if ( !classname && name )

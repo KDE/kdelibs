@@ -1511,6 +1511,13 @@ public:
   void connectHighlight( QWidget *container, KAction *action );
   void disconnectHighlight( QWidget *container, KAction *action );
 
+public slots:
+  /**
+   * Clears the entire actionCollection, deleting all actions.
+   * @see #remove
+   */
+  void clear();
+
 signals:
   void inserted( KAction* );
   void removed( KAction* );
