@@ -246,7 +246,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
+    QString completeURL(const QString& url) const { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
 
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
@@ -326,7 +326,7 @@ public:
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
     void notifyBeforeNodeRemoval(NodeImpl *n);
-    AbstractViewImpl *defaultView() const;
+    AbstractViewImpl *defaultView() const { return m_defaultView; }
     EventImpl *createEvent(const DOMString &eventType, int &exceptioncode);
 
     // keep track of what types of event listeners are registered, so we don't
@@ -394,6 +394,8 @@ public:
      * @param content The header value (value of the meta tag's "content" attribute)
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
+
+    bool isURLAllowed(const QString& url) const;
 
 signals:
     void finishedParsing();

@@ -67,6 +67,7 @@
 #include "html/html_tableimpl.h"
 #include "html/html_objectimpl.h"
 
+#include <kapplication.h>
 #include <kio/job.h>
 
 using namespace DOM;
@@ -651,8 +652,10 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 // formatting elements (block)
     case ID_DIV:
-    case ID_BLOCKQUOTE:
     case ID_P:
+        n = new HTMLDivElementImpl( docPtr(), id );
+        break;
+    case ID_BLOCKQUOTE:
     case ID_H1:
     case ID_H2:
     case ID_H3:
@@ -1989,9 +1992,35 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
         it.current()->notifyBeforeNodeRemoval(n);
 }
 
-AbstractViewImpl *DocumentImpl::defaultView() const
+bool DocumentImpl::isURLAllowed(const QString& url) const
 {
-    return m_defaultView;
+    KHTMLView *w = view();
+
+    KURL newURL(completeURL(url));
+    newURL.setRef(QString::null);
+
+    // Prohibit non-file URLs if we are asked to.
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // do we allow this suburl ?
+    if ( !kapp || !kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
+        return false;
+
+    // We allow one level of self-reference because some sites depend on that.
+    // But we don't allow more than one.
+    bool foundSelfReference = false;
+    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+        KURL partURL = part->url();
+        partURL.setRef(QString::null);
+        if (partURL == newURL) {
+            if (foundSelfReference)
+                return false;
+            foundSelfReference = true;
+        }
+    }
+
+    return true;
 }
 
 EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptioncode)
