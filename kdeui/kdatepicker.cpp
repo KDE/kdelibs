@@ -142,6 +142,12 @@ KDatePicker::getDate() const
   return table->getDate();
 }
 
+const QDate &
+KDatePicker::date() const
+{
+    return table->getDate();
+}
+
 bool
 KDatePicker::setDate(const QDate& date)
 {

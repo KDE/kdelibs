@@ -120,6 +120,11 @@ void KNumInput::setLabel(const QString & label, int a)
     layout(true);
 }
 
+QString KNumInput::label() const
+{
+    if (m_label) return m_label->text();
+    return QString::null;
+}
 
 // -----------------------------------------------------------------------------
 

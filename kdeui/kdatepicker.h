@@ -49,7 +49,7 @@ class KDateTable;
 class KDatePicker: public QFrame
 {
   Q_OBJECT
-
+  Q_PROPERTY( QDate date READ date WRITE setDate)
 public:
   /** The usual constructor.  The given date will be displayed
    * initially.
@@ -80,8 +80,14 @@ public:
 
   /**
    * Returns the selected date.
+   * @deprecated
    **/
   const QDate& getDate() const;
+
+  /**
+   * @returns the selected date.
+   */
+  const QDate &date() const;
 
   /**
    * Enables or disables the widget.

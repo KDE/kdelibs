@@ -47,6 +47,7 @@ class KIntSpinBox;
 class KNumInput : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY( QString label READ label WRITE setLabel )
 public:
     /**
      * Default constructor
@@ -80,6 +81,11 @@ public:
      *
      */
     virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+
+    /**
+     * @return the text of the label.
+     */
+    QString label() const;
 
     /**
      * Sets the spacing of tickmarks for the slider.

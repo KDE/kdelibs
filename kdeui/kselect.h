@@ -140,7 +140,9 @@ private:
 class KSelector : public QWidget, public QRangeControl
 {
   Q_OBJECT
-
+  Q_PROPERTY( int value READ value WRITE setValue )
+  Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
+  Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
 public:
 
   /**
@@ -180,6 +182,42 @@ public:
   bool indent() const
   {	return _indent; }
 
+  /**
+   * Sets the value.
+   */
+  void setValue(int value)
+  { QRangeControl::setValue(value); }
+
+  /**
+   * @returns the value.
+   */
+  int value() const
+  { return QRangeControl::value(); }
+
+  /**
+   * Sets the min value.
+   */
+  void setMinValue(int value)
+  { QRangeControl::setMinValue(value); }
+
+  /**
+   * @return the min value.
+   */
+  int minValue() const
+  { return QRangeControl::minValue(); }
+
+  /**
+   * Sets the max value.
+   */
+  void setMaxValue(int value)
+  { QRangeControl::setMaxValue(value); }
+
+  /**
+   * @return the max value.
+   */
+  int maxValue() const
+  { return QRangeControl::maxValue(); }
+
 signals:
   /**
    * This signal is emitted whenever the user chooses a value,
@@ -194,7 +232,7 @@ protected:
    *
    * Draw only within contentsRect().
    */
-  virtual void drawContents( QPainter * ); 
+  virtual void drawContents( QPainter * );
   /**
    * Override this function to draw the cursor which
    * indicates the currently value. This function is
@@ -274,7 +312,7 @@ public:
    * Set each color on its own.
    */
   void setFirstColor( const QColor &col )
-  { color1 = col; update(); } 
+  { color1 = col; update(); }
   void setSecondColor( const QColor &col )
   { color2 = col; update(); }
 
