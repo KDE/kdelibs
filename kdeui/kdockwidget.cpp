@@ -3145,9 +3145,9 @@ bool KDockContainer::isOverlapMode() {
 }
 
 
-bool KDockContainer::dockDragEnter(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
-bool KDockContainer::dockDragMove(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
-bool KDockContainer::dockDragLeave(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
+bool KDockContainer::dockDragEnter(KDockWidget*, QMouseEvent *) { return false;}
+bool KDockContainer::dockDragMove(KDockWidget*, QMouseEvent *) { return false;}
+bool KDockContainer::dockDragLeave(KDockWidget*, QMouseEvent *) { return false;}
 
 
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
