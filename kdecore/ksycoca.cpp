@@ -56,13 +56,17 @@ KSycoca::KSycoca()
     m_sycoca_size(0), m_sycoca_mmap(0)
 {
    d = new KSycocaPrivate;
-   openDatabase();
-   _self = this;
    // Register app as able to receive DCOP messages
    if (kapp && !kapp->dcopClient()->isAttached())
    {
       kapp->dcopClient()->attach();
    }
+   // We register with DCOP _before_ we try to open the database.
+   // This way we can be relative sure that the KDE framework is
+   // up and running (kdeinit, dcopserver, klaucnher, kded) and
+   // that the database is up to date.
+   openDatabase();
+   _self = this;
 }
 
 bool KSycoca::openDatabase( bool openDummyIfNotFound )
