@@ -653,6 +653,9 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "closing old URL" << endl;
   closeURL();
 
+  args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
+  args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
+  args.metaData().insert("ssl_activate_warnings", "TRUE" );
   d->m_bReloading = args.reload;
   if ( args.doPost() && (url.protocol().startsWith("http")) )
   {
@@ -674,15 +677,6 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-
-  // Tell the slave if we are the main frame
-  d->m_job->addMetaData( "main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
-  // Tell the slave where we come from (SSL or not)
-  d->m_job->addMetaData( "ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
-  // Tell the slave to activate warnings about entering/leaving SSL
-  d->m_job->addMetaData( "ssl_activate_warnings", "TRUE" );
-  //kdDebug(6050) << "Activating SSL warnings" << endl;
-
   d->m_workingURL = url;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
@@ -1193,7 +1187,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // When the first data arrives, the metadata has just been made available
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl;
+    kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
     kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
 
