@@ -397,9 +397,17 @@ protected:
      */
     void resort() {
 	if ( count() > 1 ) {
+            const KFileViewItemList *selected = KFileView::selectedItems();
+            
 	    KFileViewItem *item = myFirstItem;
 	    myFirstItem = 0L;
 	    insertSorted( item, count() );
+
+            // restore the old selection
+            KFileViewItemListIterator it( *selected );
+            for ( ; it.current(); ++it ) {
+                setSelected( it.current(), true );
+            }
 	}
     }
 

@@ -299,6 +299,8 @@ void KFileDetailView::slotSortingChanged( int col )
 	break;
     }
 
+    const KFileViewItem *current = ((KFileListViewItem*)currentItem())->fileInfo();
+
     if ( sortSpec != -1 )
 	KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
 
@@ -306,6 +308,9 @@ void KFileDetailView::slotSortingChanged( int col )
 	sortReversed();
     else
 	header()->setSortIndicator( col, !isReversed() );
+
+    if ( current && (sortSpec != -1 || reversed) )
+        KListView::setCurrentItem((QListViewItem*)current->viewItem(this));
 }
 
 
@@ -313,7 +318,6 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
 {
     kdDebug(kfile_area) << "KFileDetailView::setSorting " << count() << endl;
     KFileView::setSorting( spec );
-    resort();
     setSortIndicator();
 }
 
@@ -322,7 +326,6 @@ void KFileDetailView::sortReversed()
 {
     KFileView::sortReversed();
     setSortIndicator();
-
 }
 
 void KFileDetailView::setSortIndicator()
