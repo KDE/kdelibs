@@ -293,6 +293,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
             printf( "%s\n", replyString.data() );
         }
     }
+    return 0;
 }
 
 /**
