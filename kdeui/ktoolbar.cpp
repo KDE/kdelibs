@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.70  1998/06/18 08:56:57  radej
+// sven: removed debug output.
+//
 // Revision 1.69  1998/06/17 12:58:30  radej
 // sven: Removed compiler warning.
 // Bugfixes: Unhighlighting a handle and catching the fast click
@@ -157,6 +160,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
                                 int item_size, const char *txt) : QButton( _parent, name )
 {
+  sep=false;
   parentWidget = (KToolBar *) _parent;
   raised = false;
   setFocusPolicy( NoFocus );
@@ -376,7 +380,7 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
 {
   resize(6,6);
   hide();
-  youreSeparator ();;
+  youreSeparator ();
 }
     else
 void KToolBarButton::setEnabled( bool enabled )
