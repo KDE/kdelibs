@@ -521,8 +521,8 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 
 void KApplication::parseCommandLine( int& argc, char** argv )
 {
-    enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
-    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
+    enum parameter_code { unknown = 0, caption, icon, miniicon, restore, dcopserver };
+    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , "-dcopserver", 0 };
 
     aDummyString2 = " ";
     int i = 1;
@@ -573,6 +573,9 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    delete pSessionConfig; // should be 0 anyway
 	    // create a new read-only session config for the restortation
 	    pSessionConfig = new KConfig( sessionConfigName(), true, false);
+	    break;
+	case dcopserver:
+	    dcopClient()->setServerAddress(argv[i+1]);
 	    break;
 	case unknown:
 	    i++;
