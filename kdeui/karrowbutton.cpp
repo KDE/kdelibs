@@ -52,6 +52,10 @@ void KArrowButton::setArrowType(Qt::ArrowType a)
 		repaint();
 	}
 }
+Qt::ArrowType KArrowButton::arrowType() const
+{
+	return d->arrow;
+}
 
 void KArrowButton::drawButton(QPainter *p)
 {
