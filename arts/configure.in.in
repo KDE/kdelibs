@@ -314,6 +314,12 @@ AC_MSG_CHECKING(if building standalone aRts snapshot without KDE)
 if test "$DCOPIDL" = ""; then
 	AC_MSG_RESULT(yes)
 	ARTS_BUILD_KDE=""
+	MOC="true"
+	DCOPIDL="true"
+	DCOPIDL2CPP="true"
+	AC_SUBST(MOC)
+	AC_SUBST(DCOPIDL)
+	AC_SUBST(DCOPIDL2CPP)
 else
 	AC_MSG_RESULT(no)
 	ARTS_BUILD_KDE="x11 qtmcop kde knotify message"
