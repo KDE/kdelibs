@@ -154,6 +154,11 @@ QString KHTMLDecoder::decode(const char *data)
  found:
     // if we still haven't found an encoding latin1 will be used...
     // this is according to HTML4.0 specs
+    if (!codec)
+    {
+        enc = "iso8859-1";
+	codec = QTextCodec::codecForName(enc);
+    }
     QString out;
 
     if(!buffer.isEmpty()) {
