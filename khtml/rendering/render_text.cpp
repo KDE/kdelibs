@@ -697,6 +697,7 @@ void RenderText::calcMinMaxWidth()
     }
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+
     setMinMaxKnown();
 }
 
@@ -760,10 +761,14 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-    // ### does this make sense??
-    int retval = metrics( false ).height() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
-    if (m_lines.count())
-	retval += m_lineHeight;
+    int retval;
+    if ( m_lines.count() )
+        retval = m_lines[m_lines.count()-1]->m_y + m_lineHeight - m_lines[0]->m_y;
+    else
+        retval = metrics( false ).height();
+
+    retval += paddingTop() + paddingBottom() + borderTop() + borderBottom();
+
     return retval;
 }
 
