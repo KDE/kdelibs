@@ -567,7 +567,7 @@ KJSO TypeOfNode::evaluate()
   if (e.isA(ReferenceType)) {
     KJSO b = e.getBase();
     if (b.isA(NullType))
-      return Undefined();
+      return String("undefined");
   }
   KJSO v = e.getValue();
   switch (v.type())

@@ -31,6 +31,12 @@ class KJScript;
 class QString;
 class QConstString;
 
+#ifdef __GNUC__
+#define KJS_PACKED __attribute__((__packed__))
+#else
+#define KJS_PACKED
+#endif
+
 namespace KJS {
 
   class UCharReference;
@@ -91,8 +97,8 @@ namespace KJS {
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
-    unsigned char hi;
-    unsigned char lo;
+    unsigned char hi KJS_PACKED;
+    unsigned char lo KJS_PACKED;
   };
 
   /**
