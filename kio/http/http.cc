@@ -48,6 +48,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <kcharsets.h>
 #include <kprotocolmanager.h>
 #include <kdatastream.h>
 #include <ksock.h>
@@ -3232,7 +3233,9 @@ void HTTPProtocol::reparseConfiguration()
   // Use commas not spaces.
   m_strLanguages = languageList.join( ", " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
+  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
+  m_strCharsets += QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
 
   // Launch the cookiejar if not already running
   KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
