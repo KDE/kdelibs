@@ -344,7 +344,7 @@ void KFileDetailView::slotSelectionChanged()
     debug("void KFileDetailView::slotSelectionChanged()");
 }
 
-void KFileDetailView::slotSelectionChanged( QListViewItem *item )
+void KFileDetailView::slotSelectionChanged( QListViewItem * )
 {
     debug("void KFileDetailView::slotSelectionChanged( QListViewItem *item )");
 }

@@ -22,6 +22,7 @@
 */
 
 #include <string.h>
+#include "ktoolbar.h"
 
 #include <qpainter.h>
 #include <qtooltip.h>
@@ -33,7 +34,6 @@
 #include <config.h>
 #endif
 
-#include "ktoolbar.h"
 #include "klineedit.h"
 #include "kseparator.h"
 #include <ktmainwindow.h>
@@ -41,6 +41,8 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kiconloader.h>
+#include <kcombobox.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>

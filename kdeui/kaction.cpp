@@ -28,6 +28,7 @@
 #include <kapp.h>
 #include <kaccel.h>
 #include <kconfig.h>
+#include <kstdaccel.h>
 #include <kurl.h>
 #include <qtl.h>
 #include <qptrdict.h>
@@ -36,6 +37,7 @@
 #include <kiconloader.h>
 #include <kpopmenu.h>
 #include <kglobalsettings.h>
+#include <kcombobox.h>
 
 static QFontDatabase *fontDataBase = 0;
 

@@ -23,9 +23,7 @@
 #define _KTOOLBAR_H
 
 #include <qframe.h>
-
-#include <kiconloader.h>
-#include "kcombobox.h"
+#include <qcombobox.h>
 #include <kglobal.h>
 
 class QSize;
@@ -41,6 +39,7 @@ class KToolBoxManager;
 class KAnimWidget;
 class KPopupMenu;
 class KInstance;
+class KComboBox;
 
 class KToolBarPrivate;
 

@@ -376,13 +376,12 @@ KeyValueMap::parseComplexString
   // ----- test some conditions:
   if(mod.length()<2)
     {
-      kDebugInfo("KeyValueMap::parseComplexString: no pair of brackets "
-		 "around the string.");
+      kdDebug() << "KeyValueMap::parseComplexString: no pair of brackets " << endl;
       return false;
     }
   if(mod[0]!='"')
     {
-      kDebugInfo("KeyValueMap::parseComplexString: no opening bracket.");
+      kdDebug() << "KeyValueMap::parseComplexString: no opening bracket." << endl;
       return false;
     }
   // ----- now parse it:
@@ -535,7 +534,7 @@ KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
   // -----
   if(key.isEmpty()) // empty KEYS are errors:
     {
-      kDebugInfo("KeyValueMap::insertRaw: tried to insert empty key.");
+      kdDebug() << "KeyValueMap::insertRaw: tried to insert empty key." << endl;
       return false;
     }
   if(force) // entry will be replaced
@@ -636,7 +635,7 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
 	  return insertRaw(key, value, force);
 	}
     } else {
-      kDebugInfo("KeyValueMap::insertLine: key %s is empty.", relax ? "" : "or value ");
+      kdDebug() << "KeyValueMap::insertLine: key " << (relax ? "" : "or value ") << " is empty." << endl;
       return false;
     }
   // ###########################################################################
@@ -890,8 +889,7 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
 	{
 	  values.push_back(temp);
 	} else {
-	  kDebugInfo("KeyValueMap::get[long int list]: conversion error for "
-		     "%s.", (const char*)(*pos));
+	  kdDebug() << "KeyValueMap::get[long int list]: conversion error for " << endl;
 	}
     }
   // -----
@@ -1081,7 +1079,7 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 		  "[list<string>]: found item " << value << endl;
 	      values.push_back(value);
 	    } else {
-	      kDebugInfo("KeyValueMap::get[list<string>]: parse error.");
+	      kdDebug() << "KeyValueMap::get[list<string>]: parse error." << endl;
 	      return false;
 	    }
 	  if((unsigned)second<raw.length()-3)
@@ -1599,8 +1597,7 @@ Section::save(QTextStream& stream, int level)
       stream << '[' << (*pos).first << ']' << endl;
       if(!(*pos).second->save(stream, level+1))
 	{
-	  kDebugInfo("Section::save: error saving child section \"%s\".",
-	    (*pos).first.data());
+	  kdDebug() << "Section::save: error saving child section \"" << (*pos).first.data() << "\"." << endl;
 	  return false;
 	} else {
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "Section::save: saved section \""
@@ -1616,7 +1613,7 @@ Section::save(QTextStream& stream, int level)
       stream << "# key-value-pairs:" << endl;
       if(!keys.save(stream, level*indent_width))
 	{
-	  kDebugInfo("Section::save: error saving key-value-pairs.");
+	  kdDebug() << "Section::save: error saving key-value-pairs." << endl;
 	  return false;
 	}
     }
@@ -1660,7 +1657,7 @@ Section::readSection(QTextStream& file, bool finish)
 		}
 	      if(finish==true)
 		{
-		  kDebugInfo("Section::readSection: missing end of section.");
+		  kdDebug() << "Section::readSection: missing end of section." << endl;
 		  return false;
 		} else {
 		  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -1868,7 +1865,7 @@ QConfigDB::~QConfigDB()
     }
   if(!clear()) // this will emit changed() a last time
     {
-      kDebugInfo("QConfigDB destructor: cannot remove me.");
+      kdDebug() << "QConfigDB destructor: cannot remove me." << endl;
     }
   if(locked)
     {
@@ -2204,8 +2201,7 @@ QConfigDB::unlock()
 	    {
 	      LockFiles.erase(pos); --pos;
 	    } else {
-	      kDebugInfo("QConfigDB::unlock: file not mentioned in lockfile"
-			 " list.");
+	      kdDebug() << "QConfigDB::unlock: file not mentioned in lockfile" << endl;
 	    }
 	  locked=false;
 	  return true;
@@ -2416,9 +2412,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	  storeFileAge(); 
 	  return true;
 	} else {
-	  kDebugInfo("QConfigDB::setFileName: permission denied, "
-	    "filename not set.\n                       "
-	    "(hint: file must exist, but it does not)");
+	  kdDebug() << "QConfigDB::setFileName: permission denied, " << endl;
 	  return false;
 	}
     } else {
@@ -2577,8 +2571,7 @@ QConfigDB::load()
       kdDebug(GUARD, KAB_KDEBUG_AREA) << "QConfigDB::load: done." << endl;
       return rc;
     } else {
-      kDebugInfo("QConfigDB::load: error opening file \"%s\" for reading.",
-		 filename.ascii());
+      kdDebug() << "QConfigDB::load: error opening file \"" << filename << "\" for reading." << endl;
       return false;
     }
   // ############################################################################

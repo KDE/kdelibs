@@ -144,7 +144,7 @@ void KDirOperator::resetCursor()
 	progress->hide();
 }
 
-void KDirOperator::activatedMenu( const KFileViewItem *item )
+void KDirOperator::activatedMenu( const KFileViewItem * )
 {
     actionMenu->popup( QCursor::pos() );
 }

@@ -27,6 +27,7 @@
 #ifdef HAVE_SYS_SOUNDCARD_H
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
 #include <sys/types.h>
@@ -61,7 +62,7 @@ static int orig_init = 0;
 
 /*
  * NOTE:
- * 
+ *
  * To truely support non-blocking I/O, there is some stuff missing. Namely,
  * select should be trapped and redirected, as well as the means for making
  * a stream non-blocking and so on. Maybe poll, too.
@@ -84,16 +85,16 @@ static int sndfd = -1;
 static int settings;
 static arts_stream_t stream = 0;
 
-void artsdspdebug(const char *fmt,...)
+static void artsdspdebug(const char *fmt,...)
 {
-	int artsdspdebug = -1;
+	int iartsdspdebug = -1;
 
-	if(artsdspdebug < 0)
+	if(iartsdspdebug < 0)
 	{
 		const char *verbose = getenv("ARTSDSP_VERBOSE");
-		artsdspdebug=verbose && !strcmp(verbose,"1");
+		iartsdspdebug=verbose && !strcmp(verbose,"1");
 	}
-	if(artsdspdebug)
+	if(iartsdspdebug)
 	{
     	va_list ap;
     	va_start(ap, fmt);

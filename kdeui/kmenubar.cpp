@@ -36,6 +36,7 @@
 #include <kapp.h>
 #include <kwm.h>
 #include <kwin.h>
+#include <kglobal.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

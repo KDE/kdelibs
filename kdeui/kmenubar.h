@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998, 1999, 2000 Matthias Ettrich (ettrich@kde.org)
     Copyright (C) 1999, 2000 Daniel "Mosfet" Duley (mosfet@kde.org)
 
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -26,7 +26,6 @@
 #define _KMENUBAR_H
 
 #include <qmenubar.h>
-#include <kglobal.h>
 
 /**
  * KDE Style-able menubar.
@@ -41,7 +40,7 @@
 class KMenuBar : public QMenuBar
 {
     Q_OBJECT
-    
+
 public:
 
     KMenuBar (QWidget *parent=0, const char *name=0);

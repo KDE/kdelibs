@@ -23,7 +23,6 @@
 #define __kaction_h__ $Id$
 
 #include <qobject.h>
-#include <kstdaccel.h>
 #include <qdict.h>
 
 class QMenuBar;

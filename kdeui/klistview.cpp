@@ -70,8 +70,8 @@ KListView::KListView( QWidget *parent, const char *name )
 
 KListView::~KListView()
 {
-    delete d->startDragPos; 
-    delete d->pressPos; 
+    delete d->startDragPos;
+    delete d->pressPos;
     delete d->invalidateRect;
 }
 
@@ -567,12 +567,12 @@ QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem 
 	return rect;
 }
 
-void KListView::rename(QListViewItem *item, int c)
+void KListView::rename(QListViewItem *, int )
 {
 
 }
 
-void KListView::mousePressEvent(QMouseEvent *e)
+void KListView::mousePressEvent(QMouseEvent *)
 {
 
 }

@@ -24,6 +24,8 @@
 #include "kstatusbar.h"
 #include "ktmainwindow.h"
 #include <klocale.h>
+#include <kiconloader.h>
+#include <kglobalsettings.h>
 
 class KXMLGUIBuilderPrivate
 {
@@ -118,12 +120,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QCString text = element.namedItem( "text" ).toElement().text().utf8();
     if ( text.isEmpty() ) // try with capital T
       text = element.namedItem( "Text" ).toElement().text().utf8();
-    
+
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text!" );
     else
       i18nText = i18n( text );
-		    
+		
     QString icon = element.attribute( "icon" );
     QPixmap pix;
 
@@ -163,7 +165,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QCString text = element.namedItem( "text" ).toElement().text().utf8();
     if (text.isEmpty())  // try with capital T
       text = element.namedItem( "Text" ).toElement().text().utf8();
-    
+
     if (!text.isEmpty())
       bar->setText( i18n( text ) );
 
