@@ -54,6 +54,9 @@ KAudio::KAudio() : QObject()
   tmpadr= getenv("HOME");
   int homePathLen = strlen(tmpadr);
 
+  // Patch for HP-UX root-user with "/"-Home-Directory (deller)
+  if (homePathLen==1) { homePathLen=0; tmpadr=""; }
+  
   if ( (homePathLen+strlen(kasFileName)+1 ) >= maxFnameLen ) {
     cerr <<  "HOME path too long.\n";
     return;
@@ -70,8 +73,6 @@ KAudio::KAudio() : QObject()
 
   fscanf(KMServerCidHandle,"%s\n",ServerId);
   fclose (KMServerCidHandle);
-
-
 
   /************* connect audio player ******************************/
   MdConnect(atoi(ServerId), &m);
