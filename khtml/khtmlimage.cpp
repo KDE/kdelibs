@@ -138,7 +138,7 @@ bool KHTMLImage::openURL( const KURL &url )
 
 bool KHTMLImage::closeURL()
 {
-    return true;
+    return m_khtml->closeURL();
 }
 
 void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
