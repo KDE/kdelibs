@@ -408,6 +408,7 @@ protected:
    */
   ~KCmdLineArgs();
 
+private:
   /**
    * @internal
    *

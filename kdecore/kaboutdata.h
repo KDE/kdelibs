@@ -84,7 +84,7 @@ public:
      */
     QString webAddress() const;
 
-protected:
+private:
     const char *mName;
     const char *mTask;
     const char *mEmailAddress;
@@ -100,10 +100,10 @@ protected:
  * (using @ref KAboutPerson), license and copyright information.
  *
  * Currently, the values set here are shown by the "About" box
- * (@see KAboutDialog), used by the bug report dialog (@see KBugReport),
- * and by the help shown on command line (@see KCmdLineArguments).
+ * (see @ref KAboutDialog), used by the bug report dialog (see @ref KBugReport),
+ * and by the help shown on command line (see @ref KCmdLineArguments).
  *
- * @short Class holding information needed by the "About" box and other
+ * @short Holds information needed by the "About" box and other
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  * @version $Id$

@@ -495,7 +495,7 @@ public:
      */
      static void setMainCatalogue(const char *catalogue);
 
-protected:
+private:
     QString chset;
     bool m_weekStartsMonday;
 
