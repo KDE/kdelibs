@@ -257,7 +257,7 @@ public:
   /**
    * Returns the hostname to which the socket will be/is bound
    */
-  inline QString bindHost() const;
+  QString bindHost() const;
 
   /**
    * Sets the port/service to which we will bind before connecting
