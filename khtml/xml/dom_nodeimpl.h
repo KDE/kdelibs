@@ -285,7 +285,7 @@ public:
 
 private:
     DocumentPtr *document;
-    friend DocumentImpl;
+    friend class DocumentImpl;
 
 protected:
     khtml::RenderObject *m_render;
