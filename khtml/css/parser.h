@@ -1,3 +1,129 @@
+/* A Bison parser, made from parser.y, by GNU bison 1.75.  */
+
+/* Skeleton parser for Yacc-like parsing with Bison,
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
+
+/* As a special exception, when this file is copied by Bison into a
+   Bison output file, you may use that output file without restriction.
+   This special exception was added by the Free Software Foundation
+   in version 1.24 of Bison.  */
+
+#ifndef BISON_PARSER_TAB_H
+# define BISON_PARSER_TAB_H
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     S = 258,
+     SGML_CD = 259,
+     INCLUDES = 260,
+     DASHMATCH = 261,
+     BEGINSWITH = 262,
+     ENDSWITH = 263,
+     CONTAINS = 264,
+     STRING = 265,
+     IDENT = 266,
+     HASH = 267,
+     IMPORT_SYM = 268,
+     PAGE_SYM = 269,
+     MEDIA_SYM = 270,
+     FONT_FACE_SYM = 271,
+     CHARSET_SYM = 272,
+     NAMESPACE_SYM = 273,
+     KONQ_RULE_SYM = 274,
+     KONQ_DECLS_SYM = 275,
+     KONQ_VALUE_SYM = 276,
+     IMPORTANT_SYM = 277,
+     QEMS = 278,
+     EMS = 279,
+     EXS = 280,
+     PXS = 281,
+     CMS = 282,
+     MMS = 283,
+     INS = 284,
+     PTS = 285,
+     PCS = 286,
+     DEGS = 287,
+     RADS = 288,
+     GRADS = 289,
+     MSECS = 290,
+     SECS = 291,
+     HERZ = 292,
+     KHERZ = 293,
+     DIMEN = 294,
+     PERCENTAGE = 295,
+     NUMBER = 296,
+     URI = 297,
+     FUNCTION = 298,
+     UNICODERANGE = 299
+   };
+#endif
+#define S 258
+#define SGML_CD 259
+#define INCLUDES 260
+#define DASHMATCH 261
+#define BEGINSWITH 262
+#define ENDSWITH 263
+#define CONTAINS 264
+#define STRING 265
+#define IDENT 266
+#define HASH 267
+#define IMPORT_SYM 268
+#define PAGE_SYM 269
+#define MEDIA_SYM 270
+#define FONT_FACE_SYM 271
+#define CHARSET_SYM 272
+#define NAMESPACE_SYM 273
+#define KONQ_RULE_SYM 274
+#define KONQ_DECLS_SYM 275
+#define KONQ_VALUE_SYM 276
+#define IMPORTANT_SYM 277
+#define QEMS 278
+#define EMS 279
+#define EXS 280
+#define PXS 281
+#define CMS 282
+#define MMS 283
+#define INS 284
+#define PTS 285
+#define PCS 286
+#define DEGS 287
+#define RADS 288
+#define GRADS 289
+#define MSECS 290
+#define SECS 291
+#define HERZ 292
+#define KHERZ 293
+#define DIMEN 294
+#define PERCENTAGE 295
+#define NUMBER 296
+#define URI 297
+#define FUNCTION 298
+#define UNICODERANGE 299
+
+
+
+
+#ifndef YYSTYPE
+#line 85 "parser.y"
 typedef union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
@@ -17,47 +143,14 @@ typedef union {
     char tok;
     Value value;
     ValueList *valueList;
-} YYSTYPE;
-#define	S	257
-#define	SGML_CD	258
-#define	INCLUDES	259
-#define	DASHMATCH	260
-#define	BEGINSWITH	261
-#define	ENDSWITH	262
-#define	CONTAINS	263
-#define	STRING	264
-#define	IDENT	265
-#define	HASH	266
-#define	IMPORT_SYM	267
-#define	PAGE_SYM	268
-#define	MEDIA_SYM	269
-#define	FONT_FACE_SYM	270
-#define	CHARSET_SYM	271
-#define	NAMESPACE_SYM	272
-#define	KONQ_RULE_SYM	273
-#define	KONQ_DECLS_SYM	274
-#define	KONQ_VALUE_SYM	275
-#define	IMPORTANT_SYM	276
-#define	QEMS	277
-#define	EMS	278
-#define	EXS	279
-#define	PXS	280
-#define	CMS	281
-#define	MMS	282
-#define	INS	283
-#define	PTS	284
-#define	PCS	285
-#define	DEGS	286
-#define	RADS	287
-#define	GRADS	288
-#define	MSECS	289
-#define	SECS	290
-#define	HERZ	291
-#define	KHERZ	292
-#define	DIMEN	293
-#define	PERCENTAGE	294
-#define	NUMBER	295
-#define	URI	296
-#define	FUNCTION	297
-#define	UNICODERANGE	298
+} yystype;
+/* Line 1281 of /usr/share/bison/yacc.c.  */
+#line 149 "parser.tab.h"
+# define YYSTYPE yystype
+#endif
+
+
+
+
+#endif /* not BISON_PARSER_TAB_H */
 

@@ -606,7 +606,7 @@ element_name:
 	    if (doc->isHTMLDocument())
 		tag = tag.lower();
 	    const DOMString dtag(tag);
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
             $$ = doc->tagId(0, dtag.implementation(), false);
 #else
 	    $$ = doc->elementNames()->getId(dtag.implementation(), false);
@@ -681,7 +681,7 @@ attrib_id:
 	    if (doc->isHTMLDocument())
 		attr = attr.lower();
 	    const DOMString dattr(attr);
-#if APPLE_CHANGES
+#ifdef APPLE_CHANGES
             $$ = doc->attrId(0, dattr.implementation(), false);
 #else
 	    $$ = doc->attrNames()->getId(dattr.implementation(), false);

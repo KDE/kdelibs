@@ -134,8 +134,8 @@ namespace DOM {
 	    }
 
 	mutable DOM::DOMString value;
-        CSSSelector* simpleSelector; // Used for :not.
 	CSSSelector *tagHistory;
+        CSSSelector* simpleSelector; // Used for :not.
         DOM::NodeImpl::Id attr;
         DOM::NodeImpl::Id tag;
 
