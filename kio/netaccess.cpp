@@ -36,6 +36,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/job.h>
+#include <kio/scheduler.h>
 
 #include "kio/netaccess.h"
 
@@ -146,6 +147,7 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite
 {
   bJobOK = true; // success unless further error occurs
 
+  KIO::Scheduler::checkSlaveOnHold(true);
   KIO::Job * job = KIO::file_copy( src, target, -1, overwrite );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );

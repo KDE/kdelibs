@@ -160,6 +160,37 @@ void Slave::setPID(pid_t pid)
     m_pid = pid;
 }
 
+void Slave::hold(const KURL &url)
+{
+   ref();
+   {
+      QByteArray data;
+      QDataStream stream( data, IO_WriteOnly );
+      stream << url;
+      slaveconn.send( CMD_SLAVE_HOLD, data );
+      slaveconn.close();
+      dead = true;
+      emit slaveDied(this);
+   }
+   deref();
+   // Call KLauncher::waitForSlave(pid);
+   {
+      DCOPClient *client = kapp->dcopClient();
+      if (!client->isAttached())
+         client->attach();
+
+      QByteArray params, reply;
+      QCString replyType;
+      QDataStream stream(params, IO_WriteOnly);
+      pid_t pid = m_pid;
+      stream << pid;
+
+      QCString launcher = KApplication::launcher();
+      client->call(launcher, launcher, "waitForSlave(pid_t)",
+	    params, replyType, reply);
+   }
+}
+
 void Slave::suspend()
 {
    slaveconn.suspend();
@@ -263,12 +294,6 @@ void Slave::setConfig(const MetaData &config)
     slaveconn.send( CMD_CONFIG, data );
 }
 
-
-Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
-{
-   return createSlave(url.protocol(), url, error, error_text);
-}
-
 Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text )
 {
     //kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
@@ -305,6 +330,46 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     {
 	error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+        delete slave;
+	return 0;
+    }
+    slave->setPID(pid);
+    QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
+
+    return slave;
+}
+
+Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
+{
+    //kdDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
+
+    DCOPClient *client = kapp->dcopClient();
+    if (!client->isAttached())
+	client->attach();
+
+    QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
+    KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
+
+    KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
+
+    Slave *slave = new Slave(kss, protocol, socketfile.name());
+
+    QByteArray params, reply;
+    QCString replyType;
+    QDataStream stream(params, IO_WriteOnly);
+    stream << url << socketfile.name();
+
+    QCString launcher = KApplication::launcher();
+    if (!client->call(launcher, launcher, "requestHoldSlave(KURL,QString)",
+	    params, replyType, reply)) {
+        delete slave;
+	return 0;
+    }
+    QDataStream stream2(reply, IO_ReadOnly);
+    pid_t pid;
+    stream2 >> pid;
+    if (!pid)
+    {
         delete slave;
 	return 0;
     }

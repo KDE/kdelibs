@@ -179,6 +179,7 @@ signals:
 protected slots:
   void slotTimeout();
   void slotScanFinished( KIO::Job * );
+  void slotScanMimeType( KIO::Job *, const QString &type );
   void slotStatResult( KIO::Job * );
 
 protected:

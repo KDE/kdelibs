@@ -112,6 +112,8 @@ public:
     bool multipleAuthCaching:1;
     MetaData configData;
     SlaveBaseConfig *config;
+    KURL onHoldUrl;
+    bool onHold;
 };
 
 };
@@ -185,6 +187,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->needSendCanResume = false;
     d->multipleAuthCaching = false;
     d->config = new SlaveBaseConfig(this);
+    d->onHold = false;
 }
 
 SlaveBase::~SlaveBase()
@@ -218,20 +221,7 @@ void SlaveBase::dispatchLoop()
         QByteArray data;
         if ( appconn->read(&cmd, data) != -1 )
         {
-          if (cmd == CMD_SLAVE_CONNECT)
-          {
-            QString app_socket;
-            QDataStream stream( data, IO_ReadOnly);
-            stream >> app_socket;
-            appconn->send( MSG_SLAVE_ACK );
-            disconnectSlave();
-            mConnectedToApp = true;
-            connectSlave(app_socket);
-          }
-          else
-          {
-            dispatch(cmd, data);
-          }
+          dispatch(cmd, data);
         }
         else // some error occured, perhaps no more application
         {
@@ -358,6 +348,8 @@ void SlaveBase::slaveStatus( const QString &host, bool connected )
     pid_t pid = getpid();
     Q_INT8 b = connected ? 1 : 0;
     KIO_DATA << pid << mProtocol << host << b;
+    if (d->onHold)
+       stream << d->onHoldUrl;
     m_pConnection->send( MSG_SLAVE_STATUS, data );
 }
 
@@ -402,6 +394,8 @@ static bool isSubCommand(int cmd)
             (cmd == CMD_CONFIG) ||
             (cmd == CMD_SUBURL) ||
             (cmd == CMD_SLAVE_STATUS) ||
+            (cmd == CMD_SLAVE_CONNECT) ||
+            (cmd == CMD_SLAVE_HOLD) ||
             (cmd == CMD_MULTI_GET));
 }
 
@@ -414,8 +408,7 @@ void SlaveBase::mimeType( const QString &_type)
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
-      kdDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data"
-                    << endl;
+      // kdDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data" << endl;
       KIO_DATA << mOutgoingMetaData;
       m_pConnection->send( INF_META_DATA, data );
     }
@@ -429,6 +422,9 @@ void SlaveBase::mimeType( const QString &_type)
            this->~SlaveBase();
            ::exit(255);
        }
+       // kdDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
+       if ( cmd == CMD_HOST) // Ignore.
+          continue;
        if ( isSubCommand(cmd) )
        {
           dispatch( cmd, data );
@@ -439,10 +435,6 @@ void SlaveBase::mimeType( const QString &_type)
   }
   while (cmd != CMD_NONE);
   mOutgoingMetaData.clear();
-  // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which
-  // case the slave had been put on hold.) [or special,
-  // for http posts]. Something else is basically an error
-  Q_ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
 // remove in KDE 3.0
@@ -528,8 +520,6 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    kdDebug(7019) << "listEntries " << list.count() << endl;
-
     KIO_DATA << list.count();
     UDSEntryListConstIterator it = list.begin();
     UDSEntryListConstIterator end = list.end();
@@ -764,6 +754,29 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_SLAVE_STATUS:
         slave_status();
         break;
+    case CMD_SLAVE_CONNECT:
+    {
+        d->onHold = false; 
+        QString app_socket;
+        QDataStream stream( data, IO_ReadOnly);
+        stream >> app_socket;
+        appconn->send( MSG_SLAVE_ACK );
+        disconnectSlave();
+        mConnectedToApp = true;
+        connectSlave(app_socket);
+    } break;
+    case CMD_SLAVE_HOLD:
+    {
+        KURL url;
+        QDataStream stream( data, IO_ReadOnly);
+        stream >> url;
+        d->onHoldUrl = url;
+        d->onHold = true;
+        disconnectSlave();
+        mConnectedToApp = false;
+        // Do not close connection!
+        connectSlave(mPoolSocket);
+    } break;
     case CMD_REPARSECONFIGURATION:
         KProtocolManager::reparseConfiguration();
         reparseConfiguration();
@@ -771,12 +784,13 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_CONFIG:
         stream >> d->configData;
         break;
-    case CMD_GET: {
+    case CMD_GET: 
+    {
         stream >> url;
         get( url );
-    }
-    break;
-    case CMD_PUT: {
+    } break;
+    case CMD_PUT: 
+    {
         int permissions;
         Q_INT8 iOverwrite, iResume;
         stream >> url >> iOverwrite >> iResume >> permissions;
@@ -789,8 +803,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         d->needSendCanResume = true   /* !resume */;
 
         put( url, permissions, overwrite, resume);
-    }
-    break;
+    } break;
     case CMD_STAT:
         stream >> url;
         stat( url );
@@ -807,37 +820,37 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> url >> i;
         mkdir( url, i );
         break;
-    case CMD_RENAME: {
+    case CMD_RENAME: 
+    {
         Q_INT8 iOverwrite;
         KURL url2;
         stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         rename( url, url2, overwrite );
-    }
-    break;
-    case CMD_SYMLINK: {
+    } break;
+    case CMD_SYMLINK: 
+    {
         Q_INT8 iOverwrite;
         QString target;
         stream >> target >> url >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         symlink( target, url, overwrite );
-    }
-    break;
-    case CMD_COPY: {
+    } break;
+    case CMD_COPY:  
+    {
         int permissions;
         Q_INT8 iOverwrite;
         KURL url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
         copy( url, url2, permissions, overwrite );
-    }
-    break;
-    case CMD_DEL: {
+    } break;
+    case CMD_DEL: 
+    {
         Q_INT8 isFile;
         stream >> url >> isFile;
         del( url, isFile != 0);
-    }
-    break;
+    } break;
     case CMD_CHMOD:
         stream >> url >> i;
         chmod( url, i);

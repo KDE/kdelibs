@@ -107,23 +107,60 @@ namespace KIO {
 
         ~Scheduler();
 
+        /**
+         * Register @p job with the scheduler. 
+         * The default is to create a new slave for the job if no slave
+         * is available. This can be changed by calling @ref scheduleJob.
+         */
         static void doJob(SimpleJob *job)
         { self()->_doJob(job); }
 
+        /**
+         * Calling ths function makes that @p job gets scheduled for later
+         * execution, if multiple jobs are registered it might wait for
+         * other jobs to finish.
+         */
         static void scheduleJob(SimpleJob *job)
         { self()->_scheduleJob(job); }
 
+        /**
+         * Stop the execution of a job.
+         */
         static void cancelJob(SimpleJob *job)
         { self()->_cancelJob(job); }
 
+        /**
+         * Called when a job is done.
+         */
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
         { self()->_jobFinished(job, slave); }
 
+        /**
+         * Puts a slave on notice. A next job may reuse this slave if it
+         * requests the same URL.
+         *
+         * A job can be put on hold after it has emit'ed its mimetype.
+         * Based on the mimetype, the program can give control to another
+         * component in the same process which can then resume the job
+         * by simply asking for the same URL again.
+         */
         static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
         { self()->_putSlaveOnHold(job, url); }
 
+        /**
+         * Removes any slave that might have been put on hold. If a slave 
+         * was put on hold it will be killed.
+         */
         static void removeSlaveOnHold()
         { self()->_removeSlaveOnHold(); }
+
+        /**
+         * Send the slave that was put on hold back to KLauncher. This
+         * allows another process to take over the slave and resume the job
+         * the that was started.
+         */
+        static void publishSlaveOnHold()
+        { self()->_publishSlaveOnHold(); }
 
         /**
          * Requests a slave for use in connection-oriented mode.
@@ -197,6 +234,12 @@ namespace KIO {
                       const char *member )
         { return QObject::connect(sender, signal, member); }
 
+        /**
+         * When true, the next job will check whether KLauncher has a slave 
+         * on hold that is suitable for the job.
+         */
+        static void checkSlaveOnHold(bool b) { self()->_checkSlaveOnHold(b); }
+
         void debug_info();
 
         virtual bool process(const QCString &fun, const QByteArray &data,
@@ -241,9 +284,12 @@ namespace KIO {
         Slave *_getConnectedSlave(const KURL &url, const KIO::MetaData &metaData );
         bool _assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
         bool _disconnectSlave(KIO::Slave *slave);
+        void _checkSlaveOnHold(bool b);
+        void _publishSlaveOnHold();
 
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
+        
 
         QTimer slaveTimer;
         QTimer coSlaveTimer;
@@ -263,6 +309,7 @@ namespace KIO {
         ExtraJobData *extraJobData;
         SlaveConfig *slaveConfig;
         SessionData *sessionData;
+        bool checkOnHold;
 };
 
 };

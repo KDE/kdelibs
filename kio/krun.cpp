@@ -28,6 +28,7 @@
 #include "kmimemagic.h"
 #include "kio/job.h"
 #include "kio/global.h"
+#include "kio/scheduler.h"
 
 #include <kdatastream.h>
 #include <kmessageboxwrapper.h>
@@ -643,9 +644,11 @@ void KRun::scanFile()
   }
   kdDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
-  KIO::MimetypeJob *job = KIO::mimetype( m_strURL, m_bProgressInfo );
-  connect(job, SIGNAL( result( KIO::Job *)),
+  KIO::TransferJob *job = KIO::get( m_strURL, m_bProgressInfo );
+  connect(job, SIGNAL( result(KIO::Job *)),
           this, SLOT( slotScanFinished(KIO::Job *)));
+  connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
+          this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
   m_job = job;
 }
 
@@ -729,18 +732,19 @@ void KRun::slotStatResult( KIO::Job * job )
   }
 }
 
-void KRun::slotScanFinished( KIO::Job *job )
+void KRun::slotScanMimeType( KIO::Job *job, const QString &mimetype )
 {
-  m_job = 0;
-  if (job->error())
-  {
-     slotStatResult( job ); // hacky - we just want to use the same code on error
-     return;
-  }
-  QString mimetype = ((KIO::MimetypeJob *)job)->mimetype();
   if ( mimetype.isEmpty() )
     kdWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug." << endl;
   foundMimeType( mimetype );
+  m_job = 0;
+}
+
+void KRun::slotScanFinished( KIO::Job *job )
+{
+  m_job = 0;
+  slotStatResult( job ); // hacky - we just want to use the same code on error
+  return;
 }
 
 void KRun::foundMimeType( const QString& type )
@@ -799,6 +803,13 @@ void KRun::foundMimeType( const QString& type )
     return;
   }
 */
+  if (m_job && m_job->inherits("KIO::TransferJob"))
+  {
+     KIO::TransferJob *job = static_cast<KIO::TransferJob *>(m_job);
+     job->putOnHold();
+     KIO::Scheduler::publishSlaveOnHold();
+     m_job = 0;
+  }
 
   if (KRun::runURL( m_strURL, type )){
     m_bFinished = true;

@@ -135,15 +135,13 @@ namespace KIO {
 	 */
 	static Slave* createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text );
 
-        /**
-         * @deprecated FIXME KDE 3.0: remove me
-         */
-	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
+        static Slave* holdSlave( const QString &protocol, const KURL& url );
 
 	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }
 
         void suspend();
         void resume();
+        void hold(const KURL &url);
 
         bool suspended();
 

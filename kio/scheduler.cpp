@@ -68,6 +68,7 @@ class KIO::Scheduler::JobData
 public:
     QString protocol;
     QString proxy;
+    bool checkOnHold;
 };
 
 class KIO::Scheduler::ExtraJobData: public QPtrDict<KIO::Scheduler::JobData>
@@ -118,6 +119,7 @@ Scheduler::Scheduler()
            coSlaveTimer(this, "Scheduler::coSlaveTimer"),
            cleanupTimer(this, "Scheduler::cleanupTimer")
 {
+    checkOnHold = true; // !! Always check with KLauncher for the first request.
     slaveOnHold = 0;
     protInfoDict = new ProtocolInfoDict;
     slaveList = new SlaveList;
@@ -189,6 +191,11 @@ void Scheduler::_doJob(SimpleJob *job) {
     JobData *jobData = new JobData;
     jobData->protocol = KProtocolManager::slaveProtocol(job->url(), jobData->proxy);
 //    kdDebug(7006) << "Scheduler::_doJob protocol=" << jobData->protocol << endl;
+    if (job->command() == CMD_GET)
+    {
+       jobData->checkOnHold = checkOnHold;
+       checkOnHold = false;
+    }
     extraJobData->replace(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0, true);
@@ -495,6 +502,18 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QStri
 Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
+    JobData *jobData = extraJobData->find(job);
+if (!jobData)
+{
+    kdFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
+    return 0;
+}
+    if (jobData->checkOnHold)
+    {
+       slave = Slave::holdSlave(jobData->protocol, job->url());
+       if (slave)
+          return slave;
+    }
     if (slaveOnHold)
     {
        // Make sure that the job wants to do a GET or a POST, and with no offset
@@ -531,12 +550,6 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
           return slave;
     }
 
-    JobData *jobData = extraJobData->find(job);
-if (!jobData)
-{
-    kdFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
-    return 0;
-}
     return searchIdleList(idleSlaves, job->url(), jobData->protocol, exact);
 }
 
@@ -681,6 +694,14 @@ void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
     slaveOnHold = slave;
     urlOnHold = url;
     slaveOnHold->suspend();
+}
+
+void Scheduler::_publishSlaveOnHold()
+{
+    if (!slaveOnHold)
+       return;
+
+    slaveOnHold->hold(urlOnHold);
 }
 
 void Scheduler::_removeSlaveOnHold()
@@ -879,6 +900,13 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
     }
     return true;
 }
+
+void 
+Scheduler::_checkSlaveOnHold(bool b)
+{
+    checkOnHold = b;
+}
+
 
 static KStaticDeleter<Scheduler> ksds;
 
