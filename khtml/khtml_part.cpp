@@ -397,15 +397,6 @@ bool KHTMLPart::openURL( const KURL &url )
       d->m_job = KIO::http_post( url, args.postData, false );
       d->m_job->addMetaData("content-type", args.contentType() );
   }
-#if 0
-  else if (args.reload && d->m_doPost && (url.protocol().startsWith("http")))
-  {
-    args.setDoPost(true);
-    args.postData = d->m_postData;
-    d->m_job = KIO::http_post( url, d->m_postData, false );
-    d->m_job->addMetaData("content-type", d->m_postContentType );
-  }
-#endif
   else
   {
       d->m_job = KIO::get( url, false, false );
@@ -425,7 +416,6 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  d->m_doPost = false;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
@@ -3021,21 +3011,16 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     if (u.protocol() != "mailto")
        u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
     args.setDoPost( false );
-    d->m_doPost = false;
   }
   else {
     args.postData = formData;
     args.setDoPost( true );
-    d->m_doPost = true;
-    d->m_postData = formData;
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
       args.setContentType( "Content-Type: application/x-www-form-urlencoded" );
     else // contentType must be "multipart/form-data"
       args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
-
-    d->m_postContentType = args.contentType();
   }
 
   if ( d->m_doc->parsing() || d->m_runningScripts > 0 ) {
@@ -3337,10 +3322,6 @@ void KHTMLPart::saveState( QDataStream &stream )
   }
   stream << d->m_encoding << d->m_sheetUsed << docState;
 
-  KParts::URLArgs args( d->m_extension->urlArgs() );
-
-  stream << d->m_doPost << d->m_postData << d->m_postContentType;
-
   stream << d->m_zoomFactor;
 
   stream << d->m_httpHeaders;
@@ -3415,8 +3396,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
   stream >> d->m_cacheId;
 
   stream >> encoding >> sheetUsed >> docState;
-
-  stream >> d->m_doPost >> d->m_postData >> d->m_postContentType;
 
   d->m_encoding = encoding;
   d->m_sheetUsed = sheetUsed;
