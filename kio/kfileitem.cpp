@@ -86,8 +86,8 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
       break;
   }
   }
-  if ( _urlIsDirectory && !UDS_URL_seen && !m_strText.isEmpty() )
-      m_url.addPath( m_strText );
+  if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() )
+      m_url.addPath( m_strName );
   init( _determineMimeTypeOnDemand );
 }
 
