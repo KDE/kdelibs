@@ -61,8 +61,8 @@ void DavJob::slotData( const QByteArray& data )
 
 void DavJob::slotFinished()
 {
-  kdDebug() << "DavJob::slotFinished()" << endl;
-  kdDebug() << m_str_response << endl;
+  // kdDebug() << "DavJob::slotFinished()" << endl;
+  // kdDebug() << m_str_response << endl;
 	 
   m_response.setContent( m_str_response, true );
   TransferJob::slotFinished();
