@@ -107,7 +107,8 @@ public:
    * non-file-manager applications.
    *
    * @param _url the URL whose properties should be displayed
-   * @param _mode the mode, as returned by stat(). Don't set if unknown.  */
+   * @param _mode the mode, as returned by stat(). Don't set if unknown.
+   */
   KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1 );
 
   /**
@@ -117,7 +118,9 @@ public:
    *
    * @param _templUrl template used for reading only
    * @param _currentDir directory where the file will be written to
-   * @param _defaultName something to put in the name field, like mimetype.desktop */
+   * @param _defaultName something to put in the name field, 
+   * like mimetype.desktop 
+   */
   KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
                     const QString& _defaultName );
 
