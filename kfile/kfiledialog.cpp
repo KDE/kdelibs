@@ -216,7 +216,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	    SLOT(fileSelected(const KFileViewItem *)));
     connect(ops, SIGNAL(finishedLoading()),
 	    SLOT(slotLoadingFinished()));
-			
+
     KActionCollection *coll = ops->actionCollection();
     coll->action( "up" )->plug( toolbar );
     coll->action( "back" )->plug( toolbar );
@@ -268,7 +268,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     	     SLOT( fileCompletion( const QString& )));
     connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
 	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-	
+
     d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
 
     connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
@@ -278,10 +278,10 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
 	     SLOT( pathComboChanged( const QString& ) ));
     connect( d->pathCombo, SIGNAL( completion( const QString& )),
-    	     SLOT( dirCompletion( const QString& )));	
+    	     SLOT( dirCompletion( const QString& )));
     connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
     	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-	
+
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
 				  d->mainWidget);
@@ -462,7 +462,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 	accept();
 }
 
-	
+
 void KFileDialog::accept()
 {
     *lastDirectory = ops->url();
@@ -485,7 +485,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
 	if ( !i )
 	    return;
-	
+
 	d->url = i->url();
 
 	if ( !d->completionLock ) {
@@ -509,7 +509,7 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
 	if ( !i )
 	    return;
-	
+
 	d->url = i->url();
 	locationEdit->setCurrentItem( 0 );
 	locationEdit->setEditText( i->name() );
@@ -563,7 +563,7 @@ void KFileDialog::initGUI()
     d->boxLayout->addLayout(d->lafBox, 0);
     d->lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
     d->lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
-    d->lafBox->addWidget(d->okButton, 0, 2, AlignVCenter | AlignRight);
+    d->lafBox->addWidget(d->okButton, 0, 2, AlignVCenter);
 
     d->lafBox->addWidget(d->filterLabel, 1, 0, AlignVCenter);
     d->lafBox->addWidget(filterWidget, 1, 1, AlignVCenter);
@@ -746,14 +746,14 @@ void KFileDialog::toolbarCallback(int i) // SLOT
     if (i == CONFIGURE_BUTTON) {
 	KFileDialogConfigureDlg conf(this, "filedlgconf");
 	if (conf.exec() == QDialog::Accepted) {
-	
+
 	    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
 						 false);
 	    c->setGroup( ConfigGroup );
-	
+
 	    delete d->boxLayout; // this removes all child layouts too
 	    d->boxLayout = 0;
-	
+
 	    d->showStatusLine =
 		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
 	    delete c;
@@ -860,7 +860,7 @@ void KFileDialog::setSelection(const QString& url)
 	    locationEdit->setCurrentItem( 0 );
 	    locationEdit->setEditText( filename );
 	}
-	
+
 	d->url = KURL(ops->url(), filename);
     }
 }
@@ -1103,16 +1103,16 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     while ( true ) {
 	index1 = line.find( '"', start );
 	index2 = line.find( '"', index1 + 1 );
-	
+
 	if ( index1 < 0 )
 	    break;
-	
+
 	// get everything between the " "
 	name = line.mid( index1 + 1, index2 - index1 - 1 );
 	u.setFileName( name );
 	if ( !u.isMalformed() )
 	    urls.append( u );
-	
+
 	start = index2 + 1;
     }
     return urls;
