@@ -189,7 +189,7 @@ bool KFilterDev::at( QIODevice::Offset pos )
     // Maybe we could have a flag in the class to know we don't care about the
     // actual data
     QByteArray dummy( pos );
-    return ( readBlock( dummy.data(), pos ) == pos ) ;
+    return ( (QIODevice::Offset)readBlock( dummy.data(), pos ) == pos ) ;
 }
 
 bool KFilterDev::atEnd() const
