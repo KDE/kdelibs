@@ -1,24 +1,3 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
-                  1998 Stephan Kulow <coolo@kde.org>
-                  1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -1073,6 +1052,9 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 
 void KFileDialog::completion() // SLOT
 {
+    bool useSingleClick =
+	kapp->getConfig()->readNumEntry("SingleClick",1);
+
     QString base;
     if (acceptUrls)
 	base = dir->url().copy();
@@ -1090,12 +1072,13 @@ void KFileDialog::completion() // SLOT
 						base.length()));
 
 	if (!complete.isNull()) {
-	    debug("Complte %s", complete.data());
-	    locationEdit->setText(base + complete);
-	} else
-	    warning("no complete");
-
-    } else {  // we changed into a parent directory -> go there first
+	    // debug("Complete %s", complete.data());
+	    if ( complete != "../" )
+                locationEdit->setText(base + complete);
+	} else {
+	    // warning("no complete");
+	}
+    } else {                   // we changed into a parent directory -> go there first
 	int l = text.length() - 1;
 	while (!text.isEmpty() && text[l] != '/')
 	    l--;
@@ -1253,8 +1236,15 @@ void KFileDialog::setMultiSelection(bool)
 void KFileDialog::updateStatusLine()
 {
     QString lStatusText;
-    lStatusText.sprintf(i18n("%d directories and %d files"),
-			fileList->numDirs(), fileList->numFiles());
+    QString lFileText("files"), lDirText("directories");
+    if ( fileList->numDirs() == 1 )
+        lDirText = "directory";
+    if ( fileList->numFiles() == 1 )
+        lFileText = "file";
+    
+    lStatusText.sprintf(i18n("%d %s and %d %s"),
+			     fileList->numDirs(), lDirText.data(), 
+                             fileList->numFiles(), lFileText.data());
     myStatusLine->setText(lStatusText);
 }
 

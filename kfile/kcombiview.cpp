@@ -60,13 +60,13 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
     switch (files) {
 	
     case DetailView:
-	fileList = new KFileDetailList(s, sorting, this, "_detail");
+	fileList = new KFileDetailList(false, sorting, this, "_detail");
 	break;
     case SimpleView:
-	fileList = new KFileSimpleView(s, sorting, this, "_simple");
+	fileList = new KFileSimpleView(false, sorting, this, "_simple");
 	break;
     case DirList: // who ever wants this
-	fileList = new KDirListBox(s, sorting, this, "_dirs");
+	fileList = new KDirListBox(false, sorting, this, "_dirs");
 	break;
     case Custom:
 	fileList = getFileList();
@@ -157,19 +157,21 @@ QString KCombiView::findCompletion( const char *base, bool )
     QString found = fileList->findCompletion(base);
 
     // if no file completion possible, try the dirs
-    if (!found)
+    if (!found) {
 	found = dirList->findCompletion(base, true);
-    else {
+    } else {
         // complete in dirList so possible directories are highlighted
         QString foundDir = dirList->findCompletion(base, false);
         // if we find anything -> highlight it and least common denominator
         // is the last result
 	if ( foundDir ) {
 	    unsigned int i;
-            for ( i=0; (i<found.length()) && (i<foundDir.length()) ; i++){
+            for ( i=1; (i<=found.length()) && (i<=foundDir.length()) ; i++) {
                 if ( strncmp( found, foundDir, i) != 0 )
-                    break;}
-	    found.truncate(i);
+                    break;
+            }
+            if ( i==1 ) i++;
+	    found.truncate(i-1);
         }
     }
     return found;

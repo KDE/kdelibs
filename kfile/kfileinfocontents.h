@@ -99,7 +99,7 @@ private:
     QSignal *sActivateDir;
     QSignal *sHighlightFile;
     QSignal *sSelectFile;
-    QStrList *nameList;
+    QStrIList *nameList;
     
     KFileInfo *lastHFile;
     KFileInfo *lastSFile;

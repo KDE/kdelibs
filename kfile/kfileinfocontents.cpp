@@ -46,7 +46,7 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
     sHighlightFile = new QSignal(0, "highlightFile");
     sSelectFile    = new QSignal(0, "selectFile");
 
-    nameList = new QStrList();
+    nameList = new QStrIList();
     firstfile = 0;
     // don't use IconLoader to always get the same icon,
     // it looks very strange, if the icons differ from application
@@ -324,6 +324,9 @@ void KFileInfoContents::setCurrentItem(const char *item,
 QString KFileInfoContents::findCompletion( const char *base, 
 					   bool activateFound )
 {
+
+    if ( strlen(base) == 0 ) return 0;
+
     QString remainder = base;
     const char *name;
     for ( name = nameList->first(); name; name = nameList->next() ) {
@@ -333,31 +336,52 @@ QString KFileInfoContents::findCompletion( const char *base,
 	    break;
     }
     
+    
     if (name) {
 	
         QString body = name;
+        QString backup = name;
 
-        // get the possible text completions and store the least 
+        // get the possible text completions and store the smallest 
 	// common denominator in QString body
+        
+        unsigned int counter = strlen(base);
         for ( const char *extra = nameList->next(); extra; 
 	      extra = nameList->next() ) {
 	    
-            unsigned int counter;
-            if ( strncmp(extra, remainder, remainder.length()) != 0 )
+            counter = strlen(base);
+            // case insensitive comparison needed because items are stored insensitively
+            // so next instruction stop loop when first letter does no longer match
+            if ( strnicmp( extra, remainder, 1 ) != 0 )  
                 break;
-            for ( counter=0; counter < strlen(extra) ; counter++ ) {
+            // this is case sensitive again!
+            // goto next item if no completion possible with current item (->extra)
+            if ( strncmp(extra, remainder, remainder.length()) != 0 )
+                continue;
+            // get smallest common denominator
+            for ( ; counter <= strlen(extra) ; counter++ ) {
                 if (strncmp( extra, body, counter) != 0)
                     break;
             }
-            body.truncate(counter-1);
+            // truncate body, we have the smalles common denominator so far
+            if ( counter == 1 )
+                body.truncate(counter);
+            else
+            	body.truncate(counter-1);
+            // this is needed because we want to highlight the first item in list
+            // so we separately keep the "smallest" item separate, 
+            // we need the biggest in case the list is reversed
+            if ( extra && ( reversed ? (strcmp( extra, backup ) > 0) : (strcmp( extra, backup ) < 0) ) )
+              backup = extra;
         }
-	
-	debug("completion %s %s %s", base, name, body.data());
+	name = backup;
+        
+	// debug("completion base (%s) name (%s) body (%s)", base, name, body.data());
 
 	bool matchExactly = (name == body);
 
-	if (matchExactly || activateFound)
-	    {
+	if (matchExactly && (activateFound || useSingleClick))
+	    { 
 		for (KFileInfo *i = sortedList->first(); i; 
 		     i = sortedList->next())
 		    

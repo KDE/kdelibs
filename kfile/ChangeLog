@@ -1,3 +1,16 @@
+Mon Mar 30 17:53:20 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+        * kcombiview.cpp: bug fixes for completion & corresponding
+        highlighting
+
+        * kfiledialog.cpp: small bug fix, too much copying into location
+
+        * kfileinfocontents.cpp: completion slightly remodeled, should
+        work in all views now
+
+        * kfileinfocontents.h: changed nameList to case insensitive
+        list
+                    
 1998-03-28  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: changed the filter seperator to \n. 
