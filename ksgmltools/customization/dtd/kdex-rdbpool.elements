@@ -136,7 +136,7 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
-<!ENTITY % remap.attrib "">
+<!--ENTITY % remap.attrib ""--><!-- just for the conversion!! -->
 
 <!-- Not used -->
 <!ENTITY % revisionflag.attrib "">
