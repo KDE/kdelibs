@@ -757,6 +757,22 @@ CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
 ])
 
+AC_CHECK_RPATH(
+[
+AC_MSG_CHECKING(for rpath)
+AC_ARG_ENABLE(rpath,
+      [  --disable-rpath         do not use the rpath feature of ld],
+      USE_RPATH=$enableval, USE_RPATH=yes)
+if test -z "$KDE_RPATH" && test "$USE_RPATH" = "yes"; then
+  KDE_RPATH="-rpath \$(kde_libraries)"
+  if test -n "$qt_libraries"; then
+    KDE_RPATH="$KDE_RPATH -rpath \$(qt_libraries)"
+  fi
+fi 
+AC_SUBST(KDE_RPATH)
+AC_MSG_RESULT($USE_RPATH)
+])
+
 dnl Check for the type of the third argument of getsockname
 AC_DEFUN(AC_CHECK_KSIZE_T,
 [AC_MSG_CHECKING(for the third argument of getsockname)  
