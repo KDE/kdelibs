@@ -1,3 +1,6 @@
+24.08.97	translated the most stuff in libkdeui
+			added a flag to KLocale to avoid translated dialogs in
+			not translated applications
 23.08.97	SGI patches by Claus Riemann
 			corrected the setenv file. It's now C++ not C.
 			removed the historical AC_C_INLINE test. 
