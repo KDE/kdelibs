@@ -47,10 +47,11 @@
 using namespace DOM;
 using namespace khtml;
 
+#define TABLECELLMARGIN -0x4000;
 
 static inline int collapseMargins(int a, int b)
 {
-    if ( a == -0x4000 || b == -0x4000 ) return -0x4000;
+    if ( a == TABLECELLMARGIN || b == TABLECELLMARGIN ) return TABLECELLMARGIN;
     if(a >= 0 && b >= 0) return (a > b ? a : b );
     if(a > 0 && b < 0) return a + b;
     if(a < 0 && b > 0) return b + a;
@@ -310,13 +311,13 @@ void RenderFlow::layoutBlockChildren()
 
     int prevMargin = 0;
     if(isTableCell() ) {
-	prevMargin = -0x4000;
+	prevMargin = TABLECELLMARGIN;
     } else if ( m_height == 0 ) {
 	// the elements and childs margin collapse if there is no border and padding.
 	prevMargin = marginTop();
 	if ( parent() )
 	    prevMargin = collapseMargins( prevMargin, parent()->marginTop() );
-	if ( prevMargin != -0x4000 )
+	if ( prevMargin != TABLECELLMARGIN )
 	    m_height = -prevMargin;
     }
     //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl; 
@@ -357,7 +358,7 @@ void RenderFlow::layoutBlockChildren()
         //kdDebug(0) << "margin = " << margin << " prevMargin = " << prevMargin << endl;
         margin = collapseMargins(margin, prevMargin);
 
-	if ( margin != -0x4000 )
+	if ( margin != TABLECELLMARGIN )
 	    m_height += margin;
 
         //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;

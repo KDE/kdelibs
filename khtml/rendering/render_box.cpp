@@ -54,6 +54,7 @@
 using namespace DOM;
 using namespace khtml;
 
+#define TABLECELLMARGIN -0x4000
 
 RenderBox::RenderBox()
     : RenderContainer()
@@ -601,8 +602,8 @@ void RenderBox::calcVerticalMargins()
 {
     if( isTableCell() ) {
 	// table margins are basically infinite
-	m_marginTop = -0x4000;
-	m_marginBottom = -0x4000;
+	m_marginTop = TABLECELLMARGIN;
+	m_marginBottom = TABLECELLMARGIN;
 	return;
     }
 	
