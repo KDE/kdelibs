@@ -48,6 +48,7 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    _pem = new QRadioButton(i18n("&PEM"), bg);
    _netscape = new QRadioButton(i18n("&Netscape"), bg);
    _der = new QRadioButton(i18n("&DER/ASN1"), bg);
+   _text = new QRadioButton(i18n("&Text"), bg);
    grid->addMultiCellWidget(bg, 0, 4, 0, 3);
    _pem->setChecked(true);
 
@@ -85,6 +86,8 @@ void KCertExport::setCertificate(KSSLCertificate *c) {
 
 void KCertExport::slotExport() {
 QByteArray cert;
+QString certt;
+
    if (_filename->text().isEmpty()) return;
 
    if (!_c) {
@@ -96,11 +99,13 @@ QByteArray cert;
       cert = _c->toDer();
    } else if (_pem->isChecked()) {
       cert = _c->toPem();
+   } else if (_text->isChecked()) {
+      certt = _c->toText();
    } else {  // netscape
       cert = _c->toNetscape();
    }
 
-      if (cert.size() <= 0) {
+      if ((!_text->isChecked() && cert.size() <= 0) || certt.isEmpty()) {
          KMessageBox::error(this, i18n("Error converting the certificate into the requested format."), i18n("SSL"));
          reject();
          return;
@@ -114,7 +119,10 @@ QByteArray cert;
          return;
       }
 
-      outFile.writeBlock(cert);
+      if (_text->isChecked())
+        outFile.writeBlock(certt.local8Bit(), certt.length());
+      else outFile.writeBlock(cert);
+
       outFile.close();
 
 accept();

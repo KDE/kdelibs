@@ -45,7 +45,7 @@ protected slots:
 
 private:
   QPushButton *_export, *_cancel, *_choose;
-  QRadioButton *_pem, *_netscape, *_der;
+  QRadioButton *_pem, *_netscape, *_der, *_text;
   KLineEdit *_filename;
 
   KSSLCertificate *_c;
