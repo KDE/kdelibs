@@ -355,7 +355,7 @@ bool KZip::openArchive( int mode )
     int n;
 
     // contains information gathered from the local file headers
-    QAsciiDict<ParseFileInfo> pfi_map(1009, true, false);
+    QAsciiDict<ParseFileInfo> pfi_map(1009, true /*case sensitive */, true /*copy keys*/);
     pfi_map.setAutoDelete(true);
 
     for (;;) // repeat until 'end of entries' signature is reached
@@ -483,17 +483,17 @@ bool KZip::openArchive( int mode )
                 kdWarning(7040) << "Invalid ZIP file, central entry too short" << endl; // not long enough for valid entry
                 return false;
             }
-			// length of the filename (well, pathname indeed)
+            // length of the filename (well, pathname indeed)
             int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
             QCString bufferName( namelen + 1 );
             n = dev->readBlock( bufferName.data(), namelen );
             if ( n < namelen )
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
 
-	    ParseFileInfo *pfi = pfi_map[bufferName];
-	    if (!pfi) {	// can that happen?
-	        pfi_map.insert(bufferName.data(), pfi = new ParseFileInfo());
-	    }
+            ParseFileInfo *pfi = pfi_map[bufferName];
+            if (!pfi) {   // can that happen?
+                pfi_map.insert(bufferName.data(), pfi = new ParseFileInfo());
+            }
             QString name( QFile::decodeName(bufferName) );
 
             //kdDebug(7040) << "name: " << name << endl;
