@@ -121,6 +121,7 @@ CSSRule CSSStyleDeclaration::parentRule() const
 }
 
 
+// ----------------------------------------------------------
 
 CSSValue::CSSValue()
 {
@@ -170,7 +171,10 @@ unsigned short CSSValue::valueType() const
     return ((CSSValueImpl *)impl)->valueType();
 }
 
+// ----------------------------------------------------------
 
+// ### perhaps just use impl instead of vimpl (not sure why it
+// is here)
 
 CSSValueList::CSSValueList() : CSSValue()
 {
@@ -197,17 +201,18 @@ CSSValueList::~CSSValueList()
 
 unsigned long CSSValueList::length() const
 {
-    if(!impl) return 0;
-    return ((CSSValueListImpl *)impl)->length();
+    if(!vimpl) return 0;
+    return ((CSSValueListImpl *)vimpl)->length();
 }
 
 CSSValue CSSValueList::item( unsigned long /*index*/ )
 {
-    //if(!impl) return 0;
-    //return ((CSSValueListImpl *)impl)->item( index );
+    //if(!vimpl) return 0;
+    //return ((CSSValueListImpl *)vimpl)->item( index );
     return 0;
 }
 
+// ----------------------------------------------------------
 
 CSSPrimitiveValue::CSSPrimitiveValue() : CSSValue()
 {

@@ -33,6 +33,7 @@ class DocumentFragment;
 class Node;
 class DOMString;
 class DocumentImpl;
+class RangeImpl;
 
 class DOMException;
 
@@ -50,10 +51,9 @@ public:
      * An integer indicating the type of error generated.
      *
      */
-    enum exceptionCode {
-        BAD_ENDPOINTS_ERR = 201,
-	INVALID_NODE_TYPE_ERR = 202,
-	NULL_NODE_ERR = 203
+    enum RangeExceptionCode {
+        BAD_BOUNDARYPOINTS_ERR         = 1,
+        INVALID_NODE_TYPE_ERR          = 2
     };
     unsigned short code;
 };
@@ -61,11 +61,14 @@ public:
 
 class Range
 {
+    friend class DocumentImpl;
+    friend class Document;
+    friend class RangeImpl;
 public:
     Range();
     Range(const Document rootContainer);
     Range(const Range &other);
-    Range(const Node sc, const long so, const Node ec, const long eo);
+    Range(const Node startContainer, const long startOffset, const Node endContainer, const long endOffset);
 
     Range & operator = (const Range &other);
 
@@ -75,44 +78,38 @@ public:
      * Node within which the range begins
      *
      */
-    Node getStartContainer() const;
+    Node startContainer() const;
 
     /**
      * Offset within the starting node of the range.
      *
      */
-    long getStartOffset() const;
+    long startOffset() const;
 
     /**
      * Node within which the range ends
      *
      */
-    Node getEndContainer() const;
+    Node endContainer() const;
 
     /**
      * Offset within the ending node of the range.
      *
      */
-    long getEndOffset() const;
+    long endOffset() const;
+
+    /**
+     * TRUE if the range is collapsed
+     *
+     */
+    bool collapsed() const;
 
     /**
      * Gets the common ancestor container of the range's two end-points.
      * Also sets it.
      *
      */
-    Node getCommonAncestorContainer() /*const*/;
-
-    /**
-     * TRUE if the range is collapsed
-     *
-     */
-    bool isCollapsed() const;
-
-    /**
-     * TRUE if the range is detached
-     *
-     */
-    bool isDetached() const;
+    Node commonAncestorContainer();
 
     /**
      * Sets the attributes describing the start of the range.
@@ -250,12 +247,6 @@ public:
      */
     void selectNode ( const Node &refNode );
 
-    enum CompareHow {
-	StartToStart,
-	StartToEnd,
-	EndToEnd,
-	EndToStart
-    };
     /**
      * Select the contents within a node
      *
@@ -270,6 +261,13 @@ public:
      *
      */
     void selectNodeContents ( const Node &refNode );
+
+    enum CompareHow {
+	START_TO_START = 0,
+	START_TO_END = 1,
+	END_TO_END = 2,
+	END_TO_START = 3
+    };
 
     /**
      * Compare the end-points of two ranges in a document.
@@ -288,17 +286,6 @@ public:
      *
      */
     short compareBoundaryPoints ( CompareHow how, const Range &sourceRange );
-
-    /**
-     * @internal
-     * not part of the DOM
-     *
-     * Compare the boundary-points of a range.
-     *
-     * Return -1 if A is before B, 0 if they are equal, and 1 if A is after B.
-     *
-     */
-    short compareBoundaryPoints ( Node containerA, long offsetA, Node containerB, long offsetB );
 
     /**
      * @internal
@@ -453,29 +440,32 @@ public:
     void detach (  );
 
     /**
-     * @internal Extracts or clones the contents of the Range depending on
-     * it's argument, extract if contentExtract = true, else clone.
+     * not part of the DOM
+     * TRUE if the range is detached
+     *
      */
-    DocumentFragment masterTraverse(bool contentExtract);
-    
+    bool isDetached() const;
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    RangeImpl *handle() const;
+    bool isNull() const;
+
 protected:
-    Document ownerDocument;
-    Node startContainer;
-    unsigned long startOffset;
-    Node endContainer;
-    unsigned long endOffset;
-    Node commonAncestorContainer;
-    bool collapsed;
-    bool detached;
+    RangeImpl *impl;
+    Range(RangeImpl *i);
 };
 
 
-/*
- * IMO, the method createRange should just be added to Document, and this one is just an empty class
- * derived from Document, which holds a pointer to a DocumentImpl
+// ### not sure if this this class is really needed
+
+/**
+ * DocumentRange exists in the DOM specs as a means of providing access to the createRange() method.
+ * In khtml, this is method implemented in the Document class, but since DocumentRange inherits from
+ * Document, you can still use createRange() here if you wish.
  *
- * Lars
- */
 class DocumentRange : public Document
 {
 public:
@@ -486,7 +476,7 @@ public:
 
     ~DocumentRange();
 
-    /**
+     **
      * This interface can be obtained from the object implementing the
      * <code> Document </code> interface using binding-specific
      * casting methods.
@@ -499,12 +489,10 @@ public:
      * Attrs for which this Document is the <code> ownerDocument
      * </code> .
      *
-     */
+     *
 //    Range createRange(  );
-    
-protected:
-    DocumentImpl *impl;
 };
+*/
 
 
 }; // namespace

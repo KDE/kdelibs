@@ -44,6 +44,7 @@ class Range;
 class NodeIterator;
 class TreeWalker;
 class NodeFilter;
+class DOMImplementationImpl;
  
 /**
  * The <code> DOMImplementation </code> interface provides a number of
@@ -82,6 +83,17 @@ public:
      *
      */
     bool hasFeature ( const DOMString &feature, const DOMString &version );
+
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    DOMImplementationImpl *handle() const;
+    bool isNull() const;
+
+protected:
+    DOMImplementation(DOMImplementationImpl *i);
+    DOMImplementationImpl *impl;
 };
 
 
@@ -283,16 +295,94 @@ public:
     bool isHTMLDocument();
 
     /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentRange interface
+     *
+     * @return Range
+     * The initial state of the Range returned from this method is such that
+     * both of its boundary-points are positioned at the beginning of the
+     * corresponding Document, before any content. The Range returned can only
+     * be used to select content associated with this Document, or with
+     * DocumentFragments and Attrs for which this Document is the ownerDocument.
+     */
+    Range createRange();
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentTraversal interface
+     *
+     * Create a new NodeIterator over the subtree rooted at the specified node.
+     *
+     * @param root The node which will be iterated together with its children.
+     * The iterator is initially positioned just before this node. The
+     * whatToShow flags and the filter, if any, are not considered when setting
+     * this position. The root must not be null.
+     *
+     * @param whatToShow This flag specifies which node types may appear in the
+     * logical view of the tree presented by the iterator. See the description
+     * of NodeFilter for the set of possible SHOW_ values. These flags can be
+     * combined using OR.
+     *
+     * @param filter The NodeFilter to be used with this TreeWalker, or null to
+     * indicate no filter.
+     *
+     * @param entityReferenceExpansion The value of this flag determines
+     * whether entity reference nodes are expanded.
+     *
+     * @return NodeIterator The newly created NodeIterator.
+     *
+     * @exception DOMException
+     * NOT_SUPPORTED_ERR: Raised if the specified root is null.
+     */
+    NodeIterator createNodeIterator(Node root, unsigned long whatToShow,
+                                    NodeFilter filter, bool entityReferenceExpansion);
+
+    /**
+     * Introduced in DOM Level 2
+     * This method is from the DocumentTraversal interface
+     *
+     * Create a new TreeWalker over the subtree rooted at the specified node.
+     *
+     * @param root The node which will serve as the root for the TreeWalker.
+     * The whatToShow flags and the NodeFilter are not considered when setting
+     * this value; any node type will be accepted as the root. The currentNode
+     * of the TreeWalker is initialized to this node, whether or not it is
+     * visible. The root functions as a stopping point for traversal methods
+     * that look upward in the document structure, such as parentNode and
+     * nextNode. The root must not be null.
+     *
+     * @param whatToShow This flag specifies which node types may appear in the
+     * logical view of the tree presented by the tree-walker. See the
+     * description of NodeFilter for the set of possible SHOW_ values. These
+     * flags can be combined using OR.
+     *
+     * @param filter The NodeFilter to be used with this TreeWalker, or null to
+     * indicate no filter.
+     *
+     * @param entityReferenceExpansion If this flag is false, the contents of
+     * EntityReference nodes are not presented in the logical view.
+     *
+     * @return The newly created TreeWalker.
+     *
+     * @exception DOMException
+     * NOT_SUPPORTED_ERR: Raised if the specified root is null.
+     */
+    TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+                                bool entityReferenceExpansion);
+
+
+
+    /**
      * @internal
      * not part of the DOM
      */
-    Range createRange();
-    Range createRange(const Node &sc, const long so, const Node &ec, const long eo);
+/*    Range createRange(const Node &sc, const long so, const Node &ec, const long eo);
     NodeIterator createNodeIterator();
     NodeIterator createNodeIterator(long _whatToShow, NodeFilter *filter = 0);
     TreeWalker createTreeWalker();
-    TreeWalker createTreeWalker(long _whatToShow, NodeFilter *filter = 0);
-    
+    TreeWalker createTreeWalker(long _whatToShow, NodeFilter *filter = 0);*/
+
+
 protected:
     Document( DocumentImpl *i);
 
@@ -346,6 +436,7 @@ class DocumentFragmentImpl;
 class DocumentFragment : public Node
 {
     friend class Document;
+    friend class Range;
 
 public:
     DocumentFragment();

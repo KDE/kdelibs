@@ -193,8 +193,8 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
   if (p == "title")
     doc.setTitle(v.toString().value().string());
-// ###  else if (p == "body") // body is supposed to by writable but it is not in khtml
-//    doc.setBody(DOMNode(KJS::toNode(v)).toNode());
+  else if (p == "body")
+    doc.setBody(DOMNode(KJS::toNode(v)).toNode());
   else if (p == "cookie")
     doc.setCookie(v.toString().value().string());
   else {
@@ -454,7 +454,10 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "align")           return getString(heading.align());
     }
     break;
-    case ID_BLOCKQUOTE:
+    case ID_BLOCKQUOTE: {
+      DOM::HTMLBlockquoteElement blockquote = element;
+      if      (p == "cite")            return getString(blockquote.cite());
+    }
     case ID_Q: {
       DOM::HTMLQuoteElement quote = element;
       if      (p == "cite")            return getString(quote.cite());
@@ -1136,7 +1139,10 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       if      (p == "align")           { heading.setAlign(str); return; }
     }
     break;
-    case ID_BLOCKQUOTE:
+    case ID_BLOCKQUOTE: {
+      DOM::HTMLBlockquoteElement blockquote = element;
+      if      (p == "cite")            { blockquote.setCite(str); return; }
+    }
     case ID_Q: {
       DOM::HTMLQuoteElement quote = element;
       if      (p == "cite")            { quote.setCite(str); return; }

@@ -44,6 +44,20 @@ namespace DOM {
     class AttrImpl;
     class NodeListImpl;
     class StyleSheetListImpl;
+    class RangeImpl;
+    class NodeIteratorImpl;
+    class TreeWalkerImpl;
+    class NodeFilterImpl;
+
+class DOMImplementationImpl : public DomShared
+{
+public:
+    DOMImplementationImpl();
+    ~DOMImplementationImpl();
+
+    bool hasFeature ( const DOMString &feature, const DOMString &version );
+};
+
 
 /**
  * @internal
@@ -110,6 +124,14 @@ public:
     void setRestoreState( const QStringList &s) { m_state = s; }
 
     KHTMLView *view() const { return m_view; }
+
+    RangeImpl *createRange();
+
+    NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
+                                    NodeFilterImpl *filter, bool entityReferenceExpansion);
+
+// ###    TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+//                                bool entityReferenceExpansion);
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;

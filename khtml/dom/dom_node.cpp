@@ -34,69 +34,73 @@ using namespace DOM;
 
 NamedNodeMap::NamedNodeMap()
 {
-    map = 0;
+    impl = 0;
 }
 
 NamedNodeMap::NamedNodeMap(const NamedNodeMap &other)
 {
-    map = other.map;
-    if (map) map->ref();
+    impl = other.impl;
+    if (impl) impl->ref();
 }
 
-//NamedNodeMap::NamedNodeMap(NamedNodeMapImpl *i)// ### for BCI change
-NamedNodeMap::NamedNodeMap( NodeImpl *i)
+NamedNodeMap::NamedNodeMap(NamedNodeMapImpl *i)
 {
-    map = i;
-    if (map) map->ref();
+    impl = i;
+    if (impl) impl->ref();
 }
 
 NamedNodeMap &NamedNodeMap::operator = (const NamedNodeMap &other)
 {
-    if(map) map->deref();
-    map = other.map;
-    if(map) map->ref();
+    if(impl) impl->deref();
+    impl = other.impl;
+    if(impl) impl->ref();
 
     return *this;
 }
 
 NamedNodeMap::~NamedNodeMap()
 {
-    if(map) map->deref();
+    if(impl) impl->deref();
 }
 
 Node NamedNodeMap::getNamedItem( const DOMString &name )
 {
-    if (map) return ((NamedNodeMapImpl*)map)->getNamedItem(name);
+    if (impl) return impl->getNamedItem(name);
     return 0;
 }
 
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
-    if (map) return ((NamedNodeMapImpl*)map)->setNamedItem(arg);
+    if (impl) return impl->setNamedItem(arg);
     return 0;
 }
 
 Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
-    if (map) return ((NamedNodeMapImpl*)map)->removeNamedItem(name);
+    if (impl) return impl->removeNamedItem(name);
     return 0;
 }
 
 Node NamedNodeMap::item( unsigned long index )
 {
-    if (map) return ((NamedNodeMapImpl*)map)->item(index);
+    if (impl) return impl->item(index);
     return 0;
 }
 
 unsigned long NamedNodeMap::length() const
 {
-    if (map) return ((NamedNodeMapImpl*)map)->length();
+    if (impl) return impl->length();
     return 0;
 }
 
-bool NamedNodeMap::isNull()
+NamedNodeMapImpl *NamedNodeMap::handle() const
 {
-    return (map == 0);
+    return impl;
+}
+
+bool NamedNodeMap::isNull() const
+{
+    return (impl == 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -210,7 +214,7 @@ Node Node::nextSibling() const
 
 NamedNodeMap Node::attributes() const
 {
-    if (impl) return (NodeImpl*)(impl->attributes());
+    if (impl) return impl->attributes();
     return 0;
 }
 
@@ -296,6 +300,16 @@ QRect Node::getRect()
     return impl->getRect();
 }
 
+bool Node::isNull() const
+{
+    return (impl == 0);
+}
+
+NodeImpl *Node::handle() const
+{
+    return impl;
+}
+
 //-----------------------------------------------------------------------------
 
 NodeList::NodeList()
@@ -339,3 +353,14 @@ unsigned long NodeList::length() const
     if(!impl) return 0;
     return impl->length();
 }
+
+NodeListImpl *NodeList::handle() const
+{
+    return impl;
+}
+
+bool NodeList::isNull() const
+{
+    return (impl == 0);
+}
+

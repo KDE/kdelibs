@@ -357,100 +357,70 @@ public:
     ~MediaList();
 
     /**
-     * The parsable textual representation of the media list. This is
-     * a comma-separated list of media.
-     *
-     */
-    DOM::DOMString cssText() const;
-
-    /**
-     * see @ref cssText
-     * @exception CSSException
-     * SYNTAX_ERR: Raised if the specified CSS string value has a
-     * syntax error and is unparsable.
+     * The parsable textual representation of the media list. This is a
+     * comma-separated list of media.
      *
      * @exception DOMException
-     *  NO_MODIFICATION_ALLOWED_ERR: Raised if this media list is
-     * readonly.
+     * SYNTAX_ERR: Raised if the specified string value has a syntax error and
+     * is unparsable.
      *
+     * NO_MODIFICATION_ALLOWED_ERR: Raised if this media list is readonly.
      */
-    void setCssText( const DOM::DOMString & );
+    DOM::DOMString mediaText();
 
     /**
-     * The style sheet that contains this rule.
-     *
+     * see @ref mediaText
      */
-    CSSStyleSheet parentStyleSheet() const;
+    void setMediaText(const DOM::DOMString &value);
 
     /**
-     * If this list is contained inside another rule (e.g. inside an
-     * @media block or an @import rule), this is the containing rule.
-     * If this list is not nested inside any rules, this returns
-     * <code> null </code> .
-     *
+     * The number of media in the list. The range of valid media is 0 to length-1 inclusive.
      */
-    CSSRule parentRule() const;
+    unsigned long length();
+
 
     /**
-     * The number of media in the list. The range of valid media is
-     * <code> 0 </code> to <code> length-1 </code> inclusive.
-     *
-     */
-    unsigned long length() const;
-
-    /**
-     * Returns the <code> index </code> th in the list. If <code>
-     * index </code> is greater than or equal to the number of media
-     * in the list, this returns <code> null </code> .
+     * Returns the indexth in the list. If index is greater than or equal to
+     * the number of media in the list, this returns null.
      *
      * @param index Index into the collection.
      *
-     * @return The medium at the <code> index </code> th position in
-     * the <code> MediaList </code> , or <code> null </code> if that
-     * is not a valid index.
-     *
+     * @return The medium at the indexth position in the MediaList, or null if
+     * that is not a valid index.
      */
-    DOM::DOMString item ( unsigned long index );
+    DOM::DOMString item(unsigned long index);
 
     /**
-     * Deletes the medium indicated by <code> oldMedium </code> from
-     * the list.
-     *
-     * Note: In the idl, this method is named delete. Because of name
-     * clash with the c++ operator, we use del as the method name.
+     * Deletes the medium indicated by oldMedium from the list.
      *
      * @param oldMedium The medium to delete in the media list.
      *
-     * @return
-     *
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this list is readonly.
      *
-     *  NOT_FOUND_ERR: Raised if <code> oldMedium </code> is not in
-     * the list.
-     *
+     * NOT_FOUND_ERR: Raised if oldMedium is not in the list.
      */
-    void del ( const DOM::DOMString &oldMedium );
+    void deleteMedium(const DOM::DOMString &oldMedium);
 
     /**
-     * Adds the medium <code> newMedium </code> to the end of the
-     * list. It the <code> newMedium </code> is already used, it is
-     * first removed.
+     * Adds the medium newMedium to the end of the list. If the newMedium is
+     * already used, it is first removed.
      *
      * @param newMedium The new medium to add.
      *
-     * @return
-     *
      * @exception DOMException
-     * NO_MODIFICATION_ALLOWED_ERR: Raised if this list is readonly.
+     * INVALID_CHARACTER_ERR: If the medium contains characters that are
+     * invalid in the underlying style language.
      *
+     * NO_MODIFICATION_ALLOWED_ERR: Raised if this list is readonly.
      */
-    void append ( const DOM::DOMString &newMedium );
+    void appendMedium(const DOM::DOMString &newMedium);
 
 protected:
     MediaListImpl *impl;
 };
 
+class LinkStyleImpl;
 
 class LinkStyle
 {
@@ -465,11 +435,14 @@ public:
 
     StyleSheet sheet();
 
-    bool isNull() { return (node == 0); }
+    bool isNull() const;
 
 protected:
     DOM::NodeImpl *node;
+    LinkStyleImpl *impl;
 };
+
+class DocumentStyleImpl;
 
 class DocumentStyle
 {
@@ -484,12 +457,12 @@ public:
 
     StyleSheetList styleSheets();
 
-    bool isNull() { return (doc == 0); }
+    bool isNull() const;
 
 protected:
     DOM::DocumentImpl *doc;
+    DocumentStyleImpl *impl;
 };
-
 
 }; // namespace
 

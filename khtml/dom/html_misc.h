@@ -166,6 +166,13 @@ public:
      */
     Node namedItem ( const DOMString &name ) const;
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    HTMLCollectionImpl *handle() const;
+    bool isNull() const;
+
 protected:
     HTMLCollectionImpl *impl;
 };

@@ -321,7 +321,7 @@ public:
     CSSValue item ( unsigned long index );
 
 protected:
-    CSSValueListImpl *impl;
+    CSSValueListImpl *vimpl;
 };
 
 
@@ -364,25 +364,25 @@ public:
         CSS_EXS = 4,
         CSS_PX = 5,
         CSS_CM = 6,
-        CSS_MM = 9,
-        CSS_IN = 10,
-        CSS_PT = 11,
-        CSS_PC = 12,
-        CSS_DEG = 13,
-        CSS_RAD = 14,
-        CSS_GRAD = 15,
-        CSS_MS = 16,
-        CSS_S = 17,
-        CSS_HZ = 18,
-        CSS_KHZ = 19,
-        CSS_DIMENSION = 20,
-        CSS_STRING = 21,
-        CSS_URI = 22,
-        CSS_IDENT = 23,
-        CSS_ATTR = 24,
-        CSS_COUNTER = 25,
-        CSS_RECT = 26,
-        CSS_RGBCOLOR = 27
+        CSS_MM = 7,
+        CSS_IN = 8,
+        CSS_PT = 9,
+        CSS_PC = 10,
+        CSS_DEG = 11,
+        CSS_RAD = 12,
+        CSS_GRAD = 13,
+        CSS_MS = 14,
+        CSS_S = 15,
+        CSS_HZ = 16,
+        CSS_KHZ = 17,
+        CSS_DIMENSION = 18,
+        CSS_STRING = 19,
+        CSS_URI = 20,
+        CSS_IDENT = 21,
+        CSS_ATTR = 22,
+        CSS_COUNTER = 23,
+        CSS_RECT = 24,
+        CSS_RGBCOLOR = 25
     };
 
     /**
@@ -585,6 +585,8 @@ protected:
     QColor m_color;
 };
 
+class RectImpl;
+
 /**
  * The <code> Rect </code> interface is used to represent any <a
  * href="http://www.w3.org/TR/REC-CSS2/visufx.html#value-def-shape">
@@ -626,8 +628,12 @@ public:
      *
      */
     CSSPrimitiveValue left() const;
+
+protected:
+    RectImpl *impl;
 };
 
+class CounterImpl;
 
 /**
  * The <code> Counter </code> interface is used to represent any <a
@@ -666,6 +672,8 @@ public:
      */
     DOM::DOMString separator() const;
 
+protected:
+    CounterImpl *impl;
 };
 
 

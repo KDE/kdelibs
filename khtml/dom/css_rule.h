@@ -446,6 +446,7 @@ public:
 };
 
 
+class CSSRuleListImpl;
 class StyleListImpl;
 /**
  * The <code> CSSRuleList </code> interface provides the abstraction
@@ -457,7 +458,8 @@ class CSSRuleList
 public:
     CSSRuleList();
     CSSRuleList(const CSSRuleList &other);
-    CSSRuleList(StyleListImpl *impl);
+    CSSRuleList(CSSRuleListImpl *i);
+    CSSRuleList(StyleListImpl *i);
 public:
 
     CSSRuleList & operator = (const CSSRuleList &other);
@@ -488,7 +490,7 @@ public:
 
 protected:
     // we just need a pointer to an implementation here.
-    StyleListImpl *impl;
+    CSSRuleListImpl *impl;
 };
 
 

@@ -38,27 +38,49 @@ using namespace DOM;
 
 DOMImplementation::DOMImplementation()
 {
+    impl = 0;
 }
 
-DOMImplementation::DOMImplementation(const DOMImplementation &)
+DOMImplementation::DOMImplementation(const DOMImplementation &other)
 {
+    impl = other.impl;
+    if (impl) impl->ref();
 }
 
-DOMImplementation &DOMImplementation::operator = (const DOMImplementation &)
+DOMImplementation::DOMImplementation(DOMImplementationImpl *i)
 {
+    impl = i;
+    if (impl) impl->ref();
+}
+
+DOMImplementation &DOMImplementation::operator = (const DOMImplementation &other)
+{
+    if (impl) impl->deref();
+    impl = other.impl;
+    if (impl) impl->ref();
+
     return *this;
 }
 
 DOMImplementation::~DOMImplementation()
 {
+    if (impl) impl->deref();
 }
 
 bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &version )
 {
-    // no valid implementation at the moment... ;-)
-    if(feature == "HTML" && version == "1") return true;
-
+    if (impl) return impl->hasFeature(feature,version);
     return false;
+}
+
+DOMImplementationImpl *DOMImplementation::handle() const
+{
+    return impl;
+}
+
+bool DOMImplementation::isNull() const
+{
+    return (impl == 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -183,35 +205,62 @@ bool Document::isHTMLDocument()
 
 Range Document::createRange()
 {
-    return Range( *this );
+    if (impl) return 0;
+    return ((DocumentImpl *)impl)->createRange();
 }
 
-Range Document::createRange(const Node &sc, const long so, const Node &ec, const long eo)
+/*Range Document::createRange(const Node &sc, const long so, const Node &ec, const long eo)
 {
+// ### not part of the DOM
     Range r;
     r.setStart( sc, so );
     r.setEnd( ec, eo );
     return r;
+}*/
+
+/*NodeIterator Document::createNodeIterator()
+{
+// ### not part of the DOM
+//  return NodeIterator( *this );
+    return NodeIterator();
+}*/
+
+/*NodeIterator Document::createNodeIterator(long _whatToShow, NodeFilter *filter)
+{
+// ### not part of the DOM
+//  return NodeIterator( *this, _whatToShow, filter );
+    return NodeIterator();
+}*/
+
+/*TreeWalker Document::createTreeWalker()
+{
+// ### not part of the DOM
+//  return TreeWalker( *this );
+  return TreeWalker();
+}*/
+
+/*TreeWalker Document::createTreeWalker(long _whatToShow, NodeFilter *filter )
+{
+// ### not part of the DOM
+//  return TreeWalker( *this, _whatToShow, filter);
+  return TreeWalker();
+}*/
+
+NodeIterator Document::createNodeIterator(Node /*root*/, unsigned long /*whatToShow*/,
+                                    NodeFilter /*filter*/, bool /*entityReferenceExpansion*/)
+{
+// ###
+//    if (impl) return ((DocumentImpl *)impl)->createNodeIterator(root.impl,whatToShow,filter.handle(),entityReferenceExpansion);
+    return 0;
 }
 
-NodeIterator Document::createNodeIterator()
+TreeWalker Document::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter /*filter*/,
+                                bool /*entityReferenceExpansion*/)
 {
-  return NodeIterator( *this );
-}
-
-NodeIterator Document::createNodeIterator(long _whatToShow, NodeFilter *filter)
-{
-  return NodeIterator( *this, _whatToShow, filter );
-}
-
-TreeWalker Document::createTreeWalker()
-{
-  return TreeWalker( *this );
-}
-
-TreeWalker Document::createTreeWalker(long _whatToShow, NodeFilter *filter )
-{
-  return TreeWalker( *this, _whatToShow, filter);
+// ###
+//    if (impl) return ((DocumentImpl *)impl)->createTreeWalker(root,whatToShow,filter,entityReferenceExpansion);
+//    return 0;
+    return 0;
 }
 
 

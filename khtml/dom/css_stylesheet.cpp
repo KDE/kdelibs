@@ -159,7 +159,7 @@ CSSRule CSSStyleSheet::ownerRule() const
 
 CSSRuleList CSSStyleSheet::cssRules() const
 {
-    if(!impl) return 0;
+    if(!impl) return (CSSRuleListImpl*)0;
     return ((CSSStyleSheetImpl *)impl)->cssRules();
 }
 
@@ -219,7 +219,7 @@ StyleSheet StyleSheetList::item( unsigned long index )
     return ((StyleSheetListImpl *)impl)->item( index );
 }
 
-
+// ----------------------------------------------------------
 
 MediaList::MediaList()
 {
@@ -251,7 +251,7 @@ MediaList::~MediaList()
     if(impl) impl->deref();
 }
 
-DOMString MediaList::cssText() const
+DOM::DOMString MediaList::mediaText()
 {
     // ###
     if(!impl) return 0;
@@ -259,47 +259,37 @@ DOMString MediaList::cssText() const
     return 0;
 }
 
-void MediaList::setCssText( const DOMString &/*value*/ )
+void MediaList::setMediaText(const DOM::DOMString &/*value*/)
 {
     // ###
     //if(impl) ((ElementImpl *)impl)->setAttribute("cssText", value);
 }
 
-CSSStyleSheet MediaList::parentStyleSheet() const
-{
-    if(!impl) return CSSStyleSheet();
-    return ((MediaListImpl *)impl)->parentStyleSheet();
-}
-
-CSSRule MediaList::parentRule() const
-{
-    if(!impl) return CSSRule();
-    return ((MediaListImpl *)impl)->parentRule();
-}
-
-unsigned long MediaList::length() const
+unsigned long MediaList::length()
 {
     if(!impl) return 0;
     return ((MediaListImpl *)impl)->length();
 }
 
-DOMString MediaList::item( unsigned long index )
+DOM::DOMString MediaList::item(unsigned long index)
 {
     if(!impl) return 0;
     return ((MediaListImpl *)impl)->item( index );
 }
 
-void MediaList::del( const DOMString &oldMedium )
+void MediaList::deleteMedium(const DOM::DOMString &oldMedium)
 {
     if(impl)
         ((MediaListImpl *)impl)->del( oldMedium );
 }
 
-void MediaList::append( const DOMString &newMedium )
+void MediaList::appendMedium(const DOM::DOMString &newMedium)
 {
     if(impl)
         ((MediaListImpl *)impl)->append( newMedium );
 }
+
+
 
 // ----------------------------------------------------------
 
@@ -357,6 +347,12 @@ StyleSheet LinkStyle::sheet()
     return StyleSheet();
 }
 
+bool LinkStyle::isNull() const
+{
+    return (node == 0);
+}
+
+
 // ----------------------------------------------------------
 
 DocumentStyle::DocumentStyle()
@@ -394,5 +390,10 @@ DocumentStyle::~DocumentStyle()
 StyleSheetList DocumentStyle::styleSheets()
 {
     return doc->styleSheets();
+}
+
+bool DocumentStyle::isNull() const
+{
+    return (doc == 0);
 }
 

@@ -128,6 +128,12 @@ HTMLElement HTMLDocument::body() const
     return ((HTMLDocumentImpl *)impl)->body();
 }
 
+void HTMLDocument::setBody(const HTMLElement &_body)
+{
+    if (!impl) return 0;
+    return ((HTMLDocumentImpl *)impl)->setBody(_body);
+}
+
 HTMLCollection HTMLDocument::images() const
 {
     if(!impl) return HTMLCollection();

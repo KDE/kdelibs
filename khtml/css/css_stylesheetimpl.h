@@ -121,6 +121,9 @@ public:
 
 // ----------------------------------------------------------------------------
 
+// ### This has different methods from the MediaList class because MediaList has
+// been adjusted to fit to the spec - this class needs to be updated
+
 class MediaListImpl : public StyleBaseImpl
 {
 public:
@@ -149,3 +152,4 @@ protected:
 }; // namespace
 
 #endif
+

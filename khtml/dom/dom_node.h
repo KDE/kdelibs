@@ -32,6 +32,7 @@ namespace DOM {
 class Node;
 class DOMString;
 class NodeImpl;
+class NamedNodeMapImpl;
  
 /**
  * Objects implementing the <code> NamedNodeMap </code> interface are
@@ -139,12 +140,16 @@ public:
      */
     Node item ( unsigned long index );
 
-    bool isNull();
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    NamedNodeMapImpl *handle() const;
+    bool isNull() const;
 
 protected:
-    NamedNodeMap( NodeImpl *i);
-
-    NodeImpl *map;
+    NamedNodeMap( NamedNodeMapImpl *i);
+    NamedNodeMapImpl *impl;
 
     friend class Node;
 };
@@ -571,20 +576,20 @@ public:
      *   kdDebug(300) << "node isn't an element node" << endl;
      * </pre>
      */
-    bool isNull() { return (impl == 0); }
+    bool isNull() const;
 
     /**
      * @internal handle to the implementation object
      */
-    NodeImpl *handle() const { return impl; }
+    NodeImpl *handle() const;
 
     /**
      * @internal returns the index of a node
      */
     unsigned long index() const;
     QString toHTML();
-    virtual void applyChanges();
-    virtual void getCursor(int offset, int &_x, int &_y, int &height);
+    void applyChanges();
+    void getCursor(int offset, int &_x, int &_y, int &height);
     /**
      * not part of the DOM.
      * @returns the exact coordinates and size of this element.
@@ -643,9 +648,15 @@ public:
      */
     Node item ( unsigned long index );
 
+    /**
+     * @internal
+     * not part of the DOM
+     */
+    NodeListImpl *handle() const;
+    bool isNull() const;
+
 protected:
     NodeList(const NodeListImpl *i);
-
     NodeListImpl *impl;
 };
 

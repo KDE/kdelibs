@@ -93,6 +93,7 @@ CSSRule CSSRule::parentRule() const
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSCharsetRule::CSSCharsetRule() : CSSRule()
@@ -130,6 +131,7 @@ void CSSCharsetRule::setEncoding( const DOMString &/*value*/ )
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSFontFaceRule::CSSFontFaceRule() : CSSRule()
@@ -161,6 +163,7 @@ CSSStyleDeclaration CSSFontFaceRule::style() const
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSImportRule::CSSImportRule() : CSSRule()
@@ -204,6 +207,7 @@ CSSStyleSheet CSSImportRule::styleSheet() const
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSMediaRule::CSSMediaRule() : CSSRule()
@@ -253,6 +257,7 @@ void CSSMediaRule::deleteRule( unsigned long index )
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSPageRule::CSSPageRule() : CSSRule()
@@ -296,6 +301,7 @@ CSSStyleDeclaration CSSPageRule::style() const
 }
 
 
+// ----------------------------------------------------------
 
 CSSStyleRule::CSSStyleRule() : CSSRule()
 {
@@ -338,6 +344,7 @@ CSSStyleDeclaration CSSStyleRule::style() const
 }
 
 
+// ----------------------------------------------------------
 
 
 CSSUnknownRule::CSSUnknownRule() : CSSRule()
@@ -363,35 +370,43 @@ CSSUnknownRule::~CSSUnknownRule()
 }
 
 
+// ----------------------------------------------------------
+
+// ### need to create a CSSRuleListImpl class for this
 
 CSSRuleList::CSSRuleList()
 {
-    impl = 0;
+//    impl = 0;
 }
 
 CSSRuleList::CSSRuleList(const CSSRuleList &other)
 {
-    impl = other.impl;
-    if(impl) impl->ref();
+//    impl = other.impl;
+//    if(impl) impl->ref();
+}
+
+CSSRuleList::CSSRuleList(CSSRuleListImpl *i)
+{
+//    impl = i;
+//    if(impl) impl->ref();
 }
 
 CSSRuleList::CSSRuleList(StyleListImpl *i)
 {
-    impl = i;
-    if(impl) impl->ref();
+//    impl = ?
 }
 
 CSSRuleList &CSSRuleList::operator = (const CSSRuleList &other)
 {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+//    if(impl) impl->deref();
+//    impl = other.impl;
+//    if(impl) impl->ref();
     return *this;
 }
 
 CSSRuleList::~CSSRuleList()
 {
-    if(impl) impl->deref();
+//    if(impl) impl->deref();
 }
 
 unsigned long CSSRuleList::length() const

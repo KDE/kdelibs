@@ -147,3 +147,14 @@ Node HTMLCollection::namedItem( const DOMString &name ) const
     return ((HTMLCollectionImpl *)impl)->namedItem( name );
 }
 
+HTMLCollectionImpl *HTMLCollection::handle() const
+{
+    return impl;
+}
+
+bool HTMLCollection::isNull() const
+{
+    return (impl == 0);
+}
+
+

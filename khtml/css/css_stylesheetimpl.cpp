@@ -381,4 +381,3 @@ void MediaListImpl::setCssText(DOM::DOMString /*str*/)
     // ###
 }
 
-

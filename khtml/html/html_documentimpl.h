@@ -65,6 +65,7 @@ public:
     DOMString baseURL() const;
 
     HTMLElementImpl *body();
+    void setBody(const HTMLElement &_body);
 
     void open (  );
     void close (  );

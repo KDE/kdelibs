@@ -27,6 +27,8 @@
 #include "dom_elementimpl.h"
 #include "dom_textimpl.h"
 #include "dom_exception.h"
+#include "dom2_rangeimpl.h"
+#include "dom2_traversalimpl.h"
 
 #include "css/cssstyleselector.h"
 
@@ -51,6 +53,25 @@
 
 using namespace DOM;
 using namespace khtml;
+
+
+DOMImplementationImpl::DOMImplementationImpl()
+{
+}
+
+DOMImplementationImpl::~DOMImplementationImpl()
+{
+}
+
+bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMString &version )
+{
+    // no valid implementation at the moment... ;-)
+    if(feature == "HTML" && version == "1") return true;
+
+    return false;
+}
+
+// ------------------------------------------------------------------------
 
 DocumentImpl::DocumentImpl() : NodeBaseImpl(this)
 {
@@ -391,6 +412,26 @@ QStringList DocumentImpl::state()
    }
    return s;
 }
+
+
+RangeImpl *DocumentImpl::createRange()
+{
+    return new RangeImpl(this);
+}
+
+NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
+                                    NodeFilterImpl *filter, bool entityReferenceExpansion)
+{
+ // ###
+    return new NodeIteratorImpl;
+//    return 0;
+}
+
+/*TreeWalker DocumentImpl::createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+                                bool entityReferenceExpansion)
+{
+    return 0; // ###
+}*/
 
 void DocumentImpl::applyChanges(bool)
 {

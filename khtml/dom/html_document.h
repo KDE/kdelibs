@@ -130,6 +130,11 @@ public:
     HTMLElement body() const;
 
     /**
+     * see @ref body
+     */
+    void setBody(const HTMLElement &);
+
+    /**
      * A collection of all the <code> IMG </code> elements in a
      * document. The behavior is limited to <code> IMG </code>
      * elements for backwards compatibility.
