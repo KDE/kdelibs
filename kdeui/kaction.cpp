@@ -94,7 +94,7 @@ static void get_fonts( QStringList &lst )
     XFreeFontNames( fontNames_copy );
 }
 
-int get_toolbutton_id()
+int KAction::getToolButtonID()
 {
     static int toolbutton_no = -2;
     return toolbutton_no--;
@@ -171,7 +171,7 @@ int KAction::plug( QWidget *w, int index )
   {
     KToolBar *bar = (KToolBar *)w;
 
-    int id_ = get_toolbutton_id();
+    int id_ = getToolButtonID();
     if ( d->m_iconName == QString::null )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
@@ -386,7 +386,7 @@ int KToggleAction::plug( QWidget* widget, int index )
     if ( widget->inherits( "KToolBar" ) ) {
         KToolBar *bar = (KToolBar *)widget;
 
-        id_ = get_toolbutton_id();
+        id_ = KAction::getToolButtonID();
         bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
                            isEnabled(), plainText(), index );
 
@@ -703,7 +703,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     else if ( widget->inherits("KToolBar") )
     {
 	KToolBar* bar = (KToolBar*)widget;
-	int id_ = get_toolbutton_id();
+	int id_ = KAction::getToolButtonID();
 	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( const QString & ) ),
 			  this, SLOT( slotActivated( const QString & ) ), true, QString::null, 70, index );
 	QComboBox *cb = bar->getCombo( id_ );
@@ -1255,7 +1255,7 @@ int KActionMenu::plug( QWidget* widget, int index )
   {
     KToolBar *bar = (KToolBar *)widget;
 
-    int id_ = get_toolbutton_id();
+    int id_ = KAction::getToolButtonID();
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 		       isEnabled(), plainText(), index );
 

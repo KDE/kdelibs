@@ -331,7 +331,13 @@ public:
     virtual void setEnabled(bool enable);
     virtual void setIconSet( const QIconSet &iconSet );
     virtual void setIcon( const QString& icon );
-	
+
+    /**
+     * @internal
+     * Generate a toolbar button id. Made public for reimplementations.
+     */
+    static int getToolButtonID();
+
 protected slots:
 	virtual void slotDestroyed();
 	virtual void slotKeycodeChanged();
