@@ -176,7 +176,6 @@ private:
  * @short Holds information needed by the "About" box and other
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
- * @version $Id$
  */
 class KDECORE_EXPORT KAboutData
 {
