@@ -6,8 +6,8 @@
 #include <kdebug.h>
 
 ////NOTE: for this test to run properly, you need first to
-//// cd kdebase/kioslave/gzip ; cp *desktop /opt/kde2/share/config/protocols/
-//// cd ../tar ; cp *desktop /opt/kde2/share/config/protocols/
+//// cd kdebase/kioslave/gzip ; cp *desktop $KDEDIR/share/config/protocols/
+//// cd ../tar ; cp *desktop $KDEDIR/share/config/protocols/
 ////
 
 bool check(QString txt, QString a, QString b)
@@ -49,7 +49,11 @@ int main(int argc, char *argv[])
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
   KURL notPretty2("file:/home/test/directory%20with%20spaces");
-  check("KURL::prettyURL()", notPretty2.prettyURL(), "/home/test/directory with spaces");
+  check("KURL::prettyURL()", notPretty2.prettyURL(), "file:/home/test/directory with spaces");
+
+  KURL carsten;
+  carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
+  check("KURL::path()", carsten.path(), "/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
 
   KURL udir;
   printf("\n* Empty URL\n");
