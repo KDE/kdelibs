@@ -20,6 +20,13 @@
 // $Id$
 //
 // $Log$
+// Revision 1.99  1998/03/27 17:27:31  mark
+// MD:
+// - Added call to setWinStyleHighlightColor()
+// - changed disabled text color from darkGray to colorGroup().mid()
+// - changed config keys and groups to read color scheme and fonts
+// - used readFontEntry for reading generalFont and fixedFont
+//
 // Revision 1.98  1998/03/21 23:05:12  mark
 // MD: Addition of a new font, a fixed font, for general use in applications.
 // Unfortunately, I think this is a BINARY INCOMPATIBLE change. (Cleared with Kalle.)
@@ -1117,8 +1124,8 @@ void KApplication::readSettings()
   fixedFont = QFont("fixed", 12, QFont::Normal);
 
   config->setGroup( "General" );
-  generalFont = config->readFontEntry( "font", new QFont( generalFont ) );
-  fixedFont = config->readFontEntry( "fixedFont", new QFont( fixedFont ) );
+  generalFont = config->readFontEntry( "font", &generalFont );
+  fixedFont = config->readFontEntry( "fixedFont", &fixedFont );
   
   pCharsets->setDefault(klocale->charset());
   pCharsets->setQFont(generalFont);
