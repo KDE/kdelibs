@@ -43,6 +43,7 @@
 6030	khtml (html)
 6031	khtml (frames & objects)
 6040	khtml (render)
+6040	khtml (bidi)
 6050	khtml (part)
 6060	khtml (cache)
 6070	khtml (jscript)
