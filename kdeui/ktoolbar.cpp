@@ -1396,7 +1396,7 @@ void KToolBar::hide()
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Unmanaged );
         if ( dock != QMainWindow::Unmanaged )
             d->realPos = dock;
-        if ( d->realPos == QMainWindow::Unmanaged )
+        else
             d->realPos = QMainWindow::Top;
     }
     QToolBar::hide();
