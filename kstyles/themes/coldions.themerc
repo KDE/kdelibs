@@ -14,7 +14,7 @@ Name[nl]=Koude pictogrammen
 Name[no]=Kalde ioner
 Name[ro]=Ioni reci
 Name[sl]=Mrzli ioni
-Name[tr]=Soğuk İyonlar
+Name[tr]=Soðuk Ýyonlar
 Comment=Cold Ions unthemed style
 Comment[ca]=Estil sense tema "Ions freds".
 Comment[cs]=Styl studené ionty (netémovaný)
@@ -32,6 +32,6 @@ Comment[no_NY]='Cold Ions'-stil utan tema
 Comment[pt]=Estilo Cold Ions
 Comment[ro]=Stil fără temă Ioni reci
 Comment[sl]=Netematski slog mrzlih ionov
-Comment[tr]=Temasız Soğuk İyonlar stili
+Comment[tr]=Temasýz Soðuk Ýyonlar stili
 [KDE]
 widgetStyle=coldionsstyle.la
