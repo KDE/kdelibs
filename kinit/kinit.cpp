@@ -60,7 +60,7 @@
 #include <X11/Xlib.h>
 
 int waitForPid;
-int X11fd;
+int X11fd = -1;
 static Display *X11display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
