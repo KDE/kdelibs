@@ -2,16 +2,6 @@
  * $Id$
  * 
  * $Log$
- * Revision 1.2  1997/05/05 09:25:38  ssk
- * Taj: Attempt to fix the include-order problem. Please test this. My
- *      configure program is still not working, so i can't test this myself.
- *
- * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
- * Source imported
- *
- * Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
- * Sources imported
- *
  * Revision 1.6  1997/05/09 08:23:40  kulow
  * Coolo: included X11 headers again in drag.cpp (my fault)
  *
@@ -27,16 +17,11 @@
  * Merged changes from 0.6.3
  *
  * Revision 1.3  1997/01/15 20:01:58  kalle
-
  * merged changes from 0.52
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 #include <X11/Xos.h>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
-#include <X11/extensions/shape.h>
+Window debugWin = 0;
 #ifdef HAVE_X11_EXTENSTIONS_SHAPE_H
 #include <X11/extensions/shape.h>
 #else
@@ -141,10 +126,10 @@ void KDNDWidget::startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, 
   dndType = _type;
   dndIcon = _icon;
   dndOffsetX = _dx;
+  dndOffsetY = _dy;
   
   dndIcon->raise();
-/*
-  XGrabPointer(kapp->getDisplay(),winId(),False,
+  
   dndLastWindow = (Window)0;
   
   Window root = DefaultRootWindow( kapp->getDisplay() );
@@ -216,21 +201,32 @@ int myErrorHandler(Display *d, XErrorEvent *e)
 		e->request_code, e->minor_code, e->serial);
 	return 0;
 }
-  delete dndIcon;
-  dndIcon = 0L;
 
+void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
+{
+  if ( !drag )
+    {
+	  dndMouseReleaseEvent( _mouse );
+	  return;
     }
     
   // KDNDApplication::restoreOverrideCursor();
 
   dndIcon->move( -200, -200 );
   
+  printf("************************************************************\n");
+  printf("*** win = %i **** dndLastWindow = %i ****\n", win, dndLastWindow );
+  printf("************************************************************\n");
   debugWin = dndIcon->winId();
   
+  QPoint p = mapToGlobal( _mouse->pos() );
   
   Window root;
-//  XUngrabPointer(kapp->getDisplay(),CurrentTime);
+  root = DefaultRootWindow( kapp->getDisplay() );
+  
   Window win = findRootWindow( p );
+  printf("************************************************************\n");
+  printf("*** win = %ld **** dndLastWindow = %ld ****\n", win, dndLastWindow );
   /*  if ( dndLastWindow != 0 )
     {
 	  XEvent Event;
@@ -254,6 +250,8 @@ int myErrorHandler(Display *d, XErrorEvent *e)
   
   drag = false;
 /* I commented this out, since it works without (coolo)
+  printf("Ungarbbed\n");
+  
 	  XEvent Event;
    if ( win != 0 )
 	  Event.xclient.type              = ClientMessage;
@@ -267,15 +265,24 @@ int myErrorHandler(Display *d, XErrorEvent *e)
 	  Event.xclient.data.l[3]         = p.x();
 	  Event.xclient.data.l[4]         = p.y();
 
+	  printf("1\n");
 	  XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );	
+	  printf("2\n");
 	  XSync( kapp->getDisplay(), FALSE );	
+	  printf("3\n");
               // Switch to "friendly" error handler.
 	  delete dndData;
 	          oldErrorHandler = XSetErrorHandler(myErrorHandler);
 	      printf("1\n");
-  else
-	rootDropEvent( p.x(), p.y() );
-  
+	      XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );	
+	      printf("2\n");
+	      XSync( kapp->getDisplay(), FALSE );	
+	      printf("3\n");
+	      (void) XSetErrorHandler(oldErrorHandler);
+              oldErrorHandler = 0L;
+          }
+
+	  delete [] dndData;
 	  dndData = 0L;
     }
    else
@@ -355,13 +362,19 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
   QPoint p2( p.x(), p.y() );
   p2.setX( p2.x() + dndOffsetX );
   p2.setY( p2.y() + dndOffsetY );
+  dndIcon->move( p2 );
   // dndIcon->show();
+}
   Window parent;
   Window *children;
   for ( int i = 0; i < cchildren; i++ )
-    {
+    
+  printf("Root Window\n");
+	  printf("******************** root id = %i *********************\n",children[i] );
+  printf("Query root tree\n");
+
   // Switch to "friendly" error handler.
-	
+  if (oldErrorHandler == 0L)
       if ( children[i] == debugWin )
 	  printf("******************** root id = %ld *********************\n",children[i] );
       else
@@ -374,8 +387,11 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 		continue;
  
 	  Event.xclient.type              = ClientMessage;
-    }
+	  Event.xclient.display           = kapp->getDisplay();
+	  Event.xclient.message_type      = kapp->getDndRootProtocolAtom();
 	  Event.xclient.format            = 32;
+	  Event.xclient.data.l[1]         = (long) time( 0L );
+	  Event.xclient.data.l[2]         = 0;
 	  Event.xclient.data.l[3]         = _x;
 	  Event.xclient.data.l[4]         = _y;
 	  XSendEvent( kapp->getDisplay(), children[ i ], True, NoEventMask, &Event);
