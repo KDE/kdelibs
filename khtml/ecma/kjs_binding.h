@@ -162,7 +162,7 @@ namespace KJS {
 
     if (entry->attr & Function)
       return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
-    return thisObj->getValue(exec, entry->value);
+    return thisObj->getValueProperty(exec, entry->value);
   }
 
   /**
@@ -180,7 +180,7 @@ namespace KJS {
 
     if (entry->attr & Function)
       fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
-    return thisObj->getValue(exec, entry->value);
+    return thisObj->getValueProperty(exec, entry->value);
   }
 
   /**

@@ -62,7 +62,7 @@ Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMNodeIterator,DOMObject>(exec,p,&DOMNodeIteratorTable,this);
 }
 
-Value DOMNodeIterator::getValue(ExecState *exec, int token) const
+Value DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
 {
   DOM::NodeIterator ni(nodeIterator);
   switch (token) {
@@ -75,7 +75,7 @@ Value DOMNodeIterator::getValue(ExecState *exec, int token) const
   case ExpandEntityReferences:
     return Boolean(ni.expandEntityReferences());
  default:
-   kdWarning() << "Unhandled token in DOMNodeIterator::getValue : " << token << endl;
+   kdWarning() << "Unhandled token in DOMNodeIterator::getValueProperty : " << token << endl;
    return Value();
   }
 }
@@ -134,7 +134,7 @@ Value NodeFilterConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<NodeFilterConstructor,DOMObject>(exec,p,&NodeFilterConstructorTable,this);
 }
 
-Value NodeFilterConstructor::getValue(ExecState *, int token) const
+Value NodeFilterConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number(token);
@@ -223,7 +223,7 @@ Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMTreeWalker,DOMObject>(exec,p,&DOMTreeWalkerTable,this);
 }
 
-Value DOMTreeWalker::getValue(ExecState *exec, int token) const
+Value DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
 {
   DOM::TreeWalker tw(treeWalker);
   switch (token) {
@@ -238,7 +238,7 @@ Value DOMTreeWalker::getValue(ExecState *exec, int token) const
   case CurrentNode:
     return getDOMNode(exec,tw.currentNode());
   default:
-    kdWarning() << "Unhandled token in DOMTreeWalker::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMTreeWalker::getValueProperty : " << token << endl;
     return Value();
   }
 }

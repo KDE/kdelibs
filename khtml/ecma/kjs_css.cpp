@@ -238,7 +238,7 @@ Value DOMStyleSheet::tryGet(ExecState *exec, const UString &propertyName) const
   return DOMObjectLookupGetValue<DOMStyleSheet,DOMObject>(exec,propertyName,&DOMStyleSheetTable,this);
 }
 
-Value DOMStyleSheet::getValue(ExecState *exec, int token) const
+Value DOMStyleSheet::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Type:
@@ -655,14 +655,14 @@ Value DOMCSSRule::tryGet(ExecState *exec, const UString &propertyName) const
   if (entry) {
     if (entry->attr & Function)
       return lookupOrCreateFunction<DOMCSSRuleFunc>(exec, propertyName, this, entry->value, entry->params, entry->attr);
-    return getValue(exec, entry->value);
+    return getValueProperty(exec, entry->value);
   }
 
   // Base CSSRule stuff or parent class forward, as usual
   return DOMObjectLookupGet<DOMCSSRuleFunc, DOMCSSRule, DOMObject>(exec, propertyName, &DOMCSSRuleTable, this);
 }
 
-Value DOMCSSRule::getValue(ExecState *exec, int token) const
+Value DOMCSSRule::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Type:
@@ -709,7 +709,7 @@ Value DOMCSSRule::getValue(ExecState *exec, int token) const
     return getString(static_cast<DOM::CSSCharsetRule>(cssRule).encoding());
 
   default:
-    kdWarning() << "DOMCSSRule::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMCSSRule::getValueProperty unhandled token " << token << endl;
   }
   return Undefined();
 }
@@ -814,7 +814,7 @@ Value CSSRuleConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<CSSRuleConstructor,DOMObject>(exec,p,&CSSRuleConstructorTable,this);
 }
 
-Value CSSRuleConstructor::getValue(ExecState *, int token) const
+Value CSSRuleConstructor::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case UNKNOWN_RULE:
@@ -908,7 +908,7 @@ Value CSSValueConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<CSSValueConstructor,DOMObject>(exec,p,&CSSValueConstructorTable,this);
 }
 
-Value CSSValueConstructor::getValue(ExecState *, int token) const
+Value CSSValueConstructor::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case CSS_INHERIT:
@@ -1029,7 +1029,7 @@ Value CSSPrimitiveValueConstructor::tryGet(ExecState *exec, const UString &p) co
   return DOMObjectLookupGetValue<CSSPrimitiveValueConstructor,CSSValueConstructor>(exec,p,&CSSPrimitiveValueConstructorTable,this);
 }
 
-Value CSSPrimitiveValueConstructor::getValue(ExecState *, int token) const
+Value CSSPrimitiveValueConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number(token);

@@ -31,7 +31,7 @@ namespace KJS {
     DOMRange(ExecState *exec, DOM::Range r);
     ~DOMRange();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -52,7 +52,7 @@ namespace KJS {
   public:
     RangeConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

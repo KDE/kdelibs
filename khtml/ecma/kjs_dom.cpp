@@ -146,7 +146,7 @@ Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
   return DOMObjectLookupGetValue<DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
 }
 
-Value DOMNode::getValue(ExecState *exec, int token) const
+Value DOMNode::getValueProperty(ExecState *exec, int token) const
 {
   khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
 
@@ -255,7 +255,7 @@ Value DOMNode::getValue(ExecState *exec, int token) const
     case ScrollTop:
       return rend ? static_cast<Value>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : Value(Undefined());
     default:
-      kdWarning() << "Unhandled token in DOMNode::getValue : " << token << endl;
+      kdWarning() << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
       break;
     }
   }
@@ -585,7 +585,7 @@ Value DOMAttr::tryGet(ExecState *exec, const UString &propertyName) const
                                                   &DOMAttrTable, this );
 }
 
-Value DOMAttr::getValue(ExecState *exec, int token) const
+Value DOMAttr::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Name:
@@ -676,7 +676,7 @@ Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
     exec, propertyName, &DOMDocumentTable, this);
 }
 
-Value DOMDocument::getValue(ExecState *exec, int token) const
+Value DOMDocument::getValueProperty(ExecState *exec, int token) const
 {
   DOM::Document doc = static_cast<DOM::Document>(node);
 
@@ -691,7 +691,7 @@ Value DOMDocument::getValue(ExecState *exec, int token) const
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), doc);
   default:
-    kdWarning() << "DOMDocument::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMDocument::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -979,7 +979,7 @@ Value DOMDocumentType::tryGet(ExecState *exec, const UString &propertyName) cons
   return DOMObjectLookupGetValue<DOMDocumentType, DOMNode>(exec, propertyName, &DOMDocumentTypeTable, this);
 }
 
-Value DOMDocumentType::getValue(ExecState *exec, int token) const
+Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
 {
   DOM::DocumentType type = static_cast<DOM::DocumentType>(node);
   switch (token) {
@@ -996,7 +996,7 @@ Value DOMDocumentType::getValue(ExecState *exec, int token) const
   case InternalSubset: // DOM2
     return getString(type.internalSubset());
   default:
-    kdWarning() << "DOMDocumentType::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMDocumentType::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1100,7 +1100,7 @@ Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &propertyN
   return DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
 }
 
-Value DOMProcessingInstruction::getValue(ExecState *exec, int token) const
+Value DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Target:
@@ -1110,7 +1110,7 @@ Value DOMProcessingInstruction::getValue(ExecState *exec, int token) const
   case Sheet:
     return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
   default:
-    kdWarning() << "DOMProcessingInstruction::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMProcessingInstruction::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1139,7 +1139,7 @@ Value DOMNotation::tryGet(ExecState *exec, const UString &propertyName) const
   return DOMObjectLookupGetValue<DOMNotation, DOMNode>(exec, propertyName, &DOMNotationTable, this);
 }
 
-Value DOMNotation::getValue(ExecState *, int token) const
+Value DOMNotation::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case PublicId:
@@ -1147,7 +1147,7 @@ Value DOMNotation::getValue(ExecState *, int token) const
   case SystemId:
     return getString(static_cast<DOM::Notation>(node).systemId());
   default:
-    kdWarning() << "DOMNotation::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMNotation::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1168,7 +1168,7 @@ Value DOMEntity::tryGet(ExecState *exec, const UString &propertyName) const
   return DOMObjectLookupGetValue<DOMEntity, DOMNode>(exec, propertyName, &DOMEntityTable, this);
 }
 
-Value DOMEntity::getValue(ExecState *, int token) const
+Value DOMEntity::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case PublicId:
@@ -1178,7 +1178,7 @@ Value DOMEntity::getValue(ExecState *, int token) const
   case NotationName:
     return getString(static_cast<DOM::Entity>(node).notationName());
   default:
-    kdWarning() << "DOMEntity::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMEntity::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }
@@ -1282,7 +1282,7 @@ Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) cons
   return DOMObjectLookupGetValue<NodeConstructor, DOMObject>(exec, propertyName, &NodeConstructorTable, this);
 }
 
-Value NodeConstructor::getValue(ExecState *, int token) const
+Value NodeConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number((unsigned int)token);
@@ -1313,7 +1313,7 @@ Value NodeConstructor::getValue(ExecState *, int token) const
   case NOTATION_NODE:
     return Number((unsigned int)DOM::Node::NOTATION_NODE);
   default:
-    kdWarning() << "NodeConstructor::getValue unhandled token " << token << endl;
+    kdWarning() << "NodeConstructor::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 #endif
@@ -1353,7 +1353,7 @@ Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &propertyNa
   return DOMObjectLookupGetValue<DOMExceptionConstructor, DOMObject>(exec, propertyName, &DOMExceptionConstructorTable, this);
 }
 
-Value DOMExceptionConstructor::getValue(ExecState *, int token) const
+Value DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number((unsigned int)token);
@@ -1390,7 +1390,7 @@ Value DOMExceptionConstructor::getValue(ExecState *, int token) const
   case INVALID_ACCESS_ERR:
     return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
   default:
-    kdWarning() << "DOMExceptionConstructor::getValue unhandled token " << token << endl;
+    kdWarning() << "DOMExceptionConstructor::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 #endif
@@ -1459,7 +1459,7 @@ Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMCharacterData,DOMNode>(exec,p,&DOMCharacterDataTable,this);
 }
 
-Value DOMCharacterData::getValue(ExecState *, int token) const
+Value DOMCharacterData::getValueProperty(ExecState *, int token) const
 {
   DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
   switch (token) {
@@ -1468,7 +1468,7 @@ Value DOMCharacterData::getValue(ExecState *, int token) const
   case Length:
     return Number(data.length());
  default:
-   kdWarning() << "Unhandled token in DOMCharacterData::getValue : " << token << endl;
+   kdWarning() << "Unhandled token in DOMCharacterData::getValueProperty : " << token << endl;
    return Value();
   }
 }

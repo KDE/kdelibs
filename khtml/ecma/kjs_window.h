@@ -49,7 +49,7 @@ namespace KJS {
       AvailWidth
     };
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
   private:
     KHTMLView *view;
     virtual const ClassInfo* classInfo() const { return &info; }

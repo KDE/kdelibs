@@ -49,7 +49,7 @@ namespace KJS {
   public:
     EventConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -62,7 +62,7 @@ namespace KJS {
     DOMEvent(ExecState *exec, DOM::Event e);
     ~DOMEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -86,7 +86,7 @@ namespace KJS {
   public:
     EventExceptionConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -99,7 +99,7 @@ namespace KJS {
     DOMUIEvent(ExecState *exec, DOM::UIEvent ue) : DOMEvent(exec, ue) {}
     ~DOMUIEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -112,7 +112,7 @@ namespace KJS {
     DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) : DOMUIEvent(exec, me) {}
     ~DOMMouseEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -128,7 +128,7 @@ namespace KJS {
   public:
     MutationEventConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -141,7 +141,7 @@ namespace KJS {
     DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) : DOMEvent(exec, me) {}
     ~DOMMutationEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
-    Value getValue(ExecState *, int token) const;
+    Value getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

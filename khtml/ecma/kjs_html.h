@@ -55,7 +55,7 @@ namespace KJS {
   public:
     HTMLElement(ExecState *exec, DOM::HTMLElement e) : DOMElement(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     void putValue(ExecState *exec, int token, const Value& value, int);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
@@ -214,7 +214,7 @@ namespace KJS {
     Image(const DOM::Document &d) : doc(d), img(0) { }
     ~Image();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }

@@ -152,7 +152,7 @@ Value Navigator::get(ExecState *exec, const UString &propertyName) const
   return lookupGet<NavigatorFunc,Navigator,ObjectImp>(exec,propertyName,&NavigatorTable,this);
 }
 
-Value Navigator::getValue(ExecState *exec, int token) const
+Value Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KURL url = m_part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
@@ -216,7 +216,7 @@ Value Navigator::getValue(ExecState *exec, int token) const
   case _MimeTypes:
     return Value(new MimeTypes(exec));
   default:
-    kdWarning() << "Unhandled token in DOMEvent::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }

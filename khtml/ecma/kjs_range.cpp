@@ -74,7 +74,7 @@ Value DOMRange::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMRange,DOMObject>(exec,p,&DOMRangeTable,this);
 }
 
-Value DOMRange::getValue(ExecState *exec, int token) const
+Value DOMRange::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case StartContainer:
@@ -92,7 +92,7 @@ Value DOMRange::getValue(ExecState *exec, int token) const
     return getDOMNode(exec,range2.commonAncestorContainer());
   }
   default:
-    kdWarning() << "Unhandled token in DOMRange::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMRange::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -201,7 +201,7 @@ Value RangeConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<RangeConstructor,DOMObject>(exec,p,&RangeConstructorTable,this);
 }
 
-Value RangeConstructor::getValue(ExecState *, int token) const
+Value RangeConstructor::getValueProperty(ExecState *, int token) const
 {
   return Number(token);
 }

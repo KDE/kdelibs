@@ -31,7 +31,7 @@ namespace KJS {
   public:
     Navigator(ExecState *exec, KHTMLPart *p);
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { AppCodeName, AppName, AppVersion, Language, UserAgent, Platform,

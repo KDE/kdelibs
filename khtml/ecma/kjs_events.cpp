@@ -139,7 +139,7 @@ Value EventConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<EventConstructor, DOMObject>(exec,p,&EventConstructorTable,this);
 }
 
-Value EventConstructor::getValue(ExecState *, int token) const
+Value EventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number(token);
@@ -190,7 +190,7 @@ Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMEvent,DOMObject>(exec, p, &DOMEventTable, this );
 }
 
-Value DOMEvent::getValue(ExecState *exec, int token) const
+Value DOMEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Type:
@@ -209,7 +209,7 @@ Value DOMEvent::getValue(ExecState *exec, int token) const
   case TimeStamp:
     return Number((long unsigned int)event.timeStamp()); // ### long long ?
   default:
-    kdWarning() << "Unhandled token in DOMEvent::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -282,7 +282,7 @@ Value EventExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<EventExceptionConstructor, DOMObject>(exec,p,&EventExceptionConstructorTable,this);
 }
 
-Value EventExceptionConstructor::getValue(ExecState *, int token) const
+Value EventExceptionConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number(token);
@@ -318,7 +318,7 @@ Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMUIEvent,DOMEvent>(exec,p,&DOMUIEventTable,this);
 }
 
-Value DOMUIEvent::getValue(ExecState *exec, int token) const
+Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case View:
@@ -326,7 +326,7 @@ Value DOMUIEvent::getValue(ExecState *exec, int token) const
   case Detail:
     return Number(static_cast<DOM::UIEvent>(event).detail());
   default:
-    kdWarning() << "Unhandled token in DOMUIEvent::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -396,7 +396,7 @@ Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMMouseEvent,DOMUIEvent>(exec,p,&DOMMouseEventTable,this);
 }
 
-Value DOMMouseEvent::getValue(ExecState *exec, int token) const
+Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ScreenX:
@@ -420,7 +420,7 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
     if ( rend ) {
       int xPos, yPos;
       if ( rend->absolutePosition( xPos, yPos ) ) {
-        kdDebug() << "DOMMouseEvent::getValue rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
+        kdDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
         x -= xPos;
         y -= yPos;
       }
@@ -453,7 +453,7 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).currentTarget());
   default:
-    kdWarning() << "Unhandled token in DOMMouseEvent::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }
@@ -503,7 +503,7 @@ Value MutationEventConstructor::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<MutationEventConstructor,DOMObject>(exec,p,&MutationEventConstructorTable,this);
 }
 
-Value MutationEventConstructor::getValue(ExecState *, int token) const
+Value MutationEventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return Number(token);
@@ -542,7 +542,7 @@ Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMMutationEvent,DOMEvent>(exec,p,&DOMMutationEventTable,this);
 }
 
-Value DOMMutationEvent::getValue(ExecState *exec, int token) const
+Value DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case RelatedNode:
@@ -556,7 +556,7 @@ Value DOMMutationEvent::getValue(ExecState *exec, int token) const
   case AttrChange:
     return Number((unsigned int)static_cast<DOM::MutationEvent>(event).attrChange());
   default:
-    kdWarning() << "Unhandled token in DOMMutationEvent::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in DOMMutationEvent::getValueProperty : " << token << endl;
     return Value();
   }
 }

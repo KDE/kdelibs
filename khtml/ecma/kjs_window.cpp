@@ -57,7 +57,7 @@ namespace KJS {
   public:
     History(KHTMLPart *p) : part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
@@ -119,7 +119,7 @@ Value Screen::get(ExecState *exec, const UString &p) const
   return lookupGetValue<Screen,ObjectImp>(exec,p,&ScreenTable,this);
 }
 
-Value Screen::getValue(ExecState *, int token) const
+Value Screen::getValueProperty(ExecState *, int token) const
 {
   KWinModule info;
 
@@ -142,7 +142,7 @@ Value Screen::getValue(ExecState *, int token) const
   case AvailWidth:
     return Number(info.workArea().width());
   default:
-    kdWarning() << "Screen::getValue unhandled token " << token << endl;
+    kdWarning() << "Screen::getValueProperty unhandled token " << token << endl;
     return Undefined();
   }
 }
@@ -1539,7 +1539,7 @@ Value History::get(ExecState *exec, const UString &p) const
   return lookupGet<HistoryFunc,History,ObjectImp>(exec,p,&HistoryTable,this);
 }
 
-Value History::getValue(ExecState *, int token) const
+Value History::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case Length:
@@ -1560,7 +1560,7 @@ Value History::getValue(ExecState *, int token) const
     return Number( length.toUInt() );
   }
   default:
-    kdWarning() << "Unhandled token in History::getValue : " << token << endl;
+    kdWarning() << "Unhandled token in History::getValueProperty : " << token << endl;
     return Value();
   }
 }

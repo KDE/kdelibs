@@ -978,14 +978,14 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
   if (entry) {
     if (entry->attr & Function)
       return lookupOrCreateFunction<KJS::HTMLElementFunction>(exec, propertyName, this, entry->value, entry->params, entry->attr);
-    return getValue(exec, entry->value);
+    return getValueProperty(exec, entry->value);
   }
 
   // Base HTMLElement stuff or parent class forward, as usual
   return DOMObjectLookupGet<KJS::HTMLElementFunction, KJS::HTMLElement, DOMElement>(exec, propertyName, &KJS::HTMLElementTable, this);
 }
 
-Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
+Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
   switch (element.elementId()) {
@@ -1647,7 +1647,7 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     return getHTMLCollection(exec,element.children());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
-  kdWarning() << "HTMLElement::getValue unhandled token " << token << endl;
+  kdWarning() << "HTMLElement::getValueProperty unhandled token " << token << endl;
   return Undefined();
 }
 
@@ -2904,7 +2904,7 @@ Value Image::tryGet(ExecState *exec, const UString &propertyName) const
   return DOMObjectLookupGetValue<Image,DOMObject>(exec, propertyName, &ImageTable, this);
 }
 
-Value Image::getValue(ExecState *, int token) const
+Value Image::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case Src:
@@ -2912,7 +2912,7 @@ Value Image::getValue(ExecState *, int token) const
   case Complete:
     return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
   default:
-    kdWarning() << "Image::getValue unhandled token " << token << endl;
+    kdWarning() << "Image::getValueProperty unhandled token " << token << endl;
     return Value();
   }
 }

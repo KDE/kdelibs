@@ -59,7 +59,7 @@ namespace KJS {
     DOMStyleSheet(Object proto, DOM::StyleSheet ss) : DOMObject(proto), styleSheet(ss) { }
     virtual ~DOMStyleSheet();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -143,7 +143,7 @@ namespace KJS {
     DOMCSSRule(ExecState *, DOM::CSSRule r) : cssRule(r) { }
     virtual ~DOMCSSRule();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     void putValue(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const;
@@ -171,7 +171,7 @@ namespace KJS {
   public:
     CSSRuleConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -201,7 +201,7 @@ namespace KJS {
   public:
     CSSValueConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -227,7 +227,7 @@ namespace KJS {
   public:
     CSSPrimitiveValueConstructor(ExecState *exec) : CSSValueConstructor(exec) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
-    Value getValue(ExecState *exec, int token) const;
+    Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
