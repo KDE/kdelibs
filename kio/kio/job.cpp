@@ -2518,7 +2518,8 @@ void CopyJob::copyNextFile()
                     {
                        // We have to change the extension anyway, so while we're at it,
                        // name the file like the URL
-                       (*it).uDest.setFileName( KIO::encodeFileName( (*it).uSource.prettyURL() )+".desktop" );
+                       if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                           (*it).uDest.addPath( KIO::encodeFileName( (*it).uSource.prettyURL() )+".desktop" );
                        QString path = (*it).uDest.path();
                        kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
                        QFile f( path );
