@@ -19,8 +19,6 @@
 
 // $Id$
 
-#define QT_NO_CAST_ASCII
-
 #include "ftp.h"
 
 #include <sys/types.h>
