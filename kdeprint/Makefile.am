@@ -25,7 +25,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp kfilelist.cpp \
 			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp \
 			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
-			 kpmarginpage.cpp
+			 kpmarginpage.cpp messagewindow.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
 libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) 
@@ -39,7 +39,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h \
 		 kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
 		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h \
 		 util.h driverparse.h printerfilter.h marginpreview.h marginwidget.h \
-		 marginvaluewidget.h kpmarginpage.h
+		 marginvaluewidget.h kpmarginpage.h messagewindow.h
 
 include_HEADERS = kprinter.h kprintaction.h
 

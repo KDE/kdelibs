@@ -57,12 +57,12 @@ extern "C"
 	{
 		return CupsdDialog::restartServer(msg);
 	}
-	bool configureServer(QWidget *parent)
+	bool configureServer(QWidget *parent, QString& msg)
 	{
 		dynamically_loaded = true;
-		CupsdDialog::configure(QString::null, parent);
+		bool result = CupsdDialog::configure(QString::null, parent, &msg);
 		dynamically_loaded = false;
-		return true;
+		return result;
 	}
 }
 
@@ -210,10 +210,11 @@ bool CupsdDialog::restartServer(QString& msg)
         return (msg.isEmpty());
 }
 
-void CupsdDialog::configure(const QString& filename, QWidget *parent)
+bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *msg)
 {
-	QString	errormsg;
 	bool needUpload(false);
+	QString errormsg;
+	bool result = true;
 
 	// init password dialog if needed
 	if (!dynamically_loaded)
@@ -243,7 +244,9 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 
 	if (!errormsg.isEmpty())
 	{
-		KMessageBox::error(parent, errormsg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
+		if ( !dynamically_loaded )
+			KMessageBox::error(parent, errormsg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
+		result = false;
 	}
 	else
 	{
@@ -257,15 +260,21 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 					     "CUPS server. The daemon will not be restarted."));
 			else if (!cupsPutConf(encodedFn.data()))
 			{
-				KMessageBox::error(parent,
-					i18n("Unable to upload the configuration file to CUPS server. "
-					     "You probably don't have the access permissions to perform this operation."), i18n("CUPS configuration error"));
+				errormsg = i18n("Unable to upload the configuration file to CUPS server. "
+					     "You probably don't have the access permissions to perform this operation.");
+				if ( !dynamically_loaded )
+					KMessageBox::error(parent, errormsg, i18n("CUPS configuration error"));
+				result = false;
 			}
 		}
 
 	}
 	if (needUpload)
 		QFile::remove(fn);
+
+	if ( msg )
+		*msg = errormsg;
+	return result;
 }
 
 void CupsdDialog::slotOk()

@@ -52,6 +52,10 @@ KMManager::KMManager(QObject *parent, const char *name)
 	Q_CHECK_PTR(m_specialmgr);
 	m_virtualmgr = new KMVirtualManager(this);
 	Q_CHECK_PTR(m_virtualmgr);
+
+	// set default to true to not disturb code that
+	// hasn't been adapted yet. Otherwise, should be false
+	m_updatepossible = true;
 }
 
 KMManager::~KMManager()
@@ -222,6 +226,7 @@ KMPrinter* KMManager::defaultPrinter()
 QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString::null);
+	kdDebug() << "Getting printer list: " << reload << endl;
 
 	if (reload || m_printers.count() == 0)
 	{
@@ -238,9 +243,11 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 			m_virtualmgr->reset();
 
 		// List real printers (in subclasses)
-		listPrinters();
-                // list virtual printers (and undiscard virtual printers if necessary)
-		m_virtualmgr->refresh();
+		if ( m_updatepossible )
+			listPrinters();
+		// list virtual printers (and undiscard virtual printers if necessary)
+		if ( m_updatepossible )
+			m_virtualmgr->refresh();
 		m_specialmgr->refresh();
 
 		// remove discarded printers
@@ -529,7 +536,19 @@ QString KMManager::stateInformation()
 
 void KMManager::checkUpdatePossible()
 {
-	emit updatePossible( true );
+	m_updatepossible = false;
+	checkUpdatePossibleInternal();
+}
+
+void KMManager::checkUpdatePossibleInternal()
+{
+	setUpdatePossible( true );
+}
+
+void KMManager::setUpdatePossible( bool value )
+{
+	m_updatepossible = value;
+	emit updatePossible( m_updatepossible );
 }
 
 #include "kmmanager.moc"

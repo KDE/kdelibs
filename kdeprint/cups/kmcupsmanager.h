@@ -27,6 +27,7 @@
 class IppRequest;
 class KLibrary;
 class KExtendedSocket;
+class QSocket;
 
 class KMCupsManager : public KMManager
 {
@@ -65,8 +66,6 @@ public:
 	void validatePluginActions(KActionCollection*, KMPrinter*);
 	QString stateInformation();
 
-	void checkUpdatePossible();
-
 public slots:
 	void exportDriver();
 	void printerIppReport();
@@ -90,11 +89,12 @@ protected:
 	void unloadCupsdConf();
 	QString cupsInstallDir();
 	void ippReport(IppRequest&, int, const QString&);
+	void checkUpdatePossibleInternal();
 
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
-	KExtendedSocket *m_socket;
+	QSocket *m_socket;
 };
 
 #endif

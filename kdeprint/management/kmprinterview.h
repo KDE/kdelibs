@@ -57,6 +57,7 @@ private:
 	KMListView	*m_listview;
 	ViewType	m_type;
 	QString		m_current;
+	bool m_listset;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2002 Michael Goffioul <goffioul@imec.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,42 +17,28 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef	CUPSDDIALOG_H
-#define	CUPSDDIALOG_H
+#ifndef MESSAGEWINDOW_H
+#define MESSAGEWINDOW_H
 
-#include <kdialogbase.h>
-#include <qptrlist.h>
+#include <qwidget.h>
 
-class CupsdPage;
-struct CupsdConf;
+class QLabel;
 
-class CupsdDialog : public KDialogBase
+class MessageWindow : public QWidget
 {
 	Q_OBJECT
+
 public:
-	CupsdDialog(QWidget *parent = 0, const char *name = 0);
-	~CupsdDialog();
+	MessageWindow( const QString& txt, int delay = 500, QWidget *parent = 0, const char *name = 0 );
 
-	bool setConfigFile(const QString& filename);
-
-	static bool configure(const QString& filename = QString::null, QWidget *parent = 0, QString *errormsg = 0);
-	static bool restartServer(QString& msg);
-	static int serverPid();
-	static int serverOwner();
+	void setText( const QString& txt );
+	QString text() const;
 
 protected slots:
-	void slotOk();
-	void slotUser1();
-
-protected:
-	void addConfPage(CupsdPage*);
-	void constructDialog();
-	void restartServer();
+	void slotTimer();
 
 private:
-	QPtrList<CupsdPage>	pagelist_;
-	CupsdConf		*conf_;
-	QString			filename_;
+	QLabel *m_text;
 };
 
 #endif

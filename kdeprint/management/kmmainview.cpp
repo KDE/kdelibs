@@ -35,6 +35,7 @@
 #include "kmspecialprinterdlg.h"
 #include "plugincombobox.h"
 #include "kiconselectaction.h"
+#include "messagewindow.h"
 
 #include <qtimer.h>
 #include <qcombobox.h>
@@ -88,6 +89,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 {
 	m_current = 0;
 	m_first = true;
+	m_msgwindow = 0;
 
 	// create widgets
 	m_printerview = new KMPrinterView(this, "PrinterView");
@@ -130,6 +132,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	//slotRefresh();
 	//KMTimer::self()->release(true);
 	KMTimer::self()->hold();
+	createMessageWindow( i18n( "Initializing manager..." ) );
 	m_manager->checkUpdatePossible();
 }
 
@@ -195,7 +198,7 @@ void KMMainView::initActions()
 	new KAction(i18n("Set as &User Default"),"kdeprint_defaultsoft",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
 	new KAction(i18n("&Test Printer"),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
 	new KAction(i18n("Configure &Manager"),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
-	new KAction(i18n("Refresh &View"),"reload",0,this,SLOT(slotRefresh()),m_actions,"view_refresh");
+	new KAction(i18n("Initialize Manager/&View"),"reload",0,this,SLOT(slotInit()),m_actions,"view_refresh");
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
 	iconlst.clear();
@@ -267,6 +270,7 @@ void KMMainView::slotRefresh()
 
 void KMMainView::slotTimer()
 {
+	kdDebug() << "KMMainView::slotTimer" << endl;
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
@@ -325,6 +329,7 @@ int KMMainView::viewType() const
 
 void KMMainView::slotChangeView(int ID)
 {
+	kdDebug() << "KMMainView::slotChangeView" << endl;
 	if (ID >= KMPrinterView::Icons && ID <= KMPrinterView::Tree)
 		m_printerview->setViewType((KMPrinterView::ViewType)ID);
 }
@@ -570,9 +575,16 @@ void KMMainView::slotServerRestart()
 	KMTimer::self()->hold();
 	bool	result = m_manager->restartServer();
 	if (!result)
+	{
 		showErrorMsg(i18n("Unable to restart print server."));
-	//KMTimer::self()->release(result);
-	m_manager->checkUpdatePossible();
+		KMTimer::self()->release( false );
+	}
+	else
+	{
+		m_printerview->setPrinterList( 0 );
+		createMessageWindow( i18n( "Restarting server..." ), 0 );
+		m_manager->checkUpdatePossible();
+	}
 }
 
 void KMMainView::slotServerConfigure()
@@ -580,9 +592,16 @@ void KMMainView::slotServerConfigure()
 	KMTimer::self()->hold();
 	bool	result = m_manager->configureServer(this);
 	if (!result)
+	{
 		showErrorMsg(i18n("Unable to configure print server."));
-	//KMTimer::self()->release(result);
-	m_manager->checkUpdatePossible();
+		KMTimer::self()->release( false );
+	}
+	else
+	{
+		m_printerview->setPrinterList( 0 );
+		createMessageWindow( i18n( "Configuring server..." ), 0 );
+		m_manager->checkUpdatePossible();
+	}
 }
 
 void KMMainView::slotToggleToolBar(bool on)
@@ -657,7 +676,10 @@ void KMMainView::reload()
 
 	// We must delay the refresh such that all objects has been
 	// correctly reloaded (otherwise, crash in KMJobViewer).
-	slotRefresh();
+	KMTimer::self()->hold();
+	m_printerview->setPrinterList( 0 );
+	createMessageWindow( i18n( "Initializing manager..." ) );
+	m_manager->checkUpdatePossible();
 }
 
 void KMMainView::showPrinterInfos(bool on)
@@ -735,10 +757,30 @@ void KMMainView::configChanged()
 
 void KMMainView::slotUpdatePossible( bool flag )
 {
-	if ( flag )
-		KMTimer::self()->release( true );
-	else
+	destroyMessageWindow();
+	if ( !flag )
 		showErrorMsg( i18n( "Unable to retrieve the printer list." ) );
+	KMTimer::self()->release( true );
+}
+
+void KMMainView::createMessageWindow( const QString& txt, int delay )
+{
+	destroyMessageWindow();
+	m_msgwindow = new MessageWindow( txt, delay, m_printerview, "MessageWindow" );
+}
+
+void KMMainView::destroyMessageWindow()
+{
+	delete m_msgwindow;
+	m_msgwindow = 0;
+}
+
+void KMMainView::slotInit()
+{
+	KMTimer::self()->hold();
+	m_printerview->setPrinterList( 0 );
+	createMessageWindow( i18n( "Initializing manager..." ) );
+	m_manager->checkUpdatePossible();
 }
 
 #include "kmmainview.moc"

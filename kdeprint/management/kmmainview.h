@@ -38,6 +38,7 @@ class KToolBar;
 class KAction;
 class PluginComboBox;
 class QBoxLayout;
+class MessageWindow;
 
 class KMMainView : public QWidget, public KPReloadObject
 {
@@ -80,6 +81,7 @@ protected slots:
 	void slotChangeView(int);
 	void slotChangeDirection(int);
 	void slotUpdatePossible( bool );
+	void slotInit();
 
 protected:
 	void initActions();
@@ -92,6 +94,8 @@ protected:
 	//void aboutToReload();
 	void loadPluginActions();
 	void removePluginActions();
+	void createMessageWindow( const QString&, int delay = 500 );
+	void destroyMessageWindow();
 
 private:
 	KMPrinterView	*m_printerview;
@@ -105,6 +109,7 @@ private:
 	QStringList	m_toollist;
 	bool		m_first;
 	QBoxLayout	*m_boxlayout;
+	MessageWindow *m_msgwindow;
 };
 
 #endif

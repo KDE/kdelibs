@@ -38,6 +38,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qtimer.h>
+#include <qsocket.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -56,6 +57,8 @@
 void extractMaticData(QString& buf, const QString& filename);
 QString printerURI(KMPrinter *p, bool useExistingURI = false);
 QString downloadDriver(KMPrinter *p);
+
+static int trials = 5;
 
 //*****************************************************************************************************
 
@@ -81,7 +84,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 
 KMCupsManager::~KMCupsManager()
 {
-	delete m_socket;
+	//delete m_socket;
 }
 
 QString KMCupsManager::driverDbCreationProgram()
@@ -856,10 +859,15 @@ bool KMCupsManager::restartServer()
 
 bool KMCupsManager::configureServer(QWidget *parent)
 {
-	bool (*f2)(QWidget*) = (bool(*)(QWidget*))loadCupsdConfFunction("configureServer");
+	QString msg;
+	bool (*f2)(QWidget*, QString&) = (bool(*)(QWidget*, QString&))loadCupsdConfFunction("configureServer");
 	bool 	result(false);
 	if (f2)
-		result = f2(parent);
+	{
+		result = f2(parent, msg);
+		if ( !result )
+			setErrorMsg( msg );
+	}
 	unloadCupsdConf();
 	return result;
 }
@@ -961,41 +969,71 @@ QString KMCupsManager::stateInformation()
 	return i18n("Connected to %1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
 }
 
-void KMCupsManager::checkUpdatePossible()
+void KMCupsManager::checkUpdatePossibleInternal()
 {
+	kdDebug() << "Checking for update possible" << endl;
 	delete m_socket;
-	m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
+	/*m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
 	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
 	connect( m_socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
-	m_socket->setTimeout( 1 );
+	m_socket->setTimeout( 1 );*/
+	m_socket = new QSocket( this );
+	connect( m_socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
+	connect( m_socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
+	trials = 5;
 	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
 }
 
 void KMCupsManager::slotConnectionSuccess()
 {
-	emit updatePossible( true );
+	kdDebug() << "Connection success, trying to send a request..." << endl;
+	m_socket->close();
+	
+	IppRequest req;
+	req.setOperation( CUPS_GET_PRINTERS );
+	req.addKeyword( IPP_TAG_OPERATION, "requested-attributes", QString::fromLatin1( "printer-name" ) );
+	if ( req.doRequest( "/printers/" ) )
+		setUpdatePossible( true );
+	else
+	{
+		kdDebug() << "Unable to get printer list" << endl;
+		if ( trials > 0 )
+		{
+			trials--;
+			QTimer::singleShot( 1000, this, SLOT( slotAsyncConnect() ) );
+		}
+		else
+		{
+			setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
+				"Error: %1." ).arg( i18n( "the IPP request failed for an unknown reason" ) ) );
+			setUpdatePossible( false );
+		}
+	}
 }
 
 void KMCupsManager::slotAsyncConnect()
 {
-	m_socket->startAsyncConnect();
+	kdDebug() << "Starting async connect" << endl;
+	//m_socket->startAsyncConnect();
+	m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
 }
 
 void KMCupsManager::slotConnectionFailed( int errno )
 {
-	int to = m_socket->timeout().tv_sec;
-	if ( to < 5 )
+	kdDebug() << "Connection failed trials=" << trials << endl;
+	if ( trials > 0 )
 	{
-		m_socket->setTimeout( ++to );
-		m_socket->cancelAsyncConnect();
-		QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
+		//m_socket->setTimeout( ++to );
+		//m_socket->cancelAsyncConnect();
+		trials--;
+		m_socket->close();
+		QTimer::singleShot( 1000, this, SLOT( slotAsyncConnect() ) );
 		return;
 	}
 
-	setErrorMsg( i18n( "Connection to server %1 on port %2 failed: %3" ).arg( CupsInfos::self()->host() )
-			.arg( CupsInfos::self()->port() )
-			.arg( strerror( errno ) ) );
-	emit updatePossible( false );
+	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
+				"Error: %1." ).arg( errno == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
+	setUpdatePossible( false );
 }
 
 //*****************************************************************************************************

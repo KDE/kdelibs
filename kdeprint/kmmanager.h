@@ -130,7 +130,7 @@ public:
 	virtual void validatePluginActions(KActionCollection*, KMPrinter*);
 
 	// utility function
-	virtual void checkUpdatePossible();
+	void checkUpdatePossible();
 
 signals:
 	void updatePossible( bool );
@@ -156,6 +156,8 @@ protected:
 	void setServerOperationMask(int m)	{ m_serveroperationmask = m; }
 	QString testPage();
 	void discardAllPrinters(bool);
+	void setUpdatePossible( bool );
+	virtual void checkUpdatePossibleInternal();
 
 protected:
 	QString			m_errormsg;
@@ -166,6 +168,7 @@ protected:
 	KMSpecialManager	*m_specialmgr;
 	KMVirtualManager	*m_virtualmgr;
 	PrinterFilter	*m_printerfilter;
+	bool m_updatepossible;
 };
 
 #endif

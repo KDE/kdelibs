@@ -32,6 +32,7 @@
 #include "plugincombobox.h"
 #include "kpcopiespage.h"
 #include "treecombobox.h"
+#include "messagewindow.h"
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
@@ -73,6 +74,7 @@ public:
 	KURLRequester	*m_file;
 	QCheckBox	*m_persistent;
 	bool	m_reduced;
+	MessageWindow *m_msgwindow;
 
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;
@@ -85,6 +87,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 
 	d->m_pages.setAutoDelete(false);
 	d->m_printer = 0;
+	d->m_msgwindow = 0;
 	setCaption(i18n("Print"));
 
 	// widget creation
@@ -116,6 +119,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QToolTip::add(d->m_wizard, i18n("Add printer..."));
 	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
 	d->m_ok->setDefault(true);
+	d->m_ok->setEnabled( false );
 	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
@@ -193,6 +197,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
 	connect(d->m_file, SIGNAL(urlSelected(const QString&)), SLOT(slotOutputFileSelected(const QString&)));
+	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
 	KConfig	*config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
@@ -276,7 +281,7 @@ KPrintDialog* KPrintDialog::printerDialog(KPrinter *printer, QWidget *parent, co
 		// Real initialization comes after.
 		dlg->d->m_printer = printer;
 		KMFactory::self()->uiManager()->setupPrintDialog(dlg);
-		dlg->initialize(printer);
+		dlg->init();
 		if (!caption.isEmpty())
 			dlg->setCaption(caption);
 		if (forceExpand)
@@ -481,7 +486,7 @@ bool KPrintDialog::checkOutputFile()
 void KPrintDialog::slotOptions()
 {
 	if (KMManager::self()->invokeOptionsDialog(this))
-		initialize(d->m_printer);
+		init();
 }
 
 void KPrintDialog::enableOutputFile(bool on)
@@ -545,7 +550,8 @@ void KPrintDialog::reload()
 		d->m_dummy->show();
 	// other initializations
 	setFlags(KMFactory::self()->uiManager()->dialogFlags());
-	initialize(d->m_printer);
+	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
+	init();
 }
 
 void KPrintDialog::configChanged()
@@ -553,7 +559,7 @@ void KPrintDialog::configChanged()
 	// simply update the printer list: do it all the time
 	// as changing settings may influence the way printer
 	// are listed.
-	initialize(d->m_printer);
+	init();
 
 	// update the GUI
 	setFlags(KMFactory::self()->uiManager()->dialogFlags());
@@ -623,6 +629,26 @@ void KPrintDialog::slotOutputFileSelected(const QString& txt)
 			d->m_file->lineEdit()->setText(txt+ext);
 		}
 	}
+}
+
+void KPrintDialog::init()
+{
+	d->m_ok->setEnabled( false );
+	delete d->m_msgwindow;
+	d->m_msgwindow = new MessageWindow( i18n( "Initializing printing system..." ), 500, this, "MessageWindow" );
+	KMFactory::self()->manager()->checkUpdatePossible();
+}
+
+void KPrintDialog::slotUpdatePossible( bool flag )
+{
+	delete d->m_msgwindow;
+	d->m_msgwindow = 0;
+	if ( !flag )
+		KMessageBox::error(parentWidget(),
+			"<qt><nobr>"+
+			i18n("An error occurred while retrieving the printer list:")
+			+"</nobr><br><br>"+KMManager::self()->errorMsg()+"</qt>");
+	initialize( d->m_printer );
 }
 
 #include "kprintdialog.moc"

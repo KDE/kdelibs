@@ -39,6 +39,7 @@ KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
 	m_listview = new KMListView(this);
 	addWidget(m_listview,1);
 	m_current = QString::null;
+	m_listset = false;
 
 	connect(m_iconview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SIGNAL(rightButtonClicked(const QString&,const QPoint&)));
 	connect(m_listview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SIGNAL(rightButtonClicked(const QString&,const QPoint&)));
@@ -61,6 +62,7 @@ void KMPrinterView::setPrinterList(QPtrList<KMPrinter> *list)
 		m_iconview->setPrinterList(list);
 	if (m_type == KMPrinterView::Tree || list == 0)
 		m_listview->setPrinterList(list);
+	m_listset = ( list != 0 );
 }
 
 void KMPrinterView::setViewType(ViewType t)
@@ -78,7 +80,8 @@ void KMPrinterView::setViewType(ViewType t)
 			break;
 	}
 	QString	oldcurrent = m_current;
-	setPrinterList(KMManager::self()->printerList(false));
+	if ( m_listset )
+		setPrinterList(KMManager::self()->printerList(false));
 	if (m_type == KMPrinterView::Tree)
 	{
 		raiseWidget(m_listview);
