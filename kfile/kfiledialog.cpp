@@ -277,13 +277,13 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     bookmarksMenu = new QPopupMenu( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
-                                   (int)HOTLIST_BUTTON, true, 
+                                   (int)HOTLIST_BUTTON, true,
                                    i18n("Bookmarks"));
     toolbar->getButton(HOTLIST_BUTTON)->setPopup( bookmarksMenu, true);
 
-    connect( bookmarksMenu, SIGNAL( aboutToShow() ), 
+    connect( bookmarksMenu, SIGNAL( aboutToShow() ),
              SLOT( buildBookmarkPopup()));
-    connect( bookmarksMenu, SIGNAL( activated( int )), 
+    connect( bookmarksMenu, SIGNAL( activated( int )),
              SLOT( bookmarkMenuActivated( int )));
     /*
     toolbar->insertButton(QString::fromLatin1("configure"),
@@ -432,7 +432,7 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     d->mimetypes = mimeTypes;
     filterWidget->setMimeFilter( mimeTypes, defaultType );
 
-    QStringList types = mimeTypes;
+    QStringList types = filterWidget->currentFilter();
     types.append( QString::fromLatin1( "inode/directory" ));
     ops->clearFilter();
     ops->setMimeFilter( types );
@@ -986,7 +986,7 @@ void KFileDialog::bookmarksChanged() // SLOT
     //    kdDebug(kfile_area) << "bookmarksChanged" << endl;
 }
 
-void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, 
+void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu,
                                     int &id )
 {
     KFileBookmark *bm;
