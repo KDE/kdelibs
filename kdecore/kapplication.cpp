@@ -1823,7 +1823,8 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    config.setGroup( QString::fromLatin1("PROFILE_Default") );
    QString command = config.readEntry("EmailClient");
 
-   if (command.isEmpty() || command == QString::fromLatin1("kmail"))
+   if (command.isEmpty() || command == QString::fromLatin1("kmail")
+       || command.right(6) == "/kmail")
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
