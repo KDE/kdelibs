@@ -50,7 +50,7 @@ void KPlayObject::seek(Arts::poTime newTime)
 	if(!m_isStream)
 		object().seek(newTime);
 	else
-		kdDebug() << "Seeking in a Stream? huh?" << endl;
+		kdDebug( 400 ) << "Seeking in a Stream? huh?" << endl;
 }
 
 void KPlayObject::pause()
