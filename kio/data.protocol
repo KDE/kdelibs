@@ -1,7 +1,7 @@
 [Protocol]
 protocol=data
-input=none
-output=stream
+input=stream
+output=none
 reading=true
 Icon=www
 Description=A kioslave for data URIs (rfc2397)
