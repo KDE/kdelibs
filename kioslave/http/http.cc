@@ -3140,6 +3140,7 @@ bool HTTPProtocol::readHeader()
        (u.protocol() != "ftp") && (u.protocol() != "webdav") &&
        (u.protocol() != "webdavs"))
     {
+      redirection(u.url());
       error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
