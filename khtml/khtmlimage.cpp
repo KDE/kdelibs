@@ -120,6 +120,8 @@ bool KHTMLImage::openURL( const KURL &url )
 
     KIO::Job *job = khtml::Cache::loader()->jobForRequest( m_url.url() );
 
+    emit setWindowCaption( url.prettyURL() );
+
     if ( job )
     {
         emit started( job );
