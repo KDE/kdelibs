@@ -5,8 +5,13 @@ LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
 check_PROGRAMS = kpartstest normalktmtest ghostviewtest 
 
-kpartstest_SOURCES = example.cpp notepad.cpp parts.cpp
-normalktmtest_SOURCES = normalktm.cpp notepad.cpp parts.cpp
+noinst_LTLIBRARIES = libnotepad.la
+libnotepad_la_SOURCES = notepad.cpp
+
+kpartstest_SOURCES = example.cpp parts.cpp
+kpartstest_LDADD = libnotepad.la
+normalktmtest_SOURCES = normalktm.cpp parts.cpp
+normalktmtest_LDADD = libnotepad.la
 ghostviewtest_SOURCES = ghostview.cpp
 ghostviewtest_LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KFILE)
 
@@ -18,8 +23,8 @@ libspellcheckplugin_la_SOURCES = plugin_spellcheck.cpp
 libspellcheckplugin_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
 libspellcheckplugin_la_LDFLAGS = -module $(KDE_PLUGIN)
 
-libnotepadpart_la_SOURCES = notepad.cpp notepad_factory.cpp
-libnotepadpart_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+libnotepadpart_la_SOURCES = notepad_factory.cpp
+libnotepadpart_la_LIBADD = $(top_builddir)/kparts/libkparts.la libnotepad.la $(LIB_KDEUI)
 libnotepadpart_la_LDFLAGS = -module $(KDE_PLUGIN)
 
 rcdir = $(kde_datadir)/kpartstest
