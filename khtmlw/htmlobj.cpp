@@ -570,10 +570,8 @@ HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
                                                                                                                  
 
 
-HTMLFitType HTMLTextMaster::fitLine( bool startOfLine, int widthLeft )
+HTMLFitType HTMLTextMaster::fitLine( bool startOfLine, bool firstRun, int widthLeft )
 {
-    int startPos;
-    
     /* split ourselves up :) */
     if ( isNewline() )
     	return HTMLCompleteFit;
@@ -608,11 +606,12 @@ HTMLTextSlave::HTMLTextSlave( HTMLTextMaster *_owner,
     width = fm.width( (const char*) &(_owner->text[_posStart]), _posLen );
 }
 
-HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, 
+HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
                              int widthLeft )
 {
     int newLen;
     int newWidth;
+    char *splitPtr;
 
     const char *text = owner->text;
     // Set font settings in painter for correct width calculation
@@ -647,10 +646,18 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine,
     if ((width <= widthLeft) || (posLen <= 1) || (widthLeft < 0) )
     {
         // Text fits completely 
-        return HTMLCompleteFit;
+        if (!next() || next()->isSeparator() || next()->isNewline())
+	    return HTMLCompleteFit;
+	    
+	// Text is followed by more text... break it before the last word.
+	splitPtr = rindex( text+1 , ' '); 
+	if (!splitPtr)
+	    return HTMLCompleteFit;
     }
-
-    char *splitPtr = index( text+1, ' ');
+    else
+    {
+        splitPtr = index( text+1, ' ');
+    }
 
     if (splitPtr)
     {
@@ -697,7 +704,7 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine,
     if (!splitPtr)
     {
     	// No seperator available
-    	if (startOfLine == false)
+    	if (firstRun == false)
     	{
     	    // Text does not fit, wait for next line
     	    return HTMLNoFit;
@@ -707,12 +714,15 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine,
 	// newLen & newWidth are valid
     }
 
-    // Move remaining text to our text-slave
-    HTMLTextSlave *textSlave = new HTMLTextSlave( owner, 
-    	posStart + newLen, posLen - newLen);
+    if (posLen - newLen > 0)
+    {
+	// Move remaining text to our text-slave
+    	HTMLTextSlave *textSlave = new HTMLTextSlave( owner, 
+    		posStart + newLen, posLen - newLen);
 
-    textSlave->setNext(next());
-    setNext(textSlave);
+	textSlave->setNext(next());
+    	setNext(textSlave);
+    }
 
     posLen = newLen;
     width = newWidth;

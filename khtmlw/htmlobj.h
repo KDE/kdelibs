@@ -95,7 +95,9 @@ public:
      * If 'startOfLine' is 'false', this function may return 'HTMLNoFit' to 
      * indicate it is not possible to use the specified 'widthLeft'.
      */
-    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft ) 
+    virtual HTMLFitType fitLine( bool startOfLine, 
+    							 bool firstRun, 
+    							 int widthLeft ) 
     { return HTMLCompleteFit; }
     
     /*
@@ -390,7 +392,7 @@ public:
     	             
     virtual int  calcMinWidth() { return minWidth; }
     virtual int  calcPreferredWidth() { return prefWidth; }
-    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft );
+    virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 					    int _height, int _tx, int _ty, bool toPrinter )
 	    { return false; } // Dummy
@@ -410,7 +412,7 @@ class HTMLTextSlave : public HTMLObject
 {
 public:
     HTMLTextSlave( HTMLTextMaster *_owner, short _posStart, short _posLen);
-    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft );
+    virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & ) { }; // Handled by master

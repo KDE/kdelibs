@@ -1311,7 +1311,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     int d = 0;
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-    	obj->fitLine( true, -1);
+    	obj->fitLine( (obj == head), true, -1);
 	obj->setXPos( width );
 	width += obj->getWidth();
 	if ( obj->getAscent() > a )
@@ -1538,7 +1538,9 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    {
 		HTMLFitType fit;
 		run->setMaxWidth( rmargin - lmargin );
-		fit = run->fitLine( (w+runWidth == 0), rmargin-runWidth-w);
+		fit = run->fitLine( (w+runWidth == lmargin), // Start of line
+				    (obj == line), // first run
+				    rmargin-runWidth-w);
 		
 		if ( fit == HTMLNoFit)
 		{
