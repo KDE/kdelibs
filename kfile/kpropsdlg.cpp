@@ -121,14 +121,13 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(item->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
-
-  m_singleUrl( item->url() )
+                 parent, name, modal)
 {
   d = new KPropertiesDialogPrivate;
   m_items.append( new KFileItem(*item) ); // deep copy
 
   assert( item );
+  m_singleUrl = item->url();
   assert(!m_singleUrl.isEmpty());
 
   init (modal, autoShow);
@@ -150,13 +149,12 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
-
-  m_singleUrl( _items.first()->url() )
+                 parent, name, modal)
 {
   d = new KPropertiesDialogPrivate;
 
   assert( !_items.isEmpty() );
+  m_singleUrl = _items.first()->url();
   assert(!m_singleUrl.isEmpty());
 
   KFileItemListIterator it ( _items );
@@ -216,7 +214,7 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
   if (!modal)
     XSetTransientForHint(qt_xdisplay(), winId(), winId());
 
-  resize( 400, 400 ); // not sure what that's for
+  //  resize( 400, 400 ); // not sure what that's for
 
   insertPages();
 
