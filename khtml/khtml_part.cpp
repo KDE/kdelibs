@@ -79,7 +79,9 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
+#ifndef QT_NO_DRAGANDDROP
 #include <kmultipledrag.h>
+#endif
 
 #include <kssl.h>
 #include <ksslinfodlg.h>
