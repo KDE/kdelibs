@@ -1110,14 +1110,18 @@ QPopupMenu *KEdit::createPopupMenu( const QPoint& pos )
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
     QPopupMenu *menu = QMultiLineEdit::createPopupMenu( pos );
-
-    int id = menu->idAt(0);
-    menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
-    menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
-    menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
-    menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
-    menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
-    menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
+    
+    if ( isReadOnly() )
+      menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
+    else {
+      int id = menu->idAt(0);
+      menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
+      menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
+      menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
+      menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
+      menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
+      menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
+    }
 
     return menu;
 }
