@@ -77,7 +77,7 @@ static const char *xNames[CHARSETS_COUNT]={
     "iso8859-13",
     "iso8859-14",
     "iso8859-15",
-    "koi8",
+    "koi8-r",
     "jisx0208.1983-0",
     "ksc5601.1987-0",
     "unknown",
