@@ -52,7 +52,7 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	progressbase.h defaultprogress.h statusbarprogress.h \
-	kimageio.h kdirnotify.h
+	kimageio.h kdirnotify.h kurlpixmapprovider.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM)
