@@ -447,8 +447,9 @@ void KDockWidget::setDockWindowType (NET::WindowType windowType)
 
 #endif
 
-void KDockWidget::setDockWindowTransient (bool transientEnabled)
+void KDockWidget::setDockWindowTransient (QWidget *parent, bool transientEnabled)
 {
+  d->_parent = parent;
   d->transient = transientEnabled;
 }
 
@@ -1788,8 +1789,8 @@ void KDockManager::readConfig( KConfig* c, QString group )
   autoCreateDock->setAutoDelete( true );
 
   bool isMainVisible = main->isVisible();
-  if (isMainVisible)
-  QMessageBox::information(0,"","hallo");
+ // if (isMainVisible)  // CCC
+  //QMessageBox::information(0,"","hallo");
 //COMMENTED4TESTING  main->hide();
 
   QObjectListIt it( *childDock );
