@@ -170,7 +170,7 @@ AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
       kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: no entries." << endl;
       return AddressBook::NoEntry;
     }
-  if(!book->getEntries(entries))
+  if(book->getEntries(entries)!=AddressBook::NoError)
     {
       kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: intern error." << endl;
       return AddressBook::InternError;

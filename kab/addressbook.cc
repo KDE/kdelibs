@@ -960,13 +960,15 @@ AddressBook::getEntries(list<Entry>& thelist)
   // ###########################################################################
   StringKabKeyMap::iterator pos;
   Entry entry;
+  ErrorCode rc;
   // -----
-  thelist.erase(thelist.begin(), thelist.end());
   kdDebug(!thelist.empty(), KAB_KDEBUG_AREA)
     << "AddressBook::getEntries: warning - non-empty value list!" << endl;
+  thelist.erase(thelist.begin(), thelist.end());
   for(pos=entries->begin(); pos!=entries->end(); ++pos)
     {
-      if(getEntry((*pos).second, entry))
+      rc=getEntry((*pos).second, entry);
+      if(rc==NoError)
 	{
 	  thelist.push_back(entry);
 	} else {
