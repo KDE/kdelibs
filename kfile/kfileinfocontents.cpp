@@ -151,7 +151,7 @@ void KFileInfoContents::clear()
 void KFileInfoContents::connectDirSelected( QObject *receiver, 
 					    const char *member)
 {
-    sig->connect(sig, SIGNAL(dirSelected(KFileInfo*)), receiver, member);
+    sig->connect(sig, SIGNAL(dirActivated(KFileInfo*)), receiver, member);
 }
 
 void KFileInfoContents::connectFileHighlighted( QObject *receiver, 
@@ -295,7 +295,7 @@ void  KFileInfoContents::repaint(bool f)
 void KFileInfoContents::setCurrentItem(const char *item, 
 				       const KFileInfo *entry)
 {
-  uint i;
+    uint i;
     if (item != 0) {
 	for (i = 0; i < sorted_length; i++)
 	    if (sortedArray[i]->fileName() == item) {

@@ -92,6 +92,14 @@ public:
     bool addItem(const KFileInfo *item);
 
     /**
+     * inserts a list of items. This is an speed optimized version of 
+     * function above.
+     * @return true, if a repaint is necessary
+     * @see addItem
+     **/
+    bool addItemList(KFileInfoList *list);
+
+    /**
       * @return the name of the file at position index. 
       * 
       * the meaning of index depends on the sorting and the other files
@@ -166,9 +174,9 @@ public:
     /**
       * to connect a slot to the internal signal, that is emited, if
       * the user selects a directory.
-      * 
-      * Before this signal is emited, the value for @ref selectedDir is
-      * set to the correct value.
+      *
+      * the connected slot must have the form 
+      * <pre>member(KFileInfo*)</pre>
       **/
     void connectDirSelected( QObject *receiver, const char *member);
 
@@ -176,8 +184,8 @@ public:
       * to connect a slot to the internal signal, that is emited, if
       * the user highlights a file.
       * 
-      * Before this signal is emited, the value for @ref highlightedFile 
-      * is set to the correct value.
+      * the connected slot must have the form 
+      * <pre>member(KFileInfo*)</pre>
       **/
     void connectFileHighlighted( QObject *receiver, const char *member);
 
@@ -185,8 +193,8 @@ public:
       * to connect a slot to the internal signal, that is emited, if
       * the user selects a file.
       * 
-      * Before this signal is emited, the value for @ref selectedFile is
-      * set to the correct value.
+      * the connected slot must have the form 
+      * <pre>member(KFileInfo*)</pre>
       **/
     void connectFileSelected( QObject *receiver, const char *member);
 

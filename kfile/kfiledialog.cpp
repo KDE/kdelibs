@@ -368,8 +368,8 @@ void KFileBaseDialog::initGUI()
     boxLayout->activate();
 
     fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
-    fileList->connectFileSelected(this, SLOT(fileActivated()));
-    fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
+    fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo*)));
+    fileList->connectFileHighlighted(this, SLOT(fileHighlighted(KFileInfo*)));
 }
 
 KFileBaseDialog::~KFileBaseDialog()
