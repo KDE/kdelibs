@@ -7,7 +7,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
 	x-executable.desktop x-archive.desktop x-lha.desktop \
-	x-tbz.desktop x-tgz.desktop x-awk.desktop \
+	x-tbz.desktop x-tgz.desktop x-targz.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
 	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
