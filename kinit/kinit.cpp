@@ -1014,16 +1014,6 @@ int main(int argc, char **argv, char **envp)
 
    X11fd = initXconnection();
 
-   {
-       // if we are connected to a multihead display, make sure multihead
-       // support is turned on in  kdeglobals.
-       KInstance inst("kdeinit-multihead-check");
-       KConfig config("kdeglobals", false);
-       config.setGroup("X11");
-       config.writeEntry("enableMultihead", (ScreenCount(X11display) > 1));
-       config.sync();
-   }
-
    for(i = 1; i < argc; i++)
    {
       if (safe_argv[i][0] == '+')
