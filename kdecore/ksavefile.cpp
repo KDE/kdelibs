@@ -81,7 +81,8 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
 
 KSaveFile::~KSaveFile()
 {
-   close();
+   if (mTempFile.bOpen)
+      close(); // Close if we were still open
 }
 
 QString
