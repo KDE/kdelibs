@@ -22,6 +22,7 @@
 #define KTABWIDGET_H
 
 #include <qtabwidget.h>
+#include <qstringlist.h>
 
 #include <kdelibs_export.h>
 
@@ -39,6 +40,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool hoverCloseButton READ hoverCloseButton WRITE setHoverCloseButton )
     Q_PROPERTY( bool hoverCloseButtonDelayed READ hoverCloseButtonDelayed WRITE setHoverCloseButtonDelayed )
     Q_PROPERTY( bool tabCloseActivatePrevious READ tabCloseActivatePrevious WRITE setTabCloseActivatePrevious )
+    Q_PROPERTY( bool automaticResizeTabs READ automaticResizeTabs WRITE setAutomaticResizeTabs )
 
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
@@ -77,12 +79,25 @@ public:
     */
     bool tabCloseActivatePrevious() const;
 
+    /*!
+      Returns true if calling setTitle() will resize tabs 
+      to the width of the tab bar.
+      @since 3.4
+    */
+    bool automaticResizeTabs() const;
+
 public slots:
     /*!
       Move a widget's tab from first to second specified index and emit
       signal movedTab( int, int ) afterwards.
     */
     virtual void moveTab( int, int );
+
+    /*!
+      Removes the widget, reimplemented for 
+      internal reasons (keeping labels in sync).
+    */
+    virtual void removePage ( QWidget * w );
 
     /*!
       If \a enable is true, tab reordering with middle button will be enabled.
@@ -114,6 +129,20 @@ public slots:
       @since 3.3
     */
     void setTabCloseActivatePrevious( bool previous );
+
+    /*!
+      sets the title of the tab holding widget sender then
+      resizes tabs to fit to tab bar width if automaticResizeTabs 
+      is enabled.
+    */
+    virtual void setTabLabel( QWidget* sender, const QString &title );
+
+    /*!
+      If \a enable is true, a call to setTitle() will also resize the
+      tabs to the width of the tab bar.
+      @since 3.4
+    */
+    void setAutomaticResizeTabs( bool enable );
 
 signals:
     /*!
@@ -186,9 +215,11 @@ protected:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
+    unsigned int tabBarWidthForMaxChars( uint maxLength );
 #ifndef QT_NO_WHEELEVENT
     virtual void wheelEvent( QWheelEvent *e );
 #endif
+    virtual void resizeEvent( QResizeEvent * );
 
 protected slots:
     virtual void receivedDropEvent( int, QDropEvent * );

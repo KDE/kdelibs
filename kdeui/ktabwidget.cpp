@@ -18,14 +18,40 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
+#include <qstyle.h>
+
+#include <kconfig.h>
 #include <kiconloader.h>
+#include <kstringhandler.h>
 
 #include "ktabwidget.h"
 #include "ktabbar.h"
 
+class KTabWidgetPrivate {
+public:
+    bool m_automaticResizeTabs;
+    int m_maxLength;
+    int m_minLength;
+    unsigned int m_CurrentMaxLength;
+
+    //holds the full names of the tab, otherwise all we
+    //know about is the shortened name
+    QStringList m_tabNames;
+
+    KTabWidgetPrivate() {
+        m_automaticResizeTabs = false;
+        m_maxLength = KGlobal::config()->readNumEntry("MaximumTabLength", 30);
+        m_minLength = KGlobal::config()->readNumEntry("MinimumTabLength", 3);
+        m_CurrentMaxLength = m_minLength;
+        QStringList m_tabNames;
+    }
+};
+
 KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     : QTabWidget( parent, name, f )
 {
+    d = new KTabWidgetPrivate;
     setTabBar( new KTabBar(this, "tabbar") );
     setAcceptDrops( true );
 
@@ -44,8 +70,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
 
 KTabWidget::~KTabWidget()
 {
-    //for the futur.
-    //delete d;
+    delete d;
 }
 
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
@@ -84,6 +109,100 @@ void KTabWidget::setTabCloseActivatePrevious( bool previous)
 bool KTabWidget::tabCloseActivatePrevious() const
 {
     return static_cast<KTabBar*>(tabBar())->tabCloseActivatePrevious();
+}
+
+unsigned int KTabWidget::tabBarWidthForMaxChars( uint maxLength )
+{
+    int hframe, overlap;
+    hframe  = tabBar()->style().pixelMetric( QStyle::PM_TabBarTabHSpace, this );
+    overlap = tabBar()->style().pixelMetric( QStyle::PM_TabBarTabOverlap, this );
+
+    QFontMetrics fm = tabBar()->fontMetrics();
+    int x = 0;
+    for( int i=0; i < count(); ++i ) {
+	QString newTitle;
+	if ( d->m_tabNames.count() >= (uint)i ) {
+	    newTitle = d->m_tabNames[i];
+        } else {
+	    newTitle = tabLabel( page(i) );
+	}
+
+        newTitle = KStringHandler::rsqueeze( newTitle, maxLength ).leftJustify( d->m_minLength, ' ' );
+
+        QTab* tab = tabBar()->tabAt( i );
+        int lw = fm.width( newTitle );
+        int iw = 0;
+        if ( tab->iconSet() )
+          iw = tab->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal ).width() + 4;
+        x += ( tabBar()->style().sizeFromContents( QStyle::CT_TabBarTab, this,
+		   QSize( QMAX( lw + hframe + iw, QApplication::globalStrut().width() ), 0 ),
+                   QStyleOption( tab ) ) ).width();
+    }
+    return x;
+}
+
+void KTabWidget::setTabLabel( QWidget* sender, const QString &title )
+{
+    uint tabIndex = indexOf(sender);
+    if ( d->m_tabNames.count() <= tabIndex ) {
+	d->m_tabNames.append(title);
+    } else {
+	d->m_tabNames[tabIndex] = title;
+    }
+
+    QString newTitle = title;
+    uint newMaxLength=d->m_maxLength;
+    if ( automaticResizeTabs() ) {
+        removeTabToolTip( sender );
+
+        uint lcw=0, rcw=0;
+
+        int tabBarHeight = tabBar()->sizeHint().height();
+        if ( cornerWidget( TopLeft ) && cornerWidget( TopLeft )->isVisible() )
+          lcw = QMAX( cornerWidget( TopLeft )->width(), tabBarHeight );
+        if ( cornerWidget( TopRight ) && cornerWidget( TopRight )->isVisible() )
+          rcw = QMAX( cornerWidget( TopRight )->width(), tabBarHeight );
+
+        uint maxTabBarWidth = width() - lcw - rcw;
+
+        for ( ; newMaxLength > (uint)d->m_minLength; newMaxLength-- ) {
+          if ( tabBarWidthForMaxChars( newMaxLength ) < maxTabBarWidth )
+            break;
+        }
+
+        if ( newTitle.length() > newMaxLength )
+            setTabToolTip( sender, newTitle );
+
+        newTitle = KStringHandler::rsqueeze( newTitle, newMaxLength ).leftJustify( d->m_minLength, ' ' );
+        newTitle.replace( '&', "&&" );
+    }
+
+    if ( tabLabel( sender ) != newTitle )
+        QTabWidget::setTabLabel(sender, newTitle );
+
+    if ( automaticResizeTabs() ) {
+        if( newMaxLength != d->m_CurrentMaxLength ) {
+            for( int i = 0; i < count(); ++i) {
+	        if ( d->m_tabNames.count() >= (uint)i ) {
+                    newTitle = d->m_tabNames[i];
+                } else {
+	            newTitle = tabLabel( page(i) );
+	        }
+
+                removeTabToolTip( page( i ) );
+                if ( newTitle.length() > newMaxLength )
+                    setTabToolTip( page( i ), newTitle );
+
+                newTitle = KStringHandler::rsqueeze( newTitle, newMaxLength ).leftJustify( d->m_minLength, ' ' );
+
+                newTitle.replace( '&', "&&" );
+                if ( newTitle != tabLabel(page(i)) ) {
+                    QTabWidget::setTabLabel( page(i), newTitle );
+                }
+            }
+            d->m_CurrentMaxLength = newMaxLength;
+	}
+    }
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
@@ -207,7 +326,7 @@ void KTabWidget::moveTab( int from, int to )
     QTab * t = new QTab();
     t->setText(tablabel);
     QTabWidget::insertTab( w, t, to );
-    
+
     w = page( to );
     changeTab( w, tabiconset, tablabel );
     setTabToolTip( w, tabtooltip );
@@ -219,6 +338,15 @@ void KTabWidget::moveTab( int from, int to )
 
     emit ( movedTab( from, to ) );
 }
+
+void KTabWidget::removePage ( QWidget * w ) {
+    if ( automaticResizeTabs() && count() && !d->m_tabNames[0].isEmpty() ) {
+	int i = indexOf( w );
+	d->m_tabNames.remove( d->m_tabNames.at(i) );
+    }
+    QTabWidget::removePage( w );
+}
+
 
 bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
 {
@@ -267,9 +395,27 @@ bool KTabWidget::hoverCloseButtonDelayed() const
     return static_cast<KTabBar*>(tabBar())->hoverCloseButtonDelayed();
 }
 
+void KTabWidget::setAutomaticResizeTabs( bool enabled )
+{
+    d->m_automaticResizeTabs = enabled;
+}
+
+bool KTabWidget::automaticResizeTabs() const
+{
+    return d->m_automaticResizeTabs;
+}
+
 void KTabWidget::closeRequest( int index )
 {
     emit( closeRequest( page( index ) ) );
+}
+
+void KTabWidget::resizeEvent( QResizeEvent *e )
+{
+    QTabWidget::resizeEvent( e );
+    if ( automaticResizeTabs() && count() && !d->m_tabNames[0].isEmpty() ) {
+	setTabLabel( page(0), d->m_tabNames[0] );
+    }
 }
 
 #include "ktabwidget.moc"
