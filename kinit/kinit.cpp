@@ -797,9 +797,10 @@ static void init_kdeinit_socket()
 
   while (1) {
       /** bind it **/
+      socklen = sizeof(sa);
+      memset(&sa, 0, socklen);
       sa.sun_family = AF_UNIX;
       strcpy(sa.sun_path, sock_file);
-      socklen = sizeof(sa);
       if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
       {
           if (max_tries == 0) {
