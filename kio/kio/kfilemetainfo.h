@@ -29,6 +29,7 @@
 
 class QValidator;
 class KFilePlugin;
+class KFileMetaInfoGroup;
 
 class KFileMimeTypeInfo
 {
@@ -516,6 +517,7 @@ public:
     bool isValid() const;
 
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
+    friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
     friend class KFileMetaInfoGroup;
     
