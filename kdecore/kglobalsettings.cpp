@@ -422,7 +422,7 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // We need to save it in any case, in case the language changes later on,
     if ( !config->hasKey( "Trash" ) )
     {
-      config->writeEntry( "Trash", *s_trashPath, true, true );
+      config->writePathEntry( "Trash", *s_trashPath, true, true );
       config->sync();
     }
 
