@@ -301,7 +301,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	res.put(exec,"length", Number(0));
 	break;
       }
-      // #### Are we supposed to call registerRegexp() (for RegExp.$1 etc?)
       int *ovector;
       int mpos;
       pos = 0;

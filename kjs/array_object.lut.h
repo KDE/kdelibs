@@ -13,14 +13,14 @@ const struct HashEntry arrayTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "push", ArrayProtoFuncImp::Push, DontEnum|Function, 1, 0 },
    { "toLocaleString", ArrayProtoFuncImp::ToLocaleString, DontEnum|Function, 0, 0 },
-   { "concat", ArrayProtoFuncImp::Concat, DontEnum|Function, 0, &arrayTableEntries[14] },
+   { "concat", ArrayProtoFuncImp::Concat, DontEnum|Function, 1, &arrayTableEntries[14] },
    { "shift", ArrayProtoFuncImp::Shift, DontEnum|Function, 0, 0 },
    { "pop", ArrayProtoFuncImp::Pop, DontEnum|Function, 0, &arrayTableEntries[13] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "reverse", ArrayProtoFuncImp::Reverse, DontEnum|Function, 0, 0 },
-   { "slice", ArrayProtoFuncImp::Slice, DontEnum|Function, 0, 0 },
-   { "splice", ArrayProtoFuncImp::Splice, DontEnum|Function, 1, 0 }
+   { "slice", ArrayProtoFuncImp::Slice, DontEnum|Function, 2, 0 },
+   { "splice", ArrayProtoFuncImp::Splice, DontEnum|Function, 2, 0 }
 };
 
 const struct HashTable arrayTable = { 2, 16, arrayTableEntries, 13 };

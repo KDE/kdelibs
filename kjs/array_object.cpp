@@ -35,6 +35,12 @@
 
 using namespace KJS;
 
+template<class T>
+inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
+
+template<class T>
+inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
+
 // ------------------------------ ArrayInstanceImp -----------------------------
 
 const ClassInfo ArrayInstanceImp::info = {"Array", 0, 0, 0};
@@ -95,15 +101,15 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 @begin arrayTable 13
   toString       ArrayProtoFuncImp::ToString       DontEnum|Function 0
   toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|Function 0
-  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 0
+  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 1
   join           ArrayProtoFuncImp::Join           DontEnum|Function 1
   pop            ArrayProtoFuncImp::Pop            DontEnum|Function 0
   push           ArrayProtoFuncImp::Push           DontEnum|Function 1
   reverse        ArrayProtoFuncImp::Reverse        DontEnum|Function 0
   shift          ArrayProtoFuncImp::Shift          DontEnum|Function 0
-  slice          ArrayProtoFuncImp::Slice          DontEnum|Function 0
+  slice          ArrayProtoFuncImp::Slice          DontEnum|Function 2
   sort           ArrayProtoFuncImp::Sort           DontEnum|Function 1
-  splice         ArrayProtoFuncImp::Splice         DontEnum|Function 1
+  splice         ArrayProtoFuncImp::Splice         DontEnum|Function 2
   unshift        ArrayProtoFuncImp::UnShift        DontEnum|Function 1
 @end
 */
@@ -150,7 +156,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   Value result;
   switch (id) {
   case ToLocaleString:
-    // TODO
+    // TODO  - see 15.4.4.3
     // fall through
   case ToString:
 
@@ -284,39 +290,36 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     break;
   }
   case Slice: {
-    // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713
+    // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713 or 15.4.4.10
 
     // We return a new array
     Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
     result = resObj;
     int begin = args[0].toUInt32(exec);
+    if ( begin < 0 )
+      begin = kMax<int>( begin + length, 0 );
+    else
+      begin = kMin<int>( begin, length );
     int end = length;
     if (args[1].type() != UndefinedType)
-      {
-        end = args[1].toUInt32(exec);
-        if ( end < 0 )
-          end += length;
-      }
-    // safety tests
-    if ( begin < 0 || end < 0 || begin >= end ) {
-      resObj.put(exec, "length", Number(0), DontEnum | DontDelete);
+    {
+      end = args[1].toUInt32(exec);
+      if ( end < 0 )
+        end = kMax<int>( end + length, 0 );
+      else
+        end = kMin<int>( end, length );
     }
 
     //printf( "Slicing from %d to %d \n", begin, end );
-    if (end >= begin) {
-      resObj.put(exec, "length", Number(0), DontEnum | DontDelete);
-    }
-    else {
-      for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
-        UString str = UString::from(k+begin);
+    for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
+      UString str = UString::from(k+begin);
+      if (thisObj.hasProperty(exec,str)) {
         UString str2 = UString::from(k);
-        if (thisObj.hasProperty(exec,str)) {
-          Value obj = thisObj.get(exec, str);
-          resObj.put(exec, str2, obj);
-        }
+        Value obj = thisObj.get(exec, str);
+        resObj.put(exec, str2, obj);
       }
-      resObj.put(exec, "length", Number(end - begin), DontEnum | DontDelete);
     }
+    resObj.put(exec, "length", Number(end - begin), DontEnum | DontDelete);
     break;
   }
   case Sort:{
@@ -384,12 +387,70 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     break;
   }
   case Splice: {
-    // TODO
-    result = Undefined();
+    // 15.4.4.12 - oh boy this is huge
+    Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
+    result = resObj;
+    int begin = args[0].toUInt32(exec);
+    if ( begin < 0 )
+      begin = kMax<int>( begin + length, 0 );
+    else
+      begin = kMin<int>( begin, length );
+    unsigned int deleteCount = kMin<unsigned int>( kMax<int>( args[1].toUInt32(exec), 0 ), length - begin );
+
+    //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
+    for(unsigned int k = 0; k < deleteCount; k++) {
+      UString str = UString::from(k+begin);
+      if (thisObj.hasProperty(exec,str)) {
+        UString str2 = UString::from(k);
+        Value obj = thisObj.get(exec, str);
+        resObj.put(exec, str2, obj);
+      }
+    }
+    resObj.put(exec, "length", Number(deleteCount), DontEnum | DontDelete);
+
+    unsigned int additionalArgs = kMax( args.size() - 2, 0 );
+    if ( additionalArgs != deleteCount )
+    {
+      if ( additionalArgs < deleteCount )
+      {
+        for ( unsigned int k = begin; k < length - deleteCount; ++k )
+        {
+          UString str = UString::from(k+deleteCount);
+          UString str2 = UString::from(k+additionalArgs);
+          if (thisObj.hasProperty(exec,str)) {
+            Value obj = thisObj.get(exec, str);
+            thisObj.put(exec, str2, obj);
+          }
+          else
+            thisObj.deleteProperty(exec, str2);
+        }
+        for ( unsigned int k = length ; k > length - deleteCount + additionalArgs; --k )
+          thisObj.deleteProperty(exec, UString::from(k-1));
+      }
+      else
+      {
+        for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
+        {
+          UString str = UString::from(k+deleteCount-1);
+          UString str2 = UString::from(k+additionalArgs-1);
+          if (thisObj.hasProperty(exec,str)) {
+            Value obj = thisObj.get(exec, str);
+            thisObj.put(exec, str2, obj);
+          }
+          else
+            thisObj.deleteProperty(exec, str2);
+        }
+      }
+    }
+    for ( unsigned int k = 0; k < additionalArgs; ++k )
+    {
+      thisObj.put(exec, UString::from(k+begin), args[k+2]);
+    }
+    thisObj.put(exec, "length", Number(length - deleteCount + additionalArgs), DontEnum | DontDelete);
     break;
   }
   case UnShift: {
-    // TODO
+    // TODO - see 15.4.4.13
     result = Undefined();
     break;
   }
