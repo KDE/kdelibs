@@ -22,6 +22,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.28  1999/06/08 22:03:55  pbrown
+// I'm now using the handy configuration checks HAVE_STRFMON and
+// HAVE_MONETARY_H to insure no compilation problems.
+//
 // Revision 1.27  1999/05/31 17:59:07  porten
 // ';' -> ',' as default for lists in order not to break everything
 //
@@ -400,7 +404,7 @@ public:
    * @see #writeEntry
    */
   void writeEntry( const QString& pKey, const QStrList &rValue,
-		   char sep = ';', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
    * writeEntry() overridden to accept a list of strings.
@@ -422,7 +426,7 @@ public:
    * @see #writeEntry
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
-		   char sep = ';', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
  
   /**
    * Write the key/value pair.
