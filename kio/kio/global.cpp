@@ -45,33 +45,32 @@
 
 QString KIO::convertSize( KIO::filesize_t size )
 {
-    float fsize;
+    double fsize = size;
     QString s;
     // Giga-byte
     if ( size >= 1073741824 )
     {
-        fsize = (float) size / (float) 1073741824;
+        fsize /= 1073741824.0;
         if ( fsize > 1024 ) // Tera-byte
-            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / (float)1024, 1));
+            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024.0, 1));
         else
             s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Mega-byte
     else if ( size >= 1048576 )
     {
-        fsize = (float) size / (float) 1048576;
+        fsize /= 1048576.0;
         s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Kilo-byte
     else if ( size >= 1024 )
     {
-        fsize = (float) size / (float) 1024;
+        fsize /= 1024.0;
         s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Just byte
     else
     {
-        fsize = (float) size;
         s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
     }
     return s;
