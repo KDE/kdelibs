@@ -100,14 +100,12 @@ RenderTable::RenderTable()
     columnPos.resize( 2 );
     colMaxWidth.resize( 1 );
     colMinWidth.resize( 1 );
-    colFixedPercent.resize( 1 );
     colValue.resize(1);
     colType.resize(1);
     actColWidth.resize(1);
     columnPos.fill( 0 );
     colMaxWidth.fill( 0 );
     colMinWidth.fill( 0 );
-    colFixedPercent.fill( 0 );
     colValue.fill(0);
     colType.fill(Variable);
     actColWidth.fill(0);
@@ -325,8 +323,6 @@ void RenderTable::addColumns( int num )
     memset( colMaxWidth.data() + totalCols , 0, num*sizeof(int));
     colMinWidth.resize(newCols);
     memset( colMinWidth.data() + totalCols , 0, num*sizeof(int));
-    colFixedPercent.resize(newCols);
-    memset( colFixedPercent.data() + totalCols , 0, num*sizeof(int));
     colValue.resize(newCols);
     memset( colValue.data() + totalCols , 0, num*sizeof(int));
     colType.resize(newCols);
@@ -457,32 +453,13 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         col->max = _maxSize;
         col->maxCell = _cell;
     }
-    if (_width.type > col->type)
-    {
-        // We need to keep track of percentages, to make some
-        // b0rked tables look right.
-        //
-        if (col->type == Percent)
-            col->percentage = col->value;
 
+    // percent has highest priority, even over fixed
+    if (_width.type == Percent || ( _width.type > col->type && col->type < Percent ))
         col->type = _width.type;
-        col->value = _width.value;
-    }
-    // Make sure we see all percentages..
-    //
-    if (_width.type < col->type &&
-        _width.type == Percent)
-    {
-        col->percentage = _width.value;
-    }
 
     if (_width.type == col->type)
-    {
-        if (_width.value > col->value)
-        {
-            col->value = _width.value;
-        }
-    }
+        col->value = KMAX( _width.value, col->value );
 
     setMinMaxKnown(false);
 
@@ -715,7 +692,6 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
         colMaxWidth[c] = smax;
         colValue[c] = col->value;
         colType[c] = col->type;
-        colFixedPercent[c] = col->percentage;
     }
     else
     {
@@ -802,7 +778,6 @@ void RenderTable::calcColMinMax()
 
     colMinWidth.fill(0);
     colMaxWidth.fill(0);
-    colFixedPercent.fill(0);
 
     int availableWidth = containingBlockWidth();
 
@@ -866,7 +841,6 @@ void RenderTable::calcColMinMax()
     totalRelative=0;
 
     int maxFixed=0;
-    int maxFixedPercent=0;
     int minPercent=0;
     int percentWidest=0;
     int percentWidestPercent=0;
@@ -890,7 +864,6 @@ void RenderTable::calcColMinMax()
         {
         case Fixed:
             maxFixed += colMaxWidth[i] + spacing;
-            maxFixedPercent += colFixedPercent[i];
             hasFixed=true;
             break;
         case Percent:
@@ -943,18 +916,9 @@ void RenderTable::calcColMinMax()
     else if (hasPercent && hasFixed)
     {
         unsigned int tot = KMIN(99u,totalPercent);
-
-        // Don't let columns with both fixed and percent constrain the table
-        // size.
-        //
-        int ourPercent = (100 - tot);
-
-        if (maxFixedPercent > 0)
-            ourPercent = maxFixedPercent;
-
 //      kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
         // int w necessary here to prevent arithmetic overflow of m_width !
-        int w = (maxFixed + minVar + minRel) * 100 / ourPercent;
+        int w = (maxFixed + minVar + minRel) * 100 / ( 100 - tot );
         m_width = KMIN (w, availableWidth);
     }
     else

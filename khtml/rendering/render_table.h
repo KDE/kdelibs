@@ -157,7 +157,6 @@ public:
             value=0;
             minCell=0;
             maxCell=0;
-            percentage=0;
         }
         void update();
 
@@ -216,7 +215,6 @@ protected:
     QArray<int> columnPos;
     QArray<int> colMaxWidth;
     QArray<int> colMinWidth;
-    QArray<int> colFixedPercent;
     QArray<khtml::LengthType> colType;
     QArray<int> colValue;
     QArray<int> rowHeights;
