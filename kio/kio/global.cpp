@@ -724,7 +724,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Cyclic Link Detected" );
       description = i18n( "UNIX environments are commonly able to link a file or "
         "directory to a separate name and/or location. KDE detected a link or "
-        "series of links that results in an infinite loop - i.e., the file was "
+        "series of links that results in an infinite loop - i.e. the file was "
         "(perhaps in a roundabout way) linked to itself." );
       solutions << i18n( "Delete one part of the loop in order that it does not "
         "cause an infinite loop, and try again." ) << sSysadmin;
