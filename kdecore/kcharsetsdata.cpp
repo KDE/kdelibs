@@ -830,7 +830,6 @@ bool KCharsetsData::isDisplayable(KCharsetEntry *charset){
 
   QFont::CharSet qcharset=charset->qtCharset;
   kchdebug("qtcharset=%i\n",qcharset);
-  kchdebug("charset name=%s\n",charset->name);
  
   /* Qt doesn't support this charset. We must use the hack */
   if (qcharset==QFont::AnyCharSet && strcmp(charset->name,"us-ascii")!=0)
@@ -840,12 +839,7 @@ bool KCharsetsData::isDisplayable(KCharsetEntry *charset){
   f.setCharSet(qcharset);
   QFontInfo fi(f);
   kchdebug("fi.charset()=%i\n",fi.charSet());
-  int ch=fi.charSet();
-#if QT_VERSION==142
-    if( ch == 0 ) ch = 1;
-    else if( ch == 1 ) ch = 0;
-#endif
-  if (qcharset!=QFont::AnyCharSet && ch!=qcharset){ /* It doesn't work, maybe Qt bug*/
+  if (qcharset!=QFont::AnyCharSet && fi.charSet()!=qcharset){ /* It doesn't work, maybe Qt bug*/
     /* Is a good family known for this charset? */
     if (charset->good_family){
        if (charset->good_family->isEmpty()) /* no good_family is known */
@@ -858,16 +852,10 @@ bool KCharsetsData::isDisplayable(KCharsetEntry *charset){
     getFontList(&lst,toX(charset->name));
     charset->good_family=new QString;
     for (const char* fm = lst.first(); fm; fm = lst.next()) {
-       kchdebug("getFontList returned : fm = '%s'",fm);
        f.setCharSet(qcharset);
        f.setFamily(fm);
        QFontInfo fi(f);
-       int ch=fi.charSet();
-#if QT_VERSION==142
-       if( ch == 0 ) ch = 1;
-       else if( ch == 1 ) ch = 0;
-#endif
-       if (ch==qcharset){
+       if (fi.charSet()==qcharset){
 	  *(charset->good_family)=fm;
 	  return TRUE;
        }
