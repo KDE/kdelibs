@@ -106,8 +106,6 @@ protected:
     */
   bool eof ();
 
-  bool m_bEOF;
-
   /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
@@ -150,9 +148,10 @@ protected:
 
 protected: // Members
   bool m_bHaveHeader;
-  HTTPState m_state;
+  bool m_bEOF;
   int m_cmd, m_sock, m_iSize;
   FILE* m_fsocket;
+  HTTPState m_state;
   enum HTTP_REV m_HTTPrev;
   enum HTTP_PROTO m_proto;
 
@@ -160,23 +159,23 @@ protected: // Members
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
   QString m_sContentMD5, 
-         m_strMimeType,
-         m_strCharsets,
-         m_strLanguages;
+          m_strMimeType,
+          m_strCharsets,
+          m_strLanguages;
   
   // Proxy related members
   bool m_bUseProxy;
   int m_strProxyPort;
   QString m_strNoProxyFor,
-         m_strProxyHost,
-         m_strProxyUser,
-         m_strProxyPass;
+          m_strProxyHost,
+          m_strProxyUser,
+          m_strProxyPass;
   struct sockaddr_in m_proxySockaddr;
 
   // Authentication
   QString m_strRealm, 
-         m_strAuthString, 
-         m_strProxyAuthString;
+          m_strAuthString, 
+          m_strProxyAuthString;
   enum HTTP_AUTH Authentication, ProxyAuthentication;
 
   // Stuff to hold various error state information
@@ -188,6 +187,7 @@ protected: // Members
   bool m_bCanResume;
 
 #ifdef DO_SSL
+  // Stuff for OpenSSL/SSLeay
   bool m_bUseSSL2, m_bUseSSL3, m_bUseTLS1, m_bUseSSL;
   SSL_METHOD *meth;
   SSL_CTX *ctx;

@@ -303,7 +303,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   meth=0; ctx=0; hand=0;
 #endif
 
-  m_sContentMD5 = "";
+  m_sContentMD5 = QString::null;
   Authentication = AUTH_None;
   ProxyAuthentication = AUTH_None;
 
@@ -437,6 +437,11 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_state.reload = _reload;
   m_state.offset = _offset;
   m_state.postDataSize = _post_data_size;
+
+  // Let's also clear out some things, so bogus values aren't used.
+  m_sContentMD5 = QString::null;
+  m_HTTPrev = HTTP_Unknown;
+  m_bHaveHeader = false;
 
   // try to ensure that the port is something reasonable
   unsigned short int port = _url.port();
@@ -1529,15 +1534,13 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 void HTTPProtocol::slotData(void *_p, int _len)
 {
 	// this *should* be for a PUT method.  make sure
-	if (m_cmd != CMD_PUT)
-	{
+	if (m_cmd != CMD_PUT) {
 		abort();
 		return;
 	}
 
 	// good.  now send our data to the remote server
-	if (write(_p, _len) == -1)
-	{
+	if (write(_p, _len) == -1) {
 		error(ERR_CONNECTION_BROKEN, m_state.url.host());
 		return;
 	}
@@ -1553,8 +1556,7 @@ void HTTPProtocol::slotData(void *_p, int _len)
 void HTTPProtocol::slotDataEnd()
 {
 	// make sure that we already have our header.  get it if we don't
-	if (!m_bHaveHeader)
-	{
+	if (!m_bHaveHeader) {
 		// we won't show an error if we can't read in the header since
 		// it was probably flagged earlier
 		if (!readHeader())
@@ -1563,8 +1565,7 @@ void HTTPProtocol::slotDataEnd()
 
 	// don't bother getting the entire data if we just want the
 	// size of the data
-	if (m_cmd == CMD_GET_SIZE)
-	{
+	if (m_cmd == CMD_GET_SIZE) {
   		totalSize( m_iSize );
 		http_close();
 
@@ -1586,12 +1587,11 @@ void HTTPProtocol::slotDataEnd()
 	long nbytes = 0, sz = 0;
 	char buffer[2048];
 #ifdef DO_MD5
-  MD5_CTX context;
-  MD5Init(&context);
+	MD5_CTX context;
+	MD5Init(&context);
 #endif
 	// this is the main incoming loop.  gather everything while we can...
-	while (!eof())
-	{
+	while (!eof()) {
 		// 2048 bytes seems to be a nice number of bytes to receive
 		// at a time
 		nbytes = read(buffer, 2048);
@@ -1610,8 +1610,7 @@ void HTTPProtocol::slotDataEnd()
 			continue;
 
 		// check on the encoding.  can we get away with it as is?
-		if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty())
-		{
+		if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
 #if DO_MD5
 			if (!m_sContentMD5.isEmpty())
 				MD5Update(&context, (const unsigned char*)buffer, nbytes);
@@ -1619,9 +1618,7 @@ void HTTPProtocol::slotDataEnd()
 			// yep, let the world know that we have some data
 			data(buffer, nbytes);
 			sz += nbytes;
-		}
-		else
-		{
+		} else {
 			// nope.  slap this all onto the end of a big buffer
 			// for later use
 			unsigned int old_len = 0;
@@ -1637,19 +1634,16 @@ void HTTPProtocol::slotDataEnd()
 
 	// if we have something in big_buffer, then we know that we have
 	// encoded data.  of course, we need to do something about this
-	if (!big_buffer.isNull())
-	{
+	if (!big_buffer.isNull()) {
 		char *enc;
 		// decode all of the transfer encodings
-		while (!m_qTransferEncodings.isEmpty())
-		{
+		while (!m_qTransferEncodings.isEmpty())	{
 			enc = m_qTransferEncodings.pop();
 			if (!enc)
 				break;
 			if (strncasecmp(enc, "gzip", 4)==0)
 				decodeGzip();
-			else if (strncasecmp(enc, "chunked", 7)==0)
-			{
+			else if (strncasecmp(enc, "chunked", 7)==0) {
 				decodeChunked();
 			}
 		}
@@ -1666,15 +1660,13 @@ void HTTPProtocol::slotDataEnd()
 #endif
 		
 		// now decode all of the content encodings
-		while (!m_qContentEncodings.isEmpty())
-		{
+		while (!m_qContentEncodings.isEmpty()) {
 			enc = m_qContentEncodings.pop();
 			if (!enc)
 				break;
 			if (strncasecmp(enc, "gzip", 4)==0)
 				decodeGzip();
-			else if (strncasecmp(enc, "chunked", 7)==0)
-			{
+			else if (strncasecmp(enc, "chunked", 7)==0) {
 				decodeChunked();
 			}
 		}
@@ -1686,18 +1678,16 @@ void HTTPProtocol::slotDataEnd()
 	char buf[18], *enc_digest;
 	MD5Final((unsigned char*)buf, &context); // Wrap everything up
 	enc_digest = base64_encode_string(buf, 18);
-	if (m_sContentMD5 != "" )
-	{
+	if (!m_sContentMD5.isEmpty()) {
 		int f;
 		if ((f = m_sContentMD5.find("=")) <= 0)
 			f = m_sContentMD5.length();
 
-		if (m_sContentMD5.left(f) != enc_digest)
-		{
-			fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.ascii());
-		}
-		else
+		if (m_sContentMD5.left(f) != enc_digest) {
+			error(ERR_CHECKSUM_MISMATCH, m_state.url);
+		} else {
 			fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
+		}
 	}
 	else 
 		fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
