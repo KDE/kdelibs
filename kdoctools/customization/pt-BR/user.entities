@@ -7,6 +7,7 @@
  -->
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
+<!ENTITY artsbuilder "construtor arts">
 <!ENTITY Backspace "<keycap>Esc</keycap>">
 <!ENTITY cdrom  "<hardware>CD-ROM</hardware>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
@@ -17,12 +18,13 @@
 <!ENTITY etc     "<abbrev>etc.</abbrev>">
 <!ENTITY ex     "<abbrev>por exemplo</abbrev>">
 <!ENTITY FAQ     "Perguntas e Respostas - <acronym>FAQ</acronym>">
+<!ENTITY HTML	'<acronym>HTML</acronym>'>
 <!ENTITY ie     "isto é">
 <!ENTITY infocenter	"<application>Centro de Informações</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>O icone K do &kde;</title></objectinfo>
+ <objectinfo><title>O ícone K do &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
@@ -31,6 +33,7 @@
 <!ENTITY kmenu    "Menu <guimenu>K</guimenu>">
 <!ENTITY LMB    "botão <mousebutton>esquerdo</mousebutton> do mouse">
 <!ENTITY MMB    "botão do <mousebutton>meio</mousebutton> do mouse">
+<!ENTITY OS "<acronym>Sistema Operacional</acronym>">
 <!ENTITY RMB    "botão <mousebutton>direto</mousebutton> do mouse">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 <!ENTITY systemtray "<application>bandeja do sistema</application>">
