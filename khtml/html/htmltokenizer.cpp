@@ -155,7 +155,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
 void HTMLTokenizer::reset()
 {
     assert(m_executingScript == 0);
-    assert(onHold == false);
+    Q_ASSERT(onHold == false);
 
     while (!cachedScript.isEmpty())
         cachedScript.dequeue()->deref(this);
@@ -1240,7 +1240,7 @@ void HTMLTokenizer::addPending()
 void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
-    kdDebug( 6036 ) << this << " Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
+    kdDebug( 6036 ) << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")" << endl;
 #endif
 
     if ( !buffer )
@@ -1265,6 +1265,8 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 
     while ( !src.isEmpty() )
     {
+        if ( parser->doc() && !parser->doc()->parsing() ) // aborted
+            return;
         // do we need to enlarge the buffer?
         checkBuffer();
 
@@ -1419,7 +1421,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                     pending = LFPending;
                 }
             }
-            
+
             /* Check for MS-DOS CRLF sequence */
             if (cc == '\r')
             {
@@ -1436,12 +1438,12 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 { }
                 else
                         pending = SpacePending;
-            
+
             }
             else {
                 if (discard == AllDiscard)
                     discard = NoneDiscard;
-            
+
                 if (pending)
                     addPending();
                 if (cc == ' ')
@@ -1449,7 +1451,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 else
                     pending = TabPending;
             }
-            
+
             ++src;
         }
         else

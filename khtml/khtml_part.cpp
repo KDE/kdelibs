@@ -8,6 +8,7 @@
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
  *                     2001-2003 George Staikos <staikos@kde.org>
  *                     2001-2003 Dirk Mueller <mueller@kde.org>
+ *                     2000-2005 David Faure <faure@kde.org>
  *                     2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -844,7 +845,7 @@ DOM::Document KHTMLPart::document() const
 
 QString KHTMLPart::documentSource() const
 {
-  QString sourceStr;    
+  QString sourceStr;
   if ( !( m_url.isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
   {
      QByteArray sourceArray;
@@ -867,7 +868,7 @@ QString KHTMLPart::documentSource() const
         f.close();
       }
       KIO::NetAccess::removeTempFile( tmpFile );
-    }  
+    }
   }
 
   return sourceStr;
@@ -1137,6 +1138,15 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
       KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
       dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename, msg.qstring()));
     }
+  }
+
+  // Handle immediate redirects now (e.g. location='foo')
+  if ( !d->m_redirectURL.isEmpty() && d->m_delayRedirect == -1 )
+  {
+    kdDebug(6070) << "executeScript done, handling immediate redirection NOW" << endl;
+    // Must abort tokenizer, no further script must execute.
+    closeURL();
+    d->m_redirectionTimer.start( 0, true );
   }
 
   return ret;
@@ -3397,7 +3407,7 @@ DOM::Range KHTMLPart::selection() const
     RangeImpl *rng = r.handle();
     int exception = 0;
     NodeImpl *n = d->m_selectionStart.handle();
-    if(!n->parentNode() || 
+    if(!n->parentNode() ||
        !n->renderer() ||
        (!n->renderer()->isReplaced() && !n->renderer()->isBR())) {
         rng->setStart( n, d->m_startOffset, exception );
@@ -3405,7 +3415,7 @@ DOM::Range KHTMLPart::selection() const
 	    kdDebug(6000) << "1 -selection() threw the exception " << exception << ".  Returning empty range." << endl;
 	    return DOM::Range();
 	}
-    } else {    
+    } else {
         int o_start = 0;
         while ((n = n->previousSibling()))
             o_start++;
@@ -3416,19 +3426,19 @@ DOM::Range KHTMLPart::selection() const
 	}
 
     }
- 
+
     n = d->m_selectionEnd.handle();
-    if(!n->parentNode() || 
+    if(!n->parentNode() ||
        !n->renderer() ||
        (!n->renderer()->isReplaced() && !n->renderer()->isBR())) {
-	    
+
 	rng->setEnd( n, d->m_endOffset, exception );
 	if(exception) {
 	    kdDebug(6000) << "3 - selection() threw the exception " << exception << ".  Returning empty range." << endl;
 	    return DOM::Range();
 	}
 
-    } else {    
+    } else {
         int o_end = 0;
         while ((n = n->previousSibling()))
             o_end++;
@@ -4707,7 +4717,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 	   (d->m_strSelectedURLTarget.lower() != "_parent")) {
       if (d->m_strSelectedURLTarget.lower() == "_blank")
         args.setForcesNewWindow(true);
-      else {     
+      else {
 	KHTMLPart *p = this;
 	while (p->parentPart())
 	  p = p->parentPart();

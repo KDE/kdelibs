@@ -1,3 +1,8 @@
+2005-02-08  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (executeScript): Handle immediate redirects, scheduled
+        by JS with e.g. location='foo', as soon as the current script finishes.
+
 2005-02-07  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_image.cpp (paint): Regard inline offset when
