@@ -62,6 +62,7 @@ artsd.cc: soundserver.h
 artsplay.cc: soundserver.h
 wavplayobject_impl.cc: soundserver.h
 simplesoundserver_impl.cc: soundserver.h
+soundserver_impl.cc: soundserver.h
 
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/soundserver/kmedia2.idl
