@@ -9,6 +9,7 @@
 <!ENTITY % l10n-et "INCLUDE">
 <!ENTITY % l10n-fi "INCLUDE">
 <!ENTITY % l10n-fr "INCLUDE">
+<!ENTITY % l10n-hu "INCLUDE">
 <!ENTITY % l10n-it "INCLUDE">
 <!ENTITY % l10n-ja "INCLUDE">
 <!ENTITY % l10n-nl "INCLUDE">
@@ -110,6 +111,15 @@
          "../common/dbl1fr.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1fr
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
+<![%l10n-hu;[
+<!ENTITY dbl1hu
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//HU"
+         "../common/dbl1hu.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1hu
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 

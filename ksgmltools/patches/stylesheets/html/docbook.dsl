@@ -9,6 +9,7 @@
 <!ENTITY % l10n-et "INCLUDE">
 <!ENTITY % l10n-fi "INCLUDE">
 <!ENTITY % l10n-fr "INCLUDE">
+<!ENTITY % l10n-hu "INCLUDE">
 <!ENTITY % l10n-it "INCLUDE">
 <!ENTITY % l10n-ja "INCLUDE">
 <!ENTITY % l10n-nl "INCLUDE">
@@ -18,8 +19,8 @@
 <!ENTITY % l10n-pt-BR "INCLUDE">
 <!ENTITY % l10n-ro "INCLUDE">
 <!ENTITY % l10n-ru "INCLUDE">
-<!ENTITY % l10n-sl "INCLUDE">
 <!ENTITY % l10n-sk "INCLUDE">
+<!ENTITY % l10n-sl "INCLUDE">
 <!ENTITY % l10n-sv "INCLUDE">
 <!ENTITY % l10n-zh-CN "INCLUDE">
 
@@ -113,6 +114,15 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
+<![%l10n-hu;[
+<!ENTITY dbl1hu
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//HU"
+         "../common/dbl1hu.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1hu
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
 <![%l10n-it;[
 <!ENTITY dbl1it
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//IT"
@@ -194,21 +204,21 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
-<![%l10n-sl;[
-<!ENTITY dbl1sl
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//SL"
-         "../common/dbl1sl.dsl" CDATA DSSSL>
-]]>
-<!ENTITY dbl1sl
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
-         "../common/dbl1null.dsl" CDATA DSSSL>
-
 <![%l10n-sk;[
 <!ENTITY dbl1sk
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//SK"
          "../common/dbl1sk.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1sk
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
+<![%l10n-sl;[
+<!ENTITY dbl1sl
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//SL"
+         "../common/dbl1sl.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1sl
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
@@ -419,6 +429,7 @@
 <external-specification id="et" document="dbl1et">
 <external-specification id="fi" document="dbl1fi">
 <external-specification id="fr" document="dbl1fr">
+<external-specification id="hu" document="dbl1hu">
 <external-specification id="it" document="dbl1it">
 <external-specification id="ja" document="dbl1ja">
 <external-specification id="nl" document="dbl1nl">
@@ -434,5 +445,3 @@
 <external-specification id="zh-CN" document="dbl1zh-CN">
 
 </style-sheet>
-
-
