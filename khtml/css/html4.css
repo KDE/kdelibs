@@ -403,7 +403,8 @@ INPUT[type="radio"], INPUT[type="checkbox"] {
       
 OPTION, 
 OPTGROUP, 
-AREA  { 
+AREA,
+PARAM  { 
 	display: none; 
 }
 
