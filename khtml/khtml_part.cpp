@@ -185,7 +185,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( parentPart() )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
-  d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
+  d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
   d->m_paDebugRenderTree = new KAction( "print rendering tree to stdout", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( "print DOM tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
@@ -993,14 +993,14 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
 	while (p->parentPart()) p = p->parentPart();
 
-	p->d->m_paSecurity->setIcon( "halflock" );
+	p->d->m_paSecurity->setIcon( "halfencrypted" );
         p->d->m_bSecurityInQuestion = true;
 	kdDebug(6050) << "parent setIcon half done." << endl;
     }
     }
 
-    d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-    kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+    d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
+    kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "encrypted" : "decrypted" ) << " done." << endl;
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
@@ -3247,7 +3247,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_cipher_bits
          >> d->m_ssl_cert_state;
 
-  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
+  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
          >> frameURLs >> frameStateBuffers;

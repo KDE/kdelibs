@@ -83,14 +83,14 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
 
     if (KSSL::doesSSLWork()) {
         if (d->m_secCon) {
-            d->pixmap->setPixmap(BarIcon("lock"));
+            d->pixmap->setPixmap(BarIcon("encrypted"));
             d->info->setText(i18n("Current connection is secured with SSL."));
         } else {
-            d->pixmap->setPixmap(BarIcon("unlock"));
+            d->pixmap->setPixmap(BarIcon("decrypted"));
             d->info->setText(i18n("Current connection is not secured with SSL."));
         }
     } else {
-        d->pixmap->setPixmap(BarIcon("unlock"));
+        d->pixmap->setPixmap(BarIcon("decrypted"));
         d->info->setText(i18n("SSL support is not available in this build of KDE."));
     }
     d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
@@ -128,7 +128,7 @@ void KSSLInfoDlg::setSecurityInQuestion(bool isIt) {
    d->inQuestion = isIt;
    if (KSSL::doesSSLWork())
    if (isIt) {
-      d->pixmap->setPixmap(BarIcon("halflock"));
+      d->pixmap->setPixmap(BarIcon("halfencrypted"));
       if (d->m_secCon) {
          d->info->setText(i18n("The main part of this document is secured with SSL, but some parts are not."));
       } else {
@@ -136,10 +136,10 @@ void KSSLInfoDlg::setSecurityInQuestion(bool isIt) {
       }
    } else {
       if (d->m_secCon) {
-         d->pixmap->setPixmap(BarIcon("lock"));
+         d->pixmap->setPixmap(BarIcon("encrypted"));
          d->info->setText(i18n("Current connection is secured with SSL."));
       } else {
-         d->pixmap->setPixmap(BarIcon("unlock"));
+         d->pixmap->setPixmap(BarIcon("decrypted"));
          d->info->setText(i18n("Current connection is not secured with SSL."));
       }
    }
