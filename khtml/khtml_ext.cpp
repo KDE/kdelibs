@@ -646,6 +646,19 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
+void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
+{ 
+  if (id == VIRTUAL_FIND_FRAME_PARENT)
+  {
+    FindFrameParentParams *param = static_cast<FindFrameParentParams*>(data);
+    KHTMLPart *parentPart = m_part->findFrameParent(param->callingPart, param->frame);
+    if (parentPart)
+       param->parent = parentPart->browserHostExtension();
+    return;
+  }
+  BrowserHostExtension::virtual_hook( id, data );
+}
+
 // BCI: remove in KDE 4
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
