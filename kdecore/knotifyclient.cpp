@@ -95,7 +95,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 	
-	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
+	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("presentation", -1);
@@ -107,7 +107,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
+	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
 
 	switch (present)
@@ -126,7 +126,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 		
-	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
+	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
 	
 	present=eventsfile.readNumEntry("default_presentation", -1);
@@ -138,7 +138,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString::null;
 
-	KConfig eventsfile(locate("appdata", "eventsrc", instance()));
+	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
 
 	switch (present)
