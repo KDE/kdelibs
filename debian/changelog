@@ -1,6 +1,7 @@
 kdelibs (4:2.1-final-1) unstable; urgency=low
   
    * New upstream version
+   * Adding in cleanup for kde doc link (Closes: #85653)
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Feb 2001 02:31:00 -0700
 
