@@ -50,6 +50,8 @@ public:
     SomeForwardFooPrivate *d;
     static const int AUDIO_CD = 1;
     static const int AUDIO_CD = 1 << 6;
+    enum { Enum1, Enum2 };
+    enum NamedEnum { Enum3, Enum4 };
 k_dcop:
     virtual QString url();
     virtual QString constTest() const;
@@ -86,6 +88,8 @@ k_dcop_signals:
 };
 
 namespace TheNameSpace {
+
+  class Test3;
 
   class Test3 : public DCOPObject
   {
