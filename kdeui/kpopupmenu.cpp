@@ -602,7 +602,15 @@ void KPopupMenu::contextMenuEvent(QContextMenuEvent* e)
 {
     if (d->m_ctxMenu)
     {
-        showCtxMenu(mapFromGlobal(QCursor::pos()));
+        if (e->reason() == QContextMenuEvent::Mouse)
+        {
+            showCtxMenu(e->pos());
+        }
+        else if (actItem != -1)
+        {   
+            showCtxMenu(itemGeometry(actItem).center());
+        }
+    
         e->accept();
         return;
     }
