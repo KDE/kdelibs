@@ -215,6 +215,7 @@ void Ftp::disconnect( bool really )
 
 void Ftp::openConnection( const QString& _host, int _port, const QString& _user, const QString& _pass )
 {
+    kDebugInfo( 7102, "openConnection %s:%d %s %s", _host.ascii(), _port, _user.ascii(), _pass.ascii());
   m_bPersistent = KProtocolManager::self().persistentConnections();
 
   if ( m_bLoggedOn )
@@ -243,9 +244,9 @@ void Ftp::openConnection( const QString& _host, int _port, const QString& _user,
   QString user;
   QString passwd;
 
-  if( _user && strlen( _user ) > 0 ) {
+  if( !_user.isEmpty() ) {
     user = _user;
-    if ( _pass && strlen( _pass ) > 0 ) {
+    if ( !_pass.isEmpty() ) {
       passwd = _pass;
     } else {
       passwd = "";
@@ -356,6 +357,8 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  */
 bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 {
+    kDebugInfo( 7102, "ftpLogin %s %s", user.ascii(), _pass.ascii());
+
   assert( !m_bLoggedOn );
 
   m_user = user;
@@ -374,10 +377,11 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
         return true; /* no password required */
     }
 
+    kDebugInfo( 7102, "Old pass is '%s'", pass.ascii());
     if ( pass.isEmpty() ) {
       QString tmp = m_user + "@" + m_host;
-      if ( !openPassDlg( tmp, m_user, pass ) )
-	return false;
+      if ( !openPassDlg( tmp, m_user, pass ) ) ;
+      // return false;
     }
     kDebugInfo( 7102, "New pass is '%s'", pass.ascii());
 

@@ -261,11 +261,14 @@ bool SlaveBase::dispatch()
 
 bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
 {
+    kDebugInfo(7007, "openPassDlg %s", head.ascii());
     KIO_DATA << head << user << pass;
     m_pConnection->send( ERR_NEED_PASSWD, data );
     int cmd;
-    if ( m_pConnection->read( &cmd, data ) == -1 )
-      return false;
+    if ( m_pConnection->read( &cmd, data ) == -1 ) {
+	return false;
+    }
+    kDebugInfo(7007, "reading %d", cmd);
     if (cmd != CMD_USERPASS) {
 	if (cmd != CMD_NONE)
 	    dispatch( cmd, data );
@@ -273,6 +276,7 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
     } else {
       QDataStream stream( data, IO_ReadOnly );
       stream >> user >> pass;
+      kDebugInfo(7007, "got %s %s", cmd, user.ascii(), pass.ascii());
       return true;
     }
 }
