@@ -3866,14 +3866,15 @@ QString HTTPProtocol::findCookies( const QString &url)
   QByteArray reply;
   QString result;
 
+  long windowId = m_request.window.toLong();
   result = QString::null;
   QDataStream stream(params, IO_WriteOnly);
-  stream << url;
+  stream << url << windowId;
 
   bool attemptedRestart = false;
   while ( 1 )
   {
-    if ( !m_dcopClient->call( "kcookiejar", "kcookiejar", "findCookies(QString)",
+    if ( !m_dcopClient->call( "kcookiejar", "kcookiejar", "findCookies(QString,long int)",
                                              params, replyType, reply ) )
     {
       if ( !initCookieJar() || attemptedRestart )

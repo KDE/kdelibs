@@ -59,9 +59,9 @@ protected:
     QString mValue;
     time_t  mExpireDate;
     int     mProtocolVersion;
-    long    mWindowId;
     bool    mSecure;
     bool    mCrossDomain;
+    QValueList<long> mWindowIds;
 
     QString cookieStr(bool useDOMFormat);
 
@@ -80,7 +80,7 @@ public:
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
     QString value(void) { return mValue; }
-    long    windowId(void) { return mWindowId; }
+    QValueList<long> &windowIds(void) { return mWindowIds; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
@@ -155,7 +155,7 @@ public:
      * If @p useDOMFormat is true, the string is formatted in a format
      * in compliance with the DOM standard.
      */
-    QString findCookies(const QString &_url, bool useDOMFormat);
+    QString findCookies(const QString &_url, bool useDOMFormat, long windowId);
 
     /**
      * This function parses cookie_headers and returns a linked list of
@@ -279,13 +279,13 @@ public:
      * Removes all end of session cookies set by the
      * session @p windId.
      */
-    void eatSessionCookies( int windId );
+    void eatSessionCookies( long windowId );
 
     /**
      * Removes all end of session cookies set by the
      * session @p windId.
      */
-    void eatSessionCookies( const QString& fqdn, int windId, bool isFQDN = true );
+    void eatSessionCookies( const QString& fqdn, long windowId, bool isFQDN = true );
 
     /**
      * Parses _url and returns the FQDN (_fqdn) and path (_path).

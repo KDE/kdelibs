@@ -231,7 +231,7 @@ KCookieJar::~KCookieJar()
 // Returned is a string containing all appropriate cookies in a format
 // which can be added to a HTTP-header without any additional processing.
 //
-QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
+QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long windowId)
 {
     QString cookieStr;
     QStringList domains;
@@ -272,6 +272,11 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 
           if( cookie->isSecure() && !secureRequest )
              continue;
+
+          if (windowId && (cookie->windowIds().find(windowId) == cookie->windowIds().end()))
+          {
+             cookie->windowIds().append(windowId);
+          }
 
           // Use first cookie to determine protocol version
           if (cookieCount == 0)
@@ -527,7 +532,8 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Default domain = ""
             // Default path = ""
             KHttpCookie *cookie = new KHttpCookie(fqdn, "", "", Name, Value);
-            cookie->mWindowId = windowId;
+            if (windowId)
+               cookie->mWindowIds.append(windowId);
             cookie->mCrossDomain = crossDomain;
 
             // Insert cookie in chain
@@ -643,7 +649,8 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
         // Default path = ""
         KHttpCookie *cookie = new KHttpCookie(fqdn, QString::null, QString::null,
                                 Name, Value );
-        cookie->mWindowId = windowId;
+        if (windowId)
+            cookie->mWindowIds.append(windowId);
 
         cookieList.append(cookie);
         lastCookie = cookie;
@@ -945,6 +952,16 @@ void KCookieJar::eatCookiesForDomain(const QString &domain)
    m_cookiesChanged = true;
 }
 
+void KCookieJar::eatSessionCookies( long windowId )
+{
+    if (!windowId)
+        return;
+        
+    QStringList::Iterator it=m_domainList.begin();
+    for ( ; it != m_domainList.end(); ++it )
+        eatSessionCookies( *it, windowId, false );
+}
+
 void KCookieJar::eatAllCookies()
 {
     for ( QStringList::Iterator it=m_domainList.begin();
@@ -956,17 +973,9 @@ void KCookieJar::eatAllCookies()
     }
 }
 
-void KCookieJar::eatSessionCookies( int winId )
-{
-    QStringList::Iterator it=m_domainList.begin();
-    for ( ; it != m_domainList.end(); ++it )
-        eatSessionCookies( *it, winId, false );
-}
-
-void KCookieJar::eatSessionCookies( const QString& fqdn, int winId,
+void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
                                     bool isFQDN )
 {
-    kdDebug () << "Removing cookie for: " << fqdn << ", id = " << winId << endl;
     KHttpCookieList* cookieList;
     if ( !isFQDN )
         cookieList = m_cookieDomains[fqdn];
@@ -982,15 +991,21 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, int winId,
         KHttpCookiePtr cookie=cookieList->first();
         for (; cookie != 0;)
         {
-            if (cookie->windowId() == winId &&
-                ((cookie->expireDate() == 0) || m_ignoreCookieExpirationDate))
+            if ((cookie->expireDate() != 0) && !m_ignoreCookieExpirationDate)
             {
-                KHttpCookiePtr old_cookie = cookie;
-                cookie = cookieList->next();
-                cookieList->removeRef( old_cookie );
+               cookie = cookieList->next();
+               continue;
             }
-            else
-                cookie = cookieList->next();
+            
+            QValueList<long> &ids = cookie->windowIds();
+            if (!ids.remove(windowId) || !ids.isEmpty())
+            {
+               cookie = cookieList->next();
+               continue;
+            }
+            KHttpCookiePtr old_cookie = cookie;
+            cookie = cookieList->next();
+            cookieList->removeRef( old_cookie );
         }
     }
 }

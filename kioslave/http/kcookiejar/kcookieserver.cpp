@@ -53,6 +53,7 @@ public:
    DCOPClientTransaction *transaction;
    QString url;
    bool DOM;
+   long windowId;
 };
 
 template class  QPtrList<CookieRequest>;
@@ -90,6 +91,9 @@ KCookieServer::KCookieServer()
    {
       mCookieJar->loadCookies( filename);
    }
+   
+   connect(dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
+           this, SLOT(unregisterApp(const QCString&)));
 }
 
 KCookieServer::~KCookieServer()
@@ -274,7 +278,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
         {
            QCString replyType;
            QByteArray replyData;
-           QString res = mCookieJar->findCookies( request->url, request->DOM );
+           QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
            QDataStream stream2(replyData, IO_WriteOnly);
            stream2 << res;
@@ -371,16 +375,24 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
 QString
 KCookieServer::findCookies(QString url)
 {
+  return findCookies(url, 0);
+}
+
+// DCOP function
+QString
+KCookieServer::findCookies(QString url, long windowId)
+{
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
       request->transaction = dcopClient()->beginTransaction();
       request->url = url;
       request->DOM = false;
+      request->windowId = windowId;
       mRequestList->append( request );
       return QString::null; // Talk to you later :-)
    }
-   return mCookieJar->findCookies(url, false);
+   return mCookieJar->findCookies(url, false, windowId);
 }
 
 // DCOP function
@@ -437,16 +449,24 @@ KCookieServer::findCookies(QValueList<int> fields,
 QString
 KCookieServer::findDOMCookies(QString url)
 {
+   return findDOMCookies(url, 0);
+}
+
+// DCOP function
+QString
+KCookieServer::findDOMCookies(QString url, long windowId)
+{
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
       request->transaction = dcopClient()->beginTransaction();
       request->url = url;
       request->DOM = true;
+      request->windowId = windowId;
       mRequestList->append( request );
       return QString::null; // Talk to you later :-)
    }
-   return mCookieJar->findCookies(url, true);
+   return mCookieJar->findCookies(url, true, windowId);
 }
 
 // DCOP function
@@ -488,17 +508,24 @@ KCookieServer::deleteCookiesFromDomain(QString domain)
 }
 
 void
-KCookieServer::deleteSessionCookies( long winId )
+KCookieServer::deleteSessionCookies( long windowId )
 {
-  mCookieJar->eatSessionCookies( winId );
+  QCString sender = dcopClient()->senderId();
+  QValueList<long> *windowIds = mWindowIdList.find(sender);
+  if (windowIds)
+  {
+     windowIds->remove(windowId);
+  }
+
+  mCookieJar->eatSessionCookies( windowId );
   if(!mTimer)
     saveCookieJar();
 }
 
 void
-KCookieServer::deleteSessionCookiesFor(QString fqdn, long winId)
+KCookieServer::deleteSessionCookiesFor(QString fqdn, long windowId)
 {
-  mCookieJar->eatSessionCookies( fqdn, winId );
+  mCookieJar->eatSessionCookies( fqdn, windowId );
   if(!mTimer)
     saveCookieJar();
 }
@@ -562,6 +589,51 @@ void
 KCookieServer::shutdown()
 {
    quit();
+}
+
+// DCOP function
+void
+KCookieServer::registerWindowId(long windowId)
+{
+   if (!windowId)
+      return;
+
+   if (mWindowIdList.isEmpty()) //Only listen for notifications when needed
+   {
+      dcopClient()->setNotifications(true);
+   }      
+
+   QCString sender = dcopClient()->senderId();
+   QValueList<long> *windowIds = mWindowIdList.find(sender);
+   if (!windowIds)
+   {
+      windowIds = new QValueList<long>;
+      mWindowIdList.insert(sender, windowIds);
+   }
+   windowIds->append(windowId);
+}
+
+void
+KCookieServer::unregisterApp(const QCString& sender)
+{
+   QValueList<long> *windowIds = mWindowIdList.find(sender);
+   if (!windowIds)
+      return;
+      
+   while(!windowIds->isEmpty())
+   {
+      long windowId = windowIds->first();
+      windowIds->remove(windowId);
+      mCookieJar->eatSessionCookies( windowId );
+   }
+
+   mWindowIdList.remove(sender);
+   if (mWindowIdList.isEmpty()) //Only listen for notifications when needed
+   {
+      dcopClient()->setNotifications(false);
+   }
+   if(!mTimer)
+      saveCookieJar();
 }
 
 #include "kcookieserver.moc"
