@@ -6,9 +6,9 @@
 #include "kspelldlg.moc"
 #include "version.h"
 
-KSpellDlg::KSpellDlg (QWidget *, const char *name,
+KSpellDlg::KSpellDlg (QWidget *_parent, const char *name,
 		      bool _progressbar) :
-  QWidget (0, name, WStyle_DialogBorder)
+  QWidget (_parent, name, WStyle_DialogBorder | WType_TopLevel)
 {
 
   progressbar = _progressbar;
@@ -157,7 +157,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
   tmpQPushButton->setAutoRepeat( FALSE );
   tmpQPushButton->setAutoResize( FALSE );
   layout->addWidget (tmpQPushButton, 4, 2);
-  
+
   if (progressbar)
     {
       progbar = new KProgress (0, 100, 0, KProgress::Horizontal, this);
@@ -286,6 +286,12 @@ KSpellDlg::highlighted (int i)
 /*
   exit functions
   */
+
+void
+KSpellDlg::closeEvent( QCloseEvent * e )
+{
+	cancel();
+}
 
 void
 KSpellDlg::done (int result)

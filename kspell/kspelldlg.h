@@ -67,6 +67,7 @@ public:
   void slotProgress (unsigned int p);
 
 protected:
+	virtual void closeEvent ( QCloseEvent * e );
   void done (int i);
 
  signals:
