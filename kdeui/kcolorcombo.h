@@ -31,6 +31,8 @@
 #include "kselect.h"
 
 
+class KColorComboInternal;
+
 /**
  * Combobox for colors.
  */
@@ -44,6 +46,7 @@ public:
      * Constructs a color combo box.
      */ 
     KColorCombo( QWidget *parent, const char *name = 0L );
+    ~KColorCombo();
 
     /**
      * Selects the color @p col.
@@ -54,6 +57,12 @@ public:
      **/
     QColor color() const;
     
+
+    /**
+     * Clear the colour list and don't show it, till the next setColor() call
+     **/
+     void showEmptyList();
+
 signals:
     /**
      * Emitted when a new color box has been selected.

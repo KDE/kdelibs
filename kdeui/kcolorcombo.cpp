@@ -99,9 +99,21 @@ static void createStandardPalette()
 }
 #endif
 
+class KColorCombo::KColorComboPrivate
+{
+	protected:
+	friend class KColorCombo;
+	KColorComboPrivate(){}
+	~KColorComboPrivate(){}
+	bool showEmptyList;
+};
+
 KColorCombo::KColorCombo( QWidget *parent, const char *name )
 	: QComboBox( parent, name )
 {
+	d=new KColorComboPrivate();
+	d->showEmptyList=false;
+
 	customColor.setRgb( 255, 255, 255 );
 	internalcolor.setRgb( 255, 255, 255 );
 
@@ -113,13 +125,18 @@ KColorCombo::KColorCombo( QWidget *parent, const char *name )
 	connect( this, SIGNAL( highlighted(int) ), SLOT( slotHighlighted(int) ) );
 }
 
+
+KColorCombo::~KColorCombo()
+{
+	delete d;
+}
 /**
    Sets the current color
  */
 void KColorCombo::setColor( const QColor &col )
 {
 	internalcolor = col;
-
+	d->showEmptyList=false;
 	addColors();
 }
 
@@ -135,6 +152,15 @@ void KColorCombo::resizeEvent( QResizeEvent *re )
 {
 	QComboBox::resizeEvent( re );
 
+	addColors();
+}
+
+/**
+   Show an empty list, till the next colour is set with setColor
+ */
+void KColorCombo::showEmptyList()
+{
+	d->showEmptyList=true;
 	addColors();
 }
 
@@ -192,6 +218,7 @@ void KColorCombo::addColors()
 	int i;
 
 	clear();
+	if (d->showEmptyList) return;
 
 	createStandardPalette();
 
