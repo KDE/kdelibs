@@ -9,7 +9,7 @@ KTopLevelWidget::KTopLevelWidget(
                                   const char *name )
   : QWidget( 0L, name )
  {
-   reclevel = 0;
+   reclvl = 0;
    nores = FALSE;
 
    kmenubar = NULL;
