@@ -111,6 +111,8 @@ public:
     void setPass(QString pass) { _pass = pass; }
     QString& getName() { return _name; }
     void setName(QString name) { _name = name; }
+    QString& getPassCache() { return _cpass; }
+    void setPassCache(QString pass) { _cpass = pass; }
 
 protected:
     virtual void stateChange( bool );
@@ -118,6 +120,7 @@ protected:
 private:
     QString _pkcs;
     QString _pass;
+    QString _cpass;
     QString _name;
     KCryptoConfig *m_module; // just to call configChanged()
 };
@@ -224,8 +227,6 @@ private:
   QPushButton *oTest;
   QList<OtherCertItem> otherCertDelList;
   QList<YourCertItem> yourCertDelList;
-
-  QString pCertPass;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts;
