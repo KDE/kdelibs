@@ -119,6 +119,45 @@ public:
 		bool modal);
 
     /**
+      * Constructs a file dialog.
+      *
+      * The parameters here are identical to the first constructor except
+      * for the addition of a QWidget parameter.
+      *
+      * Historical note: The original version of KFileDialog did not have this extra
+      * parameter. It was added later, and, in order to maintain binary compatibility,
+      * it was placed in a new constructor instead of added to the original one.
+      *
+      * @param startDir This can either be
+      *         @li The URL of the directory to start in.
+      *         @li QString::null to start in the current working
+      *		    directory, or the last directory where a file has been
+      *		    selected.
+      *         @li ':<keyword>' to start in the directory last used
+      *             by a filedialog in the same application that specified
+      *             the same keyword.
+      *         @li '::<keyword' to start in the direcotry last used
+      *             by a filedialog in any application that specified the
+      *             same keyword.
+      *
+      * @param filter A shell glob or a mime-type-filter that specifies
+      *               which files to display.
+      * See @ref setFilter() for details on how to use this argument.
+      *
+      * @param acceptURLs If set to @p false, @ref KFileDialog will
+      * just accept files on the local filesystem.
+      *
+      * @param widget A widget, or a widget of widgets, for displaying custom
+      *               data in the dialog. This can be used, for example, to
+      *               display a check box with the caption "Open as read-only".
+      *               When creating this widget, you don't need to specify a parent,
+      *               since the widget's parent will be set automatically by KFileDialog.
+      */
+    KFileDialog(const QString& startDir, const QString& filter,
+		QWidget *parent, const char *name,
+		bool modal, QWidget* widget);
+
+    /**
      * Destructs the file dialog.
      */
     ~KFileDialog();
@@ -700,6 +739,12 @@ protected:
      * to true, it will care about clever updating
      **/
     void addDirEntry(KFileItem *entry, bool disableUpdating);
+
+    /**
+      * Perform basic initialization tasks. Called by constructors.
+      *
+      */
+    void init(const QString& startDir, const QString& filter, QWidget* widget);
 
     /**
       * rebuild geometry managment.

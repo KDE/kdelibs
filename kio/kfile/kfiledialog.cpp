@@ -113,6 +113,7 @@ struct KFileDialogPrivate
     KURLComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
     KURLBar *urlBar;
+    QWidget *customWidget;
 
     QPtrList<KIO::StatJob> statJobs;
 
@@ -155,270 +156,15 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                          QWidget *parent, const char* name, bool modal)
     : KDialogBase( parent, name, modal, QString::null, 0 )
 {
-    d = new KFileDialogPrivate();
-    d->boxLayout = 0;
-    d->keepLocation = false;
-    d->operationMode = Opening;
-    d->hasDefaultFilter = false;
-    d->hasView = false;
-    d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
-    setMainWidget( d->mainWidget );
-    d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
-    d->okButton->setDefault( true );
-    d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
-    connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
-    connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
-    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
-    connect( d->urlBar, SIGNAL( activated( const KURL& )),
-             SLOT( enterURL( const KURL& )) );
-
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
-                                                   true );
-    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
-
-    if ( d->initializeSpeedbar ) {
-        KURL u;
-        u.setPath( KGlobalSettings::desktopPath() );
-        d->urlBar->insertItem( u, i18n("Desktop"), false );
-
-        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
-        {
-            u.setPath( KGlobalSettings::documentPath() );
-            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
-        }
-        
-        u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false,
-                               "folder_home" );
-        u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Floppy"), false,
-                                   KProtocolInfo::icon( "floppy" ) );
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
-                               "file_temporary" );
-        u = "lan:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false,
-                                   "network_local" );
-    }
-
-    d->completionLock = false;
-    
-    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
-    toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
-    toolbar->setFlat(true);
-    qInstallMsgHandler( oldHandler );
-
-    d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
-                                     toolbar, "path combo" );
-    QToolTip::add( d->pathCombo, i18n("Often used directories") );
-    
-    KURL u;
-    u.setPath( QDir::rootDirPath() );
-    QString text = i18n("Root Directory: %1").arg( u.path() );
-    d->pathCombo->addDefaultURL( u, 
-                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ),
-                                 text );
-
-    u.setPath( QDir::homeDirPath() );
-    text = i18n("Home Directory: %1").arg( u.path( +1 ) );
-    d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
-                                 text );
-
-    KURL docPath;
-    docPath.setPath( KGlobalSettings::documentPath() );
-    if ( u.path(+1) != docPath.path(+1) ) {
-        text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        d->pathCombo->addDefaultURL( u, 
-                                     KMimeType::pixmapForURL( u, 0, KIcon::Small ),
-                                     text );
-    }
-
-    u.setPath( KGlobalSettings::desktopPath() );
-    text = i18n("Desktop: %1").arg( u.path( +1 ) );
-    d->pathCombo->addDefaultURL( u, 
-                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ), 
-                                 text );
-
-    u.setPath( "/tmp" );
-
-    if (!lastDirectory)
-    {
-        lastDirectory = ldd.setObject(new KURL());
-    }
-
-    bool defaultStartDir = startDir.isEmpty();
-    if ( !defaultStartDir )
-        if (startDir[0] == ':')
-        {
-            d->fileClass = startDir;
-            d->url = KRecentDirs::dir(d->fileClass);
-        }
-        else
-        {
-            d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
-            // If we won't be able to list it (e.g. http), then use default
-            if ( !KProtocolInfo::supportsListing( d->url.protocol() ) )
-                defaultStartDir = true;
-        }
-
-    if ( defaultStartDir )
-    {
-        if (lastDirectory->isEmpty()) {
-            *lastDirectory = KGlobalSettings::documentPath();
-            KURL home;
-            home.setPath( QDir::homeDirPath() );
-            // if there is no docpath set (== home dir), we prefer the current
-            // directory over it. We also prefer the homedir when our CWD is
-            // different from our homedirectory
-            if ( lastDirectory->path(+1) == home.path(+1) ||
-                 QDir::currentDirPath() != QDir::homeDirPath() )
-                *lastDirectory = QDir::currentDirPath();
-        }
-        d->url = *lastDirectory;
-    }
-
-    ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
-    ops->setOnlyDoubleClickSelectsFiles( true );
-    connect(ops, SIGNAL(urlEntered(const KURL&)),
-            SLOT(urlEntered(const KURL&)));
-    connect(ops, SIGNAL(fileHighlighted(const KFileItem *)),
-            SLOT(fileHighlighted(const KFileItem *)));
-    connect(ops, SIGNAL(fileSelected(const KFileItem *)),
-            SLOT(fileSelected(const KFileItem *)));
-    connect(ops, SIGNAL(finishedLoading()),
-            SLOT(slotLoadingFinished()));
-
-    KActionCollection *coll = ops->actionCollection();
-    coll->action( "up" )->plug( toolbar );
-    coll->action( "back" )->plug( toolbar );
-    coll->action( "forward" )->plug( toolbar );
-    coll->action( "home" )->plug( toolbar );
-    coll->action( "reload" )->plug( toolbar );
-    coll->action( "mkdir" )->setShortcut(Key_F10);
-    coll->action( "mkdir" )->plug( toolbar );
-    
-    d->bookmarkHandler = new KFileBookmarkHandler( this );
-    toolbar->insertButton(QString::fromLatin1("bookmark"),
-                          (int)HOTLIST_BUTTON, true,
-                          i18n("Bookmarks"));
-    toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(),
-                                                  true);
-    connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
-             SLOT( enterURL( const QString& )));
-    
-    KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
-    connect( showSidebarAction, SIGNAL( toggled( bool ) ),
-             SLOT( toggleSpeedbar( bool )) );
-
-    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
-    menu->insert( coll->action( "sorting menu" ));
-    menu->insert( coll->action( "separator" ));
-    coll->action( "short view" )->setShortcut(Key_F6);
-    menu->insert( coll->action( "short view" ));
-    coll->action( "detailed view" )->setShortcut(Key_F7);
-    menu->insert( coll->action( "detailed view" ));
-    menu->insert( coll->action( "separator" ));
-    coll->action( "show hidden" )->setShortcut(Key_F8);
-    menu->insert( coll->action( "show hidden" ));
-    menu->insert( showSidebarAction );
-    coll->action( "preview" )->setShortcut(Key_F11);
-    menu->insert( coll->action( "preview" ));
-    coll->action( "separate dirs" )->setShortcut(Key_F12);
-    menu->insert( coll->action( "separate dirs" ));
-    
-    menu->setDelayed( false );
-    connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
-             ops, SLOT( updateSelectionDependentActions() ));
-    menu->plug( toolbar );
-    
-    /*
-     * ugly little hack to have a 5 pixel space between the buttons
-     * and the combo box
-     */
-    QWidget *spacerWidget = new QWidget(toolbar);
-    spacerWidget->setMinimumWidth(spacingHint());
-    spacerWidget->setMaximumWidth(spacingHint());
-    d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
-    toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
-    
-
-    toolbar->setItemAutoSized (PATH_COMBO);
-    toolbar->setIconText(KToolBar::IconOnly);
-    toolbar->setBarPos(KToolBar::Top);
-    toolbar->setMovingEnabled(false);
-    toolbar->adjustSize();
-
-    locationEdit = new KURLComboBox(KURLComboBox::Files, true, 
-                                    d->mainWidget, "LocationEdit");
-    // to get the completionbox-signals connected:
-    locationEdit->setHandleSignals( true );
-    (void) locationEdit->completionBox();
-
-    locationEdit->setFocus();
-//     locationEdit->setCompletionObject( new KURLCompletion() );
-//     locationEdit->setAutoDeleteCompletionObject( true );
-    locationEdit->setCompletionObject( ops->completionObject(), false );
-
-    connect( locationEdit, SIGNAL( returnPressed() ),
-             this, SLOT( slotOk()));
-    connect(locationEdit, SIGNAL( activated( const QString&  )),
-            this,  SLOT( locationActivated( const QString& ) ));
-    connect( locationEdit, SIGNAL( completion( const QString& )),
-             SLOT( fileCompletion( const QString& )));
-    connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-             locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-
-    d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
-
-    connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
-             this,  SLOT( enterURL( const KURL& ) ));
-    connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
-             this,  SLOT( enterURL( const QString& ) ));
-    connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
-             SLOT( pathComboChanged( const QString& ) ));
-    connect( d->pathCombo, SIGNAL( completion( const QString& )),
-             SLOT( dirCompletion( const QString& )));
-    connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-             d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-
-    d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
-                                  d->mainWidget);
-
-    filterWidget = new KFileFilterCombo(d->mainWidget,
-                                        "KFileDialog::filterwidget");
-    setFilter(filter);
-    d->filterLabel->setBuddy(filterWidget);
-    connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
-
-    initGUI(); // activate GM
-
-    readRecentFiles( config );
-
-    adjustSize();
-
-    // we set the completionLock to avoid entering pathComboChanged() when
-    // inserting the list of URLs into the combo.
-    d->completionLock = true;
-    readConfig( config, ConfigGroup );
-    d->completionLock = false;
-
-    // need to set the current url of the urlbar manually (not via urlEntered()
-    // here, because the initial url of KDirOperator might be the same as the
-    // one that will be set later (and then urlEntered() won't be emitted).
-    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
-    if ( d->urlBar )
-        d->urlBar->setCurrentItem( d->url );
-    setSelection(d->url.url()); // ### move that into show() as well?
+    init( startDir, filter, 0 );
 }
 
+KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
+                         QWidget *parent, const char* name, bool modal, QWidget* widget)
+    : KDialogBase( parent, name, modal, QString::null, 0 )
+{
+    init( startDir, filter, widget );
+}
 
 KFileDialog::~KFileDialog()
 {
@@ -889,6 +635,272 @@ void KFileDialog::multiSelectionChanged()
     locationEdit->setEditText( text.stripWhiteSpace() );
 }
 
+void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
+{
+    d = new KFileDialogPrivate();
+    d->boxLayout = 0;
+    d->keepLocation = false;
+    d->operationMode = Opening;
+    d->hasDefaultFilter = false;
+    d->hasView = false;
+    d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
+    setMainWidget( d->mainWidget );
+    d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
+    d->okButton->setDefault( true );
+    d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
+    connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
+    connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
+    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
+    connect( d->urlBar, SIGNAL( activated( const KURL& )),
+             SLOT( enterURL( const KURL& )) );
+    d->customWidget = widget;
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, ConfigGroup );
+    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
+                                                   true );
+    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
+
+    if ( d->initializeSpeedbar ) {
+        KURL u;
+        u.setPath( KGlobalSettings::desktopPath() );
+        d->urlBar->insertItem( u, i18n("Desktop"), false );
+
+        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
+        {
+            u.setPath( KGlobalSettings::documentPath() );
+            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
+        }
+        
+        u.setPath( QDir::homeDirPath() );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false,
+                               "folder_home" );
+        u = "floppy:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Floppy"), false,
+                                   KProtocolInfo::icon( "floppy" ) );
+        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
+        u.setProtocol( "file" );
+        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
+                               "file_temporary" );
+        u = "lan:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Network"), false,
+                                   "network_local" );
+    }
+
+    d->completionLock = false;
+    
+    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
+    toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
+    toolbar->setFlat(true);
+    qInstallMsgHandler( oldHandler );
+
+    d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
+                                     toolbar, "path combo" );
+    QToolTip::add( d->pathCombo, i18n("Often used directories") );
+    
+    KURL u;
+    u.setPath( QDir::rootDirPath() );
+    QString text = i18n("Root Directory: %1").arg( u.path() );
+    d->pathCombo->addDefaultURL( u, 
+                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                                 text );
+
+    u.setPath( QDir::homeDirPath() );
+    text = i18n("Home Directory: %1").arg( u.path( +1 ) );
+    d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                                 text );
+
+    KURL docPath;
+    docPath.setPath( KGlobalSettings::documentPath() );
+    if ( u.path(+1) != docPath.path(+1) ) {
+        text = i18n("Documents: %1").arg( docPath.path( +1 ) );
+        d->pathCombo->addDefaultURL( u, 
+                                     KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                                     text );
+    }
+
+    u.setPath( KGlobalSettings::desktopPath() );
+    text = i18n("Desktop: %1").arg( u.path( +1 ) );
+    d->pathCombo->addDefaultURL( u, 
+                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ), 
+                                 text );
+
+    u.setPath( "/tmp" );
+
+    if (!lastDirectory)
+    {
+        lastDirectory = ldd.setObject(new KURL());
+    }
+
+    bool defaultStartDir = startDir.isEmpty();
+    if ( !defaultStartDir )
+        if (startDir[0] == ':')
+        {
+            d->fileClass = startDir;
+            d->url = KRecentDirs::dir(d->fileClass);
+        }
+        else
+        {
+            d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
+            // If we won't be able to list it (e.g. http), then use default
+            if ( !KProtocolInfo::supportsListing( d->url.protocol() ) )
+                defaultStartDir = true;
+        }
+
+    if ( defaultStartDir )
+    {
+        if (lastDirectory->isEmpty()) {
+            *lastDirectory = KGlobalSettings::documentPath();
+            KURL home;
+            home.setPath( QDir::homeDirPath() );
+            // if there is no docpath set (== home dir), we prefer the current
+            // directory over it. We also prefer the homedir when our CWD is
+            // different from our homedirectory
+            if ( lastDirectory->path(+1) == home.path(+1) ||
+                 QDir::currentDirPath() != QDir::homeDirPath() )
+                *lastDirectory = QDir::currentDirPath();
+        }
+        d->url = *lastDirectory;
+    }
+
+    ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
+    ops->setOnlyDoubleClickSelectsFiles( true );
+    connect(ops, SIGNAL(urlEntered(const KURL&)),
+            SLOT(urlEntered(const KURL&)));
+    connect(ops, SIGNAL(fileHighlighted(const KFileItem *)),
+            SLOT(fileHighlighted(const KFileItem *)));
+    connect(ops, SIGNAL(fileSelected(const KFileItem *)),
+            SLOT(fileSelected(const KFileItem *)));
+    connect(ops, SIGNAL(finishedLoading()),
+            SLOT(slotLoadingFinished()));
+
+    KActionCollection *coll = ops->actionCollection();
+    coll->action( "up" )->plug( toolbar );
+    coll->action( "back" )->plug( toolbar );
+    coll->action( "forward" )->plug( toolbar );
+    coll->action( "home" )->plug( toolbar );
+    coll->action( "reload" )->plug( toolbar );
+    coll->action( "mkdir" )->setShortcut(Key_F10);
+    coll->action( "mkdir" )->plug( toolbar );
+    
+    d->bookmarkHandler = new KFileBookmarkHandler( this );
+    toolbar->insertButton(QString::fromLatin1("bookmark"),
+                          (int)HOTLIST_BUTTON, true,
+                          i18n("Bookmarks"));
+    toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(),
+                                                  true);
+    connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
+             SLOT( enterURL( const QString& )));
+    
+    KToggleAction *showSidebarAction =
+        new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
+    connect( showSidebarAction, SIGNAL( toggled( bool ) ),
+             SLOT( toggleSpeedbar( bool )) );
+
+    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
+    menu->insert( coll->action( "sorting menu" ));
+    menu->insert( coll->action( "separator" ));
+    coll->action( "short view" )->setShortcut(Key_F6);
+    menu->insert( coll->action( "short view" ));
+    coll->action( "detailed view" )->setShortcut(Key_F7);
+    menu->insert( coll->action( "detailed view" ));
+    menu->insert( coll->action( "separator" ));
+    coll->action( "show hidden" )->setShortcut(Key_F8);
+    menu->insert( coll->action( "show hidden" ));
+    menu->insert( showSidebarAction );
+    coll->action( "preview" )->setShortcut(Key_F11);
+    menu->insert( coll->action( "preview" ));
+    coll->action( "separate dirs" )->setShortcut(Key_F12);
+    menu->insert( coll->action( "separate dirs" ));
+    
+    menu->setDelayed( false );
+    connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
+             ops, SLOT( updateSelectionDependentActions() ));
+    menu->plug( toolbar );
+    
+    /*
+     * ugly little hack to have a 5 pixel space between the buttons
+     * and the combo box
+     */
+    QWidget *spacerWidget = new QWidget(toolbar);
+    spacerWidget->setMinimumWidth(spacingHint());
+    spacerWidget->setMaximumWidth(spacingHint());
+    d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
+    toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
+    
+
+    toolbar->setItemAutoSized (PATH_COMBO);
+    toolbar->setIconText(KToolBar::IconOnly);
+    toolbar->setBarPos(KToolBar::Top);
+    toolbar->setMovingEnabled(false);
+    toolbar->adjustSize();
+
+    locationEdit = new KURLComboBox(KURLComboBox::Files, true, 
+                                    d->mainWidget, "LocationEdit");
+    // to get the completionbox-signals connected:
+    locationEdit->setHandleSignals( true );
+    (void) locationEdit->completionBox();
+
+    locationEdit->setFocus();
+//     locationEdit->setCompletionObject( new KURLCompletion() );
+//     locationEdit->setAutoDeleteCompletionObject( true );
+    locationEdit->setCompletionObject( ops->completionObject(), false );
+
+    connect( locationEdit, SIGNAL( returnPressed() ),
+             this, SLOT( slotOk()));
+    connect(locationEdit, SIGNAL( activated( const QString&  )),
+            this,  SLOT( locationActivated( const QString& ) ));
+    connect( locationEdit, SIGNAL( completion( const QString& )),
+             SLOT( fileCompletion( const QString& )));
+    connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
+             locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
+
+    d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
+
+    connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
+             this,  SLOT( enterURL( const KURL& ) ));
+    connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
+             this,  SLOT( enterURL( const QString& ) ));
+    connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
+             SLOT( pathComboChanged( const QString& ) ));
+    connect( d->pathCombo, SIGNAL( completion( const QString& )),
+             SLOT( dirCompletion( const QString& )));
+    connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
+             d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
+
+    d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
+    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
+                                  d->mainWidget);
+
+    filterWidget = new KFileFilterCombo(d->mainWidget,
+                                        "KFileDialog::filterwidget");
+    setFilter(filter);
+    d->filterLabel->setBuddy(filterWidget);
+    connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
+
+    initGUI(); // activate GM
+
+    readRecentFiles( config );
+
+    adjustSize();
+
+    // we set the completionLock to avoid entering pathComboChanged() when
+    // inserting the list of URLs into the combo.
+    d->completionLock = true;
+    readConfig( config, ConfigGroup );
+    d->completionLock = false;
+
+    // need to set the current url of the urlbar manually (not via urlEntered()
+    // here, because the initial url of KDirOperator might be the same as the
+    // one that will be set later (and then urlEntered() won't be emitted).
+    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
+    if ( d->urlBar )
+        d->urlBar->setCurrentItem( d->url );
+    setSelection(d->url.url()); // ### move that into show() as well?
+}
 
 void KFileDialog::initGUI()
 {
@@ -924,6 +936,31 @@ void KFileDialog::initGUI()
     setTabOrder(filterWidget, d->okButton);
     setTabOrder(d->okButton, d->cancelButton);
     setTabOrder(d->cancelButton, d->pathCombo);
+    setTabOrder(d->pathCombo, ops);
+
+    // If a custom widget was specified...
+    if ( d->customWidget != 0 )
+    {
+        // ...add it to the dialog, below the filter list box.
+
+        // Change the parent so that this widget is a child of the main widget
+        d->customWidget->reparent( d->mainWidget, QPoint() );
+
+        vbox->addWidget( d->customWidget );
+
+        // FIXME: This should adjust the tab orders so that the custom widget
+        // comes after the Cancel button. The code appears to do this, but the result
+        // somehow screws up the tab order of the file path combo box. Not a major
+        // problem, but ideally the tab order with a custom widget should be
+        // the same as the order without one.
+        setTabOrder(d->cancelButton, d->customWidget);
+        setTabOrder(d->customWidget, d->pathCombo);
+    }
+    else
+    {
+        setTabOrder(d->cancelButton, d->pathCombo);
+    }
+
     setTabOrder(d->pathCombo, ops);
 }
 
