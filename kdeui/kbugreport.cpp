@@ -257,28 +257,6 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
     lay->addWidget( m_lineedit, 10 /*stretch*/ );
 
-
-    hlay = new QHBoxLayout( lay, 0 );
-
-    text = i18n("Please check that the bug you are about to report is not already listed at ");
-    label = new QLabel( text, parent, "label");
-    hlay->addWidget( label, 0, AlignBottom );
-    hlay->addSpacing(1); // Looks better :)
-
-    text = "http://bugs.kde.org/";
-    KURLLabel *url = new KURLLabel( parent );
-    url->setText(text);
-    url->setURL(text);
-    connect( url, SIGNAL(leftClickedURL(const QString &)),
-             this, SLOT(slotUrlClicked(const QString &)));
-    hlay->addWidget( url, 0, AlignBottom );
-
-    hlay->addStretch( 10 );
-
-    // Necessary for vertical label and url alignment.
-    label->setFixedHeight( fontMetrics().lineSpacing() );
-    url->setFixedHeight( fontMetrics().lineSpacing());
-
     slotSetFrom();
   } else {
     // Point to the web form
