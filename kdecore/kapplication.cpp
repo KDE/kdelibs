@@ -2398,6 +2398,8 @@ void KApplication::initUrlActionRestrictions()
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", "http", QString::null, QString::null, "file", QString::null, QString::null, false));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "ftp", QString::null, QString::null, "file", QString::null, QString::null, false));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", "webdav", QString::null, QString::null, "file", QString::null, QString::null, false));
 
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
