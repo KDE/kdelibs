@@ -236,7 +236,7 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	QString s = args[i++];
 	if ( type == "int" )
 	    arg << s.toInt();
-	if ( type == "uint" )
+	else if ( type == "uint" )
 	    arg << s.toUInt();
 	else if ( type == "long" )
 	    arg << s.toLong();
