@@ -114,10 +114,10 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
     QString s;
     s.sprintf( "createApplet!%d!%d!%s!%s!%s!%s!%s!%d!%d\n",
 	       contextId, appletId,
-	       name.data(), clazzName.data(),
-	       baseURL.data(), 
-               codeBase ? codeBase.data() : "null",
-               jarFile ? jarFile.data() : "null",
+	       name.latin1(), clazzName.latin1(),
+	       baseURL.latin1(), 
+               codeBase.isNull() ? codeBase.latin1() : "null",
+               jarFile.isNull() ? jarFile.latin1() : "null",
                size.width(), size.height() );
     process->send( s );
 
@@ -138,7 +138,7 @@ void KJavaAppletServer::setParameter( int contextId, int appletId,
     QString s;
     s.sprintf( "setParameter!%d!%d!%s!%s\n",
 	       contextId, appletId,
-	       name.data(), value.data() );
+	       name.latin1(), value.latin1() );
     process->send( s );
 }
 
@@ -148,7 +148,7 @@ void KJavaAppletServer::showApplet( int contextId, int appletId,
     QString s;
     s.sprintf( "showApplet!%d!%d!%s\n",
 	       contextId, appletId,
-	       title.data() );
+	       title.latin1() );
     process->send( s );
 }
 
