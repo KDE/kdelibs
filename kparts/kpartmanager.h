@@ -15,19 +15,20 @@ class Part;
  * (even nested ones) and handles activation/deactivation.
  *
  * Applications that want to embed parts without merging GUIs
- * only use a KPartManager. Those who want to merge GUIs use a
- * KPartsMainWindow for example, in addition to a part manager.
+ * only use a @ref KPartManager. Those who want to merge GUIs use a
+ * @ref KPartsMainWindow for example, in addition to a part manager.
  *
  * Parts know about the part manager, to add nested parts to it,
- * and to get access to the window caption
+ * and get access to the window caption.
  */
 class PartManager : public QObject
 {
   Q_OBJECT
 public:
   /**
-   * Create a part manager
-   * @param parent the toplevel widget (window / dialog...)
+   * Create a part manager.
+   *
+   * @param parent The toplevel widget (window / dialog).
    */
   PartManager( QWidget * parent, const char * name = 0L );
   virtual ~PartManager();
@@ -35,31 +36,61 @@ public:
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   /**
-   * Call this to add a Part to the manager.
+   * Add a Part to the manager.
+   *
    * Sets it to the active part automatically.
    */
   virtual void addPart( Part *part );
   /**
-   * Call this to remove a part
+   * Remove a part.
    *
-   * Sets the active part to 0 if @p part is the @ref activePart.
+   * Sets the active part to 0 if @p part is the @ref activePart().
    */
   virtual void removePart( Part *part );
 
+  /**
+   * Set the active part.
+   *
+   * The active part receives events.
+   **/
   virtual void setActivePart( Part *part );
+  /**
+   * Retrieve the active part.
+   **/
   Part *activePart() { return m_activePart; }
 
+  /**
+   * Set the window caption.
+   **/
   virtual void setWindowCaption( const QString & caption )
   { ((QWidget *)parent())->setCaption( caption ); }
 
+  /**
+   * Retrieve a list of parts managed being managed.
+   **/
   const QList<Part> *parts() const { return &m_parts; }
 
 signals:
+  /**
+   * Emitted when a new part has been added.
+   * @see addPart()
+   **/
   void partAdded( Part *part );
+  /**
+   * Emitted when a part has been removed.
+   * @see removePart()
+   **/
   void partRemoved( Part *part );
+  /**
+   * Emitted when the active part has changed.
+   * @see setActivePart()
+   **/
   void activePartChanged( Part *newPart );
 
 protected slots:
+    /**
+     * Removes a part when it is destroyed.
+     **/
   void slotObjectDestroyed();
 
 private:

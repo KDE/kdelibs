@@ -21,13 +21,13 @@ namespace KParts
 class MainWindowPrivate;
 
 /**
- * @short a KPart-aware main window, whose user interface is described in XML
+ * A KPart-aware main window, whose user interface is described in XML.
  *
  * Inherit your main window from this class
- * and don't forget to call @setXMLFile in the inherited constructor
+ * and don't forget to call @ref setXMLFile() in the inherited constructor.
  *
- * It implements all internal interfaces in the case of a KTMainWindow as host:
- * the builder and servant interface (for menu merging)
+ * It implements all internal interfaces in the case of a @ref KTMainWindow as host:
+ * the builder and servant interface (for menu merging).
  */
 class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServant
 {
@@ -38,11 +38,13 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
    */
   MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
   /**
-   * Destructor
+   * Destructor.
    */
   virtual ~MainWindow();
 
   /**
+   * Set the name of the GUI description (XML) file.
+   *
    * Call this in the inherited class constructor
    * to set the name of the rc file containing the XML for the mainwindow
    *
@@ -53,7 +55,7 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
   virtual void setXMLFile( QString file );
 
   /**
-   * Call this instead of setXMLFile if your XML doesn't come from a file,
+   * Call this instead of @ref setXMLFile() if your XML doesn't come from a file,
    * but rather from a string.
    */
   //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
@@ -62,7 +64,7 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
   virtual void setXML( const QString &document );
 
   /**
-   * Add your actions to this collection
+   * Add your actions to this collection.
    */
   QActionCollection *actionCollection() { return &m_actionCollection; }
 
@@ -84,10 +86,11 @@ protected slots:
 
   /**
    * Create the GUI (by merging the host's and the active part's)
+   *
    * Called on startup and whenever the active part changes
    * For this you need to connect this slot to the
-   * KPartManager::activePartChanged signal
-   * @param part the active part (set to 0L if no part)
+   * @ref KPartManager::activePartChanged() signal
+   * @param part The active part (set to 0L if no part).
    */
   virtual void createGUI( Part * part );
 

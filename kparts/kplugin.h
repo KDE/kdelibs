@@ -11,12 +11,12 @@ namespace KParts
 {
 
 /**
- * A plugin is the way to add actions to an existing KParts application,
- * or to a Part.
+ * A plugin is the way to add actions to an existing @ref KParts application,
+ * or to a @ref Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts, with
- * one small difference: the document tag, named kpartplugin should have an additional
- * attribute, named "library", and containing the name of the library implementing
+ * one small difference: The document tag, named kpartplugin should have an additional
+ * attribute, named "library", and contain the name of the library implementing
  * the plugin.
  *
  * If you want this plugin to be used by a part, you need to
@@ -31,19 +31,38 @@ public:
     Plugin( QObject* parent = 0, const char* name = 0 );
     ~Plugin();
 
+    /**
+     * Retrieve an action by name.
+     **/
     QAction* action( const char* name );
+    /**
+     * Retrieve the entire action collection for the plugin.
+     **/
     QActionCollection* actionCollection();
 
+    /**
+     * Retrieve an action for a given @ref QDomElement.
+     **/
     virtual QAction *action( const QDomElement &element );
 
+    /**
+     * Set the @ref QDomDocument describing the part.
+     **/
     virtual void setDocument( QDomDocument doc );
+    /**
+     * Retrieve the @ref QDomDocument describing the part.
+     **/
     virtual QDomDocument document() const;
 
     /**
-     * ... :)
+     * Load the plugin libraries from the directories appropriate
+     * to @p instance.
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
+    /**
+     * Load the plugin libraries specified by the list @p docs.
+     */
     static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
 
     static QValueList<XMLGUIServant *> pluginServants( QObject *parent );
@@ -51,13 +70,13 @@ public:
 protected:
     /**
      * Look for plugins in the @p instance's "data" directory (+"/kpartplugins")
-     * @return a list of QDomDocuments, containing the parsed xml documents returned by plugins
+     * @return A list of @ref QDomDocument s, containing the parsed xml documents returned by plugins.
      */
     static const QValueList<QDomDocument> pluginDocuments( const KInstance * instance );
 
     /**
      * @internal
-     * @return the plugin created from the library @libname
+     * @return The plugin created from the library @p libname
      */
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
