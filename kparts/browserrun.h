@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002 David Faure <david@mandrakesoft.com>
+ * Copyright (C) 2002 David Faure <faure@kde.org>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License version 2, as published by the Free Software Foundation.
@@ -34,7 +34,7 @@ namespace KParts {
      * - warning before launching executables off the web
      * - custom error handling (i.e. treating errors as HTML pages)
      * - generation of SSL metadata depending on the previous URL shown by the part
-     * @author David Faure <david@mandrakesoft.com>
+     * @author David Faure <faure@kde.org>
      */
     class BrowserRun : public KRun
     {
@@ -52,11 +52,29 @@ namespace KParts {
         BrowserRun( const KURL& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
                     bool removeReferrer, bool trustedSource );
+
+        // BIC: merge with above constructor
+        /**
+         * @param url the URL we're probing
+         * @param args URL args - includes data for a HTTP POST, etc.
+         * @param part the part going to open this URL - can be 0L if not created yet
+         * @param window the mainwindow - passed to KIO::Job::setWindow()
+         * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
+         * @param trustedSource if false, a warning will be shown before launching an executable
+         * @param hideErrorDialog if true, no dialog will be shown in case of errors.
+	 * Always pass false for @p trustedSource, except for local directory views.
+         */
+        BrowserRun( const KURL& url, const KParts::URLArgs& args,
+                    KParts::ReadOnlyPart *part, QWidget *window,
+                    bool removeReferrer, bool trustedSource, bool hideErrorDialog );
+
         virtual ~BrowserRun();
 
         //KParts::URLArgs urlArgs() const { return m_args; }
         //KParts::ReadOnlyPart* part() const { return m_part; }
         KURL url() const { return m_strURL; }
+
+        bool hideErrorDialog() const;
 
         enum AskSaveResult { Save, Open, Cancel };
         static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString::null );
@@ -72,11 +90,27 @@ namespace KParts {
         static bool isTextExecutable( const QString &serviceType );
 
     protected:
+        /**
+         * Reimplemented from KRun
+         */
         virtual void scanFile();
+        /**
+         * Reimplemented from KRun
+         */
+        virtual void init();
+        /**
+         * Called when an error happens.
+         * NOTE: @p job could be 0L, if you passed hideErrorDialog=true.
+         * The default implementation shows a message box, but only when job != 0 ....
+         * It is strongly recommended to reimplement this method if
+         * you passed hideErrorDialog=true.
+         */
         virtual void handleError( KIO::Job * job );
 
-        // NotHandled means that foundMimeType should call KRun::foundMimeType,
-        // i.e. launch an external app.
+        /**
+         * NotHandled means that foundMimeType should call KRun::foundMimeType,
+         * i.e. launch an external app.
+         */
         enum NonEmbeddableResult { Handled, NotHandled, Delayed };
         /**
 	 * Helper for foundMimeType: call this if the mimetype couldn't be embedded
@@ -98,7 +132,8 @@ namespace KParts {
         bool m_bRemoveReferrer;
         bool m_bTrustedSource;
     private:
-        class BrowserRunPrivate* d;
+        class BrowserRunPrivate;
+        BrowserRunPrivate* d;
 
     };
 }
