@@ -222,11 +222,11 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index )
 bool CSSStyleSheetImpl::parseString(const DOMString &string)
 {
     QString preprocessed = preprocess(string.string());
-    
+
     kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 
     const QChar *curP = preprocessed.unicode();
-    const QChar *endP = preprocessed.unicode()+string.length();
+    const QChar *endP = preprocessed.unicode()+preprocessed.length();
 
     kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
 
