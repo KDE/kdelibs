@@ -29,6 +29,7 @@ class KBookmarkMenu;
 class KBookmarkOwner;
 class KActionCollection;
 class KAction;
+class QPopupMenu;
 
 /**
  * This class provides a bookmark toolbar.  Using this class is nearly
@@ -54,6 +55,9 @@ public:
 
     virtual ~KBookmarkBar();
 
+signals:
+    void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+
 public slots:
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
@@ -64,7 +68,7 @@ protected:
     bool eventFilter( QObject *o, QEvent *e );
 
 private:
-    KBookmarkOwner    *m_pOwner;
+    KBookmarkOwner *m_pOwner;
     QGuardedPtr<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
