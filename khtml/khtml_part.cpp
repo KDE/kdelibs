@@ -3108,7 +3108,7 @@ void KHTMLPart::slotChildCompleted( bool complete )
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
-  KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()));
+  KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()->parent()));
 
   QString frameName = args.frameName.lower();
   if ( !frameName.isEmpty() )
