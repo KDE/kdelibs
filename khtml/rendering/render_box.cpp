@@ -519,7 +519,18 @@ void RenderBox::calcWidth()
                     w = Length(intrinsicWidth(), Fixed);
             }
             else
-                w = Length(w.width(containingBlockWidth()), Fixed);
+            {
+                RenderObject* cb = containingBlock();
+                if(cb->isBody())
+                    while(cb && !cb->isRoot())
+                        cb = cb->parent();
+
+                if(cb)
+                    w = Length(w.width(cb->contentWidth()), Fixed);
+                else
+                    w = Length(intrinsicWidth(), Fixed);
+
+            }
         }
 
         Length ml = m_style->marginLeft();
@@ -582,10 +593,8 @@ void RenderBox::calcWidth()
                 m_marginRight = cw - m_width - m_marginLeft;
             else
                 m_marginLeft = cw - m_width - m_marginRight;
-
         }
     }
-
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
@@ -657,7 +666,17 @@ void RenderBox::calcHeight()
 
             }
             else
-                h = Length(h.width(containingBlockHeight()), Fixed);
+            {
+                RenderObject* cb = containingBlock();
+                if(cb->isBody())
+                    while(cb && !cb->isRoot())
+                        cb = cb->parent();
+
+                if(cb)
+                    h = Length(h.width(static_cast<RenderRoot*>(cb)->view()->visibleHeight()), Fixed);
+                else
+                    h = Length(intrinsicHeight(), Fixed);
+            }
         }
 
         Length tm = style()->marginTop();

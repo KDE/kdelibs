@@ -96,6 +96,7 @@ public:
     virtual bool isTableSection() const { return false; }
     virtual bool isTable() const { return false; }
     virtual bool isWidget() const { return false; }
+    virtual bool isBody() const { return false; }
 
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }

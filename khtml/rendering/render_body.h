@@ -32,10 +32,12 @@ namespace khtml {
     public:
 	RenderBody();
 	virtual ~RenderBody();
-	
+
+        virtual bool isBody() const { return true; }
+
 	virtual const char *renderName() const { return "RenderBody"; }
 	virtual void repaint();
-	
+
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
