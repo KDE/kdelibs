@@ -58,7 +58,7 @@ MyAppConfig::MyAppConfig( QWidget *parent, const char *, const QStringList &args
 }
 
 // implementations for the other methods - don't forget to call
-// setChanged( bool ) else the apply button will be disabled and the config of
+// emit changed( bool ) else the apply button will be disabled and the config of
 // your page won't be saved. For the KConfig object you can either use
 // KGlobal::config() (I don't recommend it) or KSimpleConfig( "myapprc" ).
 // I just added a new method to KSettings::Dispatcher that gives you the KConfig
