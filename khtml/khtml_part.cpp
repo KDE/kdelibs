@@ -1796,10 +1796,6 @@ void KHTMLPart::slotFinishedParsing()
 
   d->m_view->restoreScrollBar();
 
-  if ( !m_url.encodedHtmlRef().isEmpty() )
-    if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-       gotoAnchor( m_url.htmlRef() );
-
   checkCompleted();
 }
 
@@ -1987,7 +1983,11 @@ void KHTMLPart::checkCompleted()
   }
 
   setJSDefaultStatusBarText(QString::null);
-
+  
+  if ( !m_url.encodedHtmlRef().isEmpty() )
+    if ( !gotoAnchor( m_url.encodedHtmlRef()) )
+       gotoAnchor( m_url.htmlRef() );
+  
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
