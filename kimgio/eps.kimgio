@@ -1,9 +1,10 @@
 [Image Format]
 Type=EPS
-Header=^%25!PS-Adobe
-Pattern=Postscript Images
+Header=^\%!PS-Adobe
+Pattern=Encapsulated Postscript Images
 Read=true
 Write=true
 Suffices=eps,EPS
-Mimetype=image/postscript
+Mimetype=image/x-eps
 Library=kimg_eps.la
+
