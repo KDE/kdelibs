@@ -1,5 +1,5 @@
 
-SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd rlpr ext filters pics tests
+SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tests
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_includes)
 

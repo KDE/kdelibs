@@ -32,6 +32,7 @@ public:
 
 	enum Mode { LPR, LPRng };
 	Mode mode() const		{ return m_mode; }
+	void setMode(Mode m)	{ m_mode = m; }
 	QString printcapFile();
 	bool isLocalPrintcap()		{ return m_local; }
 	QString baseSpoolDir()		{ return m_spooldir; }
