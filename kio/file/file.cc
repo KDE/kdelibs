@@ -872,11 +872,7 @@ void FileProtocol::listDir( const KURL& url)
     }
 
     DIR *dp = 0L;
-#if defined( __DECCXX) && defined(__linux__)
-    struct dirent64 *ep; // XXX struct dirent *ep;
-#else
     struct dirent *ep;
-#endif
 
     dp = opendir( _path.data() );
     if ( dp == 0 ) {
