@@ -59,90 +59,91 @@ namespace KIO {
      *
      */
     class Job : public QObject {
-	Q_OBJECT
-	
+        Q_OBJECT
+
     protected:
-	    Job();
+        Job();
 
     public:
-	    virtual ~Job() {}
+        virtual ~Job() {}
 
         /**
-	    * Abort job
-	    * This kills all subjobs and deletes the job
+        * Abort job
+        * This kills all subjobs and deletes the job
         */
-	    virtual void kill();
+        virtual void kill();
 
-    	/**
-    	 * @return the error code for this job, 0 if no error
-    	 * Error codes are defined in @ref KIO::Error.
-    	 * Only call this method from the slot connected to @ref result.
-    	 */
-    	int error() { return m_error; }
+        /**
+         * @return the error code for this job, 0 if no error
+         * Error codes are defined in @ref KIO::Error.
+         * Only call this method from the slot connected to @ref result.
+         */
+        int error() { return m_error; }
 
-    	/**
-    	 * @return a string to help understand the error, usually the url
+        /**
+         * @return a string to help understand the error, usually the url
          * related to the error.
-    	 * Only call if @ref error is not 0.
-    	 * This is really internal, better use errorString or errorDialog.
-	     */
+         * Only call if @ref error is not 0.
+         * This is really internal, better use errorString or errorDialog.
+         */
         const QString & errorText() { return m_errorText; }
 
         /**
-       	 * Converts an error code and a non-i18n error message into an
-   	     * error message in the current language. The low level (non-i18n)
-       	 * error message (usually a url) is put into the translated error
+         * Converts an error code and a non-i18n error message into an
+         * error message in the current language. The low level (non-i18n)
+         * error message (usually a url) is put into the translated error
          * message using %1.
-     	 * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
-   	     *   i18n( "Could not read\n%1" ).arg( errortext );
-       	 * Use this to display the error yourself, but for a dialog box use @ref KIO::ErrorDialog.
-   	     */
+         * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
+         *   i18n( "Could not read\n%1" ).arg( errortext );
+         * Use this to display the error yourself, but for a dialog box 
+         * use @ref KIO::ErrorDialog.
+         */
         QString errorString();
 
         /**
          * Display a dialog box to inform the user of the error given by
          * this job.
-	     * Only call if @ref error is not 0, and only in the slot connected
-	     * to @ref result.
-   	     */
+         * Only call if @ref error is not 0, and only in the slot connected
+         * to @ref result.
+         */
         void showErrorDialog();
 
     signals:
-	    /**
-    	 * Emitted when the job is finished, in any case (completed, canceled,
-	     * failed...). Use @ref error to know the result.
-    	 */
-	    void result( KIO::Job *job );
+        /**
+         * Emitted when the job is finished, in any case (completed, canceled,
+         * failed...). Use @ref error to know the result.
+         */
+        void result( KIO::Job *job );
 
     protected slots:
-    	/**
-	     * Called whenever a subjob finishes.
-    	 * Default implementation checks for errors and propagates
-    	 * to parent job, then calls @ref removeSubjob.
-    	 * Override if you don't want subjobs errors to be propagated.
-    	 */
+        /**
+         * Called whenever a subjob finishes.
+         * Default implementation checks for errors and propagates
+         * to parent job, then calls @ref removeSubjob.
+         * Override if you don't want subjobs errors to be propagated.
+         */
         virtual void slotResult( KIO::Job *job );
 
-	
+    
     protected:
         /**
-	     * Add a job that has to be finished before a result
-    	 * is emitted. This has obviously to be called before
+         * Add a job that has to be finished before a result
+         * is emitted. This has obviously to be called before
          * the finish signal is emitted by the slave.
-    	 */
+         */
         virtual void addSubjob( Job *job );
 
-	    /**
-    	 * Mark a sub job as beeing done. If it's the last to
-	     * wait on the job will emit a result - jobs with
-    	 * two steps might want to override slotResult
+        /**
+         * Mark a sub job as beeing done. If it's the last to
+         * wait on the job will emit a result - jobs with
+         * two steps might want to override slotResult
          * in order to avoid calling this method.
-    	 */
-    	virtual void removeSubjob( Job *job );
+         */
+        virtual void removeSubjob( Job *job );
 
-    	QList<Job> subjobs;
-    	int m_error;
-    	QString m_errorText;
+        QList<Job> subjobs;
+        int m_error;
+        QString m_errorText;
     };
 
     /**
@@ -152,7 +153,7 @@ namespace KIO {
      * that manage subjobs but aren't scheduled directly.
      */
     class SimpleJob : public KIO::Job {
-	Q_OBJECT
+    Q_OBJECT
 
     public:
         SimpleJob(const KURL& url, int command, const QByteArray &packedArgs);
@@ -163,67 +164,67 @@ namespace KIO {
 
         /**
          * Abort job
-    	 * Reimplemented (to cancel the job in the scheduler as well)
+         * Reimplemented (to cancel the job in the scheduler as well)
          */
         virtual void kill();
 
         /**
          * @internal
          * Called by the scheduler when a slave gets to
-    	 * work on this job.
-    	 **/
+         * work on this job.
+         **/
         virtual void start( Slave *slave );
-	
+    
         /**
          * @internal
          * Slave in use by this job
          */
-    	Slave *slave() { return m_slave; }
+        Slave *slave() { return m_slave; }
 
 
     protected slots:
         /**
-	     * Called when the slave marks the job
-    	 * as finished.
-    	 */
+         * Called when the slave marks the job
+         * as finished.
+         */
         virtual void slotFinished( );
 
         virtual void slotError( int , const QString & );
 
     protected:
-    	Slave * m_slave;
-	    QByteArray m_packedArgs;
+        Slave * m_slave;
+        QByteArray m_packedArgs;
 
     private:
-    	KURL m_url;
-	    int m_command;
+        KURL m_url;
+        int m_command;
     };
 
     // Stat Job
     class StatJob : public SimpleJob {
 
-	Q_OBJECT
+    Q_OBJECT
 
     public:
-    	StatJob(const KURL& url, int command, const QByteArray &packedArgs);
+        StatJob(const KURL& url, int command, const QByteArray &packedArgs);
 
-    	/**
-	     * Call this in the slot connected to @ref result,
-    	 * and only after making sure no error happened.
-	     */
-    	const UDSEntry & statResult() const { return m_statResult; }
+        /**
+         * Call this in the slot connected to @ref result,
+         * and only after making sure no error happened.
+         */
+        const UDSEntry & statResult() const { return m_statResult; }
 
         /**
          * Called by the scheduler when a slave gets to
          * work on this job.
-    	 */
+         */
         virtual void start( Slave *slave );
-	
+    
     protected slots:
         void slotStatEntry( const KIO::UDSEntry & entry );
 
     protected:
-	    UDSEntry m_statResult;
+        UDSEntry m_statResult;
     };
 
     /**
@@ -236,21 +237,21 @@ namespace KIO {
     Q_OBJECT
 
     public:
-	    TransferJob(const KURL& url, int command,
-	                const QByteArray &packedArgs,
-	                const QByteArray &_staticData = QByteArray());
+        TransferJob(const KURL& url, int command,
+                    const QByteArray &packedArgs,
+                    const QByteArray &_staticData = QByteArray());
 
-    	virtual void start(Slave *slave);
-	
-	    /**
-    	 * Flow control. Suspend data processing from the slave.
-	     */
-    	void suspend();
-	
-    	/**
-	     * Flow control. Resume data processing from the slave.
-    	 */
-	    void resume();
+        virtual void start(Slave *slave);
+    
+        /**
+         * Flow control. Suspend data processing from the slave.
+         */
+        void suspend();
+    
+        /**
+         * Flow control. Resume data processing from the slave.
+         */
+        void resume();
 
     signals:
         /**
@@ -281,30 +282,30 @@ namespace KIO {
 
     // Mimetype Job
     class MimetypeJob : public TransferJob {
-	Q_OBJECT
+    Q_OBJECT
 
     public:
-    	MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs);
+        MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs);
 
-	    /**
-    	 * Call this in the slot connected to @ref result,
-	     * and only after making sure no error happened.
-    	 */
- 	    QString mimetype() const { return m_mimetype; }
+        /**
+         * Call this in the slot connected to @ref result,
+         * and only after making sure no error happened.
+         */
+         QString mimetype() const { return m_mimetype; }
 
         /**
          * Called by the scheduler when a slave gets to
-    	 * work on this job.
-	     */
-    	virtual void start( Slave *slave );
-	
+         * work on this job.
+         */
+        virtual void start( Slave *slave );
+    
     protected slots:
         virtual void slotData( KIO::Job *, const QByteArray &data);
         void slotMimetype( const QString &mimetype );
         virtual void slotFinished( );
 
     protected:
-	    QString m_mimetype;
+        QString m_mimetype;
     };
 
     /**
@@ -322,9 +323,9 @@ namespace KIO {
         void slotDataReq( KIO::Job *, QByteArray &data);
 
     protected slots:
-    	/**
-	     * Called whenever a subjob finishes.
-	     */
+        /**
+         * Called whenever a subjob finishes.
+         */
         virtual void slotResult( KIO::Job *job );
 
     protected:
@@ -346,24 +347,24 @@ namespace KIO {
     };
 
     class ListJob : public SimpleJob {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
     public:
         ListJob(const KURL& url, bool recursive = false, QString prefix = QString::null);
 
         virtual void start( Slave *slave );
 
     signals:
-    	void entries( KIO::Job *, const KIO::UDSEntryList& );
+        void entries( KIO::Job *, const KIO::UDSEntryList& );
 
     protected slots:
         virtual void slotResult( KIO::Job *job );
-	    void slotListEntries( const KIO::UDSEntryList& list );
-	    void gotEntries( KIO::Job *, const KIO::UDSEntryList& );
+        void slotListEntries( const KIO::UDSEntryList& list );
+        void gotEntries( KIO::Job *, const KIO::UDSEntryList& );
 
     private:
-    	bool recursive;
-	    QString prefix;
+        bool recursive;
+        QString prefix;
     };
 
     struct CopyInfo
@@ -378,10 +379,10 @@ namespace KIO {
 
     // Copy or Move
     class CopyJob : public Job {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
     public:
-    	CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
+        CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
 
     protected:
         void startNextJob();
@@ -400,13 +401,13 @@ namespace KIO {
         virtual void slotResult( KIO::Job *job );
 
     private:
-    	bool m_move;
-	    enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
-    	enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
+        bool m_move;
+        enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
+        enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
                STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES } state;
-	    long int m_totalSize;
-    	QValueList<CopyInfo> files;
-	    QValueList<CopyInfo> dirs;
+        long int m_totalSize;
+        QValueList<CopyInfo> files;
+        QValueList<CopyInfo> dirs;
         KURL::List m_srcList;
         bool m_bCurrentSrcIsDir;
         KURL m_dest;
@@ -423,7 +424,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-	DeleteJob( const KURL::List& src, bool shred );
+    DeleteJob( const KURL::List& src, bool shred );
 
     protected:
         void startNextJob();
