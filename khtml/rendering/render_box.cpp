@@ -72,6 +72,11 @@ void RenderBox::setStyle(RenderStyle *style)
 {
     RenderObject::setStyle(style);
 
+    // ### move this into the parser
+    // if only horizontal position was defined, vertical should be 50%
+    if(!style->backgroundXPosition().isVariable() && style->backgroundYPosition().isVariable())
+        m_style->setBackgroundYPosition(Length(50, Percent));
+
     switch(style->position())
     {
     case ABSOLUTE:
@@ -225,37 +230,41 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         int sy = 0;
 
         //hacky stuff
-        EBackgroundRepeat bgr = m_style->backgroundRepeat();
-	bool scroll = m_style->backgroundAttachment();
-        if ( isHtml() && firstChild() && !m_bgImage ) {
-            bgr = firstChild()->style()->backgroundRepeat();
-            scroll = firstChild()->style()->backgroundAttachment();
-	}
+        RenderStyle* my_style = m_style;
+        if ( isHtml() && firstChild() && !m_bgImage )
+            my_style = firstChild()->style();
 
 	int cx = _tx;
 	int cy = clipy;
 	int cw = w;
 	int ch = cliph;
-        switch(bgr) {
+
+        // CSS2 chapter 14.2.1
+        int pw = m_width - my_style->borderRightWidth() - my_style->borderLeftWidth();
+        int ph = m_height - my_style->borderTopWidth() - my_style->borderBottomWidth();
+        switch(my_style->backgroundRepeat()) {
         case NO_REPEAT:
             cw = QMIN(bg->pixmap_size().width(), w);
-	    cx = _tx + style()->backgroundXPosition().minWidth((w - cw)/2);
+	    cx = _tx + my_style->backgroundXPosition().minWidth(pw)
+                 - my_style->backgroundXPosition().minWidth(cw);
             /* nobreak */
         case REPEAT_X:
             ch = QMIN(bg->pixmap_size().height(), h);
-	    cy = _ty + style()->backgroundYPosition().minWidth((h -ch)/2);
+	    cy = _ty + my_style->backgroundYPosition().minWidth(ph)
+                 - my_style->backgroundYPosition().minWidth(ch);
             break;
         case REPEAT_Y:
             cw = QMIN(bg->pixmap_size().width(), w);
-	    cx = _tx + style()->backgroundXPosition().minWidth((w - cw)/2);
+	    cx = _tx + my_style->backgroundXPosition().minWidth(pw)
+                 - my_style->backgroundXPosition().minWidth(cw);
         case REPEAT:
             // make sure that the pixmap is tiled correctly
             // because we clip the tiling to the visible area (for speed reasons)
-            if(bg->pixmap_size().height() && scroll)
+            if(bg->pixmap_size().height() && my_style->backgroundAttachment())
                 sy = (clipy - _ty) % bg->pixmap_size().height();
             break;
         }
-        if( !scroll ) {
+        if(  !my_style->backgroundAttachment() ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
 	    if( isHtml() ) {
@@ -591,7 +600,7 @@ void RenderBox::calcWidth()
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
             if(m_width < m_minWidth) m_width = m_minWidth;
-            
+
             if (isFloating())
             {
                 calcMinMaxWidth();
