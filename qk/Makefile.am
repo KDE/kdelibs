@@ -22,6 +22,8 @@ noinst_LTLIBRARIES = libqk.la
 
 include_HEADERS = qaction.h qdom.h qxml.h qiconview.h qcanvas.h qpolygonscanner.h
 libqk_la_SOURCES = qaction.cpp qdom.cpp qxml.cpp qcanvas.cpp moc_qiconview.cpp qpolygonscanner.cpp
+libqk_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -no-undefined
+libqk_la_LIBADD = $(LIB_QT)
 
 METASOURCES = AUTO
 
