@@ -283,6 +283,7 @@ public:
 protected:
     void ensureRows( int numRows );
     void clearGrid();
+    bool emptyRow(int rowNum);
 
     friend class TableSectionIterator;
 };
