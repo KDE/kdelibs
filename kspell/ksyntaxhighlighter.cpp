@@ -277,8 +277,8 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
     connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
 	     this, SLOT( slotDictionaryChanged() ));
     d->spell = spell;
-    QStringList l = KSpellingHighlighter::personalWords();
-    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it ) {
+    const QStringList l = KSpellingHighlighter::personalWords();
+    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->spell->addPersonal( *it );
     }
     connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
@@ -306,7 +306,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	    }
 	    d->autoDict.replace( word, NotOkay );
 	}
-	return true && d->active;
+	return d->active;
     }
     if ( !d->sDict.isEmpty() && d->sDict[word] == Okay ) {
 	if ( d->autoReady && !d->autoDict[word] ) {
