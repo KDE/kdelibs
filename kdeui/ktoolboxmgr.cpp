@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.7  1998/05/07 16:50:06  radej
+ // I caught that mouseRelease without blocking (Yeah!)
+ //
  // Revision 1.6  1998/05/05 16:52:45  radej
  // Bugs...
  //
@@ -105,7 +108,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   Window wroot, wchild;
   int trash;
   
-  debug("Doing move...");
+  //debug("Doing move...");
 
   working=true;
   mode = Moving;
@@ -242,7 +245,7 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   Window wroot, wchild;
   int trash;
   
-  debug("Doing resize...");
+  //debug("Doing resize...");
 
   working=true;
   dynamic = _dynamic;
@@ -373,7 +376,7 @@ void KToolBoxManager::stop ()
   mode=Nothing;
 
   qApp->exit_loop();
-  debug ("stopped");
+  //debug ("stopped");
 }
 
 void KToolBoxManager::setGeometry (int index)
