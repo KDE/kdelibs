@@ -123,7 +123,7 @@ class KAboutContainerBase : public QWidget
   public:
     KAboutContainerBase( int layoutType, QWidget *parent = 0, char *name = 0 );
     virtual void show( void );
-    virtual QSize sizeHint( void );
+    virtual QSize sizeHint( void ) const;
 
     void setTitle( const QString &title );
     void setImage( const char *fileName );
@@ -196,7 +196,7 @@ class KAboutContributor : public QFrame
     QString getURL( void );
     QString getWork( void );
 
-    virtual QSize sizeHint( void );
+    virtual QSize sizeHint( void ) const;
 
   protected:
     virtual void fontChange( const QFont &oldFont );

@@ -39,6 +39,7 @@
 #include <kurllabel.h>
 
 template class QArray<QWidget*>;
+template class std::list<KAboutContributor*>;
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3
@@ -257,7 +258,7 @@ void KAboutContributor::fontChange( const QFont &/*oldFont*/ )
 }
 
 
-QSize KAboutContributor::sizeHint( void )
+QSize KAboutContributor::sizeHint( void ) const
 {
   return( minimumSizeHint() );
 }
@@ -419,7 +420,7 @@ void KAboutContainerBase::show( void )
 }
 
 
-QSize KAboutContainerBase::sizeHint( void )
+QSize KAboutContainerBase::sizeHint( void ) const
 {
   return( minimumSize() );
 }
