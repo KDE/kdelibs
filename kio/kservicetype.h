@@ -47,7 +47,7 @@ class KServiceType : public KSycocaEntry
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef QValueList<KService::Ptr> List;
+  typedef QValueList<KServiceType::Ptr> List;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
