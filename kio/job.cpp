@@ -1173,8 +1173,9 @@ void ListJob::start(Slave *slave)
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_move(move), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-      m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_dest(dest),
-      m_bAutoSkip( false ), m_bOverwriteAll( false )
+    m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
+    m_srcList(src), m_srcListCopy(src), m_dest(dest),
+    m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
@@ -1282,7 +1283,7 @@ void CopyJob::startNextJob()
         allDirNotify.FilesAdded( url );
 
         if ( m_move )
-          allDirNotify.FilesRemoved( m_srcList );
+          allDirNotify.FilesRemoved( m_srcListCopy );
 
         emit result(this);
         delete this;

@@ -628,7 +628,8 @@ namespace KIO {
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
-        KURL::List m_srcList;
+        KURL::List m_srcList; // is emptied while deleting
+        KURL::List m_srcListCopy;
         bool m_bCurrentSrcIsDir;
         KURL m_dest;
         KURL m_currentDest;
