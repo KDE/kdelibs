@@ -32,6 +32,8 @@
 #include <X11/Xlibint.h>
 #include <X11/Xmd.h>
 
+typedef Bool X11Bool;
+
 #include "netwm_p.h"
 
 
