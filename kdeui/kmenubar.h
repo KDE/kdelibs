@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.11  1998/11/15 09:22:59  garbanzo
+//Clean up kmenubar.h
+//
 //Revision 1.10  1998/11/11 14:32:12  radej
 //sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
 //
@@ -146,6 +149,7 @@ class KMenuBar : public QFrame
 
  protected slots:
    void ContextCallback(int index);
+   void slotSysMenu();
    
    void slotHighlighted (int id);
    void slotHotSpot (int i);

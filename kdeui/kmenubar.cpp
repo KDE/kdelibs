@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.48  1998/11/22 13:35:46  radej
+// sven: IMPROVED Mac menubar: Accelerators, SystemMenu, look...
+//
 // Revision 1.47  1998/11/21 20:28:39  ettrich
 // yet another small fix
 //
@@ -113,6 +116,7 @@
 // Revision 1.26  1998/05/19 14:10:23  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
 
+// Revision 1.25  1998/05/07 23:13:09  radej
 // Moving with KToolBoxManager
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
@@ -136,6 +140,7 @@ static QPixmap* miniGo = 0;
 
   title = 0;
 
+{
   Parent = parent;        // our father
   oldWFlags = getWFlags();
   menu = new _menuBar (frame);
@@ -159,13 +164,19 @@ static QPixmap* miniGo = 0;
 int KMenuBar::idAt( int index )
 {
   return menu->idAt( index );
-    return menu->heightForWidth( max_width - 9);
+}
 
 int KMenuBar::heightForWidth ( int max_width ) const
 {
   return menu->heightForWidth( max_width - 9);
 }
 
+{
+                     menu->heightForWidth(width()-hwidth));
+    frame->setGeometry(0, 0, width(), height());
+    //menu->resize(frame->width(), frame->height());
+  handle->setGeometry(0,0,hwidth,height());
+  if (height() != heightForWidth(width()))
 
      frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()));
      menu->resize(frame->width(), frame->height());
@@ -204,9 +215,6 @@ void KMenuBar::ContextCallback( int )
 	break;
    }
 
-static bool standalone_menubar = FALSE;
-
-
   handle->repaint (false);
 }
   context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
@@ -228,11 +236,14 @@ static bool standalone_menubar = FALSE;
       KConfigGroupSaver saver(config, "Menubar");
       if (config->readEntry("position") == "TopOfScreen") {
 	  int verticalOffset = config->readNumEntry("verticalOffset", 0);
-	  standalone_menubar = TRUE;
-	  setMenuBarPos(Floating);
-	  standalone_menubar = FALSE;
-	  QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
-	  setGeometry(r.x(),r.y()-3+verticalOffset, r.width()-6, heightForWidth(r.width()));
+          standalone_menubar = TRUE;
+          Parent->installEventFilter(this); // to show menubar
+          handle->removeEventFilter(this);
+          handle->hide();
+          QPixmap px(KWM::miniIcon(Parent->winId()));
+          if (!px.isNull())
+            menu->insertItem(px, 0, this, SLOT(slotSysMenu()), -2, 0);
+
       }
   }
 
@@ -373,9 +384,21 @@ void KMenuBar::closeEvent (QCloseEvent *e)
 void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
 }
+
+  if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
+bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
+    setMenuBarPos(Floating);
+    QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
+    setGeometry(r.x(),(r.y()-1)<0?0:r.y()-1, r.width(), // check panel top
+                heightForWidth(r.width()));
+    show();
+    Parent->removeEventFilter(this); //One time only
+    //bool aha = isVisible(); // did app enable show?
+      setMenuBarPos(FloatingSystem);
       Parent->removeEventFilter(this); //One time only
       return false;
   }
+  
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
@@ -554,6 +577,9 @@ void KMenuBar::leaveEvent (QEvent *e){
 void KMenuBar::enableMoving(bool flag)
 {
   moving = flag;
+  if (position == Floating && standalone_menubar == true)
+    return; // Ignore positioning of Mac menubar
+  
     if (position == FloatingSystem && standalone_menubar == true) {
 	return; // Ignore positioning of Mac menubar
      if (mpos == Floating)
@@ -569,8 +595,8 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, FALSE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	if (standalone_menubar)
-	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::standaloneMenuBar);
+        if (standalone_menubar)
+	    KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
 	else
 	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
@@ -583,8 +609,16 @@ void KMenuBar::enableMoving(bool flag)
 	  s.append(" [menu]");
 	  setCaption(s);
 	}
-	setFrameStyle( NoFrame);
-	menu->setFrameStyle( NoFrame) ;
+        setFrameStyle( NoFrame);
+        if (standalone_menubar)
+        {
+          if (style() == MotifStyle)
+            menu->setFrameStyle(Panel | Raised);
+          else
+            menu->setFrameStyle(WinPanel | Raised) ;
+        }
+        else
+          menu->setFrameStyle( NoFrame) ;
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 		*miniGo = px;
 	    show();
@@ -674,7 +708,13 @@ int KMenuBar::insertItem( const char *text, QPopupMenu *popup,
   return menu->insertItem(text, id, index);
 }
 int KMenuBar::insertItem( const QString& text, QPopupMenu *popup,
-
+                          int id, int index)
+{
+  return menu->insertItem(text, popup, id, index);
+}
+/* Later - should be virtual and I can't do it right now - sven
+int KMenuBar::insertItem (const QPixmap &pixmap, const QObject *receiver,
+                          const char *member, int accel)
 {
   return->menu->insertItem (pixmap, receiver, member, accel);
 }
@@ -731,6 +771,18 @@ void KMenuBar::slotActivated (int id)
 {
   emit activated(id);
 }
+}
+
+void KMenuBar::slotSysMenu()
+{
+  QString x,y;
+  x.setNum(9);
+  y.setNum(pos().y()+height());
+  while (x.length()<4)
+    x.prepend("0");
+  while (y.length()<4)
+    y.prepend("0");
+  KWM::sendKWMCommand(QString("kpanel:go")+x+y);
 
 void KMenuBar::slotHighlighted (int id)
 {
