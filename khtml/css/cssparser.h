@@ -166,7 +166,8 @@ public:
 	    LENGTH    = 0x0008,
 	    ANGLE     = 0x0010,
 	    TIME      = 0x0020,
-	    FREQUENCY = 0x0040
+	    FREQUENCY = 0x0040,
+	    NONNEGATIVE = 0x0080
 	};
 
 	/* called by parseValue, parses numbers+units */

@@ -1549,6 +1549,10 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_PADDING_RIGHT:        //   Which is defined as
     case CSS_PROP_PADDING_BOTTOM:       //   <length> | <percentage>
     case CSS_PROP_PADDING_LEFT:         ////
+    {
+        parsedValue = parseUnit(curP, endP, LENGTH | PERCENT|NONNEGATIVE);
+        break;
+    }
     case CSS_PROP_TEXT_INDENT:          // <length> | <percentage> | inherit
     case CSS_PROP_MIN_HEIGHT:           // <length> | <percentage> | inherit
     case CSS_PROP_MIN_WIDTH:            // <length> | <percentage> | inherit
@@ -2271,7 +2275,8 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     bool ok;
     float value = s.toFloat(&ok);
-    if(!ok) return 0;
+    if ( !ok || (value < 0 && (allowedUnits & NONNEGATIVE)) )
+	return 0;
 
     if(split > endP) // no unit
     {
