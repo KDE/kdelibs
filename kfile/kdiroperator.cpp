@@ -631,7 +631,7 @@ void KDirOperator::setView( KFile::FileView view )
 	        v = new KFileIconView( 0L, "simple view" );
 	    else
 	        v = new KFileDetailView( 0L, "detail view" );
-	    
+	
             KFilePreview *tmp = new KFilePreview(v, this, "preview");
            tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
             tmp->setPreviewWidget(myPreview, url());
@@ -708,7 +708,8 @@ void KDirOperator::setMode(KFile::Mode m)
 
     myMode = m;
 
-    dir->setDirOnlyMode( ( myMode == KFile::Directory ) );
+    dir->setDirOnlyMode( myMode & KFile::Directory &&
+			 !(myMode & (KFile::File | KFile::Files)) );
 
     // reset the view with the different mode
     setView( static_cast<KFile::FileView>(viewKind) );
