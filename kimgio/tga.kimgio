@@ -1,6 +1,6 @@
 [Image Format]
 Type=TGA
-Header=^\x01\x01[\x02|\x0a]\x01\x01\x01\x01\x01\x01\x01\x01\x01
+Header=^.\x01[\x01-\x03\x09-\x0b]\x01{3}.[\x01\x18]
 Name=Truevision Targa Image
 Name[ar]=صورة Truevision Targa
 Name[az]=Truevision Targa Rəsmi
