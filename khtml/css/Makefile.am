@@ -48,7 +48,7 @@ EXTRA_DIST = parser.y
 
 parser: $(srcdir)/parser.y
 	cd $(srcdir); \
-	$(YACC) -d -p cssyy parser.y && mv parser.tab.c parser.cpp; \
+	$(YACC) -v -d -p cssyy parser.y && mv parser.tab.c parser.cpp; \
 	if test -f parser.tab.h; then \
 	if cmp -s parser.tab.h parser.h; then rm -f parser.tab.h; \
 	else mv parser.tab.h parser.h; fi \
