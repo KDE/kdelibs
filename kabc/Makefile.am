@@ -26,7 +26,7 @@ kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la $(LIB_KAB)
 kab2kabc_SOURCES = kab2kabc.cpp
 
-check_PROGRAMS = testkabc testkabcdlg testdistlist
+check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabc_LDADD = libkabc.la
@@ -39,6 +39,14 @@ testkabcdlg_SOURCES = testkabcdlg.cpp
 testdistlist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testdistlist_LDADD = libkabc.la
 testdistlist_SOURCES = testdistlist.cpp
+
+bigread_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+bigread_LDADD = libkabc.la
+bigread_SOURCES = bigread.cpp
+
+bigwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+bigwrite_LDADD = libkabc.la
+bigwrite_SOURCES = bigwrite.cpp
 
 autostart_DATA = kab2kabc.desktop
 autostartdir = $(prefix)/share/autostart

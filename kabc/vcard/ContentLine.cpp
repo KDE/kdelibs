@@ -211,7 +211,7 @@ ContentLine::_parse()
 
 	valueType_ = EntityTypeToValueType(entityType_);
 	
-	kdDebug(5710) << "valueType: " << valueType_ << endl;
+//	kdDebug(5710) << "valueType: " << valueType_ << endl;
 	
 	switch (valueType_) {
 		

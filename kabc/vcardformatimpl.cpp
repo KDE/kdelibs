@@ -279,8 +279,8 @@ void VCardFormatImpl::addTextValue( VCard *v, EntityType type, const QString &tx
 void VCardFormatImpl::addDateValue( VCard *vcard, EntityType type,
                                     const QDate &date )
 {
-  kdDebug(5700) << "VCardFormatImpl::addDateValue(): " << date.toString()
-                << endl;
+//  kdDebug(5700) << "VCardFormatImpl::addDateValue(): " << date.toString()
+//                << endl;
 
   if ( !date.isValid() ) return;
 

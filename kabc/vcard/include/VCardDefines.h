@@ -26,7 +26,11 @@
 
 #include <kdebug.h>
 
+#ifdef VCARD_DEBUG
 #define vDebug(a) kdDebug(5710) << a << endl;
+#else
+#define vDebug(a)
+#endif
 
 #if 0
 #ifndef NDEBUG
