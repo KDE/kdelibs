@@ -79,8 +79,6 @@ public:
 public:  
   QStringList m_allDirectories; // A list of all the directories that we touch
 
-  QStringList m_desktopSystemDirs;
-
   QStringList m_defaultDataDirs;
   QStringList m_defaultAppDirs;
   QStringList m_defaultDirectoryDirs;
@@ -118,8 +116,8 @@ public:
   appsInfo *m_appsInfo; // appsInfo for current menu
   QPtrList<appsInfo> m_appsInfoStack; // All applicable appsInfo for current menu
   QDict<appsInfo> m_appsInfoDict; // menu -> appsInfo
+  QDict<KService> m_usedAppsDict; // all applications that have been allocated
   
-  QString m_desktopUserDir;
   QDomDocument m_doc;
   SubMenu *m_rootMenu;
   SubMenu *m_currentMenu;
@@ -145,7 +143,7 @@ private:
   /**
    * Build application indices
    */
-  void buildApplicationIndex();
+  void buildApplicationIndex(bool unusedOnly);
   
   /**
    * Create a appsInfo frame for this menu
@@ -219,6 +217,11 @@ private:
    * @see allDirectories()
    */
   void registerFile(const QString &file);
+
+  /**
+   * Fill m_usedAppsDict with all applications found in menu
+   */
+  void markUsedApplications(VFolderMenu::SubMenu *menu);
 
   /**
    * Register @p directory

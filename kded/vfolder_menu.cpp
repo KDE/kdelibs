@@ -295,7 +295,7 @@ VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService *n
 }
 
 
-VFolderMenu::VFolderMenu()
+VFolderMenu::VFolderMenu() : m_usedAppsDict(797)
 {
    m_rootMenu = 0;
    initDirs();
@@ -346,16 +346,26 @@ VFolderMenu::addApplication(const QString &id, KService *service)
 }
 
 void
-VFolderMenu::buildApplicationIndex()
+VFolderMenu::buildApplicationIndex(bool unusedOnly)
 {
    QDictIterator<appsInfo> it( m_appsInfoDict );
    for( ; it.current(); ++it )
    {
       appsInfo *info = it.current();
+      info->dictCategories.clear();
       for(QDictIterator<KService> it( info->applications );
-          it.current(); ++it )
+          it.current(); )
       {
          KService *s = it.current();
+         QDictIterator<KService> tmpIt = it;
+         ++it;
+         if (unusedOnly && m_usedAppsDict.find(s->menuId()))
+         {
+            // Remove and skip this one
+            info->applications.remove(tmpIt.currentKey());
+            continue;
+         }
+         
          QStringList cats = s->categories();
          for(QStringList::ConstIterator it2 = cats.begin();
              it2 != cats.end(); ++it2)
@@ -691,24 +701,6 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
 void
 VFolderMenu::initDirs()
 {
-   QString home = QDir::homeDirPath();
-    
-   m_desktopUserDir = QFile::decodeName(getenv("DESKTOP_USER_DIR"));
-   if (m_desktopUserDir.isEmpty())
-      m_desktopUserDir = home+"/.desktop/";
-   if (!m_desktopUserDir.endsWith("/"))
-      m_desktopUserDir += "/";
-
-   QString tmp = QFile::decodeName(getenv("DESKTOP_DIRS"));
-   m_desktopSystemDirs = QStringList::split(':', tmp);
-   for(QStringList::Iterator it = m_desktopSystemDirs.begin();
-       it != m_desktopSystemDirs.end();
-       ++it)
-   {
-      if (!(*it).endsWith("/"))
-         *it += "/";
-   }
-
    m_defaultDataDirs = QStringList::split(':', KGlobal::dirs()->kfsstnd_prefixes());
    QString localDir = m_defaultDataDirs.first();
    m_defaultDataDirs.remove(localDir); // Remove local dir
@@ -1319,6 +1311,19 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
    m_currentMenu = parentMenu;
 }
 
+void
+VFolderMenu::markUsedApplications(VFolderMenu::SubMenu *menu)
+{
+   for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
+   {
+      markUsedApplications(subMenu);
+   }
+   for(QDictIterator<KService> it(menu->items); it.current(); ++it)
+   {
+      m_usedAppsDict.replace(it.current()->menuId(), it.current());
+   }
+}
+
 VFolderMenu::SubMenu *
 VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 {
@@ -1341,7 +1346,13 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 
       if (pass == 0)
       {
-         buildApplicationIndex();
+         buildApplicationIndex(false);
+      }
+      if (pass == 1)
+      {
+         markUsedApplications(m_rootMenu);
+
+         buildApplicationIndex(true);
       }
    }
    

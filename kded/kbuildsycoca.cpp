@@ -79,7 +79,7 @@ static KSycocaEntryListList *g_allEntries = 0;
 static QStringList *g_changeList = 0;
 static QStringList *g_allResourceDirs = 0;
 static bool g_changed = false;
-
+static KSycocaEntry::List g_tempStorage;
 static VFolderMenu *g_vfolder = 0;
 
 static const char *cSycocaPath = 0;
@@ -188,7 +188,6 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
    {
       timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file, true);
    }
-   bool skip = false;
    KSycocaEntry* entry = 0;
    if (g_allEntries)
    {
@@ -206,8 +205,6 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
          else if (g_factory == g_bsf)
          {
             entry = g_entryDict->find(file);
-            if (!entry)
-               skip = true;
          }
          else
          {
@@ -230,7 +227,7 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
       }
    }
    g_ctimeInfo->addCTime(file, timeStamp );
-   if (!entry && !skip)
+   if (!entry)
    {
       // Create a new entry
       entry = g_factory->createEntry( file, g_resource );
@@ -239,6 +236,8 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
    {
       if (addToFactory)
          g_factory->addEntry( entry, g_resource );
+      else
+         g_tempStorage.append(entry);
       return entry;
    }
    return 0;

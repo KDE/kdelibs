@@ -10,6 +10,14 @@
 	<DefaultDirectoryDirs/>
 
 	<Menu>
+		<Name>Unknown</Name>
+		<Directory>kde-unknown.directory</Directory>
+		<OnlyUnallocated/>
+		<Include>
+			<All/>
+		</Include>
+	</Menu>
+	<Menu>
 		<Name>Development</Name>
 		<Directory>kde-development.directory</Directory>
 		<Include>
