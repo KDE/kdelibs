@@ -13,7 +13,13 @@
  *
  * The file looks like this:
  * <pre>
+ * [!Global!]
+ * appname=executable
+ * friendly=FriendlyNameOfApp
+ *
  * [eventname]
+ * friendly=FriendlyNameOfEvent
+ * description=DescriptionOfEvent
  * sound=/path/to/sound/file
  * presentation=1
  *  ...
