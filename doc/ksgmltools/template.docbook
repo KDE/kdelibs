@@ -1,9 +1,9 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
  <!ENTITY kapp "<application>Kapp</application>">
- <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
- %FDLNotice;
+ <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
  <!ENTITY % addindex "IGNORE">
- <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>
+ <!ENTITY % ents PUBLIC "-//KDE//ENTITIES KDE Application-Variable Entities V1.0//EN">
+ %ents;
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 -->
 
@@ -52,10 +52,6 @@ as Authors, publish date, the abstract, and Keywords -->
      and in the FDL itself on how to use it. -->
 <legalnotice>&FDLNotice;</legalnotice>
 
-<!-- This is a set of Keywords for indexing by search engines.
-Please at least include KDE, the KDE package it is in, the name
- of your application, and a few relevant keywords. -->
-
 <!-- Date and version information of the documentation
 Don't forget to include this last date and this last revision number, we
 need them for translation coordination !
@@ -72,6 +68,10 @@ Please respect the format of the date (DD/MM/YYYY) and of the version
 &kapp; is an application specially designed to do nothing you would ever want.
 </para>
 </abstract>
+
+<!-- This is a set of Keywords for indexing by search engines.
+Please at least include KDE, the KDE package it is in, the name
+ of your application, and a few relevant keywords. -->
 
 <keywordset>
 <keyword>KDE</keyword>
@@ -514,18 +514,7 @@ Translations done by:
 </itemizedlist>
 </para>
 
-<!-- For URL links to common stuff like the one below,
-always use paths like "common/gpl-licence".
-In this path, "common" will be a symbolic link built at "make install" time.
-This link will normally point to $KDEDIR/share/doc/HTML/en/common,
-where "en" should be replaced with the current language. -->
-
-<para>
-This program is licensed under the terms of the <ulink
-url="common/gpl-licence.html">GNU General Public License</ulink>.  The
-documentation is licensed under the terms of the <ulink
-url="common/fdl-licence.html">GNU Free Documentation License.</ulink>
-</para>
+&license-links;
 </chapter>
 
 <![ %addindex; [ &kdedocindex; ]]>
