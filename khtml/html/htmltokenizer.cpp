@@ -516,7 +516,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
                 // Partial support for MS Windows Latin-1 extensions
                 // full list http://www.bbsinc.com/iso8859.html
-                // There may be better equivelants
+                // There may be better equivalents
                 if ( res != QChar::null ) {
                     switch (res.unicode())
                     {
@@ -532,7 +532,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                     }
                 }
             }
-
 
             if ( res != QChar::null ) {
                 checkBuffer();
@@ -902,7 +901,19 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case Value:
             {
-                if( tquote )
+                if ( curchar == '&' )
+                {
+                    ++src;
+
+                    discard = NoneDiscard;
+                    if (pending)
+                        addPending();
+
+                    charEntity = true;
+                    parseEntity(src, dest, true);
+                    break;
+                }
+                else if( tquote )
                 {
                   // additional quote. discard it, and define as end of
                   // attribute

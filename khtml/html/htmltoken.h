@@ -143,7 +143,7 @@ public:
 	    if(i == -1) return 0;
 	    return value(i);
 	}
-    // adds the attribute. If it exists, replaces it.
+    // adds the attribute. If it exists, nothing happens
     void add(const Attribute &attr);
 
     unsigned int length() const;
@@ -155,6 +155,7 @@ public:
     DOMString operator [] (const DOMString &name) const;
     Attribute *operator [] (uint index) const;
 
+private:
     void remove(DOMString name);
     void remove(uint index);
 

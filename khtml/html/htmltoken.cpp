@@ -66,7 +66,7 @@ void Attribute::setName(const DOMString &name)
 	// no HTML attribute, we store the whole name
 	n = name.implementation();
 	n->ref();
-    } 
+    }
 }
 
 void Attribute::setName(const DOMStringImpl *name)
@@ -170,7 +170,7 @@ DOMString AttributeList::value(uint index) const
 }
 
 void AttributeList::add(const Attribute &a)
-{   
+{
     int index = find(a.id);
 
     if( index==-1 || a.id==0 )
@@ -181,17 +181,15 @@ void AttributeList::add(const Attribute &a)
 	    int i = 0;
 	    while(i < (int)_len)
 	    {
-	       nList[i] = _list[i];	
+	       nList[i] = _list[i];
 	       i++;
 	    }
 	    delete [] _list;
-	}	
+	}
 	_list = nList;
-	_list[_len] = a;       
+	_list[_len] = a;
 	_len++;
     }
-    else
-	_list[index].setValue(a.val());
 }
 
 unsigned int AttributeList::length() const
@@ -256,7 +254,7 @@ void AttributeList::remove(uint index)
     uint i = 0;
     while(i < index)
     {
-       nList[i] = _list[i];     
+       nList[i] = _list[i];
        i++;
     }
     while(i < _len-1)
@@ -265,7 +263,7 @@ void AttributeList::remove(uint index)
        i++;
     }
 
-    delete [] _list; 
+    delete [] _list;
     _list = nList;
     _len--;
 }
