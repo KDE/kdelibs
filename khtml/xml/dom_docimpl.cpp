@@ -514,6 +514,7 @@ void DocumentImpl::setTitle(DOMString _title)
     for (int i = 0; i < titleStr.length(); ++i)
         if (titleStr[i] < ' ')
             titleStr[i] = ' ';
+    titleStr = titleStr.stripWhiteSpace();
     titleStr.compose();
     if ( !view()->part()->parentPart() ) {
 	if (titleStr.isNull() || titleStr.isEmpty()) {
