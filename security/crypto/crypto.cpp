@@ -1103,12 +1103,12 @@ void KCryptoConfig::slotCWcompatible() {
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 56 );
+    item->setOn( item->bits() >= 56 && item->bits() <= 128 );
   }
 
   for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
-    item->setOn( item->bits() >= 56 );
+    item->setOn( item->bits() >= 56 && item->bits() <= 128 );
   }
 
   mUseTLS->setChecked(true);
