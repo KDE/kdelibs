@@ -201,11 +201,6 @@ void KComboBox::itemSelected( QListBoxItem* item )
     }
 }
 
-// BC: Remove on the next BCI day !!
-void KComboBox::connectSignals( bool ) const
-{
-}
-
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
     if( m_pEdit && m_pEdit->hasFocus() )

@@ -298,9 +298,6 @@ protected:
     */
     virtual void init();
 
-    /** BC: Remove on the next BCI day !! */
-    virtual void connectSignals( bool handle ) const;
-
     /**
     * Re-implemented for internal reasons.  API not affected.
     *

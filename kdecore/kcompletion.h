@@ -736,11 +736,6 @@ public:
 
 protected:
 
-    /**
-    *  BC:  Remove this on the next and last BCI day!!!
-    */
-    virtual void connectSignals( bool handle ) const = 0;
-
      /**
      * Returns an instance of the completion object.
      *

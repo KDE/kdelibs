@@ -135,11 +135,6 @@ void KLineEdit::makeCompletion( const QString& text )
     setCompletedText( match, marked );
 }
 
-// BC: Remove on the next BCI day !!
-void KLineEdit::connectSignals( bool ) const
-{
-}
-
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     // Filter key-events if EchoMode is normal & completion mode is not set to CompletionNone
