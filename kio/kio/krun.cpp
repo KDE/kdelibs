@@ -563,6 +563,10 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
 
   KProcess * proc = new KProcess;
   *proc << args;
+
+  if (!_service.path().isEmpty())
+     proc->setWorkingDirectory(_service.path());
+
   return runCommandInternal( proc, &_service, _service.exec(), _service.name(), _service.icon() );
 }
 
