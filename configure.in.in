@@ -57,6 +57,17 @@ AC_SUBST_KFSSTND
 
 KDE_CREATE_LIBS_ALIASES
 
+AC_DEFUN([KDE_DO_UIC_AGAIN],
+[
+AC_REQUIRE([AC_PATH_QT_MOC_UIC])
+UIC=$UIC_PATH
+if test x$ac_uic_supports_nounload = xyes; then
+    UIC="$UIC -nounload"
+fi
+AC_SUBST(UIC)
+])
+KDE_DO_UIC_AGAIN
+
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 
