@@ -32,7 +32,6 @@
 #include <kprotocolmanager.h>
 #include <kinstance.h>
 #include <qfile.h>
-#include <kdebug2.h>
 #include "file.h"
 
 using namespace KIO;
