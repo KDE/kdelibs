@@ -25,7 +25,7 @@ using namespace KABC;
 
 extern "C"
 {
-  void *init_kabc_file()
+  KDE_EXPORT void *init_kabc_file()
   {
     return new KRES::PluginFactory<ResourceFile, ResourceFileConfig>();
   }

@@ -33,7 +33,7 @@ using namespace KABC;
 
 extern "C"
 {
-  void *init_kabc_sql()
+  KDE_EXPORT void *init_kabc_sql()
   {
     return new KRES::PluginFactory<ResourceSql,ResourceSqlConfig>();
   }

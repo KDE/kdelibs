@@ -30,7 +30,7 @@ class EvolutionFactory : public KRES::PluginFactoryBase
 
 extern "C"
 {
-  void *init_kabc_evo()
+  KDE_EXPORT void *init_kabc_evo()
   {
     return ( new EvolutionFactory() );
   }

@@ -25,7 +25,7 @@ using namespace KABC;
 
 extern "C"
 {
-  void *init_kabc_net()
+  KDE_EXPORT void *init_kabc_net()
   {
     return new KRES::PluginFactory<ResourceNet, ResourceNetConfig>();
   }

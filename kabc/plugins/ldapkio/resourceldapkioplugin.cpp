@@ -25,7 +25,7 @@ using namespace KABC;
 
 extern "C"
 {
-  void *init_kabc_ldapkio()
+  KDE_EXPORT void *init_kabc_ldapkio()
   {
     return new KRES::PluginFactory<ResourceLDAPKIO, ResourceLDAPKIOConfig>();
   }
