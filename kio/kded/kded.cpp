@@ -204,6 +204,9 @@ int main(int argc, char *argv[])
 
      KCmdLineArgs::addCmdLineOptions( options );
 
+     // WABA: Make sure not to enable session management.
+     putenv("SESSION_MANAGER=");
+
      KInstance *instance = new KInstance(&aboutData);
      (void) instance->config(); // Enable translations.
 
