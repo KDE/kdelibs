@@ -29,16 +29,24 @@
 namespace KIO
 {
 
-/**
- * This class is intended to make it easier to prompt for,
- * cache and retrieve authorization information.
+/*
+ * This class is intended to make it easier to prompt for, cache
+ * and retrieve authorization information.
  *
- * NOTE: If you extend this class to add additional paramters
- * do not forget to overload the stream insertion and extraction
- * operators ("<<" and ">>") so that the added data can be
- * correctly serialzed.
+ * When using this class to cache, retrieve or prompt authentication
+ * information, you only need to set the necessary attributes. For
+ * example, to check whether a password is already cached, the only
+ * required information is the URL of the resource and optionally
+ * whether or not a path match should be performed.  Similarly, to
+ * prompt for password you only need to optionally set the prompt,
+ * username (if already supplied), comment and commentLabel fields.
  *
- * @short Object to hold authorization information
+ * <u>SPECIAL NOTE:</u> If you extend this class to add additional
+ * paramters do not forget to overload the stream insertion and
+ * extraction operators ("<<" and ">>") so that the added data can
+ * be correctly serialzed.
+ *
+ * @short A two way messaging class for passing authentication information.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class AuthInfo
@@ -73,72 +81,127 @@ public:
    void setModified( bool flag ) { modified = flag; }
 
    /**
-    * URL for which authentication is to be stored.  This
-    * field is required when attempting to cache authorization
+    * The URL for which authentication is to be stored.
+    *
+    * This field is required when attempting to cache authorization
     * and retrieve it.  However, it is not needed when prompting
-    * the user for authorization info. [required except when
-    * prompting for password]
+    * the user for authorization info.
+    *
+    * This setting is @p required except when prompting the
+    * user for password.
     */
    KURL url;
 
    /**
-    * The username supplied by the user. [required for caching].
+    * This setting is @p required for caching.
     */
    QString username;
 
    /**
-    * Password specified by the user. [required for caching]
+    * This setting is @p required for caching.
     */
    QString password;
 
    /**
-    * Information to display to user in the password
-    * dialog. [optional]
+    * Information to be displayed when prompting
+    * the user for authentication information.
+    *
+    * <u>NOTE:</u>If this field is not set, the authentication
+    * dialog simply displays the preset default prompt.
+    *
+    * This setting is @p optional and empty by default.
     */
    QString prompt;
 
    /**
-    * Text displayed in the title bar of password
-    * dialog. [optional]
+    * The text to displayed in the title bar of
+    * the password prompting dialog.
+    *
+    * <u>NOTE:</u>If this field is not set, the authentication
+    * dialog simply displays the preset default caption.
+    *
+    * This setting is @p optional and empty by default.
     */
    QString caption;
 
    /**
-    * additional comment to show to user. [optional]
+    * Additional comment to be displayed when prompting
+    * the user for authentication information.
+    *
+    * This field allows you to display a short (no more than
+    * 80 characters) extra description in the password prompt
+    * dialog.  For example, this field along with the
+    * @ref commentLabel can be used to describe the server that
+    * requested the authentication:
+    *
+    *  <pre>
+    *  Server:   Squid Proxy @ foo.com
+    *  </pre>
+    *
+    * where "Server:" is the commetLabel and the rest is the
+    * actual comment.  Note that it is always better to use
+    * the @p commentLabel field as it will be placed properly
+    * in the dialog rather than to include it within the actual
+    * comment.
+    *
+    * This setting is @p optional and empty by default.
     */
    QString comment;
 
    /**
-    * Text to be used as additional comment (eg: "Command:"). [optional]
+    * Descriptive label to be displayed infront of the
+    * comment when prompting the user for password.
+    *
+    * This setting is @p optional and only applicable when
+    * the @ref comment field is also set.
     */
    QString commentLabel;
 
    /**
-    * Field used to store a unique identity so that multiple
-    * passwords can be cached for one resource (URI). [optional]
+    * A unique identifier that allows caching of multiple
+    * passwords for different resources in the same server.
+    *
+    * Mostly this setting is applicable to the HTTP protocol
+    * whose authentication scheme explicitly defines the use
+    * of such a unique key.  However, any protocol that can
+    * generate or supply a unique id can effectively use it
+    * to distinguish passwords.
+    *
+    * If you are instead interested in caching the authentication
+    * info for multiple users to the same server, refer to @ref
+    * multipleUserCaching below.
+    *
+    * This setting is @p optional and not set by default.
     */
    QString realmValue;
 
    /**
-    * Field to store any extra information for protocols that
-    * need it. [optional]
+    * Field to store any extra authentication information for
+    * protocols that need it (ex: http).
+    *
+    * This setting is @p optional and mostly applicable for HTTP
+    * protocol.  However, any protocol can make use of it to
+    * store extra info.
     */
    QString digestInfo;
 
    /**
     * Flag that, if set, indicates whether a path match should be
-    * performed when requesting for cached authorization.  A path
-    * is deemed to be a match if it is equal to or is a subset of the
-    * cached path.  For example, if stored path is /foo/bar and the
-    * request is for the same domain with path set to /foo/bar/acme,
-    * then it is a match.  However, if the path is set to /foo, then
-    * this will result in the request being rejected. [optional]
+    * performed when requesting for cached authorization.
+    *
+    * A path is deemed to be a match if it is equal to or is a subset
+    * of the cached path.  For example, if stored path is "/foo/bar"
+    * and the request's path set to "/foo/bar/acme", then it is a match
+    * whereas it would not if the request's path was set to "/foo".
+    *
+    * This setting is @p optional and false by default.
     */
    bool verifyPath;
 
    /**
     * Flag which if set forces the username field to be read-only.
-    * This is set to false by default. [optional]
+    *
+    * This setting is @p optional and false by default.
     */
    bool readOnly;
 
@@ -154,6 +217,22 @@ public:
     * it has been closed.
     */
     bool keepPassword;
+
+    /**
+     * Flag that allows multiple password caching for different
+     * usernames on a single server.
+     *
+     * Setting this flag allows a user to log into a single server
+     * using different usernames without having to re-supply the
+     * password each time.  For example, if a user has a "johndoe"
+     * and a "janedoe" accounts for a give ftp server, ftp.foobar.com,
+     * then the authentication supplied for both accounts would be
+     * retained when this flag is set where as by default the last
+     * authentication would simply overwrite the previous one.
+     *
+     * This setting is @p optional and by default is set to false.
+     */
+    bool multipleUserCaching;
 
 protected:
     bool modified;
