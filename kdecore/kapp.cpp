@@ -48,7 +48,6 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kglobalsettings.h>
-#include <kipc.h>
 #include <kcrash.h>
 #include <kdatastream.h>
 #include <klibloader.h>
@@ -106,6 +105,8 @@ const int XKeyRelease = KeyRelease;
 #ifdef KeyPress
 #undef KeyPress
 #endif
+
+#include <kipc.h>
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
