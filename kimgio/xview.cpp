@@ -87,8 +87,7 @@ void kimgio_xv_write( QImageIO *imageio )
 {
 	QIODevice& f = *( imageio->ioDevice() );
 
-	if ( !f.open( IO_WriteOnly ) )
-		return;
+	// Removed "f.open(...)" and "f.close()" (tanghus)
 
 	const QImage& image = imageio->image();
 	int w = image.width(), h = image.height();
@@ -147,5 +146,5 @@ void kimgio_xv_write( QImageIO *imageio )
 		f.writeBlock( (const char*)buffer, w );
 	}
 
-	f.close();
+	imageio->setStatus( 0 );
 }
