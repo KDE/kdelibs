@@ -158,11 +158,18 @@ public:
   void setPopup (QPopupMenu *p);
 
   /**
-   * Give this button a delayed popup menu.  There will be a slight
-   * delay when you press the button.
+   * Gives this button a delayed popup menu.
    *
-   * @param p The new popup menu
-   * @param toggle Turn this into a toggled button, also
+   * This function allows you to add a delayed popup menu to the button.
+   * The popup menu is then only displayed when the button is pressed and
+   * held down for about half a second.  You can also make the poup-menu
+   * "sticky", i.e. visible until a selection is made or the mouse is
+   * clikced elsewhere, by simply setting the second argument to true.
+   * This "sticky" button feature allows you to make a selection without
+   * having to press and hold down the mouse while making a selection.
+   *
+   * @param p the new popup menu
+   * @param toggle if true, makes the button "sticky" (toggled)
    */
   void setDelayedPopup(QPopupMenu *p, bool toggle = false);
 
