@@ -592,7 +592,9 @@ void RenderPart::setWidget( QWidget *widget )
 
     updateSize();
 
-    //slotViewCleared();
+    // make sure the scrollbars are set correctly for restore
+    // ### find better fix
+    slotViewCleared();
 }
 
 void RenderPart::layout( )
@@ -615,6 +617,9 @@ int RenderPart::intrinsicHeight() const
     return 200;
 }
 
+void RenderPart::slotViewCleared()
+{
+}
 
 /***************************************************************************************/
 
