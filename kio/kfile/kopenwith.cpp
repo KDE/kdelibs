@@ -444,6 +444,10 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   topLayout->addWidget(terminal);
 
+  QBoxLayout* nocloseonexitLayout = new QHBoxLayout( 0, 0, KDialog::spacingHint() );
+  QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
+  nocloseonexitLayout->addItem( spacer );
+
   nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), this );
   nocloseonexit->setChecked( false );
   nocloseonexit->setDisabled( true );
@@ -456,7 +460,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   if (bReadOnly || preferredTerminal != "konsole")
      nocloseonexit->hide();
 
-  topLayout->addWidget(nocloseonexit);
+  nocloseonexitLayout->addWidget( nocloseonexit );
+  topLayout->addLayout( nocloseonexitLayout );
 
   if (!qServiceType.isNull())
   {

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>399</width>
-            <height>326</height>
+            <width>510</width>
+            <height>426</height>
         </rect>
     </property>
     <vbox>
@@ -23,55 +23,92 @@
             <property name="title">
                 <string>Terminal</string>
             </property>
-            <grid>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>terminalCheck</cstring>
+                        <cstring>layout3</cstring>
                     </property>
-                    <property name="text">
-                        <string>&amp;Run in terminal</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+R</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Check this option if the application you want to run is a text mode application or if you want the information that is provided by the terminal emulator window.</string>
-                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <spacer row="1" column="0">
+                            <property name="name">
+                                <cstring>spacer3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Minimum</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+                            <property name="name">
+                                <cstring>terminalCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Run in terminal</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+R</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Check this option if the application you want to run is a text mode application or if you want the information that is provided by the terminal emulator window.</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget" row="1" column="1">
+                            <property name="name">
+                                <cstring>layout2</cstring>
+                            </property>
+                            <grid>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel" row="1" column="0">
+                                    <property name="name">
+                                        <cstring>terminalEditLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>&amp;Terminal options:</string>
+                                    </property>
+                                    <property name="buddy" stdset="0">
+                                        <cstring>terminalEdit</cstring>
+                                    </property>
+                                </widget>
+                                <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+                                    <property name="name">
+                                        <cstring>terminalCloseCheck</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Do not &amp;close when command exits</string>
+                                    </property>
+                                    <property name="accel">
+                                        <string>Alt+C</string>
+                                    </property>
+                                    <property name="whatsThis" stdset="0">
+                                        <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open let's you retrieve this information.</string>
+                                    </property>
+                                </widget>
+                                <widget class="KLineEdit" row="1" column="1">
+                                    <property name="name">
+                                        <cstring>terminalEdit</cstring>
+                                    </property>
+                                </widget>
+                            </grid>
+                        </widget>
+                    </grid>
                 </widget>
-                <widget class="QCheckBox" row="1" column="0" rowspan="1" colspan="2">
-                    <property name="name">
-                        <cstring>terminalCloseCheck</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Do not &amp;close when command exits</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+C</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open let's you retrieve this information.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="2" column="0">
-                    <property name="name">
-                        <cstring>terminalEditLabel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Terminal options:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>terminalEdit</cstring>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="2" column="1">
-                    <property name="name">
-                        <cstring>terminalEdit</cstring>
-                    </property>
-                </widget>
-            </grid>
+            </hbox>
         </widget>
         <widget class="QButtonGroup">
             <property name="name">
@@ -80,47 +117,84 @@
             <property name="title">
                 <string>User</string>
             </property>
-            <grid>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>suidCheck</cstring>
+                        <cstring>layout5</cstring>
                     </property>
-                    <property name="text">
-                        <string>Ru&amp;n as a different user</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+N</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file acess and other permissions. The password of the user is required to use this option.</string>
-                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox" row="0" column="0" rowspan="1" colspan="2">
+                            <property name="name">
+                                <cstring>suidCheck</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Ru&amp;n as a different user</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+N</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file acess and other permissions. The password of the user is required to use this option.</string>
+                            </property>
+                        </widget>
+                        <spacer row="1" column="0">
+                            <property name="name">
+                                <cstring>spacer3_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Minimum</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLayoutWidget" row="1" column="1">
+                            <property name="name">
+                                <cstring>layout3</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>suidEditLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>&amp;Username:</string>
+                                    </property>
+                                    <property name="buddy" stdset="0">
+                                        <cstring>suidEdit</cstring>
+                                    </property>
+                                    <property name="whatsThis" stdset="0">
+                                        <string>Enter the user name you want to run the application as.</string>
+                                    </property>
+                                </widget>
+                                <widget class="KLineEdit">
+                                    <property name="name">
+                                        <cstring>suidEdit</cstring>
+                                    </property>
+                                    <property name="whatsThis" stdset="0">
+                                        <string>Enter here the user name you want to run the application as.</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </grid>
                 </widget>
-                <widget class="QLabel" row="1" column="0">
-                    <property name="name">
-                        <cstring>suidEditLabel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Username:</string>
-                    </property>
-                    <property name="buddy" stdset="0">
-                        <cstring>suidEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Enter the user name you want to run the application as.</string>
-                    </property>
-                </widget>
-                <widget class="KLineEdit" row="1" column="1">
-                    <property name="name">
-                        <cstring>suidEdit</cstring>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Enter here the user name you want to run the application as.</string>
-                    </property>
-                </widget>
-            </grid>
+            </hbox>
         </widget>
         <widget class="QButtonGroup">
             <property name="name">
