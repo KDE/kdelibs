@@ -572,13 +572,15 @@ public:
        Source of the request.
        @li FromApplication the request comes from a normal application
        @li FromTool the request comes from pager or similar tool
+       @li FromActivity the request comes as a result of the _NET_WM_TAKE_ACTIVITY_PROTOCOL
        @since 3.2
     **/
     // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
     enum RequestSource {
         FromUnknown, // internal
         FromApplication,
-        FromTool
+        FromTool,
+        FromActivity
     };
 };
 

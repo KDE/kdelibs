@@ -1834,7 +1834,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
                 Time timestamp = CurrentTime;
                 // make sure there aren't unknown values
                 if( event->xclient.data.l[0] >= FromUnknown
-                    && event->xclient.data.l[0] <= FromTool )
+                    && event->xclient.data.l[0] <= FromActivity )
                     {
                     src = static_cast< RequestSource >( event->xclient.data.l[0] );
                     timestamp = event->xclient.data.l[3];
