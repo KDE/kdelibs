@@ -1153,7 +1153,12 @@ void KeramikStyle::drawControl( ControlElement element,
 					state = QIconSet::On;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
-				p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
+				
+				if (button->text().isEmpty())
+					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2, 
+									pixmap );
+				else
+					p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
