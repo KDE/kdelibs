@@ -30,7 +30,6 @@
 #include <qcstring.h>
 #include <qfile.h>
 
-#include <krun.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstddirs.h>
