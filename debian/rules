@@ -32,7 +32,7 @@ debian/debiandirs: admin/debianrules
 build-stamp:
 	dh_testdir
 	if test ! -f configure; then \
-	  $(MAKE) -f admin/Makefile.common ;\
+	  make -f admin/Makefile.common ;\
 	fi
 	-chmod 755 configure
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
@@ -41,23 +41,23 @@ build-stamp:
 	--includedir=/usr/include/kde --without-alsa \
 	--disable-cups
 
-	$(MAKE)
-	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
+	make
+	make DESTDIR=`pwd`/debian/install-tmp/ install
 
 	touch build-stamp
 
 alsa-stamp:
 	dh_testdir
-	-$(MAKE) -C arts/ clean
+	-make -C arts/ clean
 	-rm -f `find arts -name "*.mcoptype"`
-	-$(MAKE) -C libkmid/ clean
-	-$(MAKE) -C kdeprint/cups clean
+	-make -C libkmid/ clean
+	-make -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --enable-cups \
 		--includedir=/usr/include/kde
-	$(MAKE) -C libkmid/ 
-	$(MAKE) -C arts/ 
-	$(MAKE) -C kdeprint/cups 
+	make -C libkmid/ 
+	make -C arts/ 
+	make -C kdeprint/cups 
 	touch alsa-stamp
 
 
@@ -69,9 +69,9 @@ debian-clean:
 clean: debian-clean
 	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
 	if test -d CVS; then \
-	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
+	  make -f admin/Makefile.common cvs-clean ;\
 	fi
-	-$(MAKE) distclean
+	-make distclean
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
@@ -110,9 +110,9 @@ install: build
 	-install -d debian/kdelibs4
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
-	$(MAKE) -C libkmid/ DESTDIR=$(alsa-tmp)/ install
-	$(MAKE) -C arts/ DESTDIR=$(alsa-tmp)/ install
-	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs4/ install
+	make -C libkmid/ DESTDIR=$(alsa-tmp)/ install
+	make -C arts/ DESTDIR=$(alsa-tmp)/ install
+	make -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs4/ install
 
 binary-arch:  build install
 	dh_testdir
