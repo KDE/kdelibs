@@ -24,6 +24,8 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+// for SC
+
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter_kde1.h"
 

@@ -24,6 +24,7 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+#include "kbookmarkexporter.h"
 
 /**
  * A class for importing NS bookmarks
@@ -74,6 +75,43 @@ signals:
 
 protected:
     QString m_fileName;
+};
+
+// Note - KNSBookmarkImporter can be used to get the path to the filename
+
+
+/**
+ * A class that exports all the current bookmarks to Netscape/Mozilla bookmarks
+ * Warning, it overwrites the existing bookmarks.html file !
+ *
+ * only for BC - remove for KDE 4.0
+ */
+class KNSBookmarkExporter
+{
+public:
+    KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)
+      : m_fileName(fileName), m_pManager(mgr) { }
+    ~KNSBookmarkExporter() {}
+
+    void write() { write(false); } // deprecated
+    void write( bool utf8 );
+
+protected:
+    void writeFolder(QTextStream &stream, KBookmarkGroup parent);
+    QString m_fileName;
+    KBookmarkManager* m_pManager;
+};
+
+class KNSBookmarkExporterImpl : public KBookmarkExporterBase
+{
+public:
+    KNSBookmarkExporterImpl(KBookmarkManager* mgr, const QString & fileName)
+      : KBookmarkExporterBase(mgr, fileName) 
+    { ; }
+    virtual ~KNSBookmarkExporterImpl() {}
+    virtual void write(bool utf8, KBookmarkGroup);
+protected:
+    virtual const QString folderAsString(KBookmarkGroup);
 };
 
 #endif
