@@ -58,7 +58,7 @@ bool KTarBase::open( int mode )
 
     m_dir = new KTarDirectory( this, "/", (int)buf.st_mode, (int)buf.st_mtime, pw->pw_name , grp->gr_name );
 */
-    m_dir = new KTarDirectory( this, "/", 0, 0, "", "" );
+    m_dir = new KTarDirectory( this, "/", 0, 0, "", "", "" );
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -114,6 +114,7 @@ bool KTarBase::open( int mode )
 	// read user and group
 	QString user( buffer + 0x109 );
 	QString group( buffer + 0x129 );
+	QString symlink(buffer + 0x9d );
 
 	// read time
 	buffer[ 0x93 ] = 0;
@@ -123,7 +124,7 @@ bool KTarBase::open( int mode )
 
 	KTarEntry* e;
 	if ( isdir )
-	  e = new KTarDirectory( this, nm, access, time, user, group );
+	  e = new KTarDirectory( this, nm, access, time, user, group, symlink );
 	else
 	{
 	  // read size
@@ -154,7 +155,8 @@ bool KTarBase::open( int mode )
             }
           }
 
-	  e = new KTarFile( this, nm, access, time, user, group, position(), size, arr );
+	  e = new KTarFile( this, nm, access, time, user, group, symlink,
+			    position(), size, arr );
 	}
 
 	if ( pos == -1 )
@@ -275,7 +277,9 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
 
   //debug("found parent %s adding %s to ensure %s", parent->name().latin1(), dirname.latin1(), path.latin1());
   // Found -> add the missing piece
-  KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(), m_dir->date(), m_dir->user(), m_dir->group() );
+  KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(),
+					 m_dir->date(), m_dir->user(),
+					 m_dir->group(), m_dir->symlink() );
   parent->addEntry( e );
   return e; // now a directory to <path> exists
 }
@@ -519,14 +523,17 @@ void KTarBase::fillBuffer( char * buffer,
 //////////////////////////////////////////////////////////////////////////////
 
 KTarEntry::KTarEntry( KTarBase* t, const QString& name, int access, int date,
-		      const QString& user, const QString& group )
+		      const QString& user, const QString& group, const
+		      QString& symlink)
 {
   m_name = name;
   m_access = access;
   m_date = date;
   m_user = user;
   m_group = group;
+  m_symlink = symlink;
   m_tar = t;
+
 }
 
 QDateTime KTarEntry::datetime() const
@@ -540,8 +547,9 @@ QDateTime KTarEntry::datetime() const
 
 KTarFile::KTarFile( KTarBase* t, const QString& name, int access, int date,
 		    const QString& user, const QString& group,
+		    const QString & symlink,
 		    int pos, int size, const QByteArray& data )
-  : KTarEntry( t, name, access, date, user, group ), m_data( data )
+  : KTarEntry( t, name, access, date, user, group, symlink ), m_data( data )
 {
   m_pos = pos;
   m_size = size;
@@ -564,8 +572,9 @@ QByteArray KTarFile::data() const
 }
 
 KTarDirectory::KTarDirectory( KTarBase* t, const QString& name, int access, int date,
-			      const QString& user, const QString& group )
-  : KTarEntry( t, name, access, date, user, group )
+			      const QString& user, const QString& group,
+			      const QString &symlink)
+  : KTarEntry( t, name, access, date, user, group, symlink )
 {
   m_entries.setAutoDelete( true );
 }

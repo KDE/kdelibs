@@ -226,7 +226,8 @@ class KTarEntry
 {
 public:
   KTarEntry( KTarBase* tar, const QString& name, int access, int date,
-	     const QString& user, const QString& group );
+	     const QString& user, const QString& group,
+	     const QString &symlink );
 
   virtual ~KTarEntry() { }
 
@@ -255,6 +256,11 @@ public:
   QString group() const { return m_group; }
 
   /**
+   * Symlink if there is one
+   */
+  QString symlink() const { return m_symlink; }
+
+  /**
    * @return true if this entry is a file
    */
   virtual bool isFile() const { return false; }
@@ -272,6 +278,7 @@ private:
   mode_t m_access;
   QString m_user;
   QString m_group;
+  QString m_symlink;
   KTarBase* m_tar;
 };
 
@@ -285,11 +292,11 @@ class KTarFile : public KTarEntry
 {
 public:
   KTarFile( KTarBase* tar, const QString& name, int access, int date,
-	    const QString& user, const QString& group,
+	    const QString& user, const QString& group, const QString &symlink,
 	    int pos, int size, const QByteArray& data );
-
+  
   virtual ~KTarFile() { }
-
+  
   /**
    * Position of the data in the uncompressed tar file.
    */
@@ -298,7 +305,7 @@ public:
    * Size of the data.
    */
   int size() const;
-
+  
   /**
    * @return the content of this file.
    */
@@ -325,7 +332,8 @@ class KTarDirectory : public KTarEntry
 {
 public:
   KTarDirectory( KTarBase* tar, const QString& name, int access, int date,
-		 const QString& user, const QString& group );
+		 const QString& user, const QString& group,
+		 const QString& symlink);
 
   virtual ~KTarDirectory() { }
 
