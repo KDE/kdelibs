@@ -16,7 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */  
-
 #ifndef __KDIRECTIONBUTTON_H__
 #define __KDIRECTIONBUTTON_H__
 
@@ -27,8 +26,10 @@ class QPainter;
 class QWidget;
 
 /**
-* KDirectionButton is a helper class for KTabBar and KWizard. It provides the buttons
-* used to scroll the tab bar and to change pages in KWizard.
+* KDirectionButton is a helper class for KTabBar and KWizard. It
+* provides the buttons used to scroll the tab bar and to change pages
+* in KWizard.
+*
 * @short Direction buttons for page flipping in @ref KWizard.
 * @internal
 * @author Thomas Tanghus <tanghus@earthling.net>
@@ -49,6 +50,10 @@ protected:
    virtual void drawButton(QPainter *);
 
    ArrowType direct;
+
+private:
+   class KDirectionButtonPrivate;
+   KDirectionButtonPrivate *d;
 };
 
 /**
@@ -68,8 +73,10 @@ public:
 
 protected:
    virtual void drawButton(QPainter *);
+
+private:
+   class KTabButtonPrivate;
+   KTabButtonPrivate *d;
 };
 
 #endif // __KDIRECTIONBUTTON_H__
-
-

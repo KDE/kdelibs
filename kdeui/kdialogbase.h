@@ -19,22 +19,18 @@
  *  Boston, MA 02111-1307, USA.
  *
  */
-
 #ifndef _KDIALOG_BASE_H_
 #define _KDIALOG_BASE_H_
 
-#include <qlayout.h>
-#include <qlist.h>
-#include <qpixmap.h>
 #include <qpushbutton.h>
-
 #include <kdialog.h>
 #include <kjanuswidget.h>
+#include <qlist.h>
 
 class KSeparator;
 class KURLLabel;
 class QVBoxLayout;
-
+class QPixmap;
 
 /**
  * Used internally by @ref KDialogBase.
@@ -84,9 +80,9 @@ class KDialogBaseTile : public QObject
 
   private:
     QPixmap *mPixmap;
+    class KDialogBaseTilePrivate;
+    KDialogBaseTilePrivate *d;
 };
-
-
 
 
 /**
@@ -127,14 +123,15 @@ class KDialogBaseTile : public QObject
  *
  * @sect Dialog shapes:
  *
- * You can either use one of the prebuilt, easy to use, faces or define 
- * your own main widget. The dialog provides ready to use TreeList,  
- * Tabbed, Plain, Swallow and IconList faces. For the first two you then add pages 
- * with @ref addPage(). If you want complete control of how the dialog 
- * contents should look, then you can define a main widget by using 
- * @ref setMainWidget(). You only need to set the minimum size of that 
- * widget and the dialog will resize itself to fit this minimum size. 
- * The dialog is resizeable, but can not be made smaller than its minimum 
+ * You can either use one of the prebuilt, easy to use, faces or
+ * define your own main widget. The dialog provides ready to use
+ * TreeList,  Tabbed, Plain, Swallow and IconList faces. For the first
+ * two you then add pages with @ref addPage(). If you want complete
+ * control of how the dialog contents should look, then you can define
+ * a main widget by using @ref setMainWidget(). You only need to set
+ * the minimum size of that widget and the dialog will resize itself
+ * to fit this minimum size.  The dialog is resizeable, but can not be
+ * made smaller than its minimum 
  * size.
  *
  * @sect Layout:
@@ -1230,6 +1227,9 @@ class KDialogBase : public KDialog
 
     bool mMessageBoxMode;
     ButtonCode mEscapeButton;
+
+    class KDialogBasePrivate;
+    KDialogBasePrivate *d;
 };
 
 

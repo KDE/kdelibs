@@ -1,10 +1,6 @@
-/*
- *  -*- C++ -*-
- *
- *  kiconloaderdialog.
- *
- *  Copyright (C) 1997 Christoph Neerfeld
- *  email:  Christoph.Neerfeld@home.ivm.de or chris@kde.org
+/*  This file is part of the KDE libraries
+ *  Copyright (C) 1997 Christoph Neerfeld <chris@kde.org>
+ *            (C) 2000 Kurt Granroth <granroth@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,12 +18,6 @@
  *  Boston, MA 02111-1307, USA.
  *
  */
-
-// CHANGES
-// Torben, added KIconLoaderButton
-
-
-
 #ifndef KICONLOADERDIALOG_H
 #define KICONLOADERDIALOG_H
 
@@ -35,16 +25,14 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <kiconview.h>
-
-#include <kapp.h>
 #include <kdialogbase.h>
-#include <kiconloader.h>
 
 class QComboBox;
 class QLabel;
 class QLineEdit;
 class KProgress;
 class QTimer;
+class KIconLoader;
 
 /**
 * Internal display class for @ref KIconLoaderDialog
@@ -86,6 +74,8 @@ private:
     QString dir_name, filter;
     QTimer *loadTimer;
 
+    class KIconLoaderCanvasPrivate;
+    KIconLoaderCanvasPrivate *d;
 };
 
 
@@ -179,6 +169,10 @@ protected:
     QComboBox	      *cb_types;
     KIconLoader	      *icon_loader;
     KProgress *progressBar;
+
+private:
+    class KIconLoaderDialogPrivate;
+    KIconLoaderDialogPrivate *d;
 };
 
 /**
@@ -247,10 +241,10 @@ protected:
     QString iconStr;
     QString resType;
     KIconLoader *iconLoader;
+
+private:
+    class KIconLoaderButtonPrivate;
+    KIconLoaderButtonPrivate *d;
 };
 
-
 #endif // KICONLOADERDIALOG_H
-
-
-

@@ -17,10 +17,8 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */  
-
 #ifndef __KDIALOG_H
 #define __KDIALOG_H
-
 
 class QLayoutItem;
 
@@ -33,12 +31,13 @@ class QLayoutItem;
  * If the dialog is modeless and has a parent, the default keybindings 
  * (escape = reject(), enter = accept() etc.) are disabled.
  *
- * The @ref marginHint() and @ref spacingHint() sizes shall be used whenever you layout
- * the interior of a dialog. One special note. If you make your own action
- * buttons (Ok, Cancel etc), the space beteween the buttons shall be 
- * @ref spacingHint(), while the space above, below, to right and to the left shall
- * be @ref marginHint(). If you add a separator line above the buttons, there 
- * shall be a @ref marginHint() between the buttons and the separator and a 
+ * The @ref marginHint() and @ref spacingHint() sizes shall be used
+ * whenever you layout the interior of a dialog. One special note. If
+ * you make your own action buttons (Ok, Cancel etc), the space
+ * beteween the buttons shall be @ref spacingHint(), while the space
+ * above, below, to right and to the left shall be @ref marginHint().
+ * If you add a separator line above the buttons, there shall be a
+ * @ref marginHint() between the buttons and the separator and a
  * @ref marginHint() above the separator as well.
  *
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
@@ -125,8 +124,9 @@ class KDialog : public QDialog
     static int mMarginSize;
     static int mSpacingSize;
 
+    class KDialogPrivate;
+    KDialogPrivate *d;
+
 };
 
 #endif // __KDIALOG_H
-
-

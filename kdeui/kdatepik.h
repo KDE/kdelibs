@@ -17,39 +17,11 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
-/////////////////// KDatePicker widget class //////////////////////
-//
-// Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998, 1999 Mirko Sucker
-// I also documented protected members as this is a library 
-// reference.
-// Original header from Tim:
-// This version of the class is the first release.  Please
-// send comments/suggestions/bug reports to <tdgilman@best.com>
-//
-// Written using Qt (http://www.troll.no) for the 
-// KDE project (http://www.kde.org)
-//
-//
-// Use this class to make a date picker widget
-// When a date is selected by the user, it emits a signal: 
-//    dateSelected(QDate)
-//
-// Required header for use:
-//    kdatepik.h
-// 
-// Required files for compilation:
-//
-//    kdatepik.h kdatepik.cpp kdatetbl.h kdatetbl.cpp
-
-
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 #include <qdatetime.h>
 #include <qrect.h>
 #include <qframe.h>
-// #include "kdatetbl.h"
 
 class QLineEdit;
 class QToolButton;
@@ -176,6 +148,10 @@ signals:
   /** This signal is emitted when the day has been selected by
       clicking on it in the table. */
   void tableClicked();
+
+private:
+  class KDatePickerPrivate;
+  KDatePickerPrivate *d;
 };
 
 #endif //  KDATEPICKER_H

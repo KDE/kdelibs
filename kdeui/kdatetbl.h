@@ -17,21 +17,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
-/////////////////// KDateTable widget class //////////////////////
-//
-// Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998, 1999 Mirko Sucker
-// Written using Qt (http://www.troll.no) for the
-// KDE project (http://www.kde.org)
-//
-// This is a support class for the KDatePicker class.  It just
-// draws the calender table without titles, but could theoretically
-// be used as a standalone.
-//
-// When a date is selected by the user, it emits a signal: 
-//      dateSelected(QDate)
-
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
@@ -76,6 +61,10 @@ protected:
   /** Catch mouse click events. 
       Emit monthSelected(int) when a cell has been clicked. */
   void mousePressEvent(QMouseEvent *e);
+
+private:
+  class KDateInternalMonthPrivate;
+  KDateInternalMonthPrivate *d;
 };
 
 /** Year selection widget. 
@@ -99,6 +88,10 @@ public:
 			    const char* name=0);
   int getYear();
   void setYear(int year);
+
+private:
+  class KDateInternalYearPrivate;
+  KDateInternalYearPrivate *d;
 };
 
 /**
@@ -136,6 +129,10 @@ public:
   int exec(QPoint p);
   /** Dito. */
   int exec(int x, int y);
+
+private:
+  class KPopupFramePrivate;
+  KPopupFramePrivate *d;
 };
 
 /**
@@ -150,11 +147,18 @@ public:
 };
 
 /**
- Date selection table.
- @internal
- @version $Id$
- @author Tim Gilman, Mirko Sucker
-*/
+ * Date selection table.
+ * This is a support class for the KDatePicker class.  It just
+ * draws the calender table without titles, but could theoretically
+ * be used as a standalone.
+ * 
+ * When a date is selected by the user, it emits a signal: 
+ * dateSelected(QDate)
+ * 
+ * @internal
+ * @version $Id$
+ * @author Tim Gilman, Mirko Sucker
+ */
 class KDateTable : public QTableView
 {
   Q_OBJECT
@@ -202,6 +206,10 @@ signals:
   void dateChanged(QDate);
   /** A date has been selected by clicking on the table. */
   void tableClicked();
+
+private:
+  class KDateTablePrivate;
+  KDateTablePrivate *d;
 };
 
 #endif // KDATETBL_H

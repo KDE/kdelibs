@@ -18,8 +18,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-
-
 #ifndef __KEDITCL_H__
 #define __KEDITCL_H__
 
@@ -48,6 +46,9 @@ public slots:
 
 private:
     KIntNumInput *lineNum;
+
+    class KEdGotoLinePrivate;
+    KEdGotoLinePrivate *d;
 };
 
 ///
@@ -72,6 +73,9 @@ private:
     QCheckBox *sensitive;
     QCheckBox *direction;
     QLineEdit *value;
+
+    class KEdFindPrivate;
+    KEdFindPrivate *d;
 
 signals:
 
@@ -105,6 +109,9 @@ protected slots:
 private:
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
+
+    class KEdReplacePrivate;
+    KEdReplacePrivate *d;
 
 signals:
     void replace();
@@ -382,8 +389,9 @@ private:
     bool        fill_column_is_set;
     bool        word_wrap_is_set;
     int         fill_column_value;
+
+    class KEditPrivate;
+    KEditPrivate *d;
 };
-
-
 
 #endif

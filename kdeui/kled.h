@@ -16,7 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 /*************************************************************************
  * $Id$
  *************************************************************************/
@@ -39,7 +38,6 @@ class QColor;
 * @short A round LED widget.
 * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
 */
-
 class KLed : public QWidget
 {
   Q_OBJECT
@@ -219,6 +217,10 @@ class KLed : public QWidget
   QColor led_color;
   Look  led_look;
   Shape led_shape;
+
+ private:
+  class KLedPrivate;
+  KLedPrivate *d;
 };
 
 #endif

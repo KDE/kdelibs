@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -70,6 +71,10 @@ protected:
   QString keyName;
   QString actionName;
   int id;
+
+private:
+  class KSplitListItemPrivate;
+  KSplitListItemPrivate *d;
 };
 
 /**
@@ -97,6 +102,10 @@ protected:
   void resizeEvent( QResizeEvent * );
   void paletteChange ( const QPalette & oldPalette );
   void styleChange ( GUIStyle );
+
+private:
+  class KSplitListPrivate;
+  KSplitListPrivate *d;
 };
 
 /**
@@ -119,6 +128,10 @@ protected:
 
   void paint( QPainter* _painter );
   void drawButton( QPainter* _painter ) { paint( _painter ); }
+
+private:
+  class KKeyButtonPrivate;
+  KKeyButtonPrivate *d;
 };
 
 /**
@@ -177,15 +190,20 @@ private:
   QPushButton* bOk;
   QPushButton* bCancel;
   QPushButton* bHelp;
+
+  class KKeyDialogPrivate;
+  KKeyDialogPrivate *d;
 };
 
 /**
- * Configure dictionaries of key/action
- * associations for KAccel and KGlobalAccel.
+ * Configure dictionaries of key/action associations for KAccel and
+ * KGlobalAccel.
  *
- * The class takes care of all aspects of configuration, including handling key
- * conflicts internally. Connect to the @ref allDefault() slot if you want to set all
- * configurable keybindings to their default values.
+ * The class takes care of all aspects of configuration, including
+ * handling key conflicts internally. Connect to the @ref allDefault()
+ * slot if you want to set all configurable keybindings to their
+ * default values.
+ *
  * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
  * @see KKeyDialog
  * @version $Id$
@@ -276,6 +294,9 @@ protected:
   const QString item( uint keyCode, const QString& entryKey );
   bool isKeyPresent();
   void setKey( uint kCode );
+
+  class KKeyChooserPrivate;
+  KKeyChooserPrivate *d;
 };
 
 #endif // __KKEYDIALOG_H__

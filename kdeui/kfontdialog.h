@@ -23,15 +23,11 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
-
 #ifndef _K_FONT_DIALOG_H_
 #define _K_FONT_DIALOG_H_
 
-
 #include <qlineedit.h>
 #include <kdialogbase.h>
-
 
 class QComboBox;
 class QFont;
@@ -163,6 +159,9 @@ protected:
   QFont        selFont;
 
   bool usingFixed;
+
+  class KFontChooserPrivate;
+  KFontChooserPrivate *d;
 };
 
 /**
@@ -254,6 +253,10 @@ signals:
 
 protected:
   KFontChooser *chooser;
+
+private:
+  class KFontDialogPrivate;
+  KFontDialogPrivate *d;
 };
 
 #endif

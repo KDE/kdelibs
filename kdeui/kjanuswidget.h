@@ -327,6 +327,9 @@ class KJanusWidget : public QWidget
     KSeparator   *mTitleSep;
     int          mActivePageIndex;
     QSplitter::ResizeMode mTreeListResizeMode;
+
+    class KJanusWidgetPrivate;
+    KJanusWidgetPrivate *d;
 };
 
 #endif
