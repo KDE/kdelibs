@@ -103,4 +103,4 @@ Comment[zh_TW.Big5]=預設的 KDE 風格
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]
-widgetStyle=Default
+WidgetStyle=HighColor
