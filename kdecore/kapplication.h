@@ -468,6 +468,12 @@ public slots:
    */
   void invokeBrowser( const QString &url );
 
+  void cut();
+  void copy();
+  void paste();
+  void clear();
+  void selectAll();
+
 public:
   /**
    * Returns the DCOP name of the service launcher. This will be something like
@@ -912,6 +918,8 @@ protected:
   static KApplication *KApp;
   int pArgc;
 
+  void invokeEditSlot( const char *slotName, const char *slot );
+
 private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
@@ -940,6 +948,7 @@ private:
   void dcopAutoRegistration();
   void dcopClientPostInit();
   void initUrlActionRestrictions();
+
 public:
   /**
    * @internal
@@ -1098,6 +1107,8 @@ signals:
       this state.
    */
   void shutDown();
+
+  void editSignal();
 
 private:
   void propagateSettings(SettingsCategory category);

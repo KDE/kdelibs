@@ -43,6 +43,7 @@
 #include <qpixmapcache.h>
 #include <qtooltip.h>
 #include <qstylefactory.h>
+#include <qmetaobject.h>
 #ifndef QT_NO_SQL
 #include <qsqlpropertymap.h>
 #endif
@@ -1518,6 +1519,24 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 #endif
 
+void KApplication::invokeEditSlot( const char *slotName, const char *slot )
+{
+  QObject *object = focusWidget();
+  
+  if( !object || !slotName || !slot )
+    return;
+  
+  QMetaObject *meta = object->metaObject();
+  QStrList l = meta->slotNames(true);
+  
+  if( l.find( slotName ) == -1 )
+    return;
+  
+  connect( this, SIGNAL( editSignal() ), object, slot );
+  emit editSignal();
+  disconnect( this, SIGNAL( editSignal() ), object, slot );
+}
+
 void KApplication::addKipcEventMask(int id)
 {
     if (id >= 32)
@@ -1982,6 +2001,31 @@ void KApplication::invokeBrowser( const QString &url )
       kdWarning() << "Could not launch browser:\n" << error << endl;
       return;
    }
+}
+
+void KApplication::cut()
+{
+  invokeEditSlot( "cut()", SLOT( cut() ) );
+}
+
+void KApplication::copy()
+{
+  invokeEditSlot( "copy()", SLOT( copy() ) );
+}
+
+void KApplication::paste()
+{
+  invokeEditSlot( "paste()", SLOT( paste() ) );
+}
+
+void KApplication::clear()
+{
+  invokeEditSlot( "clear()", SLOT( clear() ) );
+}
+
+void KApplication::selectAll()
+{
+  invokeEditSlot( "selectAll()", SLOT( selectAll() ) );
 }
 
 QCString
