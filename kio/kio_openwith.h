@@ -24,8 +24,10 @@ class QStringList;
 /* ------------------------------------------------------------------------- */
 
 /**
+ * "Open with" dialog box.
+ * Used automatically by KRun, and used by libkonq.
  */
-class OpenWithDlg : public QDialog
+class KOpenWithDlg : public QDialog
 {
     Q_OBJECT
 public:
@@ -37,8 +39,8 @@ public:
      * @param _text  appears as a label on top of the entry box.  
      */
     
-    OpenWithDlg( const QStringList& _url, const QString&_text, const QString&_value, QWidget *parent );
-    ~OpenWithDlg();
+    KOpenWithDlg( const QStringList& _url, const QString&_text, const QString&_value, QWidget *parent );
+    ~KOpenWithDlg();
     
     /**
      * @return the value the user entered
@@ -93,6 +95,10 @@ public:
     KAppTreeListItem( QListViewItem* parent, const char *name, const QPixmap& pixmap,
                       bool parse, bool dir, QString p, QString c );
 
+protected:
+    virtual void activate();
+    virtual void setOpen( bool o );
+
     friend KApplicationTree;
 };
 
@@ -109,20 +115,18 @@ public:
     /**
      * Parse a single .desktop/.kdelnk file
      */
-    void parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item );
+    void parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, QString relPath );
     /**
      * Parse a directory for .desktop/.kdelnk files
      */
-    short parseDesktopDir( QDir d, KAppTreeListItem *item = 0 );
+    void parseDesktopDir( QString relPath, KAppTreeListItem *item = 0 );
   
     KAppTreeListItem *it;
-    KAppTreeListItem *it2;
     
 protected:
     void resizeEvent( QResizeEvent *_ev );
   
 public slots:
-    void slotFolderSelected(QListViewItem* i);
     void slotItemHighlighted(QListViewItem* i);
     void slotSelectionChanged(QListViewItem* i);
     

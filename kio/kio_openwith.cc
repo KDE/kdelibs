@@ -72,7 +72,7 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, QString
     setPixmap(0, pixmap);
     parsed = parse;
     directory = dir;
-    path = _path;
+    path = _path; // relative path
     exec = _exec;
     exec.simplifyWhiteSpace();
     exec.truncate(exec.find(' '));
@@ -90,6 +90,20 @@ QString KAppTreeListItem::key(int column, bool /*ascending*/) const
         return text(column).upper();
 }
 
+void KAppTreeListItem::activate()
+{
+    if ( directory )
+        setOpen(!isOpen());
+}
+
+void KAppTreeListItem::setOpen( bool o )
+{
+    if( o && !parsed ) { // fill the children before opening
+        ((KApplicationTree *) parent())->parseDesktopDir( path + "/", this );
+        parsed = true;
+    }
+    QListViewItem::setOpen( o );
+}
 
 // ----------------------------------------------------------------------
 
@@ -97,13 +111,10 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     : QListView( parent )
 {
     addColumn( i18n("Known Applications") );
+    setRootIsDecorated( true );
     
-    QStringList list = KGlobal::dirs()->getResourceDirs("apps");
-    for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
-        parseDesktopDir( QDir(*it) );
+    parseDesktopDir( "" );
     
-    connect(this, SIGNAL(doubleClicked(QListViewItem*)), SLOT(slotFolderSelected(QListViewItem*)));
-    connect(this, SIGNAL(returnPressed(QListViewItem*)), SLOT(slotFolderSelected(QListViewItem*)));    
     connect( this, SIGNAL( currentChanged(QListViewItem*) ), SLOT( slotItemHighlighted(QListViewItem*) ) );
     connect( this, SIGNAL( selectionChanged(QListViewItem*) ), SLOT( slotSelectionChanged(QListViewItem*) ) );
 }
@@ -136,7 +147,7 @@ bool KApplicationTree::isDesktopFile( const QString& filename )
 
 // ----------------------------------------------------------------------
 
-void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item )
+void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, QString relPath )
 {
     QPixmap pixmap;
     QString text_name, pixmap_name, mini_pixmap_name, big_pixmap_name, command_name, comment;
@@ -183,64 +194,74 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item )
         pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("default.png", 16, 16);
     }
 
+    KAppTreeListItem * newItem;
     if(item)
-        (void) new KAppTreeListItem( item, text_name.ascii(), pixmap, false, fi->isDir(),
-                                    fi->absFilePath(), command_name );
+      newItem = new KAppTreeListItem( item, text_name.ascii(), pixmap, false, fi->isDir(),
+                                      relPath + fi->fileName(), command_name );
     else
-        (void) new KAppTreeListItem( this, text_name.ascii(), pixmap, false, fi->isDir(),
-                                    fi->absFilePath(), command_name );
+      newItem = new KAppTreeListItem( this, text_name.ascii(), pixmap, false, fi->isDir(),
+                                      relPath + fi->fileName(), command_name );
+
+    if ( fi->isDir() )
+      newItem->setExpandable( true );
 }
 
 
 // ----------------------------------------------------------------------
 
-short KApplicationTree::parseDesktopDir( QDir d, KAppTreeListItem *item)
+void KApplicationTree::parseDesktopDir( QString relPath, KAppTreeListItem *item)
 {
-    if( !d.exists() )
-        return -1;
-    
-    d.setSorting( SORT_SPEC );
-    QList <QString> item_list;
+  // for one relative path, like "Applications", there can be several real
+  // dirs (ex : a global one and a local one). Parse them both.
+    QStringList list = KGlobal::dirs()->findDirs("apps", relPath);
+    for (QStringList::ConstIterator dirsit = list.begin(); dirsit != list.end(); dirsit++)
+    {
+      //debug(QString("(*dirsit): '%1'").arg((*dirsit))); 
+      QDir d( (*dirsit) );
+      if( d.exists() )
+      {
+        d.setSorting( SORT_SPEC );
+        QList <QString> item_list;
 	
-    const QFileInfoList *list = d.entryInfoList();
-    QFileInfoListIterator it( *list );
-    QFileInfo *fi;
-
-    if( it.count() < 3 )
-        return -1;
-    
-    while( ( fi = it.current() ) ) {
-        if( fi->fileName() == "." || fi->fileName() == ".." ) {
+        const QFileInfoList *list = d.entryInfoList();
+        QFileInfoListIterator it( *list );
+        QFileInfo *fi;
+        
+        if( it.count() < 3 ) // empty dir
+          return;
+        
+        while( ( fi = it.current() ) ) {
+          if( fi->fileName() == "." || fi->fileName() == ".." ) {
             ++it;
             continue;
-        }
-        if( fi->isDir() ) {
-            parseDesktopFile( fi, item );
-        }
-        else {
+          }
+          // check if item already in list (e.g. parsed from ~/.kde)
+          QListViewItem * pChild = item ? item->firstChild() : this->firstChild();
+          bool found = false;
+          while( pChild && !found ) {
+            found = ( ((KAppTreeListItem *)pChild)->path == relPath + fi->fileName() );
+            pChild = pChild->nextSibling();
+          }
+          if ( found )
+          {
+            //debug(QString("skipping %1 | %2").arg(*dirsit).arg(fi->fileName()));
+            ++it;
+            continue;
+          }
+          
+          if( fi->isDir() ) {
+            parseDesktopFile( fi, item, relPath );
+          }
+          else {
             if( !isDesktopFile( fi->absFilePath() ) ) {
-                ++it;
-                continue;
+              ++it;
+              continue;
             }
-            parseDesktopFile( fi, item );
+            parseDesktopFile( fi, item, relPath );
+          }
+          ++it;
         }
-        ++it;
-    }
-
-    return 0;
-}
-
-
-// ----------------------------------------------------------------------
-
-void KApplicationTree::slotFolderSelected(QListViewItem* i)
-{
-    KAppTreeListItem *item = (KAppTreeListItem *) i;
-  
-    if( i && !item->parsed ) {
-        parseDesktopDir( QDir(item->path), item );
-        item->parsed = true;
-        item->setOpen(true);
+      }
     }
 }
 
@@ -249,11 +270,11 @@ void KApplicationTree::slotFolderSelected(QListViewItem* i)
 
 void KApplicationTree::slotItemHighlighted(QListViewItem* i)
 {
-    KAppTreeListItem *item = (KAppTreeListItem *) i;
-    
     // i may be 0 (see documentation)
     if(!i)
         return;
+    
+    KAppTreeListItem *item = (KAppTreeListItem *) i;
     
     if( (!item->directory ) && (!item->exec.isEmpty()) )
         emit highlighted( item->text(0), item->exec );
@@ -264,16 +285,14 @@ void KApplicationTree::slotItemHighlighted(QListViewItem* i)
 
 void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 {
-    KAppTreeListItem *item = (KAppTreeListItem *) i;
-
     // i may be 0 (see documentation)
     if(!i)
         return;
     
+    KAppTreeListItem *item = (KAppTreeListItem *) i;
+
     if( ( !item->directory ) && (!item->exec.isEmpty() ) )
         emit selected( item->text(0), item->exec );
-    else
-        item->setOpen(!item->isOpen());
 }
 
 // ----------------------------------------------------------------------
@@ -287,11 +306,11 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 
 /***************************************************************
  *
- * OpenWithDlg
+ * KOpenWithDlg
  *
  ***************************************************************/
 
-OpenWithDlg::OpenWithDlg( const QStringList& _url, const QString&_text, const QString& _value, QWidget *parent)
+KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
     m_pTree = 0L;
@@ -350,14 +369,14 @@ OpenWithDlg::OpenWithDlg( const QStringList& _url, const QString&_text, const QS
 
 // ----------------------------------------------------------------------
 
-OpenWithDlg::~OpenWithDlg()
+KOpenWithDlg::~KOpenWithDlg()
 {
     delete completion;
 }
 
 // ----------------------------------------------------------------------
 
-void OpenWithDlg::slotClear()
+void KOpenWithDlg::slotClear()
 {
     edit->setText("");
 }
@@ -365,21 +384,15 @@ void OpenWithDlg::slotClear()
 
 // ----------------------------------------------------------------------
 
-void OpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
+void KOpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
 {
-    m_pService = KServiceProvider::getServiceProvider()->serviceByName( _name );
-    if ( !m_pService )
-        edit->setText( _exec );
-    else
-        edit->setText( "" );
-    
-//    accept(); // (David) I personnally prefer having to click ok...
+    edit->setText( _exec );
 }
 
 
 // ----------------------------------------------------------------------
 
-void OpenWithDlg::slotHighlighted( const QString& _name, const QString& )
+void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
     qName = _name;
     haveApp = true;
@@ -388,7 +401,7 @@ void OpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 // ----------------------------------------------------------------------
 
-void OpenWithDlg::slotOK()
+void KOpenWithDlg::slotOK()
 {
     if( haveApp ) 
         m_pService = KServiceProvider::getServiceProvider()->serviceByName( qName );
