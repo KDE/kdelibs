@@ -355,20 +355,20 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if ( !enabled || !o->isWidgetType() )
         return false;
 
-    int t = e->type();
-    
+    QEvent::Type t = e->type();
+
     // If it is not one of the events we respond to, ignore it.
-    if( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
-            (t >= QEvent::Destroy && t <= QEvent::Hide) ||
+    if ( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
+             (t >= QEvent::Destroy && t <= QEvent::Hide) ||
              t == QEvent::AccelOverride ||
-             t == QEvent::Wheel || 
+             t == QEvent::Wheel ||
              t == QEvent::WindowDeactivate) )
-      return false;
-    
+        return false;
+
     // disconnect() and connect() on events for a new widget
-    if ( o != hideWidget ) 
+    if ( o != hideWidget )
     {
-        if ( hideWidget ) 
+        if ( hideWidget )
         {
             disconnect( hideWidget, SIGNAL( destroyed() ),
                         this, SLOT( slotWidgetDestroyed()));
@@ -378,10 +378,10 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     }
 
     QWidget *w = static_cast<QWidget *>( o );
-    hideWidget = w;
 
-    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy ||
-         t == QEvent::WindowDeactivate ) 
+    if ( hideWidget == w &&
+        (t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy ||
+         t == QEvent::WindowDeactivate) )
     {
 	if ( autoHideTimer )
             autoHideTimer->stop();
@@ -391,6 +391,8 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
         return false;
     }
+
+    hideWidget = w;
 
     if ( t == QEvent::Create ) // Qt steals mouseTracking on create()
         w->setMouseTracking( true );
@@ -404,7 +406,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
  	return false;
     }
 
-    else if ( t == QEvent::Enter ) 
+    else if ( t == QEvent::Enter )
     {
         if ( isCursorHidden )
             unhideCursor( w );
@@ -414,7 +416,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
     else // other than enter/leave/focus events
     {
-        if ( isCursorHidden ) 
+        if ( isCursorHidden )
         {
             if ( t == QEvent::MouseButtonPress ||
                  t == QEvent::MouseButtonRelease ||
