@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Service
+Name=HTTP Cookie Jar
+Exec=kcookiejar
+X-DCOP-ServiceType=Unique
+ServiceTypes=Daemon

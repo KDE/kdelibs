@@ -19,3 +19,6 @@ kcookiejar_la_LIBADD = $(LIB_KIO)
 kcookiejar_SOURCES = dummy.cpp
 kcookiejar_LDADD = kcookiejar.la
 kcookiejar_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+
+servicesdir = $(kde_servicesdir)
+services_DATA = kcookiejar.desktop
