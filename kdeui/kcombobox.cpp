@@ -353,6 +353,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
                 subMenu->insertItem( i18n("Manual"), ShellCompletion );
                 subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
+                subMenu->insertItem( i18n("Popup"), PopupCompletion );
+                subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
                 subMenu->insertItem( i18n("Automatic"), AutoCompletion );
                 subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
                 subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
