@@ -320,7 +320,8 @@ void KJSDebugWin::eval()
 
 void KJSDebugWin::closeEvent(QCloseEvent *e)
 {
-  leaveSession();
+  if (m_inSession)
+    leaveSession();
   return QWidget::closeEvent(e);
 }
 
