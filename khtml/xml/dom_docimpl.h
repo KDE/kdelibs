@@ -24,6 +24,7 @@
 #define _DOM_DocumentImpl_h_
 
 #include "dom_nodeimpl.h"
+#include "dom2_traversalimpl.h"
 
 #include <qlist.h>
 #include <qstringlist.h>
@@ -150,8 +151,8 @@ public:
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
                                     NodeFilterImpl *filter, bool entityReferenceExpansion);
 
-// ###    TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
-//                                bool entityReferenceExpansion);
+    TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+                            bool entityReferenceExpansion);
 
     QList<NodeImpl> changedNodes;
     virtual void setChanged(bool b=true);

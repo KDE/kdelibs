@@ -520,11 +520,12 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long /*w
 //    return 0;
 }
 
-/*TreeWalker DocumentImpl::createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
-                                bool entityReferenceExpansion)
+TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter /*filter*/,
+                                bool /*entityReferenceExpansion*/)
 {
-    return 0; // ###
-}*/
+    return new TreeWalkerImpl;
+//    return 0; // ###
+}
 
 void DocumentImpl::applyChanges(bool,bool force)
 {
