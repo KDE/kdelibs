@@ -47,8 +47,8 @@ typedef QMap<QString, QString> UserList;
 
 static DCOPClient* dcop = 0;
 
-static QTextStream cout( stdout, IO_WriteOnly );
-static QTextStream cerr( stderr, IO_WriteOnly );
+static QTextStream cout_( stdout, IO_WriteOnly );
+static QTextStream cerr_( stderr, IO_WriteOnly );
 
 /**
  * Session to send call to
@@ -300,7 +300,7 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
  */
 void showHelp( int exitCode = 0 )
 {
-    cout << "Usage: dcop [options] [application [object [function [arg1] [arg2] ... ] ] ]" << endl
+    cout_ << "Usage: dcop [options] [application [object [function [arg1] [arg2] ... ] ] ]" << endl
 	 << "" << endl
 	 << "Console DCOP client" << endl
 	 << "" << endl
@@ -346,7 +346,7 @@ static UserList userList()
 
     if( !f.open( IO_ReadOnly ) )
     {
-	cerr << "Can't open /etc/passwd for reading!" << endl;
+	cerr_ << "Can't open /etc/passwd for reading!" << endl;
 	return result;
     }
 
@@ -369,7 +369,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 {
     if( home.isEmpty() )
     {
-	cerr << "WARNING: Cannot determine home directory for user "
+	cerr_ << "WARNING: Cannot determine home directory for user "
 	     << user << "!" << endl
 	     << "Please check permissions or set the $DCOPSERVER variable manually before" << endl
 	     << "calling dcop." << endl;
@@ -421,7 +421,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	int delimPos = args[ 0 ].findRev( ',' );
 	if( delimPos == -1 )
         {
-	    cerr << "Error: '" << args[ 0 ]
+	    cerr_ << "Error: '" << args[ 0 ]
 		 << "' is not a valid DCOP reference." << endl;
 	    exit( -1 );
         }
@@ -467,7 +467,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
     {
 	firstRun = false;
 
-	//cout << "Iterating '" << it.key() << "'" << endl;
+	//cout_ << "Iterating '" << it.key() << "'" << endl;
 
 	if( session == QuerySessions )
 	{
@@ -476,24 +476,24 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    {
 		if( users.count() <= 1 )
 		{
-		    cout << "No active sessions";
+		    cout_ << "No active sessions";
 		    if( !( *it ).isEmpty() )
-			cout << " for user " << *it;
-		    cout << endl;
+			cout_ << " for user " << *it;
+		    cout_ << endl;
 		}
 	    }
 	    else
 	    {
-		cout << "Active sessions ";
+		cout_ << "Active sessions ";
 		if( !( *it ).isEmpty() )
-		    cout << "for user " << *it << " ";
-		cout << ":" << endl;
+		    cout_ << "for user " << *it << " ";
+		cout_ << ":" << endl;
 
 		QStringList::Iterator sIt;
 		for( sIt = sessions.begin(); sIt != sessions.end(); sIt++ )
-		    cout << "  " << *sIt << endl;
+		    cout_ << "  " << *sIt << endl;
 
-		cout << endl;
+		cout_ << endl;
 	    }
 	    continue;
 	}
@@ -514,7 +514,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		    continue;
 		else
 		{
-		    cerr << "ERROR: No active KDE sessions!" << endl
+		    cerr_ << "ERROR: No active KDE sessions!" << endl
 			 << "If you are sure there is one, please set the $DCOPSERVER variable manually" << endl
 			 << "before calling dcop." << endl;
 		    exit( -1 );
@@ -529,13 +529,13 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		}
 		else
 		{
-		    cerr << "ERROR: The specified session doesn't exist!" << endl;
+		    cerr_ << "ERROR: The specified session doesn't exist!" << endl;
 		    exit( -1 );
 		}
 	    }
 	    else if( sessions.count() > 1 && session != AllSessions )
 	    {
-		cerr << "ERROR: Multiple available KDE sessions!" << endl
+		cerr_ << "ERROR: Multiple available KDE sessions!" << endl
 		     << "Please specify the correct session to use with --session or use the" << endl
 		     << "--all-sessions option to broadcast to all sessions." << endl;
 		exit( -1 );
@@ -551,7 +551,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    QFileInfo fi( iceFile );
 	    if( iceFile.isEmpty() )
 	    {
-		cerr << "WARNING: Cannot determine home directory for user "
+		cerr_ << "WARNING: Cannot determine home directory for user "
 		     << it.key() << "!" << endl
 		     << "Please check permissions or set the $ICEAUTHORITY variable manually before" << endl
 		     << "calling dcop." << endl;
@@ -562,11 +562,11 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		{
 		    char *envStr = strdup( ( "ICEAUTHORITY=" + iceFile ).ascii() );
 		    putenv( envStr );
-		    //cerr << "ice: " << envStr << endl;
+		    //cerr_ << "ice: " << envStr << endl;
 		}
 		else
 		{
-		    cerr << "WARNING: ICE authority file " << iceFile
+		    cerr_ << "WARNING: ICE authority file " << iceFile
 			 << "is not readable by you!" << endl
 			 << "Please check permissions or set the $ICEAUTHORITY variable manually before" << endl
 			 << "calling dcop." << endl;
@@ -578,7 +578,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		    continue;
 		else
 		{
-		    cerr << "WARNING: Cannot find ICE authority file "
+		    cerr_ << "WARNING: Cannot find ICE authority file "
 		         << iceFile << "!" << endl
 			 << "Please check permissions or set the $ICEAUTHORITY"
 			 << " variable manually before" << endl
@@ -600,7 +600,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		QFile f( dcopFile );
 		if( !f.open( IO_ReadOnly ) )
 		{
-		    cerr << "Can't open " << dcopFile << " for reading!" << endl;
+		    cerr_ << "Can't open " << dcopFile << " for reading!" << endl;
 		    exit( -1 );
 		}
 
@@ -609,7 +609,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 
 		if( dcopServer.isEmpty() )
 		{
-		    cerr << "WARNING: Unable to determine DCOP server for session "
+		    cerr_ << "WARNING: Unable to determine DCOP server for session "
 			 << *sIt << "!" << endl
 			 << "Please check permissions or set the $DCOPSERVER variable manually before" << endl
 			 << "calling dcop." << endl;
@@ -624,7 +624,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    bool success = client->attach();
 	    if( !success )
 	    {
-		cerr << "ERROR: Couldn't attach to DCOP server!" << endl;
+		cerr_ << "ERROR: Couldn't attach to DCOP server!" << endl;
 		continue;
 	    }
 	    dcop = client;
@@ -672,7 +672,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		else
 		{
 		    // Just call function
-//		    cout << "call " << app << ", " << objid << ", " << function << ", (params)" << endl;
+//		    cout_ << "call " << app << ", " << objid << ", " << function << ", (params)" << endl;
 		    callFunction( app, objid, function, params );
 		}
 		break;
@@ -717,7 +717,7 @@ int main( int argc, char** argv )
 	    }
 	    else
 	    {
-		cerr << "Missing username for '--user' option!" << endl << endl;
+		cerr_ << "Missing username for '--user' option!" << endl << endl;
 		showHelp( -1 );
 	    }
 	}
@@ -725,7 +725,7 @@ int main( int argc, char** argv )
 	{
 	    if( session == AllSessions )
 	    {
-		cerr << "ERROR: --session cannot be mixed with --all-sessions!" << endl << endl;
+		cerr_ << "ERROR: --session cannot be mixed with --all-sessions!" << endl << endl;
 		showHelp( -1 );
 	    }
 	    else if( pos <= argc - 2 )
@@ -736,7 +736,7 @@ int main( int argc, char** argv )
 	    }
 	    else
 	    {
-		cerr << "Missing session name for '--session' option!" << endl << endl;
+		cerr_ << "Missing session name for '--session' option!" << endl << endl;
 		showHelp( -1 );
 	    }
 	}
@@ -754,7 +754,7 @@ int main( int argc, char** argv )
 	{
 	    if( !sessionName.isEmpty() )
 	    {
-		cerr << "ERROR: --session cannot be mixed with --all-sessions!" << endl << endl;
+		cerr_ << "ERROR: --session cannot be mixed with --all-sessions!" << endl << endl;
 		showHelp( -1 );
 	    }
 	    session = AllSessions;
@@ -762,7 +762,7 @@ int main( int argc, char** argv )
 	}
 	else if( argv[ pos ][ 0 ] == '-' )
 	{
-	    cerr << "Unknown command-line option '" << argv[ pos ]
+	    cerr_ << "Unknown command-line option '" << argv[ pos ]
 		 << "'." << endl << endl;
 	    showHelp( -1 );
 	}
@@ -778,25 +778,25 @@ int main( int argc, char** argv )
 
     if( readStdin && args.count() < 3 )
     {
-	cerr << "--pipe option only supported for function calls!" << endl << endl;
+	cerr_ << "--pipe option only supported for function calls!" << endl << endl;
 	showHelp( -1 );
     }
 
     if( user == "*" && args.count() < 3 && session != QuerySessions )
     {
-	cerr << "ERROR: The --all-users option is only supported for function calls!" << endl << endl;
+	cerr_ << "ERROR: The --all-users option is only supported for function calls!" << endl << endl;
 	showHelp( -1 );
     }
 
     if( session == QuerySessions && !args.isEmpty() )
     {
-	cerr << "ERROR: The --list-sessions option cannot be used for actual DCOP calls!" << endl << endl;
+	cerr_ << "ERROR: The --list-sessions option cannot be used for actual DCOP calls!" << endl << endl;
 	showHelp( -1 );
     }
 
     if( session == QuerySessions && user.isEmpty() )
     {
-	cerr << "ERROR: The --list-sessions option can only be used with the --user or" << endl
+	cerr_ << "ERROR: The --list-sessions option can only be used with the --user or" << endl
 	     << "--all-users options!" << endl << endl;
 	showHelp( -1 );
     }
@@ -804,7 +804,7 @@ int main( int argc, char** argv )
     if( session != DefaultSession && session != QuerySessions &&
         args.count() < 3 )
     {
-	cerr << "ERROR: The --session and --all-sessions options are only supported for function" << endl
+	cerr_ << "ERROR: The --session and --all-sessions options are only supported for function" << endl
 	     << "calls!" << endl << endl;
 	showHelp( -1 );
     }
