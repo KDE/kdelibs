@@ -55,7 +55,7 @@ public:
   enum CacheControl { CC_CacheOnly, // Fail request if not in cache
                       CC_Cache, // Use cached entry if available
                       CC_Verify, // Validate cached entry with remote site
-                      CC_Reload // Always fetch from remote site. 
+                      CC_Reload // Always fetch from remote site.
                       };
 
   typedef struct
@@ -261,7 +261,7 @@ protected: // Members
   bool m_bMustRevalidate; // Cache entry is expired.
   long m_cacheExpireDateOffset; // Position in the cache entry where the
                                 // 16 byte expire date is stored.
-  time_t m_expireDate;                                
+  time_t m_expireDate;
 
   // Language/Encoding
   QStringList m_qTransferEncodings, m_qContentEncodings;

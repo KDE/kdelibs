@@ -724,9 +724,51 @@ HTTPProtocol::http_openConnection()
       error( ERR_COULD_NOT_CONNECT, m_state.hostname );
       return false;
     }
+
+    // Check if we need to pop up a dialog box to the user
+    bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
+    kdDebug() << "ssl_was_in_use: " << ssl_was_in_use << endl;
+
+#ifdef DO_SSL
+    kdDebug() << "m_bUseSSL: " << m_bUseSSL << endl;
+    kdDebug() << "warnOnEnter: " << m_ssl.settings()->warnOnEnter() << endl;
+    kdDebug() << "warnOnUnencrypted: " << m_ssl.settings()->warnOnUnencrypted() << endl;
+    kdDebug() << "warnOnLeave: " << m_ssl.settings()->warnOnLeave() << endl;
+    kdDebug() << "warnOnMixed: " << m_ssl.settings()->warnOnMixed() << endl;
+
+    if ( !ssl_was_in_use && m_bUseSSL && m_ssl.settings()->warnOnEnter() )
+    {
+      kdDebug() << "ENTERING SSL" << endl;
+      kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
+      // TODO
+    }
+#else
+
+    if ( ssl_was_in_use )
+    {
+      kdDebug() << "LEAVING SSL" << endl;
+      // We come from the SSL world. Check if we should popup a warning.
+      KConfig cfg("cryptodefaults");
+      cfg.setGroup("Warnings");
+      if ( cfg.readBoolEntry("OnLeave", true ) )
+      {
+        // TODO
+        kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
+      }
+    }
+#endif
+/*
+        if ( doing a post :/ && !m_bUseSSL && m_ssl.settings()->warnOnUnencrypted() )
+        {
+          kdDebug() << "UNENCRYPTED" << endl;
+          // TODO
+        }
+*/
+
+    kdDebug() << time(0L) << " Sending connected" << endl;
     // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
     connected();
-    
+
     return true;
 }
 
