@@ -72,7 +72,7 @@ KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const 
 	init();
 	// ???
 	QString toolbarName = i18n("Video Toolbar");
-	setXML(QString("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Separator/><Action name=\"double_size\"/><Action name=\"normal_size\"/><Action name=\"half_size\"/><Separator/><Action name=\"fullscreen_mode\"/></Menu></MenuBar><Toolbar name=\"%1\"><Action name=\"fullscreen_mode\"/></Toolbar></kpartgui>").arg(toolbarName), true);
+	setXML(QString("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Separator/><Action name=\"double_size\"/><Action name=\"normal_size\"/><Action name=\"half_size\"/><Separator/><Action name=\"fullscreen_mode\"/></Menu></MenuBar><Toolbar name=\"VideoToolbar\"><text>Video Toolbar</text><Action name=\"fullscreen_mode\"/></Toolbar></kpartgui>"), true);
 }
 
 KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
