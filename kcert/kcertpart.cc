@@ -120,7 +120,7 @@ QCString pass;
          QString validText("Certificate is valid from %1 to %2.");
          _validPeriod->setText(validText.arg(xc->getNotBefore()).arg(xc->getNotAfter()));
 
-  //_serialNum->setText(xc->getSerialNumber());
+  _serialNum->setText(xc->getSerialNumber());
   _certState->setText(KSSLCertificate::verifyText(p12->validate()));
 
 delete p12;
