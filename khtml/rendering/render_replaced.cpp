@@ -1,8 +1,8 @@
 /**
  * This file is part of the HTML widget for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2000 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -55,7 +55,7 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
 }
 
 void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
-                            int _tx, int _ty)
+                            int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
     // not visible or nont even once layouted?
     if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
@@ -65,22 +65,9 @@ void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-    // overflow: hidden
-    bool clipped = false;
-    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
-        calcClip(p, _tx, _ty);
-	clipped = true;
-    }
-
     if(hasSpecialObjects()) paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty);
-
-    // overflow: hidden
-    // restore clip region
-    if ( clipped ) {
-	p->restore();
-    }
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
 void RenderReplaced::calcMinMaxWidth()
@@ -333,7 +320,8 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setSpecialObjects(false);
 }
 
-void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
+void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty,
+			       RenderObject::PaintPhase paintPhase)
 {
     if (!m_widget || !m_view)
 	return;

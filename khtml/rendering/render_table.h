@@ -4,7 +4,7 @@
  * Copyright (C) 1997 Martin Jones (mjones@kde.org)
  *           (C) 1997 Torben Weis (weis@kde.org)
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
- *           (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -96,7 +96,7 @@ public:
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -228,7 +228,7 @@ public:
     }
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
 
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
@@ -325,7 +325,7 @@ public:
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
     virtual void paint( QPainter* p, int x, int y,
-                        int w, int h, int tx, int ty);
+                        int w, int h, int tx, int ty, RenderObject::PaintPhase paintPhase);
 
     virtual void close();
 

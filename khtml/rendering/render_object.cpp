@@ -1,9 +1,10 @@
 /**
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,10 +30,13 @@
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmlhashes.h"
+#include "misc/loader.h"
+
 #include <kdebug.h>
 #include <qpainter.h>
 #include "khtmlview.h"
 #include "render_arena.h"
+#include "render_layer.h"
 
 #include <assert.h>
 using namespace DOM;
@@ -221,6 +225,46 @@ void RenderObject::relativePositionOffset(int &tx, int &ty) const
     }
 }
 
+void RenderObject::appendLayers(RenderLayer* parentLayer)
+{
+    if (!parentLayer)
+        return;
+
+    if (layer()) {
+        parentLayer->addChild(layer());
+        return;
+    }
+
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
+        curr->appendLayers(parentLayer);
+}
+
+void RenderObject::removeLayers(RenderLayer* parentLayer)
+{
+    if (!parentLayer)
+        return;
+
+    if (layer()) {
+        parentLayer->removeChild(layer());
+        return;
+    }
+
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
+        curr->removeLayers(parentLayer);
+}
+
+RenderLayer* RenderObject::enclosingLayer()
+{
+    RenderObject* curr = this;
+    while (curr) {
+        RenderLayer *layer = curr->layer();
+        if (layer)
+            return layer;
+        curr = curr->parent();
+    }
+    return 0;
+}
+
 int RenderObject::offsetLeft() const
 {
     int x = xPos();
@@ -250,7 +294,7 @@ int RenderObject::offsetTop() const
         RenderObject* offsetPar = offsetParent();
         for( RenderObject* curr = parent();
              curr && curr != offsetPar;
-             curr = curr->parent() ) 
+             curr = curr->parent() )
             y += curr->yPos();
     }
     return y;
@@ -267,6 +311,42 @@ RenderObject* RenderObject::offsetParent() const
         curr = curr->parent();
     }
     return curr;
+}
+
+void RenderObject::setLayouted(bool b)
+{
+    m_layouted = b;
+    if (b) {
+        RenderLayer* l = layer();
+        if (l) {
+            l->setWidth(width());
+            l->setHeight(height());
+            l->updateLayerPosition();
+        }
+    }
+    else {
+        RenderObject *o = m_parent;
+        RenderObject *root = this;
+
+        // If an attempt is made to
+        // setLayouted(false) an object inside a clipped (overflow:hidden) object, we
+        // have to make sure to repaint only the clipped rectangle.
+        // We do this by passing an argument to scheduleRelayout.  This hint really
+        // shouldn't be needed, and it's unfortunate that it is necessary.  -dwh
+
+        RenderObject* clippedObj =
+            (style()->overflow() == OHIDDEN && !isText()) ? this : 0;
+
+        while( o ) {
+            root = o;
+            o->m_layouted = false;
+            if (o->style()->overflow() == OHIDDEN && !clippedObj)
+                clippedObj = o;
+            o = o->m_parent;
+        }
+
+        root->scheduleRelayout(clippedObj);
+    }
 }
 
 RenderObject *RenderObject::containingBlock() const
@@ -621,9 +701,10 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
 }
 
-void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
+			  RenderObject::PaintPhase paintPhase )
 {
-    paintObject(p, x, y, w, h, tx, ty);
+    paintObject(p, x, y, w, h, tx, ty, paintPhase);
 }
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
@@ -653,6 +734,7 @@ QString RenderObject::information() const
     if (m_recalcMinMax) ts << "rmm ";
     if (mouseInside()) ts << "mi ";
     if (style() && style()->zIndex()) ts << "zI: " << style()->zIndex();
+    if (style() && style()->hasAutoZIndex()) ts << "zI: auto ";
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element() && element()->focused()) ts << "focus ";
@@ -670,7 +752,9 @@ QString RenderObject::information() const
 	      QString::fromLatin1(" cs=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) +
 	      QString::fromLatin1("]") ) : QString::null );
-	return str;
+    if ( layer() )
+	ts << " layer=" << layer();
+    return str;
 }
 
 void RenderObject::printTree(int indent) const
@@ -896,16 +980,6 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-#if 0  /// this method is unused
-void RenderObject::invalidateLayout()
-{
-    kdDebug() << "RenderObject::invalidateLayout " << renderName() << endl;
-    setLayouted(false);
-    if (m_parent && m_parent->layouted())
-        m_parent->invalidateLayout();
-}
-#endif
-
 void RenderObject::removeFromSpecialObjects()
 {
     if (isPositioned() || isFloating()) {
@@ -995,16 +1069,30 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     // ### table should have its own, more performant method
     if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, tx, ty))
+            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty))
                 inside = true;
     }
 
-    if (inside && element()) {
-        if (!info.innerNode())
+    if (inside) {
+        if (info.innerNode() && info.innerNode()->renderer() &&
+            !info.innerNode()->renderer()->isInline() && element() && isInline()) {
+            // Within the same layer, inlines are ALWAYS fully above blocks.  Change inner node.
             info.setInnerNode(element());
 
+            // Clear everything else.
+            info.setInnerNonSharedNode(0);
+            info.setURLElement(0);
+        }
+
+        if (!info.innerNode() && element())
+            info.setInnerNode(element());
+
+        if(!info.innerNonSharedNode() && element())
+            info.setInnerNonSharedNode(element());
+
         if (!info.URLElement()) {
-            RenderObject* p = this;
+            //RenderObject* p = (!isInline() && continuation()) ? continuation() : this;
+	    RenderObject *p = this;
             while (p) {
                 if (p->element() && p->element()->hasAnchor()) {
                     info.setURLElement(p->element());

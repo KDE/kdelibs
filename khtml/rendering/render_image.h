@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
+    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty, RenderObject::PaintPhase );
 
     virtual void layout();
 

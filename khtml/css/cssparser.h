@@ -56,7 +56,7 @@ namespace DOM {
     struct Value {
 	int id;
 	union {
-	    float fValue;
+	    double fValue;
 	    int iValue;
 	    ParseString string;
 	    Function *function;

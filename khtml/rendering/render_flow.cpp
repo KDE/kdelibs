@@ -1,9 +1,10 @@
 /**
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2002 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,6 +37,8 @@
 #include "rendering/render_text.h"
 #include "rendering/render_table.h"
 #include "rendering/render_root.h"
+#include "rendering/render_layer.h"
+
 #include "xml/dom_nodeimpl.h"
 #include "khtmlview.h"
 using namespace DOM;
@@ -89,6 +92,11 @@ void RenderFlow::setStyle(RenderStyle *_style)
 
     if(isPositioned())
         setInline(false);
+
+    if (!isTableCell() &&
+	(isPositioned() || isRelPositioned() || style()->overflow()==OHIDDEN) &&
+	!m_layer)
+        m_layer = new (renderArena()) RenderLayer(this);
 
     if(isFloating() || !style()->display() == INLINE)
         setInline(false);
@@ -177,12 +185,12 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
     return SelectionPointAfter;
 }
 
-void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                                 int _tx, int _ty)
+void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
+                                 RenderObject::PaintPhase paintPhase )
 {
 
 #ifdef DEBUG_LAYOUT
-//    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paint() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
+//     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paint() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
 #endif
 
     if(!isInline())
@@ -203,21 +211,14 @@ void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h,
         }
     }
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
-void RenderFlow::paintObject(QPainter *p, int _x, int _y,
-                                       int _w, int _h, int _tx, int _ty)
+void RenderFlow::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
+			     int _tx, int _ty,  RenderObject::PaintPhase paintPhase)
 {
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
-
-    bool clipped = false;
-    // overflow: hidden
-    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
-        calcClip(p, _tx, _ty);
-	clipped = true;
-    }
 
     // 1. paint background, borders etc
     if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
@@ -225,18 +226,12 @@ void RenderFlow::paintObject(QPainter *p, int _x, int _y,
 
     // 2. paint contents
     for ( RenderObject* child = firstChild(); child; child = child->nextSibling() )
-        if(!child->isSpecial())
-            child->paint(p, _x, _y, _w, _h, _tx, _ty);
+        if(!child->layer() && !child->isFloating())
+            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 
-    // 3. paint floats and other non-flow objects
+    // 3. paint floats
     if(specialObjects)
-	paintSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
-
-    // overflow: hidden
-    // restore clip region
-    if ( clipped ) {
-	p->restore();
-    }
+	paintFloats( p,  _x, _y, _w, _h, _tx , _ty);
 
     if(!isInline() && !childrenInline() && style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());
@@ -254,19 +249,29 @@ void RenderFlow::paintObject(QPainter *p, int _x, int _y,
 
 }
 
-void RenderFlow::paintSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+void RenderFlow::paintFloats( QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
 {
+    if (!specialObjects)
+        return;
+
     SpecialObject* r;
     QPtrListIterator<SpecialObject> it(*specialObjects);
-    for ( ; (r = it.current()); ++it ) {
-        // A special object may be registered with several different objects... so we only paint the
-        // object if we are its containing block
-       if (r->node->isPositioned() && r->node->containingBlock() == this) {
-           r->node->paint(p, x, y, w, h, tx , ty);
-       } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
-	    r->node->paint(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
-			   ty + r->startY - r->node->yPos() + r->node->marginTop() );
- 	}
+    for ( ; (r = it.current()); ++it) {
+        // Only paint the object if our noPaint flag isn't set.
+        if (r->node->isFloating() && !r->noPaint) {
+            r->node->paint(p, _x, _y, _w, _h,
+                           _tx + r->left - r->node->xPos() + r->node->marginLeft(),
+                           _ty + r->startY - r->node->yPos() + r->node->marginTop(),
+                           BACKGROUND_PHASE);
+            r->node->paint(p, _x, _y, _w, _h,
+                           _tx + r->left - r->node->xPos() + r->node->marginLeft(),
+                           _ty + r->startY - r->node->yPos() + r->node->marginTop(),
+                           FLOAT_PHASE);
+            r->node->paint(p, _x, _y, _w, _h,
+                           _tx + r->left - r->node->xPos() + r->node->marginLeft(),
+                           _ty + r->startY - r->node->yPos() + r->node->marginTop(),
+                           FOREGROUND_PHASE);
+        }
 #ifdef FLOAT_DEBUG
 	p->save();
 	if ( r->node->isPositioned() )

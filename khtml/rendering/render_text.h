@@ -1,8 +1,8 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
- * (C) 2000 Dirk Mueller (mueller@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -135,9 +135,9 @@ public:
     virtual bool isRendered() const { return true; }
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
 
     void deleteSlaves( RenderArena * );
     void detach( RenderArena * );

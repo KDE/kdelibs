@@ -39,8 +39,8 @@ public:
 
     virtual const char *renderName() const { return "RenderBR"; }
 
-    virtual void paint( QPainter *, int, int, int, int, int, int) {}
-    virtual void paintObject( QPainter *, int, int, int, int, int, int) {}
+    virtual void paint( QPainter *, int, int, int, int, int, int, RenderObject::PaintPhase) {}
+    virtual void paintObject( QPainter *, int, int, int, int, int, int, RenderObject::PaintPhase) {}
 
     virtual void position(int, int, int, int, int, bool, bool, int) {}
     virtual unsigned int width(unsigned int, unsigned int, const Font *) const { return 0; }

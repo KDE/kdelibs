@@ -1,7 +1,8 @@
 /**
  * This file is part of the HTML widget for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,6 +22,8 @@
 
 
 #include "rendering/render_root.h"
+#include "rendering/render_layer.h"
+#include "xml/dom_docimpl.h"
 
 #include "khtmlview.h"
 #include <kdebug.h>
@@ -57,6 +60,9 @@ RenderRoot::RenderRoot(DOM::NodeImpl* node, KHTMLView *view)
     m_selectionEnd = 0;
     m_selectionStartPos = -1;
     m_selectionEndPos = -1;
+
+    // Create a new root layer for our layer hierarchy.
+    m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
 }
 
 RenderRoot::~RenderRoot()
@@ -146,6 +152,9 @@ void RenderRoot::layout()
     kdDebug() << "RenderRoot::end time used=" << qt.elapsed() << endl;
 #endif
 
+    layer()->setHeight(m_height);
+    layer()->setWidth(m_width);
+
     setLayouted();
 }
 
@@ -161,13 +170,14 @@ bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
     return true;
 }
 
-void RenderRoot::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
+void RenderRoot::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
+		       RenderObject::PaintPhase paintPhase)
 {
-    paintObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
-void RenderRoot::paintObject(QPainter *p, int _x, int _y,
-                                       int _w, int _h, int _tx, int _ty)
+void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
+			     int _tx, int _ty,  RenderObject::PaintPhase paintPhase)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
@@ -183,8 +193,8 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y,
     // 2. paint contents
     RenderObject *child = firstChild();
     while(child != 0) {
-        if(!child->isFloating() && !child->isPositioned()) {
-            child->paint(p, _x, _y, _w, _h, _tx, _ty);
+        if(!child->layer() && !child->isFloating()) {
+            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
         }
         child = child->nextSibling();
     }
@@ -198,9 +208,6 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y,
         _tx += m_view->contentsX();
         _ty += m_view->contentsY();
     }
-
-    if(specialObjects) 
-        paintSpecialObjects(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty);

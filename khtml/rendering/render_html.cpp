@@ -1,7 +1,8 @@
 /**
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +23,9 @@
  */
 #include "rendering/render_html.h"
 #include "rendering/render_root.h"
+#include "rendering/render_layer.h"
 #include "html/html_elementimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include "khtmlview.h"
 
@@ -33,6 +36,7 @@ using namespace khtml;
 RenderHtml::RenderHtml(DOM::HTMLElementImpl* node)
     : RenderFlow(node)
 {
+    m_layer = new (node->getDocument()->renderArena()) RenderLayer(this);
 }
 
 RenderHtml::~RenderHtml()
@@ -45,13 +49,14 @@ void RenderHtml::setStyle(RenderStyle *style)
     setSpecialObjects(true);
 }
 
-void RenderHtml::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
+void RenderHtml::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
+		       RenderObject::PaintPhase paintPhase)
 {
     _tx += m_x;
     _ty += m_y;
 
     //kdDebug(0) << "html:paint " << _tx << "/" << _ty << endl;
-    paintObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
 void RenderHtml::paintBoxDecorations(QPainter *p,int, int _y,
@@ -67,8 +72,6 @@ void RenderHtml::paintBoxDecorations(QPainter *p,int, int _y,
 	    c = firstChild()->style()->backgroundColor();
 	if( !bg )
 	    bg = firstChild()->style()->backgroundImage();
-        if( !c.isValid() && root()->view())
-            c = root()->view()->palette().active().color(QColorGroup::Base);
     }
 
     int w = width();
@@ -120,6 +123,9 @@ void RenderHtml::layout()
 
     if( m_height + margins < lp )
 	m_height = lp - margins;
+
+    layer()->setHeight(m_height);
+    layer()->setWidth(m_width);
 
     //kdDebug(0) << "docHeight = " << m_height << endl;
 }

@@ -1,8 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,10 +26,8 @@
 #define RENDER_BOX_H
 
 #include "render_container.h"
-#include "misc/loader.h"
 
 namespace khtml {
-    class CachedObject;
 
 class RenderBox : public RenderContainer
 {
@@ -45,9 +44,11 @@ public:
 
     virtual void setStyle(RenderStyle *style);
     virtual void paint(QPainter *p, int _x, int _y, int _w, int _h,
-                       int _tx, int _ty);
+                       int _tx, int _ty, RenderObject::PaintPhase paintPhase);
 
     virtual void close();
+
+    virtual void detach(RenderArena* renderArena);
 
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
@@ -69,8 +70,8 @@ public:
     virtual short marginLeft() const { return m_marginLeft; }
     virtual short marginRight() const { return m_marginRight; }
 
-    virtual void setWidth( int width ) { m_width = width; }
-    virtual void setHeight( int height ) { m_height = height; }
+    virtual void setWidth( int width );
+    virtual void setHeight( int height );
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
 
@@ -95,6 +96,8 @@ public:
 
     void calcVerticalMargins();
 
+    virtual RenderLayer* layer() const { return m_layer; }
+
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
                                        int _w, int _h, int _tx, int _ty);
@@ -107,9 +110,10 @@ protected:
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
 
-    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+    QRect getOverflowClipRect(int tx, int ty);
+    QRect getClipRect(int tx, int ty);
 
-    void calcClip(QPainter* p, int tx, int ty);
+    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 
     // the actual height of the contents + borders + padding
     int m_height;
@@ -134,6 +138,8 @@ protected:
      * ( = the width of the element with line breaking disabled)
      */
     short m_maxWidth;
+
+    RenderLayer *m_layer;
 };
 
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -61,10 +61,10 @@ public:
     // overrides RenderObject
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
-    void paintSpecialObjects( QPainter *, int x, int y, int w, int h,
+                        int tx, int ty, RenderObject::PaintPhase paintPhase);
+    void paintFloats( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
 
     virtual void layout( );
@@ -126,6 +126,14 @@ public:
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end);
     BidiIterator findNextLineBreak(BidiIterator &start);
 
+    // The height (and width) of a block when you include overflow
+    // spillage out of the bottom of the block (e.g., a <div
+    // style="height:25px"> that has a 100px tall image inside it
+    // would have an overflow height of borderTop() + paddingTop() +
+    // 100px.
+    virtual int overflowHeight() const { return m_overflowHeight; }
+    virtual int overflowWidth() const { return m_overflowWidth; }
+
 protected:
 
     struct SpecialObject {
@@ -169,6 +177,14 @@ private:
     bool m_pre            : 1;
     bool firstLine        : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
+
+    // How much content overflows out of our block vertically or
+    // horizontally (all we support for now is spillage out of the
+    // bottom and the right, which are the common cases).  XXX
+    // Generalize to work with top and left as well.
+    short m_overflowWidth;
+    int m_overflowHeight;
+
 };
 
 

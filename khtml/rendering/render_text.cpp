@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
- * (C) 2000 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -501,7 +502,7 @@ int RenderText::rightmostPosition() const
 }
 
 void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-                      int tx, int ty)
+                      int tx, int ty, RenderObject::PaintPhase)
 {
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
@@ -647,7 +648,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 }
 
 void RenderText::paint( QPainter *p, int x, int y, int w, int h,
-                      int tx, int ty)
+                      int tx, int ty, RenderObject::PaintPhase paintPhase)
 {
     if (style()->visibility() != VISIBLE) return;
 
@@ -658,7 +659,7 @@ void RenderText::paint( QPainter *p, int x, int y, int w, int h,
     if ( ty + m_lines[0]->m_y > y + h + 64 ) return;
     if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < y ) return;
 
-    paintObject(p, x, y, w, h, tx, ty);
+    paintObject(p, x, y, w, h, tx, ty, paintPhase);
 }
 
 void RenderText::calcMinMaxWidth()

@@ -438,7 +438,7 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(int ident)
     m_type = CSSPrimitiveValue::CSS_IDENT;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(double num, CSSPrimitiveValue::UnitTypes type)
 {
     m_value.num = num;
     m_type = type;
@@ -503,17 +503,17 @@ int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, QPaintDevic
     return ( int ) computeLengthFloat( style, devMetrics );
 }
 
-float CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
 {
     unsigned short type = primitiveType();
 
-    float dpiY = 72.; // fallback
+    double dpiY = 72.; // fallback
     if ( devMetrics )
         dpiY = devMetrics->logicalDpiY();
     if ( !khtml::printpainter && dpiY < 96 )
         dpiY = 96.;
 
-    float factor = 1.;
+    double factor = 1.;
     switch(type)
     {
     case CSSPrimitiveValue::CSS_EMS:
@@ -550,7 +550,7 @@ float CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPai
     return getFloatValue(type)*factor;
 }
 
-void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue, int &exceptioncode )
+void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, double floatValue, int &exceptioncode )
 {
     exceptioncode = 0;
     cleanup();

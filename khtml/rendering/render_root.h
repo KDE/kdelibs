@@ -1,7 +1,7 @@
 /*
  * This file is part of the HTML widget for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -54,9 +54,10 @@ public:
 
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
-    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty);
+    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
+			RenderObject::PaintPhase paintPhase);
     void paintObject(QPainter *p, int _x, int _y,
-                     int _w, int _h, int _tx, int _ty);
+                     int _w, int _h, int _tx, int _ty, RenderObject::PaintPhase paintPhase);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();

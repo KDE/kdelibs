@@ -1,8 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 2001 Peter Kelly (pmk@post.com)
- * (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
+ * Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -204,6 +205,7 @@ public:
     unsigned short button() const { return m_button; }
     NodeImpl *relatedTarget() const { return m_relatedTarget; }
 
+    void computeLayerPos();
 
     void initMouseEvent(const DOMString &typeArg,
 			bool canBubbleArg,

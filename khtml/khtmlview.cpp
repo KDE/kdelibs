@@ -32,6 +32,7 @@
 #include "rendering/render_root.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_replaced.h"
+#include "rendering/render_layer.h"
 #include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
 #include "misc/htmlhashes.h"
@@ -59,6 +60,7 @@
 #include <qobjectlist.h>
 #include <qtimer.h>
 #include <kdialogbase.h>
+#include <qptrdict.h>
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -370,7 +372,7 @@ void KHTMLView::drawContents( QPainter*)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+//     kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
@@ -381,7 +383,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
         d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey, ew, eh, 0, 0);
+        m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey, ew, eh);
         d->tp->end();
         p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
     }
@@ -395,7 +397,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->tp->begin(d->paintBuffer);
             d->tp->translate(-ex, -ey-py);
             d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
-            m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey+py, ew, ph, 0, 0);
+            m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey+py, ew, ph);
 #ifdef BOX_DEBUG
             if (m_part->xmlDocImpl()->focusNode())
             {
@@ -1263,7 +1265,7 @@ void KHTMLView::print()
 
             root->setTruncatedAt(top+pageHeight);
 
-            root->paint(p, 0, top, pageWidth, pageHeight, 0, 0);
+            root->layer()->paint(p, 0, top, pageWidth, pageHeight);
             if (top + pageHeight >= root->docHeight())
                 break; // Stop if we have printed everything
 
@@ -1320,7 +1322,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     p->scale(scale, scale);
 #endif
 
-    root->paint(p, 0, yOff, root->docWidth(), height, 0, 0);
+    root->layer()->paint(p, 0, yOff, root->docWidth(), height);
     if (more)
         *more = yOff + height < root->docHeight();
     p->restore();

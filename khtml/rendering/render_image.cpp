@@ -1,9 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,6 +36,7 @@
 #include "css/csshelper.h"
 #include "misc/helper.h"
 #include "misc/htmlattrs.h"
+#include "misc/loader.h"
 #include "misc/htmltags.h"
 #include "html/html_formimpl.h"
 #include "html/html_imageimpl.h"
@@ -180,7 +181,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::paintObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
+void RenderImage::paintObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty, RenderObject::PaintPhase )
 {
     // add offset for relative positioning
     if(isRelPositioned())
@@ -350,6 +351,7 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
             (map = static_cast<HTMLDocumentImpl*>(i->getDocument())->getMap(i->imageMap()))) {
             // we're a client side image map
             inside = map->mapMouseEvent(_x - tx, _y - ty, contentWidth(), contentHeight(), info);
+            info.setInnerNonSharedNode(element());
         }
     }
 

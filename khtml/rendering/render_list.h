@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -49,9 +49,9 @@ public:
     // list-style-position: inside
 
     virtual void paint(QPainter *p, int x, int y, int w, int h,
-                           int xoff, int yoff);
+                           int xoff, int yoff, RenderObject::PaintPhase paintPhase);
     virtual void paintObject(QPainter *p, int x, int y, int w, int h,
-                             int xoff, int yoff);
+                             int xoff, int yoff, RenderObject::PaintPhase paintPhase);
     virtual void layout( );
     virtual void calcMinMaxWidth();
 

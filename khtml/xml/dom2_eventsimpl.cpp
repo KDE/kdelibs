@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 2001 Peter Kelly (pmk@post.com)
- * (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
+ * Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *           (C) 2001 Tobias Anton (anton@stud.fbi.fh-darmstadt.de)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,6 +26,8 @@
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_stringimpl.h"
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_docimpl.h"
+#include "rendering/render_layer.h"
 
 #include <kdebug.h>
 
@@ -333,12 +336,41 @@ MouseEventImpl::MouseEventImpl(EventId _id,
     m_relatedTarget = relatedTargetArg;
     if (m_relatedTarget)
 	m_relatedTarget->ref();
+    computeLayerPos();
 }
 
 MouseEventImpl::~MouseEventImpl()
 {
     if (m_relatedTarget)
 	m_relatedTarget->deref();
+}
+
+void MouseEventImpl::computeLayerPos()
+{
+    m_layerX = m_clientX;
+    m_layerY = m_clientY;
+
+    DocumentImpl *doc = view()->document();
+
+    if (!doc) {
+	return;
+    }
+
+    khtml::RenderObject::NodeInfo renderInfo(true, false);
+    doc->renderer()->layer()->nodeAtPoint(renderInfo, m_clientX, m_clientY);
+
+    NodeImpl *node = renderInfo.innerNonSharedNode();
+    while (node && !node->renderer()) {
+	node = node->parent();
+    }
+
+    if (!node) {
+	return;
+    }
+
+    node->renderer()->enclosingLayer()->updateLayerPosition();
+    m_layerX -= node->renderer()->enclosingLayer()->xPos();
+    m_layerY -= node->renderer()->enclosingLayer()->yPos();
 }
 
 void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
@@ -374,6 +406,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_relatedTarget = relatedTargetArg.handle();
     if (m_relatedTarget)
 	m_relatedTarget->ref();
+    computeLayerPos();
 }
 
 //---------------------------------------------------------------------------------------------

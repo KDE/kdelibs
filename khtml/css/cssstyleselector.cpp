@@ -2037,7 +2037,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         switch(id)
         {
         case CSS_PROP_BACKGROUND_COLOR:
-            style->setBackgroundColor(col); break;
+	    style->setBackgroundColor(col); break;
         case CSS_PROP_BORDER_TOP_COLOR:
             style->setBorderTopColor(col); break;
         case CSS_PROP_BORDER_RIGHT_COLOR:
@@ -2572,14 +2572,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if (!primitiveValue)
                 return;
 
-#if 0
             if (primitiveValue->getIdent() == CSS_VAL_AUTO) {
-                style->setHasAutoZIndex();
-                return;
-            }
-#endif
-
-            if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+                z_index = ZAUTO;
+            } else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
                 return; // Error case.
 
 	    z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
@@ -2668,7 +2663,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 // 	qDebug("setting clip bottom to %d", bottom.value );
 // 	qDebug("setting clip left to %d", left.value );
 	style->setClip( top, right, bottom, left );
-	style->setClipSpecified( true );
+	style->setHasClip( true );
         // rect, ident
         break;
     }

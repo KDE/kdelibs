@@ -1,9 +1,10 @@
 /*
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -69,6 +70,7 @@ namespace khtml {
     class RenderText;
     class RenderFrameSet;
     class RenderArena;
+    class RenderLayer;
 
 /**
  * Base Class for all rendering tree objects.
@@ -87,6 +89,18 @@ public:
 
     virtual RenderObject *firstChild() const { return 0; }
     virtual RenderObject *lastChild() const { return 0; }
+
+    virtual RenderLayer* layer() const { return 0; }
+    RenderLayer* enclosingLayer();
+    void appendLayers(RenderLayer* parentLayer);
+    void removeLayers(RenderLayer* parentLayer);
+
+    // ### rename to overflowClipRect and clipRect
+    virtual QRect getOverflowClipRect(int /*tx*/, int /*ty*/)
+	{ return QRect(0,0,0,0); }
+    virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
+    bool hasClip() { return isPositioned() &&  style()->hasClip(); }
+    bool hasOverflowClip() { return style()->overflow() == OHIDDEN; }
 
     // Linear tree traversal
     RenderObject *objectBelow() const;
@@ -188,22 +202,7 @@ public:
     RenderObject *container() const;
 
     void setOverhangingContents(bool p=true);
-    void setLayouted() {
-	m_layouted = true;
-    }
-    void setLayouted(bool b) {
-	m_layouted = b;
-	if(!b) {
-	    RenderObject *o = m_parent;
-	    RenderObject *root = this;
-	    while( o ) {
-		o->m_layouted = false;
-		root = o;
-		o = o->m_parent;
-	    }
-	    root->scheduleRelayout(true);
-	}
-    }
+    void setLayouted(bool b = true);
     void setLayoutedLocal(bool b) {
 	m_layouted = b;
     }
@@ -239,17 +238,43 @@ public:
     // the offset of baseline from the top of the object.
     virtual short baselinePosition( bool firstLine ) const;
 
+
+    enum PaintPhase {
+	// The painting of a layer occurs in three distinct phases.
+	// Each phase involves a recursive descent into the layer's
+	// render objects.
+
+	// The first phase is the background phase.  The backgrounds
+	// and borders of all blocks are painted.  Inlines are not
+	// painted at all.
+	BACKGROUND_PHASE,
+
+	// Floats must paint above block backgrounds but entirely
+	// below inline content that can overlap them.
+	FLOAT_PHASE,
+
+	// In the foreground phase, all inlines are fully painted.
+	// Inline replaced elements will get all three phases invoked
+	// on them during this phase.
+	FOREGROUND_PHASE
+    };
+
+
     /*
      * Print the object and its children, clipped by (x|y|w|h).
      * (tx|ty) is the calculated position of the parent
      */
-    virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty);
+    virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
+			PaintPhase phase);
 
     virtual void paintObject( QPainter* /*p*/, int /*x*/, int /*y*/,
-                        int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
+			      int /*w*/, int /*h*/, int /*tx*/, int /*ty*/,
+			      RenderObject::PaintPhase) {}
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 
+    virtual void paintBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
+                                     int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     /*
      * This function calculates the minimum & maximum width that the object
@@ -301,7 +326,7 @@ public:
     // does a query on the rendertree and finds the innernode
     // and overURL for the given position
     // if readonly == false, it will recalc hover styles accordingly
-    class NodeInfo
+   class NodeInfo
     {
         friend class RenderImage;
         friend class RenderFlow;
@@ -311,19 +336,22 @@ public:
         friend class DOM::HTMLAreaElementImpl;
     public:
         NodeInfo(bool readonly, bool active)
-            : m_innerNode(0), m_innerURLElement(0), m_readonly(readonly), m_active(active)
+            : m_innerNode(0), m_innerNonSharedNode(0), m_innerURLElement(0), m_readonly(readonly), m_active(active)
             { }
 
         DOM::NodeImpl* innerNode() const { return m_innerNode; }
+        DOM::NodeImpl* innerNonSharedNode() const { return m_innerNonSharedNode; }
         DOM::NodeImpl* URLElement() const { return m_innerURLElement; }
         bool readonly() const { return m_readonly; }
         bool active() const { return m_active; }
 
     private:
         void setInnerNode(DOM::NodeImpl* n) { m_innerNode = n; }
+        void setInnerNonSharedNode(DOM::NodeImpl* n) { m_innerNonSharedNode = n; }
         void setURLElement(DOM::NodeImpl* n) { m_innerURLElement = n; }
 
         DOM::NodeImpl* m_innerNode;
+        DOM::NodeImpl* m_innerNonSharedNode;
         DOM::NodeImpl* m_innerURLElement;
         bool m_readonly;
         bool m_active;
@@ -366,6 +394,13 @@ public:
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
     virtual int height() const { return 0; }
+
+    // The height of a block when you include overflow spillage out of
+    // the bottom of the block (e.g., a <div style="height:25px"> that
+    // has a 100px tall image inside it would have an overflow height
+    // of borderTop() + paddingTop() + 100px.
+    virtual int overflowHeight() const { return height(); }
+    virtual int overflowWidth() const { return width(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
@@ -463,9 +498,6 @@ public:
     }
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
-
-    virtual void paintBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                                     int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     virtual QRect viewRect() const;
     void remove() {

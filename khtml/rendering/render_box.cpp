@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,9 +29,10 @@
 
 #include <qpainter.h>
 
-#include "rendering/render_box.h"
+#include "misc/loader.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_root.h"
+#include "render_layer.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
 
@@ -57,12 +59,12 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
     m_marginBottom = 0;
     m_marginLeft = 0;
     m_marginRight = 0;
+
+    m_layer = 0;
 }
 
 void RenderBox::setStyle(RenderStyle *_style)
 {
-    bool oldpos = isPositioned();
-                    
     RenderObject::setStyle(_style);
 
     switch(_style->position())
@@ -72,24 +74,30 @@ void RenderBox::setStyle(RenderStyle *_style)
         setPositioned(true);
         break;
     default:
-        if (oldpos)
-            {
-            setPositioned(true);
-            removeFromSpecialObjects();
-            }
         setPositioned(false);
-        if(!isTableCell() && _style->isFloating()) {
+        if( !isTableCell() && _style->isFloating() )
             setFloating(true);
-        } else {
-            if(_style->position() == RELATIVE)
+        else if( _style->position() == RELATIVE )
                 setRelPositioned(true);
-        }
     }
+
+    if (!isTableCell() && (isPositioned() || isRelPositioned()) && !m_layer)
+        m_layer = new (renderArena()) RenderLayer(this);
 }
 
 RenderBox::~RenderBox()
 {
     //kdDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
+}
+
+void RenderBox::detach(RenderArena* renderArena)
+{
+    RenderLayer* layer = m_layer;
+
+    RenderContainer::detach(renderArena);
+
+    if (layer)
+        layer->detach(renderArena);
 }
 
 short RenderBox::contentWidth() const
@@ -124,11 +132,23 @@ int RenderBox::height() const
     return m_height;
 }
 
+void RenderBox::setWidth( int width )
+{
+    m_width = width;
+    if (m_layer)
+	m_layer->setWidth(width);
+}
 
+void RenderBox::setHeight( int height )
+{
+    m_height = height;
+    if (m_layer)
+	m_layer->setHeight(height);
+}
 // --------------------- painting stuff -------------------------------
 
 void RenderBox::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                                  int _tx, int _ty)
+                                  int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
     _tx += m_x;
     _ty += m_y;
@@ -137,7 +157,7 @@ void RenderBox::paint(QPainter *p, int _x, int _y, int _w, int _h,
     RenderObject *child = firstChild();
     while(child != 0)
     {
-        child->paint(p, _x, _y, _w, _h, _tx, _ty);
+        child->paint(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
         child = child->nextSibling();
     }
 }
@@ -175,6 +195,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
     if(c.isValid())
         p->fillRect(_tx, clipy, w, cliph, c);
+
     // no progressive loading of the background image
     if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage()) {
         //kdDebug( 6040 ) << "painting bgimage at " << _tx << "/" << _ty << endl;
@@ -285,11 +306,25 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
     p->drawRect(_tx, _ty, m_width, m_height);
 }
 
-
-void RenderBox::calcClip(QPainter* p, int tx, int ty)
+QRect RenderBox::getOverflowClipRect(int tx, int ty)
 {
-    int clipw = m_width;
-    int cliph = m_height;
+    // XXX When overflow-clip (CSS3) is implemented, we'll obtain the property
+    // here.
+    int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
+    int clipx = tx+bl;
+    int clipy = ty+bt;
+    int clipw = m_width-bl-br;
+    int cliph = m_height-bt-bb;
+
+    return QRect(clipx,clipy,clipw,cliph);
+}
+
+QRect RenderBox::getClipRect(int tx, int ty)
+{
+    int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
+    // ### what about apddings?
+    int clipw = m_width-bl-br;
+    int cliph = m_height-bt-bb;
 
     bool rtl = (style()->direction() == RTL);
 
@@ -298,7 +333,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     int cliptop = 0;
     int clipbottom = cliph;
 
-    if ( style()->clipSpecified() && style()->position() == ABSOLUTE ) {
+    if ( style()->hasClip() && style()->position() == ABSOLUTE ) {
 	// the only case we use the clip property according to CSS 2.1
 	if (!style()->clipLeft().isVariable()) {
 	    int c = style()->clipLeft().width(clipw);
@@ -325,23 +360,9 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     clipw = clipright-clipleft;
     cliph = clipbottom-cliptop;
 
+    //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 
-    QRect cr(clipx,clipy,clipw,cliph);
-    cr = p->xForm(cr);
-    QRegion creg(cr);
-    QRegion old = p->clipRegion();
-    if (!old.isNull())
-        creg = old.intersect(creg);
-
-#ifdef CLIP_DEBUG
-    kdDebug( 6040 ) << renderName() << ":" << this << ": setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
-    p->setPen(QPen(Qt::red, 1, Qt::DotLine));
-    p->setBrush( Qt::NoBrush );
-    p->drawRect(clipx, clipy, clipw, cliph);
-#endif
-
-    p->save();
-    p->setClipRegion(creg);
+    return QRect(clipx,clipy,clipw,cliph);
 }
 
 void RenderBox::close()
@@ -399,6 +420,12 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
 {
     x += m_x;
     y += m_y;
+
+    // Apply the relative position offset when invalidating a rectangle.  The layer
+    // is translated, but the render box isn't, so we need to do this to get the
+    // right dirty rect.
+    if (isRelPositioned())
+        relativePositionOffset(x,y);
 
     if (style()->position()==FIXED) f=true;
 

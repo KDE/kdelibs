@@ -153,7 +153,7 @@ class CSSPrimitiveValueImpl : public CSSValueImpl
 public:
     CSSPrimitiveValueImpl();
     CSSPrimitiveValueImpl(int ident);
-    CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type);
+    CSSPrimitiveValueImpl(double num, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const Counter &c);
     CSSPrimitiveValueImpl( RectImpl *r);
@@ -179,12 +179,12 @@ public:
      */
     int computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
 
-    float computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+    double computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
 
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
-    void setFloatValue ( unsigned short unitType, float floatValue, int &exceptioncode );
-    float getFloatValue ( unsigned short/* unitType */) const {
+    void setFloatValue ( unsigned short unitType, double floatValue, int &exceptioncode );
+    double getFloatValue ( unsigned short/* unitType */) const {
 	return m_value.num;
     }
 
@@ -221,7 +221,7 @@ protected:
     int m_type;
     union {
 	int ident;
-	float num;
+	double num;
 	DOM::DOMStringImpl *string;
 	CounterImpl *counter;
 	RectImpl *rect;
@@ -236,7 +236,7 @@ protected:
 class CSSQuirkPrimitiveValueImpl : public CSSPrimitiveValueImpl
 {
 public:
-    CSSQuirkPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type)
+    CSSQuirkPrimitiveValueImpl(double num, CSSPrimitiveValue::UnitTypes type)
       :CSSPrimitiveValueImpl(num, type) {}
 
     virtual ~CSSQuirkPrimitiveValueImpl() {}

@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999-2002 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2002 Dirk Mueller (mueller@kde.org)
  *
@@ -28,6 +28,7 @@
 #include "html/html_listimpl.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
+#include "misc/loader.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -229,13 +230,13 @@ void RenderListMarker::setStyle(RenderStyle *s)
 
 
 void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                             int _tx, int _ty)
+                             int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
-    paintObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty,  paintPhase);
 }
 
-void RenderListMarker::paintObject(QPainter *p, int, int _y,
-                                    int, int _h, int _tx, int _ty)
+void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
+				   int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
     if (style()->visibility() != VISIBLE) return;
 

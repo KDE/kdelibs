@@ -885,7 +885,7 @@ yynewstate:
 	      free (yyls);
 #endif
 	    }
-#endif	    
+#endif
 	  return 2;
 	}
       yystacksize *= 2;
@@ -2051,7 +2051,7 @@ yyerrhandle:
       free (yyls);
 #endif
     }
-#endif    
+#endif
   return 1;
 }
 #line 900 "parser.y"

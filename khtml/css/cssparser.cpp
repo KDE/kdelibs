@@ -342,7 +342,7 @@ static bool validUnit( Value *value, int unitflags, bool strict )
 	    b = true;
 	}
 	if ( !b && ( unitflags & FInteger ) &&
-	     (int)(1000.*value->fValue) == 1000*((int)value->fValue) )
+	     (value->fValue - (int)value->fValue) < 0.001 )
 	    b = true;
 	break;
     case CSSPrimitiveValue::CSS_PERCENTAGE:
@@ -819,7 +819,7 @@ bool CSSParser::parseValue( int propId, bool important )
 	break;
 
     case CSS_PROP_MAX_HEIGHT:           // <length> | <percentage> | none | inherit
-    case CSS_PROP_MAX_WIDTH:            // <length> | <percentage> | none | inherit
+    case CSS_PROP_MAX_WIDTH:            // <length> | <percentage> |s none | inherit
 	if ( id == CSS_VAL_NONE )
 	    valid_primitive = true;
 	else
@@ -850,6 +850,7 @@ bool CSSParser::parseValue( int propId, bool important )
 	break;
 
     case CSS_PROP_Z_INDEX:              // auto | <integer> | inherit
+	// qDebug("parsing z-index: id=%d, fValue=%f", id, value->fValue );
 	if ( id == CSS_VAL_AUTO ) {
             valid_primitive = true;
             break;

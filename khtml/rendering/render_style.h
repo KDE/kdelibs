@@ -1,9 +1,10 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -246,8 +247,7 @@ public:
 //------------------------------------------------
 // Box attributes. Not inherited.
 
-
-const int ZAUTO=0;
+const int ZAUTO = 0xfeed4c4b;
 
 class StyleBoxData : public Shared<StyleBoxData>
 {
@@ -539,7 +539,7 @@ protected:
         PseudoId _styleType : 3;
         bool _hasHover : 1;
         bool _hasActive : 1;
-        bool _clipSpecified : 1;
+        bool _hasClip : 1;
         EUnicodeBidi _unicodeBidi : 2;
         int _unused : 1;
     } noninherited_flags;
@@ -599,7 +599,7 @@ protected:
 	noninherited_flags._styleType = NOPSEUDO;
 	noninherited_flags._hasHover = false;
 	noninherited_flags._hasActive = false;
-	noninherited_flags._clipSpecified = false;
+	noninherited_flags._hasClip = false;
 	noninherited_flags._unicodeBidi = UBNormal;
         noninherited_flags._unused = 0;
     }
@@ -684,7 +684,7 @@ public:
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
-    bool clipSpecified() const { return noninherited_flags._clipSpecified; }
+    bool hasClip() const { return noninherited_flags._hasClip; }
 
     EUnicodeBidi unicodeBidi() const { return noninherited_flags._unicodeBidi; }
 
@@ -788,7 +788,7 @@ public:
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
     void setClip( Length top, Length right, Length bottom, Length left );
-    void setClipSpecified( bool b ) { noninherited_flags._clipSpecified = b; }
+    void setHasClip( bool b ) { noninherited_flags._hasClip = b; }
 
     void setUnicodeBidi( EUnicodeBidi b ) { noninherited_flags._unicodeBidi = b; }
 
@@ -855,8 +855,9 @@ public:
     bool flowAroundFloats() const { return  noninherited_flags._flowAroundFloats; }
     void setFlowAroundFloats(bool b=true) {  noninherited_flags._flowAroundFloats = b; }
 
-    int zIndex() const { return box->z_index; }
+    int zIndex() const { return (box->z_index == ZAUTO)? 0 : box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
+    bool hasAutoZIndex() const { return box->z_index == ZAUTO; }
 
     QPalette palette() const { return visual->palette; }
     void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c);

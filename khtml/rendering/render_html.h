@@ -1,7 +1,7 @@
 /*
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,7 +44,8 @@ public:
 
     virtual bool isHtml() const { return true; }
     virtual void setStyle(RenderStyle *style);
-    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty);
+    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
+			RenderObject::PaintPhase paintPhase);
     virtual void repaint();
     virtual void layout();
     virtual short containingBlockWidth() const;

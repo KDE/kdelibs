@@ -1,9 +1,10 @@
 /**
  * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2000 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 2001-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2001 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -136,14 +137,18 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
 
-    // if oldChild is the start or end of the selection, then clear the selection to
-    // avoid problems of invalid pointers
+    // Keep our layer hierarchy updated.
+    oldChild->removeLayers(enclosingLayer());
 
-    // ### This is not the "proper" solution... ideally the selection should be maintained
-    // based on DOM Nodes and a Range, which gets adjusted appropriately when nodes are
-    // deleted/inserted near etc. But this at least prevents crashes caused when the start
-    // or end of the selection is deleted and then accessed when the user next selects
-    // something.
+    // if oldChild is the start or end of the selection, then clear
+    // the selection to avoid problems of invalid pointers
+
+    // ### This is not the "proper" solution... ideally the selection
+    // ### should be maintained based on DOM Nodes and a Range, which
+    // ### gets adjusted appropriately when nodes are deleted/inserted
+    // ### near etc. But this at least prevents crashes caused when
+    // ### the start or end of the selection is deleted and then
+    // ### accessed when the user next selects something.
 
     if (oldChild->isSelectionBorder()) {
         RenderObject *root = oldChild;
@@ -240,6 +245,10 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         setFirstChild(newChild);
 
     setLastChild(newChild);
+
+    // Keep our layer hierarchy updated.
+    newChild->appendLayers(enclosingLayer());
+
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
 }
@@ -264,8 +273,13 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     beforeChild->setPreviousSibling(child);
     if(prev) prev->setNextSibling(child);
     child->setPreviousSibling(prev);
-
     child->setParent(this);
+
+    // Keep our layer hierarchy updated.
+    // XXX Need this to do an insertion and really find the right place to
+    // put the new layer. Not a big deal though. -dwh
+    child->appendLayers(enclosingLayer());
+
     child->setLayouted( false );
     child->setMinMaxKnown( false );
 }

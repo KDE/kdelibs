@@ -44,8 +44,6 @@
 #ifndef render_layer_h
 #define render_layer_h
 
-#if 0
-
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
@@ -64,7 +62,7 @@ namespace khtml {
     class RenderFrameSet;
     class RenderObject;
     class RenderArena;
-    
+
 class RenderLayer
 {
 public:
@@ -88,11 +86,11 @@ public:
     // build up this list so that we have the correct translation factor
     // for painting.  We also use a temporary z-index variable for storage
     // (more on this below).
-    // 
+    //
     struct RenderLayerElement {
       RenderLayer* layer;
       QRect absBounds; // Our bounds in absolute coordinates relative to the root.
-      QRect backgroundClipRect; // Clip rect used for our background/borders. 
+      QRect backgroundClipRect; // Clip rect used for our background/borders.
       QRect clipRect; // Clip rect used for our children.
       int zindex; // Temporary z-index used for processing and sorting.
       bool zauto : 1; // Whether or not we are using auto z-indexing.
@@ -100,29 +98,31 @@ public:
       int x; // The coords relative to the layer that will be using this list
              // to paint.
       int y;
+	int serial;
 
-      RenderLayerElement(RenderLayer* l, const QRect& rect, const QRect& bgclip, 
+      RenderLayerElement(RenderLayer* l, int s, const QRect& rect, const QRect& bgclip,
                          const QRect& clip, bool clipOrig, int xpos, int ypos)
-          :layer(l), absBounds(rect), backgroundClipRect(bgclip), clipRect(clip), 
+          :layer(l), absBounds(rect), backgroundClipRect(bgclip), clipRect(clip),
            zindex(l->zIndex()), zauto(l->hasAutoZIndex()), clipOriginator(clipOrig),
-           x(xpos), y(ypos) {}
-          
+           x(xpos), y(ypos), serial(s) {}
+
       void detach(RenderArena* renderArena);
-    
+
       // Overloaded new operator.  Derived classes must override operator new
       // in order to allocate out of the RenderArena.
-      void* operator new(size_t sz, RenderArena* renderArena) throw();    
+      void* operator new(size_t sz, RenderArena* renderArena) throw();
 
       // Overridden to prevent the normal delete from being called.
       void operator delete(void* ptr, size_t sz);
-        
+
+    private:
       // The normal operator new is disallowed.
       void* operator new(size_t sz) throw();
     };
 
     RenderLayer(RenderObject* object);
     ~RenderLayer();
-    
+
     RenderObject* renderer() const { return m_object; }
     RenderLayer *parent() const { return m_parent; }
     RenderLayer *previousSibling() const { return m_previous; }
@@ -139,7 +139,7 @@ public:
         while (curr->parent()) curr = curr->parent();
         return curr;
     }
-    
+
     int xPos() const { return m_x; }
     int yPos() const { return m_y; }
     short width() const { return m_width; }
@@ -155,15 +155,15 @@ public:
         m_x = xPos;
         m_y = yPos;
     }
-    
+
     void updateLayerPosition();
-    
+
     // Gets the nearest enclosing positioned ancestor layer (also includes
     // the <html> layer and the root layer).
     RenderLayer* enclosingPositionedAncestor();
-    
+
     void convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y);
-    
+
     bool hasAutoZIndex() { return renderer()->style()->hasAutoZIndex(); }
     int zIndex() { return renderer()->style()->zIndex(); }
 
@@ -173,23 +173,23 @@ public:
     // layers that intersect the point from front to back.
     void paint(QPainter *p, int x, int y, int w, int h);
     bool nodeAtPoint(RenderObject::NodeInfo& info, int x, int y);
-    
+
     void detach(RenderArena* renderArena);
-    
+
      // Overloaded new operator.  Derived classes must override operator new
     // in order to allocate out of the RenderArena.
-    void* operator new(size_t sz, RenderArena* renderArena) throw();    
+    void* operator new(size_t sz, RenderArena* renderArena) throw();
 
     // Overridden to prevent the normal delete from being called.
     void operator delete(void* ptr, size_t sz);
-        
+
 private:
     // The normal operator new is disallowed on all render objects.
     void* operator new(size_t sz) throw();
 
 public:
     // The list of layer elements is built through a recursive examination
-    // of a tree of z nodes. This tree structure mimics the layer 
+    // of a tree of z nodes. This tree structure mimics the layer
     // hierarchy itself, but only leaf nodes represent items that will
     // end up in the layer list for painting.
     //
@@ -203,7 +203,7 @@ public:
     // when the render tree was constructed (since the render tree
     // constructed the layers).  An exception is if a negative z-index
     // is specified on a child (see below).
-    
+
     struct RenderZTreeNode {
       RenderLayer* layer;
       RenderZTreeNode* next;
@@ -217,25 +217,26 @@ public:
 
       RenderZTreeNode(RenderLayerElement* layerElt)
           :layer(layerElt->layer), next(0), child(0), layerElement(layerElt) {}
-      
+
       ~RenderZTreeNode() {}
 
       void constructLayerList(QPtrVector<RenderLayerElement>* mergeTmpBuffer,
                               QPtrVector<RenderLayerElement>* finalBuffer);
-      
+
       void detach(RenderArena* renderArena);
-          
+
       // Overloaded new operator.  Derived classes must override operator new
       // in order to allocate out of the RenderArena.
-      void* operator new(size_t sz, RenderArena* renderArena) throw();    
+      void* operator new(size_t sz, RenderArena* renderArena) throw();
 
       // Overridden to prevent the normal delete from being called.
       void operator delete(void* ptr, size_t sz);
-        
+
+    private:
       // The normal operator new is disallowed.
       void* operator new(size_t sz) throw();
     };
-      
+
 private:
     // The constructZTree function creates a z-tree for a given layer hierarchy
     // rooted on this layer.  It will ensure that immediate child
@@ -266,7 +267,7 @@ private:
     //
     RenderZTreeNode* constructZTree(QRect overflowClipRect,
                                     QRect clipRect,
-                                    RenderLayer* rootLayer,
+                                    RenderLayer* rootLayer, int &serial,
                                     bool eventProcessing = false, int x=0, int y=0);
 
     // Once the z-tree has been constructed, we call constructLayerList
@@ -303,16 +304,16 @@ private:
     void setFirstChild(RenderLayer* first) { m_first = first; }
     void setLastChild(RenderLayer* last) { m_last = last; }
 
-protected:   
+protected:
     RenderObject* m_object;
-    
+
     RenderLayer *m_parent;
     RenderLayer *m_previous;
     RenderLayer *m_next;
 
     RenderLayer *m_first;
     RenderLayer *m_last;
-    
+
     // Our (x,y) coordinates are in our parent layer's coordinate space.
     int m_height;
     int m_y;
@@ -321,7 +322,5 @@ protected:
 };
 
 }; // namespace
-
-#endif
 
 #endif

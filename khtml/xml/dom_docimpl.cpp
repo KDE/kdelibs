@@ -35,6 +35,7 @@
 #include "css/css_stylesheetimpl.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
+#include "misc/loader.h"
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_binding.h"
 
@@ -46,6 +47,7 @@
 #include "rendering/render_root.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_arena.h"
+#include "rendering/render_layer.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -1492,7 +1494,7 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
     if ( m_render ) {
         assert(m_render->isRoot());
         RenderObject::NodeInfo renderInfo(readonly, ev->type == MousePress);
-        bool isInside = m_render->nodeAtPoint(renderInfo, _x, _y, 0, 0);
+        bool isInside = m_render->layer()->nodeAtPoint(renderInfo, _x, _y);
         ev->innerNode = renderInfo.innerNode();
 
         if (renderInfo.URLElement()) {
