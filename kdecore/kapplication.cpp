@@ -2171,6 +2171,9 @@ void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_i
      if (allowAttachments && q.startsWith("attach="))
        attachURLs.push_back(KURL::decode_string((*it).mid(7)));
      else
+     if (allowAttachments && q.startsWith("attachment="))
+       attachURLs.push_back(KURL::decode_string((*it).mid(11)));
+     else
      if (q.startsWith("to="))
        address = address.isEmpty()? KURL::decode_string((*it).mid(3)): address + ',' + KURL::decode_string((*it).mid(3));
    }
