@@ -421,7 +421,7 @@ namespace {	// Private.
 				color_array[2].b = (color_array[0].b + color_array[1].b) / 2;
 				color_array[2].a = 0xFF;
 
-				// Set all camponents to black to match DXT specs.
+				// Set all components to 0 to match DXT specs.
 				color_array[3].r = 0x00; // color_array[2].r;
 				color_array[3].g = 0x00; // color_array[2].g;
 				color_array[3].b = 0x00; // color_array[2].b;
