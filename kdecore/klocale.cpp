@@ -707,7 +707,7 @@ QDate KLocale::readDate(const QString &intstr) const
 	QString str = intstr.simplifyWhiteSpace().lower();
 	QString fmt = _datefmtshort.simplifyWhiteSpace();
 
-	int day = 0, month = 0, year = 0;
+	int day = -1, month = -1, year = -1;
 	uint strpos = 0;
 	uint fmtpos = 0;
 
@@ -791,7 +791,7 @@ QTime KLocale::readTime(const QString &intstr) const
   QString str = intstr.simplifyWhiteSpace().lower();
   QString fmt = _timefmt.simplifyWhiteSpace();
 
-  int hour = 0, minute = 0, second = 0;
+  int hour = -1, minute = -1, second = 0; // don't require seconds
   bool _12h = false;
   bool pm = false;
   uint strpos = 0;
