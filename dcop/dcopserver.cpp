@@ -130,7 +130,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	QByteArray data;
 	ds >> obj >> fun >> data;
 	QByteArray replyData;
-	receive( app, obj, fun, data, replyData, iceConn );
+	if ( !receive( app, obj, fun, data, replyData, iceConn ) ) {
+	    qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
+	}
       }
     }
     break;
@@ -160,6 +162,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	  QByteArray data;
 	  ds >> obj >> fun >> data;
 	  b = receive( app, obj, fun, data, replyData, iceConn );
+	  if ( !b )
+	      qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
 	}
 	int datalen = replyData.size();
 	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed,
@@ -448,7 +452,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
 			 QByteArray &replyData,  IceConn iceConn)
 {
-  if ( fun == "registerAs" ) {
+  if ( fun == "QCString registerAs(QCString)" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
       QCString app;
@@ -481,7 +485,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 	  datas << conn->appId;
 	  QByteArray ba;
 	  QDataStream ds( ba, IO_WriteOnly );
-	  ds << QCString("") << QCString("") << QCString("applicationRegistered") << data;
+	  ds << QCString("") << QCString("") << QCString("void applicationRegistered(QCString)") << data;
 	  int datalen = ba.size();
 	  DCOPMsg *pMsg = 0;
 	  while ( it.current() ) {
@@ -500,7 +504,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
       return TRUE;
     }
   }
-  else if ( fun == "registeredApplications" ) {
+  else if ( fun == "QCStringList registeredApplications()" ) {
     QDataStream reply( replyData, IO_WriteOnly );
     QCStringList applications;
     QDictIterator<DCOPConnection> it( appIds );
@@ -510,7 +514,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
     }
     reply << applications;
     return TRUE;
-  } else if ( fun == "isApplicationRegistered" ) {
+  } else if ( fun == "bool isApplicationRegistered(QCString)" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
       QCString s;

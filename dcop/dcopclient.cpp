@@ -103,6 +103,9 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     bool b = c->receive( app, objId, fun,
 			 data, replyData );
 
+    if ( !b )
+	qWarning("DCOP failure in applicaton %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+
     if (opcode != DCOPCall)
       return;
 
@@ -256,7 +259,7 @@ QCString DCOPClient::registerAs( const QCString& appId )
     QByteArray data, replyData;
     QDataStream arg( data, IO_WriteOnly );
     arg <<appId;
-    if ( call( "DCOPServer", "", "registerAs", data, replyData ) ) {
+    if ( call( "DCOPServer", "", "QCString registerAs(QCString)", data, replyData ) ) {
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
     }
@@ -336,7 +339,7 @@ bool DCOPClient::isApplicationRegistered( const QCString& remApp)
   QDataStream arg( data, IO_WriteOnly );
   arg << remApp;
   int result = false;
-  if ( call( "DCOPServer", "", "isApplicationRegistered", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "bool isApplicationRegistered(QCString)", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
@@ -347,7 +350,7 @@ QCStringList DCOPClient::registeredApplications()
 {
   QByteArray data, replyData;
   QCStringList result;
-  if ( call( "DCOPServer", "", "registeredApplications", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "QCStringList registeredApplications()", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
@@ -364,13 +367,13 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
   }
 
   if ( objId.isEmpty() ) {
-      if ( fun == "applicationRegistered" ) {
+      if ( fun == "void applicationRegistered(QCString)" ) {
 	  QDataStream ds( data, IO_ReadOnly );
 	  QCString r;
 	  ds >> r;
 	  emit applicationRegistered( r );
 	  return TRUE;
-      } else if ( fun == "applicationRemoved" ) {
+      } else if ( fun == "void applicationRemoved(QCString)" ) {
 	  QDataStream ds( data, IO_ReadOnly );
 	  QCString r;
 	  ds >> r;
