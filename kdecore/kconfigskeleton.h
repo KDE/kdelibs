@@ -207,6 +207,14 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
       return mReference;
     }
 
+    /**
+      Set default value for this item.
+    */
+    virtual void setDefaultValue( const T &v )
+    {
+      mDefault = v;
+    }
+
     virtual void setDefault()
     {
       mReference = mDefault;
