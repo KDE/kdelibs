@@ -418,6 +418,15 @@ void KToolBar::layoutHorizontal(int w)
         frame->setFrameShape(QFrame::VLine);
 
       frame->resize(5, tallest - 4);
+    } else
+    if (item->inherits("QFrame") &&
+        (*qli)->itemType() == KToolBarItem::Frame)
+    {
+      QFrame *frame = (QFrame*)item;
+      if (frame->frameShape() == QFrame::HLine)
+        frame->setFrameShape(QFrame::VLine);
+
+      frame->resize(5, tallest - 4);
     }
 
     // now handle this item if it is NOT right aligned
@@ -657,6 +666,15 @@ KToolBar::layoutVertical(int h)
     Item *item = (*qli)->getItem();
     if (item->inherits("QFrame") &&
         (*qli)->itemType() == KToolBarItem::Separator)
+    {
+      QFrame *frame = (QFrame*)item;
+      if (frame->frameShape() == QFrame::VLine)
+        frame->setFrameShape(QFrame::HLine);
+
+      frame->resize(d->m_maxItemWidth - 4, 5);
+    } else
+    if (item->inherits("QFrame") &&
+        (*qli)->itemType() == KToolBarItem::Frame)
     {
       QFrame *frame = (QFrame*)item;
       if (frame->frameShape() == QFrame::VLine)
