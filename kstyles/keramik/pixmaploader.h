@@ -34,8 +34,8 @@ namespace Keramik
 	public:
 		PixmapLoader();
 
-		QPixmap pixmap( const QString& name );
-		QPixmap scale( const QString& name, int width, int height );
+		QPixmap pixmap( const QString& name, bool disabled = false );
+		QPixmap scale( const QString& name, int width, int height, bool disabled = false );
 
 		void setColor( const QColor& color );
 
@@ -43,6 +43,7 @@ namespace Keramik
 
 	private:
 		void colorize( QImage &img );
+		void makeDisabled( QImage &img );
 
 		QDict< QImage > m_cache;
 		bool m_colorize;
@@ -57,10 +58,10 @@ namespace Keramik
 		TilePainter( const QString& name ) : m_name( name ) {};
 		virtual ~TilePainter() {};
 
-		void draw( QPainter *p, int x, int y, int width, int height );
-		void draw( QPainter *p, const QRect& rect )
+		void draw( QPainter *p, int x, int y, int width, int height, bool disabled = false );
+		void draw( QPainter *p, const QRect& rect, bool disabled = false )
 		{
-			draw( p, rect.x(), rect.y(), rect.width(), rect.height() );
+			draw( p, rect.x(), rect.y(), rect.width(), rect.height(), disabled );
 		}
 
 	protected:
@@ -74,10 +75,10 @@ namespace Keramik
 
 	private:
 		QString absTileName( unsigned int column, unsigned int row ) const;
-		QPixmap tile( unsigned int column, unsigned int row )
-			{ return PixmapLoader::the().pixmap( absTileName( column, row ) ); }
-		QPixmap scale( unsigned int column, unsigned int row, int width, int height )
-			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height ); }
+		QPixmap tile( unsigned int column, unsigned int row, bool disabled )
+			{ return PixmapLoader::the().pixmap( absTileName( column, row ), disabled ); }
+		QPixmap scale( unsigned int column, unsigned int row, int width, int height, bool disabled )
+			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height, disabled ); }
 
 		QString m_name;
 	};

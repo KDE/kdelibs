@@ -227,25 +227,38 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 	// We want the focus rect for buttons to be adjusted from
 	// the Qt3 defaults to be similar to Qt 2's defaults.
 	// -------------------------------------------------------------------
-	if (r == SR_PushButtonFocusRect ) {
-		const QPushButton* button = (const QPushButton*) widget;
-		QRect wrect(widget->rect());
-		int dbw1 = 0, dbw2 = 0;
+	switch ( r )
+	{
+		case SR_PushButtonFocusRect:
+		{
+			const QPushButton* button = (const QPushButton*) widget;
+			QRect wrect(widget->rect());
+			int dbw1 = 0, dbw2 = 0;
 
-		if (button->isDefault() || button->autoDefault()) {
-			dbw1 = pixelMetric(PM_ButtonDefaultIndicator, widget);
-			dbw2 = dbw1 * 2;
+			if (button->isDefault() || button->autoDefault())
+			{
+				dbw1 = pixelMetric(PM_ButtonDefaultIndicator, widget);
+				dbw2 = dbw1 * 2;
+			}
+
+			int dfw1 = pixelMetric(PM_DefaultFrameWidth, widget) * 2,
+				dfw2 = dfw1 * 2;
+
+			return QRect(wrect.x()      + dfw1 + dbw1 + 1,
+						wrect.y()      + dfw1 + dbw1 + 1,
+						wrect.width()  - dfw2 - dbw2 - 1,
+						wrect.height() - dfw2 - dbw2 - 1);
+			break;
 		}
 
-		int dfw1 = pixelMetric(PM_DefaultFrameWidth, widget) * 2,
-			dfw2 = dfw1 * 2;
+		case SR_ComboBoxFocusRect:
+		{
+			return querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField );
+		}
 
-		return QRect(wrect.x()      + dfw1 + dbw1 + 1,
-					 wrect.y()      + dfw1 + dbw1 + 1,
-					 wrect.width()  - dfw2 - dbw2 - 1,
-					 wrect.height() - dfw2 - dbw2 - 1);
-	} else
-		return KStyle::subRect(r, widget);
+		default:
+			return KStyle::subRect( r, widget );
+	}
 }
 
 
@@ -409,6 +422,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 {
 	bool down = flags & Style_Down;
 	bool on   = flags & Style_On;
+	bool disabled = ( flags & Style_Enabled ) == 0;
 	int  x, y, w, h;
 	r.rect(&x, &y, &w, &h);
 
@@ -424,7 +438,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken ) name.append( "-pressed" );
 
 			p->fillRect( r, cg.background() );
-			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
+			Keramik::RectTilePainter( name ).draw(p, x, y, w, h, disabled );
 			break;
 		}
 
@@ -468,7 +482,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken ) name += ( "-pressed" );
 
 			p->fillRect( r, cg.background() );
-			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
+			Keramik::RectTilePainter( name ).draw(p, x, y, w, h, disabled );
 
 			break;
 
@@ -564,7 +578,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			                loader.pixmap( "scrollbar-vbar-slider4" ).height() +
 			                loader.pixmap( "scrollbar-vbar-slider3" ).height() + 2 ) )
 					count = 5;
-			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h );
+			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h, disabled );
 			break;
 		}
 
@@ -573,7 +587,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			QString name( "-arrow2" );
 			if ( flags & Style_Down ) name += "-pressed";
 			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + name );
-			painter.draw( p, x, y, w, h );
+			painter.draw( p, x, y, w, h, disabled );
 			break;
 		}
 
@@ -582,14 +596,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			QString name( "-arrow1" );
 			if ( flags & Style_Down ) name += "-pressed";
 			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + name );
-			painter.draw( p, x, y, w, h );
+			painter.draw( p, x, y, w, h, disabled );
 			break;
 		}
 
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
 		case PE_Indicator:
-			Keramik::ScaledPainter( on ? "checkbox-on" : "checkbox-off" ).draw( p, x, y, w, h );
+			Keramik::ScaledPainter( on ? "checkbox-on" : "checkbox-off" ).draw( p, x, y, w, h, disabled );
 			break;
 
 			// RADIOBUTTON (exclusive indicator)
@@ -597,7 +611,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ExclusiveIndicator:
 		{
 
-			Keramik::ScaledPainter( on ? "radiobutton-on" : "radiobutton-off" ).draw( p, x, y, w, h );
+			Keramik::ScaledPainter( on ? "radiobutton-on" : "radiobutton-off" ).draw( p, x, y, w, h, disabled );
 
 			break;
 		}
@@ -653,9 +667,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 		case PE_PanelPopup:
 			p->setPen( cg.shadow() );
-			p->setBrush( cg.background().light() );
+			p->setBrush( cg.background().light( 110 ) );
 			p->drawRect( r );
-			p->fillRect( visualRect( QRect( x + 1, y + 1, 23, h - 2 ), r ), cg.mid() );
+			p->fillRect( visualRect( QRect( x + 1, y + 1, 23, h - 2 ), r ), cg.background().dark( 105 ) );
 			break;
 
 			// GENERAL PANELS
@@ -816,6 +830,7 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 										  SFlags flags,
 										  const QStyleOption &opt ) const
 {
+	bool disabled = ( flags & Style_Enabled ) == 0;
 	int x, y, w, h;
 	r.rect( &x, &y, &w, &h );
 
@@ -829,9 +844,9 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			bool horizontal = slider->orientation() == Horizontal;
 
 			if ( horizontal )
-				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, r );
+				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, r, disabled );
 			else
-				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, r );
+				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, r, disabled );
 
 			break;
 		}
@@ -839,7 +854,7 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 		// SLIDER HANDLE
 		// -------------------------------------------------------------------
 		case KPE_SliderHandle:
-			Keramik::ScaledPainter( "slider" ).draw( p, x, y, w, h );
+			Keramik::ScaledPainter( "slider" ).draw( p, x, y, w, h, disabled );
 			break;
 
 		// TOOLBAR HANDLE
@@ -930,6 +945,7 @@ void KeramikStyle::drawControl( ControlElement element,
 								  SFlags flags,
 								  const QStyleOption& opt ) const
 {
+	bool disabled = ( flags & Style_Enabled ) == 0;
 	int x, y, w, h;
 	r.rect( &x, &y, &w, &h );
 
@@ -993,6 +1009,10 @@ void KeramikStyle::drawControl( ControlElement element,
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
 
+			if ( flags & Style_HasFocus )
+				drawPrimitive( PE_FocusRect, p,
+				               visualRect( subRect( SR_PushButtonFocusRect, widget ), widget ),
+				               cg, flags );
 			break;
 		}
 
@@ -1005,7 +1025,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			              tabBar->shape() == QTabBar::TriangularBelow;
 
 			if ( flags & Style_Selected )
-				Keramik::ActiveTabPainter( bottom ).draw( p, x, y, w, h );
+				Keramik::ActiveTabPainter( bottom ).draw( p, x, y, w, h, !tabBar->isEnabled() );
 			else
 			{
 				Keramik::InactiveTabPainter::Mode mode;
@@ -1015,13 +1035,13 @@ void KeramikStyle::drawControl( ControlElement element,
 				else mode = Keramik::InactiveTabPainter::Middle;
 				if ( bottom )
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 4 );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 4, disabled );
 					p->setPen( cg.dark() );
 					p->drawLine( x, y, x + w, y );
 				}
 				else
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + 4, w, h - 4 );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + 4, w, h - 4, disabled );
 					p->setPen( cg.light() );
 					p->drawLine( x, y + h - 1, x + w, y + h - 1 );
 				}
@@ -1093,10 +1113,10 @@ void KeramikStyle::drawControl( ControlElement element,
 				p->drawPixmap( main.topLeft(), *widget->erasePixmap(), main );
 			// Draw a solid background
 			else
-				p->fillRect( main, cg.background().light() );
+				p->fillRect( main, cg.background().light( 110 ) );
 			// Are we a menu item separator?
 
-			p->fillRect( bar, cg.mid() );
+			p->fillRect( bar, cg.background().dark( 105 ) );
 
 			if ( mi->isSeparator() )
 			{
@@ -1278,6 +1298,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 									     SCFlags active,
                                          const QStyleOption& opt ) const
 {
+	bool disabled = ( flags & Style_Enabled ) == 0;
 	switch(control)
 	{
 		// COMBOBOX
@@ -1302,17 +1323,29 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				QRect rr = visualRect( QRect( ar.x(), ar.y() + 4, loader.pixmap( "ripple" ).width(), ar.height() - 8 ), widget );
 
 				ar = visualRect( QRect( ar.x() + loader.pixmap( "ripple" ).width() + 4, ar.y(), loader.pixmap( "arrow" ).width(), ar.height() ), widget );
-				Keramik::ScaledPainter( "ripple" ).draw( p, rr );
-				Keramik::CenteredPainter( "arrow" ).draw( p, ar );
+				Keramik::ScaledPainter( "ripple" ).draw( p, rr, disabled );
+				Keramik::CenteredPainter( "arrow" ).draw( p, ar, disabled );
 			}
 
-			if ( ( controls & SC_ComboBoxEditField ) && cb->editable() )
+			if ( controls & SC_ComboBoxEditField )
 			{
-				QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
-				er.addCoords( -3, -3, 3, 3 );
-				p->fillRect( er, cg.base() );
-				drawPrimitive( PE_PanelLineEdit, p, er, cg );
-				Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
+				if ( cb->editable() )
+				{
+					QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
+					er.addCoords( -3, -3, 3, 3 );
+					p->fillRect( er, cg.base() );
+					drawPrimitive( PE_PanelLineEdit, p, er, cg );
+					Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
+				}
+				else if ( cb->hasFocus() )
+				{
+                    QRect re = QStyle::visualRect(
+                                subRect(SR_ComboBoxFocusRect, cb), widget);
+
+					p->fillRect( re, cg.brush( QColorGroup::Highlight ) );
+                    drawPrimitive( PE_FocusRect, p, re, cg,
+                                   Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
+				}
 			}
 
 			break;
@@ -1320,18 +1353,19 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 
 		case CC_SpinWidget:
 		{
+			const QSpinWidget* sw = static_cast< const QSpinWidget* >( widget );
 			QRect br = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetButtonField ), widget );
 			if ( controls & SC_SpinWidgetButtonField )
 			{
-				Keramik::SpinBoxPainter().draw( p, br );
+				Keramik::SpinBoxPainter().draw( p, br, !sw->isEnabled() );
 				if ( active & SC_SpinWidgetUp )
 					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2, !sw->isUpEnabled() );
 				if ( active & SC_SpinWidgetDown )
 					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 8 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 8 );
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 8, !sw->isDownEnabled() );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
@@ -1344,6 +1378,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
 			bool horizontal = sb->orientation() == Horizontal;
 			QRect slider, subpage, addpage, subline, addline;
+			if ( sb->minValue() == sb->maxValue() ) flags &= ~Style_Enabled;
 
 			slider = querySubControlMetrics( control, widget, SC_ScrollBarSlider, opt );
 			subpage = querySubControlMetrics( control, widget, SC_ScrollBarSubPage, opt );
@@ -1365,7 +1400,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			clip ^= slider;
 
 			p->setClipRegion( clip );
-			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
+			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage, disabled );
 
 			if ( controls & SC_ScrollBarSlider )
 			{
@@ -1481,7 +1516,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 4;
 
 		case PM_SliderLength:
-			return 8;
+			return 12;
 		case PM_SliderControlThickness:
 			return loader.pixmap( "slider" ).height() - 4;
 		case PM_SliderThickness:
@@ -1529,7 +1564,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			int w = contentSize.width() + 2 * pixelMetric( PM_ButtonMargin, widget );
 			int h = contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget );
 			if ( w < 25 || h < 25 ) return QSize( w, h );
-			return QSize( w + 31, h + 3 );
+			return QSize( w + 31, h + 5 );
 		}
 
 		case CT_ComboBox:

@@ -35,7 +35,10 @@ PixmapLoader PixmapLoader::s_instance;
 
 PixmapLoader::PixmapLoader()
 	: m_cache( 193 ),
-	  m_colorize( false )
+	  m_colorize( false ),
+	  m_hue( -1 ),
+	  m_sat( 0 ),
+	  m_val( 228 )
 { 
 	QPixmapCache::setCacheLimit( 128 );
 	m_cache.setAutoDelete( true );
@@ -44,9 +47,14 @@ PixmapLoader::PixmapLoader()
 void PixmapLoader::setColor( const QColor& color )
 {
 	bool colorize = color.isValid() && color.rgb() != qRgb( 228, 228, 228 );
-	if ( colorize == m_colorize ) return;
 	if ( ( m_colorize = colorize ) )
 		color.hsv( &m_hue, &m_sat, &m_val );
+	else
+	{
+		m_hue = -1;
+		m_sat = 0;
+		m_val = 228;
+	}
 
 	m_cache.clear();
 	QPixmapCache::clear();
@@ -71,35 +79,66 @@ void PixmapLoader::colorize( QImage &img )
 	}
 }
 
-QPixmap PixmapLoader::pixmap( const QString& name )
+void PixmapLoader::makeDisabled( QImage &img )
 {
+	if ( img.isNull() ) return;
+
+	img = img.copy();
+	register Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.bits() );
+	register Q_UINT32* end = data + img.width() * img.height();
+	while ( data < end )
+	{
+		QColor c( *data );
+		int h, s, v;
+		c.hsv( &h, &s, &v );
+		if ( m_hue >= 0 && h >= 0 ) h = ( h - 216 + m_hue ) % 360;
+		if ( s ) s += m_sat / 5;
+		c.setHsv( h, QMIN( s, 255 ), QMIN( v * m_val / 255, 255 ) );
+		*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+	}
+}
+
+QPixmap PixmapLoader::pixmap( const QString& name, bool disabled )
+{
+	QString cacheName = name;
+	if ( disabled ) cacheName += "-disabled";
 	QPixmap result;
-	if ( QPixmapCache::find( name, result ) )
+	if ( QPixmapCache::find( cacheName, result ) )
 		return result;
 
-	QImage* img = m_cache[ name ];
+	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
-		if ( m_colorize ) colorize( *img );
-		m_cache.insert( name, img );
+		if ( disabled )
+			makeDisabled( *img );
+		else if ( m_colorize )
+			colorize( *img );
+		m_cache.insert( cacheName, img );
 	}
 	result.convertFromImage( *img );
-	QPixmapCache::insert( name, result );
+	QPixmapCache::insert( cacheName, result );
 	return result;
 }
 
 
-QPixmap PixmapLoader::scale( const QString& name, int width, int height )
+QPixmap PixmapLoader::scale( const QString& name, int width, int height, bool disabled )
 {
 	QString key = name + '-' + QString::number( width ) + '-' + QString::number( height );
+	if ( disabled ) key += "-disabled";
 	QPixmap result;
 	if ( QPixmapCache::find( key, result  ) )
 		return result;
 
-	QImage* img = m_cache[ name ];
+	QString cacheName = name;
+	if ( disabled ) cacheName += "-disabled";
+	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
-		m_cache.insert( name, img );
+		if ( disabled )
+			makeDisabled( *img );
+		else if ( m_colorize )
+			colorize( *img );
+		m_cache.insert( cacheName, img );
 	}
 
 	result.convertFromImage( img->scale( width ? width : img->width(), height ? height : img->height() ) );
@@ -107,7 +146,7 @@ QPixmap PixmapLoader::scale( const QString& name, int width, int height )
 	return result;
 }
 
-void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
+void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool disabled )
 {
 	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
 	int scaleWidth = width, scaleHeight = height;
@@ -118,14 +157,14 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 			scaledColumns++;
 			lastScaledColumn = col;
 		}
-		else scaleWidth -= tile( col, 0 ).width();
+		else scaleWidth -= tile( col, 0, disabled ).width();
 	for ( unsigned int row = 0; row < rows(); ++row )
 		if ( rowMode( row ) == Scaled )
 		{
 			scaledRows++;
 			lastScaledRow = row;
 		}
-		else scaleHeight -= tile( 0, row ).height();
+		else scaleHeight -= tile( 0, row, disabled ).height();
 	if ( scaleWidth < 0 ) scaleWidth = 0;
 	if ( scaleHeight < 0 ) scaleHeight = 0;
 
@@ -143,12 +182,12 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
 			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
 
-			if ( !tile( col, row ).isNull() )
-				if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h ) );
-				else p->drawPixmap( xpos, ypos, tile( col, row ) );
-			xpos += w ? w : tile( col, row ).width();
+			if ( !tile( col, row, disabled ).isNull() )
+				if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h, disabled ) );
+				else p->drawPixmap( xpos, ypos, tile( col, row, disabled ) );
+			xpos += w ? w : tile( col, row, disabled ).width();
 		}
-		ypos += h ? h : tile( 0, row ).height();
+		ypos += h ? h : tile( 0, row, disabled ).height();
 	}
 }
 
