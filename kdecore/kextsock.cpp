@@ -1023,7 +1023,7 @@ int KExtendedSocket::startAsyncLookup()
   else
     {
       d->status = lookupDone;
-      dnsResultsReady();
+      emit lookupFinished(n);
     }
   return 0;
 }
