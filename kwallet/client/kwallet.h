@@ -31,97 +31,351 @@ class DCOPRef;
 
 namespace KWallet {
 
+/**
+ * KDE Wallet
+ *
+ * This class implements a generic system-wide Wallet for KDE.  This is the
+ * ONLY public interface.  The DCOP client is unsupported and considered to be
+ * private.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @short KDE Wallet Class
+ */
 class Wallet : public QObject, public DCOPObject {
 	K_DCOP
 	Q_OBJECT
 	protected:
+		/**
+		 *  Construct a KWallet object.
+		 *  @internal
+		 *  @param handle The handle for the wallet.
+		 *  @param name The name of the wallet.
+		 */
 		Wallet(int handle, const QString& name);
+		/**
+		 *  Copy a KWallet object.
+		 *  @internal
+		 */
 		Wallet(const Wallet&);
 
 	public:
-		enum EntryType { Unknown=0, Password, Stream, Map };
+		enum EntryType { Unknown=0, Password, Stream, Map, Unused=0xffff };
 
+		/**
+		 *  Destroy a KWallet object.  Closes the wallet.
+		 */
 		virtual ~Wallet();
 		
+		/**
+		 *  List all the wallets available.
+		 *  @return Returns a list of the names of all wallets that are
+		 *          open.
+		 */
 		static QStringList walletList();
 
+		/**
+		 *  Determine if the wallet @p name is open by any application.
+		 *  @param name The name of the wallet to check.
+		 *  @return Returns true if the wallet is open, else false.
+		 */
 		static bool isOpen(const QString& name);
+
+		/**
+		 *  Close the wallet @p name.  The wallet will only be closed
+		 *  if it is open but not in use (rare), or if it is forced
+		 *  closed.
+		 *  @param name The name of the wallet to close.
+		 *  @param force Set true to force the wallet closed even if it
+		 *               is in use by others.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		static int closeWallet(const QString& name, bool force);
+
+		/**
+		 *  Delete the wallet @p name.  The wallet will be forced closed
+		 *  first.
+		 *  @param name The name of the wallet to delete.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		static int deleteWallet(const QString& name);
+
+		/**
+		 *  Disconnect the application @p app from @p wallet.
+		 *  @param wallet The name of the wallet to disconnect.
+		 *  @param app The name of the application to disconnect.
+		 *  @return Returns true on success, false on error.
+		 */
 		static bool disconnectApplication(const QString& wallet, const QCString& app);
 
+		/**
+		 *  Open the wallet @p name.  The user will be prompted to
+		 *  allow your application to open the wallet, and may be
+		 *  prompted for a password.
+		 *  @param name The name of the wallet to open.
+		 *  @return Returns a pointer to the wallet if successful,
+		 *          or a null pointer on error or if rejected.
+		 */
 		static Wallet* openWallet(const QString& name);
 
+		/**
+		 *  List the applications that are using the wallet @p wallet.
+		 *  @param wallet The wallet to query.
+		 *  @return Returns a list of all DCOP application IDs using
+		 *          the wallet.
+		 */
 		static QStringList users(const QString& wallet);
 
+		/**
+		 *  The name of the wallet used to store local passwords.
+		 */
 		static const QString LocalWallet();
+
+		/**
+		 *  The name of the wallet used to store network passwords.
+		 */
 		static const QString NetworkWallet();
 
+		/**
+		 *  The standardized name of the password folder.
+		 */
 		static const QString PasswordFolder;
+
+		/**
+		 *  The standardized name of the form data folder.
+		 */
 		static const QString FormDataFolder;
 
+		/**
+		 *  Request to the wallet service to change the password of
+		 *  the wallet @p name.
+		 *  @param name The the wallet to change the password of.
+		 */
 		static void changePassword(const QString& name);
 
+		/**
+		 *  This closes and locks the current wallet.  It will
+		 *  disconnect all applications using the wallet.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int lockWallet();
 
+		/**
+		 *  The name of the current wallet.
+		 */
 		virtual const QString& walletName() const;
 
+		/**
+		 *  Determine if the current wallet is open, and is a valid
+		 *  wallet handle.
+		 *  @return Returns true if the wallet handle is valid and open.
+		 */
 		virtual bool isOpen() const;
 
+		/**
+		 *  Request to the wallet service to change the password of
+		 *  the current wallet.
+		 */
 		virtual void requestChangePassword();
 
-		// Folder management functions
+		/**
+		 *  Obtain the list of all folders contained in the wallet.
+		 *  @return Returns an empty list if the wallet is not open.
+		 */
 		virtual QStringList folderList();
 
+		/**
+		 *  Determine if the folder @p f exists in the wallet.
+		 *  @return Returns true if the folder exists in the wallet.
+		 */
 		virtual bool hasFolder(const QString& f);
 
+		/**
+		 *  Set the current working folder to @f.  The folder must
+		 *  exist, or this call will fail.  Create a folder with
+		 *  @ref createFolder().
+		 *  @return Returns true if the folder was successfully set.
+		 */
 		virtual bool setFolder(const QString& f);
 
+		/**
+		 *  Remove the folder @f and all its entries from the wallet.
+		 *  @return Returns true if the folder was successfully removed.
+		 */
 		virtual bool removeFolder(const QString& f);
 
+		/**
+		 *  Created the folder @f.
+		 *  @return Returns true if the folder was successfully created.
+		 */
 		virtual bool createFolder(const QString& f);
 
+		/**
+		 *  Determine the current working folder in the wallet.
+		 *  If the folder name is empty, it is working in the global
+		 *  folder, which is valid but discouraged.
+		 *  @return Returns the current working folder.
+		 */
 		virtual const QString& currentFolder() const;
 
-		// Entry management functions
+		/**
+		 *  Return the list of keys of all entries in this folder.
+		 *  @return Returns an empty list if the wallet is not open, or
+		 *          if the folder is empty.
+		 */
 		virtual QStringList entryList();
 
+		/**
+		 *  Rename the entry @p oldName to @p newName.
+		 *  @param oldName The original key of the entry.
+		 *  @param newName The new key of the entry.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int renameEntry(const QString& oldName, const QString& newName);
 
+		/**
+		 *  Read the entry @p key from the current folder.
+		 *  The entry format is unknown except that it is either a
+		 *  QByteArray or a QDataStream, which effectively means that
+		 *  it is anything.
+		 *  @param key The key of the entry to read.
+		 *  @param value A buffer to fill with the value.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int readEntry(const QString& key, QByteArray& value);
 
+		/**
+		 *  Read the map entry @p key from the current folder.
+		 *  @param key The key of the entry to read.
+		 *  @param value A map buffer to fill with the value.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a map.
+		 */
 		virtual int readMap(const QString& key, QMap<QString,QString>& value);
 
+		/**
+		 *  Read the password entry @p key from the current folder.
+		 *  @param key The key of the entry to read.
+		 *  @param value A password buffer to fill with the value.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a password.
+		 */
 		virtual int readPassword(const QString& key, QString& value);
 
+		/**
+		 *  Write @p key = @p value as a binary entry to the current
+		 *  folder.  Be careful with this, it could cause inconsistency
+		 *  in the future since you can put an arbitrary entry type in
+		 *  place.
+		 *  @param key The key of the new entry.
+		 *  @param value The value of the entry.
+		 *  @param entryType The type of the entry.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int writeEntry(const QString& key, const QByteArray& value, EntryType entryType);
 
+		/**
+		 *  Write @p key = @p value as a binary entry to the current
+		 *  folder.
+		 *  @param key The key of the new entry.
+		 *  @param value The value of the entry.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int writeEntry(const QString& key, const QByteArray& value);
 
+		/**
+		 *  Write @p key = @p value as a map to the current folder.
+		 *  @param key The key of the new entry.
+		 *  @param value The value of the map.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int writeMap(const QString& key, const QMap<QString,QString>& value);
 
+		/**
+		 *  Write @p key = @p value as a password to the current folder.
+		 *  @param key The key of the new entry.
+		 *  @param value The value of the password.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int writePassword(const QString& key, const QString& value);
 
+		/**
+		 *  Determine if the current folder has they entry @p key.
+		 *  @param key The key to search for.
+		 *  @return Returns true if the folder contains @key.
+		 */
 		virtual bool hasEntry(const QString& key);
 
+		/**
+		 *  Remove the entry @p key from the current folder.
+		 *  @param key The key to remove.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
 		virtual int removeEntry(const QString& key);
 
+		/**
+		 *  Determine the type of the entry @p key in this folder.
+		 *  @param key The key to look up.
+		 *  @return Returns an enumerated type representing the type
+		 *          of the entry.
+		 */
 		virtual EntryType entryType(const QString& key);
 
 	signals:
+		/**
+		 *  Emitted when this wallet is closed.
+		 */
 		void walletClosed();
+
+		/**
+		 *  Emitted when a folder in this wallet is updated.
+		 *  @param folder The folder that was updated.
+		 */
 		void folderUpdated(const QString& folder);
+
+		/**
+		 *  Emitted when the folder list is changed in this wallet.
+		 */
 		void folderListUpdated();
+
+		/**
+		 *  Emitted when a folder in this wallet is removed.
+		 *  @param folder The folder that was removed.
+		 */
 		void folderRemoved(const QString& folder);
 
 	private:
 	k_dcop:
+		/**
+		 *  @internal
+		 *  DCOP slot for signals emitted by the wallet service.
+		 */
 		ASYNC slotWalletClosed(int handle);
+
+		/**
+		 *  @internal
+		 *  DCOP slot for signals emitted by the wallet service.
+		 */
 		ASYNC slotFolderUpdated(const QString& wallet, const QString& folder);
+
+		/**
+		 *  @internal
+		 *  DCOP slot for signals emitted by the wallet service.
+		 */
 		ASYNC slotFolderListUpdated(const QString& wallet);
+
+		/**
+		 *  @internal
+		 *  DCOP slot for signals emitted by the wallet service.
+		 */
 		ASYNC slotApplicationDisconnected(const QString& wallet, const QCString& application);
 
 	private slots:
+		/**
+		 *  @internal
+		 *  Used to detect when the wallet service dies.
+		 */
 		void slotAppUnregistered(const QCString&);
 
 	private:
@@ -133,6 +387,9 @@ class Wallet : public QObject, public DCOPObject {
 		DCOPRef *_dcopRef;
 
 	protected:
+		/**
+		 *  @internal
+		 */
 		virtual void virtual_hook(int id, void *data);
 };
 
