@@ -163,15 +163,7 @@ void ConfigPage::load()
 
           ResourcePageInfo info;
           info.mManager = mCurrentManager;
-          QString configDir = KGlobal::dirs()->saveLocation( "config" );
-          if ( family == "contact" && QFile::exists( configDir + "/kabcrc" ) ) {
-            info.mConfig = new KConfig( locateLocal( "config", "kabcrc" ) );
-          } else if ( family == "calendar" && QFile::exists( configDir + "/kcalrc" ) ) {
-            info.mConfig = new KConfig( locateLocal( "config", "kcalrc" ) );
-          } else {
-            QString configFile = KRES::ManagerImpl::defaultConfigFile( family );
-            info.mConfig = new KConfig( configFile );
-          }
+          info.mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
           info.mManager->readConfig( info.mConfig );
 
           mInfoMap.append( info );
