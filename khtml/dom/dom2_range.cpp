@@ -31,7 +31,8 @@
 #include "dom_exception.h"
 #include "dom_docimpl.h"
 #include <qstring.h>
-#include <stdio.h>               // for printf
+#include <stdio.h>
+#include <kdebug.h>
 
 /* Functions not yet implemented:
    deleteContents
@@ -164,7 +165,7 @@ Node Range::getCommonAncestorContainer() /*const*/
         commonAncestorContainer = parentStart;
     else
     {
-        printf("Error in getCommonAncestorContainer(): No common ancestor container?\n");
+        kdDebug(300) << "Error in getCommonAncestorContainer(): No common ancestor container?" << endl;
         return Node();
     }
     
@@ -628,7 +629,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
                                       sourceRange.getStartContainer(), sourceRange.getStartOffset() );
         break;
     default:
-        printf( "Function compareBoundaryPoints: Invalid CompareHow\n" );
+        kdDebug(300) << "Function compareBoundaryPoints: Invalid CompareHow" << endl;
         return 2;     // undocumented - should throw an exception here
     }
 }
@@ -637,7 +638,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
 {
     if( offsetA < 0 || offsetB < 0 )
     {
-        printf( "Function compareBoundaryPoints: No negative offsets allowed\n" );
+        kdDebug(300) << "Function compareBoundaryPoints: No negative offsets allowed" << endl;
         return 2;     // undocumented - should throw an exception here
     }
 
@@ -680,17 +681,17 @@ void Range::deleteContents(  )
     
     Node cmnRoot = getCommonAncestorContainer();
     /*
-    printf("CommonAC: %s \n", cmnRoot.nodeName().string().ascii());
-    printf("end: %d, start: %d \n", startOffset, endOffset);
-    printf("startContainer: %s \n", startContainer.nodeName().string().ascii() );
-    printf("endContainer: %s \n", endContainer.nodeName().string().ascii() );
+    kdDebug(300) << "CommonAC: " << cmnRoot.nodeName().string() << " " << endl;
+    kdDebug(300) << "end: " << startOffset << ", start: " << endOffset << " " << endl;
+    kdDebug(300) << "startContainer: " << startContainer.nodeName().string() << " " << endl;
+    kdDebug(300) << "endContainer: " << endContainer.nodeName().string() << " " << endl;
     */
 
-//    printf("end common case\n");
+//    kdDebug(300) << "end common case" << endl;
     Node _nextCurrent, _tempCurrent;
     bool delStart=false, delEnd=false;
 
-    //  printf("left side node: %s \n", startContainer.nodeName().string().ascii() );
+    //  kdDebug(300) << "left side node: " << startContainer.nodeName().string() << " " << endl;
     
     // cleanup left side
     Node _leftParent = startContainer;
@@ -860,7 +861,7 @@ DOMString Range::toString(  )
     
     while( !_node.isNull() )
     {
-        printf( "\nNodetype: %s\n", _node.nodeName().string().ascii() );
+        kdDebug(300) << "\nNodetype: " << _node.nodeName().string() << endl;
         if( _node.nodeType() == Node::TEXT_NODE )
         {
             QString str = _node.nodeValue().string();

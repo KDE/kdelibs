@@ -564,7 +564,7 @@ public:
      * // try to convert into an Element:
      * Element e = n;
      * if( e.isNull() )
-     *   printf("node isn't an element node\n");
+     *   kdDebug(300) << "node isn't an element node" << endl;
      * </pre>
      */
     bool isNull() { return (impl == 0); }

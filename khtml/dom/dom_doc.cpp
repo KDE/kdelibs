@@ -32,7 +32,7 @@
 #include "dom_xml.h"
 #include "dom2_range.h"
 #include "dom2_traversal.h"
-#include <stdio.h>               // for printf
+#include <kdebug.h>
 using namespace DOM;
 
 
