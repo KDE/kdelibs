@@ -675,8 +675,6 @@ KStatusBar *KTMainWindow::statusBar()
 void KTMainWindow::setStatusBar (KStatusBar *statusbar)
 {
   kstatusbar = statusbar;
-  if ( kstatusbar )
-    connect( kstatusbar, SIGNAL( moved() ), this, SLOT( updateRects() ) );
   updateRects ();
 }
 

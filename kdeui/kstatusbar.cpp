@@ -42,10 +42,16 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
 
 
   setText( text );
+
   // umm... Mosfet? Can you help here?
-  //if ( style() == MotifStyle )
-  setLineWidth  (1);
-  setFrameStyle (QFrame::StyledPanel | QFrame::Plain );
+  
+  // Warning: QStatusBar draws shaded rectangle around every item - which
+  // IMHO is stupid.
+  // So NoFrame|PLain is the best you get. the problem is that only in case of
+  // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
+  
+  setLineWidth  (0);
+  setFrameStyle (QFrame::NoFrame | QFrame::Plain );
   
   setAlignment( AlignHCenter | AlignVCenter );
 
@@ -73,7 +79,7 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   KConfig *config = KGlobal::config();
   QString group(config->group());
   config->setGroup(QString::fromLatin1("StatusBar style"));
-  bool grip_enabled = config->readBoolEntry(QString::fromLatin1("SizeGripEnabled"), true);
+  bool grip_enabled = config->readBoolEntry(QString::fromLatin1("SizeGripEnabled"), false);
   setSizeGripEnabled(grip_enabled);
   config->setGroup(group);
 }
@@ -89,8 +95,6 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch, bool perm
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   items.insert(id, l);
   addWidget (l, stretch, permanent);
-  if (text.isEmpty())          // is text empty?
-    l->hide();                 // yes, hide item
 }
 
 void KStatusBar::removeItem (int id)
@@ -103,7 +107,7 @@ void KStatusBar::removeItem (int id)
     // reformat (); // needed? (sven)
   }
   else
-    debug ("KStatusBar::removeItem: bad id");
+    debug ("KStatusBar::removeItem: bad item id: %d", id);
 }
 
 void KStatusBar::changeItem( const QString& text, int id )
@@ -111,15 +115,25 @@ void KStatusBar::changeItem( const QString& text, int id )
   KStatusBarLabel *l = items[id];
   if (l)
   {
+    clear();
     l->setText(text);
-    if (text.isEmpty())          // is text empty?
-      l->hide();                 // yes, hide item
-    else if (!l->isVisible())    // no. was item hidden (=text was empty)?
-      l->show();                 // then show it again
     reformat();
   }
   else
-    debug ("KStatusBar::changeItem: bad id");
+    debug ("KStatusBar::changeItem: bad item id: %d", id);
+}
+
+void KStatusBar::setItemAlignment (int id, int align)
+{
+  KStatusBarLabel *l = items[id];
+  if (l)
+  {
+    clear();
+    l->setAlignment(align);
+    //reformat(); Not needed I, think (sven)
+  }
+  else
+    debug ("KStatusBar::setItemAlignment: bad item id: %d", id);
 }
 
 void KStatusBar::slotPressed(int _id)
