@@ -655,7 +655,7 @@ protected:
    *
    * The API is unaffected.
    */
-  virtual void paintEvent(QPaintEvent*)
+  virtual void paintEvent(QPaintEvent*);
 
 private slots:
   /**
