@@ -37,11 +37,11 @@ class QListViewItem;
 class DrBase;
 class DriverItem;
 
-class BaseView : public QWidget
+class OptionBaseView : public QWidget
 {
 	Q_OBJECT
 public:
-	BaseView(QWidget *parent = 0, const char *name = 0);
+	OptionBaseView(QWidget *parent = 0, const char *name = 0);
 	virtual void setOption(DrBase*);
 	virtual void setValue(const QString&);
 
@@ -52,11 +52,11 @@ protected:
 	bool	blockSS;
 };
 
-class NumericView : public BaseView
+class OptionNumericView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	NumericView(QWidget *parent = 0, const char *name = 0);
+	OptionNumericView(QWidget *parent = 0, const char *name = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -71,10 +71,10 @@ private:
 	bool		m_integer;
 };
 
-class StringView : public BaseView
+class OptionStringView : public OptionBaseView
 {
 public:
-	StringView(QWidget *parent = 0, const char *name = 0);
+	OptionStringView(QWidget *parent = 0, const char *name = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -82,11 +82,11 @@ private:
 	QLineEdit	*m_edit;
 };
 
-class ListView : public BaseView
+class OptionListView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	ListView(QWidget *parent = 0, const char *name = 0);
+	OptionListView(QWidget *parent = 0, const char *name = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -98,11 +98,11 @@ private:
 	QStringList	m_choices;
 };
 
-class BooleanView : public BaseView
+class OptionBooleanView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	BooleanView(QWidget *parent = 0, const char *name = 0);
+	OptionBooleanView(QWidget *parent = 0, const char *name = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 

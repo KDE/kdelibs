@@ -37,24 +37,24 @@
 #include <kcursor.h>
 #include <klocale.h>
 
-BaseView::BaseView(QWidget *parent, const char *name)
+OptionBaseView::OptionBaseView(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
 	blockSS = false;
 }
 
-void BaseView::setOption(DrBase*)
+void OptionBaseView::setOption(DrBase*)
 {
 }
 
-void BaseView::setValue(const QString&)
+void OptionBaseView::setValue(const QString&)
 {
 }
 
 //******************************************************************************************************
 
-NumericView::NumericView(QWidget *parent, const char *name)
-: BaseView(parent,name)
+OptionNumericView::OptionNumericView(QWidget *parent, const char *name)
+: OptionBaseView(parent,name)
 {
 	m_edit = new QLineEdit(this);
 	m_slider = new QSlider(Qt::Horizontal,this);
@@ -83,7 +83,7 @@ NumericView::NumericView(QWidget *parent, const char *name)
 	connect(m_edit,SIGNAL(textChanged(const QString&)),SLOT(slotEditChanged(const QString&)));
 }
 
-void NumericView::setOption(DrBase *opt)
+void OptionNumericView::setOption(DrBase *opt)
 {
 	if (opt->type() != DrBase::Integer && opt->type() != DrBase::Float)
 		return;
@@ -115,12 +115,12 @@ void NumericView::setOption(DrBase *opt)
 	setValue(opt->valueText());
 }
 
-void NumericView::setValue(const QString& val)
+void OptionNumericView::setValue(const QString& val)
 {
 	m_edit->setText(val);
 }
 
-void NumericView::slotSliderChanged(int value)
+void OptionNumericView::slotSliderChanged(int value)
 {
 	if (blockSS) return;
 
@@ -135,7 +135,7 @@ void NumericView::slotSliderChanged(int value)
 	emit valueChanged(txt);
 }
 
-void NumericView::slotEditChanged(const QString& txt)
+void OptionNumericView::slotEditChanged(const QString& txt)
 {
 	if (blockSS) return;
 
@@ -161,8 +161,8 @@ void NumericView::slotEditChanged(const QString& txt)
 
 //******************************************************************************************************
 
-StringView::StringView(QWidget *parent, const char *name)
-: BaseView(parent,name)
+OptionStringView::OptionStringView(QWidget *parent, const char *name)
+: OptionBaseView(parent,name)
 {
 	m_edit = new QLineEdit(this);
 	QLabel	*lab = new QLabel(i18n("String value:"),this);
@@ -176,21 +176,21 @@ StringView::StringView(QWidget *parent, const char *name)
 	connect(m_edit,SIGNAL(textChanged(const QString&)),SIGNAL(valueChanged(const QString&)));
 }
 
-void StringView::setOption(DrBase *opt)
+void OptionStringView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::String)
 		m_edit->setText(opt->valueText());
 }
 
-void StringView::setValue(const QString& val)
+void OptionStringView::setValue(const QString& val)
 {
 	m_edit->setText(val);
 }
 
 //******************************************************************************************************
 
-ListView::ListView(QWidget *parent, const char *name)
-: BaseView(parent,name)
+OptionListView::OptionListView(QWidget *parent, const char *name)
+: OptionBaseView(parent,name)
 {
 	m_list = new KListBox(this);
 
@@ -200,7 +200,7 @@ ListView::ListView(QWidget *parent, const char *name)
 	connect(m_list,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
 }
 
-void ListView::setOption(DrBase *opt)
+void OptionListView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::List)
 	{
@@ -218,12 +218,12 @@ void ListView::setOption(DrBase *opt)
 	}
 }
 
-void ListView::setValue(const QString& val)
+void OptionListView::setValue(const QString& val)
 {
 	m_list->setCurrentItem(m_choices.findIndex(val));
 }
 
-void ListView::slotSelectionChanged()
+void OptionListView::slotSelectionChanged()
 {
 	if (blockSS) return;
 
@@ -233,8 +233,8 @@ void ListView::slotSelectionChanged()
 
 //******************************************************************************************************
 
-BooleanView::BooleanView(QWidget *parent, const char *name)
-: BaseView(parent,name)
+OptionBooleanView::OptionBooleanView(QWidget *parent, const char *name)
+: OptionBaseView(parent,name)
 {
 	m_group = new QVButtonGroup(this);
 	m_group->setFrameStyle(QFrame::NoFrame);
@@ -250,7 +250,7 @@ BooleanView::BooleanView(QWidget *parent, const char *name)
 	connect(m_group,SIGNAL(clicked(int)),SLOT(slotSelected(int)));
 }
 
-void BooleanView::setOption(DrBase *opt)
+void OptionBooleanView::setOption(DrBase *opt)
 {
 	if (opt->type() == DrBase::Boolean)
 	{
@@ -264,13 +264,13 @@ void BooleanView::setOption(DrBase *opt)
 	}
 }
 
-void BooleanView::setValue(const QString& val)
+void OptionBooleanView::setValue(const QString& val)
 {
 	int	ID = m_choices.findIndex(val);
 	m_group->setButton(ID);
 }
 
-void BooleanView::slotSelected(int ID)
+void OptionBooleanView::slotSelected(int ID)
 {
 	QString	s = m_choices[ID];
 	emit valueChanged(s);
@@ -284,23 +284,23 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	//setFixedHeight(150);
 	m_stack = new QWidgetStack(this);
 
-	BaseView	*w = new ListView(m_stack);
+	OptionBaseView	*w = new OptionListView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_stack->addWidget(w,DrBase::List);
 
-	w = new StringView(m_stack);
+	w = new OptionStringView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_stack->addWidget(w,DrBase::String);
 
-	w = new NumericView(m_stack);
+	w = new OptionNumericView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_stack->addWidget(w,DrBase::Integer);
 
-	w = new BooleanView(m_stack);
+	w = new OptionBooleanView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_stack->addWidget(w,DrBase::Boolean);
 
-	w = new BaseView(m_stack);
+	w = new OptionBaseView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
 	m_stack->addWidget(w,0);	// empty widget
 
@@ -326,7 +326,7 @@ void DrOptionView::slotItemSelected(QListViewItem *i)
 		if (m_item->drItem()->type() == DrBase::Float) ID = DrBase::Integer;
 		else ID = m_item->drItem()->type();
 
-	BaseView	*w = (BaseView*)m_stack->widget(ID);
+	OptionBaseView	*w = (OptionBaseView*)m_stack->widget(ID);
 	if (w)
 	{
 		m_block = true;
