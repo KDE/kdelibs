@@ -8,7 +8,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 ####### Files
 
 check_PROGRAMS = helloserver helloclient referenceinfo \
-  irdemo x11commtest streamsound hellomain flow testwrapper artsctest \
+  irdemo x11commtest streamsound hellomain flow artsctest \
   dcasttest hellodynamic testasubsys testaggregation
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
@@ -19,9 +19,6 @@ x11commtest_SOURCES = x11commtest.cc
 hellomain_SOURCES = hellomain.cc hello.cc hello_impl.cc
 testasubsys_SOURCES = testasubsys.cc
 testasubsys_LDFLAGS = $(FLOWLIBS)
-
-testwrapper_LDFLAGS = $(FLOWLIBS)
-testwrapper_SOURCES = wrapper.cc testwrapper.cc
 
 testaggregation_SOURCES = aggregation.cc testaggregation.cc
 
@@ -49,11 +46,6 @@ hello.h: $(top_srcdir)/arts/examples/hello.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/examples/hello.idl
 
 hello.cc: hello.h
-
-wrapper.h: $(top_srcdir)/arts/examples/wrapper.idl $(MCOPIDL)
-	$(MCOPIDL) $(top_srcdir)/arts/examples/wrapper.idl
-
-wrapper.cc: wrapper.h
 
 aggregation.h: $(top_srcdir)/arts/examples/aggregation.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/examples/aggregation.idl
