@@ -1225,6 +1225,8 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
 
     if ( !m_render )
         return;
+    
+    m_render->calcMinMaxWidth();    
 
     if ( top ) {
         if ( force ) {
