@@ -75,7 +75,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(!m_render) return false;
 
-    if(!m_render->isInline() || m_render->isFloating())
+    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating())
     {
 	_tx += m_render->xPos();
 	_ty += m_render->yPos();
@@ -243,7 +243,7 @@ void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool import
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important)
-{   
+{
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
