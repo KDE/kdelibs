@@ -31,8 +31,7 @@
 #include "css_valueimpl.h"
 #include "dom/css_value.h"
 #include "misc/helper.h"
-
-#include "kdebug.h"
+#include "xml/dom_stringimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -106,28 +105,44 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QP
 
 DOMString khtml::parseURL(const DOMString &url)
 {
-    QString s = url.string().stripWhiteSpace();
-    if(s.find("url(") == 0 && s[s.length()-1] == ')')
-        s = s.mid(4, s.length()-5);
+    DOMStringImpl* i = url.implementation();
+    if(!i) return 0;
 
-    s = s.stripWhiteSpace();
+    int o = 0;
+    int l = i->l;
+    while(o < l && (!i->s[o].latin1() || i->s[o].latin1() <= ' ')) { o++; l--; }
+    while(l > 0 && (!i->s[o+l-1].latin1() || i->s[o+l-1].latin1() <= ' ')) l--;
 
-    if(s[0] == '\"' && s[s.length()-1] == '\"')
-        s = s.mid(1, s.length()-2);
+    if(l >= 5 &&
+       i->s[o].latin1() == 'u' &&
+       i->s[o+1].latin1() == 'r' &&
+       i->s[o+2].latin1() == 'l' &&
+       i->s[o+3].latin1() == '(' &&
+       i->s[o+l-1].latin1() == ')') {
+        o += 4;
+        l -= 5;
+    }
 
-    if(s[0] == '\'' && s[s.length()-1] == '\'')
-        s = s.mid(1, s.length()-2);
+    while(o < l && (!i->s[o].latin1() || i->s[o].latin1() <= ' ')) { o++; l--; }
+    while(l > 0 && (!i->s[o+l-1].latin1() || i->s[o+l-1].latin1() <= ' ')) l--;
 
-    // remove unnecessary newlines etc from beginning/end
-    // another "just like Netscape" feature
-    s = s.stripWhiteSpace();
+    if(l >= 2 && i->s[o].latin1() == i->s[o+l-1].latin1() &&
+       (i->s[o].latin1() == '\'' || i->s[o].latin1() == '\"')) {
+        o++;
+        l -= 2;
+    }
 
-    int i;
-    // remove garbage
-    while((i = s.find('\n')) != -1)  s = s.remove(i, 1);
-    while((i = s.find('\r')) != -1)  s = s.remove(i, 1);
-    while((i = s.find('\t')) != -1)  s = s.remove(i, 1);
+    while(o < l && (!i->s[o].latin1() || i->s[o].latin1() <= ' ')) { o++; l--; }
+    while(l > 0 && (!i->s[o+l-1].latin1() || i->s[o+l-1].latin1() <= ' ')) l--;
 
-    return DOMString(s.unicode(), s.length());
+    DOMStringImpl* j = new DOMStringImpl(i->s+o,l);
+
+    int nl = 0;
+    for(int k = o; k < o+l; k++)
+        if(i->s[k].latin1() > 0x0d)
+            j->s[nl++] = i->s[k];
+
+    j->l = nl;
+
+    return j;
 }
-
