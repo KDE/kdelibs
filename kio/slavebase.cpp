@@ -275,15 +275,26 @@ void SlaveBase::mimeType( const QString &_type)
 {
     KIO_DATA << _type;
     m_pConnection->send( INF_MIME_TYPE, data );
-    int cmd;
-    if ( m_pConnection->read( &cmd, data ) == -1 ) {
-        kdDebug(7007) << "SlaveBase: mimetype: read error" << endl;
-        ::exit(255);
+    int cmd = 0;
+    while(true)
+    {
+       if ( m_pConnection->read( &cmd, data ) == -1 ) {
+           kdDebug(7007) << "SlaveBase: mimetype: read error" << endl;
+           ::exit(255);
+       }
+       if ( (cmd == CMD_META_DATA) || 
+            (cmd == CMD_SUBURL) )
+       {
+          dispatch( cmd, data );
+          continue; // Disguised goto
+       };
+       break; 
     }
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.)
 // Something else is basically an error
     kdDebug(7007) << "mimetype: reading " << cmd << endl;
+    assert( (cmd == CMD_NONE) || (cmd == CMD_GET) );
 }
 
 // ?
