@@ -837,6 +837,22 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
+
+#if 0
+        int ew = m_part->view()->contentsWidth();
+        int eh = m_part->view()->contentsHeight();
+        QPixmap paintBuffer(ew,eh);
+
+        QPainter* tp = new QPainter;
+        tp->begin( &paintBuffer );
+
+        tp->fillRect(0, 0, ew, eh, Qt::white);
+        m_part->paint( tp, QRect( 0, 0, ew, eh ) );
+        tp->end();
+        delete tp;
+
+        paintBuffer.save(m_baseDir + "/baseline/" + filename + ".png","PNG");
+#endif
     }
 }
 
