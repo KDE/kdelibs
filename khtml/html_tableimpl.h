@@ -226,6 +226,7 @@ protected:
     int distributeWidth(int distrib, LengthType type, int typeCols );
     int distributeMinWidth(int distrib, LengthType distType, 
     	    LengthType toType, int start, int span ); 
+    int distributeRest(int distrib, LengthType type, int divider );
     
     int maxColSpan;
     

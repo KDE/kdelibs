@@ -1099,37 +1099,18 @@ void HTMLTableElementImpl::calcColWidthII(void)
     tooAdd-=distributeWidth(distrib,Variable,numVar);
 
 
+
     /*
-     * Some width still left? Just give it to variable columns.
+     * Some width still left? 
      */
-        
-    c=0;
-    olddis=0;
-    int tdis = tooAdd;
     
 #ifdef TABLE_DEBUG
-    printf("DISTRIBUTING rest, %d pixels to variable cols\n", distrib);
+    printf("DISTRIBUTING rest, %d pixels\n", distrib);
 #endif
     
-    if (maxVar) while(tdis)
-    {
-	if (colType[c]==Variable)
-	{
-	    int delta = (colMaxWidth[c] * distrib) / maxVar;
-	    delta=MIN(delta,tdis);
-	    if (delta==0 && tdis)
-	    	delta=1;
-	    actColWidth[c] += delta;
-	    tdis -= delta;
-	}
-	if (++c==totalCols)
-	{
-	    c=0;
-	    if (olddis==tdis)
-		break;
-	    olddis=tdis;
-	}
-    }
+    tooAdd-= distributeRest(tooAdd,Variable,maxVar);
+    tooAdd-= distributeRest(tooAdd,Relative,maxRel);
+    tooAdd-= distributeRest(tooAdd,Percent,maxPercent);
 
 #ifdef TABLE_DEBUG
     printf("final tooAdd %d\n",tooAdd);
@@ -1187,11 +1168,42 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
     return distrib-tdis;
 }
 
+
+int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divider )
+{
+    if (!divider)
+    	return;
+
+    int olddis=0;
+    int c=0;
+
+    int tdis = distrib;
+    
+    while(tdis)
+    {
+	if (colType[c]==type)
+	{
+	    int delta = (colMaxWidth[c] * distrib) / divider;
+	    delta=MIN(delta,tdis);
+	    if (delta==0 && tdis)
+	    	delta=1;
+	    actColWidth[c] += delta;
+	    tdis -= delta;
+	}
+	if (++c==totalCols)
+	{
+	    c=0;
+	    if (olddis==tdis)
+		break;
+	    olddis=tdis;
+	}
+    }
+    return distrib-tdis;
+}
+
 int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
     	    LengthType toType, int start, int span )
 {
-  //printf("HTMLTableElementImpl::distributeMinWidth %d,%d, %d, %d/%d\n",
-  //	   distrib, distType, toType, start, span);
     int olddis=0;
     int c=start;
 
@@ -1203,7 +1215,6 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 	{
 	    int delta = MIN(distrib/span,colMaxWidth[c]-colMinWidth[c]);
 	    delta = MIN(tdis,delta);
-	    //printf("adding to col %d: %d\n", c, delta);
 	    colMinWidth[c]+=delta;
 	    colType[c]=distType;
 	    tdis-=delta;
