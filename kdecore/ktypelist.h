@@ -351,17 +351,18 @@ namespace KDE
 };
 
 /**
- * class template KTypeList
- * The building block of typelists of any length
- * Use it through the K_TYPELIST_NN macros
+ * The building block of typelists of any length.
+ * Use it through the K_TYPELIST_NN macros. 
  * Defines nested types:
- *     Head (first element, a non-typelist type by convention)
- *     Tail (second element, can be another typelist)
+ *   @li Head (first element, a non-typelist type by convention)
+ *   @li Tail (second element, can be another typelist)
  */
 template <class T, class U>
 struct KTypeList
 {
+  /// first element, a non-typelist type by convention
    typedef T Head;
+  /// second element, can be another typelist
    typedef U Tail;
 }; 
 
@@ -371,16 +372,22 @@ template <class TList> struct KTypeListLength;
 template <>
 struct KTypeListLength<KDE::NullType>
 {
+/**
+ * Zero length type list.
+ */
     enum { Value = 0 };
 };
 
 /**
- * class template for determining the length of a typelist. To be
+ * A class template for determining the length of a typelist. To be
  * used like KTypeListLength< typelist >::Value;
  */
 template <class T, class U>
 struct KTypeListLength< KTypeList<T, U> >
 {
+  /**
+   * The length of the type list.
+   */
     enum { Value = 1 + KTypeListLength<U>::Value };
 };
 
