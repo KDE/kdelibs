@@ -74,7 +74,7 @@ Collector::~Collector()
 {
   privateCollect();
 #ifdef KJS_DEBUG_MEM
-  assert(filled == 0);
+  assert(count == 0);
 #endif
   
   delete root;
@@ -139,7 +139,7 @@ void Collector::collect()
 void Collector::privateCollect()
 {
 #ifdef KJS_DEBUG_MEM
-  printf("collecting %d objects total\n", Imp::filled);
+  printf("collecting %d objects total\n", Imp::count);
   collecting = true;
 #endif
 
