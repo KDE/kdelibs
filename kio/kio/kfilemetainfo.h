@@ -146,7 +146,11 @@ public:
 
     class ItemInfo;
 
-    // ### document
+    /**
+     *  This is the class for one group of items of a @ref KFileMimeTypeInfo.
+     *  It contains, among other things, the information about the group's name
+     *   and a list of supported items.
+     **/
     class GroupInfo
     {
 
@@ -252,7 +256,11 @@ public:
 
     };
 
-    // ### document
+    /**
+     *  This is the class for one item of a @ref KFileMimeTypeInfo.
+     *  It contains every information about a @ref KFileMetaInfoItem that this
+     *  item has in common for each file of a specific mimetype.
+     **/
     class ItemInfo
     {
     friend class KFilePlugin;
@@ -454,7 +462,7 @@ public:
         return m_preferredKeys;
     }
 
-    // ### shouldn't this be private?
+    // ### shouldn't this be private? BC?
     GroupInfo * addGroupInfo( const QString& name,
                               const QString& translatedName);
 
@@ -464,7 +472,7 @@ public:
     //        bool            m_supportsVariableKeys : 1;
     QDict<ItemInfo> m_itemDict;
 
-// ### this should be made private instead
+// ### this should be made private instead, but this would be BIC
 protected:
     /** @Internal */
     KFileMimeTypeInfo( const QString& mimeType );
@@ -479,10 +487,7 @@ protected:
 /**
  * This is one item of the meta information about a file (see
  * @ref KFileMetaInfo).
- * The groups, hints and units are not yet supported, but already added to
- * the interface so that adding support doesn't break compatibility later.
  */
-
 class KFileMetaInfoItem
 {
 public:
@@ -492,9 +497,11 @@ public:
     typedef KFileMimeTypeInfo::Attributes Attributes;
 
     /**
+     * @Internal
      * You usually don't need to use this constructor yourself. Let
      * KFileMetaInfo do it for you.
      **/
+    // ### hmm, then it should be private
     KFileMetaInfoItem( const KFileMimeTypeInfo::ItemInfo* mti,
                        const QString& key, const QVariant& value);
 
@@ -552,54 +559,76 @@ public:
 
     /**
      * convenience method. It does the same as value()->type()
+     * @return the type of the item
      */
     QVariant::Type type() const;
 
     /**
+     * You can query if the application can edit the item and write it back to
+     * the file with this method. Note that this doesn't ensure that you have
+     * write access to the file and that enough space is available.
+     *
      * @return true if the item's value can be changed, false if not
      */
     bool isEditable() const;
 
     /**
+     * If you remove an item, it is only marked for removal for the file. On
+     * the next @ref KFileMetaInfo::applyChanges() , it will be removed from
+     * the file. With this method, you can ask if the item is marked for
+     * removal.
+     * 
      * @return true if the item was removed, false if not
      */
     bool isRemoved() const;
 
     /**
+     * If you change an item, it is marked as "dirty". On the next
+     * @ref KFileMetaInfo::applyChanges() , the change will be written to the
+     * file. With this method, you can ask if this item is dirty.
+     *
      * @return true if the item contains changes that have not yet been written
-     * back into the file. Removing an item counts as a change
+     * back into the file. Removing or adding an item counts as such a change
      */
     bool isModified() const;
 
     /**
-     * @return a translated prefix to be displayed before the value.
-     * Think e.g. of the $ in $30
+     * This method returns a translated prefix to be displayed before the
+     * value. Think e.g. of the $ in $30
+     *
+     * @return the prefix 
      */
     QString prefix() const;
 
     /**
-     * @return a translated suffix to be displayed after the value.
-     * Think of the kbps in 128kbps
+     * This method returns a translated suffix to be displayed after the
+     * value. Think of the kbps in 128kbps     *
+     *
+     * @return the suffix
      */
     QString suffix() const;
 
     /**
-     * @return the hint for this item. See @ref Hint
+     * @return the hint for this item. See @ref KFileMimeTypeInfo::Hint
      **/
     uint hint() const;
 
     /**
-     * @return the unit for this item. See @ref Unit
+     * @return the unit for this item. See @ref KFileMimeTypeInfo::Unit
      **/
     uint unit() const;
 
+    /**
+     * @return the atttributes for this item. See
+     * @ref KFileMimeTypeInfo::Attributes
+     **/
     uint attributes() const;
 
     /**
      * @return true if the item is valid, i.e. if it contains data, false
      * if it's invalid (created with the default constructor and not been
-     * assigned anything), or if KFileMetaInfo::item() didn't find your
-     * requested item)
+     * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
+     * your requested item)
      */
     bool isValid() const;
 
@@ -617,6 +646,10 @@ protected:
     Data *d;
 };
 
+/**
+ * This is one group of meta information items about a file (see
+ * @ref KFileMetaInfo).
+ */
 class KFileMetaInfoGroup
 {
   friend class KFilePlugin;
@@ -626,18 +659,49 @@ class KFileMetaInfoGroup
 
 public:
     class Data;
+    /**
+     * @Internal
+     * You usually don't need to use this constructor yourself. Let
+     * KFileMetaInfo do it for you.
+     **/
+    // ### hmm, then it should be private
     KFileMetaInfoGroup( const QString& name, const KFileMimeTypeInfo* info );
 
+    /**
+     * Copy onstructor
+     **/
     KFileMetaInfoGroup( const KFileMetaInfoGroup& original );
 
-    KFileMetaInfoGroup();
+    /**
+     * The assignment operator, so you can do:
+     * <pre>
+     *    KFileMetaInfoGroup group = info.group("Technical");
+     * </pre>
+     *
+     * This will create a shared copy of the object. The actual data
+     * is automatically deleted if all copies go out of scope
+     **/
+    const KFileMetaInfoGroup& operator= (const KFileMetaInfoGroup& info );
+
+    /**
+     * Default constructor. This creates an "invalid" item
+     */
+     KFileMetaInfoGroup();
 
     ~KFileMetaInfoGroup();
 
-    const KFileMetaInfoGroup& operator= (const KFileMetaInfoGroup& info );
-
-
+    /**
+     * @return true if the item is valid, i.e. if it contains data, false
+     * if it's invalid (created with the default constructor and not been
+     * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
+     * your requested item)
+     */
     bool isValid() const;
+
+    /**
+     * @return false if the object contains data, true if it's empty. An
+     * empty group is a group with no items (amazing, isn't it?)
+     */
     bool isEmpty() const;
 
     /**
@@ -669,8 +733,23 @@ public:
         return i.value();
     }
 
+    
+    /**
+     * Use this method to get a list of keys in the specified group that
+     * the plugin knows about. No variable keys.
+     * For a group that doesn't support variable keys, all keys that this
+     * group may have are returned. For a group that does support them, the
+     * non-variable ones are returned. See @ref KFileMetaInfo about variable
+     * keys
+     *
+     * @return the list of keys supported for this mimetype
+    **/
     QStringList supportedKeys() const;
 
+    /**
+     * @return true if this group supports adding or removing arbitrary
+     * keys, false if not.
+    **/
     bool supportsVariableKeys() const;
 
     /**
@@ -679,10 +758,13 @@ public:
     bool contains( const QString& key ) const;
 
     /**
-     * @return all keys, but in the order they were inserted.
+     * @return a list of all keys in the order they were inserted.
      **/
     QStringList keys() const;
 
+    /**
+     * @return a list of all keys in preference order.
+     **/
     QStringList preferredKeys() const;
 
    /**
