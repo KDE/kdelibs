@@ -4434,6 +4434,12 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 
 	    for(;;) 
 	    {
+		if ( strncmp( str, "</table", 7 ) == 0 )
+		{
+		    closeAnchor();
+		    done = true;
+		    break;
+		}
 		if ( strncmp( str, "<caption", 8 ) == 0 )
 		{
 		    stringTok->tokenize( str + 9, " >" );
@@ -4684,12 +4690,6 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    }
 		}
 		
-		if ( strncmp( str, "</table", 7 ) == 0 )
-		{
-		    closeAnchor();
-		    done = true;
-		    break;
-		}
 
 		// Unknown or unhandled table-tag: ignore
 		break;
