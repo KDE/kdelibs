@@ -2080,7 +2080,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      emit setStatusBarText(mailtoMsg);
+      emit setStatusBarText(mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), ""));
 			return;
     }
    // Is this check neccessary at all? (Frerich)
@@ -2754,7 +2754,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   // This causes crashes... needs to be fixed.
-  if (u.protocol() != "https") {
+  if (u.protocol() != "https" && u.protocol() != "mailto") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
 					"\nA third party may be able to intercept and view this information."
@@ -2788,6 +2788,18 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     }
   }
 
+  if (u.protocol() == "mailto") {
+     int rc = KMessageBox::warningContinueCancel(NULL, 
+                 i18n("This site is attempting to submit form data via email."),
+                 i18n("KDE"), 
+                 QString::null, 
+                 "WarnTriedEmailSubmit");
+
+     if (rc == KMessageBox::Cancel) {
+         return;
+     }
+  }
+
   // End form security checks
   //
 
@@ -2815,8 +2827,53 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   args.metaData().insert("ssl_activate_warnings", "TRUE");
   args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
+  // Handle mailto: forms
+  if (u.protocol() == "mailto") {
+      // 1)  Check for attach= and strip it
+      QString q = u.query().mid(1);
+      QStringList nvps = QStringList::split("&", q);
+      bool triedToAttach = false;
+
+      for (QStringList::Iterator nvp = nvps.begin(); nvp != nvps.end(); ++nvp) {
+         QStringList pair = QStringList::split("=", *nvp);
+         if (pair.count() >= 2) {
+            if (pair.first().lower() == "attach") {
+               nvp = nvps.remove(nvp);
+               triedToAttach = true;
+            }
+         }
+      }
+
+      if (triedToAttach)
+         KMessageBox::information(NULL, i18n("This site attempted to attach a file from your computer in the form submission.  The attachment was removed for your protection."), i18n("KDE"), "WarnTriedAttach");
+
+      // 2)  Append body=
+      QString bodyEnc;
+      if (contentType.lower() == "multipart/form-data") {
+         // FIXME: is this correct?  I suspect not
+         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(), 
+                                                           formData.size()));
+      } else if (contentType.lower() == "text/plain") {
+         // Convention seems to be to decode, and s/&/\n/
+         QString tmpbody = QString::fromLatin1(formData.data(), 
+                                               formData.size());
+         tmpbody.replace(QRegExp("[&]"), "\n");
+         tmpbody.replace(QRegExp("[+]"), " ");
+         tmpbody = KURL::decode_string(tmpbody);  // Decode the rest of it
+         bodyEnc = KURL::encode_string(tmpbody);  // Recode for the URL
+      } else {
+         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(), 
+                                                           formData.size()));
+      }
+
+      nvps.append(QString("body=%1").arg(bodyEnc));
+      q = nvps.join("&");
+      u.setQuery(q);
+  } 
+
   if ( strcmp( action, "get" ) == 0 ) {
-    u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
+    if (u.protocol() != "mailto")
+       u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
     args.setDoPost( false );
   }
   else {
