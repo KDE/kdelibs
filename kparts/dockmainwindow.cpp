@@ -122,7 +122,6 @@ void DockMainWindow::createGUI( Part * part )
   }
 
   setUpdatesEnabled( true );
-  updateRects();
 
   d->m_activePart = part;
 }
