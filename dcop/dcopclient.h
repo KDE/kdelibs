@@ -83,6 +83,7 @@ class DCOPClient : public QObject
    *
    * If no server address is ever specified, attach will try its best to
    * find the server anyway.
+   * @param addr the new address of the server
    */
   static void setServerAddress(const QCString &addr);
 
@@ -102,7 +103,7 @@ class DCOPClient : public QObject
    * If you want to register differently, you should use @ref registerAs()
    * instead.
    *
-   * @return @p true if attaching was successful.
+   * @return true if attaching was successful.
    */
   bool attach();
 
@@ -116,22 +117,26 @@ class DCOPClient : public QObject
 
   /**
    * Detaches from the DCOP server.
+   * @return true if successful, false otherwise
    */
   bool detach();
 
   /**
    * Returns whether or not the client is attached to the server.
+   * @return true if attached, false if not
    */
   bool isAttached() const;
 
   /**
    * Returns whether the client is attached to a server owned by
    * another user.
+   * @return true if attached to a foreign server, false if not
    */
   bool isAttachedToForeignServer() const;
 
   /**
    * Returns whether the client handles incoming calls.
+   * @return true if the client accepts calls
    */
   bool acceptCalls() const;
 
@@ -139,12 +144,14 @@ class DCOPClient : public QObject
    * Specify whether the client should accept incoming calls.
    * By default clients accept incoming calls, but not when connected
    * to a foreign server.
+   * @param b true to accept calls, false to reject them
    */
   void setAcceptCalls(bool b);
 
   /**
    * Returns whether the DCOP - Qt bridge is enabled.
    * By default the DCOP - Qt bridge is enabled.
+   * @return true if Qt objects are accessible over DCOP
    * @since 3.1
    */
   bool qtBridgeEnabled(); // ### KDE 4.0: make const
@@ -153,6 +160,7 @@ class DCOPClient : public QObject
    * Specify whether Qt objects of the application should be accessible
    * via DCOP.
    * By default the DCOP - Qt bridge is enabled.
+   * @param b true to make Qt objects accessible over DCOP
    * @since 3.1
    */
   void setQtBridgeEnabled(bool b);
@@ -177,6 +185,8 @@ class DCOPClient : public QObject
    * enough.
    * It will implicitly register you as "anonymous".
    *
+   * @param appId the id of the application
+   * @param addPID true to add the process id
    * @return The actual @p appId used for the registration or a null string
    * if the registration wasn't successful.
    */
@@ -184,16 +194,19 @@ class DCOPClient : public QObject
 
   /**
    * Returns whether or not the client is registered at the server.
+   * @return true if registered at the server
    */
   bool isRegistered() const;
 
   /**
    * Returns the current app id or a null string if the application
    * hasn't yet been registered.
+   * @param the application id, or QString::null if not registered
    */
   QCString appId() const;
 
   /**
+   * Returns the socket fd that is used for communication with the server.
    * @return The socket over which DCOP is communicating with the server.
    */
   int socket() const;
@@ -207,18 +220,22 @@ class DCOPClient : public QObject
    *
    * Be aware that not responding to DCOP requests may cause other
    * programs that want to communicate with your application, to hang.
+   * @see resume()
+   * @see isSuspended()
    */
   void suspend();
 
   /**
    * Resumes the processing of DCOP events.
-   * See @ref suspend().
+   * @see suspend().
+   * @see isSuspended()
    */
   void resume();
 
   /**
    * Returns whether DCOP events are being processed.
-   * See @ref suspend() and resume().
+   * @see suspend()
+   * @see resume().
    * @since 3.1
    */
   bool isSuspended() const;
@@ -239,6 +256,13 @@ class DCOPClient : public QObject
   /**
    * This function acts exactly the same as the above, but the data
    * parameter can be specified as a @ref QString for convenience.
+   * 
+   * @param remApp The remote application id.
+   * @param remObj The name of the remote object.
+   * @param remFun The remote function in the specified object to call.
+   * @param data The data to provide to the remote function.
+   *
+   * @return Whether or not the server was able to accept the send.
    */
   bool send(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QString &data);
@@ -257,6 +281,15 @@ class DCOPClient : public QObject
    * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
+   * @param remApp the remote application's id
+   * @param remObj the remote object id
+   * @param remFun the remote function id
+   * @param data the data to send
+   * @param replyType the type of the reply will be written here
+   * @param replyData the data of the reply will be written here
+   * @param useEventLoop if true the event loop will be started when
+   *         the call blocks too long
+   * @return true if successful, false otherwise
    * @see send()
    */
   bool call(const QCString &remApp, const QCString &remObj,
@@ -267,15 +300,6 @@ class DCOPClient : public QObject
   /**
    * Searches for an object which matches a criteria.
    *
-   * @param remApp The remote application id.
-   * @param remObj The name of the remote object.
-   * @param remFun The remote function in the specified object to call.
-   *               This function should return a bool and is used as
-   *               criteria.
-   * @param data The data to provide to the remote function.
-   * @param foundApp The remote application id that matched the criteria.
-   * @param foundObj The remote object that matched the criteria.
-   *
    * findObject calls @p remFun in the applications and objects identified
    * by @p remApp and @p remObj until @p remFun returns true. The name of
    * the application and object that returned true are returned in
@@ -284,9 +308,6 @@ class DCOPClient : public QObject
    * If @p remFun is empty a default function is called in the object
    * which always returns @p true.
    *
-   * @return true is returned when an object was found for which @p remFun
-   * returned true. If no such object is the function returns false.
-   *
    * A findObject blocks the application until the process receives the
    * answer.
    *
@@ -294,6 +315,18 @@ class DCOPClient : public QObject
    * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
+   * @param remApp The remote application id.
+   * @param remObj The name of the remote object.
+   * @param remFun The remote function in the specified object to call.
+   *               This function should return a bool and is used as
+   *               criteria.
+   * @param data The data to provide to the remote function.
+   * @param foundApp The remote application id that matched the criteria.
+   * @param foundObj The remote object that matched the criteria.
+   * @param useEventLoop if true the event loop will be started when
+   *         the call blocks too long
+   * @return true is returned when an object was found for which @p remFun
+   *         returned true. If no such object is the function returns false.
    * @see send()
    */
   bool findObject(const QCString &remApp, const QCString &remObj,
@@ -337,13 +370,21 @@ class DCOPClient : public QObject
                           const QCString &receiverObj, const QCString &slot,
                           bool Volatile);
 
-  /* For backwards compatibility */
+  /** 
+   * @deprecated
+   * For backwards compatibility 
+   */
   bool connectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
                           bool Volatile);
 
   /**
    * Disconnects a DCOP signal.
+   *
+   * A special case is when both @p sender & @p signal are empty. In this
+   * case all connections related to @p receiverObj in the current client
+   * are disconnected. (Both connections from as well as to this object!)
+   *
    * @param sender the name of the client that emits the signal.
    * @param senderObj the name of the object that emits the signal.
    * If empty all objects will be disconnected.
@@ -352,18 +393,16 @@ class DCOPClient : public QObject
    * If empty all objects will be disconnected.
    * @param slot The name of the slot the signal is connected to.
    * If empty all slots will be disconnected.
-   *
-   * A special case is when both sender & signal are empty. In this
-   * case all connections related to @p receiverObj in the current client
-   * are disconnected. (Both connections from as well as to this object!)
-   *
    * @return false if no connection(s) where removed.
    */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &senderObj,
                           const QCString &signal,
                           const QCString &receiverObj, const QCString &slot);
 
-  /* For backwards compatibility */
+  /**
+   * @deprecated
+   * For backwards compatibility 
+   */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot);
 
@@ -375,6 +414,11 @@ class DCOPClient : public QObject
    * If you do not want to reimplement this function for whatever reason,
    * you can also use a default object  or a @ref DCOPObjectProxy.
    *
+   * @param the normalized function signature
+   * @param data the received data
+   * @param replyType write the reply type in this string
+   * @param replyData write the reply data in this array
+   * @return true if successful, false otherwise
    * @see setDefaultObject()
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
@@ -387,13 +431,18 @@ class DCOPClient : public QObject
    * This allows a server to queue requests.
    *
    * Note: Should be called from inside @ref process() only!
+   * @see endTransaction()
    */
   DCOPClientTransaction *beginTransaction( );
 
   /**
    * Sends the delayed reply of a function call.
+   * @param t the transaction as received from @ref beginTransaction()
+   * @param replyType write the reply type in this string
+   * @param replyData write the reply data in this array
+   * @see beginTransaction()
    */
-  void endTransaction( DCOPClientTransaction *, QCString& replyType, QByteArray &replyData);
+  void endTransaction( DCOPClientTransaction *t, QCString& replyType, QByteArray &replyData);
 
   /**
    * Test whether the current function call is delayed.
@@ -401,39 +450,58 @@ class DCOPClient : public QObject
    * Note: Should be called from inside @ref process() only!
    * @return The ID of the current transaction or
    *         0 if no transaction is going on.
+   * @see process()
+   * @see beginTransaction()
    */
   Q_INT32 transactionId() const;
 
   /**
    * Checks whether @p remApp is registered with the DCOP server.
-   * @return @p true if the remote application is registered, otherwise @p false.
+   * @param remApp the id of the remote application
+   * @return true if the remote application is registered, otherwise @p false.
    */
   bool isApplicationRegistered( const QCString& remApp);
 
   /**
    * Retrieves the list of all currently registered applications
    * from dcopserver.
+   * @return a list of all regietered applications
    */
   QCStringList registeredApplications();
 
   /**
    * Retrieves the list of objects of the remote application @p remApp.
+   * @param tremAPp he id of the application
+   * @param ok if not null, the function sets @p ok to true if successful
+   *           and false if an error occurred
+   * @return the list of object ids
    */
   QCStringList remoteObjects( const QCString& remApp, bool *ok = 0 );
 
   /**
    * Retrieves the list of interfaces of the remote object @p remObj
    * of application @p remApp.
+   * @param remApp the id of the application
+   * @param remObj the id of the object
+   * @param ok if not null, the function sets @p ok to true if successful
+   *           and false if an error occurred
+   * @return the list of interfaces
   */
   QCStringList remoteInterfaces( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
 
   /**
    * Retrieves the list of functions of the remote object @p remObj
    * of application @p remApp
+   * @param remApp the id of the application
+   * @param remObj the id of the object
+   * @param ok if not null, the function sets @p ok to true if successful
+   *           and false if an error occurred
+   * @return the list of function ids
   */
   QCStringList remoteFunctions( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
 
   /**
+   * @internal
    * Receives a DCOPSend or DCOPCall message from the server.
    *
    * @param app The application the message was intended for.  Should be
@@ -442,13 +510,14 @@ class DCOPClient : public QObject
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
    * @param data The arguments for the function.
-   * @internal
+   * @return true if successful, false otherwise
    */
   bool receive(const QCString &app, const QCString &obj,
 	       const QCString &fun, const QByteArray& data,
 	       QCString& replyType, QByteArray &replyData);
 
   /**
+   * @internal
    * Receives a @p DCOPFind message from the server.
    *
    * @param app The application the message was intended for.  Should be
@@ -457,7 +526,6 @@ class DCOPClient : public QObject
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
    * @param data The arguments for the function.
-   * @internal
    */
   bool find(const QCString &app, const QCString &obj,
 	    const QCString &fun, const QByteArray& data,
@@ -477,12 +545,16 @@ class DCOPClient : public QObject
    * When using @ref send() or @ref call(), normalization is done
    * automatically for you.
    *
+   * @param fun the function signature to normalize
+   * @return the normalized function
    */
   static QCString normalizeFunctionSignature( const QCString& fun );
 
 
   /**
-   * Returns the @p appId of the last application that talked to us.
+   * Returns the appId of the last application that talked to us.
+   * @return the application id of the last application that send a message
+   *         to this client
    */
   QCString senderId() const;
 
@@ -492,6 +564,7 @@ class DCOPClient : public QObject
     *
     * All app-wide messages that have not been processed by the dcopclient
     * will be send further to @p objId.
+    * @param objId the id of the new default object
     */
   void setDefaultObject( const QCString& objId );
 
@@ -501,6 +574,7 @@ class DCOPClient : public QObject
      *
      * A default object receives application-wide messages that have not
      * been processed by the DCOPClient itself.
+    * @return the id of the new default object
      */
   QCString defaultObject() const;
 
@@ -512,7 +586,9 @@ class DCOPClient : public QObject
    * true, notifications will be enabled until it was called with
    * @p enabled set to false as often.
    *
-   * They are disabled by default.  */
+   * They are disabled by default.  
+   * @param enabled true to enable notifications, false to disable
+   */
   void setNotifications( bool enabled );
 
   /**
@@ -521,6 +597,7 @@ class DCOPClient : public QObject
    * If the number of regular clients drops down to zero, the
    * dcopserver will emit a KDE termination signal after 10
    * seconds.
+   * @param daemonMode true to enable daemon mode, false to disable
    */
   void setDaemonMode( bool daemonMode );
 
@@ -529,6 +606,7 @@ class DCOPClient : public QObject
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
    * as KAppliction::dcopClient().
+   * @return the application's main dcop client
    */
   static DCOPClient* mainClient();
 
@@ -537,8 +615,9 @@ class DCOPClient : public QObject
    * be used by objects that do not have any specific access to a dcop
    * client. In KDE applications, the main client usually is the same
    * as KAppliction::dcopClient().
+   * @param mainClient the new main dcop client
    */
-  static void setMainClient( DCOPClient* );
+  static void setMainClient( DCOPClient* mainClient);
 
   /**
     * @internal Do not use.
@@ -551,7 +630,9 @@ class DCOPClient : public QObject
     * Provides information about the last DCOP call for debugging purposes.
     */
   static const char *postMortemSender();
+  /// @internal
   static const char *postMortemObject();
+  /// @internal
   static const char *postMortemFunction();
 
   /**
@@ -564,8 +645,9 @@ class DCOPClient : public QObject
   static QCString dcopServerFile(const QCString &hostname=0);
 
   /**
-    * For backwards compatibility with KDE 2.x
-    */
+   * @deprecated
+   * For backwards compatibility with KDE 2.x
+   */
   static QCString dcopServerFileOld(const QCString &hostname=0);
 
 signals:
@@ -575,6 +657,7 @@ signals:
    *
    * You need to call @ref setNotifications() first, to tell the DCOP server
    * that you want to get these events.
+   * @param appId the id of the new application
    */
   void applicationRegistered( const QCString& appId );
   /**
@@ -583,6 +666,7 @@ signals:
    *
    * You need to call @ref setNotifications() first, to tell the
    * DCOP server that you want to get these events.
+   * @param appId the id of the removed application
    */
   void applicationRemoved( const QCString& appId );
 
@@ -592,6 +676,7 @@ signals:
    *
    *  Usually attached to a dialog box or some other visual
    * aid.
+   * @param msg the message tha contains further information
    */
   void attachFailed(const QString &msg);
 
@@ -610,12 +695,17 @@ signals:
    * application might end up in an illegal state, as a keyboard
    * shortcut or a mouse action might cause another dcop call to be
    * issued.
+   * @param block true to block user input, false otherwise
    */
-  void blockUserInput( bool );
+  void blockUserInput( bool block );
 
 public slots:
 
 protected slots:
+  /**
+   * Process data from the socket.
+   * @param socknum the fd of the socket
+   */
   void processSocketData(int socknum);
 
 private slots:

@@ -41,11 +41,15 @@ Bool dcop_attach(void);
  * should not rely on getting 'app_name'.
  *
  * If it was not possible to register, retval is 0.
+ * @param app_name the name of the application.
+ * @param add_pid the process id of the application
+ * @return the registered name, or 0 when the registration failed
  */
 char * dcop_register(const char * app_name, Bool add_pid);
 
 /**
  * Detach from the DCOP server.
+ * @return true if successful, false otherwise
  */
 Bool dcop_detach(void);
 
@@ -53,22 +57,26 @@ Bool dcop_detach(void);
  * Register the callback function for an object id.
  * This function should have signature dcop_callback_t. The name of the
  * actual function that should be called is passed in the struct.
+ * @param object_id the object id to register
+ * @param callback the callback for the object id
+ * @return true if successful, false otherwise
  */
 Bool dcop_register_callback(const char * object_id, dcop_callback_t callback);
 
 /**
  * Send a signal to a DCOP object.
  *
- * @p receiving_app     Name the target application is registered under.
- *                      Note that you may use wildcards here. For example,
- *                      you could send to all 'konsole' objects that are
- *                      registered using the '-pid' extension with
- *                      "konsole-*".
+ * @param receiving_app     Name the target application is registered under.
+ *                          Note that you may use wildcards here. For example,
+ *                          you could send to all 'konsole' objects that are
+ *                          registered using the '-pid' extension with
+ *                          "konsole-*".
  *
- * @p object            Name of the remote object.
- * @p function          Name of the function to call.
- * @p data              Marshalled arguments to pass to function.
- * @p data_length       Number of octets in data.
+ * @param object            Name of the remote object.
+ * @param function          Name of the function to call.
+ * @param data              Marshalled arguments to pass to function.
+ * @param data_length       Number of octets in data.
+ * @return true if successful, false otherwise
  */
 Bool dcop_send_signal(
   const char * receiving_app,
@@ -81,15 +89,16 @@ Bool dcop_send_signal(
 /**
  * Call a function of a DCOP object.
  *
- * @p app_name          Name this application is registered under.
- * @p remote_app_name   Name the target application is registered under.
- * @p remote_object_id  Name of the remote object.
- * @p remote_function   Name of the function to call.
- * @p data              Marshalled arguments to pass to function.
- * @p data_length       Number of octets in data.
- * @p reply_type        Will be set to type of retval, represented as a string.
- * @p reply_data        Will be set to retval (marshalled).
- * @p reply_data_length Will be set to number of octets in retval.
+ * @param app_name          Name this application is registered under.
+ * @param remote_app_name   Name the target application is registered under.
+ * @param remote_object_id  Name of the remote object.
+ * @param remote_function   Name of the function to call.
+ * @param data              Marshalled arguments to pass to function.
+ * @param data_length       Number of octets in data.
+ * @param reply_type        Will be set to type of retval, represented as a string.
+ * @param reply_data        Will be set to retval (marshalled).
+ * @param reply_data_length Will be set to number of octets in retval.
+ * @return true if successful, false otherwise
  */
 Bool dcop_call(
   const char * app_name,

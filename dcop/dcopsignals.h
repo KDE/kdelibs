@@ -31,7 +31,7 @@ class DCOPConnection;
 //
 // This requires:
 // DCOPSignalConnectionList * DCOPConnection::signalConnectionList()
-
+/// @internal
 class DCOPSignalConnection
 {
 public:
@@ -45,6 +45,7 @@ public:
    QCString slot;        // Function to send to in the object.
 };
 
+/// @internal
 class DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
 {
 public:

@@ -32,7 +32,7 @@ class DCOPStubPrivate;
 
 /**
 * Abstract base class for dcop stubs as created by the
-* dcopidl2cpp compiler
+* dcopidl2cpp compiler.
 *
 */
 
@@ -41,39 +41,48 @@ class DCOPStub
 public:
     /**
        Creates a DCOPStub for application @p app and object @p obj
+       @param app the application id
+       @param obj the object id
      */
     DCOPStub( const QCString& app, const QCString& obj );
 
     /** 
       Creates a DCOPStub for application @p app and object @p obj
        that operates on the DCOPClient @p client
+       @param client the DCOPClient
+       @param app the application id
+       @param obj the object id
      */
     DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj );
     virtual ~DCOPStub();
 
     /**
        Return the application id.
+       @return the application id
      */
     QCString app() const;
     /**
        Return the object  id.
+       @return the object id
      */
     QCString obj() const;
 
     enum Status{ CallSucceeded, CallFailed };
     /**
      * Return the status of the last call, either @p CallSucceeded or
-     * @p CallFailed
+     * @p CallFailed.
      *
-     *See @ref ok();
+     * @return the status of the last call
+     * @see ok();
      */
     Status status() const;
 
 
     /**
-     *Return whether no error occured
+     * Return whether no error occured,
      *
-     * See @ref status();
+     * @return true if the last call was successful, false otherwise
+     * @see status();
      */
     bool ok()  const;
 
@@ -81,6 +90,8 @@ protected:
 
     /**
        Sets the status to status. Possible values are 'CallSucceeded' and 'CallFailed'
+       @param _status the new status
+       @see status()
      */
     void setStatus( Status _status );
 
@@ -93,6 +104,7 @@ protected:
     /** 
       The dcopClient this stub operates on. Either the specific one
        specified in the constructor or DCOPClient::mainClient.
+       @return the stub's DCOPClient
     */
     DCOPClient* dcopClient();
 
