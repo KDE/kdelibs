@@ -330,7 +330,7 @@
   (list
    ; make CSS default style sheet type
    '("META" ("HTTP-EQUIV" "Content-Style-Type") ("CONTENT" "text/css"))
-   '("META" ("NAME" "Generator") ("CONTENT" "KDE DBMSS Customisation $Revision: $"))
+   '("META" ("NAME" "Generator") ("CONTENT" "KDE DBMSS Customisation $Revision$"))
     ; for KDE-wide style sheet
     (kde-external-ss (string-append %kde-doc-common-path% "kde-common.css"))
     ))
@@ -349,7 +349,7 @@
    (list "LINK" "#AA0000")
    (list "VLINK" "#AA0055")
    (list "ALINK" "#AA0000")
-   (list "STYLE" "font-family: sans-serif; position:absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;"))) ; added for new navigation design
+   (list "STYLE" "font-family: sans-serif; position:absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;"))) ; added for new navigation design; should be in the CSS file only
 
 (define %shade-verbatim% #t)
 (define ($shade-verbatim-attr$)
