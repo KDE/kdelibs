@@ -78,5 +78,10 @@ int main(int argc, char *argv[])
   check("center(test, 70)", 
 	result,
         "           The quick brown fox jumped over the lazy bridge.           ");
+
+  test = "Click on http://foo@bar:www.kde.org/yoyo/dyne.html#a1 for info.";
+  check( "tagURLs()", KStringHandler::tagURLs( test ),
+	"Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info." );
+
   printf("\nTest OK !\n");
 }
