@@ -686,9 +686,9 @@ class KDETranslator : public QTranslator
 {
 public:
   KDETranslator(QObject *parent) : QTranslator(parent, "kdetranslator") {}
-  virtual QTranslatorMessage findMessage(const char* context, 
+  virtual QTranslatorMessage findMessage(const char* context,
 					 const char *sourceText,
-					 const char* message) const 
+					 const char* message) const
   {
     QTranslatorMessage res;
     res.setTranslation(KGlobal::locale()->translateQt(context, sourceText, message));
@@ -1461,7 +1461,6 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    case ButtonPress:
 	    case ButtonRelease:
 	    case XKeyPress:
-	    case XKeyRelease:
 	    {
 		timeval tv;
 		gettimeofday( &tv, NULL );
