@@ -150,7 +150,7 @@ public:
     enum SlantType { SlantUnknown, Normal, Italic };
 
 protected:
-    KFontStructList getFontList(KFontStruct mask) const;
+    void getFontList(KFontStruct mask, KFontStructList& lst) const;
     QString xCharsetName(QFont::CharSet) const;
     QFont::CharSet nameToID(QString name) const;
     QFont::CharSet xNameToID(QString name) const;

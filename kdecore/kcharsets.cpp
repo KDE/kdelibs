@@ -235,7 +235,9 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
     KFontStruct mask;
     mask.family = family;
 
-    KFontStructList lst = getFontList(mask);
+    KFontStructList lst;
+    
+    getFontList(mask, lst);
 
     QList<QFont::CharSet> chList;
     KFontStruct *fs;
@@ -257,7 +259,8 @@ QStringList KCharsets::availableCharsetNames(QString family)
     KFontStruct mask;
     mask.family = family;
     
-    KFontStructList lst = getFontList(mask);
+    KFontStructList lst;
+    getFontList(mask, lst);
     
     QStringList chList;
     KFontStruct *fs;
@@ -313,55 +316,49 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     KFontStructList list;
     mask = f;
 
-
     mask.charset = charset;
-    list = getFontList(mask);
-    if(!list.isEmpty())
-    {
-	f.setCharSet(charset);
-	return;
+    getFontList(mask, list);
+    if(!list.isEmpty()) {
+        f.setCharSet(charset);
+        return;
     }
 
     // let's try unicode...
     mask.charset = QFont::Unicode;
-    list = getFontList(mask);
-    if(!list.isEmpty())
-    {
-	// just setting the charset to unicode should work
-	f.setCharSet(QFont::Unicode);
-	return;
+    getFontList(mask, list);
+    if(!list.isEmpty()) {
+        // just setting the charset to unicode should work
+        f.setCharSet(QFont::Unicode);
+        return;
     }
 
     // ok... we don't have the charset in the specified family, let's
     // try to find a replacement.
 
     mask.charset = charset;
-    list = getFontList(mask);
-    if(!list.isEmpty())
-    {
-	f.setFamily(list.first()->family);
-	f.setCharSet(charset);
-	return;
+    getFontList(mask, list);
+    if(!list.isEmpty()) {
+        f.setFamily(list.first()->family);
+        f.setCharSet(charset);
+        return;
     }
 
     mask.charset = QFont::Unicode;
     mask.family = QString::null;
-    list = getFontList(mask);
-    if(!list.isEmpty())
-    {
-	f.setFamily(list.first()->family);
-	f.setCharSet(QFont::Unicode);
-	return;
+    getFontList(mask, list);
+    if(!list.isEmpty()) {
+        f.setFamily(list.first()->family);
+        f.setCharSet(QFont::Unicode);
+        return;
     }
 
     KFontStruct m;
     m.charset = charset;
-    list = getFontList(m);
-    if(!list.isEmpty())
-    {
-	f.setFamily(list.first()->family);
-	f.setCharSet(charset);
-	return;
+    getFontList(m, list);
+    if(!list.isEmpty()) {
+        f.setFamily(list.first()->family);
+        f.setCharSet(charset);
+        return;
     }
 
     f.setCharSet(QFont::AnyCharSet);
@@ -378,95 +375,95 @@ bool KCharsets::isAvailable(QFont::CharSet charset)
     KFontStruct fs;
     fs.charset = charset;
 
-    KFontStructList list = getFontList(fs);
-    if(!list.isEmpty()) return true;
+    KFontStructList list;
+
+    getFontList(fs, list);
+    
+    if(!list.isEmpty())
+        return true;
+    
     return false;
 }
 
 
-KFontStructList KCharsets::getFontList(KFontStruct mask) const
+void KCharsets::getFontList(KFontStruct mask, KFontStructList& lst) const
 {
- 
     char **fontNames;
     int numFonts;
-
-    QString qfontname;
     Display *kde_display;
   
     kde_display = kapp->getDisplay();
+    lst.setAutoDelete(true);
+    lst.clear();
 
     QString maskStr("-*-");
     if(!mask.family.isEmpty())
-	maskStr += mask.family;
+        maskStr += mask.family;
     else
-	maskStr += "*";
-
+        maskStr += "*";
+    
     // we sort out wrong slants afterwards...
-    switch ( mask.weight )
-    {
+    switch ( mask.weight ) {
     case WeightUnknown:
-	maskStr += "-*-*-*-*-";
-	break;
+        maskStr += "-*-*-*-*-";
+        break;
     case Medium:
-	maskStr += "-medium-*-*-*-";
-	break;
+        maskStr += "-medium-*-*-*-";
+        break;
     case Bold:
-	maskStr += "-bold-*-*-*-";
-	break;
-    }	
+        maskStr += "-bold-*-*-*-";
+        break;
+    }
+    
     if(mask.scalable)
-	maskStr += "0-0-*-*-*-"; // perhaps "0-0-0-0-*-" ????
+        maskStr += "0-0-*-*-*-"; // perhaps "0-0-0-0-*-" ????
     else
-	maskStr += "*-*-*-*-*-"; 
-
+        maskStr += "*-*-*-*-*-"; 
+    
     maskStr += xCharsetName(mask.charset);
-
+    
     fontNames = XListFonts(kde_display, maskStr.latin1(), 32767, &numFonts);
 
-    KFontStructList lst;
-    lst.setAutoDelete(true);
+    for(int i = 0; i < numFonts; i++) {
+        KFontStruct *f = new KFontStruct;
+        
+        QCString qfontname = fontNames[i];
+        int dash = qfontname.find ('-', 1, true); // find next dash
+        if (dash == -1) continue;
+        
+        // the font name is between the second and third dash so:
+        // let's find the third dash:
+        
+        int dash_two = qfontname.find ('-', dash + 1 , true);
+        if (dash == -1) continue;
+        // fish the name of the font info string
+        f->family = qfontname.mid(dash +1, dash_two - dash -1);
+        
+        if(qfontname.find("-p-") != -1) 
+            f->fixed = Proportional;
+        else
+            f->fixed = Fixed;
+        if(qfontname.find("-r-") != -1) 
+            f->slant = Normal;
+        else
+            f->slant = Italic;
+        if(qfontname.find("-0-0-") != -1)
+            f->scalable = true;
+        if(qfontname.find("-b-") != -1) 
+            f->weight = Bold;
+        else
+            f->weight = Medium;
+        
+        // get the charset...
+        dash = qfontname.findRev('-');
+        dash = qfontname.findRev('-', dash-1);
+        QString xname = qfontname.right(qfontname.length()-dash-1);
+        f->charset = xNameToID(xname);
 
-    for(int i = 0; i < numFonts; i++){
-	KFontStruct *f = new KFontStruct;
-	
-
-	// FIXME: don't use QString. At least QCstring
-	qfontname = fontNames[i];
-	int dash = qfontname.find ('-', 1, true); // find next dash
-	if (dash == -1) continue;
-	
-	// the font name is between the second and third dash so:
-	// let's find the third dash:
-	
-	int dash_two = qfontname.find ('-', dash + 1 , true);
-	if (dash == -1) continue;
-	// fish the name of the font info string
-	f->family = qfontname.mid(dash +1, dash_two - dash -1);
-	
-	if(qfontname.find("-p-") != -1) 
-	    f->fixed = Proportional;
-	else
-	    f->fixed = Fixed;
-	if(qfontname.find("-r-") != -1) 
-	    f->slant = Normal;
-	else
-	    f->slant = Italic;
-	if(qfontname.find("-0-0-") != -1) f->scalable = true;
-	if(qfontname.find("-b-") != -1) 
-	    f->weight = Bold;
-	else
-	    f->weight = Medium;
-
-	// get the charset...
-	dash = qfontname.findRev('-');
-	dash = qfontname.findRev('-', dash-1);
-	QString xname = qfontname.right(qfontname.length()-dash-1);
-	f->charset = xNameToID(xname);
-
-	lst.append(f);
+        lst.append(f);
     }
+    
     XFreeFontNames(fontNames);
-    return lst;
 }
 
 QFont::CharSet KCharsets::charsetForLocale()
@@ -479,7 +476,10 @@ bool KCharsets::hasUnicode(QString family) const
     KFontStruct fs;
     fs.family = family;
     fs.charset = QFont::Unicode;
-    KFontStructList l = getFontList(fs);
+    KFontStructList l;
+    
+    getFontList(fs, l);
+    
     return !l.isEmpty();
 }
 

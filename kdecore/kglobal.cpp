@@ -111,6 +111,7 @@ QFont KGlobal::fixedFont()
                             _fixedFont->pointSize(), QFont::Normal);
         _fixedFont->setStyleHint(QFont::Courier);
         _fixedFont->setFixedPitch(true);
+        charsets()->setQFont(*_fixedFont, charsets()->charsetForLocale());
     }
     return *_fixedFont;
 }
