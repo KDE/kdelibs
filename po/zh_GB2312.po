@@ -1,0 +1,953 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kcmkpanel\n"
+"POT-Creation-Date: 1998-04-17 23:25+0200\n"
+"PO-Revision-Date: 1998-02-21 05:04+0800\n"
+"Last-Translator: Wang Jian <lark@ipc.ustc.edu.cn>\n"
+"Language-Team: zh_CN ( gb2312 )\n"
+
+#: kdecore/kapp.cpp:494
+msgid "&Contents"
+msgstr "内容[&C]"
+
+#: kdecore/kapp.cpp:500
+msgid "&About"
+msgstr "有关[&A]"
+
+#: kdecore/kapp.cpp:507
+msgid "About &KDE..."
+msgstr "关于 &KDE..."
+
+#: kdecore/kapp.cpp:528
+msgid "About KDE"
+msgstr "关于 KDE"
+
+#: kdecore/kapp.cpp:530
+msgid ""
+"\n"
+"The KDE Desktop Environment was written by the KDE Team,\n"
+"a world-wide network of software engineers commited to\n"
+"free software development.\n"
+"\n"
+"Visit http://www.kde.org for more information on the KDE\n"
+"Project. Please consider joining and supporting KDE.\n"
+"\n"
+"Please report bugs at http://buglist.kde.org.\n"
+msgstr ""
+
+#: kdeui/kcolordlg.cpp:285
+msgid "Select Color"
+msgstr "选择颜色"
+
+#: kdeui/kcolordlg.cpp:297
+msgid "System Colors"
+msgstr "系统颜色"
+
+#: kdeui/kcolordlg.cpp:328
+msgid "Custom Colors"
+msgstr "自定义颜色"
+
+#: kdeui/kcolordlg.cpp:341
+msgid "Add to Custom Colors"
+msgstr "加在自定义颜色中"
+
+#: kdeui/kcolordlg.cpp:463 kdeui/kfontdialog.cpp:337
+#: kdeui/kiconloaderdialog.cpp:210 kfile/kfiledialog.cpp:898 po/texts.cpp:37
+msgid "Ok"
+msgstr "确定"
+
+#: kdeui/kcolordlg.cpp:466 kdeui/kcontrol.cpp:41 kdeui/keditcl1.cpp:397
+#: kdeui/keditcl1.cpp:479 kdeui/keditcl2.cpp:897 kdeui/kfontdialog.cpp:332
+#: kdeui/kiconloaderdialog.cpp:211 kdeui/kmsgbox.cpp:505
+#: kfile/kfiledialog.cpp:286 kfile/kfiledialog.cpp:903
+#: kfile/kfiledialogconf.cpp:58 po/texts.cpp:40
+msgid "Cancel"
+msgstr "取消"
+
+#: kdeui/kcolordlg.cpp:471 kdeui/kcontrol.cpp:34 kfile/kfiledialog.cpp:292
+#: po/texts.cpp:45
+msgid "Help"
+msgstr "帮助"
+
+#: kdeui/kcolordlg.cpp:788 kdeui/kcolordlg.cpp:840
+msgid "Custom..."
+msgstr "自定义..."
+
+#: kdeui/kcontrol.cpp:39 kdeui/keditcl1.cpp:129 kdeui/keditcl1.cpp:143
+#: kdeui/keditcl1.cpp:158 kdeui/keditcl1.cpp:179 kdeui/keditcl1.cpp:192
+#: kdeui/keditcl1.cpp:1473 kdeui/keditcl1.cpp:1630 kdeui/kmsgbox.cpp:473
+#: kfile/kfiledialog.cpp:280 kfile/kfiledialog.cpp:513
+#: kfile/kfiledialogconf.cpp:60 po/texts.cpp:35
+msgid "OK"
+msgstr "确定"
+
+#: kdeui/kcontrol.cpp:40 kfile/kfiledialogconf.cpp:59 po/texts.cpp:42
+msgid "Apply"
+msgstr "应用"
+
+#: kdeui/keditcl1.cpp:127 kdeui/keditcl1.cpp:156 kdeui/keditcl1.cpp:177
+#: kdeui/keditcl1.cpp:190 kdeui/keditcl1.cpp:1471 po/texts.cpp:87
+msgid "Sorry"
+msgstr "抱歉"
+
+#: kdeui/keditcl1.cpp:128
+msgid "The specified File does not exist"
+msgstr "指定的文件不存在"
+
+#: kdeui/keditcl1.cpp:141 kdeui/keditcl1.cpp:413 kdeui/keditcl1.cpp:494
+#: kdeui/keditcl1.cpp:1627
+msgid "Sorry:"
+msgstr "抱歉:"
+
+#: kdeui/keditcl1.cpp:142
+msgid "You have specificated a directory"
+msgstr "必须指定一个目录"
+
+#: kdeui/keditcl1.cpp:157 kdeui/keditcl1.cpp:178
+msgid "You do not have read permission to this file."
+msgstr "没有权限读取这个文件"
+
+#: kdeui/keditcl1.cpp:191
+msgid "An Error occured while trying to open this Document"
+msgstr "打开文件的时候发生错误"
+
+#: kdeui/keditcl1.cpp:356
+msgid "Select Document to Insert"
+msgstr "选择要插入的文件"
+
+#: kdeui/keditcl1.cpp:392 kdeui/keditcl1.cpp:474 kdeui/keditcl1.cpp:1570
+msgid "Warning:"
+msgstr "警告:"
+
+#: kdeui/keditcl1.cpp:393 kdeui/keditcl1.cpp:475
+msgid ""
+"The current Document has been modified.\n"
+"Would you like to save it?"
+msgstr ""
+"当前的文件已经被修改.\n"
+"要保存吗?"
+
+#: kdeui/keditcl1.cpp:395 kdeui/keditcl1.cpp:416 kdeui/keditcl1.cpp:477
+#: kdeui/keditcl1.cpp:497 kdeui/keditcl1.cpp:1573 kdeui/keditcl2.cpp:108
+#: kdeui/keditcl2.cpp:125 kdeui/keditcl2.cpp:365 kdeui/keditcl2.cpp:382
+#: kdeui/keditcl2.cpp:428 kdeui/keditcl2.cpp:458 kdeui/keditcl2.cpp:475
+#: kdeui/kmsgbox.cpp:488 kdeui/kmsgbox.cpp:503 po/texts.cpp:27
+msgid "Yes"
+msgstr "是"
+
+#: kdeui/keditcl1.cpp:396 kdeui/keditcl1.cpp:417 kdeui/keditcl1.cpp:478
+#: kdeui/keditcl1.cpp:498 kdeui/keditcl1.cpp:1574 kdeui/keditcl2.cpp:109
+#: kdeui/keditcl2.cpp:126 kdeui/keditcl2.cpp:366 kdeui/keditcl2.cpp:383
+#: kdeui/keditcl2.cpp:429 kdeui/keditcl2.cpp:459 kdeui/keditcl2.cpp:476
+#: kdeui/kmsgbox.cpp:486 kdeui/kmsgbox.cpp:501 po/texts.cpp:28
+msgid "No"
+msgstr "否"
+
+#: kdeui/keditcl1.cpp:414
+msgid ""
+"Could not save the document.\n"
+"Open a new document anyways?"
+msgstr ""
+"不能保存这份文件.\n"
+"直接打开一个新文件吗?"
+
+#: kdeui/keditcl1.cpp:445
+msgid "Select Document to Open"
+msgstr "选择要打开的文件"
+
+#: kdeui/keditcl1.cpp:495
+msgid ""
+"Could not save the document.\n"
+"Create a new document anyways?"
+msgstr ""
+"不能保存这份文件.\n"
+"直接建立一份新文件吗?"
+
+#: kdeui/keditcl1.cpp:530 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+msgid "Untitled"
+msgstr "尚未命名"
+
+#: kdeui/keditcl1.cpp:1472
+msgid "Could not save the document\n"
+msgstr "无法保存这份文件.\n"
+
+#: kdeui/keditcl1.cpp:1542
+msgid "Save Document As"
+msgstr "另存新文件"
+
+#: kdeui/keditcl1.cpp:1571
+msgid ""
+"A Document with this Name exists already\n"
+"Do you want to overwrite it ?"
+msgstr ""
+"存在相同名字的文件\n"
+"要覆盖吗 ?"
+
+#: kdeui/keditcl1.cpp:1628
+msgid "You do not have write permission to this file.\n"
+msgstr "没有权限写入这个文件\n"
+
+#: kdeui/keditcl2.cpp:105 kdeui/keditcl2.cpp:122 kdeui/keditcl2.cpp:362
+#: kdeui/keditcl2.cpp:379 kdeui/keditcl2.cpp:678 kdeui/keditcl2.cpp:687
+#: kdeui/keditcl2.cpp:788
+msgid "Find"
+msgstr "寻找"
+
+#: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:363 kdeui/keditcl2.cpp:456
+msgid ""
+"End of document reached.\n"
+"Continue from the beginning?"
+msgstr ""
+"至文件结尾.\n"
+"由开头继续?"
+
+#: kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426
+#: kdeui/keditcl2.cpp:473
+msgid ""
+"Beginning of document reached.\n"
+"Continue from the end?"
+msgstr ""
+"已到文档开头.\n"
+"由结尾继续?"
+
+#: kdeui/keditcl2.cpp:425 kdeui/keditcl2.cpp:455 kdeui/keditcl2.cpp:472
+#: kdeui/keditcl2.cpp:791
+msgid "Replace"
+msgstr "替换"
+
+#: kdeui/keditcl2.cpp:684 kdeui/keditcl2.cpp:782
+msgid "Case Sensitive"
+msgstr "区分大小写"
+
+#: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:785
+msgid "Find Backwards"
+msgstr "向后寻找"
+
+#: kdeui/keditcl2.cpp:690 kdeui/keditcl2.cpp:797 po/texts.cpp:86
+msgid "Done"
+msgstr "完成"
+
+#: kdeui/keditcl2.cpp:770
+msgid "Find:"
+msgstr "寻找:"
+
+#: kdeui/keditcl2.cpp:780
+msgid "Replace with:"
+msgstr "用...替换:"
+
+#: kdeui/keditcl2.cpp:794
+msgid "Replace All"
+msgstr "全部替换"
+
+#: kdeui/keditcl2.cpp:891
+msgid "Goto Line"
+msgstr "跳至行数"
+
+#: kdeui/keditcl2.cpp:896
+msgid "Go"
+msgstr "跳"
+
+#: kdeui/kfontdialog.cpp:145
+msgid "Select Font"
+msgstr "选择字体"
+
+#: kdeui/kfontdialog.cpp:149
+msgid "Requested Font"
+msgstr "要求的字体"
+
+#: kdeui/kfontdialog.cpp:154
+msgid "Actual Font"
+msgstr "实际字体"
+
+#: kdeui/kfontdialog.cpp:158 kdeui/kfontdialog.cpp:162
+msgid "Family:"
+msgstr "族类:"
+
+#: kdeui/kfontdialog.cpp:169 kdeui/kfontdialog.cpp:175 po/texts.cpp:26
+msgid "Charset:"
+msgstr "字符集:"
+
+#: kdeui/kfontdialog.cpp:182 kdeui/kfontdialog.cpp:187 kfile/kpreview.cpp:196
+msgid "Size:"
+msgstr "大小"
+
+#: kdeui/kfontdialog.cpp:195 kdeui/kfontdialog.cpp:200
+msgid "Weight:"
+msgstr "厚度:"
+
+#: kdeui/kfontdialog.cpp:209 kdeui/kfontdialog.cpp:216
+msgid "Style:"
+msgstr "风格:"
+
+#: kdeui/kfontdialog.cpp:253
+msgid "Charset"
+msgstr "字符集"
+
+#: kdeui/kfontdialog.cpp:264 kfile/kfiledetaillist.cpp:38
+msgid "Size"
+msgstr "大小"
+
+#: kdeui/kfontdialog.cpp:305
+msgid "Weight"
+msgstr "厚度"
+
+#: kdeui/kfontdialog.cpp:306 kdeui/kfontdialog.cpp:433
+msgid "normal"
+msgstr "正常"
+
+#: kdeui/kfontdialog.cpp:307 kdeui/kfontdialog.cpp:435
+msgid "bold"
+msgstr "粗体"
+
+#: kdeui/kfontdialog.cpp:318
+msgid "Style"
+msgstr "风格"
+
+#: kdeui/kfontdialog.cpp:319 kdeui/kfontdialog.cpp:446
+#: kdeui/kfontdialog.cpp:475
+msgid "roman"
+msgstr "正体"
+
+#: kdeui/kfontdialog.cpp:320 kdeui/kfontdialog.cpp:448
+#: kdeui/kfontdialog.cpp:473
+msgid "italic"
+msgstr "斜体"
+
+#: kdeui/kfontdialog.cpp:350
+msgid "Dolor Ipse"
+msgstr ""
+
+#: kdeui/kfontdialog.cpp:468
+msgid "Bold"
+msgstr "粗体"
+
+#: kdeui/kfontdialog.cpp:470
+msgid "Normal"
+msgstr "正常"
+
+#: kdeui/kiconloaderdialog.cpp:193
+msgid "Select Icon"
+msgstr "选择图标"
+
+#: kdeui/kiconloaderdialog.cpp:198
+msgid "Filter:"
+msgstr "过滤:"
+
+#: kdeui/kmenubar.cpp:154 kdeui/ktoolbar.cpp:435
+msgid "Top"
+msgstr "顶端"
+
+#: kdeui/kmenubar.cpp:155 kdeui/ktoolbar.cpp:437
+msgid "Bottom"
+msgstr "底端"
+
+#: kdeui/kmenubar.cpp:156 kdeui/ktoolbar.cpp:438
+msgid "Floating"
+msgstr "浮动"
+
+#: kdeui/kmenubar.cpp:197 kdeui/kmenubar.cpp:337 kdeui/ktoolbar.cpp:1459
+msgid "Float"
+msgstr "浮动"
+
+#: kdeui/kmenubar.cpp:326 kdeui/ktoolbar.cpp:1441
+msgid "UnFloat"
+msgstr "固定"
+
+#: kdeui/ktoolbar.cpp:153 kdeui/ktoolbar.cpp:277
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: 空的图标, 也许缺少某些文件"
+
+#: kdeui/ktoolbar.cpp:434
+msgid "Left"
+msgstr "左"
+
+#: kdeui/ktoolbar.cpp:436
+msgid "Right"
+msgstr "右"
+
+#: kfile/bookmark.cpp:246
+msgid "<!-- Do not edit this file -->"
+msgstr "<!-- 请勿编辑此文件 -->"
+
+#: kfile/kcombiview.cpp:80
+#, fuzzy
+msgid "Folders:"
+msgstr "过滤:"
+
+#: kfile/kcombiview.cpp:81
+#, fuzzy
+msgid "Contents:"
+msgstr "内容"
+
+#: kfile/kfiledetaillist.cpp:36
+msgid "Name"
+msgstr "名称"
+
+#: kfile/kfiledetaillist.cpp:40
+msgid "Permissions"
+msgstr ""
+
+#: kfile/kfiledetaillist.cpp:42
+#, fuzzy
+msgid "Date"
+msgstr "粘贴"
+
+#: kfile/kfiledetaillist.cpp:45
+msgid "Owner"
+msgstr "所有者"
+
+#: kfile/kfiledetaillist.cpp:47
+msgid "Group"
+msgstr "用户组"
+
+#: kfile/kfiledialog.cpp:144 po/texts.cpp:56
+msgid "Back"
+msgstr "返回"
+
+#: kfile/kfiledialog.cpp:147 po/texts.cpp:57
+msgid "Forward"
+msgstr "往前"
+
+#: kfile/kfiledialog.cpp:150
+msgid "Up to parent"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:153
+msgid "Home"
+msgstr "回到起点"
+
+#: kfile/kfiledialog.cpp:156 po/texts.cpp:55
+msgid "Reload"
+msgstr "重新载入"
+
+#: kfile/kfiledialog.cpp:172
+msgid "Bookmarks"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:176
+msgid "Create new folder"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:179
+#, fuzzy
+msgid "Search for a file"
+msgstr "存成文件"
+
+#: kfile/kfiledialog.cpp:182
+msgid "Configure this dialog [development only]"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:190
+msgid "The path"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:215
+msgid "&Location:"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:227
+#, fuzzy
+msgid "&Filter:"
+msgstr "过滤:"
+
+#: kfile/kfiledialog.cpp:260
+msgid "Show hidden"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:508
+msgid "Error: Not local file"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:509
+msgid ""
+"The specified directory is not a local directory\n"
+"But the application accepts just local files."
+msgstr ""
+
+#: kfile/kfiledialog.cpp:523 kfile/kfiledialog.cpp:623
+msgid "Error: Cannot Open Directory"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:524
+#, fuzzy
+msgid ""
+"The specified directory does not exist\n"
+"or was not readable."
+msgstr "指定的文件不存在"
+
+#: kfile/kfiledialog.cpp:526 kfile/kfiledialog.cpp:626
+msgid "Dismiss"
+msgstr "取消"
+
+#: kfile/kfiledialog.cpp:562 kfile/kfiledialog.cpp:1156
+#: kfile/kfiledialog.cpp:1315 kfile/kfiledialog.cpp:1349 po/texts.cpp:69
+msgid "Open"
+msgstr "打开"
+
+#: kfile/kfiledialog.cpp:577 kfile/kfiledialog.cpp:1330 po/texts.cpp:80
+msgid "Save As"
+msgstr "另存新文件"
+
+#: kfile/kfiledialog.cpp:599
+msgid "Root Directory"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:624
+#, fuzzy
+msgid "The specified directory does not exist or was not readable."
+msgstr "指定的文件不存在"
+
+#: kfile/kfiledialog.cpp:883
+msgid "Create new directory in: "
+msgstr ""
+
+#: kfile/kfiledialog.cpp:886
+msgid "New Directory"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:958
+#, fuzzy
+msgid "Add to bookmarks"
+msgstr "加在自定义颜色中"
+
+#: kfile/kfiledialog.cpp:1190
+msgid "Choose Directory"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:1211 kfile/kfiledialog.cpp:1370 po/texts.cpp:78
+msgid "Save"
+msgstr "保存"
+
+#: kfile/kfiledialog.cpp:1258
+msgid "directory"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:1260
+msgid "directories"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:1262 kfile/kpreview.cpp:326
+#, fuzzy
+msgid "file"
+msgstr "文件"
+
+#: kfile/kfiledialog.cpp:1264
+#, fuzzy
+msgid "files"
+msgstr "文件"
+
+#: kfile/kfiledialog.cpp:1266
+#, c-format
+msgid "%d %s and %d %s"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:1276
+msgid "one directory"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:41
+msgid "Look and Feel"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:43
+msgid ""
+"KDE File Selector by:\n"
+"\n"
+"Richard Moore <rich@kde.org>\n"
+"Stephan Kulow <coolo@kde.org>\n"
+"and Daniel Grana <grana@ie.iwi.unibe.ch>\n"
+"\n"
+"with contributions by\n"
+"\n"
+"Mario Weilguni <mweilguni@sime.com>\n"
+"and Martin Jones <mjones@kde.org>"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:56 po/texts.cpp:32
+msgid "About"
+msgstr "关于"
+
+#: kfile/kfiledialogconf.cpp:70
+msgid "View style"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:74
+msgid "Show Short View"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:80
+msgid "Show Detail View"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:89
+msgid "Misc"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:95
+#, fuzzy
+msgid "Show Filter"
+msgstr "过滤:"
+
+#: kfile/kfiledialogconf.cpp:101
+msgid "Show List Labels"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:107
+msgid "Show Hidden"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:113
+msgid "Show Status Line"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:119
+msgid "Use single Click"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:125
+msgid "Mix dirs and files"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:131
+msgid "Keep dirs first"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:95 kfile/kfileinfo.cpp:99
+msgid "unknown"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:217
+msgid "Jan"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:218
+msgid "Feb"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:219
+msgid "Mar"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:220
+msgid "Apr"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:221
+msgid "May"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:222
+msgid "Jun"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:223
+msgid "Jul"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:224
+msgid "Aug"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:225
+msgid "Sep"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:226
+msgid "Oct"
+msgstr ""
+
+#: kfile/kfileinfo.cpp:227
+#, fuzzy
+msgid "Nov"
+msgstr "否"
+
+#: kfile/kfileinfo.cpp:228
+msgid "Dec"
+msgstr ""
+
+#: kfile/kpreview.cpp:187
+msgid "Name:"
+msgstr "名称:"
+
+#: kfile/kpreview.cpp:205
+msgid "Date:"
+msgstr ""
+
+#: kfile/kpreview.cpp:214
+#, fuzzy
+msgid "Owner:"
+msgstr "所有者"
+
+#: kfile/kpreview.cpp:223
+#, fuzzy
+msgid "Group:"
+msgstr "用户组"
+
+#: kfile/kpreview.cpp:232
+msgid "Type:"
+msgstr "类型:"
+
+#: kfile/kpreview.cpp:287
+msgid "locked"
+msgstr ""
+
+#: kfile/kpreview.cpp:311
+msgid "picture"
+msgstr ""
+
+#: kfile/kpreview.cpp:343
+msgid "folder"
+msgstr ""
+
+#: po/texts.cpp:24
+msgid "Error"
+msgstr "错误"
+
+#: po/texts.cpp:25
+msgid "Malformed URL"
+msgstr "不正确的 URL"
+
+#: po/texts.cpp:29
+msgid "Warning"
+msgstr "警告"
+
+#: po/texts.cpp:30
+msgid "Save a file"
+msgstr "存成文件"
+
+#: po/texts.cpp:31
+msgid "Contents"
+msgstr "内容"
+
+#: po/texts.cpp:33
+msgid "A&bout..."
+msgstr "关于[&A]..."
+
+#: po/texts.cpp:36
+msgid "&OK"
+msgstr "确定[&O]"
+
+#: po/texts.cpp:38
+#, fuzzy
+msgid "On"
+msgstr "打开"
+
+#: po/texts.cpp:39
+msgid "Off"
+msgstr ""
+
+#: po/texts.cpp:41
+msgid "&Cancel"
+msgstr "取消[&C]"
+
+#: po/texts.cpp:43
+msgid "File"
+msgstr "文件"
+
+#: po/texts.cpp:44
+msgid "&File"
+msgstr "文件[&F]"
+
+#: po/texts.cpp:46
+msgid "&Help"
+msgstr "帮助[&H]"
+
+#: po/texts.cpp:47
+msgid "Edit"
+msgstr "编辑"
+
+#: po/texts.cpp:48
+msgid "&Edit"
+msgstr "编辑[&E]"
+
+#: po/texts.cpp:49
+msgid "&Options"
+msgstr "选项[&O]"
+
+#: po/texts.cpp:50
+msgid "View"
+msgstr "视图"
+
+#: po/texts.cpp:51
+msgid "&View"
+msgstr "视图[&V]"
+
+#: po/texts.cpp:52
+msgid "E&xit"
+msgstr "退出[&X]"
+
+#: po/texts.cpp:53
+msgid "Quit"
+msgstr "离开"
+
+#: po/texts.cpp:54
+msgid "&Quit"
+msgstr "离开[&Q]"
+
+#: po/texts.cpp:58
+msgid "Copy"
+msgstr "拷贝"
+
+#: po/texts.cpp:59
+msgid "&Copy"
+msgstr "拷贝[&C]"
+
+#: po/texts.cpp:60
+msgid "Paste"
+msgstr "粘贴"
+
+#: po/texts.cpp:61
+msgid "&Paste"
+msgstr "粘贴[&P]"
+
+#: po/texts.cpp:62
+msgid "New"
+msgstr "新的"
+
+#: po/texts.cpp:63
+msgid "&New"
+msgstr "新建[&N]"
+
+#: po/texts.cpp:64
+msgid "&New..."
+msgstr "新的[&N]..."
+
+#: po/texts.cpp:65
+msgid "&New Window..."
+msgstr "新窗口[&N]..."
+
+#: po/texts.cpp:66
+msgid "New &Window..."
+msgstr "新窗口[&W]..."
+
+#: po/texts.cpp:67
+msgid "New Game"
+msgstr "开始新游戏"
+
+#: po/texts.cpp:68
+msgid "&New Game"
+msgstr "开始新游戏[&N]"
+
+#: po/texts.cpp:70
+msgid "Open a file"
+msgstr "打开文件"
+
+#: po/texts.cpp:71
+msgid "Open..."
+msgstr "打开..."
+
+#: po/texts.cpp:72
+msgid "&Open..."
+msgstr "打开[&O]..."
+
+#: po/texts.cpp:73
+msgid "Cut"
+msgstr "剪下"
+
+#: po/texts.cpp:74
+msgid "C&ut"
+msgstr "剪下[&C]"
+
+#: po/texts.cpp:75
+msgid "Font"
+msgstr "字体"
+
+#: po/texts.cpp:76
+msgid "&Foreground Color"
+msgstr "前景颜色[&F]"
+
+#: po/texts.cpp:77
+msgid "&Background Color"
+msgstr "背景颜色[&B]"
+
+#: po/texts.cpp:79
+msgid "&Save"
+msgstr "保存[&S]"
+
+#: po/texts.cpp:81
+msgid "Save as..."
+msgstr "另存新文件..."
+
+#: po/texts.cpp:82
+msgid "S&ave as..."
+msgstr "另存新文件[&A]..."
+
+#: po/texts.cpp:83
+msgid "Close"
+msgstr "关闭"
+
+#: po/texts.cpp:84
+msgid "&Close"
+msgstr "关闭[&C]"
+
+#: po/texts.cpp:85
+msgid "&Print..."
+msgstr "打印[&P]..."
+
+#: po/texts.cpp:88
+msgid "Options"
+msgstr "选项"
+
+#: po/texts.cpp:89
+msgid "Remove"
+msgstr "去除"
+
+#: po/texts.cpp:90
+msgid "Add"
+msgstr "加入"
+
+#: po/texts.cpp:91
+msgid "Change"
+msgstr "改变"
+
+#: po/texts.cpp:92
+msgid "Delete"
+msgstr "删除"
+
+#: po/texts.cpp:93
+msgid "&Delete"
+msgstr "删除[&D]"
+
+#: po/texts.cpp:94
+msgid "Clear"
+msgstr "清除"
+
+#: po/texts.cpp:95
+msgid "Italic"
+msgstr "斜体"
+
+#: po/texts.cpp:96
+msgid "Roman"
+msgstr "正体"
+
+#: po/texts.cpp:97
+msgid "Undo"
+msgstr "还原"
+
+#: po/texts.cpp:98
+msgid "&Undo"
+msgstr "还原[&U]"
+
+#: po/texts.cpp:99
+msgid "Redo"
+msgstr "重复操作"
+
+#: po/texts.cpp:100
+msgid "&Redo"
+msgstr "重复操作[R]"
+
+#: po/texts.cpp:101
+msgid "&Game"
+msgstr "游戏[&G]"
+
+#: po/texts.cpp:102
+msgid "Information"
+msgstr "信息"
+
+#: po/texts.cpp:103
+msgid "Browse..."
+msgstr "浏览..."
+
+#: po/texts.cpp:104
+msgid "(none)"
+msgstr "(无)"
