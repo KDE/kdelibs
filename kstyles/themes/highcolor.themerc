@@ -1,5 +1,6 @@
 [Misc]
 Name=HighColor Default
+Name[ca]=HighColor per omissió
 Name[cs]=Mnohobarevné implicitní
 Name[da]=KDE mange farver
 Name[de]=Standard für 64000 Farben
@@ -25,6 +26,7 @@ Name[sr]=Podrazumevani HighColor
 Name[ta]=உயரஂவணஂணமஂ ெகாடாநிைல
 Name[tr]=Yüksek Renk Öntanýmlý
 Comment=Highcolor version of the default style
+Comment[ca]=Versió Highcolor de l'estil per omissió
 Comment[cs]=Mnohobarevný implicitní styl
 Comment[da]=Højfarve version af standard stil
 Comment[de]=64000-Farben-Version des Standardstils

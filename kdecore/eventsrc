@@ -177,6 +177,7 @@ default_presentation=0
 
 [cannotopenfile]
 Name=Cannot Open File
+Name[ca]=No es pot obrir el fitxer
 Name[cs]=Není možné otevřít soubor
 Name[da]=Kan ikke åbne fil
 Name[de]=Datei lässt sich nicht öffnen
@@ -227,5 +228,18 @@ default_presentation=0
 
 [fatalerror]
 Name=Fatal Error
+Name[ca]=Error fatal
+Name[eo]=Grava Eraro
+Name[et]=Fataalne viga
+Name[no]=Fatal feil
+Name[no_NY]=Fatal feil
+Name[ru]=Фатальная ошибка
+Name[sl]=Usodna napaka
 Comment=There was a serious error causing the program to exit.
+Comment[eo]=Okazis grava eraro, kiu ĉesigis la programon.
+Comment[et]=Ilmnes tõsine viga, mis sundis programmi tööd lõpetama.
+Comment[no]=Det var en alvorlig feil som førte til at programmet avsluttet.
+Comment[no_NY]=Det var en alvorlig feil som førte til at programmet avsluttet.
+Comment[ru]=Возникла серьезная ошибка, вынудившая програму выйти.
+Comment[sl]=Program se je prekinil zaradi resne napake.
 default_presentation=2

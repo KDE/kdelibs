@@ -5,6 +5,7 @@ Name[et]=KDE-SGI
 Name[it]=KDE Sgi
 Name[ru]=KDE-SGI
 Comment=Sgi-like style
+Comment[ca]=Estil del tipus Sgi
 Comment[eo]=SGI-simila stilo
 Comment[et]=SGI laadne stiil
 Comment[it]=Stile Sgi
@@ -13,5 +14,6 @@ Comment[no]=Sgi-lignende stil
 Comment[no_NY]=Sgi-aktig stil
 Comment[pt]=Estilo tipo Sgi
 Comment[ru]=Похожий на SGI стиль
+Comment[sl]=Slog, podoben Sgi
 [KDE]
 widgetStyle=ksgistyle.la
