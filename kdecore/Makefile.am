@@ -42,7 +42,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	krect.cpp ksize.cpp kpoint.cpp
 
 
-libkdecore_la_LDFLAGS = -version-info 2:0
+libkdecore_la_LDFLAGS = -version-info 3:0
 # libkdecore_la_LIBADD = 
 
 libkdecore_la_METASOURCES = drag.moc kapp.moc kclipboard.moc \

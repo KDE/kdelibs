@@ -23,7 +23,7 @@ INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kfile $(QT_INCLUDES) $(X_INCLU
 EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -version-info 2:0  
+libkdeui_la_LDFLAGS = -version-info 3:0  
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \

@@ -23,7 +23,7 @@
 INCLUDES=  -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)
 
 lib_LTLIBRARIES  = libkspell.la
-libkspell_la_LDFLAGS = -version-info 2:0
+libkspell_la_LDFLAGS = -version-info 3:0
 
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
 noinst_HEADERS = version.h

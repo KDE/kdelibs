@@ -35,7 +35,7 @@ noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h \
 	khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h \
 	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h
 
-libkhtml_la_LDFLAGS = -version-info 2:0
+libkhtml_la_LDFLAGS = -version-info 3:0
 
 data_DATA = khtml_dnd.xpm
 datadir = $(kde_datadir)/khtml/pics

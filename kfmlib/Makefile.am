@@ -21,7 +21,7 @@ INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES)
 libkfm_la_METASOURCES = kfm.moc kfmclient_ipc.moc
 
 lib_LTLIBRARIES = libkfm.la
-libkfm_la_LDFLAGS = -version-info 2:0
+libkfm_la_LDFLAGS = -version-info 3:0
 
 libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp kfmipc.cpp
 include_HEADERS = kfm.h kfmclient_ipc.h kfmipc.h
