@@ -260,7 +260,13 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user,
       pass = FTP_PASSWD;
   }
 
-  if ( m_host != _host || m_port != _port || m_user != user || m_pass != pass )
+  m_proxyURL = metaData("UseProxy");
+  kdDebug(7102) << "Proxy URL: " << m_proxyURL.url() << endl;
+  m_bUseProxy = ( m_proxyURL.isValid() &&
+                  m_proxyURL.protocol() == QString::fromLatin1("ftp") );
+
+  if ( m_host != _host || m_port != _port ||
+       m_user != user || m_pass != pass )
       closeConnection( );
 
   m_host = _host;
@@ -285,7 +291,10 @@ void Ftp::openConnection()
 
   m_initialPath = QString::null;
 
-  if (!connect( m_host, m_port ))
+  QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
+  unsigned short int port = m_bUseProxy ? m_proxyURL.port() : m_port;
+
+  if (!connect( host, port ))
     return; // error emitted by connect
 
   m_bFtpStarted = true;
@@ -427,7 +436,7 @@ bool Ftp::ftpLogin()
       {
         if ( user != FTP_LOGIN && pass != FTP_PASSWD )
             info.username = m_user;
-        if ( checkCachedAuthentication( info ) )
+        if ( failedAuth < 3 && checkCachedAuthentication( info ) )
         {
           user = info.username;
           pass = info.password;
@@ -454,8 +463,19 @@ bool Ftp::ftpLogin()
 
       tempbuf = "user ";
       tempbuf += user.latin1();
+      if ( m_bUseProxy )
+      {
+        tempbuf += '@';
+        tempbuf += m_host.latin1();
+        if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
+        {
+          tempbuf += ':';
+          tempbuf += QString::number(m_port).latin1();
+        }
+      }
       kdDebug(7102) << "Sending Login name: " << user << endl;
-      bool loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp( rspbuf, "230", 3));
+      bool loggedIn = (ftpSendCmd( tempbuf, '2' ) &&
+                       !strncmp( rspbuf, "230", 3));
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
       // get back a "230" or "331".
@@ -506,7 +526,7 @@ bool Ftp::ftpLogin()
 
 
   QString macro = metaData( "autoLoginMacro" );
-  if ( !macro.isEmpty() )
+  if ( !macro.isEmpty() && config()->readBoolEntry("EnableAutoLoginMacro") )
   {
       QStringList list = QStringList::split('\n', macro);
       if ( !list.isEmpty() )

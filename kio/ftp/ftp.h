@@ -28,10 +28,11 @@
 #include <sys/types.h>
 
 #define FTP_BUFSIZ 1024
-#define ACCEPT_TIMEOUT 30
 
 #include <qcstring.h>
 #include <qstring.h>
+
+#include <kurl.h>
 #include <kio/slavebase.h>
 
 class KExtendedSocket;
@@ -247,6 +248,7 @@ private: // data members
    * Where we end up after connecting
    */
   QString m_initialPath;
+  KURL m_proxyURL;
 
   netbuf *nControl;
   char rspbuf[256];
@@ -254,7 +256,7 @@ private: // data members
   bool m_bLoggedOn;
   bool m_bFtpStarted;
   bool m_bPasv;
-
+  bool m_bUseProxy;
   bool m_bPersistent;
 
   size_t m_size;
