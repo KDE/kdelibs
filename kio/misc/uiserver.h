@@ -37,7 +37,7 @@ class ListProgress;
 namespace KIO {
   class Job;
   class DefaultProgress;
-};
+}
 
 /**
 * One item in the @ref #ListProgress

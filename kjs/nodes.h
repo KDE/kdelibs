@@ -1087,6 +1087,6 @@ namespace KJS {
     ProgramNode(const ProgramNode &other);
   };
 
-}; // namespace
+} // namespace
 
 #endif

@@ -108,6 +108,6 @@ namespace KIO {
      * Same as above, but takes a URL list instead of KFileItemList
      */
     MetaInfoJob* fileMetaInfo(const KURL::List& items);
-};
+}
 
 #endif

@@ -272,6 +272,6 @@ namespace KJS {
     bool isValueCompletion() const;
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_TYPES_H_

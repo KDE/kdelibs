@@ -545,7 +545,7 @@ void KURLCompletion::setReplaceEnv( bool replace )
 bool KURLCompletion::replaceHome() const
 {
 	return d->replace_home;
-};
+}
 
 void KURLCompletion::setReplaceHome( bool replace )
 {

@@ -108,6 +108,6 @@ namespace KIO {
 	class ConnectionPrivate* d;
     };
 
-};
+}
 
 #endif

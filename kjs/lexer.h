@@ -137,6 +137,6 @@ namespace KJS {
     LexerPrivate *priv;
   };
 
-}; // namespace
+} // namespace
 
 #endif

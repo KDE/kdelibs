@@ -125,6 +125,6 @@ namespace KJS {
   Value timeClip(const Value &t);
   int local_timeoffset();
 
-}; // namespace
+} // namespace
 
 #endif

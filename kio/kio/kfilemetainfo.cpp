@@ -1547,7 +1547,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& item )
            << d->removed;
 
      return s;
-};
+}
 
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& item )
@@ -1598,7 +1598,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& group )
           << d->mimeTypeInfo->mimeType();
     }
     return s;
-};
+}
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 {
@@ -1654,7 +1654,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
           << d->mimeTypeInfo->mimeType();
     }
     return s;
-};
+}
 
 QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
 {

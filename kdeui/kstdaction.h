@@ -559,6 +559,6 @@ namespace KStdAction
 	*/
 	KAction *aboutKDE(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );
-};
+}
 
 #endif // KSTDACTION_H

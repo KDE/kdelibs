@@ -208,6 +208,6 @@ namespace KJS {
     DebuggerImp *rep;
   };
 
-};
+}
 
 #endif

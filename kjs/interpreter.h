@@ -406,6 +406,6 @@ namespace KJS {
     static bool terminate_request;
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_INTERPRETER_H_

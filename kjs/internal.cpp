@@ -66,7 +66,7 @@ namespace KJS {
 
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
-};
+}
 
 // ------------------------------ UndefinedImp ---------------------------------
 

@@ -790,6 +790,6 @@ private:
     SlaveBasePrivate *d;
 };
 
-};
+}
 
 #endif

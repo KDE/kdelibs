@@ -280,6 +280,6 @@ class ShortcutList : public KShortcutList
  private:
 	class ShortcutListPrivate* d;
 };
-};
+}
 
 #endif // __KSHORTCUTLIST_H
