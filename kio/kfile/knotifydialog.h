@@ -59,6 +59,8 @@ public:
      * If you want a non-modal dialog, you need to instantiate KNotifyDialog
      * yourself instead of using the configure() method.
      *
+     * KDE4.0 modal default will be false.
+     * 
      * @param parent The parent widget for the dialog
      * @param name The widget name
      * @param modal If true, this will be a modal dialog, otherwise non-modal.
@@ -68,7 +70,7 @@ public:
      * addApplicationEvents().
      */
     KNotifyDialog( QWidget *parent = 0, const char *name = 0,
-                   bool modal = false,
+                   bool modal = true,
                    const KAboutData *aboutData =
                    KGlobal::instance()->aboutData() );
     /**
