@@ -319,15 +319,14 @@ bool KDirWatchPrivate::useFAM(Entry* e)
     }
     else {
       int res =FAMMonitorDirectory(&fc, QFile::encodeName(e->path),
-				   &(e->fr), 0);
+				   &(e->fr), e);
       if (res<0) {
 	e->m_mode = UnknownMode;
 	use_fam=false;
 	return false;
       }
-      int reqnum = FAMREQUEST_GETREQNUM(&(e->fr));
-      fr_Entry.replace(reqnum,e);
-      kdDebug(7001) << " Setup FAM (Req " << reqnum 
+      kdDebug(7001) << " Setup FAM (Req "
+		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
   }
@@ -338,17 +337,15 @@ bool KDirWatchPrivate::useFAM(Entry* e)
     }
     else {
       int res = FAMMonitorFile(&fc, QFile::encodeName(e->path),
-			       &(e->fr), 0);
+			       &(e->fr), e);
       if (res<0) {
 	e->m_mode = UnknownMode;
 	use_fam=false;
 	return false;
       }
       
-      e->m_mode = FAMMode;
-      int reqnum = FAMREQUEST_GETREQNUM(&(e->fr));
-      fr_Entry.replace(reqnum,e);
-      kdDebug(7001) << " Setup FAM (Req " << reqnum 
+      kdDebug(7001) << " Setup FAM (Req " 
+		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
   }
@@ -543,9 +540,8 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   if (e->m_mode == FAMMode) {
     if ( e->m_status == Normal) {
       FAMCancelMonitor(&fc, &(e->fr) );
-      int reqnum = FAMREQUEST_GETREQNUM(&(e->fr));
-      fr_Entry.remove(reqnum);
-      kdDebug(7001) << "Cancelled FAM (Req " << reqnum
+      kdDebug(7001) << "Cancelled FAM (Req "
+		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
     else {
@@ -944,8 +940,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
       (fe->code == FAMEndExist) ||
       (fe->code == FAMAcknowledge)) return;
 
-  int reqNum = FAMREQUEST_GETREQNUM(&(fe->fr));
-  Entry* e = fr_Entry.find(reqNum);
+  Entry* e = static_cast<Entry*>(fe->userdata);
 
   kdDebug(7001) << "Processing FAM event ("
 		<< ((fe->code == FAMChanged) ? "FAMChanged" :
@@ -958,7 +953,8 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 		    (fe->code == FAMExists) ? "FAMExists" :
 		    (fe->code == FAMEndExist) ? "FAMEndExist" : "Unknown Code")
 		<< ", " << fe->filename
-		<< ", Req " << reqNum << ")" << endl;
+		<< ", Req " << FAMREQUEST_GETREQNUM(&(e->fr))
+		<< ")" << endl;
   
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
@@ -998,6 +994,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     if (strncmp(fe->filename, ".directory", 10) == 0) return;
     // $HOME/.X.err grows with debug output, so don't notify change
     if (strncmp(fe->filename, ".X.err", 6) == 0) return;
+    if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
 
     emitEvent(e, Changed);
 
@@ -1026,8 +1023,8 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
     e->m_status = NonExistent;
     FAMCancelMonitor(&fc, &(e->fr) ); // needed ?
-    fr_Entry.remove(reqNum);
-    kdDebug(7001) << "Cancelled FAMReq " << reqNum
+    kdDebug(7001) << "Cancelled FAMReq "
+		  << FAMREQUEST_GETREQNUM(&(e->fr))
 		  << " for " << e->path << endl;
     // Scan parent for a new creation
     addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);

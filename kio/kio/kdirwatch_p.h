@@ -103,7 +103,6 @@ private:
   QSocketNotifier *sn;
   FAMConnection fc;
   bool use_fam;
-  QIntDict<Entry> fr_Entry;
 
   void checkFAMEvent(FAMEvent*);
   bool useFAM(Entry*);
