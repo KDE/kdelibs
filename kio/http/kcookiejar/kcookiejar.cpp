@@ -1,24 +1,23 @@
-/*
-This file is part of the KDE File Manager
+/* This file is part of the KDE File Manager
 
    Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, and/or sell copies of the
+   Software, and to permit persons to whom the Software is furnished to do so,
+   subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+   AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 //----------------------------------------------------------------------------
 //
@@ -244,7 +243,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
     }
 
     extractDomains(fqdn, domains);
-    bool secureRequest = (_url.find( "https://", 0, false) == 0);    
+    bool secureRequest = (_url.find( "https://", 0, false) == 0);
     for(QStringList::ConstIterator it = domains.begin();
         it != domains.end();
         ++it)
@@ -265,8 +264,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
           // Use first cookie to determine protocol version
           if (cookieCount == 0)
           {
-	     protVersion = cookie->protocolVersion();
-	  }
+             protVersion = cookie->protocolVersion();
+          }
           if (useDOMFormat)
           {
              if (cookieCount > 0)
@@ -274,15 +273,15 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
              cookieStr += cookie->cookieStr(true);
           }
           else if (protVersion == 0)
-	  {
+          {
              if (cookieCount == 0)
                 cookieStr += "Cookie: ";
              else
                 cookieStr += "; ";
              cookieStr += cookie->cookieStr(false);
-	  }
-	  else
-	  {
+          }
+          else
+          {
              if (cookieCount > 0)
                 cookieStr += "\r\n";
              cookieStr += "Cookie: ";
@@ -395,7 +394,7 @@ static void stripDomain(const QString &_fqdn, QString &_domain)
 static QString stripDomain( KHttpCookiePtr cookiePtr)
 {
     QString domain; // We file the cookie under this domain.
-    if (cookiePtr->domain().isEmpty() || 
+    if (cookiePtr->domain().isEmpty() ||
         (cookiePtr->host() == cookiePtr->domain()))
        stripDomain( cookiePtr->host(), domain);
     else
@@ -540,7 +539,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
                 cookieStr++;
 
             if (*cookieStr == '\n')
-            	cookieStr++;
+                cookieStr++;
 
             if (!*cookieStr)
                 break; // End of cookie_headers
@@ -696,6 +695,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         {
             KHttpCookiePtr old_cookie = cookie;
             cookie = cookieList->next();
+            cookieList->removeRef( old_cookie );            
             cookiesChanged = true;
         }
         else
@@ -707,7 +707,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     // Add the cookie to the cookie list
     // The cookie list is sorted 'longest path first'
     if (!cookiePtr->isExpired(time(0)))
-    {        
+    {
         cookieList->inSort( cookiePtr );
         cookiesChanged = true;
     }
