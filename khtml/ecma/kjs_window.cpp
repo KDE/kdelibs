@@ -405,7 +405,47 @@ Value Window::get(ExecState *exec, const UString &p) const
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
-  if (entry)
+
+  // properties that work on all windows
+  if (entry) {
+    switch(entry->value) {
+    case Closed:
+      return Boolean( false );
+    case _Location:
+      // No isSafeScript test here, we must be able to _set_ location.href (#49819)
+      return Value(location());
+    case Frames:
+      return Value(frames(exec));
+    case Opener:
+      if (!m_part->opener())
+        return Null();    // ### a null Window might be better, but == null
+      else                // doesn't work yet
+        return retrieve(m_part->opener());
+    case Parent:
+      return retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part);
+    case _Window:
+    case Self:
+      return retrieve(m_part);
+    case Top: {
+      KHTMLPart *p = m_part;
+      while (p->parentPart())
+        p = p->parentPart();
+      return retrieve(p);
+    }
+    case Alert:
+    case Confirm:
+    case Prompt:
+    case Open:
+    case Focus:
+    case Blur:
+      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
+    default:
+      break;
+    }
+  }
+
+  // properties that only work on safe windows
+  if (isSafeScript(exec) && entry)
   {
     //kdDebug(6070) << "token: " << entry->value << endl;
     switch( entry->value ) {
@@ -416,8 +456,6 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Status:
       return String(UString(m_part->jsStatusBarText()));
     case Document:
-      // no isSafeScript() test. Getting hold of the document object itself is allowed
-      // (to test it for null, for instance).
       if (m_part->document().isNull()) {
         kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
         m_part->begin();
@@ -437,8 +475,6 @@ Value Window::get(ExecState *exec, const UString &p) const
       return getCSSRuleConstructor(exec);
     case EventCtor:
       return getEventConstructor(exec);
-    case Frames:
-      return Value(frames(exec));
     case _History:
       return Value(history ? history :
                    (const_cast<Window*>(this)->history = new History(exec,m_part)));
@@ -462,9 +498,6 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Number(m_part->view()->visibleWidth());
     case Length:
       return Number(m_part->frames().count());
-    case _Location:
-      // No isSafeScript test here, we must be able to _set_ location.href (#49819)
-      return Value(location());
     case Name:
       return String(m_part->name());
     case _Navigator:
@@ -484,11 +517,6 @@ Value Window::get(ExecState *exec, const UString &p) const
 #endif
     case OffscreenBuffering:
       return Boolean(true);
-    case Opener:
-      if (!m_part->opener())
-        return Null();    // ### a null Window might be better, but == null
-      else                // doesn't work yet
-        return retrieve(m_part->opener());
     case OuterHeight:
     case OuterWidth:
     {
@@ -502,8 +530,6 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Number(m_part->view()->contentsX());
     case PageYOffset:
       return Number(m_part->view()->contentsY());
-    case Parent:
-      return retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part);
     case Personalbar:
       return Undefined(); // ###
     case ScreenLeft:
@@ -532,15 +558,6 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
     case Scrollbars:
       return Undefined(); // ###
-    case Self:
-    case _Window:
-      return retrieve(m_part);
-    case Top: {
-      KHTMLPart *p = m_part;
-      while (p->parentPart())
-        p = p->parentPart();
-      return retrieve(p);
-    }
     case _Screen:
       return Value(screen ? screen :
                    (const_cast<Window*>(this)->screen = new Screen(exec)));
@@ -548,12 +565,6 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Value(new ImageConstructorImp(exec, m_part->document()));
     case Option:
       return Value(new OptionConstructorImp(exec, m_part->document()));
-    case Alert:
-    case Confirm:
-    case Prompt:
-    case Open:
-    case Focus:
-    case Blur:
     case Close:
     case Scroll: // compatibility
     case ScrollBy:
@@ -572,125 +583,53 @@ Value Window::get(ExecState *exec, const UString &p) const
     case SetInterval:
     case ClearInterval:
     case Print:
-      if (isSafeScript(exec))
-        return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
-      else
-        return Undefined();
+      return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case Onabort:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::ABORT_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::ABORT_EVENT);
     case Onblur:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::BLUR_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::BLUR_EVENT);
     case Onchange:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::CHANGE_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::CHANGE_EVENT);
     case Onclick:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
     case Ondblclick:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
     case Ondragdrop:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT);
     case Onerror:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT);
     case Onfocus:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::FOCUS_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::FOCUS_EVENT);
     case Onkeydown:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT);
     case Onkeypress:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT);
     case Onkeyup:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT);
     case Onload:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::LOAD_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::LOAD_EVENT);
     case Onmousedown:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT);
     case Onmousemove:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::MOUSEMOVE_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::MOUSEMOVE_EVENT);
     case Onmouseout:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::MOUSEOUT_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::MOUSEOUT_EVENT);
     case Onmouseover:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::MOUSEOVER_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::MOUSEOVER_EVENT);
     case Onmouseup:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::MOUSEUP_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::MOUSEUP_EVENT);
     case Onmove:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_MOVE_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::KHTML_MOVE_EVENT);
     case Onreset:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::RESET_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::RESET_EVENT);
     case Onresize:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::RESIZE_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::RESIZE_EVENT);
     case Onselect:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::SELECT_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::SELECT_EVENT);
     case Onsubmit:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::SUBMIT_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::SUBMIT_EVENT);
     case Onunload:
-      if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::UNLOAD_EVENT);
-      else
-        return Undefined();
+      return getListener(exec,DOM::EventImpl::UNLOAD_EVENT);
     }
   }
   KHTMLPart *kp = m_part->findFrame( p.qstring() );
@@ -1215,7 +1154,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if ( p )
         url = p->htmlDocument().completeURL(str).string();
-      if ( !p || 
+      if ( !p ||
            !static_cast<DOM::DocumentImpl*>(p->htmlDocument().handle())->isURLAllowed(url.url()) )
           return Undefined();
     }
