@@ -335,7 +335,7 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
     // pre request basis.
     insertLFs = (insertLFs && out_len > 76);
     if ( insertLFs )
-      out_len += (out_len/76);
+      out_len += ((out_len-1)/76);
 
     int count = 0;
     out.resize( out_len );
@@ -363,6 +363,9 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
 
     if (sidx < len)
     {
+        if ( insertLFs && (count > 0) && (count%76) == 0 )
+           out[didx++] = '\n';
+
         out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
         if (sidx < len-1)
         {
