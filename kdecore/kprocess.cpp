@@ -224,14 +224,16 @@ pid_t KProcess::getPid()
 
 bool KProcess::normalExit()
 {
-  return (pid != 0) && (!runs) && (WIFEXITED(status));
+  int _status = status; // egcs needs this, don't ask me why
+  return (pid != 0) && (!runs) && (WIFEXITED(_status));
 }
 
 
 
 int KProcess::exitStatus()
 {
-  return WEXITSTATUS(status);
+  int _status = status; // egcs needs this, don't ask me why
+  return WEXITSTATUS(_status);
 }
 
 
