@@ -257,7 +257,7 @@ public:
 
     bool hasBorder() const
     {
-    	return left.width || right.width || top.width || bottom.width;
+    	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();
     }
 
     bool operator==(const BorderData& o) const
