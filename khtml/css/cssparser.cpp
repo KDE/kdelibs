@@ -26,6 +26,7 @@
 #define YYDEBUG 0
 
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kurl.h>
 
 #include "cssparser.h"
