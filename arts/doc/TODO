@@ -72,3 +72,17 @@ These are:
   plugins written for the API increases
 - when being crazy, implement gatewaying from MCOP to DCOP, CORBA, XMLRPC
   or whatever else might be useful
+
+Other suggestions:
+
+  => Config dialog:
+
+- instead of using three radio buttons to select latency, use a slider
+with three positions (left, middle, and right) with icons beneath them
+depicting latency, or labels beneath these points.  More polished looking.
+
+- instead of saying changes must take place when you logout and login,
+just restart artsd after the dialog is accepted. (This may also be done
+as an additional MCOP interface to change config stuff on the fly, as
+restarting will mean that already connected clients (mp3 player) will
+crash/hang).
