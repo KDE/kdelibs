@@ -50,7 +50,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
 		  KDialogBase::DialogType dialogType,
 		  int dialogButtons,
 		  bool modal ) :
-    KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
+    KDialogBase( dialogType, Qt::WStyle_DialogBorder,
 		  parent, name, modal, i18n("Configure"), dialogButtons ),
     d(new KConfigDialogPrivate(dialogType)) 
 {		  
@@ -164,14 +164,11 @@ void KConfigDialog::settingsChangedSlot()
 
 void KConfigDialog::show()
 {
-  if(!d->shown)
-  {
-    updateWidgets();
-    d->mgr->updateWidgets();
-    enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
-    enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
-    d->shown = true;
-  }
+  updateWidgets();
+  d->mgr->updateWidgets();
+  enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
+  enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
+  d->shown = true;
   KDialogBase::show();
 }
 
