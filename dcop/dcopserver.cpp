@@ -247,7 +247,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     for (i = 0; i < numTransports * 2; i += 2) {
 	(*_authDataEntries)[i].network_id =
-	    IceGetListenConnectionString (listenObjs[i/2]);
+	    IceGetListenConnectionString (_listenObjs[i/2]);
 	(*_authDataEntries)[i].protocol_name = const_cast<char *>("ICE");
 	(*_authDataEntries)[i].auth_name = const_cast<char *>("MIT-MAGIC-COOKIE-1");
 
@@ -256,7 +256,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 	(*_authDataEntries)[i].auth_data_length = MAGIC_COOKIE_LEN;
 
 	(*_authDataEntries)[i+1].network_id =
-	    IceGetListenConnectionString (listenObjs[i/2]);
+	    IceGetListenConnectionString (_listenObjs[i/2]);
 	(*_authDataEntries)[i+1].protocol_name = const_cast<char *>("DCOP");
 	(*_authDataEntries)[i+1].auth_name = const_cast<char *>("MIT-MAGIC-COOKIE-1");
 
@@ -269,7 +269,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
 	IceSetPaAuthData (2, &(*_authDataEntries)[i]);
 
-	IceSetHostBasedAuthProc (listenObjs[i/2], HostBasedAuthProc);
+	IceSetHostBasedAuthProc (_listenObjs[i/2], HostBasedAuthProc);
     }
 
     fclose (addfp);
@@ -582,8 +582,6 @@ static void sighandler(int sig)
 	return;
     }
 
-    if (the_server) delete the_server;
-    the_server = 0;
     qApp->quit();
     //exit(0);
 }
@@ -673,17 +671,24 @@ DCOPServer::~DCOPServer()
 /*!
   Called from our IceIoErrorHandler
  */
-void DCOPServer::ioError( IceConn /* iceConn */ )
+void DCOPServer::ioError( IceConn iceConn )
 {
+    IceSetShutdownNegotiation (iceConn, False);
+    IceCloseConnection( iceConn );
 }
+
 
 void DCOPServer::processData( int /*socket*/ )
 {
+    (void ) IceProcessMessages( ((DCOPConnection*)sender())->iceConn, 0, 0 );
+
+    /* // do not use this instead of ioError. Leaks now.
     IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
 	(void) IceCloseConnection( iceConn );
     }
+    */
 }
 
 void DCOPServer::newClient( int /*socket*/ )
@@ -989,13 +994,12 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer *server = new DCOPServer(); // this sets the_server
+    DCOPServer *server = new DCOPServer; // this sets the_server
 
     setjmp (JumpHere);
-    int ret = a.exec();
-    if (the_server) delete the_server;
-    the_server = 0;
-	return ret;
+    int ret a.exec();
+    delete server;
+    return ret;
 }
 
 #include "dcopserver.moc"
