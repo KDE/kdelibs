@@ -2919,8 +2919,8 @@ void KToolBar::setXML(const QString& xmlfile, const QDomDocument& xml)
 */
 void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
 {
-  d->m_xmlguiClient = client; 
-} 
+  d->m_xmlguiClient = client;
+}
 
 void KToolBar::setText( const QString & txt )
 {
@@ -2928,7 +2928,7 @@ void KToolBar::setText( const QString & txt )
   // TODO use it in the tooltip for the handle
 }
 
-const QString & KToolBar::text()
+QString KToolBar::text() const
 {
   return d->m_sText;
 }

@@ -180,6 +180,7 @@ class KAction : public QObject
   Q_PROPERTY( QString whatsThis READ whatsThis WRITE setWhatsThis )
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
   Q_PROPERTY( QString shortText READ shortText WRITE setShortText )
+  Q_PROPERTY( QString statusText READ statusText WRITE setStatusText )
   Q_PROPERTY( QIconSet iconSet READ iconSet WRITE setIconSet )
   Q_PROPERTY( QString icon READ iconName WRITE setIcon )
 public:
@@ -307,10 +308,6 @@ public:
      */
     virtual ~KAction();
 
-    // DOCUMENT ME!
-    // better REMOVE ME! It's unused. (Simon)
-    virtual void update();
-
     /**
      * "Plug" or insert this action into a given widget.
      *
@@ -384,13 +381,6 @@ public:
     virtual QString plainText() const;
 
     virtual QObject* component();
-    virtual void setComponent( QObject* );
-
-    /**
-     * Set the text associated with this action. The text is used for menu
-     * and toolbar labels etc.
-     */
-    virtual void setText(const QString &text);
 
     /**
      * Get the text associated with this action.
@@ -398,29 +388,14 @@ public:
     virtual QString text() const;
 
     /**
-     * Set the keyboard accelerator associated with this action.
-     */
-    virtual void setAccel(int a);
-
-    /**
      * Get the keyboard accelerator associated with this action.
      */
     virtual int accel() const;
 
-    /** Returns true iff this action is enabled. */
+    /** Returns true if this action is enabled. */
     virtual bool isEnabled() const;
 
-    virtual void setGroup( const QString& );
     virtual QString group() const;
-
-    /**
-     * Set the What's this text for the action. This text will be displayed when
-     * a widget that has been created by plugging this action into a container
-     * is clicked on in What's this mode.
-     *
-     * The What's this text can of course include QML markup as well as raw text.
-     */
-    virtual void setWhatsThis( const QString& text );
 
     /**
      * Get the What's this text for the action.
@@ -428,23 +403,13 @@ public:
     virtual QString whatsThis() const;
 
     /**
-     * Set the tooltip text for the action.
-     */
-    virtual void setToolTip( const QString& );
-
-    /**
      * Get the tooltip text for the action.
      */
     virtual QString toolTip() const;
 
-    virtual void setShortText( const QString& );
     virtual QString shortText() const;
 
-    /**
-     * Set the QIconSet from which the icons used to display this action will
-     * be chosen.
-     */
-    virtual void setIconSet( const QIconSet &iconSet );
+    virtual QString statusText() const;
 
     /**
      * Get the QIconSet from which the icons used to display this action will
@@ -452,7 +417,6 @@ public:
      */
     virtual QIconSet iconSet() const;
 
-    virtual void setIcon( const QString& icon );
     virtual QString iconName() const;
 
     KActionCollection *parentCollection() const;
@@ -467,17 +431,58 @@ public:
     void unplugAll();
 
 public slots:
+    virtual void setComponent( QObject* );
+
     /**
-     * Emulate user's interaction programmatically, by activating the action.
-     * The implementation simply emits activated().
+     * Set the text associated with this action. The text is used for menu
+     * and toolbar labels etc.
      */
-    void activate();
+    virtual void setText(const QString &text);
+
+    /**
+     * Set the keyboard accelerator associated with this action.
+     */
+    virtual void setAccel(int a);
+
+    virtual void setGroup( const QString& );
+
+    /**
+     * Set the What's this text for the action. This text will be displayed when
+     * a widget that has been created by plugging this action into a container
+     * is clicked on in What's this mode.
+     *
+     * The What's this text can of course include QML markup as well as raw text.
+     */
+    virtual void setWhatsThis( const QString& text );
+
+    /**
+     * Set the tooltip text for the action.
+     */
+    virtual void setToolTip( const QString& );
+
+    virtual void setShortText( const QString& );
+
+    /**
+     * Set the QIconSet from which the icons used to display this action will
+     * be chosen.
+     */
+    virtual void setIconSet( const QIconSet &iconSet );
+
+    virtual void setIcon( const QString& icon );
+
+    virtual void setStatusText( const QString &text );
 
     /**
      * Enables or disables this action. All uses of this action (eg. in menus
      * or toolbars) will be updated to reflect the state of the action.
-     */ 
+     */
     virtual void setEnabled(bool enable);
+
+    /**
+     * Emulate user's interaction programmatically, by activating the action.
+     * The implementation simply emits activated().
+     */
+    virtual void activate();
 
 protected slots:
     virtual void slotDestroyed();
@@ -502,6 +507,7 @@ protected:
     virtual void setIcon( int i, const QString& icon );
     virtual void setToolTip( int id, const QString& tt );
     virtual void setShortText( int id, const QString& st );
+    virtual void setStatusText( int id, const QString &text );
     virtual void setWhatsThis( int id, const QString& text );
 
 signals:
@@ -619,10 +625,12 @@ public:
      */
     bool isChecked() const;
 
-    virtual void setExclusiveGroup( const QString& name );
     virtual QString exclusiveGroup() const;
 
 public slots:
+
+    virtual void setExclusiveGroup( const QString& name );
+
     /**
      *  Sets the state of the action.
      */
@@ -845,6 +853,21 @@ public:
      */
     virtual int plug( QWidget* widget, int index = -1 );
 
+    virtual bool isEditable() const;
+
+    virtual QStringList items() const;
+
+    virtual void changeItem( int index, const QString& text );
+
+    virtual QString currentText() const;
+
+    virtual int currentItem() const;
+
+    virtual int comboWidth() const;
+
+    QPopupMenu* popupMenu();
+
+public slots:
     /**
      *  Sets the currently checked item.
      *
@@ -857,16 +880,8 @@ public:
     virtual void clear();
 
     virtual void setEditable( bool );
-    virtual bool isEditable() const;
 
-    virtual QStringList items() const;
-    virtual void changeItem( int index, const QString& text );
-    virtual QString currentText() const;
-    virtual int currentItem() const;
-    virtual int comboWidth() const;
     virtual void setComboWidth( int width );	
-
-    QPopupMenu* popupMenu();
 
 protected:
     virtual void changeItem( int id, int index, const QString& text );
@@ -1115,6 +1130,25 @@ public slots:
   void setMaxItems( uint maxItems );
 
   /**
+   *  Loads the recent files entries from a given KConfig object.
+   *  You can provide the name of the group used to load the entries.
+   *  If the groupname is empty, entries are load from a group called 'RecentFiles'
+   *
+   *  This method does not effect the active group of KConfig.
+   */
+  void loadEntries( KConfig* config, QString groupname=QString::null );
+
+  /**
+   *  Saves the current recent files entries to a given KConfig object.
+   *  You can provide the name of the group used to load the entries.
+   *  If the groupname is empty, entries are saved to a group called 'RecentFiles'
+   *
+   *  This method does not effect the active group of KConfig.
+   */
+  void saveEntries( KConfig* config, QString groupname=QString::null );
+
+public slots:
+  /**
    *  Add URL to recent files list.
    *
    *  @param url The URL of the file
@@ -1132,24 +1166,6 @@ public slots:
    *  Removes all entries from the recent files list.
    */
   void clearURLList();
-
-  /**
-   *  Loads the recent files entries from a given KConfig object.
-   *  You can provide the name of the group used to load the entries.
-   *  If the groupname is empty, entries are load from a group called 'RecentFiles'
-   *
-   *  This method does not effect the active group of KConfig.
-   */
-  void loadEntries( KConfig* config, QString groupname=QString::null );
-
-  /**
-   *  Saves the current recent files entries to a given KConfig object.
-   *  You can provide the name of the group used to load the entries.
-   *  If the groupname is empty, entries are saved to a group called 'RecentFiles'
-   *
-   *  This method does not effect the active group of KConfig.
-   */
-  void saveEntries( KConfig* config, QString groupname=QString::null );
 
 signals:
 
@@ -1195,12 +1211,14 @@ public:
     KFontAction( QObject* parent = 0, const char* name = 0 );
     ~KFontAction();
 
-    void setFont( const QString &family );
     QString font() const {
 	return currentText();
     }
 
     int plug( QWidget*, int index = -1 );
+
+public slots:
+    void setFont( const QString &family );
 
 private:
     class KFontActionPrivate;
@@ -1230,8 +1248,10 @@ public:
 
     virtual ~KFontSizeAction();
 
-    virtual void setFontSize( int size );
     virtual int fontSize() const;
+
+public slots:
+    virtual void setFontSize( int size );
 
 protected slots:
     virtual void slotActivated( int );
@@ -1269,6 +1289,7 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
+public slots:
     virtual void setEnabled( bool b );
 protected:
     virtual void setEnabled( int i, bool enable );
@@ -1294,8 +1315,6 @@ private:
     class KActionSeparatorPrivate;
     KActionSeparatorPrivate *d;
 };
-
-
 
 class KActionCollection : public QObject
 {

@@ -87,6 +87,7 @@ class KToolBar : public QFrame
   Q_PROPERTY( BarPosition barPos READ barPos WRITE setBarPos )
   Q_PROPERTY( bool fullSize READ fullSize WRITE setFullSize )
   Q_PROPERTY( int iconSize READ iconSize WRITE setIconSize )
+  Q_PROPERTY( QString text READ text WRITE setText )
 
 public:
   /**
@@ -899,7 +900,7 @@ public:
   /**
    * @return the toolbar's text.
    */
-  const QString & text();
+  QString text() const;
 
 signals:
     /**

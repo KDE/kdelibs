@@ -67,14 +67,9 @@ class KXMLGUIFactory : public QObject
   ~KXMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
-  static QString readConfigFile( const QString &filename, bool never_null );
-  static QString readConfigFile( const QString &filename );
-  static bool saveConfigFile( const QDomDocument& doc, const QString& filename);
-
-  // BCI: merge!
-  static QString readConfigFile( const QString &filename, bool never_null, KInstance *instance );
-  static QString readConfigFile( const QString &filename, KInstance *instance );
-  static bool saveConfigFile( const QDomDocument& doc, const QString& filename, KInstance *instance );
+  static QString readConfigFile( const QString &filename, bool never_null, KInstance *instance = 0 );
+  static QString readConfigFile( const QString &filename, KInstance *instance = 0 );
+  static bool saveConfigFile( const QDomDocument& doc, const QString& filename, KInstance *instance = 0 );
 
   static QString documentToXML( const QDomDocument& doc );
   static QString elementToXML( const QDomElement& elem );

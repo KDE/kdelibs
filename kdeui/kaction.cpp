@@ -81,7 +81,6 @@ public:
     m_bIconSet  = false;
     m_enabled   = true;
     m_accel     = 0;
-    m_component = 0;
   }
   ~KActionPrivate()
   {
@@ -89,7 +88,7 @@ public:
   QString m_iconName;
   KAccel *m_kaccel;
 
-  QObject* m_component;
+  QGuardedPtr<QObject> m_component;
 
   QString m_text;
   QString m_whatsThis;
@@ -101,6 +100,7 @@ public:
   int m_accel;
   QString m_toolTip;
   QString m_shortText;
+  QString m_statusText;
 
   struct Container
   {
@@ -267,12 +267,6 @@ void KAction::setComponent( QObject* obj )
     d->m_component = obj;
 }
 
-
-void KAction::update()
-{
-    // By default do nothing interesting
-}
-
 void KAction::setAccel( int a )
 {
   d->m_accel = a;
@@ -371,6 +365,25 @@ QString KAction::shortText() const
 {
   return d->m_shortText;
 }
+
+void KAction::setStatusText( const QString &text )
+{
+  d->m_statusText = text; 
+  
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setStatusText( i, text );
+}
+
+void KAction::setStatusText( int, const QString & )
+{
+  // ### 
+} 
+
+QString KAction::statusText() const
+{
+  return d->m_statusText; 
+} 
 
 int KAction::plug( QWidget *w, int index )
 {
@@ -1042,12 +1055,12 @@ void KRadioAction::slotActivated()
   if ( isChecked() )
   {
     const QObject *senderObj = sender();
-    
+
     if ( !senderObj || !senderObj->inherits( "KToolBarButton" ) )
       return;
-    
+
     const_cast<KToolBarButton *>( static_cast<const KToolBarButton *>( senderObj ) )->on( true );
-    
+
     return;
   }
 

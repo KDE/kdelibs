@@ -140,28 +140,14 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
     parent->children.append( this );
 }
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null )
-{
-  return readConfigFile( filename, never_null, KGlobal::instance() ); 
-} 
-
-QString KXMLGUIFactory::readConfigFile( const QString &filename )
-{
-  return readConfigFile( filename, KGlobal::instance() ); 
-}
-
-bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc, const QString& filename)
-{
-  return saveConfigFile( doc, filename, KGlobal::instance() ); 
-} 
-
 QString KXMLGUIFactory::readConfigFile( const QString &filename, KInstance *instance )
 {
   return readConfigFile( filename, false, instance );
 }
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, KInstance *instance )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, KInstance *_instance )
 {
+  KInstance *instance = _instance ? _instance : KGlobal::instance();
   QString xml_file;
 
   if (filename[0] == '/')
@@ -192,8 +178,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
-                                     const QString& filename, KInstance *instance )
+                                     const QString& filename, KInstance *_instance )
 {
+  KInstance *instance = _instance ? _instance : KGlobal::instance();
   QString xml_file(filename);
 
   if (xml_file[0] != '/')
