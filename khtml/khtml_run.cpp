@@ -24,7 +24,7 @@
 #include "khtml_part.h"
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url )
-: KRun( url.url(), 0, false, true )
+: KRun( url.url(), 0, false, false /* No GUI */ )
 {
   m_part = part;
   m_child = child;
