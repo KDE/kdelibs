@@ -213,8 +213,8 @@ QByteArray HTMLFormElementImpl::formData()
     for(unsigned int i=0; i < m_encCharset.length(); i++)
         m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
 
-    for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
-    {
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+        HTMLGenericFormElementImpl* current = it.current();
         khtml::encodingList lst;
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
@@ -346,8 +346,8 @@ void HTMLFormElementImpl::submit(  )
 #endif
 
     KHTMLView *view = getDocument()->view();
-    for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
-    {
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+        HTMLGenericFormElementImpl* current = it.current();
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT &&
             static_cast<HTMLInputElementImpl*>(current)->autoComplete() )
@@ -393,13 +393,8 @@ void HTMLFormElementImpl::reset(  )
         return;
     }
 
-    HTMLGenericFormElementImpl *current = formElements.first();
-    while(current)
-    {
-        current->reset();
-        current = formElements.next();
-    }
-    getDocument()->updateRendering(); // ### does this belong here?
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
+        it.current()->reset();
 
     m_inreset = false;
 }
@@ -450,9 +445,8 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
-    HTMLGenericFormElementImpl *current;
-    for (current = formElements.first(); current; current = formElements.next())
-    {
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+        HTMLGenericFormElementImpl *current = it.current();
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
             current != caller && current->form() == caller->form() && current->name() == caller->name()) {
