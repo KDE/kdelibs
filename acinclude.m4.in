@@ -139,7 +139,7 @@ all_includes=$X_INCLUDES
 ])
 ## ------------------------------------------------------------------------
 ## Try to find the QT headers and libraries.
-## $(QT_LDLFLAGS) will be -Lqtliblocation (if needed)
+## $(QT_LDFLAGS) will be -Lqtliblocation (if needed)
 ## and $(QT_INCLUDES) will be -Iqthdrlocation (if needed)
 ## ------------------------------------------------------------------------
 ##
@@ -644,7 +644,7 @@ dnl this was AC_PROG_CC. I had to include it manualy, since I had to patch it
 
   fi
 
-  if test -z "$LDLFLAGS" && test "$ac_use_debug_code" = "no" && test "$GCC" = "yes"; then
+  if test -z "$LDFLAGS" && test "$ac_use_debug_code" = "no" && test "$GCC" = "yes"; then
      LDFLAGS="-s"
   fi
 
