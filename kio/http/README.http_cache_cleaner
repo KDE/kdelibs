@@ -10,10 +10,11 @@ TODO:
 30 minutes / delte entries which end in .new and are
 older than 30 minutes.
 
+* Let kio_http fill in expire dates other than 0.
+
+DONE:
+
 * Start khttpcache from kio_http if the file "cleaned"
 is older than 30(?) minutes.
 
 * Accept command line parameteres
-
-* Let kio_http fill in expire dates other than 0.
-

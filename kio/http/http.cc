@@ -1376,14 +1376,14 @@ void HTTPProtocol::closeConnection( )
 
 void HTTPProtocol::buildURL()
 {
-  m_request.url = KURL();
-  m_request.url.setProtocol( m_protocol);
+  m_request.url = m_protocol+":/";
   m_request.url.setUser( m_request.user );
   m_request.url.setPass( m_request.passwd );
   m_request.url.setHost( m_request.hostname );
   m_request.url.setPort( m_request.port );
   m_request.url.setPath( m_request.path );
-  m_request.url.setQuery( m_request.query );
+  if (m_request.query.length())
+    m_request.url.setQuery( m_request.query );
 }
 
 void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
