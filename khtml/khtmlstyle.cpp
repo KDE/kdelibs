@@ -65,6 +65,8 @@
 class CSSProperty
 {
 public:
+    CSSProperty();
+    
     int   propId;
 #if 0
     enum contentEnum { contEnum, contAbsValue, contRelValue, contPercent,
@@ -76,7 +78,7 @@ public:
 #else
     QString value;
 #endif
-    int   weight;
+    bool important;
 };
 
 class CSSSelector
@@ -110,7 +112,15 @@ public:
     Relation relation;
     CSSSelector *tagHistory;
     CSSPropList *propList;
+
+    int specificity();
 };
+
+CSSProperty::CSSProperty()
+{
+    important = false;
+    propId = 0;
+}
 
 CSSSelector::CSSSelector(void)
 : tag(0), tagHistory(0), propList(0)
@@ -126,6 +136,20 @@ CSSSelector::~CSSSelector(void)
     {
         delete tagHistory;
     }
+}
+
+int CSSSelector::specificity()
+{
+    int s = 0;
+    CSSSelector *sel = this;
+    while(sel)
+    {
+	if(sel->attr == ATTR_ID) s += 0x100;
+	else if(sel->attr) s+= 0x10;
+	if(sel->tag) s += 0x01;
+	sel = sel->tagHistory;
+    }
+    return s;
 }
 
 void CSSSelector::print(void)
@@ -436,7 +460,7 @@ CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
 		delete selecStack;
 		return 0;
 	    }
-		    
+		
             curP = parseSpace(curP, endP);
             if (!curP)
                 return(selecStack);
@@ -501,6 +525,7 @@ CSSStyleSheet::parseSelector(const QChar *curP, const QChar *endP)
 CSSProperty *
 CSSStyleSheet::parseProperty(const QChar *curP, const QChar *endP)
 {
+    bool important = false;
     const QChar *colon;
     // Get rid of space in front of the declaration
 
@@ -529,6 +554,20 @@ printf("Property-name = \"%s\"\n", propName.data());
     if (!curP)
         return(0);
 
+    // search for !important
+    const QChar *exclam = parseToChar(curP, endP, '!', false);
+    if(exclam)
+    {
+	const QChar *imp = parseSpace(exclam+1, endP);
+	QString s(imp, endP - imp);
+	s.lower();
+	if(!s.contains("important"))
+	    return 0;
+	important = true;
+	endP = exclam - 1;
+	printf("important property!\n");
+    }
+    
     // remove space after the value;
     while (endP > curP)
     {
@@ -538,6 +577,7 @@ printf("Property-name = \"%s\"\n", propName.data());
         endP--;
     }
 
+    
     QString propVal( curP , endP - curP );
 printf("Property-value = \"%s\"\n", propVal.data());
 
@@ -550,7 +590,8 @@ printf("Property-value = \"%s\"\n", propVal.data());
     CSSProperty *prop = new CSSProperty();
     prop->propId = propPtr->id;
     prop->value = propVal.data();
-
+    prop->important = important;
+    
     return(prop);
 }
 
@@ -616,7 +657,7 @@ CSSStyleSheet::parseRule(const QChar *curP, const QChar *endP)
         return(curP);
     }
 
-    
+
     // Add rule to our data structures...
     // WABA: To be done
     return(curP);
