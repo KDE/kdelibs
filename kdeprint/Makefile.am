@@ -4,7 +4,7 @@ LIBVERSION = 1:0
 
 SUBDIRS = $(CUPSSUBDIR) pdq . standalone pics
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kdeprint/cups -I$(top_srcdir)/kdeprint/pdq $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kdeprint/cups -I$(top_srcdir)/kdeprint/pdq -I$(top_srcdir)/kfile -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint.la
 libkdeprint_la_SOURCES = kdialogimpl.cpp kprintcopiespage.cpp kprintdialog.cpp kprinter.cpp kprinteritem.cpp \

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/kdeprint -I$(top_srcdir) -I$(top_builddir)/kdeprint $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdeprint -I$(top_srcdir) -I$(top_builddir)/kdeprint $(all_includes) -I$(top_srcdir)/kfile -I$(top_srcdir)/kio
 LIBVERSION = 1:0
 
 ####### Files
