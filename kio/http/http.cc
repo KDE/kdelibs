@@ -51,7 +51,6 @@
 #ifdef DO_SSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <kmessagebox.h>
 #endif
 
 #ifdef DO_MD5
@@ -604,6 +603,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   ssize_t ret;
 #ifdef DO_SSL
   if (m_bUseSSL) {
+    m_bEOF=false;
     ret=SSL_read(hand, (char *)b, nbytes);
     if (ret==0) m_bEOF=true;
     return ret;
