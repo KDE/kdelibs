@@ -92,7 +92,7 @@ QIntDict<GradientSet> gDict;
 
 static const int itemFrame       = 1;
 static const int itemHMargin     = 3;
-static const int itemVMargin     = 1;
+static const int itemVMargin     = 0;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
 
@@ -175,12 +175,7 @@ HighColorStyle::HighColorStyle( StyleType styleType )
 	: KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar )
 {
 	type = styleType;
-	
-	if ( type == HighColor && QPixmap::defaultDepth() > 8 )
-		highcolor = true;
-	else
-		highcolor = false;
-	
+	highcolor = (type == HighColor && QPixmap::defaultDepth() > 8);
 	gDict.setAutoDelete(true);
 }
 
@@ -721,27 +716,29 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// GENERAL PANELS
 		// -------------------------------------------------------------------
 		case PE_Panel:
-		case PE_PanelPopup: {
+		case PE_PanelPopup:
+		case PE_WindowFrame:
+		case PE_PanelLineEdit: {
 			bool sunken  = flags & Style_Sunken;
 			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
 										: opt.lineWidth();
-			if (lw == 2 && sunken)
+			if (lw == 2)
 			{
 				QPen oldPen = p->pen();
 				int x,y,w,h;
 				r.rect(&x, &y, &w, &h);
 				int x2 = x+w-1;
 				int y2 = y+h-1;
-				p->setPen(cg.light());
+				p->setPen(sunken ? cg.light() : cg.dark());
 				p->drawLine(x, y2, x2, y2);
 				p->drawLine(x2, y, x2, y2);
-				p->setPen(cg.mid());
+				p->setPen(sunken ? cg.mid() : cg.light());
 				p->drawLine(x, y, x2, y);
 				p->drawLine(x, y, x, y2);
-				p->setPen(cg.midlight());
+				p->setPen(sunken ? cg.midlight() : cg.mid());
 				p->drawLine(x+1, y2-1, x2-1, y2-1);
 				p->drawLine(x2-1, y+1, x2-1, y2-1);
-				p->setPen(cg.dark());
+				p->setPen(sunken ? cg.dark() : cg.midlight());
 				p->drawLine(x+1, y+1, x2-1, y+1);
 				p->drawLine(x+1, y+1, x+1, y2-1);
 				p->setPen(oldPen);
