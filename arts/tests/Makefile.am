@@ -29,7 +29,7 @@ testremote_LDFLAGS = $(FLOWLIBS)
 testremote_SOURCES = remotetest.cc value.cc value_impl.cc testremote.cc
 
 DISTCLEANFILES = wrapper.h wrapper.cc value.h value.cc \
-				 testremote.h testremote.cc
+				 remotetest.h remotetest.cc
 
 wrapper.h: $(top_srcdir)/arts/tests/wrapper.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/tests/wrapper.idl

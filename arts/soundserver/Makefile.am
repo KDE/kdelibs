@@ -54,7 +54,8 @@ artswrapper_OBJS = artswrapper.o
 artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsshell_SOURCES = artsshell.cc
 
-DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
+DISTCLEANFILES = soundserver.cc soundserver.h soundserver.mcopclass \
+  soundserver.mcoptype kmedia2.h kmedia2.cc kmedia2.mcopclass kmedia2.mcoptype
 
 ####### Build rules
 

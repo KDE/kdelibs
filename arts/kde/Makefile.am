@@ -22,6 +22,8 @@ artskde.mcopclass: artskde.h
 artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
 	    $(MCOPIDL) -I$(top_srcdir)/arts/flow -I$(top_srcdir)/arts/soundserver -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
+DISTCLEANFILES = artskde.cc artskde.h artskde.mcoptype artskde.mcopclass
+
 check_PROGRAMS = kiotest kiotestslow
 kiotest_SOURCES = kiotest.cc
 kiotestslow_SOURCES = kiotestslow.cc
