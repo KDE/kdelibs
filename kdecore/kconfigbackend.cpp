@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <ctype.h>
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -207,7 +208,162 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     return KConfigBase::NoAccess;
 }
 
+#include <iostream.h>
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
+					   KEntryMap *pWriteBackMap,
+					   bool bGlobal)
+{
+   if (!rFile.isOpen()) // come back, if you have real work for us ;->
+      return;
+
+   QCString aCurrentGroup("<default>");
+
+   const char *map = 0;
+#ifdef HAVE_MMAP
+   map = (const char *) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE, rFile.handle(), 0);
+#endif
+   const char *s;
+   const char *eof;
+   QByteArray data;
+   if (map)
+   {
+      s = map;
+      eof = s+rFile.size();
+   }
+   else
+   {
+      rFile.at(0);
+      data = rFile.readAll();
+      s = data.data();
+      eof = s+data.size();
+   }
+   for(;s < eof;s++)
+   {
+      while(isspace(*s) && (s < eof) && (*s != '\n'))
+         s++; //skip leading whitespace, shouldn't happen to often
+
+
+      //skip empty lines, lines starting with #, and lines starting with =
+      if ((*s == '\n') || (*s == '#') || (*s == '='))
+      {
+         while ((*s!='\n') && (s<eof))
+            s++;
+         continue; // Empty or comment or no keyword
+      };
+      const char *startLine = s;
+
+      if (*startLine=='[')  //group
+      {
+         while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
+         if (*(s-1) != ']')
+         {
+            const char *e = s-1;
+            while ((e > startLine) && (*e != ']'))
+               e--;
+            if (e <= startLine)
+            {
+               fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
+               continue;
+            }
+            aCurrentGroup = QCString(startLine+1, e - startLine);
+         }
+         else
+         {
+            // group found; get the group name by taking everything in
+            // between the brackets
+            aCurrentGroup = QCString(startLine+1, s - startLine - 1);
+         }
+
+         // Backwards compatibility
+         if (aCurrentGroup == "KDE Desktop Entry")
+            aCurrentGroup = "Desktop Entry";
+
+         if (pWriteBackMap)
+         {
+            // add the special group key indicator
+            KEntryKey groupKey(aCurrentGroup, 0);
+            pWriteBackMap->insert(groupKey, KEntry());
+         }
+         continue;
+      };
+
+      const char *equal = 0;
+      const char *locale = 0;
+      const char *endOfKey=0;
+
+      while ((s < eof) && (*s != '\n'))
+      {
+         //find the equal sign
+         if ((*s=='=') && (equal==0))  //the equal sign
+         {
+            equal=s;
+            //strip trailing whitespace
+            endOfKey=equal-1;
+            while (endOfKey>startLine && isspace(*endOfKey))
+               endOfKey--;
+
+         };
+         //find the locale
+         if ((*s=='[') && (locale==0))
+            locale=s;
+
+         s++; // Search till end of line / end of file
+      };
+      if ((equal==0) || (endOfKey<startLine))
+         continue;
+
+      int keyLength = endOfKey-startLine;
+      if (locale)
+      {
+         if (((int) localeString.length() != (equal - locale - 2)) ||
+             (strncmp(locale+1, localeString.data(), localeString.length())!=0))
+         {
+            // We can ignore this one
+            if (!pWriteBackMap)
+               continue; // We just ignore it
+            // We just store it as is to be able to write it back later.
+            locale = 0;
+         }
+         else
+         {
+            // We don't store the localized part.
+            keyLength = locale-startLine;
+         }
+      }
+
+      // insert the key/value line
+      QCString key(startLine, keyLength+2); // TODO: strip whitespace, done, aleXXX
+      QCString val = printableToString(equal+1, s-equal-1);
+      //cout<<"found key: -"<<key<<"- with value -"<<val<<"-"<<endl;
+      KEntryKey aEntryKey(aCurrentGroup, key);
+      aEntryKey.bLocal = (locale != 0);
+      KEntry aEntry;
+      aEntry.mValue = val;
+      aEntry.bGlobal = bGlobal;
+      aEntry.bNLS = (locale != 0);
+
+      if (pWriteBackMap) {
+         // don't insert into the config object but into the temporary
+         // scratchpad map
+         pWriteBackMap->insert(aEntryKey, aEntry);
+      } else {
+         // directly insert value into config object
+         // no need to specify localization; if the key we just
+         // retrieved was localized already, no need to localize it again.
+        pConfig->putData(aEntryKey, aEntry);
+      }
+   }
+#ifdef HAVE_MMAP
+   if (map)
+      munmap((char *)map,rFile.size());
+#endif
+   //using kdDebug() here leads to an infinite loop
+   //remove this for the release, aleXXX
+   cout<<"******** parsed "<<rFile.name().latin1()<<endl;
+}
+
+
+/*void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					   KEntryMap *pWriteBackMap,
 					   bool bGlobal)
 {
@@ -328,7 +484,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (map)
      munmap((char *)map,rFile.size());
 #endif
-}
+}*/
 
 void KConfigINIBackEnd::sync(bool bMerge)
 {
