@@ -162,7 +162,7 @@ public:
     m_bJavaOverride = false;
 
     m_bFirstData = true;
-    
+
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
     {
@@ -287,7 +287,7 @@ public:
   QString m_overURL;
   bool m_bDnd;
     bool m_bFirstData;
-    
+
   QPoint m_dragStartPos;
 
   QCursor m_linkCursor;
@@ -1154,7 +1154,7 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->determineParseMode( decoded );
       d->m_bFirstData = false;
   }
-  
+
   //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
   if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
@@ -1244,7 +1244,7 @@ void KHTMLPart::slotFinishedParsing()
     }
   }
 #endif
-  
+
   checkCompleted();
 }
 
@@ -3156,15 +3156,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
      if ( !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE )
      {
        khtml::RenderText * renderText = static_cast<khtml::RenderText *>(innerNode.handle()->renderer());
-       khtml::TextSlave * firstSlave = renderText->first();
-       //QRect r ( firstSlave->x, firstSlave->y, firstSlave->m_width, firstSlave->m_height );
        int x, y;
        renderText->absolutePosition( x, y );
-       //QRect r ( x, y, renderText->width(), renderText->height() );
        int vx, vy;
        view()->contentsToViewport( x, y, vx, vy );
-       QRect r ( vx, vy, firstSlave->m_width, firstSlave->m_height );
-//       kdDebug( 6000 ) << " x=" << r.x() << " y=" << r.y() << " width=" << r.width() << " height=" << r.height() << endl;
+       QRect r (vx, vy, renderText->width(), renderText->height());
        KIconEffect::visualActivate( view()->viewport(), r );
      }
      else if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
