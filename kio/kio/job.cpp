@@ -2933,6 +2933,10 @@ void DeleteJob::deleteNextFile()
                 if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
                     job = 0;
                     m_processedFiles++;
+                    if ( m_processedFiles % 300 == 0 ) { // update progress info every 300 files
+                        m_currentURL = *it;
+                        slotReport();
+                    }
                 } else
                 { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
                     job = KIO::file_delete( *it, false /*no GUI*/);
@@ -2959,15 +2963,30 @@ void DeleteJob::deleteNextDir()
 {
     if ( !dirs.isEmpty() ) // some dirs to delete ?
     {
-        // Take first dir to delete out of list - last ones first !
-        KURL::List::Iterator it = dirs.fromLast();
-        SimpleJob *job = KIO::rmdir( *it );
-        Scheduler::scheduleJob(job);
-        dirs.remove(it);
-        addSubjob( job );
+        do {
+            // Take first dir to delete out of list - last ones first !
+            KURL::List::Iterator it = dirs.fromLast();
+            // If local dir, try to rmdir it directly
+            if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
+
+                m_processedDirs++;
+                if ( m_processedDirs % 100 == 0 ) { // update progress info every 100 dirs
+                    m_currentURL = *it;
+                    slotReport();
+                }
+            } else
+            {
+                SimpleJob *job = KIO::rmdir( *it );
+                Scheduler::scheduleJob(job);
+                dirs.remove(it);
+                addSubjob( job );
+                return;
+            }
+            dirs.remove(it);
+        } while ( !dirs.isEmpty() );
     }
-    else // We have finished deleting
-        startNextJob();
+    // We have finished deleting
+    startNextJob();
 }
 
 void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
