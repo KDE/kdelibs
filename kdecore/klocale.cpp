@@ -596,7 +596,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
         switch ( rst.at(i + 1).latin1() )
         {
         case 'Y':
-                rst.replace(i, 2, QString().sprintf("%02d", pDate.year()));
+                rst.replace(i, 2, QString().sprintf("%4d", pDate.year()));
 		continue;
 	case 'y':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.year() % 100));
