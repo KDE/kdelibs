@@ -25,6 +25,9 @@
 #include "kspelldlg.h"
 #include "ksconfig.h"
 
+class QTextCodec;
+
+
 /**
  * KDE Spellchecker
  *
@@ -37,8 +40,6 @@
  * @see KSpellConfig
  */
 
-class QTextCodec;
-
 class KSpell : public QObject
 {
   Q_OBJECT
@@ -48,7 +49,7 @@ public:
   /**
    * Possible states of the spell checker.
    *
-   * @li @p Starting - After creation of @ref KSpell.
+   * @li @p Starting - After creation of KSpell.
    * @li @p Running - After the ready signal has been emitted.
    * @li @p Cleaning - After @ref cleanUp() has been called.
    * @li @p Finished - After @ref cleanUp() has been completed.
@@ -63,18 +64,18 @@ public:
   /**
    * Start spellchecker.
    *
-   * @ref KSpell emits @ref ready() when it has verified that 
+   * KSpell emits @ref ready() when it has verified that 
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
-   * Be sure to call @ref cleanUp() when you are done with @ref KSpell.
+   * Be sure to call @ref cleanUp() when you are done with KSpell.
    *
-   * If @ref KSpell could not be started correctly, @ref death() is emitted.
+   * If KSpell could not be started correctly, @ref death() is emitted.
    *
    * @param _parent      Parent of @ref KSpellConfig dialg..
    * @param _caption     Caption of @ref KSpellConfig dialog.
    * @param _receiver    Receiver.
 
    * @param _slot        Receivers SLOT.
-   * @param _kcs         Configuration for @ref KSpell.
+   * @param _kcs         Configuration for KSpell.
    * @param _progressbar Indicates if progress bar should be shown.
    * @param _modal       Indicates modal or non-modal dialog.
    */
@@ -83,7 +84,7 @@ public:
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
   /**
-   * Retrieve the status of @ref KSpell.
+   * Retrieve the status of KSpell.
    *
    * @see spellStatus()
    */
@@ -99,7 +100,7 @@ public:
   virtual void cleanUp ();
 
   /** 
-   * Auto-delete the @ref KSpell object after emitting @ref death().
+   * Auto-delete the KSpell object after emitting @ref death().
    */
   void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
 
@@ -152,7 +153,7 @@ public:
    * checkWord () returns @p false if @p buffer is not a word, otherwise it
    *  returns @p true;
    *
-   * If @p usedialog is set to @p true, @ref KSpell will put up the standard
+   * If @p usedialog is set to @p true, KSpell will put up the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  @ref dlgResult() and @ref replacement(). 
    *
@@ -225,7 +226,7 @@ public:
   const QString *intermediateBuffer () {return &newbuffer;}
 
   /**
-   * Tell ISpell/ASpell to ignore this word for the life of this @ref KSpell instance.
+   * Tell ISpell/ASpell to ignore this word for the life of this KSpell instance.
    *
    *  @ref ignore() returns @p false if word is not a word or there was an error
    *  communicating with ISpell/ASpell.
@@ -241,14 +242,14 @@ public:
   virtual bool addPersonal (QString word);
 
   /**
-   * Retrieve the @ref KSpellConfig object being used by this @ref KSpell instance.
+   * Retrieve the @ref KSpellConfig object being used by this KSpell instance.
    */
   KSpellConfig ksConfig () const;
 
   /**
    * Set the resolution (in percent) of the @ref progress() signals.
    *
-   * E.g. @ref setProgressResolution (10) instructs @ref KSpell to send progress
+   * E.g. @ref setProgressResolution (10) instructs KSpell to send progress
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
@@ -341,7 +342,7 @@ signals:
   void addword (QString originalword);
 
   /**
-   * Emitted after @ref KSpell has verified that ISpell/ASpell is running
+   * Emitted after KSpell has verified that ISpell/ASpell is running
    * and working properly.  
    */
   void ready(KSpell *);
@@ -374,11 +375,11 @@ signals:
   /**
    * Emitted on terminal errors and after clean up.
    *
-   * You can delete the @ref KSpell object in this signal.
+   * You can delete the KSpell object in this signal.
    *
    * You can check @ref status() to see what caused the death:
-   * @li @p Error - @ref KSpell could not start.
-   * @li @p Crashed - @ref KSpell encountered an unexpected error during execution.
+   * @li @p Error - KSpell could not start.
+   * @li @p Crashed - KSpell encountered an unexpected error during execution.
    * @li @p Finished - Clean up finished.
    */
   void death( );

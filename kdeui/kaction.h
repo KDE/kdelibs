@@ -1534,6 +1534,9 @@ private:
     KActionSeparatorPrivate *d;
 };
 
+/**
+ * A set of KAction objects.
+ */
 class KActionCollection : public QObject
 {
   friend class KAction;

@@ -155,7 +155,7 @@ public:
    * Retrieve the current application object.
    *
    * This is similar to the global @ref QApplication pointer @ref qApp. It
-   * allows access to the single global @ref KApplication object, since
+   * allows access to the single global KApplication object, since
    * more than one cannot be created in the same application. It
    * saves you the trouble of having to pass the pointer explicitly
    * to every function that may require it.
@@ -489,7 +489,7 @@ public:
    * Enable style plugins.
    *
    * This is useful only to applications that normally
-   * do not display a GUI and create the @ref KApplication with
+   * do not display a GUI and create the KApplication with
    *  @p allowStyles set to @p false.
    */
   void enableStyles();
@@ -654,7 +654,7 @@ signals:
   void kdisplayPaletteChanged();
 
   /**
-   * KApplication has changed its GUI style in response to a @ref KDisplay request.
+   * KApplication has changed its GUI style in response to a KControl request.
    *
    * Normally, widgets will update their styles automatically (as they would
    * respond to an explicit setGUIStyle() call), but you should connect to
@@ -663,7 +663,7 @@ signals:
   void kdisplayStyleChanged();
 
   /**
-   * KApplication has changed its font in response to a @ref KDisplay request.
+   * KApplication has changed its font in response to a KControl request.
    *
    * Normally widgets will update their fonts automatically, but you should
    * connect to this to monitor global font changes, especially if you are
@@ -672,7 +672,7 @@ signals:
   void kdisplayFontChanged();
 
   /**
-   * @ref KApplication has changed either its GUI style, its font or its palette
+   * KApplication has changed either its GUI style, its font or its palette
    * in response to a kdisplay request. Normally, widgets will update their styles
    * automatically, but you should connect to this to program special
    * behavior. */

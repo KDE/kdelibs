@@ -35,9 +35,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <stdio.h>
 /**
- @internal
  $QTDIR/bin/moc testdcop.cpp -o testdcop.moc
  g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore -ldl
+ @internal
 
 **/
 

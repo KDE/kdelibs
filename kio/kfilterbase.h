@@ -63,7 +63,7 @@ public:
 
     /**
      * Call this to create the appropriate filter for the file
-     * named @fileName.
+     * named @p fileName.
      */
     static KFilterBase * findFilterByFileName( const QString & fileName );
 

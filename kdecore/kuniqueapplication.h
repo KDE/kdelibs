@@ -104,7 +104,7 @@ public:
    * }
    * </pre>
    * Although it is not necassery to call @ref start() before creating a
-   * @ref KUniqueApplication it is adviced to so because it is about
+   * KUniqueApplication, it is adviced to so because it is about
    * 40% faster if the application was already running: 
    * If you use @ref start() the @ref KApplication constructor will not be 
    * called if this isn't necessary.

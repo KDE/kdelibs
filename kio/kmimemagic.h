@@ -17,7 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-/**
+/*
  * KMimeMagic is inspired by the code of the
  * Apache Web Server.
  *
@@ -76,7 +76,7 @@ protected:
  * not only by using its extension, but also by reading its contents.
  *
  *
- * Unless specified otherwise, @ref KMimeMagic uses
+ * Unless specified otherwise, KMimeMagic uses
  * $KDEDIR/share/mimelnk/magic for this purpose.
  *
  * To make KMimeMagic restore the 'atime' of a file after it opened it,
@@ -86,7 +86,7 @@ protected:
  * This isn't done by default because it changes the 'ctime'.
  * See kmimemagic.cpp for a full discussion on this issue.
  *
- * The basic usage of @ref KMimeMagic is :
+ * The basic usage of KMimeMagic is :
  * @li Get a pointer to it, using @ref KMimeMagic::self().
  * @li Use it for any file or buffer you want, using one of the three
  * @p find...Type() methods.
@@ -175,7 +175,7 @@ public:
   KMimeMagicResult * findBufferFileType( const QByteArray &, const QString & filename );
 
   /**
-   * Returns a pointer to the unique @ref KMimeMagic instance in this process.
+   * Returns a pointer to the unique KMimeMagic instance in this process.
    */
   static KMimeMagic* self();
 

@@ -66,7 +66,7 @@ namespace KIO {
 }
 
 /**
- * An icon-view capable of showing @ref KFileViewItems. Used in the filedialog
+ * An icon-view capable of showing @ref KFileViewItem's. Used in the filedialog
  * for example. Most of the documentation is in @ref KFileView class.
  *
  * @see KDirOperator

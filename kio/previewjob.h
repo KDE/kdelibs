@@ -102,7 +102,7 @@ namespace KIO {
      * @param save if the image should be cached for later use
      * @param enabledPlugins if non-zero, this points to a list containing
      * the names of the plugins that may be used.
-     * see @ref PreviewJob::availablePlugins.
+     * see @ref availablePlugins.
      */
     PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 

@@ -256,7 +256,7 @@ public:
     /**
      * Create a GUI given a local XML file.
      *
-     * If @ref xmlfile is NULL,
+     * If @p xmlfile is NULL,
      * then it will try to construct a local XML filename like
      * appnameui.rc where 'appname' is your app's name.  If that file
      * does not exist, then the XML UI code will only use the global
@@ -515,7 +515,7 @@ protected:
      * to save its state.
      *
      * You @em must @em not change the group of the @p kconfig object, since
-     * @ref KMainWindow uses one group for each window.  Please
+     * KMainWindow uses one group for each window.  Please
      * reimplement these function in childclasses.
      *
      * Note: No user interaction is allowed

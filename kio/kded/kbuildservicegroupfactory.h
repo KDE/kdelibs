@@ -24,8 +24,8 @@
 #include <qstringlist.h>
 
 /**
- * @internal
  * Service group factory for building ksycoca
+ * @internal
  */
 class KBuildServiceGroupFactory : public KServiceGroupFactory
 {

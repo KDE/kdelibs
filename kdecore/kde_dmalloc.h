@@ -15,7 +15,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-/**
+/*
  * These operators are used in conjunction with the dmalloc memory
  * debugging library.
  */

@@ -88,7 +88,7 @@ public:
      *
      * It is valid behavior to create different kinds of objects
      * depending on the requested @p classname. For example a koffice
-     * library may usually return a pointer to @ref KoDocument.  But
+     * library may usually return a pointer to KoDocument.  But
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *
@@ -115,7 +115,7 @@ protected:
      *
      * It is valid behavior to create different kinds of objects
      * depending on the requested @p classname. For example a koffice
-     * library may usually return a pointer to @ref KoDocument.  But
+     * library may usually return a pointer to KoDocument.  But
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *

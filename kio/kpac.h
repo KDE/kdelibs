@@ -25,6 +25,9 @@
 
 class KURL;
 
+/**
+ * Proxy Auto Configuration.
+ */
 class KPAC
 {
 public:

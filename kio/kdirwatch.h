@@ -32,21 +32,21 @@ class KDirWatchPrivate;
  /**
   * Watch directories for changes.
   *
-  * It uses @p stat (2) and
+  * It uses stat(2) and
   * compares stored and actual changed time of directories. If
   * there is a difference it notifies about the change. Directories can be
   * added, removed from the list and scanning of particular directories
   * can be stopped and restarted. The whole class can be stopped and
   * restarted. Directories can be added/removed from list in
   * any state.
-  * When a watched directory is changed, @ref KDirWatch will emit
+  * When a watched directory is changed, KDirWatch will emit
   * the signal @ref dirty().
   *
-  * If a watched directory gets deleted, @ref KDirwatch will remove it from
+  * If a watched directory gets deleted, KDirwatch will remove it from
   * the list, and  emit the signal @ref deleted().
   *
   * It's possible to watch a directory that doesn't exist yet.
-  * @ref KDirWatch will emit a @ref dirty() signal when it is created.
+  * KDirWatch will emit a @ref dirty() signal when it is created.
   *
   * @short Class for watching directory changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
@@ -139,7 +139,7 @@ class KDirWatch : public QObject
   
    bool contains( const QString& path ) const;
   
-   /** @ref signal fileDirty() */
+   /** @ref fileDirty() */
    void setFileDirty( const QString & _file );
 
    static KDirWatch* self();
@@ -155,7 +155,7 @@ class KDirWatch : public QObject
    void dirty (const QString& dir);
    
    /**
-    * Emitted when @ref KDirWatch learns that the file
+    * Emitted when KDirWatch learns that the file
     * @p _file has changed.
     *
     * This happens for instance when a .desktop file 

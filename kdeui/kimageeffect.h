@@ -147,7 +147,7 @@ public:
      * @param image The QImage to process.
      * @param percent Percent value. Use a negative value to dim.
      * @param channel Which channel(s) should be modified
-     * @return The @ref image, provided for convenience.
+     * @return The @p image, provided for convenience.
      */
     static QImage& channelIntensity(QImage &image, float percent,
                                     RGBComponent channel);

@@ -29,7 +29,7 @@
 #include <kurl.h>
 #include <kmimetype.h>
 
-/*
+/**
  * A KFileItem is a generic class to handle a file, local or remote.
  * In particular, it makes it easier to handle the result of KIO::listDir.
  * (UDSEntry isn't very friendly to use)

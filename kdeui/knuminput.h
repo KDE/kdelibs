@@ -55,7 +55,7 @@ public:
     KNumInput(QWidget* parent=0, const char* name=0);
 
     /**
-     * @param below A pointer to another @ref KNumInput.
+     * @param below A pointer to another KNumInput.
      *
      */
     KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
@@ -105,7 +105,7 @@ public:
 protected:
     /**
      * Call this function whenever you change something in the geometry
-     * of your @ref KNumInput child.
+     * of your KNumInput child.
      *
      */
     void layout(bool deep);

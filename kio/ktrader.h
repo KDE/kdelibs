@@ -151,7 +151,7 @@ public:
                      const QString& preferences /*= QString::null*/) const;
 
     /**
-     * This is a static pointer to a @ref KTrader instance.
+     * This is a static pointer to a KTrader instance.
      *
      *  You will need
      * to use this to access the KTrader functionality since the

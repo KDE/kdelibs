@@ -98,7 +98,7 @@ public:
   /*
    * Check if the key has an entry in the currently active group. Use
    * this to determine if a key is not specified for the current group
-   * (@p hasKey returns @p false). Keys with null data are considered
+   * (@p hasKey returns false). Keys with null data are considered
    * nonexistent.
    *
    * @param pKey The key to search for.

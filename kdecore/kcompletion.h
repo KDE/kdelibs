@@ -43,8 +43,8 @@ class QPopupMenu;
  * commands, SQL queries, ...
  * Everytime your program knows what the user can type into an edit-field, you
  * should offer completion. With KCompletion, this is very easy, and if you are
- * using a LineEdit-widget (@ref KLineEdit()), it is even more easy.
- * Basically, you tell a KCompletion-object what strings should be completable
+ * using a line edit widget (@ref KLineEdit), it is even more easy.
+ * Basically, you tell a KCompletion object what strings should be completable
  * and whenever completion should be invoked, you call @ref makeCompletion().
  * KLineEdit and (an editable) KComboBox even do this automatically for you.
  *
@@ -229,8 +229,7 @@ public:
     QStringList items() const;
 
     /**
-     * Sets the completion mode to Auto/Manual (see @ref KCompletion
-     * documentation), Shell or None.
+     * Sets the completion mode to Auto/Manual, Shell or None.
      * If you don't set the mode explicitly, the global default value
      * KGlobalSettings::completionMode() is used.
      * @ref KGlobalSettings::CompletionNone disables completion.
@@ -521,7 +520,7 @@ private:
  * This is a convienence class that provides the basic functions
  * needed to add text completion support into widgets.  All that
  * is required is an implementation for the pure virtual function
- * @ref setCompletionText.  Refer to @ref KLineEdit or @ref KComboBox
+ * @ref setCompletedText.  Refer to @ref KLineEdit or @ref KComboBox
  * to see how easily such support can be added using this as a base
  * class.
  *
@@ -536,7 +535,7 @@ public:
     /**
      * Constants that represent the items whose short-cut
      * key-binding is programmable.  The default key-bindings
-     * for these items are defined in @ref KStdAccel().
+     * for these items are defined in @ref KStdAccel.
      */
     enum KeyBindingType {
         TextCompletion,

@@ -244,7 +244,7 @@ public:
 #endif
 
     /**
-     * Install a context menu for @ref KEdit.
+     * Install a context menu for KEdit.
      *
      *  The Popup Menu will be activated on a right mouse button press event.
      */

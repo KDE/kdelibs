@@ -597,9 +597,9 @@ class KDialogBase : public KDialog
      * toplevel widget for this particular page. The widget contains a 
      * @ref QGridLayout layout so the widget children are  positioned in a grid.
      *
-     * @param n Specifies the number of columns if @p dir is @ref QGrid::Horizontal
-     *          or the number of rows if @p dir is @ref QGrid::Vertical.
-     * @param dir Can be @ref QGrid::Horizontal or @ref QGrid::Vertical.
+     * @param n Specifies the number of columns if @p dir is @ref Qt::Horizontal
+     *          or the number of rows if @p dir is @ref Qt::Vertical.
+     * @param dir Can be @ref Qt::Horizontal or @ref Qt::Vertical.
      * @param itemName String used in the list or as tab item name.
      * @param header Header text use in the list modes @p Ignored in @p Tabbed 
      *        mode. If empty, the item text is used instead.
@@ -695,9 +695,9 @@ class KDialogBase : public KDialog
      * constructor where you define the face (Plain, Swallow, Tabbed,
      * TreeList, IconList).
      *
-     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
-     *          or the number of rows if 'dir' is QGrid::Vertical.
-     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     * @param n Specifies the number of columns if 'dir' is Qt::Horizontal
+     *          or the number of rows if 'dir' is Qt::Vertical.
+     * @param dir Can be Qt::Horizontal or Qt::Vertical.
      *
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.

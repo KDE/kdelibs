@@ -77,13 +77,13 @@ class KHTMLView : public QScrollView
 
 public:
     /**
-     * Construct a @ref KHTMLView.
+     * Constructs a KHTMLView.
      */
     KHTMLView( KHTMLPart *part, QWidget *parent, const char *name=0 );
     virtual ~KHTMLView();
 
     /**
-     * Retrieve a pointer to the @ref KHTMLPart that is
+     * Retrieves a pointer to the KHTMLPart that is
      * rendering the page.
      **/
     KHTMLPart *part() const { return m_part; }

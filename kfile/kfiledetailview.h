@@ -64,7 +64,7 @@ private:
 };
 
 /**
- * A list-view capable of showing @ref KFileViewItems. Used in the filedialog
+ * A list-view capable of showing @ref KFileViewItem'. Used in the filedialog
  * for example. Most of the documentation is in @ref KFileView class.
  *
  * @see KDirOperator

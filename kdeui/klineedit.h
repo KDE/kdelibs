@@ -50,7 +50,7 @@ class KURL;
  * popup-menu item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * To support these new features @ref KLineEdit also emits a few more
+ * To support these new features KLineEdit also emits a few more
  * additional signals.  These are: @ref completion( const QString& ),
  * textRotation( KeyBindingType ), and @ref returnPressed( const QString& ).
  * The completion signal can be connected to a slot that will assist the
@@ -65,7 +65,7 @@ class KURL;
  * the @ref completionObject( bool ) member function for the first time or
  * use @ref setCompletionObject( KCompletion*, bool ) to assign your own
  * completion object.  Additionally, to make this widget more functional,
- * @ref KLineEdit will by default handle the text rotation and completion
+ * KLineEdit will by default handle the text rotation and completion
  * events internally when a completion object is created through either one
  * of the methods mentioned above.  If you do not need this functionality,
  * simply use @ref KCompletionBase::setHandleSignals( bool ) or set the
@@ -307,7 +307,7 @@ signals:
      * Emitted when the text rotation key-bindings are pressed.
      *
      * The argument indicates which key-binding was pressed.
-     * In @ref KLineEdit's case this can be either one of two values:
+     * In KLineEdit's case this can be either one of two values:
      * @ref PrevCompletionMatch or @ref NextCompletionMatch. See
      * @ref KCompletionBase::setKeyBinding for details.
      *
@@ -351,7 +351,7 @@ public slots:
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
     /**
-     * See @ref KCompletionBase::setCompletionText.
+     * See @ref KCompletionBase::setCompletedText.
      */
     virtual void setCompletedText( const QString& );
 

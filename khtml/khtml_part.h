@@ -159,13 +159,13 @@ public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
   /**
-   * Construct a new @ref KHTMLPart.
+   * Constructs a new KHTMLPart.
    *
-   * KHTML basically consists of two objects: The @ref KHTMLPart itself,
+   * KHTML basically consists of two objects: The KHTMLPart itself,
    * holding the document data (DOM document), and the @ref KHTMLView,
-   * derived from @ref QScrollview, in which the document content is
+   * derived from @ref QScrollView, in which the document content is
    * rendered in. You can specify two different parent objects for a
-   * @ref KHTMLPart, one parent for the @ref KHTMLPart document and on parent
+   * KHTMLPart, one parent for the KHTMLPart document and on parent
    * for the @ref KHTMLView. If the second @p parent argument is 0L, then
    * @p parentWidget is used as parent for both objects, the part and
    * the view.
@@ -595,7 +595,7 @@ public:
   KParts::PartManager *partManager();
 
   /**
-   * Save the @ref KHTMLPart's complete state (including child frame
+   * Save the KHTMLPart's complete state (including child frame
    * objects) to the provided @ref QDataStream.
    *
    * This is called from the @ref saveState() method of the
@@ -603,7 +603,7 @@ public:
    */
   virtual void saveState( QDataStream &stream );
   /**
-   * Restore the @ref KHTMLPart's previously saved state (including
+   * Restore the KHTMLPart's previously saved state (including
    * child frame objects) from the provided QDataStream.
    *
    * @see saveState()
@@ -624,7 +624,7 @@ public:
   const KHTMLSettings *settings() const; 
 
   /**
-   * Retrieve a pointer to the parent @ref KHTMLPart if the part is a frame
+   * Retrieve a pointer to the parent KHTMLPart if the part is a frame
    * in an HTML frameset.
    *
    *  Returns 0L otherwise.

@@ -400,7 +400,7 @@ public:
     Node currentNode();
 
     /**
-     * see @ref getCurrentNode
+     * see @ref currentNode
      */
     void setCurrentNode(const Node _currentNode);
 

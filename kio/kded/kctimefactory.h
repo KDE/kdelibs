@@ -23,8 +23,8 @@
 #include <qdict.h>
 
 /**
- * @internal
  * Service group factory for building ksycoca
+ * @internal
  */
 class KCTimeInfo : public KSycocaFactory
 {

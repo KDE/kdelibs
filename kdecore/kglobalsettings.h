@@ -47,12 +47,12 @@ class KGlobalSettings
      * be started. This prevents spurious drags when the user intended
      * to click on something but moved the mouse a bit while doing so.
      *
-     * For this to work you must save the position of the mouse (@p oldPos)
+     * For this to work you must save the position of the mouse (oldPos)
      * in the @ref QWidget::mousePressEvent().
-     * When the position of the mouse (@p newPos)
+     * When the position of the mouse (newPos)
      * in a  @ref QWidget::mouseMoveEvent() exceeds this treshold
      * you may start a drag
-     * which should originate from @ref oldPos.
+     * which should originate from oldPos.
      *
      * Example code:
      * <pre>
@@ -156,7 +156,7 @@ class KGlobalSettings
      *         Lists all possible matches in a popup list-box to choose from.
      **/
 
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan,
+   enum Completion { CompletionNone=1, CompletionAuto, CompletionMan,
                                 CompletionShell, CompletionPopup };
 
     /**

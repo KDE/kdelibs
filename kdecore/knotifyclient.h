@@ -80,6 +80,7 @@ namespace KNotifyClient
      * <pre>
      * KNotifyClient::Instance(myInstance);
      * KNotifyClient::event("MyEvent");
+     * </pre>
      *
      * @short Enables @ref KNotifyClient to use a different @ref KInstance
      */

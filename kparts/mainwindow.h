@@ -54,7 +54,7 @@ class MainWindow : public KMainWindow, virtual public PartBase
    */
   MainWindow( QWidget* parent,  const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
   /**
-   * Compatibility Constructor, same signature as @ref KTMainWindow.
+   * Compatibility Constructor, same signature as @ref KMainWindow.
    */
   MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
   /**

@@ -78,7 +78,7 @@ public:
    * @return the icon associated with this service type. Some
    *         derived classes offer special functions which take for
    *         example an URL and returns a special icon for this
-   *         URL. An example is @ref KMimeType, @ref KFoldeType and
+   *         URL. An example is @ref KMimeType, @ref KFolderType and
    *         others.
    */
   QString icon() const { return m_strIcon; }

@@ -40,7 +40,7 @@ typedef QValueList<QCString> QCStringList;
  *
  * This class provides IPC and RPC for KDE applications.  Usually you
  * will not have to instantiate one yourself because @ref KApplication
- * contains a method to return a pointer to a @ref DCOPClient object which
+ * contains a method to return a pointer to a DCOPClient object which
  * can be used for your whole application.
  *
  * Before being able to send or receive any DCOP messages, you will have
@@ -94,7 +94,7 @@ class DCOPClient : public QObject
    * Naturally, only attached application can use DCOP services.
    *
    * If a @ref QApplication object exists then client registers itself as
-   * @ref QApplication->name() + "-" + <pid>.
+   * @ref QApplication::name() + "-" + <pid>.
    * If no @ref QApplication object exists the client registers itself as
    * "anonymous".
    *
@@ -406,7 +406,7 @@ class DCOPClient : public QObject
    * Receive a DCOPSend or DCOPCall message from the server.
    *
    * @param app The application the message was intended for.  Should be
-   *        equal to our appId that we passed when the @ref DCOPClient was
+   *        equal to our appId that we passed when the DCOPClient was
    *        created.
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
@@ -421,7 +421,7 @@ class DCOPClient : public QObject
    * Receive a @p DCOPFind message from the server.
    *
    * @param app The application the message was intended for.  Should be
-   *        equal to our appId that we passed when the @ref DCOPClient was
+   *        equal to our appId that we passed when the DCOPClient was
    *        created.
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
@@ -469,7 +469,7 @@ class DCOPClient : public QObject
      * installed as default object.
      *
      * A default object receives application-wide messages that have not
-     * been processed by the @ref DCOPClient itself.
+     * been processed by the DCOPClient itself.
      */
   QCString defaultObject() const;
 

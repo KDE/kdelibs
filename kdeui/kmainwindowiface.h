@@ -26,7 +26,7 @@
 class KDCOPActionProxy;
 class KMainWindow;
 /**
-This is the main interface to the @ref KMainwindow.  This will provide a consistant
+This is the main interface to the @ref KMainWindow.  This will provide a consistant
 dcop interface to all KDE applications that use it.
 @short DCOP interface to @ref KMainWindow.
 @author Ian Reinhart Geiser <geiseri@yahoo.com>

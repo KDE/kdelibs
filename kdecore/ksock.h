@@ -54,8 +54,8 @@ class KServerSocketPrivate;
  * The socket gives you three signals: When ready for reading, 
  * ready for writing or if the connection is broken.  
  * Using @ref socket() you get a file descriptor
- * which you can use with the usual UNIX function like @ref write(..) or
- *  @ref read(...). 
+ * which you can use with the usual UNIX function like @ref write() or
+ *  @ref read(). 
  * If you have already such a socket identifier you can construct a KSocket
  * on this identifier. 
  *  

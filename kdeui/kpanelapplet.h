@@ -68,7 +68,7 @@ class KConfig;
  * LDFLAGS: -module -no-undefined
  *
  * To implement a panel applet it is not enough to write a class
- * inheriting from @ref KPanelApplet but you also have to provide a
+ * inheriting from KPanelApplet but you also have to provide a
  * factory function in your DSO.  A sample factory function could look
  * like this:
  *
@@ -104,7 +104,7 @@ public:
     enum Direction { Up = 0, Down, Left, Right };
 
     /**
-     * Construct a @ref KPanelApplet just like any other widget.
+     * Constructs a KPanelApplet just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
      * @param Type The applet @ref type().
@@ -239,7 +239,7 @@ protected:
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your applet supports the About action.
-     * See @ref Action and @ref KPanelApplet().
+     * See @ref Action and KPanelApplet().
      **/
     virtual void about() {}
 
@@ -248,7 +248,7 @@ protected:
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your applet supports the Help action.
-     * See @ref Action and @ref KPanelApplet().
+     * See @ref Action and KPanelApplet().
      **/
     virtual void help() {}
 
@@ -257,7 +257,7 @@ protected:
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your applet supports the preferences action.
-     * See @ref Action and @ref KPanelApplet().
+     * See @ref Action and KPanelApplet().
      **/
     virtual void preferences() {}
  
@@ -267,7 +267,7 @@ protected:
      *
      * Note that this is called only when your applet supports the ReportBug
      * action.
-     * See @ref Action and @ref KPanelApplet()
+     * See @ref Action and KPanelApplet()
      **/
    virtual void reportBug() {}
 

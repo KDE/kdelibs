@@ -94,7 +94,7 @@ namespace KIO {
          * with @p host for the first time.
          *
          * Your application can use this signal to make some last minute
-         * configuration changes with @ref setConfiguration based on the
+         * configuration changes with @ref setConfigData based on the
          * host.
          */
         void configNeeded(const QString &protocol, const QString &host);

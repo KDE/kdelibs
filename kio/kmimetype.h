@@ -81,7 +81,7 @@ public:
   /**
    * Return the filename of the icon associated with the mimetype.
    *
-   * The arguments are unused, but provided so that @ref KMimeType - derived classes
+   * The arguments are unused, but provided so that KMimeType-derived classes
    * can use them (e.g. @ref KFolderType uses the URL to return one out of 2 icons)
    *
    * @return The path to the icon associated with this MIME type.
@@ -157,7 +157,7 @@ public:
   QString comment() const { return m_strComment; }
 
   /**
-   * The arguments are unused, but provided so that @ref KMimeType derived classes
+   * The arguments are unused, but provided so that KMimeType derived classes
    * can use them.
    *
    * @return The descriptive comment associated with the MIME type, if any.
@@ -194,7 +194,7 @@ public:
    *
    * 0L is @em never returned.
    *
-   * @em Very @em important: Don't store the result in a @ref KMimeType * !
+   * @em Very @em important: Don't store the result in a KMimeType* !
    *
    * @see KServiceType::serviceType
    */
@@ -224,7 +224,7 @@ public:
    *        find out the mimetype. The result may be suboptimal, but
    *        it is @em fast.
    * @return A pointer to the matching mimetype. 0L is @em never returned.
-   * @em Very @em Important: Don't store the result in a @ref KMimeType * !
+   * @em Very @em Important: Don't store the result in a KMimeType* !
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the KDE project
  *
  * (C) 2001 Peter Kelly (pmk@post.com)

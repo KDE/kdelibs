@@ -60,7 +60,7 @@ class QListViewItem;
  * The Tabbed face is a common tabbed widget. The procedure for creating a
  * page is similar for creating a TreeList. This has the advantage that if
  * your widget contain too many pages it is trivial to convert it into a
- * TreeList. Just change the face in the @ref KJanusWidget constructor to
+ * TreeList. Just change the face in the KJanusWidget constructor to
  * KJanusWidget::TreeList and you have a tree list layout instead.
  *
  * The Plain face provides an empty widget (QFrame) where you can place your

@@ -36,7 +36,7 @@ namespace KIO {
 
   /**
    * Net Transparency, formerly provided by kfmlib, but now
-   * done with @ref KIO::Jobs.
+   * done with @ref KIO::Job.
    *
    * This class isn't meant to be used as a class but only as a simple
    *  namespace for static functions, though an instance of the class
@@ -96,7 +96,7 @@ public:
 
     /**
      * Remove the specified file if and only if it was created
-     * by @ref KIO::NetAccess as a temporary file for a former download.
+     * by KIO::NetAccess as a temporary file for a former download.
      *
      * Note: This means that if you created your temporary with @ref KTempFile,
      * use @ref KTempFile::unlink() or @ref KTempFile::setAutoDelete() to have

@@ -66,7 +66,7 @@ public:
      *
      * @returns the newly created part.
      *
-     * createPart() automatically emits a signal @ref objectCreated to tell
+     * createPart() automatically emits a signal @ref KLibFactory::objectCreated to tell
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.

@@ -41,6 +41,7 @@
  * QRect rect = splitter.coordinates( 4 );
  * if ( !rect.isEmpty() )
  *     bitBlt( &item, QPoint(0,0), &somePixmap, rect, CopyROP );
+ * </pre>
  *
  * @short A class to split a pixmap into several items.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -66,7 +67,7 @@ public:
 
     /**
      * Set the size of the items you want to get out of the given pixmap.
-     * The QRect of @ref coordinate will have the width and height of exactly
+     * The QRect of @ref coordinates will have the width and height of exactly
      * this @p size.
      */
     void setItemSize( const QSize& size );

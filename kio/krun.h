@@ -140,14 +140,14 @@ public:
    * of the application. If the program to be called doesn't exist,
    * an error box will be displayed.
    *
-   * @ref _cmd must be a shell command. You must not append "&"
+   * @p _cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
    *
    * @return PID of running command, 0 if it could not be started, 0 - (PID
    * of running command) if command was unsafe for map notification.
    *
    * Use only when you know the full command line. Otherwise use the other
-   * static methods, or @ref KRun's constructor.
+   * static methods, or KRun's constructor.
    */
   static pid_t runCommand( QString cmd );
 
@@ -225,7 +225,7 @@ protected:
   /**
    * Runs a shell command.
    *
-   * @ref _cmd must be a quoted shell command. You must not append "&"
+   * @p _cmd must be a quoted shell command. You must not append "&"
    * to it, since the function will do that for you. An example is
    * "<tt>greet 'Hello Torben'</tt>".
    *
@@ -265,7 +265,7 @@ protected:
  * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
  * which displays the real open-with dialog box.
  *
- * If you use KRun you @p need to create an instance of KFileOpenWithHandler
+ * If you use KRun you @em need to create an instance of KFileOpenWithHandler
  * (except if you can make sure you only use it for executables or
  *  Type=Application desktop files)
  *

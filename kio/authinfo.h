@@ -28,7 +28,7 @@
 
 namespace KIO {
 
-/*
+/**
  * This class is intended to make it easier to prompt for, cache
  * and retrieve authorization information.
  *
@@ -86,18 +86,18 @@ public:
     * and retrieve it.  However, it is not needed when prompting
     * the user for authorization info.
     *
-    * This setting is @p required except when prompting the
+    * This setting is @em required except when prompting the
     * user for password.
     */
    KURL url;
 
    /**
-    * This setting is @p required for caching.
+    * This setting is @em required for caching.
     */
    QString username;
 
    /**
-    * This setting is @p required for caching.
+    * This setting is @em required for caching.
     */
    QString password;
 
@@ -108,7 +108,7 @@ public:
     * <u>NOTE:</u>If this field is not set, the authentication
     * dialog simply displays the preset default prompt.
     *
-    * This setting is @p optional and empty by default.
+    * This setting is @em optional and empty by default.
     */
    QString prompt;
 
@@ -119,7 +119,7 @@ public:
     * <u>NOTE:</u>If this field is not set, the authentication
     * dialog simply displays the preset default caption.
     *
-    * This setting is @p optional and empty by default.
+    * This setting is @em optional and empty by default.
     */
    QString caption;
 
@@ -143,7 +143,7 @@ public:
     * in the dialog rather than to include it within the actual
     * comment.
     *
-    * This setting is @p optional and empty by default.
+    * This setting is @em optional and empty by default.
     */
    QString comment;
 
@@ -151,7 +151,7 @@ public:
     * Descriptive label to be displayed infront of the
     * comment when prompting the user for password.
     *
-    * This setting is @p optional and only applicable when
+    * This setting is @em optional and only applicable when
     * the @ref comment field is also set.
     */
    QString commentLabel;
@@ -170,7 +170,7 @@ public:
     * info for multiple users to the same server, refer to @ref
     * multipleUserCaching below.
     *
-    * This setting is @p optional and not set by default.
+    * This setting is @em optional and not set by default.
     */
    QString realmValue;
 
@@ -178,7 +178,7 @@ public:
     * Field to store any extra authentication information for
     * protocols that need it (ex: http).
     *
-    * This setting is @p optional and mostly applicable for HTTP
+    * This setting is @em optional and mostly applicable for HTTP
     * protocol.  However, any protocol can make use of it to
     * store extra info.
     */
@@ -193,14 +193,14 @@ public:
     * and the request's path set to "/foo/bar/acme", then it is a match
     * whereas it would not if the request's path was set to "/foo".
     *
-    * This setting is @p optional and false by default.
+    * This setting is @em optional and false by default.
     */
    bool verifyPath;
 
    /**
     * Flag which if set forces the username field to be read-only.
     *
-    * This setting is @p optional and false by default.
+    * This setting is @em optional and false by default.
     */
    bool readOnly;
 

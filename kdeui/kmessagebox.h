@@ -56,7 +56,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -92,7 +92,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -129,7 +129,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
@@ -161,7 +161,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * The second button always has the text "Cancel".
   *
@@ -200,7 +200,7 @@ public:
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
   *                   
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * The second button always has the text "Cancel".
   *
@@ -240,7 +240,7 @@ public:
   *                last answer (either Yes or No). 
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -271,7 +271,7 @@ public:
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -299,7 +299,7 @@ public:
   * @param details Detailed message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -330,7 +330,7 @@ public:
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -357,7 +357,7 @@ public:
   * @param details Detailed message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -394,7 +394,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param notify  Emit a KNotify event.
+  * @param notify  Emit a @ref KNotifyClient event.
   *
   *
   * Your program wants to tell the user something.
@@ -427,7 +427,7 @@ public:
    * @param text    Message string. May contain newlines.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About <appname>").
-   * @param notify  Emit a KNotify event.
+   * @param notify  Emit a @ref KNotifyClient event.
    *
    *
    * Your program wants to show some general information about the application

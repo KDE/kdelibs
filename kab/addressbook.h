@@ -289,6 +289,7 @@ public:
    *  <DD> "town" The town the person lives in in this address. </DD>
    *  <DD> "country" The country for federal states. </DD>
    *  <DD> "state" The state for federal states. </DD>
+   *  </DL>
    *
    *  \par The local configuration section
    *  For each kab II database file there are some settings that apply

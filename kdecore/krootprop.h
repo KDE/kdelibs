@@ -35,7 +35,7 @@ class KRootPropPrivate;
 *
 * A companion to the @ref KConfig class.
 *
-* The @ref KRootProp class is used for reading and writing configuration entries
+* The KRootProp class is used for reading and writing configuration entries
 * to properties on the root window.
 *
 * All configuration entries are of the form "key=value".
@@ -57,7 +57,7 @@ protected:
 
 public:
   /**
-   * Construct a @ref KRootProp object for the property @p rProp.
+   * Construct a KRootProp object for the property @p rProp.
    *
    **/
    KRootProp( const QString& rProp = QString::null );

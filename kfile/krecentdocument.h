@@ -41,7 +41,7 @@
  * document if you want it to show up in the menu.
  *
  * You don't have to worry about this if you are using any @ref
- * KFileBaseDialog derived class to open and save documents, as it
+ * KFileDialog derived class to open and save documents, as it
  * already calls this class.  User defined limits on the maximum
  * number of documents to save, etc... are all automatically handled.
  *

@@ -38,7 +38,7 @@ class PartManagerPrivate;
  * (even nested ones) and handles activation/deactivation.
  *
  * Applications that want to embed parts without merging GUIs
- * only use a @ref KParts::PartManager. Those who want to merge GUIs use a
+ * only use a KParts::PartManager. Those who want to merge GUIs use a
  * @ref KParts::MainWindow for example, in addition to a part manager.
  *
  * Parts know about the part manager to add nested parts to it.

@@ -347,7 +347,7 @@ public:
    *
    * Calling this method stretches or shrinks your ruler.
    *
-   * For pixel display (@ref metric_style) the value is 10.0 marks
+   * For pixel display (@ref MetricStyle) the value is 10.0 marks
    * per pixel ;-)
    * For English (inches) it is 9.0, and for centimetres ~2.835 -> 3.0 .
    * If you want to magnify your part of display, you have to

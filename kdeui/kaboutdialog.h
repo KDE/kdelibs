@@ -20,7 +20,7 @@
  *
  */
 
-/**
+/*
  * This file declares a class for creating "About ..." dialogs
  * in a general way. It provides geometry management and some
  * options to connect for, like emailing the author or maintainer.
@@ -224,7 +224,7 @@ class KAboutDialogPrivate;
  * As a @ref KDialogBase it uses your application wide settings
  * for @ref KDialogBase
  * objects (base frame tiles, main frame tiles etc).
- * To use it, simply create a @ref KAboutDialog object, set all (or some) of its
+ * To use it, simply create a KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
  * until you need some cool features that are unsupported and you have
  * contacted me to add them.

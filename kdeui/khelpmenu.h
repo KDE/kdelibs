@@ -60,13 +60,13 @@ class KHelpMenuPrivate;
  * </pre>
  *
  * IMPORTANT:
- * The first time you use mHelpMenu->menu(), a @ref KPopupMenu object is
+ * The first time you use @ref KHelpMenu::menu(), a @ref KPopupMenu object is
  * allocated. Only one object is created by the class so if you call
- * @ref mHelpMenu->menu() twice or more, the same pointer is returned. The class
+ * @ref KHelpMenu::menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
  * pointer yourself.
  *
- * The @ref KHelpMenu object will be deleted when its parent is destroyed but you
+ * The KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
  * <pre>

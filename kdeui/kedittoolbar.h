@@ -76,7 +76,7 @@ class KEditToolbarWidgetPrivate;
  * }
  * </pre>
  *
- * Note that the procedure is a bit different for @ref KParts applications.
+ * Note that the procedure is a bit different for KParts applications.
  * In this case, you need only pass along a pointer to your
  * application's @ref KXMLGUIFactory object.  The editor will take care of
  * finding all of the action collections and xml files.  The editor
@@ -138,7 +138,7 @@ public:
 			   QWidget* parent = 0, const char* name = 0);
 
   /**
-   * Constructor for @ref KParts based apps.
+   * Constructor for KParts based apps.
    *
    * The main parameter, @ref factory(), is a pointer to the
    * XML GUI factory object for your application.  It contains a list

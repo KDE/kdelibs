@@ -67,7 +67,7 @@ class KPrinterPrivate;
  * This class is the main interface to access the KDE print framework. It allows KDE
  * applications to easily access the print system, through an interface that is compatible
  * with @ref QPrinter. So that the porting of an existing application should be as easy as
- * replacing any occurence of @ref QPrinter by KPrinter. However applications that explicitely
+ * replacing any occurence of @ref QPrinter by KPrinter. However applications that explicitly
  * used the @ref QPrintDialog class must be changed to the standard KPrinter way of accessing
  * the print dialog.
  *

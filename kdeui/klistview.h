@@ -569,7 +569,7 @@ protected:
   virtual bool event( QEvent * ); 
 
   /**
-   * Emit signal @ref execute.
+   * Emit signal @ref executed.
    * @internal
    */
   void emitExecute( QListViewItem *item, const QPoint &pos, int c );

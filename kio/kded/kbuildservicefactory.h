@@ -27,8 +27,8 @@
 #include <kbuildservicegroupfactory.h>
 
 /**
- * @internal
  * Service factory for building ksycoca
+ * @internal
  */
 class KBuildServiceFactory : public KServiceFactory
 {

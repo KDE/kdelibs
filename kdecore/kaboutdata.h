@@ -32,7 +32,7 @@ class KAboutDataPrivate;
  * This structure is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
  * link to a homepage. This class is intended for use in the
- * @ref KAboutProgram class, but it can be used elsewhere as well.
+ * @ref KAboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
 */
 class KAboutPerson
@@ -96,7 +96,7 @@ private:
 /**
  * This structure is used to store information about a translator.
  * It can store the translator's name and an email address.
- * This class is intended for use in the @ref KAboutProgram class, 
+ * This class is intended for use in the @ref KAboutData class, 
  * but it can be used elsewhere as well.
  * Normally you should at least define the translator's name.
  * 
@@ -142,7 +142,7 @@ private:
  *
  * Currently, the values set here are shown by the "About" box
  * (see @ref KAboutDialog), used by the bug report dialog (see @ref KBugReport),
- * and by the help shown on command line (see @ref KCmdLineArguments).
+ * and by the help shown on command line (see @ref KCmdLineArgs).
  *
  * @short Holds information needed by the "About" box and other
  * classes.
@@ -360,7 +360,7 @@ class KAboutData
     QString otherText() const;
 
     /**
-     * Returns the license. If @ref setLicenseType has been
+     * Returns the license. If the licenseType argument of the constructor has been
      * used, any text defined by @ref setLicenseText is ignored,
      * and the standard text for the chosen license will be returned.
      *

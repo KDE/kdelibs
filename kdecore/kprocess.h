@@ -219,13 +219,14 @@ public:
   */
   void clearArguments();
 
-  /** Start the process.
+  /**
+   *  Starts the process.
    *  For a detailed description of the
    *  various run modes and communication semantics, have a look at the
-   *  general description of the @ref KProcess class.
+   *  general description of the KProcess class.
    *
-   *  The following problems could cause @ref KProcess:start() to
-   *    return @p false:
+   *  The following problems could cause this function to
+   *    return false:
    *
    *  @li The process is already running.
    *  @li The command line argument list is empty.
@@ -237,7 +238,7 @@ public:
    *  no communication takes place and the respective communication
    *  signals will never get emitted.
    *
-   *  @return @p true on success, @p false on error
+   *  @return true on success, false on error
    *  (see above for error conditions)
    **/
   virtual bool start(RunMode  runmode = NotifyOnExit,
@@ -558,7 +559,7 @@ protected:
      "errnot" and connect their Qt slots to the respective KProcess member functions.
 
      For a more detailed explanation, it is best to have a look at the default
-     implementation of "setupCommunication" in @ref kprocess.cpp.
+     implementation of "setupCommunication" in kprocess.cpp.
   */
   virtual int commSetupDoneP();
 

@@ -36,8 +36,8 @@ struct KURLPrivate;
  *   protocol:/user:password@hostname:port/path/to/file.ext#reference
  * </pre>
  *
- *  @ref KURL has some restrictions regarding the path
- * encoding. @ref KURL works internally with the decoded path and
+ * KURL has some restrictions regarding the path
+ * encoding. KURL works internally with the decoded path and
  * and encoded query. For example,
  * <pre>
  * http://localhost/cgi-bin/test%20me.pl?cmd=Hello%20you
@@ -423,7 +423,7 @@ public:
   QString prettyURL( int _trailing = 0) const;
 
   /**
-   * Test to see if the @ref KURL is empty.
+   * Test to see if the KURL is empty.
    **/
   bool isEmpty() const;
 

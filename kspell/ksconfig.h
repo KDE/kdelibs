@@ -59,7 +59,7 @@ enum KSpellClients {
  *
  * It contains all of the options settings.The options are set to default
  * values by the constructor and can be reset either by using the 
- * public interface or by using @ref KSpellConfig as a widget in a dialog 
+ * public interface or by using KSpellConfig as a widget in a dialog 
  * (or, preferably a tabbed dialog using @ref KDialogBase) and letting 
  * the user change the settings. This way an application that uses 
  * @ref KSpell can either rely on the default settings (in the simplest 
@@ -81,7 +81,7 @@ class KSpellConfig : public QWidget
 
   public:
     /**
-     * Create a @ref KSpellConfig with default or custom settings. 
+     * Constructs a KSpellConfig with default or custom settings. 
      *
      * @param parent Parent of the widget.
      * @param name Widget name.
@@ -106,10 +106,10 @@ class KSpellConfig : public QWidget
 
     /**
      *
-     * The @p ignorelist contains words you'd like @ref KSpell
-     * to ignore when it is spellchecking.  When you get a @ref KSpellConfig
+     * The @p _ignorelist contains words you'd like @ref KSpell
+     * to ignore when it is spellchecking.  When you get a KSpellConfig
      * object back from @ref KSpell (using @ref KSpell::kcConfig()),
-     * the @ref ignorelist contains whatever was put in by you plus 
+     * the @p _ignorelist contains whatever was put in by you plus 
      * any words the user has chosen to ignore via the dialog box.  
      * It may be useful to save this list with the document being 
      * edited to facilitate quicker future spellchecking.

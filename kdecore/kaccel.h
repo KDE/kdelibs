@@ -72,7 +72,7 @@ typedef QMap<int, QString> KKeyMapOrder;
  * key bindings through application configuration files or through the
  * @ref KKeyChooser GUI.
  *
- * A @ref KAccel contains a list of accelerator items. Each accelerator item
+ * A KAccel contains a list of accelerator items. Each accelerator item
  * consists of an action name and a keyboard code combined with modifiers
  * (Shift, Ctrl and Alt.)
  *
@@ -142,7 +142,7 @@ typedef QMap<int, QString> KKeyMapOrder;
  * </pre>
  *
  * Please keep the order right:  First insert all functions in the
- * acceleratior, then call a -> @ref readSettings() and @em then build your
+ * accelerator, then call @ref readSettings() and @em then build your
  * menu structure.
  *
  * @short Configurable key binding support.
@@ -428,7 +428,9 @@ class KAccel : public QAccel
 	 */
 	void readSettings(KConfig* config = 0);
 
-        /// @internal
+        /**
+         * @internal
+         */
         static void readKeyMap( KKeyEntryMap &aKeyMap, const QString &group,
                                 KConfigBase *config = 0 );
 

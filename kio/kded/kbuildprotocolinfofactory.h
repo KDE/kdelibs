@@ -22,9 +22,10 @@
 #include <kprotocolinfofactory.h>
 #include <assert.h>
 #include <qstringlist.h>
+
 /**
- * @internal
  * Protocol Info factory for building ksycoca
+ * @internal
  */
 class KBuildProtocolInfoFactory : public KProtocolInfoFactory
 {

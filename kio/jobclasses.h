@@ -111,7 +111,7 @@ namespace KIO {
          * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
          *   i18n( "Could not read\n%1" ).arg( errortext );
          * Use this to display the error yourself, but for a dialog box
-         * use @ref KIO::ErrorDialog.
+         * use @ref Job::showErrorDialog.
          */
         QString errorString() const;
 

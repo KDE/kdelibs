@@ -30,7 +30,7 @@ class KStylePrivate;
 /**
  * Extends the @ref QStyle class with virtual methods to draw KDE widgets.
  *
- * To create a new @ref KStyle, reimplement the virtual functions which draw
+ * To create a new KStyle, reimplement the virtual functions which draw
  *  the GUI elements.
  * @author Daniel M. Duley <mosfet@kde.org>
  */

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 2000 Lars Knoll (knoll@kde.org)

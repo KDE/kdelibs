@@ -39,7 +39,7 @@ class KListBox;
 /**
  * A widget for interactive font selection.
  *
- * While @ref KFontChooser as an ordinary widget can be embedded in
+ * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
  * @ref KFontDialog.

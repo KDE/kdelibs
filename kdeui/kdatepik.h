@@ -61,7 +61,7 @@ public:
    **/
   virtual ~KDatePicker();
 
-  /** The size hint for @ref KDatePickers. The size hint recommends the
+  /** The size hint for date pickers. The size hint recommends the
    *   minimum size of the widget so that all elements may be placed
    *  without clipping. This sometimes looks ugly, so when using the
    *  size hint, try adding 28 to each of the reported numbers of

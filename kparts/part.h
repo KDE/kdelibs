@@ -107,11 +107,11 @@ private:
  * (menubars, toolbars... ).
  *
  * @sect About the widget
- * Note that @ref KParts::Part does not inherit @ref QWidget.
+ * Note that KParts::Part does not inherit @ref QWidget.
  * This is due to the fact that the "visual representation"
  * will probably not be a mere @ref QWidget, but an elaborate one.
- * That's why when implementing your @ref KParts::Part (or derived)
- * you should call @ref KParts::Part::setWidget() in your constructor.
+ * That's why when implementing your KParts::Part (or derived)
+ * you should call KParts::Part::setWidget() in your constructor.
  *
  * @sect About the GUI elements
  * Those elements trigger actions, defined by the part (@ref action()).

@@ -251,7 +251,7 @@ public:
    *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * @em Very @em important: Don't store the result in a @ref KService * !
+   * @em Very @em important: Don't store the result in a KService* !
    */
   static Ptr serviceByName( const QString& _name );
 
@@ -263,7 +263,7 @@ public:
    *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * @em Very @em important: Don't store the result in a @ref KService * !
+   * @em Very @em important: Don't store the result in a KService* !
    */
   static Ptr serviceByDesktopPath( const QString& _name );
 
@@ -278,7 +278,7 @@ public:
    *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
-   * @em Very @em important: Don't store the result in a @ref KService * !
+   * @em Very @em important: Don't store the result in a KService* !
    */
   static Ptr serviceByDesktopName( const QString& _name );
 

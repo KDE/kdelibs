@@ -389,11 +389,13 @@ class KColorDialog : public KDialogBase
 
   public:
     /**
-     * Construct a @ref KColorDialog.
+     * Constructs a color selection dialog.
      */
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 		  bool modal = FALSE );
-
+    /**
+     * Destroys the color selection dialog.
+     */
     ~KColorDialog();
 
     /**

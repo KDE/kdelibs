@@ -207,7 +207,7 @@ private:
   KBufferedIOPrivate *d;
 
 protected:
-  /*
+  /**
    * For an explanation on how these buffers work, please refer to the comments
    * at the top of kbufferedio.cpp
    */

@@ -49,8 +49,8 @@
 /**
  *
  * The Document Object Model (DOM) is divided into two parts, the
- * @ref COREDOM core
- * DOM, specifying some core functionality, and the @ref HTMLDOM HTML DOM,
+ * COREDOM core
+ * DOM, specifying some core functionality, and the HTMLDOM HTML DOM,
  * which deals with the extensions needed for HTML.
  *
  *

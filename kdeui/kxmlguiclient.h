@@ -31,6 +31,10 @@ class KXMLGUIClientPrivate;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
 
+/**
+ * A KXMLGUIClient can be used with @ref KXMLGUIFactory to create a GUI from actions
+ * and an XML document, and can be dynamically merged with other KXMLGUIClients.
+ */
 class KXMLGUIClient
 {
 public:

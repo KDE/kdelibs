@@ -58,21 +58,21 @@ class DCOPObject
 {
 public:
   /**
-   * Creates a @ref DCOPObject and calculates the object id
+   * Creates a DCOPObject and calculates the object id
    * using its physical memory address.
    */
   DCOPObject();
-    /**
-   * Creates a @ref DCOPObject and calculates the object id
+  /**
+   * Creates a DCOPObject and calculates the object id
    * using @ref QObject::name().
    */
   DCOPObject(QObject *obj);
   /**
-   * Creates a @ref DCOPObject with object Id @p objId.
+   * Creates a DCOPObject with object Id @p objId.
    */
   DCOPObject(const QCString &objId);
   /**
-   * Destroys the @ref DCOPObject and removes it from the map
+   * Destroys the DCOPObject and removes it from the map
    * of known objects.
    */
   virtual ~DCOPObject();
@@ -205,7 +205,7 @@ public:
   static bool hasObject(const QCString &objId);
 
   /**
-   * @return the @ref DCOPObject for the id @p objId.
+   * @return the  DCOPObject for the id @p objId.
    *
    * This function does not query the @ref DCOPObjectProxy.
    */

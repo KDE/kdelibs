@@ -47,7 +47,7 @@ class KURL;
  * item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * To support these new features @ref KComboBox also emits a few
+ * To support these new features KComboBox also emits a few
  * more additional signals as well.  The main ones are the
  * @ref completion( const QString& ) and @ref textRotation( KeyBindgingType )
  * signals.  The completion signal is intended to be connected to a slot
@@ -61,7 +61,7 @@ class KURL;
  * the @ref completionObject( bool ) member function for the first time
  * or use @ref setCompletionObject( KCompletion*, bool ) to assign your
  * own completion object.  Additionally, to make this widget more functional,
- * @ref KComboBox will by default handle the text rotation and completion
+ * KComboBox will by default handle the text rotation and completion
  * events internally whenever a completion object is created through either
  * one of the methods mentioned above.  If you do not need this functionality,
  * simply use @ref KCompletionBase::setHandleSignals( bool ) or alternatively
@@ -287,12 +287,12 @@ public:
     bool contains( const QString& text ) const;
 
     /**
-     * By default, @ref KComboBox recognizes Key_Return and Key_Enter
+     * By default, KComboBox recognizes Key_Return and Key_Enter
      * and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p trap equal to @p true to make @ref KComboBox
+     * Call this method with @p trap equal to true to make KComboBox
      * stop these
      * events. The signals will still be emitted of course.
      *
@@ -321,7 +321,7 @@ public:
      * @returns the completion-box, that is used in completion mode
      * @ref KGlobalSettings::CompletionPopup.
      * This method will create a completion-box by calling
-     * @ref makeCompletionBox, if none is there, yet.
+     * @ref KLineEdit::completionBox, if none is there, yet.
      *
      * @param create Set this to false if you don't want the box to be created
      *               i.e. to test if it is available.

@@ -30,7 +30,7 @@ class KRootPixmapData;
  * that part of the desktop background that it is currently obscuring. This
  * gives a transparency effect.
  *
- * To create a transparent widget, construct a @ref KRootPixmap and pass it a 
+ * To create a transparent widget, construct a KRootPixmap and pass it a 
  * pointer to your widget. That's it! Moving, resizing and background changes 
  * are handled automatically.
  *

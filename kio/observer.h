@@ -86,7 +86,7 @@ public:
   bool openPassDlg( KIO::AuthInfo& info );
 
   /**
-   * Popup a message box. See @ref SlaveBase.
+   * Popup a message box. See @ref KIO::SlaveBase.
    */
   int messageBox( int progressId, int type, const QString &text, const QString &caption,
                   const QString &buttonYes, const QString &buttonNo );

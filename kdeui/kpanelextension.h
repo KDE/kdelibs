@@ -68,7 +68,7 @@ class KPanelExtensionPrivate;
  * LDFLAGS: -module -no-undefined
  *
  * To implement a panel extension it is not enough to write a class
- * inheriting from @ref KPanelExtension but you also have to provide a
+ * inheriting from KPanelExtension but you also have to provide a
  * factory function in your DSO.  A sample factory function could look
  * like this:
  *
@@ -104,7 +104,7 @@ public:
     enum Position { Left = 0, Right, Top, Bottom };
 
     /**
-     * Construct a @ref KPanelExtension just like any other widget.
+     * Constructs a KPanelExtension just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
      * @param Type The extension @ref type().
@@ -196,7 +196,7 @@ protected:
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your extension supports the About action.
-     * See @ref Action and @ref KPanelExtension().
+     * See @ref Action.
      **/
     virtual void about() {}
 
@@ -205,7 +205,7 @@ protected:
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your extension supports the Help action.
-     * See @ref Action and @ref KPanelExtension().
+     * See @ref Action.
      **/
     virtual void help() {}
 
@@ -214,7 +214,7 @@ protected:
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your extension supports the preferences action.
-     * See @ref Action and @ref KPanelExtension().
+     * See @ref Action.
      **/
     virtual void preferences() {}
 	
@@ -224,7 +224,7 @@ protected:
      *
      * Note that this is called only when your applet supports the ReportBug
      * action.
-     * See @ref Action and @ref KPanelApplet()
+     * See @ref Action.
      **/
     virtual void reportBug() {}
 

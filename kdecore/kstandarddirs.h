@@ -51,7 +51,7 @@ class KStandardDirsPrivate;
 * or locate("data", "kgame/background.jpg") to return
 * /opt/kde/share/apps/kgame/background.jpg
 *
-* The main idea behind @ref KStandardDirs is that there are several
+* The main idea behind KStandardDirs is that there are several
 * toplevel prefixes below which the files lie. One of these prefixes is
 * the one where the user installed kdelibs, one is where the
 * application was installed, and one is $HOME/.kde, but there
@@ -62,7 +62,7 @@ class KStandardDirsPrivate;
 * So the search algorithm basicly appends to each prefix each registered
 * suffix and tries to locate the file there.
 * To make the thing even more complex, it's also possible to register
-* absolute paths that @ref KStandardDirs looks up after not finding anything
+* absolute paths that KStandardDirs looks up after not finding anything
 * in the former steps. They can be useful if the user wants to provide
 * specific directories that aren't in his $HOME/.kde directory for,
 * for example, icons.
@@ -89,7 +89,7 @@ class KStandardDirsPrivate;
 * @li tmp - Temporary files (specfic for both current host and current user)
 * @li socket - UNIX Sockets (specific for both current host and current user)
 *
-* A type that is added by the class KApplication if you use it, is
+* A type that is added by the class @ref KApplication if you use it, is
 * appdata. This one makes the use of the type data a bit easier as it
 * appends the name of the application.
 * So while you had to @ref locate("data", "appname/filename") so you can
@@ -117,12 +117,12 @@ class KStandardDirs
 {
 public:
         /**
-	 * @ref KStandardDirs constructor. It just initializes the caches.
+	 * KStandardDirs constructor. It just initializes the caches.
 	 **/
 	KStandardDirs( );
 
 	/**
-	 * @ref KStandardDirs destructor.
+	 * KStandardDirs destructor.
 	 */
 	virtual ~KStandardDirs();
 
@@ -262,7 +262,7 @@ public:
 	 *
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a @ref QRexExp
+	 *        may consist of an optional directory and a @ref QRegExp
 	 *        wildcard expression. E.g. "images\*.jpg"
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
@@ -286,7 +286,7 @@ public:
 	 *
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a @ref QRexExp
+	 *        may consist of an optional directory and a @ref QRegExp
 	 *        wildcard expression. E.g. "images\*.jpg"
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.

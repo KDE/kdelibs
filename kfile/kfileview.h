@@ -57,8 +57,6 @@ signals:
 };
 
 /**
-  * A base class for views of the KDE file selector
-  *
   * This class defines an interface to all file views. Its intent is
   * to allow to switch the view of the files in the selector very easily.
   * It defines some pure virtual functions, that must be implemented to

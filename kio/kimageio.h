@@ -64,12 +64,12 @@ public:
   /**
    * Possible image file access modes.
    *
-   * Used in various @ref KImageIO static function.
+   * Used in various KImageIO static function.
    **/
   enum Mode { Reading, Writing };
 
   /**
-   *  Registers all @ref KImageIO supported formats.
+   *  Registers all KImageIO supported formats.
    */
   static void registerFormats();
 
@@ -84,7 +84,7 @@ public:
   static bool canRead(const QString& type);
 
   /**
-   *  Retrieve a list of all @ref KImageIO supported formats. 
+   * Retrieves a list of all KImageIO supported formats. 
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    */
@@ -92,7 +92,7 @@ public:
 
 
   /**
-   * Retrieve a list of patterns of all @ref KImageIO supported formats. 
+   * Retrieve a list of patterns of all KImageIO supported formats. 
    *
    * These patterns can be passed to @ref KFileDialog::getOpenFileName()
    * or @ref KFileDialog::getSaveFileName(), for example.
@@ -113,7 +113,7 @@ public:
   static QString type(const QString& filename);
 
   /**
-   *  Retrieve a list of MIME types for all @ref KImageIO supported formats. 
+   *  Retrieve a list of MIME types for all KImageIO supported formats. 
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    */

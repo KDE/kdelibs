@@ -31,7 +31,7 @@ namespace KParts
 {
 
 /**
- * A plugin is the way to add actions to an existing @ref KParts application,
+ * A plugin is the way to add actions to an existing KParts application,
  * or to a @ref Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts,
@@ -67,7 +67,7 @@ public:
 
     /**
      * Load the plugin libraries from the directories appropriate
-     * to @p instance and make the @ref Plugin objects children of @p parent .
+     * to @p instance and make the Plugin objects children of @p parent .
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
@@ -86,7 +86,7 @@ public:
     /**
      * Returns a list of plugin objects loaded for @p parent. This
      * functions basically calls the @ref queryList method of @ref
-     * QObject to retrieve the list of child objects inheritting @ref
+     * QObject to retrieve the list of child objects inheriting 
      * KParts::Plugin .
      **/
     static QPtrList<Plugin> pluginObjects( QObject *parent );

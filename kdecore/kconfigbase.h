@@ -46,14 +46,14 @@ class KConfigBasePrivate;
  * abstract base class, meaning that you cannot directly instantiate
  * objects of this class. Either use @ref KConfig (for usual KDE
  * configuration) or @ref KSimpleConfig (for special needs as in ksamba), or
- * even @ref KSharedConfig (stores values in shared memory).
+ * even KSharedConfig (stores values in shared memory).
  *
  * All configuration entries are key, value pairs.  Each entry also
  * belongs to a specific group of related entries.  All configuration
  * entries that do not explicitly specify which group they are in are
  * in a special group called the default group.
  *
- * If there is a $ character in an entry, @ref KConfigBase tries to expand
+ * If there is a $ character in an entry, KConfigBase tries to expand
  * environment variable and uses its value instead of its name. You
  * can avoid this feature by having two consecutive $ characters in
  * your config file which get expanded to one.
@@ -847,7 +847,7 @@ public:
 
 
   /**
-   * Turns on or off "dollar  expansion" (see @ref KConfigBase introduction)
+   * Turns on or off "dollar  expansion" (see KConfigBase introduction)
    *  when reading config entries.
    * Dollar sign expansion is initially OFF.
    *
@@ -869,7 +869,7 @@ public:
    * @ref writeEntry() again, the global dirty flag is set again and all
    * dirty entries will be written at a subsequent @ref sync() call.
    *
-   * Classes that derive from @ref KConfigObject should override this
+   * Classes that derive from KConfigBase should override this
    * method and implement storage-specific behaviour, as well as
    * calling the @ref KConfigBase::rollback() explicitly in the initializer.
    *
@@ -921,7 +921,7 @@ public:
    * nonexistent.
    *
    * @param pKey The key to search for.
-   * @return If @ref true, the key is available.
+   * @return If true, the key is available.
    */
   virtual bool hasKey( const QString& pKey ) const = 0;
 

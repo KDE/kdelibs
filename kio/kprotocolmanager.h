@@ -218,7 +218,7 @@ public:
    * Returns the Proxy server address for a given URL
    * If automatic proxy configuration is configured, @ref KPAC
    * is used to determine the proxy server, otherwise the return
-   * value of @ref proxyFor for the URL's protocol is used.
+   * value of @ref #proxyFor for the URL's protocol is used.
    * If an empty string is returned, the request is to be aborted,
    * a return value of "DIRECT" requests a direct connection.
    *

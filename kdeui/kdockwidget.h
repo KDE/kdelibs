@@ -330,8 +330,8 @@ private:
  * widget, drag it somewhere and let it loose. Depending on the
  * position where you leave it, the dockwidget becomes a toplevel
  * window on the desktop (floating mode) or docks to a new widget
- * (dock mode).  + Note: A @ref KDockWidget can only be docked to a
- * @ref KDockWidget.
+ * (dock mode). Note: A KDockWidget can only be docked to a
+ * KDockWidget.
  *
  * If you want to use this kind of widget, your main application
  * window has to be a @ref KDockMainWindow.  That is because it has
@@ -339,7 +339,7 @@ private:
  * @ref KDockManager that has an overview over all dockwidgets and and
  * a dockmovemanager (internal class) that handles the dock process.
  *
- * Usually you create an @ref KDockWidget that covers the actual widget in this way:
+ * Usually you create an KDockWidget that covers the actual widget in this way:
  * <PRE>
  * ...
  * KDockMainWindow* mainWidget;
@@ -1062,9 +1062,8 @@ private:
  * The main widget should be a @ref KDockWidget where other @ref KDockWidget can be docked to
  * the left, right, top, bottom or to the middle.
  * Note: dock to the middle means to drop on a dockwidget and to unite them to a new widget, a tab control.
- * That tab widget is a @ref KDockTabCtl .
  *
- * Furthermore, the KDockMainWindow has got the @ref KDocManager and some data about the dock states.
+ * Furthermore, the KDockMainWindow has got the @ref KDockManager and some data about the dock states.
  *
  * If you've got some dockwidgets, you can dock them to the dockmainwindow to initialize a start scene:
  * Here an example:

@@ -33,7 +33,7 @@ class KStdActionPrivate;
  * conform to the KDE UI Style Guide
  * @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html .
  *
- * All of the documentation for @ref KAction holds for @ref KStdAction
+ * All of the documentation for @ref KAction holds for KStdAction
  * also.  When in doubt on how things work, check the @ref KAction
  * documention first.
  *

@@ -9,6 +9,7 @@ class QMultiLineEdit;
 /**
  * Who said writing a part should be complex ? :-)
  * Here is a very simple kedit-like part
+ * @internal
  */
 class NotepadPart : public KParts::ReadWritePart
 {

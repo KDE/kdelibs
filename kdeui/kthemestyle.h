@@ -47,7 +47,7 @@ class KThemeStyle: public KThemeBase
     Q_OBJECT
 public:
     /**
-     * Construct a new @ref KThemeStyle object.
+     * Constructs a new KThemeStyle object.
      *
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
@@ -341,7 +341,7 @@ public:
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *c=0, bool atBorder=false);
     /**
-     * Draw a @ref KProgess bar.
+     * Draw a @ref KProgress bar.
      */
     virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QBrush *fill);
