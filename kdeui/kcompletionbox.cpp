@@ -162,13 +162,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
     }
 
     else { // any other object received an event while we're visible
-        if ( type == QEvent::MouseButtonPress )
-            hide();
+        if ( type == QEvent::MouseButtonPress ) {
+            if ( o->parent() != this ) // allow presses on the scrollbar
+                hide();
+        }
 
         else if ( m_parent ) {
             if ( o == m_parent->topLevelWidget() ) { // the toplevel moved?
                 if ( type == QEvent::Move )
-                    move( m_parent->mapToGlobal( QPoint(0, 
+                    move( m_parent->mapToGlobal( QPoint(0,
                                                         m_parent->height())));
             }
         }
