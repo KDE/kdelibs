@@ -2,11 +2,8 @@
 <varlistentry>
 <term>
 <menuchoice>
-<shortcut>
-<keycombo action="simul"><keycap>F1</keycap></keycombo>
-</shortcut>
 <guimenu>Aide</guimenu>
-<guimenuitem>Contenu</guimenuitem>
+<guimenuitem>Manuel de &kappname</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Invoque le système d'aide de KDE</action>
@@ -23,8 +20,8 @@ en démarrant avec le manuel de &kappname; (ce document).</para></listitem>
 </menuchoice>
 </term>
 <listitem><para><action>Dessine un point d'interrogation (?) à côté du pointeur
-de la souris</action>. Cliquer sur un item dans &kappname; affiche alors une
-fenêtre d'aide (si celle-ci existe pour cet item particulier), expliquant la fonction
+de la souris</action>. Cliquer sur un élément dans &kappname; affiche alors une
+fenêtre d'aide (si celle-ci existe pour cet élément particulier), expliquant la fonction
 de l'élément en question.</para></listitem>
 </varlistentry>
 
@@ -32,7 +29,7 @@ de l'élément en question.</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Aide</guimenu>
-<guimenuitem>Rapport de bogue</guimenuitem>
+<guimenuitem>Rapport de bogue...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Ouvre une boîte de dialogue de rapport de bogue</action>.
 Vous pouvez alors envoyer un rapport de bogue ou émettre un souhait.</para></listitem>
