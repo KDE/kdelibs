@@ -29,9 +29,6 @@
 #include <qtimer.h>
 #include <qpopupmenu.h>
 #include <qlabel.h>
-#include <qtoolbutton.h>
-#include <qtoolbar.h>
-#include <qobjectlist.h>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
