@@ -1,5 +1,5 @@
 
-INCLUDES = -I$(top_srcdir) $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libltdl $(all_includes)
 
 kde_module_LTLIBRARIES = libkpac.la
 
