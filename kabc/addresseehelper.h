@@ -21,10 +21,11 @@
 #define KABC_ADDRESSEEHELPER_H
 
 #include <qobject.h>
-#include <qvaluelist.h>
 #include <qstringlist.h>
 
 #include <dcopobject.h>
+
+#include <set>
 
 /**
   static data, shared by ALL addressee objects
@@ -49,10 +50,11 @@ class AddresseeHelper : public QObject, public DCOPObject
   private:
     AddresseeHelper();
 
-    static void addToSet( const QStringList& list, QStringList& container );
-    QStringList mTitles;
-    QStringList mPrefixes;
-    QStringList mSuffixes;
+    static void addToSet( const QStringList& list,
+                          std::set<QString>& container );
+    std::set<QString> mTitles;
+    std::set<QString> mPrefixes;
+    std::set<QString> mSuffixes;
 
     static AddresseeHelper *s_self;
 };

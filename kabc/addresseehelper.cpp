@@ -49,12 +49,12 @@ AddresseeHelper::AddresseeHelper()
 
 // static
 void AddresseeHelper::addToSet( const QStringList& list,
-                                QStringList& container )
+                                std::set<QString>& container )
 {
   QStringList::ConstIterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
     if ( !(*it).isEmpty() )
-      container.append( *it );
+      container.insert( *it );
   }
 }
 
@@ -64,22 +64,22 @@ void AddresseeHelper::initSettings()
   mSuffixes.clear();
   mPrefixes.clear();
 
-  mTitles.append( i18n( "Dr." ) );
-  mTitles.append( i18n( "Miss" ) );
-  mTitles.append( i18n( "Mr." ) );
-  mTitles.append( i18n( "Mrs." ) );
-  mTitles.append( i18n( "Ms." ) );
-  mTitles.append( i18n( "Prof." ) );
+  mTitles.insert( i18n( "Dr." ) );
+  mTitles.insert( i18n( "Miss" ) );
+  mTitles.insert( i18n( "Mr." ) );
+  mTitles.insert( i18n( "Mrs." ) );
+  mTitles.insert( i18n( "Ms." ) );
+  mTitles.insert( i18n( "Prof." ) );
 
-  mSuffixes.append( i18n( "I" ) );
-  mSuffixes.append( i18n( "II" ) );
-  mSuffixes.append( i18n( "III" ) );
-  mSuffixes.append( i18n( "Jr." ) );
-  mSuffixes.append( i18n( "Sr." ) );
+  mSuffixes.insert( i18n( "I" ) );
+  mSuffixes.insert( i18n( "II" ) );
+  mSuffixes.insert( i18n( "III" ) );
+  mSuffixes.insert( i18n( "Jr." ) );
+  mSuffixes.insert( i18n( "Sr." ) );
 
-  mPrefixes.append( "van" );
-  mPrefixes.append( "von" );
-  mPrefixes.append( "de" );
+  mPrefixes.insert( "van" );
+  mPrefixes.insert( "von" );
+  mPrefixes.insert( "de" );
 
   KConfig config( "kabcrc", true, false ); // readonly, no kdeglobals
   config.setGroup( "General" );

@@ -42,11 +42,11 @@ class Ticket;
 */
 class AddressBook : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
-    friend QDataStream &operator<<( QDataStream &, const AddressBook & );
-    friend QDataStream &operator>>( QDataStream &, AddressBook & );
-    friend class StdAddressBook;
+  friend QDataStream &operator<<( QDataStream &, const AddressBook & );
+  friend QDataStream &operator>>( QDataStream &, AddressBook & );
+  friend class StdAddressBook;
 
   public:
     /**
