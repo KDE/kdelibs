@@ -1354,13 +1354,6 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	return;
     }
 
-    // Send keyup event
-    if ( dispatchKeyEvent( _ke ) )
-    {
-        _ke->accept();
-        return;
-    }
-    
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
     if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton)
 	{
@@ -1375,6 +1368,13 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
 	
+    // Send keyup event
+    if ( dispatchKeyEvent( _ke ) )
+    {
+        _ke->accept();
+        return;
+    }
+    
     QScrollView::keyReleaseEvent(_ke);
 }
 
