@@ -194,7 +194,7 @@ static int openSocket()
 }
 
 static pid_t kwrapper_pid;
-static pid_t got_sig; /* = 0 */
+static volatile pid_t got_sig; /* = 0 */
 static pid_t last_sig; /* = 0 */
 
 static void sig_pass_handler( int signo );
@@ -209,7 +209,7 @@ static void setup_signal_handler( int signo, int clean )
         sa.sa_handler = sig_pass_handler;
     sigemptyset( &sa.sa_mask );
     sigaddset( &sa.sa_mask, signo );
-    sa.sa_flags = 0;
+    sa.sa_flags = 0; // don't use SA_RESTART
     sigaction( signo, &sa, 0 );
 }
 
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
    else if (kwrapper)
       header.cmd = LAUNCHER_KWRAPPER;
    else
-      header.cmd = LAUNCHER_EXT_EXEC;
+      header.cmd = LAUNCHER_SHELL;
    header.arg_length = size;
    write_socket(sock, (char *) &header, sizeof(header));
 
@@ -426,7 +426,7 @@ int main(int argc, char **argv)
    memcpy( p, &avoid_loops, sizeof( avoid_loops ));
    p += sizeof( avoid_loops );
    
-   if( p - buffer != size ) /* should fail only you change this source and do */
+   if( p - buffer != size ) /* should fail only if you change this source and do */
                                  /* a stupid mistake, it should be assert() actually */
    {
       fprintf(stderr, "Oops. Invalid format.\n");

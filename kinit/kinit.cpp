@@ -55,11 +55,13 @@
 #include <klibloader.h>
 #include <kapp.h>
 #include <klocale.h>
+#include <kstartupinfo.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
 
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -82,6 +84,7 @@ static Display *X11display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
+static Atom net_current_desktop;
 
 /* Group data */
 struct {
@@ -179,14 +182,117 @@ static void setup_tty( const char* tty )
     close( fd );
 }
 
+// from kdecore/netwm.cpp
+static int get_current_desktop( Display* disp )
+{
+    Atom type_ret;
+    int format_ret;
+    unsigned char *data_ret;
+    unsigned long nitems_ret, unused;
+    if( XGetWindowProperty( disp, DefaultRootWindow( disp ), net_current_desktop,
+        0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret, &nitems_ret, &unused, &data_ret )
+	    == Success)
+    {
+	if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
+	    return *((long *) data_ret) + 1;
+    }
+    return 0;
+}
+
+static void init_startup_info( KStartupInfoId& id )
+    {
+    id.initId();
+    id.setupStartupEnv();
+    }
+    
+static void send_startup_info( KStartupInfoId& id, pid_t pid, const char* bin )
+{
+    Display*  disp = XOpenDisplay( NULL ); // we are a child, so we can't use X11display
+    if( disp == NULL )
+        return;
+    int desktop = get_current_desktop( disp );
+#if 0
+    int screen_number = get_screen_number();
+#endif
+    KStartupInfoData data;
+    data.setBin( bin );
+    data.setDesktop( desktop );
+    data.addPid( pid );
+    data.setHostname();
+    // CHECKME add more
+    KStartupInfo::sendStartupX( disp, id, data );
+    XCloseDisplay( disp );
+}
+
+QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs, bool avoid_loops )
+{
+     QStringList paths;
+     if( envc > 0 ) /* use the passed environment */
+     {
+         const char* env_l = envs;
+         for (int i = 0;  i < envc; i++)
+         {
+            if( strncmp( env_l, "PATH=", 5 ) == 0 )
+            {
+                paths = QStringList::split( QRegExp( "[:\b]" ), env_l + 5, true );
+                break; // -->
+            }    
+            while(*env_l != 0) env_l++;
+                env_l++;
+         }
+     }
+     else
+         paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
+     QCString execpath = QFile::encodeName(
+         s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+     if( avoid_loops && !execpath.isEmpty())
+     {
+         int pos = execpath.findRev( '/' );
+         QString bin_path = execpath.left( pos );
+         for( QStringList::Iterator it = paths.begin();
+              it != paths.end();
+              ++it )
+             if( ( *it ) == bin_path || ( *it ) == bin_path + '/' )
+             {
+                 paths.remove( it );
+                 break; // -->
+             }
+         execpath = QFile::encodeName(
+             s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+     }
+     return execpath;
+}
+
 static pid_t launch(int argc, const char *_name, const char *args, 
                     const char *cwd=0, int envc=0, const char *envs=0,
-                    const char *tty=0, bool avoid_loops = false )
+                    const char *tty=0, bool avoid_loops = false, bool startup_info = false )
 {
   int launcher = 0;
   QCString lib;
   QCString name;
   QCString exec;
+  
+  KStartupInfoId startup_id;
+  if( startup_info )
+  {
+      if( envc > 0 )
+      { // get the KDE_STARTUP_ID var from envs
+          const char* env_l = envs;
+          for (int i = 0;  i < envc; i++)
+          {
+             if( strncmp( env_l, "KDE_STARTUP_ENV=", 16 ) == 0 ) // length 16 must match
+             {  // set it, it will be reset at the end of launch()
+                 putenv( strdup( env_l )); // won't this leak memory ?
+                 break; // -->
+             }    
+             while(*env_l != 0) env_l++;
+                 env_l++;
+          }
+      }
+      init_startup_info( startup_id );
+  }
+  else
+      KStartupInfo::resetStartupEnv();
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
@@ -211,40 +317,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      lib = name + ".la";
      exec = name;
      libpath = QFile::encodeName(KLibLoader::findLibrary( lib, s_instance ));
-     QStringList paths;
-     if( envc > 0 ) /* use the passed environment */
-     {
-         const char* env_l = envs;
-         for (int i = 0;  i < envc; i++)
-         {
-            if( strncmp( env_l, "PATH=", 5 ) == 0 )
-            {
-                paths = QStringList::split( QRegExp( "[:\b]" ), env_l + 5, true );
-                break; // -->
-            }    
-            while(*env_l != 0) env_l++;
-                env_l++;
-         }
-     }
-     else
-         paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
-     execpath = QFile::encodeName(
-         s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
-     if( avoid_loops && !execpath.isEmpty())
-     {
-         int pos = execpath.findRev( '/' );
-         QString bin_path = execpath.left( pos );
-         for( QStringList::Iterator it = paths.begin();
-              it != paths.end();
-              ++it )
-             if( ( *it ) == bin_path || ( *it ) == bin_path + '/' )
-             {
-                 paths.remove( it );
-                 break; // -->
-             }
-         execpath = QFile::encodeName(
-             s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
-     }
+     execpath = execpath_avoid_loops( exec, envc, envs, avoid_loops );
   }
   else
   {
@@ -482,6 +555,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
+  if( d.fork && startup_info )
+      send_startup_info( startup_id, d.fork, name );
+  KStartupInfo::resetStartupEnv();
   return d.fork;
 }
 
@@ -738,6 +814,7 @@ static void handle_launcher_request(int sock = -1)
 
    if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
+       (request_header.cmd == LAUNCHER_SHELL ) ||
        (request_header.cmd == LAUNCHER_KWRAPPER))
    {
       pid_t pid;
@@ -753,10 +830,11 @@ static void handle_launcher_request(int sock = -1)
       int avoid_loops = 0;
 
 #ifndef NDEBUG
-      if (launcher)
-         fprintf(stderr, "kdeinit: Got EXEC '%s' from klauncher.\n", name);
-      else
-         fprintf(stderr, "kdeinit: Got EXEC '%s' from socket.\n", name);
+     fprintf(stderr, "kdeinit: Got %s '%s' from %s.\n",
+        (request_header.cmd == LAUNCHER_EXEC ? "EXEC" :
+        (request_header.cmd == LAUNCHER_EXT_EXEC ? "EXT_EXEC" :
+        (request_header.cmd == LAUNCHER_SHELL ? "SHELL" : "KWRAPPER" ))),
+         name, launcher ? "launcher" : "socket" );
 #endif
 
       char *arg_n = args;
@@ -764,8 +842,8 @@ static void handle_launcher_request(int sock = -1)
       {
         arg_n = arg_n + strlen(arg_n) + 1;
       }
-      if( request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_KWRAPPER )
-      {  // Extended exec or kwrapper
+      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER )
+      {  // Shell or kwrapper
          cwd = arg_n; arg_n += strlen(cwd) + 1;
          envc = *((long *) arg_n); arg_n += sizeof(long);
          envs = arg_n;
@@ -805,7 +883,9 @@ static void handle_launcher_request(int sock = -1)
       if (reset_display)
           setenv("DISPLAY", kdedisplay, true);
 
-      pid = launch(argc, name, args, cwd, envc, envs, tty, avoid_loops );
+      pid = launch(argc, name, args, cwd, envc, envs, tty, avoid_loops,
+          request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_SHELL
+          || request_header.cmd == LAUNCHER_KWRAPPER );
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
@@ -918,6 +998,7 @@ static void handle_requests(pid_t waitForPid)
               return;
            if (d.launcher_pid)
            {
+           // TODO send process died message
               klauncher_header request_header;
               long request_data[2];
               request_header.cmd = LAUNCHER_DIED;
@@ -1110,6 +1191,7 @@ static int initXconnection()
 #ifndef NDEBUG
     fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
 #endif
+    net_current_desktop = XInternAtom( X11display, "_NET_CURRENT_DESKTOP", False );
     return XConnectionNumber( X11display );
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
