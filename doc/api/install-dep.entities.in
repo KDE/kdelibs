@@ -1,2 +1,2 @@
 <!-- Please only use this technique after consulting the docbook team -->
-<!ENTITY QTDOCDIR "_QTDOCDIR_">
+<!ENTITY QTDOCDIR "@QTDOCDIR@">
