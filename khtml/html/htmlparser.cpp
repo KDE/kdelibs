@@ -645,11 +645,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
            }
            break;
-	    case ID_FONT:
-		if ( current->id() == ID_OPTION || current->id() == ID_OPTGROUP )
-		    return false;
-		break;
-	    default:
+        default:
             break;
         }
 
@@ -833,10 +829,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 		// IE treats a nested select as </select>. Let's do the same
 		popBlock( ID_SELECT );
                 break;
-            }
-            else {
-                popBlock(ID_SELECT);
-                handled = true;
             }
             break;
             // head elements in the body should be ignored.
