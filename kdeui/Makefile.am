@@ -28,40 +28,39 @@ libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
-		kdatepik.h kdatetbl.h \
-		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
-		ktreelist.h kstatusbar.h ktopwidget.h ktmainwindow.h \
-		ktoolbar.h kmenubar.h kbutton.h kslider.h kseparator.h \
-		klined.h kcombo.h krestrictedline.h kintegerline.h	\
-		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
+		kdatepik.h kdatetbl.h kfontdialog.h kmsgbox.h kpopmenu.h \
+		ktabctl.h ktreelist.h kstatusbar.h ktopwidget.h \
+		ktmainwindow.h ktoolbar.h kmenubar.h kbutton.h kslider.h \
+		kseparator.h klined.h kcombo.h krestrictedline.h \
+		kintegerline.h kspinbox.h kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
-		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h	\
+		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h knotebook.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h kaction.h \
-		kuiactions.h
+		kuiactions.h kintlineedit.h
 
-libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
-		kselect.cpp kdatepik.cpp kdatetbl.cpp \
-		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
-		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
+libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
+		kselect.cpp kdatepik.cpp kdatetbl.cpp kfontdialog.cpp \
+		kmsgbox.cpp kpopmenu.cpp ktabctl.cpp ktreelist.cpp \
+		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		kmenubar.cpp ktoolbar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp klined.cpp kcombo.cpp krestrictedline.cpp \
-		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
-		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
-		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
-		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp	\
-		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
-		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
+		kintegerline.cpp kspinbox.cpp kcontrol.cpp kcolorbtn.cpp \
+		kiconloaderdialog.cpp kwmmapp.cpp kbuttonbox.cpp \
+		ktablistbox.cpp knewpanner.cpp keditcl1.cpp keditcl2.cpp \
+		ktoolboxmgr.cpp kled.cpp kdbtn.cpp knotebook.cpp \
+		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
+		kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
-		kcolordrag.cpp kaction.cpp kuiactions.cpp
+		kcolordrag.cpp kaction.cpp kuiactions.cpp kintlineedit.cpp
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
-	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc kdatepik.moc \
-	kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
+	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc \
+	kdatepik.moc kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
 	kiconloaderdialog.moc kintegerline.moc kkeydialog.moc kled.moc \
 	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc knewpanner.moc \
 	knotebook.moc kpanner.moc kpopmenu.moc kprogress.moc \
@@ -71,7 +70,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc kaction.moc \
-	kuiactions.moc
+	kuiactions.moc kintlineedit.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	

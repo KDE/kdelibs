@@ -2,7 +2,7 @@
 **
 ** $Id$
 **
-** Definition of KIntegerLine
+** Definition of KIntLineEdit
 **
 ** Copyright (C) 1997 Michael Wiedmann, <mw@miwie.in-berlin.de>
 **
@@ -22,10 +22,9 @@
 **
 *****************************************************************************/
 
-#ifndef KINTEGERLINE_H
-#define KINTEGERLINE_H
+#ifndef KINTLINEEDIT_H
+#define KINTLINEEDIT_H
 
-#warning KIntegerLine is obsolete and will disappear. Use KIntLineEdit instead.
 #include "krestrictedline.h"
 
 /** Enum for the possible types of Editlines
@@ -36,7 +35,7 @@ enum KEditLineType{
   KEditTypeHex = 16
 };
 
-/** IntegerEditline: Editline for Integers. Only octal, decimal or
+/** LineEdit for integers. Only octal, decimal or
     hexadecimal characters are valid input characters for this sort 
     of edit lines. 
     A few special keys are supported by this class:
@@ -50,7 +49,7 @@ enum KEditLineType{
     @author Michael Wiedmann <mw@miwie.in-berlin.de>
     @version 0.0.1
   */
-class KIntegerLine : public KRestrictedLine
+class KIntLineEdit : public KRestrictedLine
 {
   Q_OBJECT
   
@@ -59,7 +58,7 @@ public:
   //@{
   /** Default - empty - constructor
 	*/
-  KIntegerLine();
+  KIntLineEdit();
     
   /** Contructor: This constructor takes three - optional - arguments.
 	  The first two parameters are simply passed to KRestrictedLine.
@@ -67,20 +66,26 @@ public:
 	  @param name     pointer to the name of this widget
 	  @param t        type of this integer line (defaults to KEditTypeDec)
   */
-  KIntegerLine( QWidget *parent=0, 
+  KIntLineEdit( QWidget *parent=0, 
 				const char *name=0, 
 				KEditLineType t=KEditTypeDec);
 
-  /// Destructor
-  ~KIntegerLine();
+  /** Destructor */
+  ~KIntLineEdit();
 
-  /// Get the type of this Line
+  /** Get the type of this Line */
   KEditLineType getType();
 
-  /// Get the current value in the lined
+  /** Get the current value in the lined */
   int value( void );
   
-  /// Set the current value in the lined
+  /**
+   * Same as @ref value, for compatibility with old KIntLineEdit.
+   * @deprecated
+   */
+  int getValue( void );
+  
+  /** Set the current value in the lined */
   void setValue( int value );
   //@}
 
@@ -104,19 +109,19 @@ private slots:
   void internalValueChanged();
 
 private:
-  /// type of this line
+  /** type of this line */
   KEditLineType lineType;
 
-  /// get value based on radix of this line
+  /** get value based on radix of this line */
   int getValue(QString &s);
     
-  /// put value based on radix of this line
+  /** put value based on radix of this line */
   void putValue(QString &s, int val);  
 
-  /// increment value based on radix of this line
+  /** increment value based on radix of this line */
   void incValue(QString &s, int val);
 
-  /// decrement value based on radix of this line
+  /** decrement value based on radix of this line */
   void decValue(QString &s, int val);
 };
 

@@ -58,36 +58,7 @@
 
 #include <kapp.h>
 #include <kfontdialog.h>
-
-///
-class KIntLineEdit : public QLineEdit
-{
-  Q_OBJECT
-
-public:
-  KIntLineEdit( QWidget *parent = 0, const char *name = 0 )
-    : QLineEdit( parent, name ) {};
-
-  int getValue() { return atoi( text() ); };
-
-protected:
-	
-  void keyPressEvent( QKeyEvent *e ) {
-    char key = e->ascii();
-
-    if( isdigit( key )
-	|| ( e->key() == Key_Return) || ( e->key() == Key_Enter    )
-	|| ( e->key() == Key_Delete) || ( e->key() == Key_Backspace)
-	|| ( e->key() == Key_Left  ) || ( e->key() == Key_Right    )){
-
-      QLineEdit::keyPressEvent( e );
-      return;
-    } else {
-      e->ignore();
-      return;
-    }
-  };
-};
+#include <kintlineedit.h>
 
 ///
 class KEdGotoLine : public QDialog
