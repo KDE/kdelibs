@@ -21,6 +21,7 @@
 #include <qptrdict.h>
 
 #include <kjs/operations.h>
+#include <khtmlview.h>
 #include <dom_string.h>
 #include <dom_xml.h>
 #include <xml/dom_nodeimpl.h>
@@ -116,6 +117,11 @@ KJSO DOMNode::tryGet(const UString &p) const
       result = Number(rend->contentWidth());
   else if (p == "clientHeight")
       result = Number(rend->contentHeight());
+  else if (p == "scrollLeft")
+      result = Number(rend->xPos() - node.ownerDocument().view()->contentsX());
+  else if (p == "scrollTop")
+      result = Number(rend->contentHeight());
+
   else
     result = Imp::get(p);
 
