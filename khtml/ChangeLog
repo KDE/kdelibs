@@ -1,3 +1,7 @@
+2004-10-26  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/bidi.{h,cpp}: Merge bidi-changes from WebCore
+
 2004-10-26  David Faure  <faure@kde.org>
 
         * khtml_part.cpp (urlSelected): Only call recursiveFrameRequest if target is
@@ -12,7 +16,7 @@
 2004-10-25  Stephan Kulow  <coolo@kde.org>
 
         * html/html_elementimpl.cpp (addCSSProperty): add css properties parsed from
-        attributes as lower case 
+        attributes as lower case
 
 2004-10-25  George Staikos  <staikos@kde.org>
 
@@ -33,6 +37,16 @@
 
         * css/cssparser.cpp (parseValue): implementing CSS 2.1 compliant parsing
         of background-position (#91572)
+
+2004-10-21  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement limited DHTML capabilities to the layer implementation
+
+        * html/html_miscimpl.{h,cpp}: Extract collection of all layers
+        * dom/html_block.{h,cpp}: Add layer DOM
+        * dom/html_document.{h,cpp}: Add .layers to document DOM
+        * ecma/kjs_html.{h,cpp}: Add layer DHTML and allow layers to be found by ID
+        * ecma/kjs_window.cpp: Allow layers to be found by ID
 
 2004-10-19  Allan Sandfeld Jensen <kde@carewolf.com>
 

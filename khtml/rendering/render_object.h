@@ -216,6 +216,7 @@ public:
     virtual bool isRenderReplaced() const { return false; }
 
     virtual bool isListItem() const { return false; }
+    virtual bool isListMarker() const { return false; }
     virtual bool isCanvas() const { return false; }
     virtual bool isBR() const { return false; }
     virtual bool isTableCell() const { return false; }
@@ -486,7 +487,7 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
-    
+
     /**
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
@@ -576,7 +577,7 @@ public:
     virtual bool hasFloats() const { return false; }
     virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
-    
+
     bool usesLineWidth() const;
 
     // positioning of inline children (bidi)
