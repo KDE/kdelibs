@@ -309,6 +309,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   }
 
   do_proxy = m_bUseProxy;
+  bzero(c_buffer, 64);
 
   if ( do_proxy && !m_strNoProxyFor.empty() ) 
     do_proxy = !revmatch( _url.host(), m_strNoProxyFor.c_str() );    
@@ -354,7 +355,6 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     command = "GET ";
 
   if( do_proxy ) {
-    bzero(c_buffer, 64);
     sprintf(c_buffer, ":%i", port);
     command += "http://";
     command += _url.host();
@@ -372,7 +372,6 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   command += "\r\n";
 
   if ( _offset > 0 ) {
-    bzero(c_buffer, 64);
     sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
     command += c_buffer;
     debug( "kio_http : Range = %s", c_buffer);
