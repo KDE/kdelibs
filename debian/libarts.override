@@ -1,3 +1,2 @@
 # suid
 libarts: setuid-binary usr/bin/artswrapper 4755 root/root
-libarts: shlib-missing-in-control-file knotify usr/lib/knotify.so 

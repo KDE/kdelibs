@@ -93,6 +93,8 @@ binary-arch:  build
 		--includedir=/usr/include/kde
 	make -C libkmid/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	-rm -f `find debian/libarts-alsa/ -name "*notify*"`
+	-rm -f `find debian/libarts-alsa/ -name "*qtmcop*"`
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
 	# messy cleanup
 	-rm -rf debian/libarts-alsa/usr/include build-stamp 
