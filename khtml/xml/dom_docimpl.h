@@ -64,8 +64,8 @@ namespace DOM {
     class GenericRONamedNodeMapImpl;
     class HTMLDocumentImpl;
     class HTMLElementImpl;
-    class NodeFilterImpl;
     class NodeFilter;
+    class NodeFilterImpl;
     class NodeIteratorImpl;
     class NodeListImpl;
     class ProcessingInstructionImpl;
@@ -137,6 +137,10 @@ public:
     virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
     AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
+
+    // Actually part of HTMLDocument, but used for giving XML documents a window title as well
+    DOMString title() const { return m_title; }
+    void setTitle(DOMString _title);
 
     // DOM methods overridden from  parent classes
 
@@ -405,6 +409,8 @@ protected:
     bool visuallyOrdered;
     bool m_bParsing;
     bool m_docChanged;
+
+    DOMString m_title;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

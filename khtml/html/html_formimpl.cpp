@@ -478,27 +478,15 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLElementImpl(doc)
 {
-    clear();
-
-    m_form = f;
-    if (m_form)
-        m_form->registerFormElement(this);
-}
-
-HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    clear();
-
-    m_form = getForm();
-    if (m_form)
-        m_form->registerFormElement(this);
-}
-
-void HTMLGenericFormElementImpl::clear()
-{
     m_disabled = m_readOnly = false;
     m_name = 0;
+
+    if (f)
+	m_form = f;
+    else
+	m_form = getForm();
+    if (m_form)
+        m_form->registerFormElement(this);
 }
 
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
@@ -669,15 +657,6 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentPtr *doc, HTMLFormElementIm
     m_activeSubmit = false;
 }
 
-HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-    m_clicked = false;
-    m_type = BUTTON;
-    m_dirty = true;
-    m_activeSubmit = false;
-}
-
 HTMLButtonElementImpl::~HTMLButtonElementImpl()
 {
 }
@@ -758,11 +737,6 @@ HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormEleme
 {
 }
 
-HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-}
-
 HTMLFieldSetElementImpl::~HTMLFieldSetElementImpl()
 {
 }
@@ -774,22 +748,8 @@ NodeImpl::Id HTMLFieldSetElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-    clear();
-}
-
 HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
-{
-    clear();
-
-    if ( f )
-        m_autocomplete = f->autoComplete();
-}
-
-void HTMLInputElementImpl::clear()
 {
     m_type = TEXT;
     m_maxLen = -1;
@@ -804,6 +764,9 @@ void HTMLInputElementImpl::clear()
 
     xPos = 0;
     yPos = 0;
+
+    if ( m_form )
+        m_autocomplete = f->autoComplete();
 }
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
@@ -1414,11 +1377,6 @@ HTMLLegendElementImpl::HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementIm
 {
 }
 
-HTMLLegendElementImpl::HTMLLegendElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-}
-
 HTMLLegendElementImpl::~HTMLLegendElementImpl()
 {
 }
@@ -1429,15 +1387,6 @@ NodeImpl::Id HTMLLegendElementImpl::id() const
 }
 
 // -------------------------------------------------------------------------
-
-HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-    m_multiple = false;
-    // 0 means invalid (i.e. not set)
-    m_size = 0;
-    m_minwidth = 0;
-}
 
 HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
@@ -1807,19 +1756,8 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
 
 // -------------------------------------------------------------------------
 
-HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc)
-    : HTMLSelectElementImpl(doc)
-{
-    clear(doc);
-}
-
 HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementImpl* f)
     : HTMLSelectElementImpl(doc, f)
-{
-    clear(doc);
-}
-
-void HTMLKeygenElementImpl::clear(DocumentPtr* doc)
 {
     QStringList keys = KSSLKeyGen::supportedKeySizes();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
@@ -1828,7 +1766,6 @@ void HTMLKeygenElementImpl::clear(DocumentPtr* doc)
         o->addChild(new TextImpl(doc, DOMString(*i)));
     }
 }
-
 
 NodeImpl::Id HTMLKeygenElementImpl::id() const
 {
@@ -1871,11 +1808,6 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 
 HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
-{
-}
-
-HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
 {
 }
 
@@ -1946,12 +1878,6 @@ void HTMLOptGroupElementImpl::setChanged( bool b )
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
-{
-    m_selected = false;
-}
-
-HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
 {
     m_selected = false;
 }
@@ -2063,17 +1989,6 @@ void HTMLOptionElementImpl::setChanged( bool b )
 }
 
 // -------------------------------------------------------------------------
-
-HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc)
-    : HTMLGenericFormElementImpl(doc)
-{
-    // DTD requires rows & cols be specified, but we will provide reasonable defaults
-    m_rows = 2;
-    m_cols = 20;
-    m_wrap = ta_Virtual;
-    m_dirtyvalue = true;
-}
-
 
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
@@ -2262,16 +2177,11 @@ bool HTMLTextAreaElementImpl::isEditable()
 
 // -------------------------------------------------------------------------
 
-HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentPtr *doc)
-    : HTMLInputElementImpl(doc)
-{
-    m_type = TEXT;
-}
-
 HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLInputElementImpl(doc, f)
 {
     m_type = TEXT;
+    setName("isindex");
 }
 
 HTMLIsIndexElementImpl::~HTMLIsIndexElementImpl()
@@ -2288,21 +2198,12 @@ void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
     switch(attr->attrId)
     {
     case ATTR_PROMPT:
-        m_prompt = attr->value();
+	setValue(attr->value());
     default:
         // don't call HTMLInputElement::parseAttribute here, as it would
         // accept attributes this element does not support
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLIsIndexElementImpl::init()
-{
-    HTMLInputElementImpl::init();
-
-    setName("isindex");
-    // ### fix this, this is just a crude hack
-    setValue(m_prompt);
 }
 
 // -------------------------------------------------------------------------

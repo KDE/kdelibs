@@ -82,15 +82,7 @@ HTMLDocument::~HTMLDocument()
 DOMString HTMLDocument::title() const
 {
     if(!impl) return DOMString();
-
-    NodeImpl *e = static_cast<HTMLDocumentImpl *>(impl)->findElement(ID_TITLE);
-    if(!e) return DOMString();
-
-    NodeImpl *t = e->firstChild();
-    if(!t) return DOMString();
-
-    // ### join all text nodes within <TITLE>
-    return static_cast<TextImpl *>(t)->data();
+    return static_cast<HTMLDocumentImpl *>(impl)->title();
 }
 
 void HTMLDocument::setTitle( const DOMString &/*value*/ )

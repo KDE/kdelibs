@@ -1065,10 +1065,6 @@ void KHTMLParser::processCloseTag(Token *t)
         // don't close head neither. the creation of body will do it for us.
         // fixes some sites, that define stylesheets after </head>
         return;
-    case ID_TITLE+ID_CLOSE_TAG:
-        if ( current->id() == ID_TITLE )
-          static_cast<HTMLTitleElementImpl *>(current)->setTitle();
-        break;
     case ID_SELECT+ID_CLOSE_TAG:
         inSelect = false;
         break;

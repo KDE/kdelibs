@@ -191,9 +191,8 @@ void CharacterDataImpl::setNodeValue( const DOMString &_nodeValue, int &exceptio
 
 void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
-    // ### fixme (?) - hack so STYLE elements reparse their stylesheet when text changes
     if (_parent)
-        _parent->setChanged(true);
+        _parent->childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
 	return;
 

@@ -51,11 +51,18 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void init();
+
+    DOMString href() const { return m_href; }
+    DOMString target() const { return m_target; }
+
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+
+    void process();
 
 protected:
-    DOMString _href;
-    DOMString _target;
+    DOMString m_href;
+    DOMString m_target;
 };
 
 
@@ -74,13 +81,18 @@ public:
     StyleSheetImpl *sheet() const;
 
     // overload from HTMLElementImpl
-    virtual void init();
     virtual void parseAttribute(AttrImpl *attr);
+
+    void process();
+
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
     bool isLoading() const;
     void sheetLoaded();
+
 
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
@@ -107,12 +119,11 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
     virtual void insertedIntoDocument();
 
-    void checkProcess();
+    void process();
 
 protected:
     DOMString m_equiv;
     DOMString m_content;
-    bool m_processed;
 };
 
 // -------------------------------------------------------------------------
@@ -142,14 +153,12 @@ public:
 
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttrImpl *attr);
-    virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void setChanged(bool b=true);
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+    virtual void childrenChanged();
 
     bool isLoading() const;
     void sheetLoaded();
-    void reparseSheet();
-
-    virtual void init();
 
 protected:
     StyleSheetImpl *m_sheet;
@@ -167,7 +176,13 @@ public:
     ~HTMLTitleElementImpl();
 
     virtual Id id() const;
-    virtual void setTitle();
+
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+    virtual void childrenChanged();
+
+protected:
+    DOMString m_title;
 };
 
 }; //namespace

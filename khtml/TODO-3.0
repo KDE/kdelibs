@@ -190,3 +190,12 @@ Things we discussed (in no particular order):
    
 - minor things i forgot...
 
+
+More things (pmk):
+
+- Make sure all elements update properly when parsing attributes, basically
+  what is done in most of the init() methods. This also needs to take into
+  account what happens when you insert/remvoe elements, e.g. removing a title
+  element should clear the document's title, and then creating a new title
+  element again and changing the text should only update the doc's title when
+  it actually gets put in the tree.

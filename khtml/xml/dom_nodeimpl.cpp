@@ -56,6 +56,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_attached( false ),
       m_changed( false ),
       m_hasChangedChild( false ),
+      m_inDocument( false ),
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
@@ -763,6 +764,7 @@ bool NodeImpl::dispatchUIEvent(int _id, int detail)
 
 bool NodeImpl::dispatchSubtreeModifiedEvent()
 {
+    childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
 	return false;
     int exceptioncode = 0;
@@ -1034,9 +1036,15 @@ void NodeImpl::restoreState(const QString &/*state*/)
 
 void NodeImpl::insertedIntoDocument()
 {
+    setInDocument(true);
 }
 
 void NodeImpl::removedFromDocument()
+{
+    setInDocument(false);
+}
+
+void NodeImpl::childrenChanged()
 {
 }
 
@@ -1418,6 +1426,15 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 
     // Dispatch post-removal mutation events
     dispatchSubtreeModifiedEvent();
+
+    NodeImpl *p = this;
+    while (p->parentNode())
+	p = p->parentNode();
+    if (p->nodeType() == Node::DOCUMENT_NODE) {
+	for (NodeImpl *c = oldChild; c; c = c->traverseNextNode(oldChild))
+	    c->removedFromDocument();
+    }
+
     return oldChild;
 }
 
@@ -1583,6 +1600,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     }
 
     newChild->insertedIntoDocument();
+    childrenChanged();
 
     if(newChild->nodeType() == Node::ELEMENT_NODE)
         return newChild;
@@ -1916,7 +1934,6 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
 	p = p->parentNode();
     if (p->nodeType() == Node::DOCUMENT_NODE) {
 	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
-	    c->removedFromDocument();
 	    if (hasRemovalListeners) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
 				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);

@@ -38,7 +38,6 @@
 #include "css/csshelper.h"
 
 #include <kurl.h>
-#include <kstringhandler.h>
 #include <kdebug.h>
 
 using namespace khtml;
@@ -62,25 +61,46 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_HREF:
-      _href = khtml::parseURL(attr->value());
-      break;
+	m_href = khtml::parseURL(attr->value());
+	process();
+	break;
     case ATTR_TARGET:
-      _target = attr->value();
-      break;
+	m_target = attr->value();
+	process();
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
 }
 
-void HTMLBaseElementImpl::init()
+void HTMLBaseElementImpl::insertedIntoDocument()
 {
-    HTMLElementImpl::init();
+    HTMLElementImpl::insertedIntoDocument();
+    process();
+}
 
-    if(!_href.isEmpty())
-        getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), _href.string() ).url() );
+void HTMLBaseElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
 
-    if(!_target.isEmpty())
-        getDocument()->setBaseTarget( _target.string() );
+    // Since the document doesn't have a base element...
+    // (This will break in the case of multiple base elements, but that's not valid anyway (?))
+    getDocument()->setBaseURL( QString::null );
+    getDocument()->setBaseTarget( QString::null );
+}
+
+void HTMLBaseElementImpl::process()
+{
+    if (!inDocument())
+	return;
+
+    if(!m_href.isEmpty())
+	getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), m_href.string() ).url() );
+
+    if(!m_target.isEmpty())
+	getDocument()->setBaseTarget( m_target.string() );
+
+    // ### should changing a document's base URL dynamically automatically update all images, stylesheets etc?
 }
 
 // -------------------------------------------------------------------------
@@ -104,9 +124,38 @@ NodeImpl::Id HTMLLinkElementImpl::id() const
     return ID_LINK;
 }
 
-void HTMLLinkElementImpl::init()
+void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 {
-    HTMLElementImpl::init();
+    switch (attr->attrId)
+    {
+    case ATTR_REL:
+        m_rel = attr->value();
+	process();
+        break;
+    case ATTR_HREF:
+        m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
+	process();
+        break;
+    case ATTR_TYPE:
+        m_type = attr->value();
+	process();
+        break;
+    case ATTR_MEDIA:
+        m_media = attr->value().string().lower();
+	process();
+        break;
+    case ATTR_DISABLED:
+        // ###
+        break;
+    default:
+        HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLLinkElementImpl::process()
+{
+    if (!inDocument())
+	return;
 
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
@@ -117,46 +166,39 @@ void HTMLLinkElementImpl::init()
     if ( part && rel.contains("shortcut icon") && !m_url.isEmpty() && !part->parentPart())
         part->browserExtension()->setIconURL( KURL(m_url.string()) );
 
-    if((type.contains("text/css") || rel == "stylesheet") && !rel.contains("alternate"))
-    {
+    // Stylesheet
+    if((type.contains("text/css") || rel == "stylesheet") && !rel.contains("alternate")) {
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
-        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") )
-        {
+        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") ) {
             m_loading = true;
-            DocumentImpl *doc = getDocument();
-            // we must have a doc->docLoader() !
+
             QString chset = getAttribute( ATTR_CHARSET ).string();
-            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, chset);
-            if(m_cachedSheet) m_cachedSheet->ref(this);
+            if (m_cachedSheet)
+		m_cachedSheet->deref(this);
+            m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(m_url, chset);
+            if (m_cachedSheet)
+		m_cachedSheet->ref(this);
         }
     }
-
-    getDocument()->updateStyleSelector();
+    else if (m_sheet) {
+	// we no longer contain a stylesheet, e.g. perhaps rel or type was changed
+	m_sheet->deref();
+	m_sheet = 0;
+	getDocument()->updateStyleSelector();
+    }
 }
 
-void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLLinkElementImpl::insertedIntoDocument()
 {
-    switch (attr->attrId)
-    {
-    case ATTR_REL:
-        m_rel = attr->value();
-        break;
-    case ATTR_HREF:
-        m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
-        break;
-    case ATTR_TYPE:
-        m_type = attr->value();
-        break;
-    case ATTR_MEDIA:
-        m_media = attr->value().string().lower();
-        break;
-    case ATTR_DISABLED:
-        // ###
-        break;
-    default:
-        HTMLElementImpl::parseAttribute(attr);
-    }
+    HTMLElementImpl::insertedIntoDocument();
+    process();
+}
+
+void HTMLLinkElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+    process();
 }
 
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr)
@@ -164,7 +206,8 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 //    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
 //    kdDebug( 6030 ) << "**** current medium: " << m_media << endl;
 
-    if( m_sheet ) return;
+    if (m_sheet)
+	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheetStr);
@@ -198,12 +241,10 @@ StyleSheetImpl *HTMLLinkElementImpl::sheet() const
     return m_sheet;
 }
 
-
 // -------------------------------------------------------------------------
 
 HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
-    m_processed = false;
 }
 
 HTMLMetaElementImpl::~HTMLMetaElementImpl()
@@ -221,13 +262,11 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_HTTP_EQUIV:
 	m_equiv = attr->value();
-	m_processed = false;
-	checkProcess();
+	process();
 	break;
     case ATTR_CONTENT:
 	m_content = attr->value();
-	m_processed = false;
-	checkProcess();
+	process();
 	break;
     case ATTR_NAME:
       break;
@@ -238,23 +277,16 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLMetaElementImpl::insertedIntoDocument()
 {
-    checkProcess();
+    HTMLElementImpl::insertedIntoDocument();
+    process();
 }
 
-void HTMLMetaElementImpl::checkProcess()
+void HTMLMetaElementImpl::process()
 {
-    if (!m_processed && !m_equiv.isNull() && !m_content.isNull()) {
-	// Get the document to process the tag, but only if we're actually part of DOM tree (changing a meta tag while
-	// it's not in the tree shouldn't have any effect on the document)
-
-	NodeImpl *doc = parentNode();
-	while (doc && (doc->nodeType() != Node::DOCUMENT_NODE))
-	    doc = doc->parentNode();
-	if (doc) {
-	    static_cast<DocumentImpl*>(doc)->processHttpEquiv(m_equiv,m_content);
-	    m_processed = true;
-	}
-    }
+    // Get the document to process the tag, but only if we're actually part of DOM tree (changing a meta tag while
+    // it's not in the tree shouldn't have any effect on the document)
+    if (inDocument() && !m_equiv.isNull() && !m_content.isNull())
+	getDocument()->processHttpEquiv(m_equiv,m_content);
 }
 
 // -------------------------------------------------------------------------
@@ -295,53 +327,41 @@ void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_TYPE:
-        m_type = attr->value(); break;
+        m_type = attr->value();
+	if (inDocument())
+	    getDocument()->updateStyleSelector();
+	break;
     case ATTR_MEDIA:
-        m_media = attr->value(); break;
+        m_media = attr->value();
+	if (inDocument())
+	    getDocument()->updateStyleSelector();
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
 }
 
-NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
+void HTMLStyleElementImpl::insertedIntoDocument()
 {
-    NodeImpl *r = NodeBaseImpl::addChild(child);
-    reparseSheet();
-    sheetLoaded();
-    return r;
-}
-
-void HTMLStyleElementImpl::setChanged(bool b)
-{
-    // TextImpl sets it's parent to be changed when appendData() or similar is called (hack)
-    // ### make this work properly in all situations
-    if (b)
-        reparseSheet();
-
-    HTMLElementImpl::setChanged(b);
-}
-
-bool HTMLStyleElementImpl::isLoading() const
-{
-    if(!m_sheet) return false;
-    //if(!m_sheet->isCSSStyleSheet()) return false;
-    return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
-}
-
-void HTMLStyleElementImpl::sheetLoaded()
-{
+    HTMLElementImpl::insertedIntoDocument();
     getDocument()->updateStyleSelector();
 }
 
-void HTMLStyleElementImpl::reparseSheet()
+void HTMLStyleElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+    getDocument()->updateStyleSelector();
+}
+
+void HTMLStyleElementImpl::childrenChanged()
 {
     DOMString text = "";
-    NodeImpl *n;
-    for (n = _first; n; n = n->nextSibling()) {
-        if (n->nodeType() == Node::TEXT_NODE ||
-            n->nodeType() == Node::CDATA_SECTION_NODE ||
-            n->nodeType() == Node::COMMENT_NODE)
-        text += static_cast<CharacterDataImpl*>(n)->data();
+
+    for (NodeImpl *c = firstChild(); c != 0; c = c->nextSibling()) {
+	if ((c->nodeType() == Node::TEXT_NODE) ||
+	    (c->nodeType() == Node::CDATA_SECTION_NODE) ||
+	    (c->nodeType() == Node::COMMENT_NODE))
+	    text += c->nodeValue();
     }
 
     if(m_sheet)
@@ -352,11 +372,15 @@ void HTMLStyleElementImpl::reparseSheet()
     getDocument()->updateStyleSelector();
 }
 
-void HTMLStyleElementImpl::init()
+bool HTMLStyleElementImpl::isLoading() const
 {
-    HTMLElementImpl::init();
+    if(!m_sheet) return false;
+    return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
+}
 
-    if (m_sheet) getDocument()->updateStyleSelector();
+void HTMLStyleElementImpl::sheetLoaded()
+{
+    getDocument()->updateStyleSelector();
 }
 
 // -------------------------------------------------------------------------
@@ -375,15 +399,28 @@ NodeImpl::Id HTMLTitleElementImpl::id() const
     return ID_TITLE;
 }
 
-void HTMLTitleElementImpl::setTitle()
+void HTMLTitleElementImpl::insertedIntoDocument()
 {
-    if(!_first || _first->id() != ID_TEXT) return;
-    TextImpl *t = static_cast<TextImpl *>(_first);
-    QString s = t->data().string();
-    s.compose();
-    s = KStringHandler::csqueeze( s, 128 );
+    HTMLElementImpl::insertedIntoDocument();
+    getDocument()->setTitle(m_title);
+}
 
-    DocumentImpl *d = getDocument();
-    if ( !d->view()->part()->parentPart() )
-        emit d->view()->part()->setWindowCaption( s );
+void HTMLTitleElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+    // Title element removed, so we have no title... we ignore the case of multiple title elements, as it's invalid
+    // anyway (?)
+    getDocument()->setTitle(DOMString());
+}
+
+void HTMLTitleElementImpl::childrenChanged()
+{
+    HTMLElementImpl::childrenChanged();
+    m_title = "";
+    for (NodeImpl *c = firstChild(); c != 0; c = c->nextSibling()) {
+	if ((c->nodeType() == Node::TEXT_NODE) || (c->nodeType() == Node::CDATA_SECTION_NODE))
+	    m_title += c->nodeValue();
+    }
+    if (inDocument())
+	getDocument()->setTitle(m_title);
 }

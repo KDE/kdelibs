@@ -224,6 +224,7 @@ public:
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
     bool hasChangedChild() const { return m_hasChangedChild; }
+    bool inDocument() const { return m_inDocument; }
     bool styleElement() const { return m_styleElement; }
     void setHasEvents(bool b=true) { m_hasEvents = b; }
     void setHasID(bool b=true) { m_hasId = b; }
@@ -233,6 +234,7 @@ public:
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
     void setHasChangedChild( bool b = true ) { m_hasChangedChild = b; }
+    void setInDocument(bool b=true) { m_inDocument = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setChanged(bool b=true);
@@ -408,8 +410,8 @@ public:
      * Notifies the node that it has been inserted into the document. This is called during document parsing, and also
      * when a node is added through the DOM methods insertBefore(), appendChild() or replaceChild(). Note that this only
      * happens when the node becomes part of the document tree, i.e. only when the document is actually an ancestor of
-     * the node.
-     *
+     * the node. The call happens _after_ the node has been added to the tree.
+     * 
      * This is similar to the DOMNodeInsertedIntoDocument DOM event, but does not require the overhead of event
      * dispatching.
      */
@@ -420,9 +422,15 @@ public:
      * node.
      *
      * This is similar to the DOMNodeRemovedFromDocument DOM event, but does not require the overhead of event
-     * dispatching.
+     * dispatching, and is called _after_ the node is removed from the tree.
      */
     virtual void removedFromDocument();
+
+    /**
+     * Notifies the node that it's list of children have changed (either by adding or removing child nodes), or a child
+     * node that is of the type CDATA_SECTION_NODE, TEXT_NODE or COMMENT_NODE has changed it's value.
+     */
+    virtual void childrenChanged();
 
 protected:
     DocumentPtr *document;
@@ -441,6 +449,7 @@ protected:
     bool m_attached : 1;
     bool m_changed : 1;
     bool m_hasChangedChild : 1;
+    bool m_inDocument : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;

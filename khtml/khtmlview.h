@@ -94,6 +94,7 @@ public:
     /**
      * Sets a margin in x direction.
      */
+    // ### BIC make this non-inline and make it update the rendering area when set
     void setMarginWidth(int x) { _marginWidth = x; }
 
     /**
@@ -106,6 +107,7 @@ public:
     /*
      * Sets a margin in y direction.
      */
+    // ### BIC make this non-inline and make it update the rendering area when set
     void setMarginHeight(int y) { _marginHeight = y; }
 
     /**

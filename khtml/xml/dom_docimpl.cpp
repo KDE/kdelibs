@@ -47,6 +47,7 @@
 #include "khtml_part.h"
 
 #include <kglobalsettings.h>
+#include <kstringhandler.h>
 #include "khtml_settings.h"
 
 #include "html/html_baseimpl.h"
@@ -266,6 +267,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_listenerTypes = 0;
     m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
+    m_inDocument = true;
 
     m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
@@ -434,6 +436,25 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     //kdDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
     return 0;
+}
+
+void DocumentImpl::setTitle(DOMString _title)
+{
+    m_title = _title;
+
+    QString titleStr = m_title.string();
+    titleStr.compose();
+    if ( !view()->part()->parentPart() ) {
+	if (titleStr.isNull() || titleStr.isEmpty()) {
+	    // empty title... set window caption as the URL
+	    KURL url = m_url;
+	    url.setRef(QString::null);
+	    url.setQuery(QString::null);
+	    titleStr = url.url();
+	}
+
+	emit view()->part()->setWindowCaption( KStringHandler::csqueeze( titleStr, 128 ) );
+    }
 }
 
 DOMString DocumentImpl::nodeName() const

@@ -115,8 +115,7 @@ class HTMLGenericFormElementImpl : public HTMLElementImpl
     friend class khtml::RenderFormElement;
 
 public:
-    HTMLGenericFormElementImpl(DocumentPtr *doc);
-    HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLGenericFormElementImpl();
 
     HTMLFormElementImpl *form() { return m_form; }
@@ -154,9 +153,6 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool isEditable();
 
-private:
-    void clear();
-
 protected:
     HTMLFormElementImpl *getForm() const;
 
@@ -170,8 +166,7 @@ protected:
 class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLButtonElementImpl(DocumentPtr *doc);
-    HTMLButtonElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLButtonElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual ~HTMLButtonElementImpl();
 
@@ -205,8 +200,7 @@ protected:
 class HTMLFieldSetElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLFieldSetElementImpl(DocumentPtr *doc);
-    HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual ~HTMLFieldSetElementImpl();
 
@@ -234,8 +228,7 @@ public:
         ISINDEX
     };
 
-    HTMLInputElementImpl(DocumentPtr *doc);
-    HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLInputElementImpl();
 
     virtual Id id() const;
@@ -305,9 +298,6 @@ protected:
     bool m_haveType : 1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
-
-private:
-    void clear();
 };
 
 // -------------------------------------------------------------------------
@@ -335,8 +325,7 @@ public:
 class HTMLLegendElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLLegendElementImpl(DocumentPtr *doc);
-    HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLLegendElementImpl();
 
     virtual Id id() const;
@@ -348,8 +337,7 @@ public:
 class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLSelectElementImpl(DocumentPtr *doc);
-    HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -412,8 +400,7 @@ protected:
 class HTMLKeygenElementImpl : public HTMLSelectElementImpl
 {
 public:
-    HTMLKeygenElementImpl(DocumentPtr *doc);
-    HTMLKeygenElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLKeygenElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -428,8 +415,6 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
-private:
-    void clear(DocumentPtr*);
 };
 
 // -------------------------------------------------------------------------
@@ -437,8 +422,7 @@ private:
 class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptGroupElementImpl(DocumentPtr *doc);
-    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLOptGroupElementImpl();
 
     virtual Id id() const;
@@ -462,8 +446,7 @@ class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
     friend class DOM::HTMLSelectElementImpl;
 
 public:
-    HTMLOptionElementImpl(DocumentPtr *doc);
-    HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -501,8 +484,7 @@ public:
         ta_Physical
     };
 
-    HTMLTextAreaElementImpl(DocumentPtr *doc);
-    HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -549,18 +531,13 @@ protected:
 class HTMLIsIndexElementImpl : public HTMLInputElementImpl
 {
 public:
-    HTMLIsIndexElementImpl(DocumentPtr *doc);
-    HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+    HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
     ~HTMLIsIndexElementImpl();
 
     virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void init();
-
-protected:
-    DOMString m_prompt;
 };
 
 
