@@ -1170,11 +1170,6 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 }
 
 
-KURL KFileDialog::baseURL() const
-{
-    return ops->url();
-}
-
 QString KFileDialog::selectedFile() const
 {
     if ( result() == QDialog::Accepted )
@@ -1190,21 +1185,28 @@ QStringList KFileDialog::selectedFiles() const
     QStringList list;
 
     if ( result() == QDialog::Accepted ) {
-        QString name;
-        QString url = ops->url().path( +1 );
-        // FIXME: check for local files?
+        if ( (ops->mode() & KFile::Files) == KFile::Files ) {
+            KURL::List urls = parseSelectedURLs();
+	    QValueListConstIterator<KURL> it = urls.begin();
+	    while ( it != urls.end() ) {
+		if ( (*it).isLocalFile() )
+		    list.append( (*it).path() );
+		++it;
+	    }
+	}
 
-        static QRegExp r( QString::fromLatin1( "\"" ) );
-        static const QString &empty = KGlobal::staticQString("");
-        QTextStream t( &(d->filenames), IO_ReadOnly );
-        while ( !t.eof() ) {
-            t >> name;
-            name.replace( r, empty );
-            name.prepend( url );
-            list.append( name );
+        else { // single-selection mode
+	    if ( d->url.isLocalFile() )
+		list.append( d->url.path() );
         }
     }
+    
     return list;
+}
+
+KURL KFileDialog::baseURL() const
+{
+    return ops->url();
 }
 
 QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
