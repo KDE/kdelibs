@@ -142,10 +142,11 @@ bool RenderObject::deleteMe()
     return false;
 }
 
-void RenderObject::addChild(RenderObject *newChild)
+void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
+                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     newChild->setParsing();
@@ -153,18 +154,30 @@ void RenderObject::addChild(RenderObject *newChild)
     // just add it...
     newChild->setParent(this);
 
-    if(m_last)
-    {
-	newChild->setPreviousSibling(m_last);
-	m_last->setNextSibling(newChild);
-	m_last = newChild;
+    if (!beforeChild) {
+	if(m_last)
+	{
+	    newChild->setPreviousSibling(m_last);
+	    m_last->setNextSibling(newChild);
+	    m_last = newChild;
+	}
+	else
+	{
+	    m_first = m_last = newChild;
+	}
     }
-    else
-    {
-	m_first = m_last = newChild;
+    else {
+        RenderObject *newPrev = beforeChild->previousSibling();
+	newChild->setNextSibling(beforeChild);
+	beforeChild->setPreviousSibling(newChild);
+
+	newPrev->setNextSibling(newChild);
+	newChild->setPreviousSibling(newPrev);
+
     }
     newChild->calcWidth();
 }
+
 
 RenderObject *RenderObject::containingBlock() const
 {

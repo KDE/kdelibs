@@ -622,7 +622,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 	    cell->setRowSpan(rSpan);
 	    cell->setColSpan(cSpan);
 	}
-	if(m_render) r->addChild(m_render);
+	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
     }
 
     NodeImpl *child = _first;

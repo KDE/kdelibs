@@ -85,7 +85,7 @@ public:
     void setFirstChild(RenderObject *first) { m_first = first; }
     void setLastChild(RenderObject *last) { m_last = last; }
 
-    virtual void addChild(RenderObject *newChild);
+    virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
     // some helper functions...
     /**

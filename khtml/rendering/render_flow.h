@@ -78,7 +78,7 @@ public:
 
     virtual void close();
 
-    virtual void addChild(RenderObject *newChild);
+    virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
     virtual void setPos( int xPos, int yPos );
     virtual void setXPos( int xPos );

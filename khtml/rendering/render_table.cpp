@@ -159,10 +159,11 @@ RenderTable::ColInfo::update()
         max = maxCell->maxWidth();
 }
 
-void RenderTable::addChild(RenderObject *child)
+void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
+                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     switch(child->style()->display())
@@ -173,7 +174,7 @@ void RenderTable::addChild(RenderObject *child)
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
     	{
-	RenderObject::addChild(child);
+	RenderObject::addChild(child,beforeChild);
 	RenderTableCol* colel = static_cast<RenderTableCol *>(child);
 	if (_oldColElem)
 	    _currentCol = _oldColElem->lastCol();
@@ -203,7 +204,7 @@ void RenderTable::addChild(RenderObject *child)
     default:	
 	break;
     }
-    RenderObject::addChild(child);
+    RenderObject::addChild(child,beforeChild);
     child->setTable(this);
 }
 
@@ -1428,15 +1429,16 @@ RenderTableSection::~RenderTableSection()
     nrows = 0;
 }
 
-void RenderTableSection::addChild(RenderObject *child)
+void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", " <<
+                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     table->startRow();
     child->setTable(table);
-    RenderObject::addChild(child);
+    RenderObject::addChild(child,beforeChild);
 }
 
 // -------------------------------------------------------------------------
@@ -1463,10 +1465,11 @@ void RenderTableRow::setRowIndex( long  )
     // ###
 }
 
-void RenderTableRow::addChild(RenderObject *child)
+void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
+                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     RenderTableCell *cell =
@@ -1475,7 +1478,7 @@ void RenderTableRow::addChild(RenderObject *child)
     cell->setRowImpl(this);
     table->addCell(cell);
 
-    RenderObject::addChild(child);
+    RenderObject::addChild(child,beforeChild);
 }
 
 // -------------------------------------------------------------------------
@@ -1622,16 +1625,17 @@ RenderTableCol::~RenderTableCol()
 }
 
 
-void RenderTableCol::addChild(RenderObject *child)
+void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )" <<  << ", " <<
+                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
 
     if (child->style()->display() == TABLE_COLUMN)
     {
 	// these have to come before the table definition!	
-	RenderObject::addChild(child);
+	RenderObject::addChild(child,beforeChild);
 	RenderTableCol* colel = static_cast<RenderTableCol *>(child);
 	colel->setStartCol(_currentCol);
 //	kdDebug( 6040 ) << "_currentCol=" << _currentCol << endl;

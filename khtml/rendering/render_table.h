@@ -106,7 +106,7 @@ public:
 		    RenderTableCell* _cell);
 
     // overrides
-    virtual void addChild(RenderObject *child);
+    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void print( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
     virtual void printBorders( QPainter *, int x, int y, int w, int h,
@@ -270,7 +270,7 @@ public:
     int numRows() { return nrows; }
 
     // overrides
-    virtual void addChild(RenderObject *child);
+    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
@@ -304,7 +304,7 @@ public:
     void setSectionRowIndex( long i ) { rIndex = i; }
 
     // overrides
-    virtual void addChild(RenderObject *child);
+    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
@@ -419,7 +419,7 @@ public:
     void setSpan( long s ) { _span = s; }
     khtml::Length width();
 
-    virtual void addChild(RenderObject *child);
+    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}

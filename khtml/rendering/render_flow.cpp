@@ -42,6 +42,7 @@
 
 #include <kdebug.h>
 #include <assert.h>
+#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -1030,10 +1031,11 @@ void RenderFlow::close()
 #endif
 }
 
-void RenderFlow::addChild(RenderObject *newChild)
+void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() <<
+                       ", " << beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
 
@@ -1041,6 +1043,7 @@ void RenderFlow::addChild(RenderObject *newChild)
     if (!newChild->isInline() && !newChild->isFloating())
     {
     	newChild->setYPos(-100000);
+    	newChild->setLayouted(false);
     }
 
     switch (newChild->style()->position())
@@ -1053,7 +1056,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	{
 //	    kdDebug( 6040 ) << "absolute found" << endl;
 	    setContainsPositioned(true);	    
-    	    RenderObject::addChild(newChild);
+    	    RenderObject::addChild(newChild,beforeChild);
 	    return;
 	}
 	default: ;
@@ -1063,32 +1066,68 @@ void RenderFlow::addChild(RenderObject *newChild)
 
     if(m_childrenInline && !newChild->isInline() && !newChild->isFloating())
     {
-	// put all inline children we have up to now in a anonymous block box
+	// put all inline children we have up to now in two anonymous block boxes -
+	// one containing those before beforeChild, and one containing beforeChild and after
 	if(m_last)
 	{
 //	    kdDebug( 6040 ) << "no inline child, moving previous inline children!" << endl;
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(BLOCK);
-	    RenderFlow *newBox = new RenderFlow();
-	    newBox->setStyle(newStyle);
-	    newBox->setIsAnonymousBox(true);
+	
+	    RenderFlow *beforeBox = new RenderFlow();
+	    beforeBox->setStyle(newStyle);
+	    beforeBox->setIsAnonymousBox(true);
 	    // ### the children have a wrong style!!!
 	    // They get exactly the style of this element, not of the anonymous box
 	    // might be important for bg colors!
-	    newBox->setFirstChild(m_first);
-	    newBox->setLastChild(m_last);
-	    RenderObject *o = newBox->firstChild();
+	    beforeBox->setFirstChild(m_first);
+	    RenderObject *beforeBoxLast;
+	    if (beforeChild)
+		beforeBoxLast = beforeChild->previousSibling() ? beforeChild->previousSibling() : m_first;
+	    else
+		beforeBoxLast = m_last;
+	    beforeBoxLast->setNextSibling(0);
+	    beforeBox->setLastChild(beforeBoxLast);
+	    RenderObject *o = beforeBox->firstChild();
 	    while(o)
 	    {
-		o->setParent(newBox);
+		o->setParent(beforeBox);
 		o = o->nextSibling();
 	    }
-	    newBox->setParent(this);
-	    m_first = m_last = newBox;
-	    newBox->close();
-	    newBox->setYPos(-100000);
-	    newBox->setLayouted(false);
-	    newBox->layout();
+	    beforeBox->setParent(this);
+	    m_first = m_last = beforeBox;
+	    beforeBox->close();
+	    beforeBox->setYPos(-100000);
+	    beforeBox->setLayouted(false);
+	    beforeBox->layout();
+
+	    if (beforeChild) {
+		RenderFlow *afterBox = new RenderFlow();
+		afterBox->setStyle(newStyle);
+		afterBox->setIsAnonymousBox(true);
+		// ### the children have a wrong style!!!
+		// They get exactly the style of this element, not of the anonymous box
+		// might be important for bg colors!
+		beforeChild->setPreviousSibling(0);
+		afterBox->setFirstChild(beforeChild);
+		afterBox->setLastChild(m_last);
+		RenderObject *o = afterBox->firstChild();
+		while(o)
+		{
+		    o->setParent(afterBox);
+		    o = o->nextSibling();
+		}
+		afterBox->setParent(this);
+		m_last = afterBox;
+		beforeBox->setNextSibling(afterBox);
+		afterBox->setPreviousSibling(beforeBox);
+		afterBox->close();
+		afterBox->setYPos(-100000);
+		afterBox->setLayouted(false);
+		afterBox->layout();
+		beforeChild = afterBox;
+	    }
+	
 	}
 	m_childrenInline = false;
     }
@@ -1105,7 +1144,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 		RenderFlow *newBox = new RenderFlow();
 		newBox->setStyle(newStyle);
 		newBox->setIsAnonymousBox(true);
-		RenderObject::addChild(newBox);
+		RenderObject::addChild(newBox,beforeChild);
 		newBox->addChild(newChild);
 		newBox->setYPos(-100000);	
 		setHaveAnonymousBox();
@@ -1113,7 +1152,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    }
 	    else
 	    {
-		m_last->addChild(newChild);
+		m_last->addChild(newChild); // ,beforeChild ???
 		return;
 	    }
 	}
@@ -1142,7 +1181,7 @@ void RenderFlow::addChild(RenderObject *newChild)
     }
 
     setLayouted(false);
-    RenderObject::addChild(newChild);
+    RenderObject::addChild(newChild,beforeChild);
     // ### care about aligned stuff
 }
 

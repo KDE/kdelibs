@@ -204,12 +204,14 @@ namespace khtml {
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
+  setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
   init( new KHTMLView( this, parentWidget, widgetname ) );
 }
 
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent, name )
 {
+  setInstance( KHTMLFactory::instance() );
   assert( view );
   init( view );
 }
@@ -218,7 +220,6 @@ void KHTMLPart::init( KHTMLView *view )
 {
   khtml::Cache::ref();
 
-  setInstance( KHTMLFactory::instance() );
   setXMLFile( "khtml.rc" );
 
   d = new KHTMLPartPrivate;
@@ -255,8 +256,8 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
   /*
-  if ( !autoloadImages() )
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+    if ( !autoloadImages() )
+      d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
   */
 
   connect( this, SIGNAL( completed() ),

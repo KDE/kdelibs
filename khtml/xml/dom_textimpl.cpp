@@ -146,7 +146,7 @@ void TextImpl::attach(KHTMLView *)
     {
 	m_render = new RenderText(str);
 	m_render->setStyle(m_style);
-	r->addChild(m_render);
+	r->addChild(m_render, _next ? _next->renderer() : 0);
 	m_render->ref();
     }
 }

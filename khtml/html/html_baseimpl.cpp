@@ -213,7 +213,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     m_render = renderFrame;
     m_render->setStyle(m_style);
     m_render->ref();
-    r->addChild( m_render );
+    r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
     if(name.isEmpty())
@@ -403,7 +403,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     m_render = renderFrameSet;
     m_render->setStyle(m_style);
     m_render->ref();
-    r->addChild( m_render );
+    r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
 #if 0

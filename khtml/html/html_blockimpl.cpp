@@ -146,7 +146,7 @@ void HTMLHRElementImpl::attach(KHTMLView *)
 	renderHr->setSize(size);
 	renderHr->setShade(shade);
 	m_render = renderHr;
-	if(m_render) r->addChild(m_render);
+	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
 	
     }
 }

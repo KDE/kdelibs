@@ -351,7 +351,7 @@ void ElementImpl::attach(KHTMLView *w)
 	m_render = khtml::RenderObject::createObject(this);
 	if(m_render)
 	{
-	    r->addChild(m_render);
+	    r->addChild(m_render, _next ? _next->renderer() : 0);
 	    m_render->ref();
 	}
     }

@@ -219,7 +219,7 @@ void HTMLBRElementImpl::attach(KHTMLView *)
 	m_render = new RenderBR();
 	m_render->setStyle(m_style);
 	m_render->ref();
-	r->addChild(m_render);	
+	r->addChild(m_render, _next ? _next->renderer() : 0);	
     }
 }
 
@@ -381,7 +381,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   m_render = renderFrame;
   m_render->setStyle(m_style);
   m_render->ref();
-  r->addChild( m_render );
+  r->addChild( m_render, _next ? _next->renderer() : 0 );
 
 
   NodeBaseImpl::attach( w );

@@ -435,6 +435,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(refChild);
+    newChild->attach(document->view());
 
     // ### set style in case it's attached
     applyChanges();
@@ -471,6 +472,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(next);
+    newChild->attach(document->view());
 
     // ### set style in case it's attached
     applyChanges();
@@ -526,6 +528,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     {
 	_first = _last = newChild;
     }
+    newChild->attach(document->view());
 
     applyChanges();
     // ### set style in case it's attached
