@@ -54,7 +54,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     hb->addWidget( autoPreview );
     connect( autoPreview, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
-    previewButton = new QPushButton( i18n("&Preview"), this );
+    previewButton = new QPushButton( SmallIcon("thumbnail"), i18n("&Preview"), this );
     hb->addWidget( previewButton );
     connect( previewButton, SIGNAL(clicked()), SLOT(showPreview()) );
 
