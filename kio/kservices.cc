@@ -123,6 +123,14 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
     QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
     return 0L;
   }
+  if ( exec.isEmpty() )
+  {
+    QString tmp = i18n( "The application config file\n"
+			"%1\n"
+			"does not contain an Exec=... entry").arg(_file);
+    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
+    return 0L;
+  }
 
   QString path = config.readEntry( "Path" );
   QString terminal = config.readEntry( "TerminalOptions" );
