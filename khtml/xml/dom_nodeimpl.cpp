@@ -494,7 +494,6 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_regdListeners->removeRef(it.current());
-            listener->deref();
             return;
         }
 }
