@@ -1365,14 +1365,14 @@ void HTMLImage::changeImage( HTMLString _url )
 
 void HTMLImage::setPixmap( QPixmap *p )
 {
-    printf("KHTMLImage::setPixmap()\n");
+  //    printf("KHTMLImage::setPixmap()\n");
     pixmap = p;
 
 //     printf("KHTMLImage::setPixmap(); width: %d, height: %d; lastWidth: %d, lastHeight: %d; URL: %s\n", 
-// 	pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
+// 	   pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
     if (width == 0)
         return; // setMaxSize has not yet been called. Do nothing.
-    printf("KHTMLImage::setPixmap() 1\n");
+    //    printf("KHTMLImage::setPixmap() 1\n");
     if (  (
            (predefinedWidth) ||
            (percent != UNDEFINED) ||
@@ -1388,14 +1388,15 @@ void HTMLImage::setPixmap( QPixmap *p )
 	// Image dimension are predefined or have not changed:
 	// draw ourselves.
 	htmlWidget->paintSingleObject( this );
-	printf("KHTMLImage::setPixmap() painted\n");    }
+	//	printf("KHTMLImage::setPixmap() painted\n");
+    }
     else
     {
         // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
         htmlWidget->scheduleUpdate( true );
-	printf("KHTMLImage::setPixmap() paint scheduled\n");
+	//	printf("KHTMLImage::setPixmap() paint scheduled\n");
     }
 }
 
@@ -1902,3 +1903,118 @@ HTMLAnchor* HTMLAnchor::findAnchor( QString _name, int &_x, int &_y )
 
 //-----------------------------------------------------------------------------
 
+HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
+				HTMLString _target)
+    : HTMLObject()
+{
+    // Width is set in setMaxWidth()
+    pixmap = 0;
+    bComplete = true;
+
+    htmlWidget = widget;
+
+    target = _target;
+
+    imageURL = _url;
+
+    // A HTMLJSImage ?
+    if ( !_url.length() )
+    {
+      // Do not load an image yet
+      imageURL = 0;
+      bComplete = false;
+      return;
+    }
+
+    printf("********* IMAGE %s ******\n",_url.string().latin1() );
+
+    htmlWidget->requestImage( this, imageURL );
+}
+
+void HTMLBackground::changeImage( HTMLString _url )
+{
+  htmlWidget->imageCache()->free( imageURL, this);
+  imageURL = _url;
+  pixmap = 0;
+
+  bComplete = false;
+  htmlWidget->requestImage( this, imageURL );
+}
+
+void HTMLBackground::setPixmap( QPixmap *p )
+{
+  //    printf("KHTMLImage::setPixmap()\n");
+    pixmap = p;
+
+//     printf("KHTMLImage::setPixmap(); width: %d, height: %d; lastWidth: %d, lastHeight: %d; URL: %s\n", 
+// 	   pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
+
+    htmlWidget->paintSingleObject( this );
+}
+
+void HTMLBackground::pixmapChanged(QPixmap *p)
+{
+    if( p )
+	setPixmap( p );
+}
+
+bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, 
+			    int _x_offset, int _y_offset )
+{
+  if ( !pixmap )
+    return false;
+
+  // if the background pixmap is transparent we must erase the bg
+  if ( pixmap->mask() )
+    _painter->eraseRect( _x - _xoff, _y - _yoff, _w, _h );
+  
+  int pw = pixmap->width();
+  int ph = pixmap->height();
+  
+  int xOrigin = _x/pw*pw - _x_offset%pw;
+  int yOrigin = _y/ph*ph - _y_offset%ph;
+  
+  _painter->setClipRect( _x - _xoff, _y - _yoff, _w, _h );
+  _painter->setClipping( TRUE );
+  
+  for ( int yp = yOrigin; yp < _y + _h; yp += ph )
+    {
+      for ( int xp = xOrigin; xp < _x + _w; xp += pw )
+	{
+	  _painter->drawPixmap( xp - _xoff, yp - _yoff, *pixmap );
+	}
+    }
+  
+  _painter->setClipping( FALSE );
+  return true;
+}
+
+HTMLBackground::~HTMLBackground()
+{
+   htmlWidget->imageCache()->free( imageURL, this );
+}
+
+void
+HTMLBackground::printDebug( bool, int indent, bool printObjects )
+{
+    // return if printing out the objects is not desired
+    if(!printObjects) return;
+
+    QString str = "    ";
+    int i;
+    for( i=0; i<indent; i++)
+	printf(str.ascii());
+
+    QString aStr = imageURL;
+    if(aStr.length() > 20)
+    {
+	aStr.truncate(19);
+	str = aStr + "...";
+    } else
+	str = aStr;
+
+    printf("%s (\"%s \"/%dx%d)\n", objectName(), str.latin1(),
+		width, ascent);
+}
+
+//----------------------------------------------------------------------------

@@ -60,7 +60,7 @@ class KHTMLImageSource : public QDataSource
   int pos;
 
  public:
-  KHTMLImageSource(QIODevice*, int bufsize=4096);
+  KHTMLImageSource(QIODevice*, int bufsize=8192);
   ~KHTMLImageSource();
  
   /**

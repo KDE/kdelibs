@@ -140,20 +140,19 @@ void KHTMLImageSource::sendTo(QDataSink* sink, int n)
   // workaround for qt bug:
   // in readyToSend we return minimal 1
   // so test if there is really something to send
-    if ( !sendReady )
-      {
-	sendReady = true;
-	return;
-      }
-    
-    int oldPos = iod->at(); // save old position
-
-    iod->at( pos );
-    iod->readBlock((char*)buffer, n);
-    sink->receive(buffer, n);
-    iod->at( oldPos ); // restore old position
-
-    pos += n;
+  if ( sendReady )
+    {
+      int oldPos = iod->at(); // save old position
+      
+      iod->at( pos );
+      iod->readBlock((char*)buffer, n);
+      sink->receive(buffer, n);
+      iod->at( oldPos ); // restore old position
+      
+      pos += n;
+    }
+  else
+    sendReady = true;
 }
 
 KHTMLCachedImage::KHTMLCachedImage()
@@ -300,11 +299,8 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	clear();
 	formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
 	typeChecked = true;
-      }
-    
-    if ( formatType )  // movie format exists
-      {
-	if ( !incBuffer )
+	
+	if ( formatType )  // movie format exists
 	  {
 	    incBuffer = new QBuffer();
 	    incBuffer->open(IO_ReadWrite);
@@ -314,14 +310,16 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	    m = new QMovie( new KHTMLImageSource(incBuffer) );
 	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
 	    gotFrame = false;
-	    size = _buffer.size();
 	    return false;
 	  }
-
+      }
+    
+    if ( formatType )  // movie format exists
+      {
 	int bufSize = incBuffer->size(),
 	    length = _buffer.size()-bufSize;
 	
-	if ( length > 0)
+	if ( length )
 	  {
 	    incBuffer->at(bufSize);
 	    incBuffer->writeBlock( &_buffer.buffer().at(bufSize), length);
@@ -338,13 +336,16 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	// set size of image. 
 	if( p && !p->isNull() )
 	  size = p->width() * p->height() * p->depth() / 8;
+
+	notify(); // Notify only if we have a pixmap. Movies notifies itself via movieUpdated.
       }
     else
-      incBuffer->close();
-      
+      {
+	incBuffer->close();
+	size = incBuffer->size();
+      }
+
     computeStatus();
-    notify();
-    // FIXME: only update, when needed
     return true;
 }
 

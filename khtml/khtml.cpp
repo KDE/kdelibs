@@ -112,6 +112,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     allocator     = 0;
     settings      = 0;
     colorContext  = 0;
+    bgPixmap      = 0;
     pressed       = false;
     //pressedURL    = "";
     //pressedTarget = "";
@@ -259,12 +260,6 @@ void KHTMLWidget::cancelAllRequests()
   mapPendingFiles.clear();
 }
 
-void KHTMLWidget::requestBackgroundImage( QString _url )
-{
-    bgPixmapURL = _url;
-    emit fileRequest( _url );
-}
-
 void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
 {
   bool do_update = false;
@@ -311,19 +306,7 @@ void KHTMLWidget::slotFileLoaded( QString _url, QString _filename )
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
-  {
-    if ( !bgPixmapURL.isEmpty() )
-    {
-	// Did the background image arrive ?
-	if ( bgPixmapURL == _url )
-	{
-	    bgPixmap.load( _filename );					
-	    bgPixmapURL = QString::null;
-	    scheduleUpdate( true );
-	}
-    }    
     return;
-  }
 
   assert( !p->m_buffer.isOpen() );
   
@@ -1195,9 +1178,16 @@ void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
     emit scrollHorz( x_offset );
     emit scrollVert( y_offset );
     
-    if ( !bgPixmapURL.isEmpty() )
-	emit cancelFileRequest( bgPixmapURL );
-    bgPixmapURL = QString::null;
+//     if ( !bgPixmapURL.isEmpty() )
+// 	emit cancelFileRequest( bgPixmapURL );
+//     bgPixmapURL = QString::null;
+    if ( bgPixmap )
+      {
+	if ( !bgPixmap->isNull() )
+	  emit cancelFileRequest( bgPixmap->getURL() );
+	delete bgPixmap;
+	bgPixmap = 0;
+      }
     
     stopParser();
     
@@ -1328,8 +1318,8 @@ void KHTMLWidget::parse()
 
     parser = new KHTMLParser( this, ht, painter, settings, 0 /* &formData */, allocator );
 
-    if ( !bgPixmap.isNull() )
-	bgPixmap.resize( -1, -1 );
+//     if ( !bgPixmap.isNull() )
+// 	bgPixmap.resize( -1, -1 );
 
     // clear page
     bDrawBackground = true;
@@ -1457,7 +1447,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 
 	// Did we finish the job or are still pictures missing ?
 	// XXXX if ( waitingFileList.count() == 0 && bgPixmapURL.isEmpty() )
-	if ( mapPendingFiles.isEmpty() && bgPixmapURL.isEmpty() )
+	if ( mapPendingFiles.isEmpty() )
 	{
 	    emit documentDone();
 	}
@@ -1649,7 +1639,8 @@ void KHTMLWidget::drawBackground( int _x, int _y, int _w, int _h, QPainter *p,
     if( !p )
 	p = painter;
 
-    if ( bgPixmap.isNull() )
+    //    if ( bgPixmap.isNull() )
+    if ( !bgPixmap )
     {
 	if( !settings->bgColor.isValid() )
 	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
@@ -1657,29 +1648,31 @@ void KHTMLWidget::drawBackground( int _x, int _y, int _w, int _h, QPainter *p,
 	    p->fillRect( _x - xoff, _y - yoff, _w, _h, settings->bgColor );
 	return;
     }
+    else
+      bgPixmap->print( p, _x, _y, _w, _h, xoff, yoff, x_offset, y_offset);
 
-	// if the background pixmap is transparent we must erase the bg
-	if ( bgPixmap.mask() )
-	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
+// 	// if the background pixmap is transparent we must erase the bg
+// 	if ( bgPixmap.mask() )
+// 	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
 
-	int pw = bgPixmap.width();
-	int ph = bgPixmap.height();
+// 	int pw = bgPixmap.width();
+// 	int ph = bgPixmap.height();
 
-	int xOrigin = _x/pw*pw - x_offset%pw;
-	int yOrigin = _y/ph*ph - y_offset%ph;
+// 	int xOrigin = _x/pw*pw - x_offset%pw;
+// 	int yOrigin = _y/ph*ph - y_offset%ph;
 
-	p->setClipRect( _x - xoff, _y - yoff, _w, _h );
-	p->setClipping( TRUE );
+// 	p->setClipRect( _x - xoff, _y - yoff, _w, _h );
+// 	p->setClipping( TRUE );
 
-	for ( int yp = yOrigin; yp < _y + _h; yp += ph )
-	{
-		for ( int xp = xOrigin; xp < _x + _w; xp += pw )
-		{
-			p->drawPixmap( xp - xoff, yp - yoff, bgPixmap );
-		}
-	}
+// 	for ( int yp = yOrigin; yp < _y + _h; yp += ph )
+// 	{
+// 		for ( int xp = xOrigin; xp < _x + _w; xp += pw )
+// 		{
+// 			p->drawPixmap( xp - xoff, yp - yoff, bgPixmap );
+// 		}
+// 	}
 
-	painter->setClipping( FALSE );
+// 	painter->setClipping( FALSE );
 }
 
 bool KHTMLWidget::gotoAnchor( )
@@ -2172,15 +2165,20 @@ void KHTMLWidget::setBGImage( QString _url)
 {
     KURL kurl( baseURL, _url );
 
-    if ( kurl.protocol() == "file" )
-    {
-        bgPixmap.load( kurl.path() );
-        scheduleUpdate( true );
-    }
-    else
-    {
-        requestBackgroundImage( kurl.url() );
-    }
+//     if ( kurl.protocol() == "file" )
+//     {
+//         bgPixmap.load( kurl.path() );
+//         scheduleUpdate( true );
+//     }
+//     else
+//     {
+//         requestBackgroundImage( kurl.url() );
+//     }
+
+    if ( bgPixmap )
+      delete bgPixmap;
+
+    bgPixmap = new(allocator) HTMLBackground( this, allocator->newString(kurl.url()), allocator->newString(""));
 }     
 
 void KHTMLWidget::setBGColor( const QColor &_bgColor)

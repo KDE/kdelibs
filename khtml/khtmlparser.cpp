@@ -1797,7 +1797,7 @@ void KHTMLParser::parseTagImg(void)
     int width = UNDEFINED;
     int height = UNDEFINED;
     int percent = UNDEFINED;
-    int border = url.length() ? 0 : 2;
+    int border = 0;
     HTMLClue::HAlign align = HTMLClue::HNone;
     HTMLClue::VAlign valign = HTMLClue::VNone;
 

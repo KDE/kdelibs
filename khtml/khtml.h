@@ -56,6 +56,7 @@ class HTMLForm;
 class HTMLFrameSet;
 class HTMLAllocator;
 class HTMLFileRequester;
+class HTMLBackground;
 
 class JSEnvironment;
 class JSWindowObject;
@@ -547,9 +548,6 @@ public:
      * Cancels all @ref requestFile.
      */
     void cancelAllRequests();
-
-    // This function is called to download the background image from the web
-    void requestBackgroundImage( QString _url );
 
     /*
      * This function is used to repaint images that have been loaded from the
@@ -1052,7 +1050,7 @@ protected:
     int parseCount;
     int granularity;
 
-    QPixmap bgPixmap;
+    HTMLBackground* bgPixmap;
 
     /*
      * This is the cusor to use when over a link

@@ -869,4 +869,54 @@ protected:
 
 //----------------------------------------------------------------------------
 
+class HTMLBackground : public HTMLObject
+{
+public:
+    HTMLBackground( KHTMLWidget *widget, HTMLString imageURL, 
+		    HTMLString _target );
+    virtual ~HTMLBackground();
+
+    // ####### seems to be unused, but possibly useful for jscript
+    virtual void changeImage( HTMLString _url );
+
+    virtual void setPixmap( QPixmap * );
+    virtual void pixmapChanged( QPixmap * = 0 );
+
+    virtual HTMLString  getURL() const { return imageURL; }
+    virtual HTMLString  getTarget() const { return target; }
+
+    virtual const char * objectName() const { return "HTMLBackground"; };
+    virtual void printDebug( bool, int indent, bool printObjects );
+
+    bool isNull() { return pixmap == 0; };
+    bool print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty, int _x_offset, int _y_offset );
+
+protected:
+
+    /*
+     * Pointer to the image
+     * If this pointer is 0L, that means that the picture could not be loaded
+     * for some strange reason or that the image is waiting to be downloaded
+     * from the internet for example.
+     */
+    QPixmap *pixmap;
+
+    /**
+     * The URL of this image.
+     */
+    HTMLString imageURL;
+    
+    KHTMLWidget *htmlWidget;
+    
+    /*
+     * The URL this image points to 
+     */
+    HTMLString target;
+
+    bool bComplete;
+};
+
+//-----------------------------------------------------------------------------
+
 #endif // HTMLOBJ
