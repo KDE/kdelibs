@@ -339,13 +339,13 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         break;
     }
   }
-  
+
   if ( close_connection )
   {
     http_close();
     finished();
   }
-  
+
   return true;
 }
 
@@ -395,7 +395,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.url = url;
   m_request.passwd = url.pass();
   m_request.user = url.user();
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
 
   retrieveContent();
 }
@@ -412,7 +412,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
   m_request.url = url;
 
   retrieveContent();
@@ -430,7 +430,7 @@ void HTTPProtocol::post( const KURL& url)
   m_request.query = url.query();
   m_request.cache = CC_Reload;
   m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
   m_request.url = url;
 
   retrieveContent();
@@ -541,11 +541,11 @@ void HTTPProtocol::http_checkConnection()
   if ( m_iSock != -1 )
   {
      bool closeDown = false;
-     if ( m_request.do_proxy && m_state.do_proxy )
+     if ( m_request.doProxy && m_state.doProxy )
      {
         // Keep the connection to the proxy.
      }
-     else if ( !m_state.do_proxy && !m_request.do_proxy )
+     else if ( !m_state.doProxy && !m_request.doProxy )
      {
         if (m_state.hostname != m_request.hostname)
         {
@@ -581,7 +581,7 @@ void HTTPProtocol::http_checkConnection()
   m_state.port = m_request.port;
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
-  m_state.do_proxy = m_request.do_proxy;
+  m_state.doProxy = m_request.doProxy;
 }
 
 bool HTTPProtocol::http_openConnection()
@@ -592,7 +592,7 @@ bool HTTPProtocol::http_openConnection()
   int errCode;
   QString errMsg;
 
-  if ( m_state.do_proxy )
+  if ( m_state.doProxy )
   {
     QString proxy_host = m_proxyURL.host();
     int proxy_port = m_proxyURL.port();
@@ -696,7 +696,7 @@ bool HTTPProtocol::http_open()
   }
 
   http_checkConnection();
-  
+
   // Let's clear out some things, so bogus values aren't used.
   m_fcache = 0;
   m_lineCount = 0;
@@ -716,7 +716,7 @@ bool HTTPProtocol::http_open()
   m_bError = false;
   m_bErrorPage = config()->readBoolEntry("errorPage", true);
   m_iSize = -1;
-  
+
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -799,15 +799,37 @@ bool HTTPProtocol::http_open()
     {
       QString agent = config()->readEntry("UserAgent");
       if( !agent.isEmpty() )
-        header += "User-Agent: " + agent + "\r\n";
+      {
+        header += "User-Agent: ";
+        header += agent;
+        header += "\r\n";
+      }
     }
+
+    // Send the Host: information
+    header += "Host: ";
+    if (m_state.hostname.find(':') != -1)
+    {
+      // This is an IPv6 (not hostname)
+      header += '[';
+      header += m_state.hostname;
+      header += ']';
+    }
+    else
+    {
+      header += m_state.hostname;
+    }
+
+    if (m_state.port != m_iDefaultPort)
+      header += QString(":%1").arg(m_state.port);
+    header += "\r\n";
 
     header += proxyAuthenticationHeader();
   }
   else
   {
     // format the URI
-    if (m_state.do_proxy && !m_bIsTunneled)
+    if (m_state.doProxy && !m_bIsTunneled)
     {
       KURL u;
       u.setUser( m_state.user );
@@ -847,20 +869,6 @@ bool HTTPProtocol::http_open()
         header += "\r\n"; //Don't try to correct spelling!
       }
     }
-
-/*
-    if ( !sendReferrer &&
-         config()->readBoolEntry("EnableReferrerWorkaround", true) )
-    {
-      // for privacy reasons we send the URL without the filename
-      KURL u = m_request.url;
-      u.setFileName( "" );
-      u.setRef( "" );
-      header += "Referer: ";
-      header += u.url();
-      header += "\r\n";
-    }
-*/
 
     // Adjust the offset value based on the "resume" meta-data.
     QString resumeOffset = config()->readEntry("resume");
@@ -1012,7 +1020,7 @@ bool HTTPProtocol::http_open()
     }
 
     // Do we need to authorize to the proxy server ?
-    if ( m_state.do_proxy && !m_bIsTunneled )
+    if ( m_state.doProxy && !m_bIsTunneled )
       header += proxyAuthenticationHeader();
   }
 
@@ -1193,7 +1201,7 @@ bool HTTPProtocol::readHeader()
          // connections but don't tell us.
          // We will still use persistent connections if the proxy
          // sends us a "Connection: Keep-Alive" header.
-         if (m_state.do_proxy)
+         if (m_state.doProxy)
          {
             m_bKeepAlive = false;
          }
@@ -2001,7 +2009,7 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.query = url.query();
   m_request.cache = CC_Cache;
   m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
   m_request.url = url;
 
   retrieveHeader();
@@ -2570,7 +2578,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
 {
    kdDebug(7113) << "(" << getpid() << ") " << cookieHeader << endl;
-   
+
    long windowId = m_request.window.toLong();
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
@@ -2665,7 +2673,7 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
   m_request.query = url.query();
   m_request.cache = CC_Reload;
   m_request.offset = 0;
-  m_request.do_proxy = m_bUseProxy;
+  m_request.doProxy = m_bUseProxy;
   m_request.url = url;
 
   if (no_cache)
@@ -3383,7 +3391,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
-    authStr += info.entity_body;
+    authStr += info.entityBody;
   }
 //  kdDebug(7113) << "(" << getpid() << ") A2 => " << authStr << endl;
   md.reset();
@@ -3440,7 +3448,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
     return QString::null;
 
-  // info.entity_body = p;   // FIXME: need to have the data to be sent for POST action!!
+  // info.entityBody = p;   // FIXME: need to have the data to be sent for POST action!!
   info.realm = "";
   info.algorithm = "MD5";
   info.nonce = "";
