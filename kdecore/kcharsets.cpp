@@ -1,6 +1,5 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
-    $Id$
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -128,6 +127,7 @@ static const char* const charsets_for_encoding[] = {
 // 14 Tamil
 // 15 Unicode
 // 16 Northern Sami
+// ### FIXME KDE4: the name of the encodings should mostly be uppercase
 static struct LanguageForEncoding
     {
     const char* index;
@@ -171,7 +171,7 @@ static struct LanguageForEncoding
     { "iso 8859-11", 11 },
     { "utf8", 15 },
     { "utf16", 15 },
-    { "utf7", 15 },
+    { "utf7", 15 }, // ### FIXME: UTF-7 is not in Qt
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
     { "winsami2", 16},
@@ -191,8 +191,10 @@ static struct Builtin
     { "us-ascii", "iso 8859-1" },
     { "usascii", "iso 8859-1" },
     { "x-utf-8", "utf-8" },
-    { "x-utf-7", "utf-7" },
-    { "unicode-1-1-utf-7", "utf-7" },
+    { "x-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt 
+    { "unicode-1-1-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt
+    { "utf-16", "iso-10646-ucs-2" },
+    { "utf16", "iso-10646-ucs-2" },
     { "ucs2", "iso-10646-ucs-2" },
     { "iso10646-1", "iso-10646-ucs-2" },
     { "gb18030.2000-1", "gb18030" },
@@ -325,7 +327,6 @@ static struct ConversionHints
     { "cp1250", "iso-8859-2" },
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
-    { "utf16", "iso-10646-ucs-2" },
     { 0, 0 }};
 
 
@@ -595,6 +596,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
+    // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
