@@ -485,9 +485,10 @@ void KAccel::clearItem(const QString &action)
     }
 }
 
- bool KAccel::updateItem( const QString &action, uint keyCode)
+bool KAccel::updateItem( const QString &action, uint keyCode)
 {
   KKeyEntry *pEntry = aKeyDict[ action ];
+  if ( pEntry->aCurrentKeyCode==keyCode ) return true;
   if (pEntry) {
     if ( pEntry->aAccelId ) {
 		QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
