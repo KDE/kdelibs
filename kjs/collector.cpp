@@ -46,7 +46,7 @@ const int ALLOCATIONS_PER_COLLECTION = 1000;
 // derived constants
 const int CELL_ARRAY_LENGTH = (MINIMUM_CELL_SIZE / sizeof(double)) + (MINIMUM_CELL_SIZE % sizeof(double) != 0 ? sizeof(double) : 0);
 const int CELL_SIZE = CELL_ARRAY_LENGTH * sizeof(double);
-const int CELLS_PER_BLOCK = ((BLOCK_SIZE * 8 - sizeof(int32_t) * 8 - sizeof(void *) * 8) / (CELL_SIZE * 8));
+const int CELLS_PER_BLOCK = ((BLOCK_SIZE * 8 - sizeof(int) * 8 - sizeof(void *) * 8) / (CELL_SIZE * 8));
 
 
 
@@ -57,7 +57,7 @@ struct CollectorCell {
 
 struct CollectorBlock {
   CollectorCell cells[CELLS_PER_BLOCK];
-  int32_t usedCells;
+  int usedCells;
   CollectorCell *freeList;
 };
 
