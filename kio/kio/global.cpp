@@ -1250,7 +1250,6 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
-#define MOUNTOPTS(var) var->mnt_opts
 #define FSNAME(var) var->mnt_fsname
 #elif defined(_AIX)
 /* we don't need this stuff */
@@ -1262,7 +1261,6 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) (getmntent(file, &var) == 0)
 #define MOUNTPOINT(var) var.mnt_mountp
 #define MOUNTTYPE(var) var.mnt_fstype
-#warning please add MOUNTOPTS(var) !!
 #define FSNAME(var) var.mnt_special
 #endif
 
@@ -1526,7 +1524,8 @@ static void check_mount_point(const char *mounttype,
     }
 }
 
-// returns the mount point, checks the mount state
+// returns the mount point, checks the mount state.
+// if ismanual == Wrong this function does not check the manual mount state
 static QString get_mount_info(const QString& filename, 
     MountState& isautofs, MountState& isslow, MountState& ismanual)
 {
@@ -1580,8 +1579,13 @@ static QString get_mount_info(const QString& filename,
             check_mount_point( mounttype, mounted[i].f_mntfromname,
                                isautofs, isslow );
             // keep going, looking for a potentially better one
-            if ( strstr(MOUNTOPTS(me), "user") )
-                ismanual = Right;
+
+            if (ismanual == Unseen)
+            {
+                struct fstab *ft = getfsfile(mounted[i].f_mntonname);
+                if (!ft || strstr(ft->fs_mntops, "noauto"))
+                  ismanual = Right;
+            }
         }
     }
 
@@ -1639,7 +1643,13 @@ static QString get_mount_info(const QString& filename,
             {
                 mountPoint = QFile::decodeName(mountedto);
                 check_mount_point(ent->vfsent_name, device_name, isautofs, isslow);
-                // TODO: add check for ismanual!
+
+                if (ismanual == Unseen)
+                {
+                    // TODO: add check for ismanual, I couldn't find any way
+                    // how to get the mount attribute from /etc/filesystems
+                    ismanual == Wrong;                
+                }
             }
 
             free(mountedfrom);
@@ -1674,8 +1684,15 @@ static QString get_mount_info(const QString& filename,
         {
             mountPoint = QFile::decodeName( MOUNTPOINT(me) );
             check_mount_point(MOUNTTYPE(me), FSNAME(me), isautofs, isslow);
-            if ( strstr(MOUNTOPTS(me), "user") )
-                ismanual = Right;
+
+            // we don't check if ismanual is Right, if /a/b is manually
+            // mounted /a/b/c can't be automounted. At least IMO.
+            if (ismanual == Unseen)
+            {
+                struct fstab *ft = getfsfile(MOUNTPOINT(me));
+                if (!ft || strstr(ft->fs_mntops, "noauto"))
+                  ismanual = Right;
+            }
         }
     }
 
@@ -1691,7 +1708,7 @@ static QString get_mount_info(const QString& filename,
 
 QString KIO::findPathMountPoint(const QString& filename)
 {
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
+  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   return get_mount_info(filename, isautofs, isslow, ismanual);
 }
 
@@ -1704,7 +1721,7 @@ bool KIO::manually_mounted(const QString& filename)
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
+  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual);
   return (mountPoint != QString::null) && (isslow == Right);
 }
