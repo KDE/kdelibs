@@ -83,6 +83,8 @@ crash/hang).
   => Documentation & Web
 
 - make kdoc classtree available online
+- add a section "what runs natively with artsd, faked via artsdsp, and
+  not at all" to the aRts FAQ
 
   => aRts C API
 
