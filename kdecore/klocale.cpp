@@ -68,7 +68,7 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
 
   ASSERT( cfg );
 
-  initCharset(cfg);
+  initCharset(cfg);  // #### HPB: Remove in KDE 3 after porting to Qt 3
   initEncoding(cfg);
   initCatalogue(catalogue);
 
@@ -1535,6 +1535,7 @@ bool KLocale::useDefaultLanguage() const
   return language() == defaultLanguage();
 }
 
+// #### HPB: Remove in KDE 3 after porting to Qt 3
 void KLocale::initCharset(KConfig *config)
 {
   KConfigGroupSaver saver(config, "Locale");
@@ -1587,6 +1588,7 @@ void KLocale::initCatalogue( KCatalogue & catalogue )
   catalogue.setFileName( catalogueFileName( language(), catalogue ) );
 }
 
+// #### HPB: Remove in KDE 3 after porting to Qt 3
 bool KLocale::setCharset(const QString & charset)
 {
   if ( charset.isEmpty() )
