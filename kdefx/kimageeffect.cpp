@@ -1018,18 +1018,18 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 256, 
                                     alpha, alpha, alpha, 256 };
 
-        Q_UINT32 color = int( clr.red()   * opacity ) << 16 |
-                         int( clr.green() * opacity ) << 8 |
-                         int( clr.blue()  * opacity );
+        Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
+        Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
+        Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
 
-        Q_UINT32 packedcolor[2] = { color, color };
- 
+        Q_UINT16 packedcolor[8] = { blue, green, red, 0,
+                                    blue, green, red, 0 };
+
         // Prepare the XMM5, XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
         "pxor        %%xmm7,  %%xmm7\n\t" // Zero out XMM7 for unpacking
         "movdqu        (%0),  %%xmm6\n\t" // Set up (1 - alpha) * 256 in XMM6
-        "movq          (%1),  %%xmm5\n\t" // Set up color * alpha in XMM5
-        "punpcklbw   %%xmm7,  %%xmm5\n\t" // Unpack the color
+        "movdqu        (%1),  %%xmm5\n\t" // Set up color * alpha * 256 in XMM5
         : : "r"(packedalpha), "r"(packedcolor) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
@@ -1047,8 +1047,8 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             "movd         (%0,%1,4),      %%xmm0\n\t"  // Load one pixel to XMM1
             "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixel
             "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm0\n\t"  // Divide by 256
             "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack the pixel to a dword
             "movd            %%xmm0,   (%0,%1,4)\n\t"  // Write the pixel to the image
             : : "r"(data), "r"(i) );
@@ -1069,26 +1069,26 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             // Blend pixels 1 and 2
             "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixels with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm0\n\t"  // Divide by 256
 
             // Blend pixels 3 and 4
             "punpcklbw       %%xmm7,      %%xmm1\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm1\n\t"  // Multiply the pixels with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm1\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm1\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm1\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm1\n\t"  // Divide by 256
 
             // Blend pixels 5 and 6
             "punpcklbw       %%xmm7,      %%xmm2\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm2\n\t"  // Multiply the pixels with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm2\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm2\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm2\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm2\n\t"  // Divide by 256
 
             // Blend pixels 7 and 8
             "punpcklbw       %%xmm7,      %%xmm3\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm3\n\t"  // Multiply the pixels with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm3\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm3\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm3\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm3\n\t"  // Divide by 256
 
             // Pack the pixels into 2 double quadwords
             "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack pixels 1 - 4 to a double qword
@@ -1106,8 +1106,8 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             "movd         (%0,%1,4),      %%xmm0\n\t"  // Load one pixel to XMM1
             "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixel
             "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%xmm0\n\t"  // Divide by 256
             "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack the pixel to a dword
             "movd            %%xmm0,   (%0,%1,4)\n\t"  // Write the pixel to the image
             : : "r"(data), "r"(i) );
@@ -1120,16 +1120,17 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
         Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, 256 };
 
-        Q_UINT32 color = int( clr.red()   * opacity ) << 16 |
-                         int( clr.green() * opacity ) << 8 |
-                         int( clr.blue()  * opacity );
+        Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
+        Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
+        Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
+
+        Q_UINT16 packedcolor[4] = { blue, green, red, 0 };
 
         __asm__ __volatile__(
         "pxor        %%mm7,    %%mm7\n\t"       // Zero out MM7 for unpacking
         "movq         (%0),    %%mm6\n\t"       // Set up (1 - alpha) * 256 in MM6
-        "movd           %1,    %%mm5\n\t"       // Set up color * alpha in MM5
-        "punpcklbw   %%mm7,    %%mm5\n\t"       // Unpack the color
-        : : "r"(packedalpha), "r"(color) );
+        "movq         (%1),    %%mm5\n\t"       // Set up color * alpha * 256 in MM5
+        : : "r"(packedalpha), "r"(packedcolor) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
@@ -1149,26 +1150,26 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             // Blend the first pixel
             "punpcklbw        %%mm7,      %%mm0\n\t"  // Unpack the pixel
             "pmullw           %%mm6,      %%mm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%mm0\n\t"  // Divide the result by 256
-            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha to the result
+            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%mm0\n\t"  // Divide by 256
 
             // Blend the second pixel
             "punpcklbw        %%mm7,      %%mm1\n\t"  // Unpack the pixel
             "pmullw           %%mm6,      %%mm1\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%mm1\n\t"  // Divide the result by 256
-            "paddw            %%mm5,      %%mm1\n\t"  // Add color * alpha to the result
+            "paddw            %%mm5,      %%mm1\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%mm1\n\t"  // Divide by 256
 
             // Blend the third pixel
             "punpcklbw        %%mm7,      %%mm2\n\t"  // Unpack the pixel
             "pmullw           %%mm6,      %%mm2\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%mm2\n\t"  // Divide the result by 256
-            "paddw            %%mm5,      %%mm2\n\t"  // Add color * alpha to the result
+            "paddw            %%mm5,      %%mm2\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%mm2\n\t"  // Divide by 256
 
             // Blend the fourth pixel
             "punpcklbw        %%mm7,      %%mm3\n\t"  // Unpack the pixel
             "pmullw           %%mm6,      %%mm3\n\t"  // Multiply the pixel with (1 - alpha) * 256
-            "psrlw               $8,      %%mm3\n\t"  // Divide the result by 256
-            "paddw            %%mm5,      %%mm3\n\t"  // Add color * alpha to the result
+            "paddw            %%mm5,      %%mm3\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%mm3\n\t"  // Divide by 256
 
             // Pack the pixels into 2 quadwords
             "packuswb         %%mm1,      %%mm0\n\t"  // Pack pixels 1 and 2 to a qword
@@ -1186,8 +1187,8 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             "movd         (%0,%1,4),      %%mm0\n\t"  // Load one pixel to MM1
             "punpcklbw        %%mm7,      %%mm0\n\t"  // Unpack the pixel
             "pmullw           %%mm6,      %%mm0\n\t"  // Multiply the pixel with 1 - alpha * 256
-            "psrlw               $8,      %%mm0\n\t"  // Divide the result by 256
-            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha to the result
+            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha * 256 to the result
+            "psrlw               $8,      %%mm0\n\t"  // Divide by 256
             "packuswb         %%mm0,      %%mm0\n\t"  // Pack the pixel to a dword
             "movd             %%mm0,  (%0,%1,4)\n\t"  // Write the pixel to the image
             : : "r"(data), "r"(i) );
