@@ -131,7 +131,7 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
         connect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
                     this, SLOT( extensionProxyEditableWidgetFocused() ) );
         connect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
-                    this, SLOT( extensionProxyeditableWidgetBlurred() ) );
+                    this, SLOT( extensionProxyEditableWidgetBlurred() ) );
 
         enableAction( "cut", m_extensionProxy->isActionEnabled( "cut" ) );
         enableAction( "copy", m_extensionProxy->isActionEnabled( "copy" ) );
