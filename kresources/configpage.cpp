@@ -73,52 +73,22 @@ class ConfigViewItem : public QCheckListItem
     bool mIsStandard;
 };
 
-ResourcesConfigPage::ResourcesConfigPage( const QString &family, QWidget *parent, 
-                                          const QString &config, const char *name )
+ResourcesConfigPage::ResourcesConfigPage( const QString &family, const QString &config,
+                                          QWidget *parent, const char *name )
   : QWidget( parent, name ), mFamily( family ), mConfig( config )
 {
   kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
-  setCaption( i18n( "Resource Configuration" ) );
 
-  QVBoxLayout *mainLayout = new QVBoxLayout( this );
+  init();
+}
 
-  QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
-  groupBox->setColumnLayout(0, Qt::Vertical );
-  groupBox->layout()->setSpacing( 6 );
-  groupBox->layout()->setMargin( 11 );
-  QHBoxLayout *groupBoxLayout = new QHBoxLayout( groupBox->layout() );
+ResourcesConfigPage::ResourcesConfigPage( const QString &family, QWidget *parent,
+                                          const char *name )
+  : QWidget( parent, name ), mFamily( family ), mConfig( QString::null )
+{
+  kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
 
-  mListView = new KListView( groupBox );
-  mListView->setAllColumnsShowFocus( true );
-  mListView->addColumn( i18n( "Name" ) );
-  mListView->addColumn( i18n( "Type" ) );
-  mListView->addColumn( i18n( "Standard" ) );
-
-  groupBoxLayout->addWidget( mListView );
-
-  KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
-  mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
-  mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
-  mRemoveButton->setEnabled( false );
-  mEditButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
-  mEditButton->setEnabled( false );
-  mStandardButton = buttonBox->addButton( i18n( "&Use as Standard" ), this, SLOT(slotStandard()) );
-  mStandardButton->setEnabled( false );
-  buttonBox->layout();
-
-  groupBoxLayout->addWidget( buttonBox );
-
-  mainLayout->addWidget( groupBox );
-
-  connect( mListView, SIGNAL( selectionChanged() ),
-           SLOT( slotSelectionChanged() ) );
-  connect( mListView, SIGNAL( clicked( QListViewItem * ) ),
-           SLOT( slotItemClicked( QListViewItem * ) ) );
-
-  mManager = 0;
-  mLastItem = 0;
-
-  load();
+  init();
 }
 
 ResourcesConfigPage::~ResourcesConfigPage()
@@ -362,6 +332,51 @@ void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
   if ( configItem->isOn() != configItem->resource()->isActive() ) {
     emit changed( true );
   }
+}
+
+void ResourcesConfigPage::init()
+{
+  setCaption( i18n( "Resource Configuration" ) );
+
+  QVBoxLayout *mainLayout = new QVBoxLayout( this );
+
+  QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
+  groupBox->setColumnLayout(0, Qt::Vertical );
+  groupBox->layout()->setSpacing( 6 );
+  groupBox->layout()->setMargin( 11 );
+  QHBoxLayout *groupBoxLayout = new QHBoxLayout( groupBox->layout() );
+
+  mListView = new KListView( groupBox );
+  mListView->setAllColumnsShowFocus( true );
+  mListView->addColumn( i18n( "Name" ) );
+  mListView->addColumn( i18n( "Type" ) );
+  mListView->addColumn( i18n( "Standard" ) );
+
+  groupBoxLayout->addWidget( mListView );
+
+  KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
+  mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
+  mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
+  mRemoveButton->setEnabled( false );
+  mEditButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
+  mEditButton->setEnabled( false );
+  mStandardButton = buttonBox->addButton( i18n( "&Use as Standard" ), this, SLOT(slotStandard()) );
+  mStandardButton->setEnabled( false );
+  buttonBox->layout();
+
+  groupBoxLayout->addWidget( buttonBox );
+
+  mainLayout->addWidget( groupBox );
+
+  connect( mListView, SIGNAL( selectionChanged() ),
+           SLOT( slotSelectionChanged() ) );
+  connect( mListView, SIGNAL( clicked( QListViewItem * ) ),
+           SLOT( slotItemClicked( QListViewItem * ) ) );
+
+  mManager = 0;
+  mLastItem = 0;
+
+  load();
 }
 
 #include "resourcesconfigpage.moc"
