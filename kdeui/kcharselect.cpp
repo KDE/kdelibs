@@ -350,7 +350,7 @@ void KCharSelectTable::setToolTips()
 	    QToolTip::remove(this,r);
 	    QString s;
 	    s.sprintf("%04X", vTableNum * 256 + numCols()*i + j);
-	    QToolTip::add(this, r, i18n("Character code","UTF code: %1").arg(s));
+	    QToolTip::add(this, r, i18n("Character code","Unicode code: U+%1").arg(s));
 	}
     }
 }
