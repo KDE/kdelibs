@@ -28,6 +28,7 @@ using namespace std;
 
 class Arts::DynamicRequestPrivate {
 public:
+	Connection *connection;
 	Buffer *buffer;
 	MethodDef method;
 	Object object;
@@ -38,7 +39,7 @@ public:
 	 * lookup again" is -1, which gets set whenever the current request differs
 	 * from the last
 	 */
-	long requestID, methodID;
+	long requestID, methodID, objectID;
 	unsigned long paramCount;
 
 	/**
@@ -53,6 +54,8 @@ public:
 DynamicRequest::DynamicRequest(const Object& obj)
 {
 	d = new DynamicRequestPrivate(obj);
+	d->connection = obj._base()->_getConnection();
+	d->objectID = obj._base()->_getObjectID();
 }
 
 DynamicRequest::~DynamicRequest()
@@ -64,12 +67,9 @@ DynamicRequest& DynamicRequest::method(const string& method)
 {
 	assert(!d->buffer);
 
-#if 0
 	// methodID will be set later
-	d->buffer = d->object._base()->_startDynamicRequest(d->requestID,0);
-#else
-	d->buffer = new Buffer();
-#endif
+	d->buffer = Dispatcher::the()->createRequest(d->requestID, d->objectID, 0);
+
 	if(d->method.name != method)
 	{
 		d->method.name = method;
@@ -130,16 +130,14 @@ bool DynamicRequest::invoke(const AnyRef& returnCode)
 		}
 	}
 
-#if 0
+
+	d->buffer->patchLength();
 	d->buffer->patchLong(20,d->methodID);
-	Buffer *result =
-		d->object._base()->_executeDynamicRequest(d->requestID,d->buffer);
-#else
-	cerr << "dynamic requests are not entierly implemented yet" << endl;
-	delete d->buffer;
-	Buffer *result = 0;
-#endif
+	d->connection->qSendBuffer(d->buffer);
 	d->buffer = 0;
+
+	Buffer *result =
+		Dispatcher::the()->waitForResult(d->requestID,d->connection);
 
 	if(result)
 	{

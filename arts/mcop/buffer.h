@@ -33,6 +33,9 @@ namespace Arts {
 typedef unsigned char mcopbyte;
 #endif
 
+// BCI: private data pointer is missing, add next time when breaking binary
+// compatibility, so that internal representation can be changed to something
+// else than vector. Also think about seek.
 class Buffer {
 	std::vector<unsigned char> contents;
 	long rpos;
@@ -76,6 +79,7 @@ public:
 	void readStringSeq(std::vector<std::string>& result);
 
 	void patchLength();
+	void patchLong(long position, long value);
 
 	std::string toString(const std::string& name);
 	bool fromString(const std::string& data, const std::string& name);

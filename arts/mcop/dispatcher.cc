@@ -35,7 +35,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <iostream.h>
-
+#include <loopback.h>
 
 /* Dispatcher private data class (to ensure binary compatibility) */
 
@@ -45,6 +45,7 @@ class DispatcherPrivate {
 public:
 	GlobalComm globalComm;
 	InterfaceRepo interfaceRepo;
+	LoopbackConnection *loopbackConnection;
 };
 
 };
@@ -102,6 +103,8 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 		}
 	}
 	else tcpServer = 0;
+
+	d->loopbackConnection = new LoopbackConnection(serverID);
 
 	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
 	_flowSystem = 0;
@@ -190,6 +193,11 @@ Dispatcher::~Dispatcher()
 
 	d->interfaceRepo = InterfaceRepo::null();
 
+	if(d->loopbackConnection)
+	{
+		d->loopbackConnection->_release();
+		d->loopbackConnection = 0;
+	}
 	if(unixServer)
 	{
 		delete unixServer;
@@ -276,7 +284,7 @@ Dispatcher *Dispatcher::the()
 
 Buffer *Dispatcher::waitForResult(long requestID, Connection *connection)
 {
-	Buffer *b = 0;
+	Buffer *b = requestResultPool[requestID];
 
 	while(!b && !connection->broken()) {
 		_ioManager->processOneEvent(true);
@@ -732,4 +740,9 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 Connection *Dispatcher::activeConnection()
 {
 	return _activeConnection;
+}
+
+Connection *Dispatcher::loopbackConnection()
+{
+	return d->loopbackConnection;
 }

@@ -47,6 +47,7 @@ class WeakReferenceBase;
 
 class Object_base : public NotificationClient {
 private:
+	friend class DynamicRequest;
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
 protected:
@@ -65,6 +66,14 @@ protected:
 
 	Object_base();
 	virtual ~Object_base();
+
+	/*
+	 * helpers for DynamicRequest, BC/BCI, when breaking binary compatibility,
+	 * it may be better to get objectID defined here directly, and maybe do
+	 * something about Connection as well
+	 */
+	long _getObjectID() const;
+	Connection *_getConnection() const;
 
 	/*
 	 * internal management for streams
@@ -178,6 +187,7 @@ class MethodDef;
 
 class Object_skel : virtual public Object_base {
 private:
+	friend class Object_base;
 	struct MethodTableEntry;
 
 	long _objectID;

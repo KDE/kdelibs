@@ -183,6 +183,13 @@ public:
 	 * this will return the Connection the last request came from
 	 */
 	Connection *activeConnection();
+
+	/**
+	 * - internal usage only -
+	 *
+	 * this will return a loopback Connection for sending requests to myself
+	 */
+	Connection *loopbackConnection();
 };
 };
 #endif

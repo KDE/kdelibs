@@ -238,12 +238,23 @@ void Buffer::readStringSeq(vector<string>& result)
 void Buffer::patchLength()
 {
 	long len = size();
-	assert(len > 8);
+	assert(len >= 8);
 
 	contents[4] = len & 0xff;
 	contents[5] = (len >> 8) & 0xff;
 	contents[6] = (len >> 16) & 0xff;
 	contents[7] = (len >> 24) & 0xff;
+}
+
+void Buffer::patchLong(long position, long value)
+{
+	long len = size();
+	assert(len >= position+4);
+
+	contents[position] = value & 0xff;
+	contents[position+1] = (value >> 8) & 0xff;
+	contents[position+2] = (value >> 16) & 0xff;
+	contents[position+3] = (value >> 24) & 0xff;
 }
 
 string Buffer::toString(const string& name)

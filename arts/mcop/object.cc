@@ -136,6 +136,36 @@ ScheduleNode *Object_base::_node()
 	return _scheduleNode;
 }
 
+long Object_base::_getObjectID() const
+{
+	// BCI: add const to the other methods when breaking binary compatibility
+	Object_base *xthis = const_cast<Object_base*>(this);
+	switch(xthis->_location())
+	{
+		case objectIsLocal:
+			return xthis->_skel()->_objectID;
+		case objectIsRemote:
+			return xthis->_stub()->_objectID;
+	}
+	assert(false);
+	return 0;
+}
+
+Connection *Object_base::_getConnection() const
+{
+	// BCI: add const to the other methods when breaking binary compatibility
+	Object_base *xthis = const_cast<Object_base*>(this);
+	switch(xthis->_location())
+	{
+		case objectIsLocal:
+			return Dispatcher::the()->loopbackConnection();
+		case objectIsRemote:
+			return xthis->_stub()->_connection;
+	}
+	assert(false);
+	return 0;
+}
+
 void *Object_base::_cast(unsigned long iid)
 {
 	if(iid == Object_base::_IID) return (Object *)this;
@@ -478,7 +508,13 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 {
 	long mcount = 0;
 
-	assert(_methodTableInit);
+	if(!_methodTableInit)
+	{
+		// take care that the object base methods are at the beginning
+		Object_skel::_buildMethodTable();
+		_buildMethodTable();
+		_methodTableInit = true;
+	}
 
 	vector<MethodTableEntry>::iterator i;
 	for(i=_methodTable.begin(); i != _methodTable.end(); i++)
