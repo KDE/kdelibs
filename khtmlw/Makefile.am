@@ -4,6 +4,11 @@ libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpe
 libkhtmlw_la_LIBADD = -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs -L@topdir@/jscript/.libs @all_libraries@ -lkdecore -lqt -lX11 -lgif -ljpeg
 
 BUILT_SOURCES = html.moc htmlform.moc htmlframe.moc htmlview.moc
+html.cpp: html.moc
+htmlform.cpp: htmlform.moc
+htmlframe.cpp: htmlframe.moc
+htmlview.cpp: htmlview.moc
+
 CLEANFILES = $(BUILT_SOURCES)
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h htmltoken.h htmlframe.h htmlview.h
 libkhtmlw_la_LDFLAGS = -version-info 0:6 -rpath $(libdir)

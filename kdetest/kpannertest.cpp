@@ -10,27 +10,11 @@
 #include <qmlined.h>
 
 #include "kpanner.h"
+#include "kpannertest.h"
 
 QFont default_font("Helvetica", 12);
 
 QApplication *a;
-
-class TopLevel : public QWidget
-{
-    Q_OBJECT;
-public:
-
-    TopLevel( QWidget *parent=0, const char *name=0 );
-protected:
-    void resizeEvent(QResizeEvent *);
-    KPanner *panner, *panner1;
-    QPushButton *ok, *cancel;
-    QListBox *box;
-    QMultiLineEdit *e;
-public slots:
-    void pannerHasChanged();
-    void okPressed();
-};
 
 TopLevel::TopLevel(QWidget *parent, const char *name)
     : QWidget(parent, name)

@@ -9,18 +9,25 @@ INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
 CLEANFILES = *.moc
 
 noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest kpannertest \
-					kcolordlgtest kdatepicktest kfontdialogtest	\
-					kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
-					kkeyconfigtest kseparatortest \
-					kiconloadertest
+		kcolordlgtest kdatepicktest kfontdialogtest	\
+		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
+		kkeyconfigtest kseparatortest kiconloadertest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
-					kkeyconfigtest.h ktabctltest.h \
-					kiconloadertestmain.h
-BUILT_SOURCES = kconfigtest.moc kpannertest.moc ktabctltest.moc \
-				kmsgboxtest.moc kdatepicktestdlg.moc ktreelisttest.moc	\
-				kkeyconfigtest.moc kseparatortest.moc 	\
-				kiconloadertestmain.moc
+		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h
+
+BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
+		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
+		kconfigtest.moc kpannertest.moc
+
+ktabctltest.cpp: ktabctltest.moc
+kiconloadertestmain.cpp: kiconloadertestmain.moc
+kmsgboxtest.cpp: kmsgboxtest.moc
+kdatepicktestdlg.cpp: kdatepicktestdlg.moc
+ktreelisttest.cpp: ktreelisttest.moc
+kkeyconfigtest.cpp: kkeyconfigtest.moc
+kconfigtest.cpp: kconfigtest.moc
+kpannertest.cpp: kpannertest.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
@@ -43,7 +50,4 @@ LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @X_
 
 %.moc: %.h
 	$(MOC) $< -o $@
-
-.cpp.moc:
-	$(MOC) $< -o $@	
 

@@ -31,6 +31,26 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc
 
+kledlamp.cpp: kledlamp.moc
+kprogress.cpp: kprogress.moc
+kpanner.cpp: kpanner.moc
+kcolordlg.cpp: kcolordlg.moc
+kselect.cpp: kselect.moc
+ktabctl.cpp: ktabctl.moc
+kdatepik.cpp: kdatepik.moc
+kmsgbox.cpp: kmsgbox.moc
+kpopmenu.cpp: kpopmenu.moc
+ktreelist.cpp: ktreelist.moc
+kdatetbl.cpp: kdatetbl.moc
+kfontdialog.cpp: kfontdialog.moc
+ktoolbar.cpp: ktoolbar.moc
+kstatusbar.cpp: kstatusbar.moc
+kmenubar.cpp: kmenubar.moc
+ktopwidget.cpp: ktopwidget.moc
+kbutton.cpp: kbutton.moc
+kslider.cpp: kslider.moc
+kiconloader.cpp: kiconloader.moc
+
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 
 %.moc: %.h

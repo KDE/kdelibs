@@ -1,6 +1,9 @@
 // $Id$
 
 /* $Log$
+ *    automake to 1.2 (untested).
+ *
+ *    BTW: Martin, could you do it for me? Please!
  *
  * Revision 1.2  1997/04/15 20:01:57  kalle
  * Kalles changes for 0.8
@@ -84,36 +87,8 @@
 // KDE includes
 #include <kconfig.h>
 
-class KConfigTestView : public QDialog
-{
-  Q_OBJECT
-public:
-  KConfigTestView( QWidget *parent=0, const char *name=0 );
-  ~KConfigTestView();
-
-private slots:
-  void appConfigEditReturnPressed();
-  void groupEditReturnPressed();
-  void keyEditReturnPressed();
-  void writeButtonClicked();
-
-private:
-  QLabel* pAppFileLabel;
-  QLineEdit* pAppFileEdit;
-  QLabel* pGroupLabel;
-  QLineEdit* pGroupEdit;
-  QLineEdit* pKeyEdit;
-  QLabel* pEqualsLabel;
-  QLineEdit* pValueEdit;
-  QPushButton* pWriteButton;
-  QLabel* pInfoLabel1, *pInfoLabel2;
-  QPushButton* pQuitButton;
-
-  KConfig* pConfig;
-  QFile* pFile;
-  QTextStream* pStream;
-};
-
+//
+// KConfigTestView contains lots of Qt widgets.
 //
 
 #include "kconfigtest.h"
@@ -263,12 +238,6 @@ void KConfigTestView::keyEditReturnPressed()
 }
 
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
-
-//
-// Include the meta-object code for our own classes
-//
-
-#include "kconfigtest.moc"
   pInfoLabel2->setText( "Entry written" );
 
   KASSERT1( true, KDEBUG_INFO, 1, "Entry written: %d", 27 );

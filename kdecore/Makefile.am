@@ -25,6 +25,11 @@ libkdecore_la_LDFLAGS = -version-info 0:9 -rpath $(libdir)
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc
 
+ksock.cpp: ksock.moc
+drag.cpp: drag.moc
+kkeyconf.cpp: kkeydata.moc
+kapp.cpp: kapp.moc
+
 %.moc: %.h
 	$(MOC) $< -o $@
 
