@@ -710,25 +710,71 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   return QString::null;
 }
 
-QString KXMLGUIClient::findVersionNumber( const QString &_xml )
+
+
+QString KXMLGUIClient::findVersionNumber( const QString &xml )
 {
-  QString xml = _xml;
-
-  QRegExp versionExpr( ".*<.*gui.+version=\"([0-9]+)\".*>.*" );
-  versionExpr.setCaseSensitive( false );
-
-  QTextStream stream( xml, IO_ReadOnly );
-  stream.setEncoding( QTextStream::UnicodeUTF8 );
-  QString line = stream.readLine();
-  for (; !line.isNull(); line = stream.readLine() )
+  enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
+               ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
+  for (unsigned int pos = 0; pos < xml.length(); pos++)
   {
-    if ( line.isEmpty() )
-      continue;
+    switch (state)
+    {
+      case ST_START:
+        if (xml[pos] == '<')
+          state = ST_AFTER_OPEN;
+        break;
+      case ST_AFTER_OPEN:
+      {
+        //Jump to gui..
+        int guipos = xml.find("gui", pos, false /*case-insensitive*/);
+        if (guipos == -1)
+          return QString::null; //Reject
 
-    if ( versionExpr.search( line ) > -1 )
-        return versionExpr.cap( 1 );
-  }
+        pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
+        state = ST_AFTER_GUI;
+        break;
+      }       
+      case ST_AFTER_GUI:
+        state = ST_EXPECT_VERSION;
+        break;
+      case ST_EXPECT_VERSION:
+      {
+        int verpos =  xml.find("version=\"", pos, false /*case-insensitive*/);
+        if (verpos == -1)
+          return QString::null; //Reject
 
+        pos = verpos +  8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
+        state = ST_VERSION_NUM;
+        break;
+      }
+      case ST_VERSION_NUM:
+      {
+        int endpos;
+        for (endpos = pos; endpos <  xml.length(); endpos++)
+        {
+          if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')
+            continue; //Number..
+          if (xml[endpos].unicode() == '"') //End of parameter
+            break;
+          else //This shouldn't be here..
+          {
+            endpos = xml.length();
+          }                  
+        }
+
+        if (endpos != pos && endpos < xml.length() )
+        {
+          QString matchCandidate = xml.mid(pos, endpos - pos); //Don't include " ".
+          return matchCandidate;
+        }
+
+        state = ST_EXPECT_VERSION; //Try to match a well-formed version..            
+        break;
+      } //case..
+    } //switch
+  } //for
+ 
   return QString::null;
 }
 
