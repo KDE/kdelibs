@@ -142,6 +142,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_fcache = 0;
   m_iSize = -1;
   m_HTTPrev = HTTP_Unknown;
+  m_bUseCookiejar = false;
 
   m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
   m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
@@ -211,6 +212,13 @@ void HTTPProtocol::resetSessionSettings()
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
   m_request.window = config()->readEntry("window-id");
+
+  if ( m_bUseCookiejar && !m_dcopClient->isApplicationRegistered( "kcookiejar" ) )
+  {
+      QString error;
+      if ( KApplication::startServiceByDesktopName( "kcookiejar", QStringList(), &error ) != 0 )
+          kdDebug( 7103 ) << "Error starting cookiejar: " << error << endl;
+  }
 
   bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
   if ( sendReferrer )
