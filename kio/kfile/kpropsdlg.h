@@ -43,6 +43,7 @@ class KURLRequester;
 class QButton;
 class KIconButton;
 class KPropsDlgPlugin;
+class QComboBox;
 
 #define KPropsPage KPropsDlgPlugin
 
