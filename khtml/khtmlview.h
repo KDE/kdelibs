@@ -256,6 +256,7 @@ private:
 
     void complete();
 
+#ifndef KHTML_NO_CARET
     // -- caret-related member functions (for caretMode as well as designMode)
 
     /** initializes the caret if it hasn't been initialized yet.
@@ -517,6 +518,8 @@ private:
     /** moves the caret to the end of the current line.
      */
     void moveCaretToLineEnd();
+
+#endif // KHTML_NO_CARET
 
     // ------------------------------------- member variables ------------------------------------
  private:
