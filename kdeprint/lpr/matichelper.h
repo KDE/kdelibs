@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *  Copyright (c) 2002 Michael Goffioul <goffioul@imec.be>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,32 +17,12 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmlpruimanager.h"
-#include "kmpropertypage.h"
-#include "kprinterpropertydialog.h"
-#include "kpqtpage.h"
+#ifndef MATICHELPER_H
+#define MATICHELPER_H
 
-#include "kmpropdriver.h"
-#include "kmpropbackend.h"
+class DrMain;
+class MaticBlock;
 
-#include <klocale.h>
+DrMain* maticToDriver(MaticBlock*);
 
-KMLprUiManager::KMLprUiManager(QObject *parent, const char *name)
-: KMUiManager(parent,name)
-{
-}
-
-KMLprUiManager::~KMLprUiManager()
-{
-}
-
-void KMLprUiManager::setupPropertyPages(KMPropertyPage *pages)
-{
-	pages->addPropPage(new KMPropBackend(pages, "Backend"));
-	pages->addPropPage(new KMPropDriver(pages, "Driver"));
-}
-
-void KMLprUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
-{
-	dlg->addPage(new KPQtPage(dlg->driver(), dlg, "QtPage"));
-}
+#endif

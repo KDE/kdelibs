@@ -24,23 +24,31 @@
 
 class PrintcapEntry;
 class KMPrinter;
+class DrMain;
+class KMManager;
 
 class LprHandler
 {
 public:
-	LprHandler(const QString& name);
+	LprHandler(const QString& name, KMManager *mgr = 0);
 
 	virtual bool validate(PrintcapEntry*);
 	virtual KMPrinter* createPrinter(PrintcapEntry*);
 	virtual bool completePrinter(KMPrinter*, PrintcapEntry*, bool shortmode = true);
-	
+	virtual DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
+
 	QString name() const;
+	KMManager* manager() const;
 
 protected:
 	QString	m_name;
+	KMManager	*m_manager;
 };
 
 inline QString LprHandler::name() const
 { return m_name; }
+
+inline KMManager* LprHandler::manager() const
+{ return m_manager; }
 
 #endif

@@ -26,6 +26,7 @@
 #include <qfileinfo.h>
 #include <qlist.h>
 #include <klocale.h>
+#include <unistd.h>
 
 KMLprManager::KMLprManager(QObject *parent, const char *name)
 : KMManager(parent,name)
@@ -33,8 +34,11 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 	m_handlers.setAutoDelete(true);
 	m_handlerlist.setAutoDelete(false);
 	m_entries.setAutoDelete(true);
-	
+
 	m_lpchelper = new LpcHelper(this);
+
+	setHasManagement(/*getuid() == 0*/true);
+	setPrinterOperationMask(KMManager::PrinterEnabling|KMManager::PrinterConfigure|KMManager::PrinterTesting);
 
 	initHandlers();
 }
@@ -95,10 +99,10 @@ void KMLprManager::initHandlers()
 	m_handlers.clear();
 	m_handlerlist.clear();
 
-	insertHandler(new MaticHandler);
+	insertHandler(new MaticHandler(this));
 
 	// default handler
-	insertHandler(new LprHandler("default"));
+	insertHandler(new LprHandler("default", this));
 }
 
 LprHandler* KMLprManager::findHandler(KMPrinter *prt)
@@ -150,4 +154,14 @@ void KMLprManager::checkPrinterState(KMPrinter *prt)
 		prt->setState(m_lpchelper->state(prt));
 	else
 		prt->setState(KMPrinter::Idle);
+}
+
+DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool)
+{
+	LprHandler	*handler = findHandler(prt);
+	PrintcapEntry	*entry = findEntry(prt);
+	if (handler && entry)
+		return handler->loadDriver(prt, entry);
+	setErrorMsg(i18n("Internal error."));
+	return NULL;
 }

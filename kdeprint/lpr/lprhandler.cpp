@@ -20,11 +20,12 @@
 #include "lprhandler.h"
 #include "kmprinter.h"
 #include "printcapentry.h"
+#include "kmmanager.h"
 
 #include <klocale.h>
 
-LprHandler::LprHandler(const QString& name)
-: m_name(name)
+LprHandler::LprHandler(const QString& name, KMManager *mgr)
+: m_name(name), m_manager(mgr)
 {
 }
 
@@ -53,4 +54,10 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
     else
         prt->setLocation(i18n("Unknown (unrecognized entry)"));
 	return true;
+}
+
+DrMain* LprHandler::loadDriver(KMPrinter*, PrintcapEntry*)
+{
+	manager()->setErrorMsg(i18n("Unrecognized entry"));
+	return NULL;
 }

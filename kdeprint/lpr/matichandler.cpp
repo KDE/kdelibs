@@ -21,6 +21,7 @@
 #include "printcapentry.h"
 #include "kmprinter.h"
 #include "matic.h"
+#include "matichelper.h"
 
 #include <klocale.h>
 #include <kstringhandler.h>
@@ -29,8 +30,8 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 
-MaticHandler::MaticHandler()
-: LprHandler("foomatic")
+MaticHandler::MaticHandler(KMManager *mgr)
+: LprHandler("foomatic", mgr)
 {
 }
 
@@ -206,4 +207,12 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 	}
 
 	return url;
+}
+
+DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
+{
+	MaticBlock	*blk = loadMaticDriver(entry);
+	if (blk)
+		return maticToDriver(blk);
+	return NULL;
 }

@@ -38,6 +38,8 @@ public:
 
 	bool completePrinter(KMPrinter*);
 	bool completePrinterShort(KMPrinter*);
+	
+	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 
 protected:
 	void listPrinters();

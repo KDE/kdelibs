@@ -29,11 +29,12 @@ class MaticBlock;
 class MaticHandler : public LprHandler
 {
 public:
-	MaticHandler();
+	MaticHandler(KMManager *mgr = 0);
 
 	bool validate(PrintcapEntry*);
 	KMPrinter* createPrinter(PrintcapEntry*);
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
+	DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
 
 private:
 	MaticBlock* loadMaticDriver(PrintcapEntry*);

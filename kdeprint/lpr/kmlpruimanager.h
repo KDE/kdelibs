@@ -29,6 +29,7 @@ public:
 	~KMLprUiManager();
 
 	void setupPropertyPages(KMPropertyPage*);
+	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 	//void setupWizard(KMWizard*);
 };
 
