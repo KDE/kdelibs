@@ -349,6 +349,10 @@ namespace KJS {
     void popScope();
     LabelStack *seenLabels() { return &ls; }
 
+    void pushTryCatch() { tryCatch++; };
+    void popTryCatch() { tryCatch--; };
+    bool inTryCatch() const;
+
   private:
 
     List scope;
@@ -360,6 +364,7 @@ namespace KJS {
 
     LabelStack ls;
     CodeType codeType;
+    int tryCatch;
   };
 
   /**
@@ -494,6 +499,15 @@ namespace KJS {
     InterpreterImp *next, *prev;
 
     int recursion;
+  };
+
+  class ExecStateImp {
+  public:
+    ExecStateImp(Interpreter *interp, ContextImp *con)
+      : interpreter(interp), context(con) {};
+    Interpreter *interpreter;
+    ContextImp *context;
+    Value exception;
   };
 
   class AttachedInterpreter;

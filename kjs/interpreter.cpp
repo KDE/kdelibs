@@ -34,6 +34,7 @@
 #include "collector.h"
 #include "operations.h"
 #include "error_object.h"
+#include "debugger.h"
 #include "nodes.h"
 
 using namespace KJS;
@@ -311,18 +312,6 @@ void Interpreter::finalCheck()
 
 // ------------------------------ ExecState --------------------------------------
 
-namespace KJS {
-  class ExecStateImp
-  {
-  public:
-    ExecStateImp(Interpreter *interp, ContextImp *con)
-      : interpreter(interp), context(con) {};
-    Interpreter *interpreter;
-    ContextImp *context;
-    Value exception;
-  };
-};
-
 ExecState::~ExecState()
 {
   delete rep;
@@ -340,6 +329,11 @@ const Context ExecState::context() const
 
 void ExecState::setException(const Value &e)
 {
+  if (e.isValid()) {
+    Debugger *dbg = rep->interpreter->imp()->debugger();
+    if (dbg)
+      dbg->exception(this,e,rep->context->inTryCatch());
+  }
   rep->exception = e;
 }
 

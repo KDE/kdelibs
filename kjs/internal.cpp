@@ -684,6 +684,7 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
 {
   codeType = type;
   callingCon = _callingContext;
+  tryCatch = 0;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode ) {
@@ -746,6 +747,14 @@ void ContextImp::pushScope(const Object &s)
 void ContextImp::popScope()
 {
   scope.removeFirst();
+}
+
+bool ContextImp::inTryCatch() const
+{
+  const ContextImp *c = this;
+  while (c && !c->tryCatch)
+    c = c->callingCon;
+  return (c && c->tryCatch);
 }
 
 // ------------------------------ Parser ---------------------------------------

@@ -110,8 +110,8 @@ bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
   return true;
 }
 
-bool Debugger::exception(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         Object &/*exceptionObj*/)
+bool Debugger::exception(ExecState */*exec*/, const Value &/*value*/,
+			 bool /*inTryCatch*/)
 {
   return true;
 }

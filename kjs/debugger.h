@@ -28,6 +28,7 @@ namespace KJS {
   class DebuggerImp;
   class Interpreter;
   class ExecState;
+  class Value;
   class Object;
   class UString;
   class List;
@@ -140,14 +141,14 @@ namespace KJS {
      * you want to process this event.
      *
      * @param exec The current execution state
-     * @param sourceId The ID of the source code being executed
-     * @param lineno The line at which the error occurred
-     * @param exceptionObj The exception object
+     * @param value The value of the exception
+     * @param inTryCatch Whether or not the exception will be caught by the
+     * script
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool exception(ExecState *exec, int sourceId, int lineno,
-                           Object &exceptionObj);
+    virtual bool exception(ExecState *exec, const Value &value,
+			   bool inTryCatch);
 
     /**
      * Called when a line of the script is reached (before it is executed)

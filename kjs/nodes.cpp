@@ -2643,6 +2643,10 @@ Completion ThrowNode::execute(ExecState *exec)
   // bail out on error
   KJS_CHECKEXCEPTION
 
+  Debugger *dbg = exec->interpreter()->imp()->debugger();
+  if (dbg)
+    dbg->exception(exec,v,exec->context().imp()->inTryCatch());
+
   return Completion(Throw, v);
 }
 
@@ -2748,7 +2752,11 @@ Completion TryNode::execute(ExecState *exec)
 
   Completion c, c2;
 
+  if (_catch)
+    exec->context().imp()->pushTryCatch();
   c = block->execute(exec);
+  if (_catch)
+    exec->context().imp()->popTryCatch();
 
   if (!_final) {
     if (c.complType() != Throw)

@@ -97,7 +97,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   ContextImp ctx(globalObj, exec, thisObj, codeType(),
                  exec->context().imp(), this, args);
   ExecState newExec(exec->interpreter(), &ctx);
-  newExec.setException(exec->exception()); // could be null
+  newExec.rep->exception = exec->exception(); // could be null
 
   // In order to maintain our "arguments" property, we maintain a list of arguments
   // properties from earlier in the execution stack. Upon return, we restore the
@@ -141,7 +141,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   // if an exception occured, propogate it back to the previous execution object
   if (newExec.hadException())
-    exec->setException(newExec.exception());
+    exec->rep->exception = newExec.exception();
   if (codeType() == FunctionCode)
     popArgs(&newExec);
 
@@ -158,7 +158,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
 
   if (comp.complType() == Throw) {
-    exec->setException(comp.value());
+    exec->rep->exception = comp.value();
     return comp.value();
   }
   else if (comp.complType() == ReturnValue)
