@@ -2700,7 +2700,7 @@ void KActionCollection::setWidget( QWidget* w )
       d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
   }
   else
-    kdWarning(129) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
+    kdDebug(129) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
 }
 
 void KActionCollection::findMainWindow( QWidget *w )
