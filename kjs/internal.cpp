@@ -779,7 +779,13 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   m_compatMode = Interpreter::NativeMode;
 
   // initialize properties of the global object
+  initGlobalObject();
 
+  recursion = 0;
+}
+
+void InterpreterImp::initGlobalObject()
+{
   // Contructor prototype objects (Object.prototype, Array.prototype etc)
 
   FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(globExec);
@@ -902,8 +908,6 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
 
   // built-in objects
   global.put(globExec,"Math", Object(new MathObjectImp(globExec,objProto)), DontEnum);
-
-  recursion = 0;
 }
 
 InterpreterImp::~InterpreterImp()

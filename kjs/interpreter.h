@@ -148,6 +148,8 @@ namespace KJS {
      */
     Object globalObject() const;
 
+    void initGlobalObject();
+
     /**
      * Returns the execution state object which can be used to execute
      * scripts using this interpreter at a the "global" level, i.e. one

@@ -114,6 +114,11 @@ Object Interpreter::globalObject() const
   return rep->globalObject();
 }
 
+void Interpreter::initGlobalObject()
+{
+  rep->initGlobalObject();
+}
+
 ExecState *Interpreter::globalExec()
 {
   return rep->globalExec();
