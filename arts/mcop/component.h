@@ -19,6 +19,8 @@
 */
 #ifndef MCOP_COMPONENT_H
 #define MCOP_COMPONENT_H
+#include <string>
+#include <vector>
 
 class ScheduleNode;
 
@@ -26,17 +28,8 @@ class Component
 {
 public:
 	virtual ScheduleNode *node() = 0;
-/*
-protected:
-public:
-	// return the default port name in this direction, or "" if no default
-	// default port is always defined when the component has only one port (!)
-	// and should be mentioned explicitely with the 'default' modifier in the
-	// idl in case the component has multiple ports
-	virtual std::string defaultPort(PortDirection dir) = 0;
-	// return 0 in case the port doesn't exist
-	virtual PortType* portType(const std::string& port) = 0;
-*/
+	virtual vector<std::string> defaultPortsIn() = 0;
+	virtual vector<std::string> defaultPortsOut() = 0;
 };
 
 #endif

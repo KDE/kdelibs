@@ -28,18 +28,16 @@ class Component;
 
 // Connect function overloaded for components with default port
 void connect(Component* src, const std::string& output, Component* dest, const std::string& input);
-/* // default ports not implemented yet
 void connect(Component* src, const string& output, Component* dest);
 void connect(Component* src, Component* dest, const string& input);
 void connect(Component* src, Component* dest);
-*/
+
 // setValue function overloaded for components with default port
 void setValue(Component* c, const std::string& port, const float fvalue);
-/* // default ports not implemented yet
 void setValue(Component* c, const string& port, const string& svalue);
 void setValue(Component* c, const float fvalue);
 void setValue(Component* c, const string& svalue);
-*/
+
 //}
 
 #endif

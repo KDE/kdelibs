@@ -101,6 +101,7 @@ struct MethodDef {
  * - attribute is incoming/outgoing stream
  * - if it's a stream, it also should contain the information whether it is
  *   asynchronous or synchronous
+ * - NB20000320: see InterfaceDef for the meaning of streamDefault
  */
 
 enum AttributeType {
@@ -109,7 +110,8 @@ enum AttributeType {
   streamMulti = 4,
   attributeStream    = 8,
   attributeAttribute = 16,
-  streamAsync = 32
+  streamAsync = 32,
+  streamDefault = 64
 };
 
 struct AttributeDef {
@@ -128,6 +130,11 @@ struct AttributeDef {
  * inherits in exactly one step. So to see if interface XYZ is inherited
  * from ABC, you need to check the "inheritedInterfaces" of XYZ, and their
  * "inheritedInterfaces" and their "inheritedInterfaces" and so on.
+ *
+ * - NB20000320: defaultPorts allows to connect to those port by default if
+ *               connection is made in the corresponding direction.
+ *               It cannot be just an attribute flag because of the syntax
+ *               on a separate line.
  */
 
 struct InterfaceDef {
@@ -136,6 +143,8 @@ struct InterfaceDef {
 	sequence<string> inheritedInterfaces;
 	sequence<MethodDef> methods;
 	sequence<AttributeDef> attributes;
+	
+	sequence<string> defaultPorts;
 };
 
 // Type definitions (struct's and such)

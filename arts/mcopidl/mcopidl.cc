@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 1999 Stefan Westerfeld, stefan@space.twc.de
+                       Nicolas Brodu, nicolas.brodu@free.fr
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ void addStructTodo( TypeDef *type )
 void addInterfaceTodo( InterfaceDef *iface )
 {
 	interfaces.push_back(iface);
-
+	
 	if(idl_in_include)
 	{
 		includedNames.push_back(iface->name);
@@ -1002,14 +1002,14 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tstatic %s_base *_fromReference(ObjectReference ref,"
 		                                " bool needcopy);\n\n",d->name.c_str());
 
-			/* reference counting: _copy */
+		/* reference counting: _copy */
 		fprintf(header,"\tinline %s_base *_copy() {\n"
 					   "\t\tassert(_refCnt > 0);\n"
 				       "\t\t_refCnt++;\n"
 					   "\t\treturn this;\n"
 					   "\t}\n\n",d->name.c_str());
 
-			/* attributes (not for streams) */
+		/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
 			AttributeDef *ad = *ai;
@@ -1030,7 +1030,8 @@ void doInterfacesHeader(FILE *header)
 				}
 			}
 		}
-			/* methods */
+		
+		/* methods */
 		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
 		{
 			MethodDef *md = *mi;
@@ -1039,7 +1040,7 @@ void doInterfacesHeader(FILE *header)
 
 			fprintf(header,"\tvirtual %s %s(%s) = 0;\n",rc.c_str(),
 				md->name.c_str(), params.c_str());
-		}
+		}		
 		fprintf(header,"};\n\n");
 
 		// create var
@@ -1365,6 +1366,11 @@ void doInterfacesHeader(FILE *header)
 			// Component virtual has to be coded in the cc
 			fprintf(header,"\tScheduleNode *node();\n");
 		}
+		fprintf(header,"\n");
+		
+		// Default I/O info
+		fprintf(header,"\tvirtual vector<std::string> defaultPortsIn();\n");
+		fprintf(header,"\tvirtual vector<std::string> defaultPortsOut();\n");
 		fprintf(header,"\n");
 
 		/* attributes */
@@ -1735,12 +1741,107 @@ void doInterfacesSource(FILE *source)
 		/* destructor - take care of reference counting */
 		fprintf(source,"%s::~%s() { _assign_%s_base(0); }\n",
 			d->name.c_str(), d->name.c_str(), d->name.c_str());
+		
+		// Default I/O info
+		fprintf(source,"vector<std::string> %s::defaultPortsIn() {\n",d->name.c_str());
+		fprintf(source,"\tvector<std::string> ret;\n");
+		vector<std::string>::iterator si;
+		int defaultPortsCount = 0;
+		for (si = d->defaultPorts.begin(); si != d->defaultPorts.end(); si++)
+		{
+			// look if an attribute corresponds
+			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamIn)
+				&& ((*si)==(*ai)->name))
+				{
+					(*ai)->flags = (AttributeType)((int)(*ai)->flags | (int)streamDefault);
+					fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+					defaultPortsCount++;
+					break;
+				}
+		}
+		// No default, but only one stream => it is the default
+		if (defaultPortsCount==0) {
+			// look if an attribute corresponds
+			vector<AttributeDef *>::iterator foundPos;
+			int found = 0;
+			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamIn))
+				{
+					found++; foundPos=ai;
+				}
+			if (found==1) {
+				(*foundPos)->flags = (AttributeType)((int)(*foundPos)->flags | (int)streamDefault);
+				fprintf(source,"\tret.push_back(\"%s\");\n",(*foundPos)->name.c_str());
+			}
+		}
+		if (!d->inheritedInterfaces.empty()) {
+			fprintf(source,"\tvector<std::string> ports;\n");
+		}
+		for (si=d->inheritedInterfaces.begin(); si!=d->inheritedInterfaces.end(); si++)
+		{
+			// Parent default ports will be inserted after, in order
+			// => the first default ports are always those declared in our own
+			// interface
+			// But the parents are taken in the order they were declared.
+			fprintf(source,"\tports = %s::defaultPortsIn();\n",(*si).c_str());
+			fprintf(source,"\tret.insert(ret.end(),ports.begin(),ports.end());\n");
+		}
+		fprintf(source,"\treturn ret;\n}\n");
+		
+		fprintf(source,"vector<std::string> %s::defaultPortsOut() {\n",d->name.c_str());
+		fprintf(source,"\tvector<std::string> ret;\n");
+		defaultPortsCount = 0;
+		for (si = d->defaultPorts.begin(); si != d->defaultPorts.end(); si++)
+		{
+			// look if an attribute corresponds
+			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamOut)
+				&& ((*si)==(*ai)->name))
+				{
+					(*ai)->flags = (AttributeType)((int)(*ai)->flags | (int)streamDefault);
+					fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+					defaultPortsCount++;
+					break;
+				}
+		}
+		// No default, but only one stream => it is the default
+		if (defaultPortsCount==0) {
+			// look if an attribute corresponds
+			vector<AttributeDef *>::iterator foundPos;
+			int found = 0;
+			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamOut))
+				{
+					found++; foundPos=ai;
+				}
+			if (found==1) {
+				(*foundPos)->flags = (AttributeType)((int)(*foundPos)->flags | (int)streamDefault);
+				fprintf(source,"\tret.push_back(\"%s\");\n",(*foundPos)->name.c_str());
+			}
+		}
+		if (!d->inheritedInterfaces.empty()) {
+			fprintf(source,"\tvector<std::string> ports;\n");
+		}
+		for (si=d->inheritedInterfaces.begin(); si!=d->inheritedInterfaces.end(); si++)
+		{
+			// Parent default ports will be inserted after, in order
+			// => the first default ports are always those declared in our own
+			// interface
+			// But the parents are taken in the order they were declared.
+			fprintf(source,"\tports = %s::defaultPortsOut();\n",(*si).c_str());
+			fprintf(source,"\tret.insert(ret.end(),ports.begin(),ports.end());\n");
+		}
+		fprintf(source,"\treturn ret;\n}\n");
+		fprintf(source,"\n");
+		
 		if (haveStreams(d)) {
 			// Component virtual
 			fprintf(source,"ScheduleNode *%s::node()"
 				" {return _%s_base()->_node();}\n\n",
 					d->name.c_str(),d->name.c_str());
 		}
+		fprintf(source,"\n");
 	}
 }
 

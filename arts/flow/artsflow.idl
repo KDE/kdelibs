@@ -255,7 +255,7 @@ interface SynthModule {
 
 interface Synth_PLAY : SynthModule {
 	// attribute string channels;
-	in audio stream invalue_left,invalue_right;
+	default in audio stream invalue_left,invalue_right;
 };
 
 interface Synth_FREQUENCY : SynthModule {
@@ -274,13 +274,14 @@ interface Synth_MULTI_ADD : SynthModule {
 };
 
 interface Synth_ADD : SynthModule {
-	in audio stream invalue1,invalue2;
+	default in audio stream invalue1,invalue2;
 	out audio stream outvalue;
 };
 
 interface Synth_MUL : SynthModule {
 	in audio stream invalue1,invalue2;
 	out audio stream outvalue;
+	default invalue1, invalue2;
 };
 
 interface Synth_PLAY_WAV : SynthModule {
@@ -289,6 +290,7 @@ interface Synth_PLAY_WAV : SynthModule {
 	readonly attribute boolean finished;
 
 	out audio stream left, right;
+	default left, right;
 };
 
 interface ByteStreamToAudio : SynthModule {
@@ -305,11 +307,13 @@ interface ByteStreamToAudio : SynthModule {
 	async in byte stream indata;
 
 	out audio stream left,right;
+	default left;
+	default right;
 };
 
 interface StereoEffect : SynthModule {
-	in audio stream inleft, inright;
-	out audio stream outleft, outright;
+	default in audio stream inleft, inright;
+	default out audio stream outleft, outright;
 };
 
 /*

@@ -8,7 +8,7 @@
 enum HeaderMagic {MCOP_MAGIC = 1347371853};
 enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5, mcopOnewayInvocation = 6};
 enum MethodType {methodOneway = 1, methodTwoway = 2};
-enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32};
+enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32, streamDefault = 64};
 class Header : public Type {
 public:
 	Header();
@@ -173,7 +173,7 @@ public:
 class InterfaceDef : public Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<MethodDef *>& methods, const std::vector<AttributeDef *>& attributes);
+	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<MethodDef *>& methods, const std::vector<AttributeDef *>& attributes, const std::vector<std::string>& defaultPorts);
 	InterfaceDef(Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
@@ -183,6 +183,7 @@ public:
 	std::vector<std::string> inheritedInterfaces;
 	std::vector<MethodDef *> methods;
 	std::vector<AttributeDef *> attributes;
+	std::vector<std::string> defaultPorts;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -373,6 +374,9 @@ public:
 	inline operator InterfaceRepo_base*() {return _InterfaceRepo_base();}
 	inline bool isNull() {return _InterfaceRepo_base()==0;}
 
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
+
 	inline long insertModule(const ModuleDef& newModule) {return _InterfaceRepo_base()->insertModule(newModule);}
 	inline void removeModule(long moduleID) {return _InterfaceRepo_base()->removeModule(moduleID);}
 	inline InterfaceDef* queryInterface(const std::string& name) {return _InterfaceRepo_base()->queryInterface(name);}
@@ -469,6 +473,9 @@ public:
 	inline operator FlowSystemSender_base*() {return _FlowSystemSender_base();}
 	inline bool isNull() {return _FlowSystemSender_base()==0;}
 
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
+
 	inline void processed() {return _FlowSystemSender_base()->processed();}
 };
 
@@ -561,6 +568,9 @@ public:
 	inline std::string toString() {return _FlowSystemReceiver_base()->_toString();}
 	inline operator FlowSystemReceiver_base*() {return _FlowSystemReceiver_base();}
 	inline bool isNull() {return _FlowSystemReceiver_base()==0;}
+
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
 
 	long receiveHandlerID() {return _FlowSystemReceiver_base()->receiveHandlerID();}
 };
@@ -665,6 +675,9 @@ public:
 	inline operator FlowSystem_base*() {return _FlowSystem_base();}
 	inline bool isNull() {return _FlowSystem_base()==0;}
 
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
+
 	inline void startObject(Object_base * node) {return _FlowSystem_base()->startObject(node);}
 	inline void stopObject(Object_base * node) {return _FlowSystem_base()->stopObject(node);}
 	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->connectObject(sourceObject, sourcePort, destObject, destPort);}
@@ -768,6 +781,9 @@ public:
 	inline operator GlobalComm_base*() {return _GlobalComm_base();}
 	inline bool isNull() {return _GlobalComm_base()==0;}
 
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
+
 	inline bool put(const std::string& variable, const std::string& value) {return _GlobalComm_base()->put(variable, value);}
 	inline std::string get(const std::string& variable) {return _GlobalComm_base()->get(variable);}
 	inline void erase(const std::string& variable) {return _GlobalComm_base()->erase(variable);}
@@ -861,6 +877,9 @@ public:
 	inline std::string toString() {return _TmpGlobalComm_base()->_toString();}
 	inline operator TmpGlobalComm_base*() {return _TmpGlobalComm_base();}
 	inline bool isNull() {return _TmpGlobalComm_base()==0;}
+
+	virtual vector<std::string> defaultPortsIn();
+	virtual vector<std::string> defaultPortsOut();
 
 };
 

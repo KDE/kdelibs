@@ -194,6 +194,7 @@ stream		return T_STREAM;
 multi		return T_MULTI;
 async		return T_ASYNC;
 oneway		return T_ONEWAY;
+default		return T_DEFAULT;
 
 {Kidl_Identifier}	{
 			  yylval._str = strdup(yytext);		// TAKE CARE: free that thing

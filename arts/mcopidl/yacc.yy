@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 1999 Stefan Westerfeld, stefan@space.twc.de
+                       Nicolas Brodu, nicolas.brodu@free.fr
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -96,17 +96,20 @@ void yyerror( const char *s )
 %type<_interfaceDef> classbody
 %type<_enumComponentSeq> enumbody
 %type<_strs> identifierlist
+%type<_strs> defaultdef
 %type<_strs> inheritedinterfaces
 
 %type<_int> maybereadonly
 %type<_int> direction
 %type<_int> maybeoneway
+%type<_int> maybedefault
 
 %token T_INTEGER_LITERAL T_UNKNOWN
 %type<_int> T_INTEGER_LITERAL
 
 %token T_BOOLEAN T_STRING T_LONG T_BYTE T_OBJECT T_SEQUENCE T_AUDIO
 %token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY T_ASYNC T_ONEWAY
+%token T_DEFAULT
 
 %%
 
@@ -218,6 +221,17 @@ classbody:
 	  {
 	    $$ = $2;
 	    $$->attributes.insert($$->attributes.begin(),$1->begin(),$1->end());
+	    if (((*$1)[0])->flags & streamDefault) {
+	      vector<std::string> sv;
+	      for (vector<AttributeDef *>::iterator i=$1->begin(); i!=$1->end(); i++)
+	        sv.push_back((*i)->name);
+	      $$->defaultPorts.insert($$->defaultPorts.begin(),sv.begin(),sv.end());
+	    }
+	  }
+	| defaultdef classbody
+	  {
+	    $$ = $2;
+	    $$->defaultPorts.insert($$->defaultPorts.begin(),$1->begin(),$1->end());
 	  };
 
 attributedef:
@@ -246,17 +260,27 @@ maybeoneway:
 	| T_ONEWAY { $$ = methodOneway; }
 	;
 
-streamdef: direction type T_STREAM identifierlist T_SEMICOLON
+maybedefault:
+      epsilon { $$ = 0; }
+	| T_DEFAULT { $$ = streamDefault; }
+	;
+
+streamdef: maybedefault direction type T_STREAM identifierlist T_SEMICOLON
 	  {
 	    // 8 == stream
 		vector<char *>::iterator i;
 		$$ = new vector<AttributeDef *>;
-		for(i=$4->begin();i != $4->end();i++)
+		for(i=$5->begin();i != $5->end();i++)
 		{
-	  	  $$->push_back(new AttributeDef((*i),$2,(AttributeType)($1 + 8)));
+	  	  $$->push_back(new AttributeDef((*i),$3,(AttributeType)(($2|$1) + 8)));
 		  free(*i);
 		}
-		delete $4;
+		delete $5;
+	  };
+
+defaultdef: T_DEFAULT identifierlist T_SEMICOLON
+	  {
+	  	$$ = $2;
 	  };
 
 direction:

@@ -1,8 +1,7 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
-                       stefan@space.twc.de
-    Component subsystem added by Nicolas Brodu, nicolas.brodu@free.fr
+    Copyright (C) 1999 Stefan Westerfeld, stefan@space.twc.de
+                       Nicolas Brodu, nicolas.brodu@free.fr
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,12 +38,12 @@ int main()
 	Synth_PLAY      play;
 
 	// object initialization
-	setValue(&freq,"frequency",440.0);
+	setValue(&freq, 440.0);
 
 	// object connection
-	connect(&freq,"pos",&sin,"pos");
-	connect(&sin,"outvalue",&play,"invalue_left");
-	connect(&sin,"outvalue",&play,"invalue_right");
+	connect(&freq, &sin);
+	connect(&sin, &play, "invalue_left");
+	connect(&sin, &play, "invalue_right");
 
 	// start all objects (maybe we should group objects like with QWidget
 	// parents and such?)

@@ -31,11 +31,36 @@ void connect(Component* src, const std::string& output, Component* dest, const s
 	src->node()->connect(output, dest->node(), input);
 }
 
-/* // default ports not implemented yet
-void connect(Component* src, const string& output, Component* dest);
-void connect(Component* src, Component* dest, const string& input);
-void connect(Component* src, Component* dest);
-*/
+void connect(Component* src, const string& output, Component* dest)
+{
+	assert(src); assert(dest);
+	vector<std::string> portsIn = dest->defaultPortsIn();
+	assert(portsIn.size() == 1);
+	src->node()->connect(output, dest->node(), portsIn[0]);
+}
+
+void connect(Component* src, Component* dest, const string& input)
+{
+	assert(src); assert(dest);
+	vector<std::string> portsOut = src->defaultPortsOut();
+	assert(portsOut.size() == 1);
+	src->node()->connect(portsOut[0], dest->node(), input);
+}
+
+void connect(Component* src, Component* dest)
+{
+	assert(src); assert(dest);
+	vector<std::string> portsOut = src->defaultPortsOut();
+	vector<std::string> portsIn = dest->defaultPortsIn();
+	assert(portsOut.size() == portsIn.size());
+	assert(!portsOut.empty());
+	vector<std::string>::iterator ot = portsOut.begin();
+	vector<std::string>::iterator it = portsIn.begin();
+	for (; ot != portsOut.end(); it++, ot++) {
+		src->node()->connect(*ot, dest->node(), *it);
+	}
+}
+
 
 // setValue function overloaded for components with default port
 void setValue(Component* c, const std::string& port, const float fvalue)
@@ -44,9 +69,25 @@ void setValue(Component* c, const std::string& port, const float fvalue)
 	c->node()->setFloatValue(port, fvalue);
 }
 
-/* // default ports not implemented yet
-void setValue(Component* c, const string& port, const string& svalue);
-void setValue(Component* c, const float fvalue);
-void setValue(Component* c, const string& svalue);
+void setValue(Component* c, const float fvalue)
+{
+	assert(c);
+	vector<std::string> portsIn = c->defaultPortsIn();
+	assert(!portsIn.empty());
+	vector<std::string>::iterator it = portsIn.begin();
+	for (; it != portsIn.end(); it++) {
+		c->node()->setFloatValue(*it, fvalue);
+	}
+}
+
+/* String values???
+void setValue(Component* c, const string& port, const string& svalue)
+{
+}
+
+void setValue(Component* c, const string& svalue)
+{
+}
 */
+
 //}
