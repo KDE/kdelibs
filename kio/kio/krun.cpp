@@ -186,7 +186,7 @@ bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
     if (kapp && !kapp->authorizeKAction("openwith"))
     {
        // TODO: Better message, i18n freeze :-(
-       KMessageBox::sorry(0L, i18n("You are not authorized to execute this file."));
+       KMessageBox::sorry(0L, i18n("You are not authorized to open this file."));
        return false;
     }
 
@@ -507,8 +507,10 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
 static pid_t runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName )
 {
-  if ( service && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
+  if (!service->desktopEntryPath().isEmpty() &&
+      service && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
+     kdWarning() << "No authorization to execute " << service->desktopEntryPath() << endl;
      KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
      return 0;
   }
@@ -634,6 +636,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   if (!_service.desktopEntryPath().isEmpty() &&
       !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
+     kdWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
      KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
      return 0;
   }
