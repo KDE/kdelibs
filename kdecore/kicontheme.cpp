@@ -53,6 +53,7 @@ class KIconThemeDir
 public:
     KIconThemeDir(const QString& dir, const KConfigBase *config);
 
+    bool isValid() const { return mbValid; }
     QString iconPath(const QString& name) const;
     QStringList iconList() const;
     QString dir() const { return mDir; }
@@ -154,8 +155,19 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     {
 	cfg.setGroup(*it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); itDir++)
+	{
 	    if (KStandardDirs::exists(*itDir + *it + "/"))
-		mDirs.append(new KIconThemeDir(*itDir + *it, &cfg));
+	    {
+	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
+	        if (!dir->isValid())
+	        {
+	            kdWarning(264) << "Icon directory " << *itDir << " group " << *it << " not valid.\n";
+	            delete dir;
+	        }
+	        else
+	            mDirs.append(dir);
+            }
+        }
     }
 
     // Expand available sizes for scalable icons to their full range
