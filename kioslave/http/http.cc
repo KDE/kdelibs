@@ -2617,9 +2617,9 @@ bool HTTPProtocol::readBody()
         array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
         sz += bytesToSend;
         processedSize( sz );
-        if ( sz >= bytesReceived )
+        if ( int(sz) >= bytesReceived )
           break;
-        if ( bytesReceived-sz < bytesToSend )
+        if ( bytesReceived-int(sz) < bytesToSend )
           bytesToSend = bytesReceived-sz;
       }
     }
