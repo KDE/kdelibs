@@ -117,6 +117,11 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     }
 
     m_attribute->setValue(v.implementation());
+    if (m_element) {
+        m_element->parseAttribute(m_attribute);
+        // ###
+        m_element->setChanged(true);
+    }
 }
 
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
@@ -228,8 +233,12 @@ void ElementImpl::setAttribute(NodeImpl::Id id, DOMStringImpl* value, int &excep
         namedAttrMap->removeAttribute(id);
     else if (!old && value)
         namedAttrMap->addAttribute(new AttributeImpl(id, value));
-    else if (old && value)
+    else if (old && value) {
         old->setValue(value);
+        parseAttribute(old);
+        // ###
+        setChanged(this);
+    }
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -677,10 +686,18 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     }
 
     AttributeImpl* a = attr->attrImpl();
-    assert(a); // ### can the impl be 0 ?
+    AttributeImpl* old = getAttributeItem(a->id());
+    if (old == a) return arg; // we know about it already
 
-    Node r(attr);
-    element->setAttribute(a->id(), a->val(), exceptioncode);
+    // ### slightly inefficient - resizes attribute array twice.
+    Node r;
+    if (old) {
+        if (!old->attrImpl())
+            old->allocateImpl(element);
+        r = old->_impl;
+        removeAttribute(a->id());
+    }
+    addAttribute(a);
     return r;
 }
 
@@ -802,6 +819,7 @@ void NamedAttrMapImpl::addAttribute(AttributeImpl *attr)
     // Note that element may be null here if we are called from insertAttr() during parsing
     if (element) {
         element->parseAttribute(attr);
+        // ###
         element->setChanged(true);
         element->dispatchAttrAdditionEvent(attr);
         element->dispatchSubtreeModifiedEvent();
@@ -820,7 +838,7 @@ void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
     if (index >= len) return;
 
     // Remove the attribute from the list
-    AttributeImpl* ret = attrs[index];
+    AttributeImpl* attr = attrs[index];
     if (attrs[index]->_impl)
         attrs[index]->_impl->m_element = 0;
     if (len == 1) {
@@ -842,12 +860,19 @@ void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
 
     // Notify the element that the attribute has been removed
     // dispatch appropriate mutation events
-    if (ret->_value) {
-        ret->_value->deref();
-        ret->_value = 0;
-        element->parseAttribute(ret);
+    if (attr->_value) {
+        attr->_value->deref();
+        attr->_value = 0;
+        if (element) {
+            element->parseAttribute(attr);
+            // ###
+            element->setChanged(true);
+        }
     }
-    element->dispatchAttrRemovalEvent(ret);
-    element->dispatchSubtreeModifiedEvent();
+    if (element) {
+        element->dispatchAttrRemovalEvent(attr);
+        element->dispatchSubtreeModifiedEvent();
+    }
+    attr->deref();
 }
 
