@@ -492,7 +492,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
-        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !event->spontaneous())
+        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
