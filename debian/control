@@ -17,7 +17,7 @@ Architecture: all
 Section: doc
 Depends: kdelibs3-cvs (= ${Source-Version})
 Replaces: kdelibs-doc
-Suggests: kdevelop, kdoc
+Suggests: kdevelop, kdoc, qt2-doc
 Description: KDE core libraries (documentation)
  KDE library documentation.
 

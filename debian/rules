@@ -57,7 +57,7 @@ binary-arch:  build
 	echo "dir_html=/$(kde_htmldir)" >> $$debianrc
 
 	perl -w admin/debianrules kdelibs3-cvs
-
+	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
 	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
 	(mkdir -p debian/kdelibs-doc-cvs/usr/doc/kdelibs-doc-cvs/html) ; \

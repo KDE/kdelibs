@@ -1,6 +1,7 @@
 kdelibs-cvs (4:2.0-19990820-1) experimental; urgency=low
 
   * New upstream CVS version
+  * Moving into /usr from /opt
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 20 Aug 1999 11:00:28 -0400
 
