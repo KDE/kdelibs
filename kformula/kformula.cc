@@ -1,3 +1,5 @@
+// $Id:$
+
 #include "kformula.h"
 #include "box.h"
 #include "matrixbox.h"
@@ -200,24 +202,19 @@ QString KFormula::unparse(box *b)
 //if it's a text box, looks up variables vars and their values
 //in vals and returns them.  otherwise, evaluates the children and
 //does whatever is necessary to them.
-double KFormula::evaluate(QStrList vars, QArray<double> vals,
+double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
 			  int *error, box *b)
 {
   if(!restricted) return 0; // evaluate only if restricted
 
-  int alloced_error = 0;
+  int err_dummy;
 
-  if(error == NULL) {
-    error = new int;
-    alloced_error = 1;
-  }
+  if(!error)
+    error = &err_dummy;
 
   *error = NO_ERROR;
 
-  //instead of return to deallocate error if necessary:
-#define RET(x) { if(alloced_error) delete error; return (x); }
-
-  if(b == NULL) b = boxes[boxes.size() - 1];
+  if(!b) b = boxes[boxes.size() - 1];
 
   if(b->type == TEXT) {
     QString temptext = b->text.stripWhiteSpace();
@@ -233,121 +230,120 @@ double KFormula::evaluate(QStrList vars, QArray<double> vals,
       strcpy(varname, temptext.ascii());
 
       int i = vars.find(varname);
-      if(i != -1) RET(vals[i])
+      if(i != -1) return vals[i];
       else { // variable not found
-	*error = UNDEFINED_VARIABLE;
-	RET(0);
+        *error = UNDEFINED_VARIABLE;
+        return 0;
       }
     }
-    if(b->parent == NULL) {
+    if(!b->parent) {
       *error = EMPTY_BOX;
-      RET(0)
+      return 0;
     }
-    if(b->parent->type == SQRT && b->parent->b1 == b) RET(2);
-    if(b->parent->type == MINUS && b->parent->b1 == b) RET(0);
-    if(b->parent->type == PLUS && b->parent->b1 == b) RET(0);
-    if(delim().contains(QChar(b->parent->type)) && b->parent->b1 == b) RET(0);
+    if(b->parent->type == SQRT && b->parent->b1 == b) return 2;
+    if(b->parent->type == MINUS && b->parent->b1 == b) return 0;
+    if(b->parent->type == PLUS && b->parent->b1 == b) return 0;
+    if(delim().contains(QChar(b->parent->type)) && b->parent->b1 == b) return 0;
 
-    if(b->parent->type == CAT) RET(1); // cat is multiplication
-    
+    if(b->parent->type == CAT) return 1; // cat is multiplication
+
     *error = EMPTY_BOX;
-    RET(0)
+    return 0;
   }
 
   double b1 = 0, b2 = 0;
   int undefined_in_b1 = 0; // whether b1 had an undefined variable
 
-  if(b->b1 != NULL) b1 = evaluate(vars, vals, error, b->b1);
+  if(b->b1) b1 = evaluate(vars, vals, error, b->b1);
 
   if(*error == UNDEFINED_VARIABLE && b->type == CAT) {
     *error = 0; // it may be a function!
     undefined_in_b1 = 1;
   }
-  
-  if(*error) RET(0)
 
-  if(b->b2 != NULL) b2 = evaluate(vars, vals, error, b->b2);
+  if(*error) return 0;
 
-  if(*error) RET(0)
+  if(b->b2) b2 = evaluate(vars, vals, error, b->b2);
+
+  if(*error) return 0;
 
   switch(b->type) {
   case PLUS:
-    RET(b1 + b2)
+    return b1 + b2;
     break;
   case MINUS:
-    RET(b1 - b2)
+    return b1 - b2;
     break;
   case TIMES:
-    RET(b1 * b2)
+    return b1 * b2;
     break;
   case SLASH:
-  case DIVIDE: {
-    if(b2 != 0)
-      RET(b1 / b2)
+  case DIVIDE:
+    if(b2)
+      return b1 / b2;
     else {
       *error = DIVISION_BY_ZERO;
-      RET(0)
+      return 0;
     }
     break;
-  }
   case POWER:
-    RET(pow(b1, b2))
+    return pow(b1, b2);
     break;
   case SQRT:
-    if(b1 == 0) {
+    if(!b1) {
       *error = DIVISION_BY_ZERO;
-      RET(0)
+      return 0;
     }
 
     if(b2 < 0) {
       *error = ROOT_OF_NEGATIVE;
-      RET(0)
+      return 0;
     }
 
-    RET(pow(b2, 1 / b1))
+    return pow(b2, 1 / b1);
 
     break;
   case PAREN:
-    RET(b2)
+    return b2;
     break;
   case ABS:
-    RET(fabs(b2))
+    return fabs(b2);
     break;
   case CAT: // multiply variables or evaluate functions
-    if(!undefined_in_b1) RET(b1 * b2)
+    if(!undefined_in_b1) return b1 * b2;
 
-      if(b->b1->type != TEXT) {
-	*error = PARSE_ERROR;
-	RET(0);
-      }
+    if(b->b1->type != TEXT) {
+      *error = PARSE_ERROR;
+      return 0;
+    }
 
     QString fun = b->b1->text.stripWhiteSpace();
 
-    if(!strcmp(fun.ascii(), "sqrt")) RET(sqrt(b2))
-    if(!strcmp(fun.ascii(), "log")) RET(log(b2))
-    if(!strcmp(fun.ascii(), "exp")) RET(exp(b2))
-    if(!strcmp(fun.ascii(), "floor")) RET(floor(b2))
-    if(!strcmp(fun.ascii(), "ceil")) RET(ceil(b2))
-    if(!strcmp(fun.ascii(), "abs")) RET(fabs(b2))
+    if(!strcmp(fun.ascii(), "sqrt")) return sqrt(b2);
+    if(!strcmp(fun.ascii(), "log")) return log(b2);
+    if(!strcmp(fun.ascii(), "exp")) return exp(b2);
+    if(!strcmp(fun.ascii(), "floor")) return floor(b2);
+    if(!strcmp(fun.ascii(), "ceil")) return ceil(b2);
+    if(!strcmp(fun.ascii(), "abs")) return fabs(b2);
 
-    if(!strcmp(fun.ascii(), "sin")) RET(sin(b2))
-    if(!strcmp(fun.ascii(), "cos")) RET(cos(b2))
-    if(!strcmp(fun.ascii(), "tan")) RET(tan(b2))
-    if(!strcmp(fun.ascii(), "sinh")) RET(sinh(b2))
-    if(!strcmp(fun.ascii(), "cosh")) RET(cosh(b2))
-    if(!strcmp(fun.ascii(), "tanh")) RET(tanh(b2))
+    if(!strcmp(fun.ascii(), "sin")) return sin(b2);
+    if(!strcmp(fun.ascii(), "cos")) return cos(b2);
+    if(!strcmp(fun.ascii(), "tan")) return tan(b2);
+    if(!strcmp(fun.ascii(), "sinh")) return sinh(b2);
+    if(!strcmp(fun.ascii(), "cosh")) return cosh(b2);
+    if(!strcmp(fun.ascii(), "tanh")) return tanh(b2);
 
-    if(!strcmp(fun.ascii(), "asin")) RET(asin(b2))
-    if(!strcmp(fun.ascii(), "acos")) RET(acos(b2))
-    if(!strcmp(fun.ascii(), "atan")) RET(atan(b2))
-    if(!strcmp(fun.ascii(), "asinh")) RET(asinh(b2))
-    if(!strcmp(fun.ascii(), "acosh")) RET(acosh(b2))
-    if(!strcmp(fun.ascii(), "atanh")) RET(atanh(b2))
-    
+    if(!strcmp(fun.ascii(), "asin")) return asin(b2);
+    if(!strcmp(fun.ascii(), "acos")) return acos(b2);
+    if(!strcmp(fun.ascii(), "atan")) return atan(b2);
+    if(!strcmp(fun.ascii(), "asinh")) return asinh(b2);
+    if(!strcmp(fun.ascii(), "acosh")) return acosh(b2);
+    if(!strcmp(fun.ascii(), "atanh")) return atanh(b2);
+
     break;
   }
-  
-  RET(0)
+
+  return 0;
 }
 
 //INSERTED goes through the charinfo array and increments posinstr

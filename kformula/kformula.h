@@ -1,3 +1,5 @@
+// $Id:$
+
 #ifndef KFORMULA_H_INCLUDED
 #define KFORMULA_H_INCLUDED
 
@@ -60,7 +62,7 @@ public:
   void parse(QString text, QArray<charinfo> *info = NULL);
   QString unparse(box *b = NULL);
   QRect getCursorPos(charinfo i);
-  double evaluate(QStrList vars, QArray<double> vals,
+  double evaluate(QStrList &vars, const QArray<double> &vals,
 		  int *error = NULL, box *b = NULL);
   QSize size();
 
