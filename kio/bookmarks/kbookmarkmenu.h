@@ -83,8 +83,7 @@ public:
    * (one instance of KBookmarkMenu is created for the toplevel menu,
    *  but also one per submenu).
    *
-   * @param owner implementation of the KBookmarkOwner interface (callbacks). If this is of type
-   *  KBookmarkOwnerListCapable (checked at runtime), then the menu will also allow group opens.
+   * @param owner implementation of the KBookmarkOwner callback interface.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions. 
    *  Only used for other menus than the toplevel one.

@@ -268,24 +268,4 @@ protected:
   virtual void virtual_hook( int id, void* data );
 };
 
-/**
- * Adds the ability to open lists of urls to @ref KBookmarkOwner.
- * 
- * Note that unlike @ref KBookmarkOwner this is an abstract class
- * as there is no default implementation of openBookmarkGroup
- * it should therefore be accessed via a dynamic_cast
- */
-class KBookmarkOwnerListCapable : public KBookmarkOwner
-{
-public:
-  /**
-   * Opens a list of bookmark urls.
-   *
-   * In Konqueror this will open each bookmark in its own tab.
-   */
-  virtual void openBookmarkURLList( const QStringList& urls ) = 0;
-protected:
-  virtual void virtual_hook( int id, void* data );
-};
-
 #endif

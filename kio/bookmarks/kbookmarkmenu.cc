@@ -219,8 +219,6 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Entire Folder" ), this, SLOT(slotRMBActionOpen(int)) );
-    contextMenu->setItemParameter( id, val );
     // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
   } 
   else
@@ -285,30 +283,9 @@ void KBookmarkMenu::slotRMBActionOpen( int val )
 
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
+  Q_ASSERT(!bookmark.isGroup());
 
-  if ( !bookmark.isGroup() )
-  {
-    m_pOwner->openBookmarkURL( bookmark.url().url() );
-  }
-  else 
-  {
-    KBookmarkOwnerListCapable* owner = dynamic_cast<KBookmarkOwnerListCapable*>( m_pOwner ); 
-    if (!owner) {
-      kdWarning(7043) << "KBookmarkMenu::slotRMBActionOpen - not KBookmarkOwnerListCapable!" << endl;
-      return;
-    }
-
-    QStringList urlList;
-    KBookmarkGroup parentBookmark = bookmark.toGroup();
-    for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) )
-    {
-      if ( bm.isSeparator() || bm.isGroup() ) 
-        continue;
-      urlList << bm.url().url().utf8();
-    }
-    
-    owner->openBookmarkURLList( urlList );
-  } 
+  m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
