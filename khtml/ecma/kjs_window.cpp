@@ -1012,7 +1012,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
     QString dstUrl = active->part()->htmlDocument().completeURL(url).string();
     kdDebug() << "Window::goURL dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
     // Check if the URL is the current one. No [infinite] redirect in that case.
-    if ( m_part->url().cmp( KURL(dstUrl), true ) )
+    if ( m_part->url().equals( KURL(dstUrl), true ) )
         return;
 
     // check if we're allowed to inject javascript
@@ -2001,14 +2001,14 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if (args.size() == 2)
       title = args[1].toString(exec).qstring();
 
-    // AK - don't do anything yet, for the moment i 
+    // AK - don't do anything yet, for the moment i
     // just wanted the base js handling code in cvs
     return Undefined();
 
-    QString question = 
-       i18n("Do you want a bookmark pointing to the location \"%1\" %2to be added to your collection?") 
+    QString question =
+       i18n("Do you want a bookmark pointing to the location \"%1\" %2to be added to your collection?")
       .arg(url).arg(title.isEmpty()?"":i18n("titled \"%2\" ").arg(title));
-    if (KMessageBox::warningYesNo( 
+    if (KMessageBox::warningYesNo(
           widget, question,
           "JavaScript Attempted Bookmark Insert",
           i18n("Insert"), i18n("Disallow")) == KMessageBox::Yes)
