@@ -48,9 +48,6 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case MSG_DATA_REQ:
         emit dataReq();
 	break;
-    case MSG_READY:
-	emit ready();
-	break;
     case MSG_FINISHED:
 	kDebugInfo(7007, "Finished [this = %p]", this);
 	emit finished();

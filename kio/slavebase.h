@@ -42,7 +42,6 @@ public:
     SlaveBase( const QCString &protocol, Connection *connection );
     virtual ~SlaveBase() { }
 
-    // wrong IMHO (David)
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
 
@@ -56,15 +55,27 @@ public:
      * Send an empty QByteArray() to signal end of data.
      */
     void data( const QByteArray &data );
-    void dataReq( );
-    void error( int _errid, const QString &_text );
+
     /**
-     * Emit when ready for starting a transfer (get, put)
-     * and when done ("ready") in openConnection() and closeConnection()
-     * (David) or we could use finished for consistency with the other methods...
+     * Emit to ask for data (in put)
      */
-    void ready();
+    void dataReq( );
+
+    /**
+     * Emit to signal an error. 
+     * This also finishes the job, no need to call finished.
+     */
+    void error( int _errid, const QString &_text );
+
+    /**
+     * Emit in openConnection, if you reimplement it, when you're done.
+     */
     void connected();
+
+    /**
+     * Emit to signal successful completion of any command
+     * (besides openConnection and closeConnection)
+     */
     void finished();
     
     /**
@@ -75,13 +86,29 @@ public:
      **/
     void slaveStatus(const QString &host, bool connected);
 
+    /**
+     * Emit this once in stat()
+     */
     void statEntry( const UDSEntry& _entry );
+
+    /**
+     * Emit this in listDir, each time you have a bunch of entries
+     * to report.
+     */
     void listEntries( const UDSEntryList& _entry );
+
+    /**
+     * ???? Is this still necessary?
+     */
     void renamed( const QString &_new );
+
+    /**
+     * ???? Is this still necessary?
+     */
     void canResume( bool _resume );
 
     ///////////
-    // Info Signals to send to the job
+    // Info Signals to send to the job (most are OLD)
     ///////////
 
     void totalSize( unsigned long _bytes );
@@ -220,10 +247,13 @@ public:
      */
     virtual void slave_status();
 
+    /**
+     * @internal
+     */
     static void sigsegv_handler(int);
 
     /////////////////
-    // Dispatching
+    // Dispatching (internal)
     ////////////////
 
     virtual bool dispatch();

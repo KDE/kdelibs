@@ -90,7 +90,6 @@ class Connection;
    MSG_DATA = 100,
    MSG_DATA_REQ,
    MSG_ERROR,
-   MSG_READY,
    MSG_CONNECTED,
    MSG_FINISHED,
    MSG_STAT_ENTRY,
@@ -129,7 +128,6 @@ public:
     void data( const QByteArray & );
     void dataReq( );
     void error( int , const QString & );
-    void ready();
     void connected();
     void finished();
     void slaveStatus(pid_t, const QCString &, const QString &, bool);

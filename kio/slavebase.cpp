@@ -43,11 +43,6 @@ void SlaveBase::error( int _errid, const QString &_text )
     m_pConnection->send( MSG_ERROR, data );
 }
 
-void SlaveBase::ready()
-{
-    m_pConnection->send( MSG_READY );
-}
-
 void SlaveBase::connected()
 {
     m_pConnection->send( MSG_CONNECTED );
@@ -225,7 +220,7 @@ void SlaveBase::openConnection(QString const &host, int, QString const &, QStrin
 
 void SlaveBase::closeConnection(void)
 {
-   ready();
+   //ready();
 }
 
 
