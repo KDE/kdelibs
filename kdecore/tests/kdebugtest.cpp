@@ -2,7 +2,7 @@
 #include <qwidget.h>
 #include <kinstance.h>
 #include <iostream.h>
-#include <qapp.h>
+#include <qapplication.h>
 
 class TestWidget : public QWidget
 {
