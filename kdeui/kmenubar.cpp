@@ -36,6 +36,10 @@
 #include <kwm.h>
 #include <kwin.h>
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
 
@@ -182,6 +186,9 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 
 
   setFrameStyle( NoFrame );
+
+  // Tell the window manager we want to be avoided.
+  KWin::avoid(winId(), KWin::Top);
 
   show();
 
