@@ -334,7 +334,12 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 }
                 break;
             case DOC_ALL:
-                check = true;
+                // all['foo'] accepts all elements with id='foo' and
+                // images, forms and applets with name='foo'.
+                if ( attr_id == ATTR_ID ||
+                     (attr_id == ATTR_NAME &&
+                      ( e->id() == ID_IMG || e->id() == ID_FORM || e->id() == ID_APPLET ) ) )
+                    check = true;
                 break;
             case NODE_CHILDREN:
                 check = true;
