@@ -293,6 +293,7 @@ private:
   QString m_strDesktopEntryPath;
   QString m_strDesktopEntryName;
   QString m_docPath;
+  bool m_bHideFromPanel;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;

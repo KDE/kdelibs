@@ -129,6 +129,7 @@ KService::init( KDesktopFile *config )
   m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
   m_docPath = config->readEntry("DocPath");
+  m_bHideFromPanel = config->readBoolEntry("X-KDE-HideFromPanel");
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
   m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
@@ -193,7 +194,7 @@ QPixmap KService::pixmap( int _group, int _force_size, int _state, QString * _pa
 
 void KService::load( QDataStream& s )
 {
-  Q_INT8 def, term, suid;
+  Q_INT8 def, term, suid, hfp;
   Q_INT8 dst, initpref;
 
   s >> m_strType >> m_strName >> m_strExec >> m_strIcon
@@ -202,10 +203,11 @@ void KService::load( QDataStream& s )
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryPath >> m_strDesktopEntryName
-    >> suid >> m_strUsername >> initpref >> m_docPath;
+    >> suid >> m_strUsername >> initpref >> m_docPath >> hfp;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
+  m_bHideFromPanel = hfp;
   m_bSuid = suid;
   m_DCOPServiceType = (DCOPServiceType_t) dst;
   m_initialPreference = initpref;
@@ -219,6 +221,7 @@ void KService::save( QDataStream& s )
   Q_INT8 def = m_bAllowAsDefault, initpref = m_initialPreference;
   Q_INT8 term = m_bTerminal, suid = m_bSuid;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
+  Q_INT8 hfp = m_bHideFromPanel;
 
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
@@ -229,7 +232,7 @@ void KService::save( QDataStream& s )
     << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
     << m_strDesktopEntryPath << m_strDesktopEntryName
-    << suid << m_strUsername << initpref << m_docPath;
+    << suid << m_strUsername << initpref << m_docPath << hfp;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -284,6 +287,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_strUsername );
   else if ( _name == "DocPath")
     return QVariant( m_docPath );
+  else if ( _name == "X-KDE-HideFromPanel")
+    return QVariant( static_cast<int>(m_bHideFromPanel) );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -319,6 +324,7 @@ QStringList KService::propertyNames() const
   res.append( "X-KDE-SubstituteUID" );
   res.append( "X-KDE-Username" );
   res.append( "DocPath" );
+  res.append( "X-KDE-HideFromPanel" );
 
   return res;
 }
