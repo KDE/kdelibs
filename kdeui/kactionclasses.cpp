@@ -44,6 +44,7 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
+#include <kstandarddirs.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -1044,6 +1045,8 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 void KRecentFilesAction::addURL( const KURL& url )
 {
     QString     file = url.prettyURL();
+    if ( file.contains(locateLocal("tmp", QString::null)))
+        return;
     QStringList lst = items();
 
     // remove file if already in list
@@ -1807,7 +1810,7 @@ void KToggleToolBarAction::setChecked( bool c )
 
 ////////
 
-KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut, 
+KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              QObject* parent, const char* name )
   : KToggleAction( QString::null, cut, receiver, slot, parent, name )
