@@ -586,14 +586,16 @@ void QXEmbed::embed(WId w)
     bool has_window =  w == window;
     window = w;
     if ( !has_window ) {
-	XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
-	QApplication::flushX();
-	while (!wstate_withdrawn(window))
-	    ;
+  	if ( !wstate_withdrawn(window) ) {
+	    XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
+	    QApplication::flushX();
+	    while (!wstate_withdrawn(window))
+		;
+	}
 	XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
 	QApplication::syncX();
     }
-    
+
     XResizeWindow(qt_xdisplay(), w, width(), height());
     XMapRaised(qt_xdisplay(), window);
     extraData()->xDndProxy = w;
@@ -644,6 +646,8 @@ bool QXEmbed::x11Event( XEvent* e)
 	}
 	break;
     case ReparentNotify:
+	if ( e->xreparent.window == d->focusProxy->winId() )
+	    break; // ignore proxy
 	if ( window && e->xreparent.window == window &&
 	     e->xreparent.parent != winId() ) {
 	    // we lost the window
@@ -671,8 +675,8 @@ bool QXEmbed::x11Event( XEvent* e)
 		QWidget::focusNextPrevChild( FALSE );
 		break;
 	    case XEMBED_REQUEST_FOCUS:
-	        QFocusEvent::setReason( QFocusEvent::Mouse );
-	        setFocus();
+		QFocusEvent::setReason( QFocusEvent::Mouse );
+		setFocus();
 		QFocusEvent::resetReason();
 		break;
 	    default:
@@ -834,4 +838,4 @@ bool QXEmbed::customWhatsThis() const
 }
 
 // for KDE
-#include "qxembed.moc"   
+#include "qxembed.moc"
