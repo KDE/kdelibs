@@ -40,7 +40,8 @@ namespace khtml {
 	unsigned char level;
 	bool override : 1;
 	QChar::Direction dir : 5;
-
+	QChar::Direction basicDir : 5;
+	
 	BidiContext *parent;
 
 

@@ -388,7 +388,9 @@ void HTMLTitleElementImpl::setTitle()
     if(!_first || _first->id() != ID_TEXT) return;
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();
-
+    s.compose();
+    
+    
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
-    emit d->view()->part()->setWindowCaption( s );
+    emit d->view()->part()->setWindowCaption( s.visual() );
 }

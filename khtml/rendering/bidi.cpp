@@ -42,7 +42,9 @@ BidiContext::BidiContext(unsigned char l, QChar::Direction e, BidiContext *p, bo
     parent = p;
     if(p) {
 	p->ref();
-    }
+	basicDir = p->basicDir;
+    } else
+	basicDir = e;
     count = 0;
 }
 
@@ -659,33 +661,35 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
     int count = runs.count() - 1;
 
-    while(levelHigh >= levelLow)
-	{
+    // do not reverse for visually ordered web sites
+    if(!m_style->visuallyOrdered()) {
+	while(levelHigh >= levelLow) {
 	    int i = 0;
-	    while ( i < count )
-		{
-	    while(i < count && runs.at(i)->level < levelHigh) i++;
-	    int start = i;
-	    while(i <= count && runs.at(i)->level >= levelHigh) i++;
-	    int end = i-1;
+	    while ( i < count ) {
+		while(i < count && runs.at(i)->level < levelHigh)
+		    i++;
+		int start = i;
+		while(i <= count && runs.at(i)->level >= levelHigh)
+		    i++;
+		int end = i-1;
 
-	    if(start != end)
-	    {
-		//kdDebug(6041) << "reversing from " << start << " to " << end << endl;
-		for(int j = 0; j < (end-start+1)/2; j++)
-		{
-		    BidiRun *first = runs.take(start+j);
-		    BidiRun *last = runs.take(end-j-1);
-		    runs.insert(start+j, last);
-		    runs.insert(end-j, first);
+		if(start != end) {
+				//kdDebug(6041) << "reversing from " << start << " to " << end << endl;
+		    for(int j = 0; j < (end-start+1)/2; j++)
+			{
+			    BidiRun *first = runs.take(start+j);
+			    BidiRun *last = runs.take(end-j-1);
+			    runs.insert(start+j, last);
+			    runs.insert(end-j, first);
+			}
 		}
+		i++;
+		if(i >= count) break;
 	    }
-	    i++;
-	    if(i >= count) break;
+	    levelHigh--;
 	}
-	levelHigh--;
     }
-
+    
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
     QListIterator<BidiRun> it3(runs);
@@ -741,8 +745,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     int availableWidth = lineWidth(m_height);
     switch(m_style->textAlign()) {
     case LEFT:
-    case JUSTIFY:
 	break;
+    case JUSTIFY:
+	if(endEmbed->basicDir == QChar::DirL)
+	    break;
+	// for right to left fall through to right aligned
     case RIGHT:
 	x += availableWidth - totWidth;
 	break;
