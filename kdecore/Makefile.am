@@ -21,7 +21,7 @@ libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 
 libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 
-libkdecore_la_LDFLAGS = -version-info 0:9 -rpath $(libdir) 
+libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc
 
