@@ -8,7 +8,7 @@ METASOURCES = AUTO
 kde_module_LTLIBRARIES = kio_metainfo.la
 
 kio_metainfo_la_SOURCES = metainfo.cpp
-kio_metainfo_la_LIBADD = $(LIB_KIO)
+kio_metainfo_la_LIBADD = $(top_builddir)/kio/libkio.la
 kio_metainfo_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 noinst_HEADERS = metainfo.h 

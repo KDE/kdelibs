@@ -55,7 +55,7 @@ metatest_SOURCES = metatest.cpp
 # metadata plugin test and "make install".
 #kde_module_LTLIBRARIES = dummymeta.la
 #dummymeta_la_SOURCES = dummymeta.cpp
-#dummymeta_la_LIBADD = $(LIB_KIO)
+#dummymeta_la_LIBADD = $(top_builddir)/kio/libkio.la
 #dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 #services_DATA = dummymeta.desktop

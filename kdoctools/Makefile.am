@@ -6,8 +6,7 @@ AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\""
 noinst_LTLIBRARIES = libkbzipfilter_dummy.la
 
 libkbzipfilter_dummy_la_SOURCES = kbzip2filter.cpp
-libkbzipfilter_dummy_la_LIBADD = $(LIB_KIO) $(LIBBZ2)
-libkbzipfilter_dummy_la_DEPENDENCIES = $(LIB_KIO)
+libkbzipfilter_dummy_la_LIBADD = $(top_builddir)/kio/libkio.la $(LIBBZ2)
 
 ####### Files
 

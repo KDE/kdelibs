@@ -33,8 +33,7 @@ kdeinit_DEPENDENCIES = $(LIB_KPARTS)
 kioslave_SOURCES = kioslave.cpp
 kioslave_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
                   $(KDE_RPATH)
-kioslave_LDADD = $(LIB_KIO) 
-kioslave_DEPENDENCIES = $(LIB_KIO)
+kioslave_LDADD = $(top_builddir)/kio/libkio.la 
 
 kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
@@ -52,8 +51,7 @@ kwrapper_SOURCES = kwrapper.c
 kwrapper_LDADD = $(LIBSOCKET)
 
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
-klauncher_la_LIBADD = $(LIB_KIO)
-klauncher_la_DEPENDENCIES = $(LIB_KIO)
+klauncher_la_LIBADD = $(top_builddir)/kio/libkio.la
 klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
 
 klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)

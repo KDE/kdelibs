@@ -13,8 +13,7 @@ kcookiejar_la_SOURCES = kcookiejar.cpp kcookieserver.cpp \
 			main.cpp 
 kcookiejar_la_METASOURCES = AUTO
 kcookiejar_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kcookiejar_la_LIBADD = $(LIB_KIO)
-kcookiejar_la_DEPENDENCIES = $(LIB_KIO)
+kcookiejar_la_LIBADD = $(top_builddir)/kio/libkio.la
 
 kcookiejar_SOURCES = dummy.cpp
 kcookiejar_LDADD = kcookiejar.la
