@@ -1079,21 +1079,26 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   QString mod = i18n("modified");
 
   QString s(userCaption);
+  if (!s.isEmpty())
+  {
+    // If the document is modified, add '[modified]'.
+    if (modified)
+      s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
 
-  // If the document is modified, add '[modified]'.
-  if (modified)
-    s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
+    // Add the application name if:
+    // User asked for it and the app name (caption()) is not empty
 
-  // Add the application name if:
-  // User asked for it and the app name (caption()) is not empty
-  // OR
-  // The user-supplied caption is empty.
-
-  if ((withAppName && !(caption().isNull())));
-    s += QString::fromUtf8(" - ") + caption();
-
-  if (userCaption.isEmpty())
+    if ((withAppName && !(caption().isNull())));
+      s += QString::fromUtf8(" - ") + caption();
+  }
+  else
+  {
+    // The user-supplied caption is empty.
     s = caption();
+    // Append [modified] if modified
+    if (modified)
+      s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
+  }
 
   return s;
 }
