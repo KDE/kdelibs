@@ -130,6 +130,42 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
 
 // ---------------------------------------------------------------------------
 
+CommentImpl::CommentImpl(DocumentImpl *doc, const DOMString &_text)
+    : CharacterDataImpl(doc, _text)
+{
+}
+
+CommentImpl::CommentImpl(DocumentImpl *doc)
+    : CharacterDataImpl(doc)
+{
+}
+
+CommentImpl::~CommentImpl()
+{
+}
+
+const DOMString CommentImpl::nodeName() const
+{
+    return "#comment";
+}
+
+DOMString CommentImpl::nodeValue() const
+{
+    return str;
+}
+
+unsigned short CommentImpl::nodeType() const
+{
+    return Node::COMMENT_NODE;
+}
+
+ushort CommentImpl::id() const
+{
+    return ID_COMMENT;
+}
+
+// ---------------------------------------------------------------------------
+
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {

@@ -427,6 +427,11 @@ TextImpl *DocumentImpl::createTextNode( const DOMString &data )
     return new TextImpl(this, data);
 }
 
+CommentImpl *DocumentImpl::createComment ( const DOMString &data )
+{
+    return new CommentImpl(this,data);
+}
+
 AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 {
     return new AttrImpl(this, name);

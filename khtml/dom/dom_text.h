@@ -202,6 +202,8 @@ protected:
 };
 
 
+class CommentImpl;
+
 /**
  * This represents the content of a comment, i.e., all the characters
  * between the starting ' <code> &lt;!-- </code> ' and ending ' <code>
@@ -212,6 +214,8 @@ protected:
  */
 class Comment : public CharacterData
 {
+    friend class Document;
+
 public:
     Comment();
     Comment(const Comment &other);
@@ -222,6 +226,9 @@ public:
     Comment & operator = (const Comment &other);
 
     ~Comment();
+
+protected:
+    Comment(CommentImpl *i);
 };
 
 class TextImpl;

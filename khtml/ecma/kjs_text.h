@@ -52,6 +52,17 @@ namespace KJS {
     DOM::Text text;
   };
 
+  class DOMComment : public NodeObject {
+  public:
+    DOMComment(DOM::Comment t) : comment(t) { }
+    virtual KJSO get(const UString &p) const;
+    virtual DOM::Node toNode() const { return comment; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+  private:
+    DOM::Comment comment;
+  };
+
 }; // namespace
 
 #endif

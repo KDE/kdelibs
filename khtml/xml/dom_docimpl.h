@@ -40,6 +40,7 @@ namespace DOM {
     class ElementImpl;
     class DocumentFragmentImpl;
     class TextImpl;
+    class CommentImpl;
     class AttrImpl;
     class NodeListImpl;
     class StyleSheetListImpl;
@@ -77,7 +78,7 @@ public:
 
     TextImpl *createTextNode ( const DOMString &data );
 
-    //Comment createComment ( const DOMString &data );
+    CommentImpl *createComment ( const DOMString &data );
 
     //CDATASection createCDATASection ( const DOMString &data );
 

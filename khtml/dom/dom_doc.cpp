@@ -145,9 +145,9 @@ Text Document::createTextNode( const DOMString &data )
     return ((DocumentImpl *)impl)->createTextNode( data );
 }
 
-Comment Document::createComment( const DOMString & )
+Comment Document::createComment( const DOMString &data )
 {
-    return Comment( );
+    return ((DocumentImpl *)impl)->createComment( data );
 }
 
 CDATASection Document::createCDATASection( const DOMString & )

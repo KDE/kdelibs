@@ -205,7 +205,7 @@ Completion DOMDocFunction::execute(const List &args)
     result = new DOMText(doc.createTextNode(s));
     break;
   case CreateComment:
-    result = new DOMText(doc.createComment(s)); /* TODO: okay ? */
+    result = new DOMComment(doc.createComment(s));
     break;
   case CreateCDATASection:
     result = new DOMText(doc.createCDATASection(s));  /* TODO: okay ? */

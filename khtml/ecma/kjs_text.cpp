@@ -66,3 +66,17 @@ KJSO DOMText::get(const UString &p) const
     return tmp.get(p);
   }
 }
+
+const TypeInfo DOMComment::info = { "Comment", HostType,
+				 &DOMCharacterData::info, 0, 0 };
+
+KJSO DOMComment::get(const UString &p) const
+{
+  if (p == "")
+    return Undefined(); // TODO
+  else {
+    DOM::Node n = comment;
+    KJSO tmp(new DOMCharacterData(n));
+    return tmp.get(p);
+  }
+}

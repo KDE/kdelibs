@@ -136,6 +136,10 @@ Comment::~Comment()
 {
 }
 
+Comment::Comment(CommentImpl *i) : CharacterData(i)
+{
+}
+
 // ----------------------------------------------------------------------------
 
 Text::Text()

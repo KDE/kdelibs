@@ -65,6 +65,21 @@ protected:
 
 // ----------------------------------------------------------------------------
 
+class CommentImpl : public CharacterDataImpl
+{
+public:
+    CommentImpl(DocumentImpl *doc, const DOMString &_text);
+    CommentImpl(DocumentImpl *doc);
+    virtual ~CommentImpl();
+
+    virtual const DOMString nodeName() const;
+    virtual DOMString nodeValue() const;
+    virtual unsigned short nodeType() const;
+    virtual ushort id() const;
+};
+
+// ----------------------------------------------------------------------------
+
 class TextImpl : public CharacterDataImpl
 {
 public:

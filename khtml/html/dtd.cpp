@@ -67,6 +67,7 @@ static const ushort tag_list_0[] = {
     ID_TEXTAREA,
     ID_LABEL,
     ID_BUTTON,
+    ID_COMMENT,
     0
 };
 
@@ -134,12 +135,14 @@ static const ushort tag_list_1[] = {
     ID_TEXTAREA,
     ID_LABEL,
     ID_BUTTON,
+    ID_COMMENT,
     0
 };
 
 static const ushort tag_list_2[] = {
     ID_INS,
     ID_DEL,
+    ID_COMMENT,
     0
 };
 
@@ -168,6 +171,7 @@ static const ushort tag_list_3[] = {
     ID_TABLE,
     ID_FIELDSET,
     ID_ADDRESS,
+    ID_COMMENT,
     0
 };
 
@@ -236,6 +240,7 @@ static const ushort tag_list_4[] = {
     ID_TEXTAREA,
     ID_LABEL,
     ID_BUTTON,
+    ID_COMMENT,
     0
 };
 
@@ -249,18 +254,21 @@ static const ushort tag_list_5[] = {
     ID_SUP,
     ID_FONT,
     ID_BASEFONT,
+    ID_COMMENT,
     0
 };
 
 static const ushort tag_list_6[] = {
     ID_DT,
     ID_DD,
+    ID_COMMENT,
     0
 };
 
 static const ushort tag_list_7[] = {
     ID_OPTGROUP,
     ID_OPTION,
+    ID_COMMENT,
     0
 };
 
@@ -275,18 +283,21 @@ static const ushort tag_list_8[] = {
     ID_ISINDEX,
     ID_FIELDSET,
     ID_IFRAME,
+    ID_COMMENT,
     0
 };
 
 static const ushort tag_list_9[] = {
     ID_TH,
     ID_TD,
+    ID_COMMENT,
     0
 };
 
 static const ushort tag_list_10[] = {
     ID_FRAMESET,
     ID_FRAME,
+    ID_COMMENT,
     0
 };
 
@@ -296,6 +307,7 @@ static const ushort tag_list_11[] = {
     ID_META,
     ID_LINK,
     ID_OBJECT,
+    ID_COMMENT,
     0
 };
 
@@ -366,6 +378,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_ISINDEX:
     case ID_BASE:
     case ID_META:
+    case ID_COMMENT:
 	// BASEFONT: EMPTY
 	return false;
     case ID_BODY:
