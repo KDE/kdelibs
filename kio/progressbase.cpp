@@ -16,8 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <kdebug.h>
-
 #include "jobclasses.h"
 #include "progressbase.h"
 
@@ -134,7 +132,6 @@ void ProgressBase::setJob( KIO::DeleteJob *job )
 
 
 void ProgressBase::closeEvent( QCloseEvent* ) {
-//   kdDebug(7007) << "ProgressBase::closeEvent" << endl;
   // kill job when desired
   if ( m_bStopOnClose ) {
     slotStop();
@@ -149,8 +146,7 @@ void ProgressBase::closeEvent( QCloseEvent* ) {
 }
 
 
-void ProgressBase::slotFinished( KIO::Job* job ) {
-//   kdDebug(7007) << "ProgressBase::slotFinished  " << job << endl;
+void ProgressBase::slotFinished( KIO::Job* ) {
   // clean or delete dialog
   if ( m_bOnlyClean ) {
     slotClean();
@@ -161,7 +157,6 @@ void ProgressBase::slotFinished( KIO::Job* job ) {
 
 
 void ProgressBase::slotStop() {
-//   kdDebug(7007) << "ProgressBase::slotStop" << endl;
   if ( m_pJob ) {
     m_pJob->kill(); // this will call slotFinished
     m_pJob = 0L;
