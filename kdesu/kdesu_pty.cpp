@@ -107,7 +107,7 @@ int PTY::getpt()
 	ttyname = name;
 	name[5]='p';
 	ptyname = name;
-	//close(slave_fd); // We don't need this yet // Yes, we do.
+        //close(slave_fd); // We don't need this yet // Yes, we do.
 	ptyfd = master_fd;
 	return ptyfd;
     }
@@ -182,6 +182,12 @@ int PTY::grantpt()
 #ifdef HAVE_GRANTPT
 
     return ::grantpt(ptyfd);
+
+#elif defined(HAVE_OPENPTY)
+
+    // the BSD openpty() interface chowns the devices properly for us,
+    // no need to do this at all
+    return 0;
 
 #else
 
