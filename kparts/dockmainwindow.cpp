@@ -22,6 +22,7 @@
 #include <kparts/dockmainwindow.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
+#include <kaccel.h>
 #include <kparts/plugin.h>
 #include <kstatusbar.h>
 #include <kinstance.h>
@@ -84,11 +85,6 @@ void DockMainWindow::createGUI( Part * part )
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
 
-    plugins = Plugin::pluginObjects( d->m_activePart );
-    Plugin *plugin = plugins.last();
-    for (; plugin; plugin = plugins.prev() )
-      factory->removeClient( plugin );
-
     factory->removeClient( d->m_activePart );
 
     disconnect( d->m_activePart, SIGNAL( setWindowCaption( const QString & ) ),
@@ -99,6 +95,7 @@ void DockMainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
+    loadPlugins( this, this, KGlobal::instance() );
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }
@@ -116,11 +113,6 @@ void DockMainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
-    plugins = Plugin::pluginObjects( part );
-    QPtrListIterator<Plugin> pIt( plugins );
-
-    for (; pIt.current(); ++pIt )
-      factory->addClient( pIt.current() );
   }
 
   setUpdatesEnabled( true );
@@ -135,6 +127,8 @@ void DockMainWindow::slotSetStatusBarText( const QString & text )
 
 void DockMainWindow::createShellGUI( bool create )
 {
+    bool bAccelAutoUpdate = accel()->setAutoUpdate( false );
+    assert( d->m_bShellGUIActivated != create );
     if ( create )
     {
         if ( isHelpMenuEnabled() )
@@ -155,23 +149,15 @@ void DockMainWindow::createShellGUI( bool create )
 
         guiFactory()->addClient( this );
 
-        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
-        QPtrListIterator<Plugin> pIt( plugins );
-        for (; pIt.current(); ++pIt )
-            guiFactory()->addClient( pIt.current() );
     }
     else
     {
         GUIActivateEvent ev( false );
         QApplication::sendEvent( this, &ev );
 
-        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
-        Plugin *plugin = plugins.last();
-        for (; plugin; plugin = plugins.prev() )
-            guiFactory()->removeClient( plugin );
-
         guiFactory()->removeClient( this );
     }
+    accel()->setAutoUpdate( bAccelAutoUpdate );
 }
 
 #include "dockmainwindow.moc"
