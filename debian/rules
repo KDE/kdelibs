@@ -11,7 +11,7 @@ build: $(BUILDDIR)/build-stamp
 $(BUILDDIR)/build-stamp:
 	dh_testdir
 	if test ! -f configure; then \
-	  $(MAKE) -f admin/Makefile.common ;\
+	  $(MAKE) -f Makefile.cvs ;\
 	fi
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
@@ -31,10 +31,10 @@ $(BUILDDIR)/build-stamp:
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	../configure --prefix=/usr \
-	--disable-rpath \
+	--disable-rpath --with-qt-dir=/usr/lib/qt1g \
 	--includedir=/usr/include/kde \
-	--libdir=/usr/lib  
-	
+	--libdir=/usr/lib 
+
 	make -C $(BUILDDIR)
 
 	touch $(BUILDDIR)/build-stamp
@@ -44,7 +44,6 @@ debian-clean:
 	-rm -f $(BUILDDIR)/build-stamp
 	-rm -f debian/files
 	-rm -f debian/*substvars
-	-rm -f configure
 
 clean: debian-clean
 	-rm -rf $(BUILDDIR)
@@ -79,7 +78,7 @@ binary-arch:  build
 	   includedir=`pwd`/debian/tmp/usr/include/kde \
 	   libdir=`pwd`/debian/tmp/usr/lib install 
 
-	perl -w admin/debianrules
+	perl -w admin/debianrules kdelibs2g
 	if test -f /usr/bin/qt2kdoc; then \
 	mkdir -p debian/tmp/usr/share/kdoc/index ; \
 	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html ; \
@@ -89,9 +88,9 @@ binary-arch:  build
 	/usr/doc/qt1g-doc/html ; \
 	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
 	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
-	dh_movefiles -pkdelibs-doc usr/share/kdoc ; \
+	dh_movefiles -pkdelibs-doc usr/share/kdoc usr/doc/kdelibs-doc ; \
 	fi
-	dh_movefiles
+	dh_movefiles 
 	dh_installdocs 
 	dh_installchangelogs 
 	dh_strip 

@@ -2,3 +2,5 @@ usr/lib/lib*.so.*
 etc/kde/charsets
 etc/kde/kdebug.areas
 usr/share
+usr/doc/kde
+usr/doc/kdelibs2g
