@@ -2,7 +2,7 @@
 # set "REMOVE_NANA" to get rid of the NANA assertions:
 # (REMOVE_NANA is now defined by default if the compiler directives
 #  do not define DEBUG), I use MS_NANA_DEFINES for this:
-INCLUDES= -I$(top_srcdir)/kfile -I$(top_srcdir)/kio $(all_includes) 
+INCLUDES= -I$(top_srcdir)/kfile -I$(top_srcdir)/kio -I$(top_srcdir)/nana $(all_includes) 
 # -DKAB_DEBUG
 
 lib_LTLIBRARIES = libkab.la
