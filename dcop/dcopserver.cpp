@@ -1529,6 +1529,9 @@ static bool isRunning(const QCString &fName, bool printNetworkId = false)
 	    // remove lockfile and continue
 	    unlink(fName.data());
 	}
+    } else if (errno != ENOENT) {
+        // remove lockfile and continue
+        unlink(fName.data());
     }
     return false;
 }
