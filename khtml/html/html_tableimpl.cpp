@@ -250,7 +250,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         }
     }
     // insertRow(numRows) appends to TFOOT. insertRow(-1) appends to TBODY, hence the !append.
-    if ( !found && foot && !append )
+    if ( !found && !append )
         section = static_cast<HTMLTableSectionElementImpl *>(foot);
 
     // If index has decreased to 0, it means "insert before first row in current section"
