@@ -32,6 +32,7 @@
 #include "misc/htmlhashes.h"
 #include <kdebug.h>
 #include "css_valueimpl.h"
+#include "css_stylesheetimpl.h"
 #include <typeinfo>
 
 using namespace DOM;
@@ -787,6 +788,14 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
     }
 }
 
+void ElementImpl::createDecl( )
+{
+    m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->ref();
+    m_styleDecls->setParent(document->elementSheet());
+    m_styleDecls->setNode(this);
+    m_styleDecls->setStrictParsing( document->parseMode() == DocumentImpl::Strict );
+}
 
 // -------------------------------------------------------------------------
 

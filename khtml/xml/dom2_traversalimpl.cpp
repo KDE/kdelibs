@@ -160,7 +160,6 @@ NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
 	    return m_referenceNode;
     }
 
-    short _result;
     NodeImpl *_tempCurrent = getPreviousNode(m_referenceNode);
     while( _tempCurrent ) {
 	m_referenceNode = _tempCurrent;

@@ -161,7 +161,11 @@ public:
     virtual short tabIndex() const;
     virtual void setTabIndex( short );
 
-    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return m_styleDecls; }
+    void createDecl();
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() {
+      if (!m_styleDecls) createDecl();
+      return m_styleDecls;
+    }
 
 protected: // member variables
 

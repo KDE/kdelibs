@@ -177,7 +177,7 @@ public:
     virtual void setRenderer(khtml::RenderObject *object) { m_render = object; }
     virtual khtml::RenderObject *renderer() const { return m_render; }
 
-    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return 0; }
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() { return 0; }
 
     // for LINK and STYLE
     virtual void sheetLoaded() {}
