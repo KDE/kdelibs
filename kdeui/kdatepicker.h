@@ -50,6 +50,8 @@ class KDatePicker: public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)
+  Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
+      
 public:
   /** The usual constructor.  The given date will be displayed
    * initially.
@@ -103,6 +105,22 @@ public:
    */
   int fontSize() const
     { return fontsize; }
+
+  /**
+   * By calling this method with @p enable = true, KDatePicker will show
+   * a little close-button in the upper button-row. Clicking the 
+   * close-button will cause the KDatePicker's topLevelWidget()'s close() 
+   * method being called. This is mostly useful for toplevel datepickers 
+   * without a window manager decoration.
+   * @see #hasCloseButton
+   */
+  void setCloseButton( bool enable );
+
+  /**
+   * @returns true if a KDatePicker shows a close-button.
+   * @see #setCloseButton
+   */
+  bool hasCloseButton() const;
 
 protected:
   /// the resize event

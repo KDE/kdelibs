@@ -35,6 +35,14 @@
 #include "kdatetbl.h"
 #include "kdatepicker.moc"
 
+class KDatePicker::KDatePickerPrivate
+{
+public:
+    KDatePickerPrivate() : closeButton(0L) {}
+
+    QToolButton *closeButton;
+};
+
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   : QFrame(parent,name),
@@ -49,6 +57,8 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
     table(new KDateTable(this)),
     fontsize(10)
 {
+  d = new KDatePickerPrivate();
+
   // -----
   setFontSize(10);
   line->setValidator(val);
@@ -81,7 +91,9 @@ KDatePicker::resizeEvent(QResizeEvent*)
 	    selectMonth,
 	    selectYear,
 	    monthForward,
-	    yearForward };
+	    yearForward,
+	    d->closeButton
+    };
     const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
     QSize sizes[NoOfButtons];
     int buttonHeight=0;
@@ -90,8 +102,12 @@ KDatePicker::resizeEvent(QResizeEvent*)
     int x=0;
     // ----- calculate button row height:
     for(count=0; count<NoOfButtons; ++count) {
-	sizes[count]=buttons[count]->sizeHint();
-	buttonHeight=QMAX(buttonHeight, sizes[count].height());
+        if ( buttons[count] ) { // closeButton may be 0L
+            sizes[count]=buttons[count]->sizeHint();
+            buttonHeight=QMAX(buttonHeight, sizes[count].height());
+        }
+        else
+            sizes[count] = QSize(0,0); // closeButton
     }
     // ----- calculate size of the month button:
     w=0;
@@ -109,7 +125,8 @@ KDatePicker::resizeEvent(QResizeEvent*)
     for(count=0; count<NoOfButtons; ++count)
     {
 	w=sizes[count].width();
-	buttons[count]->setGeometry(x, 0, w, buttonHeight);
+        if ( buttons[count] )
+            buttons[count]->setGeometry(x, 0, w, buttonHeight);
 	x+=w;
     }
     // ----- place the line edit for direct input:
@@ -345,14 +362,20 @@ KDatePicker::sizeHint() const
     selectMonth,
     selectYear,
     monthForward,
-    yearForward };
+    yearForward,
+    d->closeButton
+  };
   const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
   QSize sizes[NoOfButtons];
   int cx=0, cy=0, count;
   // ----- store the size hints:
   for(count=0; count<NoOfButtons; ++count)
     {
-      sizes[count]=buttons[count]->sizeHint();
+      if ( buttons[count] )
+          sizes[count]=buttons[count]->sizeHint();
+      else
+          sizes[count] = QSize(0,0);
+      
       if(buttons[count]==selectMonth)
 	{
 	  cx+=maxMonthRect.width();
@@ -399,6 +422,31 @@ KDatePicker::setFontSize(int s)
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }
   table->setFontSize(s);
+}
+
+void 
+KDatePicker::setCloseButton( bool enable )
+{
+    if ( enable == (d->closeButton != 0L) )
+        return;
+    
+    if ( enable ) {
+        d->closeButton = new QToolButton( this );
+        d->closeButton->setPixmap( SmallIcon("remove") );
+        connect( d->closeButton, SIGNAL( clicked() ), 
+                 topLevelWidget(), SLOT( close() ) );
+    }
+    else {
+        delete d->closeButton;
+        d->closeButton = 0L;
+    }
+    
+    updateGeometry();
+}
+
+bool KDatePicker::hasCloseButton() const
+{
+    return (d->closeButton != 0L);
 }
 
 void KDatePicker::virtual_hook( int id, void* data )
