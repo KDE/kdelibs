@@ -367,10 +367,9 @@ public:
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
-    virtual void setTable(RenderTable *t) { table = t; }
-
-    virtual void setContainingBlock();
-
+    virtual void setTable(RenderTable *t) { m_table = t; }
+    RenderTable *table() const { return m_table; }
+    
     virtual void print( QPainter* p, int x, int y,
 			int w, int h, int tx, int ty);
 
@@ -386,7 +385,7 @@ public:
     	
 
 protected:
-    RenderTable *table;
+    RenderTable *m_table;
 
     int _row;
     int _col;

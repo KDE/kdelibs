@@ -72,7 +72,7 @@ public:
     virtual const char *renderName() const { return "RenderObject"; }
     virtual void printTree(int indent=0) const;
 
-    void setParent(RenderObject *parent) { resetContainingBlock(); m_parent = parent; }
+    void setParent(RenderObject *parent) { m_parent = parent; }
     RenderObject *parent() const { return m_parent; }
 
     RenderObject *previousSibling() const { return m_previous; }
@@ -345,7 +345,6 @@ public:
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
-    virtual void resetContainingBlock();
 
     virtual int lowestPosition() {return 0;}
 
@@ -354,7 +353,6 @@ protected:
 
     // assumes (_tx/_ty) point to the upper left corner of the box
     virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}
-    virtual void setContainingBlock();
 
     virtual QRect viewRect() const;
 
@@ -367,8 +365,7 @@ protected:
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
     bool m_isAnonymous    : 1;
-    
-    RenderObject *m_containingBlock;
+
     RenderStyle *m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;

@@ -1559,7 +1559,7 @@ RenderTableCell::RenderTableCell()
   cSpan = rSpan = 1;
   nWrap = false;
   rowHeight = 0;
-  table = 0;
+  m_table = 0;
   rowimpl = 0;
   m_printSpecial=true;
 }
@@ -1584,21 +1584,13 @@ void RenderTableCell::calcMinMaxWidth()
     if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
-        table->addColInfo(this);	
+        m_table->addColInfo(this);	
 
 }
 
 void RenderTableCell::calcWidth()
 {
 }
-
-void RenderTableCell::setContainingBlock()
-{
-    // ### this break absolute positioning of table cells, but that's
-    //     nothing one should do anyway ;-)
-    m_containingBlock = table;
-}
-
 
 void RenderTableCell::close()
 {
@@ -1622,7 +1614,7 @@ void RenderTableCell::close()
     calcMinMaxWidth();
     setLayouted(false);
 
-    table->updateSize();
+    m_table->updateSize();
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::close() total height =" << m_height << endl;

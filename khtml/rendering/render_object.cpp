@@ -110,8 +110,7 @@ RenderObject::RenderObject()
     m_printSpecial = false;
     m_containsPositioned = false;
     m_isAnonymous = false;
-    
-    m_containingBlock = 0;
+
     m_bgImage = 0;
 }
 
@@ -262,34 +261,28 @@ void RenderObject::removeChild(RenderObject *oldChild)
 
 RenderObject *RenderObject::containingBlock() const
 {
-    if(!m_containingBlock) const_cast<RenderObject *>(this)->setContainingBlock();
-    return m_containingBlock;
-}
-
-void RenderObject::setContainingBlock()
-{
+    if(isTableCell()) {
+	return static_cast<const RenderTableCell *>(this)->table();
+    }
+    
     RenderObject *o = parent();
-    if(m_style->position() == FIXED)
-    {
+    if(m_style->position() == FIXED) {
 	// ### containing block is viewport
     }
-    else if(m_style->position() == ABSOLUTE)
-    {
-	while(o && o->style()->position() == STATIC && !o->isRoot()) o = o->parent();
-    }
-    else
-    {
-	while(o && o->style()->display() == INLINE) o = o->parent();
+    else if(m_style->position() == ABSOLUTE) {
+	while (o && o->style()->position() == STATIC && !o->isRoot()) 
+	    o = o->parent();
+    } else {
+	while(o && o->style()->display() == INLINE) 
+	    o = o->parent();
     }
     // this is just to make sure we return a valid element.
     // the case below should never happen...
-    if(!o)
-    {
-	kdDebug( 6040 ) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0, setting to this" << endl;
-	m_containingBlock = this;
-    }
-    else
-	m_containingBlock = o;
+    if(!o) {
+	kdDebug( 6040 ) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0" << endl;
+	return const_cast<RenderObject *>(this);
+    } else
+	return o;
 }
 
 QSize RenderObject::containingBlockSize() const
@@ -490,7 +483,7 @@ void RenderObject::setKeyboardFocus(DOM::ActivationState b)
 
 QRect RenderObject::viewRect() const
 {
-    return m_containingBlock->viewRect();
+    return containingBlock()->viewRect();
 }
 
 void RenderObject::absolutePosition(int &xPos, int &yPos)
@@ -506,12 +499,3 @@ void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
     _x = _y = height = -1;
 }
 
-void RenderObject::resetContainingBlock()
-{
-    m_containingBlock = 0;
-
-    RenderObject *n;
-
-    for( n = m_first; n != 0; n = n->nextSibling() )
-	n->resetContainingBlock();
-}
