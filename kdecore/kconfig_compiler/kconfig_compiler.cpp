@@ -967,7 +967,7 @@ int main( int argc, char **argv )
     h << "    }" << endl;
   }
 
-  h << "  private:" << endl;
+  h << "  protected:" << endl;
 
   // Private constructor for singleton
   if ( singleton ) {
@@ -1092,6 +1092,11 @@ int main( int argc, char **argv )
   }
 
   cpp << "{" << endl;
+
+  // Needed in case the singleton class is used as baseclass for
+  // another singleton.
+  if ( singleton )
+    cpp << "  mSelf = this;" << endl;
 
   group = QString::null;
   for( e = entries.first(); e; e = entries.next() ) {
