@@ -715,8 +715,6 @@ void RenderPartObject::updateWidget()
       }
       if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
-      else
-          objbase->setLiveConnect(part->liveConnectExtension(this));
   }
 }
 
