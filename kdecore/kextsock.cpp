@@ -998,7 +998,7 @@ int KExtendedSocket::resolve(KSocketAddress *sock, QString &host, QString &port,
 }
 
 QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
-					    int flags)
+					    int flags, int *error)
 {
   int err;
   addrinfo hint, *res, *p;
@@ -1006,12 +1006,20 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 
   memset(&hint, 0, sizeof(hint));
   if (!process_flags(flags, hint))
-    return l;
+    {
+      if (error)
+	*error = EAI_BADFLAGS;
+      return l;
+    }
 
   kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
   err = doLookup(host, port, hint, &res);
   if (err)
-    return l;
+    {
+      if (error)
+	*error = err;
+      return l;
+    }
 
   for (p = res; p; p = p->ai_next)
     if (valid_family(p, flags))

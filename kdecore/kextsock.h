@@ -508,11 +508,14 @@ public:
   /**
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
+   * The error code can be transformed into string by @ref KExtendedSocket::strError
+   * with code of IO_LookupError
    * @param host	the hostname to look up
    * @param port	the port/service to look up
    * @param flags	flags to be used when looking up
+   * @param error	pointer to a variable holding the error code
    */
-  static QList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0);
+  static QList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
 
   /**
    * Returns the local socket address
