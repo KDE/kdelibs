@@ -826,13 +826,11 @@ void RenderFlow::layoutInlineChildren()
 	firstLine = true;
 	while( !end.atEnd() ) {
 	    start = end;
-#if 0
-	    if( start.current() == QChar('\n') ) {
+	    if(m_pre && start.current() == QChar('\n') ) {
 		++start;
 		if( start.atEnd() )
 		    break;
 	    }
-#endif
 	    if(!m_pre) {
 		// remove leading spaces
 		while(!start.atEnd() && start.direction() == QChar::DirWS )
