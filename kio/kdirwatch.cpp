@@ -17,22 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qtimer.h>
-#include <qstringlist.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qsocketnotifier.h>
-
-#include <kapp.h>
-#include <kdebug.h>
-
 #include <config.h>
-
-#include "kdirwatch.h"
-
-#ifdef HAVE_FAM
-#include <fam.h>
-#endif
 
 #ifdef HAVE_DNOTIFY
 #ifndef _GNU_SOURCE
@@ -42,10 +27,24 @@
 #undef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 500
 #endif
-#define _POSIX_C_SOURCE 199506L
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
+#endif
+
+#include <qtimer.h>
+#include <qstringlist.h>
+#include <qfile.h>
+#include <qdir.h>
+#include <qsocketnotifier.h>
+
+#include <kapp.h>
+#include <kdebug.h>
+
+#include "kdirwatch.h"
+
+#ifdef HAVE_FAM
+#include <fam.h>
 #endif
 
 enum directoryStatus { Normal = 0, NonExistent };
