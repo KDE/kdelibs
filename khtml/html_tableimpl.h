@@ -29,6 +29,7 @@
 
 #include <qcolor.h>
 #include <qvector.h>
+#include <qdatetime.h>
 
 #include "dtd.h"
 #include "html_elementimpl.h"
@@ -287,6 +288,8 @@ protected:
 
     HTMLTableColElementImpl *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
+    
+    QTime updateTimer;
 };
 
 // -------------------------------------------------------------------------

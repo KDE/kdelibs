@@ -1685,6 +1685,7 @@ void HTMLTableElementImpl::close()
 {
     setParsing(false);
     calcMinMaxWidth();
+    setLayouted(false);
     if(!availableWidth) return;
     if(availableWidth < minWidth)
 	_parent->updateSize();
@@ -1696,6 +1697,14 @@ void HTMLTableElementImpl::close()
 
 void HTMLTableElementImpl::updateSize()
 {
+    if (parsing())
+    {
+	if (!updateTimer.isNull() && updateTimer.elapsed()<200)
+	    return;
+	else
+	    updateTimer.start();	    	
+    }
+    
     HTMLPositionedElementImpl::updateSize();
 }
 

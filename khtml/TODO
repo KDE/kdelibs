@@ -7,6 +7,7 @@ broken sites:
 	www.tomshardware.com (aligned tables)
 	www.spiegel.de (image of headline)
 	www.zdnet.com (rightmost column missing, some minor layouting probs)
+	www.barnesandnoble.com (floating tables contents disappears on resize)
 
 General:
 	* move all internal classes into namespace khtml
