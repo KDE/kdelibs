@@ -59,6 +59,12 @@ public:
     virtual ~KFontCombo();
 
     /**
+     * Sets the font list
+     *
+     * @param fonts Font list to show
+     */
+    void setFonts(const QStringList &fonts);
+    /**
      * Set the listed fonts to bold or normal
      *
      * @param bold Set to true to display fonts in bold
@@ -129,16 +135,13 @@ public:
 
 protected:
     /**
-     * Initializes the combobox with the given font list
-     *
-     * @param fonts the fonts to display
-     */
-    void init(const QStringList &fonts);
-    /**
      * Updated the combo's @ref listBox() to reflect changes made to the
      * fonts' attributed
      */
     void updateFonts();
+
+private:
+    void init();
 
 private:
     friend class KFontListItem;
