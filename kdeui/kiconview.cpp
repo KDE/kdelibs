@@ -235,7 +235,7 @@ void KIconView::slotAutoSelect()
       setSelected( m_pCurrentItem, true );
   }
   else
-    kdDebug() << "KIconView: That´s not supposed to happen!!!!" << endl;
+    kdDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
 }
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
