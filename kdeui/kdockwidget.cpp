@@ -624,6 +624,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if ( dockPos == KDockWidget::DockCenter )
   {
     KDockTabGroup* tab = new KDockTabGroup( newDock, "_dock_tab");
+    QObject::connect(tab, SIGNAL(currentChanged(QWidget*)), d, SLOT(slotFocusEmbeddedWidget(QWidget*)));
     newDock->setWidget( tab );
 
     target->applyToWidget( tab );

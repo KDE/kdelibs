@@ -115,6 +115,12 @@ public:
   KDockWidgetPrivate();
   ~KDockWidgetPrivate();
 
+public slots:
+  /**
+   * Especially used for Tab page docking. Switching the pages requires additional setFocus() for the embedded widget.
+   */
+  void slotFocusEmbeddedWidget(QWidget* w = 0L);
+
 public:
   int index;
   int splitPosInPercent;
