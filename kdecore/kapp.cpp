@@ -89,6 +89,15 @@ static int kde_xio_errhandler( Display * )
   return kapp->xioErrhandler();
 }
 
+static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
+{
+    char errstr[256];
+    XGetErrorText( dpy, err->error_code, errstr, 256 );
+    qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
+    return 0;
+}
+
+
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
     QApplication( argc, argv )
 {
@@ -108,12 +117,14 @@ int KApplication::xioErrhandler()
   return 0;
 }
 
+
 void KApplication::init()
 {
   QApplication::setDesktopSettingsAware( false );
   // this is important since we fork() to launch the help (Matthias)
   fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
-  // set up the fance KDE xio error handler (Matthias)
+  // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
+  XSetErrorHandler( kde_x_errhandler );
   XSetIOErrorHandler( kde_xio_errhandler );
 
   // CC: install KProcess' signal handler
@@ -410,7 +421,7 @@ QPixmap KApplication::getIcon() const
       KApplication *that = const_cast<KApplication*>(this);
       that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( QString(name()) + ".xpm");
   }
-  return aIconPixmap; 
+  return aIconPixmap;
 }
 
 QPixmap KApplication::getMiniIcon() const
@@ -419,7 +430,7 @@ QPixmap KApplication::getMiniIcon() const
       KApplication *that = const_cast<KApplication*>(this);
       that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( QString(name()) + ".xpm" );
   }
-  return aMiniIconPixmap; 
+  return aMiniIconPixmap;
 }
 KApplication::~KApplication()
 {
@@ -430,10 +441,10 @@ KApplication::~KApplication()
     bIsRestored = false;
     QString aSessionConfigName = locateLocal("config", aSessionName);
     QFile sessionFile( aSessionConfigName);
-    if (sessionFile.exists()) 
+    if (sessionFile.exists())
     {
       sessionFile.remove();
-    }         
+    }
   }
 
   removeEventFilter( this );
@@ -470,10 +481,10 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  bIsRestored = false;
           QString aSessionConfigName = locateLocal("config", aSessionName);
           QFile sessionFile( aSessionConfigName);
-          if (sessionFile.exists()) 
+          if (sessionFile.exists())
 	  {
 	    sessionFile.remove();
-	  }         
+	  }
 	}
 	
 	if (!topWidget() ||
@@ -487,7 +498,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	if (bSessionManagementUserDefined)
 	  KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 	else {
-	  
+	
 	  if (pSessionConfig && !aSessionName.isEmpty()){
 	    QString aCommand = name();
 	    if (aCommand != argv()[0]){
@@ -522,7 +533,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
     // stuff for reconfiguring
     if ( cme->message_type == KDEChangeStyle ) {
       QString str;
-      
+
       KGlobal::config()->setGroup("KDE");
       str = KGlobal::config()->readEntry("widgetStyle");
       if(!str.isNull())
@@ -533,7 +544,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    applyGUIStyle(WindowsStyle);
       return true;
     }
-    
+
     if ( cme->message_type == KDEChangePalette )
       {
 	readSettings(true);
@@ -619,7 +630,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         }
 
         if(!styleHandle){
-            warning("KApp: Unable to open style plugin %s (%s).", 
+            warning("KApp: Unable to open style plugin %s (%s).",
 		    styleStr.ascii(), lt_dlerror());
 
             pKStyle = 0;
@@ -838,11 +849,11 @@ QString KApplication::kde_appsdir()
 {
     warning("kde_appsdir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) 
+    if (dir.isNull())
       dir = kdedir() + KStandardDirs::kde_default("apps");
     return dir;
 }
-                                        
+
 QString KApplication::localkdedir()
 {
   warning("localkdedir is obsolete. Try to use KStandardDirs instead");
@@ -879,7 +890,7 @@ bool KApplication::getKDEFonts(QStringList &fontlist) const
 QString KApplication::tempSaveName( const QString& pFilename ) const
 {
   QString aFilename;
-  
+
   if( pFilename[0] != '/' )
     {
       kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
@@ -887,7 +898,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
     }
   else
     aFilename = pFilename;
-  
+
   QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
     {
@@ -899,7 +910,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
     }
 
   aFilename.replace( QRegExp( "/" ),"\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
-  
+
   return aFilename;
 }
 
@@ -908,7 +919,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
         bool& bRecover ) const
 {
   QString aFilename;
-  
+
   if( pFilename[0] != '/' )
     {
       kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
@@ -916,7 +927,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
     }
   else
     aFilename = pFilename;
-  
+
   QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
     {
@@ -926,9 +937,9 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 	  aAutosaveDir.setPath( _PATH_TMP );
 	}
     }
-  
+
   aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
-  
+
   if( QFile( aFilename ).exists() )
     {
       bRecover = true;
@@ -983,7 +994,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     KWM::setIcon(topWidget->winId(), getIcon());
     KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
     // set a short icon text
-    // TODO: perhaps using .ascii() isn't right here as this may be seen by 
+    // TODO: perhaps using .ascii() isn't right here as this may be seen by
     // a user?
     XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
     if (bSessionManagement)
