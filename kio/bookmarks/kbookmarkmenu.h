@@ -148,6 +148,7 @@ protected:
   bool m_bAddBookmark:1;
   bool m_bDirty:1;
   bool m_bNSBookmark:1;
+  bool m_bAddShortcuts:1;
 
   KBookmarkManager * m_pManager;
   KBookmarkOwner *m_pOwner;

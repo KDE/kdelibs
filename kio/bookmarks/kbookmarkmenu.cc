@@ -85,6 +85,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
                               KActionCollection *collec, bool _isRoot, bool _add,
                               const QString & parentAddress )
   : m_bIsRoot(_isRoot), m_bAddBookmark(_add),
+    m_bAddShortcuts(true),
     m_pManager(mgr), m_pOwner(_owner),
     m_parentMenu( _parentMenu ),
     m_actionCollection( collec ),
@@ -305,7 +306,7 @@ void KBookmarkMenu::addAddBookmark()
 
   KAction * paAddBookmarks = new KAction( title,
                                           "bookmark_add",
-                                          m_bIsRoot ? KStdAccel::addBookmark() : KShortcut(),
+                                          m_bIsRoot && m_bAddShortcuts ? KStdAccel::addBookmark() : KShortcut(),
                                           this,
                                           SLOT( slotAddBookmark() ),
                                           m_actionCollection, m_bIsRoot ? "add_bookmark" : 0 );
