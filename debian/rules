@@ -99,6 +99,7 @@ binary-arch:  build
 	dh_shlibdeps 
 	dh_gencontrol
 	cd debian/tmp && find ./$(kde_confdir) -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
+	echo "/etc/pam.d/kde" >> debian/tmp/DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
 	dh_md5sums
 	perl -w admin/debianrules update
