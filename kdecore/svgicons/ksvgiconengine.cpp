@@ -298,10 +298,10 @@ public:
 		}
 	}
 
-	void handleTags(QDomElement element, bool paint)
+	bool handleTags(QDomElement element, bool paint)
 	{
 		if(element.attribute("display") == "none")
-			return;
+			return false;
 		if(element.tagName() == "linearGradient")
 		{
 			ArtGradientLinear *gradient = new ArtGradientLinear();
@@ -320,7 +320,7 @@ public:
 
 			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);
 			m_engine->painter()->addLinearGradientElement(gradient, element);
-			return;
+			return true;
 		}
 		else if(element.tagName() == "radialGradient")
 		{
@@ -332,11 +332,11 @@ public:
 
 			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);
 			m_engine->painter()->addRadialGradientElement(gradient, element);
-			return;
+			return true;
 		}
 
 		if(!paint)
-			return;
+			return true;
 
 		// TODO: Default attribute values
 		if(element.tagName() == "rect")
@@ -357,6 +357,24 @@ public:
 
 			m_engine->painter()->drawRectangle(x, y, w, h, rx, ry);
 		}
+		else if(element.tagName() == "switch")
+		{
+			QDomNode iterate = element.firstChild();
+
+			while(!iterate.isNull())
+			{
+				// Reset matrix
+				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+
+				// Parse common attributes, style / transform
+				parseCommonAttributes(iterate);
+
+				if(handleTags(iterate.toElement(), true))
+					return true;
+				iterate = iterate.nextSibling();
+			}
+			return true;
+		}
 		else if(element.tagName() == "g" || element.tagName() == "defs")
 		{
 			QDomNode iterate = element.firstChild();
@@ -372,6 +390,7 @@ public:
 				handleTags(iterate.toElement(), (element.tagName() == "defs") ? false : true);
 				iterate = iterate.nextSibling();
 			}
+			return true;
 		}
 		else if(element.tagName() == "line")
 		{
@@ -381,6 +400,7 @@ public:
 			double y2 = toPixel(element.attribute("y2"), false);
 
 			m_engine->painter()->drawLine(x1, y1, x2, y2);
+			return true;
 		}
 		else if(element.tagName() == "circle")
 		{
@@ -390,6 +410,7 @@ public:
 			double r = toPixel(element.attribute("r"), true); // TODO: horiz correct?
 
 			m_engine->painter()->drawEllipse(cx, cy, r, r);
+			return true;
 		}
 		else if(element.tagName() == "ellipse")
 		{
@@ -400,16 +421,19 @@ public:
 			double ry = toPixel(element.attribute("ry"), false);
 
 			m_engine->painter()->drawEllipse(cx, cy, rx, ry);
+			return true;
 		}
 		else if(element.tagName() == "polyline")
 		{
 			QPointArray polyline = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolyline(polyline);
+			return true;
 		}
 		else if(element.tagName() == "polygon")
 		{
 			QPointArray polygon = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolygon(polygon);
+			return true;
 		}
 		else if(element.tagName() == "path")
 		{
@@ -422,6 +446,7 @@ public:
 				filled = false;
 
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
+			return true;
 		}
 		else if(element.tagName() == "image")
 		{
@@ -453,7 +478,9 @@ public:
 
 				m_engine->painter()->drawImage(x, y, *image);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	void parseStyle(const QString &style)
