@@ -1880,6 +1880,9 @@ void KDirLister::handleError( KIO::Job *job )
 void KDirLister::addNewItem( const KFileItem *item )
 {
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
+  if (isNameFilterMatch)
+     return; // No reason to continue... bailing out here prevents a mimetype scan.
+     
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
   if ( !isNameFilterMatch && !isMimeFilterMatch )
