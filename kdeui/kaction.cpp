@@ -129,9 +129,9 @@ void KAction::unplug( QWidget *w )
   {
     KToolBar *bar = (KToolBar *)w;
 
-    int id = findContainer( bar );
+    int idx = findContainer( bar );
 
-    bar->removeItem( id );
+    bar->removeItem( menuId( idx ) );
   }
 }
 
