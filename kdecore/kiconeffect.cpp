@@ -134,14 +134,14 @@ QString KIconEffect::fingerprint(int group, int state) const
     {
         QString tmp;
         cached = tmp.setNum(mEffect[group][state]);
-        cached += ":";
+        cached += ':';
         cached += tmp.setNum(mValue[group][state]);
-        cached += ":";
+        cached += ':';
         cached += mTrans[group][state] ? QString::fromLatin1("trans")
             : QString::fromLatin1("notrans");
         if (mEffect[group][state] == Colorize)
         {
-            cached += ":";
+            cached += ':';
             cached += mColor[group][state].name();
         }
     
