@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/perl -w
 
 $file = $ARGV[0];
 open(IN, $file) or die "No such file $file";
@@ -12,6 +12,7 @@ my $name;
 my $size;
 my $hashsize;
 my $banner = 0;
+sub calcTable();
 
 while (<IN>) {
   chop; 
@@ -74,7 +75,7 @@ sub calcTable() {
 }
 
 sub hashValue {
-  @chars = split(/ */, @_[0]);
+  @chars = split(/ */, $_[0]);
   my $val = 0;
   foreach $c (@chars) {
     $val += ord($c);
@@ -85,11 +86,11 @@ sub hashValue {
 sub output {
   if (!$banner) {
     $banner = 1;
-    print "/* automatically generated from $file. DO NOT EDIT ! */\n";
+    print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
   }
 
   print "\nnamespace KJS {\n";
-  print "\nconst struct HashEntry2 ${name}Entries[] = {\n";
+  print "\nconst struct HashEntry ${name}Entries[] = {\n";
   my $i = 0;
   foreach $entry (@table) {
     if (defined($entry)) {
@@ -110,7 +111,7 @@ sub output {
     $i++;
   }
   print "};\n";
-  print "\nconst struct HashTable2 $name = ";
+  print "\nconst struct HashTable $name = ";
   print "\{ 2, $size, ${name}Entries, $hashsize \};\n\n";
   print "}; // namespace\n";
 }

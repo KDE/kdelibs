@@ -41,10 +41,11 @@ namespace KJS {
   // ECMA 262-3 8.6.1
   // Attributes (only applicable to the Object type)
   enum Attribute { None       = 0,
-		   ReadOnly   = 1 << 1,
-		   DontEnum   = 1 << 2,
-		   DontDelete = 1 << 3,
-		   Internal   = 1 << 4 };
+		   ReadOnly   = 1 << 1, // property can be only read, not written
+		   DontEnum   = 1 << 2, // property doesn't appear in (for .. in ..)
+		   DontDelete = 1 << 3, // property can't be deleted
+		   Internal   = 1 << 4, // an internal property, set to by pass checks
+		   Function   = 1 << 5 }; // property is a function - only used by static hashtables
 
   /**
    * Class Information
@@ -297,7 +298,7 @@ namespace KJS {
      * }
      * f.prototype = new String();
      *
-     * When the function f.b is executed, it's scope will include properties of
+     * When the function f.b is executed, its scope will include properties of
      * f. So in the example above the return value of f.b() would be the new
      * String object that was assigned to f.prototype.
      *

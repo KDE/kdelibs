@@ -1,8 +1,8 @@
-/* automatically generated from keywords.table. DO NOT EDIT ! */
+/* Automatically generated from keywords.table using create_hash_table. DO NOT EDIT ! */
 
 namespace KJS {
 
-const struct HashEntry2 mainTableEntries[] = {
+const struct HashEntry mainTableEntries[] = {
    { "instanceof", INSTANCEOF, 0, &mainTableEntries[63] },
    { "var", VAR, 0, &mainTableEntries[47] },
    { "case", CASE, 0, &mainTableEntries[41] },
@@ -72,6 +72,6 @@ const struct HashEntry2 mainTableEntries[] = {
    { "volatile", RESERVED, 0, 0 }
 };
 
-const struct HashTable2 mainTable = { 2, 67, mainTableEntries, 41 };
+const struct HashTable mainTable = { 2, 67, mainTableEntries, 41 };
 
 }; // namespace

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
@@ -71,7 +72,7 @@ namespace KJS {
   public:
     FunctionObjectImp(ExecState *exec, FunctionPrototypeImp *funcProto);
     virtual ~FunctionObjectImp();
- 
+
     virtual bool implementsConstruct() const;
     virtual Object construct(ExecState *exec, const List &args);
     virtual bool implementsCall() const;

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
@@ -82,9 +83,9 @@ namespace KJS {
      */
 #if QT_VERSION < 300
     unsigned char high() const { return hi; }
-#else      
+#else
     unsigned char high() const { return uc >> 8; }
-#endif      
+#endif
     /**
      * @return The lower byte of the character.
      */
@@ -92,15 +93,15 @@ namespace KJS {
     unsigned char low() const { return lo; }
 #else
     unsigned char low() const { return uc & 0xFF; }
-#endif      
+#endif
     /**
      * @return the 16 bit Unicode value of the character
      */
 #if QT_VERSION < 300
     unsigned short unicode() const { return hi << 8 | lo; }
-#else      
+#else
     unsigned short unicode() const { return uc; }
-#endif      
+#endif
   public:
     /**
      * @return The character converted to lower case.
@@ -120,12 +121,12 @@ namespace KJS {
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
-      
+
 #if QT_VERSION < 300
     unsigned char hi;
     unsigned char lo;
   } KJS_PACKED;
-#else  
+#else
     ushort uc;
   };
 #endif
@@ -134,12 +135,12 @@ namespace KJS {
   inline UChar::UChar() : hi(0), lo(0) { }
   inline UChar::UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
   inline UChar::UChar(unsigned short u) : hi(u >> 8), lo(u & 0x00ff) { }
-#else  
+#else
   inline UChar::UChar() : uc(0) { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
   inline UChar::UChar(unsigned short u) : uc(u) { }
 #endif
-  
+
   /**
    * @short Dynamic reference to a string character.
    *
@@ -177,15 +178,15 @@ namespace KJS {
     unsigned char& low() const { return ref().lo; }
 #else
     unsigned char low() const { return ref().uc & 0xFF; }
-#endif    
+#endif
     /**
      * @return Higher byte.
      */
 #if QT_VERSION < 300
     unsigned char& high() const { return ref().hi; }
-#else    
+#else
     unsigned char high() const { return ref().uc >> 8; }
-#endif    
+#endif
     /**
      * @return Character converted to lower case.
      */
