@@ -917,6 +917,7 @@ int main(int argc, char **argv, char **envp)
    pid_t pid;
    int launch_dcop = 1;
    int launch_klauncher = 1;
+   int launch_kded = 1;
    int keep_running = 1;
 
    /** Save arguments first... **/
@@ -928,6 +929,8 @@ int main(int argc, char **argv, char **envp)
          launch_dcop = 0;
       if (strcmp(d.argv[i], "--no-klauncher") == 0)
          launch_klauncher = 0;
+      if (strcmp(d.argv[i], "--no-kded") == 0)
+         launch_kded = 0;
       if (strcmp(d.argv[i], "--exit") == 0)
          keep_running = 0;
    }
@@ -972,6 +975,13 @@ int main(int argc, char **argv, char **envp)
    {
       pid = launch( 1, "klauncher", 0 );
       printf("KLauncher: pid = %d result = %d\n", pid, d.result);
+      WaitPid(pid);
+   }
+
+   if (launch_kded)
+   {
+      pid = launch( 1, "kded", 0 );
+      printf("KDED: pid = %d result = %d\n", pid, d.result);
       WaitPid(pid);
    }
 
