@@ -71,9 +71,6 @@
 typedef int (*QX11EventFilter) (XEvent*);
 extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 
-#define HSV_X 305
-#define RGB_X 385
-
 static const char * const recentColors = "Recent_Colors";
 static const char * const customColors = "Custom_Colors";
 
@@ -91,7 +88,7 @@ public:
       emit valueChanged( value() );
       emit valueChanged( currentValueText() );
   }
-  
+
 };
 
 
@@ -1102,7 +1099,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->htmlName->setFixedWidth(w);
   l_grid->addWidget(d->htmlName, 1, 2, AlignLeft);
 
-  connect( d->htmlName, SIGNAL( textChanged(const QString &) ), 
+  connect( d->htmlName, SIGNAL( textChanged(const QString &) ),
       SLOT( slotHtmlChanged() ) );
 
   d->patch = new KColorPatch( page );
