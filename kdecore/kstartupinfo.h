@@ -30,8 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <qobject.h>
 
-#include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
 #include <qcstring.h>
 #include <qstring.h>
@@ -574,5 +572,4 @@ class KStartupInfoData
         KStartupInfoDataPrivate* d;
     };
 
-#endif
 #endif
