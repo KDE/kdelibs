@@ -441,7 +441,8 @@ void KStartupInfo::startups_cleanup()
          it != d->startups.end();
          )
         {
-        if( ( *it ).age > 6 ) // 60 seconds CHECKME
+        ( *it ).age++;
+        if( ( *it ).age >= 3 ) // 30 seconds CHECKME
             {
             const KStartupInfoId& key = it.key();
             ++it;
@@ -449,10 +450,7 @@ void KStartupInfo::startups_cleanup()
             remove_startup_info_internal( key );
             }
         else
-            {
-            ( *it ).age++;
             ++it;
-            }
         }
     }
     
