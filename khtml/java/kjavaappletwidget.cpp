@@ -6,7 +6,6 @@
 #include <kwin.h>
 #include <netwm.h>
 
-
 #include <unistd.h>
 
 // For future expansion
@@ -209,6 +208,7 @@ static bool wstate_withdrawn( WId winid )
 
 void KJavaAppletWidget::swallowWindow( WId w )
 {
+
    window = w;
 
    XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());   
@@ -218,34 +218,12 @@ void KJavaAppletWidget::swallowWindow( WId w )
      ;
 
    embed(window);
-
-   XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
-   XMapRaised( qt_xdisplay(), window );
-   XSync( qt_xdisplay(), False );
-
-   XResizeWindow( qt_xdisplay(), window, width(), height() );
-}
-
-void KJavaAppletWidget::resizeEvent( QResizeEvent * )
-{
-   if ( window != 0 )
-      XResizeWindow( qt_xdisplay(), window, width(), height() );
 }
 
 void KJavaAppletWidget::resize( int w, int h)
 {
   QXEmbed::resize( w, h );
   applet->setSize( QSize(w, h) );
-}
-
-void KJavaAppletWidget::closeEvent( QCloseEvent *e )
-{
-  /*
-   if ( window )
-      KWM::close( window );
-   else
-   */
-      e->accept();
 }
 
 

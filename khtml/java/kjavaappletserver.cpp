@@ -60,9 +60,14 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     
     if( config.readBoolEntry( "JavaAutoDetect", true) ) 
         p->setJVMPath( "java" );
-    else
-        p->setJVMPath( config.readEntry( "JavaPath", "/usr/lib/jdk" ) + "/java" );
-    
+    else {
+        QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
+	// Cut off trailing slash if any
+	if(jPath[jPath.length()-1] == '/')
+	  jPath.remove(jPath.length()-1, 1);
+
+        p->setJVMPath( jPath + "/java");
+    }
     QString extraArgs = config.readEntry( "JavaArgs", "" );
     
     if( config.readBoolEntry( "ShowJavaConsole", false) )

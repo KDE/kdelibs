@@ -159,8 +159,6 @@ protected slots:
 
 protected:
    void swallowWindow( WId w );
-   void resizeEvent(QResizeEvent *);
-   void closeEvent(QCloseEvent *);
    void uniqueTitle();
 
 private:
@@ -182,6 +180,11 @@ private:
 
 /*
  * $Log$
+ * Revision 1.10  2000/07/10 12:34:19  hoelzer
+ * Use qxembed to embed the java view.
+ * Now a KWin guru should put this code from 'working'
+ * to 'working well'. :)
+ *
  * Revision 1.9  2000/06/08 22:48:24  pfeiffer
  * actually s/kwin.h//, as it's not needed at all in the headerfile.
  * No idea how to fix the cpp-file, tho.
