@@ -640,7 +640,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // request html anchor
   if ( d->m_frames.count() == 0 &&
        urlcmp( url.url(), m_url.url(), true, true ) && 
-       !url.encodedHtmlRef().isEmpty() && !args.doPost() && !args.reload )
+       url.hasRef() && !args.doPost() && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
@@ -1213,7 +1213,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
   assert ( d->m_job == kio_job );
 
-    //kdDebug( 6050 ) << "slotData: " << data.size() << endl;
+  //kdDebug( 6050 ) << "slotData: " << data.size() << endl;
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
@@ -2333,7 +2333,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
-
   KURL cURL = d->m_doc ? d->m_doc->completeURL( url ) : url;
   // special case for <a href="">
   if ( url.isEmpty() )
@@ -2343,7 +2342,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     // ### ERROR HANDLING
     return;
 
-  //kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
+  //kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
 
   if ( button == LeftButton && ( state & ShiftButton ) )
   {
@@ -2683,8 +2682,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
                                   d->m_ssl_in_use ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
 
-  // Support for <frame url="">
-  if (url.isEmpty() && args.serviceType.isEmpty())
+  // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
+  if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
     args.serviceType = QString::fromLatin1( "text/html" );
 
   if ( args.serviceType.isEmpty() ) {
@@ -2832,6 +2831,19 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       p->end();
       return true;
   }
+  else if ( url.url() == "about:blank" )
+  {
+      if (!child->m_part->inherits("KHTMLPart"))
+          return false;
+
+      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
+
+      p->begin();
+      p->m_url = "";
+      p->write(""); // Tried <HTML></HTML> too, still no luck
+      p->end();
+      return true;
+  }
   else if ( !url.isEmpty() )
   {
       //kdDebug( 6050 ) << "opening " << url.url() << " in frame " << child->m_part << endl;
@@ -2909,6 +2921,7 @@ void KHTMLPart::submitFormAgain()
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
+  kdDebug(6000) << "KHTMLPart::submitForm target=" << _target << " url=" << url << endl;
   KURL u = d->m_doc ? d->m_doc->completeURL( url ) : url;
 
   if ( !u.isValid() )
@@ -2958,7 +2971,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   if ( d->m_bParsing || d->m_runningScripts > 0 ) {
     if( d->m_submitForm ) {
-        return;
+      kdDebug(6000) << "KHTMLPart::submitForm ABORTING!" << endl;
+      return;
     }
     d->m_submitForm = new KHTMLPartPrivate::SubmitForm;
     d->m_submitForm->submitAction = action;
@@ -2970,8 +2984,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     connect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
   }
   else
+  {
     emit d->m_extension->openURLRequest( u, args );
-
+  }
 }
 
 void KHTMLPart::popupMenu( const QString &url )
