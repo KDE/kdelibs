@@ -88,8 +88,12 @@ struct KStartupInfoPrivate
     
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
     : QObject( parent_P, name_P ), 
+        d(0L),
         clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 )
     {
+    if (!KApplication::kApplication()) return;
+    if (!KApplication::kApplication()->getDisplay()) return;
+
     d = new KStartupInfoPrivate;
     d->wm_module = new KWinModule( this );
     connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( window_added( WId )));
@@ -101,7 +105,7 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
 
 KStartupInfo::~KStartupInfo()
     {
-    delete d;
+    if (d) delete d;
     }
 
 void KStartupInfo::got_message( const QString& msg_P )
@@ -147,6 +151,7 @@ void KStartupInfo::got_startup_info( const QString& msg_P, bool update_only_P )
 void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
     Data& data_P, bool update_only_P )
     {
+    if (!d) return;
     if( id_P.none())
         return;
     if( d->startups.contains( id_P ))
@@ -182,6 +187,7 @@ void KStartupInfo::got_remove_startup_info( const QString& msg_P )
 
 void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
     {
+    if (!d) return;
     if( !d->startups.contains( id_P ))
         return;
 //    kdDebug( 172 ) << "removing" << endl;
@@ -192,6 +198,7 @@ void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
 
 void KStartupInfo::remove_startup_pids( const KStartupInfoData& data_P )
     { // first find the matching info
+    if (!d) return;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          ++it )
@@ -208,6 +215,7 @@ void KStartupInfo::remove_startup_pids( const KStartupInfoData& data_P )
 void KStartupInfo::remove_startup_pids( const KStartupInfoId& id_P,
     const KStartupInfoData& data_P )
     {
+    if (!d) return;
     kdFatal( data_P.pids().count() == 0, 172 );
     if( !d->startups.contains( id_P ))
         return;
@@ -352,6 +360,7 @@ KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P )
 KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O, bool remove_P )
     {
+    if (!d) return NoMatch;
     if( d->startups.count() == 0 )
         return NoMatch; // no startups
     NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
@@ -419,6 +428,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
 bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O, bool remove_P )
     {
+    if (!d) return false;
 //    kdDebug( 172 ) << "find_id:" << id_P << endl;
     KStartupInfoId id;
     id.initId( id_P );
@@ -439,6 +449,7 @@ bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
 bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P, 
     KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove_P )
     {
+    if (!d) return false;
 //    kdDebug( 172 ) << "find_pid:" << pid_P << endl;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
@@ -462,6 +473,7 @@ bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P,
 bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
     KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove_P )
     {
+    if (!d) return false;
     res_name = res_name.lower();
     res_class = res_class.lower();
 //    kdDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class << endl;
@@ -552,6 +564,7 @@ void KStartupInfo::startups_cleanup_no_age()
     
 void KStartupInfo::startups_cleanup()
     {
+    if (!d) return;
     if( d->startups.count() == 0 )
         {
         d->cleanup->stop();
@@ -562,6 +575,7 @@ void KStartupInfo::startups_cleanup()
     
 void KStartupInfo::startups_cleanup_internal( bool age_P )
     {
+    if (!d) return;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          )
@@ -582,6 +596,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
     
 void KStartupInfo::clean_all_noncompliant()
     {
+    if (!d) return;
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
          it != d->startups.end();
          )
