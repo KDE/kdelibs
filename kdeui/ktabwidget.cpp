@@ -100,7 +100,12 @@ void KTabWidget::mousePressEvent( QMouseEvent *e )
 {
     if ( e->button() == RightButton ) {
         if ( isEmptyTabbarSpace( e->pos() ) ) {
-            emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
+            emit( contextMenu( mapToGlobal( e->pos() ) ) );
+            return;
+        }
+    } else if ( e->button() == MidButton ) {
+        if ( isEmptyTabbarSpace( e->pos() ) ) {
+            emit( mouseMiddleClick() );
             return;
         }
     }

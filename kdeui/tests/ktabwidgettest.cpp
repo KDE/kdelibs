@@ -26,8 +26,9 @@ Test::Test( QWidget* parent, const char *name )
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), SLOT( currentChanged( QWidget * ) ) );
   connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), SLOT(contextMenu( QWidget *, const QPoint & )));
-  connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), SLOT(tabbarContextMenu( const QPoint & )));
+  connect( mWidget, SIGNAL( contextMenu( const QPoint & )), SLOT(tabbarContextMenu( const QPoint & )));
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), SLOT(mouseDoubleClick( QWidget * )));
+  connect( mWidget, SIGNAL( mouseMiddleClick() ), SLOT(addTab() ));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( closeRequest( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( testCanDecode(const QDragMoveEvent *, bool & )), SLOT(testCanDecode(const QDragMoveEvent *, bool & )));

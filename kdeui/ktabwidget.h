@@ -97,7 +97,7 @@ signals:
     /*!
       The right mouse button was pressed over empty space besides tabbar.
     */
-    void tabbarContextMenu( const QPoint & );
+    void contextMenu( const QPoint & );
 
     /*!
       The right mouse button was pressed over a widget.
@@ -114,6 +114,11 @@ signals:
       A double left mouse button click was performed over the widget.
     */
     void mouseDoubleClick( QWidget * );
+
+    /*!
+      A middle mouse button click was performed over empty space besides tabbar.
+    */
+    void mouseMiddleClick();
 
     /*!
       A middle mouse button click was performed over the widget.
