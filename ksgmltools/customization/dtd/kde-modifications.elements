@@ -1,6 +1,40 @@
 <!-- ONLY to supply declarations that were switched off earlier 
      Take _all_ care to make it only _more_ restrictive.  -->
 
+<!-- One modification: BookInfo is compulsory, because
+     it contains ReleaseInfo, which is compulsory -->
+<!ELEMENT Book - O ((%div.title.content;)?, BookInfo,
+		(Dedication | ToC | LoT
+		| Glossary | Bibliography | Preface
+		| %chapter.class; | Reference | Part
+		| %article.class;
+		| %appendix.class;
+		| %index.class;
+		| Colophon)*)
+		%ubiq.inclusion;>
+
+<!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
+     compulsory.  Not all orders that could be valid are allowed (the
+     number increases factorial).  The current restrictions are quite
+     strict, and it is foreseen that they will be relaxed.  Date and 
+     ReleaseInfo must come together, as must Abstract and Keywordset.
+     Abstract and Keywordset must follow Date and ReleaseInfo when they
+     are used the first time.
+-->
+<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice
+		        | ModeSpec | SubjectSet | ITermSet
+		        | %kde.bibliocomponent.mix; | BookBiblio)*,
+		        ((Date, ReleaseInfo) | (ReleaseInfo, Date)),
+                        (Graphic | MediaObject | LegalNotice
+			| ModeSpec | SubjectSet
+			| ITermSet | %kde.bibliocomponent.mix;
+			| BookBiblio)*,
+                        ((Abstract, Keywordset) | (Keywordset, Abstract)),
+		       (Graphic | MediaObject | LegalNotice | ModeSpec 
+		       | SubjectSet | ITermSet
+		       | %bibliocomponent.mix; | BookBiblio | Keywordset)*)
+		       %beginpage.exclusion;>
+
 <!ATTLIST Section
 		%label.attrib;
 		%status.attrib;
@@ -28,3 +62,4 @@
 		%sect1.role.attrib;
 		%local.sect1.attrib;
 >
+

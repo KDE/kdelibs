@@ -1,6 +1,7 @@
 <!-- -*- dtd -*-
     Modified hierarchy elements for DocBook as used in the KDE documentation
-    (instantiates %rdbhier2;)
+    (instantiates %rdbhier2;).  The actual changes are done in
+    kde-modifications.elements.
     
     Copyright (C) 1999-2000 Frederik Fouvry
      
@@ -25,115 +26,54 @@
 
     Refer to this DTD as
 
-      "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
+      "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"
 
     For instance
 
       <!ENTITY % rdbhier2 PUBLIC
-       "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN">
+       "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN">
 
     It is recommended to use kde.cat as the catalogue file.
+
+    Set to IGNORE:                      to revert from KDE customisation for:
+    kde.remove.unused.elements          some elements unlikely to be used
+    kde.book.meta.info                  extra requirements for bookinfo element
+    kde.compulsory.id                   compulsory ID on certain elements
 -->
 
-<!ENTITY % kde.rdbhier2 "INCLUDE">
-<![ %kde.rdbhier2; [
 
+<!-- Elements which are unlikely to be useful in the KDE documentation,
+     because their purpose is either to markup already existing documents
+     or because there are automatic means of obtaining the same effect 
+
+     %kde.remove.unused.elements; is set in kde-rdbpool.elements.
+ -->
+<![ %kde.remove.unused.elements; [
 <!ENTITY % beginpage.module "IGNORE">
 <!ENTITY % bridgehead.module "IGNORE">
 <!ENTITY % revhistory.content.module "IGNORE">
-<!ENTITY % toc.content.module "INCLUDE">
-<!ENTITY % lot.content.module "INCLUDE">
+<!ENTITY % toc.content.module "IGNORE">
+<!ENTITY % lot.content.module "IGNORE">
+<!-- end of kde.remove.unused.elements -->]]>
 
+
+<!-- For translation and revision bookkeeping mechanisms, some elements 
+     are required to be present in bookinfo.
+ -->
+<!ENTITY % kde.book.meta.info "INCLUDE">
+<![ %kde.book.meta.info; [
+<!ENTITY % bookinfo.element "IGNORE">
+<!-- end of kde.book.meta.info -->]]>
+
+
+<!-- To make allow for translated file names, ID attributes must be 
+     present (the style sheets use them to generate the file names).
+ -->
+<!ENTITY % kde.compulsory.id "INCLUDE">
 <![ %kde.compulsory.id; [
-
 <!ENTITY % chapter.attlist "IGNORE">
 <!ENTITY % sect1.attlist "IGNORE">
-<!-- Sect2-5 have no compulsory ID (they don't seem to be used to create 
-     chunks.) -->
+<!-- Sect2-5 have no compulsory ID: they are not used to create
+     chunks. -->
 <!ENTITY % section.attlist "IGNORE">
-
-<!-- End of compulsory id -->]]>
-
-
-<![ %kde.compulsory.datereleaseinfo; [
-<!ENTITY % div.title.content
-	"Title, Subtitle?, TitleAbbrev?">
-
-<!ENTITY % book.content.module "INCLUDE">
-<![ %book.content.module; [
-<!ENTITY % book.module "INCLUDE">
-<![ %book.module; [
-
-<!-- Unchanged -->
-<!ENTITY % local.book.attrib "">
-<!ENTITY % book.role.attrib "%role.attrib;">
-
-<!ENTITY % book.element "IGNORE">
-<!ENTITY % kde.book.element "INCLUDE">
-<![ %kde.book.element; [
-<!-- One modification: BookInfo is compulsory, because
-     it contains ReleaseInfo, which is compulsory -->
-<!ELEMENT Book - O ((%div.title.content;)?, BookInfo,
-		(Dedication | ToC | LoT
-		| Glossary | Bibliography | Preface
-		| %chapter.class; | Reference | Part
-		| %article.class;
-		| %appendix.class;
-		| %index.class;
-		| Colophon)*)
-		%ubiq.inclusion;>
-<!--end of kde.book.element-->]]>
-
-<![ %kde.compulsory.fpi; [
-<!ENTITY % book.attlist "IGNORE">
-<!ENTITY % kde.book.attlist "INCLUDE">
-<![ %kde.book.attlist; [
-<!-- FPI is compulsory -->
-<!ATTLIST Book	
-		--
-		FPI: SGML formal public identifier
-		--
-		FPI		CDATA		#REQUIRED
-		%label.attrib;
-		%status.attrib;
-		%common.attrib;
-		%book.role.attrib;
-		%local.book.attrib;
->
-<!--end of kde.book.attlist-->]]>
-<!--end of kde.compulsory.fpi in book-->]]>
-<!--end of book.module-->]]>
-
-<!ENTITY % bookinfo.module "INCLUDE">
-<![ %bookinfo.module; [
-
-<!ENTITY % bookinfo.element "IGNORE">
-<!ENTITY % kde.bookinfo.element "INCLUDE">
-<![ %kde.bookinfo.element; [
-<!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
-     compulsory.  Not all orders that could be valid are allowed (the
-     number increases factorial).  The current restrictions are quite
-     strict, and it is foreseen that they will be relaxed.  Date and 
-     ReleaseInfo must come together, as must Abstract and Keywordset.
-     Abstract and Keywordset must follow Date and ReleaseInfo when they
-     are used the first time.
--->
-<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice
-		        | ModeSpec | SubjectSet | ITermSet
-		        | %kde.bibliocomponent.mix; | BookBiblio)*,
-		        ((Date, ReleaseInfo) | (ReleaseInfo, Date)),
-                        (Graphic | MediaObject | LegalNotice
-			| ModeSpec | SubjectSet
-			| ITermSet | %kde.bibliocomponent.mix;
-			| BookBiblio)*,
-                        ((Abstract, Keywordset) | (Keywordset, Abstract)),
-		       (Graphic | MediaObject | LegalNotice | ModeSpec 
-		       | SubjectSet | ITermSet
-		       | %bibliocomponent.mix; | BookBiblio | Keywordset)*)
-		       %beginpage.exclusion;>
-<!--end of kde.bookinfo.element-->]]>
-<!--end of bookinfo.module-->]]>
-<!--end of book.content.module-->]]>
-<!-- End of compulsory releaseinfo -->]]>
-
-<!-- End of kde.rdbhier2	-->]]>
+<!-- end of kde.compulsory.id -->]]>
