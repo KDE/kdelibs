@@ -32,7 +32,8 @@ void kimgio_tiff_read( QImageIO *io )
 	QImage image( width, height, 32 );
 	data = (uint32 *)image.bits();
 
-	debug( "unsigned size: %d, uint32 size: %d",
+	//Sven: changed to %ld for 64bit machines
+	debug( "unsigned size: %ld, uint32 size: %ld",
 		sizeof(unsigned), sizeof(uint32) );
 
 	// read data
