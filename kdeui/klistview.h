@@ -181,7 +181,8 @@ public:
 
   /**
    * @returns if it is legal to move items in the list view.  True by default.
-   *
+   * 
+   * @see #setDragEnabled()
    * @see #setItemsMovable()
    */
   bool itemsMovable() const;
