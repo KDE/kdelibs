@@ -41,7 +41,7 @@ public:
    * Constructor.
    *
    * @param name The name of the catalog
-   * @param name The language of this catalog
+   * @param language The language of this catalog
    */
   explicit KCatalogue(const QString & name = QString::null, const QString & language = QString::null);
 
