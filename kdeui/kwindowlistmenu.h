@@ -26,8 +26,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kwindowlistmenu_h__
 
 #include <qpopupmenu.h>
+#include <qmap.h>
 
 class KWinModule;
+class KWIndowListMenuPrivate;
 
 class KWindowListMenu : public QPopupMenu
 {
@@ -44,8 +46,8 @@ protected slots:
     void slotCascadeWindows();
 
 private:
-    KWinModule* kwin_module;
-    class KWindowListMenuPrivate;
+    KWinModule*         kwin_module;
+    QMap<int,WId>       map;
     KWindowListMenuPrivate *d;
 };
 
