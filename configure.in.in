@@ -206,3 +206,5 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 CXXFLAGS="$CXXFLAGS $USE_RTTI"
 
+dnl AC_OUTPUT(kde-config)
+
