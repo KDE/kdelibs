@@ -3752,7 +3752,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 			int delay = t.toInt( &ok );
 			if ( !ok ) delay = 0;
 
-			QString url;
+			QString url = actualURL.url();
 			while ( stringTok->hasMoreTokens() )
 	   		{
 			    const char* token = stringTok->nextToken();
@@ -3773,8 +3773,9 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 				}
 			    }
 			}
-			// set up the redirect...
-			emit redirect( delay, url );
+			if( !(delay == 0 && url == actualURL.url() ) )
+			    // set up the redirect...
+			    emit redirect( delay, url );
 		    }
 		} 
 			 

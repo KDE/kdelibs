@@ -175,7 +175,8 @@ public:
      */
     virtual HTMLIterator *getIterator()
        { return head ? new HTMLListIterator( this ) : 0; }
-		        
+
+    virtual void setBgColor( QColor c );
   
 protected:
     HTMLObject *head;

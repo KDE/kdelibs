@@ -106,12 +106,6 @@ int HTMLTableCell::calcMinWidth()
             width = minWidth;
     }
                                                                     
-                                                                        
-    if ( isFixedWidth() )
-    {
-        if (width > minWidth)
-            minWidth = width;
-    }
     return minWidth;
 }
 
@@ -133,6 +127,11 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
  		QBrush brush( bg );
 		_painter->fillRect( _tx + x - padding, _ty + y - ascent + top,
 			getMaxWidth() + padding * 2, bottom - top, brush );
+
+	    // another hack... 
+	    HTMLObject *obj;
+	    for ( obj = head; obj != 0; obj = obj->next() )
+		obj->setBgColor(bg);
 	}
 
 	return HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
@@ -160,6 +159,11 @@ void HTMLTableCell::print( QPainter *_painter, HTMLChain *_chain, int _x,
 	    QBrush brush( bg );
 	    _painter->fillRect( _tx + x + left, _ty + y - ascent + top,
 		    right - left, bottom - top, brush );
+
+	    // another hack...
+	    HTMLObject *obj;
+	    for ( obj = head; obj != 0; obj = obj->next() )
+		obj->setBgColor(bg);
     }
 
     HTMLClue::print( _painter, _chain, _x, _y, _width, _height, _tx, _ty );
@@ -418,6 +422,7 @@ void HTMLTable::calcSize( HTMLClue * )
     int indx;
     HTMLTableCell *cell;
 
+
     // recalculate min/max widths
     calcColumnWidths();
 
@@ -425,7 +430,10 @@ void HTMLTable::calcSize( HTMLClue * )
     for ( c = 0; c < totalCols; c++ )
     {
         if (columnPos[c+1] > max_width-border)
-             columnPos[c+1] = max_width-border;
+	{
+	    printf("Column %d is too for right\n",c+1);
+	    columnPos[c+1] = max_width-border;
+	}
     }
 
     // Attempt to get sensible cell widths
@@ -446,8 +454,9 @@ void HTMLTable::calcSize( HTMLClue * )
 	    if ( ( indx = c-cell->colSpan()+1 ) < 0 )
 		indx = 0;
 
-	    cell->setWidth( columnOpt[c+1] - columnOpt[ indx ] - spacing -
-		 padding - padding );
+	    int w = columnOpt[c+1] - columnOpt[ indx ] - spacing -
+		padding - padding;
+	    cell->setWidth( w );
 	    cell->calcSize();
 	}
     }
@@ -586,6 +595,9 @@ void HTMLTable::calcColumnWidths()
 	    if ( columnPrefPos[c + 1] < columnPos[c + 1] )
 		columnPrefPos[c + 1] = columnPos[c + 1];
 	}
+	if (columnPos[c + 1] <= columnPos[c])
+	    columnPos[c + 1] = columnPos[c];
+
 	if (columnPrefPos[c + 1] <= columnPrefPos[c])
 	    columnPrefPos[c + 1] = columnPrefPos[c]+1;
     }
@@ -864,22 +876,6 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
             if ( r < totalRows - 1 && cells[r+1][c] == cell )
                 continue;
 
-            // Parse colspan-cells in each colomn!
-
-            if ( c < totalCols - 1 && cells[r][c+1] == cell )
-            {        
-                // Find the last cell
-                unsigned int c1 = c+2;
-                while ((c1 < totalCols) && (cells[r][c1] == cell))
-                    c1++;
-                               
-                minWidth = columnOpt[c1] - columnOpt[c1 + 1 - cell->colSpan()];
-            }
-            else
-            {        
-                minWidth = columnOpt[c+1] - columnOpt[c];
-            }                 
-
             if (cell->isFixedWidth())
             { // fixed width
                 prefCellWidth = cell->getWidth() + padding +
@@ -911,7 +907,7 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
         }
 
     } // for c
-                
+
     if (totalRequested > 0)  // Nothing to do
     {
         totalAllowed = tooAdd;

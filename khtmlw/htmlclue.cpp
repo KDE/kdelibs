@@ -517,6 +517,14 @@ void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int 
     }
 }
 
+void 
+HTMLClue::setBgColor( QColor c )
+{
+    HTMLObject *obj;
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->setBgColor( c );
+}
+
 //-----------------------------------------------------------------------------
 
 HTMLClueV::HTMLClueV( int _x, int _y, int _max_width, int _percent )

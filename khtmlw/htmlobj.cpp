@@ -223,6 +223,7 @@ bool HTMLObject::getObjectPosition( const HTMLObject *obj, int &xp, int &yp )
     return false;
 }
 
+
 //-----------------------------------------------------------------------------
 
 HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
@@ -1511,12 +1512,12 @@ void HTMLImage::fileLoaded( const char *_filename )
 {
     bComplete = true;
 
-    char buffer[ 4 ];
+    char buffer[ 7 ];
     buffer[0] = 0;
     FILE *f = fopen( _filename, "rb" );
     if ( f )
     {
-      int n = fread( buffer, 1, 3, f );
+      int n = fread( buffer, 1, 6, f );
       if ( n >= 0 )
 	buffer[ n ] = 0;
       else
@@ -1529,7 +1530,7 @@ void HTMLImage::fileLoaded( const char *_filename )
       perror( "" );
     }
     
-    if ( strcmp( buffer, "GIF" ) == 0 )
+    if ( strcmp( buffer, "GIF89a" ) == 0 )
     {
       // Workaround for bug in QMovie
       // Load the image in memory to avoid vasting file handles
@@ -1637,24 +1638,26 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	// Wow... all this mess, just to get QMovies with transparent
 	// parts working... (Lars 30.11.98)
 	rect = movie->getValidRect();
-	if( ! movieCache )
+	if( !movieCache )
 	{
-	    movieCache = new QPixmap(width-2*border, ascent-border,
+	    movieCache = new QPixmap(pixmap->width(), pixmap->height(),
 				     pixmap->depth());
 	    QPainter p;
 	    p.begin(movieCache);
-	    htmlWidget->drawBackground(x + _tx + border, 
+	    if( bgColor.isValid() )
+		p.fillRect( 0, 0, pixmap->width(), pixmap->height(), bgColor );
+	    else
+		htmlWidget->drawBackground(x + _tx + border, 
 				       y - ascent + _ty + border,
 				       x + _tx + border, 
 				       y - ascent + _ty + border,
-				       width-2*border, ascent-border, &p);
-	    p.drawPixmap(QPoint( rect.x(), rect.y() ), movie->framePixmap(), 
-			 rect);
+				       pixmap->width(), pixmap->height(), &p);
 	    p.end();
 	}
+	QPainter p;
+
 	QPixmap pm;
 	pm = movie->framePixmap();
-	QPainter p;
 	p.begin(movieCache);
 	p.drawPixmap(QPoint( rect.x(), rect.y() ), *pixmap, oldRect);
 	p.drawPixmap(QPoint( rect.x(), rect.y() ), movie->framePixmap(), rect);
@@ -1662,11 +1665,14 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 
 	*pixmap = movie->framePixmap();
 	p.begin(pixmap);
-	htmlWidget->drawBackground(x + _tx + border + rect.x(), 
-				   y - ascent + _ty + border + rect.y(),
-				   x + _tx + border + rect.x(), 
-				   y - ascent + _ty + border + rect.y(),
-				   rect.width(), rect.height(), &p);
+	if( bgColor.isValid() )
+	    p.fillRect( 0, 0, pixmap->width(), pixmap->height(), bgColor );
+	else
+	    htmlWidget->drawBackground(x + _tx + border + rect.x(), 
+				       y - ascent + _ty + border + rect.y(),
+				       x + _tx + border + rect.x(), 
+				       y - ascent + _ty + border + rect.y(),
+				       rect.width(), rect.height(), &p);
 	p.end();
 
 	oldRect = rect;
@@ -1754,6 +1760,22 @@ int HTMLImage::getAbsX()
 int HTMLImage::getAbsY()
 {
     return absY;
+}
+
+void 
+HTMLImage::setBgColor( QColor col )
+{
+    bgColor = col;
+    if( movieCache )
+    {
+	QPainter p;
+	p.begin(movieCache);
+	if( bgColor.isValid() )
+	    p.fillRect( 0, 0, pixmap->width(), pixmap->height(), bgColor );
+	//p.drawPixmap(QPoint( rect.x(), rect.y() ), movie->framePixmap(), 
+	//	     rect);
+	p.end();
+    }
 }
 
 void HTMLImage::movieUpdated( const QRect & )

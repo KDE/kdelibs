@@ -291,6 +291,11 @@ public:
      */
     virtual bool selectText( const QRegExp & ) { return false; }
 
+    /*
+     * used by HTMLImage
+     */
+    virtual void setBgColor( QColor ) { };
+
 protected:
     int x;
     int y;
@@ -618,6 +623,7 @@ public:
 
     void setBorderColor( const QColor &color )
 	{   borderColor = color; }
+    virtual void setBgColor( QColor c );
 
 protected slots:
     void movieUpdated( const QRect &rect );
@@ -641,6 +647,7 @@ protected:
     QPixmap *pixmap;
     QPixmap *movieCache;
     QRect oldRect;
+    QColor bgColor;
 
 #ifdef USE_QMOVIE
     QMovie *movie;
