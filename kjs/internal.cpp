@@ -256,7 +256,23 @@ void Reference2::putValue(ExecState *exec, const Value& w)
 		   propertyName()).cstring().c_str(), w);
 #endif
   if (bs.type() == NullType)
-    exec->interpreter()->globalObject().put(exec, propertyName(), w);
+  {
+    // Declare new variable in the right (lexically scoped) global object
+    // which is the last item in the scope chain
+    List chain = exec->context().scopeChain();
+    if ( chain.isEmpty() )
+      fprintf( stderr, "KJS: Reference2::putValue: empty scope chain!\n" );
+    else
+    {
+      ListIterator last = chain.end();
+      --last;
+      Object varObj = Object::dynamicCast( *last );
+      if ( varObj.isValid() )
+        varObj.put(exec, propertyName(), w);
+      else // shouldn't happen
+        fprintf( stderr, "KJS: Reference2::putValue: scope chain contains non-object!\n" );
+    }
+  }
   else
     static_cast<ObjectImp*>(bs.imp())->put(exec, propertyName(), w);
 }
