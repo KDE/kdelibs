@@ -166,7 +166,7 @@ void KateSearch::replace()
     s_searchList = replaceDialog->findHistory () ;
     s_replaceList = replaceDialog->replacementHistory () ;
 
-    replace( s_searchList.first(), s_replaceList.first(), opts );
+    replace( s_searchList.first(), m_replacement, opts );
   }
 
   delete replaceDialog;
