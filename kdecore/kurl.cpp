@@ -1107,7 +1107,11 @@ QString KURL::prettyURL( int _trailing ) const
       // Don't show password!
       u += "@";
     }
-    u += lazy_encode(m_strHost);
+    bool IPv6 = (m_strHost.find(':') != -1);
+    if (IPv6) 
+       u += '[' + m_strHost + ']';
+    else
+       u += lazy_encode(m_strHost);
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );
