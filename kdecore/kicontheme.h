@@ -123,6 +123,10 @@ public:
     /** Query available icons for a size and context. */
     QStringList queryIcons(int size, int context = KIcon::Any) const;
 
+    /** Query available icons for a context and preferred size. */
+    QStringList queryIconsByContext(int size, int context = KIcon::Any) const;
+
+
     /** Lookup an icon in the theme.
      * @param name The name of the icon, without extension.
      * @param size The desired size of the icon.

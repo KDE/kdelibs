@@ -138,6 +138,18 @@ public:
     QStringList queryIcons(int group_or_size, int context=KIcon::Any) const;
 
     /**
+     * Query all available icons for a specific context. 
+     * @param group_or_size The icon preferred group or size. If available
+     * at this group or size, those icons will be returned, in other case,
+     * icons of undefined size will be returned. 
+     * @param context The icon context.
+     * @return A QStringList containing the icon names
+     * available for that context
+     */
+    QStringList queryIconsByContext(int group_or_size, 
+				    int context=KIcon::Any) const;
+
+    /**
      * @return the current size for an icon group.
      */
     int currentSize(int group);

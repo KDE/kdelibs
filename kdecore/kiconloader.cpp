@@ -47,6 +47,7 @@ public:
     ~KIconThemeNode();
 
     void queryIcons(QStringList *lst, int size, int context) const;
+    void queryIconsByContext(QStringList *lst, int size, int context) const;
     KIcon findIcon(const QString& name, int size, int match) const;
     void printTree(QString& dbgString) const;
 
@@ -80,13 +81,24 @@ void KIconThemeNode::printTree(QString& dbgString) const
     dbgString += ")";
 }
 
-void KIconThemeNode::queryIcons(QStringList *result, int size, int context) const
+void KIconThemeNode::queryIcons(QStringList *result, 
+				int size, int context) const
 {
     // add the icons of this theme to it
     *result += theme->queryIcons(size, context);
     QListIterator<KIconThemeNode> it(links);
     for (; it.current(); ++it) // recursivly going down
 	it.current()->queryIcons(result, size, context);
+}
+
+void KIconThemeNode::queryIconsByContext(QStringList *result, 
+				int size, int context) const
+{
+    // add the icons of this theme to it
+    *result += theme->queryIconsByContext(size, context);
+    QListIterator<KIconThemeNode> it(links);
+    for (; it.current(); ++it) // recursivly going down
+	it.current()->queryIconsByContext(result, size, context);
 }
 
 KIcon KIconThemeNode::findIcon(const QString& name, int size,
@@ -369,24 +381,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     QString name = _name;
     QPixmap pix;
     QString key;
+    bool absolutePath=false;
 
     if (d->mpThemeRoot == 0L)
 	return pix;
 
     // Special case for absolute path icons.
-    if (name.at(0) == '/')
-    {
-	if (path_store != 0L)
-	    *path_store = name;
-	key = "$kicoa_";
-	key += name;
-	if (QPixmapCache::find(key, pix))
-	    return pix;
-
-	pix.load(name);
-	QPixmapCache::insert(key, pix);
-	return pix;
-    }
+    if (name.at(0) == '/') absolutePath=true;
 
     // Special case for "User" icons.
     if (group == KIcon::User)
@@ -397,7 +398,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	if (inCache && (path_store == 0L))
 	    return pix;
 
-	QString path = iconPath(name, KIcon::User, canReturnNull);
+	QString path = (absolutePath) ? name :
+			iconPath(name, KIcon::User, canReturnNull);
 	if (path.isEmpty())
 	{
 	    if (canReturnNull)
@@ -442,12 +444,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	group = 0;
     }
 
-    QString ext = name.right(4);
-    if ((ext == ".png") || (ext == ".xpm"))
+    if (!absolutePath)
     {
-	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+	QString ext = name.right(4);
+	if ((ext == ".png") || (ext == ".xpm"))
+	{
+	    kdDebug(264) << "Application " 
+		<< KGlobal::instance()->instanceName()
 		<< " loads icon with extension.\n";
-	name = name.left(name.length() - 4);
+	    name = name.left(name.length() - 4);
+	}
     }
 
     // If size == 0, use default size for the specified group.
@@ -477,20 +483,31 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	return pix;
 
     // No? load it.
-    KIcon icon = findMatchingIcon(name, size);
-    if (!icon.isValid())
+    KIcon icon;
+    if (absolutePath)
     {
-	// Try "User" icon too. Some apps expect this.
-	pix = loadIcon(name, KIcon::User, size, state, path_store, true);
-	if (!pix.isNull() || canReturnNull)
-	    return pix;
-
-	icon = findMatchingIcon("unknown", size);
+        icon.context=KIcon::Any;
+	icon.type=KIcon::Scalable;
+	icon.path=name;
+    }
+    else
+    {
+	icon = findMatchingIcon(name, size);
 	if (!icon.isValid())
 	{
-	    kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
-		         << size << "\n";
-	    return pix;
+	    // Try "User" icon too. Some apps expect this.
+	    pix = loadIcon(name, KIcon::User, size, state, path_store, true);
+	    if (!pix.isNull() || canReturnNull)
+		return pix;
+
+	    icon = findMatchingIcon("unknown", size);
+	    if (!icon.isValid())
+	    {
+		kdDebug(264) 
+		    << "Warning: could not find \"Unknown\" icon for size = " 
+		    << size << "\n";
+		return pix;
+	    }
 	}
     }
 
@@ -518,7 +535,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 		((ovl = loadOverlay(theme->zipOverlay(), size)) != 0L))
 	    KIconEffect::overlay(img, *ovl);
     }
-	
+
     // Scale the icon and apply effects if necessary
     if ((icon.type == KIcon::Scalable) && (size != img.width()))
     {
@@ -622,6 +639,43 @@ int KIconLoader::currentSize(int group)
 	return -1;
     }
     return d->mpGroups[group].size;
+}
+
+QStringList KIconLoader::queryIconsByContext(int group_or_size, 
+					    int context) const
+{
+    QStringList result;
+    if (group_or_size >= KIcon::LastGroup)
+    {
+	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	return result;
+    }
+    int size;
+    if (group_or_size >= 0)
+	size = d->mpGroups[group_or_size].size;
+    else
+	size = -group_or_size;
+    d->mpThemeRoot->queryIconsByContext(&result, size, context); 
+
+    // Eliminate duplicate entries (same icon in different directories)
+    QString name;
+    QStringList res2, entries;
+    QStringList::ConstIterator it;
+    for (it=result.begin(); it!=result.end(); it++)
+    {
+	int n = (*it).findRev('/');
+	if (n == -1)
+	    name = *it;
+	else
+	    name = (*it).mid(n+1);
+	if (!entries.contains(name))
+	{
+	    entries += name;
+	    res2 += *it;
+	}
+    }
+    return res2;
+
 }
 
 QStringList KIconLoader::queryIcons(int group_or_size, int context) const
