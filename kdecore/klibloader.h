@@ -23,7 +23,6 @@
 #include <qstringlist.h>
 #include <qasciidict.h>
 #include <qptrlist.h>
-#include <qmetaobject.h>
 #include <kglobal.h>
 
 #include <stdlib.h> // For backwards compatibility
@@ -222,7 +221,7 @@ private:
 
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
- * you should return a pointer to your factory. The  K_EXPORT_COMPONENT_FACTORY
+ * you should return a pointer to your factory. The K_EXPORT_COMPONENT_FACTORY
  * macro is provided for this purpose:
  * <pre>
  *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
