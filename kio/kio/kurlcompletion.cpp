@@ -510,7 +510,7 @@ void KURLCompletion::init()
 void KURLCompletion::setDir(const QString &dir)
 {
 	if ( dir.startsWith( QString("file:") ) )
-	  d->cwd = dir.mid(5);
+	  d->cwd = KURL(dir).path();
 	else
 	  d->cwd = dir;
 }
@@ -1263,7 +1263,7 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 			QString copy;
 
 			if ( (*match).startsWith( QString("file:") ) )
-				copy = (*match).mid(5);
+				copy = KURL(*match).path();
 			else
 				copy = *match;
 
