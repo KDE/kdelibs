@@ -88,6 +88,7 @@ void HTMLTokenizer::reset()
     if ( buffer )
 	delete [] buffer;
     buffer = 0;
+    size = 0;
 
     if ( scriptCode )
     	delete [] scriptCode;
@@ -414,7 +415,7 @@ void HTMLTokenizer::parseEntity(HTMLStringIt &src, bool start)
 	    QConstString cStr(entityBuffer, entityPos);
 	    QChar res = charsets->fromEntity(cStr.string());
 	    
-	    printf("ENTITY %d, %c\n",res.unicode(), res.latin1());
+	    //printf("ENTITY %d, %c\n",res.unicode(), res.latin1());
 	
 	    if (tag && src[0] != ';' ) {
 		// Don't translate entities in tags with a missing ';'

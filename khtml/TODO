@@ -4,6 +4,13 @@ for krash:
 	* fix <meta> redirection
 	* scrolling problems
 	* fix crash of unicode.html
+broken sites:
+	www.tomshardware.com (aligned tables)
+	babelfish.altavista.com (form positioning)
+	www.fonts.org (table positioning)
+	www.spiegel.de (image of headline)
+	www.zdnet.com (rightmost column missing, some minor layouting probs)
+
 
 General:
 	* move all internal classes into namespace khtml
