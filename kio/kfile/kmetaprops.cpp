@@ -20,7 +20,6 @@
 
 #include "kmetaprops.h"
 
-// #include <kchoicevalidator.h>
 #include <kcombobox.h>
 #include <kfilemetainfo.h>
 #include <kglobal.h>
@@ -37,6 +36,10 @@
 #include <qcheckbox.h>
 
 #include <iostream.h>
+
+#ifdef Bool
+#undef Bool
+#endif
 
 class MetaPropsScrollView : public QScrollView
 {
