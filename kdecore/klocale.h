@@ -43,8 +43,19 @@ class KCalendarSystem;
  * \relates KLocale
  * I18N_NOOP marks a string to be translated without translating it.
  * Do not use this unless you know you need it.
+ * http://developer.kde.org/documentation/other/developer-faq.html#q2.11.2
  */
 #define I18N_NOOP(x) x
+#endif
+
+#ifndef I18N_NOOP2
+/**
+ * \relates KLocale
+ *  If the string is too ambiguous to be translated well to a non-english
+ *  language, use this instead of I18N_NOOP to separate lookup string and english.
+ *  Warning: you need to call i18n( comment, stringVar ) later on, not just i18n( stringVar ).
+ */
+#define I18N_NOOP2(comment,x) x
 #endif
 
 /**
