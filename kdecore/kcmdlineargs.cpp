@@ -268,7 +268,7 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
-      if (strcmp(args->id, id) == 0)
+      if (!id || strcmp(args->id, id) == 0)
       {
           if (!parsed)
              parseAllArgs();
@@ -280,8 +280,8 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
    if (!args)
    {
       fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
-      fprintf(stderr, "Application requests for parsedArgs(\"%s\") witout a prior call\n", id);
-      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\")\n\n", id);
+      fprintf(stderr, "Application requests for parsedArgs(\"%s\") witout a prior call\n", id?id:"null");
+      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\")\n\n", id?id:"null");
 
       assert( 0 );
       exit(255);
