@@ -32,6 +32,7 @@ public:
     
     kdDebug() << "Printing a null QWidget pointer: " << (QWidget*)0 << endl;
 
+    kdDebug() << "char " << '^' << " " << char(26) << endl;
     QPoint p(0,9);
     kdDebug() << p << endl;
 
