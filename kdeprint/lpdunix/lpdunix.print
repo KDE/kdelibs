@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpdunix
 Comment=Generic UNIX LPD print system (default)
+Comment[cs]=Obecný UNIX LPD tiskový systém (výchozí)
 Comment[da]=Generisk UNIX LPD udskriftssystem (standard)
 Comment[de]=UNIX-LPD-Drucksystem (Voreinstellung)
 Comment[hu]=Általános Unix LPD nyomtatórendszer (alapértelmezés)

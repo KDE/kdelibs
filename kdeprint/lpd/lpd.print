@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
+Comment[cs]=LPR (standardní tiskový systém BSD)
 Comment[da]=LPR (Standard BSD udskriftssystem)
 Comment[de]=LPR (standardmäßiges BSD-Drucksystem)
 Comment[hu]=LPR (BSD-típusú nyomtatórendszer)
