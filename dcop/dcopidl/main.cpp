@@ -49,7 +49,8 @@ int main( int argc, char** argv )
 
     QByteArray arr = file.readAll();
     uint len = arr.size();
-    for (uint i = 1, j = 1; i<len; i++, j++) {
+    uint j = 1;
+    for (uint i = 1; i<len; i++, j++) {
         if (arr[ i-1 ] == '\r' && ((i+1)==len || arr[ i ] != '\n')) {
             // change single \r's (Mac OS line endings) to \n
             arr[ j-1 ] = '\n';
