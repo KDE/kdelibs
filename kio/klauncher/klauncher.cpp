@@ -573,7 +573,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    {
       length += (*it).length() + 1; // Envs...
    }
-   length += sizeof( int ); // avoid_loops
+   length += sizeof( long ); // avoid_loops
    bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
    if( startup_notify )
        length += request->startup_id.length() + 1;
@@ -581,7 +581,8 @@ KLauncher::requestStart(KLaunchRequest *request)
    requestData.resize( length );
 
    char *p = requestData.data();
-   *(reinterpret_cast<long *>(p)) = request->arg_list.count()+1;
+   long l = request->arg_list.count()+1;
+   memcpy(p, &l, sizeof(long));
    p += sizeof(long);
    strcpy(p, request->name.data());
    p += strlen(p) + 1;
@@ -592,7 +593,8 @@ KLauncher::requestStart(KLaunchRequest *request)
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
-   *(reinterpret_cast<long *>(p)) = request->envs.count();
+   l = request->envs.count();
+   memcpy(p, &l, sizeof(long));
    p += sizeof(long);
    for(QValueList<QCString>::ConstIterator it = request->envs.begin();
        it != request->envs.end();
@@ -601,8 +603,9 @@ KLauncher::requestStart(KLaunchRequest *request)
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
-   *(reinterpret_cast<int *>(p)) = 0; // avoid_loops, always false here
-   p += sizeof(int);
+   l = 0; // avoid_loops, always false here
+   memcpy(p, &l, sizeof(long));
+   p += sizeof(long);
    if( startup_notify )
    {
        strcpy(p, request->startup_id.data());

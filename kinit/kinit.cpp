@@ -821,7 +821,9 @@ static void handle_launcher_request(int sock = -1)
       pid_t pid;
       klauncher_header response_header;
       long response_data;
-      int argc = *((long *) request_data);
+      long l;
+      memcpy( &l, request_data, sizeof( long ));
+      int argc = l;
       const char *name = request_data + sizeof(long);
       const char *args = name + strlen(name) + 1;
       const char *cwd = 0;
@@ -854,7 +856,9 @@ static void handle_launcher_request(int sock = -1)
       if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
           || request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW )
       {
-         envc = *((long *) arg_n); arg_n += sizeof(long);
+         memcpy( &l, arg_n, sizeof( long ));
+         envc = l;
+         arg_n += sizeof(long);
          envs = arg_n;
          for(int i = 0; i < envc; i++)
          {
@@ -870,8 +874,9 @@ static void handle_launcher_request(int sock = -1)
      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
          || request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW )
      {
-         avoid_loops = *((int*)arg_n);
-         arg_n += sizeof( int );
+         memcpy( &l, arg_n, sizeof( long ));
+         avoid_loops = l;
+         arg_n += sizeof( long );
      }
      
      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER

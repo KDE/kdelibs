@@ -288,7 +288,7 @@ int main(int argc, char **argv)
    char *start, *p, *buffer;
    char cwd[8192];
    const char *tty;
-   int avoid_loops = 0;
+   long avoid_loops = 0;
    const char* startup_id;
 
    long size = 0;
