@@ -33,7 +33,7 @@ class KCharsetsData;
 class KCharset{
 friend class KCharsets;
 public:
-  KCharset(){ entry=0; } 
+  KCharset(); 
   KCharset(const KCharsetEntry *);
   KCharset(const char *);
   KCharset(const QString);

@@ -333,7 +333,7 @@ const char * KCharsetConverterData::convert(const char * str
            kchdebug("Amperstand found\n");
 	   unicode=kcharsetsData->decodeAmp(str+i,tmp);
            kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
-	   if (tmp>0) i+=tmp;
+	   if (tmp>0) i+=tmp-1;
 	 } 
 	 if (unicode==0)
            if (inBits<=8) index=(unsigned char)str[i];
@@ -352,11 +352,15 @@ const char * KCharsetConverterData::convert(const char * str
 	     if (ptr) chr=*ptr;
 	     else chr=0;
 	   }  
+         if (chr==0 && index>0 && index<0x20)
+            chr=index; // control characters - do not change
 	 break;
        case FromUnicode:
          ptr=(*convFromUniDict)[unicode];
 	 if (ptr) chr=*ptr;
 	 else chr=0;
+         if (unicode>0 && unicode<0x20)
+            chr=index; // control characters - do not change
 	 break;
        case UnicodeUnicode:
          chr=unicode;
@@ -377,6 +381,8 @@ const char * KCharsetConverterData::convert(const char * str
 	    else chr=0;
 	 }   
 	 else chr=0;
+         if (chr==0 && index>0 && index<0x20)
+            chr=index; // control characters - do not change
          break;
     }
 //    kchdebug("Converted to: %x\n",chr);

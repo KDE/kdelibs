@@ -33,6 +33,15 @@ KCharsetsData *KCharsetConverterData::kcharsetsData=0;
 
 /////////////////////////////////////////////////////////////////
 
+KCharset::KCharset(){
+  
+   if (!data || !charsets){
+      fatal("KCharset constructor called when no KCharsets object created");
+      return;
+   }   
+   entry=0;
+}
+
 KCharset::KCharset(const KCharsetEntry *e){
   
    if (!data || !charsets){
