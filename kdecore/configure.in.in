@@ -12,7 +12,7 @@ case $host in  dnl  it doesn't work even though it's there
     *-*-freebsd-* )
          ;;
     *)
-        AC_CHECK_FUNC(getaddrinfo)
+        AC_CHECK_FUNCS(getaddrinfo)
 	;;
 esac
 
