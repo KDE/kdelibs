@@ -46,8 +46,14 @@ using namespace KWallet;
 #define KWMAGIC "KWALLET\n\r\0\r\n"
 #define KWMAGIC_LEN 12
 
-Backend::Backend(const QString& name) : _name(name), _ref(0) {
+Backend::Backend(const QString& name, bool isPath) : _name(name), _ref(0) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+	if (isPath) {
+		_path = name;
+	} else {
+		_path = KGlobal::dirs()->saveLocation("kwallet") + "/" + _name + ".kwl";
+	}
+
 	_open = false;
 }
 
@@ -225,16 +231,13 @@ int Backend::open(const QByteArray& password) {
 		return -255;  // already open
 	}
 
-	QString path = KGlobal::dirs()->saveLocation("kwallet") +
-		       "/"+_name+".kwl";
-
 	QByteArray passhash;
 
 	// No wallet existed.  Let's create it.
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk and should be deleted.
-	if (!QFile::exists(path) || QFileInfo(path).size() < 60) {
-		QFile newfile(path);
+	if (!QFile::exists(_path) || QFileInfo(_path).size() < 60) {
+		QFile newfile(_path);
 		if (!newfile.open(IO_ReadWrite)) {
 			return -2;   // error opening file
 		}
@@ -244,7 +247,7 @@ int Backend::open(const QByteArray& password) {
 		return 1;          // new file opened, but OK
 	}
 
-	QFile db(path);
+	QFile db(_path);
 
 	if (!db.open(IO_ReadOnly)) {
 		return -2;         // error opening file
@@ -423,10 +426,7 @@ int Backend::sync(const QByteArray& password) {
 		return -255;  // not open yet
 	}
 
-	QString path = KGlobal::dirs()->saveLocation("kwallet") +
-		       "/"+_name+".kwl";
-
-	QFile qf(path);
+	QFile qf(_path);
 
 	if (!qf.open(IO_WriteOnly)) {
 		return -1;		// error opening file

@@ -47,6 +47,9 @@ class KWalletD : public KDEDModule {
 		// Open and unlock the wallet
 		virtual int open(const QString& wallet);
 
+		// Open and unlock the wallet with this path
+		virtual int openPath(const QString& path);
+
 		// Asynchronous open - must give the object to return the handle
 		// to.
 		virtual void openAsynchronous(const QString& wallet, const QCString& returnObject);
@@ -134,6 +137,7 @@ class KWalletD : public KDEDModule {
 		void timedOut(int);
 
 	private:
+		int internalOpen(const QString& wallet, bool isPath = false);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(int handle);
 		// Generate a new unique handle.

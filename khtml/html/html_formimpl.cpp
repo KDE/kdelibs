@@ -356,7 +356,7 @@ void HTMLFormElementImpl::doAutoFill()
     QString key = calculateAutoFillKey(*this);
 
     if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
-                                         KWallet::Wallet::FormDataFolder,
+                                         KWallet::Wallet::FormDataFolder(),
                                          key) )
         return;
 
@@ -364,11 +364,11 @@ void HTMLFormElementImpl::doAutoFill()
     KWallet::Wallet* w = getDocument()->view()->part()->wallet();
 
     if (w) {
-        if (!w->hasFolder(KWallet::Wallet::FormDataFolder)) {
-            if (!w->createFolder(KWallet::Wallet::FormDataFolder))
+        if (!w->hasFolder(KWallet::Wallet::FormDataFolder())) {
+            if (!w->createFolder(KWallet::Wallet::FormDataFolder()))
                 return; // failed
         }
-        w->setFolder(KWallet::Wallet::FormDataFolder);
+        w->setFolder(KWallet::Wallet::FormDataFolder());
         QMap<QString, QString> map;
         if (w->readMap(key, map))
             return; // failed, abort
@@ -484,7 +484,7 @@ void HTMLFormElementImpl::submit(  )
                 // otherwise we might have a potential security problem
                 // by saving passwords under wrong lookup key.
 
-                w->setFolder(KWallet::Wallet::FormDataFolder);
+                w->setFolder(KWallet::Wallet::FormDataFolder());
                 w->writeMap(key, walletMap);
             }
         }

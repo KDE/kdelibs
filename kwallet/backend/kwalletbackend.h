@@ -38,7 +38,7 @@ class MD5Digest;
  */
 class Backend {
 	public:
-		Backend(const QString& name = "kdewallet");
+		Backend(const QString& name = "kdewallet", bool isPath = false);
 		~Backend();
 
 		// Open and unlock the wallet.
@@ -111,6 +111,7 @@ class Backend {
 		class BackendPrivate;
 		BackendPrivate *d;
 		QString _name;
+		QString _path;
 		bool _open;
 		QString _folder;
 		int _ref;

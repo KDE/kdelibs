@@ -101,8 +101,21 @@ void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObj
 }
 
 
+int KWalletD::openPath(const QString& path) {
+	if (!_enabled) { // guard
+		return -1;
+	}
+
+	return internalOpen(path, true);
+}
+
+
 int KWalletD::open(const QString& wallet) {
 	if (!_enabled) { // guard
+		return -1;
+	}
+
+	if (!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
 		return -1;
 	}
 
@@ -126,8 +139,8 @@ int KWalletD::open(const QString& wallet) {
 			QByteArray p;
 			p.duplicate(wiz->_pass1->text().utf8(), wiz->_pass1->text().length());
 			b->open(p);
-			b->createFolder(KWallet::Wallet::PasswordFolder);
-			b->createFolder(KWallet::Wallet::FormDataFolder);
+			b->createFolder(KWallet::Wallet::PasswordFolder());
+			b->createFolder(KWallet::Wallet::FormDataFolder());
 			b->close(p);
 			p.fill(0);
 			delete b;
@@ -144,12 +157,13 @@ int KWalletD::open(const QString& wallet) {
 		cfg.sync();
 	}
 
+	return internalOpen(wallet);
+}
+
+
+int KWalletD::internalOpen(const QString& wallet, bool isPath) {
 	int rc = -1;
 	bool brandNew = false;
-
-	if (!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
-		return -1;
-	}
 
 	QCString appid = friendlyDCOPPeerName();
 	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
@@ -169,9 +183,9 @@ int KWalletD::open(const QString& wallet) {
 		// event loop
 		KApplication::dcopClient()->suspend();
 
-		KWallet::Backend *b = new KWallet::Backend(wallet);
+		KWallet::Backend *b = new KWallet::Backend(wallet, isPath);
 		KPasswordDialog *kpd;
-		if (KWallet::Backend::exists(wallet)) {
+		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
 			kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet), false);
 			brandNew = false;
 			kpd->setButtonOKText(i18n("&Open"));
@@ -213,12 +227,12 @@ int KWalletD::open(const QString& wallet) {
 		_handles[appid].append(rc);
 		
 		if (brandNew) {
-			createFolder(rc, KWallet::Wallet::PasswordFolder);
-			createFolder(rc, KWallet::Wallet::FormDataFolder);
+			createFolder(rc, KWallet::Wallet::PasswordFolder());
+			createFolder(rc, KWallet::Wallet::FormDataFolder());
 		}
 
 		b->ref();
-		if (_closeIdle) {
+		if (_closeIdle && _timeouts) {
 			_timeouts->addTimer(rc, _idleTime);
 		}
 		delete kpd;
@@ -362,7 +376,7 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 		const QString& wallet = w->walletName();
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
-			if (_closeIdle) {
+			if (_closeIdle && _timeouts) {
 				_timeouts->removeTimer(handle);
 			}
 			_wallets.remove(handle);
@@ -401,7 +415,7 @@ bool contains = false;
 
 		// watch the side effect of the deref()
 		if ((contains && w->deref() == 0 && !_leaveOpen) || force) {
-			if (_closeIdle) {
+			if (_closeIdle && _timeouts) {
 				_timeouts->removeTimer(handle);
 			}
 			_wallets.remove(handle);
@@ -750,7 +764,7 @@ KWallet::Backend *w = _wallets.find(handle);
 			if (_handles[appid].contains(handle)) {
 				// the app owns this handle
 				_failed = 0;
-				if (_closeIdle) {
+				if (_closeIdle && _timeouts) {
 					_timeouts->resetTimer(handle, _idleTime);
 				}
 				return w;

@@ -49,9 +49,13 @@ const QString Wallet::NetworkWallet() {
 return cfg.readEntry("Default Wallet", "kdewallet");
 }
 
-const QString Wallet::PasswordFolder("Passwords");
+const QString Wallet::PasswordFolder() {
+return "Passwords";
+}
 
-const QString Wallet::FormDataFolder("Form Data");
+const QString Wallet::FormDataFolder() {
+return "Form Data";
+}
 
 
 
@@ -161,11 +165,21 @@ Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
 		return w;
 	}
 
+	bool isPath = ot == Path;
+	DCOPReply r;
 
 #if KDE_IS_VERSION(3,1,90)
-	DCOPReply r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
+	if (isPath) {
+		r = DCOPRef("kded", "kwalletd").callExt("openPath", DCOPRef::UseEventLoop, -1, name);
+	} else {
+		r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
+	}
 #else
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
+	if (isPath) {
+		r = DCOPRef("kded", "kwalletd").call("openPath", name);
+	} else {
+		r = DCOPRef("kded", "kwalletd").call("open", name);
+	}
 #endif
 	if (r.isValid()) {
 		int drc = -1;

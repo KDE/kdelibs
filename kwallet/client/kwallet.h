@@ -114,7 +114,7 @@ class Wallet : public QObject, public DCOPObject {
 		 */
 		static bool disconnectApplication(const QString& wallet, const QCString& app);
 
-		enum OpenType { Synchronous=0, Asynchronous, OpenTypeUnused=0xff };
+		enum OpenType { Synchronous=0, Asynchronous, Path, OpenTypeUnused=0xff };
 
 		/**
 		 *  Open the wallet @p name.  The user will be prompted to
@@ -153,12 +153,12 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  The standardized name of the password folder.
 		 */
-		static const QString PasswordFolder;
+		static const QString PasswordFolder();
 
 		/**
 		 *  The standardized name of the form data folder.
 		 */
-		static const QString FormDataFolder;
+		static const QString FormDataFolder();
 
 		/**
 		 *  Request to the wallet service to change the password of
