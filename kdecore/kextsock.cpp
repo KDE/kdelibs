@@ -1849,7 +1849,7 @@ int KExtendedSocket::waitForMore(int msecs)
       setError(IO_FatalError, errno);
       return -1;
     }
-  else if (retval == 0)
+  else if (retval != 0)
     socketActivityRead();	// do read processing
 
   return bytesAvailable();
