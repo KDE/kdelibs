@@ -47,7 +47,9 @@ class QTimer;
  * selected.
  *
  * You can change this behavior by using @ref setMode() or @ref setFilter().
- *
+ * 
+ * \image html kurlrequester.png "KDE URL Requester"
+ * 
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
