@@ -1,14 +1,77 @@
-This is the kdelibs distribution. The libraries are covered (since
-Saturday, 21st June 1997) by the GNU Library General License Version 2 or
-later (at your option). Please see the file COPYING.LIB for more
-information. The examples are covered by the GNU General Public License,
-more information can be found in COPYING.
+In this file:
 
-IMPORTANT: You should set the environment variable KDEDIR to the
-directory you want to install the KDE files to (usually /usr/local/kde/).
+* About kdelibs
+* Licensing information
+* Common Mistakes
+* Debugging
+* Upgrading
+* More Info
 
-If configure claims Qt cannot be found, have a look at http://www.troll.no.
-Qt 1.41 or newer is needed to install this version of the KDE.
+About kdelibs
+-------------
+
+This is the version 1.1 (almost) release of the KDE libraries.  Among this
+collection are ten (10) libraries that are central to the development and 
+execution of a KDE program, internationalization files for these libraries, 
+misc HTML documentation, and regression tests.  The ten libraries are:
+
+* kdecore
+    This is
+
+* kdeui
+
+* jscript
+
+* kimgio
+
+* khtmlw
+
+* kfmlib
+
+* kfile
+
+* mediatool
+
+* kspell
+
+* kab
+
+
+Licensing
+---------
+
+The libraries themselves have been covered (since Saturday, June 21st, 1997)
+by the GNU Library General Public License (LGPL).  Any other programs (such as
+the examples) are covered by the GNU General Public License (GPL).  All the
+gory details for the LGPL reside in COPYING.LIB, and for the GPL reside in 
+COPYING.
+
+Common Mistakes
+---------------
+
+IMPORTANT: most applications need KDEDIR as the directory where KDE is
+installed.  Please set this in your login file.
+
+If configure claims Qt cannot be found, have a look at http://www.troll.no
+to get a copy of Qt, version 1.41 or newer.
+
+Debugging
+---------
+
+You can use --enable-debug with the configure script, if you want to have
+debug code in your KDE libs.  If you have the space and can stand code that's
+somewhat slower, this is worth it.  The extra information really
+helps debugging and thus bugfixing.
+
+Upgrading
+---------
+
+If you have an older kdebase installed, just copy all your .k*rc files
+from $HOME to $HOME/.kde/config. In the other case, default values are
+used for most apps.
+
+More Info
+---------
 
 Please direct any bug reports to me (kalle@kde.org). General KDE
 discussions should go to the KDE mailing list (kde@kde.org).
