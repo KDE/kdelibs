@@ -30,10 +30,12 @@
 PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 :QWidget(parent, name)
 {
-        QString whatsThisCurrentPrintsystem = i18n(" <qt> This combo box shows (and lets you select) "
+        QString whatsThisCurrentPrintsystem = i18n(" <qt><b>Print Subsystem Selection</b>"
+						" <p>This combo box shows (and lets you select)"
 						" a print subsystem to be used by KDEPrint. (This print"
 						" subsystem must, of course, be installed inside your"
-						" Operating System.) KDEPrint usually auto-detects it."
+						" Operating System.) KDEPrint usually auto-detects the" 
+                                                " correct print subsystem by itself upon first startup."
 						" Most Linux distributions have \"CUPS\", the <em>Common"
 						" Unix Printing System</em>." 
                                                 " </qt>" );
@@ -86,8 +88,9 @@ void PluginComboBox::reload()
 
 void PluginComboBox::configChanged()
 {
-        QString whatsThisCurrentConnection = i18n(" <qt> This line shows to which CUPS server your PC"
-						" currently is connected for printing and retrieving"
+        QString whatsThisCurrentConnection = i18n(" <qt><b>Current Connection</b>"
+						" <p>This line shows to which CUPS server your PC"
+						" is currently connected for printing and retrieving"
 						" printer info. To switch to a different CUPS server,"
 						" click \"System Options\", then select \"Cups server\""
 						" and fill in the required info." 
