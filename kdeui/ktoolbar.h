@@ -1083,6 +1083,7 @@ private slots:
     void slotRepaint();
     void toolBarPosChanged( QToolBar *tb );
     void slotContextAboutToShow();
+    void slotContextAboutToHide();
     void widgetDestroyed();
 
 private:

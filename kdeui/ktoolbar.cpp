@@ -2048,6 +2048,7 @@ KPopupMenu *KToolBar::contextMenu()
   }
 
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
+  connect( context, SIGNAL( aboutToHide() ), this, SLOT( slotContextAboutToHide() ) );
   return context;
 }
 
@@ -2125,6 +2126,17 @@ void KToolBar::slotContextAboutToShow()
       context->setItemChecked( CONTEXT_TOP, true );
       break;
   default: break;
+  }
+}
+
+void KToolBar::slotContextAboutToHide()
+{
+  QPtrListIterator<QWidget> it( widgets );
+  QWidget *wdg;
+  while ( ( wdg = it.current() ) != 0 ) {
+    if ( wdg->inherits( "QToolButton" ) )
+      static_cast<QToolButton*>( wdg )->setDown( false );
+    ++it;
   }
 }
 
