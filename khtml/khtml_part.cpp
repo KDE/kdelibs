@@ -131,7 +131,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() ); 
+    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
     init( new KHTMLView( this, parentWidget, widgetname ), prof );
 }
 
@@ -3408,6 +3408,7 @@ void KHTMLPart::setZoomFactor (int percent)
 {
   if (percent < minZoom) percent = minZoom;
   if (percent > maxZoom) percent = maxZoom;
+  if (d->m_zoomFactor == percent) return;
   d->m_zoomFactor = percent;
 
   if(d->m_doc) {
