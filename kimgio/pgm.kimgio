@@ -1,0 +1,9 @@
+[Image Format]
+Type=PNM
+Header=
+Name=Portable Graymap Picture
+Read=true
+Write=true
+Suffices=pgm,PGM,pgmraw,PGMRAW
+Mimetype=image/x-portable-greymap
+Library=

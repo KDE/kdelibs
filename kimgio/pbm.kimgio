@@ -1,0 +1,9 @@
+[Image Format]
+Type=PBM
+Header=
+Name=Portable Bitmap Picture
+Read=true
+Write=true
+Suffices=pbm,PBM,pbmraw,PBMRAW
+Mimetype=image/x-portable-bitmap
+Library=
