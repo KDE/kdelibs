@@ -259,7 +259,7 @@ QString Backend::openRCToString(int rc) {
 		case -43:
 			return i18n("Corrupt file?");
 		case -8:
-			return i18n("Error validating wallet integrity.  Possibly corrupted.");
+			return i18n("Error validating wallet integrity. Possibly corrupted.");
 		case -5:
 		case -7:
 			return i18n("Read error - possibly incorrect password.");
@@ -347,8 +347,8 @@ int Backend::open(const QByteArray& password) {
 			ba.duplicate(reinterpret_cast<char *>(d2), 16);
 			(*it).append(ba);
 		}
-	}	
-	
+	}
+
 	// Read in the rest of the file.
 	QByteArray encrypted = db.readAll();
 	assert(encrypted.size() < db.size());

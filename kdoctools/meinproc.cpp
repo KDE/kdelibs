@@ -71,13 +71,13 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 static KCmdLineOptions options[] =
 {
     { "stylesheet <xsl>",  I18N_NOOP( "Stylesheet to use" ), 0 },
-    { "stdout", I18N_NOOP( "output whole document to stdout" ), 0 },
+    { "stdout", I18N_NOOP( "Output whole document to stdout" ), 0 },
     { "o", 0, 0 },
-    { "output <file>", I18N_NOOP("output whole document to file" ), 0 },
-    { "htdig", I18N_NOOP( "create a ht://dig compatible index" ), 0 },
-    { "check", I18N_NOOP( "check the document for validity" ), 0 },
-    { "cache <file>", I18N_NOOP( "create a cache file for the document" ), 0},
-    { "srcdir <dir>", I18N_NOOP( "set the srcdir, for kdelibs" ), 0},
+    { "output <file>", I18N_NOOP("Output whole document to file" ), 0 },
+    { "htdig", I18N_NOOP( "Create a ht://dig compatible index" ), 0 },
+    { "check", I18N_NOOP( "Check the document for validity" ), 0 },
+    { "cache <file>", I18N_NOOP( "Create a cache file for the document" ), 0},
+    { "srcdir <dir>", I18N_NOOP( "Cet the srcdir, for kdelibs" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     KCmdLineLastOption // End of options.
 };

@@ -352,7 +352,7 @@ int main(int argc, char **argv)
 {
    KLocale::setMainCatalogue("kdelibs");
    KAboutData d(appName, I18N_NOOP("KDontChangeTheHostName"), appVersion,
-                I18N_NOOP("Informs KDE about a change in hostname."),
+                I18N_NOOP("Informs KDE about a change in hostname"),
                 KAboutData::License_GPL, "(c) 2001 Waldo Bastian");
    d.addAuthor("Waldo Bastian", I18N_NOOP("Author"), "bastian@kde.org");
 

@@ -274,7 +274,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
 	QWhatsThis::add(m_commentlabel, whatsThisPrinterComment);
 	m_printerlabel->setBuddy(d->m_printers);
-	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties..."), "edit"), m_pbox);
+	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties"), "edit"), m_pbox);
 	QWhatsThis::add( d->m_properties, whatsThisPrintJobProperties);
 	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions..."), "kdeprint_configmgr"), this);
 	QWhatsThis::add(d->m_options,whatsThisSystemOptions);

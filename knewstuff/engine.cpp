@@ -264,7 +264,7 @@ void Engine::upload( Entry *entry )
     mUploadFile = locateLocal( "data", "korganizer/upload/" + mUploadFile );
 
     if ( !mNewStuff->createUploadFile( mUploadFile ) ) {
-      KMessageBox::error( mParentWidget, i18n("Unable to create file to upload") );
+      KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
       return;
     }
   }
@@ -282,7 +282,7 @@ void Engine::upload( Entry *entry )
   }
   text.append( mUploadMetaFile + "\n" );
 
-  QString caption = i18n("Upload files");
+  QString caption = i18n("Upload Files");
 
   if ( mUploadProvider->noUpload() ) {
     KURL noUploadUrl = mUploadProvider->noUploadUrl();

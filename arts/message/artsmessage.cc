@@ -52,7 +52,7 @@ static KCmdLineOptions options[] =
   };
 
 KAboutData aboutData("artsmessage", I18N_NOOP("artsmessage"), "0.1",
-					 I18N_NOOP("Utility to display aRts error messages."),
+					 I18N_NOOP("Utility to display aRts error messages"),
 					 KAboutData::License_GPL, "(c) 2001, Jeff Tranter", 0, 0, "tranter@kde.org");
 
 int main(int argc, char **argv) {
