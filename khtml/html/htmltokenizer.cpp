@@ -627,6 +627,10 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                     const entity *e = findEntity(cBuffer, cBufferPos);
                     if(e)
                         EntityChar = e->code;
+
+                    // be IE compatible
+                    if(tag && EntityChar.unicode() > 255 && src[0] != ';')
+                        EntityChar = QChar::null;
                 }
             }
             else
@@ -637,9 +641,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             //kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << ", " << res << endl;
 
             fixUpChar(EntityChar);
-
-            if(tag && EntityChar != '&' && src[0] != ';')
-                EntityChar = QChar::null;
 
             if ( EntityChar != QChar::null ) {
                 checkBuffer();
@@ -672,13 +673,6 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
     }
 }
 
-static inline bool isSeparator(char curchar)
-{
-
-  return curchar == '\t' || curchar == '\r' ||
-         curchar == '\n' || curchar == ' ';
-}
-
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
     if (Entity)
@@ -688,11 +682,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     {
         checkBuffer();
         char curchar = src[0].latin1();
-//         int l = 0;
-//         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
-//             l++;
-//         qDebug("src is now: *%s*, tquote: %d",
-//                QConstString((QChar*)src.current(), l).string().latin1(), tquote);
+#ifdef TOKEN_DEBUG
+        int l = 0;
+        while(l < src.length() && (*(src.current()+l)).latin1() != '>')
+            l++;
+        qDebug("src is now: *%s*, tquote: %d",
+               QConstString((QChar*)src.current(), l).string().latin1(), tquote);
+#endif
         switch(tag) {
         case NoTag:
         {
@@ -744,8 +740,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 // we fail anyway
                 char cc = curchar;
                 cBuffer[cBufferPos++] = cc | 0x20;
-//                      cBuffer[cBufferPos++] = (cc >= 'A' && cc <= 'Z') ?
-//                                              cc +'a' - 'A' : cc;
                 ++src;
             }
 
@@ -887,7 +881,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                         dest = buffer;
                         tag = SearchAttribute;
-                        discard = AllDiscard;
                     }
                     break;
                 }
@@ -910,6 +903,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     break;
                 }
                 ++src;
+                curchar = src->unicode();
             }
             break;
         }
@@ -919,7 +913,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 qDebug("QuotedValue");
 #endif
             while(src.length()) {
-                curchar = src[0];
                 checkBuffer();
 
                 if(curchar <= '\'') {
@@ -964,6 +957,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 *dest++ = src[0];
                 ++src;
+                curchar = src->unicode();
             }
             break;
         }
@@ -972,31 +966,39 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #ifdef TOKEN_DEBUG
             qDebug("Value");
 #endif
-            // parse Entities
-            if ( curchar == '&' )
-            {
+            while(src.length()) {
+                checkBuffer();
+
+                if(curchar <= '>') {
+                    // parse Entities
+                    if ( curchar == '&' )
+                    {
+                        ++src;
+                        parseEntity(src, dest, true);
+                        break;
+                    }
+                    if ( curchar <= ' ' || curchar == '>')
+                    {
+                        // no quotes. Every space means end of value
+                        AttrImpl* a;
+                        if(*buffer)
+                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                        else
+                            a = new AttrImpl(parser->doc(), DOMString(attrName));
+
+                        a->setValue(DOMString(buffer+1, dest-buffer-1));
+                        currToken.insertAttr(a);
+
+                        dest = buffer;
+                        tag = SearchAttribute;
+                        break;
+                    }
+                }
+
+                *dest++ = src[0];
                 ++src;
-                parseEntity(src, dest, true);
-                break;
+                curchar = src->unicode();
             }
-            if ( curchar <= ' ' || curchar == '>')
-            {
-                // no quotes. Every space means end of value
-                AttrImpl* a;
-                if(*buffer)
-                    a = new AttrImpl(parser->doc(), (int)*buffer);
-                else
-                    a = new AttrImpl(parser->doc(), DOMString(attrName));
-
-                a->setValue(DOMString(buffer+1, dest-buffer-1));
-                currToken.insertAttr(a);
-
-                dest = buffer;
-                    tag = SearchAttribute;
-                    break;
-            }
-            *dest++ = src[0];
-            ++src;
             break;
         }
         case SearchEnd:
@@ -1016,31 +1018,20 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             searchCount = 0; // Stop looking for '<!--' sequence
             tag = NoTag;
             tquote = NoQuote;
-            pending = NonePending; // Ignore pending spaces
             ++src;
 
-            if ( currToken.id == 0 ) //stop if tag is unknown
-            {
-                discard = NoneDiscard;
+            if ( !currToken.id ) //stop if tag is unknown
                 return;
-            }
+
             uint tagID = currToken.id;
 #ifdef TOKEN_DEBUG
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
             bool beginTag = tagID < ID_CLOSE_TAG;
-            if(!(pre || textarea || tagID == ID_PRE)) {
-                // Ignore Space/LF's after a start tag
-                // Don't ignore CR/LF's after a close tag
-                discard = beginTag ? LFDiscard : NoneDiscard;
-                }
-                else
-                    discard = NoneDiscard;
 
             if(!beginTag)
                 tagID -= ID_CLOSE_TAG;
-
-            if ( beginTag && tagID == ID_SCRIPT ) {
+            else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttrImpl* a = 0;
                 if(currToken.attrs) {
                     a = currToken.attrs->getIdItem(ATTR_SRC);
@@ -1499,7 +1490,7 @@ void HTMLTokenizer::processToken()
     {
 #ifdef TOKEN_DEBUG
         if(currToken.id && currToken.id != ID_COMMENT)
-            kdDebug( 6036 ) << "Error in processToken!!!" << endl;
+            assert(0);
 #endif
         if ( currToken.complexText ) {
             // ### we do too much QString copying here, but better here than in RenderText...
