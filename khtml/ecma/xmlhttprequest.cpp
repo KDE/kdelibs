@@ -305,7 +305,6 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QCString(_body.utf8()), false );
@@ -359,7 +358,7 @@ void XMLHttpRequest::send(const QString& _body)
 void XMLHttpRequest::abort()
 {
   if (job) {
-    job->kill();
+    job->kill(false);
     job = 0;
   }
   delete decoder;
@@ -565,7 +564,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   }
 
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj.imp());
-
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -585,7 +583,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2 || args.size() > 5) {
-    return Undefined();
+        return Undefined();
       }
 
       QString method = args[0].toString(exec).qstring();
