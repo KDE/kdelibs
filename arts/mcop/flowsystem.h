@@ -64,6 +64,9 @@ public:
 
 	// internal interface against Object_skel
 	
+	typedef bool (*QueryInitStreamFunc)(Object_skel *object,
+											const std::string& name);
+
 	virtual void initStream(std::string name, void *ptr, long flags) = 0;
 
 	// interface against node implementation
@@ -137,6 +140,7 @@ public:
 	virtual void suspend() = 0;
 	virtual void restart() = 0;
 };
+
 };
 
 #endif

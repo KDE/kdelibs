@@ -1,0 +1,12 @@
+interface FloatValue {
+	attribute float value;
+};
+
+interface StringValue {
+	attribute string value;
+};
+
+interface FloatSender {
+	void send(sequence<float> data);
+	async out float stream outstream;
+};

@@ -349,6 +349,7 @@ StdScheduleNode::StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem)
 	running = false;
 	suspended = false;
 	module = 0;
+	queryInitStreamFunc = 0;
 	inConn = outConn = 0;
 	inConnCount = outConnCount = 0;
 	Busy = BusyHit = NeedCycles = CanPerform = 0;
@@ -388,7 +389,11 @@ StdScheduleNode::~StdScheduleNode()
 
 void StdScheduleNode::initStream(string name, void *ptr, long flags)
 {
-	if(flags & streamAsync)
+	if(flags == -1)
+	{
+		queryInitStreamFunc = (QueryInitStreamFunc)ptr;
+	}
+	else if(flags & streamAsync)
 	{
 		ports.push_back(new ASyncPort(name,ptr,flags,this));
 	}
@@ -489,6 +494,17 @@ Port *StdScheduleNode::findPort(string name)
 	{
 		Port *p = *i;
 		if(p->name() == name) return p;
+	}
+	if(queryInitStreamFunc)
+	{
+		if(queryInitStreamFunc(_object,name))
+		{
+			for(i=ports.begin();i!=ports.end();i++)
+			{
+				Port *p = *i;
+				if(p->name() == name) return p;
+			}
+		}
 	}
 	return 0;
 }

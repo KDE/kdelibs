@@ -1,4 +1,5 @@
-check_PROGRAMS = testbuffer testifacerepo testanyref testwrapper
+check_PROGRAMS = testbuffer testifacerepo testanyref testwrapper \
+   testchangenotify
 
 TESTS = $(check_PROGRAMS)
 
@@ -7,15 +8,23 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/soundserver -I$(top_srcdir)/arts/artsc
 
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
+FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 testbuffer_SOURCES = testbuffer.cc
 testifacerepo_SOURCES = testifacerepo.cc
 testanyref_SOURCES = testanyref.cc
 
-testwrapper_LDFLAGS = $(FLOWLIBS)
 testwrapper_SOURCES = wrapper.cc testwrapper.cc
+
+testchangenotify_LDFLAGS = $(FLOWLIBS)
+testchangenotify_SOURCES = value.cc value_impl.cc testchangenotify.cc
 
 wrapper.h: $(top_srcdir)/arts/tests/wrapper.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/tests/wrapper.idl
 
 wrapper.cc: wrapper.h
+
+value.h: $(top_srcdir)/arts/tests/value.idl $(MCOPIDL)
+	$(MCOPIDL) $(top_srcdir)/arts/tests/value.idl
+
+value.cc: value.h

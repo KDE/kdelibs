@@ -26,11 +26,16 @@
 #include "weakreference.h"
 #include "namedstore.h"
 #include "debug.h"
+#include "anyref.h"
 #include <stdio.h>
 #include <iostream>
 
 using namespace std;
 using namespace Arts;
+
+namespace Arts {
+	class AttributeSlotBind;
+};
 
 class Arts::ObjectInternalData {
 public:
@@ -47,6 +52,7 @@ public:
 	// for _skel classes only:
 	bool methodTableInit;
 	std::vector<MethodTableEntry> methodTable;
+	list<AttributeSlotBind *> attributeSlots;
 };
 
 struct Object_base::ObjectStreamInfo {
@@ -54,6 +60,241 @@ struct Object_base::ObjectStreamInfo {
 	long flags;
 	void *ptr;
 };
+
+/*****************************************************************************/
+/* the following methods/classes are necessary for attribute notifications   */
+/*****************************************************************************/
+
+namespace Arts {
+	class AttributeDataPacket : public GenericDataPacket {
+	public:
+		Buffer b;
+		AttributeDataPacket(GenericDataChannel *channel)
+			        : GenericDataPacket(channel)
+		{
+			size = 0;
+			b.writeLong(0);
+		}                                         
+		void add(const AnyConstRef& r)
+		{
+			r.write(&b);
+			b.patchLong(0,++size);
+		}
+
+    	void ensureCapacity(int)
+		{
+        }
+		void read(Buffer& stream)
+		{
+			vector<mcopbyte> all;
+			size = stream.readLong();
+			b.patchLong(0,size);
+			stream.read(all,stream.remaining());
+			b.write(all);
+		}
+		void write(Buffer& stream)
+		{
+			vector<mcopbyte> all;
+			b.rewind();
+			b.read(all,b.remaining());
+			stream.write(all);
+		}
+	};
+	class AttributeSlotBind : public GenericAsyncStream {
+	public:
+    	GenericDataPacket *createPacket(int)
+    	{
+			return allocPacket();
+		}
+		AttributeDataPacket *allocPacket()
+		{
+			return new AttributeDataPacket(channel);
+    	}
+ 
+    	void freePacket(GenericDataPacket *packet)
+    	{
+			delete packet;
+    	}
+ 
+    	GenericAsyncStream *createNewStream()
+    	{
+			return new AttributeSlotBind();
+    	}
+
+		virtual ~AttributeSlotBind()
+		{
+		}
+
+		string method;
+		bool output;
+	};
+};
+
+bool Object_skel::_initAttribute(const AttributeDef& attribute)
+{
+	long flags = attribute.flags;
+
+	if(flags & attributeAttribute)
+	{
+		flags |= attributeStream | streamAsync;
+		flags &= ~attributeAttribute;
+	}
+	else
+	{
+		arts_warning("attribute init on stream %s", attribute.name.c_str());
+		return false;
+	}
+
+	list<AttributeSlotBind *>::iterator i;
+	for(i = _internalData->attributeSlots.begin();
+		i != _internalData->attributeSlots.end(); i++)
+	{
+		AttributeSlotBind *b = *i;
+		if(b->method == "_set_"+attribute.name
+		|| b->method == attribute.name + "_changed")
+		{
+			arts_warning("double attribute init %s",b->method.c_str());
+			return false;
+		}
+	}
+	if(flags & streamIn)
+	{
+		AttributeSlotBind *b = new AttributeSlotBind();
+		b->output = false;
+		b->method = "_set_"+attribute.name;
+		_internalData->attributeSlots.push_back(b);
+
+		_scheduleNode->initStream(attribute.name, b, flags & (~streamOut));
+	}
+	if(flags & streamOut)
+	{
+		string changed = attribute.name + "_changed";
+		AttributeSlotBind *b = new AttributeSlotBind();
+		b->output = true;
+		b->method = changed;
+		_internalData->attributeSlots.push_back(b);
+
+		_scheduleNode->initStream(changed, b, flags & (~streamIn));
+	}
+	return true;
+}
+
+void Object_skel::_defaultNotify(const Notification& notification)
+{
+	list<AttributeSlotBind *>::iterator i;
+	list<AttributeSlotBind *>& slots = _internalData->attributeSlots;
+
+	for(i = slots.begin(); i != slots.end(); i++)
+	{
+		if((*i)->notifyID() == notification.ID)
+		{
+			GenericDataPacket *dp = (GenericDataPacket *)notification.data;
+			Buffer params;
+
+			dp->write(params);
+
+			if(!_internalData->methodTableInit)
+			{
+				// take care that the object base methods are at the beginning
+				Object_skel::_buildMethodTable();
+				_buildMethodTable();
+				_internalData->methodTableInit = true;
+			}
+		
+			vector<Arts::ObjectInternalData::MethodTableEntry>::iterator mti;
+
+			for(mti = _internalData->methodTable.begin();
+				mti != _internalData->methodTable.end(); mti++)
+			{
+				if(mti->methodDef.name == (*i)->method)
+				{
+					Buffer result;
+
+					long count = params.readLong();
+					while(params.remaining())
+					{
+						mti->dispatcher(mti->object, &params, &result);
+						count--;
+					}
+					arts_assert(count == 0);
+				}
+			}
+		}
+	}
+}
+
+void Object_skel::notify(const Notification& notification)
+{
+	_defaultNotify(notification);
+}
+
+void Object_skel::_emit_changed(const char *attrib, const AnyConstRef& value)
+{
+	list<AttributeSlotBind *>::iterator i;
+	list<AttributeSlotBind *>& slots = _internalData->attributeSlots;
+
+	for(i = slots.begin(); i != slots.end(); i++)
+	{
+		if((*i)->method == attrib) 
+		{
+			AttributeDataPacket *adp =
+				(AttributeDataPacket *)(*i)->createPacket(1);
+			adp->add(value);
+			adp->send();
+			return;
+		}
+	}
+}
+
+
+bool Object_skel::_generateSlots(const std::string& name,
+										const std::string& interface)
+{
+	InterfaceDef d = _queryInterface(interface);
+	vector<string>::iterator ii;
+	for(ii = d.inheritedInterfaces.begin();
+					ii != d.inheritedInterfaces.end(); ii++)
+	{
+		if(_generateSlots(name, *ii)) return true;
+	}
+
+	vector<AttributeDef>::iterator ai;
+	for(ai = d.attributes.begin(); ai != d.attributes.end(); ai++)
+	{
+		if(ai->flags & attributeAttribute)
+		{
+			if((ai->flags & streamIn && ai->name == name)
+			|| (ai->flags & streamOut && ai->name+"_changed" == name))
+			{
+				_initAttribute(*ai);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Object_skel::_QueryInitStreamFunc(Object_skel *skel, const
+															std::string& name)
+{
+	/*
+	 * this function
+	 *
+	 * checks if there is a stream which should be added called <name>,
+	 * and returns true if it in fact added a stream, so that requesting
+	 * function needs to retry
+	 */
+	bool result = skel->_generateSlots(name, skel->_interfaceName());
+	if(!result)
+	{
+		arts_warning("used stream %s on object %s, which doesn't seem to exist",
+					name.c_str(), skel->_interfaceName().c_str());
+	}
+	return result;
+}
+
+/*****************************************************************************/
+
 
 /*
  * Object: common for every object
@@ -98,6 +339,14 @@ Object_base::~Object_base()
 	}
 	assert(_deleteOk);
 
+	/* remove attribute slots */
+	list<AttributeSlotBind *>::iterator ai;
+	for(ai = _internalData->attributeSlots.begin();
+		ai != _internalData->attributeSlots.end(); ai++)
+	{
+		delete (*ai);
+	}
+	
 	/* clear stream list */
 	list<ObjectStreamInfo *>::iterator osii;
 	for(osii = _streamList.begin(); osii != _streamList.end(); osii++)
@@ -130,6 +379,8 @@ ScheduleNode *Object_base::_node()
 					{
 						_scheduleNode->initStream((*osii)->name,(*osii)->ptr,(*osii)->flags);
 					}
+					_scheduleNode->initStream("QueryInitStreamFunc",
+								(void *)Object_skel::_QueryInitStreamFunc, -1);
 				}
 				break;
 

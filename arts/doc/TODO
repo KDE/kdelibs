@@ -10,8 +10,6 @@ Index:
 1. KDE2.1
 
 => optimization, not necessary but pretty
-- get rid of additional Synth_MULTI_ADD pair in soundserver
-
 - change text in the kcmarts module regarding latency, it's plain confusing
 
 - ensure DynamicCast(<some null object>) == Object::null()
@@ -24,7 +22,6 @@ Index:
 - port visual objects
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces
 - port every object
-- notifications when attributes change
 - recursive scheduling again (with loops & cycles)
 - reading/writing IEEE Floats needs proper documentation, testing on
   different architectures and probably different code for some machines

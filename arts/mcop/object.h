@@ -205,6 +205,8 @@ class MethodDef;
 
 
 class Object_skel_private;
+class AnyConstRef;
+class AttributeDef;
 
 class Object_skel : virtual public Object_base {
 private:
@@ -224,6 +226,16 @@ protected:
 	void _addMethod(OnewayDispatchFunction disp, void *object,
 														const MethodDef& md);
 	void _initStream(std::string name, void *ptr, long flags);
+
+	/** stuff relative to attribute notifications **/
+	bool _initAttribute(const Arts::AttributeDef& attribute);
+	static bool _QueryInitStreamFunc(Object_skel *skel,const std::string& name);
+	bool _generateSlots(const std::string& name, const std::string& interface);
+
+protected:
+	void _defaultNotify(const Notification& notification);
+	void notify(const Notification& notification);
+	void _emit_changed(const char *stream, const AnyConstRef& value);
 
 	/**
 	 * custom messaging: this is used to install a custom data handler that

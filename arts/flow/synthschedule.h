@@ -218,6 +218,7 @@ class StdScheduleNode :public ScheduleNode
 	AudioPort **outConn;
 	unsigned long inConnCount, outConnCount;
 	typedef AudioPort *AudioPort_ptr;
+	QueryInitStreamFunc queryInitStreamFunc;
 
 	void freeConn();
 	void rebuildConn();
