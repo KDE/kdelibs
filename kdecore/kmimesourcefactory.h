@@ -35,7 +35,7 @@
  * you automagically and sets @ref QMimeSourceFactory::setDefaultFactory.
  *
  * @version $Id$
- * @auther Peter Putzer <putzer@kde.org>
+ * @author Peter Putzer <putzer@kde.org>
  */
 class KMimeSourceFactory : public QMimeSourceFactory
 {
