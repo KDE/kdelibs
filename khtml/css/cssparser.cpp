@@ -655,7 +655,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_FONT_WEIGHT:
     case CSS_PROP_LETTER_SPACING:
     case CSS_PROP_LINE_HEIGHT:
-    case CSS_PROP_LIST_STYLE_IMAGE:
     case CSS_PROP_LIST_STYLE_POSITION:
     case CSS_PROP_LIST_STYLE_TYPE:
     case CSS_PROP_MARGIN_TOP:
@@ -803,7 +802,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	{
 	    DOMString value(curP, endP - curP);
 	    value = khtml::parseURL(value);
-	    kdDebug( 6080 ) << "mage, url=" << value.string() << " base=" << baseUrl().string() << endl;
+	    kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
 	    parsedValue = new CSSImageValueImpl(value, baseUrl());
 	    break;
 	}

@@ -1061,6 +1061,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // uri || inherit
     case CSS_PROP_BACKGROUND_IMAGE:
     {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    style->setBackgroundImage(e->parentNode()->style()->backgroundImage());
+	    break;
+	}
 	if(!primitiveValue) return;
 	CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
 	style->setBackgroundImage(image->image());
@@ -1072,6 +1078,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	break;
     case CSS_PROP_LIST_STYLE_IMAGE:
     {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    style->setListStyleImage(e->parentNode()->style()->listStyleImage());
+	    break;
+	}
 	if(!primitiveValue) return;
 	CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
 	style->setListStyleImage(image->image());
@@ -1089,7 +1101,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
 	    // ###
-	    //style->setBackgroundAttachment(e->parentNode->style()->backgroundAttachment());
 	    break;
 	}
 	if(!primitiveValue) break;

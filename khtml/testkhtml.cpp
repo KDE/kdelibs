@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     doc->setFontSizes(fontSizes);
 #endif
 
-    doc->enableJScript(true);
+    //doc->enableJScript(true);
     doc->enableJava(true);
 //    doc->setCharset("unicode");
 
