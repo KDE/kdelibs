@@ -1,6 +1,4 @@
-## Makefile.am of kdebase/kioslave/ftp
-
-INCLUDES=	$(all_includes) -I$(srcdir)/../.. -I$(srcdir)/..
+INCLUDES= -I$(srcdir)/../.. -I$(srcdir)/.. $(all_includes)
 
 ####### Files
 
