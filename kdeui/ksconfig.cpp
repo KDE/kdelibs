@@ -265,8 +265,9 @@ KSpellConfig::interpret( QString &fname, QString &lname,
     dname.truncate(i);
   }
 
-  // Aspell uses 2 alpha language codes or 2 alpha language + 2 alpha country
-  if ( dname.length() == 2 ) {
+  // Aspell uses 2 alpha language codes or 2 alpha language + 2 alpha country,
+  // but since aspell 0.6 also 3-character ISO-codes can be used
+  if ( (dname.length() == 2) || (dname.length() == 3) ) {
     lname = dname;
     hname = KGlobal::locale()->twoAlphaToLanguageName( lname );
   }
@@ -519,11 +520,24 @@ void KSpellConfig::getAvailDictsAspell () {
     // consider only simple dicts without '-' in the name
     // FIXME: may be this is wrong an the list should contain
     // all *.multi files too, to allow using special dictionaries
+    
+    // Well, KSpell2 has a better way to do this, but this code has to be
+    // cleaned up somehow: since aspell 0.6 we have quite a lot of files in the 
+    // aspell dictionary that are not dictionaries. These must not be presented as "languages"
+    // We only keep 
+    // *.rws: dictionary
+    // *.multi: definition file to load several subdictionaries
+    if ( !( fname.endsWith(".rws") || fname.endsWith(".multi") ) ) {
+        // remove noise from the language list
+        continue;
+    }
     if (fname[0] != '.')
     {
 
       // remove .multi
       if (fname.endsWith(".multi")) fname.remove (fname.length()-6,6);
+      // remove .rws
+      if (fname.endsWith(".rws")) fname.remove (fname.length()-4,4);
 
       if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
       { // This one is the KDE default language
