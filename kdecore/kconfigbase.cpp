@@ -257,7 +257,7 @@ const QString KConfigBase::readEntry( const char* pKey,
   if (nDollarPos != -1)
     aValue.detach();
 
-  while( nDollarPos != -1 && nDollarPos+1 < aValue.length())
+  while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length()))
 	{
 	  // there is at least one $
  	  if( (aValue)[nDollarPos+1] != '$' )
