@@ -669,10 +669,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Size:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    QHBoxLayout * sizelay = new QHBoxLayout(KDialog::spacingHint());
-    grid->addLayout( sizelay, curRow++, 2 );
     m_sizeLabel = new QLabel( d->m_frame );
-    sizelay->addWidget(m_sizeLabel, 0);
+    //sizelay->addWidget(m_sizeLabel, 0);
+    grid->addWidget( m_sizeLabel, curRow++, 2 );
 
     if (S_ISREG(item->mode())) // File (or symlink to file)
     {
@@ -682,6 +681,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
     else // Directory
     {
+        QHBoxLayout * sizelay = new QHBoxLayout(KDialog::spacingHint());
+        grid->addLayout( sizelay, curRow++, 2 );
+
         // buttons
         m_sizeDetermineButton = new QPushButton( i18n("Calculate"), d->m_frame );
         m_sizeStopButton = new QPushButton( i18n("Stop"), d->m_frame );
@@ -689,6 +691,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         connect( m_sizeStopButton, SIGNAL( pressed() ), this, SLOT( slotSizeStop() ) );
         sizelay->addWidget(m_sizeDetermineButton, 0);
         sizelay->addWidget(m_sizeStopButton, 0);
+        sizelay->addStretch(10); // so that the buttons don't grow horizontally
 
         // auto-launch for local dirs only, and not for '/'
         if ( item->url().isLocalFile() && item->url().path().length() > 1 )
