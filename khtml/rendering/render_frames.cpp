@@ -573,10 +573,10 @@ void RenderFrameSet::dump(QTextStream *stream, QString ind) const
   *stream << " totalcols=" << m_frameset->totalCols();
 
   uint i;
-  for (i = 0; i < m_frameset->totalRows(); i++)
+  for (i = 0; i < (uint)m_frameset->totalRows(); i++)
     *stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
 
-  for (i = 0; i < m_frameset->totalCols(); i++)
+  for (i = 0; i < (uint)m_frameset->totalCols(); i++)
     *stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
 
   RenderBox::dump(stream,ind);
@@ -619,8 +619,9 @@ void RenderPart::layout( )
         m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3860 ) );
 }
 
-void RenderPart::partLoadingErrorNotify()
+bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
 {
+    return false;
 }
 
 short RenderPart::intrinsicWidth() const
@@ -794,16 +795,7 @@ void RenderPartObject::updateWidget()
         embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
         embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
 
-        // Check if serviceType can be handled by ie. nsplugin
-		// else default to the activexhandler if there is a classid
-        // and a codebase, where we may download the ocx if it's missing (Niko)
-        bool retval = part->requestObject( this, url, serviceType, embed->param );
-
-        if(!retval && !o->classId.isEmpty() && !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
-        {
-           serviceType = "application/x-activex-handler";
-           part->requestObject( this, url, serviceType, embed->param );
-        }
+        part->requestObject( this, url, serviceType, embed->param );
      }
   }
   else if ( m_obj->id() == ID_EMBED ) {
@@ -847,15 +839,42 @@ void RenderPartObject::close()
 }
 
 
-void RenderPartObject::partLoadingErrorNotify()
+bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType )
 {
+    // Check if we just tried with e.g. nsplugin
+    // and fallback to the activexhandler if there is a classid
+    // and a codebase, where we may download the ocx if it's missing
+    if( serviceType != "application/x-activex-handler" && m_obj->id()==ID_OBJECT ) {
+
+        // check for embed child object
+        HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
+        HTMLEmbedElementImpl *embed = 0;
+        NodeImpl *child = o->firstChild();
+        while ( child ) {
+            if ( child->id() == ID_EMBED )
+                embed = static_cast<HTMLEmbedElementImpl *>( child );
+
+            child = child->nextSibling();
+        }
+        if( embed && !o->classId.isEmpty() &&
+            !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
+        {
+            KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+            KParts::URLArgs args;
+            args.serviceType = "application/x-activex-handler";
+            if (part->requestObject( childFrame, url, args ))
+                return true; // success
+        }
+    }
     // Dissociate ourselves from the current event loop (to prevent crashes
     // due to the message box staying up)
     QTimer::singleShot( 0, this, SLOT( slotPartLoadingErrorNotify() ) );
+    return false;
 }
 
 void RenderPartObject::slotPartLoadingErrorNotify()
 {
+    // First we need to find out the servicetype - again - this code is too duplicated !
     HTMLEmbedElementImpl *embed = 0;
     QString serviceType;
     if( m_obj->id()==ID_OBJECT ) {

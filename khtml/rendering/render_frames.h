@@ -39,6 +39,7 @@ namespace DOM
 
 namespace khtml
 {
+  struct ChildFrame;
 
 class RenderFrameSet : public RenderBox
 {
@@ -111,8 +112,11 @@ public:
      * has been determined or syncroniously from within requestObject)
      *
      * The default implementation does nothing.
+     *
+     * Return false in the normal case, return true if a fallback was found
+     * and the url was successfully opened.
      */
-    virtual void partLoadingErrorNotify();
+    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
 
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
@@ -154,7 +158,7 @@ public:
 
     DOM::HTMLElementImpl *m_obj;
 
-    virtual void partLoadingErrorNotify();
+    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
 
 public slots:
     void slotViewCleared();
