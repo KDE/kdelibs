@@ -47,9 +47,11 @@ public:
     PartMonitor *m_previousMonitor;
     bool m_completed;
     KHTMLPart *m_part;
+    int m_timer_waits;
 public slots:
     void partCompleted();
     void timeout();
+    void finishTimers();
 };
 
 /**
