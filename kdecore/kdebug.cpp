@@ -229,7 +229,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
 		    nSize = sprintf( buf, "%s", data);
 
                 QFile aOutputFile( aOutputFileName );
-                aOutputFile.open( IO_WriteOnly );
+                aOutputFile.open( IO_WriteOnly | IO_Append );
                 aOutputFile.writeBlock( buf, nSize+1 );
                 aOutputFile.close();
                 break;
