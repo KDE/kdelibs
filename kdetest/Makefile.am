@@ -29,17 +29,18 @@ noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
-		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest
+		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
+		kcharsetstest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h	\
-		kprocesstest.h
+		kprocesstest.h kcharsetstest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
 		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
-		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc 
+		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc kcharsetstest.moc
 
 ktabctltest.cpp: ktabctltest.moc
 kiconloadertestmain.cpp: kiconloadertestmain.moc
@@ -54,6 +55,7 @@ klinetest.cpp: klinetest.moc
 kstatusbartest.cpp: kstatusbartest.moc
 kspinboxtest.cpp: kspinboxtest.moc
 kprocesstest.cpp: kprocesstest.moc
+kcharsetstest.cpp: kcharsetstest.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
@@ -77,6 +79,7 @@ kspinboxtest_SOURCES = kspinboxtest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
+kcharsetstest_SOURCES = kcharsetstest.cpp
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
@@ -116,3 +119,6 @@ kconfigtest.moc: kconfigtest.h
 
 kprocesstest.moc: kprocesstest.h
 	$(MOC) kprocesstest.h -o kprocesstest.moc
+
+kcharsetstest.moc: kcharsetstest.h
+	$(MOC) kcharsetstest.h -o kcharsetstest.moc
