@@ -43,7 +43,7 @@ CupsLocationDialog::CupsLocationDialog(CupsdConf *conf, QWidget *parent, const c
 	setOkButton(i18n("OK"));
 	setCancelButton(i18n("Cancel"));
 
-	setHelpButton(i18n("Short Help..."));
+	setHelpButton(i18n("Short Help"));
         connect(this, SIGNAL(helpButtonPressed()), SLOT(slotHelp()));
 
 	setCaption(i18n("Add Resource"));

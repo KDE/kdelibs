@@ -152,7 +152,7 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   nameLayout->addWidget( mEditButton );
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editList() ) );
 
-  mRemoveButton = new QPushButton( i18n("Remove List..."), this );
+  mRemoveButton = new QPushButton( i18n("Remove List"), this );
   nameLayout->addWidget( mRemoveButton );
   connect( mRemoveButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 

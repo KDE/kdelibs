@@ -93,7 +93,7 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         QPushButton     *ok_ = new QPushButton(i18n("OK"), this);
         QPushButton     *cancel_ = new QPushButton(i18n("Cancel"), this);
         QPushButton     *apply_ = new QPushButton(i18n("Apply"), this);
-        QPushButton     *help_ = new QPushButton(i18n("Short Help..."), this);
+        QPushButton     *help_ = new QPushButton(i18n("Short Help"), this);
         connect(ok_, SIGNAL(clicked()), SLOT(slotOk()));
         connect(cancel_, SIGNAL(clicked()), SLOT(slotCancel()));
         connect(apply_, SIGNAL(clicked()), SLOT(slotApply()));
