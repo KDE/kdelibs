@@ -116,7 +116,7 @@ void box::offset(int xoffs, int yoffs)
 //far harder.
 //Now the 0 of the bounding rect represents the "midline" to which
 //everything is valigned-- Andrea Rizzi's idea
-void box::calculate(QPainter &p, int setFontsize)
+void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *bc, QColor *fc)
 {
   if(!dirty) return;
 
@@ -124,6 +124,8 @@ void box::calculate(QPainter &p, int setFontsize)
   b1x = b1y = b2x = b2y = 0;
   if(setFontsize == -1) setFontsize = p.font().pointSize();
   fontsize = setFontsize;
+  if ( f_ )
+      fontsize = f_->pointSize();
   if(fontsize < MIN_FONT_SIZE) fontsize = MIN_FONT_SIZE;
 
   QRect tmp1, tmp2; //temporary variables
@@ -131,7 +133,9 @@ void box::calculate(QPainter &p, int setFontsize)
   QFont f; //temporary to preserve the current font of the painter.
 
   f = p.font();
-
+  if ( f_ )
+      f = *f_;
+  
   lastFont = f;
   lastFont.setPointSize(fontsize);
   p.setFont(lastFont);
@@ -139,7 +143,9 @@ void box::calculate(QPainter &p, int setFontsize)
   fontsize = font_info_tmp.pointSize();
 
   QFontMetrics fm = p.fontMetrics();
-
+  if ( f_ )
+      fm = QFontMetrics( *f_ );
+  
   switch(type)
     {
     case TEXT:
@@ -466,7 +472,7 @@ QRect box::getLastRect()
 //--------------------------------DRAW------------------------------
 //first draws its children and then itself.
 //x and y are relative coordnates.
-void box::draw(QPainter &p, int x, int y)
+void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 {
 
   if(dirty) calculate(p); //just in case
@@ -475,11 +481,17 @@ void box::draw(QPainter &p, int x, int y)
 
   QFont f;
   f = p.font();
+  if ( f_ )
+      f = *f_;
   QPen oldPen = p.pen();
-
+  if ( fc )
+      oldPen = QPen( *fc );
+  
   p.setFont(lastFont);
+  if ( fc )
+      p.setPen( *fc );
 
-  QFontMetrics fm(p.fontMetrics());
+  QFontMetrics fm( f );
 
   QRect tmp;
   int i;
@@ -495,8 +507,8 @@ void box::draw(QPainter &p, int x, int y)
 #endif
 
   //Draw the children:
-  if(b1 != NULL) b1->draw(p, x + b1x, y + b1y);
-  if(b2 != NULL) b2->draw(p, x + b2x, y + b2y);
+  if(b1 != NULL) b1->draw(p, x + b1x, y + b1y, f_, bc, fc );
+  if(b2 != NULL) b2->draw(p, x + b2x, y + b2y, f_, bc, fc );
 
   switch(type) {
   case TEXT:

@@ -39,8 +39,8 @@ public:
 
   void addElem(box *e);
 
-  void calculate(QPainter &p, int setFontsize = -1);
-  void draw(QPainter &p, int x, int y);
+  void calculate(QPainter &p, int setFontsize = -1, QFont *f = 0, QColor *bc = 0, QColor *fc = 0);
+  void draw(QPainter &p, int x, int y, QFont *f = 0, QColor *bc = 0, QColor *fc = 0);
 
   QRect getCursorPos(charinfo i, int x, int y);
 };

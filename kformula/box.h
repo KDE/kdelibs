@@ -132,12 +132,13 @@ public:
   virtual ~box();
 
   void setText(QString newText);
-  virtual void calculate(QPainter &p, int setFontsize = -1);
+  virtual void calculate(QPainter &p, int setFontsize = -1,
+			 QFont *f = 0, QColor *bc = 0, QColor *fc = 0 );
   QRect getRect() { return rect; }
   int getType() { return type; }
   box *getParent() { return parent; }
   QString getText() { return text; }
-  virtual void draw(QPainter &p, int x, int y);
+  virtual void draw(QPainter &p, int x, int y, QFont *f = 0, QColor *bc = 0, QColor *fc = 0);
 
   virtual QRect getCursorPos(charinfo i, int x, int y);
   QRect getLastRect();

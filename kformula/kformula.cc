@@ -45,7 +45,7 @@ void KFormula::initStrings(void)
   INTEXT = new QString();
   BIGOP = new QString();
   EVAL = new QString();
-  
+
   *SPECIAL += (L_GROUP);
   *SPECIAL += (R_GROUP);
   *SPECIAL += (QChar(PLUS));
@@ -131,13 +131,13 @@ QString KFormula::toUgly(QString ugly)
 
     i = ugly.find(QChar(SQRT), i);
   }
-  
+
   //look for brackets
   i = ugly.find(QChar(BRACKET));
   while(i != -1) {
     i -= 2;
     ugly.remove(i, 3);  // {}[{...}  -->  {...}
-    
+
     ugly[ findMatch(ugly, i) ] = ']';
     ugly[i] = '[';  // {...}  -->  [...]
 
@@ -278,7 +278,7 @@ int KFormula::findMatch(QString s, int pos)
     kdebug(KDEBUG_ERROR, 0, "Mismatched delimeters.  String = %s", s.ascii());
     return -1;
   }
-  
+
   if(s[pos] == rchar) { // find the L_GROUP to the left
     while(pos >= 0) {
       if(s[pos] == lchar) level--;
@@ -302,12 +302,14 @@ int KFormula::findMatch(QString s, int pos)
 
 //---------------------CONSTRUCTORS AND DESTRUCTORS-----------------
 KFormula::KFormula(bool r)
+    : font( 0 ), backColor( 0 ), foreColor( 0 )
 {
   posx = posy = 0;
   restricted = r;
 }
 
 KFormula::KFormula(int x, int y, bool r)
+    : font( 0 ), backColor( 0 ), foreColor( 0 )
 {
   posx = x;
   posy = y;
@@ -320,6 +322,12 @@ KFormula::~KFormula()
     delete boxes[boxes.size() - 1];
     boxes.resize(boxes.size() - 1);
   }
+  if ( font )
+      delete font;
+  if ( backColor )
+      delete backColor;
+  if ( foreColor)
+      delete foreColor;
 }
 
 //---------------------------GET CURSOR POS-------------------------
@@ -346,10 +354,16 @@ void KFormula::redraw(QPainter &p)
 {
 
   if(boxes.size() == 0) return;
-  boxes[boxes.size() - 1]->calculate(p, p.font().pointSize());
+  boxes[boxes.size() - 1]->calculate(p, p.font().pointSize(),
+				     getFont(), 
+				     getBackColor(), 
+				     getForeColor() );
   QRect tmp = boxes[boxes.size() - 1]->getRect();
   boxes[boxes.size() - 1]->draw(p, posx - tmp.center().x(),
-			       posy - tmp.center().y());
+				posy - tmp.center().y(),
+				getFont(), 
+				getBackColor(), 
+				getForeColor() );
 
   return;
 }
@@ -552,7 +566,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 
     for(i = 0; i <= (int)text.length(); i++) {
       charinfo inf;
-      
+
       inf.where = NULL;
       inf.posinbox = 0;
       inf.posinstr = i;
@@ -704,7 +718,7 @@ for(i = 0; i < (int)text.length(); i++) {      \
   ADD_PAREN_REVERSE( QString(QChar(LSUB)) + QChar(LSUP) )
 
   ADD_PAREN( delim() + QChar(SQRT) + QChar(DIVIDE) + QChar(ABOVE) + QChar(BELOW) )
-    
+
   // now realize the left char/right char attachments
   if ( info )
     for(i = 0; i < (int)info->size(); i++) {
@@ -806,7 +820,7 @@ box * KFormula::makeBoxes(QString str, int offset,
 	}
       }
     }
-    
+
     return boxes[boxes.size() - 1];
   }
 
@@ -831,7 +845,7 @@ box * KFormula::makeBoxes(QString str, int offset,
 	}
       }
     }
-    
+
     return boxes[boxes.size() - 1];
   }
 

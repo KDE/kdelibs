@@ -87,7 +87,7 @@ void matrixbox::addElem(box *e)
 }
 
 //----------------------------CALCULATE---------------------------
-void matrixbox::calculate(QPainter &p, int setFontsize)
+void matrixbox::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *bc, QColor *fc)
 {
   if(!dirty) return;
 
@@ -100,18 +100,22 @@ void matrixbox::calculate(QPainter &p, int setFontsize)
   b1x = b1y = b2x = b2y = 0;
   if(setFontsize == -1) setFontsize = p.font().pointSize();
   fontsize = setFontsize;
+  if ( f_ )
+      fontsize = f_->pointSize();
   if(fontsize < MIN_FONT_SIZE) fontsize = MIN_FONT_SIZE;
-  
+
   int i;
   QFont f; //temporary to preserve the current font of the painter.
-  
+
   f = p.font();
+  if ( f_ )
+      f = *f_;
   
   lastFont = f;
   lastFont.setPointSize(fontsize);
   p.setFont(lastFont);
 
-  QFontMetrics fm = p.fontMetrics();
+  QFontMetrics fm( f );
 
   //calculate all the elements
   for(i = 0; i < width * height; i++) {
@@ -133,7 +137,7 @@ void matrixbox::calculate(QPainter &p, int setFontsize)
     int j, maxsize;
 
     maxsize = 0;
-    
+
     //find the widest one:
     for(j = 0; j < height; j++) {
       maxsize = QMAX(maxsize, elems[i + j]->getRect().width());
@@ -179,12 +183,12 @@ void matrixbox::calculate(QPainter &p, int setFontsize)
     //and after we are done with the row, update cursize:
     cursize += maxsize;
   }
-  
+
   rect.setY(-(cursize - SPACE * 3) / 2);
   rect.setHeight(cursize - SPACE * 3);
 
   elem_pos.translate(0, -(cursize - SPACE * 3) / 2);
-  
+
   dirty = 0;
 
 }
@@ -192,8 +196,11 @@ void matrixbox::calculate(QPainter &p, int setFontsize)
 
 //------------------------------DRAW--------------------------
 //now drawing them is easy.
-void matrixbox::draw(QPainter &p, int x, int y)
+void matrixbox::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 {
+  if ( fc )
+      p.setPen( *fc );
+
   if(dirty) calculate(p); // just in case
 
   offsx = x;
@@ -202,7 +209,7 @@ void matrixbox::draw(QPainter &p, int x, int y)
   int i;
 
   for(i = 0; i < (int)elems.size(); i++) {
-    elems[i]->draw(p, x + elem_pos[i].x(), y + elem_pos[i].y());
+    elems[i]->draw(p, x + elem_pos[i].x(), y + elem_pos[i].y(), f_, bc, fc );
   }
 
   return;
@@ -224,7 +231,7 @@ QRect matrixbox::getCursorPos(charinfo i, int x, int y)
 	      fm.height() * 3 / 4);
 
   if(i.where == this) {
-    if(i.posinbox == 0) tmp.setX(rect.x() + x - 1); 
+    if(i.posinbox == 0) tmp.setX(rect.x() + x - 1);
     else tmp.setX(x + rect.right() + 1);
 
     tmp.setWidth(1); //make sure cursor is thin and not empty

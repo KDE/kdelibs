@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <qregexp.h>
-#include <qpalette.h>
 
 //initialize the static clipboard
 QString KFormulaEdit::clipText;
@@ -157,7 +156,8 @@ void KFormulaEdit::resizeEvent(QResizeEvent *)
   QPainter p(&pm);
 
   //clear the pixmap
-  p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
+  p.fillRect(0, 0, pm.width(), pm.height(), getFormula()->getBackColor() ? 
+	     *getFormula()->getBackColor() : backgroundColor());
 
   cacheState = ALL_DIRTY;
   redraw();
@@ -181,20 +181,16 @@ void KFormulaEdit::redraw(int all)
   //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii());
   //kdebug(KDEBUG_INFO, 0, "%s", uglyForm().ascii());
 
+  pm.fill( getFormula()->getBackColor() ? 
+	   *getFormula()->getBackColor() : backgroundColor());
+  
   p.begin(&pm);
   p.setFont(font());
-  p.setPen( palette().normal().foreground() );
-  p.setBrush( palette().normal().background() );
   //only clear what was drawn.
-  QRect r( oldBound );
-  r.setLeft( r.left() - 10 );
-  r.setTop( r.top() - 10 );
-  r.setRight( r.right() + 10 );
-  r.setBottom( r.bottom() + 10 );
-  p.fillRect(r, palette().normal().background() );
+//   p.fillRect( oldBound, getFormula()->getBackColor() ? *getFormula()->getBackColor() : backgroundColor() );
 
   form->setPos(pm.width() / 2, pm.height() / 2);
-  form->redraw(p);
+  form->redraw( p );
 
   if(textSelected && selectStart != cursorPos) {
     //draw selection with white brush, since XORing
@@ -244,7 +240,7 @@ void KFormulaEdit::redraw(int all)
       }
     }
 
-    p.fillRect(tmp, palette().normal().background());
+    p.fillRect(tmp, getFormula()->getBackColor() ? *getFormula()->getBackColor() : backgroundColor() );
 
     p.setRasterOp(CopyROP);
   }
@@ -314,7 +310,8 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
   QRect tmp = bound | oldBound;
 
   //draw only what's necessary--faster
-  bitBlt(this, tmp.left(), tmp.top(), &pm, tmp.left(), tmp.top(),tmp.width(), tmp.height());
+//   bitBlt(this, tmp.left(), tmp.top(), &pm, tmp.left(), tmp.top(),tmp.width(), tmp.height());
+  bitBlt(this, 0, 0, &pm, 0, 0, pm.width(), pm.height());
 
   QPainter p(this);
   qDrawPlainRect(&p, 0, 0, width(), height(), Qt::black);
@@ -324,6 +321,9 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
   if((!textSelected || cursorPos == selectStart) && cursorDrawn) {
     QRect r;
     r = getCursorPos(cursorPos);
+
+    if ( getFormula()->getForeColor() )
+	p.setPen( *getFormula()->getForeColor() );
 
     p.drawLine(r.left(), r.top(), r.left(), r.bottom());
     p.drawLine(r.left() - 2, r.top(), r.left() + 2, r.top());

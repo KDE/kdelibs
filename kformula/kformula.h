@@ -29,11 +29,11 @@
 #include "box.h"
 
 struct charinfo { // used to determine where each character gets
-                  // sent during parsing
-  box * where;    // points to box where it ends up
-  int posinbox;   // where in that box is it
-  int posinstr;   // where is it in the parsed string after parenthesize
-  bool left;      // whether it's to the left or right of its char
+    // sent during parsing
+    box * where;    // points to box where it ends up
+    int posinbox;   // where in that box is it
+    int posinstr;   // where is it in the parsed string after parenthesize
+    bool left;      // whether it's to the left or right of its char
 };
 
 int operator==(struct charinfo a, struct charinfo b);
@@ -44,12 +44,12 @@ int operator==(struct charinfo a, struct charinfo b);
 #define R_BRACE_UNSEEN QChar(130)
 
 enum ErrorType {
-  NO_ERROR = 0,
-  DIVISION_BY_ZERO,
-  ROOT_OF_NEGATIVE,
-  UNDEFINED_VARIABLE,
-  EMPTY_BOX,
-  PARSE_ERROR
+    NO_ERROR = 0,
+    DIVISION_BY_ZERO,
+    ROOT_OF_NEGATIVE,
+    UNDEFINED_VARIABLE,
+    EMPTY_BOX,
+    PARSE_ERROR
 };
 
 //this class is for parsing and storing the actual boxes that
@@ -78,55 +78,82 @@ enum ErrorType {
 class KFormula {
 private:
 
-  static QString *SPECIAL; //all the special characters
-  static QString *INTEXT;  //plus minus slash times relationals
-  static QString *LOC;     //powers, subscripts, above, below
-  static QString *DELIM;   //parentheses, absolute value, etc
-  static QString *BIGOP;   //sums, products, integrals
-  static QString *EVAL;    //things we can evaluate
+    static QString *SPECIAL; //all the special characters
+    static QString *INTEXT;  //plus minus slash times relationals
+    static QString *LOC;     //powers, subscripts, above, below
+    static QString *DELIM;   //parentheses, absolute value, etc
+    static QString *BIGOP;   //sums, products, integrals
+    static QString *EVAL;    //things we can evaluate
 
-  static void initStrings(void);
+    static void initStrings(void);
 
-  bool restricted; // if will be evaluated
-
-public:
-  KFormula(bool restricted = FALSE);
-  KFormula(int x, int y, bool restricted = FALSE);
-  virtual ~KFormula();
-
-  void redraw(QPainter &p);
-  void setBoxes(QArray<box *> newBoxes);
-  QArray<box *> getBoxes(void);
-  void setPos(int x, int y); //sets the position for the center of the formula
-  void parse(QString text, QArray<charinfo> *info = NULL);
-  QRect getCursorPos(charinfo i);
-
-  /**
-   * The arguments to this will be replaced with a dict at some point...
-   */
-  double evaluate(QStrList &vars, const QArray<double> &vals,
-		  int *error = NULL, box *b = NULL);
-  QSize size();
-
-private:
-  QArray<box *> boxes;
-  int posx;
-  int posy;
-
-private:
-  void parenthesize(QString &temp, int &i, QArray<charinfo> *info);
-  box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
+    bool restricted; // if will be evaluated
 
 public:
-  static QString special() { initStrings(); return *SPECIAL; }
-  static QString intext() { initStrings();  return *INTEXT; }
-  static QString loc() { initStrings(); return *LOC; }
-  static QString delim() { initStrings(); return *DELIM; }
-  static QString bigop() { initStrings(); return *BIGOP; }
-  static QString eval() { initStrings(); return *EVAL; }
-  static int findMatch(QString s, int pos); // find the matching brace
-  static QString toUgly(QString);
-  static QString fromUgly(QString);
+    KFormula(bool restricted = FALSE);
+    KFormula(int x, int y, bool restricted = FALSE);
+    virtual ~KFormula();
+
+    void redraw(QPainter &p);
+    void setBoxes(QArray<box *> newBoxes);
+    QArray<box *> getBoxes(void);
+    void setPos(int x, int y); //sets the position for the center of the formula
+    void parse(QString text, QArray<charinfo> *info = NULL);
+    QRect getCursorPos(charinfo i);
+
+    /**
+     * The arguments to this will be replaced with a dict at some point...
+     */
+    double evaluate(QStrList &vars, const QArray<double> &vals,
+		    int *error = NULL, box *b = NULL);
+    QSize size();
+
+    void setFont( const QFont &f ) {
+	if ( !font )
+	    font = new QFont;
+	*font = f;
+    }
+    void setBackColor( const QColor &c ) {
+	if ( !backColor )
+	    backColor = new QColor;
+	*backColor = c;
+    }
+    void setForeColor( const QColor &c ) {
+	if ( !foreColor )
+	    foreColor = new QColor;
+	*foreColor = c;
+    }
+    QFont *getFont() const {
+	return font;
+    }
+    QColor *getBackColor() const {
+	return backColor;
+    }
+    QColor *getForeColor() const {
+	return foreColor;
+    }
+    
+private:
+    QArray<box *> boxes;
+    int posx;
+    int posy;
+    QFont *font;
+    QColor *backColor, *foreColor;
+    
+private:
+    void parenthesize(QString &temp, int &i, QArray<charinfo> *info);
+    box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
+
+public:
+    static QString special() { initStrings(); return *SPECIAL; }
+    static QString intext() { initStrings();  return *INTEXT; }
+    static QString loc() { initStrings(); return *LOC; }
+    static QString delim() { initStrings(); return *DELIM; }
+    static QString bigop() { initStrings(); return *BIGOP; }
+    static QString eval() { initStrings(); return *EVAL; }
+    static int findMatch(QString s, int pos); // find the matching brace
+    static QString toUgly(QString);
+    static QString fromUgly(QString);
 
 };
 
