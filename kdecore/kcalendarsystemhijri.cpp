@@ -357,7 +357,6 @@ int KCalendarSystemHijri::monthsInYear( const QDate & date ) const
 
 int KCalendarSystemHijri::weeksInYear(int year) const
 {
-
   QDate temp;
   setYMD(temp, year, 12, hndays(12, year));
 
@@ -657,7 +656,6 @@ int KCalendarSystemHijri::hndays(int month, int year) const
 // Min valid year that may be converted to QDate
 int KCalendarSystemHijri::minValidYear() const
 {
-
   QDate date(1753, 1, 1);
 
   return year(date);
@@ -666,7 +664,6 @@ int KCalendarSystemHijri::minValidYear() const
 // Max valid year that may be converted to QDate
 int KCalendarSystemHijri::maxValidYear() const
 {
-
   QDate date(8000, 1, 1);
 
   SDATE *sd = toHijri(date);
@@ -707,7 +704,6 @@ QDate KCalendarSystemHijri::addDays( const QDate & date, int ndays ) const
 
 QDate KCalendarSystemHijri::addMonths( const QDate & date, int nmonths ) const
 {
-
   QDate result = date;
   int m = month(date);
   int y = year(date);
