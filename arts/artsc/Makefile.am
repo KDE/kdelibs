@@ -21,7 +21,7 @@ libartsc_la_LDFLAGS = -no-undefined
 libartsc_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la $(LIBPTHREAD) $(USE_THREADS)
 
 libartscbackend_la_SOURCES = artscbackend.cc
-libartscbackend_la_LDFLAGS = -no-undefined -module
+libartscbackend_la_LDFLAGS = -no-undefined -module $(KDE_RPATH)
 libartscbackend_la_LIBADD = $(FLOWLIBS) \
     $(top_builddir)/arts/soundserver/libsoundserver_idl.la
 
