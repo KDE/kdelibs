@@ -27,6 +27,7 @@
 #include "html_objectimpl.h"
 #include "htmltags.h"
 #include "khtmlview.h"
+#include "khtml_part.h"
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -451,9 +452,10 @@ RenderFrame::~RenderFrame()
 {
 }
 
-RenderPartObject::RenderPartObject( QScrollView *view )
+RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLObjectElementImpl *o )
 : RenderPart( view )
 {
+  m_obj = o;
 }
 
 RenderPartObject::~RenderPartObject()
@@ -462,7 +464,27 @@ RenderPartObject::~RenderPartObject()
 
 void RenderPartObject::close()
 {
-/*
+  QString url = m_obj->url;
+  
+  if(m_obj) {
+
+  if((url.isEmpty() || url.isNull()) && m_obj->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
+      // Flash. Have to find the url in the param elements...
+    NodeImpl *child = m_obj->firstChild();
+    while ( child )
+      {
+	if ( child->id() == ID_PARAM )
+	  {
+	    HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+
+	    if ( p->name().lower() == "src" )
+	      url = p->value();
+	  }
+
+	child = child->nextSibling();
+      }
+  }
+#if 0
   NodeImpl *child = m_obj->firstChild();
   while ( child )
   {
@@ -478,7 +500,13 @@ void RenderPartObject::close()
 
     child = child->nextSibling();
   }
-*/
+#endif
+  }
+  if ( url.isEmpty() )
+    return; //ooops (-:
+
+  static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, m_obj->serviceType );
+
   layout();
 
   RenderPart::close();

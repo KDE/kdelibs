@@ -228,6 +228,8 @@ void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
     case ATTR_HEIGHT:
       addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
       break;
+    case ATTR_CLASSID:
+      classId = val;
     default:
       HTMLElementImpl::parseAttribute( attr );
   }
@@ -241,16 +243,12 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
 
   m_style = document->styleSelector()->styleForElement( this );
 
-  if ( url.isEmpty() )
-    return; //ooops (-:
-
-  RenderPartObject *p = new RenderPartObject( w );
+  RenderPartObject *p = new RenderPartObject( w, this );
   m_render = p;
   m_render->setStyle(m_style);
   m_render->ref();
   r->addChild( m_render );
 
-  w->part()->requestObject( p, url, serviceType );
   NodeBaseImpl::attach( w );
 }
 

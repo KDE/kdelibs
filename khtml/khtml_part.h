@@ -51,6 +51,7 @@ namespace khtml
 {
   class Settings;
   class RenderPart;
+  class RenderPartObject;
   struct ChildFrame;
 };
 
@@ -109,6 +110,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLObjectElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
+  friend class khtml::RenderPartObject;
 public:
   /**
    * Constructs a new KHTMLPart.

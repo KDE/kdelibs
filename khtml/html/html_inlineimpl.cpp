@@ -391,7 +391,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   if ( !r )
     return;
 
-  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w );
+  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, 0 );
   m_render = renderFrame;
   m_render->setStyle(m_style);
   m_render->ref();

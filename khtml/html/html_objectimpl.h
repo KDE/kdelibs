@@ -92,9 +92,9 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach();
 
-private:
     QString serviceType;
     QString url;
+    QString classId;
 };
 
 // -------------------------------------------------------------------------
