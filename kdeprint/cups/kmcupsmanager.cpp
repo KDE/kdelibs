@@ -32,6 +32,7 @@
 #include "kmdbentry.h"
 #include "cupsaddsmb2.h"
 #include "ippreportdlg.h"
+#include "kpipeprocess.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -87,6 +88,8 @@ QString KMCupsManager::driverDirectory()
 	if (d.isEmpty())
 		d = "/usr";
 	d.append("/share/cups/model");
+	// raw foomatic support
+	d.append(":/usr/share/foomatic/db/source");
 	return d;
 }
 
@@ -458,7 +461,54 @@ DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 
 DrMain* KMCupsManager::loadFileDriver(const QString& filename)
 {
-	return loadDriverFile(filename);
+	if (filename.startsWith("ppd:"))
+		return loadDriverFile(filename.mid(4));
+	else if (filename.startsWith("foomatic/"))
+		return loadMaticDriver(filename);
+	else
+		return loadDriverFile(filename);
+}
+
+DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
+{
+	QStringList	comps = QStringList::split('/', drname, false);
+	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
+	if (exe.isEmpty())
+	{
+		setErrorMsg(i18n("Unable to find the executable foomatic-datafile "
+		                 "in your PATH. Check that Foomatic is correctly installed."));
+		return NULL;
+	}
+
+	KPipeProcess	in;
+	QFile		out(tmpFile);
+	if (in.open(exe + " -t cups -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	{
+		QTextStream	tin(&in), tout(&out);
+		QString	line;
+		while (!tin.atEnd())
+		{
+			line = tin.readLine();
+			tout << line << endl;
+		}
+		in.close();
+		out.close();
+
+		DrMain	*driver = loadDriverFile(tmpFile);
+		if (driver)
+		{
+			driver->set("template", tmpFile);
+			driver->set("temporary", tmpFile);
+			return driver;
+		}
+	}
+	setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
+	                 "Either that driver does not exist, or you don't have "
+	                 "the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
+	QFile::remove(tmpFile);
+	return NULL;
 }
 
 DrMain* KMCupsManager::loadDriverFile(const QString& fname)

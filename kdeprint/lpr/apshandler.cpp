@@ -133,7 +133,7 @@ QString ApsHandler::shareDir()
 
 QString ApsHandler::driverDirInternal()
 {
-	return locateDir("apsfilter", "/usr/share:/usr/local/share:/opt/share");
+	return locateDir("apsfilter/setup", "/usr/share:/usr/local/share:/opt/share");
 }
 
 QMap<QString,QString> ApsHandler::loadResources(PrintcapEntry *entry)

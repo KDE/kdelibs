@@ -26,7 +26,7 @@ noinst_HEADERS = cupsinfos.h ipprequest.h kmcupsfactory.h kmcupsjobmanager.h kmc
 
 bin_PROGRAMS = make_driver_db_cups cupsdoprint
 make_driver_db_cups_SOURCES = make_driver_db_cups.c
-make_driver_db_cups_LDADD = -lz
+make_driver_db_cups_LDADD = -lz ../libdriverparse.a
 
 cupsdoprint_SOURCES = cupsdoprint.c
 cupsdoprint_LDADD = $(LIB_CUPS)

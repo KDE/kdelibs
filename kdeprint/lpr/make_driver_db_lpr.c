@@ -6,16 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	**files;
-int	nfiles, maxfiles;
-
-void initFiles(void)
-{
-	maxfiles = 100;
-	nfiles = 0;
-	files = (char**)malloc(sizeof(char*) * maxfiles);
-}
-
 void simplifyModel(const char *modelname)
 {
 	char	*g;
@@ -33,151 +23,7 @@ void simplifyModel(const char *modelname)
 	}
 }
 
-void freeFiles(void)
-{
-	int	i;
-	for (i=0; i<nfiles; i++)
-		free(files[i]);
-	free(files);
-}
-
-void checkSize(void)
-{
-	if (nfiles == maxfiles)
-	{
-		maxfiles += 100;
-		files = (char**)realloc(files, sizeof(char*) * maxfiles);
-	}
-}
-
-void nextTag(FILE *f, char *tag, int len)
-{
-	int	p = 0;
-	int	c;
-
-	while (!feof(f) && fgetc(f) != '<') ;
-	while (!feof(f) && p < (len-1) && (c = fgetc(f)) != '>')
-		tag[p++] = c;
-	tag[p] = 0;
-}
-
-void readValue(FILE *f, char *value, int len)
-{
-	char	c;
-	int	p = 0;
-
-	while (!feof(f) && p < (len-1) && (c = fgetc(f)) != '<')
-		value[p++] = c;
-	value[p] = 0;
-}
-
-int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model)
-{
-	char	filePath[256];
-	FILE	*xmlFile;
-	char	tag[32] = {0};
-	int	n = 0;
-
-	snprintf(filePath, 256, "%s/%s.xml", base, id);
-	xmlFile = fopen(filePath, "r");
-	if (xmlFile == NULL)
-		return 0;
-	while (!feof(xmlFile) && n < 2)
-	{
-		tag[0] = 0;
-		nextTag(xmlFile, tag, 32);
-		if (tag[0])
-		{
-			char	*c;
-
-			if (strcmp(tag, "make") == 0)
-				c = make;
-			else if (strcmp(tag, "model") == 0)
-				c = model;
-			else
-				continue;
-			n++;
-			readValue(xmlFile, c, 64);
-		}
-	}
-	fclose(xmlFile);
-	return 1;
-}
-
-int parseMaticDriverFile(char *driver, FILE *output)
-{
-	FILE	*drFile;
-	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0};
-	char	id[128];
-	char	path[256], *c;
-
-	drFile = fopen(driver, "r");
-	if (drFile == NULL)
-		return 0;
-	strncpy(path, driver, 255);
-	if ((c = strstr(path, "/driver/")) != NULL)
-		*c = 0;
-	while (!feof(drFile))
-	{
-		tag[0] = 0;
-		nextTag(drFile, tag, 32);
-		if (tag[0])
-		{
-			if (strcmp(tag, "name") == 0)
-				readValue(drFile, name, 32);
-			else if (strcmp(tag, "id") == 0)
-			{
-				readValue(drFile, id, 128);
-				fprintf(output, "FILE=foomatic/%s/%s\n", id+8, name);
-				make[0] = 0;
-				model[0] = 0;
-				getMaticPrinterInfos(path, id, make, model);
-				fprintf(output, "MANUFACTURER=%s\n", make);
-				fprintf(output, "MODELNAME=%s\n", model);
-				fprintf(output, "MODEL=%s\n", model);
-				fprintf(output, "DESCRIPTION=%s %s (Foomatic + %s)\n", make, model, name);
-				fprintf(output, "\n");
-			}
-			else if (strcmp(tag, "/printers") == 0)
-				break;
-		}
-	}
-	fclose(drFile);
-	return 1;
-}
-
-int initMatic(const char *base)
-{
-	char	drPath[256];
-	char	drFile[256];
-	DIR	*foodir;
-	struct dirent	*d;
-	struct stat	st;
-	int	n = 0;
-
-	if (strstr(base, "foomatic") == NULL)
-		return 0;
-
-	snprintf(drPath, 256, "%s/driver", base);
-	foodir = opendir(drPath);
-	if (foodir == NULL)
-		return 0;
-	while ((d = readdir(foodir)) != NULL)
-	{
-		snprintf(drFile, 256, "foomatic:%s/%s", drPath, d->d_name);
-		if (stat(drFile+9, &st) != 0)
-			continue;
-		else if (!S_ISREG(st.st_mode))
-			continue;
-		checkSize();
-		files[nfiles++] = strdup(drFile);
-		n++;
-	}
-	closedir(foodir);
-	return n;
-}
-
-void parseApsFile(char *filename, FILE *output)
+int parseApsFile(char *filename, FILE *output)
 {
 	FILE	*apsfile;
 	char	buf[256], modelname[256];
@@ -185,7 +31,7 @@ void parseApsFile(char *filename, FILE *output)
 
 	apsfile = fopen(filename, "r");
 	if (apsfile == NULL)
-		return;
+		return 0;
 	while (fgets(buf, 255, apsfile) != NULL)
 	{
 		if ((c = strchr(buf, '\n')) != NULL)
@@ -217,21 +63,22 @@ void parseApsFile(char *filename, FILE *output)
 		fprintf(output, "\n");
 	}
 	fclose(apsfile);
+	return 1;
 }
 
-int initAps(const char *base)
+void initAps(const char *base)
 {
 	char	drFile[256];
 	DIR	*apsdir;
 	struct dirent	*d;
-	int	n = 0, gsversion = 0;
+	int	gsversion = 0;
 
 	if (strstr(base, "apsfilter") == NULL)
-		return 0;
+		return;
 
 	apsdir = opendir(base);
 	if (apsdir == NULL)
-		return 0;
+		return;
 	while ((d = readdir(apsdir)) != NULL)
 	{
 		if (strncmp(d->d_name, "printer-", 8) != 0)
@@ -243,12 +90,9 @@ int initAps(const char *base)
 			gsversion = 1;
 		}
 		snprintf(drFile, 256, "apsfilter:%s/%s", base, d->d_name);
-		checkSize();
-		files[nfiles++] = strdup(drFile);
-		n++;
+		addFile(drFile);
 	}
 	closedir(apsdir);
-	return n;
 }
 
 char* nextWord(char *c)
@@ -259,7 +103,7 @@ char* nextWord(char *c)
 	return d;
 }
 
-void parseIfhpFile(const char *filename, FILE *output)
+int parseIfhpFile(const char *filename, FILE *output)
 {
 	char	buf[1024];
 	FILE	*in;
@@ -267,7 +111,7 @@ void parseIfhpFile(const char *filename, FILE *output)
 
 	in = fopen(filename, "r");
 	if (in == NULL)
-		return;
+		return 0;
 	while (fgets(buf, 1023, in))
 	{
 		char	*c;
@@ -321,80 +165,24 @@ void parseIfhpFile(const char *filename, FILE *output)
 		}
 	}
 	fclose(in);
+	return 1;
 }
 
-int initIfhp(const char *base)
+void initIfhp(const char *base)
 {
 	char	path[256];
 
 	snprintf(path, 255, "lprngtool:%s/printerdb", base);
 	if (access(path+10, R_OK) == 0)
 	{
-		checkSize();
-		files[nfiles++] = strdup(path);
-		return 1;
-	}
-	return 0;
-}
-
-void parseAllFiles(FILE *output)
-{
-	int	i;
-	for (i=0; i<nfiles; i++)
-	{
-		if (strncmp(files[i], "foomatic:", 9) == 0)
-			parseMaticDriverFile(files[i]+9, output);
-		else if (strncmp(files[i], "apsfilter:", 10) == 0)
-			parseApsFile(files[i]+10, output);
-		else if (strncmp(files[i], "lprngtool:", 10) == 0)
-			parseIfhpFile(files[i]+10, output);
-		fprintf(stdout, "%d\n", i);
-		fflush(stdout);
+		addFile(path);
 	}
 }
 
 int main(int argc, char **argv)
 {
-	FILE	*dbFile;
-	int	n = 0;
-	char	*c, *d;
-
-	if (argc < 2 || argc > 3)
-	{
-		fprintf(stderr, "usage: make_driver_db <db_directory> [output_filename]\n");
-		return -1;
-	}
-	if (argc == 3)
-	{
-		dbFile = fopen(argv[2], "w");
-		if (dbFile == NULL)
-		{
-			fprintf(stderr, "unable to open DB file for writing\n");
-			return -1;
-		}
-	}
-	else
-		dbFile = stdout;
-	initFiles();
-	c = argv[1];
-	do
-	{
-		d = strchr(c, ':');
-		if (d != NULL)
-			*d = 0;
-		n += initMatic(c);
-		n += initAps(c);
-		n += initIfhp(c);
-		/* do it for other handlers */
-		if (d != NULL)
-			c = d+1;
-	} while (d && *c);
-
-	fprintf(stdout, "%d\n", n);
-	fflush(stdout);
-	parseAllFiles(dbFile);
-	freeFiles();
-	if (dbFile != stdout)
-		fclose(dbFile);
-	return 0;
+	initFoomatic();
+	registerHandler("apsfilter:", initAps, parseApsFile);
+	registerHandler("lprngtool:", initIfhp, parseIfhpFile);
+	return execute(argc, argv);
 }

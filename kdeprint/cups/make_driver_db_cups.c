@@ -8,96 +8,18 @@
 #include <ctype.h>
 #include <zlib.h>
 
-typedef struct _Node
-{
-	char		*str;
-	struct _Node	*next;
-} Node;
-Node	*start = 0, *current = 0;
-int	node_number = 0;
-
-void exit_with_error(const char *txt);
-int process_file(const char *filename, FILE *output_file);
-void append_node(const char *str);
-void delete_all_nodes(void);
-int list_files(const char *dirname);
-
-int main(int argc, char *argv[])
-{
-	FILE	*db_file;
-	char	*db_filename;
-	int	count = 0;
-	int	i1, i2;
-
-	if (argc < 2 || argc > 3)
-	{
-		exit_with_error("usage: make_driver_db <db_directory> [output_filename]");
-	}
-	if (argc == 3)
-	{
-		i1 = argc-2;
-		i2 = argc-1;
-	}
-	else
-	{
-		i1 = argc-1;
-		i2 = i1;
-	}
-
-	fprintf(stderr, "PPDs:|%s|%s|\n", argv[i1], argv[i2] );
-
-	if (list_files(argv[i1]) == -1)
-	{
-		exit_with_error(0);
-	}
-	printf("%d\n",node_number);
-	fflush(stdout);
-
-	db_filename = (char*)calloc(strlen(argv[i2])+32,sizeof(char));
-	strcpy(db_filename, argv[i2]);
-	/*strcat(db_filename,"/");
-	strcat(db_filename,"printers_db.txt");*/
-	db_file = fopen(db_filename,"w");
-	if (db_file == NULL)
-	{
-		char str[256];
-		sprintf(str, "Unable to open driver database file : %s\n", db_filename);
-		free(db_filename);
-		exit_with_error(str);
-	}
-	free(db_filename);
-
-	current = start;
-	while (current)
-	{
-		printf("%d\n",count++);
-		fflush(stdout);
-		
-		if (process_file(current->str,db_file) == -1)
-		{
-			fclose(db_file);
-			exit_with_error("Problem while scanning driver file");
-		}
-		current = current->next;
-	}
-	fclose(db_file);
-
-	delete_all_nodes();
-
-	return 0;
-}
-
-int list_files(const char *dirname)
+void initPpd(const char *dirname)
 {
 	DIR	*dir = opendir(dirname);
 	struct dirent	*entry;
 	char		buffer[4096] = {0};
+	char	drFile[256];
 	int		len = strlen(dirname);
 
 	if (dir == NULL)
 	{
 		fprintf(stderr, "Can't open drivers directory : %s\n", dirname);
-		return -1;
+		return;
 	}
 	while ((entry=readdir(dir)) != NULL)
 	{
@@ -116,39 +38,35 @@ int list_files(const char *dirname)
 			{
 				if (S_ISDIR(st.st_mode))
 				{
-					if (list_files(buffer) == -1)
-					{
-						closedir(dir);
-						return -1;
-					}
+					initPpd(buffer);
 				}
 				else if (S_ISREG(st.st_mode))
 				{
 					char	*c = strrchr(buffer,'.');
+					snprintf(drFile, 255, "ppd:%s", buffer);
 					if (c && strncmp(c,".ppd",4) == 0)
 					{
-						append_node(buffer);
+						addFile(drFile);
 					}
-                                        else if (c && strncmp(c, ".gz", 3) == 0)
-                                        { /* keep also compressed driver files */
-                                        	while (c != buffer)
-                                                {
-                                                	if (*(--c) == '.') break;
-                                                }
-                                                if (*c == '.' && strncmp(c, ".ppd",4) == 0)
-                                                {
-                                                	append_node(buffer);
-                                                }
-                                        }
+					else if (c && strncmp(c, ".gz", 3) == 0)
+					{ /* keep also compressed driver files */
+						while (c != buffer)
+						{
+							if (*(--c) == '.') break;
+						}
+						if (*c == '.' && strncmp(c, ".ppd",4) == 0)
+						{
+							addFile(drFile);
+						}
+					}
 				}
 			}
 		}
 	}
 	closedir(dir);
-	return 0;
 }
 
-int process_file(const char *filename, FILE *output_file)
+int parsePpdFile(const char *filename, FILE *output_file)
 {
 	gzFile	ppd_file;
 	char	line[4096], value[256];
@@ -158,9 +76,9 @@ int process_file(const char *filename, FILE *output_file)
 	if (ppd_file == NULL)
 	{
 		fprintf(stderr, "Can't open driver file : %s\n", filename);
-		return -1;
+		return 0;
 	}
-	fprintf(output_file,"FILE=%s\n",filename);
+	fprintf(output_file,"FILE=ppd:%s\n",filename);
 
 	while (gzgets(ppd_file,line,4095) != Z_NULL)
 	{
@@ -195,41 +113,12 @@ int process_file(const char *filename, FILE *output_file)
 	fprintf(output_file,"\n");
 
 	gzclose(ppd_file);
-	return 0;
+	return 1;
 }
 
-void append_node(const char *str)
+int main(int argc, char *argv[])
 {
-	if (!start)
-	{
-		start = (Node*)malloc(sizeof(Node));
-		current = start;
-	}
-	else
-	{
-		current->next = (Node*)malloc(sizeof(Node));
-		current = current->next;
-	}
-	current->next = 0;
-	current->str = (char*)calloc(strlen(str)+1,sizeof(char));
-	strncpy(current->str,str,strlen(str));
-	node_number++;
-}
-
-void delete_all_nodes()
-{
-	while (start)
-	{
-		current = start;
-		start = start->next;
-		free(current->str);
-		free(current);
-	}
-}
-
-void exit_with_error(const char *txt)
-{
-	if (txt) fprintf(stderr,"%s\n",txt);
-	delete_all_nodes();
-	exit(-1);
+	registerHandler("ppd:", initPpd, parsePpdFile);
+	initFoomatic();
+	return execute(argc, argv);
 }

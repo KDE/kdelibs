@@ -76,6 +76,7 @@ protected:
 	void processRequest(IppRequest*);
 	bool setPrinterState(KMPrinter *p, int st);
 	DrMain* loadDriverFile(const QString& filename);
+	DrMain* loadMaticDriver(const QString& drname);
 	void saveDriverFile(DrMain *driver, const QString& filename);
 	void reportIppError(IppRequest*);
 	void* loadCupsdConfFunction(const char*);

@@ -32,7 +32,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
 		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h \
 		 kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
 		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h \
-		 util.h
+		 util.h driverparse.h
 
 include_HEADERS = kprinter.h kprintaction.h
 
@@ -72,3 +72,6 @@ noinst_DATA = kdeprint
 kdeprint:
 	$(LN_S) $(srcdir)/management kdeprint
 
+# convenience static library
+noinst_LIBRARIES = libdriverparse.a
+libdriverparse_a_SOURCES = driverparse.c

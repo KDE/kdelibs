@@ -51,3 +51,6 @@ WISHES
 - CUPS: add a generic table view as the print dialog to set arbitrary
   options (useful to "tag" a specified job, and this doesn't affect
   the CUPS process).
+
+- printer filtering mechanism to view only a selected set of
+  printers

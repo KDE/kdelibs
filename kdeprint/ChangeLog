@@ -394,3 +394,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     buggy. I should find a workaround.
   * general (CUPS): enable some actions for jobs on remote hosts. It seems
     to work OK between my local LM-8.1 and a remote LM-7.2.
+
+16/02/2002 Michael Goffioul <goffioul@imec.be>
+  * CUPS: added direct Foomatic driver support (no need the all PPD package
+    from foomatic anymore, driver are loaded directly from Foomatic)
