@@ -197,7 +197,7 @@ AC_ARG_WITH(ipv6-lookup,
     AC_MSG_RESULT([never do the lookup])
   fi
 ], [    
-  AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 0, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
+  AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 1, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
 ])
   
 
