@@ -79,12 +79,12 @@ libkdeui_la_SOURCES = \
 		qxembed.cpp ksharedpixmap.cpp kpixmapio.cpp \
 		kpopupmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp \
 		kactioncollection.cpp kactionclasses.cpp \
-		kurllabel.cpp \
+		kurllabel.cpp kmenubar.cpp \
 		knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
 		kdatetbl.cpp kfontdialog.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
-		kmenubar.cpp keditlistbox.cpp \
+		keditlistbox.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
