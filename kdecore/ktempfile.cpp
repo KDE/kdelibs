@@ -190,6 +190,7 @@ KTempFile::unlink()
 {
    if (!mTmpName.isEmpty())
       QFile::remove( mTmpName );
+   mTmpName = QString::null;
 }
 
 bool
