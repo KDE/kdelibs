@@ -22,6 +22,7 @@
 #include "types.h"
 #include "regexp.h"
 #include "string_object.h"
+#include <stdio.h>
 
 using namespace KJS;
 
@@ -104,8 +105,12 @@ KJSO StringPrototype::get(const UString &p) const
     id = StringProtoFunc::IndexOf;
   else if (p == "lastIndexOf")
     id = StringProtoFunc::LastIndexOf;
+  else if (p == "match")
+    id = StringProtoFunc::Match;
   else if (p == "replace")
     id = StringProtoFunc::Replace;
+  else if (p == "search")
+    id = StringProtoFunc::Search;
   else if (p == "split")
     id = StringProtoFunc::Split;
   else if (p == "substr")
@@ -223,6 +228,25 @@ Completion StringProtoFunc::execute(const List &args)
       pos = a1.toInteger().intValue();
     d = s.value().rfind(s2.value(), pos);
     result = Number(d);
+    break;
+  case Match:
+  case Search:
+    u = s.value();
+    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass) {
+      s2 = a0.get("source").toString();
+      RegExp reg(s2.value());
+      UString mstr = reg.match(u, -1, &pos);
+      if (id == Search) {
+        result = Number(pos);
+        break;
+      }
+      /* TODO return an array, with the matches, etc. */
+      result = String(mstr);
+    } else
+    {
+      printf("Match/Search. Argument is not a RegExp - returning Undefined\n");
+      result = Undefined(); // No idea what to do here
+    }
     break;
   case Replace:
     /* TODO: this is just a hack to get the most common cases going */
