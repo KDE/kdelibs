@@ -488,6 +488,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
+  if ( parentPart() )
+      d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
   d->m_paDebugRenderTree = new KAction( "print rendering tree to stdout", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
@@ -508,10 +510,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDecFontSizes->setEnabled( false );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  if ( parentPart() )
+      d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
+  if ( parentPart() )
+      d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   // set the default java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
@@ -3329,6 +3335,9 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
 KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
 {
   KParts::ReadOnlyPart* part = (KParts::ReadOnlyPart*)(this);
+  // Find active part in our frame manager, in case we are a frameset
+  // and keep doing that (in case of nested framesets).
+  // Just realized we could also do this recursively, calling part->currentFrame()...
   while ( part && part->inherits("KHTMLPart") &&
           static_cast<KHTMLPart *>(part)->d->m_frames.count() > 0 ) {
     KHTMLPart* frameset = static_cast<KHTMLPart *>(part);
