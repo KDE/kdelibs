@@ -328,6 +328,7 @@ void KPixmapIO::destroyShmSegment()
     {
 	XShmDetach(qt_xdisplay(), d->shminfo);
 	shmdt(d->shminfo->shmaddr);
+        shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	d->shmsize = 0;
     }
 }
@@ -365,7 +366,6 @@ void KPixmapIO::createShmSegment(int size)
 
     d->shmsize = size;
     XSync(qt_xdisplay(), false);
-    shmctl(d->shminfo->shmid, IPC_RMID, 0);
 }
 
 
