@@ -24,7 +24,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
-                 previewtest
+                 previewtest kionetrctest
 
 METASOURCES = AUTO
 
@@ -41,6 +41,8 @@ kdefaultprogresstest_LDADD = $(top_builddir)/kio/libkio.la
 kdefaultprogresstest_SOURCES = kdefaultprogresstest.cpp
 kclipboardtest_LDADD = $(top_builddir)/kio/libkio.la
 kclipboardtest_SOURCES = kclipboardtest.cpp
+kionetrctest_LDADD = $(top_builddir)/kio/libkio.la
+kionetrctest_SOURCES = kionetrctest.cpp
 
 ## libksycoca
 kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
