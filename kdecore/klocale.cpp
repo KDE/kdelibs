@@ -300,7 +300,7 @@ void KLocale::initFormat()
 
 bool KLocale::setCountry(const QString & country)
 {
-  // Check if the file exist too??
+  // Check if the file exists too??
   if ( country.isEmpty() )
     return false;
 
@@ -1556,8 +1556,11 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   return QString::null;
 }
 
+// #### HPB: Deprecated. Remove in KDE 3
 QString KLocale::charset() const
 {
+  kdDebug(173) << "Using deprecated method setCharset()" << endl;
+
   return m_charset;
 }
 
@@ -1566,7 +1569,7 @@ bool KLocale::useDefaultLanguage() const
   return language() == defaultLanguage();
 }
 
-// #### HPB: Remove in KDE 3 after porting to Qt 3
+// #### HPB: Deprecated. Remove in KDE 3 after porting to Qt 3
 void KLocale::initCharset(KConfig *config)
 {
   KConfigGroupSaver saver(config, "Locale");
@@ -1620,9 +1623,11 @@ void KLocale::initCatalogue( KCatalogue & catalogue )
   catalogue.setFileName( catalogueFileName( language(), catalogue ) );
 }
 
-// #### HPB: Remove in KDE 3 after porting to Qt 3
+// #### HPB: Deprecated. Remove in KDE 3 after porting to Qt 3
 bool KLocale::setCharset(const QString & charset)
 {
+  kdDebug(173) << "Using deprecated method charset()" << endl;
+
   if ( charset.isEmpty() )
     return false;
 
