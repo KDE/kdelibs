@@ -208,36 +208,6 @@ bool KCharset::printable(int chr){
   return FALSE;
 }
 
-/////////////////////////////////////////////////////////////////
-	
-KCharsetConverter::KCharsetConverter(const char * inputCharset
-				    ,int flags){
-				    
-  warning("KCharsetConverter::KCharsetConverter(const char *,int) called. Recompile the application");		     
-  if (!inputCharset) {
-    warning("KCharsetConverter: NULL charset on input!\n");
-    inputCharset="us-ascii";    
-  }  
-  data=new KCharsetConverterData(KCharset(inputCharset),flags);
-}
-
-KCharsetConverter::KCharsetConverter(const char * inputCharset
-				    ,const char *outputCharset
-				    ,int flags){
-				    
-  warning("KCharsetConverter::KCharsetConverter(const char *,const char *,int) called. Recompile the application");		     
-  if (!inputCharset) {
-    warning("KCharsetConverter: NULL charset on input!\n");
-    inputCharset="us-ascii";    
-  }  
-  if (!outputCharset) {
-    warning("KCharsetConverter: NULL charset on output!\n");
-    outputCharset="us-ascii";    
-  }  
-  data=new KCharsetConverterData(KCharset(inputCharset)
-                                 ,KCharset(outputCharset),flags);
-}
-
 KCharsetConverter::KCharsetConverter(KCharset inputCharset
 				    ,int flags){
 				    

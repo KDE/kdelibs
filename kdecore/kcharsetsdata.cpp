@@ -228,7 +228,7 @@ bool KCharsetConverterData::decodeUTF8(const char*str,unsigned int &code
     extrachars=5;
   }  
   else {
-    warning("Invalid UTF-8 sequence!");
+    warning("Invalid UTF-8 sequence %2x%2x...!",(int)chr,(int)str[1]);
     return FALSE;
   }  
 

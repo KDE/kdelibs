@@ -227,13 +227,6 @@ public:
 */
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &l);
- #ifdef KCHARSETS_CPP
-   KCharsetConverter(const char * inputCharset
-		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
-   KCharsetConverter(const char * inputCharset
-                     ,const char *outputCharset
-		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
-#endif		     
 };
     
 /**
