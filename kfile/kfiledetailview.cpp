@@ -34,7 +34,6 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 {
     KListView::setSorting( -1 );
     setViewName( i18n("Detailed View") );
-    header()->setClickEnabled( false );
     myLastItem = 0L;
 
     addColumn( i18n( "Name" ) );
@@ -45,6 +44,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     addColumn( i18n( "Group" ) );
     setShowSortIndicator( TRUE );
     setAllColumnsShowFocus( TRUE );
+    header()->setClickEnabled( false );
 
     connect( this, SIGNAL( doubleClicked(QListViewItem *) ),
 	     SLOT( selected( QListViewItem *) ) );
