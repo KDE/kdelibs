@@ -39,7 +39,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     setFont(KGlobal::menuFont());
 
     config->setGroup(QString::fromLatin1("PopupTitle"));
-    bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().dark());
+    bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().mid());
     grHigh = bgColor.light(150);
     grLow = bgColor.dark(150);
     fgColor = config->readColorEntry(QString::fromLatin1("TextColor"), &colorGroup().highlightedText());
