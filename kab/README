@@ -1,21 +1,26 @@
 The KDE addressbook
-================================================================================
-This directory contains the sources for the kab API provided by "libkab.so". kab
-is the  KDE addressbook,  users usually know it by one of the applications using
-the kab API, kab itselfes. But kab intends to do more, i t tries to be a central
-database to store personal information for as much KDE applications as possible.
+===================
 
-To compile this subdirectory, your C++ compiler will be stressed a little.   You 
-need either a recent version of gcc  (2.7.2 or later) or egcs  (1.0.2 or later), 
-or another C++ compiler that supports the following things:
-° error free (!) creation of template instances,
-° a STL implementation that is similar to either the one provided by gcc 2.7  or 
-  the one provided by egcs/pgcc or gcc >=2.8
+This directory contains the sources for the kab API provided by
+"libkab.so". kab is the KDE addressbook, users usually know it by one of
+the applications using the kab API, kab itselfes. But kab intends to do
+more, it tries to be a central database to store personal information for
+as much KDE applications as possible.
 
-Please note that egcs / pgcc 1.0.2 creates errors in the binary when you compile
-the sources using optimization level 6 (-O6).  Stick to -O2, and it should work.
+To compile this subdirectory, your C++ compiler will be stressed a little.  
+You need either a recent version of gcc (2.7.2 or later) or egcs (1.0.2 or
+later), or another C++ compiler that supports the following things:
 
-Since this directory provides only the kab library, you will have to install the
-kdeutils package, that contains the sources for kab's binary, also.
-                                                    Mirko Sucker, September 1998.
+* error free (!) creation of template instances,
+* a STL implementation that is similar to either the one provided by gcc
+2.7 or the one provided by egcs/pgcc or gcc >=2.8 (HP or SGI based).
 
+Please note that egcs / pgcc 1.0.2 creates errors in the binary when you
+compile the sources using optimization level 6 (-O6).  Stick to -O2, and
+it should work.
+
+Since this directory provides only the kab library, you will have to
+install the kdeutils package, that contains the sources for kab's binary,
+also.
+
+                                                   Mirko Sucker, September 1998.

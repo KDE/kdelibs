@@ -1,14 +1,17 @@
 The KDE addressbook
-================================================================================
-The format that kab uses is plain ASCII, written by an ConfigDB object. The doc-
-umentation for ConfigDB can be found on my homepage.  In general, it provides an
-easy way to read and write  hierarchical  structured files storing data of basic
-C++ data types. The files may be edited manually if the syntax is not violated.
-An addressbook database file contains two sections,  one to store the users ent-
-ries,  called "entries",  and one to store the configuration,  called  "config".
-Every subsection of the "entries" section is one entry,  containing a key-value-
-pair for every data item.  For example, my entry for the KDE mailing lists looks
-like this:
+===================
+
+The format that kab uses is plain ASCII, written by an ConfigDB object.
+The doc- umentation for ConfigDB can be found on my homepage.  In general,
+it provides an easy way to read and write hierarchical structured files
+storing data of basic C++ data types. The files may be edited manually if
+the syntax is not violated. An addressbook database file contains two
+sections, one to store the users ent- ries, called "entries", and one to
+store the configuration, called "config". Every subsection of the
+"entries" section is one entry, containing a key-value- pair for every
+data item.  For example, my entry for the KDE mailing lists looks like
+this:
+
   [20]
     # key-value-pairs
     URL="http://www.kde.org/"
@@ -37,9 +40,9 @@ like this:
     title=""
     town=""
   [END 20]
-Note that "emails" is a list of strings, delimited by "\e".  If you plan to read
-kab files,  you probably should use the kab API, so you do not need to parse the 
-file format yourselfes (read README.KABAPI).
-                                                    Mirko Sucker, September 1998.
 
- 
+Note that "emails" is a list of strings, delimited by "\e".  If you plan
+to read kab files, you probably should use the kab API, so you do not need
+to parse the file format yourselfes (read README.KABAPI).
+
+                                                   Mirko Sucker, September 1998.
