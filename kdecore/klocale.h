@@ -525,6 +525,4 @@ protected:
     KLocalePrivate *d;
 };
 
-QString i18n(const char *text);
-
 #endif
