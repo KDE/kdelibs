@@ -132,7 +132,7 @@ void DefaultProgress::init()
   line->setFrameShadow( QFrame::Sunken );
   topLayout->addWidget( line );
 
-  d->keepOpen = new QCheckBox( i18n("&Keep this window open after the operation is complete."), this);
+  d->keepOpen = new QCheckBox( i18n("&Keep this window open after download is complete"), this);
   connect( d->keepOpen, SIGNAL( toggled(bool) ), SLOT( slotKeepOpenToggled(bool) ) );
   topLayout->addWidget(d->keepOpen);
   d->keepOpen->hide();
