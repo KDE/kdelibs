@@ -277,7 +277,7 @@ int main( int argc, char** argv )
   {
     if (argc != 4)
     {
-        printf("usage: kziptest.cpp print2 archivename filename");
+        printf("usage: "__FILE__" print2 archivename filename");
 	return 1;
     }
     KZip zip( argv[2] );
@@ -305,7 +305,7 @@ int main( int argc, char** argv )
   {
     if (argc != 4)
     {
-        printf("usage: kziptest.cpp update archivename filename");
+        printf("usage: "__FILE__" update archivename filename");
        return 1;
     }
     KZip zip( argv[2] );
@@ -341,7 +341,7 @@ int main( int argc, char** argv )
   {
     if (argc != 4)
     {
-        printf("usage: kziptest.cpp transfer sourcefile destfile");
+        printf("usage: "__FILE__" transfer sourcefile destfile");
 	return 1;
     }
     KZip zip1( argv[2] );
