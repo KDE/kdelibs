@@ -256,7 +256,6 @@ void KSSLInfoDlg::setCertState(const QString &errorNrs)
 {
     d->_cert_ksvl.clear();
     QStringList errors = QStringList::split(':', errorNrs);
-qWarning("errors.count() =  %d", errors.count());
     for(QStringList::ConstIterator it = errors.begin();
         it != errors.end(); ++it)
     {
@@ -287,41 +286,33 @@ QPalette cspl;
    
    KSSLCertificate::KSSLValidation ksv;
    KSSLCertificate::KSSLValidationList ksvl;
-   if ((x == d->_cert) && !d->_cert_ksvl.isEmpty())
-   {
-qWarning("DisplayCert: Using ssl_cert_errors.");
+   if ((x == d->_cert) && !d->_cert_ksvl.isEmpty()) {
       ksvl = d->_cert_ksvl;
       ksv = ksvl.first();
-   }
-   else
-   {
-qWarning("DisplayCert: validating.");
+   } else {
       ksv = x->validate();
-      if (ksv == KSSLCertificate::SelfSigned) 
-      {
+      if (ksv == KSSLCertificate::SelfSigned) {
          if (x->getQDTNotAfter() > QDateTime::currentDateTime() &&
-             x->getQDTNotBefore() < QDateTime::currentDateTime()) 
-         {
+             x->getQDTNotBefore() < QDateTime::currentDateTime()) {
             if (KSSLSigners().useForSSL(*x))
                ksv = KSSLCertificate::Ok;
-	 } 
-	 else 
-	 {
+	 } else {
             ksv = KSSLCertificate::Expired;
 	 }
       }
       ksvl << ksv;
    } 
 
-   if (ksv != KSSLCertificate::Ok)
+   if (ksv != KSSLCertificate::Ok) {
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-   else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   } else {
+      cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   }
    d->_csl->setPalette(cspl);
 
    QString errorStr;
    for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
-       it != ksvl.end(); ++it)
-   {
+       it != ksvl.end(); ++it) {
       if (!errorStr.isEmpty())
          errorStr.append('\n');
       errorStr += KSSLCertificate::verifyText(*it);
