@@ -808,7 +808,9 @@ void DocumentImpl::recalcStyle( StyleChange change )
 	fontDef.weight = f.weight();
         if (m_view) {
             const KHTMLSettings *settings = m_view->part()->settings();
-            fontDef.family = settings->stdFontName();
+	    QString stdfont = settings->stdFontName();
+	    if ( !stdfont.isEmpty() )
+		fontDef.family = stdfont;
 
             QValueList<int> fs = settings->fontSizes();
             float dpiY = 72.; // fallback

@@ -2353,9 +2353,11 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 		else if( face == "konq_default") {
 		    face = settings->stdFontName();
 		}
-		fontDef.family = face;
-                if (style->setFontDef( fontDef ))
-		fontDirty = true;
+		if ( !face.isEmpty() ) {
+		    fontDef.family = face;
+		    if (style->setFontDef( fontDef ))
+			fontDirty = true;
+		}
                 return;
 	    }
         }

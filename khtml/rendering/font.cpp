@@ -24,6 +24,8 @@
  */
 
 #include "font.h"
+#include "khtml_factory.h"
+#include "khtml_settings.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -116,7 +118,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 
 void Font::update( QPaintDeviceMetrics* devMetrics ) const
 {
-    f.setFamily( fontDef.family );
+    f.setFamily( fontDef.family.isEmpty() ? KHTMLFactory::defaultHTMLSettings()->stdFontName() : fontDef.family );
     f.setItalic( fontDef.italic );
     f.setWeight( fontDef.weight );
 
