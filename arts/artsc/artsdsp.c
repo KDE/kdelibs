@@ -506,7 +506,7 @@ ssize_t write (int fd, const void *buf, size_t count)
   return 0;
 }
 
-caddr_t mmap(void  *start,  size_t length, int prot, int flags,
+void *mmap(void  *start,  size_t length, int prot, int flags,
              int fd, off_t offset)
 {
   CHECK_INIT();
