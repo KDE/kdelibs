@@ -91,7 +91,15 @@ dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp setmntent gettimeofday setenv unsetenv)
+
+AC_LANG_SAVE
+AC_LANG_C
+dnl the vfork test in autoconf has a bug with C++ compilers (it declares
+dnl the prototype for sparc_address_test() correctly but calls it without
+dnl arguments), so we switch languages here.
 AC_FUNC_VFORK
+AC_LANG_RESTORE
+
 AC_CHECK_USLEEP
 AC_CHECK_GETDOMAINNAME
 AC_CHECK_GETHOSTNAME
