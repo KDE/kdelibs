@@ -414,3 +414,4 @@ void kDebugPError( unsigned short area, const char* fmt, ... )
     kDebugError( area, "%s: %s", buf, strerror(errno) );
 }
 
+kdbgstream &perror( kdbgstream &s) { s << " " << strerror(errno) << endl; return s; }
