@@ -33,7 +33,7 @@ class DCOPClient;
 class DCOPObject;
 
 typedef unsigned long Atom;
-#if defined(Q_WS_QWS) || defined(Q_WS_WIN)
+#if !defined(Q_WS_X11)
 typedef void Display;
 #endif
 
@@ -116,7 +116,7 @@ public:
    */
   KApplication( bool allowStyles=true, bool GUIenabled=true);
 
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
+#ifdef Q_WS_X11
   /**
    * Constructor. Parses command-line arguments. Use this constructor when you
    * you need to use a non-default visual or colormap. 

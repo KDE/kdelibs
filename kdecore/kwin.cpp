@@ -90,8 +90,8 @@ static void kwin_net_create_atoms() {
 /*
   Sends a client message to the ROOT window.
  */
-static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z = 0 ){
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
+static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z = 0 ){
   XEvent ev;
   long mask;
 
@@ -105,14 +105,14 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
   ev.xclient.data.l[2] = z;
   mask = SubstructureRedirectMask;
   XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
-#endif
 }
+#endif
 
 /*
   Send a client message to window w
  */
-static void sendClientMessage(Window w, Atom a, long x){
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
+static void sendClientMessage(Window w, Atom a, long x){
   XEvent ev;
   long mask;
 
@@ -127,9 +127,10 @@ static void sendClientMessage(Window w, Atom a, long x){
   if (w == qt_xrootwin())
     mask = SubstructureRedirectMask;        /* magic! */
   XSendEvent(qt_xdisplay(), w, False, mask, &ev);
-#endif
 }
+#endif
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 namespace
 {
 class ContextWidget : public QWidget
@@ -142,7 +143,6 @@ public:
 ContextWidget::ContextWidget()
 	: QWidget(0,0)
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
 	QWhatsThis::enterWhatsThisMode();
@@ -155,13 +155,11 @@ ContextWidget::ContextWidget()
 		      GrabModeAsync, GrabModeAsync,
 		      None, c.handle(), CurrentTime );
 	qApp->enter_loop();
-#endif
     }
 
 
 bool ContextWidget::x11Event( XEvent * ev)
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
 	    XUngrabPointer( qt_xdisplay(), ev->xbutton.time );
 	    Window root;
@@ -186,13 +184,15 @@ bool ContextWidget::x11Event( XEvent * ev)
 	    return true;
 	}
 	return false;
-#endif
     }
 } // namespace
+#endif
 
 void KWin::invokeContextHelp()
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     ContextWidget w;
+#endif
 }
 
 void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
@@ -822,7 +822,7 @@ NET::MappingState KWin::WindowInfo::mappingState() const
         << "Pass NET::XAWMState to KWin::windowInfo()" << endl;
     return d->info->mappingState();
 #else
-    return 0;
+    return NET::Visible;
 #endif
 }
 
@@ -1017,15 +1017,19 @@ QRect KWin::WindowInfo::geometry() const
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
     return d->geometry_;
 #else
-    return QRect( 100, 100, 200, 200 );;
+    return QRect( 100, 100, 200, 200 );
 #endif
 }
 
 QRect KWin::WindowInfo::frameGeometry() const
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
         << "Pass NET::WMKDEFrameStrut to KWin::windowInfo()" << endl;
     return d->frame_geometry_;
+#else
+    return QRect();
+#endif
 }
 
 WId KWin::WindowInfo::transientFor() const

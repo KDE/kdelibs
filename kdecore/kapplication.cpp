@@ -139,6 +139,11 @@ typedef void* IceIOErrorHandler;
 #include <kipc.h>
 #endif
 
+#ifdef Q_WS_MACX
+#include <Carbon/Carbon.h>
+#include <qimage.h>
+#endif
+
 #include "kappdcopiface.h"
 
 // exported for kdm kfrontend
@@ -151,7 +156,7 @@ bool KApplication::loadedByKdeinit = false;
 DCOPClient *KApplication::s_DCOPClient = 0L;
 bool KApplication::s_dcopClientNeedsPostInit = false;
 
-#ifndef Q_WS_WIN
+#ifdef Q_WS_X11
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
 extern Time qt_x_time;
@@ -576,7 +581,7 @@ QString KApplication::sessionConfigName() const
 #endif
 }
 
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
+#ifdef Q_WS_X11
 static SmcConn mySmcConnection = 0;
 static SmcConn tmpSmcConnection = 0;
 #else
@@ -711,6 +716,8 @@ int KApplication::xioErrhandler( Display* dpy )
         emit shutDown();
 #ifdef Q_WS_X11
         d->oldXIOErrorHandler( dpy );
+#else
+        Q_UNUSED(dpy);
 #endif
     }
     exit( 1 );
@@ -879,6 +886,33 @@ void KApplication::init(bool GUIenabled)
     d->checkAccelerators = new KCheckAccelerators( this );
   }
 
+#ifdef Q_WS_MACX
+  if (GUIenabled) {
+      QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
+              KIcon::NoGroup, KIcon::SizeLarge, KIcon::DefaultState, 0L, false );
+      if (!pixmap.isNull()) {
+          QImage i = pixmap.convertToImage().convertDepth(32).smoothScale(40, 40);
+          for(int y = 0; y < i.height(); y++) {
+              uchar *l = i.scanLine(y);
+              for(int x = 0; x < i.width(); x+=4)
+                  *(l+x) = 255;
+          }
+          CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
+          CGDataProviderRef dp = CGDataProviderCreateWithData(NULL,
+                  i.bits(), i.numBytes(), NULL);
+          CGImageRef ir = CGImageCreate(i.width(), i.height(), 8, 32, i.bytesPerLine(),
+                  cs, kCGImageAlphaNoneSkipFirst, dp,
+                  0, 0, kCGRenderingIntentDefault);
+          //cleanup
+          SetApplicationDockTileImage(ir);
+          CGImageRelease(ir);
+          CGColorSpaceRelease(cs);
+          CGDataProviderRelease(dp);
+      }
+  }
+#endif
+
+
   // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,
   // which makes it impossible to use the -reverse cmdline switch with KDE apps
   bool rtl = reverseLayout();
@@ -1037,7 +1071,7 @@ void KApplication::disableSessionManagement() {
 
 void KApplication::enableSessionManagement() {
   bSessionManagement = true;
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
+#ifdef Q_WS_X11
   // Session management support in Qt/KDE is awfully broken.
   // If konqueror disables session management right after its startup,
   // and enables it later (preloading stuff), it won't be properly
@@ -1204,7 +1238,7 @@ void KApplication::commitData( QSessionManager& sm )
 void KApplication::saveState( QSessionManager& sm )
 {
     d->session_save = true;
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
+#ifdef Q_WS_X11
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
@@ -1214,7 +1248,7 @@ void KApplication::saveState( QSessionManager& sm )
         return;
     }
     else
-    	sm.setRestartHint( QSessionManager::RestartIfRunning );
+	sm.setRestartHint( QSessionManager::RestartIfRunning );
 
 #if QT_VERSION < 0x030100
     {
@@ -1582,7 +1616,7 @@ KApplication::~KApplication()
   delete d;
   KApp = 0;
 
-#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
+#ifdef Q_WS_X11
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
@@ -1997,6 +2031,16 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
 
 void KApplication::kdisplaySetPalette()
 {
+#ifdef Q_WS_MACX
+    //Can I have this on other platforms, please!? --Sam
+    {
+        KConfig *config = KGlobal::config();
+        KConfigGroupSaver saver( config, "General" );
+        bool do_not_set_palette = FALSE;
+        if(config->readBoolEntry("nopaletteChange", &do_not_set_palette))
+            return;
+    }
+#endif
     QApplication::setPalette( createApplicationPalette(), true);
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
@@ -2949,6 +2993,8 @@ uint KApplication::keyboardModifiers()
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
     return keybstate & 0x00ff;
+#elif defined W_WS_MACX
+    return GetCurrentEventKeyModifiers() & 0x00ff;
 #else
     //TODO for win32
     return 0;
@@ -2957,25 +3003,27 @@ uint KApplication::keyboardModifiers()
 
 uint KApplication::mouseState()
 {
-    uint keybstate;
+    uint mousestate;
 #ifdef Q_WS_X11
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-                   &root_x, &root_y, &win_x, &win_y, &keybstate );
+                   &root_x, &root_y, &win_x, &win_y, &mousestate );
 #elif defined(Q_WS_WIN)
     const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
     if (GetAsyncKeyState(VK_LBUTTON))
-        keybstate |= (mousebtn_swapped ? Button3Mask : Button1Mask);
+        mousestate |= (mousebtn_swapped ? Button3Mask : Button1Mask);
     if (GetAsyncKeyState(VK_MBUTTON))
-        keybstate |= Button2Mask;
+        mousestate |= Button2Mask;
     if (GetAsyncKeyState(VK_RBUTTON))
-        keybstate |= (mousebtn_swapped ? Button1Mask : Button3Mask);
-#else 
+        mousestate |= (mousebtn_swapped ? Button1Mask : Button3Mask);
+#elif defined(Q_WS_MACX)
+    mousestate = GetCurrentEventButtonState();
+#else
     //TODO: other platforms
 #endif
-    return keybstate & 0xff00;
+    return mousestate & 0xff00;
 }
 
 Qt::ButtonState KApplication::keyboardMouseState()
