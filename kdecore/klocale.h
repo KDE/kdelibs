@@ -378,8 +378,11 @@ public:
     double readNumber(const QString &numStr, bool * ok=0) const;
 
     /**
-     * Converts a localized date string to a QDate. Note:
-     * This only works on short dates for the time beeing.
+     * Converts a localized date string to a QDate.
+     * isValid() on the returning object will be false
+     * if the date entered was not valid.
+     *
+     * Note: This only works on short dates for the time beeing.
      *
      * @param str the string we want to convert.
      *
@@ -389,6 +392,8 @@ public:
 
     /**
      * Converts a localized time string to a QTime.
+     * isValid() on the returning object will be false
+     * if the time entered was not valid.
      *
      * @param str the string we want to convert.
      *
