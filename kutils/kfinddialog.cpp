@@ -133,7 +133,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_replace = new KHistoryCombo(true, m_replaceGrp);
     m_replace->setMaxCount(10);
     m_replace->setDuplicatesEnabled(false);
-    m_backRef = new QCheckBox(i18n("Us&e placeholders"), m_replaceGrp);
+    m_backRef = new QCheckBox(i18n("Use p&laceholders"), m_replaceGrp);
     m_backRefItem = new QPushButton(i18n("Insert Place&holder"), m_replaceGrp);
     m_backRefItem->setEnabled(false);
 
