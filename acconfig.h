@@ -149,11 +149,17 @@ int gethostname (char *Name, int Namelen);
 #define HAVE_BOOLEAN
 #endif
 
+/* random() returns a value between 0 and RANDOM_MAX.
+ * RANDOM_MAX is needed to generate good random numbers. (Nicolas)
+ */
 #ifndef HAVE_RANDOM
 #define HAVE_RANDOM
+#define RANDOM_MAX 2^31 // random() is lrand48()
 long int random(void); // defined in fakes.cpp
 void srandom(unsigned int seed);
-#endif 
+#else
+#define RANDOM_MAX RAND_MAX // normal random()
+#endif
 
 #ifndef HAVE_S_ISSOCK
 #define HAVE_S_ISSOCK
