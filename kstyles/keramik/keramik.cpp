@@ -2101,9 +2101,6 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				titleBarMode = Maximized;
 			}
 
-
-
-
 			QRect button, menuarea;
 			button   = querySubControlMetrics(control, widget, SC_ToolButton, opt);
 			menuarea = querySubControlMetrics(control, widget, SC_ToolButtonMenu, opt);
@@ -2136,9 +2133,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				}
 				else if (onToolbar)
 				{
-					QToolBar* parent = static_cast<QToolBar*>(widget->parent());
-					renderToolbarEntryBackground(p, parent, r, cg,
-												 parent->orientation() == Qt::Horizontal);
+					renderToolbarWidgetBackground(p, widget);
 				}
 				else if (onExtender)
 				{
