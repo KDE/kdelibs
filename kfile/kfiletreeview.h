@@ -131,6 +131,11 @@ public slots:
     */
    void populateBranch( KFileTreeBranch *brnch );
 
+   void slotNewTreeViewItem( KFileTreeViewItem *it );
+      
+   void slotSetNextUrlToSelect( const KURL &url )
+      { m_nextUrlToSelect = url; }
+   
 protected:
     virtual QDragObject * dragObject();
     virtual void startAnimation( KFileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
@@ -167,10 +172,16 @@ private slots:
    void slotCanceled(  );
 
    void slotPopulateFinished( KFileTreeViewItem* );
+
+   
 signals:
 
    void onItem( const QString& );
+   
+protected:
+   KURL m_nextUrlToSelect;
 
+   
 private:
     void clearTree();
     bool checkOnFilter( QString&);
@@ -207,6 +218,7 @@ private:
 
     KFileTreeViewToolTip m_toolTip;
 
+   
    class KFileTreeViewPrivate;
    KFileTreeViewPrivate *d;
 };
