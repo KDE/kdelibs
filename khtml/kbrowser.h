@@ -93,6 +93,9 @@ public:
   void enableImages( bool enable ) { m_bEnableImages = enable; }
   bool imagesEnabled() const { return m_bEnableImages; }
   
+  void enableSmartAnchorHandling( bool enable ) { m_bEnableSmartAnchorHandling = enable; }
+  bool smartAnchorHandling() const { return m_bEnableSmartAnchorHandling; }
+  
 public slots:
   virtual void slotStop();
   virtual void slotReload();
@@ -321,6 +324,13 @@ protected:
    * see also: @ref enableImages and @ref imagesEnabled
    */
   bool m_bEnableImages;
+  
+  /**
+   * This flag indicates whether KBrowser should handle anchor-links
+   * internally (meaning it calls gotoAnchor() directly), or whether it
+   * should call the generic openURL() method, which might be overloaded.
+   */
+  bool m_bEnableSmartAnchorHandling;
 };
 
 #endif

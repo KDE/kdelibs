@@ -46,7 +46,7 @@ KBrowser::KBrowser( QWidget *parent, const char *name, KBrowser *_parent_browser
   m_bComplete          = true;
   m_bReload            = false;
   m_bEnableImages      = true;
-  
+  m_bEnableSmartAnchorHandling = true;
   // m_lstPendingURLRequests.setAutoDelete( true );
   m_lstURLRequestJobs.setAutoDelete( true );
   
@@ -403,7 +403,7 @@ void KBrowser::slotURLSelected( QString _url, int _button, QString _target )
     }
 
     // if only the reference differs, then we just go to the new anchor
-    if ( urlcmp( url, m_strURL, TRUE, TRUE ) )
+    if ( urlcmp( url, m_strURL, TRUE, TRUE ) && m_bEnableSmartAnchorHandling )
     {
       QString anchor = u1.htmlRef();
       kdebug(0,1202,"Going to anchor %s", anchor.ascii());
