@@ -139,7 +139,7 @@ typedef struct _GString GString;
 
 void
 gsl_g_log (const gchar*msg,const char *format, va_list ap);
-static void
+static inline void
 g_error (const gchar *format,
 	 ...)
 {
@@ -148,7 +148,7 @@ g_error (const gchar *format,
   gsl_g_log ("**ERROR**", format, args);
   va_end (args);
 }
-static void
+static inline void
 g_message (const gchar *format,
 	   ...)
 {
@@ -157,7 +157,7 @@ g_message (const gchar *format,
   gsl_g_log ("**MESSAGE**", format, args);
   va_end (args);
 }
-static void
+static inline void
 g_warning (const gchar *format,
 	   ...)
 {
@@ -166,7 +166,7 @@ g_warning (const gchar *format,
   gsl_g_log ("**WARNING**", format, args);
   va_end (args);
 }
-static void
+static inline void
 g_print (const gchar *format,
 	   ...)
 {
@@ -180,7 +180,7 @@ struct _GTrashStack
 {
   GTrashStack *next;
 };
-static   guint
+static inline  guint
 g_bit_storage (gulong number)
 {
   register guint n_bits = 0;
@@ -193,7 +193,7 @@ g_bit_storage (gulong number)
   while (number);
   return n_bits;
 }
-static void
+static inline void
 g_trash_stack_push (GTrashStack **stack_p,
 		    gpointer      data_p)
 {
@@ -202,7 +202,7 @@ g_trash_stack_push (GTrashStack **stack_p,
   data->next = *stack_p;
   *stack_p = data;
 }
-static gpointer
+static inline gpointer
 g_trash_stack_pop (GTrashStack **stack_p)
 {
   GTrashStack *data;
@@ -228,7 +228,7 @@ g_trash_stack_peek (GTrashStack **stack_p)
 
   return data;
 }
-static guint
+static inline guint
 g_trash_stack_height (GTrashStack **stack_p)
 {
   GTrashStack *data;
