@@ -37,9 +37,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h \
-	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h 
-
-#  Removed temporarily for various portability reasons: ksocks.h
+	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 3:0
@@ -62,10 +60,8 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp \
-	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp kmdcodec.cpp
+	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp kmdcodec.cpp ksocks.cpp
 
-
-#  Removed temporarily for various portability reasons: 	ksocks.cpp
 
 kcharset.cpp: kentities.c
 
