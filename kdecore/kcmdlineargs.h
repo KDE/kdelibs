@@ -19,6 +19,10 @@
 #ifndef _KCMDLINEARGS_H_
 #define _KCMDLINEARGS_H_
 
+#ifndef I18N_NOOP
+#define I18N_NOOP(x) (x)
+#endif
+
 #include <qlist.h>
 #include <qstring.h>
 
@@ -96,8 +100,21 @@ public:
    *
    * @param complete If true, print all available options.
    **/
-  static void usage(bool complete = false);
+  static void usage(const char *id = 0);
 
+  /**
+   * Print an error to stderr and the usage help to stdout and exit.
+   *
+   **/
+  static void usage(const QString &error);
+
+  /**
+   * Enable i18n to be able to print a translated error message.
+   * 
+   * This function leaks memory so you are expected to exit 
+   * afterwards. E.g. by calling usage().
+   **/
+  static void enable_i18n();
 
   // Member functions:
 
@@ -130,7 +147,24 @@ public:
    *          default is false.
    */
   bool isSet(const char *option);
+
+  /**
+   *  Read the number of arguments that aren't options (but
+   *  e.g. filenames)
+   *
+   *  @return the number of arguments that aren't options
+   */
+  int count();
   
+  /**
+   *  Read out an argument
+   *
+   *  @param n The argument to read. 0 is the first argument.
+   *           count()-1 is the last argument.
+   *
+   *  @return a const char * pointer to the n'th argument.
+   */
+  const char *arg(int n);
 
 protected:   
   /**
@@ -182,11 +216,21 @@ protected:
    *  Set a string option
    */
   void setOption(const char *option, const char *value);
+
+  /**
+   * @internal 
+   *
+   * Add an argument
+   */
+  void addArgument(const char *argument);
+
+  static void printQ(const QString &msg);
   
   const KCmdLineOptions *options;
   const char *name;
   const char *id;
-  KCmdLineParsedArgs *parsedArgList;
+  KCmdLineParsedArgs *parsedOptionList;
+  QList<char> *parsedArgList;
 
   static KCmdLineArgsList *argsList; // All options.
   static const char *appname; // Appname
