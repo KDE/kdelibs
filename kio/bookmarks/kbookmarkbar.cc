@@ -33,6 +33,7 @@
 
 #include "kbookmarkdrag.h"
 #include "kbookmarkmenu_p.h"
+#include "kbookmarkdombuilder.h"
 
 #include "dptrtemplate.h"
 
@@ -59,9 +60,7 @@ class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivat
 public:
     QPtrList<KAction> m_actions;
     bool m_readOnly;
-#if 0
     KBookmarkManager* m_filteredMgr;
-#endif
 };
 QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
@@ -86,6 +85,11 @@ private:
     KBookmarkGroup m_visibleStart;
 };
 
+static bool useFilteredToolbar(KBookmarkManager* mgr) 
+{
+    return false;
+}
+
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
@@ -106,28 +110,24 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
 
-#if 0
     dptr()->m_filteredMgr = 0;
 
-    if ( mgr->filteredToolbar() )
+    if ( useFilteredToolbar(mgr) )
     {
-        dptr()->m_readOnly = true;
-        dptr()->m_filteredMgr = ...;
-        // TODO
-        // * create a temporary kbookmarkmanager of our own
-        // * connect a dombuilder to the below signals
-        // * use this dombuilder to fill in the temp bookmarkmanager
+        QString fname = mgr->path() + ".ftbcache";
+        dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
+        dptr()->m_filteredMgr->save();
+        ToolbarFilter filter;
+        KBookmarkDomBuilder builder( dptr()->m_filteredMgr->root(), 
+                                     dptr()->m_filteredMgr );
+        builder.connectImporter( &filter );
+        filter.filterInto( mgr->root() );
     }
-    else 
 
     dptr()->m_readOnly = !!dptr()->m_filteredMgr;
     KBookmarkGroup toolbar = dptr()->m_filteredMgr 
                            ? dptr()->m_filteredMgr->root() 
                            : mgr->toolbar();
-#else
-    dptr()->m_readOnly = false;
-    KBookmarkGroup toolbar = mgr->toolbar();
-#endif
 
     fillBookmarkBar( toolbar );
 }
@@ -398,19 +398,19 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
 }
 
 static bool showInToolbar( const KBookmark &bk ) {
-    return true; // iff bk has the flag "showintoolbar"
+    // iff bk has the flag "showintoolbar"
+    return true; 
 }
 
 void ToolbarFilter::visit( const KBookmark &bk ) {
     kdDebug() << "visit(" << bk.text() << ")" << endl;
-    if ( showInToolbar(bk) || m_visible )
+    if ( m_visible || showInToolbar(bk) )
         KXBELBookmarkImporterImpl::visit(bk);
 }
 
 void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
     kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
-    // if showintoolbar() and not already visible then set entergroup and make visible
-    if ( showInToolbar(grp) )
+    if ( !m_visible && showInToolbar(grp) )
     {
         m_visibleStart = grp;
         m_visible = true;
@@ -422,11 +422,9 @@ void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
 void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
     kdDebug() << "visitLeave()" << endl;
     if ( m_visible )
-    {
         KXBELBookmarkImporterImpl::visitLeave(grp);
-        if ( grp.address() == m_visibleStart.address() )
-            m_visible = false;
-    }
+    if ( m_visible && grp.address() == m_visibleStart.address() )
+        m_visible = false;
 }
 
 #undef dptr
