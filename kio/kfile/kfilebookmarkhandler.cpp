@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qfile.h>
 #include <qtextstream.h>
 
 #include <kbookmarkimporter.h>
 #include <kpopupmenu.h>
+#include <ksavefile.h>
 #include <kstandarddirs.h>
 
 #include "kfiledialog.h"
@@ -51,11 +51,11 @@ QString KFileBookmarkHandler::currentURL() const
 void KFileBookmarkHandler::importOldBookmarks( const QString& path,
                                                const QString& destinationPath )
 {
-    QFile file( destinationPath );
-    if ( !file.open( IO_WriteOnly | IO_Truncate ) )
+    KSaveFile file( destinationPath );
+    if ( file.status() != 0 )
         return;
-
-    m_importStream = new QTextStream( &file );
+    
+    m_importStream = file.textStream();
     *m_importStream << "<!DOCTYPE xbel>\n<xbel>\n";
 
     KNSBookmarkImporter importer( path );
@@ -73,7 +73,6 @@ void KFileBookmarkHandler::importOldBookmarks( const QString& path,
     *m_importStream << "</xbel>";
 
     file.close();
-    delete m_importStream;
     m_importStream = 0L;
 }
 
@@ -98,7 +97,7 @@ void KFileBookmarkHandler::newSeparator()
     *m_importStream << "<separator/>\n";
 }
 
-void KFileBookmarkHandler::endMenu()
+void KFileBookmarkHandler::endFolder()
 {
     *m_importStream << "</folder>\n";
 }

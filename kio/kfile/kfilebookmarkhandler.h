@@ -33,7 +33,7 @@ private slots:
     void slotNewFolder( const QString& text, bool open,
                         const QString& additionalInfo );
     void newSeparator();
-    void endMenu();
+    void endFolder();
 
 private:
     void importOldBookmarks( const QString& path, const QString& destinationPath );
