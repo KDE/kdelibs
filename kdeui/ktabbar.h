@@ -26,6 +26,9 @@
 class QToolButton;
 class KTabBarPrivate;
 
+/**
+ * @since 3.2
+ */
 class KTabBar: public QTabBar
 {
     Q_OBJECT
@@ -46,7 +49,7 @@ signals:
     void contextMenu( const int, const QPoint & );
     void mouseDoubleClick( const int );
     void mouseMiddleClick( const int );
-    void dragInitiated( const int );
+    void initiateDrag( const int );
     void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
     void receivedDropEvent( const int, QDropEvent * );
     void moveTab( const int, const int );

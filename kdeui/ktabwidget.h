@@ -25,6 +25,9 @@
 
 class KTabWidgetPrivate;
 
+/**
+ * @since 3.2
+ */
 class KTabWidget : public QTabWidget
 {
     Q_OBJECT
@@ -32,28 +35,86 @@ class KTabWidget : public QTabWidget
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
+    /*!
+      Set the tab of the given widget to \a color.
+    */
     void setTabColor( QWidget *, const QColor& color );
     QColor tabColor( QWidget * ) const;
 
-/*!
-    If \a enable is TRUE, tab reordering with middle button will be enabled.
+    /*!
+      If \a enable is TRUE, tab reordering with middle button will be enabled.
 
-    Note that once enabled you shouldn't rely on previously queried
-    currentPageIndex() or indexOf( QWidget * ) values anymore.
+      Note that once enabled you shouldn't rely on previously queried
+      currentPageIndex() or indexOf( QWidget * ) values anymore.
 
-    You can connect to signal movedTab(int, int) which will notify
-    you from which index to which index a tab has been moved.
-*/
+      You can connect to signal movedTab(int, int) which will notify
+      you from which index to which index a tab has been moved.
+    */
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
-/*!
-    If \a enable is TRUE, a close button will be shown on mouse hover
-    over tab icons which will emit signal closeRequest( QWidget * )
-    when pressed.
-*/
+    /*!
+      If \a enable is TRUE, a close button will be shown on mouse hover
+      over tab icons which will emit signal closeRequest( QWidget * )
+      when pressed.
+    */
     void setHoverCloseButton( bool enable );
     bool hoverCloseButton() const;
+
+signals:
+    /*!
+      Connect to this and set accept to TRUE if you can and want to decode the event.
+    */
+    void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
+
+    /*!
+      Received an event in the empty space beside tabbar. Usually creates a new tab.
+      This signal is only possible after testCanDecode and positive accept result.
+    */
+    void receivedDropEvent( QDropEvent * );
+
+    /*!
+      Received an drop event on given widget's tab.
+      This signal is only possible after testCanDecode and positive accept result.
+    */
+    void receivedDropEvent( QWidget *, QDropEvent * );
+
+    /*!
+      Request to start a drag operation on the given tab.
+    */
+    void initiateDrag( QWidget * );
+
+    /*!
+      The right mouse button was pressed over empty space besides tabbar.
+    */
+    void tabbarContextMenu( const QPoint & );
+
+    /*!
+      The right mouse button was pressed over a widget.
+    */
+    void contextMenu( QWidget *, const QPoint & );
+
+    /*!
+      A tab was moved from first to second index. This signal is only
+      possible after you have called setTabReorderingEnabled( true ).
+    */
+    void movedTab( const int, const int );
+
+    /*!
+      A double left mouse button click was performred over the widget.
+    */
+    void mouseDoubleClick( QWidget * );
+
+    /*!
+      A middle mouse button click was performed over the widget.
+    */
+    void mouseMiddleClick( QWidget * );
+
+    /*!
+      The close button of a widget's tab was clicked. This signal is
+      only possible after you have called setHoverCloseButton( true ).
+    */
+    void closeRequest( QWidget * );
 
 protected slots:
     virtual void mousePressEvent( QMouseEvent * );
@@ -62,24 +123,11 @@ protected slots:
     virtual void moveTab( const int, const int );
 
     virtual void receivedDropEvent( const int, QDropEvent * );
-    virtual void dragInitiated( const int );
+    virtual void initiateDrag( const int );
     virtual void contextMenu( const int, const QPoint & );
     virtual void mouseDoubleClick( const int );
     virtual void mouseMiddleClick( const int );
     virtual void closeRequest( const int );
-
-signals:
-    void tabbarContextMenu( const QPoint & );
-    void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
-    void receivedDropEvent( QDropEvent * );
-    void receivedDropEvent( QWidget *, QDropEvent * );
-    void dragInitiated( QWidget * );
-    void movedTab( const int, const int );
-
-    void contextMenu( QWidget *, const QPoint & );
-    void mouseDoubleClick( QWidget * );
-    void mouseMiddleClick( QWidget * );
-    void closeRequest( QWidget * );
 
 private:
     bool isEmptyTabbarSpace( const QPoint & );

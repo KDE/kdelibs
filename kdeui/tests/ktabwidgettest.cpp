@@ -28,7 +28,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( testCanDecode(const QDragMoveEvent *, bool & )), SLOT(testCanDecode(const QDragMoveEvent *, bool & )));
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
-  connect( mWidget, SIGNAL( dragInitiated( QWidget * )), SLOT(dragInitiated( QWidget * )));
+  connect( mWidget, SIGNAL( initiateDrag( QWidget * )), SLOT(initiateDrag( QWidget * )));
   connect( mWidget, SIGNAL( movedTab( const int, const int )), SLOT(movedTab( const int, const int )));
   mWidget->setTabReorderingEnabled( true );
 
@@ -113,7 +113,7 @@ void Test::receivedDropEvent( QWidget *w, QDropEvent *e )
   }
 }
 
-void Test::dragInitiated( QWidget *w )
+void Test::initiateDrag( QWidget *w )
 {
    QDragObject *d = new QTextDrag( mWidget->label( mWidget->indexOf( w ) ), this );
    d->dragCopy(); // do NOT delete d.

@@ -71,7 +71,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
          {
             QTab *tab = selectTab( e->pos() );
             if( tab!= 0L ) {
-                emit( dragInitiated( indexOf( tab->identifier() ) ) );
+                emit( initiateDrag( indexOf( tab->identifier() ) ) );
                 return;
            }
        }

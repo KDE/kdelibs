@@ -32,7 +32,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     connect(tabBar(), SIGNAL(contextMenu( const int, const QPoint & )), SLOT(contextMenu( const int, const QPoint & )));
     connect(tabBar(), SIGNAL(mouseDoubleClick( const int )), SLOT(mouseDoubleClick( const int )));
     connect(tabBar(), SIGNAL(mouseMiddleClick( const int )), SLOT(mouseMiddleClick( const int )));
-    connect(tabBar(), SIGNAL(dragInitiated( const int )), SLOT(dragInitiated( const int )));
+    connect(tabBar(), SIGNAL(initiateDrag( const int )), SLOT(initiateDrag( const int )));
     connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
     connect(tabBar(), SIGNAL(receivedDropEvent( const int, QDropEvent * )), SLOT(receivedDropEvent( const int, QDropEvent * )));
     connect(tabBar(), SIGNAL(moveTab( const int, const int )), SLOT(moveTab( const int, const int )));
@@ -100,9 +100,9 @@ void KTabWidget::receivedDropEvent( const int index, QDropEvent *e )
     emit( receivedDropEvent( page( index ), e ) );
 }
 
-void KTabWidget::dragInitiated( const int index )
+void KTabWidget::initiateDrag( const int index )
 {
-    emit( dragInitiated( page( index ) ) );
+    emit( initiateDrag( page( index ) ) );
 }
 
 void KTabWidget::contextMenu( const int index, const QPoint &p )
