@@ -326,8 +326,12 @@ void KJavaProcess::killJVM()
 
 void KJavaProcess::flushBuffers()
 {
-    while ( !d->BufferList.isEmpty() )
-        slotSendData(0);
+    while ( !d->BufferList.isEmpty() ) {
+        if (innot)
+            slotSendData(0);
+        else
+            d->BufferList.removeFirst();  //note: AutoDelete is true
+    }
 }
 
 /*  In this method, read one command and send it to the d->appletServer
