@@ -349,7 +349,7 @@ KAction *KStdAction::zoom(const QObject *recvr, const char *slot, QObject *paren
 KAction *KStdAction::redisplay(const QObject *recvr, const char *slot,
                                QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Redisplay"), 0, recvr, slot, parent, name);
+    return new KAction(i18n("&Redisplay"), QIconSet(BarIcon("reload")), 0, recvr, slot, parent, name);
 }
 
 KAction *KStdAction::up(const QObject *recvr, const char *slot, QObject *parent, const char *name )
