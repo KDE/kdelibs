@@ -134,7 +134,7 @@ int main(int argc, char **argv)
     KAboutData aboutData(appName, programName, version, description);
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
-    
+
     KApplication app;
 
     QStringList minicliFilters;
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
     filter( "file:/etc/passwd?foo=bar", "file:/etc/passwd?foo=bar", KURIFilterData::LOCAL_FILE );
         // local file with ? in the name (#58990)
     QFile tmpFile( "/tmp/kurifiltertest?foo" ); // Yeah, I know, security risk blah blah. This is a test prog!
-    
+
     if ( tmpFile.open( IO_ReadWrite ) ) 
     {
         QCString fname = QFile::encodeName( tmpFile.name() );
@@ -174,14 +174,24 @@ int main(int argc, char **argv)
     filter( "LINUXTODAY.COM", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "kde.org", "http://kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
+    filter( "ftp.kde.org:21", "ftp://ftp.kde.org:21", KURIFilterData::NET_PROTOCOL );
     filter( "cr.yp.to", "http://cr.yp.to", KURIFilterData::NET_PROTOCOL );
-    filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );
-    filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
-    
-    // Exotic IPv4 address formats. Really exercises the shorturi filter.
+    filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );        
+    filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "foo@bar.com", "mailto:foo@bar.com", KURIFilterData::NET_PROTOCOL );
+    filter( "www.123.foo", "http://www.123.foo", KURIFilterData::NET_PROTOCOL );
+    filter( "user@www.123.foo:3128", "http://user@www.123.foo:3128", KURIFilterData::NET_PROTOCOL );
+
+    // Exotic IPv4 address formats...
     filter( "127.1", "http://127.1", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.1", "http://127.0.1", KURIFilterData::NET_PROTOCOL );
-        
+
+    // Local domain filter territory - If you uncomment this test, make sure
+		// you adjust this based on the localhost entry in /etc/hosts.
+    // filter( "localhost:3128", "http://localhost.localdomain:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
+
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
@@ -189,11 +199,13 @@ int main(int argc, char **argv)
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
-    
+
     // Should not be filtered at all. All valid protocols of this form will be ignored.
     filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
-    
-    /* 
+    filter( "ftp:" , "ftp:", KURIFilterData::UNKNOWN );
+    filter( "http:" , "http:", KURIFilterData::UNKNOWN );
+
+    /*
      Automatic searching tests. NOTE: If the Default search engine is set to 'None',
      this stuff will fail as the status returned will then be KURIFilterData::UNKNOWN.
     */
@@ -202,18 +214,14 @@ int main(int argc, char **argv)
     filter( "FTP", 0 , KURIFilterData::NET_PROTOCOL );
 
     // If your default search engine is set to 'Google', you can uncomment the test below.
-   
-/*    
     filter( "gg:", "http://www.google.com/search?q=gg%3A&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "KDE", "http://www.google.com/search?q=KDE&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "FTP", "http://www.google.com/search?q=FTP&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );    
-*/    
-    // Should be handled by the local domain filter unless the user circumvents is
-    // by adding their own pattern match....
-    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
-    
-    // Typing 'ls' in konq's location bar should go to google for ls too. Unless
-    // Default search engine is set to 'None' in the Web Shortcuts dialog.
+
+
+    // Typing 'ls' or any other valid unix command in konq's location bar should result in 
+    // a search using the default search engine unless that is set to 'None' in which
+    // case you should end up with an error message.
     //filter( "ls", "http://www.google.com/search?q=ls&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     // Executable tests - No IKWS in minicli
@@ -230,7 +238,7 @@ int main(int argc, char **argv)
     // ENVIRONMENT variable
     setenv( "SOMEVAR", "/somevar", 0 );
     setenv( "ETC", "/etc", 0 );
-    
+
     QCString qtdir=getenv("QTDIR");    
     QCString home = getenv("HOME");
     QCString kdehome = getenv("KDEHOME");
@@ -239,21 +247,21 @@ int main(int argc, char **argv)
     filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
     filter( "$QTDIR/doc/html/functions.html#s", QCString("file:")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
     filter( "http://www.kde.org/$USER", "http://www.kde.org/$USER", KURIFilterData::NET_PROTOCOL ); // no expansion
-    
+
     // Assume the default (~/.kde) if 
     if (kdehome.isEmpty())
     {
       kdehome += "$HOME/.kde";
       setenv("KDEHOME", kdehome.data(), 0);
     }
-      
+
     filter( "$KDEHOME/share", kdehome+"/share", KURIFilterData::LOCAL_DIR );
     KStandardDirs::makeDir( "/tmp/a+plus" );
     filter( "/tmp/a+plus", "/tmp/a+plus", KURIFilterData::LOCAL_DIR );
-    
+
     // BR 27788 - note that you need this dir to exist for this test to work. 
     //filter( "$KDEHOME/share/apps/kword/templates/Text oriented", kdehome+"/share/apps/kword/templates/Text oriented", KURIFilterData::LOCAL_DIR );
-    
+
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing", 0, KURIFilterData::ERROR );
     filter( "$1/$2/$3", "http://www.google.com/search?q=$1/$2/$3&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );  // can be used as bogus or valid test. Currently triggers default search, i.e. google
     filter( "$$$$", "http://www.google.com/search?q=$$$$&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL ); // worst case scenarios.
@@ -267,8 +275,8 @@ int main(int argc, char **argv)
 
     // Search Engine tests    
     char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
-    
-    QCString sc;          
+
+    QCString sc;
     filter( sc.sprintf("gg%cfoo bar",delimiter), "http://www.google.com/search?q=foo%20bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( sc.sprintf("bug%c55798", delimiter), "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
 
@@ -283,11 +291,7 @@ int main(int argc, char **argv)
     filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share/" ); // cleanDirPath removes the trailing slash
     filter( "../", kdehome, KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
     filter( "apps", kdehome+"/share/apps", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
-    
-    // This test is against the specification of setAbsolutePath !!
-    // It says a _PATH_ must be used!
-    // kshorturifilter had code for this, but it broke, since it couldn't check that the resulting URL existed. Disabled.
-    //filter( "../../index.html", "http://www.kde.org/index.html", KURIFilterData::NET_PROTOCOL, "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
+
     kdDebug() << "All tests done. Go home..." << endl;
     return 0;
 }
