@@ -59,7 +59,7 @@ class RenameDlg::RenameDlgPrivate
   QPushButton *b5;
   QPushButton *b6;
   QPushButton *b7;
-  QPushButton *b8; //why isn't it an array 
+  QPushButton *b8; //why isn't it an array
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout; // ### doesn't need to be here
   QString src;
@@ -179,7 +179,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 	delete obj;
 	continue;
       }
-      if( plugin->initialize( _mode, _src, _dest, d->mimeSrc, 
+      if( plugin->initialize( _mode, _src, _dest, d->mimeSrc,
 			      d->mimeDest, sizeSrc, sizeDest,
 			      ctimeSrc, ctimeDest,
 			      mtimeSrc, mtimeDest ) ) {
@@ -191,7 +191,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 	delete obj;
       }
     }
-    
+
   }
   if( !d->plugin ){
   // User tries to overwrite a file with itself ?
@@ -286,7 +286,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   }
   d->m_pLineEdit = new QLineEdit( this );
   d->m_pLayout->addWidget( d->m_pLineEdit );
-  d->m_pLineEdit->setText( KURL(d->dest).fileName() );
+  QString fileName = KURL(d->dest).fileName();
+  d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
   if (d->b1)
       connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
               SLOT(enableRenameButton(const QString &)));
@@ -342,7 +343,8 @@ void RenameDlg::enableRenameButton(const QString &newDest)
 KURL RenameDlg::newDestURL()
 {
   KURL newDest( d->dest );
-  newDest.setFileName( d->m_pLineEdit->text() );
+  QString fileName = d->m_pLineEdit->text();
+  newDest.setFileName( KIO::encodeFileName( fileName ) );
   return newDest;
 }
 
@@ -369,7 +371,7 @@ void RenameDlg::b1Pressed()
 // Propose
 void RenameDlg::b8Pressed()
 {
-  int pos; 
+  int pos;
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
   QString basename, suffix, tmp;
@@ -377,33 +379,33 @@ void RenameDlg::b8Pressed()
   basename = info.baseName();
   suffix = info.extension();
   pos = basename.findRev('_' );
-  if(pos != -1 ) 
+  if(pos != -1 )
   {
     bool ok;
     tmp = basename.right( basename.length() - (pos + 1) );
     int number = tmp.toInt( &ok, 10 );
-    if ( !ok ) // ok there is no number 
+    if ( !ok ) // ok there is no number
     {
       basename.append("_1" );
       d->m_pLineEdit->setText(basename + "." + suffix );
       b1Pressed(); // prepended now  'click' rename
       return;
-    } 
-    else 
+    }
+    else
     { // yes there's allready a number behind the _ so increment it by one
       QString tmp2 = QString::number ( number + 1 );
       basename.replace( pos+1, tmp.length() ,tmp2);
       d->m_pLineEdit->setText( basename + "." + suffix );
       //b1Pressed();
       return;
-    }  
-  } 
+    }
+  }
   else // no underscore yet
   {
     d->m_pLineEdit->setText( basename + "_1." + suffix );
     //b1Pressed();
     return;
-  
+
   }
   return; // we should never return from here jic
 }
