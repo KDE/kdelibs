@@ -379,7 +379,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(appid)).arg(QStyleSheet::escape(wallet)));
 				}
 				brandNew = false;
-				kpd->setButtonOK(KStdGuiItem::open());
+				kpd->setButtonOK(KGuiItem(i18n("&Open"),"fileopen"));
 			} else {
 				emptyPass = true;
 			}
@@ -393,7 +393,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(QStyleSheet::escape(appid)));
 			}
 			brandNew = true;
-			kpd->setButtonOK(KStdGuiItem::open());
+			kpd->setButtonOK(KGuiItem(i18n("&Open"),"fileopen"));
 		} else {
 			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 			if (appid.length() == 0) {
