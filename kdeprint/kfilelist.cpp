@@ -19,12 +19,11 @@
 
 #include "kfilelist.h"
 
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qdragobject.h>
 #include <qtooltip.h>
-#include <qregexp.h>
 #include <qheader.h>
 
 #include <kio/netaccess.h>
@@ -51,31 +50,31 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_files->header()->setStretchEnabled(true, 2);
 	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
-	m_add = new QPushButton(this);
-	m_add->setPixmap(SmallIcon("fileopen"));
+	m_add = new QToolButton(this);
+	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
 	QToolTip::add(m_add, i18n("Add File"));
 
-	m_remove = new QPushButton(this);
-	m_remove->setPixmap(SmallIcon("remove"));
+	m_remove = new QToolButton(this);
+	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
 	QToolTip::add(m_remove, i18n("Remove File"));
 	m_remove->setEnabled(false);
 
-	m_open = new QPushButton(this);
-	m_open->setPixmap(SmallIcon("filefind"));
+	m_open = new QToolButton(this);
+	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
 	QToolTip::add(m_open, i18n("Open File"));
 	m_open->setEnabled(false);
 
-	m_up = new QPushButton(this);
-	m_up->setPixmap(SmallIcon("up"));
+	m_up = new QToolButton(this);
+	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
 	QToolTip::add(m_up, i18n("Move Up"));
 	m_up->setEnabled(false);
 
-	m_down = new QPushButton(this);
-	m_down->setPixmap(SmallIcon("down"));
+	m_down = new QToolButton(this);
+	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
 	QToolTip::add(m_down, i18n("Move Down"));
 	m_down->setEnabled(false);
@@ -86,8 +85,8 @@ KFileList::KFileList(QWidget *parent, const char *name)
 		"Drag file(s) here or use the button to open a file dialog. "
 		"Leave empty for <b>&lt;STDIN&gt;</b>."));
 
-	QHBoxLayout	*l0 = new QHBoxLayout(this, 0, 5);
-	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 0);
+	QHBoxLayout	*l0 = new QHBoxLayout(this, 0, KDialog::spacingHint());
+	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 1);
 	l0->addWidget(m_files);
 	l0->addLayout(l1);
 	l1->addWidget(m_add);

@@ -24,7 +24,7 @@
 #include <qptrlist.h>
 
 class KListView;
-class QPushButton;
+class QToolButton;
 class QListViewItem;
 
 class KFileList : public QWidget
@@ -54,7 +54,7 @@ protected:
 
 private:
 	KListView	*m_files;
-	QPushButton	*m_add, *m_remove, *m_open, *m_up, *m_down;
+	QToolButton	*m_add, *m_remove, *m_open, *m_up, *m_down;
 	bool		m_block;
 };
 
