@@ -8,7 +8,9 @@
  * $Revision$
  */
 
-#pragma implementation
+#ifndef KDE_USE_FINAL
+#pragma implementation "keyvaluemap.h"
+#endif
 
 #include "keyvaluemap.h"
 #include <qwidget.h>

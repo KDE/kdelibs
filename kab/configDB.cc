@@ -11,7 +11,9 @@
  * $Revision$
  */
 
-#pragma implementation
+#ifndef KDE_USE_FINAL
+#pragma implementation "configDB.h"
+#endif
 
 #include "configDB.h" 
 #include <qwidget.h>

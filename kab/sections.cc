@@ -10,7 +10,9 @@
  * $Revision$
  */
 
-#pragma implementation
+#ifndef KDE_USE_FINAL
+#pragma implementation "sections.h"
+#endif
 
 #include "sections.h" 
 #include <qwidget.h>
