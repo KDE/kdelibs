@@ -328,6 +328,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
             }
             else
             {
+              kdWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
               result = -1;
             }
@@ -358,6 +359,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 
     if ( close(fd) )
     {
+        kdWarning(7101) << "Error when closing file descriptor:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
     }
@@ -487,6 +489,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
           }
           else
           {
+              kdWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest.path());
           }
           return;
@@ -506,6 +509,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
     if (close( dest_fd))
     {
+        kdWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest.path());
         return;
     }
