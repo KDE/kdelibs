@@ -81,7 +81,7 @@ namespace DOM {
 
 	const QChar *parseSpace(const QChar *curP, const QChar *endP);
 	const QChar *parseToChar(const QChar *curP, const QChar *endP,
-				 QChar c, bool chkws);
+				 QChar c, bool chkws, bool endAtBlock = false);
 
 	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP);
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);

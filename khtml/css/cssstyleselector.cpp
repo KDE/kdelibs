@@ -416,7 +416,7 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
 	{
 	    //kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
 	    CSSStyleDeclarationImpl *decl = at(i)->rule->declaration();
-	    propsToApply->append(decl, offset + at(i)->index, important);
+	    propsToApply->append(decl, offset + i, important);
 	}
     }
 }

@@ -163,7 +163,7 @@ StyleBaseImpl::parseSpace(const QChar *curP, const QChar *endP)
  * quoted strings, and pairs of braces/parens/brackets.
  */
 const QChar *
-StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws)
+StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws, bool endAtBlock)
 {
     //kdDebug( 6080 ) << "parsetochar: \"" << QString(curP, endP-curP) << "\" searching " << c << " ws=" << chkws << endl;
 
@@ -191,6 +191,8 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
             return(curP);
         else if (*curP == '{')
         {
+	    if(endAtBlock) 
+		return curP;
             curP = parseToChar(curP + 1, endP, '}', false);
             if (!curP)
                 return(0);
@@ -233,15 +235,27 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	if(!curP) return 0;
 	startP = curP++;
 	curP = parseToChar(startP, endP, ';', true);
+	if(!curP) return 0;
 	DOMString url = khtml::parseURL(DOMString(startP, curP - startP));
 	startP = curP;
-	curP = parseToChar(startP, endP, ';', false);
+	if(*curP != ';')
+	    curP = parseToChar(startP, endP, ';', false, true);
+	if(!curP) return 0;
 	QString media(startP, curP - startP);
 	// ### check if at the beginning of the stylesheet (no style rule
 	//     before the import rule)
-	//kdDebug( 6080 ) << "url = " << url.string() << endl;
-	//kdDebug( 6080 ) << "media = " << media << endl;
-	// ### add medialist
+	kdDebug( 6080 ) << "at rule: url = " << url.string() 
+			<< " media = " << media << endl;
+	// ignore block following @import rule
+	if( *curP == '{' ) {
+	    curP++;
+	    curP = parseToChar(curP, endP, '}', false);
+	    if(curP)
+		curP++;
+	}
+	// ### only media="", "screen and "all" are imported for the moment...
+	if( !media.isEmpty() && !(media.contains("all") || media.contains("screen")) )
+	    return 0;
 	if(!this->isCSSStyleSheet()) return 0;
 	return new CSSImportRuleImpl(this, url, 0);
     }
@@ -250,25 +264,25 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	// ### invoke decoder
 	startP = curP++;
 	curP = parseToChar(startP, endP, ';', false);
-	//kdDebug( 6080 ) << "charset = " << QString(startP, curP - startP) << endl;
+	kdDebug( 6080 ) << "charset = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "font-face")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
+	kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "media")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
+	kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "page")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug( 6080 ) << "page rule = " << QString(startP, curP - startP) << endl;
+	kdDebug( 6080 ) << "page rule = " << QString(startP, curP - startP) << endl;
     }
 
 	
@@ -409,7 +423,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
        delete cs;
        return(0);
    }
-   //kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " relation=" << cs->match << " value=" << cs->value.string() << "]" << endl;
+   kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " relation=" << (int)cs->match << " value=" << cs->value.string() << " specificity=" << cs->specificity() << "]" << endl;
    return(cs);
 }
 
@@ -1373,7 +1387,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     curP = parseToChar(startP, endP, '{', false);
     if (!curP)
         return(0);
-    //kdDebug( 6080 ) << "selector is \'" << QString(startP, curP-startP) << "\'" << endl;
+    kdDebug( 6080 ) << "selector is \'" << QString(startP, curP-startP) << "\'" << endl;
 
     slist = parseSelector(startP, curP );
 
@@ -1381,6 +1395,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 
     startP = curP;
     curP = parseToChar(startP, endP, '}', false);
+    //kdDebug( 6080 ) << "rules are \'" << QString(startP, curP-startP) << "\'" << endl;
     if (!curP)
     {
         delete slist;
@@ -1417,7 +1432,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     CSSRuleImpl *rule = 0;
 
     if(!curP) return 0;
-    //kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
+    kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
 
     if (*curP == '@')
 	rule = parseAtRule(curP, endP);
