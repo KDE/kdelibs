@@ -304,7 +304,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
     {
         cliph-=style()->clipBottom().width(m_height-bt-bb);
     }
-    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
+    //kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<")"<<endl;
 
     QRect cr(clipx,clipy,clipw,cliph);
     cr = p->xForm(cr);
