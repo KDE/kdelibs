@@ -521,15 +521,14 @@ KeyEventImpl::KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   m_detail = key->count();
 
   m_numPad = false;
+  m_keyVal = 0;
+  m_virtKeyVal = DOM_VK_UNDEFINED;
+  m_inputGenerated = true;
 
   // m_keyVal should contain the unicode value
   // of the pressed key if available.
   if (!key->text().isNull())
-  {
       m_keyVal = key->text().unicode()[0];
-      m_virtKeyVal = DOM_VK_UNDEFINED;
-      m_inputGenerated = true;
-  }
   else
   {
     switch(key->key())
@@ -703,16 +702,16 @@ KeyEventImpl::KeyEventImpl(EventId _id,
   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
   qKeyEvent = 0;
-  m_outputString = outputStringArg;
   m_keyVal = keyValArg;
   m_virtKeyVal = virtKeyValArg;
   m_inputGenerated = inputGeneratedArg;
+  m_outputString = outputStringArg;
   m_numPad = numPadArg;
+  m_modifier = 0;
 }
 
 KeyEventImpl::~KeyEventImpl()
 {
-  if (qKeyEvent)
     delete qKeyEvent;
 }
 
