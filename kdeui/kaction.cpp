@@ -642,7 +642,7 @@ void KAction::plugMainWindowAccel( QWidget *w )
   // Note: topLevelWidget() stops too early, we can't use it.
   QWidget * tl = w;
   QWidget * n;
-  while ( ( n = tl->parentWidget() ) ) // lookup parent and store
+  while ( !tl->isDialog() && ( n = tl->parentWidget() ) ) // lookup parent and store
     tl = n;
 
   KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
