@@ -36,7 +36,7 @@ class KHTMLWidget;
 class Token;
 class HTMLStackElem;
 class CSSStyle;
-class HTMLSettings;
+class khtml::Settings;
 
 namespace DOM {
     class HTMLDocumentImpl;
@@ -119,7 +119,7 @@ protected:
     /*
      * default font sizes etc...
      */
-    HTMLSettings *settings;
+    khtml::Settings *settings;
 
     ushort *forbiddenTag;
 

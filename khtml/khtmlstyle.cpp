@@ -44,7 +44,7 @@ using namespace DOM;
 using namespace khtml;
 
 
-CSSStyleSheet::CSSStyleSheet(const HTMLSettings *_settings)
+CSSStyleSheet::CSSStyleSheet(const khtml::Settings *_settings)
 {
     settings = _settings;
 }

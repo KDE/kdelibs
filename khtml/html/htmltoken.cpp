@@ -28,9 +28,6 @@
 #include "htmltoken.h"
 #include "htmlhashes.h"
 
-// defined in khtmltokenizer
-int getAttrID(const char *tagStr, int len);
-
 // ---------------------------------------------------------------------------
 
 Attribute::Attribute(const DOMString &name, const DOMString &val)
@@ -54,12 +51,12 @@ const DOMString &Attribute::name() const
 
 void Attribute::setName(const DOMString &name)
 {
-    id = getAttrID(name.string().ascii(), name.length());
+    id = khtml::getAttrID(name.string().ascii(), name.length());
 }
 
 void Attribute::setName(const DOMStringImpl *name)
 {
-    id = getAttrID(QConstString(name->s, name->l).string().ascii(), name->l);
+    id = khtml::getAttrID(QConstString(name->s, name->l).string().ascii(), name->l);
 }
 
 //-----------------------------------------------------------------------------

@@ -205,7 +205,7 @@ class CSSStyleSheet
 {
 
 public:
-    CSSStyleSheet(const HTMLSettings *);
+    CSSStyleSheet(const khtml::Settings *);
     ~CSSStyleSheet();
 
     /*
@@ -228,7 +228,7 @@ public:
     void addStyle(CSSStyle *currentStyle, const QChar *CSSString);
 
 protected:
-    const HTMLSettings *settings;
+    const khtml::Settings *settings;
 };
 
 #endif // HTMLSTYLE_H

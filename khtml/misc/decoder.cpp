@@ -90,7 +90,7 @@ QString KHTMLDecoder::decode(const char *data)
 			ptr++;
 			len++;
 		    }
-		    int id = getTagID(tmp, len);
+		    int id = khtml::getTagID(tmp, len);
 		    if(end) id += ID_CLOSE_TAG;
 		    
 		    switch( id ) {

@@ -176,7 +176,7 @@ void KHTMLWidget::init()
   document = 0;
   decoder = 0;
   cache = new KHTMLCache(this);
-  defaultSettings = new HTMLSettings;
+  defaultSettings = new khtml::Settings;
   _settings = 0;
 
   _marginWidth = 5;
@@ -386,7 +386,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
         emit setTitle( "* Unknown *" );
     }
 
-    if(!_settings) _settings = new HTMLSettings( *defaultSettings);
+    if(!_settings) _settings = new khtml::Settings( *defaultSettings);
 
 
     document = new HTMLDocumentImpl(this, cache);
@@ -1596,10 +1596,10 @@ bool KHTMLWidget::isFrameSet()
     return false;
 }
 
-HTMLSettings *KHTMLWidget::settings()
+khtml::Settings *KHTMLWidget::settings()
 {
     // ### check all settings stuff in khtml.cpp for memory leaks...
-    if(!_settings) _settings = new HTMLSettings(*defaultSettings);
+    if(!_settings) _settings = new khtml::Settings(*defaultSettings);
     return _settings;
 }
 

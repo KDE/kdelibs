@@ -53,7 +53,10 @@ namespace DOM {
 
 class KHTMLCache;
 class KHTMLDecoder;
-class HTMLSettings;
+
+namespace khtml {
+  class Settings;
+};
 
 // JScript class
 class KJSWorld;
@@ -557,7 +560,7 @@ public:
      */
     int marginHeight() { return _marginHeight; }
 
-    HTMLSettings *settings();
+    khtml::Settings *settings();
 
     void scheduleRedirection(int delay, const QString & url);
 
@@ -873,8 +876,8 @@ protected:
 
 private:
 
-    HTMLSettings *defaultSettings;
-    HTMLSettings *_settings;
+    khtml::Settings *defaultSettings;
+    khtml::Settings *_settings;
 
     bool bIsTextSelected;
     bool _isFrame;

@@ -26,20 +26,22 @@
 
 
 #include "khtmldata.h"
+using namespace khtml;
+
 #include <kglobal.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-HTMLSettings* pSettings = 0;
+Settings* khtml::pSettings = 0;
 
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
 const int defaultFontSizes[MAXFONTSIZES] = { 6, 8, 10, 12, 14, 18, 24 };
 
-HTMLSettings::HTMLSettings()
+Settings::Settings()
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
@@ -59,7 +61,7 @@ HTMLSettings::HTMLSettings()
     underlineLinks = true;
 }
 
-void HTMLSettings::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
+void Settings::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
 {
     memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
     if (newFixedFontSizes)
@@ -72,7 +74,7 @@ void HTMLSettings::setFontSizes(const int *newFontSizes, const int *newFixedFont
     }
 }
 
-void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
+void Settings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
 {
     memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
     if (oldFixedFontSizes)
@@ -81,13 +83,13 @@ void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
     }
 }
 
-void HTMLSettings::resetFontSizes(void)
+void Settings::resetFontSizes(void)
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
 }
 
-HTMLSettings::HTMLSettings( const HTMLSettings &s )
+Settings::Settings( const Settings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
@@ -106,7 +108,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
     underlineLinks = s.underlineLinks;
 }
 
-const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
+const Settings &Settings::operator=( const Settings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
@@ -127,4 +129,4 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     return *this;
 }
 
-const int HTMLSettings::fontBaseSize = 3;
+const int Settings::fontBaseSize = 3;

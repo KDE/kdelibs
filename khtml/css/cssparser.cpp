@@ -317,7 +317,7 @@ printf("selectString = \"%s\"\n", selecString.ascii());
 			cs->match = CSSSelector::Exact;
 		    }
 		}
-		cs->attr = getAttrID(attr.ascii(), attr.length());
+		cs->attr = khtml::getAttrID(attr.ascii(), attr.length());
 		if(equal)
 		{
 		    equal++;
@@ -351,7 +351,7 @@ printf("selectString = \"%s\"\n", selecString.ascii());
 	if(tag == "*")
 	    cs->tag = -1;
 	else
-	    cs->tag = getTagID(tag.lower().data(), tag.length());
+	    cs->tag = khtml::getTagID(tag.lower().data(), tag.length());
    }
    if (cs->tag == 0)
    {

@@ -4,7 +4,7 @@
 #include "htmlattrs.c"
 
 
-int getTagID(const char *tagStr, int len)
+int khtml::getTagID(const char *tagStr, int len)
 {
     const struct tags *tagPtr = findTag(tagStr, len);
     if (!tagPtr)
@@ -13,7 +13,7 @@ int getTagID(const char *tagStr, int len)
     return tagPtr->id;
 }
 
-int getAttrID(const char *tagStr, int len)
+int khtml::getAttrID(const char *tagStr, int len)
 {
     const struct attrs *tagPtr = findAttr(tagStr, len);
     if (!tagPtr)

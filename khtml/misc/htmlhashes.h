@@ -4,7 +4,10 @@
 #include "htmlattrs.h"
 #include "htmltags.h"
 
-int getTagID(const char *tagStr, int len);
-int getAttrID(const char *tagStr, int len);
+namespace khtml
+{
+  int getTagID(const char *tagStr, int len);
+  int getAttrID(const char *tagStr, int len);
+};
 
 #endif

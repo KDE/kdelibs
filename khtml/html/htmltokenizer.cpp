@@ -598,7 +598,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    if(*(dest-1) == '/' && len > 1) len--;
 		
 		    QConstString tmp(ptr, len);
-		    uint tagID = getTagID(tmp.string().ascii(), len);
+		    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
 		    if (!tagID) {
 			printf("Unknown tag: \"%s\"\n", tmp.string().ascii());
 			dest = buffer;
@@ -665,7 +665,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    // beginning of name
 		    QChar *ptr = buffer;
 		    QConstString tmp(ptr, dest-buffer);
-		    uint a = getAttrID(tmp.string().ascii(),
+		    uint a = khtml::getAttrID(tmp.string().ascii(),
 						     dest-buffer);
 		    dest = buffer;
 		    if (!a) {

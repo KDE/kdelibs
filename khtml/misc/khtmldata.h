@@ -37,16 +37,19 @@
 #define MAXFONTSIZES 7
 #endif
 
+namespace khtml
+{
+
 /**
  * @internal
  */
-class HTMLSettings
+class Settings
 {
 public:
-    HTMLSettings();
-    HTMLSettings( const HTMLSettings & );
+    Settings();
+    Settings( const Settings & );
 
-    const HTMLSettings &operator=( const HTMLSettings & );
+    const Settings &operator=( const Settings & );
 
     void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
     void getFontSizes(int *newFontSizes, int *newFixedFontSizes);
@@ -71,7 +74,9 @@ public:
     static const int fontBaseSize;
 };
 
-extern HTMLSettings* pSettings;
+extern Settings* pSettings;
+
+};
 
 #endif
 
