@@ -124,7 +124,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
-	d->m_file->fileDialog()->setCaption(i18n("Print to File"));
 	d->m_file->setEnabled(false);
 	d->m_filelabel->setBuddy(d->m_file);
 	d->m_cmdlabel = new QLabel(i18n("Print co&mmand:"), m_pbox);
@@ -197,6 +196,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
 	connect(d->m_file, SIGNAL(urlSelected(const QString&)), SLOT(slotOutputFileSelected(const QString&)));
+	connect( d->m_file, SIGNAL( openFileDialog( KURLRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
 	KConfig	*config = KGlobal::config();
@@ -341,7 +341,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 		}
 		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : QMAX(defhard,0)));
 		d->m_printers->setCurrentItem(defindex);
-		slotPrinterSelected(defindex);
+		//slotPrinterSelected(defindex);
 	}
 
 	// Initialize output filename
@@ -349,6 +349,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 		d->m_file->lineEdit()->setText(d->m_printer->outputFileName());
 	else if (!d->m_printer->docFileName().isEmpty())
 		d->m_file->lineEdit()->setText(QDir::homeDirPath()+"/"+d->m_printer->docFileName()+".ps");
+
+	if ( d->m_printers->count() > 0 )
+		slotPrinterSelected( d->m_printers->currentItem() );
 
 	// update with KPrinter options
 	if (d->m_printer->option("kde-preview") == "1" || d->m_printer->previewOnly())
@@ -653,6 +656,29 @@ void KPrintDialog::slotUpdatePossible( bool flag )
 			i18n("An error occurred while retrieving the printer list:")
 			+"</nobr><br><br>"+KMManager::self()->errorMsg()+"</qt>");
 	initialize( d->m_printer );
+}
+
+void KPrintDialog::enableDialogPage( int index, bool flag )
+{
+	if ( index < 0 || index >= ( int )d->m_pages.count() )
+	{
+		kdWarning() << "KPrintDialog: page index out of bound" << endl;
+		return;
+	}
+
+	if ( d->m_pages.count() > 1 )
+	{
+		QTabWidget	*tabs = static_cast<QTabWidget*>(d->m_dummy->child("TabWidget", "QTabWidget"));
+		tabs->setTabEnabled( d->m_pages.at( index ), flag );
+	}
+	else
+		d->m_pages.at( 0 )->setEnabled( flag );
+}
+
+void KPrintDialog::slotOpenFileDialog()
+{
+	d->m_file->fileDialog()->setCaption(i18n("Print to File"));
+	d->m_file->fileDialog()->setOperationMode( KFileDialog::Saving );
 }
 
 #include "kprintdialog.moc"

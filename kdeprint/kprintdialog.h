@@ -38,6 +38,7 @@ public:
 
 	void setFlags(int f);
 	void setDialogPages(QPtrList<KPrintDialogPage> *pages);
+	void enableDialogPage( int index, bool flag = true );
 	KPrinter* printer() const;
 
 	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString::null, bool forceExpand = false);
@@ -57,6 +58,7 @@ protected slots:
 	void slotHelp();
 	void slotOutputFileSelected(const QString&);
 	void slotUpdatePossible( bool );
+	void slotOpenFileDialog();
 
 protected:
 	bool checkOutputFile();
