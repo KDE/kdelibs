@@ -1251,10 +1251,6 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
       return;
   }
 
-  // NOTE: This code shouldn't ever be reached if this method is used proprely,
-  // QListVIew::moveItem() handles the same cases.  However, to avoid changing the (albeit
-  // undocumented behavior) it's being left in for the moment.
-
   // Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
   // in here, without ever deleting the item.
   if (item->parent())

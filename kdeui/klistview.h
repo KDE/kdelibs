@@ -169,12 +169,11 @@ public:
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
+   * If after is 0, @p item is made the first child of @p parent.
    *
-   * @see QListViewItem::moveItem()
-   *
-   * @deprecated
+   * (Un-deprecated in kde-3.4)
    */
-  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after) KDE_DEPRECATED;
+  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 
   /**
    * @return the last item (not child!) of this listview.
