@@ -346,10 +346,34 @@ LineEditWidget::~LineEditWidget()
     m_spell=0L;
 }
 
+
 void LineEditWidget::slotCheckSpelling()
 {
     delete m_spell;
-    m_spell=new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
+    m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+
+    connect( m_spell, SIGNAL( death() ),this, SLOT( spellCheckerFinished() ) );
+
+    connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
+
+    connect( m_spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+
+}
+
+void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStringList &, unsigned int pos)
+{
+    setSelection ( pos, _text.length() );
+}
+
+void LineEditWidget::spellCheckerCorrected( const QString &old, const QString &corr, unsigned int pos )
+{
+    setSelection ( pos, old.length() );
+    insert( corr );
+    setSelection ( pos, corr.length() );
+}
+
+void LineEditWidget::spellCheckerFinished()
+{
 }
 
 void LineEditWidget::slotSpellCheckReady( KSpell *s )
@@ -1248,7 +1272,46 @@ QPopupMenu *TextAreaWidget::createPopupMenu( const QPoint &pos )
 void TextAreaWidget::slotCheckSpelling()
 {
     delete m_spell;
-    m_spell=new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
+    m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+
+    connect( m_spell, SIGNAL( death() ),
+             this, SLOT( spellCheckerFinished() ) );
+
+    connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
+
+    connect( m_spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+
+}
+
+void TextAreaWidget::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos)
+{
+#if 0
+    kdDebug()<<" spellCheckerMisspelling( const QString &, const QStringList &, unsigned int )*****************\n";
+    removeSelection();
+    kdDebug()<<" pos :"<<pos<<endl;
+    int parag = 0;
+    int paragNbChar = paragraphLength( parag);
+    while ( pos > paragNbChar && parag < paragraphs())
+    {
+        parag++;
+        paragNbChar = paragraphLength( parag );
+        pos -= paragraphLength( parag );
+    }
+    kdDebug()<<" pos :"<<pos <<" parag :"<<parag<<endl;
+    setSelection( parag, pos, parag, pos +text.length());
+#endif
+}
+
+void TextAreaWidget::spellCheckerCorrected( const QString &, const QString &, unsigned int )
+{
+#if 0
+    kdDebug()<<"void TextAreaWidget::spellCheckerCorrected( const QString &, const QString &, unsigned int )***************\n";
+#endif
+}
+
+void TextAreaWidget::spellCheckerFinished()
+{
+
 }
 
 void TextAreaWidget::slotSpellCheckReady( KSpell *s )

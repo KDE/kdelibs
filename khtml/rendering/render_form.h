@@ -255,7 +255,9 @@ private slots:
     void slotCheckSpelling();
     void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );
-
+    void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
+    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
+    void spellCheckerFinished();
 
 private:
     enum LineEditMenuID {
@@ -404,6 +406,10 @@ protected slots:
     void slotCheckSpelling();
     void slotSpellCheckReady(KSpell *s);
     void slotSpellCheckDone(const QString &s);
+    void spellCheckerMisspelling( const QString &, const QStringList &, unsigned int );
+    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
+    void spellCheckerFinished();
+
 private:
     KSpell *m_spell;
 };
