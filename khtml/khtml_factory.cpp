@@ -204,11 +204,6 @@ KInstance *KHTMLFactory::instance()
     s_about->addAuthor( "Tobias Anton", 0, "anton@stud.fbi.fh-darmstadt.de" );
 
     s_instance = new KInstance( s_about );
-
-    // "khtml" catalogue does not exist, our translations are in kdelibs.
-    // removing this catalogue from KGlobal::locale() prevents problems
-    // with changing the language in applications at runtime -Thomas Reitelbach
-    KGlobal::locale()->removeCatalogue("khtml");
   }
 
   return s_instance;
