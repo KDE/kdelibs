@@ -49,9 +49,10 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  ButtonCode defaultButton, bool separator,
 			  const QString &user1, const QString &user2,
 			  const QString &user3 )
-  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder),
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
-   mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
+   mButtonOrientation(Horizontal)
 {
   setCaption( caption );
 
@@ -71,9 +72,10 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, const QString &user1,
 			  const QString &user2, const QString &user3 )
-  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
-   mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
+   mButtonOrientation(Horizontal)
 {
   setCaption( caption );
 
@@ -96,10 +98,10 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  QWidget *parent, const char *name, bool modal,
 			  bool separator, QString yes,
 			  QString no, QString cancel )
-  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
-   mEscapeButton(escapeButton)
+   mButtonOrientation(Horizontal),mEscapeButton(escapeButton)
 {
   if (yes.isEmpty())
      yes = i18n("&Yes");
@@ -150,7 +152,19 @@ void KDialogBase::setupLayout()
   {
     delete mTopLayout;
   }
-  mTopLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
+  // mTopLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
+
+
+  if( mButtonOrientation == Horizontal )
+  {
+    mTopLayout = new QBoxLayout( this, QBoxLayout::TopToBottom, 
+				 marginHint(), spacingHint() );
+  }
+  else
+  {
+    mTopLayout = new QBoxLayout( this, QBoxLayout::LeftToRight, 
+				 marginHint(), spacingHint() );
+  }
 
   if( mUrlHelp != 0 )
   {
@@ -175,6 +189,33 @@ void KDialogBase::setupLayout()
   {
     mTopLayout->addWidget( mButton.box );
   }
+}
+
+
+
+void KDialogBase::setButtonBoxOrientation( int orientation )
+{
+  if( mButtonOrientation != orientation )
+  {
+    mButtonOrientation = orientation;
+    if( mActionSep != 0 )
+    {
+      mActionSep->setOrientation( mButtonOrientation == Horizontal ? 
+				  QFrame::HLine : QFrame::VLine );
+    }
+    if( mButtonOrientation == Vertical )
+    {
+      enableLinkedHelp(false); // 2000-06-18 Espen: No support for this yet.
+    }
+    setupLayout();
+    setButtonStyle( mButton.style );
+  }
+}
+
+
+void KDialogBase::setEscapeButton( ButtonCode id )
+{
+  mEscapeButton = id;
 }
 
 
@@ -206,6 +247,8 @@ void KDialogBase::enableButtonSeparator( bool state )
     }
     mActionSep = new KSeparator( this );
     mActionSep->setFocusPolicy(QWidget::NoFocus);
+    mActionSep->setOrientation( mButtonOrientation == Horizontal ? 
+				QFrame::HLine : QFrame::VLine );
     mActionSep->show();
   }
   else
@@ -286,8 +329,18 @@ void KDialogBase::adjustSize()
   // The button box
   //
   s2 = mButton.box->minimumSize();
-  s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
-  s1.rheight() += s2.rheight();
+  if( mButtonOrientation == Horizontal )
+  {
+    s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
+    s1.rheight() += s2.rheight();
+  }
+  else 
+  {
+    s1.rwidth() += s2.rwidth();
+    s1.rheight() = QMAX( s1.rheight(), s2.rheight() );
+  }
+  //s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
+  //s1.rheight() += s2.rheight();
 
   //
   // Outer margings
@@ -433,89 +486,148 @@ void KDialogBase::setButtonStyle( int style )
   if( style < 0 || style > ActionStyleMAX ) { style = ActionStyle0; }
   mButton.style = style;
 
-  static int layoutRule[5][8] =
+  const int *layout;
+  if( mButtonOrientation == Horizontal )
   {
-    {Help,Default|Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
-    {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-    {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-    {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
-    {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
-  };
-  const int *layout = layoutRule[ mButton.style ];
+    static int layoutRule[5][8] =
+    {
+      {Help,Default|Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
+      {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
+    };
+    layout = layoutRule[ mButton.style ];
+  }
+  else
+  {
+    static int layoutRule[5][8] =
+    {
+      {Ok,Apply|Try,User1,User2,User3|Stretch,Default,Cancel|Close,Help},
+      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Default|Stretch,Help},
+      {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
+    };
+    layout = layoutRule[ mButton.style ];
+  }
+
+  // static int layoutRule[5][8] =
+  //{
+  //  {Help,Default|Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
+  //  {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+  //  {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+  //  {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
+  // {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
+  //};
+  //const int *layout = layoutRule[ mButton.style ];
 
 
   if( mButton.box->layout() )
   {
     delete mButton.box->layout();
   }
-  QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
+
+  QBoxLayout *lay;
+  if( mButtonOrientation == Horizontal )
+  {
+    lay = new QBoxLayout( mButton.box, QBoxLayout::LeftToRight, 0, 
+			  spacingHint());
+  }
+  else
+  {
+    lay = new QBoxLayout( mButton.box, QBoxLayout::TopToBottom, 0, 
+			  spacingHint());
+  }
+
+  //QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
 
   if( mMessageBoxMode == true )
   {
-    hbox->addStretch(1);
+    lay->addStretch(1);
   }
 
   int numButton = 0;
+  QPushButton *prevButton = 0;
+  QPushButton *newButton;
+
   for( uint i=0; i<8; i++ )
   {
     if( i>0 && (layout[i-1]&Stretch) && mMessageBoxMode == false )
     {
-      hbox->addStretch(1);
+      lay->addStretch(1);
     }
 
     if( mButton.mask & Help & layout[i] )
     {
-      hbox->addWidget( actionButton( Help ) ); numButton++;
+      newButton = actionButton( Help );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Default & layout[i] )
     {
-      hbox->addWidget( actionButton( Default ) ); numButton++;
+      newButton = actionButton( Default );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & User3 & layout[i] )
     {
-      hbox->addWidget( actionButton( User3 ) ); numButton++;
+      newButton = actionButton( User3 );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & User2 & layout[i] )
     {
-      hbox->addWidget( actionButton( User2 ) ); numButton++;
+      newButton = actionButton( User2 );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & User1 & layout[i] )
     {
-      hbox->addWidget( actionButton( User1 ) ); numButton++;
+      newButton = actionButton( User1 );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Ok & layout[i] )
     {
-      hbox->addWidget( actionButton( Ok ) ); numButton++;
+      newButton = actionButton( Ok );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Apply & layout[i] )
     {
-      hbox->addWidget( actionButton( Apply ) ); numButton++;
+      newButton = actionButton( Apply );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Try & layout[i] )
     {
-      hbox->addWidget( actionButton( Try ) ); numButton++;
+      newButton = actionButton( Try );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Cancel & layout[i] )
     {
-      hbox->addWidget( actionButton( Cancel ) ); numButton++;
+      newButton = actionButton( Cancel );
+      lay->addWidget( newButton ); numButton++;
     }
     else if( mButton.mask & Close & layout[i] )
     {
-      hbox->addWidget( actionButton( Close ) ); numButton++;
+      newButton = actionButton( Close );
+      lay->addWidget( newButton ); numButton++;
     }
     else
     {
       continue;
     }
 
+    if( prevButton != 0 )
+    {
+      setTabOrder( prevButton, newButton );
+    }
+    prevButton = newButton;
+
     if( mMessageBoxMode == true )
     {
-      hbox->addStretch(1);
+      lay->addStretch(1);
     }
 
   }
 
-  mButton.resize( true, 0, spacingHint() );
+  mButton.resize( true, 0, spacingHint(), mButtonOrientation );
 }
 
 

@@ -24,12 +24,12 @@
 
 #include <qpushbutton.h>
 #include <kdialog.h>
-#include <kjanuswidget.h>
+#include <kjanuswidget.h> 
 #include <qlist.h>
 
 class KSeparator;
 class KURLLabel;
-class QVBoxLayout;
+class QBoxLayout;
 class QPixmap;
 
 /**
@@ -125,21 +125,25 @@ class KDialogBaseTile : public QObject
  *
  * You can either use one of the prebuilt, easy to use, faces or
  * define your own main widget. The dialog provides ready to use
- * TreeList,  Tabbed, Plain, Swallow and IconList faces. For the first
- * two you then add pages with @ref addPage(). If you want complete
- * control of how the dialog contents should look, then you can define
- * a main widget by using @ref setMainWidget(). You only need to set
- * the minimum size of that widget and the dialog will resize itself
- * to fit this minimum size.  The dialog is resizeable, but can not be
- * made smaller than its minimum 
- * size.
+ * TreeList, Tabbed, Plain, Swallow and IconList faces. KDialogBase uses
+ * the @ref KJanusWidget class internally to accomplish this. If you
+ * use TreeList, Tabbed or IconList mode, then add pages with @ref addPage(). 
+ * If you want complete control of how the dialog contents should look, 
+ * then you can define a main widget by using @ref setMainWidget(). You 
+ * only need to set the minimum size of that widget and the dialog will 
+ * resize itself to fit this minimum size.  The dialog is resizeable, but 
+ * can not be made smaller than its minimum size.
  *
  * @sect Layout:
- *
  * The dialog consists of a help area on top (becomes visible if you define
- * a help path and use @ref enableLinkedHelp()), the built-in dialog face or
- * your own widget in the middle, and the button row at the bottom. You can
- * also specify a separator to be shown above the button row.
+ * a help path and use @ref enableLinkedHelp()), the main area which is 
+ * the built-in dialog face or your own widget in the middle and by default 
+ * a button box at the bottom. The button box can also be placed at the 
+ * right edge (to the right of the main widget). Use 
+ * @ref setButtonBoxOrientation() to control this behavior. A separator
+ * can be placed above the button box (or to the left when the button box 
+ * is at the right edge). Normally you specify that you want a separator
+ * in the constructor, but you can use @ref enableButtonSeparator() as well.
  *
  * @sect Standard compliance:
  *
@@ -193,6 +197,10 @@ class KDialogBaseTile : public QObject
  * }
  * </pre>
  *
+ * This class can be used in many ways. Note that most KDE ui widgets
+ * and many of KDE core applications use the KDialogBase so for more 
+ * inspiration you should study the code for these.
+ *
  * @short A dialog base class which standard buttons and predefined layouts.
  * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
@@ -245,13 +253,13 @@ class KDialogBase : public KDialog
     };
 
     /**
-     *  @li @p TreeList - A dialog with a tree on the left side
-     *                    and a representation of the contents on the right side.
+     *  @li @p TreeList - A dialog with a tree on the left side and a 
+     *                    representation of the contents on the right side.
      *  @li @p Tabbed -   A dialog using a @ref QTabWidget.
      *  @li @p Plain -    A normal dialog.
      *  @li @p Swallow
-     *  @li @p IconList - A dialog with an iconlist on the left side
-     *                    and a representation of the contents on the right side.
+     *  @li @p IconList - A dialog with an iconlist on the left side and a 
+     *                    representation of the contents on the right side.
      */
     enum DialogType
     {
@@ -276,7 +284,7 @@ class KDialogBase : public KDialog
 	return( p );
       }
 
-      void resize( bool sameWidth, int margin, int spacing )
+      void resize( bool sameWidth, int margin, int spacing, int orientation )
       {
 	KDialogBaseButton *p;
 	int w = 0;
@@ -286,17 +294,34 @@ class KDialogBase : public KDialog
 	{
 	  if( p->sizeHint().width() > w ) { w = p->sizeHint().width(); }
 	}
-	for( p = list.first(); p!=0; p =  list.next() )
+
+	if( orientation == Horizontal )
 	{
-	  QSize s( p->sizeHint() );
-	  if( sameWidth == true ) { s.setWidth( w ); }
-	  p->setFixedSize( s );
-	  t += s.width() + spacing;
-	}
+	  for( p = list.first(); p!=0; p =  list.next() )
+	  {
+	    QSize s( p->sizeHint() );
+	    if( sameWidth == true ) { s.setWidth( w ); }
+	    p->setFixedSize( s );
+	    t += s.width() + spacing;
+	  }
 	
-	p = list.first();
-	box->setMinimumHeight( margin*2 + ( p==0? 0:p->sizeHint().height()) );
-	box->setMinimumWidth( margin*2 + t - spacing );
+	  p = list.first();
+	  box->setMinimumHeight( margin*2 + ( p==0? 0:p->sizeHint().height()));
+	  box->setMinimumWidth( margin*2 + t - spacing );
+	}
+	else
+	{
+	  // sameWidth has no effect here
+	  for( p = list.first(); p!=0; p =  list.next() )
+	  {
+	    QSize s( p->sizeHint() );
+	    s.setWidth( w );
+	    p->setFixedSize( s );
+	    t += s.height() + spacing;
+	  }
+	  box->setMinimumHeight( margin*2 + t - spacing );
+	  box->setMinimumWidth( margin*2 + w );
+	}
       }
 
 
@@ -423,6 +448,28 @@ class KDialogBase : public KDialog
      * calling this function.
      */
     void delayedDestruct();
+
+    /**
+     * Sets the orientation of the button box. It can be Vertical or 
+     * Horizontal. If Horizontal (default), the button box is positioned
+     * at the bottom of the dialog. If Vertical it will be placed at 
+     * the right edge of the dialog.
+     *
+     * @param orientation The button box orientation.
+     */
+    void setButtonBoxOrientation( int orientation );
+
+    /**
+     * Sets the button that will be activated when the Escape key
+     * is pressed. Normally you should not use this function. By default,
+     * the Escape key is mapped to either the Cancel or the Close button 
+     * if one of these buttons are defined. The user expects that Escape will 
+     * cancel an operation so use this function with caution.
+     *
+     * @param id The button code.
+     */
+    void setEscapeButton( ButtonCode id );
+
 
     /**
      * Adjust the size of the dialog to fit the contents just before
@@ -1362,7 +1409,7 @@ class KDialogBase : public KDialog
 
     
   private:
-    QVBoxLayout  *mTopLayout;
+    QBoxLayout   *mTopLayout;
     QWidget      *mMainWidget;
     KURLLabel    *mUrlHelp;
     KJanusWidget *mJanus;
@@ -1379,6 +1426,7 @@ class KDialogBase : public KDialog
     bool   mShowTile;
 
     bool mMessageBoxMode;
+    int  mButtonOrientation;
     ButtonCode mEscapeButton;
 
     class KDialogBasePrivate;
