@@ -184,7 +184,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
   // gdb gets confused when the application runs from gdb.
   uid_t uid = getuid();
   gid_t gid = getgid();
+#ifdef HAVE_INITGROUPS
   struct passwd *pw = getpwuid(uid);
+#endif
 
   int fd[2];
   if (0 > pipe(fd))
@@ -207,7 +209,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
         {
            setgid(gid);
 #if defined( HAVE_INITGROUPS)
-           initgroups(pw->pw_name, pw->pw_gid);
+	   if(pw)
+              initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(uid);
         }
@@ -748,7 +751,9 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   // gdb gets confused when the application runs from gdb.
   uid_t uid = getuid();
   gid_t gid = getgid();
+#ifdef HAVE_INITGROUPS
   struct passwd *pw = getpwuid(uid);
+#endif
 
   runs = true;
 
@@ -763,7 +768,8 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         {
            setgid(gid);
 #if defined( HAVE_INITGROUPS)
-           initgroups(pw->pw_name, pw->pw_gid);
+	   if(pw)
+              initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(uid);
 
