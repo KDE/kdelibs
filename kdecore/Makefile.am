@@ -23,7 +23,7 @@ lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kconfigbackend.h kcolorgroup.h kapp.h kcharsets.h \
-	kurl.h ksock.h drag.h kmisc.h \
+	kurl.h ksock.h drag.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
