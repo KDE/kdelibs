@@ -8,6 +8,7 @@
 #include <qaction.h>
 #include <qapplication.h>
 #include <qfile.h>
+#include <qstatusbar.h>
 
 Shell::Shell( QWidget* parent, const char* name )
     : QMainWindow( parent, name ), m_collection( this )
@@ -19,6 +20,7 @@ Shell::Shell( QWidget* parent, const char* name )
     m_policy = TriState;
     m_selectedView = 0;
     m_selectedPart = 0;
+    m_statusBar = 0;
 
     qApp->installEventFilter( this );
 }
@@ -46,6 +48,15 @@ void Shell::setSelectionPolicy( SelectionPolicy p )
 Shell::SelectionPolicy Shell::selectionPolicy()
 {
     return m_policy;
+}
+
+QStatusBar *Shell::createStatusBar()
+{
+  if ( m_statusBar )
+    delete m_statusBar;
+
+  m_statusBar = new QStatusBar( this );
+  return m_statusBar;
 }
 
 Part* Shell::rootPart()
@@ -164,6 +175,12 @@ void Shell::setActiveView( View* view, Part* part )
         m_toolbars.clear();
     }
     menuBar()->clear();
+
+    if ( m_statusBar )
+    {
+      delete m_statusBar;
+      m_statusBar = 0;
+    }
 
     if ( m_activeView )
     {

@@ -8,6 +8,7 @@
 
 class QPopupMenu;
 class QString;
+class QStatusBar;
 
 class Part;
 class View;
@@ -48,6 +49,8 @@ public:
     void setSelectionPolicy( SelectionPolicy );
     SelectionPolicy selectionPolicy();
 
+    QStatusBar *createStatusBar();
+
 protected:
     void createToolBars( const QDomElement& element );
     void createMenuBar( const QDomElement& shell, const QDomElement& part );
@@ -86,6 +89,8 @@ private:
     QActionCollection m_collection;
 
     SelectionPolicy m_policy;
+
+    QStatusBar *m_statusBar;
 };
 
 #endif
