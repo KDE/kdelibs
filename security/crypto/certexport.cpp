@@ -105,7 +105,7 @@ QString certt;
       cert = _c->toNetscape();
    }
 
-      if ((!_text->isChecked() && cert.size() <= 0) || certt.isEmpty()) {
+      if ((!_text->isChecked() && cert.size() <= 0) && certt.isEmpty()) {
          KMessageBox::error(this, i18n("Error converting the certificate into the requested format."), i18n("SSL"));
          reject();
          return;
