@@ -1,4 +1,4 @@
-/* vi: ts=8 sts=4 sw=4 */
+// vi: ts=8 sts=4 sw=4
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
