@@ -24,6 +24,8 @@ Test::Test( QWidget* parent, const char *name )
   mWidget->changeTab( mList[1], QString("Two") );
   mWidget->changeTab( mList[2], SmallIcon( "konsole" ), "Three" );
 
+  connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), this, SLOT( currentChanged( QWidget * ) ) );
+
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid, 4, 2 );
 
@@ -67,6 +69,11 @@ Test::Test( QWidget* parent, const char *name )
   srand( time(0) );
   connect( mTimer, SIGNAL(timeout()), this, SLOT(timerDone()) );
   mTimer->start( 3000 ); // 3 seconds single-shot timer
+}
+
+void Test::currentChanged(QWidget* w)
+{
+  mWidget->changeTab( w, Qt::black );
 }
 
 void Test::addTab()

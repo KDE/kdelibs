@@ -30,6 +30,7 @@ private slots:
   void toggleTabShape(bool);
   void leftPopupActivated(int);
   void rightPopupActivated(int);
+  void currentChanged(QWidget*);
 
 private:
   KTabWidget*     mWidget;
