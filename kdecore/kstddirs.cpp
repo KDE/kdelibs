@@ -365,7 +365,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
    
     // Check for existance of typed directory + suffix
     QString fullPath = local + dirs->last() + suffix;
-    if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    if (stat(fullPath.ascii(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 	    debug("save location %s doesn't exist", fullPath.ascii());
 	    return local;
