@@ -77,11 +77,6 @@ public:
   QString readIcon();
 
   /**
-   * Returns the value of the "MiniIcon=" entry.
-   */
-  QString readMiniIcon();
-
-  /**
    * Returns the value of the "Name=" entry.
    */
   QString readName();

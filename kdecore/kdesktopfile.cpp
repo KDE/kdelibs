@@ -68,11 +68,6 @@ QString KDesktopFile::readIcon()
   return readEntry("Icon");
 }
 
-QString KDesktopFile::readMiniIcon()
-{
-  return readEntry("MiniIcon");
-}
-
 QString KDesktopFile::readName()
 {
   return readEntry("Name");
