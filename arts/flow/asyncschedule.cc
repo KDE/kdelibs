@@ -212,6 +212,15 @@ void ASyncPort::sendNet(ASyncNetSend *netsend)
 	sender = FlowSystemSender::_from_base(netsend->_copy());
 }
 
+ASyncNetSend::~ASyncNetSend()
+{
+	while(!pqueue.empty())
+	{
+		pqueue.front()->processed();
+		pqueue.pop();
+	}
+}
+
 long ASyncNetSend::notifyID()
 {
 	return 1;
@@ -348,12 +357,12 @@ void ASyncNetReceive::disconnect()
 	}
 }
 
-void ASyncNetReceive::sendPacket(GenericDataPacket *packet)
+void ASyncNetReceive::sendPacket(GenericDataPacket *)
 {
 	assert(false);
 }
 
-void ASyncNetReceive::setPull(int packets, int capacity)
+void ASyncNetReceive::setPull(int, int)
 {
 	assert(false);
 }

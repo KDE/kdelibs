@@ -46,6 +46,7 @@ protected:
 	long receiveHandlerID;
 
 public:
+	~ASyncNetSend();
 	long notifyID();
 
 	/* this overwrites the Object::notify function */
