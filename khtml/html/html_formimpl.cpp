@@ -451,8 +451,6 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
-    // ### make sure this get's called, when formElements get removed from
-    // the document tree
     formElements.remove(e);
 }
 
@@ -573,6 +571,22 @@ void HTMLGenericFormElementImpl::setFocus(bool received)
             onBlur();
     }
 }
+
+void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
+{
+    if (_parent) { // false on initial insert, we use the form given by the parser
+	if (m_form)
+	    m_form->removeFormElement(this);
+	m_form = 0;
+    }
+    HTMLElementImpl::setParent(parent);
+    if (!m_form) {
+	m_form = getForm();
+	if (m_form)
+	    m_form->registerFormElement(this);
+    }
+}
+
 
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
