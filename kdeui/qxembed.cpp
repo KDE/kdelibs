@@ -839,8 +839,9 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
     // L1510: This is a good time to set the X11 focus on the focus proxy window.
     //        Except if the the embedding application itself is embedded into another.
     if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
-        XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
-                        RevertToParent, qt_x_time );
+        if( isActiveWindow()) // alter X focus only when this is the active window
+            XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
+                            RevertToParent, qt_x_time );
     if (d->xplain) {
         // L1520: Qt focus has changed. Grab state might change. See L2800.
         checkGrab();
