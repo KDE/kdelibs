@@ -96,10 +96,11 @@ public:
    * If id is not specified, the tab is simply added. Otherwise it's inserted at the specified position.
    *
    * @param label the title in the tab page header
-   * @param id an identification number for access operations
+   * @param id suggest an identification number for access operations but it will be shifted to the next free value
+   * @param index the tab page position (default=-1 means append)
    * @return the new allocated id
    */
-  int insertTab( const QString &label, int id = -1 );
+  int insertTab( const QString &label, int id = -1, int index = -1 );
 
   /**
    * Sets an icon for the tab page with that id.
@@ -380,9 +381,11 @@ public:
    *
    * @param w the widget that is inserted
    * @param label the title for the caption bar of the tab page
+   * @param id suggest an identification number for access operations but it will be shifted to the next free value
+   * @param index the tab page position (default=-1 means append)
    * @return the id of the new inserted page
    */
-  int insertPage( QWidget * w, const QString &label, int id = -1 );
+  int insertPage( QWidget * w, const QString &label, int id = -1, int index = -1 );
 
   /**
    * Sets the title of the tab page.
@@ -500,6 +503,13 @@ public:
    * @param w the widget that should return its id
    */
   int id( QWidget* w);
+
+  /**
+   * Returns the widget's index. (tab page position)
+   *
+   * @param w the widget that should return its index
+   */
+  int index( QWidget* w);
 
   /**
    * Removes the tab page from the covered tab bar.

@@ -632,6 +632,8 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
 {
+  d = new KDockWidgetPrivate();  // create private data
+
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
@@ -671,6 +673,7 @@ KDockWidget::~KDockWidget()
   delete pix;
   emit iMBeingClosed();
   manager->childDock->remove( this );
+  delete d; // destroy private data
 }
 
 void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
@@ -785,7 +788,7 @@ bool KDockWidget::event( QEvent *event )
   return QWidget::event( event );
 }
 
-KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos, int spliPos, QPoint pos, bool check )
+KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos, int spliPos, QPoint pos, bool check, int tabIndex )
 {
   bool succes = true; // tested flag
 
@@ -815,7 +818,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
         case KDockWidget::DockBottom: another__dockPos = KDockWidget::DockTop   ; break;
         default: break;
       }
-      dock_result = target->manualDock( this, another__dockPos, spliPos, pos, true );
+      dock_result = target->manualDock( this, another__dockPos, spliPos, pos, true, tabIndex );
     }
     return dock_result;
   }
@@ -834,7 +837,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if ( parentTab ){
     // add to existing TabGroup
     applyToWidget( parentTab );
-    parentTab->insertPage( this, tabPageLabel() );
+    parentTab->insertPage( this, tabPageLabel(), -1, tabIndex );
     parentTab->setPixmap( this, *pix );
     setDockTabName( parentTab );
     if( !toolTipStr.isEmpty())
@@ -890,7 +893,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     if( !target->toolTipString().isEmpty())
       tab->setToolTip( target, target->toolTipString());
 
-    tab->insertPage( this, tabPageLabel() );
+    tab->insertPage( this, tabPageLabel(), -1, tabIndex );
     tab->setPixmap( this, *pix );
     if( !toolTipString().isEmpty())
       tab->setToolTip( this, toolTipString());
@@ -983,6 +986,7 @@ void KDockWidget::undock()
 
   KDockTabGroup* parentTab = parentTabGroup();
   if ( parentTab ){
+    d->index = parentTab->index( this); // memorize the page position in the tab widget
     parentTab->removePage( this );
     formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
     QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
@@ -1041,6 +1045,7 @@ void KDockWidget::undock()
 /*********************************************************************************************/
     if ( parentW->inherits("KDockSplitter") ){
       KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)parentW;
+      d->splitPosInPercent = parentSplitterOfDockWidget->separatorPos();
 
       KDockWidget* secondWidget = (KDockWidget*)parentSplitterOfDockWidget->getAnother( this );
       KDockWidget* group        = (KDockWidget*)parentSplitterOfDockWidget->parentWidget();
@@ -1198,15 +1203,17 @@ void KDockWidget::dockBack()
 
 		if( !found) {
 			// can dock back to the former brother dockwidget
-			manualDock( formerBrotherDockWidget, formerDockPos);
+			manualDock( formerBrotherDockWidget, formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
 			formerBrotherDockWidget = 0L;
+			makeDockVisible();
 			return;
 		}
 	}
 
 	// else dockback to the dockmainwindow (default behaviour)
-  manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos);
+  manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
   formerBrotherDockWidget = 0L;
+  makeDockVisible();
 }
 
 bool KDockWidget::isDockBackPossible()

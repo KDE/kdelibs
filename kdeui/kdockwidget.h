@@ -49,6 +49,7 @@ class KDockSplitter;
 class KDockMoveManager;
 class KDockWidget;
 class KDockButton_Private;
+class KDockWidgetPrivate;
 
 class QObjectList;
 class QPopupMenu;
@@ -355,9 +356,10 @@ public:
    * @param  spliPos the split relation (in percent) between both dockwidgets, target and this
    * @param  pos the dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
    * @param  check only for internal use;
+   * @param  tabIndex the position index of the tab widget (when in tab page mode), -1 (default) means append
    * @return result the group dockwidget that replaces the target dockwidget and will be grandparent of target and this
    */
-  KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false );
+  KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false, int tabIndex = -1);
 
   /**
    * Specify where it is either possible or impossible for this to dock to another dockwidget.
@@ -605,8 +607,7 @@ private:
   bool isGroup;
   bool isTabGroup;
 
-  class KDockWidgetData;
-  KDockWidgetData *d;
+  KDockWidgetPrivate *d;
 };
 
 /**

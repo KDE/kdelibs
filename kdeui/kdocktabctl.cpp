@@ -570,7 +570,7 @@ KDockTabCtl::~KDockTabCtl()
   delete mainData;
 }
 
-int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id )
+int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id, int index )
 {
   if ( id == -1 ){
     id = -1;
@@ -580,8 +580,11 @@ int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id )
   }
   KDockTabCtl_Private* data = new KDockTabCtl_Private( widget, id );
   stack->addWidget( widget, id );
-  mainData->append( data );
-  tabs->insertTab( label, id );
+  if( index == -1)
+    mainData->append( data );
+  else
+    mainData->insert( index, data);
+  tabs->insertTab( label, id, index );
   if ( !tabs->isVisible() ){
     tabs->show();
     layout->activate();
@@ -676,6 +679,17 @@ int KDockTabCtl::id( QWidget* widget )
 {
   KDockTabCtl_Private* data = findData(widget);
   return data == 0L ? -1:data->id;
+}
+
+int KDockTabCtl::index( QWidget* widget )
+{
+  int indx = -1;
+  for ( uint k = 0; k < mainData->count(); k++ )
+    if ( mainData->at(k)->widget == widget ){
+      indx = k;
+      break;
+    }
+  return indx;
 }
 
 QWidget* KDockTabCtl::page( int id )
@@ -973,7 +987,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
   barPainter->repaint( false );
 }
 
-int KDockTabBar::insertTab( const QString &label, int id )
+int KDockTabBar::insertTab( const QString &label, int id, int index )
 {
   if ( id == -1 ){
     id = 0;
@@ -984,7 +998,10 @@ int KDockTabBar::insertTab( const QString &label, int id )
   data->textColor = colorGroup().text();
 
   data->width = 4 + fontMetrics().width( label ) + 14;
-  mainData->append( data );
+  if( index == -1)
+    mainData->append( data );
+  else
+    mainData->insert( index, data);
 
   resizeEvent(0);
   repaint( false );

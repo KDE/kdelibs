@@ -445,3 +445,14 @@ void KDockButton_Private::leaveEvent( QEvent * )
   repaint();
 }
 
+/*************************************************************************/
+KDockWidgetPrivate::KDockWidgetPrivate()
+  : QObject()
+  ,index(-1)
+  ,splitPosInPercent(50)
+{
+}
+
+KDockWidgetPrivate::~KDockWidgetPrivate()
+{
+}

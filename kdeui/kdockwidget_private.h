@@ -154,4 +154,19 @@ private:
   bool moveMouse;
 };
 
+/**
+ * additional KDockWidget stuff (private)
+*/
+class KDockWidgetPrivate : public QObject
+{
+  Q_OBJECT
+public:
+  KDockWidgetPrivate();
+  ~KDockWidgetPrivate();
+
+public:
+  int index;
+  int splitPosInPercent;
+};
+
 #endif
