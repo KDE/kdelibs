@@ -56,3 +56,47 @@ void usleep(unsigned int usec) {
 }
 
 #endif
+
+#if !defined(HAVE_GETDOMAINNAME)
+
+#include <sys/utsname.h> 
+#include <netdb.h>
+#include <strings.h>
+#include <errno.h>
+#include <stdio.h>
+
+int getdomainname(char *name, size_t len)
+{
+        struct utsname uts;
+        struct hostent *hent;
+        int rv = -1;
+
+        if (name == NULL)
+          errno = EINVAL;
+        else
+        {               
+                name[0] = '\0';
+                if (uname(&uts) >= 0)
+                {
+                        if ((hent = gethostbyname(uts.nodename)) != NULL)
+                        {
+                                char *p = strchr(hent->h_name, '.');
+                                if (p != NULL)
+                                {
+                                        ++p;
+                                        if (strlen(p) > len-1)
+                                          errno = EINVAL;
+                                        else
+                                        {
+                                                strcpy(name, p);
+                                                rv = 0;
+                                        }
+                                }
+                        }
+                }
+        }
+        return rv;
+}
+
+
+#endif

@@ -35,13 +35,6 @@
 #include <sysent.h>
 #endif
 
-/* this is needed for AIX */
-#ifndef HAVE_GETDOMAINNAME
-extern "C" {
-int getdomainname (char *Name, int Namelen);
-}
-#endif
-
 bool kwm_error;
 
 static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){

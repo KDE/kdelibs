@@ -14,8 +14,8 @@ const bool true = 1;
 /* this is needed for Solaris and others */
 #ifndef HAVE_GETDOMAINNAME
 #define HAVE_GETDOMAINNAME
-#ifdef __cplusplus  
-extern "C" 
+#ifdef __cplusplus
+extern "C"
 #endif
 int getdomainname (char *Name, int Namelen);
 #endif  
