@@ -162,8 +162,9 @@ public:
 	underMouse = 0;
         linkPressed = false;
         useSlowRepaints = false;
-        originalNode = 0;
-	borderTouched = false;
+	tabMovePending = false;
+	lastTabbingDirection = true;
+	focusJustEnteredView = true;
 #ifndef KHTML_NO_SCROLLBARS
         vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
@@ -272,11 +273,9 @@ public:
     QPixmap  *vertPaintBuffer;
     NodeImpl *underMouse;
 
-    // the node that was selected when enter was pressed
-    NodeImpl *originalNode;
-
-    bool borderTouched:1;
-    bool borderStart:1;
+    bool tabMovePending:1;
+    bool lastTabbingDirection:1;
+    bool focusJustEnteredView:1;
     bool scrollBarMoved:1;
 
     QScrollView::ScrollBarMode vmode;
@@ -1243,7 +1242,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		NodeImpl *n = m_part->xmlDocImpl()->focusNode();
 		if (n)
 		    n->setActive();
-		d->originalNode = n;
 	    }
             break;
         case Key_Home:
@@ -1377,16 +1375,16 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent * /*ce*/ )
 bool KHTMLView::focusNextPrevChild( bool next )
 {
     // Now try to find the next child
-    if (m_part->xmlDocImpl()) {
-        focusNextPrevNode(next);
-        if (m_part->xmlDocImpl()->focusNode() != 0) {
-	  kdDebug() << "focusNode.name: "
-	  << m_part->xmlDocImpl()->focusNode()->nodeName().string() << endl;
-            return true; // focus node found
-	    }
+    if (m_part->xmlDocImpl() && focusNextPrevNode(next))
+    {
+	if (m_part->xmlDocImpl()->focusNode())
+	    kdDebug() << "focusNode.name: "
+		      << m_part->xmlDocImpl()->focusNode()->nodeName().string() << endl;
+	return true; // focus node found
     }
 
-    // If we get here, there is no next/previous child to go to, so pass up to the next/previous child in our parent
+    // If we get here, pass tabbing control up to the next/previous child in our parent
+    d->focusJustEnteredView = true;
     if (m_part->parentPart() && m_part->parentPart()->view())
         return m_part->parentPart()->view()->focusNextPrevChild(next);
 
@@ -1652,63 +1650,113 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 
 }
 
-void KHTMLView::focusNextPrevNode(bool next)
+bool KHTMLView::focusNextPrevNode(bool next)
 {
-    // Sets the focus node of the document to be the node after (or if next is false, before) the current focus node.
-    // Only nodes that are selectable (i.e. for which isSelectable() returns true) are taken into account, and the order
-    // used is that specified in the HTML spec (see DocumentImpl::nextFocusNode() and DocumentImpl::previousFocusNode()
-    // for details).
+    // Sets the focus node of the document to be the node after (or if
+    // next is false, before) the current focus node.  Only nodes that
+    // are selectable (i.e. for which isSelectable() returns true) are
+    // taken into account, and the order used is that specified in the
+    // HTML spec (see DocumentImpl::nextFocusNode() and
+    // DocumentImpl::previousFocusNode() for details).
+
+// behaviour of this function in pseudo
+// 	if TabMovePending, then
+// 	{
+// 	    if Tabbing-direction changed since last time,
+//                 newFocusNode = actFocusNode; (actFocusNode is not visible ATM!)
+// 	    else
+// 	        newFocusNode = nextPrevNode (current tabbing-direction);
+// 	}
+
+// 	move View at most by one screen towards newFocusNode.
+//         if no NewFocusNode, move by one screen towards upper/lower corner
+//         or, if focus just entered view, directly to upper/lower corner
+
+// 	if newFocusNode visible, then
+// 	    setFocusNode(newFocusNode);
+//             pendingTabMove = true;
+//         else:
+//             pendingTabMove = false
+
+// 	oldTabbingDirection = current Tabbing-direction.
 
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
     NodeImpl *newFocusNode;
 
-    // Find the next/previous node from the current one
-    if (next)
-        newFocusNode = doc->nextFocusNode(oldFocusNode);
+    if (d->tabMovePending && next != d->lastTabbingDirection)
+	newFocusNode = oldFocusNode;
+    else if (next)
+	newFocusNode = doc->nextFocusNode(oldFocusNode);
     else
-        newFocusNode = doc->previousFocusNode(oldFocusNode);
+	newFocusNode = doc->previousFocusNode(oldFocusNode);
 
-    // If the user has scrolled the document, then instead of picking the next focusable node in the document, use the
-    // first one that lies within the visible area (if possible).
-    if (newFocusNode && d->scrollBarMoved) {
+#if 1
+    // If the user has scrolled the document, then instead of picking
+    // the next focusable node in the document, use the first one that
+    // is within the visible area (if possible).
+    if (d->scrollBarMoved)
+    {
+	kdDebug(6000) << " searching for visible link" << endl;
+	
+	NodeImpl *toFocus;
+	if (next)
+	    toFocus = doc->nextFocusNode(NULL);
+	else
+	    toFocus = doc->previousFocusNode(NULL);
 
-      kdDebug(6000) << " searching for visible link" << endl;
+	while (toFocus)
+	{
+	    
+	    QRect focusNodeRect = toFocus->getRect();
+	    if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
+		(focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
+		{
+		    QRect r = toFocus->getRect();
+		    ensureVisible( r.right(), r.bottom());
+		    ensureVisible( r.left(), r.top());
+		    d->scrollBarMoved = false;
+		    d->tabMovePending = false;
+		    d->lastTabbingDirection = next;
+		    d->focusJustEnteredView = false;
+		    kdDebug(6000) << "found visible link" << endl;
+		    m_part->xmlDocImpl()->setFocusNode(toFocus);
+		    Node guard(toFocus);
+		    if (!toFocus->hasOneRef() )
+		    {
+			emit m_part->nodeActivated(Node(toFocus));
+		    }
+		    return true;
+		}
+	    }
+	    if (next)
+		toFocus = doc->nextFocusNode(toFocus);
+	    else
+		toFocus = doc->previousFocusNode(toFocus);
+	}
 
-        bool visible = false;
-        NodeImpl *toFocus = newFocusNode;
-        while (!visible && toFocus) {
-            QRect focusNodeRect = toFocus->getRect();
-            if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
-                (focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
-                // toFocus is visible in the contents area
-                visible = true;
-            }
-            else {
-                // toFocus is _not_ visible in the contents area, pick the next node
-                if (next)
-                    toFocus = doc->nextFocusNode(toFocus);
-                else
-                    toFocus = doc->previousFocusNode(toFocus);
-            }
-        }
+	d->scrollBarMoved = false;
+    }
+#endif
 
-        if (toFocus)
-            newFocusNode = toFocus;
+    if (d->focusJustEnteredView)
+    {
+	ensureVisible(contentsX(), next?0:contentsHeight());
+	d->scrollBarMoved = false;
+	d->focusJustEnteredView = false;
+	return true;
     }
 
-    d->scrollBarMoved = false;
+    bool targetVisible = false;
 
     if (!newFocusNode)
-      {
-        // No new focus node, scroll to bottom or top depending on next
-        if (next)
-            scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
-        else
-            scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+    {
+	if (next)
+	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+	else
+	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
     }
     else
-    // Scroll the view as necessary to ensure that the new focus node is visible
     {
 #ifndef KHTML_NO_CARET
         // if it's an editable element, activate the caret
@@ -1721,25 +1769,31 @@ void KHTMLView::focusNextPrevNode(bool next)
 	}
 #endif // KHTML_NO_CARET
 
-      if (oldFocusNode)
-	{
-	  if (!scrollTo(newFocusNode->getRect()))
-	    return;
-	}
-      else
-	{
-	  ensureVisible(contentsX(), next?0:contentsHeight());
-	  //return;
-	}
-
+	targetVisible = scrollTo(newFocusNode->getRect());
     }
 
-    // Set focus node on the document
-    Node guard(newFocusNode);
-    m_part->xmlDocImpl()->setFocusNode(newFocusNode);
-    if( newFocusNode != NULL && newFocusNode->hasOneRef()) // deleted, only held by guard
-        return;
-    emit m_part->nodeActivated(Node(newFocusNode));
+    if (targetVisible)
+    {
+	d->tabMovePending = false;
+	d->lastTabbingDirection = next;
+
+	m_part->xmlDocImpl()->setFocusNode(newFocusNode);
+	if (newFocusNode)
+	{
+	    Node guard(newFocusNode);
+	    if (!newFocusNode->hasOneRef() )
+	    {
+		emit m_part->nodeActivated(Node(newFocusNode));
+	    }
+	    return true;
+	}
+	else return false;
+    }
+    else
+    {
+	d->tabMovePending = true;
+	return true;
+    }
 }
 
 // Handling of the HTML accesskey attribute.

@@ -243,7 +243,7 @@ private:
 
     bool scrollTo(const QRect &);
 
-    void focusNextPrevNode(bool next);
+    bool focusNextPrevNode(bool next);
     bool handleAccessKey(const QKeyEvent* ev);
     bool focusNodeWithAccessKey(QChar c, KHTMLView* caller = NULL);
 

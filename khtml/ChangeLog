@@ -1,3 +1,12 @@
+2004-06-30 Tobias Anton <anton@stud.fbi.fh-darmstadt.de>
+	* khtmlview.{cpp,h}:
+	integrated keyboard tabbing with mouse scrolling.
+	Hitting tab skips at most one page, but respects
+	the tabindex ordering of the document.
+	If the document has been scrolled by the mouse before,
+	"tab" now selects the first/last element in the visible
+	area of the page.
+
 2004-06-26  Germain Garand  <germain@ebooksfrance.org>
 
         * css/html4.css: 
