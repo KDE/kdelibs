@@ -322,7 +322,7 @@ void KHTMLParser::parseToken(Token *t)
 #ifdef PARSER_DEBUG
 	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
 #endif
-	if (!_inline  || !inBody)  {
+	if (!_inline  || !inBody || current->id() == ID_OPTION)  {
 	    if(t->text.length() == 1 && t->text[0].latin1() == ' ')
 		return;
 	} else if ( inBody ) {
@@ -621,7 +621,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
            }
            break;
-        default:
+	    case ID_FONT:
+		if ( current->id() == ID_OPTION || current->id() == ID_OPTGROUP )
+		    return false;
+		break;
+	    default:
             break;
         }
 
