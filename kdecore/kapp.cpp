@@ -721,12 +721,14 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("crashhandler"))
     {
+#if 0
         // reset the crash handler recursive counter
         resetCrashRecursion();
 
         // set default crash handler / set emergency save function to nothing
         setCrashHandler(KDE_CRASH_INTERNAL);
         setEmergencySaveFunction(KDE_SAVE_NONE);
+#endif
     }
 
     delete args; // Throw away
