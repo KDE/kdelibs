@@ -59,31 +59,41 @@ public:
     KLibrary( const QString& libname, const QString& filename, void * handle );
 
     /**
+     * Returns the name of the library.
      * @return The name of the library like "libkspread".
      */
     QString name() const;
 
     /**
+     * Returns the file name of the library.
      * @return The filename of the library, for example "/opt/kde2&/lib/libkspread.la"
      */
     QString fileName() const;
 
     /**
-     * @return The factory of the library if there is any.
+     * Returns the factory of the library.
+     * @return The factory of the library if there is any, otherwise 0
      */
     KLibFactory* factory();
 
     /**
      * Looks up a symbol from the library. This is a very low level
-     * function that you usually don't want to use.
+     * function that you usually don't want to use. Usually you should
+     * check using @ref hasSymbol() whether the symbol actually exists,
+     * otherwise a warning will be printed.
+     * @param name the name of the symbol to look up
+     * @return the address of the symbol, or 0 if it does not exist
+     * @see #hasSymbol
      */
     void* symbol( const char* name ) const;
 
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use.
-     * Unlike symbol(), this method doesn't warn if the symbol doesn't exist,
+     * Unlike @ref #symbol(), this method doesn't warn if the symbol doesn't exist,
      * so if the symbol might or might not exist, better use hasSymbol() before symbol().
+     * @param name the name of the symbol to check
+     * @return true if the symbol exists
      */
     bool hasSymbol( const char* name ) const;
 
@@ -142,7 +152,19 @@ public:
      * handled gracefully.
      *
      * This is a convenience function that returns the factory immediately
+     * @param libname  This is the library name without extension. Usually that is something like
+     *                 "libkspread". The function will then search for a file named
+     *                 "libkspread.la" in the KDE library paths.
+     *                 The *.la files are created by libtool and contain
+     *                 important information especially about the libraries dependencies
+     *                 on other shared libs. Loading a "libfoo.so" could not solve the
+     *                 dependencies problem.
      *
+     *                 You can, however, give a library name ending in ".so"
+     *                 (or whatever is used on your platform), and the library
+     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     * @return the @ref KLibFactory, or 0 if the library does not exist or it does
+     *         not have a factory
      * @see #library
      */
     KLibFactory* factory( const char* libname );
@@ -194,23 +216,42 @@ public:
     KLibrary* globalLibrary( const char *name );
 
     /*
-     * returns an error message that can be useful to debug the problem
-     * returns QString::null if the last call to ::library(const char*) was successful
-     * you can call this function more than once. The error message is only
+     * Returns an error message that can be useful to debug the problem.
+     * Returns QString::null if the last call to @ref #library() was successful.
+     * You can call this function more than once. The error message is only
      * reset by a new call to library().
+     * @return the last error message, or QString::null if there was no error
      */
     QString lastErrorMessage() const;
 
+    /**
+     * Unloads the library with the given name.
+     * @param libname  This is the library name without extension. Usually that is something like
+     *                 "libkspread". The function will then search for a file named
+     *                 "libkspread.la" in the KDE library paths.
+     *                 The *.la files are created by libtool and contain
+     *                 important information especially about the libraries dependencies
+     *                 on other shared libs. Loading a "libfoo.so" could not solve the
+     *                 dependencies problem.
+     *
+     *                 You can, however, give a library name ending in ".so"
+     *                 (or whatever is used on your platform), and the library
+     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     */
     virtual void unloadLibrary( const char *libname );
 
     /**
+     * Returns a pointer to the factory. Use this function to get an instance
+     * of KLibLoader.
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
      */
     static KLibLoader* self();
 
     /**
-     * @internal method, called by the KApplication destructor
+     * @internal 
+     * Internal Method, called by the KApplication destructor.
+     * Do not call it.
      * This is what makes it possible to rely on ~KLibFactory
      * being called in all cases, whether the library is unloaded
      * while the application is running or when exiting.
@@ -219,9 +260,13 @@ public:
 
     /**
      * Helper method which looks for a library in the standard paths
-     * ("module" and "lib" resources)
+     * ("module" and "lib" resources).
      * Made public for code that doesn't use KLibLoader itself, but still
      * wants to open modules.
+     * @param name of the library. If it is not a path, the function searches in
+     *             the "module" and "lib" resources. If there is no extension, 
+     *             ".la" will be appended.
+     * @param instance a KInstance used to get the standard paths
      */
     static QString findLibrary( const char * name, const KInstance * instance = KGlobal::instance() );
 
@@ -283,6 +328,8 @@ class KLibFactory : public QObject
 public:
     /**
      * Create a new factory.
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
      */
     KLibFactory( QObject* parent = 0, const char* name = 0 );
     virtual ~KLibFactory();
@@ -301,6 +348,11 @@ public:
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.
+     *
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
+     * @param classname the name of the class
+     * @param args a list of arguments
      */
 
      QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
@@ -308,6 +360,7 @@ public:
 signals:
     /**
      * Emitted in #create
+     * @param obj the new object
      */
     void objectCreated( QObject *obj );
 
@@ -325,6 +378,10 @@ protected:
      * that encapsulates the Koffice specific features.
      *
      * This function is called by #create()
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
+     * @param classname the name of the class
+     * @param args a list of arguments
      */
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
