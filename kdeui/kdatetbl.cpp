@@ -139,9 +139,9 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   // setTableFlags(Tbl_clipCellPainting); // enable to find drawing failures
   setBackgroundColor(lightGray);
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
-  Days[0]=i18n("Sun"); Days[1]=i18n("Mon"); Days[2]=i18n("Tue"); 
-  Days[3]=i18n("Wed"); Days[4]=i18n("Thu"); Days[5]=i18n("Fri"); 
-  Days[6]=i18n("Sat"); 
+  Days[0]=i18n("Mon"); Days[1]=i18n("Tue"); Days[2]=i18n("Wed"); 
+  Days[3]=i18n("Thu"); Days[4]=i18n("Fri"); Days[5]=i18n("Sat"); 
+  Days[6]=i18n("Sun");
 }
 
 void
@@ -171,7 +171,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 	  painter->drawRect(0, 0, cellWidth(), cellHeight());
 	  painter->setPen(blue);
 	  painter->drawText(0, 0, w, h-1, AlignCenter, 
-			    date.dayName(col+1), -1, &rect);
+			    Days[col], -1, &rect);
 	  break;
 	default: // normal weekday
 	  painter->setPen(blue);
@@ -179,7 +179,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 	  painter->drawRect(0, 0, w, h);
 	  painter->setPen(white);
 	  painter->drawText(0, 0, w, h-1, AlignCenter, 
-			    date.dayName(col+1), -1, &rect);
+			    Days[col], -1, &rect);
 	};
       painter->setPen(black);
       painter->moveTo(0, h-1);
