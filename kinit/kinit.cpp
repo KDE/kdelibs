@@ -170,8 +170,6 @@ static pid_t launch(int argc, const char *_name, const char *args)
      close(d.fd[0]);
      close_fds();
 
-fprintf(stderr, "arg[0] = %s\n", name.data());
-
      /** Give the process a new name **/
      kdeinit_setproctitle( "%s", name.data() );
 
@@ -180,13 +178,11 @@ fprintf(stderr, "arg[0] = %s\n", name.data());
      for (int i = 1;  i < argc; i++)
      {
         d.argv[i] = (char *) args;
-fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         while(*args != 0) args++;
         args++;
      }
      d.argv[argc] = 0;
 
-     printf("Opening \"%s\"\n", cmd.data() );
      d.handle = lt_dlopen( cmd.data() );
      if (!d.handle )
      {
@@ -230,7 +226,6 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
      }
      else
      {
-fprintf(stderr, "Starting klauncher.\n");
         d.sym = lt_dlsym( d.handle, "start_launcher");
         if (!d.sym )
         {
@@ -288,7 +283,6 @@ fprintf(stderr, "Starting klauncher.\n");
        }
        if (exec)
        {
-          fprintf(stderr, "Exec successfull.\n");
           d.result = 0;
           break;
        }
@@ -676,12 +670,10 @@ static void handle_launcher_request(int sock = -1)
       name = request_data + sizeof(long);
       args = name + strlen(name) + 1;
 
-      printf("KInit: args = %d arg_length = %ld\n", argc, request_header.arg_length);
-
       if (launcher)
-         printf("KInit: Got EXEC '%s' from klauncher\n", name);
+         fprintf(stderr, "KInit: Got EXEC '%s' from klauncher\n", name);
       else
-         printf("KInit: Got EXEC '%s' from socket\n", name);
+         fprintf(stderr, "KInit: Got EXEC '%s' from socket\n", name);
 
       {
          int i = 1;
@@ -689,7 +681,6 @@ static void handle_launcher_request(int sock = -1)
          arg_n = args;
          while (i < argc)
          {
-printf("KInit: argc[%d] = '%s'\n", i, arg_n);
            arg_n = arg_n + strlen(arg_n) + 1;
            i++;
          }
@@ -725,9 +716,9 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
       env_value = env_name + strlen(env_name) + 1;
 
       if (launcher)
-         printf("Got SETENV '%s=%s' from klauncher\n", env_name, env_value);
+         fprintf(stderr, "Got SETENV '%s=%s' from klauncher\n", env_name, env_value);
       else
-         printf("Got SETENV '%s=%s' from socket\n", env_name, env_value);
+         fprintf(stderr, "Got SETENV '%s=%s' from socket\n", env_name, env_value);
 
       if ( request_header.arg_length !=
           (int) (strlen(env_name) + strlen(env_value) + 2))
@@ -795,10 +786,7 @@ static void handle_requests()
       FD_SET(d.deadpipe[0], &rd_set);
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
 
-      printf("Entering select...\n");
       result = select(max_sock, &rd_set, &wr_set, &e_set, 0);
-      printf("Select done...\n");
-
 
       /* Handle wrapper request */
       if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
@@ -997,19 +985,17 @@ int main(int argc, char **argv, char **envp)
       init_kdeinit_socket();
    }
 
-   printf("Pre Launcher, pid = %ld\n", (long)getpid());
-
    if (launch_dcop)
    {
       pid = launch( 2, "dcopserver", "--nosid" );
-      printf("DCOPServer: pid = %d result = %d\n", pid, d.result);
+      fprintf(stderr, "DCOPServer: pid = %d result = %d\n", pid, d.result);
       WaitPid(pid);
    }
 
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );
-      printf("KLauncher: pid = %d result = %d\n", pid, d.result);
+      fprintf(stderr, "KLauncher: pid = %d result = %d\n", pid, d.result);
       WaitPid(pid);
    }
 
@@ -1019,7 +1005,7 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "+kdesktop") == 0)
       {
          pid = launch( 2, "kdesktop", "--waitforkded" );
-         printf("KDesktop: pid = %d result = %d\n", pid, d.result);
+         fprintf(stderr, "KDesktop: pid = %d result = %d\n", pid, d.result);
          WaitPid(pid);
          safe_argv[i][0] = '-'; // Make it an option so that it won't be launched a second time!
          break;
@@ -1029,7 +1015,7 @@ int main(int argc, char **argv, char **envp)
    if (launch_kded)
    {
       pid = launch( 1, "kded", 0 );
-      printf("KDED: pid = %d result = %d\n", pid, d.result);
+      fprintf(stderr, "KDED: pid = %d result = %d\n", pid, d.result);
       WaitPid(pid);
    }
 
@@ -1038,7 +1024,7 @@ int main(int argc, char **argv, char **envp)
       if (safe_argv[i][0] == '+')
       {
          pid = launch( 1, safe_argv[i]+1, 0);
-         printf("Launched: %s, pid = %d result = %d\n", safe_argv[i]+1, pid, d.result);
+         fprintf(stderr, "Launched: %s, pid = %d result = %d\n", safe_argv[i]+1, pid, d.result);
          WaitPid(pid);
       }
       else if (safe_argv[i][0] == '-')
@@ -1048,7 +1034,7 @@ int main(int argc, char **argv, char **envp)
       else
       {
          pid = launch( 1, safe_argv[i], 0 );
-         printf("Launched: %s, pid = %d result = %d\n", safe_argv[i], pid, d.result);
+         fprintf(stderr, "Launched: %s, pid = %d result = %d\n", safe_argv[i], pid, d.result);
       }
    }
 
