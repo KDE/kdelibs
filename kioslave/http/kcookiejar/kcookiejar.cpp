@@ -472,7 +472,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           // Catch some TLDs that we miss with the previous check
           // e.g. com.au, org.uk, mil.co
           QCString t = partList[0].lower().utf8();
-          if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil")) 
+          if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int")) 
               break;
        }
        QString domain = partList.join(".");
