@@ -1042,7 +1042,7 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
 
     emit requestStarted( req->m_docLoader, req->object );
 
-    servePendingRequests();
+    QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
 }
 
 void Loader::servePendingRequests()
@@ -1124,7 +1124,7 @@ void Loader::slotFinished( KIO::Job* job )
 #endif
 
   delete r;
-  servePendingRequests();
+  QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
