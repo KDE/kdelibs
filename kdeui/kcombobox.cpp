@@ -71,7 +71,6 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     if ( rw ) {
         KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
         setLineEdit( edit );
-        setDelegate( edit );
     }
 }
 
@@ -266,6 +265,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
 {
     QComboBox::setLineEdit( edit );
     d->klineEdit = dynamic_cast<KLineEdit*>( edit );
+    setDelegate( d->klineEdit );
 }
 
 // Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
