@@ -24,10 +24,8 @@ Index:
 - recursive scheduling again (with loops & cycles)
 - reading/writing IEEE Floats needs proper documentation, testing on
   different architectures and probably different code for some machines
-- audio playing support for mono? 8bit? mmap? ... support other architectures
 - allow progressive loading for wave files
 - write blockwise caching (not requiring whole samples to be held in memory)
-- maybe make an explicit call like "suspend now" (esdctl off/esdctl on)
 - recording, try to fix autoSuspend in conjunction with full duplex
 
 2. To have more fun
@@ -59,18 +57,6 @@ Index:
 
 3. Other suggestions:
 
-  => Config dialog:
-
-- instead of using three radio buttons to select latency, use a slider
-with three positions (left, middle, and right) with icons beneath them
-depicting latency, or labels beneath these points.  More polished looking.
-
-- instead of saying changes must take place when you logout and login,
-just restart artsd after the dialog is accepted. (This may also be done
-as an additional MCOP interface to change config stuff on the fly, as
-restarting will mean that already connected clients (mp3 player) will
-crash/hang).
-
   => Documentation & Web
 
 - make kdoc classtree available online
@@ -81,19 +67,9 @@ crash/hang).
 
 - implement an arts_stream_flush for writing half-written data packets
   (useful for implementing SNDCTL_DSP_POST in artsdsp)
-- maybe implement atomic setting of fragmentcount and -size
-  (useful for implementing SNDCTL_DSP_SETFRAGMENT)
 
   => audio output
 
 - maybe use some code from the XMMS-Solaris plugin for the aRtsd sound output.
-  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/
-  (is being worked on)
-
-- modularize audio output to be able to add "drivers" more easily
-
-- support 8bit audio output
-  (i.e. I got a message, complaining that aRts doesn't start:
-  > [root@js6864nt bin]# ./artsd start
-  > Error while initializing the sound driver:
-  > Can't set 16bit (AFMT_S16_LE) playback
+  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/ (is being worked on)
+- maybe support mono? mmap? ... support other architectures (SDL, NAS, ESD, AIX)
