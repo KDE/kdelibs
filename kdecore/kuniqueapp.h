@@ -126,8 +126,7 @@ public:
   /** 
    * Dispatch any incoming DCOP message for a new instance.
    *
-   *  If
-   * it is not a request for a new instance, return @p false.
+   * If it is not a request for a new instance, return @p false.
    */
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString &replyType, QByteArray &replyData);
@@ -135,8 +134,7 @@ public:
   /**
    * Create a new "instance" of the application.
    *
-   *  Usually this
-   * will involve making some calls into the GUI portion of your
+   * Usually this will involve making some calls into the GUI portion of your
    * application asking for a new window to be created, possibly with
    * some data already loaded based on the arguments received.
    *
