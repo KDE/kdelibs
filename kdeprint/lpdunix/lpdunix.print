@@ -3,6 +3,7 @@ PrintSystem=lpdunix
 Comment=Generic UNIX LPD print system (default)
 Comment[da]=Generisk UNIX LPD udskriftssystem (standard)
 Comment[de]=UNIX-LPD-Drucksystem (Voreinstellung)
+Comment[hu]=Általános Unix LPD nyomtatórendszer (alapértelmezés)
 Comment[lv]=Vispārēja UNIX LPD drukas sistēma (noklusēta)
 Comment[ru]=Система печати UNIX LPD (по умолчанию)
 Comment[uk]=Загальна система друку UNIX - LPD (типова)

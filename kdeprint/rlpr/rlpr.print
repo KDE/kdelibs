@@ -3,6 +3,7 @@ PrintSystem=rlpr
 Comment=RLPR environment (Remote LPD servers)
 Comment[da]=RLPR miljø (Fjerne LPD servere)
 Comment[de]=RLPR-Umgebung (entfernte LPD-Server)
+Comment[hu]=RLPR környezet (távoli LPD kiszolgálók)
 Comment[lv]=RLPR vide (Attālināti LPD serveri)
 Comment[ru]=Среда RLPR (сетевые принт-серверы LPD)
 Comment[uk]=Оточення RLPR (віддалені сервери LPD)
