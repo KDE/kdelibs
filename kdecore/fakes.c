@@ -88,7 +88,9 @@ int unsetenv(const char * name) {
 #include <sys/select.h>
 #endif
 
+#ifdef __cplusplus  /* this is supposed to be a C source file but still.. */
 extern "C" {
+#endif
 
 void usleep(unsigned int usec) {
         struct timeval _usleep_tv;
@@ -97,7 +99,9 @@ void usleep(unsigned int usec) {
         select(0,0,0,0,&_usleep_tv);
 }
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif
 
