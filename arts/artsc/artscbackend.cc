@@ -143,6 +143,50 @@ protected:
 		return bufferSize();
 	}
 
+	int packetSettings()
+	{
+		int settings = 0;
+
+		int cap = packetCapacity;
+		while(cap > 1)
+		{
+			settings++;
+			cap /= 2;
+		}
+
+		settings |= packetCount << 16;
+		return settings;
+	}
+
+	int setPacketSettings(int settings)
+	{
+		/* don't change sizes when already streaming */
+		if(isAttached)
+			return ARTS_E_NOIMPL;
+
+		packetCount = settings >> 16;
+		
+		packetCapacity = 1;
+		int c = settings & 0xffff;
+		while(c > 0) {
+			packetCapacity *= 2;
+			c--;
+		}
+
+		/*
+		 * - do not configure stream buffers smaller than the server
+		 *   recommended value
+		 * - keep the packetSize the applications specified
+		 */
+		int needSize = timeToBytes(server.minStreamBufferTime());
+
+		while(bufferSize() < needSize)
+			packetCount++;
+
+		return packetSettings();
+	}
+
+
 	void attach()
 	{
 		if(!isAttached)
@@ -193,11 +237,14 @@ public:
 		switch(param) {
 			case ARTS_P_BUFFER_SIZE:
 				return setBufferSize(value);
-			
+
 			case ARTS_P_BUFFER_TIME:
 				result = setBufferSize(timeToBytes(value));
 				if(result < 0) return result;
 				return (int)bufferTime();
+
+			case ARTS_P_PACKET_SETTINGS:
+				return setPacketSettings(value);
 
 			case ARTS_P_BLOCKING:
 				if(value != 0 && value != 1) return ARTS_E_NOIMPL;
@@ -229,6 +276,9 @@ public:
 			
 			case ARTS_P_BUFFER_SPACE:
 				return bufferSpace();
+
+			case ARTS_P_PACKET_SETTINGS:
+				return packetSettings();
 
 			case ARTS_P_SERVER_LATENCY:
 				return (int)serverBufferTime;

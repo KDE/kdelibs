@@ -63,7 +63,8 @@ enum arts_parameter_t_enum {
     ARTS_P_TOTAL_LATENCY = 5,
     ARTS_P_BLOCKING = 6,
     ARTS_P_PACKET_SIZE = 7,
-    ARTS_P_PACKET_COUNT = 8
+    ARTS_P_PACKET_COUNT = 8,
+	ARTS_P_PACKET_SETTINGS = 9
 };
 
 /**
@@ -118,6 +119,12 @@ enum arts_parameter_t_enum {
  * @li ARTS_P_PACKET_COUNT (r)
  *   This returns the number of the packets are used for buffering. See 
  *   ARTS_P_PACKET_SIZE for more.
+ *
+ * @li ARTS_P_PACKET_SETTINGS (rw)
+ *   This is a way to configure packet size & packet count at the same time.
+ *   The format is 0xCCCCSSSS, where 2^SSSS is the packet size, and CCCC is
+ *   the packet count. Note that when writing this, you don't necessarily
+ *   get the settings you requested.
  */
 typedef enum arts_parameter_t_enum arts_parameter_t;
 
