@@ -599,9 +599,11 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
          return;
     }
 
+    int numProps = propList->count();
     if(!parseValue(curP, endP, propPtr->id, important, propList)) {
-	kdDebug(6080) << "invalid property, clearing list" << endl;
-	propList->clear();
+	kdDebug(6080) << "invalid property, removing added properties from propList" << endl;
+	while(propList->count() > numProps)
+	    propList->removeLast();
     }
 }
 
