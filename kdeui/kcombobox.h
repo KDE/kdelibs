@@ -255,7 +255,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void previousMatch( KeyBindingType /* type */ );
+    void previousMatch( KCompletionBase::KeyBindingType /* type */ );
 
     /**
     * Signal emitted when the key-binding set for
@@ -266,7 +266,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void nextMatch( KeyBindingType /* type */ );
+    void nextMatch( KCompletionBase::KeyBindingType /* type */ );
 
     /**
     * This signal is emitted when the rotate up key is pressed.
@@ -274,7 +274,7 @@ signals:
     * Note that this signal is NOT available if this widget is non-editable
     * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
-    void rotateUp( KeyBindingType /* type */ );
+    void rotateUp( KCompletionBase::KeyBindingType /* type */ );
 
     /**
     * Signal emitted when the rotate down key is pressed.
@@ -282,7 +282,7 @@ signals:
     * Note that this signal is NOT available if this widget is non-editable
     * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
-    void rotateDown( KeyBindingType /* type */ );
+    void rotateDown( KCompletionBase::KeyBindingType /* type */ );
 
 public slots:
 
@@ -303,7 +303,7 @@ public slots:
     *
     * @param type the key-binding invoked.
     */
-    void rotateText( KeyBindingType /* type */ );
+    void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
 
 protected slots:
