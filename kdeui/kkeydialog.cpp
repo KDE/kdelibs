@@ -853,18 +853,14 @@ void KKeyChooser::changeKey()
     d->bChange->setEditing(true);
     d->lInfo->setText( i18n("Press the wanted key") );
     d->lInfo->setEnabled( true );
-    /* give the focus to the widget */
 
-    //eKey->setGeometry(d->bChange->x()+6, d->bChange->y()+4, d->bChange->width()-12,
-    //d->bChange->height()-8);
-    //eKey->show();
-    //eKey->setEnabled(true);
-    setFocus();
     d->bKeyIntercept = true;
+    grabKeyboard();
 }
 
 void KKeyChooser::keyPressEvent( QKeyEvent *e )
 {
+  releaseKeyboard();
   /* the keys are processed if the change button was pressed */
   if( !d->bKeyIntercept )
   {
