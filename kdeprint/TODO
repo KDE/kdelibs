@@ -26,12 +26,4 @@
 
 - CUPS: warn user if daemon not running
 
-- CUPS: see if possible to retrieve remote jobs (as infos for
-  remote printers)
-
-- CUPS: support new PPD scheme where numerical options are mapped
-  into enum ones for Adobe PPD compliance. When parsing a PPD file,
-  an enum option should be dropped if a numerical one with the same
-  name is found. When saving the PPD file, the enum should be set
-  to the closest available value, and the real value should be set
-  in the COMDATA line (as suggested by Till).
+- support for job priority.

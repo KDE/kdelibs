@@ -179,3 +179,16 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     the combo box -> cleaner view.
   * general: ported the use of a global instance file to 2.2 branch
     (file is /etc/cups/lpoptions).
+  * CUPS: added support for Adobe PPD file compliance (foomatic will
+    introduce them very soon in normal distributions), where numerical
+    options are mapped into enum options. KDEPrint still uses the 
+    numerical option and update the corresponding enum one with the
+    closest value.
+
+21/11/2001 Michael Goffioul <goffioul@imec.be>
+  * job viewer: clicking on 'x' button only hide the job viewer but
+    doesn't quit the app. To quit, either use menu item (from window
+    or system tray) or accel when job viewer is visible.
+  * general: print preview has been embedded in a real dialog, so that
+    it is always centered on its parent now. It also have the dialog
+    buttons in title bar (no minimize).
