@@ -984,9 +984,14 @@ int main( int argc, char* argv[] )
   }
 
   bool nofork = false;
+  bool nosid = false;
   for(int i = 1; i < argc; i++)
+  {
      if (strcmp(argv[i], "--nofork") == 0)
         nofork = true;
+     if (strcmp(argv[i], "--nosid") == 0)
+        nosid = true;
+  }
 
   pipe(ready);
 
@@ -1002,7 +1007,8 @@ int main( int argc, char* argv[] )
     }
     close(ready[0]);
 
-    setsid();
+    if (!nosid)
+       setsid();
 
     if (fork() > 0)
       exit(0); // get rid of controlling terminal
