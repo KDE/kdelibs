@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <iostream.h>
 
-#include "pluginimpl.moc"
 
 PluginImpl::PluginImpl(QObject *parent)
     : Plugin(parent, "Postgres"), m_control(0L)
@@ -62,6 +61,7 @@ PluginImpl::provides(KDB::capability cap)
 {
     bool ret = false;
     switch (cap) {
+    case KDB::SEQUENCES:
     case KDB::CONFIG:
     case KDB::TRANSACTIONS:
         ret = true;
@@ -90,3 +90,5 @@ PluginImpl::createObject(KDB::capability cap)
 
     return ret;
 }
+
+#include "pluginimpl.moc"
