@@ -11,7 +11,10 @@
 #include"config.h"
 #endif
 
-#include "krl.h"
+extern "C" {
+void kimgio_krl_read( QImageIO *io );
+void kimgio_krl_write(QImageIO *io );
+}
 
 #include<qimage.h>
 #include<assert.h>

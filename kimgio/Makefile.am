@@ -47,7 +47,7 @@ kimg_pcx_la_SOURCES = pcx.cpp
 kimg_pcx_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_pcx_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
 
-noinst_HEADERS= xview.h eps.h tiffr.h krl.h g3r.h ico.h jp2.h pcx.h
+noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(all_includes)
 
