@@ -18,7 +18,8 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
 	x-truetype-font.desktop msexcel2.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
-	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop
+	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
+	binary-certificate.desktop
 
 datadir = $(kde_mimedir)/application
 
