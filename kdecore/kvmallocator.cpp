@@ -85,7 +85,7 @@ KVMAllocator::allocate(size_t _size)
 {
    if (!d->tempfile)
    {
-      d->tempfile = new KTempFile("/tmp/", "vmdata");
+      d->tempfile = new KTempFile(QString::null, "vmdata");
       d->tempfile->unlink();
    }
    // Search in free list
@@ -186,6 +186,12 @@ KVMAllocator::free(Block *block_p)
 void
 KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
 {
+   (void) copyBlock(dest, src, _offset, length);
+}
+
+bool
+KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
+{
    //kdDebug(13020)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<":"<<length<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
    if (length == 0)
@@ -196,11 +202,18 @@ KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
    while(done < to_go)
    {
       int n = read(d->tempfile->handle(), buf+done, to_go);
-      if (n <= 0) return; // End of data or error
+      if (n <= 0) 
+      {
+         if (n < 0)
+            return false; // Error
+         else
+            return true; // End of data
+      }
       done += n;
       to_go -= n;
    }
    // Done.
+   return true;
 }
 
 /**
@@ -208,6 +221,12 @@ KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
  */
 void
 KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
+{
+   (void) copyBlock(dest, src, _offset, length);
+}
+
+bool
+KVMAllocator::copyBlock(Block *dest, void *src, int _offset, size_t length)
 {
    //kdDebug(13020)<<"VM write: seek "<<(long)dest->start<<" +"<<_offset<< ":" << length << endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);
@@ -219,11 +238,12 @@ KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
    while(done < to_go)
    {
       int n = write(d->tempfile->handle(), buf+done, to_go);
-      if (n <= 0) return; // End of data or error
+      if (n <= 0) return false; // Error
       done += n;
       to_go -= n;
    }
    // Done.
+   return true;
 }
 
 /**
