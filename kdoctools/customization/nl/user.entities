@@ -6,27 +6,19 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!-- this is getting a bit too messy and needs redesigning: entities should only be added for things
-  that are used very often: either within a document (preferably saving keystrokes, and certainly gaining rock solid consistency)
-  or between documents (ie in all documentation; gaining consistency - the keystrokes are negligible here)
-  I have my doubts about the first four entities, but others may have to be reconsidered too. -->
-
-<!-- Credits (voor ROLES_OF_TRANSLATORS) -->
+<!-- Credits (voor ROLES_OF_TRANSLATORS, en andere plaatsen) -->
+<!-- remains to check how the subelements are treated by the style sheets -->
 <!ENTITY Niels.Reedijk '<othercredit role="translator"><firstname>Niels</firstname><surname>Reedijk</surname><affiliation><address><email>nielx@kde.nl</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Floris.Lambrechts '<othercredit role="translator"><firstname>Floris</firstname><surname>Lambrechts</surname><affiliation><address><email>floris.lambrechts@linuxfocus.org</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Michel.Fontes '<othercredit role="translator"><firstname>Michel</firstname><surname>Fontes</surname><affiliation><address><email>michelfontes@hotmail.com</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Jogchum.Reitsma '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 
-<!ENTITY Niels.Reedijk "Niels Reedijk <email>nielx@kde.nl</email>">
-<!ENTITY Floris.Lambrechts "Floris Lambrechts <email>floris.lambrechts@linuxfocus.org</email>">
-<!ENTITY Michel.Fontes "Michel Fontes <email>michelfontes@hotmail.com</email>">
-<!ENTITY Jogchum.Reitsma "Jogchum Reitsma <email>j.reitsma@hcc.net</email>">
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
 <!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
 
-<!-- Entities voor vertalers ( voor CREDITS_FOR_TRANSLATORS)-->
+<!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
 <!ENTITY vertaling.floris "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
 <!ENTITY vertaling.niels "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
 <!ENTITY vertaling.michel "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
