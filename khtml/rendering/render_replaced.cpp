@@ -492,7 +492,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
     
     // fill background
-    if ( external || ::qt_cast<QFrame *>(widget)) {
+    if ( external ) {
 	// even hackier!
         QPainter pt( pm );
         const QColor c = widget->colorGroup().base();
