@@ -3,6 +3,7 @@
 #include "khtml_part.h"
 #include "khtml_ext.h"
 #include <kio/global.h>
+#include <qvariant.h>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
     : DCOPObject( _part->dcopObjectId() ), part(_part)
@@ -166,4 +167,8 @@ QString KHTMLPartIface::selectedText() const
 void KHTMLPartIface::viewFrameSource()
 {
     part->slotViewFrameSource();
+}
+
+QString KHTMLPartIface::evalJS(const QString &script) {
+    return part->executeScript(script).toString();
 }

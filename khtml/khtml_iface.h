@@ -191,6 +191,7 @@ k_dcop:
     void viewFrameSource();
     void saveBackground(const QString &url);
     void saveDocument(const QString &url);
+    QString evalJS(const QString &script);
 
 private:
     KHTMLPart *part;
