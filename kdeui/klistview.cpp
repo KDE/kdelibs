@@ -379,6 +379,8 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
     // Don't let a RMB close the editor
     if (focusEv->reason() != QFocusEvent::Popup && focusEv->reason() != QFocusEvent::ActiveWindow)
         terminate(true);
+    else
+        KLineEdit::focusOutEvent(ev);
 }
 
 void KListViewLineEdit::paintEvent( QPaintEvent *e )
