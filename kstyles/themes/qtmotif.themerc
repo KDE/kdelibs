@@ -1,14 +1,5 @@
 [Misc]
 Name=Motif
-Name[de]=Qt-Motif
-Name[eo]=Qt-Motif
-Name[fa]=Qt موتیف
-Name[ko]=Qt 모티프
-Name[mn]=Qt-Motif
-Name[nn]=Qt-Motif
-Name[se]=Qt-Motif
-Name[th]=โมทีฟ - Qt
-Name[xx]=xxQt Motifxx
 Comment=Built-in unthemed Motif style
 Comment[af]=Ingeboude ongetemade Motif styl
 Comment[ar]=مظهر مضمن مشابه لMotif
@@ -32,6 +23,7 @@ Comment[fi]=Sisäänrakennettu teemoittamaton Motif-tyyli
 Comment[fr]=Style Motif d'origine sans thème
 Comment[ga]=Stíl inmheánach gan téama, cosúil le Motif
 Comment[gl]=Estilo incorporado Motif sen tema
+Comment[hi]=अंतर्निर्मित अनथीम्ड मोटिफ शैली
 Comment[hr]=Ugrađeni napredni Motif stil
 Comment[hu]=Beépített Motif-stílus
 Comment[id]=Gaya unthemed Motif built-in

@@ -1,6 +1,7 @@
 [Misc]
 Name=BeOS
 Name[af]=Beos
+Name[hi]=बीईओएस (BeOS)
 Name[id]=Beos
 Name[th]=ระบบปฏิบัติการ BeOS
 Name[xx]=xxBeOSxx
@@ -20,6 +21,7 @@ Comment[fa]=سبک شبیه Beos بدون طرح
 Comment[fi]=Teemoittamaton BeOS:n kaltainen tyyli
 Comment[fr]=Style sans thème similaire à BeOS
 Comment[he]=סגנון דומה ל-BeOS ללא ערכה
+Comment[hi]=अनथीम्ड बीईओएस जैसी शैली
 Comment[hu]=BeOS-szerű megjelenés, téma nélkül
 Comment[it]=Stile senza tema simile a BeOS
 Comment[ms]=Gaya BeOS
