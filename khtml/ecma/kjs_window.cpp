@@ -1195,7 +1195,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
 }
 
 KParts::ReadOnlyPart *Window::part() const {
-    return m_frame.isNull() ? 0L : m_frame->m_part;
+    return m_frame.isNull() ? 0L : static_cast<KParts::ReadOnlyPart *>(m_frame->m_part);
 }
 
 void Window::delayedGoHistory( int steps )
@@ -2007,7 +2007,7 @@ Location::~Location()
 }
 
 KParts::ReadOnlyPart *Location::part() const {
-  return m_frame ? m_frame->m_part:0L;
+  return m_frame ? static_cast<KParts::ReadOnlyPart *>(m_frame->m_part) : 0L;
 }
 
 Value Location::get(ExecState *exec, const Identifier &p) const
