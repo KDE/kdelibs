@@ -67,7 +67,7 @@ libkdeui_la_SOURCES = \
 		qxembed.cpp qttableview.cpp ksharedpixmap.cpp \
 		kthemestyle.cpp kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
-		kimageeffect.cpp kcolordlg.cpp kselect.cpp kdatepik.cpp \
+		kimageeffect.cpp kcolordialog.cpp kselect.cpp kdatepik.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp ktmainwindow.cpp \
 		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
