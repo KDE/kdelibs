@@ -642,8 +642,8 @@ void RenderPartObject::setSize( int w, int h )
 
 void RenderPartObject::layout( )
 {
-  setSize( m_style->width().width( m_view->clipper()->width() ),
-           m_style->height().width( m_view->clipper()->height() ) );
+  setSize( m_style->width().minWidth( m_view->visibleWidth() ),
+           m_style->height().minWidth( m_view->visibleHeight() ) );
   calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
           containingBlockWidth());
   RenderPart::layout();
