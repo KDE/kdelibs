@@ -46,8 +46,8 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	qstr.setLength( slen );
 	QChar *uc = (QChar *)qstr.unicode();
 	for( int i = 0; i < slen; i++ )
-	    if ( uc->unicode() == 0xa0 )
-		*uc = ' ';
+	    if ( (uc+i)->unicode() == 0xa0 )
+		*(uc+i) = ' ';
     }
     
     // ### fixme for RTL
@@ -103,8 +103,8 @@ int Font::width( QChar *chs, int slen, int pos, int len ) const
 	qstr.setLength( slen );
 	QChar *uc = (QChar *)qstr.unicode();
 	for( int i = 0; i < slen; i++ )
-	    if ( uc->unicode() == 0xa0 )
-		*uc = ' ';
+	    if ( (uc+i)->unicode() == 0xa0 )
+		*(uc+i) = ' ';
     }
     // ### might be a little inaccurate
     int w = fm.width( qstr, len );
