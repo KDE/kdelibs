@@ -71,8 +71,7 @@ HTMLDocument &HTMLDocument::operator = (const Node &other)
 	impl = 0;
 	return *this;
     }
-    Document d;
-    d = other;
+    Document d(other);
     if(!d.isHTMLDocument())
 	impl = 0;
     else
