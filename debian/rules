@@ -167,7 +167,7 @@ binary-arch:  build install
 	#done
 	dh_perl -a
 	dh_link -a
-	dh_compress -a -X.docbook -X.css -X-license -X.dcl
+	dh_compress -a -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -a
 	-chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
 	-chmod 4755 debian/libarts/usr/bin/artswrapper
