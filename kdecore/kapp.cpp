@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.14  1997/07/24 21:04:38  kalle
+// Kalle: Patches for SGI
+//
 // Revision 1.13  1997/06/29 18:26:35  kalle
 // 29.06.97:	KConfig reads and writes string lists
 // 			Torben's patches to ktoolbar.*, kurl.h
@@ -195,7 +198,7 @@ void reaper(int)
 
 #include "kprocctrl.h"
 
-  if( pHome = getenv( "HOME" ) )
+KCharsets* KApplication::pCharsets = 0L;
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;

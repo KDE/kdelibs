@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * I checked twice, that only comments are affected ;)
+ *
+ * Revision 1.10  1997/12/18 01:56:25  torben
  * Torben: Secure string operations. Use instead of QString::sprintf
  *
  * Revision 1.9  1997/10/21 20:44:53  kulow
@@ -89,7 +92,7 @@
 *
 * @author Torben Weis <weis@uni-frankfurt.de>
 * @version $Id$
-  Q_OBJECT;
+* @short a TCP/IP client socket.
 */
  * @version $Id$
 #include <sys/types.h>
@@ -204,7 +207,7 @@
 *
 * @author Torben Weis <weis@stud.uni-frankfurt.de>
 * @version $Id$
-  Q_OBJECT;
+* @short Monitor a port for incoming TCP/IP connections.
     int sock;
  * @version $Id$
     int domain;

@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.11  1997/07/24 21:04:37  kalle
+ * Kalle: Patches for SGI
+ *
  * Revision 1.10  1997/07/17 18:43:17  kalle
  * Kalle: new stopsign.xpm
  * 			KConfig: environment variables are resolved in readEntry()
@@ -343,7 +346,7 @@ QString KConfig::readEntry( const QString& rKey,
 }
 
 int KConfig::readListEntry ( const QString &rKey, QStrList &list, 
-							 char sep = ',' ) const
+							 char sep  ) const
 {
   if( !hasKey( rKey ) )
     return 0;
@@ -540,7 +543,7 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 }
 
 void KConfig::writeEntry( const QString& rKey, QStrList& list, 
-						  char sep = ',', bool bPersistent = true )
+						  char sep, bool bPersistent )
 {
   if( list.isEmpty() )
     {
@@ -549,7 +552,7 @@ void KConfig::writeEntry( const QString& rKey, QStrList& list,
     }
   QString str_list, value;
   int i;
-  for( value = list.first(); value != NULL; value = list.next() )
+  for( value = list.first(); value != (char*)NULL; value = list.next() )
     {
       for( i = 0; i < (int) value.length(); i++ )
 	{
@@ -620,12 +623,12 @@ void KConfig::rollback( bool bDeep )
   QDictIterator<KEntryDict> aIt( pData->aGroupDict );
   // loop over all the groups
   const char* pCurrentGroup;
-  while( pCurrentGroup = aIt.currentKey() )
+  while( (pCurrentGroup = aIt.currentKey()) )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries
 	  KEntryDictEntry* pCurrentEntry;
-	  while( pCurrentEntry = aInnerIt.current() )
+	  while( (pCurrentEntry = aInnerIt.current()) )
 		{
 		  pCurrentEntry->bDirty = false;
 		  ++aInnerIt;
@@ -703,12 +706,12 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
 
   // loop over all the groups
   const char* pCurrentGroup;
-  while( pCurrentGroup = aIt.currentKey() )
+  while( (pCurrentGroup = aIt.currentKey()) )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries
 	  KEntryDictEntry* pCurrentEntry;
-	  while( pCurrentEntry = aInnerIt.current() )
+	  while( (pCurrentEntry = aInnerIt.current()) )
 		{
 		  if( pCurrentEntry->bDirty )
 			{

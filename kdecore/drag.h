@@ -2,6 +2,9 @@
  *
  * $Log$
  *
+ * Revision 1.1.1.2  1997/12/10 07:08:28  jacek
+ * Imported sources from KDE CVS
+ *
  * Revision 1.1.1.1  1997/12/09 22:02:45  jacek
  * Imported sorces fromkde
  *
@@ -108,7 +111,7 @@
 #define DndExe          7
 // For Offix internal use only
 #define DndEND          8
-  Q_OBJECT;
+// An URL
 #define DndURL          128
 
 #define Dnd_X_Precision 2
@@ -149,7 +152,7 @@ protected:
 */
   QPixmap pixmap;
 };
-  Q_OBJECT;
+
 /**
 * Drop zone for KDE Drag n Drop. 
 *

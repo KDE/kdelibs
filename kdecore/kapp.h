@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.12  1997/07/18 05:49:16  ssk
+// Taj: All kdecore doc now in javadoc format (hopefully).
+//
 // Revision 1.11  1997/06/29 18:26:36  kalle
 // 29.06.97:	KConfig reads and writes string lists
 // 			Torben's patches to ktoolbar.*, kurl.h
@@ -138,7 +141,7 @@
 #endif
 
 class KIconLoader;
-  Q_OBJECT;
+class KCharsets;
 
 //#ifndef _KLOCALE_H
 #include <klocale.h>
