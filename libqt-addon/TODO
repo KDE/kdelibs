@@ -1,0 +1,30 @@
+Version: $Id$
+
+Sockets:
+========
+- Write QSocksProxySocketImpl
+- Adapt with a KDE class for KSocks
+- Reimplement QSocketBase::setSocketDevice in QClientSocketBase and QServerSocket:
+  -> must find out what the new socket's state is
+- Clean up API
+- Take tjansen's class for QNetworkInterface
+- Write QMulticastSocket, QMulticastSocketImpl
+- Write QSctpSocketImpl, QSctpStreamSocket, QSctpServerSocket
+
+to be seen:
+- Enhance QSocketImpl creation through requested capabilities
+  (multicast, datagram, local-binding)
+
+Resolver:
+=========
+- Add SRV-based resolution
+  -> library that does low-level DNS (-lresolv), maybe in C
+  -> the rest of the processing, sorting, etc. in C++
+  to break dependency on -lresolv on the main library, maybe even allow
+  for other DNS implementation
+- Add non-blocking reverse resolution
+  -> no need for special class
+  -> simple signal-based 
+     SIGNAL(resolved(const QString&, const QString&))
+     or something similar
+- Add PF_LLC to the resolving possibilities
