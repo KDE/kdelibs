@@ -47,7 +47,7 @@ QString HTMLElement::encodeString( const QString &e )
 
 	while ( pos < e.length() )
 	{
-		unsigned c = e[pos];
+		unsigned c = (unsigned char) e[pos];
 
 		if ( c == ' ' )
 			encoded += '+';
