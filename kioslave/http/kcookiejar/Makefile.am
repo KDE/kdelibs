@@ -26,3 +26,6 @@ kdeddir = $(kde_servicesdir)/kded
 update_DATA = kcookiescfg.upd
 updatedir = $(kde_datadir)/kconf_update
 
+cookie_DATA = domain_info
+cookiedir = $(kde_datadir)/khtml
+

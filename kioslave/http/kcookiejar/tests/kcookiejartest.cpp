@@ -236,6 +236,18 @@ int main(int argc, char *argv[])
    arg2 = "Set-Cookie: set_by_8=\"x.y.foobar.co.uk\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
    addCookies(arg1, arg2);
 
+   // Domain should be corrected to "y.museum.uk"
+   arg1 = "http://y.museum.uk/acme/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_4=\"y.museum.uk\"; Path=\"/acme\"; Domain=\".museum.uk\"; expires=Fri, 04-May-2022 01:00:00 GMT";
+   addCookies(arg1, arg2);
+
+   // Domain should not be corrected!
+   arg1 = "http://y.museum.fr/acme/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_4=\"y.museum.fr\"; Path=\"/acme\"; Domain=\".museum.fr\"; expires=Fri, 04-May-2022 01:00:00 GMT";
+   addCookies(arg1, arg2);
+
    // Testing a missing "." in the specified domain name. This
    // should result in the cookie being set for ".foo.com".
    arg1 = "http://y.foo.com/index.html";
