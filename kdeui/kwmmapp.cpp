@@ -124,22 +124,20 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
 	if (*wp == w) {
 	  windows_sorted.remove();
+	  windows_sorted.append(wp);
 	  break;
 	}
       }
-      if (wp) 
-	windows_sorted.append(wp);
       emit windowRaise(w);
     }
     if (a == module_win_lower){
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
 	if (*wp == w) {
 	  windows_sorted.remove();
+	  windows_sorted.insert(0, wp);
 	  break;
 	}
       }
-      if (wp) 
-	windows_sorted.insert(0, wp);
       emit windowLower(w);
     }
     if (a == module_win_activate){
