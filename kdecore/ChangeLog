@@ -1,3 +1,7 @@
+1999-05-06  Woohyun JANG  <louis@mizi.co.kr>
+
+	* kwm.cpp: change getQStringProperty() to use QString::fromLocal8Bit().
+
 1999-05-05  Woohyun JANG  <louis@mizi.co.kr>
 
 	* klocale.cpp: change translate() to use QString::fromLocal8Bit().
