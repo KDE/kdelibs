@@ -1148,6 +1148,9 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
     // ### find a better way to handle non-css attributes
     setChanged(false);
 
+    if (!attached())
+	return;
+
     int ow = (m_style?m_style->outlineWidth():0);
 
     if (top)
