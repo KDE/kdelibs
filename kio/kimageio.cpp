@@ -21,6 +21,7 @@
 #include "kimageio.h"
 #include "kimageiofactory.h"
 #include <klocale.h>
+#include <klibloader.h>
 #include <kglobal.h>
 #include <kmimetype.h>
 #include <ksycocaentry.h>
@@ -94,10 +95,16 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
          iio->setStatus(1); // Error
          return;
       }
-      lt_dlhandle libhandle = lt_dlopen(mLib.ascii());
+      QString libpath = KLibLoader::findLibrary(mLib.ascii());
+      if ( libpath.isEmpty())
+      {
+         iio->setStatus(1); // Error
+         return;
+      }
+      lt_dlhandle libhandle = lt_dlopen( libpath.ascii() );
       if (libhandle == 0) {
          iio->setStatus(1); // error
-         kdDebug() << "KImageIOFormat::callLibFunc: couldn't dlopen " << mLib << "(" << lt_dlerror() << ")" << endl;
+         kdWarning() << "KImageIOFormat::callLibFunc: couldn't dlopen " << mLib << "(" << lt_dlerror() << ")" << endl;
          return;
       }
       bLibLoaded = true;
