@@ -136,20 +136,19 @@ install: build
 
 	# install dh-make template and debianrules
 	install -d debian/tmp/usr/share/doc/kdelibs4-dev/dh-make
-	install -p debian/dh-make/* \
+	-install -m644 -p debian/dh-make/* \
 		debian/tmp/usr/share/doc/kdelibs4-dev/dh-make
 	install -p admin/debianrules \
 		debian/tmp/usr/share/doc/kdelibs4-dev/dh-make
-	rm -f debian/tmp/usr/share/doc/kdelibs4-dev/dh-make/CVS
 
 	# install kdelibs api docs
 	install -d debian/tmp/usr/share/doc/kdelibs4-doc/html
-	install -p apidocs/html/* \
+	install -m644 -p apidocs/html/* \
 		debian/tmp/usr/share/doc/kdelibs4-doc/html
 
 	# create system.kdeglobals
 	perl -w admin/debianrules echoglobals > debian/system.kdeglobals
-	install -p debian/system.kdeglobals debian/tmp/$(kde_confdir)
+	install -m644 -p debian/system.kdeglobals debian/tmp/$(kde_confdir)
 
 	# make proxytype.pl and useragent.pl executable
 	-chmod 755 debian/tmp/$(kde_datadir)/kconf_update/useragent.pl \

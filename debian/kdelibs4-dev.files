@@ -47,3 +47,4 @@ usr/lib/libshellscript.la
 usr/lib/libshellscript.so
 usr/lib/libvcard.la
 usr/lib/libvcard.so
+usr/share/doc/kdelibs4-dev/dh-make
