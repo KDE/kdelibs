@@ -91,6 +91,19 @@ public:
   QString sampleText() { return sampleEdit->text(); }
 
   /**
+   * Sets the sample text. Normally you should not change this 
+   * text, but it can be better to do this if the default text is
+   * too large for the edit area when using the default font of your
+   * application.
+   *
+   * @param text The new sample text. The current will be removed.
+   */
+  void setSampleText( const QString &text )
+  {
+    sampleEdit->setText( text );
+  }
+
+  /**
    * This function converts a QFont into the corresponding X Logical Font 
    * Description.
    *
