@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.13  1998/11/23 15:34:05  radej
+//sven: Nicer sysmenu button
+//
 //Revision 1.12  1998/11/22 13:35:47  radej
 //sven: IMPROVED Mac menubar: Accelerators, SystemMenu, look...
 //
@@ -162,7 +165,7 @@ class KMenuBar : public QFrame
    void mousePressEvent ( QMouseEvent *m );
    void resizeEvent( QResizeEvent *e );
    
- protected:
+   void closeEvent (QCloseEvent *e);
    void leaveEvent (QEvent *e);
    bool eventFilter(QObject *, QEvent *);
 
@@ -194,7 +197,7 @@ signals:
     void highlighted(int id);
 
     /**
- protected:
+     * This signal is emited when item id is activated.
      */
     void activated(int id);
 
