@@ -455,7 +455,10 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   if ( filename.isEmpty() ) // no template
     filename = properties->kurl().filename();
   else
+  {
     m_bFromTemplate = true;
+    setDirty();
+  }
 
   // Make it human-readable (%2F => '/', ...)
   filename = KIO::decodeFileName( filename );
@@ -679,6 +682,7 @@ void KFilePropsPage::applyChanges()
     KURL oldurl = properties->kurl();
     // Tell properties. Warning, this changes the result of properties->kurl() !
     properties->rename( n );
+    kdDebug(1202) << "New URL = " << properties->kurl().url() << endl;
 
     // Don't remove the template !!
     if ( !m_bFromTemplate ) { // (normal renaming)
