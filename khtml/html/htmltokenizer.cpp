@@ -106,8 +106,8 @@ void HTMLTokenizer::begin()
     executingScript = false;
     reset();
     currToken = 0;
-    size = 1023;
-    buffer = QT_ALLOC_QCHAR_VEC( 1024 );
+    size = 4095;
+    buffer = QT_ALLOC_QCHAR_VEC( 4096 );
     dest = buffer;
     tag = NoTag;
     pending = NonePending;
@@ -216,7 +216,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
-    // Wee are inside a <script>, <style> or comment. Look for the end tag
+    // We are inside a <script>, <style> or comment. Look for the end tag
     // which is either </script>, </style> or -->
     // otherwise print out every received character
 
@@ -1381,13 +1381,6 @@ void HTMLTokenizer::processToken()
         if(currToken->id && currToken->id != ID_COMMENT)
             kdDebug( 6036 ) << "Error in processToken!!!" << endl;
 #endif
-/*
-        if(!pre && dest - buffer == 1 && *buffer == ' ')
-        {
-            dest = buffer;
-            return;
-        }
-*/
         // ### we do too much QString copying here, but better here than in RenderText...
         // anyway have to find a better solution in the long run (lars)
         QString s = QConstString(buffer, dest-buffer).string();
@@ -1397,10 +1390,8 @@ void HTMLTokenizer::processToken()
             currToken->id = ID_TEXT;
     }
     else if(!currToken->id)
-    {
-//      kdDebug( 6036 ) << "Empty token!" << endl;
         return;
-    }
+
     dest = buffer;
 
 #ifdef TOKEN_PRINT
@@ -1434,9 +1425,11 @@ void HTMLTokenizer::processToken()
     kdDebug( 6036 ) << endl;
 #endif
 #endif
-    // pass the token over to the parser, the parser deletes the token
+    // pass the token over to the parser, the parser DOES NOT delete the token
     parser->parseToken(currToken);
 
+    // ### FIXME: make this faster
+    delete currToken;
     currToken = new Token;
 }
 
@@ -1447,19 +1440,14 @@ HTMLTokenizer::~HTMLTokenizer()
 }
 
 
-void HTMLTokenizer::checkBuffer(int len)
+void HTMLTokenizer::enlargeBuffer(int len)
 {
-        // do we need to enlarge the buffer?
-        if ( (dest - buffer) > size-len )
-        {
-            int newsize = QMAX(2*size, size+2048);
-            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
-            memcpy( newbuf, buffer, (dest - buffer + 1)*sizeof(QChar) );
-            dest = newbuf + ( dest - buffer );
-            QT_DELETE_QCHAR_VEC(buffer);
-            buffer = newbuf;
-            size = newsize;
-        }
+    QChar *newbuf = QT_ALLOC_QCHAR_VEC( size*2 );
+    memcpy( newbuf, buffer, (dest - buffer + 1)*sizeof(QChar) );
+    dest = newbuf + ( dest - buffer );
+    QT_DELETE_QCHAR_VEC(buffer);
+    buffer = newbuf;
+    size *= 2;
 }
 
 void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)

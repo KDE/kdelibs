@@ -278,14 +278,12 @@ void KHTMLParser::parseToken(Token *t)
     if (t->id > 2*ID_CLOSE_TAG)
     {
       kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->id << endl;
-      delete t;
       return;
     }
     if(discard_until)
     {
         if(t->id == discard_until)
             discard_until = 0;
-        delete t;
         return;
     }
 
@@ -297,7 +295,6 @@ void KHTMLParser::parseToken(Token *t)
     if(t->id > ID_CLOSE_TAG)
     {
         processCloseTag(t);
-        delete t;
         return;
     }
 
@@ -308,20 +305,14 @@ void KHTMLParser::parseToken(Token *t)
         kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
 #endif
         if(t->text.length() == 1 && t->text[0].latin1() == ' ')
-        {
-            //kdDebug( 6035 ) << "discarding space!" << endl;
-            delete t;
             return;
-        }
     }
 
 
     NodeImpl *n = getElement(t);
     // just to be sure, and to catch currently unimplemented stuff
-    if(!n) {
-        delete t;
+    if(!n)
         return;
-    }
 
     // set attributes
     if(n->isElementNode())
@@ -358,8 +349,6 @@ void KHTMLParser::parseToken(Token *t)
         }
         delete n;
     }
-
-    delete t;
 }
 
 void KHTMLParser::insertNode(NodeImpl *n)

@@ -103,7 +103,12 @@ protected:
 
     // check if we have enough space in the buffer.
     // if not enlarge it
-    void checkBuffer(int len = 10);
+    inline void checkBuffer(int len = 10)
+    {
+        if ( (dest - buffer) > size-len )
+            enlargeBuffer(len);
+    }
+    void enlargeBuffer(int len);
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
@@ -132,10 +137,10 @@ protected:
 
     typedef enum
     {
-	NonePending = 0,
-	SpacePending,
-	LFPending,
-	TabPending
+        NonePending = 0,
+        SpacePending,
+        LFPending,
+        TabPending
     } HTMLPendingType;
 
     // To avoid multiple spaces
@@ -143,10 +148,10 @@ protected:
 
     typedef enum
     {
-	NoneDiscard = 0,
-	SpaceDiscard,
-	LFDiscard,
-	AllDiscard  // discard all spaces, LF's etc until next non white char
+        NoneDiscard = 0,
+        SpaceDiscard,
+        LFDiscard,
+        AllDiscard  // discard all spaces, LF's etc until next non white char
     } HTMLDiscardType;
 
     // Discard line breaks immediately after start-tags
@@ -160,15 +165,15 @@ protected:
     bool startTag;
 
     typedef enum {
-	NoTag = 0,
-	TagName,
-	SearchAttribute,
-	AttributeName,
-	SearchEqual,
-	SearchValue,
-	QuotedValue,
-	Value,
-	SearchEnd
+        NoTag = 0,
+        TagName,
+        SearchAttribute,
+        AttributeName,
+        SearchEqual,
+        SearchValue,
+        QuotedValue,
+        Value,
+        SearchEnd
     } HTMLTagParse;
 
     // Flag to say, we are just parsing a tag, meaning, we are in the middle
