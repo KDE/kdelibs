@@ -21,6 +21,7 @@
  * $Id$
  */
 #include "render_html.h"
+#include "render_root.h"
 
 #include <qpainter.h>
 #include <qscrollview.h>
@@ -29,10 +30,9 @@
 
 using namespace khtml;
 
-RenderHtml::RenderHtml(QScrollView* view)
+RenderHtml::RenderHtml()
     : RenderFlow()
 {
-    m_view = view;
 }
 
 RenderHtml::~RenderHtml()
@@ -67,8 +67,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 	    c = firstChild()->style()->backgroundColor();
 	if( !bg )
 	    bg = firstChild()->style()->backgroundImage();
-        if( !c.isValid() )
-            c = m_view->palette().normal().color(QColorGroup::Base);
+        if( !c.isValid() && root()->view())
+            c = root()->view()->palette().normal().color(QColorGroup::Base);
     }
 
     int w = width();

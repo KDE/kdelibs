@@ -59,9 +59,9 @@ void RenderRoot::calcWidth()
     // the width gets set by KHTMLView::print when printing to a printer.
     if(printingMode) return;
 
-    m_width = m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
-
-//    if(m_width < m_minWidth) m_width = m_minWidth;
+    m_width = m_view ?
+                m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
+                : m_minWidth;
 
     if (style()->marginLeft().type==Fixed)
         m_marginLeft = style()->marginLeft().value;
@@ -108,9 +108,9 @@ void RenderRoot::layout()
     qt.start();
 #endif
     // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
-    m_view->resizeContents(docWidth(), docHeight());
+    if (m_view) m_view->resizeContents(docWidth(), docHeight());
 
-    if (!printingMode)
+    if (!printingMode && m_view)
     {
        m_height = m_view->visibleHeight();
        m_width = m_view->visibleWidth();
@@ -131,7 +131,7 @@ QScrollView *RenderRoot::view()
 
 bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if ( f ) {
+    if ( f && m_view) {
 	xPos = m_view->contentsX();
 	yPos = m_view->contentsY();
     }
@@ -172,8 +172,11 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     // 3. print floats and other non-flow objects.
     // we have to do that after the contents otherwise they would get obscured by background settings.
     // it is anyway undefined if regular text is above fixed objects or the other way round.
-    _tx += m_view->contentsX();
-    _ty += m_view->contentsY();
+    if (m_view) 
+    {
+        _tx += m_view->contentsX();
+        _ty += m_view->contentsY();
+    }
 
     if(specialObjects)
     {
@@ -221,6 +224,9 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
+    
+    if (!m_view) return;
+    
     //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight() timer=" << updateTimer.elapsed() << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
@@ -259,7 +265,7 @@ void RenderRoot::close()
 {
     setParsing(false);
     updateSize();
-    m_view->layout(true);
+    if (m_view) m_view->layout(true);
     //printTree();
 }
 
@@ -361,8 +367,8 @@ QRect RenderRoot::viewRect() const
 int RenderRoot::docHeight() const
 {
     int h;
-    if (printingMode)
-        h = m_width;
+    if (printingMode || !m_view)
+        h = m_height;
     else
         h = m_view->visibleHeight();
 
@@ -381,7 +387,7 @@ int RenderRoot::docHeight() const
 int RenderRoot::docWidth() const
 {
     int w;
-    if (printingMode)
+    if (printingMode || !m_view)
         w = m_width;
     else
         w = m_view->visibleWidth();

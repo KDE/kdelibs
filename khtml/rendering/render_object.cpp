@@ -174,7 +174,7 @@ RenderObject *RenderObject::containingBlock() const
             o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
-        while (o && o->style()->position() == STATIC && !o->isHtml())
+        while (o && o->style()->position() == STATIC && !o->isHtml() && !o->isRoot())
             o = o->parent();
     } else {
         while(o && o->isInline())

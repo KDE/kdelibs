@@ -32,7 +32,7 @@ namespace khtml {
     class RenderHtml : public RenderFlow
     {
     public:
-	RenderHtml(QScrollView* view);
+	RenderHtml();
 	virtual ~RenderHtml();
 
 	virtual const char *renderName() const { return "RenderHtml"; }

@@ -84,6 +84,7 @@ void RenderListItem::setStyle(RenderStyle *_style)
 {
     RenderFlow::setStyle(_style);
     RenderStyle *newStyle = new RenderStyle();
+    kdDebug () << "INSIDE "  << (style()->listStylePosition()==INSIDE) << endl;
     newStyle->inheritFrom(style());
        if(newStyle->direction() == LTR)
            newStyle->setFloating(FLEFT);
