@@ -18,8 +18,8 @@
 #include <kstatusbar.h>
 #include <kstddirs.h>
 
-NotepadPart::NotepadPart( QWidget * parentWidget )
- : KParts::ReadWritePart( "NotepadPart" )
+NotepadPart::NotepadPart( QObject *parent, QWidget * parentWidget )
+ : KParts::ReadWritePart( parent, "NotepadPart" )
 {
   debug("NotepadPart::NotepadPart");
   KInstance * instance = new KInstance( "notepadpart" );

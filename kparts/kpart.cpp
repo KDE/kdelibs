@@ -37,8 +37,8 @@ public:
 };
 };
 
-Part::Part( const char* name )
-    : QObject( 0L, name ), m_collection( this )
+Part::Part( QObject *parent, const char* name )
+    : QObject( parent, name ), m_collection( this )
 {
   d = new PartPrivate;
   m_widget = 0L;
@@ -163,8 +163,8 @@ public:
 
 };
 
-ReadOnlyPart::ReadOnlyPart( const char *name )
- : Part( name ), m_bTemp( false )
+ReadOnlyPart::ReadOnlyPart( QObject *parent, const char *name )
+ : Part( parent, name ), m_bTemp( false )
 {
   d = new ReadOnlyPartPrivate;
 }
@@ -243,8 +243,8 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 
 //////////////////////////////////////////////////
 
-ReadWritePart::ReadWritePart( const char *name )
- : ReadOnlyPart( name ), m_bModified( false )
+ReadWritePart::ReadWritePart( QObject *parent, const char *name )
+ : ReadOnlyPart( parent, name ), m_bModified( false )
 {
 }
 

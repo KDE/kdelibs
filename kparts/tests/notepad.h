@@ -14,7 +14,7 @@ class NotepadPart : public KParts::ReadWritePart
 {
   Q_OBJECT
 public:
-  NotepadPart( QWidget * parentWidget );
+  NotepadPart( QObject *parent, QWidget * parentWidget );
   virtual ~NotepadPart();
 
   virtual bool save();

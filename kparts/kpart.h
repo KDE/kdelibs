@@ -48,7 +48,7 @@ class Part : public QObject, public XMLGUIServant
 {
   Q_OBJECT
 public:
-    Part( const char* name = 0 );
+    Part( QObject *parent = 0, const char* name = 0 );
     virtual ~Part();
 
     QAction* action( const char* name );
@@ -112,7 +112,7 @@ protected:
 
     /**
      * Set the name of the rc file containing the XML for the part.
-     * 
+     *
      * Call this in the Part-inherited class constructor.
      *
      * @param file Either an absolute path for the file, or simply the filename,
@@ -124,7 +124,7 @@ protected:
     //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
     /**
      * Set the XML for the part.
-     * 
+     *
      * Call this in the Part-inherited class constructor if you
      *  don't call @ref setXMLFile().
      **/
@@ -159,7 +159,7 @@ class ReadOnlyPart : public Part
 {
   Q_OBJECT
 public:
-  ReadOnlyPart( const char *name = 0 );
+  ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
   virtual ~ReadOnlyPart();
 
   virtual void init();
@@ -226,7 +226,7 @@ class ReadWritePart : public ReadOnlyPart
 {
   Q_OBJECT
 public:
-  ReadWritePart( const char *name = 0 );
+  ReadWritePart( QObject *parent = 0, const char *name = 0 );
   virtual ~ReadWritePart();
 
   /**

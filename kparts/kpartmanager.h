@@ -40,7 +40,7 @@ public:
    *
    * Sets it to the active part automatically.
    */
-  virtual void addPart( Part *part );
+  virtual void addPart( Part *part, bool setActive = true );
   /**
    * Remove a part.
    *

@@ -19,7 +19,7 @@ PartManager::PartManager( QWidget * parent, const char * name )
 
 PartManager::~PartManager()
 {
-  setActivePart( 0L ); 
+  setActivePart( 0L );
   qApp->removeEventFilter( this );
 }
 
@@ -78,15 +78,16 @@ Part * PartManager::findPartFromWidget( QWidget * widget )
   return 0L;
 }
 
-void PartManager::addPart( Part *part )
+void PartManager::addPart( Part *part, bool setActive )
 {
   connect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
   m_parts.append( part );
 
   part->setManager( this );
-  
-  setActivePart( part );
+
+  if ( setActive )
+    setActivePart( part );
 
   // Prevent focus problems
   if ( part->widget()->focusPolicy() == QWidget::NoFocus ||
@@ -121,7 +122,7 @@ void PartManager::setActivePart( Part *part )
 {
   m_activePart = part;
   emit activePartChanged( m_activePart );
-} 
+}
 
 void PartManager::slotObjectDestroyed()
 {

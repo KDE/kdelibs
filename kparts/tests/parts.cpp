@@ -17,8 +17,8 @@
 #include <kaction.h>
 #include <klocale.h>
 
-Part1::Part1( QWidget * parentWidget )
- : KParts::ReadOnlyPart( "Part1" )
+Part1::Part1( QObject *parent, QWidget * parentWidget )
+ : KParts::ReadOnlyPart( parent, "Part1" )
 {
   m_instance = new KInstance( "kpartstestpart" );
   setInstance( m_instance );
@@ -58,8 +58,8 @@ bool Part1::openFile()
   return true;
 }
 
-Part2::Part2( QWidget * parentWidget )
- : KParts::Part( "Part2" )
+Part2::Part2( QObject *parent, QWidget * parentWidget )
+ : KParts::Part( parent, "Part2" )
 {
   m_instance = new KInstance( "part2" );
   setInstance( m_instance );

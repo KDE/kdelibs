@@ -29,8 +29,8 @@ Shell::Shell()
   // I wonder what kdevelop uses/will use to embed kedit, BTW.
   m_splitter = new QSplitter( this );
 
-  m_part1 = new Part1(m_splitter);
-  m_part2 = new Part2(m_splitter);
+  m_part1 = new Part1(this, m_splitter);
+  m_part2 = new Part2(this, m_splitter);
 
   QActionCollection *coll = actionCollection();
 
@@ -81,7 +81,7 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( m_splitter );
+  m_editorpart = new NotepadPart( this, m_splitter );
   m_manager->addPart( m_editorpart );
   m_paEditFile->setEnabled(false);
   m_paCloseEditor->setEnabled(true);
@@ -94,7 +94,7 @@ void Shell::slotFileCloseEditor()
 
   delete m_editorpart;
   m_editorpart = 0L;
-  m_part2 = new Part2(m_splitter);
+  m_part2 = new Part2(this, m_splitter);
   m_manager->addPart( m_part2 );
   m_paEditFile->setEnabled(true);
   m_paCloseEditor->setEnabled(false);
