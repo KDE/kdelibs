@@ -552,8 +552,8 @@ namespace KIO {
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo );
 
-        KURL::List srcURLs() const { return m_srcList; } 
-        KURL destURL() const { return m_dest; } 
+        KURL::List srcURLs() const { return m_srcList; }
+        KURL destURL() const { return m_dest; }
 
     signals:
 
@@ -646,7 +646,7 @@ namespace KIO {
     public:
         DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo );
 
-        KURL::List urls() const { return m_srcList; } 
+        KURL::List urls() const { return m_srcList; }
 
     signals:
 
@@ -681,7 +681,8 @@ namespace KIO {
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
-        KURL::List m_srcList;
+        KURL::List m_srcList; // is emptied while deleting
+        KURL::List m_srcListCopy;
         bool m_shred;
     };
 

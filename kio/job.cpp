@@ -55,6 +55,8 @@
 
 #include "kio/observer.h"
 
+#include <kdirnotify_stub.h>
+
 using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
@@ -293,7 +295,12 @@ void SimpleJob::slotFinished( )
 
     if (subjobs.isEmpty())
     {
-	emit result(this);
+        if ( m_command == CMD_MKDIR )
+        {
+            KDirNotify_stub allDirNotify("*", "KDirNotify*");
+            allDirNotify.FilesAdded( url().directory() );
+        }
+        emit result(this);
         delete this; // Suicide is painless
     }
 }
@@ -1266,6 +1273,17 @@ void CopyJob::startNextJob()
         // keep src url in the list, just in case we need it later
     } else
     {
+        // Finished - tell the world
+        KDirNotify_stub allDirNotify("*", "KDirNotify*");
+        KURL url( m_dest );
+        if ( m_asMethod )
+          url.setPath( url.directory() );
+        kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.url() << endl;
+        allDirNotify.FilesAdded( url );
+
+        if ( m_move )
+          allDirNotify.FilesRemoved( m_srcList );
+
         emit result(this);
         delete this;
     }
@@ -2005,7 +2023,8 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressIn
 }
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(showProgressInfo), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_shred(shred)
+    : Job(showProgressInfo), m_totalSize(0), m_processedSize(0),
+      m_fileProcessedSize(0), m_srcList(src), m_srcListCopy(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
@@ -2085,6 +2104,9 @@ void DeleteJob::startNextJob()
         m_srcList.remove(it);
     } else
     {
+        // Finished - tell the world
+        KDirNotify_stub allDirNotify("*", "KDirNotify*");
+        allDirNotify.FilesRemoved( m_srcListCopy );
         emit result(this);
         delete this;
     }

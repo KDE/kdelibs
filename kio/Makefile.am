@@ -70,7 +70,7 @@ libkio_la_SOURCES = \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
 	kurlcompletion.cpp kshellcompletion.cpp \
-	kdirnotify.cpp kdirnotify.skel \
+	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
 	observer.cpp uiserver.stub observer.skel
 
 
