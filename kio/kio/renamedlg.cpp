@@ -243,37 +243,40 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
           row++;
       }
 
-      // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
-      gridLayout->addRowSpacing( 4, 20 );
-
-      QLabel * lb2 = new QLabel( i18n("The source file is '%1'").arg(d->src), this );
-      gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
-
-      lb2 = new QLabel( this );
-      lb2->setPixmap( KMimeType::pixmapForURL( d->src ) );
-      gridLayout->addMultiCellWidget( lb2, 6, 8, 0, 0 ); // takes the first column on rows 6-8
-
-      row = 6;
-
-      if ( sizeSrc != (KIO::filesize_t)-1 )
+      if ( !d->src.isEmpty() )
       {
-          QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeSrc) ), this );
-          gridLayout->addWidget( lb, row, 1 );
-          row++;
-      }
-      if ( ctimeSrc != (time_t)-1 )
-      {
-          QDateTime dctime; dctime.setTime_t( ctimeSrc );
-          QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
-          gridLayout->addWidget( lb, row, 1 );
-          row++;
-      }
-      if ( mtimeSrc != (time_t)-1 )
-      {
-          QDateTime dmtime; dmtime.setTime_t( mtimeSrc );
-          QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
-          gridLayout->addWidget( lb, row, 1 );
-          row++;
+          // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
+          gridLayout->addRowSpacing( 4, 20 );
+
+          QLabel * lb2 = new QLabel( i18n("The source file is '%1'").arg(d->src), this );
+          gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
+
+          lb2 = new QLabel( this );
+          lb2->setPixmap( KMimeType::pixmapForURL( d->src ) );
+          gridLayout->addMultiCellWidget( lb2, 6, 8, 0, 0 ); // takes the first column on rows 6-8
+
+          row = 6;
+
+          if ( sizeSrc != (KIO::filesize_t)-1 )
+          {
+              QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeSrc) ), this );
+              gridLayout->addWidget( lb, row, 1 );
+              row++;
+          }
+          if ( ctimeSrc != (time_t)-1 )
+          {
+              QDateTime dctime; dctime.setTime_t( ctimeSrc );
+              QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
+              gridLayout->addWidget( lb, row, 1 );
+              row++;
+          }
+          if ( mtimeSrc != (time_t)-1 )
+          {
+              QDateTime dmtime; dmtime.setTime_t( mtimeSrc );
+              QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
+              gridLayout->addWidget( lb, row, 1 );
+              row++;
+          }
       }
   } else
   {
