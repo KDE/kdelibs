@@ -59,6 +59,7 @@
 #endif
 
 #include <kcursor.h>
+#include <knotifyclient.h>
 #include <ksimpleconfig.h>
 #include <kstringhandler.h>
 #include <kstandarddirs.h>
@@ -1078,13 +1079,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 				}
 				else
 				{
+					KNotifyClient::beep();
 					status = i18n("Link not found: \"%1\".");
 				}
 			}
 			else
 			{
-				m_part->findText(newFindString, KHTMLPart::FindNoPopups,
-				                 this);
+				m_part->findText(newFindString, KHTMLPart::FindNoPopups, this);
 				if(m_part->findTextNext())
 				{
 					d->findString = newFindString;
@@ -1092,6 +1093,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 				}
 				else
 				{
+					KNotifyClient::beep();
 					status = i18n("Text not found: \"%1\".");
 				}
 			}
@@ -1626,12 +1628,12 @@ bool KHTMLView::scrollTo(const QRect &bounds, bool one_page)
 
     int scrollX = deltax;
     int scrollY = deltay;
-    
+
     if( one_page ) {
         scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
         scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
     }
-    
+
     if (contentsX() + scrollX < 0)
 	scrollX = -contentsX();
     else if (contentsWidth() - visibleWidth() - contentsX() < scrollX)
