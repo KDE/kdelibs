@@ -1197,7 +1197,7 @@ HTMLIsIndexElement::~HTMLIsIndexElement()
 
 HTMLFormElement HTMLIsIndexElement::form() const
 {
-    return HTMLFormElement();
+    return Element::form();
 }
 
 DOMString HTMLIsIndexElement::prompt() const
