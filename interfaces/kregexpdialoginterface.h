@@ -3,6 +3,7 @@
 
 class QWidget;
 
+// obsolete. don't use. will disappear next friday!
 class KRegExpDialogInterface
 {
 public:

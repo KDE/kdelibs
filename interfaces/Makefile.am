@@ -10,7 +10,7 @@ libkregexpeditor_la_SOURCES = kregexpeditor.cpp
 libkregexpeditor_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 libkregexpeditor_la_LIBADD =  $(LIB_KFILE)
 
-include_HEADERS = kregexpeditor.h kregexpdialoginterface.h
+include_HEADERS = kregexpeditor.h kregexpdialoginterface.h kregexpeditorinterface.h
 
 METASOURCES = AUTO
 
