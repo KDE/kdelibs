@@ -75,16 +75,22 @@ void KListView::slotSettingsChanged(int category)
     if (category != KApplication::SETTINGS_MOUSE)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
+
+    disconnect( this, SIGNAL( mouseButtonClicked( int, QListViewItem *, 
+						  const QPoint &, int ) ),
+		this, SLOT( slotMouseButtonClicked( int, QListViewItem *, 
+						    const QPoint &, int ) ) );
+//       disconnect( this, SIGNAL( doubleClicked( QListViewItem *, 
+// 					       const QPoint &, int ) ),
+// 		  this, SLOT( slotExecute( QListViewItem *, 
+// 					   const QPoint &, int ) ) );
+
     if( m_bUseSingle )
     {
       connect( this, SIGNAL( mouseButtonClicked( int, QListViewItem *, 
 						 const QPoint &, int ) ),
 	       this, SLOT( slotMouseButtonClicked( int, QListViewItem *, 
 						   const QPoint &, int ) ) );
-//       disconnect( this, SIGNAL( doubleClicked( QListViewItem *, 
-// 					       const QPoint &, int ) ),
-// 		  this, SLOT( slotExecute( QListViewItem *, 
-// 					   const QPoint &, int ) ) );
     }
     else
     {
@@ -92,10 +98,6 @@ void KListView::slotSettingsChanged(int category)
 // 					    const QPoint &, int ) ),
 // 	       this, SLOT( slotExecute( QListViewItem *, 
 // 					const QPoint &, int ) ) );
-      disconnect( this, SIGNAL( mouseButtonClicked( int, QListViewItem *, 
-						    const QPoint &, int ) ),
-		  this, SLOT( slotMouseButtonClicked( int, QListViewItem *, 
-						      const QPoint &, int ) ) );
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
