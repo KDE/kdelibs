@@ -55,9 +55,6 @@ class KLibraryPrivate;
  * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
  * It allows you to find ressource files (images, XML, sound etc.) belonging
  * to the library.
- * Furthermore if you provide any QObject derived classes, you must call
- * @ref setMocClasses() with an array of names of these classes. To generate
- * that list automatically use am_edit.
  *
  * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
  * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
@@ -146,13 +143,22 @@ class KLibrary : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * @internal
+     * Don't create KLibrary objects on your own. Instead use @ref KLibLoader.
+     */
     KLibrary( const QString& libname, const QString& filename, lt_dlhandle handel );
+    /**
+     * @internal
+     * Don't destruct KLibrary objects yourself. Instead use @ref KLibLoader::unloadLibrary.
+     */
     ~KLibrary();
 
     /**
      * @return The name of the library like "libkspread".
      */
     QString name() const;
+
     /**
      * @return The filename of the library, for example "/opt/kde2&/lib/libkspread.la"
      */
@@ -162,6 +168,7 @@ public:
      * @return The factory of the library if there is any.
      */
     KLibFactory* factory();
+
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually dont want to use.
@@ -183,6 +190,8 @@ private:
     KLibraryPrivate *d;
 };
 
+class KLibWrapPrivate;
+
 /**
  * The KLibLoader allows you to load libraries dynamically at runtime.
  * Dependend libraries are loaded automatically.
@@ -199,7 +208,7 @@ public:
     /**
      * You should NEVER destruct an instance of KLibLoader
      * until you know what you are doing. This will release
-     * the loaded library.
+     * the loaded libraries.
      */
     ~KLibLoader();
 
@@ -255,7 +264,9 @@ protected:
 private slots:
     void slotLibraryDestroyed();
 private:
-    QAsciiDict<KLibrary> m_libs;
+    void close_pending( KLibWrapPrivate * );
+    //QAsciiDict<KLibrary> m_libs;
+    QAsciiDict<KLibWrapPrivate> m_libs;
 
     static KLibLoader* s_self;
 
