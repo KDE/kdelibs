@@ -84,8 +84,9 @@ namespace KParts
                                              const QStringList &args = QStringList(),
                                              int *error = 0 )
         {
-            KLibFactory *factory = KLibLoader::self()->factory( libraryName );
-            if ( !factory )
+            KLibrary *library = KLibLoader::self()->library( libraryName );
+            KLibFactory *factory = 0;
+            if ( !library || !( factory = library->factory() ) )
             {
                 if ( error )
                     *error = ErrNoFactory;
@@ -93,7 +94,10 @@ namespace KParts
             }
             T *res = createInstanceFromFactory<T>( factory, parent, name, args );
             if ( !res && error )
+            {
+                delete library;
                 *error = ErrNoComponent;
+            }
             return res;
         }
 
