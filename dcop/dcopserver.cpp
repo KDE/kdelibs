@@ -549,6 +549,7 @@ CloseListeners ()
   unlink(fName.data());
 
   FreeAuthenticationData(numTransports, authDataEntries);
+  exit(0);
 }
 
 static void sighandler(int)
