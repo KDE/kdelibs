@@ -51,7 +51,7 @@
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org> 
  */
-class KMidSimpleAPI 
+class KMID_EXPORT KMidSimpleAPI 
 {
   private:
     class KMidSimpleAPIPrivate;
@@ -184,19 +184,19 @@ extern "C" {
 #endif
 
  
-  int    kMidInit(void);
-  int    kMidLoad(const char *filename);
-  int    kMidPlay(void);
-  int    kMidStop(void);
-  void   kMidDestruct(void);
-  int    kMidIsPlaying(void);
-  int    kMidDevices(void);
-  const char * kMidName(int i);
-  const char * kMidType(int i);
-  void   kMidSetDevice(int i);
-  void   kMidSetMidiMapper(const char *mapfilename);
-  const char * kMidVersion(void);
-  const char * kMidCopyright(void);
+KMID_EXPORT  int    kMidInit(void);
+KMID_EXPORT  int    kMidLoad(const char *filename);
+KMID_EXPORT  int    kMidPlay(void);
+KMID_EXPORT  int    kMidStop(void);
+KMID_EXPORT  void   kMidDestruct(void);
+KMID_EXPORT  int    kMidIsPlaying(void);
+KMID_EXPORT  int    kMidDevices(void);
+KMID_EXPORT  const char * kMidName(int i);
+KMID_EXPORT  const char * kMidType(int i);
+KMID_EXPORT  void   kMidSetDevice(int i);
+KMID_EXPORT  void   kMidSetMidiMapper(const char *mapfilename);
+KMID_EXPORT  const char * kMidVersion(void);
+KMID_EXPORT  const char * kMidCopyright(void);
 
 
 
