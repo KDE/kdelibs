@@ -207,6 +207,8 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 
 	if (p->name) delete [] p->name;
 	if (p->visible_name) delete [] p->visible_name;
+        if (p->icon_name) delete [] p->icon_name;
+        if (p->visible_icon_name) delete [] p->visible_icon_name;
         if (p->startup_id) delete[] p->startup_id;
 
 	int i;
