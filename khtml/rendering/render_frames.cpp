@@ -623,6 +623,7 @@ void RenderPartObject::setWidget( QWidget *w )
       QSize hint = w->sizeHint();
       m_width = hint.width();
       m_height = hint.height();
+      m_minWidth = m_maxWidth = m_width;
   }
 
   RenderPart::setWidget( w );

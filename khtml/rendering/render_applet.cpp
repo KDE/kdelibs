@@ -107,6 +107,7 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     tmp->setAppletClass( args[QString::fromLatin1("code") ] );
 
     m_width = args[QString::fromLatin1("width") ].toInt();
+    m_minWidth = m_maxWidth = m_width;
     m_height = args[QString::fromLatin1("height") ].toInt();
     tmp->resize( m_width, m_height );
 
@@ -133,6 +134,7 @@ RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
   ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
 
   m_width = sz.width();
+  m_minWidth = m_maxWidth = m_width;
   m_height = sz.height();
   m_widget->resize( sz );
 }
