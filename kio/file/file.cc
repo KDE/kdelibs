@@ -1059,7 +1059,7 @@ void FileProtocol::unmount( const QString& _point )
     if ( err.isEmpty() )
 	finished();
     else
-        error( KIO::ERR_COULD_NOT_MOUNT, err );
+        error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 }
 
 /*************************************
