@@ -341,7 +341,6 @@ void HTMLFormElementImpl::submit(  )
     QByteArray form_data = formData();
     if(m_post)
     {
-
         view->part()->submitForm( "post", m_url.string(), form_data,
                                   m_target.string(),
                                   enctype().string(),
@@ -349,9 +348,11 @@ void HTMLFormElementImpl::submit(  )
 //                                   : QString(enctype().string() + "; charset=" + m_encCharset),
                                   boundary().string() );
     }
-    else
+    else {
         view->part()->submitForm( "get", m_url.string(), form_data,
                                   m_target.string() );
+    }
+
 }
 
 void HTMLFormElementImpl::prepareReset()
@@ -1638,6 +1639,8 @@ void HTMLSelectElementImpl::recalcListItems()
             }
         }
     }
+    if ( m_render )
+        static_cast<RenderSelect*>(m_render)->setOptionsChanged(true);
     setChanged(true);
 }
 
