@@ -35,6 +35,7 @@
 #include <qfontdatabase.h>
 #include <qobjectlist.h>
 #include <qptrdict.h>
+#include <qregexp.h>
 #include <qtl.h>
 #include <qtooltip.h>
 #include <qvariant.h>
@@ -152,6 +153,7 @@ public:
   KShortcut m_cutDefault;
 
   bool m_configurable;
+  QVariant m_slotParam;
 
   struct Container
   {
@@ -204,9 +206,6 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIconSet() )
 		setIcon( item.iconName() );
-
-	if( receiver )
-		connect( this, SIGNAL(activated()), receiver, slot );
 }
 
 #if KDE_VERSION < 400
@@ -312,8 +311,18 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d->setText( text );
     initShortcut( cut );
 
-    if ( receiver )
-        connect( this, SIGNAL( activated() ), receiver, slot );
+    if ( receiver && slot ) {
+        if ( QString(slot).find( QRegExp("\\(\\s*int\\s*\\)") ) >= 0 ) {
+            QRegExp rxVal("\\{(.+)\\}");
+            rxVal.setMinimal( true );
+            if ( rxVal.search( name() ) >= 0 ) {
+                d->m_slotParam = rxVal.cap(1).toInt();
+                connect( this, SIGNAL( activated( int ) ), receiver, slot );
+            }
+        }
+        else
+            connect( this, SIGNAL( activated() ), receiver, slot );
+    }
 }
 
 bool KAction::isPlugged() const
@@ -1109,7 +1118,16 @@ void KAction::activate()
 
 void KAction::slotActivated()
 {
+  switch( d->m_slotParam.type() ) {
+    case QVariant::Invalid:
       emit activated();
+      break;
+    case QVariant::Int:
+      emit activated( d->m_slotParam.toInt() );
+      break;
+    default:
+      break;
+  }
 }
 
 void KAction::slotDestroyed()
