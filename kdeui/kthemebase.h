@@ -20,6 +20,8 @@
 #ifndef __KTHEMEBASE_H
 #define __KTHEMEBASE_H
 
+#include <qdatetime.h>
+#include <qtimer.h>
 #include <kstyle.h>
 #include <kpixmap.h>
 #include <kconfig.h>
@@ -28,6 +30,23 @@
 #include <qstring.h>
 
 #define WIDGETS 24
+
+/**
+ * This class adds simple time management to KPixmap for use in flushing
+ * KThemeCache.
+ *
+ * @author Daniel M. Duley <mosfet@kde.org>
+ */
+class KThemePixmap : public KPixmap
+{
+public:
+    KThemePixmap() : KPixmap() {t.start();}
+    ~KThemePixmap(){;}
+    void updateAccessed() {t.start();}
+    bool isOld() {return(t.elapsed() >= 300000);} // 5 minutes
+protected:
+    QTime t;
+};
 
 /**
  * A very simple pixmap cache for theme plugins. QPixmapCache is not used
@@ -47,11 +66,12 @@
  * very likely the vertical height was not originally 32. Thus the pixmap
  * will be wrong when drawn, even though the horizontal width matches.
  *
- * @author Daniel M. Duley <mosfet@jorsm.com>
+ * @author Daniel M. Duley <mosfet@kde.org>
  *
  */
-class KThemeCache
+class KThemeCache : public QObject
 {
+    Q_OBJECT
 public:
     /**
      * The scale hints supported by the cache. Note that Tiled is not here
@@ -63,7 +83,7 @@ public:
      *
      * @param maxSize The maximum size of the cache in kilobytes.
      */
-    KThemeCache(int maxSize);
+    KThemeCache(int maxSize, QObject *parent=0, const char *name=0);
     /**
      * Inserts a new pixmap into the cache.
      *
@@ -74,7 +94,7 @@ public:
      *
      * @return True if the insert was successful, false otherwise.
      */
-    bool insert(KPixmap *pixmap, ScaleHint scale, int widgetID);
+    bool insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID);
     /**
      * Returns a fully scaled pixmap.
      *
@@ -85,7 +105,7 @@ public:
      * @return True if a pixmap matching the width, height, and widget ID of
      * the pixmap exists, NULL otherwise.
      */
-    KPixmap* pixmap(int w, int h, int widgetID);
+    KThemePixmap* pixmap(int w, int h, int widgetID);
     /**
      * Returns a horizontally scaled pixmap.
      *
@@ -95,7 +115,7 @@ public:
      * @return True if a pixmap matching the width and widget ID of
      * the pixmap exists, NULL otherwise.
      */
-    KPixmap* horizontalPixmap(int w, int widgetID);
+    KThemePixmap* horizontalPixmap(int w, int widgetID);
     /**
      * Returns a vertically scaled pixmap.
      *
@@ -105,28 +125,14 @@ public:
      * @return True if a pixmap matching the height and widget ID of
      * the pixmap exists, NULL otherwise.
      */
-    KPixmap* verticalPixmap(int h, int widgetID);
+    KThemePixmap* verticalPixmap(int h, int widgetID);
+protected slots:
+    void flushTimeout();
 protected:
-    QIntCache<KPixmap> cache;
+    QIntCache<KThemePixmap> cache;
+    QTimer flushTimer;
 };
 
-inline KPixmap* KThemeCache::pixmap(int w, int h, int widgetID)
-{
-    widgetID = widgetID | (w << 6) | (h << 19);
-    return(cache.find(widgetID));
-}
-
-inline KPixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
-{
-    widgetID = widgetID | (w << 6);
-    return(cache.find(widgetID));
-}
-
-inline KPixmap* KThemeCache::verticalPixmap(int h, int widgetID)
-{
-    widgetID = widgetID | (h << 19);
-    return(cache.find(widgetID));
-}
 
 /**
  * This is a base class for KDE themed styles. It implements a cache,
@@ -137,6 +143,8 @@ inline KPixmap* KThemeCache::verticalPixmap(int h, int widgetID)
  * provides the groundwork for doing so. The only reason to use this class
  * directly is if you plan to reimplement all of the widgets. Otherwise,
  * refer to KThemeStyle for a fully themed style you can derive from.
+ *
+ * @author Daniel M. Duley <mosfet@kde.org>
  */
 class KThemeBase: public KStyle
 {
@@ -291,7 +299,7 @@ public:
      * been specified in the config file, the original pixmap if not, or NULL
      * if no pixmap has been specified.
      */
-    KPixmap* uncached(WidgetType widget) const;
+    KThemePixmap* uncached(WidgetType widget) const;
     /**
      * Returns the pixmap for the given widget at the specified width and
      * height. This will return NULL if no pixmap or gradient is specified.
@@ -306,7 +314,7 @@ public:
      * @param widget Widget type.
      * @return The pixmap or NULL if one is not specified.
      */
-    virtual KPixmap *scalePixmap(int w, int h, WidgetType widget);
+    virtual KThemePixmap *scalePixmap(int w, int h, WidgetType widget);
     /**
      * This method reads a configuration file and applies it to the user's
      * kdeglobals file. It does not signal applications to reload via the
@@ -347,12 +355,12 @@ protected:
      */
     QColorGroup* makeColorGroup(QColor &fg, QColor &bg,
                                 Qt::GUIStyle style = Qt::WindowsStyle);
-    KPixmap* scale(int w, int h, WidgetType widget);
-    KPixmap* gradient(int w, int h, WidgetType widget);
+    KThemePixmap* scale(int w, int h, WidgetType widget);
+    KThemePixmap* gradient(int w, int h, WidgetType widget);
     /**
      * Attempts to load a pixmap from the default KThemeBase locations.
      */
-    KPixmap* loadPixmap(QString &name);
+    KThemePixmap* loadPixmap(QString &name);
     /**
      * Attempts to load a image from the default KThemeBase locations.
      */
@@ -382,7 +390,7 @@ private:
      * this acts as a cache. Otherwise this will hold whatever the last scaled
      * pixmap was.
      */
-    KPixmap *pixmaps[WIDGETS];
+    KThemePixmap *pixmaps[WIDGETS];
     /**
      * The theme images. These are for scaled images and are kept in order
      * to maintain fast smoothscaling.
@@ -452,7 +460,7 @@ inline KThemeBase::Gradient KThemeBase::gradientHint(WidgetType widget) const
     return((widget < WIDGETS) ? gradients[widget] : GrNone);
 }
 
-inline KPixmap* KThemeBase::uncached(WidgetType widget) const
+inline KThemePixmap* KThemeBase::uncached(WidgetType widget) const
 {
     return(pixmaps[widget]);
 }

@@ -60,6 +60,21 @@ static const char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
 enum WGroupLabel{WScale=0, WGradients, WGradientLow, WGradientHigh,
 WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps};
 
+// This is used to encode the keys. I used to use masks but I think this
+// bitfield is nicer :) I don't know why C++ coders don't use these more..
+// (mosfet)
+struct kthemeKeyData{
+    unsigned int id          :5;
+    unsigned int width       :14;
+    unsigned int height      :13;
+};
+
+union kthemeKey{
+    kthemeKeyData data;
+    unsigned int cacheKey;
+};
+
+
 void KThemeBase::readConfig(Qt::GUIStyle style)
 {
     int i;
@@ -385,9 +400,9 @@ QImage* KThemeBase::loadImage(QString &name)
     return(NULL);
 }
  
-KPixmap* KThemeBase::loadPixmap(QString &name)
+KThemePixmap* KThemeBase::loadPixmap(QString &name)
 {
-    KPixmap *pixmap = new KPixmap;
+    KThemePixmap *pixmap = new KThemePixmap;
     warning("loading pixmap %s", name.latin1());
     QString path = locate("kstyle_pixmap", name);
     pixmap->load(path);
@@ -398,30 +413,30 @@ KPixmap* KThemeBase::loadPixmap(QString &name)
     return(NULL);
 }
 
-KPixmap* KThemeBase::scale(int w, int h, WidgetType widget)
+KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
 {
     if(scaleHints[widget] == FullScale){
         if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
            pixmaps[widget]->height() != h){
-            KPixmap *cachePix = cache->pixmap(w, h, widget);
+            KThemePixmap *cachePix = cache->pixmap(w, h, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 cache->insert(pixmaps[widget], KThemeCache::FullScale, widget);
                 pixmaps[widget] = cachePix;
             }
             else{
                 cache->insert(pixmaps[widget], KThemeCache::FullScale, widget);
                 QImage tmpImg = images[widget]->smoothScale(w, h);
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
             }
         }
     }
     else if(scaleHints[widget] == HorizontalScale){
         if(pixmaps[widget]->width() != w){
-            KPixmap *cachePix = cache->horizontalPixmap(w, widget);
+            KThemePixmap *cachePix = cache->horizontalPixmap(w, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 cache->insert(pixmaps[widget], KThemeCache::HorizontalScale, widget);
                 pixmaps[widget] = cachePix;
             }
@@ -429,16 +444,16 @@ KPixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                 cache->insert(pixmaps[widget], KThemeCache::HorizontalScale, widget);
                 QImage tmpImg = images[widget]->
                     smoothScale(w, images[widget]->height());
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
             }
         }
     }
     else if(scaleHints[widget] == VerticalScale){
         if(pixmaps[widget]->height() != h){
-            KPixmap *cachePix = cache->verticalPixmap(w, widget);
+            KThemePixmap *cachePix = cache->verticalPixmap(w, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 cache->insert(pixmaps[widget], KThemeCache::VerticalScale, widget);
                 pixmaps[widget] = cachePix;
             }
@@ -446,7 +461,7 @@ KPixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                 cache->insert(pixmaps[widget], KThemeCache::VerticalScale, widget);
                 QImage tmpImg =
                     images[widget]->smoothScale(images[widget]->width(), h);
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
             }
         }
@@ -454,13 +469,13 @@ KPixmap* KThemeBase::scale(int w, int h, WidgetType widget)
     return(pixmaps[widget]);
 }
 
-KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
+KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
 {
     if(gradients[widget] == GrVertical){
         if(!pixmaps[widget] || pixmaps[widget]->height() != h){
-            KPixmap *cachePix = cache->verticalPixmap(h, widget);
+            KThemePixmap *cachePix = cache->verticalPixmap(h, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::VerticalScale,
                                   widget);
@@ -470,7 +485,7 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::VerticalScale,
                                   widget);
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->resize(w, h);
                 KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
                                         *grLowColors[widget],
@@ -480,9 +495,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
     }
     else if(gradients[widget] == GrHorizontal){
         if(!pixmaps[widget] || pixmaps[widget]->width() != w){
-            KPixmap *cachePix = cache->horizontalPixmap(w, widget);
+            KThemePixmap *cachePix = cache->horizontalPixmap(w, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget],
                                   KThemeCache::HorizontalScale, widget);
@@ -492,7 +507,7 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget],
                                   KThemeCache::HorizontalScale, widget);
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->resize(w, h);
                 KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
                                         *grLowColors[widget],
@@ -503,9 +518,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
     else if(gradients[widget] == GrDiagonal){
         if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
            pixmaps[widget]->height() != h){
-            KPixmap *cachePix = cache->pixmap(w, h, widget);
+            KThemePixmap *cachePix = cache->pixmap(w, h, widget);
             if(cachePix){
-                cachePix = new KPixmap(*cachePix);
+                cachePix = new KThemePixmap(*cachePix);
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::FullScale,
                                   widget);
@@ -515,7 +530,7 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::FullScale,
                                   widget);
-                pixmaps[widget] = new KPixmap;
+                pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->resize(w, h);
                 KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
                                         *grLowColors[widget],
@@ -526,7 +541,7 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
     return(pixmaps[widget]);
 }
 
-KPixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget)
+KThemePixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget)
 {
 
     if(gradients[widget])
@@ -535,21 +550,80 @@ KPixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget)
 }
 
 
-KThemeCache::KThemeCache(int maxSize)
+KThemeCache::KThemeCache(int maxSize, QObject *parent, const char *name)
+    : QObject(parent, name)
 {
     cache.setMaxCost(maxSize*1024);
+    cache.setAutoDelete(true);
+    flushTimer.start(300000); // 5 minutes
+    connect(&flushTimer, SIGNAL(timeout()), SLOT(flushTimeout()));
 }
 
-bool KThemeCache::insert(KPixmap *pixmap, ScaleHint scale, int widgetID)
+void KThemeCache::flushTimeout()
 {
-    if(scale == FullScale || scale == HorizontalScale)
-        widgetID |= pixmap->width() << 6;
-    if(scale == FullScale || scale == VerticalScale)
-        widgetID |= pixmap->height() << 19;
+    QIntCacheIterator<KThemePixmap> it(cache);
+    for(;it.current(); ++it){
+        if(it.current()->isOld()){
+            kthemeKey key;
+            key.cacheKey = it.currentKey();
+            cache.remove(it.currentKey());
+        }
+    }
+}
 
-    if(cache.find(widgetID), false)
+KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID)
+{
+
+    kthemeKey key;
+    key.data.id = widgetID;
+    key.data.width = w;
+    key.data.height = h;
+    KThemePixmap *pix = cache.find(key.cacheKey);
+    if(pix){
+        pix->updateAccessed();
+    }
+    return(pix);
+}
+
+KThemePixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
+{
+    kthemeKey key;
+    key.data.id = widgetID;
+    key.data.width = w;
+    key.data.height = 0;
+    KThemePixmap *pix = cache.find(key.cacheKey);
+    if(pix){
+        pix->updateAccessed();
+    }
+    return(pix);
+}
+
+KThemePixmap* KThemeCache::verticalPixmap(int h, int widgetID)
+{
+    kthemeKey key;
+    key.data.id = widgetID;
+    key.data.width = 0;
+    key.data.height = h;
+    KThemePixmap *pix = cache.find(key.cacheKey);
+    if(pix){
+        pix->updateAccessed();
+    }
+    return(pix);
+}
+
+bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID)
+{
+    kthemeKey key;
+    key.data.id = widgetID;
+    key.data.width = (scale == FullScale || scale == HorizontalScale) ?
+        pixmap->width() : 0;
+    key.data.height = (scale == FullScale || scale == VerticalScale) ?
+        pixmap->height() : 0;
+
+    if(cache.find(key.cacheKey, true) != NULL){
         return(true); // a pixmap of this scale is already in there
-    return(cache.insert(widgetID, pixmap,
+    }
+    return(cache.insert(key.cacheKey, pixmap,
                         pixmap->width()*pixmap->height()*pixmap->depth()/8));
 }
 
