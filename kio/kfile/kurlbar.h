@@ -502,7 +502,8 @@ public:
      */
     static bool getInformation( bool allowGlobal, KURL& url,
                                 QString& description, QString& icon,
-                                bool& appLocal, QWidget *parent = 0 );
+                                bool& appLocal, int iconSize,
+                                QWidget *parent = 0 );
 
     /**
      * Constructs a KURLBarItemDialog.
@@ -515,6 +516,7 @@ public:
      * @p icon an icon for the item
      * @p appLocal tells whether the item should be local for this application
      *             or available globalle
+     * @p iconSize determines the size of the icon that is shown/selectable
      * @p parent the parent-widget for the dialog
      *
      * If you leave the icon empty, the default icon for the given url will be
@@ -523,6 +525,7 @@ public:
     KURLBarItemDialog( bool allowGlobal, const KURL& url,
                        const QString& description, QString icon,
                        bool appLocal = true,
+                       int iconSize = KIcon::SizeMedium,
                        QWidget *parent = 0, const char *name = 0 );
     /**
      * Destroys the dialog.

@@ -506,7 +506,8 @@ void KURLBar::slotDropped( QDropEvent *e )
             url = *it;
             if ( KURLBarItemDialog::getInformation( m_useGlobal,
                                                     url, description, icon,
-                                                    appLocal, this ) ) {
+                                                    appLocal, m_iconSize,
+                                                    this ) ) {
                 (void) insertItem( url, description, appLocal, icon );
                 m_isModified = true;
             }
@@ -585,7 +586,8 @@ bool KURLBar::editItem( KURLBarItem *item )
 
     if ( KURLBarItemDialog::getInformation( m_useGlobal,
                                             url, description,
-                                            icon, appLocal, this ))
+                                            icon, appLocal,
+                                            m_iconSize, this ))
     {
         item->setURL( url );
         item->setDescription( description );
@@ -663,11 +665,13 @@ void KURLBarListBox::setOrientation( Qt::Orientation orient )
 
 bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
                                         QString& description, QString& icon,
-                                        bool& appLocal, QWidget *parent )
+                                        bool& appLocal, int iconSize,
+                                        QWidget *parent )
 {
     KURLBarItemDialog *dialog = new KURLBarItemDialog( allowGlobal, url,
                                                        description, icon,
-                                                       appLocal, parent );
+                                                       appLocal,
+                                                       iconSize, parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
         url         = dialog->url();
@@ -686,6 +690,7 @@ bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
 KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
+                                      int iconSize,
                                       QWidget *parent, const char *name )
     : KDialogBase( parent, name, true,
                    i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
@@ -701,18 +706,21 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_urlEdit->setMode( KFile::Directory );
 
     grid->setSpacing( spacingHint() );
-    label = new QLabel( i18n("Choose an &icon:"), grid );
-
-    m_iconButton = new KIconButton( grid, "icon button" );
-    if ( icon.isEmpty() )
-        icon = KMimeType::iconForURL( url );
-    m_iconButton->setIcon( icon );
-    label->setBuddy( m_iconButton );
 
     label = new QLabel( i18n("&Description:"), grid );
     m_edit = new KLineEdit( grid, "description edit" );
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
+
+    label = new QLabel( i18n("Choose an &icon:"), grid );
+
+    m_iconButton = new KIconButton( grid, "icon button" );
+    m_iconButton->setIconSize( iconSize );
+    m_iconButton->setStrictIconSize( true );
+    if ( icon.isEmpty() )
+        icon = KMimeType::iconForURL( url );
+    m_iconButton->setIcon( icon );
+    label->setBuddy( m_iconButton );
 
     if ( allowGlobal ) {
         m_appLocal = new QCheckBox(i18n("&Only for this application"), box);
