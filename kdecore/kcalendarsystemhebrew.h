@@ -1,6 +1,6 @@
 /*
-   Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-   Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002-2003 Carlos Moro <cfmoro@correo.uniovi.es>
+   Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,8 +36,7 @@ class KCalendarSystemHebrewPrivate;
  *
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
- * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @licence GNU-GPL v.2
+ * @author Hans Petter Bieker <bieker@kde.org>
  * @version $Id$
  * @since 3.2
  */
