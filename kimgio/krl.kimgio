@@ -1,7 +1,7 @@
 [Image Format]
 Type=KRL
 Header=DUMMYKRLREGEXP
-Name=
+Name=KRL-Images
 Read=true
 Write=true
 Suffices=
