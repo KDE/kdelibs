@@ -34,10 +34,6 @@
 #include <signal.h>
 #include <setjmp.h>
 
-#ifdef Q_WS_WIN
-# include <stdlib.h>
-#endif
-
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>
@@ -853,12 +849,10 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 
      if (hasDefault)
      {
-#ifndef Q_WS_WIN //TODO: this will be removed later
         // Entry had a default value
         if ((currentEntry.mValue == (*aTestIt).mValue) &&
             (currentEntry.bDeleted == (*aTestIt).bDeleted))
            continue; // Same as default, don't write.
-#endif
      }
      else
      {
