@@ -288,7 +288,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
         popup->setItemEnabled( Clear, flag && ( text().length() > 0) );
         popup->setItemEnabled( Unselect, hasMarkedText() );
-        popup->setItemEnabled( SelectAll, flag && hasMarkedText() && !allMarked );
+        popup->setItemEnabled( SelectAll, flag && !allMarked );
 
 	KGlobalSettings::Completion oldMode = completionMode();
         int result = popup->exec( e->globalPos() );

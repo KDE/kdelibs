@@ -368,7 +368,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
             popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
             popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( SelectAll, flag && m_pEdit->hasMarkedText() && !allMarked );
+            popup->setItemEnabled( SelectAll, flag && !allMarked );
 
 	    KGlobalSettings::Completion oldMode = completionMode();
             int result = popup->exec( e->globalPos() );
