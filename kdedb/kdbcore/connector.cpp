@@ -115,9 +115,9 @@ Connector::close()
 
 
 Query *
-Connector::createQueryObject(QObject *parent = 0L,
-                               const char *name = 0L,
-                               const QString &sql = QString::null)
+Connector::createQueryObject(QObject *parent,
+                               const char *name,
+                               const QString &sql)
 {
     return new Query(this, parent, name, sql);
 }

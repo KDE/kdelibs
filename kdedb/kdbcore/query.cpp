@@ -25,7 +25,9 @@
 
 #include <qdom.h>
 #include <qregexp.h>
+#include <qdict.h>
 
+#include <klocale.h>
 #include <kdebug.h>
 
 #include "query.moc"
@@ -40,7 +42,7 @@ namespace KDB {
             : type(Query::Select),
               dirty(true)
         {
-            paramList.setAutoDelete(true);
+            //paramList.setAutoDelete(true);
             cond.setAutoDelete(true);
             fields.setAutoDelete(true);
         }
@@ -50,14 +52,14 @@ namespace KDB {
         ParameterList paramList;
 
         FldList fields;
-        QStringList tables;
+        QMap<QString,QString> tables;
         CondList cond;
         bool dirty;
+        QString firstTable;
     };
 }
 
 using namespace KDB;
-
 
 
 Query::Query( Connector * conn, QObject *parent, const char *name, const QString &sql )
@@ -94,28 +96,31 @@ Query::Query( Connector * conn, QObject *parent, const char *name, const QString
                     node = node.nextSibling();
                 }
 
-                // fields
-                QDomNode flds = e.namedItem("Fields");
-                node = flds.firstChild();
-                while( !node.isNull() ) {
-                    QDomElement el = node.toElement(); // try to convert the node to an element.
-                    if( !el.isNull() ) { // the node was really an element.
-                        addField(el.attribute("table"),el.attribute("name"), el.attribute("value"));
-                    }
-                    node = node.nextSibling();
-                }
-
                 // Tables
                 QDomNode tabs = e.namedItem("Tables");
                 node = tabs.firstChild();
                 while( !node.isNull() ) {
                     QDomElement el = node.toElement(); // try to convert the node to an element.
                     if( !el.isNull() ) { // the node was really an element.
-                        addTable(el.attribute("name"));
+                        addTable(el.attribute("name"), el.attribute("alias"));
                     }
                     node = node.nextSibling();
                 }
                 
+                // fields
+                QDomNode flds = e.namedItem("Fields");
+                node = flds.firstChild();
+                while( !node.isNull() ) {
+                    QDomElement el = node.toElement(); // try to convert the node to an element.
+                    if( !el.isNull() ) { // the node was really an element.
+                        addField(el.attribute("table"),
+                                 el.attribute("name"),
+                                 el.attribute("value"),
+                                 el.attribute("aggregate"));
+                    }
+                    node = node.nextSibling();
+                }
+
                 // Conditions
                 QDomNode conds = e.namedItem("Conditions");
                 node = conds.firstChild();
@@ -162,45 +167,58 @@ Query::parameters() const
 }
 
 void
-Query::setParameter(const QString &param, const char *value)
+Query::setParameter(const QString &param, const QString &value)
 {
-    d->paramList.replace(param, strdup(value));
+    d->paramList[param] = value;
     d->dirty = true;
 }
 
-const char *
+QString
 Query::parameter(const QString &param) const
 {
     return d->paramList[param];
 }
 
-void 
-Query::addField(const QString &table, const QString &name, const QString &val)
+bool 
+Query::addField(const QString &table,
+                const QString &name,
+                const QString &val,
+                const QString &aggregate)
 {
     kdDebug(20000) << "Query::addField" << " table=" << table << " name=" << name
                    << " value=" << val << endl;
     // add the table name to the table list, if not already threre
-    addTable(table);
 
-    // look for a field with the same name and table in the field list
-    FldIterator it(d->fields);
-
-    while (it.current()) {
-        if (it.current()->table == table && it.current()->name == name) {
-            it.current()->val = val;
-            break;
-        }
-        ++it;
+    if (tableName(table).isNull()) {
+        pushError(new InvalidRequest(this, i18n("No table %1 in this query").arg(table)) );
+        return false;
     }
-    if (!it.current()) {
-        qryField * f = new qryField;
-        f->table = table;
-        f->name = name;
-        f->val = val;
-        d->fields.append(f);
-    }   
+
+    /* this is wrong! what if I want to add the same field twice??
+  
+       // look for a field with the same name and table in the field list
+       FldIterator it(d->fields);
+       
+       while (it.current()) {
+       if (it.current()->table == table && it.current()->name == name) {
+       it.current()->aggregate = val;
+       it.current()->val = val;
+       break;
+       }
+       ++it;
+       }
+       if (!it.current()) {
+    */
+    qryField * f = new qryField;
+    f->table = table;
+    f->name = name;
+    f->aggregate = aggregate;
+    f->val = val;
+    d->fields.append(f);
     d->dirty = true;
-        
+
+    emit definitionChanged();
+    return true;
 }
 
 void
@@ -216,6 +234,7 @@ Query::removeField(const QString &table, const QString &name)
         ++it;
     }
     d->dirty = true;
+    emit definitionChanged();
     
 }
 
@@ -225,35 +244,81 @@ Query::fields() const
     return d->fields;
 }
 
-void 
-Query::addTable(const QString &name)
+QString 
+Query::addTable(const QString &name, const QString &alias)
 {
-    kdDebug(20000) << "Query::addTable" << " name=" << name << endl;
-    if ( !d->tables.contains(name) ) {
-        d->tables.append(name);
+    // will be used when building sql for command queries.
+    if (d->firstTable.isNull()) {
+        d->firstTable = name;
     }
+
+    if (d->tables.count() == 1 && type() != Select)
+        return QString::null;
+    
+    QString al = alias;
+    int count = 0;
+    kdDebug(20000) << "Query::addTable" << " name=" << name << " alias="
+                   << (alias.isNull() ? QString("Null") : alias) << endl;
+    if ( (d->tables.find(name)!= d->tables.end()) && al.isNull() ) {
+        // this name is already there, create an alias for it, format name_#, where # is
+        // the lowest free number
+        do {
+            al = QString("%1_%2").arg(name).arg(++count);
+        } while (!tableName(al).isNull());
+    } else {
+        if (al.isNull())
+            al = name;
+    }
+    kdDebug(20000) << "inserting " << name << " whith alias " << al << endl;
+    d->tables.insert(al, name);
     d->dirty = true;
+    emit definitionChanged();
+    return al;
 }
 
 void
-Query::removeTable( const QString &name )
+Query::removeTable( const QString &alias )
 {
-    if (!d->tables.contains(name))
+    // find the table name by alias
+    QString name = tableName(alias);
+    
+    if (name.isNull())
         return;
 
-    d->tables.remove(name);
+    d->tables.remove(alias);
 
     FldIterator it(d->fields);
 
     while (it.current()) {
-        if (it.current()->table == name)
+        if (it.current()->table == alias)
             d->fields.removeRef(it.current());
         else //???
             ++it;
     }
     d->dirty = true;
+    emit definitionChanged();
 }
 
+QStringList
+Query::tables()
+{
+    QStringList res;
+    for (QMap<QString, QString>::Iterator itt = d->tables.begin(); itt != d->tables.end(); itt++) {
+        res << itt.key();
+        ++itt;
+    }
+    return res;
+}
+
+QString
+Query::tableName( const QString &alias )
+{
+    QMap<QString, QString>::Iterator itt = d->tables.find(alias);
+    if (itt != d->tables.end())
+        return itt.data();
+    return QString::null;
+}
+    
 
 void 
 Query::addCondition(const QString &condition, ConditionType t, int level)
@@ -267,6 +332,7 @@ Query::addCondition(const QString &condition, ConditionType t, int level)
     cond->level = level;
     d->cond.append(cond);
     d->dirty = true;
+    emit definitionChanged();
 }
 
 void
@@ -284,7 +350,7 @@ Query::removeCondition(const QString &condition, int level)
         ++it;
     }
     d->dirty = true;
-    
+    emit definitionChanged();    
 }
 
 CondList
@@ -338,6 +404,8 @@ Query::save()
 {
     if (! isDirty())
         return;
+
+    bool newQuery = false;
     
     //warning! the query table must exist here, otherwise we don't save anything
     Database * base = static_cast<Database *>(parent());
@@ -348,6 +416,7 @@ Query::save()
         RecordsetIterator iter = set->begin();
         RecordPtr rec = iter.findFirst("Name",QString(name()));
         if (!rec) {
+            newQuery = true;
             rec = set->addRecord();
             rec->field("Name") = Value(name());
         }
@@ -367,13 +436,12 @@ Query::save()
 
         // parameters
         QDomElement param = doc.createElement( "Parameters" );
-        QDictIterator<char> itp( d->paramList ); // iterator for dict
         
-        while ( itp.current() ) {
+        for (QMap<QString, QString>::Iterator itp = d->paramList.begin();
+             itp != d->paramList.end(); ++itp) {
             QDomElement par = doc.createElement( "Parameter" );
-            par.setAttribute("name",itp.currentKey());
+            par.setAttribute("name",itp.key());
             param.appendChild(par);
-            ++itp;
         }
         def.appendChild(param);
 
@@ -385,6 +453,7 @@ Query::save()
             QDomElement fld = doc.createElement( "Field" );
             fld.setAttribute("name",itf.current()->name);
             fld.setAttribute("table",itf.current()->table);
+            fld.setAttribute("aggregate",itf.current()->aggregate);
             fld.setAttribute("value",itf.current()->val);
             flds.appendChild(fld);
             ++itf;
@@ -393,9 +462,11 @@ Query::save()
         
         // tables
         QDomElement tabs = doc.createElement( "Tables" );
-        for (QStringList::Iterator itt = d->tables.begin(); itt != d->tables.end(); itt++) {
+        for (QMap<QString, QString>::Iterator itt = d->tables.begin();
+             itt != d->tables.end(); ++itt) {
             QDomElement tab = doc.createElement( "Table" );
-            tab.setAttribute("name",*itt);
+            tab.setAttribute("name",itt.data());
+            tab.setAttribute("alias",itt.key());
             tabs.appendChild(tab);
         }
         def.appendChild(tabs);
@@ -418,6 +489,9 @@ Query::save()
         rec->update();
     }
 
+    if (newQuery)
+        emit created(this);
+    
     d->dirty = false;
 }
 
@@ -462,18 +536,22 @@ Query::buildSQL()
             first = true;
             tmpSql += "FROM ";
             // add table list
-            for (QStringList::Iterator itt = d->tables.begin(); itt != d->tables.end(); itt++) {
+            for (QMap<QString, QString>::Iterator itt = d->tables.begin();
+                 itt != d->tables.end(); ++itt) {
                 if (!first)
                     tmpSql += ",";
                 first = false;
-                tmpSql += *itt + "\n";
+                if (itt.key() == itt.data()) 
+                    tmpSql += itt.data() + "\n";
+                else
+                    tmpSql += QString("%1 as %2").arg(itt.data()).arg(itt.key());
             }
             break;
         }
     case Insert:
         {
             kdDebug(20000) << "QueryType: INSERT" << endl;
-            QString tabName = *(d->tables.begin());
+            QString tabName = d->firstTable;
             tmpSql = QString("INSERT INTO %1 (").arg(tabName);
 
             // build field list
@@ -536,7 +614,7 @@ Query::buildSQL()
     case Update:
         {
             kdDebug(20000) << "QueryType: UPDATE" << endl;
-            QString tabName = *(d->tables.begin());
+            QString tabName = d->firstTable;
             tmpSql = QString("UPDATE  %1 SET ").arg(tabName);
             
             // we need to know the datatipe for each field, to properly quote strings
@@ -576,7 +654,7 @@ Query::buildSQL()
         }
     case Delete:
         kdDebug(20000) << "QueryType: DELETE" << endl;
-        tmpSql = QString("DELETE FROM %1 ").arg(*(d->tables.begin()));
+        tmpSql = QString("DELETE FROM %1 ").arg(d->firstTable);
         break;
     default:
         break;
@@ -584,7 +662,7 @@ Query::buildSQL()
     
     // step two: build the where clause (not for insert)
     if (d->cond.count() != 0 && d->type != Insert) {
-        tmpSql += " WHERE ";
+        tmpSql += "\n WHERE ";
         
         first = true;
         int prevLevel = 0;
@@ -597,9 +675,9 @@ Query::buildSQL()
             //first, determine AND/OR
             if (!first) {
                 if (c->type == And) 
-                    tmpSql += " AND ";
+                    tmpSql += "\n  AND ";
                 else
-                    tmpSql += " OR ";
+                    tmpSql += "\n   OR ";
             }
             first = false;
 
@@ -662,6 +740,9 @@ Query::clear()
 {
     d->paramList.clear();
     d->cond.clear();
-    d->fields.clear();
-   
+    d->fields.clear();   
+    d->tables.clear();
+    d->firstTable = QString::null;
+    emit definitionChanged();
 }
+

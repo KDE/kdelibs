@@ -27,7 +27,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlist.h>
-#include <qdict.h>
+#include <qmap.h>
 
 #include <ksharedptr.h>
 
@@ -45,11 +45,12 @@ class QueryPrivate;
 typedef KSharedPtr<Query>            QueryPtr;
 typedef QValueList<QueryPtr>         QueryList;
 typedef QValueListIterator<QueryPtr> QueryIterator;
-typedef QDict<char>                  ParameterList; 
+typedef QMap<QString,QString>        ParameterList; 
 
 struct qryField {
     QString table;
     QString name;
+    QString aggregate;
     QString val;
 };
  
@@ -135,21 +136,28 @@ class Query :public DataObject{
     /**
      * Set the value of a parameter
      */
-    void setParameter(const QString &prop, const char * value);
+    void setParameter(const QString &prop, const QString &value);
 
     /**
      * Return the actual value of a parameter
      */
-    const char * parameter(const QString &prop) const;
+    QString parameter(const QString &prop) const;
     
     /**
      * Append a new field to the field list of the query.
+     * WARNING! aggregate functions aren't yet supported. The sig is here but the SQL ignores
+     * aggregates.
      * @param table The table to which this field belongs. Ignored for command queries.
      * @param name The name of the field
+     * @param aggregate The aggregate function to apply to this field
      * @param value The value this field should get (useful only for update and insert queries,
      * ignored otherwhise).
+     * @return true if the field has been appended, false oterwise
      */
-    void addField(const QString &table, const QString &name, const QString &value = QString::null);
+    bool addField(const QString &table,
+                  const QString &name,
+                  const QString &value = QString::null,
+                  const QString &aggregate = QString::null);
 
     /**
      * Remove a field from the list of fields
@@ -164,20 +172,28 @@ class Query :public DataObject{
     /**
      * Add a table to the existing list of tables. For insert, update and delete queries
      * only the first table is taken into consideration. All others will be discarded
-     * silently
+     * silently.
+     * If this table is already present in the table list, and an alias isn't supplied,
+     * it will be created based on the table name.
+     * @returns the alias of the table added.
      */
-    void addTable(const QString &name) ;
+    QString addTable(const QString &name, const QString & alias = QString::null) ;
 
     /**
-     * Remove a table from the list of tables. This will also remove all fields for the
+     * Remove a table from the list of tables, by alias. This will also remove all fields for the
      * removed table
      */
-    void removeTable(const QString &name);
+    void removeTable(const QString &alias);
 
     /**
-     * Return the list of tables
+     * Return the list of table aliases.
      */
     QStringList tables();
+
+    /**
+     * given an alias, retrieve the corresponding table name
+     */
+    QString tableName(const QString & alias);
     
     /**
      * Add a condition to the query. Ignored for insert queries.
