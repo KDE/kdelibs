@@ -53,7 +53,6 @@
 #include <kcombobox.h>
 #include <kfontcombo.h>
 #include <kdebug.h>
-#include <kkey_x11.h>
 #include <assert.h>
 
 static QFontDatabase *fontDataBase = 0;
@@ -318,7 +317,7 @@ void KAction::setShortcut( const KShortcut& cut )
 
 void KAction::setAccel( int keyQt )
 {
-  setShortcut( keyQt );
+  setShortcut( KShortcut(keyQt) );
 }
 
 void KAction::setShortcut( int i )
@@ -591,7 +590,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
 void KAction::unplugAccel()
 {
-  kdDebug(125) << "KAction::unplugAccel()" << endl; // -- ellis
+  //kdDebug(125) << "KAction::unplugAccel()" << endl;
   if ( d->m_kaccel )
   {
     d->m_kaccel->remove(name());
