@@ -32,7 +32,6 @@ KComboBox::KComboBox( QWidget *parent, const char *name ) :QComboBox( parent, na
     m_pEdit = 0;
     m_bShowContextMenu = false;
     m_bShowModeChanger = false;
-    m_pReadOnlyText = "";
     initialize();
 }
 
@@ -48,7 +47,6 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name,
     delete list;
     initialize();
     m_bShowModeChanger = showModeChanger;
-    m_pReadOnlyText = QString::null;
     if ( rw && showContext )
         showContextMenu();
 }
@@ -74,6 +72,10 @@ void KComboBox::initialize()
     // Determines whether the completion object should
     // be deleted or not.
     m_bAutoDelCompObj = false;
+
+    // Determine whether items in a select-only mode are
+    //auto-selectable
+    m_bAutoSelect = false;
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
@@ -283,24 +285,16 @@ void KComboBox::makeCompletion( const QString& text )
             m_pEdit->validateAndSet( match, m_iPrevpos, m_iPrevpos, m_iPrevlen );
         }
     }
-/*    else if( m_pEdit ==0 && m_pCompObj != 0 &&
+    else if( m_pEdit ==0 && m_pCompObj != 0 &&
              m_iCompletionMode == KGlobal::CompletionAuto )
     {
-        debug("Text to match : %s", text.latin1() );
-        QString match = m_pCompObj->makeCompletion( text );
-        debug("Found matching entry : %s", text.latin1() );
-        // If no match or the same match, simply return
-        // without completing.
-        if( match.isNull() || match == text )
-            return;
+       if( text.isNull() )
+        return;
 
-        int index = listBox()->index( listBox()->findItem( match ) );
-        if( index != -1 )
-        {
+       int index = listBox()->index( listBox()->findItem( text ) );
+        if( index >= 0 )
             setCurrentItem( index );
-            m_pReadOnlyText="";
-        }
-    } */
+    }
 }
 
 void KComboBox::multipleCompletions( const QStringList& )
@@ -421,21 +415,21 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             }
         }
     }
-/*    else if( m_pEdit == 0 && m_iCompletionMode == KGlobal::CompletionAuto )
-    {
-       // TODO : Figure out why normal key-codes ( Key_A etc ) do not propagate
-       // through this method when this widget is not editable ???
-        if( ev->type() == QEvent::KeyPress )
-        {
-            QString keycode = ((QKeyEvent *) ev)->text();
-            debug ( "Key Event : %s", keycode.latin1() );
-            if ( !keycode.isNull() && keycode.unicode()->isPrint() )
-            {
-                m_pReadOnlyText += keycode;
-                emit completion ( m_pReadOnlyText );
-                // return true;
-            }
-        }
-    } */
     return false;
+}
+
+void KComboBox::keyPressEvent ( QKeyEvent * e )
+{
+    if( m_bAutoSelect && m_pEdit == 0 &&
+        m_iCompletionMode == KGlobal::CompletionAuto )
+    {
+        QString keycode = e->text();
+        debug ( "Key Event : %s", keycode.latin1() );
+        if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+        {
+            emit completion ( keycode );
+            return;
+        }
+    }
+    QComboBox::keyPressEvent( e );
 }

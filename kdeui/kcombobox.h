@@ -38,15 +38,18 @@
  * such as copy/cut/paste to manipulate content through the mouse, a
  * built-in hook into @ref a KCompletion object which provides automatic
  * manual completion, and the ability to change which keyboard key is used
- * for this feature.  Since this widget inherits form QComboBox, it can be
- * used as a drop-in replacement where the above extra functionalities are
- * needed and/or useful.
+ * for this feature.  Furthermore, since it inherits form QComboBox it can
+ * be used as a drop-in replacement for it where the above functionalities
+ * are needed and/or useful.
  *
  * KComboBox emits a few more additional signals than @ref QComboBox, the
- * main one being the comepltion signal.  This signal can be connected to a
- * slot that will assist the user in filling out the remaining text.  The
- * other signals are mainly provided a matter of convenience.  See @ref
- * returnPressed, @ref clicked and @ref pressed.
+ * main one being the @ref comepltion signal.  This signal can be connected
+ * to a slot that will assist the user in filling out the remaining text.  Both
+ * @ref returnPressed signals are emitted when the user presses return and are
+ * only available whenthe widget is editable. The clicked and pressed signals
+ * are necessary to allow the list box to be closed on a single-click event.
+ * Otherwise, the listbox items are only selected by double-clicking.  See
+ * @ref clicked, @ref pressed and @ref setSelectedItem for detials.
  *
  * The default key-binding for completion is determined from the global
  * setting in @ref KStdAccel.  However, this value can be set locally to
@@ -69,10 +72,12 @@
  *
  * KCompletion *comp = edit->completionObject();
  *
- * // connect to the return pressed signal to some filter method of a completion object's list...
- * connect( edit, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
- * // connect the clicked signal and let the widget worry about what to do. Easy, isn't it ?
- * connect( edit, SIGNAL( clicked( int ) ), combo, SLOT( setSelectedItem( int ) ) );
+ * // Connect to the return pressed signal - optional
+ * connect( combo, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
+ *
+ * // Connect to either clicked or pressed signal to the setSelectedItem slot to
+ * // close combo-box on single-clicks.
+ * connect( combo, SIGNAL( clicked( int ) ), combo, SLOT( setSelectedItem( int ) ) );
  * </pre>
  *
  * To use a customized completion object such as KURLCompletion
@@ -80,8 +85,10 @@
  *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
+ *
  * KURLCompletion *comp = new KURLCompletion();
- * edit->setCompletionObject( comp );
+ *
+ * combo->setCompletionObject( comp );
  * </pre>
  *
  * Of course @ref setCompletionObject can also be used to assign the base
@@ -90,7 +97,6 @@
  *
  * See @ref setCompletionObject and @ref enableCompletion for detailed
  * information.
- *
  *
  * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@earthlink.net>
@@ -156,7 +162,7 @@ public:
     * the completion object object will be handled by this widget as well.
     *
     * The object assigned through this method, by default, is not deleted
-    * when this widget is destroyed.  If you want KLineEdit to handle the
+    * when this widget is destroyed.  If you want KComboBox to handle the
     * deletion, make sure you set the flag in the parameter below to true.
     * This is done to allow you to share a single completion object across
     * multiple widgets.
@@ -308,7 +314,20 @@ public:
     *
     * @param @p highlight if true enables highlighting on mouse
     */
-    void autoHighlightItems( bool highlight = false );
+    void autoHighlightItems( bool highlight = true );
+
+    /**
+    * Enables or disables the automatic selection of an item from the list box
+    * if widget is NOT editable.
+    *
+    * This method allows you to turn on the ability to select an item by
+    * simply entering the first letter of an item when the combo-box is in
+    * "select-only" mode.  This feature has no impact if the widget is
+    * created as "read-write" or editable.
+    *
+    * @param @p select if true enables auto selection of items.
+    */
+    void autoSelectItems( bool select = true ) { m_bAutoSelect = select; }
 
     /**
     * Enables the default popup (context) menu for this widget.
@@ -403,7 +422,7 @@ signals:
 public slots:
 
     /**
-    * TODO : NOT YET IMPLEMENTED...
+    * TODO : NOT YET IMPLEMENTED :))
     */
     virtual void multipleCompletions( const QStringList& );
 
@@ -438,7 +457,9 @@ public slots:
     virtual void setEditText( const QString& );
 
 protected slots:
-    // Slots for manupilating editors content from the context menu
+
+    // Slots for manupilating the content of the line-edit from the
+    // context menu.
     virtual void copy()       { m_pEdit->copy(); }
     virtual void cut()        { m_pEdit->cut(); }
     virtual void paste()      { m_pEdit->paste(); }
@@ -446,33 +467,38 @@ protected slots:
     virtual void select()     { m_pEdit->selectAll(); }
     virtual void unselect()   { m_pEdit->deselect(); }
 
-    // Slots for manupilating completion mode from the context menu
+    // Slots for manupilating completion mode from the context menu.
     virtual void modeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
     virtual void modeManual() { setCompletionMode( KGlobal::CompletionMan );  }
     virtual void modeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
     virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
 
-    //
+    // deals with text changing in the line edit in editable mode.
     virtual void itemChanged( const QString& );
-    //
+    // deals with highlighting the seleted item when return
+    // is pressed in the list box (editable-mode only).
     virtual void itemSelected( QListBoxItem* );
-    //
+    // deals with processing text completions.
     virtual void makeCompletion( const QString& );
-    // slot used to highlight an item in list box if autohighlight is enabled.
+    // deals with highlighting an item in list box when
+    // autohighlight is enabled.
     virtual void mouseOverItem( QListBoxItem* );
-    // slot the emits a clicked signal with an integer parameter
+    // emits a clicked signal with an integer parameter
     virtual void clickItemEvent( QListBoxItem* );
-    // slot the emits a pressed signal with an integer parameter
+    // emits a pressed signal with an integer parameter
     virtual void pressedItemEvent( QListBoxItem* );
-    // slot that emits a returnPressed signal with a QString parameter.
+    // emits a returnPressed signal with a QString parameter.
     virtual void returnKeyPressed();
-    // slots to populate the context menu before it is shown
+    // populates the context menu before it is displayed
     virtual void aboutToShowMenu();
+    // populates the sub menu before it is displayed
     virtual void aboutToShowSubMenu( int );
 
 protected:
     // Initializes the variables upon construction.
     virtual void initialize();
+    // Override the key-press event for "select-only" box.
+    virtual void keyPressEvent ( QKeyEvent* );
 
 private :
     // Stores the completion key locally
@@ -495,6 +521,8 @@ private :
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
     bool m_bAutoDelCompObj;
+    //
+    bool m_bAutoSelect;
 
     // Stores the completion mode locally.
     KGlobal::Completion m_iCompletionMode;
@@ -504,8 +532,6 @@ private :
     KCompletion* m_pCompObj;
     // Context Menu items.
     QPopupMenu *m_pContextMenu, *m_pSubMenu;
-    // Stores the key strokes in select-only mode.
-    QString m_pReadOnlyText;
     // Event Filter to trap events
     virtual bool eventFilter( QObject* o, QEvent* e );
 };
