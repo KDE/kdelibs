@@ -34,6 +34,11 @@ KIconLoader *KGlobal::iconLoader()
     return _instance->iconLoader();
 }
 
+KInstance *KGlobal::instance() 
+{
+    return _instance;
+}
+
 KLocale	*KGlobal::locale()
 {	
     if( _locale == 0 ) {

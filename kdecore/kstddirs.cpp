@@ -634,13 +634,13 @@ QString KStandardDirs::localkdedir() const
 
 // just to make code more readable without macros
 QString locate( const QString& type,
-		const QString& filename, KInstance* inst )
+		const QString& filename, const KInstance* inst )
 {
     return inst->dirs()->findResource(type, filename);
 }
 
 QString locateLocal( const QString& type,
-	             const QString& filename, KInstance* inst )
+	             const QString& filename, const KInstance* inst )
 {
     // try to find slashes. If there are some, we have to
     // create the subdir first

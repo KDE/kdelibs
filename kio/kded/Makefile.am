@@ -19,7 +19,7 @@
 INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 
 bin_PROGRAMS = kded
-kded_LDADD = $(top_builddir)/kio/libkio.la
+kded_LDADD = ../libkio.la
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kded_SOURCES = main.cpp kbuildsycoca.cpp
 kded_METASOURCES = AUTO
