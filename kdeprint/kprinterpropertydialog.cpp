@@ -80,11 +80,27 @@ bool KPrinterPropertyDialog::synchronize()
 	return true;
 }
 
-void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts)
+void KPrinterPropertyDialog::setOptions(const QMap<QString,QString>& opts)
+{
+	// merge the 2 options sets
+	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
+		m_options[it.key()] = it.data();
+	// update all existing pages
+	QPtrListIterator<KPrintDialogPage>	it(m_pages);
+	for (; it.current(); ++it)
+		it.current()->setOptions(m_options);
+}
+
+void KPrinterPropertyDialog::getOptions(QMap<QString,QString>& opts, bool incldef)
+{
+	collectOptions(opts, incldef);
+}
+
+void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts, bool incldef)
 {
 	QPtrListIterator<KPrintDialogPage>	it(m_pages);
 	for (;it.current();++it)
-		it.current()->getOptions(opts,false);
+		it.current()->getOptions(opts,incldef);
 }
 
 void KPrinterPropertyDialog::done(int result)
@@ -99,7 +115,7 @@ void KPrinterPropertyDialog::slotSaveClicked()
 	if (m_printer && synchronize())
 	{
 		QMap<QString,QString>	opts;
-		collectOptions(opts);
+		collectOptions(opts, false);
 		m_printer->setDefaultOptions(opts);
 		m_printer->setEditedOptions(QMap<QString,QString>());
 		m_printer->setEdited(false);
@@ -116,7 +132,7 @@ void KPrinterPropertyDialog::setupPrinter(KMPrinter *pr, QWidget *parent)
 	else if (dlg.exec())
 	{
 		QMap<QString,QString>	opts;
-		dlg.collectOptions(opts);
+		dlg.collectOptions(opts, false);
 		pr->setEditedOptions(opts);
 		pr->setEdited(true);
 	}

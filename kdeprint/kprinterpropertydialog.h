@@ -41,12 +41,14 @@ public:
 	DrMain* driver()		{ return m_driver; }
 	void setDriver(DrMain* d) 	{ if (!m_driver) m_driver = d; }
 	void addPage(KPrintDialogPage*);
+	void setOptions(const QMap<QString,QString>&);
+	void getOptions(QMap<QString,QString>&, bool = false);
 
 	static void setupPrinter(KMPrinter *printer, QWidget *parent);
 
 protected:
 	bool synchronize();
-	void collectOptions(QMap<QString,QString>& opts);
+	void collectOptions(QMap<QString,QString>& opts, bool incldef = false);
 
 protected slots:
 	void slotCurrentChanged(QWidget*);
