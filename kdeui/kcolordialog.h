@@ -45,7 +45,8 @@ class KColorCells;
 
 
 /**
- * Widget for Hue/Saturation selection.
+ * Widget for Hue/Saturation colour selection.
+ *
  * The actual values can be fetched using the inherited xValue and yValue
  * methods.
  *
@@ -53,7 +54,6 @@ class KColorCells;
  *
  * @see KXYSelector, KValueSelector, KColorDialog
  * @author Martin Jones (mjones@kde.org)
- * @version $Id$
 */
 class KDEUI_EXPORT KHSSelector : public KXYSelector
 {
@@ -98,7 +98,6 @@ class KValueSelectorPrivate;
  *
  * @see KHSSelector, KColorDialog
  * @author Martin Jones (mjones@kde.org)
- * @version $Id$
  */
 class KDEUI_EXPORT KValueSelector : public KSelector
 {
@@ -153,10 +152,13 @@ private:
 
 
 /**
- * A color class that preserves both RGB and HSV values; this is
+ * A color class that preserves both RGB and HSV values.
+ *
+ * This is
  * unlike QColor which only preserves RGB values and recalculates HSV
  * values. The QColor behavior leads to an accumulation of rounding
  * errors when working in the HSV color space.
+ *
  * @author Waldo Bastian <bastian@kde.org>
  **/
 class KDEUI_EXPORT KColor : public QColor
@@ -190,8 +192,8 @@ private:
 
 /**
  * A color palette in table form.
+ *
  * @author Waldo Bastian <bastian@kde.org>
- * @version $Id$
  **/
 class KDEUI_EXPORT KPaletteTable : public QWidget
 {
@@ -243,8 +245,8 @@ private:
 
 /**
 * A table of editable color cells.
+*
 * @author Martin Jones <mjones@kde.org>
-* @version $Id$
 */
 class KDEUI_EXPORT KColorCells : public QGridView
 {
