@@ -604,7 +604,6 @@ void RenderPartObject::updateWidget()
   // ### this should be constant true - move iframe to somewhere else
   } else {
 
-      QString serviceType;
       QStringList params;
       HTMLObjectBaseElementImpl * objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
       url = objbase->url;
@@ -644,9 +643,9 @@ void RenderPartObject::updateWidget()
       params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(element()->getDocument()->baseURL().url()));
 
       HTMLEmbedElementImpl *embed = 0;
+      QString serviceType = objbase->serviceType;
       if ( element()->id() == ID_EMBED ) {
 
-          serviceType = objbase->serviceType;
           embed = static_cast<HTMLEmbedElementImpl *>( objbase );
 
       }
@@ -669,12 +668,12 @@ void RenderPartObject::updateWidget()
           if ( embed ) {
               // render embed object
               url = embed->url;
-              serviceType = embed->serviceType;
+              if (!embed->serviceType.isEmpty())
+                  serviceType = embed->serviceType;
           } else if (url.isEmpty() && objbase->classId.startsWith("java:")) {
               serviceType = "application/x-java-applet";
               url = objbase->classId.mid(5);
-          } else
-              serviceType = objbase->serviceType;
+          }
           if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
               // We have a clsid, means this is activex (Niko)
