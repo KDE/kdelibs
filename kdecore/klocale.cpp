@@ -184,6 +184,10 @@ KLocale::KLocale( const QString& _catalogue )
     if (maincatalogue)
       catalogue = QString::fromLatin1(maincatalogue);
 
+    if (catalogue.isEmpty()) {
+        kdDebug() << "KLocale instance created called without valid catalogue! Give an argument or call setMaintCatalogue before init\n";
+        catalogue = QString::fromLatin1("kdelibs");
+    }
     initLanguage(config, catalogue);
     initFormat(config);
 }
@@ -218,7 +222,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   QStringList langlist = config->readListEntry("Language", ':');
 
   QStringList kdelangs = QStringList::split(':', QFile::decodeName(getenv("KDE_LANG")) );
-  for ( QStringList::Iterator kit = kdelangs.begin(); kit != kdelangs.end(); ++kit ) 
+  for ( QStringList::Iterator kit = kdelangs.begin(); kit != kdelangs.end(); ++kit )
     langlist.prepend( *kit );
 
   // same order as setlocale use
@@ -388,10 +392,12 @@ void KLocale::insertCatalogue( const QString& catalogue )
   QString str = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg(lang)
     .arg(catalogue);
-  k_bindtextdomain ( catalogue.ascii() ,
-		     QFile::encodeName(KGlobal::dirs()->findResourceDir("locale", str)));
-
-  catalogues->append(catalogue.ascii());
+  str = KGlobal::dirs()->findResourceDir("locale", str);
+  if (!str.isEmpty()) {
+      k_bindtextdomain ( catalogue.ascii(),
+                         QFile::encodeName(str));
+      catalogues->append(catalogue.ascii());
+  }
 }
 
 KLocale::~KLocale()
@@ -417,7 +423,7 @@ QString KLocale::translate_priv(const char *msgid, const char *fallback) const
   {
     const char *text = k_dcgettext( catalogue, msgid, lang);
     if ( text != msgid) // we found it
-      return _codec->toUnicode( text );
+        return _codec->toUnicode( text );
   }
 
   // Always use UTF-8 if the string was not found
