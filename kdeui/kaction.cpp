@@ -58,6 +58,33 @@
 #include <ktoolbarbutton.h>
 #include <kurl.h>
 
+/**
+* How it works.
+* KActionCollection is an organizing container for KActions.
+* KActionCollection keeps track of the information necessary to handle
+* configuration and shortcuts.
+*
+* Focus Widget pointer:
+* This is the widget which is the focus for action shortcuts.
+* It is set either by passing a QWidget* to the KActionCollection constructor
+* or by calling setWidget() if the widget wasn't known when the object was
+* initially constructed (as in KXMLGUIClient and KParts::PartBase)
+*
+* Main Window pointer:
+* The KMainWindow* is used during destruction.  If it is flagged that KMainWindow
+* is destroying itself, then KAction::~KAction shouldn't unplug itself.
+* This is set when the Focus Widget pointer is set.
+* <not yet implemented>
+*
+* Shortcuts:
+* An action's shortcut will not not be connected unless a focus widget has
+* been specified in KActionCollection.
+*
+* XML Filename:
+* This is used to save user-modified settings back to the *ui.rc file.
+* It is set by KXMLGUIFactory.
+*/
+
 static QFontDatabase *fontDataBase = 0;
 
 static void cleanupFontDatabase()
@@ -250,6 +277,9 @@ KAction::~KAction()
     if (d->m_kaccel)
       unplugAccel();
 
+    // Unplug from menus and toolbars.
+    unplugAll();
+
     if ( m_parentCollection )
       m_parentCollection->take( this );
 
@@ -316,12 +346,8 @@ bool KAction::setShortcut( const KShortcut& cut )
   if( !d->m_kaccel ) {
     // Only insert action into KAccel if it has a valid shortcut and name,
     if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
-        && m_parentCollection ) {
-      if( m_parentCollection->accel() )
-        plugAccel( m_parentCollection->accel() );
-      else
-        kdWarning(125) << "KAction::setShortcut( " << cut.toStringInternal() << " ): m_parentCollection->accel() = 0" << endl;
-    }
+        && m_parentCollection && m_parentCollection->accel() )
+      plugAccel( m_parentCollection->accel() );
   }
   else
     d->m_kaccel->setShortcut( name(), cut );
@@ -373,8 +399,12 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
       menu->changeItem( s, id );
   }
   // Otherwise insert the shortcut itself into the popup menu.
-  else
+  else {
+    // This is a fall-hack in case the KAction is missing a proper parent collection.
+    //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
+    kdWarning(125) << "KAction::updateShortcut(): d->m_kaccel = 0" << endl;
+  }
 }
 
 const KShortcut& KAction::shortcut() const
@@ -466,8 +496,18 @@ int KAction::plug( QWidget *w, int index )
   // Plug into the KMainWindow accel so that keybindings work for
   // actions that are only plugged into a toolbar, and in case of
   // hiding the menubar.
-  if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
-    plugMainWindowAccel( w );
+  //if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
+  //  plugMainWindowAccel( w );
+  
+  // Application actions should be plugged into an accel upon construction,
+  //  but for KParts actions, they should only be connected when they are
+  //  either explicitly given a K
+  if( !d->m_kaccel ) {
+    // Only insert action into KAccel if it has a valid shortcut and name,
+    if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
+        && m_parentCollection && m_parentCollection->accel() )
+      plugAccel( m_parentCollection->accel() );
+  }
 
   if ( w->inherits("QPopupMenu") )
   {
@@ -496,6 +536,8 @@ int KAction::plug( QWidget *w, int index )
     //  we need to set the menu item's shortcut text.
     if ( d->m_kaccel )
         updateShortcut( menu, id );
+    else if ( !d->m_cut.isNull() )
+        kdWarning(125) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -2655,7 +2697,9 @@ class KActionCollection::KActionCollectionPrivate
 public:
   KActionCollectionPrivate()
   {
+    m_instance = 0;
     m_kaccel = 0;
+    m_mainwindow = 0;
     m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
@@ -2667,6 +2711,7 @@ public:
   KInstance *m_instance;
   QString m_sXMLFile;
   KAccel *m_kaccel;
+  KMainWindow *m_mainwindow;
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
@@ -2678,6 +2723,7 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
+  kdDebug() << "KActionCollection::KActionCollection( " << parent << ", " << name << " ): this = " << this << endl; // ellis
   d = new KActionCollectionPrivate;
   if( parent )
     d->m_kaccel = new KAccel( parent, "KActionCollection-KAccel" );
@@ -2688,6 +2734,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
                                       KInstance *instance )
   : QObject( parent, name )
 {
+  kdDebug() << "KActionCollection::KActionCollection( " << watch << ", " << parent << ", " << name << " ): this = " << this << endl; //ellis
   d = new KActionCollectionPrivate;
   if( watch )
     d->m_kaccel = new KAccel( watch, this, "KActionCollection-KAccel" );
@@ -2699,6 +2746,7 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
+  kdDebug() << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
@@ -2719,9 +2767,13 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 KActionCollection::~KActionCollection()
 {
   QAsciiDictIterator<KAction> it( d->m_actionDict );
-  for (; it.current(); ++it )
-      if ( it.current()->m_parentCollection == this )
-          it.current()->m_parentCollection = 0L;
+  for (; it.current(); ++it ) {
+    if ( it.current()->m_parentCollection == this ) {
+      it.current()->m_parentCollection = 0L;
+      if( it.current()->d->m_kaccel == d->m_kaccel )
+        it.current()->d->m_kaccel = 0;
+    }
+  }
 
   delete d; d = 0;
 }
@@ -2730,12 +2782,27 @@ KActionCollection::~KActionCollection()
 //  into this accel.
 void KActionCollection::setWidget( QWidget* w )
 {
+  kdDebug() << "KActionCollection::setWidget( " << w << " ): this = " << this << endl;
   if ( !d->m_kaccel ) {
     if ( w )
       d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
   }
   else
     kdWarning(125) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
+}
+
+void KActionCollection::findMainWindow( QWidget *w )
+{
+  // Note: topLevelWidget() stops too early, we can't use it.
+  QWidget * tl = w;
+  while ( tl->parentWidget() ) // lookup parent and store
+    tl = tl->parentWidget();
+
+  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
+  if (mw)
+    d->m_mainwindow = mw;
+  else
+    kdDebug(125) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KActionCollection::_insert( KAction* action )
@@ -2809,7 +2876,7 @@ KAction* KActionCollection::action( int index ) const
 //  return d->m_actions.at( index );
 }
 
-void KActionCollection::createKeyMap( KAccelActions& map ) const
+/*void KActionCollection::createKeyMap( KAccelActions& map ) const
 {
   kdDebug(125) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
   map.clear();
@@ -2838,7 +2905,7 @@ void KActionCollection::setKeyMap( const KAccelActions& map )
     if( act )
       act->setShortcut( aa->shortcut() );
   }
-}
+}*/
 
 bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig )
 {
@@ -2891,36 +2958,6 @@ KActionPtrList KActionCollection::actions() const
 
   return lst;
 }
-
-/*KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
-{
-  KActionCollection ret( *this );
-
-  QValueList<KAction *> actions = c.actions();
-  QValueList<KAction *>::ConstIterator it = actions.begin();
-  QValueList<KAction *>::ConstIterator end = actions.end();
-  for (; it != end; ++it )
-    ret.insert( *it );
-
-  return ret;
-}
-
-KActionCollection &KActionCollection::operator=( const KActionCollection &c )
-{
-  d->m_actionDict = c.d->m_actionDict;
-  //d->m_keyMap.init( c.d->m_keyMap );
-  setInstance( c.instance() );
-  return *this;
-}
-
-KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
-{
-  QAsciiDictIterator<KAction> it(c.d->m_actionDict);
-  for ( ; it.current(); ++it )
-    insert( it.current() );
-
-  return *this;
-}*/
 
 void KActionCollection::setInstance( KInstance *instance )
 {
