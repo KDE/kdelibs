@@ -2136,7 +2136,6 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
                 default:
                     return;
                 }
-            return;
         }
         if(primitiveValue && !apply)
         {
