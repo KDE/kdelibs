@@ -499,7 +499,7 @@ void KRun::slotError( int, int _errid, const char *_errortext )
   kioErrorDialog( _errid, _errortext );
 
   m_bFault = true;
-  // m_timer.start( 0, true );
+  m_timer.start( 0, true );
 }
 
 void KRun::slotMimeType( int, const char *_type )
@@ -563,20 +563,14 @@ void KRun::foundMimeType( const char *_type )
   }
 
   if (KRun::runURL( m_strURL.ascii(), _type )){
-      emit finished(); // tell owner that we finished (David)
+    m_bFinished = true;
   }
   else{
-      emit error();
+    m_bFinished = true;
+    m_bFault = true;
   }
-
-  if ( m_bAutoDelete )
-  {
-    delete this;
-    return;
-  }
-  /*
-  m_bFinished = true;
-  m_timer.start( 0, true ); */
+  
+  m_timer.start( 0, true );
 }
 
 void KRun::killJob()
