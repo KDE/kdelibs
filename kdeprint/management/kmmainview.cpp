@@ -71,7 +71,7 @@ extern "C"
 	}
 };
 
-KMMainView::KMMainView(QWidget *parent, const char *name)
+KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
 : QWidget(parent, name)
 {
 	KMTimer::setMainView(this);
@@ -107,7 +107,10 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	connect(m_plugin, SIGNAL(aboutToChange()), SLOT(slotPluginChange()));
 
 	// actions
-	m_actions = new KActionCollection(this);
+    if (coll)
+		m_actions = coll;
+	else
+		m_actions = new KActionCollection(this);
 	initActions();
 
 	// first update
@@ -155,7 +158,7 @@ void KMMainView::saveSettings()
 	conf->writeEntry("Orientation",(int)m_splitter->orientation());
 	conf->writeEntry("Sizes",m_splitter->sizes());
 	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
-	conf->writeEntry("ViewPrinterInfos",m_printerpages->isVisible());
+	conf->writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());
 	conf->sync();
 }
 

@@ -41,7 +41,7 @@ class KMMainView : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
-	KMMainView(QWidget *parent = 0, const char *name = 0);
+	KMMainView(QWidget *parent = 0, const char *name = 0, KActionCollection *coll = 0);
 	~KMMainView();
 
 	void startTimer();
