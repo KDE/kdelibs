@@ -907,8 +907,7 @@ private slots:
   virtual void slotFind();
   virtual void slotFindDone(); // ### remove me
   virtual void slotFindDialogDestroyed();
-
-  void findText();
+  void slotFindNext();
 
   void slotIncZoom();
   void slotDecZoom();
@@ -1008,7 +1007,7 @@ private slots:
   /**
    * @internal
    */
-  void slotHighlight( const QString &, int index, int length, const QRect & );
+  void slotHighlight( const QString &, int index, int length );
 
 private:
 
@@ -1097,6 +1096,10 @@ private:
 
   void checkEmitLoadEvent();
   void emitLoadEvent();
+
+  bool initFindNode( bool selection, bool reverse );
+  void findText();
+  void findTextNext();
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

@@ -117,7 +117,7 @@ public:
     m_jobPercent = 0;
     m_haveEncoding = false;
     m_activeFrame = 0L;
-    //m_findDialog = 0;
+    m_find = 0;
     m_ssl_in_use = false;
 #ifndef Q_WS_QWS
     m_javaContext = 0;
@@ -277,6 +277,7 @@ public:
   KHTMLZoomFactorAction *m_paDecZoomFactor;
   KAction *m_paLoadImages;
   KAction *m_paFind;
+  KAction *m_paFindNext;
   KAction *m_paPrintFrame;
   KAction *m_paSelectAll;
   KAction *m_paDebugDOMTree;
@@ -361,7 +362,7 @@ public:
   };
   QValueList<StringPortion> m_stringPortions;
 
-  //KFind *m_findDialog;
+  KFind *m_find;
 
   struct findState
   {
@@ -374,10 +375,10 @@ public:
 
   findState m_lastFindState;
 
-  // This is for the old find feature, the one in findTextBegin/findTextNext.
-  // Not used by khtml anymore, but kept so that the API calls still work.
-  int m_findPos;
-  DOM::NodeImpl *m_findNode;
+  DOM::NodeImpl *m_findNode; // current node
+  DOM::NodeImpl *m_findNodeEnd; // end node
+  int m_findPos; // current pos in current node
+  int m_findPosEnd; // pos in end node
   /////////
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
