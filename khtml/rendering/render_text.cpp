@@ -636,9 +636,12 @@ void RenderText::calcMinMaxWidth()
     // ### not 100% correct for first-line
     const Font *f = htmlFont( false );
     int len = str->l;
+    m_startMin = 0;
+    m_endMin = 0;
     bool isPre = style()->whiteSpace() == PRE;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
+    bool first = true;
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
@@ -653,19 +656,20 @@ void RenderText::calcMinMaxWidth()
             int w = f->width(str->s, str->l, i, wordlen);
             currMinWidth += w;
             currMaxWidth += w;
-        }
+        } else {
+	    first = false;
+	}
         if(i+wordlen < len) {
 	    m_hasBreakableChar = true;
-            if ( (*(str->s+i+wordlen)).latin1() == '\n' )
-            {
+            if ( (*(str->s+i+wordlen)).latin1() == '\n' ) {
 		m_hasReturn = true;
+		if ( first ) m_startMin = QMIN( currMinWidth, 0x1ff );
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
                 currMaxWidth = 0;
-            }
-            else
-            {
+            } else {
+		if ( first ) m_startMin = QMIN( currMinWidth , 0x1ff );
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 currMaxWidth += f->width( str->s, str->l, i + wordlen );
@@ -677,14 +681,20 @@ void RenderText::calcMinMaxWidth()
                 currMinWidth = 0;
                 currMaxWidth += minus_width;
             }*/
+	    first = false;
         }
         i += wordlen;
     }
+    if ( first ) m_startMin = QMIN( currMinWidth, 0x1ff );
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+    m_endMin = QMIN( currMinWidth , 0x1ff );
 
-    if (style()->whiteSpace() == NOWRAP)
+    if (style()->whiteSpace() == NOWRAP) {
+	m_startMin = QMIN( m_minWidth, 0x1ff );
+	m_endMin = m_startMin;
         m_minWidth = m_maxWidth;
+    }
 
     setMinMaxKnown();
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): min = " << m_minWidth << " max = " << m_maxWidth << endl;

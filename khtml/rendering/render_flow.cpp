@@ -1069,25 +1069,21 @@ void RenderFlow::calcMinMaxWidth()
 
     RenderObject *child = firstChild();
     RenderObject *prevchild = 0;
-    if(childrenInline())
-    {
+
+    if(childrenInline()) {
         int inlineMax=0;
         int currentMin=0;
         int inlineMin=0;
         bool noBreak=false;
-	bool prevWasText = false;
 
-        while(child != 0)
-        {
+        while(child != 0) {
             // positioned children don't affect the minmaxwidth
-            if (child->isPositioned())
-            {
+            if (child->isPositioned()) {
                 child = next(this, child);
                 continue;
             }
 
-            if( !child->isBR() )
-            {
+            if( !child->isBR() ) {
                 RenderStyle* cstyle = child->style();
                 int margins = 0;
 		LengthType type = cstyle->marginLeft().type;
@@ -1098,74 +1094,51 @@ void RenderFlow::calcMinMaxWidth()
                     margins += (type == Fixed ? cstyle->marginRight().value : child->marginRight());
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
+// 		qDebug("child min=%d, max=%d, currentMin=%d, inlineMin=%d",  childMin,  childMax, currentMin, inlineMin );
                 if (child->isText() && static_cast<RenderText *>(child)->stringLength() > 0) {
 
                     int ti = cstyle->textIndent().minWidth(cw);
                     childMin+=ti;
                     childMax+=ti;
 
-                    bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
-                    if (t->text()[0] == nbsp) //inline starts with nbsp
-                    {
-                        currentMin += childMin;
-                        inlineMax += childMax;
-                        hasNbsp = true;
+// 		    qDebug("child is text, startMin=%d, endMin=%d", t->startMin(),  t->endMin() );
+                    if (noBreak || t->text()[0] == nbsp) { //inline starts with nbsp
+                        currentMin += t->startMin();
+// 			qDebug("added startMin to currentMin, currentMin=%d", currentMin );
                     }
-                    if (hasNbsp && t->text()[t->stringLength()-1]==nbsp )
-                    {                           //inline starts and ends with nbsp
-                        noBreak=true;
+		    noBreak = false;
+		    if ( t->hasBreakableChar() ) {
+			inlineMin = QMAX( inlineMin, currentMin );
+			currentMin = t->endMin();
+		    }
+                    if ( t->text()[t->stringLength()-1]==nbsp ) { //inline ends with nbsp
+			noBreak = true;
                     }
-                    else if (t->text()[t->stringLength()-1] == nbsp && t->text()[0] != ' ')
-                    {                           //inline only ends with nbsp
-                        if(currentMin < childMin) currentMin = childMin;
-                        inlineMax += childMax;
-                        noBreak = true;
-                        hasNbsp = true;
-                    }
-                    if ( t->hasBreakableChar() )
-                        noBreak = false;
-                    prevWasText = true;
-                    if (hasNbsp)
-                    {
-                        if(inlineMin < currentMin) inlineMin = currentMin;
-                        prevchild = child;
-                        child = next(this, child);
-                        hasNbsp = false;
-                        continue;
-                    }
-                }
-		prevWasText = false;
-                if (noBreak ||
-                        (prevchild && prevchild->isFloating() && child->isFloating()))
-                {
+// 		    qDebug("noBreak = %d, currentMin = %d", noBreak,  currentMin );
+                } else if (noBreak ||
+		    (prevchild && prevchild->isFloating() && child->isFloating())) {
                     currentMin += childMin;
-                    if(inlineMin < currentMin) inlineMin = currentMin;
-                    inlineMax += childMax;
                     noBreak = false;
                 }
-                else
-                {
-                    currentMin = childMin;
-                    if(inlineMin < currentMin) inlineMin = currentMin;
-                    inlineMax += childMax;
-                }
-
+		inlineMin = QMAX( inlineMin, childMin );
+		inlineMax += childMax;
             }
             else
             {
+		inlineMin = QMAX( currentMin, inlineMin );
                 if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
                 inlineMin = currentMin = inlineMax = 0;
             }
-	    prevWasText = false;
             prevchild = child;
             child = next(this, child);
         }
+	inlineMin = QMAX( currentMin, inlineMin );
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
-//         kdDebug( 6040 ) << "m_minWidth=" << m_minWidth
-// 			<< " m_maxWidth=" << m_maxWidth << endl;
+//          kdDebug( 6040 ) << "m_minWidth=" << m_minWidth
+//  			<< " m_maxWidth=" << m_maxWidth << endl;
     }
     else
     {

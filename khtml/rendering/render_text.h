@@ -155,6 +155,9 @@ public:
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
 
+    ushort startMin() const { return m_startMin; }
+    ushort endMin() const { return m_endMin; }
+
     // returns the minimum x position of all slaves relative to the parent.
     // defaults to 0.
     int minXPos() const;
@@ -207,8 +210,10 @@ protected: // members
     SelectionState m_selectionState : 3 ;
     bool m_hasReturn : 1;
     bool m_hasBreakableChar : 1;
+    uint unused : 1;
 
-    // 19 bits left
+    ushort m_startMin : 9;
+    ushort m_endMin : 9;
 };
 
 
