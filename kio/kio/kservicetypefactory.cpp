@@ -45,11 +45,20 @@ KServiceTypeFactory::KServiceTypeFactory()
       (*m_str) >> i;
       m_otherPatternOffset = i;
       (*m_str) >> n;
-      QString str;
-      for(;n;n--)
+      
+      if (n > 1024)
       {
-         (*m_str) >> str >> i;
-         m_propertyTypeDict.insert(str, i);
+         KSycoca::flagError();
+      }
+      else
+      {
+         QString str;
+         for(;n;n--)
+         {
+            KSycocaEntry::read(*m_str, str);
+            (*m_str) >> i;
+            m_propertyTypeDict.insert(str, i);
+         }
       }
    }
 }
@@ -137,7 +146,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
          middle = (left + right) / 2;
          // read pattern at position "middle"
          str->device()->at( middle * entrySize + fastOffset );
-         (*str) >> pattern;
+         KSycocaEntry::read(*str, pattern);
          int cmp = pattern.compare( extension );
          if (cmp < 0)
             left = middle + 1;
@@ -162,7 +171,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
       while (true)
       {
-         (*str) >> pattern;
+         KSycocaEntry::read(*str, pattern);
          if (pattern.isEmpty()) // end of list
             break;
          (*str) >> mimetypeOffset;
