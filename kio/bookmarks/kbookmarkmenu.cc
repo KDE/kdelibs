@@ -618,6 +618,40 @@ void KBookmarkMenu::slotAddBookmarksList()
     m_pManager->emitChanged( parentBookmark );
 }
 
+static QString pickUnusedTitle( KBookmarkGroup parentBookmark, 
+                                const QString &title, const QString &url 
+) {
+  // If this title is already used, we'll try to find something unused.
+  KBookmark ch = parentBookmark.first();
+  int count = 1;
+  QString uniqueTitle = title;
+  do
+  {
+    while ( !ch.isNull() )
+    {
+      if ( uniqueTitle == ch.text() )
+      {
+        // Title already used !
+        if ( url != ch.url().url() )
+        {
+          uniqueTitle = title + QString(" (%1)").arg(++count);
+          // New title -> restart search from the beginning
+          ch = parentBookmark.first();
+          break;
+        }
+        else
+        {
+          // this exact URL already exists
+          return QString::null;
+        }
+      }
+      ch = parentBookmark.next( ch );
+    }
+  } while ( !ch.isNull() );
+
+  return uniqueTitle;
+}
+
 void KBookmarkMenu::slotAddBookmark()
 {
   QString url = m_pOwner->currentURL();
@@ -637,35 +671,9 @@ void KBookmarkMenu::slotAddBookmark()
     parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
 
-    // If this title is already used, we'll try to find something unused.
-    KBookmark ch = parentBookmark.first();
-    int count = 1;
-    QString uniqueTitle = title;
-    do
-    {
-      while ( !ch.isNull() )
-      {
-        if ( uniqueTitle == ch.text() )
-        {
-          // Title already used !
-          if ( url != ch.url().url() )
-          {
-            uniqueTitle = title + QString(" (%1)").arg(++count);
-            // New title -> restart search from the beginning
-            ch = parentBookmark.first();
-            break;
-          }
-          else
-          {
-            // this exact URL already exists
-            return;
-          }
-        }
-        ch = parentBookmark.next( ch );
-      }
-    } while ( !ch.isNull() );
-    parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
-
+    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
+    if ( !uniqueTitle.isNull() )
+      parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
   } 
   else 
   {
