@@ -30,6 +30,8 @@
  * Id: now.c,v 1.2 1998/01/17 11:31:00 pjm Exp 
  */
 
+
+#include <sys/types.h>
 #ifdef HAVE_GETTIMEOFDAY
 #include <sys/time.h>
 #else
