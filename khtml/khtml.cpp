@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Main Widget
-// $Id:  $
+// $Id$
 
 #include <kurl.h>
 #include <kapp.h>
@@ -2189,6 +2189,9 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    {
 		int l;
 		const char *str1;
+
+		if (!flow)
+		    newFlow(_clue);
 
 	    	const HTMLFont *fp = currentFont();
 		// Handling entities
