@@ -132,7 +132,6 @@ void HTMLTokenizer::reset()
 {
     assert(m_executingScript == 0);
     assert(onHold == false);
-    assert( !loadingExtScript );
 
     if (cachedScript)
         cachedScript->deref(this);
