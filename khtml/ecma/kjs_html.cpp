@@ -700,6 +700,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   name		KJS::HTMLElement::FormName	DontDelete
   acceptCharset	KJS::HTMLElement::FormAcceptCharset	DontDelete
   action	KJS::HTMLElement::FormAction	DontDelete
+  encoding	KJS::HTMLElement::FormEncType	DontDelete
   enctype	KJS::HTMLElement::FormEncType	DontDelete
   method	KJS::HTMLElement::FormMethod	DontDelete
   target	KJS::HTMLElement::FormTarget	DontDelete
