@@ -1063,7 +1063,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     bool attemptedRestart = false;
     while ( 1 )
     {
-        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "checkCachedAuthInfo(KIO::AuthInfo, long int)",
+        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
                                    params, replyType, reply ) )
         {
             if ( !initCookieJar() || attemptedRestart )
@@ -1154,7 +1154,17 @@ bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
 
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
-    return false;
+    QByteArray params;
+    long windowId = metaData("window-id").toLong();
+            
+    (void) dcopClient(); // Make sure to have a dcop client.
+
+    QDataStream stream(params, IO_WriteOnly);
+    stream << info << windowId;
+
+    d->dcopClient->send( "kcookiejar", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );
+
+    return true;
 }
 
 void SlaveBase::setMultipleAuthCaching( bool enable )
