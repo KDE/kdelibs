@@ -906,6 +906,7 @@ QString KListView::tooltip(QListViewItem *item, int column) const
 
 void KListView::keyPressEvent (QKeyEvent* e)
 {
+  //don't we need a contextMenuModifier too ? (aleXXX)
   if (e->key() == d->contextMenuKey)
 	{
 	  emit menuShortCutPressed (this, currentItem());
@@ -935,13 +936,12 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
   d->wasShiftEvent = e->state() == ShiftButton;
 
-  // We are only interested in the insert key here
   QListViewItem* item = currentItem();
-  //insert without modifiers toggles the selection of the current item and moves to the next
   if (item==0) return;
   QListViewItem* nextItem = 0L;
   int items = 0;
 
+  /* no longer needed due to menuShortCutPressed 
   if (((e->key() == Key_Enter)|| (e->key() == Key_Return)) && (e->state() == ControlButton))
 	{
       QListViewItem* item = currentItem();
@@ -957,11 +957,9 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
       QPoint p (width() / 2, height() / 2 );
       p = mapToGlobal( p );
-      //TODO we need something for the contextMenu, like:
-      // emit contectMenuShortcutPressed(p);
-	  //      popupMenu( p );
+      //      popupMenu( p );
       return;
-   }
+   }*/
 
    switch (e->key())
 	 {
@@ -1124,11 +1122,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        break;
 	 default:
 
-          //this is mainly for the "goto filename beginning with pressed char" feature (alex)
-          KListView::SelectionModeExt mode=selectionModeExt();
-//           setSelectionModeExt(KListView::Multi);
+          //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+          setSelectionModeExt(KListView::Multi);
           QListView::keyPressEvent (e);
-          setSelectionModeExt(mode);
+          setSelectionModeExt(KListView::Konqueror);
           break;
    }
 }
@@ -1148,6 +1145,7 @@ void KListView::setSelectionModeExt (SelectionModeExt mode)
 
     case Konqueror:
       setSelectionMode (QListView::Extended);
+      break;
 
 	default:
       kdDebug () << "Warning: illegal selection mode " << int(mode) << " set!" << endl;
