@@ -27,6 +27,7 @@
 extern "C" {
 static int X509Callback(int ok, X509_STORE_CTX *ctx) {
  
+  kdDebug(7029) << "X509Callback: ok = " << ok << " error = " << ctx->error << endl;
   // Here is how this works.  We put "ok = 1;" in any case that we
   // don't consider to be an error.  In that case, it will return OK
   // for the certificate check as long as there are no other critical
