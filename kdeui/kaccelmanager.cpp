@@ -369,20 +369,14 @@ void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 KAccelString::KAccelString(const QString &input, int initialWeight)
   : m_pureText(input), m_weight()
 {
-    bool accel = true;
-
-    orig_accel = m_pureText.find("(&&)");
-    m_pureText.replace(orig_accel, 4, "");
     orig_accel = m_pureText.find("(!)&");
-    if (orig_accel != -1) {
+    m_pureText.replace(orig_accel, 4, "");
+    orig_accel = m_pureText.find("(&&)");
+    if (orig_accel != -1)
         m_pureText.replace(orig_accel, 4, "&");
-        orig_accel = -1;
-        accel = false;
-    }
-    m_accel = stripAccelerator(m_pureText);
-    if (accel)
-        orig_accel = m_accel;
+    orig_accel = m_accel = stripAccelerator(m_pureText);
 
+    kdDebug() << input << " " << orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
