@@ -29,20 +29,21 @@
 
 #include <qfile.h>
 
-#include <klocale.h>
+#include <kconfig.h>
 #include <kdebug.h>
-#include <kurl.h>
+#include <klibloader.h>
+#include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
+#include <ktempfile.h>
+#include <kurl.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kstartupinfo.h> // schroder
 #endif
 
-#include <ktempfile.h>
-#include <kconfig.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -204,6 +205,11 @@ KLauncher::KLauncher(int _kdeinitSocket)
    if (!mSlaveDebug.isEmpty())
    {
       qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", mSlaveDebug.data());
+   }
+   mSlaveValgrind = getenv("KDE_SLAVE_VALGRIND");
+   if (!mSlaveValgrind.isEmpty())
+   {
+      qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", mSlaveValgrind.data());
    }
    klauncher_header request_header;
    request_header.cmd = LAUNCHER_OK;
@@ -1253,6 +1259,12 @@ KLauncher::requestSlave(const QString &protocol,
        request_header.cmd = LAUNCHER_DEBUG_WAIT;
        request_header.arg_length = 0;
        write(kdeinitSocket, &request_header, sizeof(request_header));
+    }
+    if (mSlaveValgrind == arg1)
+    {
+       arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name)));
+       arg_list.prepend(QFile::encodeName(locate("exe", "kioslave")));
+       name = "valgrind";
     }
 
     KLaunchRequest *request = new KLaunchRequest;
