@@ -319,71 +319,71 @@
 	    (process-children)
 	    (make empty-element gi: "BR"))))
 
-  (element revhistory
-    (make element gi: "DIV"
-	  attributes: (list (list "CLASS" (gi)))
-	  (make element gi: "TABLE"
-		attributes: (list
-			     (list "WIDTH" ($table-width$))
-			     (list "BORDER" "0"))
-		(make sequence
-		  (make element gi: "TR"
-			(make element gi: "TH"
-			      attributes: '(("ALIGN" "LEFT") 
-					    ("VALIGN" "TOP")
-					    ("COLSPAN" "3"))
-			      (make element gi: "B"
-				    (literal (gentext-element-name 
-					      (gi (current-node)))))))
-		  (process-children)))))
+  (element revhistory (empty-sosofo))
+;     (make element gi: "DIV"
+; 	  attributes: (list (list "CLASS" (gi)))
+; 	  (make element gi: "TABLE"
+; 		attributes: (list
+; 			     (list "WIDTH" ($table-width$))
+; 			     (list "BORDER" "0"))
+; 		(make sequence
+; 		  (make element gi: "TR"
+; 			(make element gi: "TH"
+; 			      attributes: '(("ALIGN" "LEFT") 
+; 					    ("VALIGN" "TOP")
+; 					    ("COLSPAN" "3"))
+; 			      (make element gi: "B"
+; 				    (literal (gentext-element-name 
+; 					      (gi (current-node)))))))
+; 		  (process-children)))))
 
-  (element (revhistory revision)
-    (let ((revnumber (select-elements (descendants (current-node)) 
-				      (normalize "revnumber")))
-	  (revdate   (select-elements (descendants (current-node)) 
-				      (normalize "date")))
-	  (revauthor (select-elements (descendants (current-node)) 
-				      (normalize "authorinitials")))
-	  (revremark (select-elements (descendants (current-node)) 
-				      (normalize "revremark"))))
-      (make sequence
-      (make element gi: "TR"
-	(make element gi: "TD"
-	      attributes: (list
-			   (list "ALIGN" "LEFT"))
-	      (if (not (node-list-empty? revnumber))
-		  (make sequence
-		    (literal (gentext-element-name-space 
-			      (gi (current-node))))
-		    (process-node-list revnumber))
-		  (empty-sosofo)))
-	(make element gi: "TD"
-	      attributes: (list
-			   (list "ALIGN" "LEFT"))
-	      (if (not (node-list-empty? revdate))
-		  (process-node-list revdate)
-		  (empty-sosofo)))
-	(make element gi: "TD"
-	      attributes: (list
-			   (list "ALIGN" "LEFT"))
-	      (if (not (node-list-empty? revauthor))
-		  (make sequence
-		    (literal (gentext-revised-by))
-		    (process-node-list revauthor))
-		  (empty-sosofo))))
-	(make element gi: "TR"
-	    (make element gi: "TD"
-		  attributes: (list
-			       (list "ALIGN" "LEFT")
-			       (list "COLSPAN" "3"))
-		  (if (not (node-list-empty? revremark))
-		      (process-node-list revremark)
-		      (empty-sosofo)))))))
+  (element (revhistory revision) (empty-sosofo))
+;     (let ((revnumber (select-elements (descendants (current-node)) 
+; 				      (normalize "revnumber")))
+; 	  (revdate   (select-elements (descendants (current-node)) 
+; 				      (normalize "date")))
+; 	  (revauthor (select-elements (descendants (current-node)) 
+; 				      (normalize "authorinitials")))
+; 	  (revremark (select-elements (descendants (current-node)) 
+; 				      (normalize "revremark"))))
+;       (make sequence
+;       (make element gi: "TR"
+; 	(make element gi: "TD"
+; 	      attributes: (list
+; 			   (list "ALIGN" "LEFT"))
+; 	      (if (not (node-list-empty? revnumber))
+; 		  (make sequence
+; 		    (literal (gentext-element-name-space 
+; 			      (gi (current-node))))
+; 		    (process-node-list revnumber))
+; 		  (empty-sosofo)))
+; 	(make element gi: "TD"
+; 	      attributes: (list
+; 			   (list "ALIGN" "LEFT"))
+; 	      (if (not (node-list-empty? revdate))
+; 		  (process-node-list revdate)
+; 		  (empty-sosofo)))
+; 	(make element gi: "TD"
+; 	      attributes: (list
+; 			   (list "ALIGN" "LEFT"))
+; 	      (if (not (node-list-empty? revauthor))
+; 		  (make sequence
+; 		    (literal (gentext-revised-by))
+; 		    (process-node-list revauthor))
+; 		  (empty-sosofo))))
+; 	(make element gi: "TR"
+; 	    (make element gi: "TD"
+; 		  attributes: (list
+; 			       (list "ALIGN" "LEFT")
+; 			       (list "COLSPAN" "3"))
+; 		  (if (not (node-list-empty? revremark))
+; 		      (process-node-list revremark)
+; 		      (empty-sosofo)))))))
 
-  (element (revision revnumber) (process-children-trim))
-  (element (revision date) (process-children-trim))
-  (element (revision authorinitials) (process-children-trim))
-  (element (revision revremark) (process-children-trim))
+  (element (revision revnumber)  (empty-sosofo));(process-children-trim))
+  (element (revision date)  (empty-sosofo));(process-children-trim))
+  (element (revision authorinitials)  (empty-sosofo));(process-children-trim))
+  (element (revision revremark)  (empty-sosofo));(process-children-trim))
 
   (element seriesvolnums
     (make element gi: "SPAN"
