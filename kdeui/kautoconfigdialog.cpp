@@ -6,6 +6,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <qlayout.h>
+#include <qvbox.h>
 
 QAsciiDict<QObject> KAutoConfigDialog::openDialogs;
 
@@ -62,6 +63,7 @@ void KAutoConfigDialog::addPage(QWidget *page,
       if(Header.isEmpty())
         Header = itemName;
       QVBox *frame = kdialogbase->addVBoxPage(itemName, Header, SmallIcon(pixmapName, 32));
+      frame->setSpacing( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());
     }
     break;
@@ -75,7 +77,7 @@ void KAutoConfigDialog::addPage(QWidget *page,
     case KDialogBase::Plain:{
       page->reparent(((QWidget*)kdialogbase), 0, QPoint());
       QFrame *page = kdialogbase->plainPage();
-      QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
+      QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 0 );
       page->reparent(((QWidget*)page), 0, QPoint());
       topLayout->addWidget( page );
       kdialogbase->setMainWidget(page);
