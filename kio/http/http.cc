@@ -1719,7 +1719,8 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
-     else if (m_strMimeType.startsWith("text/"))
+     else if ((m_strMimeType.startsWith("text/")) &&
+              (m_request.url.path().right(3) != ".gz"))
      {
         // Unzip!
      }
