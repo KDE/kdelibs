@@ -41,6 +41,7 @@
 #define sk_value kossl->sk_value
 #define sk_num kossl->sk_num
 #define sk_dup kossl->sk_dup
+#define sk_pop kossl->sk_pop
 #endif
 
 
@@ -57,7 +58,14 @@ KSSLPKCS12::KSSLPKCS12() {
 KSSLPKCS12::~KSSLPKCS12() {
 #ifdef HAVE_SSL
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
-   if (_caStack) sk_X509_free(_caStack);
+   if (_caStack) {
+      for (;;) {
+         X509* x5 = sk_X509_pop(_caStack);
+         if (!x5) break;
+         kossl->X509_free(x5);
+      }
+      sk_X509_free(_caStack);
+   }
    if (_pkcs) kossl->PKCS12_free(_pkcs);
 #endif
    if (_cert) delete _cert;
@@ -137,7 +145,14 @@ X509 *x = NULL;
 
    if (_cert) delete _cert;
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
-   if (_caStack) sk_X509_free(_caStack);
+   if (_caStack) {
+      for (;;) {
+         X509* x5 = sk_X509_pop(_caStack);
+         if (!x5) break;
+         kossl->X509_free(x5);
+      }
+      sk_X509_free(_caStack);
+   }
    _pkey = NULL;
    _caStack = NULL;
    _cert = NULL;
@@ -179,7 +194,6 @@ QString base64;
 unsigned char *p;
 int len;
 
-#if 1
    len = kossl->i2d_PKCS12(_pkcs, NULL);
    char *buf = new char[len];
    p = (unsigned char *)buf;
@@ -189,22 +203,6 @@ int len;
    base64 = KCodecs::base64Encode(qba);
    qba.resetRawData(buf, len);
    delete[] buf;
-#else
-   KTempFile ktf;
-   kossl->i2d_PKCS12_fp(ktf.fstream(), _pkcs);
-   ktf.close();
-   QFile qf(ktf.name());
-   qf.open(IO_ReadOnly);
-   char *buf = new char[qf.size()];
-   qf.readBlock(buf, qf.size());
-   QByteArray qba;
-   qba.setRawData(buf, qf.size());
-   base64 = KCodecs::base64Encode(qba);
-   qba.resetRawData(buf, qf.size());
-   delete[] buf;
-   qf.close();
-   ktf.unlink();
-#endif
 #endif
 return base64;
 }
@@ -269,6 +267,7 @@ QString KSSLPKCS12::name() {
 #undef sk_free
 #undef sk_value
 #undef sk_num
+#undef sk_pop
 #undef sk_dup
 #endif
 
