@@ -335,7 +335,7 @@ UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
   readSettings();
 
   // setup toolbar
-  toolBar()->insertButton(BarIcon("delete"), TOOL_CANCEL,
+  toolBar()->insertButton("editdelete", TOOL_CANCEL,
 			  SIGNAL(clicked()), this,
 			  SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
 
