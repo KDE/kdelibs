@@ -42,13 +42,12 @@ DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
-$(srcdir)/stdsynthmodule.h: artsflow.h
 $(srcdir)/stdsynthmodule.cc: artsflow.h
-$(srcdir)/synthschedule.h: artsflow.h
 $(srcdir)/synthschedule.cc: artsflow.h
 $(srcdir)/synth_play_impl.cc: artsflow.h
-$(srcdir)/bus.h: artsflow.h
-$(srcdir)/gslschedule.h: artsflow.h
+$(srcdir)/bus.cc: artsflow.h
+$(srcdir)/gslschedule.cc: artsflow.h
+$(srcdir)/virtualports.cc: artsflow.h
 $(srcdir)/audiomanager_impl.cc: artsflow.h
 $(srcdir)/audiotobytestream_impl.cc: artsflow.h
 $(srcdir)/bytestreamtoaudio_impl.cc: artsflow.h
