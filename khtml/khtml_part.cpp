@@ -532,24 +532,47 @@ bool KHTMLPart::openURL( const KURL &url )
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
-  if ( !isFrameSet && !args.redirectedRequest() &&
-       urlcmp( url.url(), m_url.url(), true, true ) &&
-       url.hasRef() && !args.doPost() && !args.reload )
+  
+  if ( url.hasRef() && !isFrameSet )
   {
-    kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
-    m_url = url;
-    emit started( 0L );
 
-    if ( !gotoAnchor( url.encodedHtmlRef()) )
-       gotoAnchor( url.htmlRef() );
+    //if new url == old url, jump to anchor straight away
+    //no need to reload unless explicitly asked
+    bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
+    if (urlcmp( url.url(), m_url.url(), true, true ) && noReloadForced)
+    {
+        kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
+        m_url = url;
+        emit started( 0L );
+        
+        if ( !gotoAnchor( url.encodedHtmlRef()) )
+          gotoAnchor( url.htmlRef() );
+        
+        d->m_bComplete = true;
+        if (d->m_doc)
+        d->m_doc->setParsing(false);
+        
+        kdDebug( 6050 ) << "completed..." << endl;
+        emit completed();
+        return true;
+    }
+    //jump to the anchor AFTER layouting is done, otherwise the position of the
+    //anchor is not known and we have no clue to which coordinates to jump
+    else
+    {
+        disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+        if ( !url.encodedHtmlRef().isEmpty() )
+          connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+    }
+  }
 
-    d->m_bComplete = true;
-    if (d->m_doc)
-       d->m_doc->setParsing(false);
-
-    kdDebug( 6050 ) << "completed..." << endl;
-    emit completed();
-    return true;
+  // Save offset of viewport when page is reloaded to be compliant
+  // to every other capable browser out there.
+  if (args.reload) {
+    args.xOffset = d->m_view->contentsX();
+    args.yOffset = d->m_view->contentsY();
+    d->m_extension->setURLArgs(args);
+    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
   if (!d->m_restored)
@@ -2027,10 +2050,6 @@ void KHTMLPart::checkCompleted()
 
   setJSDefaultStatusBarText(QString::null);
 
-  if ( !m_url.encodedHtmlRef().isEmpty() )
-    if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-       gotoAnchor( m_url.htmlRef() );
-
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
@@ -2211,6 +2230,13 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
   if ( d->m_doc )
     d->m_doc->setUserStyleSheet( styleSheet );
+}
+
+void KHTMLPart::gotoAnchor()
+{
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  if ( !gotoAnchor( m_url.encodedHtmlRef()) )
+      gotoAnchor( m_url.htmlRef() );
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )
@@ -6038,6 +6064,25 @@ khtml::Decoder *KHTMLPart::createDecoder()
 
 void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
   emit caretPositionChanged(node, offset);
+}
+
+void KHTMLPart::restoreScrollPosition()
+{
+  KParts::URLArgs args = d->m_extension->urlArgs();
+  if (!args.reload) {
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+    return;	// should not happen
+  }
+
+  // Check whether the viewport has become large enough to encompass the stored
+  // offsets. If the document has been fully loaded, force the new coordinates,
+  // even if the canvas is too short (can happen when user resizes the window
+  // during loading).
+  if (d->m_view->contentsHeight() - d->m_view->visibleHeight() >= args.yOffset
+      || d->m_bComplete) {
+    d->m_view->setContentsPos(args.xOffset, args.yOffset);
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+  }
 }
 
 KWallet::Wallet* KHTMLPart::wallet()

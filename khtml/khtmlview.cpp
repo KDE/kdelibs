@@ -608,6 +608,8 @@ void KHTMLView::layout()
         root->setMinMaxKnown(false);
         root->setLayouted(false);
         root->layout();
+	
+	emit finishedLayout();
 #ifndef KHTML_NO_CARET
         hideCaret();
         if ((m_part->isCaretMode() || m_part->isEditable())
