@@ -1,3 +1,4 @@
+
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
@@ -135,12 +136,7 @@ pid_t launch(int argc, char *name, char *args)
      name = cmdLine; 
   }
   l = strlen(cmd);
-  if (args)
-  {
-    strncpy( cmd + l + 1, args, MAX_ARGLENGTH - l - l);
-    args = cmd + l + 1;
-  }
-  else
+  if (!args)
   {
     argc = 1;
   }
@@ -174,7 +170,7 @@ fprintf(stderr, "arg[0] = %s\n", name);
      for ( l = 1;  l < argc; l++)
      {
         d.argv[l] = args;
-fprintf(stderr, "arg[%d] = %s\n", l, args);
+fprintf(stderr, "arg[%d] = %s (%p)\n", l, args, args);
         while(*args != 0) args++;
         args++; 
      }
@@ -482,6 +478,7 @@ void handle_launcher_request()
    if (result != 0)
    {
       kill_launcher();
+      free(request_data);
       return;
    }
 
@@ -497,18 +494,23 @@ void handle_launcher_request()
       name = request_data + sizeof(long);
       args = name + strlen(name) + 1;
 
-      printf("Got EXEC '%s' from klauncher \n", name);
+      printf("KInit: args = %d arg_length = %ld\n", argc, request_header.arg_length);
+
+      printf("KInit: Got EXEC '%s' from klauncher \n", name);
       {
          int i = 1;
          char *arg_n;
          arg_n = args;
          while (i < argc)
          {
+printf("KInit: argc[%d] = '%s'\n", i, arg_n);
            arg_n = arg_n + strlen(arg_n) + 1;
+           i++;
          }   
          if ((arg_n - request_data) != request_header.arg_length)
          {
            fprintf(stderr, "kinit: EXEC request has invalid format.\n"); 
+           free(request_data);
            return;
          }
       }
@@ -542,10 +544,12 @@ void handle_launcher_request()
           (strlen(env_name) + strlen(env_value) + 2))
       {
          fprintf(stderr, "kinit: SETENV request has invalid format.\n"); 
+         free(request_data);
          return;
       }
       setenv( env_name, env_value, 1);
    }
+   free(request_data);
 }
 
 void handle_requests()
