@@ -55,6 +55,7 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <time.h>
+#include <sys/param.h>
 
 #include "kurlcompletion.h"
 
@@ -219,11 +220,14 @@ void DirectoryListThread::run()
 		QDir::setCurrent( *it );
 
 		// Loop through all directory entries
+		// Solaris and IRIX dirent structures do not allocate space for d_name. On
+		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
+		// that's ok.
 
-		struct dirent dirPosition;
+		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
 		struct dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
-		        ::readdir_r( dir, &dirPosition, &dirEntry ) == 0 && dirEntry )
+		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
 		{
 			// Skip hidden files if m_noHidden is true
 
@@ -281,6 +285,8 @@ void DirectoryListThread::run()
 
 		::closedir( dir );
 		dir = 0;
+
+		free( dirPosition );
 	}
 
 	done();
