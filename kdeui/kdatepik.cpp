@@ -247,7 +247,9 @@ void KDatePicker::updateHeader(QDate dt)
     } else {
       month=i18n("(invalid)");
     }
-  sHeader = QString("%1 %2").arg(month).arg(dt.year());
+  QString tmp;
+  tmp.setNum(dt.year());
+  sHeader = month + " " + tmp;
   m_header->setText(sHeader);
 }
 
