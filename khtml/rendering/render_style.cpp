@@ -258,7 +258,15 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 
     if (!ps)
     {
+        switch (pid) {
+          case FIRST_LETTER:             // pseudo-elements (FIRST_LINE has a special handling)
+          case BEFORE:
+          case AFTER:
+            ps = new RenderStyle();
+            break;
+          default:
             ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
+        }
         ps->ref();
         ps->noninherited_flags.f._styleType = pid;
         ps->pseudoStyle = pseudoStyle;

@@ -1,3 +1,18 @@
+2004-02-16  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp (setStyle): skip pseudo
+        styles when updating anonymous blocks'style (#73978).
+        (addChildToFlow):don't crash when installing 
+        first-letter in anonymous blocks or when remaining 
+        content is empty.
+
+        * rendering/render_container.cpp (updatePseudoChild):
+        always regenerate :before/:after content holding
+        :first-letter. 
+
+        * rendering/render_style.cpp (addPseudoStyle): don't use
+        RenderStyle's copy constructor for pseudo-elements.
+
 2004-02-16  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_container.cpp (updatePseudoChild): merge more 

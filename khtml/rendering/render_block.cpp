@@ -80,7 +80,7 @@ void RenderBlock::setStyle(RenderStyle* _style)
     RenderObject *child = firstChild();
     while (child != 0)
     {
-        if (child->isAnonymous())
+        if (child->isAnonymous() && child->style()->styleType() == RenderStyle::NOPSEUDO)
         {
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
@@ -139,9 +139,12 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                     length++;
                 length++;
                 kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-                newTextChild->setText(oldText->substring(length,oldText->l-length));
-
-                RenderText* letter = new (renderArena()) RenderText(newTextChild->element(), oldText->substring(0,length));
+                NodeImpl* letterElement = newTextChild->element() ? (NodeImpl*) newTextChild->element() : (NodeImpl*) document(); 
+                if (!(oldText->l-length))
+                    firstLetterContainer->removeChild(newTextChild);
+                else
+                    newTextChild->setText(oldText->substring(length,oldText->l-length));
+                RenderText* letter = new (renderArena()) RenderText(letterElement, oldText->substring(0,length));
                 RenderStyle* newStyle = new RenderStyle();
                 newStyle->inheritFrom(pseudoStyle);
                 letter->setStyle(newStyle);

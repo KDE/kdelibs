@@ -222,8 +222,8 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     // of the old generated content.
     if (!newContentWanted ||
         (oldContentPresent && !child->style()->contentDataEquivalent(pseudo))) {
-        // Nuke the child.
         if (child && child->style()->styleType() == type) {
+            // The child needs to be removed.
             oldContentPresent = false;
             removeChild(child);
             child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
@@ -251,11 +251,17 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
             // Note that if we ever support additional types of generated content (which should be way off
             // in the future), this code will need to be patched.
             for (RenderObject* genChild = child->firstChild(); genChild; genChild = genChild->nextSibling()) {
-                if (genChild->isText())
+                if (genChild->style()->styleType() == RenderStyle::FIRST_LETTER) {
+                    // We can't properly update, so remove the child and bail
+                    oldContentPresent = false;
+                    removeChild(child);
+                    child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
+                    break;
+                } else if (genChild->isText()) {
                     // Generated text content is a child whose style also needs to be set to the pseudo
                     // style.
                     genChild->setStyle(pseudo);
-                else {
+                } else {
                     // Images get an empty style that inherits from the pseudo.
                     RenderStyle* style = new RenderStyle();
                     style->inheritFrom(pseudo);
@@ -263,7 +269,8 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
                 }
             }
         }
-        return; // We've updated the generated content. That's all we needed to do.
+        if (oldContentPresent)
+            return; // We've updated the generated content. That's all we needed to do.
     }
 
     RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? child : 0;
@@ -303,7 +310,6 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         pseudoContainer->close();
     }
 }
-
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {
