@@ -54,6 +54,7 @@
 #include <kconfig.h>
 #include <klibloader.h>
 #include <kapp.h>
+#include <klocale.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
@@ -102,6 +103,7 @@ struct {
   int (*launcher_func)(int);
   bool debug_wait;
   int lt_dlopen_flag;
+  QCString errorMsg;
 } d;
 
 extern "C" {
@@ -140,6 +142,18 @@ static void close_fds()
    signal(SIGPIPE, SIG_DFL);
 }
 
+static void exitWithErrorMsg(const QString &errorMsg)
+{
+   QCString utf8ErrorMsg = errorMsg.utf8();
+   d.result = 3; // Error with msg
+   write(d.fd[1], &d.result, 1);
+   int l = utf8ErrorMsg.length();
+   write(d.fd[1], &l, sizeof(int));
+   write(d.fd[1], utf8ErrorMsg.data(), l);
+   close(d.fd[1]);
+   exit(255);
+}
+
 static pid_t launch(int argc, const char *_name, const char *args)
 {
   int launcher = 0;
@@ -161,12 +175,16 @@ static pid_t launch(int argc, const char *_name, const char *args)
      launcher = 1;
   }
 
+  QCString libpath;
+  QCString execpath;
   if (_name[0] != '/')
   {
      /* Relative name without '.la' */
      name = _name;
      lib = name + ".la";
      exec = name;
+     libpath = QFile::encodeName(KLibLoader::findLibrary( lib, s_instance ));
+     execpath = QFile::encodeName(s_instance->dirs()->findExe( exec ));
   }
   else
   {
@@ -174,6 +192,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
      name = _name;
      name = name.mid( name.findRev('/') + 1);
      exec = _name;
+     libpath = lib;
+     execpath = exec;
   }
   if (!args)
   {
@@ -186,6 +206,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
      exit(255);
   }
 
+  d.errorMsg = 0;
   d.fork = fork();
   switch(d.fork) {
   case -1:
@@ -216,18 +237,31 @@ static pid_t launch(int argc, const char *_name, const char *args)
      }
 
      d.handle = 0;
-     if (lib.right(3) == ".la")
+     if (libpath.isEmpty() && execpath.isEmpty())
      {
-        QString libpath = KLibLoader::findLibrary( lib, s_instance );
-        if ( !libpath.isEmpty())
-        {
-           d.handle = lt_dlopen( libpath.latin1() );
-           if (!d.handle )
-           {
-              const char * ltdlError = lt_dlerror();
-              fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
-           }
-        }
+        QString errorMsg = i18n("Could not find '%1' executable.").arg(QFile::decodeName(_name));
+        exitWithErrorMsg(errorMsg);
+     }
+
+     if ( !libpath.isEmpty())
+     {
+       d.handle = lt_dlopen( QFile::encodeName(libpath) );
+       if (!d.handle )
+       {
+          const char * ltdlError = lt_dlerror();
+          if (execpath.isEmpty())
+          {
+             // Error
+             QString errorMsg = i18n("Could not dlopen library '%1'.\n%2").arg(QFile::decodeName(libpath))
+		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+             exitWithErrorMsg(errorMsg);
+          }
+          else
+          {
+             // Print warning
+             fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
+          }
+       }
      }
      lt_dlopen_flag = d.lt_dlopen_flag;
      if (!d.handle )
@@ -255,10 +289,9 @@ static pid_t launch(int argc, const char *_name, const char *args)
            {
               const char * ltdlError = lt_dlerror();
               fprintf(stderr, "Could not find main: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-              d.result = 1; // Error
-              write(d.fd[1], &d.result, 1);
-              close(d.fd[1]);
-              exit(255);
+              QString errorMsg = i18n("Could not find 'main' in '%1'.\n%2").arg(libpath)
+		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+              exitWithErrorMsg(errorMsg);
            }
         }
 
@@ -323,6 +356,23 @@ static pid_t launch(int argc, const char *_name, const char *args)
 #endif
              exec = true;
              continue;
+          }
+          if (d.result == 3)
+          {
+             fprintf(stderr, "We got an error message.,..\n");
+             int l = 0;
+             d.n = read(d.fd[0], &l, sizeof(int));
+             if (d.n == sizeof(int))
+             {
+                fprintf(stderr, "Message is %d bytes long..\n", l);
+                QCString tmp;
+                tmp.resize(l+1);
+                d.n = read(d.fd[0], tmp.data(), l);
+                tmp[l] = 0;
+                if (d.n == l)
+                   d.errorMsg = tmp;
+                fprintf(stderr, "Message reads: '%s'\n", tmp.data());
+             }
           }
           // Finished
           break;
@@ -677,9 +727,13 @@ static void handle_launcher_request(int sock = -1)
       }
       else
       {
+         int l = d.errorMsg.length();
+         if (l) l++; // Include trailing null.
          response_header.cmd = LAUNCHER_ERROR;
-         response_header.arg_length = 0;
+         response_header.arg_length = l;
          write(sock, &response_header, sizeof(response_header));
+         if (l)
+            write(sock, d.errorMsg.data(), l);
       }
       d.debug_wait = false;
    }
