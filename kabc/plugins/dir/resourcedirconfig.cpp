@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kdialog.h>
 
 #include "formatfactory.h"
 #include "resourcedir.h"
@@ -36,8 +37,8 @@ using namespace KABC;
 ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
     : KRES::ConfigWidget( parent, name )
 {
-  resize( 245, 115 ); 
-  QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
+  QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0, 
+      KDialog::spacingHint() );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
   mFormatBox = new KComboBox( this );

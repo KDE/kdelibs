@@ -41,8 +41,8 @@ using namespace KABC;
 ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   : KRES::ConfigWidget( parent, name )
 {
-  resize( 250, 120 ); 
-  QGridLayout *mainLayout = new QGridLayout( this, 8, 2 );
+  QGridLayout *mainLayout = new QGridLayout( this, 8, 2, 0,
+      KDialog::spacingHint() );
 
   QLabel *label = new QLabel( i18n( "User:" ), this );
   mUser = new KLineEdit( this );
@@ -147,13 +147,13 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
                  Ok, parent, name, true, true )
 {
   mNameDict.setAutoDelete( true );
-  mNameDict.insert( "commonName", new QString( i18n( "Common Name" ) ) );
-  mNameDict.insert( "formattedName", new QString( i18n( "Formatted Name" ) ) );
-  mNameDict.insert( "familyName", new QString( i18n( "Family Name" ) ) );
-  mNameDict.insert( "givenName", new QString( i18n( "Given Name" ) ) );
+  mNameDict.insert( "commonName", new QString( i18n( "Common name" ) ) );
+  mNameDict.insert( "formattedName", new QString( i18n( "Formatted name" ) ) );
+  mNameDict.insert( "familyName", new QString( i18n( "Family name" ) ) );
+  mNameDict.insert( "givenName", new QString( i18n( "Given name" ) ) );
   mNameDict.insert( "mail", new QString( i18n( "Email" ) ) );
-  mNameDict.insert( "mailAlias", new QString( i18n( "Email Alias" ) ) );
-  mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone Number" ) ) );
+  mNameDict.insert( "mailAlias", new QString( i18n( "Email alias" ) ) );
+  mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone number" ) ) );
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
 
   // overwrite the default values here
@@ -172,17 +172,16 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapList.append( evolutionMap );
   mMapList.append( outlookMap );
 
-
   QFrame *page = plainPage();
   QGridLayout *layout = new QGridLayout( page, 2, attributes.count() + 1,
-                                         marginHint(), spacingHint() );
+                                         0, spacingHint() );
 
-  QLabel *label = new QLabel( i18n( "Templates" ), page );
+  QLabel *label = new QLabel( i18n( "Template:" ), page );
   layout->addWidget( label, 0, 0 );
   mMapCombo = new KComboBox( page );
   layout->addWidget( mMapCombo, 0, 1 );
 
-  mMapCombo->insertItem( i18n( "User defined" ) );
+  mMapCombo->insertItem( i18n( "User Defined" ) );
   mMapCombo->insertItem( i18n( "Kolab" ) );
   mMapCombo->insertItem( i18n( "Netscape" ) );
   mMapCombo->insertItem( i18n( "Evolution" ) );
