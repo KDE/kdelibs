@@ -108,8 +108,8 @@ namespace KParts
  * w->show();
  * </pre>
  *
- * If Java and JavaScript are enabled by default depends on the user's
- * settings. If you do not need them, and escpecially if you display
+ * Java and JavaScript are enabled by default depending on the user's
+ * settings. If you do not need them, and especially if you display
  * unfiltered data from untrusted sources, it is strongly recommended to
  * turn them off. In that case, you should also turn off the automatic
  * redirect and plugins:
@@ -121,8 +121,15 @@ namespace KParts
  * w->setPluginsEnabled(false);
  * </pre>
  *
+ * You may also wish to disable external references.  This will prevent KHTML
+ * from loading images, frames, etc,  or redirecting to external sites.
+ *
+ * <pre>
+ * w->setOnlyLocalReferences(true);
+ * </pre>
+ *
  * Some apps want to write their HTML code directly into the widget instead of
- * it opening an url. You can also do that in the following way:
+ * opening an url. You can do this in the following way:
  *
  * <pre>
  * QString myHTMLCode = ...;
@@ -133,8 +140,8 @@ namespace KParts
  * w->end();
  * </pre>
  *
- * You can do as many calls to write as you want. But there are two
- * @ref write() methods, one accepting a @ref QString one accepting a
+ * You can do as many calls to write() as you wish.  There are two
+ * @ref write() methods, one accepting a @ref QString and one accepting a
  * @p char @p * argument. You should use one or the other
  * (but not both) since the method using
  * the @p char @p * argument does an additional decoding step to convert the
@@ -216,14 +223,14 @@ public:
   virtual bool openURL( const KURL &url );
 
   /**
-   * Stops loading the document and kill all data requests (for images, etc.)
+   * Stops loading the document and kills all data requests (for images, etc.)
    */
   virtual bool closeURL();
 
   /**
-   * is called when a certain error situation (i.e. connection timed out) occured.
-   * default implementation either shows a KIO error dialog or loads a more verbose
-   * error description a as page, depending on the users configuration.
+   * Called when a certain error situation (i.e. connection timed out) occurred.
+   * The default implementation either shows a KIO error dialog or loads a more
+   * verbose error description a as page, depending on the users configuration.
    * @p job is the job that signaled the error situation
    */
   virtual void showError( KIO::Job* job );
@@ -248,6 +255,7 @@ public:
    */
   KParts::BrowserExtension *browserExtension() const;
   KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
+  
   /**
    * Returns a pointer to the HTML document's view.
    */
@@ -268,7 +276,7 @@ public:
   bool jScriptEnabled() const;
 
   /**
-   * Enable/disable the automatic forwarding by &lt;meta http-equiv="refresh" ....&gt;
+   * Enable/disable automatic forwarding by &lt;meta http-equiv="refresh" ....&gt;
    */
   void setMetaRefreshEnabled( bool enable );
 
@@ -278,7 +286,8 @@ public:
   bool metaRefreshEnabled() const;
 
   /**
-   * Same as executeScript( const QString & ) except with the Node parameter specifying the 'this' value.
+   * Same as executeScript( const QString & ) except with the Node parameter
+   * specifying the 'this' value.
    */
   QVariant executeScript( const DOM::Node &n, const QString &script );
 
@@ -287,6 +296,7 @@ public:
    * the users drags a link.
    */
   void setDNDEnabled( bool b );
+
   /**
    * Returns whether Dragn'n'Drop support is enabled or not.
    */
@@ -301,7 +311,7 @@ public:
   void setJavaEnabled( bool enable );
 
   /**
-   * Return if Java applet support is enabled/disabled.
+   * Return true if Java applet support is enabled, false if disabled
    */
   bool javaEnabled() const;
 
@@ -311,18 +321,18 @@ public:
   KJavaAppletContext *javaContext();
 
   /**
-   * Returns the java context of the applets. If no context exists yet, a new one is
-   * created.
+   * Returns the java context of the applets. If no context exists yet, a
+   * new one is created.
    */
   KJavaAppletContext *createJavaContext();
 
   /**
-   * Enables or disables plugins via, default is enabled
+   * Enables or disables plugins, default is enabled
    */
   void setPluginsEnabled( bool enable );
 
   /**
-   * Returns trie if plugins are enabled/disabled.
+   * Returns true if plugins are enabled/disabled.
    */
   bool pluginsEnabled() const;
 
