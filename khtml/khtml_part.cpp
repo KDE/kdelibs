@@ -600,15 +600,12 @@ bool KHTMLPart::openURL( const KURL &url )
         emit completed();
         return true;
     }
-    //jump to the anchor AFTER layouting is done, otherwise the position of the
-    //anchor is not known and we have no clue to which coordinates to jump
-    else
-    {
-        disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-        if ( !url.encodedHtmlRef().isEmpty() )
-          connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-    }
   }
+
+  //jump to the anchor AFTER layouting is done, otherwise the position of the
+  //anchor is not known and we have no clue to which coordinates to jump
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
 
   // Save offset of viewport when page is reloaded to be compliant
   // to every other capable browser out there.
@@ -2366,7 +2363,8 @@ void KHTMLPart::gotoAnchor()
     disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
   }
 
-  if ( !gotoAnchor(m_url.encodedHtmlRef()) )
+  if ( m_url.hasRef() )
+    if ( !gotoAnchor(m_url.encodedHtmlRef()) )
       gotoAnchor(m_url.htmlRef());
 }
 
