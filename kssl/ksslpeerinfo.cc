@@ -70,7 +70,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
 #if QT_VERSION < 300
      if (!cnre.match(d->host->nodeName())) return true;
 #else
-     if (!cnre.search(d->host->nodeName())) return true;
+     if (cnre.exactMatch(d->host->nodeName())) return true;
 #endif
   } else {
 #if QT_VERSION < 300
