@@ -428,8 +428,10 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget->inherits( "KTMainWindow" ) )
+    if ( !d->m_widget || !d->m_widget->inherits( "KTMainWindow" ) ||
+         d->toolBarInfos.count() == 0 )
 	return;
+
     KTMainWindow *mw = (KTMainWindow*)d->m_widget;
     KToolBar *toolbar;
     QListIterator<KToolBar> it( mw->toolBarIterator() );
@@ -443,4 +445,5 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 	if ( toolbar->testWState( Qt::WState_ForceHide ) )
 	    toolbar->hide();
     }
+    d->toolBarInfos.clear();
 }
