@@ -128,6 +128,7 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLAppletElementImpl::attach(KHTMLView *_view)
 {
+  m_style = document->styleSelector()->styleForElement(this);
   if(!code)
       return;
 
@@ -135,7 +136,6 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
   if(!r)
       return;
 
-  m_style = document->styleSelector()->styleForElement(this);
   view = _view;
   RenderWidget *f;
 
@@ -273,11 +273,11 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
+   m_style = document->styleSelector()->styleForElement( this );
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
       return;
 
-   m_style = document->styleSelector()->styleForElement( this );
    if ( _parent->id()!=ID_OBJECT )
    {
       RenderPartObject *p = new RenderPartObject( w, this );
@@ -353,11 +353,11 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLObjectElementImpl::attach(KHTMLView *w)
 {
+  m_style = document->styleSelector()->styleForElement( this );
+
   khtml::RenderObject *r = _parent->renderer();
   if ( !r )
     return;
-
-  m_style = document->styleSelector()->styleForElement( this );
 
   RenderPartObject *p = new RenderPartObject( w, this );
   m_render = p;

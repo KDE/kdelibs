@@ -49,9 +49,9 @@ bool isBreakable( const QChar *s, int pos, int )
 			cachedString = new QCString;
 		    if ( !thaiIt )
 			thaiIt = ThBreakIterator::createWordInstance(); 
-		    *cachedString = thaiCodec->fromUnicode( QConstString( s, len ).string() );
+		    *cachedString = thaiCodec->fromUnicode( QConstString( (QChar *)s, len ).string() );
 		}
-		thaiIt->setText(buf);
+		thaiIt->setText((tchar *)cachedString->data());
 		for(int i = thaiIt->first(); i != thaiIt->DONE; i = thaiIt->next() ) {
 		    if( i == pos )
 			return true;

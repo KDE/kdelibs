@@ -9,6 +9,8 @@ StyleSheets:
 	* lots of properties
 	* delete the old cssproperties in a style attribute in case
 	  the style attribute changes.
+	* border shorthand properties. Unspecified properties get their default
+	  values. border-width: medium; border-color: undefined (== text color)
 
 DOM:
 	* some functions in the Impl classes
