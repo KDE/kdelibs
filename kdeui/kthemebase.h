@@ -47,6 +47,8 @@
  * very likely the vertical height was not originally 32. Thus the pixmap
  * will be wrong when drawn, even though the horizontal width matches.
  *
+ * @author Daniel M. Duley <mosfet@jorsm.com>
+ *
  */
 class KThemeCache
 {
@@ -171,7 +173,7 @@ public:
      * The gradient types. Horizontal is left to right, Vertical is top to
      * bottom, and diagonal is upper-left to bottom-right.
      */
-    enum Gradient{None, Horizontal, Vertical, Diagonal};
+    enum Gradient{GrNone, GrHorizontal, GrVertical, GrDiagonal};
     /**
      * This provides a list of widget types that KThemeBase recognizes.
      */
@@ -289,6 +291,21 @@ public:
      * @return The pixmap or NULL if one is not specified.
      */
     virtual KPixmap *scalePixmap(int w, int h, WidgetType widget);
+    /**
+     * This method reads a configuration file and applies it to the user's
+     * .kderc file. It does not signal applications to reload via the
+     * KDEChangeGeneral atom, if you want to do this you must do so yourself.
+     * See kcmdisplay's general.cpp for an example.
+     *
+     * @param file The configuration file to apply.
+     */
+    static void applyConfigFile(const QString &file);
+    /**
+     * This writes the current configuration in .kderc to a file.
+     *
+     * @param file The file to write the current configuration to.
+     */
+    static void writeConfigFile(const QString &file);
 protected:
     /**
      * Returns a QImage for the given widget if the widget is scaled, NULL
@@ -306,13 +323,17 @@ protected:
      */
     QColor* gradientLow(WidgetType widget) const;
     /**
-     * Reads all the configuration file entries supported.
+     * Reads in all the configuration file entries supported.
      *
      * @param colorStyle The style for the color groups. In KDE, colors were
      * calculated a little differently for Motif vs Windows styles. This
      * is obsolete.
      */
     void readConfig(Qt::GUIStyle colorStyle = Qt::WindowsStyle);
+    /**
+     * Internal method for saving and applying a configuration file.
+     */
+    static void writeConfig(KConfigBase &inConfig, KConfigBase &outConfig);
     /**
      * Makes a full color group based on the given foreground and background
      * colors. This is the same code used by KDE (kapp.cpp) in previous
@@ -389,7 +410,7 @@ private:
 
 inline bool KThemeBase::isPixmap(const WidgetType widget) const
 {
-    return(pixmaps[widget] != NULL || gradients[widget] != None);
+    return(pixmaps[widget] != NULL || gradients[widget] != GrNone);
 }
  
 inline bool KThemeBase::isColor(WidgetType widget) const
@@ -404,7 +425,7 @@ inline KThemeBase::ScaleHint KThemeBase::scaleHint(WidgetType widget) const
 
 inline KThemeBase::Gradient KThemeBase::gradientHint(WidgetType widget) const
 {
-    return((widget < WIDGETS) ? gradients[widget] : None);
+    return((widget < WIDGETS) ? gradients[widget] : GrNone);
 }
 
 inline KPixmap* KThemeBase::uncached(WidgetType widget) const
