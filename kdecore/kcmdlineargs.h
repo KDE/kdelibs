@@ -536,6 +536,7 @@ public:
 
   /**
    * Add standard option --tempfile
+   * @since 3.4
    */
   static void addTempFileOption();
 
@@ -543,6 +544,7 @@ public:
   // but this approach doesn't scale well, we can't have 50 standard options here...
   /**
    * @return true if --tempfile was set
+   * @since 3.4
    */
   static bool isTempFileSet();
 
