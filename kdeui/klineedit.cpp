@@ -296,7 +296,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             d->subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
             d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
             d->subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
-            d->subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
+            d->subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
             d->subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
             if ( mode != KGlobalSettings::completionMode() )
             {
