@@ -218,13 +218,13 @@ return false;
 
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
-  s << (Q_UINT8)p;
+  s << (Q_UINT32)p;
 return s;
 }
 
 
 QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p) {
-  s >> (Q_UINT8)p;
+  s >> (Q_UINT32)p;
 return s;
 }
 
