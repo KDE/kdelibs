@@ -1,0 +1,16 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=KSpell/Client
+X-KDE-Derived=KPluginInfo
+Comment=KSpell Client
+Comment[da]=KSpell-klient
+Comment[el]=Πελάτης KSpell
+Comment[es]=Cliente de KSpell
+Comment[et]=KSpelli klient
+Comment[pt]=Cliente do KSpell
+Comment[pt_BR]=Cliente KSpell
+Comment[sv]=Stavningskontrollklient
+Comment[ta]=¿ô¼÷ ¸ÕÅ¢
+Comment[wa]=Cliyint KSpell
+Comment[xx]=xxKSpell Clientxx
