@@ -29,6 +29,7 @@
 #include "midispec.h"
 #include "mt32togm.h"
 #include "../version.h"
+#include "sys/stat.h"
 
 
 /* This function gives the metronome tempo, from a tempo data as found in
@@ -100,10 +101,20 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
 {
     ok=1;
     track **Tracks;
+
+    struct stat buf;
+    stat(name,&buf);
+    if (!S_ISREG(buf.st_mode))
+    {
+        printf("ERROR: %s is not a regular file\n",name);
+	ok=-6;
+	return NULL;
+    }
+    
     FILE *fh=fopen(name,"rb");
     if (fh==NULL) 
     {
-        printf("ERROR: Can't open file\n");
+        printf("ERROR: Can't open file %s\n",name);
         ok=-1;
         return NULL;
     }
@@ -146,7 +157,7 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
     if (info->ticksPerCuarterNote<0)
     {
         printf("ERROR: Ticks per cuarter note is negative !\n");
-        printf("Please report this error to : antlarr@arrakis.es\n");
+        printf("Please report this error to : larrosa@kde.org\n");
         fclose(fh);
         ok=-3;
         return NULL;
