@@ -24,46 +24,41 @@
 
   ; This generates an keyword entry - is this a good format?
   ; Keywords should NOT be legislated: use subjectterms for that
-  ; As they are not used yet, they are not processed here
+  ; As they are not used yet, they are not processed here.
   (element keywordset
     (make sequence
 	(make formatting-instruction data: "keywordset ")
-        (make formatting-instruction data: (attribute-string (normalize "id")))
-	(make formatting-instruction data: " ")
-	; This should be either only in keywordset or in keyword
         (make formatting-instruction data: (href-to (current-node)))
 	(htmlnewline)
 	(htmlindexattr "arch")
 	(htmlindexattr "conformance")
+	(htmlindexattr "id")
 	(htmlindexattr "lang")
 	(htmlindexattr "os")
 	(htmlindexattr "remap")
-	(htmlindexattr "role")
 	(htmlindexattr "revision")
 	(htmlindexattr "revisionflag")
+	(htmlindexattr "role")
 	(htmlindexattr "userlevel")
 	(htmlindexattr "vendor")
 	(htmlindexattr "xreflabel")
 	(process-children)
-	(make formatting-instruction data: "/keyword")
+	(make formatting-instruction data: "/keywordset")
 	(htmlnewline)))
 
   (element keyword
     (make sequence
 	(make formatting-instruction data: "keyword ")
-        (make formatting-instruction data: (attribute-string (normalize "id")))
-	(make formatting-instruction data: " ")
-	; This should be either only in keywordset or in keyword
-        (make formatting-instruction data: (href-to (current-node)))
 	(htmlnewline)
 	(htmlindexattr "arch")
 	(htmlindexattr "conformance")
+	(htmlindexattr "id")
 	(htmlindexattr "lang")
 	(htmlindexattr "os")
 	(htmlindexattr "remap")
-	(htmlindexattr "role")
 	(htmlindexattr "revision")
 	(htmlindexattr "revisionflag")
+	(htmlindexattr "role")
 	(htmlindexattr "userlevel")
 	(htmlindexattr "vendor")
 	(htmlindexattr "xreflabel")
