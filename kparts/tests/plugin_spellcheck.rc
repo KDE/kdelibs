@@ -2,10 +2,10 @@
 <kpartplugin library="libspellcheck">
 <MenuBar>
  <Menu name="edit"><Text>&amp;Edit</Text>
-  <Action name="spellcheck" plugin="libspellcheckplugin"/>
+  <Action name="spellcheck"/>
  </Menu>
  <Menu name="SomePluginMenu"><text>Some Cool Plugin Menu</text>
-  <Action name="spellcheck" plugin="libspellcheckplugin"/>
+  <Action name="spellcheck"/>
   <Action name="searchreplace"/>
   <Menu name="WhatASubMenu"><text>Yep</text>
     <Action name="searchreplace"/>
