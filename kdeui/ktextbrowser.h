@@ -86,6 +86,11 @@ class KTextBrowser : public QTextBrowser
      */
     virtual void viewportMouseMoveEvent( QMouseEvent* e);
 
+    /**
+     * Reimplemented to support Qt2 behavior (Ctrl-Wheel = fast scroll)
+     */
+    virtual void contentsWheelEvent( QWheelEvent *e );
+    
   signals:
     /**
      * Emitted when a mail link has been activated and the widget has

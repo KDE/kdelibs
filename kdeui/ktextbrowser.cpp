@@ -21,6 +21,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.9  2001/10/10 17:40:39  mueller
+* CVS_SILENT: fixincludes
+*
 * Revision 1.8  2000/06/01 09:36:12  gehrmab
 * We like orthogonal APIs
 *
@@ -134,12 +137,9 @@ void KTextBrowser::viewportMouseMoveEvent( QMouseEvent* e)
     viewport()->setCursor( KCursor::handCursor() );
 }
 
+void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
+{
+    QScrollView::contentsWheelEvent( e );
+}
+
 #include "ktextbrowser.moc"
-
-
-
-
-
-
-
-
