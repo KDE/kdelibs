@@ -35,6 +35,9 @@
 #include <qtimer.h>
 #include <qlist.h>
 #include <kurl.h>
+#include <qdict.h>
+#include <qstring.h>
+#include <qbuffer.h>
 
 class KHTMLWidget;
 class HTMLIterator;
@@ -64,6 +67,17 @@ class KCharsetConverter;
 
 void debugT( const char *msg , ...);
 void debugM( const char *msg , ...);
+
+struct HTMLPendingFile
+{
+public:
+  HTMLPendingFile();
+  HTMLPendingFile( const char *_url, HTMLObject *_obj );
+
+  QBuffer m_buffer;
+  QString m_strURL;
+  QList<HTMLObject> m_lstClients;
+};
 
 typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
 
@@ -585,6 +599,9 @@ public:
     //-----------------------------------------------------------
     // End KFM Extensions
     // -----------------------------------------------------------
+
+    // Another option to feed image data into the HTML Widget
+    void data( const char *_url, const char *_data, int _len, bool _eof );
   
 signals:
     /**
@@ -729,7 +746,7 @@ signals:
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
-         
+      
 public slots:
     /**
      * Scrolls the document to _y.
@@ -1057,7 +1074,7 @@ protected:
     void popColor();
 
     // List of all objects waiting to get a remote file loaded
-    QList<HTMLObject> waitingFileList;
+    // XXXX QList<HTMLObject> waitingFileList;
     
     /*
      * The font stack. The font on top of the stack is the currently
@@ -1488,9 +1505,11 @@ protected:
      * Iterator used to find text within the document
      */
     HTMLIterator *textFindIter;
+
+    /**
+     * Keeps a list of all pending file.
+     */
+    QDict<HTMLPendingFile> mapPendingFiles;
 };
 
 #endif // HTML
-
-
-

@@ -192,7 +192,8 @@ public:
      * fileLoaded is called when the requested file has arrived.
      */
     virtual void fileLoaded( const char * /* _filename */ ) { }
- 
+    virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */ ) { return false; }
+
     /*
      * returns the url of the file that has been requested.
      */
@@ -592,6 +593,8 @@ public:
     virtual int  getAbsX();
     virtual int  getAbsY();
 
+    virtual void changeImage( const char *_url );
+  
     void setOverlay( const char *ol );
 
     static void cacheImage( const char * );
@@ -602,6 +605,8 @@ public:
      * The image is on the local disk in the file named '_filename.'
      */
     virtual void fileLoaded( const char *_filename );
+    virtual bool fileLoaded( const char* _url, QBuffer& _buffer );
+
     virtual const char *requestedFile()
        	{	return imageURL.data(); }
 
@@ -701,6 +706,8 @@ protected:
     // The absolute position of this object on the page
     int absX;
     int absY;
+
+    bool bComplete;
 };
 
 //----------------------------------------------------------------------------
@@ -747,6 +754,8 @@ public:
     virtual ~HTMLMap();
 
     virtual void fileLoaded( const char *_filename );
+    virtual bool fileLoaded( const char* _url, QBuffer& _buffer );
+
     virtual const char *requestedFile()
 	    {	return mapurl; }
 
@@ -758,6 +767,8 @@ public:
 	    {	return mapurl; }
 
 protected:
+    bool fileLoaded( QIODevice& file );
+  
     QList<HTMLArea> areas;
     KHTMLWidget *htmlWidget;
     QString mapurl;

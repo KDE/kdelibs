@@ -490,6 +490,9 @@ public:
 
     void cancelAllRequests();
 
+    // Another option to feed image data into the HTML Widget
+    void data( const char *_url, const char *_data, int _len, bool _eof );
+
 signals:
     /**
      * This signal is emitted if we deal with frames ( or one of the child

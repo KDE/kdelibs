@@ -187,10 +187,11 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     blockStack = 0;
     memPoolMax = 0;
 
+    mapPendingFiles.setAutoDelete( true );
     framesetStack.setAutoDelete( false );
     framesetList.setAutoDelete( false );
     frameList.setAutoDelete( false ); 
-    waitingFileList.setAutoDelete( false );
+    // XXX waitingFileList.setAutoDelete( false );
     formList.setAutoDelete( true );
     listStack.setAutoDelete( true );
     glossaryStack.setAutoDelete( true );
@@ -234,27 +235,72 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
 void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
 {
-    waitingFileList.append( _obj );
-    emit fileRequest( _url );
+  // waitingFileList.append( _obj );
+  // emit fileRequest( _url );
+
+  printf("========================= REQUEST %s  ================\n", _url );
+  
+  ///////////////
+  // The new code
+  ///////////////
+  HTMLPendingFile *p = mapPendingFiles[ _url ];
+  if ( p )
+  {
+    p->m_lstClients.append( _obj );
+    return;
+  }
+
+  p = new HTMLPendingFile( _url, _obj );
+  mapPendingFiles.insert( _url, p );
+  
+  emit fileRequest( _url );
 }
 
 void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
 {
-    if ( waitingFileList.findRef( _obj ) != -1 )
+  /* if ( waitingFileList.findRef( _obj ) != -1 )
+     {
+     waitingFileList.removeRef( _obj );
+     emit cancelFileRequest( _obj->requestedFile() );
+     } */
+
+  ///////////////
+  // The new code
+  ///////////////
+  QStrList lst;
+  
+  QDictIterator<HTMLPendingFile> it( mapPendingFiles );
+  for( ; it.current(); ++it )
+  {
+    it.current()->m_lstClients.removeRef( _obj );
+    if ( it.current()->m_lstClients.count() == 0 )
     {
-	waitingFileList.removeRef( _obj );
-	emit cancelFileRequest( _obj->requestedFile() );
+      emit cancelFileRequest( it.current()->m_strURL );
+      lst.append( it.currentKey() );
     }
+  }
+  
+  const char* u;
+  for( u = lst.first(); u != 0L; u = lst.next() )
+    mapPendingFiles.remove( u );
 }
 
 void KHTMLWidget::cancelAllRequests()
 {
-    HTMLObject *o;
+  /*  HTMLObject *o;
 
     for ( o = waitingFileList.first(); o != 0; o = waitingFileList.next() )
 	emit cancelFileRequest( o->requestedFile() );
 
-    waitingFileList.clear();
+    waitingFileList.clear(); */
+
+  ///////////////
+  // The new code
+  ///////////////
+  QDictIterator<HTMLPendingFile> it( mapPendingFiles );
+  for( ; it.current(); ++it )
+    emit cancelFileRequest( it.current()->m_strURL );
+  mapPendingFiles.clear();
 }
 
 void KHTMLWidget::requestBackgroundImage( const char *_url )
@@ -264,9 +310,68 @@ void KHTMLWidget::requestBackgroundImage( const char *_url )
     emit fileRequest( _url );
 }
 
+void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof )
+{
+  ///////////////
+  // The new code
+  ///////////////
+
+  bool do_update = false;
+  
+  HTMLPendingFile *p = mapPendingFiles[ _url ];
+  if ( !p )
+    return;
+  
+  if ( !p->m_buffer.isOpen() )
+    p->m_buffer.open( IO_WriteOnly );
+  p->m_buffer.writeBlock( _data, _len );
+  if ( _eof )
+  {    
+    p->m_buffer.close();
+
+    HTMLObject* o;
+    for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
+      if ( o->fileLoaded( _url, p->m_buffer ) )
+	do_update = true;
+    
+    mapPendingFiles.remove( _url );
+  }
+
+  if ( do_update )
+  {
+    calcSize();
+    calcAbsolutePos();
+    scheduleUpdate( true );
+  }
+  
+  if ( mapPendingFiles.count() == 0 && !parsing )
+    emit documentDone();
+}
+
 void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 {
-    QList<HTMLObject> del;
+  printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
+  
+  HTMLPendingFile *p = mapPendingFiles[ _url ];
+  if ( !p )
+    return;
+
+  assert( !p->m_buffer.isOpen() );
+  
+  HTMLObject* o;
+  for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
+    o->fileLoaded( _filename );
+  
+  mapPendingFiles.remove( _url );
+
+  if ( mapPendingFiles.count() == 0 && !parsing )
+    emit documentDone();
+
+  ///////////////
+  // The old code
+  ///////////////
+
+  /* QList<HTMLObject> del;
     del.setAutoDelete( FALSE );
 
     HTMLObject *p;    
@@ -300,7 +405,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	{
 	    emit documentDone();
 	}
-    }
+    } */
 }
 
 void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data )
@@ -1700,7 +1805,8 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	painter = 0;
 
 	// Did we finish the job or are still pictures missing ?
-	if ( waitingFileList.count() == 0 && bgPixmapURL.isEmpty() )
+	// XXXX if ( waitingFileList.count() == 0 && bgPixmapURL.isEmpty() )
+	if ( mapPendingFiles.isEmpty() && bgPixmapURL.isEmpty() )
 	{
 	    emit documentDone();
 	}
@@ -5543,6 +5649,16 @@ void KHTMLWidget::cellContextMenu()
 //-----------------------------------------------------------
 // End KFM Extensions
 //-----------------------------------------------------------
+
+HTMLPendingFile::HTMLPendingFile()
+{
+}
+
+HTMLPendingFile::HTMLPendingFile( const char *_url, HTMLObject *_obj )
+{
+  m_strURL = _url;
+  m_lstClients.append( _obj );
+}
 
 #include "html.moc"
 

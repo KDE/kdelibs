@@ -1264,6 +1264,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     pixmap = 0;
     movie = 0;
     overlay = 0;
+    bComplete = true;
 
     htmlWidget = widget;
     
@@ -1293,11 +1294,27 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     absX = -1;
     absY = -1;
     
+    // A HTMLJSImage ?
+    if ( _filename == 0L )
+    {
+      // Do not load an image yet
+      imageURL = "";
+      synchron = false;
+      bComplete = false;
+      return;
+    }
+
+    printf("********* IMAGE %s ******\n",_filename );
+    
     if ( _filename[0] != '/' )
     {
 	KURL kurl( _filename );
 	if ( kurl.isMalformed() )
-	    return;
+	{
+	  warning("Malformed URL '%s'\n", _filename );
+	  return;
+	}
+	
 	if ( strcmp( kurl.protocol(), "file" ) == 0 )
 	{
 	    pixmap = HTMLImage::findImage( kurl.path() );
@@ -1326,7 +1343,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	else 
 	{
 	    imageURL = _filename;
-	    imageURL.detach();
+	    bComplete = false;
 	    synchron = TRUE;
 	    htmlWidget->requestFile( this, imageURL.data() );
 	    synchron = FALSE;
@@ -1382,15 +1399,111 @@ void HTMLImage::init()
 	ascent += border;
 }
 
+void HTMLImage::changeImage( const char *_url )
+{ 
+  KURL u( htmlWidget->getBaseURL(), _url );
+  if ( u.isMalformed() )
+    return;
+
+  if ( !bComplete && !pixmap )
+    htmlWidget->cancelRequestFile( this );
+
+  imageURL = _url;
+
+  if ( u.isLocalFile() )
+  {
+    QPixmap *p = HTMLImage::findImage( _url );
+    if ( p )
+    {
+      if ( pixmap )
+	delete pixmap;
+      pixmap = p;
+    }
+    else
+    {
+      if ( !pixmap )
+	pixmap = new QPixmap();
+      pixmap->load( u.path() );
+      cached = false;
+    }
+
+    bComplete = true;
+  }
+  else
+  {
+    synchron = TRUE;
+    bComplete = false;
+    htmlWidget->requestFile( this, imageURL.data() );
+    synchron = FALSE;
+  }
+  
+  // Is the image available ?
+  if ( pixmap == 0 || pixmap->isNull() )
+  {
+    if ( !predefinedWidth && !percent)
+      width = 32;
+    if ( !predefinedHeight )
+      ascent = 32;
+  }
+  else
+    init();
+
+  if ( bComplete && !isA( "HTMLJSImage" ) )
+    htmlWidget->paintSingleObject( this );
+}
+
 void HTMLImage::setOverlay( const char *_ol )
 {
     // overlays must be cached
     overlay = HTMLImage::findImage( _ol );
 }
 
+bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
+{
+  bComplete = true;
+  
+  char buffer[ 4 ];
+  buffer[0] = 0;
+  _buffer.open( IO_ReadOnly );
+  _buffer.readBlock( buffer, 3 );
+  _buffer.close();
+    
+  if ( strcmp( buffer, "GIF" ) == 0 )
+  {
+    movie = new QMovie( _buffer.buffer() );
+    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
+  }
+  else
+  {
+    pixmap = new QPixmap();
+    pixmap->loadFromData( _buffer.buffer() );	    
+    cached = false;
+
+    if ( pixmap == 0 || pixmap->isNull() )
+      return false;
+  }
+  
+  init();
+
+  // We knew the size during the HTML parsing ?
+  if ( predefinedWidth && predefinedHeight && !synchron )
+    htmlWidget->paintSingleObject( this ); 
+  else if ( !synchron )
+    // We need an update. That means the size and position if
+    // all elements has to be recalculated => return true
+    return true;
+  
+  // No update of sizes and positions needed since we already knew
+  // the size of the image or since we are in synchron mode.
+  return false;
+}
+
 void HTMLImage::fileLoaded( const char *_filename )
 {
-#ifdef USE_QMOVIE
+  printf("*********** LOADED %s ******", _filename );
+  
+    bComplete = true;
+
     char buffer[ 4 ];
     buffer[0] = 0;
     FILE *f = fopen( _filename, "rb" );
@@ -1430,7 +1543,6 @@ void HTMLImage::fileLoaded( const char *_filename )
     }
     else
     {
-#endif
 	pixmap = new QPixmap();
 	pixmap->load( _filename );	    
 	cached = false;
@@ -1452,9 +1564,7 @@ void HTMLImage::fileLoaded( const char *_filename )
 	    htmlWidget->calcAbsolutePos();
 	    htmlWidget->scheduleUpdate( true );
 	}
-#ifdef USE_QMOVIE
     }
-#endif
 }
 
 int HTMLImage::calcMinWidth()
@@ -1623,8 +1733,11 @@ void HTMLImage::movieUpdated( const QRect & )
 
 HTMLImage::~HTMLImage()
 {
-    if ( !imageURL.isEmpty() && !pixmap )
+    if ( !bComplete && !pixmap )
 	htmlWidget->cancelRequestFile( this );
+
+    // if ( !imageURL.isEmpty() && !pixmap )
+    // htmlWidget->cancelRequestFile( this );
 
     if ( pixmap && !cached )
 	delete pixmap;
@@ -1683,117 +1796,145 @@ HTMLMap::~HTMLMap()
 	htmlWidget->cancelRequestFile( this );
 }
 
+bool HTMLMap::fileLoaded( const char* _url, QBuffer& _buffer )
+{
+  if ( !_buffer.open( IO_ReadOnly ) )
+  {
+    warning("Could not open buffer for reading a map\n" );
+    return false;
+  }
+  
+  bool res = fileLoaded( _buffer );
+  
+  _buffer.close();
+
+  return res;
+}
+
 // The external map has been downloaded
 void HTMLMap::fileLoaded( const char *_filename )
 {
-    QFile file( _filename );
+  QFile file( _filename );
+  if ( !file.open( IO_ReadOnly ) )
+  {
+    warning("Could not open %s for reading a map\n", _filename );
+    return;
+  }
+
+  (void)fileLoaded( file );
+
+  file.close();
+}
+
+bool HTMLMap::fileLoaded( QIODevice& file )
+{
     QString buffer;
     QString href;
     QString coords;
     HTMLArea::Shape shape = HTMLArea::Rect;
     char ch;
 
-    if ( file.open( IO_ReadOnly ) )
+    while ( !file.atEnd() )
     {
-	while ( !file.atEnd() )
+      // read in a line
+      buffer[0] = '\0';
+      do
+      {
+	ch = file.getch();
+	if ( ch != '\n' && ch != -1 );
+	buffer += ch;
+      }
+      while ( ch != '\n' && ch != -1 );
+      
+      // comment?
+      if ( buffer[0] == '#' )
+	continue;
+      
+      StringTokenizer st;
+      st.tokenize( buffer, " " );
+      
+      // get shape
+      const char *p = st.nextToken();
+      
+      if ( strncasecmp( p, "rect", 4 ) == 0 )
+	shape = HTMLArea::Rect;
+      else if ( strncasecmp( p, "poly", 4 ) == 0 )
+	shape = HTMLArea::Poly;
+      else if ( strncasecmp( p, "circle", 6 ) == 0 )
+	shape = HTMLArea::Circle;
+      
+      // get url
+      p = st.nextToken();
+	    
+      if ( *p == '#' )
+      {// reference
+	KURL u( htmlWidget->getDocumentURL() );
+	u.setReference( p + 1 );
+	href = u.url();
+      }
+      else if ( strchr( p, ':' ) )
+      {// full URL
+	href =  p;
+      }
+      else
+      {// relative URL
+	KURL u2( htmlWidget->getBaseURL(), p );
+	href = u2.url();
+      }
+
+      // read coords and create object
+      HTMLArea *area = 0;
+      
+      switch ( shape )
+      {
+      case HTMLArea::Rect:
 	{
-	    // read in a line
-	    buffer[0] = '\0';
-	    do
-	    {
-		ch = file.getch();
-		if ( ch != '\n' && ch != -1 );
-		    buffer += ch;
-	    }
-	    while ( ch != '\n' && ch != -1 );
-
-	    // comment?
-	    if ( buffer[0] == '#' )
-		continue;
-
-	    StringTokenizer st;
-	    st.tokenize( buffer, " " );
-
-	    // get shape
-	    const char *p = st.nextToken();
-
-	    if ( strncasecmp( p, "rect", 4 ) == 0 )
-		shape = HTMLArea::Rect;
-	    else if ( strncasecmp( p, "poly", 4 ) == 0 )
-		shape = HTMLArea::Poly;
-	    else if ( strncasecmp( p, "circle", 6 ) == 0 )
-		shape = HTMLArea::Circle;
-
-	    // get url
-	    p = st.nextToken();
-
-	    if ( *p == '#' )
-	    {// reference
-		KURL u( htmlWidget->getDocumentURL() );
-		u.setReference( p + 1 );
-		href = u.url();
-	    }
-	    else if ( strchr( p, ':' ) )
-	    {// full URL
-		href =  p;
-	    }
-	    else
-	    {// relative URL
-		KURL u2( htmlWidget->getBaseURL(), p );
-		href = u2.url();
-	    }
-
-	    // read coords and create object
-	    HTMLArea *area = 0;
-
-	    switch ( shape )
-	    {
-		case HTMLArea::Rect:
-		    {
-			p = st.nextToken();
-			int x1, y1, x2, y2;
-			sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
-			QRect rect( x1, y1, x2-x1, y2-y1 );
-			area = new HTMLArea( rect, href, "" );
-			printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
-		    }
-		    break;
-
-		case HTMLArea::Circle:
-		    {
-			p = st.nextToken();
-			int xc, yc, rc;
-			sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
-			area = new HTMLArea( xc, yc, rc, href, "" );
-			printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
-		    }
-		    break;
-
-		case HTMLArea::Poly:
-		    {
-			printf( "Area Poly " );
-			int count = 0, x, y;
-			QPointArray parray;
-			while ( st.hasMoreTokens() )
-			{
-			    p = st.nextToken();
-			    sscanf( p, "%d,%d", &x, &y );
-			    parray.resize( count + 1 );
-			    parray.setPoint( count, x, y );
-			    printf( "%d, %d  ", x, y );
-			    count++;
-			}
-			printf( "\n" );
-			if ( count > 2 )
-			    area = new HTMLArea( parray, href, "" );
-		    }
-		    break;
-	    }
-
-	    if ( area )
-		addArea( area );
+	  p = st.nextToken();
+	  int x1, y1, x2, y2;
+	  sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+	  QRect rect( x1, y1, x2-x1, y2-y1 );
+	  area = new HTMLArea( rect, href, "" );
+	  printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 	}
+      break;
+      
+      case HTMLArea::Circle:
+	{
+	  p = st.nextToken();
+	  int xc, yc, rc;
+	  sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
+	  area = new HTMLArea( xc, yc, rc, href, "" );
+	  printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
+	}
+      break;
+
+      case HTMLArea::Poly:
+	{
+	  printf( "Area Poly " );
+	  int count = 0, x, y;
+	  QPointArray parray;
+	  while ( st.hasMoreTokens() )
+	    {
+	      p = st.nextToken();
+	      sscanf( p, "%d,%d", &x, &y );
+	      parray.resize( count + 1 );
+	      parray.setPoint( count, x, y );
+	      printf( "%d, %d  ", x, y );
+	      count++;
+	    }
+	  printf( "\n" );
+	  if ( count > 2 )
+	    area = new HTMLArea( parray, href, "" );
+	}
+      break;
+      }
+      
+      if ( area )
+	addArea( area );
     }
+    
+    // No update needed.
+    return false;
 }
 
 const HTMLArea *HTMLMap::containsPoint( int _x, int _y )

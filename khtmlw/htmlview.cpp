@@ -714,5 +714,10 @@ KHTMLView* KHTMLView::topView()
   return v;
 }
 
+void KHTMLView::data( const char *_url, const char *_data, int _len, bool _eof )
+{
+  view->data( _url, _data, _len, _eof );
+}
+
 #include "htmlview.moc"
 
