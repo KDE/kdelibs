@@ -51,6 +51,8 @@ static const KCmdLineOptions options[] =
 
 bool globalEnums;
 bool itemAccessors;
+QStringList allNames;
+QRegExp *validNameRegexp;
 
 class CfgEntry
 {
@@ -430,7 +432,8 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     }
   }
 
-  if ( name.isEmpty() && key.isEmpty() ) {
+  bool nameIsEmpty = name.isEmpty();
+  if ( nameIsEmpty && key.isEmpty() ) {
     kdError() << "Entry must have a name or a key: " << dumpNode(element) << endl;
     return 0;
   }
@@ -439,7 +442,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     key = name;
   }
 
-  if ( name.isEmpty() ) {
+  if ( nameIsEmpty ) {
     name = key;
     name.replace( " ", QString::null );
   } else if ( name.contains( ' ' ) ) {
@@ -518,6 +521,27 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       }
     }
   }
+
+  if (!validNameRegexp->exactMatch(name))
+  {
+    if (nameIsEmpty)
+      kdError() << "The key '" << key << "' can not be used as name for the entry because "
+                   "it is not a valid name. You need to specify a valid name for this entry." << endl;
+    else
+      kdError() << "The name '" << name << "' is not a valid name for an entry." << endl;
+    return 0;
+  }
+
+  if (allNames.contains(name))
+  {
+    if (nameIsEmpty)
+      kdError() << "The key '" << key << "' can not be used as name for the entry because "
+                   "it does not result in a unique name. You need to specify a unique name for this entry." << endl;
+    else
+      kdError() << "The name '" << name << "' is not unique." << endl;
+    return 0;
+  }
+  allNames.append(name);
 
   if (!defaultCode)
   {
@@ -764,6 +788,8 @@ int main( int argc, char **argv )
     kdError() << "Too many arguments." << endl;
     return 1;
   }
+
+  validNameRegexp = new QRegExp("[a-zA-Z_][a-zA-Z0-9_]*");
 
   QString baseDir = QFile::decodeName(args->getOption("directory"));
   if (!baseDir.endsWith("/"))
