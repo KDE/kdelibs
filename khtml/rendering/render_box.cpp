@@ -253,22 +253,35 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         if ( isHtml() && firstChild() && !backgroundImage() )
             sptr = firstChild()->style();
 
-	int cx = _tx;
-	int cy = clipy;
-	int cw = w;
-	int ch = h;
+	int cw,ch;
+        int cx,cy;
 
         // CSS2 chapter 14.2.1
         int pw = m_width - sptr->borderRightWidth() - sptr->borderLeftWidth();
         int ph = m_height - sptr->borderTopWidth() - sptr->borderBottomWidth();
+        int pixw = bg->pixmap_size().width();
+        int pixh = bg->pixmap_size().height();
         EBackgroundRepeat bgr = sptr->backgroundRepeat();
-        if(bgr == NO_REPEAT || bgr == REPEAT_Y)
-            cw = QMIN(bg->pixmap_size().width(), w);
-        if(bgr == NO_REPEAT || bgr == REPEAT_X)
-            ch = QMIN(bg->pixmap_size().height(), h);
+        if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
+            cw = pixw;
+            cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
+        } else {
+            cw = w;
+            cx = _tx;   
+            sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+        }
+         
+        if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
+            ch = pixh;
+            cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);    
+        } else {
+            ch = h;
+            cy = _ty;   
+            sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
+        }
 
-        cx = _tx + sptr->backgroundXPosition().minWidth(pw) - sptr->backgroundXPosition().minWidth(cw);
-        cy = _ty + sptr->backgroundYPosition().minWidth(ph) - sptr->backgroundYPosition().minWidth(ch);
+        
+        
         if( !sptr->backgroundAttachment() ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
@@ -279,10 +292,10 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             sx = cx - r.x();
             sy = cy - r.y();
         }
-        else
+        //else
             // make sure that the pixmap is tiled correctly
             // because we clip the tiling to the visible area (for speed reasons)
-            if(bg->pixmap_size().height() && sptr->backgroundAttachment());
+        //    if(bg->pixmap_size().height() && sptr->backgroundAttachment());
 
         //        sy = (clipy - _ty) % bg->pixmap_size().height();
 
