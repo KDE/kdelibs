@@ -43,24 +43,29 @@ public:
    * KSpell emits ready() when it has verified that ispell is
    *  working properly.  Pass the name of a slot -- do not pass zero!
    * Be sure to call cleanUp() when you are done with KSpell.
+   *
+   * If KSpell could not be started correctly, death() is emitted.
    */
   KSpell(QWidget *_parent, QString,
 	 QObject *obj, const char *slot, KSpellConfig *_kcs=0,
 	 bool _progressbar = TRUE, bool _modal = FALSE );
 
+  enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed };
+  
   /**
-   * Be sure your instance of KSpell isOk() before you use it.
-   *  isOk()==TRUE would indicate that any memory that needed to be
-   *  allocated was and that ispell is up and running.  If you find
-   *  that isOk()==FALSE, it's probably b/c either ispell isn't installed
-   *  (and in $PATH) or an invalid path was given for the dictionary
-   *  or personal dictionary (see KSpellConfig).
+   * Returns the status of KSpell.
+   * 
+   * Starting: After creation of KSpell.
+   * Running: After the ready signal has been emitted.
+   * Cleaning: After cleanUp() has been called.
+   * Finished: After cleanUp() has been completed.
    *
-   *  If an instance of KSpell is not Ok, then it never will be.
-   *   Delete it, reconfigure a KSpellConfig and try again (perhaps with
-   *   the system defaults).
-   **/
-  inline bool isOk () { return ok; }
+   * The following error states exist:
+   *
+   * Error: An error occured in the Starting state.
+   * Crashed: An error occured in the Running state.
+   */
+  spellStatus status() { return m_status; }
 
   /**
    * Clean up ISpell (write out the personal dictionary and close ispell's
@@ -68,6 +73,12 @@ public:
    *  complete, but the cleanUp() method will return immediately.
    **/
   virtual void cleanUp ();
+
+  /** 
+   * Auto delete the KSpell object after emitting death().
+   */
+  void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
+
   /**
    *  check() will spell check a buffer of many words in plain text 
    *  format
@@ -230,10 +241,7 @@ signals:
 
   /**
    * This is emitted after KSpell has verified that ispell is running
-   *  and working properly.  The calling application should check
-   *  isOk() in response to this signal before attempting to use any of
-   *  the spell-checking methods (check(), et at).  Those methods _don't_
-   *  check isOk() for you.
+   * and working properly.  
    */
   void ready(KSpell *);
 
@@ -258,14 +266,16 @@ signals:
   void done(bool);
 
   /**
-   * emitted when cleanUp() is done
-   **/
-  void cleanDone();
-
-  /**
-   * emitted on terminal errors
+   * emitted on terminal errors and after clean up.
+   * You can delete the KSpell object in this signal
+   *
+   * You can check status() to see what caused the death:
+   * Error: KSpell could not start.
+   * Crashed: KSpell encountered an unexpected error during execution.
+   * Finished: clean up finished.
    */
-  void death(KSpell *);
+  void death( );
+  
 
 protected slots:
   /* All of those signals from KProcIO get sent here. */
@@ -282,6 +292,7 @@ protected slots:
 		   
   void slotStopCancel (int);
   void ispellExit (KProcess *);
+  void emitDeath();
   void ispellErrors (KProcess *, char *, int);
 
 private slots:
@@ -311,16 +322,17 @@ protected:
   QStringList replacelist;
   QStringList sugg;
   QTextCodec* codec;
+
+  spellStatus m_status;
   
-  bool cleaning;
   bool usedialog;
   bool texmode;
   bool dlgon;
-  bool ok;
   bool personaldict;
   bool dialogwillprocess;
   bool progressbar;
   bool dialogsetup;
+  bool autoDelete;
 
   QString caption;
   QString orig;

@@ -58,7 +58,7 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc,
 		bool _progressbar, bool _modal)
 {
-
+  autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;
 
@@ -66,8 +66,6 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   ksconfig=0;
   ksdlg=0;
   
-
-
   //won't be using the dialog in ksconfig, just the option values
   if (_ksc!=0)
     ksconfig = new KSpellConfig (*_ksc);
@@ -89,12 +87,11 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   
   kdebug(KDEBUG_INFO, 750, "%s:%d Codec = %s", __FILE__, __LINE__, codec ? codec->name() : "<default>");
 
-  ok=texmode=dlgon=FALSE;
-  cleaning=FALSE;
+  texmode=dlgon=FALSE;
+  m_status = Starting;
   dialogsetup = FALSE;
   progres=10;
   curprog=0;
-
 
   dialogwillprocess=FALSE;
   dialog3slot="";
@@ -205,10 +202,9 @@ KSpell::startIspell()
     }
 
   if (proc->start ()==FALSE)
-    {
-      emit ready(this);
-    }
-
+  {
+     QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+  }
 }
 
 void
@@ -227,39 +223,37 @@ void KSpell::KSpell2 (KProcIO *)
   QString line;
 
   if (proc->fgets (line, TRUE)==-1)
-    {
-      emit ready(this);
-      return;
-    }
+  {
+     QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+     return;
+  }
 
 
   if (line[0]!='@') //@ indicates that ispell is working fine
-    {
-      emit ready(this);
-      return;
-    }
+  {
+     QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+     return;
+  }
     
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
-    {
-      //      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
-      emit ready(this);
-      return;
-    }
+  {
+     //      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
+     QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+     return;
+  }
 
   //We want to recognize linux in any text!
   if (ignore ("linux")==FALSE)
-    {
-      //      kdebug(KDEBUG_INFO, 750, "@Linux was FALSE");
-      emit ready(this);
-      return;
-    }
-
+  {
+     //      kdebug(KDEBUG_INFO, 750, "@Linux was FALSE");
+     QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+     return;
+  }
 
   NOOUTPUT (KSpell2);
 
-  ok=TRUE;
-
+  m_status = Running;
   emit ready(this);
 }
 
@@ -269,7 +263,6 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   if (dialogsetup)
     return;
 
-  
   //Set up the dialog box
   ksdlg=new KSpellDlg (parent, "dialog", 
 		       progressbar && reallyuseprogressbar, modaldlg );
@@ -921,36 +914,47 @@ KSpellConfig KSpell::ksConfig () const
 
 void KSpell::cleanUp ()
 {
-  if (personaldict)
-    writePersonalDictionary();
-  cleaning=TRUE;
+  if (m_status == Cleaning) return; // Ignore
+  if (m_status == Running) 
+  {
+    if (personaldict)
+       writePersonalDictionary();
+    m_status = Cleaning;
+  }
   proc->closeStdin();
 }
 
 void KSpell::ispellExit (KProcess *)
 {
   //kdebug(KDEBUG_INFO, 750, "KSpell::ispellExit()");
+  if ((m_status == Starting) && (trystart<maxtrystart))
+  {
+    trystart++;
+    startIspell();
+    return;
+  }
 
-  if (cleaning)
-    {
-      emit cleanDone(); //you can delete me now
-      return;
-    }
+  if (m_status == Starting)
+     m_status = Error;
+  else if (m_status == Cleaning)
+     m_status = Finished;
+  else if (m_status == Running)
+     m_status = Crashed;
+  else // Error, Finished, Crashed
+     return; // Dead already
 
-  if (trystart<maxtrystart)
-    {
-      trystart++;
-      startIspell();
-      return;
-    }
-
-  if (!ok)
-    {
-      kdebug(KDEBUG_WARN, 750, "NOT OK");
-      emit ready(this);
-    }
   kdebug(KDEBUG_ERROR, 750, "Death");
-  emit death(this);
+  QTimer::singleShot( 0, this, SLOT(emitDeath())); 
+}
+
+// This is always called from the event loop to make
+// sure that the receiver can safely delete the 
+// KSpell object.
+void KSpell::emitDeath()
+{
+  emit death();
+  if (autoDelete)
+     delete this;
 }
 
 void KSpell::setProgressResolution (unsigned int res)
@@ -1009,7 +1013,7 @@ KSpell::modalCheck( QString& text )
 void KSpell::slotModalReady()
 {
     // qDebug("MODAL READY");
-    ASSERT( isOk() );
+    ASSERT( m_status == Running );
     connect( this, SIGNAL( done( const char* ) ), this, SLOT( slotModalDone( const char* ) ) );
     check( modaltext );
 }
