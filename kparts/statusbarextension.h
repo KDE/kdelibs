@@ -112,7 +112,7 @@ namespace KParts
      StatusBarExtensionPrivate *d;
   };
 
-};
+}
 #endif // KPARTS_STATUSBAREXTENSION_H
 
 // vim: ts=2 sw=2 et

@@ -66,5 +66,5 @@ protected:
     RenderObject *m_last;
 };
 
-};
+}
 #endif

@@ -30,6 +30,6 @@ namespace KIO {
                     DAV_SUBSCRIBE, DAV_UNSUBSCRIBE, DAV_POLL, DAV_NOTIFY,
                     HTTP_UNKNOWN = -1};
 
-};
+}
 
 #endif

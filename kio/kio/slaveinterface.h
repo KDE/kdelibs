@@ -241,7 +241,7 @@ private:
     SlaveInterfacePrivate *d;
 };
 
-};
+}
 
 inline QDataStream &operator >>(QDataStream &s, KIO::UDSAtom &a )
 {

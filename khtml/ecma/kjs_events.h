@@ -187,6 +187,6 @@ namespace KJS {
     DOM::MutationEvent toMutationEvent() const { return static_cast<DOM::MutationEvent>(event); }
   };
 
-}; // namespace
+} // namespace
 
 #endif

@@ -84,6 +84,6 @@ private:
 	static const unsigned int PACKET_COUNT;
 };
 
-};
+}
 
 #endif

@@ -189,7 +189,7 @@ static EVP_CIPHER *(*K_EVP_rc2_cbc)() = 0L;
 static EVP_CIPHER *(*K_EVP_rc2_64_cbc)() = 0L;
 static EVP_CIPHER *(*K_EVP_rc2_40_cbc)() = 0L;
 #endif
-};
+}
 
 
 bool KOpenSSLProxy::hasLibSSL() const {

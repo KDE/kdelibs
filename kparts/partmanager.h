@@ -261,7 +261,7 @@ private:
   PartManagerPrivate *d;
 };
 
-};
+}
 
 #endif
 

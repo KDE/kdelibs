@@ -366,7 +366,7 @@ namespace KParts
  
     }
 
-};
+}
 
 /*
  * vim: et sw=4

@@ -236,5 +236,5 @@ protected: // members
 };
 
 
-};
+}
 #endif

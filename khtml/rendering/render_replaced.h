@@ -103,6 +103,6 @@ protected:
     KHTMLView* m_view;
 };
 
-};
+}
 
 #endif

@@ -78,7 +78,7 @@ void PluginSelectorModule::createPage( QFrame * page )
 	d->selector = new KPluginSelector( d->instance, page );
 }
 
-}; //namespace
+} //namespace
 
 #include "pluginselectormodule.moc"
 

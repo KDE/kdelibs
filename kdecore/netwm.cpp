@@ -1483,7 +1483,6 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
     unsigned long props[ PROPERTIES_SIZE ] = { 0, 0, 0, 0 };
     assert( PROPERTIES_SIZE == 4 ); // add elements above
     unsigned long& dirty = props[ PROTOCOLS ];
-    unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
 
     // the window manager will be interested in client messages... no other
@@ -1643,8 +1642,8 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
         update( props );
         
 #ifdef   NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx, 0x%lx\n",
-	    dirty, dirty2);
+    fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx\n",
+	    dirty);
 #endif
 
     if( properties_size > PROPERTIES_SIZE )
@@ -1670,7 +1669,6 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
          ++i )
         props[ i ] = dirty_props[ i ] & p->client_properties[ i ];
     const unsigned long& dirty = props[ PROTOCOLS ];
-    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
 
     if (dirty & Supported ) {
         // only in Client mode
@@ -2912,7 +2910,6 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
     unsigned long props[ PROPERTIES_SIZE ] = { 0, 0 };
     assert( PROPERTIES_SIZE == 2 ); // add elements above
     unsigned long& dirty = props[ PROTOCOLS ];
-    unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
 
     if (role == WindowManager && event->type == ClientMessage &&
@@ -3100,7 +3097,6 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
          ++i )
         props[ i ] = dirty_props[ i ] & p->properties[ i ];
     const unsigned long& dirty = props[ PROTOCOLS ];
-    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
 
     // we *always* want to update WM_STATE if set in dirty_props
     if( dirty_props[ PROTOCOLS ] & XAWMState )

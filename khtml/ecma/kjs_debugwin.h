@@ -272,7 +272,7 @@ namespace KJS {
     static KJSDebugWin *kjs_html_debugger;
   };
 
-}; // namespace
+} // namespace
 
 #endif // KJS_DEBUGGER
 

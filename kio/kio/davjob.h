@@ -120,7 +120,7 @@ namespace KIO {
     */
    DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
 
-};
+}
 
 #endif
 

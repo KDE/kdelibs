@@ -202,6 +202,6 @@ namespace KJS {
         return *this;
     }
 
- }; // namespace KJS
+ } // namespace KJS
 
 #endif // KJS_LIST_H

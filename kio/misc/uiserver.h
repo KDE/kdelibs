@@ -40,7 +40,7 @@ class UIServer;
 namespace KIO {
   class Job;
   class DefaultProgress;
-};
+}
 
 
 struct ListProgressColumnConfig

@@ -263,6 +263,6 @@ namespace KIO {
 	class SlavePrivate* d;
     };
 
-};
+}
 
 #endif

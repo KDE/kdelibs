@@ -54,7 +54,7 @@ namespace DOM {
     class HTMLSelectElementImpl;
     class HTMLGenericFormElementImpl;
     class HTMLTextAreaElementImpl;
-};
+}
 
 namespace khtml {
 
@@ -443,6 +443,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-}; //namespace
+} //namespace
 
 #endif

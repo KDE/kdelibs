@@ -305,7 +305,7 @@ namespace KJS {
     Identifier name;
     Parameter *next;
   };
-};
+}
 
 FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
   : InternalFunctionImp(

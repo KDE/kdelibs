@@ -67,7 +67,7 @@ namespace
 	
 	QIntCache<GradientCacheEntry> cache(65636, 17);
 	
-};
+}
 
 using namespace Keramik;
 
@@ -163,6 +163,6 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 	
 	p->drawTiledPixmap(r, *imgToAdd->m_pixmap, horizontal? QPoint(0,py): QPoint(px,0));
 	entry.m_pixmap = 0;//Don't free too early..
-};
+}
 
 // vim: ts=4 sw=4 noet

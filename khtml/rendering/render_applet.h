@@ -33,7 +33,7 @@ class KHTMLView;
 
 namespace DOM {
     class HTMLElementImpl;
-};
+}
 
 namespace khtml {
 
@@ -57,5 +57,5 @@ private:
     void processArguments( const QMap<QString, QString> &args );
 };
 
-};
+}
 #endif

@@ -54,7 +54,7 @@ namespace KIO
 {
   class Job;
   class TransferJob;
-};
+}
 namespace KParts
 {
   class StatusBarExtension;
@@ -91,7 +91,7 @@ namespace khtml
     bool m_bPendingRedirection;
   };
 
-};
+}
 
 class FrameList : public QValueList<khtml::ChildFrame>
 {

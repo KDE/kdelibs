@@ -1524,7 +1524,7 @@ static QColor colorForCSSValue( int css_value )
 #endif
 
     return c;
-};
+}
 
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )

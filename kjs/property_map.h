@@ -93,6 +93,6 @@ namespace KJS {
         Entry _singleEntry;
     };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_PROPERTY_MAP_H_

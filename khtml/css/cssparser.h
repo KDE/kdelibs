@@ -158,5 +158,5 @@ namespace DOM {
 	int yy_start;
     };
 
-}; // namespace
+} // namespace
 #endif

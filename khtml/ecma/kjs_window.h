@@ -239,6 +239,6 @@ namespace KJS {
   };
 #endif
 
-}; // namespace
+} // namespace
 
 #endif

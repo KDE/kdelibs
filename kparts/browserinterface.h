@@ -43,6 +43,6 @@ public:
     void callMethod( const char *name, const QVariant &argument );
 };
 
-};
+}
 
 #endif

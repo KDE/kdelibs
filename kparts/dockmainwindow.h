@@ -83,6 +83,6 @@ protected:
   DockMainWindowPrivate *d;
   };
 
-};
+}
 
 #endif

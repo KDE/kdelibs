@@ -136,7 +136,7 @@ KCModuleInfo::docPath() const
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _doc;
-};
+}
 
 QString
 KCModuleInfo::handle() const
@@ -148,7 +148,7 @@ KCModuleInfo::handle() const
      return _lib;
 
   return _handle;
-};
+}
 
 bool
 KCModuleInfo::needsRootPrivileges() const
@@ -157,7 +157,7 @@ KCModuleInfo::needsRootPrivileges() const
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _needsRootPrivileges;
-};
+}
 
 bool
 KCModuleInfo::isHiddenByDefault() const
@@ -166,6 +166,6 @@ KCModuleInfo::isHiddenByDefault() const
     const_cast<KCModuleInfo*>(this)->loadAll();
 
   return _isHiddenByDefault;
-};
+}
 
 // vim: ts=2 sw=2 et

@@ -52,7 +52,7 @@ MidiOut::MidiOut(int d)
   map=new MidiMapper(NULL);
   if (map==NULL) { printfdebug("ERROR : midiOut : Map is NULL\n"); return; };
   _ok=1;
-};
+}
 
 MidiOut::~MidiOut()
 {

@@ -234,6 +234,6 @@ namespace KJS {
   Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 
 
-}; // namespace
+} // namespace
 
 #endif

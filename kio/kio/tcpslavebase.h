@@ -386,6 +386,6 @@ private:
     TcpSlaveBasePrivate *d;
 };
 
-};
+}
 
 #endif

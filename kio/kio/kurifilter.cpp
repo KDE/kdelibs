@@ -263,7 +263,7 @@ QString KURIFilter::filteredURI( const QString &uri, const QStringList& filters 
 QPtrListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const
 {
     return QPtrListIterator<KURIFilterPlugin>(m_lstPlugins);
-};
+}
 
 QStringList KURIFilter::pluginNames() const
 {

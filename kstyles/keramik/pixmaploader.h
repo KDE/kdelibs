@@ -358,7 +358,7 @@ namespace Keramik
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
 	};
-};
+}
 
 #endif
 

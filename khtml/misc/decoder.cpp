@@ -71,7 +71,7 @@ public:
 
 };
 
-};
+}
 
 const int KanjiCode::ESC = 0x1b;
 const int KanjiCode::_SS2_ = 0x8e;

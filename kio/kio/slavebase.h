@@ -789,6 +789,6 @@ private:
     SlaveBasePrivate *d;
 };
 
-};
+}
 
 #endif

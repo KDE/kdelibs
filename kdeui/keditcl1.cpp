@@ -284,7 +284,7 @@ int KEdit::currentLine(){
   computePosition();
   return line_pos;
 
-};
+}
 
 int KEdit::currentColumn(){
 

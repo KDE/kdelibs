@@ -92,6 +92,6 @@ protected:
     RenderListMarker *m_marker;
 };
 
-}; //namespace
+} //namespace
 
 #endif

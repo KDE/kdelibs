@@ -298,7 +298,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   } // for()...
 
   return true;
-};
+}
 
 bool LDIFConverter::parseSingleLine( Addressee &a, 
 	Address &homeAddr, Address &workAddr, QString &line )

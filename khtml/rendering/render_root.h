@@ -102,5 +102,5 @@ protected:
     int m_truncatedAt;
 };
 
-};
+}
 #endif

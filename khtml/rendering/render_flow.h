@@ -207,6 +207,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

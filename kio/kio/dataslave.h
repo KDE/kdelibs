@@ -77,6 +77,6 @@ namespace KIO {
 	MetaData meta_data;
     };
 
-};
+}
 
 #endif /*__KIO_DATASLAVE_H__*/

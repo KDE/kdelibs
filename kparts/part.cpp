@@ -77,7 +77,7 @@ public:
 
   bool m_bSelectable;
 };
-};
+}
 
 PartBase::PartBase()
 {
@@ -287,7 +287,7 @@ public:
   bool m_showProgressInfo;
 };
 
-};
+}
 
 ReadOnlyPart::ReadOnlyPart( QObject *parent, const char *name )
  : Part( parent, name ), m_bTemp( false )

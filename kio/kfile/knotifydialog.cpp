@@ -94,7 +94,7 @@ namespace KNotify
             return KNotifyClient::None;
         }
     };
-};
+}
 
 
 int KNotifyDialog::configure( QWidget *parent, const char *name,
@@ -118,7 +118,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
 
     connect( this, SIGNAL( okClicked() ), m_notifyWidget, SLOT( save() ));
     connect( this, SIGNAL( applyClicked() ), m_notifyWidget, SLOT( save() ));
-};
+}
 
 KNotifyDialog::~KNotifyDialog()
 {

@@ -126,7 +126,7 @@ namespace khtml {
         QGuardedPtr<KHTMLPart> m_part;
         khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
-};
+}
 
 
 FrameList::Iterator FrameList::find( const QString &name )

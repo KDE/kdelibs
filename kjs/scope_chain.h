@@ -66,6 +66,6 @@ namespace KJS {
         void release();
     };
 
-}; // namespace KJS
+} // namespace KJS
 
 #endif // KJS_SCOPE_CHAIN_H

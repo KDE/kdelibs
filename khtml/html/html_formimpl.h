@@ -544,6 +544,6 @@ public:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

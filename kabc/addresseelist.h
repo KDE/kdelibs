@@ -77,7 +77,7 @@ class GivenName  // fallback to family name
     static bool lt( const Addressee &, const Addressee & );
 };
 
-};
+}
 
 /** 
  * Addressee attribute used for sorting. 
@@ -206,6 +206,6 @@ class AddresseeList : public QValueList<Addressee>
     Field* mActiveSortingField;
 };
 
-};
+}
 
 #endif

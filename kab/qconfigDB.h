@@ -17,7 +17,7 @@
    $Id$	 
 */
 
-namespace std { };
+namespace std { }
 using namespace std;
 
 #include <list>

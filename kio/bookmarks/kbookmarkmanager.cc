@@ -510,6 +510,6 @@ KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
    static QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
    return KBookmarkManager::managerForFile( bookmarksFile );
-};
+}
 
 #include "kbookmarkmanager.moc"

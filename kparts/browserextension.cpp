@@ -78,7 +78,7 @@ struct URLArgsPrivate
     bool newTab;
 };
 
-};
+}
 
 URLArgs::URLArgs()
 {
@@ -207,7 +207,7 @@ struct WindowArgsPrivate
 {
 };
 
-};
+}
 
 WindowArgs::WindowArgs()
 {
@@ -324,7 +324,7 @@ public:
   BrowserInterface *m_browserInterface;
 };
 
-};
+}
 
 BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0L;
 static KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
@@ -589,7 +589,7 @@ public:
   KParts::ReadOnlyPart *m_part;
 };
 
-};
+}
 
 BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent, const char *name )
  : QObject( parent, name )

@@ -120,7 +120,7 @@ namespace KJS {
     };
     const ClassInfo MimeType::info = { "MimeType", 0, 0, 0 };
 
-};
+}
 
 
 QPtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;

@@ -466,5 +466,5 @@ DOMString getPropertyName(unsigned short id)
       return DOMString();
     else
       return DOMString(propertyList[id]);
-};
+}
 

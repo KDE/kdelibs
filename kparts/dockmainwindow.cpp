@@ -56,7 +56,7 @@ public:
   bool m_bShellGUIActivated;
   KHelpMenu *m_helpMenu;
 };
-};
+}
 
 DockMainWindow::DockMainWindow( QWidget* parent, const char *name, WFlags f )
   : KDockMainWindow( parent, name, f )

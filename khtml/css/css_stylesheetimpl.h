@@ -34,7 +34,7 @@
 namespace khtml {
     class CachedCSSStyleSheet;
     class DocLoader;
-};
+}
 
 namespace DOM {
 
@@ -174,7 +174,7 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif
 

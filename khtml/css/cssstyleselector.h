@@ -305,5 +305,5 @@ public:
 		      Source regular, Source important );
     };
 
-};
+}
 #endif

@@ -67,6 +67,6 @@ namespace KJS {
     static bool memoryFull;
   };
 
-};
+}
 
 #endif /* _KJSCOLLECTOR_H_ */

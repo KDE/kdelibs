@@ -67,7 +67,7 @@ public:
   bool m_bAllowNestedParts;
 };
 
-};
+}
 
 PartManager::PartManager( QWidget * parent, const char * name )
  : QObject( parent, name )

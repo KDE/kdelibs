@@ -66,6 +66,6 @@ namespace KJS {
     ValueImp **storage;
   };
 
-}; // namespace KJS
+} // namespace KJS
 
 #endif

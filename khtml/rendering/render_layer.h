@@ -325,5 +325,5 @@ protected:
     short m_width;
 };
 
-}; // namespace
+} // namespace
 #endif

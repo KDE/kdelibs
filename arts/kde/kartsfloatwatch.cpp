@@ -43,7 +43,7 @@ public:
 	void value(float newValue) { watch->change(newValue); }
 };
 
-};
+}
 
 KArtsFloatWatch::KArtsFloatWatch(Arts::Object object, const char *stream,
 	QObject *parent, const char *name) : QObject(parent, name)

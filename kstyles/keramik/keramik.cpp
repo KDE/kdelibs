@@ -165,7 +165,7 @@ namespace
 		}
 		p->restore();
 	}
-};
+}
 
 // XXX
 /* reimp. */

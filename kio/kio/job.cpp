@@ -1951,7 +1951,7 @@ void CopyJob::slotReport()
         default:
             break;
     }
-};
+}
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {

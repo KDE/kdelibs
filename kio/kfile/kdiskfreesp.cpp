@@ -63,7 +63,7 @@ KDiskFreeSp::KDiskFreeSp(QObject *parent, const char *name)
 KDiskFreeSp::~KDiskFreeSp()
 {
     delete dfProc;
-};
+}
 
 /***************************************************************************
   * is called, when the df-command writes on StdOut

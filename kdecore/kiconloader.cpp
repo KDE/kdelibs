@@ -1127,7 +1127,7 @@ KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
 {
     setAutoDelete( true );
-};
+}
 
 QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode mode_P, QIconSet::State )
     {

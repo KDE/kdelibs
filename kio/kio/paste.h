@@ -60,6 +60,6 @@ namespace KIO {
    * @return true if empty
    */
   bool isClipboardEmpty();
-};
+}
 
 #endif

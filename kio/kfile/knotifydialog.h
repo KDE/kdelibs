@@ -333,7 +333,7 @@ namespace KNotify
         Event * m_event;
     };
 
-};
+}
 
 
 #endif

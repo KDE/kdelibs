@@ -34,7 +34,7 @@ namespace DOM
   class HTMLFrameElementImpl;
   class HTMLElementImpl;
   class MouseEventImpl;
-};
+}
 
 namespace khtml
 {
@@ -159,6 +159,6 @@ private slots:
     void slotPartLoadingErrorNotify();
 };
 
-};
+}
 
 #endif

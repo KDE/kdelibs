@@ -104,6 +104,6 @@ namespace khtml
         };
     };
 
-};
+}
 
 #endif

@@ -54,7 +54,7 @@ using namespace khtml;
 namespace DOM {
     DOMString extractPrefix(DOMStringImpl *qualifiedName);
     DOMString extractLocalName(DOMStringImpl *qualifiedName);
-};
+}
 
 DOMString DOM::extractPrefix(DOMStringImpl *qualifiedName)
 {

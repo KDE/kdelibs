@@ -95,7 +95,7 @@ namespace KJS {
     QCString m_name;
   };
 #endif
-}; // namespace KJS
+} // namespace KJS
 
 #include "kjs_window.lut.h"
 

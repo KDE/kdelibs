@@ -143,6 +143,6 @@ protected:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

@@ -56,7 +56,7 @@ class PluginSelectorModule : public KPreferencesModule
 		struct PluginSelectorModulePrivate;
 		PluginSelectorModulePrivate * d;
 };
-}; //namespace
+} //namespace
 
 #endif // KPARTS_PLUGINSELECTORMODULE_H
 
