@@ -1743,7 +1743,11 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                         isDir = S_ISDIR((*it2).m_long);
                         break;
                     case UDS_NAME:
-                        filename = (*it2).m_str;
+                        if( filename.isEmpty() )
+                            filename = (*it2).m_str;
+                        break;
+                    case UDS_URL:
+                        filename = KURL((*it2).m_str).fileName();
                         break;
                     case UDS_LINK_DEST:
                         // This is a link !!! Don't follow !
@@ -3422,7 +3426,11 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             atomsFound++;
             break;
          case UDS_NAME:
-            relName = ((*it2).m_str);
+            if( relName.isEmpty() )
+                relName = (*it2).m_str;
+            break;
+         case UDS_URL:
+            relName = KURL((*it2).m_str).fileName();
             atomsFound++;
             break;
          case UDS_LINK_DEST:
