@@ -219,11 +219,6 @@ protected:
     DocumentImpl *document;
     unsigned short flags;
     khtml::RenderObject *m_render;
-private:
-    static const QChar LT;
-    static const QChar MT;
-    static const QChar SLASH;
-    static const QChar SPACE;
 };
 
 // this class implements nodes, which can have a parent but no children:

@@ -40,11 +40,6 @@
 using namespace DOM;
 using namespace khtml;
 
-const QChar NodeImpl::LT= '<';
-const QChar NodeImpl::MT = '>';
-const QChar NodeImpl::SLASH = '/';
-const QChar NodeImpl::SPACE = ' ';
-
 NodeImpl::NodeImpl(DocumentImpl *doc)
 {
     document = doc;
@@ -195,6 +190,12 @@ QString NodeImpl::toHTML()
 
 void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc )
 {
+    static const QChar LT = '<';
+    static const QChar MT = '>';
+    static const QChar SLASH = '/';
+    static const QChar SPACE = ' ';
+
+
 //kdDebug( 6020 ) << "\nOFFSET: " << offset << "\n" << endl;
 //kdDebug( 6020 ) << "\nSIZE: " << sizeof htmlText << "\n" << endl;
 //kdDebug( 6020 ) << "recursive 1: " << nodeName().string() << endl;
