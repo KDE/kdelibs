@@ -17,7 +17,7 @@
  *                                                                         *
  ***************************************************************************
 -->
-<language version="1.05" kateversion="2.1" name="Scheme" section="Sources" extensions="*.scm;*.ss;*.scheme" mimetype="text/x-scheme" author="Dominik Haumann">
+<language version="1.06" kateversion="2.1" name="Scheme" section="Sources" extensions="*.scm;*.ss;*.scheme" mimetype="text/x-scheme" author="Dominik Haumann">
   <highlighting>
     <list name="keywords">
       <item> abs </item>
