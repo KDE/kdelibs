@@ -101,8 +101,6 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         return;
     }
 
-    qDebug( "RenderImage::setPixmap!!" );
-
     bool iwchanged = false;
 
     if(o->isErrorImage()) {
