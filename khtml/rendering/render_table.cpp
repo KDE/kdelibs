@@ -29,7 +29,8 @@
 //#define BOX_DEBUG
 
 #include "rendering/render_table.h"
-
+#include "html/html_tableimpl.h"
+#include "misc/htmltags.h"
 
 #include <kglobal.h>
 
@@ -241,9 +242,6 @@ void RenderTable::addCell( RenderTableCell *cell )
         col++;
     setCells( row, col, cell );
 
-//     setMinMaxKnown(false);
-//     setLayouted(false);
-
     col++;
 }
 
@@ -252,7 +250,7 @@ void RenderTable::setCells( unsigned int r, unsigned int c,
                                      RenderTableCell *cell )
 {
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "span = " << cell->rowSpan() << "d/" << cell->colSpan() << "d" << endl;
+    kdDebug( 6040 ) << "setCells: span = " << cell->rowSpan() << "/" << cell->colSpan() << " pos = " << r << "/" << c << endl;
 #endif
     cell->setRow(r);
     cell->setCol(c);
@@ -269,10 +267,8 @@ void RenderTable::setCells( unsigned int r, unsigned int c,
     if ( endRow > totalRows )
         totalRows = endRow;
 
-    for ( ; r < endRow; r++ )
-    {
-        for ( unsigned int tc = c; tc < endCol; tc++ )
-        {
+    for ( ; r < endRow; r++ ) {
+        for ( unsigned int tc = c; tc < endCol; tc++ ) {
             cells[r][tc] = cell;
         }
     }
@@ -1942,8 +1938,16 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* node)
 {
   _col = -1;
   _row = -1;
-  cSpan = rSpan = 1;
-  nWrap = false;
+  DOM::NodeImpl *node = element();
+  if ( node && (node->id() == ID_TD || node->id() == ID_TH) ) {
+      DOM::HTMLTableCellElementImpl *tc = static_cast<DOM::HTMLTableCellElementImpl *>(node);
+      cSpan = tc->colSpan();
+      rSpan = tc->rowSpan();
+      nWrap = tc->noWrap();
+  } else {
+      cSpan = rSpan = 1;
+      nWrap = false;
+  }
   _id = 0;
   rowHeight = 0;
   m_table = 0;
@@ -2039,6 +2043,8 @@ void RenderTableCell::setStyle( RenderStyle *style )
 }
 
 #ifdef BOX_DEBUG
+#include <qpainter.h>
+
 static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 {
     p->setPen(QPen(QColor("yellow"), 3, Qt::DotLine));

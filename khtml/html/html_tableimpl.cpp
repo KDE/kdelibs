@@ -739,18 +739,6 @@ void HTMLTableCellElementImpl::init()
     }
 }
 
-void HTMLTableCellElementImpl::attach()
-{
-    HTMLElementImpl::attach();
-
-    if(m_render && m_render->style()->display() == TABLE_CELL) {
-        RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
-        cell->setRowSpan(rSpan);
-        cell->setColSpan(cSpan);
-        cell->setNoWrap(m_nowrap);
-    }
-}
-
 // -------------------------------------------------------------------------
 
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)

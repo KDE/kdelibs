@@ -192,11 +192,11 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         printOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
-    if (isVisible()) {
+    if ( style() && style()->visibility() == VISIBLE ) {
         if(isAnonymousBox())
             outlineBox(p, _tx, _ty, "green");
         if(isFloating())
-	outlineBox(p, _tx, _ty, "yellow");
+	    outlineBox(p, _tx, _ty, "yellow");
         else
             outlineBox(p, _tx, _ty);
     }

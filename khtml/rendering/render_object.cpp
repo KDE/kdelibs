@@ -517,6 +517,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
 }
 
 #ifndef NDEBUG
+
 void RenderObject::printTree(int indent) const
 {
     QString ind;
@@ -525,7 +526,7 @@ void RenderObject::printTree(int indent) const
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         childcount++;
 
-    //if (!isInline() )
+    if (!isInline() )
     kdDebug()    << ind << renderName()
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
@@ -542,7 +543,17 @@ void RenderObject::printTree(int indent) const
                  << " lt=" << (int)layouted()
                  << " mk=" << (int)minMaxKnown()
                  << " rmm=" << (int)m_recalcMinMax
-                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+		 << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+		 << (isTableCell() ? 
+		    ( QString::fromLatin1(" [row=") + 
+		      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
+		      QString::fromLatin1(" col=") + 
+		      QString::number( static_cast<const RenderTableCell *>(this)->col() ) +
+		      QString::fromLatin1(" rowspan=") + 
+		      QString::number( static_cast<const RenderTableCell *>(this)->rowSpan() ) +
+		      QString::fromLatin1(" colspan=") + 
+		      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) + 
+		      QString::fromLatin1("]") ) : QString::null )
 		 << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
