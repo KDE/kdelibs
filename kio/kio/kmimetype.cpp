@@ -250,6 +250,13 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
+KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )
+{
+    KURL u;
+    u.setPath(path);
+    return findByURL( u, mode, true, fast_mode );
+}
+
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 {
   KMimeMagicResult *result = KMimeMagic::self()->findBufferType(data);

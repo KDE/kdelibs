@@ -210,7 +210,7 @@ public:
    * This function looks at mode_t first.
    *
    * If that does not help it
-   * looks at the extension.  This is find for FTP, FILE, TAR and
+   * looks at the extension.  This is fine for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
    * @ref KRun instead, but this function returns immediately while
    * @ref KRun is async. If no extension matches, then
@@ -234,6 +234,13 @@ public:
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
+  /**
+   * Same as findByURL but for local files only - convenience method.
+   *
+   * Equivalent to KURL u; u.setPath(path); return findByURL( u, mode, true, fast_mode );
+   */
+  static Ptr findByPath( const QString& path, mode_t mode = 0, bool fast_mode = false );
+
   /**
    * Tries to find out the MIME type of a data chunk by looking for
    * certain magic numbers and characteristic strings in it.
