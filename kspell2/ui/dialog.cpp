@@ -195,6 +195,7 @@ void Dialog::slotSuggest()
 void Dialog::slotChangeLanguage( const QString& lang )
 {
     d->checker->changeLanguage( lang );
+    slotSuggest();
 }
 
 void Dialog::slotSelectionChanged( QListViewItem *item )
