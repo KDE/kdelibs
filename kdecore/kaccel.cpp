@@ -557,6 +557,13 @@ int KAccel::stringToKey(const QString& key)
 //		kdWarning(125) << "stringToKey::Empty key" << endl;
 		return 0;
 	}
+        if( key == "default" )  // old code used to write just "default"
+            return 0;                           //  which is not enough
+        if( key.startsWith( "default(" )) {
+            int pos = key.findRev( ')' );
+            if( pos >= 0 ) // this should be really done with regexp
+                return stringToKey( key.mid( 8, pos - 8 ));
+        }
 
 	// break the string in tokens separated by "+"
 	int k = 0;
