@@ -2584,9 +2584,18 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 
 #ifdef CSS_DEBUG
   kdDebug(6080) << "---Before---" << endl;
+  kdDebug(6080) << str << endl;
   float orgLength = str.length();
   kdDebug(6080) << "Length: " << orgLength << endl;
 #endif
+
+  /*Remove initial SGML Comment which hides CSS from 3.0 Browsers */      
+  while(ch < last && ch->isSpace()) { ++ch; }
+  
+  if ((*ch == '<') && ((ch+4) < last) && 
+      (*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
+    ch = ch+4; //skip '<!--'
+  }
 
   while(ch < last) {
     if( !comment && !sq && *ch == '"' ) {
@@ -2645,6 +2654,7 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	firstChar = true; // Slash added only if next is not '*' 
       } else if ((*ch == '<') && ((ch+3) < last) /* SGML Comment */
 		 && (*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
+	ch = ch+3; // skip '<!--'
 	comment = true;
       } else if ( *ch == ',' || *ch == ';') {
 	processed += *ch;
