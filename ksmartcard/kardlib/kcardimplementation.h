@@ -30,6 +30,7 @@
 #define KCARD_TYPE_PROCESSOR "Processor"
 #define KCARD_TYPE_GSM       "GSM"
 #define KCARD_TYPE_MEMORY    "Memory"
+#define KCARD_TYPE_JAVA      "Java"
 
 
 class KCardReader;
@@ -49,6 +50,13 @@ class KCardImplementation {
   virtual const QString& getType() const;
   virtual const QString& getSubType() const;
   virtual const QString& getSubSubType() const;
+
+  /* Attempt to match the ATR.  This uses a heuristic to determine
+   * if the given ATR is for a card with this type/subtype/subsubtype.
+   * It should return 0 or -1 for a failure, and a number up to 100 for
+   * the percentage of probability of successful match.
+   */
+  virtual int matchATR(KCardCommand atr);
 
   virtual int lastError() const;
   virtual void clearError();

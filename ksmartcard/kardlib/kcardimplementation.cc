@@ -37,6 +37,11 @@ KCardImplementation::~KCardImplementation() {
 }
 
 
+int KCardImplementation::matchATR(KCardCommand atr) {
+return -1;
+}
+
+
 int KCardImplementation::selectFile(const QString) {
 return -1;
 }
