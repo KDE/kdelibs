@@ -101,7 +101,7 @@ namespace KIO {
      * connection goes down, so your error handler should contain:
      * \code
      *    if (error == KIO::ERR_CONNECTION_BROKEN)
-     *        KIO::Scheduler::disconectSlave(slave);
+     *        KIO::Scheduler::disconnectSlave(slave);
      * \endcode
      *
      * @see KIO::Slave
