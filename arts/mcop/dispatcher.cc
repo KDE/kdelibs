@@ -188,8 +188,16 @@ Dispatcher::~Dispatcher()
 
 	d->globalComm = GlobalComm::null();
 
+	/*
+	 * if objects leaked, we can't remove the object manager and unload the
+	 * extensions, unfortunately.
+	 */
+	bool deleteObjectManager = true;
+	if(Object_base::_objectCount() != 0)
+		deleteObjectManager = false;
+
 	/* all objects should be gone now - remove all extensions we loaded */
-	if(objectManager)
+	if(objectManager && deleteObjectManager)
 		objectManager->removeExtensions();
 
 	StartupManager::shutdown();
@@ -239,7 +247,7 @@ Dispatcher::~Dispatcher()
 		notificationManager = 0;
 	}
 
-	if(objectManager)
+	if(objectManager && deleteObjectManager)
 	{
 		delete objectManager;
 		objectManager = 0;
