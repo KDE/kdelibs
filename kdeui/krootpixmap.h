@@ -15,8 +15,7 @@
 #include <qcolor.h>
 #include <kdemacros.h>
 
-#include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
+#ifndef Q_WS_QWS //FIXME
 
 class QRect;
 class QWidget;
@@ -209,6 +208,6 @@ private:
     void init();
 };
 
-#endif // Q_WS_X11 && ! K_WS_QTONLY
+#endif // ! Q_WS_QWS
 #endif // __KRootPixmap_h_Included__
 
