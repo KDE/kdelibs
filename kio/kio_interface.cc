@@ -385,6 +385,18 @@ bool ConnectionSignals::gettingFile( const char *_url )
   return true;
 }
 
+bool ConnectionSignals::deletingFile( const char *_url )
+{
+  assert( m_pConnection );
+  
+  int l = strlen( _url );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  m_pConnection->send( INF_DELETING_FILE, static_cast<const char*>(_url), l + 1 );
+  return true;
+}
+
 bool ConnectionSignals::redirection( const char *_url )
 {
   assert( m_pConnection );
@@ -753,6 +765,9 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case INF_GETTING_FILE:
       slotGettingFile( ( const char*)_p );
+      break;
+    case INF_DELETING_FILE:
+      slotDeletingFile( ( const char*)_p );
       break;
     case INF_ERROR_PAGE:
       slotErrorPage();

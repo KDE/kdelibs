@@ -40,6 +40,7 @@
 #define INF_MIME_TYPE 61
 #define INF_ERROR_PAGE 62
 #define INF_GETTING_FILE 63
+#define INF_DELETING_FILE 64
 
 #define MSG_DATA 100
 #define MSG_DATA_END 101
@@ -206,6 +207,7 @@ public:
   virtual bool errorPage();
   virtual bool mimeType( const char *_type );
   virtual bool gettingFile( const char *_url );
+  virtual bool deletingFile( const char *_url );
   
 protected:
   virtual bool source( const char *_url );
@@ -277,6 +279,7 @@ public:
   virtual void slotErrorPage() { };
   virtual void slotMimeType( const char *_type ) { };
   virtual void slotGettingFile( const char *_url ) { };
+  virtual void slotDeletingFile( const char *_url ) { };
 
   ///////////
   // Dispatching

@@ -86,13 +86,24 @@ public:
    */
   void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
 
-  virtual bool copy( list<string>& _source, const char *_dest );
-  virtual bool copy( QStrList& _source, const char *_dest );
-  virtual bool copy( const char* _source, const char *_dest );
+  virtual bool copy( list<string>& _source, const char *_dest, bool _move = false );
+  virtual bool copy( QStrList& _source, const char *_dest, bool _move = false );
+  virtual bool copy( const char* _source, const char *_dest, bool _move = false );
+
+  virtual bool move( list<string>& _source, const char *_dest );
+  virtual bool move( QStrList& _source, const char *_dest );
+  virtual bool move( const char* _source, const char *_dest );
+
+  virtual bool del( list<string>& _source );
+  virtual bool del( QStrList& _source );
+  virtual bool del( const char* _source );
+
   virtual bool get( const char *_url );
   virtual bool getSize( const char *_url );
+
   virtual bool listDir( const char *_url );
   virtual bool testDir( const char *_url );
+
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
   virtual bool unmount( const char *_point );
   
@@ -131,6 +142,7 @@ public:
   virtual void slotCopyingFile( const char *_from, const char *_to );
   virtual void slotMakingDir( const char *_dir );
   virtual void slotGettingFile( const char *_url );
+  virtual void slotDeletingFile( const char *_url );
   virtual void slotListEntry( UDSEntry& _entry );
   virtual void slotMimeType( const char *_type );
   virtual void slotRedirection( const char *_url );

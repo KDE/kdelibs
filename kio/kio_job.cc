@@ -215,7 +215,7 @@ bool KIOJob::unmount( const char *_point )
 }
 
 
-bool KIOJob::copy( const char *_source, const char *_dest )
+bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 {
   list<K2URL> lst;
   if ( !K2URL::split( _source, lst ) )
@@ -239,22 +239,25 @@ bool KIOJob::copy( const char *_source, const char *_dest )
     m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
   
-  return IOJob::copy( _source, _dest );
+  if ( _move )
+    return IOJob::move( _source, _dest );
+  else
+    return IOJob::copy( _source, _dest );
 }
 
 
-bool KIOJob::copy( QStrList& _source, const char *_dest )
+bool KIOJob::copy( QStrList& _source, const char *_dest, bool _move )
 {
   list<string> stlurls;
   const char *s;
   for( s = _source.first(); s != 0; s = _source.next() )
     stlurls.push_back( s );
 
-  return copy( stlurls, _dest );
+  return copy( stlurls, _dest, _move );
 }
 
 
-bool KIOJob::copy( list<string>& _source, const char *_dest )
+bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
 {
   assert( !m_pSlave );
 
@@ -295,7 +298,112 @@ bool KIOJob::copy( list<string>& _source, const char *_dest )
     m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
   
-  return IOJob::copy( _source, _dest );
+  if ( _move )
+    return IOJob::move( _source, _dest );
+  else
+    return IOJob::copy( _source, _dest );
+}
+
+
+bool KIOJob::move( const char *_source, const char *_dest )
+{
+  return copy( _source, _dest, true );
+}
+
+
+bool KIOJob::move( QStrList& _source, const char *_dest )
+{
+  return copy( _source, _dest, true );
+}
+
+
+bool KIOJob::move( list<string>& _source, const char *_dest )
+{
+  return copy( _source, _dest, true );
+}
+
+
+bool KIOJob::del( const char *_source )
+{
+  list<K2URL> lst;
+  if ( !K2URL::split( _source, lst ) )
+  {
+    slotError( ERR_MALFORMED_URL, _source );
+    return false;
+  }
+
+  string protocol = lst.back().protocol();
+
+  string error;
+  int errid = 0;
+  if ( !createSlave( protocol.c_str(), errid, error ) )
+  {
+    slotError( errid, error.c_str() );
+    return false;
+  }
+  
+  if ( m_bGUI )
+  {
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
+  }
+  
+  return IOJob::del( _source );
+}
+
+
+bool KIOJob::del( QStrList& _source )
+{
+  list<string> stlurls;
+  const char *s;
+  for( s = _source.first(); s != 0; s = _source.next() )
+    stlurls.push_back( s );
+
+  return del( stlurls );
+}
+
+
+bool KIOJob::del( list<string>& _source )
+{
+  assert( !m_pSlave );
+
+  string protocol;
+  string host;
+  list<string>::iterator it = _source.begin();
+  for( ; it != _source.end(); ++it )
+  {    
+    list<K2URL> lst;
+    if ( !K2URL::split( it->c_str(), lst ) )
+    {
+      slotError( ERR_MALFORMED_URL, it->c_str() );
+      return false;
+    }
+    if ( protocol.empty() )
+    {
+      protocol = lst.back().protocol();
+      host = lst.back().host();
+    }
+    // Still the same host and protocol ?
+    else if ( protocol != lst.back().protocol() || host != lst.back().host() )
+    {
+      // URGENTLY TODO: extract these sources and start a second copy command with them
+      assert( 0 );
+    }
+  }
+  
+  string error;
+  int errid = 0;
+  if ( !createSlave( protocol.c_str(), errid, error ) )
+  {
+    slotError( errid, error.c_str() );
+    return false;
+  }
+  
+  if ( m_bGUI )
+  {
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
+  }
+  
+  return IOJob::del( _source );
 }
 
 
@@ -700,6 +808,14 @@ void KIOJob::slotGettingFile( const char *_url )
   cerr << "GettingFile " << _url << endl;
 }
 
+
+void KIOJob::slotDeletingFile( const char *_url )
+{
+  if ( m_cmd == CMD_DEL && m_pCopyProgressDlg )
+    m_pCopyProgressDlg->deletingFile( _url );
+
+  cerr << "DeletingFile " << _url << endl;
+}
 
 void KIOJob::slotMimeType( const char *_type )
 {
