@@ -132,9 +132,15 @@ protected:
      * when appropriate.
      */
     virtual QPopupMenu *createPopupMenu( const QPoint &pos );
-    // FIXME: use using once we dump gcc 2.x support
-    // FIXME: Reimplementing this doesn't work.  You must use the one above.
-    //        Did we break compatibility here?
+
+    /**
+     * This is just a reimplementation of a deprecated method from QTextEdit and
+     * is just here to keep source compatibility.  This should not be used in
+     * new code.  Specifically reimplementing this method will probably not do
+     * what you expect.  See the method above.
+     *
+     * @deprecated
+     */
     virtual QPopupMenu *createPopupMenu();
 
 protected:
