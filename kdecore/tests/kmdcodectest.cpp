@@ -27,6 +27,7 @@
 
 #define TEST_BLOCK_LEN 1000             // Length of test blocks.
 #define TEST_BLOCK_COUNT 10000          // Number of test blocks.
+#define MAX_READ_BUF_SIZE 8192
 
 enum Codec {
     Unspecified=0,
@@ -111,7 +112,7 @@ void testCodec( const char* msg, Codec type, bool isFile )
         // Read contents of file...
         int count=0;
         QByteArray data;
-        while((count=readContent(fd, data, 4096, err_msg)) > 0);
+        while((count=readContent(fd, data, MAX_READ_BUF_SIZE, err_msg)) > 0);
 
         // Error! Exit!
         if ( count == -1 ) return;
@@ -142,7 +143,10 @@ void testCodec( const char* msg, Codec type, bool isFile )
             default:
                 break;
         }
-        kdDebug() << "Result: \n" << output.data() << endl;
+        char* result = output.data();
+        // NULL terminate string before printing!
+        result[output.size()] = '\0';
+        kdDebug() << "Result: \n" << result << endl;
     }
     else
     {
@@ -156,7 +160,9 @@ void testCodec( const char* msg, Codec type, bool isFile )
             out = KCodecs::base64Encode(output);
             break;
           case Base64Decode:
+            kdDebug() << "Decoding base64 data..." << endl;
             out = KCodecs::base64Decode(output);
+            kdDebug() << "Base64 decoding completed!" << endl;
             break;
           case UUEncode:
             out = KCodecs::uuencode(output);
@@ -290,8 +296,8 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
 
 int main (int argc, char *argv[])
 {
-    const char *version = "v0.0.5";
-    const char *description = "Unit test for md5, base64encode/decode & uuencode/decode facilities";
+    const char *version = "1.0";
+    const char *description = "Unit test for md5, base64 encode/decode and uuencode/decode facilities";
     KCmdLineOptions options[] =
     {
         { "c <digest>", "compare <digest> with the calculated digest for a string or file.", 0 },
