@@ -883,8 +883,6 @@ public:
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * = 0 );
 
-    virtual HTMLString  getURL() const { return imageURL; }
-
     virtual const char * objectName() const { return "HTMLBackground"; };
     /**
      * prints debug info to stdout
@@ -896,8 +894,6 @@ public:
     virtual int  getAbsY() { return 0; }
 
     bool isNull() { return pixmap == 0; };
-
-    void setBorder( int left, int right, int top, int bottom);
 
     bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
@@ -921,11 +917,6 @@ protected:
     KHTMLWidget *htmlWidget;
     
     bool bComplete;
-
-    int leftBorder;
-    int rightBorder;
-    int topBorder;
-    int bottomBorder;
 };
 
 //-----------------------------------------------------------------------------

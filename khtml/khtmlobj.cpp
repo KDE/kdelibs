@@ -1907,11 +1907,6 @@ HTMLBackground::HTMLBackground( KHTMLWidget *widget, QColor& color)
     htmlWidget = widget;
 
     imageURL = 0;
-
-    leftBorder = 0;
-    rightBorder = 0;
-    topBorder = 0;
-    bottomBorder = 0;
 }
 
 HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
@@ -1925,11 +1920,6 @@ HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
     htmlWidget = widget;
 
     imageURL = _url;
-
-    leftBorder = 0;
-    rightBorder = 0;
-    topBorder = 0;
-    bottomBorder = 0;
 
     // A HTMLJSImage ?
     if ( !_url.length() )
@@ -1979,7 +1969,7 @@ void HTMLBackground::pixmapChanged(QPixmap *p)
 	setPixmap( p );
 }
 
-bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, bool toPrinter)
+bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _tx, int _ty, bool toPrinter)
 {
   if (toPrinter)
      return false;
@@ -1987,15 +1977,15 @@ bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, 
   if ( !pixmap )
     {
       if( !bgColor.isValid() )
-	_painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+	_painter->eraseRect( _x + _tx, _y + _ty, _w, _h);
       else
-	_painter->fillRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder, bgColor );
+	_painter->fillRect( _x + _tx, _y + _ty, _w, _h, bgColor );
     }
   else
     {
       // if the background pixmap is transparent we must erase the bg
       if ( pixmap->mask() )
-	_painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+	_painter->eraseRect( _x + _tx, _y + _ty, _w, _h);
       
       int pw = pixmap->width();
       int ph = pixmap->height();
@@ -2005,27 +1995,25 @@ bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, 
 	  // Height or width is 0 !
 	  // So better erase background and return;
 	  if( !bgColor.isValid() )
-	    _painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+	    _painter->eraseRect( _x + _tx, _y + _ty, _w, _h);
 	  else
-	    _painter->fillRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder, bgColor );
+	    _painter->fillRect( _x + _tx, _y + _ty, _w, _h, bgColor );
 	  return false;
 	}
 
-      int xOrigin = (_x - leftBorder)/pw*pw;
-      int yOrigin = (_y - topBorder)/ph*ph;
-      int yMax = _y + _h + topBorder;
-      int xMax = _x + _w + leftBorder;
-      int bXoff = _xoff - leftBorder;
-      int bYoff = _yoff - topBorder;
+      int xOrigin = _x/pw*pw;
+      int yOrigin = _y/ph*ph;
+      int yMax = _y + _h;
+      int xMax = _x + _w;
 
-      _painter->setClipRect( _x + bXoff, _y + bYoff, _w + leftBorder, _h + topBorder);
+      _painter->setClipRect( _x + _tx, _y + _ty, _w, _h);
       _painter->setClipping( TRUE );
       
       for ( int yp = yOrigin; yp < yMax; yp += ph )
 	{
 	  for ( int xp = xOrigin; xp < xMax; xp += pw )
 	    {
-	      _painter->drawPixmap( xp + bXoff, yp + bYoff, *pixmap );
+	      _painter->drawPixmap( xp + _tx, yp + _ty, *pixmap );
 	    }
 	}
       
@@ -2037,15 +2025,6 @@ bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, 
 HTMLBackground::~HTMLBackground()
 {
   htmlWidget->imageCache()->free( imageURL, this );
-}
-
-void
-HTMLBackground::setBorder( int left, int right, int top, int bottom )
-{
-  leftBorder = left;
-  rightBorder = right;
-  topBorder = top;
-  bottomBorder = bottom;
 }
 
 void

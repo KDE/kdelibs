@@ -108,6 +108,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     x_offset      = 0;
     y_offset      = 0;
     clue          = 0;
+    background    = 0;
     ht            = 0;
     allocator     = 0;
     settings      = 0;
@@ -720,12 +721,18 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 
     positionFormElements();
 
+    if (background)
+    {
+        background->print( painter, _pe->rect().x() + x_offset,
+	    _pe->rect().y() + y_offset,
+	    _pe->rect().width(), _pe->rect().height(), -x_offset, -y_offset, false );
+    }
+
     // painter->translate( x_offset, -y_offset );    
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
 
-    clue->print( painter, _pe->rect().x() + x_offset - leftBorder,
-	    _pe->rect().y() + y_offset - topBorder,
+    clue->print( painter, _pe->rect().x() - tx, _pe->rect().y() - ty,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
     
     if ( bIsSelected )
@@ -922,12 +929,16 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
 	    painter->begin( this );
 	    newPainter = TRUE;
 	}
-
+        if (background)
+        {
+            background->print( painter, x + x_offset, y + y_offset, 
+			w, h, -x_offset, -y_offset, false );
+        }
 	int tx = -x_offset + leftBorder;
 	int ty = -y_offset + topBorder;
 
-	_chain->current()->print( painter, _chain, x + x_offset - leftBorder,
-		y + y_offset - topBorder, w, h, tx, ty );
+	_chain->current()->print( painter, _chain, x - tx,
+		y - ty, w, h, tx, ty );
     
 	if ( newPainter )
 	{
@@ -1188,6 +1199,11 @@ void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
     // Delete all HTMLObjects on the page
     if (clue)
 	delete clue;
+    
+    if (background)
+        delete background;
+    background = 0;
+
 
     // Free their storage
     if ( allocator )
@@ -1286,6 +1302,11 @@ void KHTMLWidget::parse()
     timerId = startTimer( TIMER_INTERVAL );
 }
 
+void KHTMLWidget::setBackground(HTMLBackground *_background)
+{
+    background = _background;
+}
+
 void KHTMLWidget::stopParser()
 {
     if ( !parser )
@@ -1370,6 +1391,11 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     if ( !parser )
     {
 #ifdef CLUE_DEBUG
+	printf("---------------------- background ----------------------------\n");
+        if (background)
+            background->printDebug( true, 0, true);
+        else
+            printf("No background.\n");
 	printf("------------------ clue + object list ------------------------\n");
 	clue->printDebug(true, 0, true);
 	printf("--------------------------------------------------------------\n");
@@ -1842,6 +1868,10 @@ KHTMLWidget::~KHTMLWidget()
     }
     if (clue)
 	delete clue;
+
+    if (background)
+        delete background;
+
     if (ht)
 	delete ht;
     if (allocator)

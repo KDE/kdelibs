@@ -708,8 +708,7 @@ uint KHTMLParser::parseBody( HTMLClue *__clue, const uint *_end, bool toplevel )
       if ( !background )
 	{
 	  background = NEW HTMLBackground( HTMLWidget, settings->bgColor);
-	  background->setBorder( leftBorder, rightBorder, topBorder, bottomBorder );
-	  _clue->append( background );
+	  HTMLWidget->setBackground( background );
 	}
 
       parseCount = granularity;

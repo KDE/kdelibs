@@ -580,6 +580,10 @@ public:
      */
     void calcAbsolutePos();
 
+    /*
+     * Set background 
+     */
+    void setBackground( HTMLBackground *_background); 
 
     /*
      * Set background color
@@ -926,6 +930,11 @@ protected:
      * This is the pointer to the tree of HTMLObjects.
      */
     HTMLClue *clue;
+
+    /*
+     * The background of the page is handled seperately.
+     */
+    HTMLBackground *background;
 
     /*
      * This is the scroll offset. The upper left corner is (0,0).
