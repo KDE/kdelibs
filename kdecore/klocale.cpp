@@ -717,10 +717,11 @@ static int readInt(const QString &str, uint &pos)
 	return result;
 }
 
-QDate KLocale::readDate(const QString &str) const
+QDate KLocale::readDate(const QString &intstr) const
 {
 	QDate date;
-	QString fmt(_datefmtshort);
+	QString str = intstr.simplifyWhiteSpace();
+	QString fmt = _datefmtshort.simplifyWhiteSpace();
 
 	int day = 0, month = 0, year = 0;
 	uint strpos = 0;
@@ -731,15 +732,15 @@ QDate KLocale::readDate(const QString &str) const
 
 		if (c != '%') {
 			if (c.isSpace())
-				while (str.length() > strpos && str.at(strpos).isSpace())
-					strpos++;
+				strpos++;
 			else if (c != str.at(strpos++))
 				goto error;
 			continue;
 		}
 
-		// remove all spaces at the begining
-		while (str.length() > strpos && str.at(strpos).isSpace()) strpos++;
+		// remove space at the begining
+		if (str.length() > strpos && str.at(strpos).isSpace())
+			strpos++;
 
 		c = fmt.at(fmtpos++);
 		switch (c) {
@@ -771,9 +772,6 @@ QDate KLocale::readDate(const QString &str) const
 
 			break;
 		}
-		if (str.length() > strpos && str.at(strpos).isSpace())
-			while (fmt.length() > fmtpos && !fmt.at(fmtpos).isSpace())
-				fmtpos++;
 	}
 	date.setYMD(year, month, day);
 
