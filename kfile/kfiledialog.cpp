@@ -21,16 +21,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-// somehow msg_handler is undeclared when QT_NO_COMPAT is defined
-#ifdef QT_NO_COMPAT
-#undef QT_NO_COMPAT
-#include <qglobal.h>
-#define QT_NO_COMPAT
-#else
-#include <qglobal.h>
-#endif
-
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -194,7 +184,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     d->myStatusLine = 0;
 
-    msg_handler oldHandler = qInstallMsgHandler( silenceQToolBar ); 
+    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar ); 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
     qInstallMsgHandler( oldHandler );
 
