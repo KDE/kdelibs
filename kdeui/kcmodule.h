@@ -19,12 +19,17 @@
    Boston, MA 02111-1307, USA.
 
 */
+
 #ifndef __KCMODULE_H__
 #define __KCMODULE_H__
 
 #include <qwidget.h>
-#include <qstringlist.h>
+
+class QStringList;
+
 class KAboutData;
+class KConfigDialogManager;
+class KConfigSkeleton;
 class KCModulePrivate;
 class KInstance;
 
@@ -58,7 +63,6 @@ class KInstance;
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
-
 class KCModule : public QWidget
 {
   Q_OBJECT
@@ -102,12 +106,17 @@ public:
    * (most of the times from a config file) and update the user interface.
    * This happens when the user clicks the "Reset" button in the control
    * center, to undo all of his changes and restore the currently valid
-   * settings. NOTE that this is not called after the modules is loaded,
-   * so you probably want to call this method in the constructor.
+   * settings. 
+   *
+   * If you use KConfigXT, loading is taken care of automatically and 
+   * you do not need to do it manually. However, if you for some reason reimplement it and
+   * also are using KConfigXT, you must call this function otherwise the loading of KConfigXT 
+   * options will not work.
+   *
    */
-  virtual void load() {};
+  virtual void load();
   // ### KDE 4: Call load() automatically through a single-shot timer
-  //            from the constructor
+  //            from the constructor // and change documentation
 
   /**
    * Save the configuration data.
@@ -121,16 +130,25 @@ public:
    * KSettings::Dispatcher.
    *
    * save is called when the user clicks "Apply" or "Ok".
+   *
+   * If you use KConfigXT saving is taken care off automatically and 
+   * you do not need to load manually. However, if you for some reason reimplement it and
+   * also are using KConfigXT, you must call this function, otherwise the saving of KConfigXT 
+   * options will not work.
    */
-  virtual void save() {};
+  virtual void save();
 
   /**
    * Sets the configuration to sensible default values.
    *
    * This method is called when the user clicks the "Default"
    * button. It should set the display to useful values.
+   *
+   * If you use KConfigXT, you do not have to reimplement this function since
+   * the fetching and settings of default values is done automatically. However, if you 
+   * reimplement and also are using KConfigXT, remember to call the base function.
    */
-  virtual void defaults() {};
+  virtual void defaults();
 
   /**
    * Set the configuration to system default values.
@@ -138,25 +156,29 @@ public:
    * This method is called when the user clicks the "System-Default"
    * button. It should set the display to the system default values.
    *
-   * NOTE: The default behavior is to call defaults().
+   * @note The default behavior is to call defaults().
    */
   virtual void sysdefaults() { defaults(); };
+  // KDE 4 deprecate
 
   /**
    * Return a quick-help text.
    *
    * This method is called when the module is docked.
    * The quick-help text should contain a short description of the module and
-   * links to the module's help files. You can use QML formating tags in the text.
+   * links to the module's help files. You can use QML formatting tags in the text.
    *
-   * NOTE: Please make sure the quick help text gets translated (use i18n()).
+   * @note make sure the quick help text gets translated (use i18n()).
    */
   virtual QString quickHelp() const { return QString::null; };
 
   /**
-   * Returns a the KAboutData for this module
    * This is generally only called for the KBugReport.
-   * Override and have it return a pointer to a constant
+   * Override and have it return a pointer to a constant.
+   *
+   * @note it is mandatory to implement this function.
+   *
+   * @returns the KAboutData for this module
    */
   virtual const KAboutData *aboutData() const { return 0; }
 
@@ -198,6 +220,18 @@ public:
 
   KInstance *instance() const;
 
+protected:
+  /**
+   * Adds a KConfigskeleton @p config to watch the widget @p widget
+   *
+   * This function is useful if you need to handle multiple configuration files.
+   *
+   * @return a pointer to the KConfigDialogManager in use
+   * @param config the KConfigSkeleton to use
+   * @param widget the widget to watch
+   */
+  KConfigDialogManager* addConfig( KConfigSkeleton *config, QWidget* widget );
+
 signals:
 
   /**
@@ -222,7 +256,7 @@ signals:
 protected slots:
 
   /**
-   * Emitting to this slot is equivalent to emitting changed(true)
+   * Calling this slot is equivalent to emitting changed(true).
    * @since 3.3
    */
   void changed();
@@ -250,7 +284,7 @@ protected:
    * corresponding desktop file contains the line X-KDE-RootOnly=true.
    * If no message is set, a default one will be used.
    *
-   * @see KCModule::rootOnlyMessage
+   * @see KCModule::rootOnlyMsg
    */
   void setRootOnlyMsg(const QString& msg);
 
@@ -271,6 +305,13 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   KCModulePrivate *d;
+
+  /**
+   * Internal function for initialization of the class.
+   */
+  void init();
+
 };
 
-#endif
+#endif //__KCMODULE_H__
+

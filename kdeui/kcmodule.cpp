@@ -1,7 +1,8 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
+<<<Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
+   Copyright (C) 2004 Frans Englich <frans.englich@telia.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,46 +21,69 @@
 
 */
 
-#include "kcmodule.h"
-#include <kinstance.h>
-#include <kglobal.h>
-#include <klocale.h>
+#include <qlayout.h>
+
+#include <kconfigskeleton.h> 
+#include <kconfigdialogmanager.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kinstance.h>
+#include <klocale.h>
+
+#include "kcmodule.h"
+#include "kcmodule.moc"
 
 class KCModulePrivate
 {
 public:
+    KCModulePrivate():
+        _useRootOnlyMsg( true ),
+        _hasOwnInstance( true )
+        { }
+
     KInstance *_instance;
     QString _rootOnlyMsg;
     bool _useRootOnlyMsg;
     bool _hasOwnInstance;
+    QPtrList<KConfigDialogManager> managers;
+
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
-    : QWidget(parent, name), _btn(Help|Default|Apply)
+    : QWidget(parent, name)
 {
-    kdDebug( 281 ) << "KCModule " << name << endl;
-    d = new KCModulePrivate;
-    d->_useRootOnlyMsg = true;
+    init();
     if (name && strlen(name)) {
         d->_instance = new KInstance(name);
         KGlobal::locale()->insertCatalogue(name);
     } else
         d->_instance = new KInstance("kcmunnamed");
-    d->_hasOwnInstance = true;
     KGlobal::setActiveInstance(this->instance());
 }
 
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
-    : QWidget(parent, instance ? instance->instanceName().data() : 0), _btn(Help|Default|Apply)
+    : QWidget(parent, instance ? instance->instanceName().data() : 0)
 {
-    kdDebug( 281 ) << "KCModule instance " << (instance ? instance->instanceName().data() : "none") << endl;
-    d = new KCModulePrivate;
-    d->_useRootOnlyMsg = true;
+    init();
     d->_instance = instance;
     KGlobal::locale()->insertCatalogue(instance->instanceName());
     d->_hasOwnInstance = false;
     KGlobal::setActiveInstance(this->instance());
+}
+
+void KCModule::init()
+{ 
+    d = new KCModulePrivate;
+   _btn = Help|Default|Apply;
+}
+
+KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
+{
+    KConfigDialogManager* manager = new KConfigDialogManager( widget, config, name() );
+    connect( manager, SIGNAL( settingsChanged() ), SLOT( changed() ));
+    connect( manager, SIGNAL( widgetModified() ), SLOT( changed() ));
+    d->managers.append( manager );
+    return manager;
 }
 
 KCModule::~KCModule()
@@ -68,6 +92,28 @@ KCModule::~KCModule()
        delete d->_instance;
     delete d;
 }
+
+void KCModule::load()
+{
+    KConfigDialogManager* manager;
+    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+        manager->updateWidgets();
+}
+
+void KCModule::save()
+{
+    KConfigDialogManager* manager;
+    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+        manager->updateSettings();
+}
+
+void KCModule::defaults()
+{
+    KConfigDialogManager* manager;
+    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+        manager->updateWidgetsDefault();
+}
+
 
 void KCModule::setRootOnlyMsg(const QString& msg)
 {
@@ -101,7 +147,5 @@ KInstance *KCModule::instance() const
 
 void KCModule::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-
-#include "kcmodule.moc"
 
 // vim: sw=4 et sts=4
