@@ -154,13 +154,6 @@ public:
 			   const QString& appAboutText );
 							
   /**
-    * Get character set information.
-    * @return a pointer to the KCharsets object of the application
-    * @see KCharsets
-    */
-  KCharsets* getCharsets() const;
-
-  /**
 	* Get the application icon.
 	* @return a QPixmap with the icon.
 	* @see QPixmap
@@ -457,8 +450,6 @@ public:
   QColor activeTitleColor() const;
   QColor activeTextColor() const;
   int contrast() const;
-  QFont generalFont() const;
-  QFont fixedFont() const;
   GUIStyle applicationStyle() const;
 
 
@@ -553,6 +544,17 @@ private:
 #endif
 
 // $Log$
+// Revision 1.93  1999/06/20 09:41:48  kulow
+// big patch:
+// removed const QString as return values
+// marked some const functions const
+// made FALSE and TRUE consistent with the rest (besides that I still
+//   believe that passing TRUE is an implicit cast - it may be optimized
+//   away, but it's still there somehow ;)
+// removing some more functions from kapp.h (registerTopWidget, etc)
+//
+// BTW: What applications use kclipboard?
+//
 // Revision 1.92  1999/06/19 21:16:26  kulow
 // found the reason why KConfig parses all files twice at startup.
 // KApplication does reparseConfig right after creating the config

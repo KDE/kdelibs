@@ -1215,30 +1215,6 @@ Qt::GUIStyle KApplication::applicationStyle() const
 }
 
 
-#if 1 // FIXME: deprecated functions, to be removed for 2.0...
-KCharsets* KApplication::getCharsets()const
-{
-  printf("Kapplication::getCharsets() is obsolete.\n" 
-	   "Use KGlobal::charsets() instead.\n");
-  return KGlobal::charsets();
-}
-QFont KApplication::generalFont() const
-{
-    warning("Kapplication::generalFont() is obsolete.\n"
-	  "Use KGlobal::generalFont() instead.\n");
-    return KGlobal::generalFont();
-}
-
-QFont KApplication::fixedFont() const
-{
-    printf("Kapplication::fixedFont() is obsolete.\n" 
-	   "Use KGlobal::fixedFont() instead.\n");
-    return KGlobal::fixedFont();
-}
-
-
-#endif
-
 #include "kapp.moc"
 
 
