@@ -152,8 +152,8 @@ void KHTMLView::init()
     setFocusPolicy(QWidget::StrongFocus);
     viewport()->setFocusPolicy( QWidget::WheelFocus );
 
-  _marginWidth = 0;
-  _marginHeight = 0;
+  _marginWidth = -1; // undefined
+  _marginHeight = -1;
   _width = 0;
   _height = 0;
 
