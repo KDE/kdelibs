@@ -1622,7 +1622,7 @@ case 114:
 case 115:
 #line 534 "yacc.yy"
 {
-		QString *tmp = new QString("%1&lt;%2&gt; "); /* the space is necessary for "a<b<c> >" */
+		QString *tmp = new QString("%1&lt;%2&gt;");
 		*tmp = tmp->arg(*(yyvsp[-3]._str));
 		*tmp = tmp->arg(*(yyvsp[-1]._str));
 		yyval._str = tmp;

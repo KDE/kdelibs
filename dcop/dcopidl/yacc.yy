@@ -532,7 +532,7 @@ type_name
 	| T_STRUCT Identifier { $$ = $2; }
 	| T_CLASS Identifier { $$ = $2; }
 	| Identifier T_LESS templ_type_list T_GREATER {
-		QString *tmp = new QString("%1&lt;%2&gt; "); /* the space is necessary for "a<b<c> >" */
+		QString *tmp = new QString("%1&lt;%2&gt;");
 		*tmp = tmp->arg(*($1));
 		*tmp = tmp->arg(*($3));
 		$$ = tmp;
