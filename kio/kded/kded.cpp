@@ -45,6 +45,16 @@
 #include <kdirwatch.h>
 #include <kstddirs.h>
 
+static void runBuildSycoca()
+{
+   // Avoid relying on $PATH and on /bin/sh -> don't use system()
+   KProcess proc;
+   proc << locate("exe","kbuildsycoca");
+   proc << "--incremental";
+   proc.start( KProcess::Block );
+}
+
+
 Kded::Kded()
   : KSycoca( true )
 {
@@ -115,11 +125,8 @@ void Kded::recreate()
    // database
 
    build(); // Update tree first, to be sure to miss nothing.
-   // Avoid relying on $PATH and on /bin/sh -> don't use system()
-   KProcess proc;
-   proc << locate("exe","kbuildsycoca");
-   proc << "--incremental";
-   proc.start( KProcess::Block );
+    
+   runBuildSycoca();
 }
 
 void Kded::dirDeleted(const QString& /*path*/)
@@ -206,6 +213,7 @@ static void sighandler(int /*sig*/)
 
 static KCmdLineOptions options[] =
 {
+  { "check", I18N_NOOP("Check sycoca database only once."), 0 },
   { 0, 0, 0 }
 };
 
@@ -231,6 +239,12 @@ int main(int argc, char *argv[])
      (void) instance->config(); // Enable translations.
 
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+     if (args->isSet("check"))
+     {
+        runBuildSycoca();
+        exit(0);
+     }
 
      if (!KUniqueApplication::start())
      {
