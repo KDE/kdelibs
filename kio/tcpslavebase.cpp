@@ -314,10 +314,16 @@ bool TCPSlaveBase::InitializeSSL()
 
 void TCPSlaveBase::CleanSSL()
 {
-    delete d->cc;
+    if (d->cc)
+        delete d->cc;
+        d->cc = NULL;
+    }
 
-    if (m_bIsSSL) {
+    if (m_bIsSSL || d->usingTLS) {
         delete d->kssl;
+	d->kssl = NULL;
+        d->usingTLS = false;
+        setMetaData("ssl_in_use", "FALSE");
     }
 }
 
@@ -334,6 +340,7 @@ int TCPSlaveBase::startTLS()
     d->kssl = new KSSL(false);
     if (!d->kssl->TLSInit()) {
         delete d->kssl;
+	d->kssl = NULL;
         return -1;
     }
 
@@ -342,6 +349,7 @@ int TCPSlaveBase::startTLS()
     int rc = d->kssl->connect(m_iSock);
     if (rc < 0) {
         delete d->kssl;
+	d->kssl = NULL;
         return -2;
     }
 
@@ -352,6 +360,7 @@ int TCPSlaveBase::startTLS()
         setMetaData("ssl_in_use", "FALSE");
         d->usingTLS = false;
         delete d->kssl;
+	d->kssl = NULL;
         return -3;
     }
 
@@ -361,8 +370,14 @@ int TCPSlaveBase::startTLS()
 
 void TCPSlaveBase::stopTLS()
 {
+    if (d->cc) {
+       delete d->cc;
+       d->cc = NULL;
+    }
+
     if (d->usingTLS) {
         delete d->kssl;
+	d->kssl = NULL;
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
@@ -929,6 +944,8 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
+if (m_bIsSSL) {
+} else {
     fd_set rd, wr;
     struct timeval timeout;
 
@@ -948,6 +965,7 @@ bool TCPSlaveBase::waitForResponse( int t )
             return true;
     }
     return false; // Timed out!
+}
 }
 
 int TCPSlaveBase::connectResult()
