@@ -43,7 +43,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp
 
-kde_toolbar_DATA = configure.png
+#kde_toolbar_DATA = configure.png
 
 EXTRA_DIST = configure.png KFile.kdoc NOTES
 
