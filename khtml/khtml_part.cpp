@@ -2072,6 +2072,7 @@ void KHTMLPart::findText()
   d->m_lastFindState.history = optionsDialog.findHistory();
 
   // Create the KFind object
+  delete d->m_find;
   d->m_find = new KFind( optionsDialog.pattern(), options, widget() );
   connect(d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
           this, SLOT( slotHighlight( const QString &, int, int ) ) );
