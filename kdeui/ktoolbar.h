@@ -860,8 +860,8 @@ public:
     void updateRects( bool = FALSE ) {}
 
     void loadState( const QDomElement &e );
-    QDomElement saveState( QDomElement &e );
-    
+    void saveState( QDomElement &e );
+
 signals:
     /**
      * Emitted when button @p id is clicked.

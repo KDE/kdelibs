@@ -1057,10 +1057,26 @@ void KToolBar::saveState()
     // first, try to save to the xml file
     //  if ( d->m_xmlFile != QString::null )
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
+	// go down one level to get to the right tags
 	QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
+	elem = elem.firstChild().toElement();
 	QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
-	QDomElement current = saveState( elem );
+	QDomElement current;
+	// now try to find our toolbar
+	d->modified = false;
+	for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
+	    current = elem;
+	
+	    if ( current.tagName().lower() != "toolbar" )
+		continue;
 
+	    QString curname(current.attribute( "name" ));
+
+	    if ( curname == barname ) {
+		saveState( current );
+		break;
+	    }
+	}
 	// if we didn't make changes, then just return
 	if ( !d->modified )
 	    return;
@@ -1077,9 +1093,9 @@ void KToolBar::saveState()
 	for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
 	    if ( elem.tagName().lower() != "toolbar" )
 		continue;
-
+	    
 	    QString curname(elem.attribute( "name" ));
-
+	    
 	    if ( curname == barname ) {
 		just_append = false;
 		local.documentElement().replaceChild( current, elem );
@@ -1089,12 +1105,12 @@ void KToolBar::saveState()
 
 	if (just_append)
 	    local.documentElement().appendChild( current );
-
+	
 	KXMLGUIFactory::saveConfigFile(local, d->m_xmlguiClient->xmlFile(), d->m_xmlguiClient->instance() );
-
+	
 	return;
     }
-
+    
     // if that didn't work, we save to the config file
     QString grpToolbarStyle;
     if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
@@ -1737,45 +1753,23 @@ void KToolBar::getAttributes( QString &position, QString &icontext, QString &ind
     }
 }
 
-QDomElement KToolBar::saveState( QDomElement &elem )
+void KToolBar::saveState( QDomElement &current )
 {
     QString position, icontext, index, offset, newLine;
     getAttributes( position, icontext, index, offset, newLine );
 
-    // go down one level to get to the right tags
-    elem = elem.firstChild().toElement();
-
-    // get a name we can use for this toolbar
-    QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
-
-    // now try to find our toolbar
-    d->modified = false;
-    QDomElement current;
-    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
-	current = elem;
-	
-	if ( current.tagName().lower() != "toolbar" )
-	    continue;
-
-	QString curname(current.attribute( "name" ));
-
-	if ( curname == barname ) {
-	    current.setAttribute( "noMerge", "1" );
-	    current.setAttribute( "position", position );
-	    current.setAttribute( "iconText", icontext );
-	    if ( !index.isEmpty() )
-		current.setAttribute( "index", index );
-	    if ( !offset.isEmpty() )
-		current.setAttribute( "offset", offset );
-	    if ( !newLine.isEmpty() )
-		current.setAttribute( "newline", newLine );
-	    d->modified = true;
-	    break;
-	}
-    }
-    
-    return current;
+    current.setAttribute( "noMerge", "1" );
+    current.setAttribute( "position", position );
+    current.setAttribute( "iconText", icontext );
+    if ( !index.isEmpty() )
+	current.setAttribute( "index", index );
+    if ( !offset.isEmpty() )
+	current.setAttribute( "offset", offset );
+    if ( !newLine.isEmpty() )
+	current.setAttribute( "newline", newLine );
+    d->modified = true;
 }
+
  
 #include "ktoolbar.moc"
 
