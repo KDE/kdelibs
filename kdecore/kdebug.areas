@@ -93,6 +93,8 @@
 5511        kpilotdaemon
 5512        kpilotconduit
 5600    gofai
+5700        kabc
+5710        kabc/vcard
 
 # libkhtml
 6000        khtml
