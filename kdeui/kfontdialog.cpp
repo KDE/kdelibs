@@ -99,7 +99,6 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
                            QButton::ToggleState *sizeIsRelativeState )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
-  xlfdBox = 0;
   charsetsCombo = 0;
 
   QString mainWhatsThisText =

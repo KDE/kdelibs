@@ -261,7 +261,7 @@ private:
   // inserted into the fontdialog font-family combo-box
   QStringList  fontList;
 
-  QGroupBox    *xlfdBox;
+  KIntNumInput *sizeOfFont;
 
   QLineEdit    *sampleEdit;
   QLineEdit    *xlfdEdit;
@@ -278,7 +278,6 @@ private:
   QComboBox    *charsetsCombo;
   QCheckBox    *sizeIsRelativeCheckBox;
 
-  KIntNumInput *sizeOfFont;
   QFont        selFont;
 
   QString      selectedStyle;
