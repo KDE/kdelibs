@@ -5,6 +5,9 @@
 
 #undef PACKAGE
 
+/* defines if having libz */
+#undef HAVE_LIBZ
+
 /* defines if having libgif (always 1) */
 #undef HAVE_LIBGIF
 
