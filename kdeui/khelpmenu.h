@@ -30,6 +30,44 @@ class QPopupMenu;
 class QWidget;
 class KAboutDialog;
 
+
+/**
+ * This class provides the standard KDE help menu with the default "about" 
+ * dialog boxes and help entry. This class is used in @ref KTMainWindow so
+ * normally you don't need to use this class yourself. However, if you 
+ * need the help menu or any of its dialog boxes in your code that is 
+ * not subclassed from @ref KTMainWindow you should use this class.
+ * 
+ * The usage is simple:
+ *
+ * mHelpMenu = new KHelpMenu( this, <someText> );
+ * kmenubar->insertItem(i18n("&Help"), mHelpMenu->menu() );
+ *
+ * or if you just want to open a dialog box:
+ *
+ * mHelpMenu = new KHelpMenu( this, <someText> );
+ * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
+ *
+ * IMPORTANT:
+ * If you use mHelpMenu->menu() once, a QPopupMenu object is allocated. Only
+ * one object is created by the class so if you call mHelpMenu->menu() twice 
+ * or more, only one QPopupMenu object is created. The class will not 
+ * destroy this popupmenu itself. So to avoid a memory leak you should do
+ * the following in your destructor:
+ * 
+ * MyClass::~MyClass( void )
+ * {
+ *   delete mHelpMenu->menu(); // Only required if mHelpMenu->menu() has 
+ *                             // already been used.
+ *   delete mHelpMenu;
+ * }
+ *
+ * 
+ * @short Standard KDE help menu with dialog boxes.
+ * @author Espen Sand (espen@kde.org)
+ * @version $Id:
+ */
+
 class KHelpMenu : public QObject
 {
   Q_OBJECT
