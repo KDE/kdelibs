@@ -988,7 +988,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_grid->setColStretch(2, 1);
 
   label = new QLabel( page );
-  label->setText("Name:");
+  label->setText(i18n("Name:"));
   l_grid->addWidget(label, 0, 1, AlignLeft);
 
   d->colorName = new QLabel( page );
@@ -997,7 +997,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_grid->addWidget(d->colorName, 0, 2, AlignLeft);
 
   label = new QLabel( page );
-  label->setText("HTML:");
+  label->setText(i18n("HTML:"));
   l_grid->addWidget(label, 1, 1, AlignLeft);
 
   d->htmlName = new QLineEdit( page );
