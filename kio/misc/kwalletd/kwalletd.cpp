@@ -38,6 +38,42 @@ extern "C" {
 }
 
 
+/*
+
+   Design issues:
+
+   - How do we track when a client disappears?
+
+   - If we lose a client, do we prompt to close the wallet?
+     (perhaps at shutdown time)
+
+   - Should we have a flush() which closes the wallet then reopens?
+
+   - Should we allow a wallet to be locked?
+
+
+*/
+
+/*
+
+   Functions to add:
+
+   - list wallets
+
+   - search wallet
+
+   - add to wallet  (or overwrite of course)
+
+   - remove from wallet
+
+   - list "types" in wallet
+
+   - list contents of wallet
+
+*/
+
+
+
 KWalletD::KWalletD(const QCString &name) : KDEDModule(name)
 {
 }
