@@ -58,11 +58,11 @@ class KPluginInfo::KPluginInfoPrivate
         /** WARNING: add every entry to the cctor and operator= */
 };
 
-    KPluginInfo::KPluginInfo( const QString & filename )
+    KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
     : m_loaded( false )
 , d( new KPluginInfoPrivate )
 {
-    KSimpleConfig file( filename );
+    KConfig file( filename, resource );
 
     d->specfile = filename;
 
@@ -147,7 +147,8 @@ QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & servi
     for( KService::List::ConstIterator it = services.begin();
             it != services.end(); ++it )
     {
-        info = new KPluginInfo( ( *it )->desktopEntryPath() );
+        const char* resource = ( *it )->type() == "Service" ? "service" : "apps";
+        info = new KPluginInfo( ( *it )->desktopEntryPath(), resource );
         info->setConfig( config, group );
         infolist += info;
     }
