@@ -364,11 +364,13 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
    // Step 2: Modify the image
    if (grayscale) {
        for (i=0; i<pixels; i++) {
-           float w = (255-qRed(data[i]))*value/255;
-           float b = qRed(data[i])*value/255;
-           rval = static_cast<int>(w*rw + b*rb + (1.0-value)*qRed(data[i]));
-           gval = static_cast<int>(w*gw + b*gb + (1.0-value)*qGreen(data[i]));
-           bval = static_cast<int>(w*bw + b*bb + (1.0-value)*qBlue(data[i]));
+           int v = qRed(data[i]);
+           rval = static_cast<int>( ((255-v)*rw + v*rb)*value/255 + (1.0-value)*qRed(data[i]));
+           gval = static_cast<int>( ((255-v)*gw + v*gb)*value/255 + (1.0-value)*qGreen(data[i]));
+           bval = static_cast<int>( ((255-v)*bw + v*bb)*value/255 + (1.0-value)*qBlue(data[i]));
+
+           alpha = qAlpha(data[i]);
+           data[i] = qRgba(rval, gval, bval, alpha);
        }
    }
    else {
