@@ -76,9 +76,9 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   QFont f("utopia", DEFAULT_FONT_SIZE);
 
   setFont(f); //just default
-  clipText.sprintf("");
+  clipText = "";
 
-  formText.sprintf("");
+  formText = "";
 
   form->parse(formText, &info); // initialize info
 
