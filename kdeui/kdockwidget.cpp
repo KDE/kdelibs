@@ -374,11 +374,26 @@ KDockWidget::~KDockWidget()
     undock();
     d->blockHasUndockedSignal = false;
   }
+  
+  if (latestKDockContainer()) latestKDockContainer()->removeWidget(this);
   emit iMBeingClosed();
   manager->childDock->remove( this );
   delete pix;
   delete d; // destroy private data
 }
+
+void KDockWidget::setLatestKDockContainer(KDockContainer* container)
+{
+	d->container=(QWidget*)(container);
+}
+
+KDockContainer *KDockWidget::latestKDockContainer()
+{
+	if (d->container)  return static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"));
+	return 0;
+}
+
+
 
 void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
 {
@@ -2341,7 +2356,9 @@ KDockContainer::KDockContainer(){;}
 KDockContainer::~KDockContainer(){;}
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
 void KDockContainer::insertWidget (KDockWidget *, QPixmap, const QString &, int &){;}
-void KDockContainer::setToolTip (KDockWidget *, QString &){;}
+void KDockContainer::removeWidget (KDockWidget *){;}
+void KDockContainer::undockWidget (KDockWidget *){;}
+void KDockContainer::setToolTip(KDockWidget *, QString &){;}
 
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )

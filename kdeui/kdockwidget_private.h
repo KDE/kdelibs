@@ -31,6 +31,8 @@
 #endif
 
 class QFrame;
+class KDockContainer;
+
 
 /**
  * Like QSplitter but specially designed for dockwidgets stuff.
@@ -134,6 +136,8 @@ public:
 
   QWidget *_parent;
   bool transient;
+
+  QGuardedPtr<QWidget> container;
 };
 
 #endif

@@ -359,8 +359,10 @@ public:
   virtual ~KDockContainer();
   virtual KDockWidget *parentDockWidget();
   virtual void insertWidget (KDockWidget *, QPixmap, const QString &, int &);
-  virtual void setToolTip (KDockWidget *, QString &);
+  virtual void removeWidget(KDockWidget*);
+  virtual void undockWidget(KDockWidget*);
 
+  virtual void setToolTip (KDockWidget *, QString &);
 };
 
 
@@ -650,6 +652,9 @@ protected:
    * @li it is not able to dock to another dockwidget
    */
   void updateHeader();
+
+  void setLatestKDockContainer(KDockContainer*);
+  KDockContainer *latestKDockContainer();
   
 signals:
   /**
