@@ -60,19 +60,19 @@ void KServiceTypeProfile::initStatic()
 
     KService::Ptr pService = KService::serviceByDesktopPath( appDesktopPath );
 	
-	if ( pService ) {
-		QString application = pService->name();
+    if ( pService ) {
+      QString application = pService->name();
 
-    	if ( !type.isEmpty() && pref >= 0 )
-    	{
-    	  KServiceTypeProfile* p = 
-		  	KServiceTypeProfile::serviceTypeProfile( type );
+      if ( !type.isEmpty() && pref >= 0 )
+      {
+        KServiceTypeProfile* p =
+          KServiceTypeProfile::serviceTypeProfile( type );
 
-    	  if ( !p )
-			p = new KServiceTypeProfile( type );
+        if ( !p )
+          p = new KServiceTypeProfile( type );
 
-    	  p->addService( application, pref, allow );
-		}
+        p->addService( application, pref, allow );
+      }
     }
   }
 }
@@ -82,35 +82,34 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 {
   OfferList offers;
 
-  //kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << ")" << endl;
+  kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << ")" << endl;
   KServiceTypeProfile* profile = serviceTypeProfile( _servicetype );
   if ( profile )
   {
-    //kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
+    kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
     return profile->offers();
   }
 
   KService::List list = KServiceType::offers( _servicetype );
-  //kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
+  kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
     bool allow = (*it)->allowAsDefault();
     KServiceOffer o( (*it), (*it)->initialPreference(), allow );
     offers.append( o );
-    //kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+    kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
   }
 
   qBubbleSort( offers );
 
   // debug code, please leave for debugging
-  /*kdDebug(7010) << "Sorted list:" << endl;
+  kdDebug(7010) << "Sorted list:" << endl;
   OfferList::Iterator itOff = offers.begin();
   for( ; itOff != offers.end(); ++itOff )
   {
     kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
   }
-  */
 
   return offers;
 }
@@ -190,12 +189,12 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
       if( it2 != m_mapServices.end() )
       {
       	if ( it2.data().m_iPreference > 0 ) {
-			bool allow = (*it)->allowAsDefault();
-			if ( allow )
-			  allow = it2.data().m_bAllowAsDefault;
-			KServiceOffer o( (*it), it2.data().m_iPreference, allow );
-			offers.append( o );
-		}
+          bool allow = (*it)->allowAsDefault();
+          if ( allow )
+            allow = it2.data().m_bAllowAsDefault;
+          KServiceOffer o( (*it), it2.data().m_iPreference, allow );
+          offers.append( o );
+        }
       }
       else
       {
