@@ -1337,6 +1337,9 @@ protected:
 protected slots:
   void slotDockWidgetUndocked();
 
+protected:
+  virtual void resizeEvent( QResizeEvent *);
+
 private:
   class KDockMainWindowPrivate;
   KDockMainWindowPrivate *d;
