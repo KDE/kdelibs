@@ -272,7 +272,10 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
 
 QWidget* KFileMetaInfoWidget::makeDateWidget()
 {
-  return new QDateEdit(m_item.value().toDate(), this);
+  QWidget *e = new QDateEdit(m_item.value().toDate(), this);
+  connect(e,    SIGNAL(valueChanged(const QDate&)),
+          this, SLOT(slotDateChanged(const QDate&)));
+  return e;
 }
 
 QWidget* KFileMetaInfoWidget::makeTimeWidget()
