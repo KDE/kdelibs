@@ -486,13 +486,13 @@ class kndbgstream {
 
 /**
  * Does nothing.
- * @param a stream
+ * @param s a stream
  * @return the given @p s
  */
 inline kndbgstream &endl( kndbgstream & s) { return s; }
 /**
  * Does nothing.
- * @param a stream
+ * @param s a stream
  * @return the given @p s
  */
 inline kndbgstream &flush( kndbgstream & s) { return s; }
@@ -526,7 +526,7 @@ QString kdBacktrace(int levels);
  * @param area an id to identify the output, 0 for default
  * @see kdDebug()
  */
-inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
+inline kndbgstream kndDebug(int area = 0) { Q_UNUSED(area); return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
 inline QString kndBacktrace() { return QString::null; }
 inline QString kndBacktrace(int) { return QString::null; }
