@@ -154,7 +154,7 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. USE WITH CARE :)
-     * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
+     * @return @ref KLibrary is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
      * @see #factory
