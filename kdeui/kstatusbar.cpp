@@ -88,6 +88,9 @@ KStatusBar::~KStatusBar ()
 
 void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
 {
+  if (items[id])
+    kdDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   l->setFixedHeight(fontMetrics().height()+2);
   items.insert(id, l);
@@ -108,6 +111,15 @@ void KStatusBar::removeItem (int id)
   }
   else
     kdDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
+}
+
+bool KStatusBar::hasItem( int id ) const
+{
+  KStatusBarLabel *l = items[id];
+  if (l)
+    return true;
+  else
+    return false;
 }
 
 void KStatusBar::changeItem( const QString& text, int id )

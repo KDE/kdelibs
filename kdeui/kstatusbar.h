@@ -141,6 +141,14 @@ public:
   void removeItem( int id );
 
   /**
+   *  Returns true if an item with @id exists already in KStatusBar,
+   *  otherwise returns false.
+   *
+   *  @param id id of the item
+   */
+  bool hasItem( int id ) const;
+
+  /**
    * Changes the text in a status bar field.
    *
    * The item will be resized to fit the text. If you change text to be empty,
