@@ -288,7 +288,7 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
 
   KURL u( _url );
 
-  string icon;
+  QString icon;
   if ( u.isLocalFile() )
   {
     struct stat buff;
@@ -312,7 +312,7 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
   m_file = _parent->file();
   m_file += "/";
   m_file += encode( _text );
-  // m_file += ".kdelnk";
+  // m_file += ".kdelnk"; // looks better to the user without extension
 
   FILE *f = fopen( m_file, "w" );
   if ( f == 0L )
@@ -324,8 +324,8 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
   fprintf( f, "# KDE Config File\n" );
   fprintf( f, "[KDE Desktop Entry]\n" );
   fprintf( f, "URL=%s\n", m_url.data() );
-  fprintf( f, "Icon=%s\n", icon.c_str() );
-  fprintf( f, "MiniIcon=%s\n", icon.c_str() );
+  fprintf( f, "Icon=%s\n", icon.data() );
+  fprintf( f, "MiniIcon=%s\n", icon.data() );
   fprintf( f, "Type=Link\n" );
   fclose( f );
 
