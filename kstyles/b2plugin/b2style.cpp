@@ -942,7 +942,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (font)
                 p->setFont(*font);
             if(raised)
-                p->setPen(Qt::blue);
+                p->setPen(KGlobalSettings::toolBarHighlightColor());
             p->drawText(x+dx, y+dy, fm.width(btext), fm.lineSpacing(), tf, btext);
         }
     }
@@ -967,7 +967,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (font)
                 p->setFont(*font);
             if(raised)
-                p->setPen(Qt::blue);
+                p->setPen(KGlobalSettings::toolBarHighlightColor());
             p->drawText(x, y, w, h-3, tf, btext);
         }
     }
