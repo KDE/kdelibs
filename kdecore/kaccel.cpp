@@ -629,3 +629,5 @@ uint KAccel::stringToKey(const QString& key)
 
 	return keyCode;
 }
+
+#include "kaccel.moc"
