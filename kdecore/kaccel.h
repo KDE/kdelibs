@@ -46,7 +46,9 @@ uint stringToKey( const QString& sKey );
 QString keyToString( uint keyCode, bool i18_n = false );
 
 struct KKeyEntry {
-    uint aCurrentKeyCode, aDefaultKeyCode, aConfigKeyCode;
+    uint aCurrentKeyCode;
+    uint aDefaultKeyCode;
+    uint aConfigKeyCode;
     bool bConfigurable;
     bool bEnabled;
     int aAccelId;

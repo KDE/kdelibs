@@ -58,7 +58,8 @@ public:
   friend KPoint operator/(const KPoint &_pnt,double _c);
 
 protected:
-  int xpos,ypos;
+  int xpos;
+  int ypos;
 
 };
 

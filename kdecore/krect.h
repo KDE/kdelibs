@@ -86,7 +86,10 @@ public:
   friend bool operator!=(const KRect &_rect1,const QRect &_rect2);
 
 protected:
-  int x1,x2,y1,y2;
+  int x1;
+  int x2;
+  int y1;
+  int y2;
 
 };
 

@@ -49,8 +49,10 @@ class KCharsetsData;
 class KCharsetConverterData{
 friend class KCharsets;
    static KCharsetsData *kcharsetsData;
-   bool inAmps,outAmps;
-   bool unicodeIn,unicodeOut;
+   bool inAmps;
+   bool outAmps;
+   bool unicodeIn;
+   bool unicodeOut;
    enum{
    	NoConversion,
  	ToUnicode,
