@@ -80,14 +80,14 @@ class KDirWatch : public QObject
    /**
     * Adds a directory to be watched.
     *
-    * The directory does not have to exist. When @param watchFiles is
+    * The directory does not have to exist. When @p watchFiles is
     * false (the default), the signals dirty(), created(), deleted()
     * can be emitted, all for the watched directory.
-    * When @param watchFiles is true, all files in the watched directory
+    * When @p watchFiles is true, all files in the watched directory
     * are looked for changes, too. Thus, the signals fileDirty(),
     * fileCreated(), fileDeleted() can be emitted.
     *
-    * When @param recursive is true, also all sub directories are watched.
+    * When @p recursive is true, also all sub directories are watched.
     */
    void addDir(const QString& path, 
 	       bool watchFiles = false, bool recursive = false);
