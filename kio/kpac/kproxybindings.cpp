@@ -1,7 +1,7 @@
 /*
  *  $Id$
  *  KJS-Bindings for Proxy Auto Configuration
- *  
+ *
  *  Copyright (C) 2000 Malte Starostik <malte.starostik@t-online.de>
  *
  *  This library is free software; you can redistribute it and/or
@@ -320,7 +320,7 @@ Completion KProxyFunc::execute(const List &args)
             }
             break;
     }
-    return Completion(Normal, result);
+    return Completion(ReturnValue, result);
 }
 
 const UString KProxyFunc::dnsResolve(const UString &host) const
