@@ -5,6 +5,7 @@
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
 #include <qdrawutil.h>
+#include <ktoolbar.h>
 
 KColorAction::KColorAction( const QString& text, int accel,
 			    QObject* parent, const char* name )
@@ -266,7 +267,27 @@ int KColorBarAction::plug( QWidget *widget )
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 	
 	return containerCount() - 1;
+    } else if ( widget && widget->inherits( "KToolBar" ) ) {
+	KToolBar* bar = (KToolBar*)widget;
+	KColorBar *b;
+	b = new KColorBar( colors, widget, "" );
+	bar->insertWidget( -1, b->width(), b );
+	b->resize( 100, 25 );
+	b->show();
+	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+		 this, SIGNAL( leftClicked( const QColor & ) ) );
+	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+		 this, SIGNAL( rightClicked( const QColor & ) ) );
+	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+		 receiver, leftClickSlot );
+	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+		 receiver, rightClickSlot );
+
+	addContainer( bar, b );
+	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+	
+	return containerCount() - 1;
     }
-    
+
     return -1;
 }
