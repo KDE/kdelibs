@@ -21,16 +21,10 @@
 #ifndef KAUDIO_H
 #define KAUDIO_H "$Id$"
 
+#include <string>
+
 #include <qobject.h>
 #include <qtimer.h>
-#include <string>
-/* socket stuff */
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
 
 /**
   * The KAudio class is a very easy means to playback digital audio

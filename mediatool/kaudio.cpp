@@ -1,11 +1,21 @@
+// $Id$
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+
+#include <arpa/inet.h>
+
+#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <fcntl.h>
+
 #include "kaudio.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 KAudio::KAudio()
 {
