@@ -34,6 +34,8 @@
  
 */
 
+class KDEAniMenuPrivate;
+
 class KDEAniMenu : public QObject
 {
     Q_OBJECT
@@ -50,7 +52,10 @@ private:
 
     QPopupMenu *mnu;
     QWidget *widget;
+    KDEAniMenuPrivate *d;
 };
+
+class KDEStylePrivate;
 
 class KDEStyle : public KStyle
 {
@@ -163,6 +168,8 @@ private:
     QWidget *highlightWidget;
     void polish(QApplication *a) { QStyle::polish(a); }
     void unPolish(QApplication *a) {QStyle::unPolish(a); }
+
+    KDEStylePrivate *d;
 };
 
 #endif

@@ -29,7 +29,7 @@
  *
  * Used e.g. by @ref KHistoryCombo
  *
- * @author Carsten Pfeiffer <pfeiffer@kde.org
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short an abstract interface for looking up icons
  */
 class KPixmapProvider

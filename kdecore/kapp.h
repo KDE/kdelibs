@@ -710,6 +710,8 @@ private:
 bool checkAccess(const QString& pathname, int mode);
 
 
+class KSessionManagedPrivate;
+
 /**
    Provides highlevel aceess to session management on a per-object
    base.
@@ -744,12 +746,18 @@ public:
        This function is just a convenience version to avoid subclassing KApplication.
      */
   virtual bool commitData( QSessionManager& sm );
+
+private:
+  KSessionManagedPrivate *d;
 };
 
 
 #endif
 
 // $Log$
+// Revision 1.174  2000/07/13 16:08:49  coolo
+// increased date. I've seen bug reports >= 20000708 and I still have 0629 - bah :)
+//
 // Revision 1.173  2000/07/02 11:45:51  jansen
 // Adding KApplication::libmapnotify()
 //

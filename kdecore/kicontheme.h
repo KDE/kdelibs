@@ -23,6 +23,8 @@ class KIconThemeDir;
 
 class KIconThemePrivate;
 
+class KIconPrivate;
+
 /**
  * One icon as found by KIconTheme.
  */
@@ -54,6 +56,9 @@ public:
 
     /** The full path of the icon. */
     QString path;
+
+private:
+    KIconPrivate *d;
 };
 
 
