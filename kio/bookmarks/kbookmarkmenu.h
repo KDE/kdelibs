@@ -143,7 +143,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void fillContextMenu( KPopupMenu *, QPopupMenu * );
+  void fillContextMenu( QPopupMenu * );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;

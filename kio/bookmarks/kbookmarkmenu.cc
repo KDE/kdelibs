@@ -167,7 +167,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
   if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
   {
-    s_highlightedAddress = action->property("address").toString()
+    s_highlightedAddress = action->property("address").toString();
     kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
   } 
   else 
@@ -176,7 +176,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   }
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
 {
   kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull()) 
@@ -184,10 +184,10 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMen
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  fillContextMenu( menu, contextMenu );
+  fillContextMenu( contextMenu );
 }
 
-void KBookmarkMenu::fillContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu )
+void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu )
 {
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
