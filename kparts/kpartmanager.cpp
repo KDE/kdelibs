@@ -44,10 +44,15 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   while ( w )
   {
     part = findPartFromWidget( w );
-    if ( part && part != m_activePart )
+    if ( part ) // We found a part whose widget is w
     {
-      kDebugInfo( 1000, QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) );
-      setActivePart( part );
+      if ( part != m_activePart )
+      {
+        kDebugInfo( 1000, QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) );
+
+        setActivePart( part );
+      }
+
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
@@ -60,10 +65,14 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     if ( w && ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) ) )
+    {
+      kDebugInfo( 1000, QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) );
       return false;
+    }
 
   }
 
+  kDebugInfo( 1000, QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) );
   return false;
 }
 
