@@ -127,7 +127,7 @@ int KDEsuClient::connect()
     }
 #else
     struct ucred cred;
-    socklen_t siz = sizeof(cred);
+    ksize_t siz = sizeof(cred);
 
     // Security: if socket exists, we must own it
     if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)
