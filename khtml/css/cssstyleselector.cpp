@@ -880,8 +880,23 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         if(!primitiveValue) return;
-	style->setBackgroundRepeat( (EBackgroundRepeat) (primitiveValue->getIdent() - CSS_VAL_REPEAT) );
-        break;
+	switch(primitiveValue->getIdent())
+	{
+	case CSS_VAL_REPEAT:
+	    style->setBackgroundRepeat( REPEAT );
+	    break;
+	case CSS_VAL_REPEAT_X:
+	    style->setBackgroundRepeat( REPEAT_X );
+	    break;	 
+	case CSS_VAL_REPEAT_Y:
+	    style->setBackgroundRepeat( REPEAT_Y );
+	    break;
+	case CSS_VAL_NO_REPEAT:
+	    style->setBackgroundRepeat( NO_REPEAT );
+	    break;
+	default:
+	    return;
+	}
     }
     case CSS_PROP_BORDER_COLLAPSE:
         if(value->valueType() == CSSValue::CSS_INHERIT)
