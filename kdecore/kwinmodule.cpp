@@ -217,11 +217,11 @@ WId KWinModule::activeWindow() const
 
 QRect KWinModule::workArea( int desktop ) const
 {
-
     int desk  = (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop : currentDesktop();
     if ( desk <= 0 )
 	return QApplication::desktop()->geometry();
-    NETRect r = d->workArea( desktop );
+    
+    NETRect r = d->workArea( desk );
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
