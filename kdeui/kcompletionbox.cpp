@@ -165,6 +165,8 @@ void KCompletionBox::popup()
         ensureCurrentVisible();
         if ( !isVisible() )
             show();
+        else if ( size().height() < sizeHint().height() )
+            resize( sizeHint() );
     }
 }
 
