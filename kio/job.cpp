@@ -120,8 +120,10 @@ void Job::slotResult( Job *job )
 
 void Job::showErrorDialog()
 {
-  kapp->enableStyles(); // or use KMessageBoxWrapper ...
-  KMessageBox::error( 0, errorString() );
+  kapp->enableStyles();
+  // Show a message box, except for "user canceled"
+  if ( m_error != ERR_USER_CANCELED )
+      KMessageBox::error( 0, errorString() );
 }
 
 SimpleJob::SimpleJob(const KURL& url, int command,
@@ -1572,7 +1574,7 @@ void DeleteJob::deleteNextFile()
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs);
-        } else 
+        } else
         {
             // Normal deletion
             job = KIO::file_delete( *it );
@@ -1654,7 +1656,7 @@ void DeleteJob::slotResult( Job *job )
                 kDebugInfo(7007," Target is a file (or a symlink) ");
                 // Remove it
 
-                state = STATE_DELETING_FILES;                
+                state = STATE_DELETING_FILES;
                 if ( m_shred && url.isLocalFile() && !bLink )
                 {
                     // KShred your KTie
@@ -1662,7 +1664,7 @@ void DeleteJob::slotResult( Job *job )
                     SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
                     addSubjob(job);
                 }
-                else 
+                else
                 {
                    // Normal deletion
                    SimpleJob *job = KIO::file_delete(url);
