@@ -117,12 +117,12 @@ namespace Keramik
 	class RectTilePainter : public TilePainter
 	{
 	public:
-		RectTilePainter( const QString& name ) : TilePainter( name ) {};
+		RectTilePainter( const QString& name, unsigned int columns = 3, unsigned int rows = 3 );
 		virtual ~RectTilePainter() {};
 
 	protected:
-		virtual unsigned int columns() const { return 3; }
-		virtual unsigned int rows() const { return 3; }
+		virtual unsigned int columns() const { return m_columns; }
+		virtual unsigned int rows() const { return m_rows; }
 		virtual QString tileName( unsigned int column, unsigned int row ) const;
 		virtual TileMode columnMode( unsigned int column ) const
 		{
@@ -132,6 +132,10 @@ namespace Keramik
 		{
 			return row == 1 ? Scaled : Fixed;
 		}
+
+	private:
+		unsigned int m_columns;
+		unsigned int m_rows;
 	};
 
 	class TabPainter : public RectTilePainter

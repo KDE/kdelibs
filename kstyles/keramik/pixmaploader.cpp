@@ -127,6 +127,13 @@ QString TilePainter::absTileName( unsigned int column, unsigned int row ) const
 	return m_name + "-" + name;
 }
 
+RectTilePainter::RectTilePainter( const QString& name, unsigned int columns, unsigned int rows )
+	: TilePainter( name ),
+	  m_columns( columns ),
+	  m_rows( rows )
+{
+}
+
 QString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 {
 	static QString c = "lcr", r = "tcb";

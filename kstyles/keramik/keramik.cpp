@@ -85,6 +85,8 @@ void KeramikStyle::polish(QWidget* widget)
 	// Put in order of highest occurance to maximise hit rate
 	if ( widget->inherits( "QPushButton" ) || widget->inherits( "QComboBox" ) )
 		widget->setBackgroundMode( NoBackground );
+/*	else if ( widget->inherits( "QLineEdit" ) )
+		widget->installEventFilter( this ); */ 
  	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
 	    QListBox* listbox = (QListBox*) widget;
 	    listbox->setLineWidth( 4 );
@@ -571,6 +573,15 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		*/
 
 		case PE_PanelLineEdit:
+		{
+			p->setPen( cg.dark() );
+			p->drawLine( x, y, x + w - 1, y );
+			p->drawLine( x, y, x, y + h - 1 );
+			p->setPen( cg.mid() );
+			p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
+			p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
+			break;
+		}
 
 		default:
 			KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
@@ -813,7 +824,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			else name = "tab-bottom-";
 
 			if ( flags & Style_Selected )
-				Keramik::RectTilePainter( name + "active" ).draw( p, x, y, w, h );
+				Keramik::RectTilePainter( name + "active", 3, 2 ).draw( p, x, y, w, h );
 			else
 			{
 				Keramik::TabPainter::Mode mode;
@@ -1107,108 +1118,39 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		// -------------------------------------------------------------------
 		case CC_ComboBox:
 		{
-			p->fillRect( r, cg.background() );
+			const QComboBox* cb = static_cast< const QComboBox* >( widget );
+			if ( cb->editable() ) p->fillRect( r, cg.background() );
+			drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+
 			// Draw box and arrow
-			if ( controls & SC_ComboBoxArrow ) {
+			if ( controls & SC_ComboBoxArrow )
+			{
 				if ( active ) flags |= Style_On;
 
-				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+				QRect ar = querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxArrow );
 
-				QRect ar = querySubControlMetrics(CC_ComboBox, widget, SC_ComboBoxArrow);
+				QRect rr = visualRect( QRect( ar.x(), ar.y() + 4, loader.pixmap( "ripple" ).width(), ar.height() - 8 ), widget );
 
-				QRect rr = QStyle::visualRect( QRect( ar.x(), ar.y() + 4,
-				                                      loader.pixmap( "ripple" ).width(), ar.height() - 8 ),
-				                               widget );
-
-				ar = QStyle::visualRect( QRect( ar.x() + loader.pixmap( "ripple" ).width() + 4, ar.y(),
-				                                loader.pixmap( "arrow" ).width(), ar.height() ),
-				                         widget );
+				ar = visualRect( QRect( ar.x() + loader.pixmap( "ripple" ).width() + 4, ar.y(), loader.pixmap( "arrow" ).width(), ar.height() ), widget );
 				Keramik::ScaledPainter( "ripple" ).draw( p, rr );
 				Keramik::CenteredPainter( "arrow" ).draw( p, ar );
-
-/*				// Draw the combo
-				int x,y,w,h;
-				r.rect(&x, &y, &w, &h);
-				int x2 = x+w-1;
-				int y2 = y+h-1;
-
-				p->setPen(cg.shadow());
-				p->drawLine(x+1, y, x2-1, y);
-				p->drawLine(x+1, y2, x2-1, y2);
-				p->drawLine(x, y+1, x, y2-1);
-				p->drawLine(x2, y+1, x2, y2-1);
-
-				// Ensure the edge notches are properly colored
-				p->setPen(cg.button());
-				p->drawPoint(x,y);
-				p->drawPoint(x,y2);
-				p->drawPoint(x2,y);
-				p->drawPoint(x2,y2);
-
-				renderGradient( p, QRect(x+2, y+2, w-4, h-4),
-								cg.button(), false);
-
-				p->setPen(sunken ? cg.light() : cg.mid());
-				p->drawLine(x2-1, y+2, x2-1, y2-1);
-				p->drawLine(x+1, y2-1, x2-1, y2-1);
-
-				p->setPen(sunken ? cg.mid() : cg.light());
-				p->drawLine(x+1, y+1, x2-1, y+1);
-				p->drawLine(x+1, y+2, x+1, y2-2);
-
-				// Get the button bounding box
-				QRect ar = QStyle::visualRect(
-					querySubControlMetrics(CC_ComboBox, widget, SC_ComboBoxArrow),
-					widget );
-
-				// Are we enabled?
-				if ( widget->isEnabled() )
-					flags |= Style_Enabled;
-
-				// Are we "pushed" ?
-				if ( active & Style_Sunken )
-					flags |= Style_Sunken;
-
-				drawPrimitive(PE_ArrowDown, p, ar, cg, flags);*/
+			}
+			if ( ( controls & SC_ComboBoxEditField ) && cb->editable() )
+			{
+				QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
+				er.addCoords( -3, -3, 3, 3 );
+				p->fillRect( er, cg.base() );
+				drawPrimitive( PE_PanelLineEdit, p, er, cg );
+//				er.addCoords( 1, 1, -1, -1 );
+				Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( p, er );
 			}
 
-			// Draw an edit field if required
-/*			if ( controls & SC_ComboBoxEditField )
-			{
-				const QComboBox * cb = (const QComboBox *) widget;
-				QRect re = QStyle::visualRect(
-					querySubControlMetrics( CC_ComboBox, widget,
-						                    SC_ComboBoxEditField), widget );
-
-				// Draw the indent
-				if (cb->editable()) {
-					p->setPen( cg.dark() );
-					p->drawLine( re.x(), re.y()-1, re.x()+re.width(), re.y()-1 );
-					p->drawLine( re.x()-1, re.y(), re.x()-1, re.y()+re.height() );
-				}
-
-				if ( cb->hasFocus() ) {
-					p->setPen( cg.highlightedText() );
-					p->setBackgroundColor( cg.highlight() );
-				} else {
-					p->setPen( cg.text() );
-					p->setBackgroundColor( cg.button() );
-				}
-
-				if ( cb->hasFocus() && !cb->editable() ) {
-					// Draw the contents
-					p->fillRect( re.x(), re.y(), re.width(), re.height(),
-								 cg.brush( QColorGroup::Highlight ) );
-
-					QRect re = QStyle::visualRect( 
-								subRect(SR_ComboBoxFocusRect, cb), widget);
-
-					drawPrimitive( PE_FocusRect, p, re, cg,
-								   Style_FocusAtBorder, QStyleOption(cg.highlight()));
-				}
-			}*/
 			break;
 		}
+
+		case CC_SpinWidget:
+			Keramik::CenteredPainter( "spinbox" ).draw( p, r );
+			break;
 /*
 		// TOOLBUTTON
 		// -------------------------------------------------------------------
@@ -1377,6 +1319,9 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ScrollBarSliderMin:
 			return loader.pixmap( "scrollbar-vbar-slider-small" ).height();
 
+		case PM_DefaultFrameWidth:
+			return 2;
+
 		default:
 			return KStyle::pixelMetric(m, widget);
 	}
@@ -1393,12 +1338,12 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 		// PUSHBUTTON SIZE
 		// ------------------------------------------------------------------
 		case CT_PushButton:
-			return QSize( contentSize.width() + 2 * pixelMetric( PM_ButtonMargin, widget ) + 28,
-			              contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget ) );
+			return QSize( contentSize.width() + 2 * pixelMetric( PM_ButtonMargin, widget ) + 31,
+			              contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget ) + 3 );
 
 		case CT_ComboBox:
-			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 22,
-			              contentSize.height() + 8 );
+			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 40,
+			              contentSize.height() + 12 );
 /*
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
@@ -1498,7 +1443,7 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					return QRect( widget->width() - arrow - 10, 0, arrow, widget->height() );
 
 				case SC_ComboBoxEditField:
-					return QRect( 8, 4, widget->width() - arrow - 18, widget->height() - 8 );
+					return QRect( 10, 8, widget->width() - arrow - 20, widget->height() - 16 );
 
 				default: break;
 			}
@@ -1589,7 +1534,22 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 	if (KStyle::eventFilter( object, event ))
 		return true;
 
-	if ( event->type() == QEvent::Paint && object->isWidgetType() && object->inherits("QListBox") )
+	if ( !object->isWidgetType() ) return false;
+
+	if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
+	{
+		static bool recursion = false;
+		if (recursion )
+			return false;
+		recursion = true;
+		object->event( static_cast< QPaintEvent* >( event ) );
+		QWidget* widget = static_cast< QWidget* >( object );
+		QPainter p( widget );
+		Keramik::RectTilePainter( "frame-shadow", 2, 2 ).draw( &p, widget->rect() );
+		recursion = false;
+		return true;
+	}
+	else if ( event->type() == QEvent::Paint && object->inherits("QListBox") )
 	{
 		static bool recursion = false;
 		if (recursion )
@@ -1609,7 +1569,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			return true;
 		}
 	}
-	else if ( event->type() == QEvent::Show && object->isWidgetType() && object->inherits( "QListBox" ) )
+	else if ( event->type() == QEvent::Show && object->inherits( "QListBox" ) )
 	{
 		QListBox* listbox = (QListBox*) object;
 		listbox->setGeometry( listbox->x() + 4, listbox->y() - 4, listbox->width() - 8, listbox->height() + 8 );
