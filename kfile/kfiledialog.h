@@ -194,7 +194,14 @@ public:
 
     static void initIcons();
 
+    /**
+     * Set the mode of the dialog.
+     */
     void setMode( Mode m );
+
+    /**
+     * Retrieves the mode of the filedialog.
+     */
     Mode mode() const;
 
 signals:
