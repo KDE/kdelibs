@@ -35,11 +35,6 @@ Test::~Test()
   ;
 }
 
-QString Test::showLocale(QString category){
-
-  return category+"="+KGlobal::locale()->getLocale(category)+"\n";
-}
-
 void Test::createFields()
 {
   QString string;
