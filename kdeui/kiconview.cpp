@@ -20,6 +20,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
     slotSettingsChanged( KApplication::SETTINGS_MOUSE );
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
     kapp->addKipcEventMask( KIPC::SettingsChanged );
 
     m_pCurrentItem = 0L;
@@ -52,29 +53,29 @@ void KIconView::slotOnViewport()
 void KIconView::slotSettingsChanged(int category)
 {
     if ( category != KApplication::SETTINGS_MOUSE )
-        return;
+      return;
     m_bUseSingle = KGlobalSettings::singleClick();
-    if( m_bUseSingle )
-    {
-      connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *, 
-						 const QPoint & ) ),
-	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
-						   const QPoint & ) ) );
+
+    disconnect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
+						  const QPoint & ) ),
+		this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
+						    const QPoint & ) ) );
 //         disconnect( this, SIGNAL( doubleClicked( QIconViewItem *, 
 // 						 const QPoint & ) ),
 // 		    this, SLOT( slotExecute( QIconViewItem *, 
 // 					     const QPoint & ) ) );
+
+    if( m_bUseSingle ) {
+      connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *, 
+						 const QPoint & ) ),
+	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
+						   const QPoint & ) ) );
     }
-    else
-    {
+    else {
 //         connect( this, SIGNAL( doubleClicked( QIconViewItem *, 
 // 					      const QPoint & ) ),
 //                  this, SLOT( slotExecute( QIconViewItem *, 
 // 					  const QPoint & ) ) );
-      disconnect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
-						    const QPoint & ) ),
-		  this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
-						      const QPoint & ) ) );
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
