@@ -34,6 +34,7 @@
 #include "loader_jpeg.h"
 #endif
 
+#include <stdlib.h>
 #include <qlist.h>
 #include <qobject.h>
 #include <qptrdict.h>
@@ -41,6 +42,7 @@
 #include <qpixmap.h>
 #include <qbuffer.h>
 #include <qstringlist.h>
+#include <qtextcodec.h>
 
 #include <kurl.h>
 
@@ -100,8 +102,12 @@ namespace khtml
 	    m_reload = _reload;
 	    m_request = 0;
 	    m_expireDate = _expireDate;
+            m_deleted = false;
 	}
-	virtual ~CachedObject() {}
+	virtual ~CachedObject() {
+            if(m_deleted) abort();
+            m_deleted = true;
+        }
 
 	virtual void data( QBuffer &buffer, bool eof) = 0;
 	virtual void error( int err, const char *text ) = 0;
@@ -160,6 +166,7 @@ namespace khtml
 	int m_expireDate;
         bool m_free;
         bool m_reload;
+        bool m_deleted;
     };
 
 
@@ -169,7 +176,7 @@ namespace khtml
     class CachedCSSStyleSheet : public CachedObject
     {
     public:
-	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate);
+	CachedCSSStyleSheet(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate, const QString& charset);
 	virtual ~CachedCSSStyleSheet();
 
 	const DOM::DOMString &sheet() const { return m_sheet; }
@@ -185,6 +192,7 @@ namespace khtml
     protected:
 	DOM::DOMString m_sheet;
 	bool loading;
+        QTextCodec* m_codec;
     };
 
     /**
@@ -193,7 +201,7 @@ namespace khtml
     class CachedScript : public CachedObject
     {
     public:
-	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate);
+	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL, bool reload, int _expireDate, const QString& charset);
 	virtual ~CachedScript();
 
 	const DOM::DOMString &script() const { return m_script; }
@@ -209,6 +217,7 @@ namespace khtml
     protected:
 	DOM::DOMString m_script;
 	bool loading;
+        QTextCodec* m_codec;
     };
 
     class ImageSource;
@@ -289,8 +298,8 @@ namespace khtml
  	~DocLoader();
 
 	CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
-	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
-	CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset);
+CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset);
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         bool reloading() const { return m_reloading; }
@@ -391,13 +400,13 @@ namespace khtml
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedCSSStyleSheet *requestStyleSheet( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
+	static CachedCSSStyleSheet *requestStyleSheet( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0, const QString& charset = QString::null);
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
 	 * load the requested data in case it's not cahced
 	 */
-	static CachedScript *requestScript( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0);
+	static CachedScript *requestScript( const DocLoader* l, const DOM::DOMString &url, const DOM::DOMString &baseUrl, bool reload=false, int _expireDate=0, const QString& charset=QString::null);
 
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some
