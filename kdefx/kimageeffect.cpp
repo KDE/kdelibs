@@ -2,6 +2,7 @@
     Copyright (C) 1998, 1999, 2001, 2002 Daniel M. Duley <mosfet@kde.org>
     (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
     (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+    (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
     (C) 2000 Josef Weidendorfer <weidendo@in.tum.de>
 
 Redistribution and use in source and binary forms, with or without
@@ -1049,7 +1050,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
 
-        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 256, 
+        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 256,
                                     alpha, alpha, alpha, 256 };
 
         Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
@@ -1409,7 +1410,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
             "movd        (%1,%2,4),     %%mm1\n\t"  // Load the 1st dst pixel to MM1
             "movd       4(%0,%2,4),     %%mm2\n\t"  // Load the 2nd src pixel to MM2
             "movd       4(%1,%2,4),     %%mm3\n\t"  // Load the 2nd dst pixel to MM3
- 
+
             // Blend the first pixel
             "punpcklbw       %%mm7,     %%mm0\n\t"  // Unpack the src pixel
             "punpcklbw       %%mm7,     %%mm1\n\t"  // Unpack the dst pixel
@@ -2519,6 +2520,126 @@ bool KImageEffect::blendOnLower(
 
   return true;
 }
+
+void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
+                                QImage &lower, const QRect &lowerRect)
+{
+    // clip rect
+    QRect lr =  lowerRect & lower.rect();
+    lr.setWidth( QMIN(lr.width(), upper.width()-upperOffset.x()) );
+    lr.setHeight( QMIN(lr.height(), upper.height()-upperOffset.y()) );
+    if ( !lr.isValid() ) return;
+
+    // blend
+    for (int y = 0; y < lr.height(); y++) {
+        for (int x = 0; x < lr.width(); x++) {
+            QRgb *b = reinterpret_cast<QRgb*>(lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
+            QRgb *d = reinterpret_cast<QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
+            int a = qAlpha(*d);
+            *b = qRgb(qRed(*b) - (((qRed(*b) - qRed(*d)) * a) >> 8),
+                      qGreen(*b) - (((qGreen(*b) - qGreen(*d)) * a) >> 8),
+                      qBlue(*b) - (((qBlue(*b) - qBlue(*d)) * a) >> 8));
+        }
+    }
+}
+
+void KImageEffect::blendOnLower(const QImage &upper, const QPoint &upperOffset,
+                          QImage &lower, const QRect &lowerRect, float opacity)
+{
+    // clip rect
+    QRect lr =  lowerRect & lower.rect();
+    lr.setWidth( QMIN(lr.width(), upper.width()-upperOffset.x()) );
+    lr.setHeight( QMIN(lr.height(), upper.height()-upperOffset.y()) );
+    if ( !lr.isValid() ) return;
+
+    // blend
+    for (int y = 0; y < lr.height(); y++) {
+        for (int x = 0; x < lr.width(); x++) {
+            QRgb *b = reinterpret_cast<QRgb*>(lower.scanLine(lr.y() + y)+ (lr.x() + x) * sizeof(QRgb));
+            QRgb *d = reinterpret_cast<QRgb*>(upper.scanLine(upperOffset.y() + y) + (upperOffset.x() + x) * sizeof(QRgb));
+            int a = qRound(opacity * qAlpha(*d));
+            *b = qRgb(qRed(*b) - (((qRed(*b) - qRed(*d)) * a) >> 8),
+                      qGreen(*b) - (((qGreen(*b) - qGreen(*d)) * a) >> 8),
+                      qBlue(*b) - (((qBlue(*b) - qBlue(*d)) * a) >> 8));
+        }
+    }
+}
+
+QRect KImageEffect::computeDestinationRect(const QSize &lowerSize,
+                                       Disposition disposition, QImage &upper)
+{
+    int w = lowerSize.width();
+    int h = lowerSize.height();
+    int ww = upper.width();
+    int wh = upper.height();
+    QRect d;
+
+    switch (disposition) {
+    case NoImage:
+        break;
+    case Centered:
+        d.setRect((w - ww) / 2, (h - wh) / 2, ww, wh);
+        break;
+    case Tiled:
+        d.setRect(0, 0, w, h);
+        break;
+    case CenterTiled:
+        d.setCoords(-ww + ((w - ww) / 2) % ww, -wh + ((h - wh) / 2) % wh,
+                    w-1, h-1);
+        break;
+    case Scaled:
+        upper = upper.smoothScale(w, h);
+        d.setRect(0, 0, w, h);
+        break;
+    case CenteredAutoFit:
+        if( ww <= w && wh <= h ) {
+            d.setRect((w - ww) / 2, (h - wh) / 2, ww, wh); // like Centered
+            break;
+        }
+        // fall through
+    case CenteredMaxpect: {
+        double sx = (double) w / ww;
+        double sy = (double) h / wh;
+        if (sx > sy) {
+            ww = (int)(sy * ww);
+            wh = h;
+        } else {
+            wh = (int)(sx * wh);
+            ww = w;
+        }
+        upper = upper.smoothScale(ww, wh);
+        d.setRect((w - ww) / 2, (h - wh) / 2, ww, wh);
+        break;
+    }
+    case TiledMaxpect: {
+        double sx = (double) w / ww;
+        double sy = (double) h / wh;
+        if (sx > sy) {
+            ww = (int)(sy * ww);
+            wh = h;
+        } else {
+            wh = (int)(sx * wh);
+            ww = w;
+        }
+        upper = upper.smoothScale(ww, wh);
+        d.setRect(0, 0, w, h);
+        break;
+    }
+    }
+
+    return d;
+}
+
+void KImageEffect::blendOnLower(QImage &upper, QImage &lower,
+                                Disposition disposition, float opacity)
+{
+    QRect r = computeDestinationRect(lower.size(), disposition, upper);
+    for (int y = r.top(); y<r.bottom(); y += upper.height())
+        for (int x = r.left(); x<r.right(); x += upper.width())
+            blendOnLower(upper, QPoint(-QMIN(x, 0), -QMIN(y, 0)),
+                   lower, QRect(x, y, upper.width(), upper.height()), opacity);
+}
+
 
 // For selected icons
 QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )

@@ -106,8 +106,8 @@ public:
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param clr source color to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
-     * @param opacity opacity (in percent) which determines how much the source
-     *                color will be blended into the destination image.
+     * @param opacity opacity (between 0.0 and 1.0) which determines how much
+     *             the source color will be blended into the destination image.
      * @return The destination image (dst) containing the result.
      */
     static QImage& blend(const QColor& clr, QImage& dst, float opacity);
@@ -124,8 +124,8 @@ public:
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param src source image to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
-     * @param opacity opacity (in percent) which determines how much the source
-     *                image will be blended into the destination image.
+     * @param opacity opacity (between 0.0 and 1.0) which determines how much
+     *             the source image will be blended into the destination image.
      * @return The destination image (dst) containing the result.
      */
     static QImage& blend(QImage& src, QImage& dst, float opacity);
@@ -203,6 +203,64 @@ public:
      * of the blend method above provided by convenience.
      */
     static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
+
+    /** @since 3.2
+     * Blend part of an image into part of another, using the alpha channel in
+     * the expected way.
+     * Note that the destination rectangle will be correctly clipped.
+     *
+     * @param upperOffset Offset for the part of the upper image to be used.
+     * @param lowerRect Rectangle for the part of the lower image where the
+     *                  blending will occur.
+     * @param opacity Opacity (between 0.0 and 1.0) which determines how much
+     *             the source image will be blended into the destination image.
+     */
+    static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+                             QImage &lower, const QRect &lowerRect);
+
+    /** @since 3.2
+     * Blend part of an image into part of another, using the opacity value
+     * and the alpha channel in the expected way.
+     * Note that the destination rectangle will be correctly clipped.
+     *
+     * @param upperOffset Offset for the part of the upper image to be used.
+     * @param lowerRect Rectangle for the part of the lower image where the
+     *                  blending will occur.
+     * @param opacity Opacity (between 0.0 and 1.0) which determines how much
+     *             the source image will be blended into the destination image.
+     */
+    static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+                             QImage &lower, const QRect &lowerRect, float opacity);
+
+    /** @since 3.2
+     * Disposition of a source image on top of a destination image.
+     */
+    enum Disposition { NoImage = 0, Centered, Tiled, CenterTiled,
+                      CenteredMaxpect, TiledMaxpect, Scaled, CenteredAutoFit };
+
+    /** @since 3.2
+     * Compute the destination rectangle where to draw the upper image on top
+     * of another image using the givem disposition. For tiled
+     * disposition, the rectangle should be duplicated on the whole area to
+     * obtained the wanted effect.
+     *
+     * @param lowerSize The size of the destination image.
+     * @param disposition The wanted disposition.
+     * @param upper The upper image. Note that this image may be scaled to
+     *               adjust to the requested disposition.
+     *
+     * @return the computed rectangle. Its size may exceed @e lowerSize.
+     */
+    static QRect computeDestinationRect(const QSize &lowerSize,
+                                      Disposition disposition, QImage &upper);
+
+    /** @since 3.2
+     * Blend an image on top of another using a given disposition and a given
+     * opacity. The alpha channel of the upper image is used in the expected
+     * way. Beware the upper image may be modified.
+     */
+    static void blendOnLower(QImage &upper, QImage &lower,
+                             Disposition disposition, float opacity);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
