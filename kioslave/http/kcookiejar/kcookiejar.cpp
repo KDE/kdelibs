@@ -184,14 +184,20 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     }
 
     // Cookie path match check
-    if (path.isEmpty())
+    if (mPath.isEmpty())
         return true;
 
-    // According to the netscape spec both http://www.acme.com/foobar and
-    // http://www.acme.com/foo/bar match http://www.acme.com/foo
-    // According to RFC2109 only http://www.acme.com/foo/bar matches
+    // According to the netscape spec both http://www.acme.com/foobar,
+    // http://www.acme.com/foo.bar and http://www.acme.com/foo/bar 
+    // match http://www.acme.com/foo.
+    // We only match http://www.acme.com/foo/bar
+    
     if( path.startsWith(mPath) &&
-        ((mProtocolVersion == 0) || (path == mPath) || (path[mPath.length()] == '/')) )
+        (
+         (path.length() == mPath.length() ) || 	// Paths are exact match
+         (path[mPath.length()-1] == '/') || 	// mPath ended with a slash
+         (path[mPath.length()] == '/')		// A slash follows.
+         ))
         return true; // Path of URL starts with cookie-path
 
     return false;
@@ -510,6 +516,14 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           QCString t = partList[0].lower().utf8();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int")) 
               break;
+              
+          // The .name domain uses <name>.<surname>.name
+          // Although the TLD is striclty speaking .name, for our purpose
+          // it should be <surname>.name since people should not be able
+          // to set cookies for everyone with the same surname.
+          // Matches <surname>.name
+          if (partList[1].lower() == "name")
+              break;
        }
        QString domain = partList.join(".");
        _domains.append("." + domain);
@@ -583,9 +597,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         }
         else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
         {
-            // What the fuck is this?
             // Does anyone invent his own headers these days?
             // Read the fucking RFC guys! This header is not there!
+            //
+            // Update: rfc2965 defines Set-Cookie2: You wonder why they
+            // didn't use the version field instead.
             cookieStr +=12;
             // Continue with lastCookie
         }
@@ -828,7 +844,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           cookiePtr->fixDomain(QString::null);
        }
     }
-
+    
     KCookieAdvice advice = KCookieDunno;
 
     QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.
