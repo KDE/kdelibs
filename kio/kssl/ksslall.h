@@ -36,6 +36,5 @@
 #include <ksslcertchain.h>
 #include <ksslx509v3.h>
 #include <ksslsigners.h>
-#include <ksslsession.h>
 #endif
 
