@@ -148,8 +148,7 @@ void StatusBarExtension::setStatusBar( KStatusBar* status )
 
 void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
 {
-  StatusBarItem item( widget, stretch, permanent );
-  m_statusBarItems.append(item);
+  m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
   QValueListIterator<StatusBarItem> it = m_statusBarItems.fromLast();
   KStatusBar * sb = statusBar();
   Q_ASSERT(sb);

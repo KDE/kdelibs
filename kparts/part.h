@@ -621,6 +621,6 @@ private:
   bool m_bClosing;
 };
 
-};
+} // namespace
 
 #endif
