@@ -2701,6 +2701,9 @@ void KHTMLPart::reparseConfiguration()
 {
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
+ 
+  // Keep original charset setting.
+  settings->setCharset(d->m_settings->charset());
 
   autoloadImages( settings->autoLoadImages() );
 
