@@ -35,7 +35,7 @@ using namespace khtml;
 
 DOMStringImpl::DOMStringImpl(const char *str)
 {
-    if(str && l)
+    if(str && *str)
     {
         l = strlen(str);
         s = QT_ALLOC_QCHAR_VEC( l );
