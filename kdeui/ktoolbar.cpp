@@ -1286,14 +1286,6 @@ void KToolBar::showEvent( QShowEvent *e )
 {
     QToolBar::showEvent( e );
     rebuildLayout();
-    // Let's try without
-#if 0
-#ifdef __GNUC__
-#warning workaround for a QToolbar bug in Qt 2.2.3
-#endif
-    QResizeEvent re(size(), size());
-    QToolBar::resizeEvent(&re);
-#endif
 }
 
 void KToolBar::setStretchableWidget( QWidget *w )
@@ -1412,9 +1404,11 @@ void KToolBar::show()
 
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
+    bool b = isUpdatesEnabled();
     setUpdatesEnabled( FALSE );
     QToolBar::resizeEvent( e );
-    QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
+    if (b)
+       QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
 }
 
 void KToolBar::slotIconChanged(int group)
@@ -1686,6 +1680,12 @@ bool KToolBar::event( QEvent *e )
 
 void KToolBar::slotRepaint()
 {
+    setUpdatesEnabled( FALSE );
+    // Send a resizeEvent to update the "toolbar extension arrow" 
+    // (The button you get when your toolbar-items don't fit in 
+    // the available space)
+    QResizeEvent ev(size(), size());
+    resizeEvent(&ev);
     setUpdatesEnabled( TRUE );
     repaint( FALSE );
 }
