@@ -569,6 +569,9 @@ void KHTMLPart::clear()
     }
   }
 
+  if ( d->m_jscript )
+    d->m_jscript->clear();
+
   if ( d->m_doc )
   {
     kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
@@ -581,9 +584,6 @@ void KHTMLPart::clear()
     delete d->m_decoder;
 
   d->m_decoder = 0;
-
-  if ( d->m_jscript )
-    d->m_jscript->clear();
 
   if ( d->m_view )
     d->m_view->clear();
