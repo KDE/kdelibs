@@ -347,6 +347,15 @@ void KFileDialog::slotOk()
 	    }
 	}
 
+        if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
+             !d->url.isLocalFile() ) {
+// ### after message freeze, add message for directories!
+            KMessageBox::sorry( d->mainWidget,
+                                i18n("You can only select local files."),
+                                i18n("Remote Files not Accepted") );
+            return;
+        }
+
 	accept();
 	return;
     }
@@ -433,11 +442,11 @@ void KFileDialog::slotOk()
 
         }
         else { // FIXME: remote directory, should we allow that?
-    //             qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
-    //             d->filenames = QString::null;
-    //             d->urlList.clear();
-    //             d->urlList.append( d->url );
-    //             accept();
+            qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
+            d->filenames = QString::null;
+            d->urlList.clear();
+            d->urlList.append( d->url );
+            accept();
         }
 
         if ( done )
