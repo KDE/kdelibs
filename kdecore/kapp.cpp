@@ -721,14 +721,29 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("crashhandler"))
     {
-#if 0
+    	
         // reset the crash handler recursive counter
-        resetCrashRecursion();
+        //KCrash::resetCrashRecursion();
 
         // set default crash handler / set emergency save function to nothing
-        setCrashHandler(KDE_CRASH_INTERNAL);
-        setEmergencySaveFunction(KDE_SAVE_NONE);
-#endif
+        KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+        KCrash::setEmergencySaveFunction(NULL);
+
+        // check if arg(0) contains the whole path, if not, get it from findExe
+
+        if (strstr(args->arg(0),"/"))
+        {
+#warning can someone fix this?
+//            KCrash::setApplicationPath(QCString().setStr(args->arg(0)));
+        }
+        else
+        {
+#warning can someone fix this?
+//KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->arg(0)),NULL,0));
+        }
+
+#warning can someone fix this?
+//        KCrash::setApplicationName(QString(KInstance::instanceName));
     }
 
     delete args; // Throw away
