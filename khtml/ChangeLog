@@ -1,3 +1,14 @@
+2003-11-25  Germain Garand  <germain@ebooksfrance.org>
+
+        * khtml_part.cpp (checkCompleted): prepend "Automatic Detection" entry to 
+        "Use Stylesheet" menu.
+        (slotUseStylesheet): set m_sheetUsed to null string if autodetect is on.
+        Fixes #54335.
+
+        * xml/dom_docimpl.cpp (recalcStyleSelector): if the previous sheet is sticky but
+        still missing when we've already got <body>, choose the document's best 
+        candidate until parsing ends. Avoids ending with no decision (#63348).
+
 2003-11-24  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_formimpl.cpp (defaultEventHandler): ignore stale keyup events.

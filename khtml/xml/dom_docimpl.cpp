@@ -1815,6 +1815,7 @@ void DocumentImpl::recalcStyleSelector()
     for (;;) {
         m_availableSheets.clear();
         m_availableSheets << i18n("Basic Page Style");
+        bool canResetSheet = false;
 
         for (n = this; n; n = n->traverseNextNode()) {
             StyleSheetImpl *sheet = 0;
@@ -1860,7 +1861,7 @@ void DocumentImpl::recalcStyleSelector()
                         if (!title.isEmpty() &&
                             ( (!l->isAlternate() && sheetUsed.isEmpty()) ||
                               m_preferredStylesheetSet == title))
-                            sheetUsed = view() ? view()->part()->d->m_sheetUsed = title : QString();
+                            sheetUsed = title;
                     }
                 }
                 else {
@@ -1871,7 +1872,7 @@ void DocumentImpl::recalcStyleSelector()
                         if (sheet) title = s->getAttribute(ATTR_TITLE).string();
                     }
                     if (!title.isEmpty() && sheetUsed.isEmpty())
-                        sheetUsed = view() ? view()->part()->d->m_sheetUsed = title : QString();
+                        sheetUsed = title;
                 }
 
                 if ( !title.isEmpty() ) {
@@ -1897,20 +1898,24 @@ void DocumentImpl::recalcStyleSelector()
 
             // For HTML documents, stylesheets are not allowed within/after the <BODY> tag. So we
             // can stop searching here.
-            if (isHTMLDocument() && n->id() == ID_BODY)
+            if (isHTMLDocument() && n->id() == ID_BODY) {
+                canResetSheet = !canResetSheet;
                 break;
+        }
         }
 
         // we're done if we don't select an alternative sheet
         // or we found the sheet we selected
         if (sheetUsed.isEmpty() ||
-            tokenizer() ||
+            (!canResetSheet && tokenizer()) ||          
             m_availableSheets.contains(sheetUsed)) {
             break;
         }
 
         // the alternative sheet we used doesn't exist anymore
         // so try from scratch again
+        if (view())
+            view()->part()->d->m_sheetUsed = QString::null;          
         sheetUsed = QString::null;
     }
 

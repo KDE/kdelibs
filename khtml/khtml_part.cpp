@@ -1969,9 +1969,11 @@ void KHTMLPart::checkCompleted()
   QStringList sheets;
   if (d->m_doc)
      sheets = d->m_doc->availableStyleSheets();
+  sheets.prepend( i18n( "Automatic Detection" ) );
   d->m_paUseStylesheet->setItems( sheets );
-  d->m_paUseStylesheet->setEnabled( sheets.count() > 1);
-  if (sheets.count() > 1)
+  
+  d->m_paUseStylesheet->setEnabled( sheets.count() > 2);
+  if (sheets.count() > 2)
   {
     d->m_paUseStylesheet->setCurrentItem(kMax(sheets.findIndex(d->m_sheetUsed), 0));
     slotUseStylesheet();
@@ -3496,8 +3498,10 @@ void KHTMLPart::slotSetEncoding()
 
 void KHTMLPart::slotUseStylesheet()
 {
-  if (d->m_doc && d->m_paUseStylesheet->currentText() != d->m_sheetUsed) {
-    d->m_sheetUsed = d->m_paUseStylesheet->currentText();
+  if (d->m_doc) 
+  {
+    bool autoselect = (d->m_paUseStylesheet->currentItem() == 0);
+    d->m_sheetUsed = autoselect ? QString() : d->m_paUseStylesheet->currentText();
     d->m_doc->updateStyleSelector();
   }
 }
