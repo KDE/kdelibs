@@ -348,6 +348,10 @@ public:
     virtual bool isReadOnly();
     virtual khtml::RenderObject *nextRenderer();
 
+    virtual bool prepareMouseEvent( int x, int y,
+                                    int _tx, int _ty,
+                                    MouseEvent *ev);
+
 protected:
     NodeImpl *_parent;
     NodeImpl *_previous;
@@ -394,6 +398,10 @@ public:
     virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
     bool getLowerRightCorner(int &xPos, int &yPos) const;
+    
+    virtual bool prepareMouseEvent( int x, int y,
+                                    int _tx, int _ty,
+                                    MouseEvent *ev);
 
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);

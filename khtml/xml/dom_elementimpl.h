@@ -142,9 +142,6 @@ public:
     virtual void detach();
     virtual void recalcStyle();
 
-    virtual bool prepareMouseEvent( int x, int y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev);
     virtual void setFocus(bool = true);
     virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
