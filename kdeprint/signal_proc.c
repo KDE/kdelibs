@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 		{
 			case 'p':
 				strncpy(progname, argv[++i], 128);
+                                progname[127]='\0';
 				break;
 			case 's':
 				signal_number = atoi(argv[++i]);

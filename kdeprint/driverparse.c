@@ -229,6 +229,7 @@ int parseMaticFile(const char *driver, FILE *output)
 	if (drFile == NULL)
 		return 0;
 	strncpy(path, driver, 255);
+        path[ 255 ] = '\0';
 	if ((c = strstr(path, "/driver/")) != NULL)
 		*c = 0;
 	c = comment;
