@@ -1,5 +1,7 @@
 [Misc]
 Name=KDE default
 Comment=Default KDE style
+Highcolor=hcstyle.la
+InactiveShading=true
 [KDE]
 widgetStyle=Default
