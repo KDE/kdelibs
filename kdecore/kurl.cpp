@@ -1222,7 +1222,7 @@ static QString trailingSlash( int _trailing, const QString &path )
   else if ( _trailing == 1 )
   {
     int len = result.length();
-    if ( len == 0 || result[ len - 1 ] != '/' )
+    if ( (len == 0) || (result[ len - 1 ] != '/') )
       result += "/";
     return result;
   }
@@ -1231,7 +1231,7 @@ static QString trailingSlash( int _trailing, const QString &path )
     if ( result == "/" )
       return result;
     int len = result.length();
-    if ( len != 0 && result[ len - 1 ] == '/' )
+    if ( (len != 0) && (result[ len - 1 ] == '/') )
       result.truncate( len - 1 );
     return result;
   }
@@ -1448,7 +1448,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     }
   }
 
-  if ( m_iUriMode == URL )
+  if ( m_iUriMode == URL || m_iUriMode == Mailto )
     u += encodedPathAndQuery( _trailing, false, encoding_hint );
   else
     u += m_strPath;
