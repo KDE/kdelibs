@@ -16,20 +16,29 @@
 #define CONTEXT_FLOAT 3
 
 // uncomment this to have menubar raised:
-//  #define MENUBAR_IS_RAISED
 
-// But beware that it looks ugly when toolmar is raised
+#define MENUBAR_IS_RAISED
+
+// Sven -
+// But beware that it looks ugly when toolbar is raised
 // I cannot draw shaded panel around menubar, cause it would
 // totaly #§%$*% resizing
 // If kde comunity wants to have raised menubar do the
 // resizing things properly or just uncoment this and suffer uglyness
 
+// Mark Donohoe (17-9-97) -
+// With a little reworking of the menubar style one can get round the ugly
+// look
+// Moving with KToolBoxManager
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
  {
 #ifndef MENUBAR_IS_RAISED
    setFrameStyle(NoFrame);
 #endif
+	
+	//MD (17-9-97)
+	setLineWidth(1);
  }
 
 _menuBar::~_menuBar ()
@@ -60,19 +69,22 @@ int KMenuBar::idAt( int index )
      // Khm... I'm resized from kwm
      // menu bar installs eventFilter on parent, so we don't have
      // to bother with resizing her
-     frame->setGeometry(11, 0, width()-11, height());
+     frame->setGeometry( 9, 0, width()-9, height());
      frame->resize(menu->width(), menu->height());
      if (height() != frame->height() ||
-         width() != frame->width()+11)
+         width() != frame->width()+9)
       {
         //warning ("resize");
-        resize(frame->width()+11, frame->height());
+        resize(frame->width()+9, frame->height());
       }
    }
   else
    {
      // I will be resized from KtopLevel
-     frame->setGeometry (11, 0, width()-11, height());
+	 
+	 // MD (17-9-97) change offset from 11 pixels to 9 pixels
+     frame->setGeometry (9, 0, width()-9, height());
+	 
      if (menu->height() != height())
       {
         frame->resize(frame->width(), menu->height());
@@ -139,35 +151,42 @@ void KMenuBar::paintEvent(QPaintEvent *)
   QPainter *paint = new QPainter();
 
   int menubarHeight = menu->height();
+  int stipple_height;
   
   paint->begin( this );
 
   // Handle point
 
-  switch ( position )
-   {
+  switch ( position ) {
     case Top:
     case Bottom:
-      qDrawShadePanel( paint, offset, 3, 4, menubarHeight-8,
-                       g , FALSE, 2);
-      offset+=4;
-      qDrawShadePanel( paint, offset, 3, 4, menubarHeight-8,
-		       g , FALSE, 2);
-      offset+=9;
-      break;
-
-    case Floating:
-      qDrawShadePanel( paint, offset, 3, 4, menubarHeight-8,
-                       g , FALSE, 2);
-      offset+=4;
-      qDrawShadePanel( paint, offset, 3, 4, menubarHeight-8,
-                       g , FALSE, 2);
-      offset+=9;
-      break;
-   }
+		case Floating:
+	
+      qDrawShadePanel( paint, 0, 0, 9, menubarHeight,
+                       g , FALSE, 1);
+			
+			paint->setPen( g.light() );
+      stipple_height = 3;
+      while ( stipple_height < menubarHeight-3 ) {
+				paint->drawPoint( 1, stipple_height+1);
+				paint->drawPoint( 4, stipple_height);
+				stipple_height+=3;
+			}
+			paint->setPen( g.dark() );
+      stipple_height = 4;
+      while ( stipple_height < menubarHeight-3 ) {
+				paint->drawPoint( 2, stipple_height+1);
+				paint->drawPoint( 5, stipple_height);
+				stipple_height+=3;
+			}
+    	break;
+	}
 
 #ifdef MENUBAR_IS_RAISED
-  qDrawShadePanel(paint, 0, 0, width(), height(), g , FALSE, 2);
+	
+	// MD (17-9-97) Change panel shadow from 2 pixels to 1
+	qDrawShadePanel(paint, 0, 0, width(), height(), g , FALSE, 1);
+  
 #endif
   paint->end();
   delete paint;

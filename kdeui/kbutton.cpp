@@ -34,34 +34,44 @@ void KButton::drawButtonLabel( QPainter *_painter )
     paint( _painter );
 }
 
+void KButton::setOn( bool enable )
+{
+	QButton::setOn( enable );
+	
+	if (enable)
+		raised = -1;
+	else
+		raised = 0;
+	
+	repaint();
+}
+
 void KButton::paint( QPainter *painter )
 {
+	if ( raised == 1 ) {
+		if ( style() == WindowsStyle )
+			qDrawWinButton( painter, 0, 0, width(), height(),
+								colorGroup(), FALSE );
+		else {
+			qDrawShadePanel( painter, 0, 0, width(), height(), 
+								colorGroup(), FALSE, 2, 0L );
+			painter->setPen(black);
+			painter->drawRect(0,0,width(),height()); 
+		}
+	} else if ( raised == -1 ) {
+		if ( style() == WindowsStyle )
+			qDrawWinButton( painter, 0, 0, width(), 
+						height(), colorGroup(), TRUE );
+		else
+			qDrawShadePanel( painter, 0, 0, width(), 
+						height(), colorGroup(), TRUE, 2, 0L );
+    }
   
-  if ( raised == 1 )
-    {
-      if ( style() == WindowsStyle )
-	qDrawWinButton( painter, 0, 0, width(), height(), 
-			colorGroup(), FALSE );
-      else
-	qDrawShadePanel( painter, 0, 0, width(), height(), 
-			 colorGroup(), FALSE, 2, 0L );
-    }
-  else if ( raised == -1 )
-    {
-      if ( style() == WindowsStyle )
-	qDrawWinButton( painter, 0, 0, width(), 
-			height(), colorGroup(), TRUE );
-      else
-	qDrawShadePanel( painter, 0, 0, width(), 
-			 height(), colorGroup(), TRUE, 2, 0L );
-    }
-  
-  if ( pixmap() )
-    {
-      int dx = ( width() - pixmap()->width() ) / 2;
-      int dy = ( height() - pixmap()->height() ) / 2;
-      painter->drawPixmap( dx, dy, *pixmap() );
-    }
+	if ( pixmap() ) {
+		int dx = ( width() - pixmap()->width() ) / 2;
+		int dy = ( height() - pixmap()->height() ) / 2;
+		painter->drawPixmap( dx, dy, *pixmap() );
+	}
 }
 
 void KButton::slotPressed()
@@ -72,8 +82,12 @@ void KButton::slotPressed()
 
 void KButton::slotReleased()
 {
-    raised = 0;
-    repaint();
+	if ( isToggleButton() )
+		raised =0;
+	else
+		raised = 1;
+
+	repaint();
 }
 
 KButton::~KButton()

@@ -12,12 +12,12 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     kmenubar = NULL;
     kmainwidget = NULL;
     kstatusbar = NULL;
-    borderwidth = 1;
+    borderwidth = 0;
 
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
     kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
-    kmainwidgetframe ->setLineWidth(2);
+    kmainwidgetframe ->setLineWidth(0);
     kmainwidgetframe ->hide();
 }
 
@@ -78,7 +78,7 @@ void KTopLevelWidget::setView( QWidget *view, bool show_frame )
     // frame.
 
     if(borderwidth == 0 )
-      setFrameBorderWidth(1);
+      setFrameBorderWidth(0);
 
     kmainwidgetframe->show();
   }

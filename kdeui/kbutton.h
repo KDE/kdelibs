@@ -17,7 +17,8 @@ public slots:
     
 protected:
     virtual void leaveEvent( QEvent *_ev );
-    virtual void enterEvent( QEvent *_ev );    
+    virtual void enterEvent( QEvent *_ev );
+	void setOn( bool enable );
         
     virtual void drawButton( QPainter *_painter );
     virtual void drawButtonLabel( QPainter *_painter );
