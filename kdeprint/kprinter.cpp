@@ -110,7 +110,6 @@ public:
 	QString			m_tmpbuffer;
 	QString			m_printername;
 	QString			m_searchname;
-	QSize			m_margins;
 	QString			m_errormsg;
 	bool			m_ready;
 	int		m_pagenumber;
@@ -536,10 +535,6 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	/*if (d->m_margins.isValid())
-		if (orientation() == KPrinter::Landscape) return QSize(d->m_margins.height(),d->m_margins.width());
-		else return d->m_margins;
-	else return d->m_wrapper->margins();*/
 	return d->m_wrapper->margins();
 }
 
@@ -602,11 +597,17 @@ void KPrinter::setOrientation(Orientation o)
 	d->m_impl->broadcastOption( "kde-orientation-fixed", "1" );
 }
 
+void KPrinter::setOption( const QString& key, const QString& value, bool broadcast )
+{
+	setOption( key, value );
+	if ( broadcast )
+		d->m_impl->broadcastOption( key, value );
+}
+
 void KPrinter::setPageSize(PageSize s)
 {
 	KMFactory::self()->settings()->pageSize = s;
-	setOption("kde-pagesize",QString::number((int)s));
-	d->m_impl->broadcastOption("kde-pagesize",option("kde-pagesize"));
+	setOption("kde-pagesize",QString::number((int)s),true);
 	d->m_impl->broadcastOption( "kde-pagesize-fixed", "1" );
 }
 
@@ -938,7 +939,18 @@ bool KPrinter::aborted() const
 { return d->m_wrapper->aborted(); }
 
 void KPrinter::setMargins(QSize m)
-{ d->m_margins = m; }
+{
+	setMargins( m.height(), m.width(), m.height(), m.width() );
+}
+
+void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
+{
+	d->m_wrapper->setMargins( top, left, bottom, right );
+	setOption( "kde-margin-top", QString::number( top ), true );
+	setOption( "kde-margin-left", QString::number( left ), true );
+	setOption( "kde-margin-bottom", QString::number( bottom ), true );
+	setOption( "kde-margin-right", QString::number( right ), true );
+}
 
 DrPageSize* KPrinter::realPageSize() const
 { return d->m_pagesize; }

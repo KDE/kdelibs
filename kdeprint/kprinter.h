@@ -452,20 +452,16 @@ public:
 	 */
 	void setMargins(QSize m);
 	/**
-	 * Returns the real page size in points. Some print system (like CUPS) allows to customize the
-	 * page size through printer description files (PPD). The size returned corresponds to this
-	 * size.
+	 * Returns the page metric in dot unit ( 1 dot = 1/72th in ). This method is intended for
+	 * internal use, if you want to access actual page metric, use a QPaintDeviceMetrics object
+	 * instead. Note that the metric returned by this method does not take resolution into
+	 * account, and that it can returns NULL if no page metic was found in the printer driver.
 	 * @see setRealPageSize
 	 */
 	DrPageSize* realPageSize() const;
-	/**
-	 * Sets the real page size. For internal use only.
-	 * @param p the page size
-	 * @see realPageSize()
-	 */
-	void setRealPageSize(DrPageSize* p);
 
 	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
+	void setMargins( uint top, uint left, uint bottom, uint right );
 
 	/**
 	 * Returns the page list to be printed, correpsonding to the options selected by the user. This
@@ -731,6 +727,8 @@ protected:
 	void reload();
 	void init(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution);
 	bool doPreview(const QString& file);
+	void setRealPageSize(DrPageSize* p);
+	void setOption( const QString& key, const QString& value, bool broadcast );
 
 protected:
 	KPrinterPrivate		*d;
