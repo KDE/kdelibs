@@ -1667,8 +1667,10 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	// first collect all possible types and count matches
 	while ((token = strtok((char *) s, " \t\n\r\f,;")) != NULL) {
 		s = NULL;       /* make strtok() keep on tokin' */
+                //kdDebug() << "KMimeMagic::ascmagic token=" << token << endl;
 		for (p = names; p->name ; p++) {
 			if (STREQ(p->name, token)) {
+                                //kdDebug() << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
 			        tokencount++;
 				typeset |= p->type;
 				if (p->type == L_JAVA)
@@ -1694,7 +1696,11 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		accuracy = 40;
 	        if (!(typeset & ~(L_C|L_CPP|L_JAVA))) {
 			if (jonly && conly)
-			  kdError(7018) << "Oops, jonly && conly?!" << endl;
+                            // Take the biggest
+                            if ( jonly > conly )
+                                conly = 0;
+                            else
+                                jonly = 0;
 			if (jonly) {
 				// A java-only token has matched
 				resultBuf = QString(types[P_JAVA].type);
