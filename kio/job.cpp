@@ -454,7 +454,7 @@ void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
 
-    if (m_redirectionList.contains(url))
+    if (m_redirectionList.contains(url) > 1)
     {
        kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
