@@ -587,15 +587,15 @@ int AutoTableLayout::calcEffectiveWidth()
 
 	int col = table->colToEffCol( cell->col() );
 	unsigned int lastCol = col;
-	int cMinWidth = cell->minWidth();
-	int cMaxWidth = cell->maxWidth();
+	int cMinWidth = cell->minWidth() + spacing;
+	int cMaxWidth = cell->maxWidth() + spacing;
 	int totalPercent = 0;
 	int minWidth = 0;
 	int maxWidth = 0;
 	bool allColsArePercent = true;
 	bool allColsAreFixed = true;
 	bool haveVariable = false;
-	int fixedWidth = spacing;
+	int fixedWidth = 0;
 #ifdef DEBUG_LAYOUT
 	int cSpan = span;
 #endif
@@ -607,7 +607,7 @@ int AutoTableLayout::calcEffectiveWidth()
 		break;
 	    case Fixed:
                 if (layoutStruct[lastCol].width.value > 0) {
-                    fixedWidth += layoutStruct[lastCol].width.value + spacing;
+                    fixedWidth += layoutStruct[lastCol].width.value;
                     allColsArePercent = false;
                     // IE resets effWidth to Variable here, but this breaks the konqueror about page and seems to be some bad
                     // legacy behaviour anyway. mozilla doesn't do this so I decided we don't neither.
@@ -626,6 +626,8 @@ int AutoTableLayout::calcEffectiveWidth()
 	    minWidth += layoutStruct[lastCol].effMinWidth;
 	    maxWidth += layoutStruct[lastCol].effMaxWidth;
 	    lastCol++;
+	    cMinWidth -= spacing;
+	    cMaxWidth -= spacing;
 	}
 #ifdef DEBUG_LAYOUT
 	qDebug("    colspan cell %p at effCol %d, span %d, type %d, value %d cmin=%d min=%d fixedwidth=%d", cell, col, cSpan, w.type, w.value, cMinWidth, minWidth, fixedWidth );
@@ -669,46 +671,46 @@ int AutoTableLayout::calcEffectiveWidth()
 	    }
 	}
 
-	if ( !(w.type == Percent ) ) {
-	    // make sure minWidth and maxWidth of the spanning cell are honoured
-	    if ( cMinWidth > minWidth ) {
-		if ( allColsAreFixed ) {
+	// make sure minWidth and maxWidth of the spanning cell are honoured
+	if ( cMinWidth > minWidth ) {
+	    if ( allColsAreFixed ) {
 #ifdef DEBUG_LAYOUT
-		    qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d accroding to fixed sum %d", col, lastCol-1, cMinWidth, minWidth, fixedWidth );
+		qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d accroding to fixed sum %d", col, lastCol-1, cMinWidth, minWidth, fixedWidth );
 #endif
-		    for ( unsigned int pos = col; fixedWidth > 0 && pos < lastCol; pos++ ) {
-			int w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].width.value / fixedWidth );
+		for ( unsigned int pos = col; fixedWidth > 0 && pos < lastCol; pos++ ) {
+		    int w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].width.value / fixedWidth );
 #ifdef DEBUG_LAYOUT
-			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
+		    qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 #endif
+		    fixedWidth -= layoutStruct[pos].width.value;
+		    cMinWidth -= w;
+		    layoutStruct[pos].effMinWidth = w;
+		}
+
+	    } else {
+#ifdef DEBUG_LAYOUT
+		qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", col, lastCol-1, cMinWidth, minWidth );
+#endif
+		int maxw = maxWidth;
+		for ( unsigned int pos = col; minWidth > 0 && pos < lastCol; pos++ ) {
+
+		    int w;
+		    if ( layoutStruct[pos].width.type == Fixed && haveVariable && fixedWidth <= cMinWidth ) {
+			w = QMAX( layoutStruct[pos].effMinWidth, layoutStruct[pos].width.value );
 			fixedWidth -= layoutStruct[pos].width.value;
-			cMinWidth -= w;
-			layoutStruct[pos].effMinWidth = w;
+		    } else {
+			w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMaxWidth / maxw );
 		    }
-
-		} else {
 #ifdef DEBUG_LAYOUT
-		    qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", col, lastCol-1, cMinWidth, minWidth );
+		    qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
 #endif
-		    int maxw = maxWidth;
-		    for ( unsigned int pos = col; minWidth > 0 && pos < lastCol; pos++ ) {
-
-			int w;
-			if ( layoutStruct[pos].width.type == Fixed && haveVariable && fixedWidth <= cMinWidth ) {
-			    w = QMAX( layoutStruct[pos].effMinWidth, layoutStruct[pos].width.value );
-			    fixedWidth -= layoutStruct[pos].width.value;
-			} else {
-			    w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].effMaxWidth / maxw );
-			}
-#ifdef DEBUG_LAYOUT
-			qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].effMinWidth, layoutStruct[pos].effMinWidth, w );
-#endif
-			maxw -= layoutStruct[pos].effMaxWidth;
-			cMinWidth -= w;
-			layoutStruct[pos].effMinWidth = w;
-		    }
+		    maxw -= layoutStruct[pos].effMaxWidth;
+		    cMinWidth -= w;
+		    layoutStruct[pos].effMinWidth = w;
 		}
 	    }
+	}
+	if ( !(w.type == Percent ) ) {
 	    if ( cMaxWidth > maxWidth ) {
 #ifdef DEBUG_LAYOUT
 		qDebug("extending maxWidth of cols %d-%d to %dpx", col, lastCol-1, cMaxWidth );
@@ -723,6 +725,9 @@ int AutoTableLayout::calcEffectiveWidth()
 		    layoutStruct[pos].effMaxWidth = w;
 		}
 	    }
+	} else {
+	    for ( unsigned int pos = col; pos < lastCol; pos++ )
+		layoutStruct[pos].maxWidth = QMAX(layoutStruct[pos].maxWidth, layoutStruct[pos].minWidth );
 	}
     }
     effWidthDirty = false;
@@ -829,12 +834,10 @@ void AutoTableLayout::layout()
 
     // then allocate width to percent cols
     if ( available > 0 && havePercent ) {
-	int totalAllocated = 0;
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    Length &width = layoutStruct[i].effWidth;
 	    if ( width.type == Percent ) {
-                int w = kMax ( int( layoutStruct[i].minWidth ), width.minWidth( tableWidth ) );
-		totalAllocated += w;
+                int w = kMax ( int( layoutStruct[i].effMinWidth ), width.minWidth( tableWidth ) );
 		available += layoutStruct[i].calcWidth - w;
 		layoutStruct[i].calcWidth = w;
 	    }
