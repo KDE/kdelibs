@@ -144,8 +144,6 @@ void KFileMetaPropsPlugin::createLayout()
 //        QLabel* groupLabel = new QLabel(QString("<b><u>" + QStyleSheet::escape(*git)) + "</b></u>", d->m_frame);
 //        toplayout->addMultiCellWidget( groupLabel, count, count, 0, 1);
 
-        count++;
-
         QStringList itemList=d->m_info.group(*git).preferredKeys();
 
         // first create all widgets and add them to the lists
@@ -197,8 +195,9 @@ void KFileMetaPropsPlugin::createLayout()
             toplayout->addWidget( *wit, count, 1 );
             count++;
         }
-    }
 
+        count++;
+    }
 
     // the add key (disabled until fully implemented)
 /*    d->m_add = new QPushButton(i18n("&Add"), topframe);
