@@ -85,6 +85,9 @@ public:
 
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;
+	bool b_optionsEnabled;
+	bool b_propertiesEnabled;
+	bool b_systemEnabled;
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
@@ -398,21 +401,28 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect( d->m_file, SIGNAL( openFileDialog( KURLRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
-	if (!kapp->authorize("print/system"))
+	d->b_optionsEnabled = kapp->authorize("print/options") && kapp->authorize("print/selection");
+	d->b_propertiesEnabled = kapp->authorize("print/properties") && kapp->authorize("print/selection");
+	d->b_systemEnabled = kapp->authorize("print/system") && kapp->authorize("print/selection");
+	                
+	if (!d->b_systemEnabled)
 	{
 		d->m_plugin->hide();
 	}
 
-	if (!kapp->authorize("print/options"))
+	if (!d->b_optionsEnabled)
 	{
 		d->m_options->hide();
+	}
+	
+	if (!d->b_propertiesEnabled)
+	{
+		d->m_properties->hide();
+		d->m_wizard->hide();
 	}
 
 	if (!kapp->authorize("print/selection"))
 	{
-		d->m_plugin->hide();
-		d->m_options->hide();
-
 		d->m_extbtn->hide();
 		m_pbox->hide();
 
@@ -437,7 +447,7 @@ KPrintDialog::~KPrintDialog()
 
 void KPrintDialog::setFlags(int f)
 {
-	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties))
+	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties) && d->b_propertiesEnabled)
 	d->m_default->hide();
 	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General")->readBoolEntry("UseLast", true)))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
@@ -848,7 +858,8 @@ void KPrintDialog::expandDialog(bool on)
 		if (isVisible() || !d->m_dummy->isVisible() || !d->m_plugin->isVisible())
 		{
 			d->m_dummy->show();
-			d->m_plugin->show();
+			if (d->b_systemEnabled)
+				d->m_plugin->show();
 		}
 		d->m_extbtn->setIconSet(SmallIconSet("up"));
 		d->m_extbtn->setText(i18n("Collaps&e"));
@@ -860,7 +871,8 @@ void KPrintDialog::expandDialog(bool on)
 		if (!isVisible() || d->m_dummy->isVisible() || d->m_plugin->isVisible())
 		{
 			d->m_dummy->hide();
-			d->m_plugin->hide();
+			if (d->b_systemEnabled)
+				d->m_plugin->hide();
 		}
 		d->m_extbtn->setIconSet(SmallIconSet("down"));
 		d->m_extbtn->setText(i18n("&Expand"));
