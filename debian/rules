@@ -21,7 +21,9 @@ $(BUILDDIR)/build-stamp:
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	../configure --enable-debug --disable-rpath \
 	--libdir=$$libdir --includedir=$$includedir
-
+	## Temporary hack to allow building
+	#cp corba/kom/kom.idl build/corba/kom/
+	#cp corba/partsui/openparts_ui.idl build/corba/partsui/
 	make -C $(BUILDDIR)
 
 	touch $(BUILDDIR)/build-stamp
@@ -52,7 +54,7 @@ binary-arch:  build
 
 	perl -w admin/debianrules kdelibs3-cvs
 	eval `perl -w admin/debianrules echodirs`; \
-	dh_movefiles -pkdelibs3-cvs-dev usr/include/kde usr/lib/lib*.so usr/lib/lib*.la usr/lib/lib*.a
+	dh_movefiles -pkdelibs3-cvs-dev usr/include/kde usr/lib/*.so usr/lib/*.la usr/lib/*.a
 	dh_installdocs 
 	dh_undocumented
 	dh_installchangelogs
@@ -65,6 +67,7 @@ binary-arch:  build
 	dh_shlibdeps 
 	dh_gencontrol
 	dh_md5sums
+	perl -w admin/debianrules update
 	dh_builddeb 
 	
 # Below here is fairly generic really

@@ -7,7 +7,7 @@ Standards-Version: 2.5.0
 Package: kdelibs3-cvs
 Architecture: any
 Section: x11
-Depends: ${shlibs:Depends}, libjpeg62, qt2beta, libjpeg62, xlib6, mico-2.2.7 (>= 2.2.7), python-base (>= 1.5.1)
+Depends: ${shlibs:Depends}, libjpeg62, libjpeg62, xlib6, mico-2.2.7 (>= 2.2.7), python-base (>= 1.5.1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
