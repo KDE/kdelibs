@@ -889,7 +889,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                 {
                    RenderCanvas *rootObj = canvas();
                    if (ty+s->m_y < rootObj->truncatedAt())
-                      rootObj->setTruncatedAt(ty+s->m_y);
+                      rootObj->setBestTruncatedAt(ty+s->m_y, this);
                    // Let's stop here.
                    break;
                 }

@@ -371,7 +371,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         {
             RenderCanvas *rootObj = canvas();
             if (_ty < rootObj->truncatedAt())
-                rootObj->setTruncatedAt(_ty);
+                rootObj->setBestTruncatedAt(_ty, this);
             // Let's paint this on the next page.
             return;
         }

@@ -1984,9 +1984,55 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     }
     break;
-    case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
-    case CSS_PROP_PAGE_BREAK_INSIDE:
+    {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakBefore, PageBreakBefore, PageBreak)
+        if (!primitiveValue) return;
+        switch (primitiveValue->getIdent()) {
+            case CSS_VAL_AUTO:
+                style->setPageBreakBefore(PBAUTO);
+                break;
+            case CSS_VAL_LEFT:
+            case CSS_VAL_RIGHT:
+            case CSS_VAL_ALWAYS:
+                style->setPageBreakBefore(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                break;
+            case CSS_VAL_AVOID:
+                style->setPageBreakBefore(PBAVOID);
+                break;
+        }
+        break;
+    }
+
+    case CSS_PROP_PAGE_BREAK_AFTER:
+    {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakAfter, PageBreakAfter, PageBreak)
+        if (!primitiveValue) return;
+        switch (primitiveValue->getIdent()) {
+            case CSS_VAL_AUTO:
+                style->setPageBreakAfter(PBAUTO);
+                break;
+            case CSS_VAL_LEFT:
+            case CSS_VAL_RIGHT:
+            case CSS_VAL_ALWAYS:
+                style->setPageBreakAfter(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                break;
+            case CSS_VAL_AVOID:
+                style->setPageBreakAfter(PBAVOID);
+                break;
+        }
+        break;
+    }
+
+    case CSS_PROP_PAGE_BREAK_INSIDE: {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakInside, PageBreakInside, PageBreak)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent() == CSS_VAL_AUTO)
+            style->setPageBreakInside(PBAUTO);
+        else if (primitiveValue->getIdent() == CSS_VAL_AVOID)
+            style->setPageBreakInside(PBAVOID);
+        return;
+    }
 //    case CSS_PROP_PAUSE_AFTER:
 //    case CSS_PROP_PAUSE_BEFORE:
         break;

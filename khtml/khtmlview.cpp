@@ -2208,6 +2208,8 @@ void KHTMLView::print(bool quick)
 
         int top = 0;
         int page = 1;
+        int bottom = 0;
+        int oldbottom = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
             if (printHeader)
@@ -2229,13 +2231,19 @@ void KHTMLView::print(bool quick)
 #endif
             p->translate(0, headerHeight-top);
 
-            root->setTruncatedAt(top+pageHeight);
+            oldbottom = top+pageHeight;
+            root->setTruncatedAt(oldbottom);
 
             root->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
-            if (top + pageHeight >= root->docHeight())
+            bottom = root->bestTruncatedAt();
+            kdDebug(6000) << "printed: page " << page <<" truncatedAt = " << oldbottom
+                          << " bestTruncatedAt = " << bottom << endl;
+            if (bottom == 0) bottom = oldbottom;
+
+            if (bottom >= root->docHeight())
                 break; // Stop if we have printed everything
 
-            top = root->truncatedAt();
+            top = bottom;
             p->resetXForm();
             page++;
         }

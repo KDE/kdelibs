@@ -1,3 +1,13 @@
+2004-10-07  Allan Sandfeld Jensen <kde@carewolf.com>
+        * rendering/render_style.h:
+        WebCore merge of paged media attributes (#68930).
+        * rendering/render_block.cpp (paintObject):
+        Break on page-break-before and -after.
+        * rendering/render_canvas.{h,cpp}:
+        Merge bestTruncatedAt from WebCore.
+        * khtmlview.cpp (print):
+        Use bestTruncatedAt for detect truncated pages.
+
 2004-10-07  David Faure  <faure@kde.org>
 
         * xml/dom_nodeimpl.cpp (dispatchWindowEvent): Emit load event for frames
@@ -9,18 +19,18 @@
 
 2004-10-05  David Faure  <faure@kde.org>
 
-        * html/html_baseimpl.cpp (parseAttribute): 
+        * html/html_baseimpl.cpp (parseAttribute):
         Set event listener on frame element itself (fixes #72440)
         * xml/dom_docimpl.cpp (ownerElement): Safari merge.
-        * html/html_documentimpl.cpp (close): 
+        * html/html_documentimpl.cpp (close):
         Emit onload event for frames (famous gmail bug).
 
-        * ecma/kjs_html.cpp (getValueProperty): 
+        * ecma/kjs_html.cpp (getValueProperty):
         Don't return null when innerText or innerHTML is empty.
 
 2004-10-04  David Faure  <faure@kde.org>
 
-        * khtml_part.cpp (processObjectRequest): 
+        * khtml_part.cpp (processObjectRequest):
         Fixed showing of iframe hidden with display=none (#84332).
 
 2004-09-16  Leo Savernik  <l.savernik@aon.at>
@@ -44,7 +54,7 @@
 
 2004-09-11  David Faure  <faure@kde.org>
 
-        * khtml_part.cpp (defaultEncoding, encoding, createDecoder): 
+        * khtml_part.cpp (defaultEncoding, encoding, createDecoder):
         Make default charset latin1 over HTTP, keep default to locale on other protocols.
 
 2004-09-02  Leo Savernik  <l.savernik@aon.at>
@@ -54,13 +64,13 @@
         Mark it fully initialized when RenderTextArea has been initialized
         from the DOM.
         (HTMLTextAreaElementImpl::setValue): Mark element as initialized after
-        setting. 
+        setting.
         * render_form.cpp (RenderTextArea::setStyle):
         Block signals on call to QTextEdit::setAlignment. Otherwise, a bogus
-        textChanged signal is emitted. 
+        textChanged signal is emitted.
 
 2004-08-27  Germain Garand  <germain@ebooksfrance.org>
-        
+
         scope: - more accurate completed() signal.
                - anchor jumps (#57360)
 

@@ -477,6 +477,10 @@ enum ETextDecoration {
     TDNONE = 0x0 , UNDERLINE = 0x1, OVERLINE = 0x2, LINE_THROUGH= 0x4, BLINK = 0x8
 };
 
+enum EPageBreak {
+    PBAUTO, PBALWAYS, PBAVOID
+};
+
 class StyleInheritedData : public Shared<StyleInheritedData>
 {
     StyleInheritedData& operator=(const StyleInheritedData&);
@@ -503,6 +507,11 @@ public:
 
     short border_hspacing;
     short border_vspacing;
+
+    // Paged media properties.
+    short widows;
+    short orphans;
+    EPageBreak page_break_inside : 2;
 };
 
 
@@ -589,7 +598,7 @@ protected:
 
     // inherit
     struct InheritedFlags {
-    // 32 bit inherited, don't add to the struct, or the operator will break.
+    // 64 bit inherited, don't add to the struct, or the operator will break.
 	bool operator==( const InheritedFlags &other ) const
         {    return _iflags ==other._iflags;    }
 	bool operator!=( const InheritedFlags &other ) const
@@ -623,7 +632,7 @@ protected:
 
 // don't inherit
     struct NonInheritedFlags {
-    // 32 bit non-inherited, don't add to the struct, or the operator will break.
+    // 64 bit non-inherited, don't add to the struct, or the operator will break.
 	bool operator==( const NonInheritedFlags &other ) const
         {   return _niflags == other._niflags;    }
 	bool operator!=( const NonInheritedFlags &other ) const
@@ -642,13 +651,18 @@ protected:
                 ETableLayout _table_layout : 1;
                 bool _flowAroundFloats :1;
 
+                EPageBreak _page_break_before : 2;
+                EPageBreak _page_break_after : 2;
+
                 PseudoId _styleType : 3;
 		bool _affectedByHover : 1;
 		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
+
+                unsigned int unused : 28;
             } f;
-            Q_UINT32 _niflags;
+            Q_UINT64 _niflags;
         };
     } noninherited_flags;
 
@@ -694,6 +708,7 @@ protected:
 	inherited_flags.f._visuallyOrdered = false;
 	inherited_flags.f._htmlHacks=false;
 	inherited_flags.f._user_input = UI_NONE;
+        inherited_flags.f.unused = 0;
 
         noninherited_flags.f._display = initialDisplay();
 	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
@@ -705,11 +720,14 @@ protected:
 	noninherited_flags.f._floating = initialFloating();
 	noninherited_flags.f._table_layout = initialTableLayout();
 	noninherited_flags.f._flowAroundFloats= initialFlowAroundFloats();
+        noninherited_flags.f._page_break_before = initialPageBreak();
+        noninherited_flags.f._page_break_after = initialPageBreak();
 	noninherited_flags.f._styleType = NOPSEUDO;
 	noninherited_flags.f._affectedByHover = false;
 	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
+        noninherited_flags.f.unused = 0;
     }
 
 public:
@@ -865,6 +883,12 @@ public:
 
     ECursor cursor() const { return inherited_flags.f._cursor_style; }
 
+    short widows() const { return inherited->widows; }
+    short orphans() const { return inherited->orphans; }
+    EPageBreak pageBreakInside() const { return inherited->page_break_inside; }
+    EPageBreak pageBreakBefore() const { return noninherited_flags.f._page_break_before; }
+    EPageBreak pageBreakAfter() const { return noninherited_flags.f._page_break_after; }
+
     // CSS3 Getter Methods
     EUserInput userInput() const { return inherited_flags.f._user_input; }
 
@@ -1004,6 +1028,12 @@ public:
     bool hasAutoZIndex() const { return box->z_auto; }
     void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); }
 
+    void setWidows(short w) { SET_VAR(inherited, widows, w); }
+    void setOrphans(short o) { SET_VAR(inherited, orphans, o); }
+    void setPageBreakInside(EPageBreak b) { SET_VAR(inherited, page_break_inside, b); }
+    void setPageBreakBefore(EPageBreak b) { noninherited_flags.f._page_break_before = b; }
+    void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
+
     // CSS3 Setters
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
@@ -1050,6 +1080,7 @@ public:
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return DISC; }
     static EOverflow initialOverflow() { return OVISIBLE; }
+    static EPageBreak initialPageBreak() { return PBAUTO; }
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }

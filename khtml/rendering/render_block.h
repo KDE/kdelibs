@@ -165,6 +165,8 @@ public:
     virtual bool requiresLayer() const { return isRoot() || (!isTableCell() &&
         (isPositioned() || isRelPositioned() || style()->hidesOverflow())); }
 
+    bool inRootBlockContext() const;
+
 #ifdef ENABLE_DUMP
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream &stream, const QString &ind) const;

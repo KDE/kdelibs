@@ -176,7 +176,9 @@ StyleInheritedData::StyleInheritedData()
       style_image( RenderStyle::initialListStyleImage() ),
       font(), color( RenderStyle::initialColor() ),
       border_hspacing( RenderStyle::initialBorderHorizontalSpacing() ),
-      border_vspacing( RenderStyle::initialBorderVerticalSpacing() )
+      border_vspacing( RenderStyle::initialBorderVerticalSpacing() ),
+      widows( RenderStyle::initialWidows() ), orphans( RenderStyle::initialOrphans() ),
+      page_break_inside( RenderStyle::initialPageBreak() )
 {
 }
 
@@ -189,7 +191,8 @@ StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
       indent( o.indent ), line_height( o.line_height ), style_image( o.style_image ),
       font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
       border_hspacing( o.border_hspacing ),
-      border_vspacing( o.border_vspacing )
+      border_vspacing( o.border_vspacing ),
+      widows(o.widows), orphans(o.orphans), page_break_inside(o.page_break_inside)
 {
 }
 
@@ -203,7 +206,12 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
 	style_image == o.style_image &&
 	font == o.font &&
 	color == o.color &&
-	decoration_color == o.decoration_color;
+	decoration_color == o.decoration_color &&
+        border_hspacing == o.border_hspacing &&
+        border_vspacing == o.border_vspacing &&
+        widows == o.widows &&
+        orphans == o.orphans &&
+        page_break_inside == o.page_break_inside;
 
     // doesn't work because structs are not packed
     //return memcmp(this, &o, sizeof(*this))==0;
