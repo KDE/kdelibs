@@ -72,7 +72,12 @@ namespace KJS {
      */
     static Imp *retrieve(KHTMLPart *p);
     static Window *retrieveWindow(KHTMLPart *p);
-
+    /**
+     * returns a pointer to the Window object this javascript interpreting instance
+     * was called from.
+     */
+    static Window *retrieveActive();
+    QGuardedPtr<KHTMLPart> part() const { return m_part; }
     virtual void mark(Imp *imp = 0L);
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
@@ -83,8 +88,9 @@ namespace KJS {
     void scheduleClose();
     bool isSafeScript() const;
     Location *location() const;
+    virtual String toString() const;
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QGuardedPtr<KHTMLPart> m_part;
     QGuardedPtr<KHTMLPart> opener;
     Screen *screen;
     History *history;

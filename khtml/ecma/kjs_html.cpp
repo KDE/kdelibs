@@ -1068,7 +1068,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       if (p == "name")                 { form.setName(str); return; }
       else if (p == "acceptCharset")   { form.setAcceptCharset(str); return; }
       else if (p == "action") {
-        form.setAction(getInstance()->completeURL( str.string() ).url());
+        form.setAction(Window::retrieveActive()->part()->completeURL( str.string() ).url());
         return;
       }
       else if (p == "enctype")         { form.setEnctype(str); return; }

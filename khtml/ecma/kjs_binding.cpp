@@ -187,10 +187,3 @@ bool KJS::originCheck(const QString & url1, const QString & url2)
   else
     return false;
 }
-
-QGuardedPtr<KHTMLPart> KJS::getInstance()
-{
-  // ### HORRIBLE HACK!!!!!!
-  KJS::Window* w = static_cast<KJS::Window*>(KJS::Global::current().prototype().imp());
-  return w->part;
-}

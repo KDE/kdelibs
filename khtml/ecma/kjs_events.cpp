@@ -19,6 +19,7 @@
  *  $Id$
  */
 
+#include "kjs_window.h"
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include <dom_string.h>
@@ -50,7 +51,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List args;
     args.append(getDOMEvent(evt));
 
-    QGuardedPtr<KHTMLPart> part = getInstance();
+    QGuardedPtr<KHTMLPart> part = Window::retrieveActive()->part();
     KJSO thisVal = Null();
     part->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
 

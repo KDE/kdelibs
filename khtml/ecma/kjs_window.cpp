@@ -55,7 +55,7 @@ using namespace KJS;
 
 namespace KJS {
 
-ScriptMap *script_map = 0L;  
+ScriptMap *script_map = 0L;
 
 ////////////////////// History Object ////////////////////////
 
@@ -155,7 +155,7 @@ KJSO Screen::get(const UString &p) const
 ////////////////////// Window Object ////////////////////////
 
 Window::Window(KHTMLPart *p)
-  : part(p), screen(0), history(0), frames(0), loc(0),
+  : m_part(p), screen(0), history(0), frames(0), loc(0),
     openedByJS(false)
 {
   winq = new WindowQObject(this);
@@ -164,7 +164,7 @@ Window::Window(KHTMLPart *p)
 
 Window::~Window()
 {
-  kdDebug() << "Window::~Window this=" << this << " part=" << part << endl;
+  kdDebug() << "Window::~Window this=" << this << " part=" << m_part << endl;
   delete winq;
 }
 
@@ -172,6 +172,11 @@ Window *Window::retrieveWindow(KHTMLPart *p)
 {
   // prototype set in kjs_create()
   return (Window*)retrieve(p)->prototype();
+}
+
+Window *Window::retrieveActive()
+{
+  return static_cast<KJS::Window*>(KJS::Global::current().prototype().imp());
 }
 
 Imp *Window::retrieve(KHTMLPart *p)
@@ -193,7 +198,7 @@ Imp *Window::retrieve(KHTMLPart *p)
 Location *Window::location() const
 {
   if (!loc)
-    const_cast<Window*>(this)->loc = new Location(part);
+    const_cast<Window*>(this)->loc = new Location(m_part);
   return loc;
 }
 
@@ -210,7 +215,7 @@ void Window::mark(Imp *)
   if (loc && !loc->refcount)
     loc->mark();
 
-#if 0  
+#if 0
   // Mark all Window objects from the map. Necessary to keep
   // existing window properties, such as 'opener'.
   if (window_map)
@@ -225,7 +230,12 @@ void Window::mark(Imp *)
        }
      }
   }
-#endif  
+#endif
+}
+
+String Window::toString() const
+{
+  return UString( "object Window" );
 }
 
 bool Window::hasProperty(const UString &p, bool recursive) const
@@ -234,7 +244,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
     return true;
 
   // we don't want any operations on a closed window
-  if (part.isNull())
+  if (m_part.isNull())
     return false;
 
   // Properties
@@ -262,13 +272,14 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "pageYOffset" ||
       p == "parent" ||
       p == "personalbar" ||
+      p == "screen" ||
       p == "screenX" ||
       p == "screenY" ||
       p == "scrollbars" ||
       p == "self" ||
-      p == "status" ||      
+      p == "status" ||
       p == "top" ||
-      p == "screen" ||
+      p == "window" ||
       p == "Image" ||
       p == "Option" ||
   // Methods
@@ -291,12 +302,12 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "setInterval" ||
       p == "setTimeout" ||
       HostImp::hasProperty(p,recursive) ||
-      part->findFrame( p.qstring() ))
+      m_part->findFrame( p.qstring() ))
     return true;
 
   //  allow shortcuts like 'Image1' instead of document.images.Image1
-  if (part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = part->htmlDocument().all();
+  if (m_part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = m_part->htmlDocument().all();
     DOM::HTMLElement element = coll.namedItem(p.string());
     if (!element.isNull()) {
         return true;
@@ -309,10 +320,10 @@ bool Window::hasProperty(const UString &p, bool recursive) const
 KJSO Window::get(const UString &p) const
 {
   if (p == "closed")
-    return Boolean(part.isNull());
+    return Boolean(m_part.isNull());
 
   // we don't want any operations on a closed window
-  if (part.isNull())
+  if (m_part.isNull())
     return Undefined();
 
   if (Imp::hasProperty(p,true)) {
@@ -323,12 +334,12 @@ KJSO Window::get(const UString &p) const
   if (p == "crypto")
     return Undefined(); // ###
   else if (p == "defaultStatus" || p == "defaultstatus")
-    return String(UString(part->jsDefaultStatusBarText()));
+    return String(UString(m_part->jsDefaultStatusBarText()));
   else if (p == "status")
-    return String(UString(part->jsStatusBarText()));
+    return String(UString(m_part->jsStatusBarText()));
   else if (p == "document") {
     if (isSafeScript())
-      return getDOMNode(part->document());
+      return getDOMNode(m_part->document());
     else
       return Undefined();
   }
@@ -342,18 +353,18 @@ KJSO Window::get(const UString &p) const
     return getDOMExceptionPrototype();
   else if (p == "frames")
     return KJSO(frames ? frames :
-		(const_cast<Window*>(this)->frames = new FrameArray(part)));
+		(const_cast<Window*>(this)->frames = new FrameArray(m_part)));
   else if (p == "history")
     return KJSO(history ? history :
-		(const_cast<Window*>(this)->history = new History(part)));
+		(const_cast<Window*>(this)->history = new History(m_part)));
  // else if (p == "event")
-//    return getDOMEvent(static_cast<DOM::Event>(part->view()->lastDOMMouseEvent()));
+//    return getDOMEvent(static_cast<DOM::Event>(m_part->view()->lastDOMMouseEvent()));
   else if (p == "innerHeight")
-    return Number(part->view()->visibleHeight());
+    return Number(m_part->view()->visibleHeight());
   else if (p == "innerWidth")
-    return Number(part->view()->visibleWidth());
+    return Number(m_part->view()->visibleWidth());
   else if (p == "length")
-    return Number(part->frames().count());
+    return Number(m_part->frames().count());
   else if (p == "location") {
     if (isSafeScript())
       return KJSO(location());
@@ -361,9 +372,9 @@ KJSO Window::get(const UString &p) const
       return Undefined();
   }
   else if (p == "name")
-    return String(part->name());
+    return String(m_part->name());
   else if (p == "navigator")
-    return KJSO(new Navigator(part));
+    return KJSO(new Navigator(m_part));
   else if (p == "offscreenBuffering")
     return Boolean(true);
   else if (p == "opener")
@@ -372,21 +383,21 @@ KJSO Window::get(const UString &p) const
     else                // doesn't work yet
       return retrieve(opener);
   else if (p == "outerHeight")
-    return Number(part->view() ? part->view()->height() : 0); // ###
+    return Number(m_part->view() ? m_part->view()->height() : 0); // ###
   else if (p == "outerWidth")
-    return Number(part->view() ? part->view()->width() : 0); // ###
+    return Number(m_part->view() ? m_part->view()->width() : 0); // ###
   else if (p == "pageXOffset")
-    return Number(part->view()->contentsX());
+    return Number(m_part->view()->contentsX());
   else if (p == "pageYOffset")
-    return Number(part->view()->contentsY());
+    return Number(m_part->view()->contentsY());
   else if (p == "parent")
-    return KJSO(retrieve(part->parentPart() ? part->parentPart() : (KHTMLPart*)part));
+    return KJSO(retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part));
   else if (p == "personalbar")
     return Undefined(); // ###
   else if (p == "screenX")
-    return Number(part->view() ? part->view()->mapToGlobal(QPoint(0,0)).x() : 0);
+    return Number(m_part->view() ? m_part->view()->mapToGlobal(QPoint(0,0)).x() : 0);
   else if (p == "screenY")
-    return Number(part->view() ? part->view()->mapToGlobal(QPoint(0,0)).y() : 0);
+    return Number(m_part->view() ? m_part->view()->mapToGlobal(QPoint(0,0)).y() : 0);
   else if (p == "scrollbars")
     return Undefined(); // ###
   else if (p == "scroll")
@@ -404,9 +415,9 @@ KJSO Window::get(const UString &p) const
   else if (p == "resizeTo")
     return Function(new WindowFunc(this, WindowFunc::ResizeTo));
   else if (p == "self" || p == "window")
-    return KJSO(retrieve(part));
+    return KJSO(retrieve(m_part));
   else if (p == "top") {
-    KHTMLPart *p = part;
+    KHTMLPart *p = m_part;
     while (p->parentPart())
       p = p->parentPart();
     return KJSO(retrieve(p));
@@ -415,9 +426,9 @@ KJSO Window::get(const UString &p) const
     return KJSO(screen ? screen :
 		(const_cast<Window*>(this)->screen = new Screen()));
   else if (p == "Image")
-    return KJSO(new ImageConstructor(Global::current(), part->document()));
+    return KJSO(new ImageConstructor(Global::current(), m_part->document()));
   else if (p == "Option")
-    return KJSO(new OptionConstructor(part->document()));
+    return KJSO(new OptionConstructor(m_part->document()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
@@ -457,14 +468,14 @@ KJSO Window::get(const UString &p) const
       return Undefined();
   }
 
-  KHTMLPart *kp = part->findFrame( p.qstring() );
+  KHTMLPart *kp = m_part->findFrame( p.qstring() );
   if (kp)
     return KJSO(retrieve(kp));
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript() &&
-      part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = part->htmlDocument().all();
+      m_part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = m_part->htmlDocument().all();
     DOM::HTMLElement element = coll.namedItem(p.string());
     if (!element.isNull()) {
         return getDOMNode(element);
@@ -478,20 +489,20 @@ void Window::put(const UString &p, const KJSO &v)
 {
   if (p == "status") {
     String s = v.toString();
-    part->setJSStatusBarText(s.value().qstring());
+    m_part->setJSStatusBarText(s.value().qstring());
   } else if (p == "defaultStatus" || p == "defaultstatus") {
     String s = v.toString();
-    part->setJSDefaultStatusBarText(s.value().qstring());
+    m_part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
     QString str = v.toString().value().qstring();
-    part->scheduleRedirection(0, getInstance()->
+    m_part->scheduleRedirection(0, Window::retrieveActive()->m_part->
                               completeURL(str).url().prepend( "target://_self/#" ));
   } else if (p == "onload") {
     if (isSafeScript() && v.isA(ConstructorType)) {
       // ### other attributes like this?
       DOM::Element body;
-      if (!part->htmlDocument().isNull() &&
-          !(body = part->htmlDocument().body()).isNull())
+      if (!m_part->htmlDocument().isNull() &&
+          !(body = m_part->htmlDocument().body()).isNull())
         body.setAttribute("onload",((FunctionImp*)v.imp())->name().string() + "()");
     }
   } else {
@@ -502,7 +513,7 @@ void Window::put(const UString &p, const KJSO &v)
 
 Boolean Window::toBoolean() const
 {
-  return Boolean(!part.isNull());
+  return Boolean(!m_part.isNull());
 }
 
 int Window::installTimeout(const UString &handler, int t, bool singleShot)
@@ -517,13 +528,13 @@ void Window::clearTimeout(int timerId)
 
 void Window::scheduleClose()
 {
-  kdDebug(6070) << "WindowFunc::tryExecute window.close() " << part << endl;
+  kdDebug(6070) << "WindowFunc::tryExecute window.close() " << m_part << endl;
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
 }
 
 bool Window::isSafeScript() const
 {
-  return originCheck(part->url().url(),KJS::Global::current().get("[[ScriptURL]]").toString().value().qstring());
+  return originCheck(m_part->url().url(),KJS::Global::current().get("[[ScriptURL]]").toString().value().qstring());
 }
 
 Completion WindowFunc::tryExecute(const List &args)
@@ -532,10 +543,10 @@ Completion WindowFunc::tryExecute(const List &args)
   QString str, str2;
   int i;
 
-  if (!window->part)
+  if (!window->m_part)
     return Completion(Normal);
 
-  KHTMLPart *part = window->part;
+  KHTMLPart *part = window->m_part;
   if (!part)
     return Completion(Normal);
 
@@ -771,7 +782,7 @@ Completion WindowFunc::tryExecute(const List &args)
         // has more than one entry in the history (NS does that too).
         History history(part);
         if ( history.get( "length" ).toInt32() <= 1 ||
-             KMessageBox::questionYesNo( window->part->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
+             KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
             (const_cast<Window*>(window))->scheduleClose();
     }
     else
@@ -794,9 +805,9 @@ void WindowFunc::initJScript(KHTMLPart *p)
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
-  part = parent->part;
-    connect( parent->part, SIGNAL( destroyed() ),
-             this, SLOT( parentDestroyed() ) );
+  part = parent->m_part;
+  connect( parent->m_part, SIGNAL( destroyed() ),
+           this, SLOT( parentDestroyed() ) );
 }
 
 WindowQObject::~WindowQObject()
@@ -834,9 +845,9 @@ void WindowQObject::clearTimeout(int timerId)
 
 void WindowQObject::timerEvent(QTimerEvent *e)
 {
-  if (!parent->part.isNull()) {
+  if (!parent->part().isNull()) {
     QString hnd = map[e->timerId()];
-    parent->part->executeScript(hnd.mid(1));
+    parent->part()->executeScript(hnd.mid(1));
     // remove single shots installed by setTimeout()
     if (hnd.startsWith("0"))
       clearTimeout(e->timerId());
@@ -845,10 +856,10 @@ void WindowQObject::timerEvent(QTimerEvent *e)
 
 void WindowQObject::timeoutClose()
 {
-  if (!parent->part.isNull())
+  if (!parent->part().isNull())
   {
     kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
-    delete parent->part;
+    delete parent->m_part;
   }
 }
 
@@ -936,7 +947,7 @@ void Location::put(const UString &p, const KJSO &v)
   KURL url;
 
   if (p == "href")
-       url = getInstance()->completeURL(str);
+       url = Window::retrieveActive()->part()->completeURL(str);
   else {
     url = part->url();
     if (p == "hash") url.setRef(str);
