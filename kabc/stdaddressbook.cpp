@@ -51,7 +51,7 @@ static void crashHandler( int sigId )
 AddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
-static KStaticDeleter<AddressBook> staticDeleter;
+static KStaticDeleter<AddressBook> addressBookDeleter;
 
 QString StdAddressBook::fileName()
 {
@@ -68,7 +68,7 @@ AddressBook *StdAddressBook::self()
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
-    staticDeleter.setObject( mSelf, new StdAddressBook );
+    addressBookDeleter.setObject( mSelf, new StdAddressBook );
 
   return mSelf;
 }
@@ -78,7 +78,7 @@ AddressBook *StdAddressBook::self( bool onlyFastResources )
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
-    staticDeleter.setObject( mSelf, new StdAddressBook( onlyFastResources ) );
+    addressBookDeleter.setObject( mSelf, new StdAddressBook( onlyFastResources ) );
 
   return mSelf;
 }
@@ -150,7 +150,7 @@ void StdAddressBook::init( bool )
     if ( res )
       addResource( res );
     else
-      kdDebug() << "No resource available!!!" << endl;
+      kdDebug(5700) << "No resource available!!!" << endl;
   }
 
   setStandardResource( res );

@@ -33,14 +33,14 @@
 using namespace KABC;
 
 FormatFactory *FormatFactory::mSelf = 0;
-static KStaticDeleter<FormatFactory> staticDeleter;
+static KStaticDeleter<FormatFactory> factoryDeleter;
 
 FormatFactory *FormatFactory::self()
 {
   kdDebug(5700) << "FormatFactory::self()" << endl;
 
   if ( !mSelf )
-    staticDeleter.setObject( mSelf, new FormatFactory );
+    factoryDeleter.setObject( mSelf, new FormatFactory );
 
   return mSelf;
 }
