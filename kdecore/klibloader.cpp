@@ -70,7 +70,7 @@ KLibFactory::KLibFactory( QObject* parent, const char* name )
 
 KLibFactory::~KLibFactory()
 {
-    kdDebug(150) << "Deleting KLibFactory " << this << endl;
+//    kdDebug(150) << "Deleting KLibFactory " << this << endl;
     delete d;
 }
 
@@ -109,7 +109,7 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, void * hand
 
 KLibrary::~KLibrary()
 {
-    kdDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
+//    kdDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
     if ( m_timer && m_timer->isActive() )
 	m_timer->stop();
 
@@ -119,7 +119,7 @@ KLibrary::~KLibrary()
 	    QListIterator<QObject> it( m_objs );
 	    for ( ; it.current() ; ++it )
 		{
-		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << endl;
+		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << " Library = " << m_libname << endl;
 		    disconnect( it.current(), SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
 		}
@@ -128,7 +128,7 @@ KLibrary::~KLibrary()
 	}
 
     if ( m_factory ) {
-	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
+//	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
 	delete m_factory;
     }
     delete d;
@@ -210,8 +210,8 @@ void KLibrary::slotObjectDestroyed()
 
   if ( m_objs.count() == 0 )
   {
-    kdDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
-                 << endl;
+//    kdDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
+//                 << endl;
 
     if ( !m_timer )
     {
@@ -262,7 +262,7 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
 {
     unload_mode = UNKNOWN;
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
-        kdDebug(150) << "Will not unload " << name << endl;
+//        kdDebug(150) << "Will not unload " << name << endl;
         unload_mode = DONT_UNLOAD;
     } else if (lt_dlsym(handle, "__kde_do_unload") != 0) {
         unload_mode = UNLOAD;
@@ -313,7 +313,7 @@ KLibLoader::KLibLoader( QObject* parent, const char* name )
 
 KLibLoader::~KLibLoader()
 {
-    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
+//    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
 
     QAsciiDictIterator<KLibWrapPrivate> it( m_libs );
     for (; it.current(); ++it )
@@ -456,7 +456,7 @@ void KLibLoader::unloadLibrary( const char *libname )
   if (--wrap->ref_count)
     return;
 
-  kdDebug(150) << "closing library " << libname << endl;
+//  kdDebug(150) << "closing library " << libname << endl;
 
   m_libs.remove( libname );
 
@@ -525,11 +525,11 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
     if (!d->pending_close.containsRef( wrap )) {
       if (!deleted_one)
         /* Only diagnose, if we really haven't deleted anything. */
-        kdDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
+//        kdDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
       break;
     }
 
-    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
+//    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
