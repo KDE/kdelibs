@@ -56,7 +56,7 @@ testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
 testdcopc_SOURCES = testdcopc.c dcopc.c
-testdcopc_LDADD = $(LIBSM)
+testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
 EXTRA_DIST = HOWTO ICE
 
