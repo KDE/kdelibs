@@ -874,38 +874,9 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
     return job;
 }
 
-class ErrorJob : public TransferJob
-{
-public:
-
-  ErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
-  {
-    m_error = ERR_ACCESS_DENIED;
-    m_errorText = url;
-  }
-  
-};
-
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
-    bool valid = true;
-    
-    // filter out non https? protocols
-    if ((url.protocol() != "http") && (url.protocol() != "https" ))
-      valid = false;
-
-    // filter out some malicious ports
-    if (!(url.port() == 0 || url.port() == 80 || url.port() == 443 || url.port() >= 1024 ))
-      valid = false;
-    
-    // if request is not valid, return an invalid transfer job
-    if (!valid)
-    {
-      KIO_ARGS << (int)1 << url;
-      TransferJob * job = new ErrorJob(url.url(), packedArgs, postData, showProgressInfo);
-      return job;
-    }
-    
+    assert( (url.protocol() == "http") || (url.protocol() == "https" ));
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << url;
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
