@@ -375,27 +375,25 @@ bool
 KSpell::cleanFputsWord (QString s, bool appendCR)
 {
   QString qs(s);
-  bool firstchar = TRUE;
+  //bool firstchar = TRUE;
   bool empty = TRUE;
 
   for (unsigned int i=0; i<qs.length(); i++)
   {
     //we need some punctuation for ornaments
-    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() &&
-    // permit hyphen when it's not at the beginning of the word 
-	(firstchar || qs[i] != '-')) {
+    if (qs[i] != '\'' && qs[i] != '\"' && qs[i].isPunct() || qs[i].isSpace())
+    {
       qs.remove(i,1);
       i--;
     } else {
-      firstchar = FALSE; 
       if (qs[i].isLetter()) empty=FALSE;
     }
   }
 
-  // don't check empty words, otherwise synchronisation fails
+  // don't check empty words, otherwise synchronisation will fail
   if (empty) return FALSE;
 
-  return proc->fputs(qs, appendCR);
+  return proc->fputs("^"+qs, appendCR);
 }
 
 bool
@@ -403,13 +401,13 @@ KSpell::cleanFputs (QString s, bool appendCR)
 {
   QString qs(s);
   unsigned l = qs.length();
-  bool firstchar = TRUE;
-
-  //  kdDebug(750) << "KS::cleanFputs (before)" << qs.length() << " [" << qs <<"]" << endl;
+  // bool firstchar = TRUE;
 
   // Why we need this stuff?
   if (l<MAXLINELENGTH)
     {
+
+      /*
       for (unsigned int i=0; i<l; i++)
 	{
 	  if ( !qs[i].isLetter() && qs[i] != '\'' && qs[i] != '\"' 
@@ -420,16 +418,15 @@ KSpell::cleanFputs (QString s, bool appendCR)
 	      qs.replace (i,1," ");
 	    } else firstchar = FALSE; 
 	}
+      */
 
       if (qs.isEmpty())
 	qs="";
 
-      // kdDebug(750) << "KS::cleanFputs (after) " << qs.length() << " [" << qs << "]" << endl;
-
-      return proc->fputs (qs, appendCR);
+      return proc->fputs ("^"+qs, appendCR);
     }
   else
-    return proc->fputs ("\n",appendCR);
+    return proc->fputs ("^\n",appendCR);
 
 }
 
@@ -495,6 +492,8 @@ void KSpell::checkWord3 ()
 }
 
 QString KSpell::funnyWord (QString word)
+  // composes a guess from ispell to a readable word
+  // e.g. "re+fry-y+ies" -> "refries"
 {
   QString qs;
   unsigned int i=0;
@@ -514,9 +513,7 @@ QString KSpell::funnyWord (QString word)
 	    shorty+=word [j];
 	  i=j-1;
 
-	  if ((k=qs.findRev (shorty))==0
-	//	 || k==(signed)(qs.length()-shorty.length())
-		|| k!=-1)
+	  if ((k=qs.findRev (shorty))==0 || k!=-1)
 	    qs.remove (k,shorty.length());
 	  else
 	    {
@@ -576,7 +573,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       else
 	qs2=qs;
 
-      posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt();
+      posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt()-1;
 
       ///// Replace-list stuff ////
       QStringList::Iterator it = replacelist.begin();
@@ -591,7 +588,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       }
 
       /////// Suggestions //////
-      if (buffer [0]!='#')
+      if (buffer [0] != '#')
 	{
 	  qs = buffer.mid(buffer.find(':')+2, buffer.length());
 	  qs+=',';
@@ -1001,26 +998,27 @@ void KSpell::dialog2 (int result)
   switch (dlgresult)
     {
 
+    case KS_IGNORE:
+      emit ignoreword(dlgorigword);
+      break;
     case KS_IGNOREALL:
+      // would be better to lower case only words with beginning cap
       ignorelist.prepend(dlgorigword.lower());
+      emit ignoreall (dlgorigword);
       break;
     case KS_ADD:
       addPersonal (dlgorigword);
       personaldict=TRUE;
+      emit addword (dlgorigword);
+      // adding to pesonal dict takes effect at the next line, not the current
       ignorelist.prepend(dlgorigword.lower());
       break;
     case KS_REPLACEALL:
       replacelist.append (dlgorigword);
       replacelist.append (replacement());
-      /*
-    case KS_REPLACE:
-    emit corrected (dlgorigword, replacement(), lastpos);
-*/
       break;
     }
 
-  
-  // emit corrected (dlgorigword, replacement(), lastpos);
   connect (this, SIGNAL (dialog3()), this, dialog3slot.ascii());
   emit dialog3();
 }

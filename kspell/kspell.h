@@ -308,6 +308,29 @@ signals:
   void corrected (QString originalword, QString newword, unsigned pos);
 
   /**
+   * Emitted when the user pressed "Ignore All" in the dialog.
+   * This could be used to make an application or file specific
+   * user dictionary.
+   *
+   */
+  void ignoreall (QString originalword);
+
+  /**
+   * Emmited when the user pressed "Ignore" in the dialog.
+   * Don't know if this could be usefull.
+   *
+   */
+  void ignoreword (QString originalword);
+
+  /**
+   * Emitted when the user pressed "Add" in the dialog.
+   * This could be used to make an external user dictionary
+   * independent of the ISpell personal dictionary.
+   *
+   */
+  void addword (QString originalword);
+
+  /**
    * Emitted after @ref KSpell has verified that ISpell/ASpell is running
    * and working properly.  
    */
