@@ -2053,9 +2053,28 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
 
 void KListView::setSorting(int column, bool ascending)
 {
+  QListViewItem *selected = 0;
+
+  if (selectionMode() == QListView::Single) {
+    selected = selectedItem();
+    if (selected && !selected->isVisible())
+      selected = 0;
+  }
+  else if (selectionMode() != QListView::NoSelection) {
+    QListViewItem *item = firstChild();
+    while (item && !selected) {
+      if (item->isSelected() && item->isVisible())
+	selected = item;
+      item = item->itemBelow();
+    }
+  }
+
   d->sortColumn = column;
   d->sortAscending = ascending;
   QListView::setSorting(column, ascending);
+
+  if (selected)
+    ensureItemVisible(selected);
 
   QListViewItem* item = firstChild();
   while ( item ) {
