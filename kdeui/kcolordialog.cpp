@@ -1045,7 +1045,9 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
     SIGNAL( colorDoubleClicked( const QColor &, const QString & ) ),
     SLOT( slotColorDoubleClicked( const QColor &, const QString & ) )
   );
-
+  // Store the default value for saving time.
+  d->originalPalette = d->table->palette();
+  
   //
   // a little space between
   //
@@ -1188,7 +1190,6 @@ KColorDialog::readSettings()
   config->setGroup("Colors");
   QString palette = config->readEntry("CurrentPalette");
   d->table->setPalette(palette);
-  d->originalPalette = d->table->palette();
   config->setGroup( oldgroup );
 }
 
@@ -1196,14 +1197,12 @@ void
 KColorDialog::slotWriteSettings()
 {
   KConfig* config = KGlobal::config();
-  QString oldgroup = config->group();
   config->setGroup("Colors");
-    
   QString palette = d->table->palette();
-  // Don't save anything if there is nothing new or nothing changed.
-  if(palette != d->originalPalette)
-    config->writeEntry("CurrentPalette", d->table->palette() );
-  config->setGroup( oldgroup );
+  (!config->hasDefault("CurrentPalette") &&
+   d->table->palette() == d->originalPalette) ?
+    config->revertToDefault("CurrentPalette") :
+    config->writeEntry("CurrentPalette", d->table->palette());
 }
 
 QColor
