@@ -36,6 +36,7 @@
 
 #include <arpa/inet.h>
 
+#include "kdebug.h"
 #include "ksock.h"
 
 #include <errno.h>
@@ -362,8 +363,10 @@ KSocket::~KSocket()
 {
 	delete readNotifier;
 	delete writeNotifier;
-	if (sock != -1)
+	if (sock != -1) {
+	  kdDebug() << "closing " << sock << endl;
       ::close( sock );
+    }
 }
 
 
@@ -550,6 +553,7 @@ void KServerSocket::slotAccept( int )
       qWarning("Error accepting\n");
       return;
     }
+    kdDebug() << "accepted " << new_sock << endl;
 
     emit accepted( new KSocket( new_sock ) );
   }
