@@ -565,6 +565,9 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
+    // Trigger creation of locale.
+    (void) KGlobal::locale();
+
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
@@ -582,6 +585,9 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
        allowStyles = false;
     useStyles = allowStyles;
     setName( instanceName() );
+
+    // Trigger creation of locale.
+    (void) KGlobal::locale();
 
     parseCommandLine( );
     init(GUIenabled);
@@ -668,9 +674,6 @@ void KApplication::init(bool GUIenabled)
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged);
-
-  // Trigger creation of locale.
-  (void) KGlobal::locale();
 
   if (GUIenabled)
   {
