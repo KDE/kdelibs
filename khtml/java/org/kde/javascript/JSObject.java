@@ -11,16 +11,13 @@ public class JSObject extends netscape.javascript.JSObject {
     private int id;
     private Applet applet;
     private String appletID = null;
-    private final String decls = "if(!__lc){__lc=[window];__lcres;}\nfunction __lccall(i,v){var len=__lc.length;if(i>=len)return;var res=eval('__lc[i]'+v);if(res) __lc[len]=res;__lcres=len;}\nfunction __lcgetres(a){document[a].__lc_ret=''+__lcres+' '+__lc[__lcres];}";
+
+    /* JavaScript code:
+     * __lc=[[JS objects],call func, get result func, last result]
+     */
+    private final String decls = "if(!__lc) __lc=[[window],function(i,v,glob){if(i>=__lc[0].length)return;__lc[3]=eval((glob?'':'__lc[0][i]')+v);},function(a){var v='E ';var t=typeof __lc[3];if(t=='undefined')v='V ';else if(t=='number')v='N '+__lc[3];else if(t=='string')v='S '+__lc[3];else{var len=__lc[0].length;__lc[0][len]=__lc[3];v=''+len+' '+__lc[3];}document[a].__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
-        /*
-        try {
-            throw new RuntimeException("No Exception, just debugging: a=" + a + " name=" + name + " _id=" + _id);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        */
         Main.info("JSObject.ctor: " + name);
         jsobject = new String(name);
         applet = a;
@@ -31,7 +28,12 @@ public class JSObject extends netscape.javascript.JSObject {
             kc.evaluateJavaScript(decls, appletID, null);
         } 
     }
-    private JSObject evaluate(String _script) {
+
+    int getId() {
+        return id;
+    }
+
+    private Object evaluate(String _script, boolean global) {
         Main.info("evaluate (\"" + _script + "\")");
         int oldpos = 0;
         int pos = _script.indexOf("\"");
@@ -47,87 +49,108 @@ public class JSObject extends netscape.javascript.JSObject {
         KJASAppletContext kc = (KJASAppletContext) applet.getAppletContext();
         String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
-        kc.evaluateJavaScript("__lccall(" + id + ",\"" + script + "\")", appletID, null);
-        kc.evaluateJavaScript("__lcgetres(\"" + appletname + "\")", appletID, this);
+        kc.evaluateJavaScript("__lc[1](" + id + ",'" + script + (global ? "',true)" : "')"), appletID, null);
+        kc.evaluateJavaScript("__lc[2]('" + appletname + "')", appletID, this);
+        boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);
-        } catch (InterruptedException ex) {}
+        } catch (InterruptedException ex) {
+            timedout = false;
+        }
         thread = null;
-        Main.debug("JSObject.evaluate: __lccall(" + id + ",\"" + script + "\")");
-        if (returnvalue == null)
+        if (timedout || returnvalue == null)
             return null;
+
+        /* lets see what we've got */
         String retval = returnvalue;
-        returnvalue = null;
         pos = retval.indexOf(' ');
-        String newName = retval.substring(pos+1);
-        String newId = retval.substring(0, pos);
-        Main.info("newName=" + newName + " newId=" + newId);
-        JSObject ret = new JSObject(applet, newName, Integer.parseInt(newId));
-        Main.info("returning " + ret);
-        return ret;               
+        String type = retval.substring(0, pos);
+        if (type.equals("V")) // Void
+            return null;
+        String value = retval.substring(pos+1);
+        Main.info("value=" + value + " type=" + type);
+        if (type.equals("N")) // Number
+            return new Double(value);
+        if (type.equals("S")) // String
+            return value;
+
+        /* Is it an applet? */
+        if (value.startsWith("[object APPLET ref=")) {
+            int p1 = value.indexOf('=');
+            int p2 = value.indexOf(',', p1+1);
+            int p3 = value.indexOf(']', p2+1);
+            String appletid = value.substring(p2+1, p3);
+            //FIXME: get the correct context, not our own
+            //int contextid = Integer.parseInt(value.substring(p1+1, p2));
+            return kc.getAppletById(appletid);
+        }
+        /* Is it a Java object then? */
+        if (value.startsWith("[[embed ")) {
+            int p1 = value.indexOf("ref=");
+            int p2 = value.indexOf(',', p1+1);
+            int p3 = value.indexOf(',', p2+1);
+            int p4 = value.indexOf(']', p3+1);
+            //int contextid = Integer.parseInt(value.substring(p1+1, p2));
+            String appletid = value.substring(p2+1, p3);
+            int objindex = Integer.parseInt(value.substring(p3+1, p4));
+            return kc.getJSReferencedObject(objindex);
+        }
+        /* Ok, make it a JSObject */
+        return new JSObject(applet, value, Integer.parseInt(type));
     }
     private String convertValueJ2JS(Object o) {
-        /* FIXME: escape strings
-         *        handle JSObect differently
-         *        check for number,boolean types
+        /* FIXME: escape strings: ' -> \'
          */
         if (o == null)
             return new String("null");
-        return new String("\"" + o.toString() + "\"");
+        if (o instanceof java.lang.Number || o instanceof java.lang.Boolean)
+            return o.toString();
+        if (o instanceof netscape.javascript.JSObject)
+            return new String("__lc[0][" + ((JSObject)o).getId() + "]");
+        return new String("'" + o.toString() + "'");
     }
     public Object call(String func, Object [] args) {
-        Main.debug("JSObject.call: " + jsobject + "." + func);
+        Main.info("JSObject.call: " + jsobject + "." + func);
         String script = new String("." + func + "(");
         for (int i = 0; i < args.length; i++)
             script += (i > 0 ? "," : "") + args[i];
         script += ")";
-        return evaluate(script);
+        return evaluate(script, false);
     }
     public Object eval(String s) {
-        return evaluate("." + s);
+        return evaluate(s, true);
     }
     public boolean equals(Object obj) {
-        Main.debug("JSObject.equals");
+        Main.info("JSObject.equals");
         return super.equals(obj);
     }
     public Object getMember(String name) {
         Main.info("JSObject.getMember: " + jsobject + "." + name);
-        Object ret = evaluate("." + name);
-        try {
-            Object doubleObject = new Double(ret.toString());
-            ret = doubleObject;
-        } catch (Exception e) {
-            // this is ok. Just wasn't a number
-        }
-        Main.info("getMember() returns a " + ret.getClass().getName());
-        return ret;
+        return evaluate("." + name, false);
     }
     public void setMember(String name, java.lang.Object o) throws netscape.javascript.JSException {
-        Main.debug("JSObject.setMember: " + jsobject + "." + name);
-        Object ret = evaluate("." + name + "=" + convertValueJ2JS(o.toString()));
-        if (ret == null) {
-            throw new netscape.javascript.JSException("Setting javascript member " + jsobject + "." + name);
-        }
+        Main.info("JSObject.setMember: " + jsobject + "." + name);
+        evaluate("." + name + "=" + convertValueJ2JS(o), false);
     }
     public void removeMember(String name) {
-        Main.debug("JSObject.removeMember: " + jsobject + "." + name);
-        evaluate("." + name + "=null");
+        Main.info("JSObject.removeMember: " + jsobject + "." + name);
+        evaluate("." + name + "=null", false);
     }
     /* get array element; JS: this[index] */
     public Object getSlot(int index){
-        Main.debug("JSObject.getSlot: " + jsobject + "[" + index + "]");
-        return evaluate("[" + index + "]");
+        Main.info("JSObject.getSlot: " + jsobject + "[" + index + "]");
+        return evaluate("[" + index + "]", false);
     }
     public void setSlot(int index, Object o) {
-        Main.debug("JSObject.setSlot: " + jsobject + "[" + index + "]");
-        evaluate("[" + index + "]=" + convertValueJ2JS(o));
+        Main.info("JSObject.setSlot: " + jsobject + "[" + index + "]");
+        evaluate("[" + index + "]=" + convertValueJ2JS(o), false);
     }
     public String toString(){
-        Main.debug("JSObject.toString: " + jsobject);
+        Main.info("JSObject.toString: " + jsobject);
         return new String(jsobject);
     }
     public static JSObject getWindow(Applet a, int dummy) {
-        Main.debug("JSObject.getWindow");
+        Main.info("JSObject.getWindow");
         return new JSObject(a, "[WINDOW]", 0);
     }
 }
