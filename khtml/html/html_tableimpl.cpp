@@ -86,8 +86,10 @@ NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
     int exceptioncode;
     NodeImpl* r;
-    if(tCaption)
-        r = replaceChild ( c, tCaption, exceptioncode );
+    if(tCaption) {
+        replaceChild ( c, tCaption, exceptioncode );
+        r = c;
+    }
     else
         r = insertBefore( c, firstChild(), exceptioncode );
     tCaption = c;
@@ -98,14 +100,17 @@ NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
     int exceptioncode;
     NodeImpl* r;
-    if(head)
-        r = replaceChild ( s, head, exceptioncode );
+    if(head) {
+        replaceChild( s, head, exceptioncode );
+        r = s;
+    }
     else if( foot )
         r = insertBefore( s, foot, exceptioncode );
     else if( firstBody )
         r = insertBefore( s, firstBody, exceptioncode );
     else
         r = appendChild( s, exceptioncode );
+
     head = s;
     return r;
 }
@@ -114,8 +119,10 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
     int exceptioncode;
     NodeImpl* r;
-    if(foot)
-        r = replaceChild ( s, foot, exceptioncode );
+    if(foot) {
+        replaceChild ( s, foot, exceptioncode );
+        r = s;
+    }
     else if( firstBody )
         r = insertBefore( s, firstBody, exceptioncode );
     else
