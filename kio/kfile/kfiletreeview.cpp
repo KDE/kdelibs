@@ -79,7 +79,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 
-    m_openFolderPixmap = SmallIcon( "folder_open" );
+    m_openFolderPixmap = DesktopIcon( "folder_open",KIcon::SizeSmall,KIcon::ActiveState );
 }
 
 KFileTreeView::~KFileTreeView()
@@ -357,7 +357,7 @@ void KFileTreeView::slotSelectionChanged()
 KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
                               bool showHidden )
 {
-    const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( KIcon::Small );
+    const QPixmap& folderPix = KMimeType::mimeType("inode/directory")->pixmap( KIcon::Desktop,KIcon::SizeSmall );
 
     return addBranch( path, name, folderPix, showHidden);
 }
@@ -525,7 +525,7 @@ void KFileTreeView::slotAnimation()
       uint & iconNumber = it.data().iconNumber;
       QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
       // kdDebug(250) << "Loading icon " << icon << endl;
-      item->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
+      item->setPixmap( 0, DesktopIcon( icon,KIcon::SizeSmall,KIcon::ActiveState )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
       if ( iconNumber > it.data().iconCount )
