@@ -200,7 +200,12 @@ class KIOConnection
     private KJASInputStream in = null;
 
     KIOConnection(URL u) {
-        url = u;
+        try {
+            url = new URL(u.toExternalForm());
+        } catch (MalformedURLException muex) {
+            url = null;
+            Main.debug ("Failed to create URL of URL: " + (u == null ? "null" :u.toExternalForm()));
+        }
     }
     public void setData(int code, byte [] d) {
         // this method is synchronized on jobs in processCommand
@@ -281,6 +286,7 @@ class KIOConnection
     synchronized void connect(boolean doInput) throws IOException {
         if (connected)
             return; // javadocs: call is ignored
+	//(new Exception()).printStackTrace();
         Main.debug ("connect " + url);
         errorcode = 0;
         synchronized (jobs) {
@@ -419,11 +425,13 @@ final class KJASHttpURLConnection extends HttpURLConnection
         return kioconnection.headersmap;
     }
     public String getHeaderField(String name) {
-        Main.debug ("getHeaderField:" + name + "=" +
-                    (String) kioconnection.headersmap.get(name));
-        return (String) kioconnection.headersmap.get(name);
+        String field = (String) kioconnection.headersmap.get(name);
+        Main.debug ("getHeaderField:" + name + "=" + field);
+	//(new Exception()).printStackTrace();
+        return field;
     }
     public String getHeaderField(int n) {
+        Main.debug ("getHeaderField(" + n + ") size=" + kioconnection.headersmap.size());
         if (n >= kioconnection.headersmap.size())
             return null;
         String [] entry = (String []) kioconnection.headers.get(n);
@@ -448,7 +456,6 @@ final class KJASHttpURLConnection extends HttpURLConnection
     }
     public synchronized void connect() throws IOException {
         Main.debug ("KJASHttpURLConnection.connect " + url);
-        kioconnection.responseCode = -1;
         SecurityManager security = System.getSecurityManager();
         if (security != null)
             security.checkPermission(getPermission());
