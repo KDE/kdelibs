@@ -40,6 +40,7 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <qmovie.h>
+#include <qwidget.h>
 
 #include <kio/job.h>
 #include <kio/jobclasses.h>
@@ -1021,8 +1022,8 @@ void Loader::servePendingRequests()
          job->addMetaData("cross-domain", "true");
          
       KHTMLPart *part = req->m_docLoader->part();
-      if (part && part->widget())
-        job->setWindow (part->widget());
+      if (part && part->widget() && part->widget()->topLevelWidget())
+        job->setWindow (part->widget()->topLevelWidget());
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
@@ -1271,7 +1272,7 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
     return static_cast<CachedImage *>(o);
 }
 
-CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & url, bool reload, time_t _expireDate, const QString& charset)
+CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & url, bool /*reload*/, time_t _expireDate, const QString& charset)
 {
     // this brings the _url to a standard form...
     KURL kurl;
@@ -1340,7 +1341,7 @@ void Cache::preloadStyleSheet( const QString &url, const QString &stylesheet_dat
     cache->insert( url, stylesheet );
 }
 
-CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bool reload, time_t _expireDate, const QString& charset)
+CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bool /*reload*/, time_t _expireDate, const QString& charset)
 {
     // this brings the _url to a standard form...
     KURL kurl;
