@@ -78,7 +78,17 @@ COOKIE ACCEPT http://d.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NE
 COOKIE ACCEPT http://d.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
 COOKIE ACCEPT http://d.b.c/ Set-Cookie: some_value=value11; Path="/"
 COOKIE ACCEPT http://d.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
-## Check overriding of domain policies #2
+## Check resetting of domain policies
+CONFIG CookieDomainAdvice
+COOKIE ASK http://a.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
+COOKIE ASK http://a.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
+COOKIE ASK http://a.b.c/ Set-Cookie: some_value=value11; Path="/"
+COOKIE ASK http://a.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
+COOKIE ASK http://d.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
+COOKIE ASK http://d.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
+COOKIE ASK http://d.b.c/ Set-Cookie: some_value=value11; Path="/"
+COOKIE ASK http://d.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
+## Check overriding of domain policies #3
 CONFIG CookieDomainAdvice b.c:Reject,.b.c:Accept
 COOKIE REJECT http://b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
 COOKIE REJECT http://b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
@@ -88,6 +98,11 @@ COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NE
 COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
 COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value11; Path="/"
 COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
+## Check overriding of domain policies #4
+CONFIG CookieDomainAdvice .a.b.c.d:Reject,.b.c.d:Accept,.c.d:Ask
+COOKIE REJECT http://www.a.b.c.d/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
+COOKIE ACCEPT http://www.b.c.d/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
+COOKIE ASK http://www.c.d/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
 ## Check interaction with session policy
 CONFIG AcceptSessionCookies true
 CONFIG CookieDomainAdvice .b.c:Reject

@@ -554,7 +554,10 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
 {
    QStringList domains;
    extractDomains(_fqdn, domains);
-   _domain = domains[0];
+   if (domains.count() > 3)
+      _domain = domains[3];
+   else
+      _domain = domains[0];
 }
 
 QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
@@ -640,6 +643,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
     while(partList.count())
     {
+
        if (partList.count() == 1)
          break; // We only have a TLD left.
        
@@ -664,15 +668,15 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        }
 
        QString domain = partList.join(L1("."));
-       _domains.append('.' + domain);
        _domains.append(domain);
+       _domains.append('.' + domain);
        partList.remove(partList.begin()); // Remove part
     }
 
-    // Always add the FQDN at the end of the list for
+    // Always add the FQDN at the start of the list for
     // hostname == cookie-domainname checks!
-    _domains.append( '.' + _fqdn );
-    _domains.append( _fqdn );
+    _domains.prepend( '.' + _fqdn );
+    _domains.prepend( _fqdn );
 }
 
 //
@@ -1014,15 +1018,19 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     }
 
     KCookieAdvice advice = KCookieDunno;
-
-    QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.
+    bool isFQDN = true; // First is FQDN
+    QStringList::Iterator it = domains.begin(); // Start with FQDN which first in the list.
     while( (advice == KCookieDunno) && (it != domains.end()))
     {
        QString domain = *it;
        // Check if a policy for the FQDN/domain is set.
-       KHttpCookieList *cookieList = m_cookieDomains[domain];
-       if (cookieList)
-          advice = cookieList->getAdvice();
+       if ( domain[0] == '.' || isFQDN )
+       {
+          isFQDN = false;
+          KHttpCookieList *cookieList = m_cookieDomains[domain];
+          if (cookieList)
+             advice = cookieList->getAdvice();
+       }
        domains.remove(it);
        it = domains.begin(); // Continue from begin of remaining list
     }

@@ -316,7 +316,9 @@ public:
                          QString &_path);
 
     /**
-     * Returns a list of domains (_domainList) relevant for this host.
+     * Returns a list of domains in @p _domainList relevant for this host.
+     * The list is sorted with the FQDN listed first and the top-most
+     * domain listed last
      */
     void extractDomains(const QString &_fqdn,
                         QStringList &_domainList);
