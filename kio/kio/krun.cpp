@@ -744,8 +744,14 @@ void KRun::init()
   }
 
   if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
-
     m_bIsLocalFile = true;
+
+  QString exec;
+  if (m_strURL.protocol().startsWith("http"))
+  {
+    KConfigGroup cfg(KGlobal::config(), "General");
+    exec = cfg.readEntry("BrowserApplication");
+  }
 
   if ( m_bIsLocalFile )
   {
@@ -771,18 +777,41 @@ void KRun::init()
     foundMimeType( mime->name() );
     return;
   }
-  else if ( KProtocolInfo::isHelperProtocol( m_strURL ) ) {
+  else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( m_strURL ) ) {
     kdDebug(7010) << "Helper protocol" << endl;
 
+    bool ok;
     KURL::List urls;
     urls.append( m_strURL );
-    QString exec = KProtocolInfo::exec( m_strURL.protocol() );
-    run( exec, urls );
-
-    m_bFinished = true;
-    // will emit the error and autodelete this
-    m_timer.start( 0, true );
-    return;
+    if (exec.isEmpty())
+    {
+       exec = KProtocolInfo::exec( m_strURL.protocol() );
+       run( exec, urls );
+       ok = true;
+    }
+    else if (exec.startsWith("!"))
+    {
+       exec = exec.mid(1); // Literal command
+       run( exec, urls );
+       ok = true;
+    }
+    else
+    {
+       KService::Ptr service = KService::serviceByStorageId( exec );
+       if (service)
+       {
+          run( *service, urls );
+          ok = true;
+       }
+    }
+       
+    if (ok)
+    {
+       m_bFinished = true;
+       // will emit the error and autodelete this
+       m_timer.start( 0, true );
+       return;
+    }
   }
 
   // Did we already get the information that it is a directory ?
