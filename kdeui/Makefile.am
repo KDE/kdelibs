@@ -28,7 +28,7 @@ libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
 include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
-		kdatepik.h kdatetbl.h kfontdialog.h kmsgbox.h kpopmenu.h \
+		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
 		ktabctl.h kstatusbar.h ktopwidget.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h \
@@ -50,7 +50,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
 		klined.cpp kledlamp.cpp kprogress.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
-		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp \
+		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp kcombo.cpp krestrictedline.cpp \
@@ -69,7 +69,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc \
 	kdatepik.moc kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
 	kiconloaderdialog.moc kkeydialog.moc kled.moc \
-	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc \
+	kledlamp.moc klined.moc kmenubar.moc \
 	kpopmenu.moc kprogress.moc \
 	kquickhelp.moc krestrictedline.moc kruler.moc kselect.moc \
 	kslider.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
