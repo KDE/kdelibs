@@ -41,6 +41,18 @@ class BrowserInterface;
 
 struct URLArgsPrivate;
 
+/**
+ * URLArgs is a set of arguments bundled into a structure,
+ * to allow specifying how a URL should be opened by openURL().
+ * In other words, this is like arguments to openURL(), but without
+ * have to change the signature of openURL() (since openURL is a
+ * generic KParts method).
+ * The parts (with a browser extension) who care about urlargs will
+ * use those arguments, others will ignore them.
+ *
+ * This can also be used the other way round, when a part asks
+ * for a URL to be opened (with openURLRequest or createNewWindow).
+ */
 struct URLArgs
 {
   URLArgs();
@@ -50,25 +62,78 @@ struct URLArgs
   URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   virtual ~URLArgs();
 
+  /**
+   * This buffer can be used by the part to save and restore its contents.
+   * See KHTMLPart for instance.
+   */
   QStringList docState;
 
+  /**
+   * @p reload is set when the cache shouldn't be used (forced reload)
+   */
   bool reload;
+  /**
+   * @p xOffset is the horizontal scrolling of the part's widget
+   * (in case it's a scrollview). This is saved into the history
+   * and restored when going back in the history.
+   */
   int xOffset;
+  /**
+   * @p yOffset vertical scrolling position, @see xOffset
+   */
   int yOffset;
+  /**
+   * The servicetype (usually mimetype) to use when opening the next URL.
+   */
   QString serviceType;
 
-  QByteArray postData; //khtml specific stuff (POST)
-  void setContentType( const QString & contentType ); // Header for POST
-  QString contentType() const; // Header for POST
+  /**
+   * KHTML-specific field, contents of the HTTP POST data
+   */
+  QByteArray postData;
+  /**
+   * KHTML-specific field, header defining the type of the POST data.
+   */
+  void setContentType( const QString & contentType );
+  /**
+   * KHTML-specific field, header defining the type of the POST data.
+   */
+  QString contentType() const;
+  /**
+   * KHTML-specific field, whether to do a POST instead of a GET,
+   * for the next openURL
+   */
   void setDoPost( bool enable );
+  /**
+   * KHTML-specific field, whether to do a POST instead of a GET,
+   * for the next openURL
+   */
   bool doPost() const;
+
+  /**
+   * Whether to lock the history when opening the next URL.
+   * This is used during e.g. a redirection, to avoid a new entry
+   * in the history
+   */
   void setLockHistory( bool lock );
   bool lockHistory() const;
 
+  /**
+   * Meta-data to associate with the next KIO operation
+   * (@see KIO::TransferJob etc.)
+   */
   QMap<QString, QString> &metaData();
 
+  /**
+   * The frame in which to open the URL. KHTML/Konqueror-specific
+   */
   QString frameName;
 
+  /**
+   * If true, the part who asks for a URL to be opened can be 'trusted'
+   * to execute applications. For instance, the directory views can be
+   * 'trusted' whereas HTML pages are not trusted in that respect.
+   */
   bool trustedSource;
 
   URLArgsPrivate *d;
@@ -76,6 +141,11 @@ struct URLArgs
 
 struct WindowArgsPrivate;
 
+/**
+ * The WindowArgs are used to specify arguments to the "create new window"
+ * call (see the createNewWindow variant that uses WindowArgs).
+ * The primary reason for this is the javascript window.open function.
+ */
 struct WindowArgs
 {
     WindowArgs();
@@ -87,8 +157,10 @@ struct WindowArgs
                 bool _menuBarVisible, bool _toolBarsVisible,
                 bool _statusBarVisible, bool _resizable );
 
+    // Position
     int x;
     int y;
+    // Size
     int width;
     int height;
     bool fullscreen; //defaults to false
@@ -127,6 +199,20 @@ private:
 class BrowserExtensionPrivate;
 
  /**
+  * The Browser Extension is an extension (yes, no kidding) to
+  * KParts::ReadOnlyPart, which allows a better integration of parts
+  * with browsers (in particular Konqueror).
+  * Remember that ReadOnlyPart only has openURL(KURL), with no other settings.
+  * For full-fledged browsing, we need much more than that, including
+  * many arguments about how to open this URL (see URLArgs), allowing
+  * parts to save and restore their data into the back/forward history,
+  * allowing parts to control the location bar URL, to requests URLs
+  * to be opened by the hosting browser, etc.
+  * 
+  * Another aspect of the browser integration is that a set of standard
+  * actions are provided by the browser, but implemented by the part
+  * (for the actions it supports).
+  * 
   * The following standard actions are defined by the host of the view :
   *
   * [selection-dependent actions]
@@ -419,8 +505,21 @@ signals:
                   const QPoint &global, const KURL &url,
                   const QString &mimeType, mode_t mode = (mode_t)-1 );
 
+  /**
+   * Inform the hosting application about the current selection.
+   * Used when a set of files/URLs is selected (with full information
+   * about those URLs, including size, permissions etc.)
+   */
   void selectionInfo( const KFileItemList &items );
+  /**
+   * Inform the hosting application about the current selection.
+   * Used when some text is selected.
+   */
   void selectionInfo( const QString &text );
+  /**
+   * Inform the hosting application about the current selection.
+   * Used when a set of URLs is selected.
+   */
   void selectionInfo( const KURL::List &urls );
 
 private slots:
@@ -443,8 +542,9 @@ private:
 };
 
 /**
- * An extension class for container parts.
- *
+ * An extension class for container parts, i.e. parts that contain
+ * other parts.
+ * For instance a KHTMLPart hosts one part per frame.
  */
 class BrowserHostExtension : public QObject
 {
