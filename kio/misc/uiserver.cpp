@@ -40,6 +40,13 @@
 #include <kmessagebox.h>
 #include <kdesu/client.h>
 #include <kwin.h>
+#include <kdialog.h>
+
+#include <qcheckbox.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpopupmenu.h>
+#include <qheader.h>
 
 #include "observer_stub.h"
 #include "observer.h" // for static methods only
@@ -60,7 +67,7 @@
 UIServer* uiserver;
 
 // ToolBar field IDs
-enum { TOOL_CANCEL };
+enum { TOOL_CANCEL, TOOL_CONFIGURE };
 
 // StatusBar field IDs
 enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
@@ -78,6 +85,74 @@ static const int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
                                     70,  // REMAINING_TIME
                                     450  // URL
 };
+
+class ProgressConfigDialog:public KDialogBase
+{
+   public:
+      ProgressConfigDialog(QWidget* parent);
+      ~ProgressConfigDialog()  {}
+      void setChecked(int i, bool on);
+      bool isChecked(int i) const;
+      friend UIServer;
+   private:
+      QCheckBox *m_keepOpenCb;
+      QCheckBox *m_toolBarCb;
+      QCheckBox *m_statusBarCb;
+      QCheckBox *m_headerCb;
+      QCheckBox *m_fixedWidthCb;
+      KListView *m_columns;
+      QCheckListItem *(m_items[ListProgress::TB_MAX]);
+};
+
+ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
+:KDialogBase(KDialogBase::Plain,i18n("Configure the network operation window"),KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
+             KDialogBase::Ok, parent, "configprog", false)
+{
+   QVBoxLayout *layout=new QVBoxLayout(plainPage(),spacingHint());
+   m_keepOpenCb=new QCheckBox(i18n("Keep network operation window always open"), plainPage());
+   m_headerCb=new QCheckBox(i18n("Show column headers"), plainPage());
+   m_toolBarCb=new QCheckBox(i18n("Show toolbar"), plainPage());
+   m_statusBarCb=new QCheckBox(i18n("Show statusbar"), plainPage());
+   m_fixedWidthCb=new QCheckBox(i18n("Column widths are user adjustable"), plainPage());
+   QLabel *label=new QLabel(i18n("Show information:"), plainPage());
+   m_columns=new KListView(plainPage());
+
+   m_columns->addColumn("info");
+   m_columns->setSorting(-1);
+   m_columns->header()->hide();
+
+   m_items[ListProgress::TB_ADDRESS]        =new QCheckListItem(m_columns, i18n("URL"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_REMAINING_TIME] =new QCheckListItem(m_columns, i18n("Rem. Time"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_SPEED]          =new QCheckListItem(m_columns, i18n("Speed"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_TOTAL]          =new QCheckListItem(m_columns, i18n("Size"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_PROGRESS]       =new QCheckListItem(m_columns, i18n("%"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_COUNT]          =new QCheckListItem(m_columns, i18n("Count"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_RESUME]         =new QCheckListItem(m_columns, i18n("Resume", "Res."), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_LOCAL_FILENAME] =new QCheckListItem(m_columns, i18n("Local Filename"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_OPERATION]      =new QCheckListItem(m_columns, i18n("Operation"), QCheckListItem::CheckBox);
+
+   layout->addWidget(m_keepOpenCb);
+   layout->addWidget(m_headerCb);
+   layout->addWidget(m_toolBarCb);
+   layout->addWidget(m_statusBarCb);
+   layout->addWidget(m_fixedWidthCb);
+   layout->addWidget(label);
+   layout->addWidget(m_columns);
+}
+
+void ProgressConfigDialog::setChecked(int i, bool on)
+{
+   if (i>=ListProgress::TB_MAX)
+      return;
+   m_items[i]->setOn(on);
+}
+
+bool ProgressConfigDialog::isChecked(int i) const
+{
+   if (i>=ListProgress::TB_MAX)
+      return false;
+   return m_items[i]->isOn();
+}
 
 ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
                             bool showDefault )
@@ -371,12 +446,9 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
   m_lpcc[TB_SPEED].title=i18n("Speed");
   m_lpcc[TB_REMAINING_TIME].title=i18n("Rem. Time");
   m_lpcc[TB_ADDRESS].title=i18n("URL");
-  readConfig();
+  readSettings();
 
-  createColumns();
-
-  if (!m_showHeader)
-     header()->hide();
+  applySettings();
 
   //used for squeezing the text in local file name and url
   m_squeezer=new KSqueezedTextLabel(this);
@@ -386,10 +458,9 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
 
 
 ListProgress::~ListProgress() {
-  writeConfig();
 }
 
-void ListProgress::createColumns()
+void ListProgress::applySettings()
 {
    //remove all but the first column
    for (int i=columns()-1; i>=0; i--)
@@ -397,15 +468,24 @@ void ListProgress::createColumns()
 
    for (int i=0; i<TB_MAX; i++)
    {
+//      kdDebug()<<"createColumn() i: "<<i<<" width: "<<m_lpcc[i].width<<endl;
       if (m_lpcc[i].enabled)
       {
          m_lpcc[i].index=addColumn(m_lpcc[i].title, m_fixedColumnWidths?m_lpcc[i].width:-1);
          setColumnWidth(i, m_lpcc[i].width); //yes, this is required here, alexxx
+         if (m_fixedColumnWidths)
+            setColumnWidthMode(i, Manual);
       }
+//      else
+//         m_lpcc[i].index=-1;
    }
+  if (!m_showHeader)
+     header()->hide();
+  else
+     header()->show();
 }
 
-void ListProgress::readConfig() {
+void ListProgress::readSettings() {
   KConfig config("uiserverrc");
 
   // read listview geometry properties
@@ -435,20 +515,24 @@ void ListProgress::columnWidthChanged(int column)
          pi->setText(TB_ADDRESS,pi->fullLengthAddress());
       }
    }
-   writeConfig();
+   writeSettings();
 }
 
-void ListProgress::writeConfig() {
+void ListProgress::writeSettings() {
    KConfig config("uiserverrc");
 
    // write listview geometry properties
    config.setGroup( "ProgressList" );
    for ( int i = 0; i < TB_MAX; i++ ) {
-      m_lpcc[i].width=columnWidth(i);
+      if (!m_lpcc[i].enabled)
+         continue;
+      m_lpcc[i].width=columnWidth(m_lpcc[i].index);
       QString tmps;
-      tmps.sprintf( "Col%d", i );
+      tmps.sprintf( "Col%d", i);
       config.writeEntry( tmps, m_lpcc[i].width);
    }
+   config.writeEntry("ShowListHeader", m_showHeader);
+   config.writeEntry("FixedColumnWidths", m_fixedColumnWidths);
    config.sync();
 }
 
@@ -457,6 +541,7 @@ void ListProgress::writeConfig() {
 
 
 UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
+,m_configDialog(0), m_contextMenu(0)
 {
 
   readSettings();
@@ -464,7 +549,10 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
   // setup toolbar
   toolBar()->insertButton("editdelete", TOOL_CANCEL,
                           SIGNAL(clicked()), this,
-                          SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
+                          SLOT(slotCancelCurrent()), FALSE, i18n("Cancel"));
+  toolBar()->insertButton("configure", TOOL_CONFIGURE,
+                          SIGNAL(clicked()), this,
+                          SLOT(slotConfigure()), true, i18n("Settings"));
 
   toolBar()->setBarPos( KToolBar::Left );
 
@@ -483,6 +571,9 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
            SLOT( slotSelection() ) );
   connect( listProgress, SIGNAL( executed( QListViewItem* ) ),
            SLOT( slotToggleDefaultProgress( QListViewItem* ) ) );
+  connect( listProgress, SIGNAL( contextMenu( KListView*, QListViewItem *, const QPoint &)),
+           SLOT(slotShowContextMenu(KListView*, QListViewItem *, const QPoint&)));
+
 
   // setup animation timer
   updateTimer = new QTimer( this );
@@ -494,10 +585,7 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
   setMinimumSize( 150, 50 );
   resize( m_initWidth, m_initHeight);
 
-  if (m_showStatusBar==false)
-     statusBar()->hide();
-  if (m_showToolBar==false)
-     toolBar()->hide();
+  applySettings();
 
 /*  if ((m_bShowList) && (m_keepListOpen))
   {
@@ -508,11 +596,73 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
      hide();
 }
 
-
 UIServer::~UIServer() {
   updateTimer->stop();
 }
 
+void UIServer::applySettings()
+{
+  if (m_showStatusBar==false)
+     statusBar()->hide();
+  else
+     statusBar()->show();
+  if (m_showToolBar==false)
+     toolBar()->hide();
+  else
+     toolBar()->show();
+}
+
+void UIServer::slotShowContextMenu(KListView*, QListViewItem *item, const QPoint& pos)
+{
+   if (m_contextMenu==0)
+   {
+      m_contextMenu=new QPopupMenu(this);
+      m_contextMenu->insertItem(i18n("Cancel job"), this, SLOT(slotCancelCurrent()));
+//      m_contextMenu->insertItem(i18n("Toggle progress"), this, SLOT(slotToggleDefaultProgress()));
+      m_contextMenu->insertSeparator();
+      m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
+   }
+
+
+   m_contextMenu->popup(pos);
+}
+
+void UIServer::slotConfigure()
+{
+   if (m_configDialog==0)
+   {
+      m_configDialog=new ProgressConfigDialog(0);
+//      connect(m_configDialog,SIGNAL(cancelClicked()), this, SLOT(slotCancelConfig()));
+      connect(m_configDialog,SIGNAL(okClicked()), this, SLOT(slotApplyConfig()));
+      connect(m_configDialog,SIGNAL(applyClicked()), this, SLOT(slotApplyConfig()));
+   }
+   m_configDialog->m_keepOpenCb->setChecked(m_keepListOpen);
+   m_configDialog->m_toolBarCb->setChecked(m_showToolBar);
+   m_configDialog->m_statusBarCb->setChecked(m_showStatusBar);
+   m_configDialog->m_headerCb->setChecked(listProgress->m_showHeader);
+   m_configDialog->m_fixedWidthCb->setChecked(listProgress->m_fixedColumnWidths);
+   for (int i=0; i<ListProgress::TB_MAX; i++)
+   {
+      m_configDialog->setChecked(i, listProgress->m_lpcc[i].enabled);
+   }
+   m_configDialog->show();
+}
+
+void UIServer::slotApplyConfig()
+{
+   m_keepListOpen=m_configDialog->m_keepOpenCb->isChecked();
+   m_showToolBar=m_configDialog->m_toolBarCb->isChecked();
+   m_showStatusBar=m_configDialog->m_statusBarCb->isChecked();
+   listProgress->m_showHeader=m_configDialog->m_headerCb->isChecked();
+   listProgress->m_fixedColumnWidths=m_configDialog->m_fixedWidthCb->isChecked();
+   for (int i=0; i<ListProgress::TB_MAX; i++)
+      listProgress->m_lpcc[i].enabled=m_configDialog->isChecked(i);
+
+   applySettings();
+   listProgress->applySettings();
+   writeSettings();
+   listProgress->writeSettings();
+}
 
 int UIServer::newJob( QCString observerAppId, bool showProgress )
 {
@@ -1077,10 +1227,13 @@ void UIServer::writeSettings() {
   config.setGroup( "UIServer" );
   config.writeEntry("InitialWidth",width());
   config.writeEntry("InitialHeight",height());
+  config.writeEntry("ShowStatusBar", m_showStatusBar);
+  config.writeEntry("ShowToolBar", m_showToolBar);
+  config.writeEntry("KeepListOpen", m_keepListOpen);
 }
 
 
-void UIServer::cancelCurrent() {
+void UIServer::slotCancelCurrent() {
   QListViewItemIterator it( listProgress );
   ProgressItem *item;
 

@@ -35,6 +35,7 @@
 class ListProgress;
 class KSqueezedTextLabel;
 class ProgressItem;
+class UIServer;
 
 namespace KIO {
   class Job;
@@ -81,13 +82,14 @@ public:
   };
 
   friend class ProgressItem;
-
+  friend class UIServer;
 protected slots:
   void columnWidthChanged(int column);
 protected:
 
-  void writeConfig();
-  void readConfig();
+  void writeSettings();
+  void readSettings();
+  void applySettings();
   void createColumns();
 
   bool m_showHeader;
@@ -188,6 +190,8 @@ protected:
 };
 
 class QResizeEvent;
+class ProgressConfigDialog;
+class QPopupMenu;
 
 /**
  * It's purpose is to show progress of IO operations.
@@ -348,12 +352,15 @@ protected slots:
 
   void slotUpdate();
 
-  void cancelCurrent();
+  void slotCancelCurrent();
 
   void slotToggleDefaultProgress( QListViewItem * );
   void slotSelection();
 
   void slotJobCanceled( ProgressItem * );
+  void slotConfigure();
+  void slotApplyConfig();
+  void slotShowContextMenu(KListView*, QListViewItem *item, const QPoint& pos);
 
 protected:
 
@@ -370,6 +377,7 @@ protected:
   KToolBar::BarPosition toolbarPos;
   QString properties;
 
+  void applySettings();
   void readSettings();
   void writeSettings();
 private:
@@ -385,6 +393,8 @@ private:
 
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
+  ProgressConfigDialog *m_configDialog;
+  QPopupMenu* m_contextMenu;
 
   static int s_jobId;
 };
