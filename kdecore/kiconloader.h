@@ -152,6 +152,16 @@ public:
     QMovie loadMovie(const QString& name, int group, int size=0) const;
     
     /**
+     * Returns the path to an animated icon.
+     * @param name The name of the icon.
+     * @param group The icon group. See @ref loadIcon().
+     * @param size Override the default size for @p group.
+     * @return the full path to the movie, ready to be passed to QMovie's constructor.
+     * Empty string if not found.
+     */
+    QString moviePath(const QString& name, int group, int size) const;
+
+    /**
      * Loads an animated icon. In the future, this will be replaced by a
      * routine which loads an MNG animation and returns a QMovie.
      * @param name The name of the icon.

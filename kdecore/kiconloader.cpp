@@ -655,7 +655,15 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 
 QMovie KIconLoader::loadMovie(const QString& name, int group, int size) const
 {
-    if (!d->mpGroups) return QMovie();
+    QString file = moviePath( name, group, size );
+    if (file.isEmpty())
+	return QMovie();
+    return QMovie(file);
+}
+
+QString KIconLoader::moviePath(const QString& name, int group, int size) const
+{
+    if (!d->mpGroups) return QString::null;
 
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
@@ -687,10 +695,7 @@ QMovie KIconLoader::loadMovie(const QString& name, int group, int size) const
 	file = icon.isValid() ? icon.path : QString::null;
 
     }
-    if (file.isEmpty())
-	return QMovie();
-
-    return QMovie(file);
+    return file;
 }
 
 
