@@ -98,10 +98,17 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
                 if(r && e)
                 {
-                    int absx, absy;
+                    KHTMLView* v = getDocument()->view();
+                    int x = e->clientX();
+                    int y = e->clientY();
+                    int absx = 0;
+                    int absy = 0;
+                    if ( v ) {
+                        x += v->contentsX();
+                        y += v->contentsY();
+                    }
                     r->absolutePosition(absx, absy);
-                    int x(e->clientX() - absx), y(e->clientY() - absy);
-                    url += QString("?%1,%2").arg( x ).arg( y );
+                    url += QString("?%1,%2").arg( x - absx ).arg( y - absy );
                 }
                 else {
                     evt->setDefaultHandled();

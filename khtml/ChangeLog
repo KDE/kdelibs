@@ -1,5 +1,11 @@
 2004-01-26  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_inlineimpl.cpp (defaultEventHandler): use content, not
+	viewport coordinates for server side image maps (#59701).
+
+	* rendering/bidi.cpp (computeVerticalPositionsForLine): update
+	overflowWidth, otherwise a lot of things go wrong (#59701).
+
 	* misc/loader.cpp (data): correctly emit notifyFinished(), otherwise our
 	state machine goes out of sync.
 

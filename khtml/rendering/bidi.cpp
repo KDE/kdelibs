@@ -1137,6 +1137,9 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiCo
 	    r->box->setWidth(r->box->width() + spaceAdd);
         else
             x += r->box->width() + spaceAdd;
+        if ( x > m_overflowWidth )
+            m_overflowWidth = x;
+
         r = sruns->next();
     }
 
