@@ -568,7 +568,7 @@ QString Decoder::decode(const char *data, int len)
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
-    if(out[out.length()-1] == QChar::null)
+    if( out[out.length()-1].isNull() )
         assert(0);
     return out;
 }
