@@ -25,6 +25,7 @@
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kfontdialog.h>
 
 #include "kfontcombo.h"
 #include "kfontcombo.moc"
@@ -161,8 +162,9 @@ KFontCombo::KFontCombo(QWidget *parent, const char *name)
     : KComboBox(true, parent, name)
 {
     init();
-    QFontDatabase fontdb;
-    setFonts(fontdb.families());
+    QStringList families;
+    KFontChooser::getFontList(families, false);
+    setFonts(families);
 }
 
 KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent, const char *name)
