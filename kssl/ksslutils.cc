@@ -67,12 +67,11 @@ return qdt;
 
 
 QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
-KLocale kl;
-QString qstr;
-int gmt;
-QDateTime qdt = ASN1_UTCTIME_QDateTime(tm, &gmt);
+  QString qstr;
+  int gmt;
+  QDateTime qdt = ASN1_UTCTIME_QDateTime(tm, &gmt);
 
-  qstr = kl.formatDateTime(qdt, false, true);
+  qstr = KGlobal::locale()->formatDateTime(qdt, false, true);
   if (gmt) { 
     qstr += " ";
     qstr += /*TODO? i18n*/ ("GMT");
