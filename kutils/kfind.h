@@ -80,8 +80,9 @@ class KFindNextDialog;
  *      }
  *
  *      if ( res == KFind::NoMatch ) // i.e. at end
- *          <Call either  m_find->displayFinalDialog()
- *           or           if ( m_find->shouldRestart() ) { reinit and call slotFindNext(); }>
+ *          <Call either  m_find->displayFinalDialog(); delete m_find; m_find = 0L;
+ *           or           if ( m_find->shouldRestart() ) { reinit and call slotFindNext(); }
+                          else { delete m_find; m_find = 0L; }>
  *  }
  * </pre>
  *
