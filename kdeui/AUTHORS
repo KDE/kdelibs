@@ -96,5 +96,5 @@ Holger Freyther <freyther@yahoo.com>
 KDialogBase, KGuiItem, KStdGuiItem, KAction,
 added KMessageBox::questionYesNoCancel( )
 
-Benjamin C Meyer <ben@meyerhome.net>
+Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
 KAutoConfigDialog

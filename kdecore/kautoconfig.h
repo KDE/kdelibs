@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2003 Benjamin C Meyer (ben@meyerhome.net)
+ *  Copyright (C) 2003 Benjamin C Meyer (ben+kdelibs at meyerhome dot net)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,7 +27,7 @@ class KConfig;
 class QWidget;
 
 /**
- * @author Benjamin C Meyer <ben-devel at meyerhome.net>
+ * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * 
  * The KAutoConfig class provides a means of automaticly retrieving,
  * saving and reseting basic settings.  It also can emit signals when
