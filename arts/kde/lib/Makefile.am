@@ -10,7 +10,7 @@ kwrapper.cc: kwrapper.h
 kwrapper.mcoptype: kwrapper.h
 kwrapper.mcopclass: kwrapper.h
 kwrapper.h: $(top_srcdir)/arts/kde/lib/kwrapper.idl $(MCOPIDL)
-	    $(MCOPIDL) -I$(top_srcdir)/arts/soundserver -t $(MCOPINC) $(top_srcdir)/arts/kde/lib/kwrapper.idl
+	    $(MCOPIDL) -I$(top_srcdir)/arts/soundserver -I$(top_srcdir)/arts/flow -t $(MCOPINC) $(top_srcdir)/arts/kde/lib/kwrapper.idl
 
 DISTCLEANFILES = kwrapper.cc kwrapper.h kwrapper.mcoptype kwrapper.mcopclass
 
