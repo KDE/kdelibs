@@ -719,6 +719,12 @@ void KHTMLView::setCharset( const char *_c)
     view->setCharset(_c);
 }
 
+void 
+KHTMLView::setOverrideCharset(const char *name)
+{
+    view->setOverrideCharset(name);
+}
+
 KHTMLView* KHTMLView::topView()
 {
   KHTMLView *v = this;

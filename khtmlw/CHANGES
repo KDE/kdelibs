@@ -1,6 +1,14 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.3  - 17 Nov 1998 (Lars Knoll <knoll@mpi-hd.mpg.de>)
+--------------
+
+Fixed charset support for forms
+Added methods for a better charset support in kfm
+Changes are BINARY INCOMPATIBLE
+
+
 Version 0.13.3  - 29 Oct 1998 (Lars Knoll <knoll@mpi-hd.mpg.de>)
 --------------
 

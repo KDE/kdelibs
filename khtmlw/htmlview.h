@@ -489,6 +489,11 @@ public:
     void setCharset( const char *_c); 
     
     /**
+     * set a charset, which will override the <meta ...> setting
+     */
+    void setOverrideCharset(const char *name = 0);
+
+    /**
      * For internal use only.
      *
      * @see #cookie

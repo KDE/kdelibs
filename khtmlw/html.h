@@ -595,6 +595,11 @@ public:
      */
     bool setCharset(const char *name); 
 
+    /**
+     * set a charset, which will override the <meta ...> setting
+     */
+    void setOverrideCharset(const char *name = 0);
+
     //-----------------------------------------------------------
     // FUNCTIONS used for KFM Extension
     // -----------------------------------------------------------
@@ -1003,6 +1008,11 @@ protected:
      * Reference (anchor) to jump to once it becomes available
      */
     QString reference;
+
+    /*
+     * overrides the document charset as specified by <meta> if set.
+     */
+    QString overrideCharset;
 
     /*
      * This painter is created at need, for example to draw

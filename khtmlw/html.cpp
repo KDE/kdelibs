@@ -1707,10 +1707,20 @@ void KHTMLWidget::parse()
     
     font_stack.clear();
     HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, settings->fontSizes );
-    f.setCharset(settings->charset);
+    // set the initial charset
+    if(!overrideCharset.isEmpty())
+	f.setCharset(overrideCharset);
+    else
+	f.setCharset(kapp->getCharsets()->defaultCharset().name());
+    //f.setCharset(settings->charset);
     f.setTextColor( settings->fontBaseColor );
     const HTMLFont *fp = pFontManager->getFont( f );
     font_stack.push( fp );
+
+    if(!overrideCharset.isEmpty())
+	setCharset(overrideCharset);
+    else
+	setCharset(kapp->getCharsets()->defaultCharset().name());
 
     // reset form related stuff
     formList.clear();
@@ -3591,7 +3601,8 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	   		{
 				const char* token = stringTok->nextToken();
 				debugM("token: %s\n",token);
-				if ( strncasecmp( token, "charset=", 8 ) == 0)
+				if ( strncasecmp( token, "charset=", 8 ) == 0
+				    && overrideCharset.isEmpty() )
 				  	setCharset(token+8);
 			}                         
 		}
@@ -3802,7 +3813,8 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 			}
 		}
 
-		formSelect = new HTMLSelect( this, name, size, multi );
+		formSelect = new HTMLSelect( this, name, size, multi,
+					     currentFont() );
 		formSelect->setForm( form );
 		form->addElement( formSelect );
 		if ( !flow )
@@ -3925,7 +3937,8 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 			}
 		}
 
-		formTextArea = new HTMLTextArea( this, name, rows, cols );
+		formTextArea = new HTMLTextArea( this, name, rows, cols,
+						 currentFont() );
 		formTextArea->setForm( form );
 		form->addElement( formTextArea );
 		if ( !flow )
@@ -4612,7 +4625,8 @@ const char *KHTMLWidget::parseInput( const char *attr )
     {
 	case CheckBox:
 	    {
-		HTMLCheckBox *cb = new HTMLCheckBox( this,name,value,checked );
+		HTMLCheckBox *cb = new HTMLCheckBox( this,name,value,checked,
+						     currentFont() );
 		cb->setForm( form );
 		form->addElement( cb );
 		flow->append( cb );
@@ -4629,7 +4643,8 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 	case Radio:
 	    {
-		HTMLRadio *radio = new HTMLRadio( this, name, value, checked );
+		HTMLRadio *radio = new HTMLRadio( this, name, value, checked,
+						  currentFont() );
 		radio->setForm( form );
 		form->addElement( radio );
 		flow->append( radio );
@@ -4642,7 +4657,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 	case Reset:
 	    {
-		HTMLReset *reset = new HTMLReset( this, value );
+		HTMLReset *reset = new HTMLReset( this, value, currentFont() );
 		reset->setForm( form );
 		form->addElement( reset );
 		flow->append( reset );
@@ -4653,7 +4668,8 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 	case Submit:
 	    {
-		HTMLSubmit *submit = new HTMLSubmit( this, name, value );
+		HTMLSubmit *submit = new HTMLSubmit( this, name, value,
+						     currentFont() );
 		submit->setForm( form );
 		form->addElement( submit );
 		flow->append( submit );
@@ -4664,7 +4680,8 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 	case Button:
 	    {
-		HTMLButton *button = new HTMLButton(this,name,value,handlers);
+		HTMLButton *button = new HTMLButton(this,name,value,handlers,
+						    currentFont() );
 		button->setForm( form );
 		form->addElement( button );
 		flow->append( button );
@@ -4675,7 +4692,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	case Password:
 	    {
 		HTMLTextInput *ti = new HTMLTextInput( this, name, value, size,
-			maxLen, (type == Password));
+			maxLen, (type == Password), currentFont() );
 		ti->setForm( form );
 		form->addElement( ti );
 		flow->append( ti );
@@ -5185,9 +5202,10 @@ bool KHTMLWidget::setCharset(const char *name){
 	KCharsets *charsets=kapp->getCharsets();
 	KCharset charset;
         if (!name || !name[0])
-          charset=charsets->defaultCharset();
+	    charset=charsets->defaultCharset();
 	else
-	  charset=KCharset(name);
+	    charset=KCharset(name);
+	printf("setting charset to %s.\n", charset.name());
 	if (!charset.isDisplayable()){
 		if (charsetConverter) delete charsetConverter;
 	        charsetConverter=0;
@@ -5230,6 +5248,13 @@ bool KHTMLWidget::setCharset(const char *name){
 	}
 	return TRUE;
 }
+
+void 
+KHTMLWidget::setOverrideCharset(const char *name)
+{
+    overrideCharset = name;
+}
+
 
 //-----------------------------------------------------------
 // FUNCTIONS used for KFM Extension
