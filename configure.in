@@ -196,6 +196,7 @@ AC_OUTPUT(Makefile \
 	khtml/Makefile \
 	khtml/java/Makefile \
 	khtml/kjs/Makefile \
+	khtml/misc/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
 	kio/Makefile \
