@@ -47,8 +47,8 @@ KHTMLImageSource::KHTMLImageSource(QIODevice* device, int buffer_size) :
     iod(device),
     rew(FALSE),
     sendReady(TRUE),
-    pos(0),
-    eof(FALSE)
+    eof(FALSE),
+    pos(0)
 {
 }
 
@@ -70,7 +70,7 @@ int KHTMLImageSource::readyToSend()
 {
   if ( !(iod->state() & IO_Open) )
     {
-      if ( iod->size() == pos)
+      if ( (int) iod->size() == pos)
 	return -1;
 
       // This indicates that the end of the buffer is the end 
