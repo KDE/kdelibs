@@ -425,17 +425,22 @@ const_qualifier
 
 int_type
 	: T_SIGNED { $$ = new QString("signed int"); }
+	| T_SIGNED T_INT { $$ = new QString("signed int"); }
 	| T_UNSIGNED { $$ = new QString("unsigned int"); }
-	| T_SIGNED T_SHORT { $$ = new QString("signed short int"); }
-	| T_SIGNED T_LONG { $$ = new QString("signed long int"); }
-	| T_SIGNED T_SHORT T_INT { $$ = new QString("signed short int"); }
-	| T_UNSIGNED T_SHORT { $$ = new QString("unsigned short int"); }
-	| T_UNSIGNED T_LONG { $$ = new QString("unsigned long int"); }
-	| T_UNSIGNED T_SHORT T_INT { $$ = new QString("unsigned short int"); }
 	| T_UNSIGNED T_INT { $$ = new QString("unsigned int"); }
+	| T_SIGNED T_SHORT { $$ = new QString("signed short int"); }
+	| T_SIGNED T_SHORT T_INT { $$ = new QString("signed short int"); }
+	| T_SIGNED T_LONG { $$ = new QString("signed long int"); }
+	| T_SIGNED T_LONG T_INT { $$ = new QString("signed long int"); }
+	| T_UNSIGNED T_SHORT { $$ = new QString("unsigned short int"); }
+	| T_UNSIGNED T_SHORT T_INT { $$ = new QString("unsigned short int"); }
+	| T_UNSIGNED T_LONG { $$ = new QString("unsigned long int"); }
+	| T_UNSIGNED T_LONG T_INT { $$ = new QString("unsigned long int"); }
 	| T_INT { $$ = new QString("int"); }
 	| T_LONG { $$ = new QString("long int"); }
+	| T_LONG T_INT { $$ = new QString("long int"); }
 	| T_SHORT { $$ = new QString("short int"); }
+	| T_SHORT T_INT { $$ = new QString("short int"); }
 	| T_CHAR { $$ = new QString("char"); }
 	| T_SIGNED T_CHAR { $$ = new QString("signed char"); }
 	| T_UNSIGNED T_CHAR { $$ = new QString("unsigned char"); }
