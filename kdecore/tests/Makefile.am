@@ -26,7 +26,7 @@ check_PROGRAMS = kconfigtest klocaletest klocaletest2 kprocesstest ksimpleconfig
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest kcatalogue \
-	ksortablevaluelisttest
+	ksortablevaluelisttest krfcdatetest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h kipctest.h
 
@@ -60,3 +60,4 @@ kmdcodectest_SOURCES = kmdcodectest.cpp
 knotifytest_SOURCES = knotifytest.cpp
 kcatalogue_SOURCES = kcatalogue.cpp libintl.cpp
 ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
+krfcdatetest_SOURCES = krfcdatetest.cpp
