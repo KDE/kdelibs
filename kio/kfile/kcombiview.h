@@ -29,6 +29,7 @@
 #include <kfileview.h>
 
 class KFileIconView;
+class QEvent;
 class QIconViewItem;
 
 /**
@@ -100,7 +101,7 @@ public:
     virtual KActionCollection * actionCollection() const;
 
     virtual void setAcceptDrops(bool b);
-    
+
     // KDE 4: Make virtual
     void setDropOptions(int options);
 
@@ -122,6 +123,7 @@ private:
     mutable KFileView *m_lastViewForPrevItem;
 
 protected:
+    virtual bool eventFilter( QObject *o, QEvent *e );
     void setDropOptions_impl(int options);
 
     virtual void virtual_hook( int id, void* data );

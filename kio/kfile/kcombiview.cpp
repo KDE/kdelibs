@@ -28,8 +28,7 @@
 #include "kfiledetailview.h"
 #include "config-kfile.h"
 
-#include <qpainter.h>
-#include <qlistbox.h>
+#include <qevent.h>
 
 #include <qdir.h>
 
@@ -55,7 +54,8 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     left->setArrangement( QIconView::LeftToRight );
     left->setParentView( this );
     left->setAcceptDrops(false);
-
+    left->installEventFilter( this );
+    
     connect( sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
              SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
@@ -80,6 +80,7 @@ void KCombiView::setRight(KFileView *view)
     right->setParentView( this );
     right->widget()->setAcceptDrops(acceptDrops());
     right->setDropOptions(dropOptions());
+    right->widget()->installEventFilter( this );
 }
 
 
@@ -340,14 +341,30 @@ void KCombiView::setDropOptions_impl(int options)
 }
 
 void KCombiView::virtual_hook( int id, void* data )
-{ 
+{
     switch(id) {
-      case VIRTUAL_SET_DROP_OPTIONS: 
+      case VIRTUAL_SET_DROP_OPTIONS:
          setDropOptions_impl(*(int *)data);
          break;
       default:
          KFileView::virtual_hook( id, data );
     }
+}
+
+bool KCombiView::eventFilter( QObject *o, QEvent *e )
+{
+    int type = e->type();
+    
+    // only the focused view may have a selection
+    if ( type == QEvent::FocusIn )
+    {
+        if ( o == left )
+            right->clearSelection();
+        else if ( o == right->widget() )
+            left->clearSelection();
+    }
+    
+    return QSplitter::eventFilter( o, e );
 }
 
 #include "kcombiview.moc"
