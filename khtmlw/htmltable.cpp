@@ -98,8 +98,8 @@ int HTMLTableCell::calcMinWidth()
     if ( isFixedWidth() )
     {
         // Our minimum width is at least our fixed width
-        if (width > minWidth)
-            minWidth = width;
+        if (max_width > minWidth)
+            minWidth = max_width;
 
         // And our actual width is at least our minimum width.
         if (width < minWidth)
@@ -114,7 +114,7 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 {
 	if ( _y + _height < y - getAscent() || _y > y )
 		return false;
-    
+
  	if ( bg.isValid() )
 	{
 		int top = _y - ( y - getAscent() );
@@ -126,7 +126,7 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 
  		QBrush brush( bg );
 		_painter->fillRect( _tx + x - padding, _ty + y - ascent + top,
-			getMaxWidth() + padding * 2, bottom - top, brush );
+			width + padding * 2, bottom - top, brush );
 
 	    // another hack... 
 	    HTMLObject *obj;
@@ -430,10 +430,7 @@ void HTMLTable::calcSize( HTMLClue * )
     for ( c = 0; c < totalCols; c++ )
     {
         if (columnPos[c+1] > max_width-border)
-	{
-	    printf("Column %d is too for right\n",c+1);
 	    columnPos[c+1] = max_width-border;
-	}
     }
 
     // Attempt to get sensible cell widths
@@ -860,12 +857,23 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
     }
 
     prefColumnWidth = new int [totalCols];
+    bool *fixedCol = new bool [totalCols];
+    bool *percentCol = new bool [totalCols];
+    bool *variableCol = new bool [totalCols];
+
+    //printf("columnOpt1: ");
+    //for ( c = 0; c < totalCols; c++ )
+    //printf("%d ", columnOpt[c+1]);
+    //printf("\n");
         
     /* first calculate how much we would like to add in each column */
     for ( c = c_start; c <= c_end; c++ )
     {
         minWidth = columnOpt[c+1] - columnOpt[c];
         prefColumnWidth[c] = minWidth;
+	fixedCol[c] = false;
+	percentCol[c] = false;
+	variableCol[c] = true;
         for ( r = 0; r < totalRows; r++ )
         {
             int prefCellWidth;
@@ -880,11 +888,15 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
             { // fixed width
                 prefCellWidth = cell->getWidth() + padding +
                                 padding + spacing + borderExtra;
+		fixedCol[c] = true;
+		variableCol[c] = false;
             }
             else if (cell->getPercent() > 0)
             { // percentage width
                 prefCellWidth = tableWidth * cell->getPercent() / 100 + padding +
                                 padding + spacing + borderExtra;
+		percentCol[c] = true;
+		variableCol[c] = false;
             }
             else
             { // variable width
@@ -920,7 +932,7 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
                        
             minWidth = columnOpt[c+1] - columnOpt[c];
             prefWidth = prefColumnWidth[c];
-            if (prefWidth <= minWidth)
+            if (prefWidth <= minWidth || fixedCol[c] || percentCol[c])
                 continue;
                                         
             addSize = (prefWidth - minWidth);
@@ -941,21 +953,75 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
     }
     delete [] prefColumnWidth;
 
-    // Spread the remaining space equally across all columns
-    if (tooAdd > 0)
-    {        
-        for( c = c_start; c <= c_end; c++)
-        {
-            unsigned int c1;
+    //printf("columnOpt2: ");
+    //for ( c = 0; c < totalCols; c++ )
+    //printf("%d ", columnOpt[c+1]);
+    //printf("\n");
 
-            addSize = tooAdd / (1 + c_end - c);
-            tooAdd -= addSize;
-            for ( c1 = c+1; c1 <= totalCols; c1++ )
-            {
-                columnOpt[c1] += addSize;
-            }
-        }
+    // Spread the remaining space equally across all variable columns
+    if (tooAdd > 0) 
+	tooAdd = scaleSelectedColumns(c_start, c_end, tooAdd, variableCol);
+
+    //printf("columnOpt3: ");
+    //for ( c = 0; c < totalCols; c++ )
+    //	printf("%d ", columnOpt[c+1]);
+    //printf("\n");
+
+    // Spread the remaining space equally across all percentage columns
+    if (tooAdd > 0)
+	tooAdd = scaleSelectedColumns(c_start, c_end, tooAdd, percentCol);
+
+    //printf("columnOpt4: ");
+    //for ( c = 0; c < totalCols; c++ )
+    //printf("%d ", columnOpt[c+1]);
+    //printf("\n");
+
+    // Still something left... Change fixed columns
+    if (tooAdd > 0)
+	tooAdd = scaleSelectedColumns(c_start, c_end, tooAdd, fixedCol);
+
+    //printf("columnOpt5: ");
+    //for ( c = 0; c < totalCols; c++ )
+    //printf("%d ", columnOpt[c+1]);
+    //printf("\n");
+
+    delete [] fixedCol;
+    delete [] percentCol;
+    delete [] variableCol;
+    
+}
+
+int
+HTMLTable::scaleSelectedColumns(int c_start, int c_end, int tooAdd, 
+				 bool *selected)
+{
+    int c, c1;
+
+    if (tooAdd <= 0) return tooAdd;
+
+    int numSelected = 0;
+    for ( c = c_start; c <= c_end; c++ )
+	if( selected[c] ) numSelected++;
+    if(numSelected < 1) return tooAdd;
+    
+    int addSize = tooAdd / numSelected;
+    int left = tooAdd - addSize * numSelected;
+    for( c = c_start; c <= c_end; c++)
+    {
+	if( !selected[c] ) continue;
+	tooAdd -= addSize;
+	for ( c1 = c+1; c1 <= totalCols; c1++ )
+	{
+	    columnOpt[c1] += addSize;
+	    if ( left ) columnOpt[c1]++;
+	}
+	if(left) 
+	{
+	    tooAdd--;
+	    left--;
+	}
     }        
+    return tooAdd;
 }
 
 // New table layout function
