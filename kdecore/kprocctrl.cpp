@@ -85,6 +85,13 @@ KProcessController::~KProcessController()
 }
 
 
+extern "C" {
+static void theReaper( int num )
+{
+  KProcessController::theSigCHLDHandler( num );
+}
+}
+
 struct sigaction KProcessController::oldChildHandlerData;
 bool KProcessController::handlerSet = false;
 
@@ -101,7 +108,7 @@ void KProcessController::setupHandlers()
   act.sa_flags = 0;
   sigaction( SIGPIPE, &act, 0L );
 
-  act.sa_handler = theSigCHLDHandler;
+  act.sa_handler = theReaper;
   act.sa_flags = SA_NOCLDSTOP;
   // CC: take care of SunOS which automatically restarts interrupted system
   // calls (and thus does not have SA_RESTART)
