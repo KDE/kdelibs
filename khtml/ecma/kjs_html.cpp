@@ -3060,8 +3060,11 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyNam
   bool ok;
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
-    DOM::Node node = collection.item(u);
-    return getDOMNode(exec,node);
+    if ( u < collection.length() ) {
+      DOM::Node node = collection.item(u);
+      return getDOMNode(exec,node);
+    } else
+      return Undefined();
   }
   else
     return getNamedItems(exec,propertyName);
