@@ -305,6 +305,9 @@ private:
 
   bool m_bShowList;
 
+  // true if there's a new job that hasn't been shown yet.
+  bool m_bUpdateNewJob;
+ 
   static int s_jobId;
 };
 

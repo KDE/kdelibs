@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kdesu/client.h>
+#include <kwin.h>
 
 #include "observer_stub.h"
 #include "kio/defaultprogress.h"
@@ -373,9 +374,7 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
   updateTimer = new QTimer( this );
   connect( updateTimer, SIGNAL( timeout() ),
            SLOT( slotUpdate() ) );
-
-  if (m_bShowList)
-    updateTimer->start( 1000 );
+  m_bUpdateNewJob=false;
 
   setCaption("Progress Dialog");
   setMinimumSize( 350, 150 );
@@ -411,6 +410,11 @@ int UIServer::newJob( QCString observerAppId, bool showProgress )
   ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, show );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
            SLOT( slotJobCanceled( ProgressItem* ) ) );
+
+  if ( m_bShowList && !updateTimer->isActive() ) 
+    updateTimer->start( 1000 );
+
+  m_bUpdateNewJob=true;
 
   return s_jobId;
 }
@@ -645,7 +649,7 @@ void UIServer::killJob( QCString observerAppId, int progressId )
 
 
 void UIServer::closeEvent( QCloseEvent * ){
-  hide();
+   KWin::iconifyWindow(winId());
 }
 
 
@@ -670,10 +674,15 @@ void UIServer::slotUpdate() {
 
   if ( !visible ) {
     hide();
+    updateTimer->stop();
     return;
-  }
+  } 
 
-  show();
+  if (m_bUpdateNewJob)
+  {
+    m_bUpdateNewJob=false;
+    show();
+  }
 
   int iTotalFiles = 0;
   int iTotalSize = 0;
