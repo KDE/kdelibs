@@ -156,7 +156,7 @@ void KPropertiesDialog::init()
 {
   m_pageList.setAutoDelete( true );
 
-  m_tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties Dialog" ),
+  m_tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(m_singleUrl.fileName()),
 			 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, 0L, "propsdlg", false );
 
   // Matthias: let the dialog look like a modal dialog
