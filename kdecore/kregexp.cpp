@@ -6,11 +6,10 @@
 #include <string.h>
 #include <assert.h>
 
-#ifndef __FreeBSD__
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
-#else
-#include <stdlib.h>
 #endif
+#include <stdlib.h>
 
 KRegExpPrivate::KRegExpPrivate()
 {
