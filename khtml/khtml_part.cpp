@@ -785,7 +785,7 @@ void KHTMLPart::write( const QString &str )
 void KHTMLPart::end()
 {
     // make sure nothing's left in there...
-    if(!d->m_encoder || !d->m_decoder->encoding()) {
+    if(d->m_decoder && !d->m_decoder->encoding()) {
 	d->m_decoder->setEncoding("iso8859-1");
 	write(" ");
     }
