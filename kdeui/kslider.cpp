@@ -19,7 +19,7 @@
 */
 //-----------------------------------------------------------------------------
 // KSlider control V2.0
-// KSlider now maintained by Christian Esken (chris@magicon.prima.ruhr.de)
+// KSlider now maintained by Christian Esken (esken@kde.org)
 // Revision information.
 // 1.0 KSlider by Martin R. Jones
 // 1.1 All changes now by Christian Esken: sanity checks ( checkWidth() ).
