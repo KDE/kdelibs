@@ -148,12 +148,11 @@ public:
                        const QColor *pen, bool atBorder);
     int defaultFrameWidth() const {return(2);}
     void polishPopupMenu(QPopupMenu *mnu);
-    /*
     void drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
                  bool selected);
     void drawTabMask( QPainter*, const QTabBar*, QTab*, bool selected );
     void tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
-    int &overlap);*/
+                       int &overlap);
 
     void drawSplitter(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, Orientation orient);

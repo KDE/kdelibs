@@ -1604,7 +1604,6 @@ void HCStyle::polishPopupMenu(QPopupMenu *mnu)
     config->setGroup(oldGrp);
 }
 
-/*
 void HCStyle::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
                       bool selected)
 {
@@ -1615,57 +1614,49 @@ void HCStyle::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
 
     QRect r = tab->rect();
     QColorGroup g = tabBar->colorGroup();
-    if(selected){
-        p->setPen(g.light());
-        p->drawLine(r.x()+2, r.y(), r.right()-8, r.y());
-        p->drawPoint(r.x()+1, r.y()+1);
-        p->drawLine(r.x(), r.y()+2, r.x(), r.bottom());
-        p->drawPoint(r.right()-7, r.y()+1);
-
-        p->setPen(Qt::black);
-        p->drawLine(r.right()-5, r.y()+3, r.right()-5, r.bottom()-5);
-        p->drawLine(r.right()-4, r.bottom()-4, r.right(), r.bottom());
+    if(!selected){
+        r.setY(r.y()+1);
         p->setPen(g.dark());
-        p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom()-5);
-        p->drawLine(r.right()-5, r.bottom()-4, r.right()-1, r.bottom());
-
-        p->fillRect(r.x()+2, r.y()+2, r.width()-10, r.height()-2,
-                    g.button());
-        p->setPen(g.button());
-        p->drawLine(r.x()+2, r.y()+1, r.right()-8, r.y()+1);
-        p->drawLine(r.x()+1, r.y()+2, r.x()+1, r.bottom());
-        p->drawLine(r.right()-7, r.y()+2, r.right()-7, r.bottom());
-
-        p->drawLine(r.right()-6, r.bottom()-4, r.right()-6, r.bottom());
-        p->drawLine(r.right()-5, r.bottom()-3, r.right()-5, r.bottom());
-        p->drawLine(r.right()-4, r.bottom()-2, r.right()-4, r.bottom());
-        p->drawLine(r.right()-3, r.bottom()-1, r.right()-3, r.bottom());
-        p->drawPoint(r.right()-2, r.bottom());
-    }
-    else{
-        r.setY(r.y()+3);
-        p->fillRect(r.x()+2, r.y()+2, r.width()-9, r.height()-2,
-                    g.brush(QColorGroup::Button));
-
-        p->setPen(g.light());
-        p->drawLine(r.x()+2, r.y(), r.right()-8, r.y());
-        p->drawPoint(r.x()+1, r.y()+1);
-        p->drawLine(r.x(), r.y()+2, r.x(), r.bottom());
-        p->drawPoint(r.right()-7, r.y()+1);
-
+        p->drawLine(r.x(), r.y()+4, r.x(), r.bottom()-2);
+        p->drawLine(r.x(), r.y()+4, r.x()+4, r.y());
+        p->drawLine(r.x()+4, r.y(), r.right()-1, r.y());
+        p->drawLine(r.right(), r.y()+1, r.right(), r.bottom()-2);
 
         p->setPen(g.midlight());
-        p->drawLine(r.x()+1, r.y()+2, r.x()+1, r.bottom());
-        p->drawLine(r.x()+2, r.y()+1, r.right()-8, r.y()+1);
+        p->drawLine(r.x()+1, r.y()+4, r.x()+1, r.bottom());
+        p->drawLine(r.x()+1, r.y()+4, r.x()+4, r.y()+1);
+        p->drawLine(r.x()+5, r.y()+1, r.right()-2, r.y()+1);
+        p->drawLine(r.x(), r.bottom(), r.right(), r.bottom());
 
-        p->setPen(g.dark());
-        p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom());
-        p->drawLine(r.x(), r.bottom()-1, r.right()-5, r.bottom()-1);
-        p->setPen(Qt::black);
-        p->drawLine(r.right()-5, r.y()+3, r.right()-5, r.bottom());
-        p->drawLine(r.x(), r.bottom(), r.right()-5, r.bottom());
+        p->setPen(g.mid());
+        p->drawPoint(r.right()-1, r.y()+1);
+        p->drawLine(r.x()+4, r.y()+2, r.right()-1, r.y()+2);
+        p->drawLine(r.x()+3, r.y()+3, r.right()-1, r.y()+3);
+
+        p->fillRect(r.x()+2, r.y()+4, r.width()-3, r.height()-6,
+        g.brush(QColorGroup::Mid));
+
+        p->setPen(g.light());
+        p->drawLine(r.x(), r.bottom()-1, r.right(), r.bottom()-1);
+        p->setPen(g.midlight());
 
     }
+    else{
+        p->setPen(g.light());
+        p->drawLine(r.x(), r.y()+4, r.x(), r.bottom());
+        p->drawLine(r.x(), r.y()+4, r.x()+4, r.y());
+        p->drawLine(r.x()+4, r.y(), r.right()-1, r.y());
+        p->setPen(g.dark());
+        p->drawLine(r.right(), r.y()+1, r.right(), r.bottom());
+
+        p->setPen(g.midlight());
+        p->drawLine(r.x()+1, r.y()+4, r.x()+1, r.bottom());
+        p->drawLine(r.x()+1, r.y()+4, r.x()+4, r.y()+1);
+        p->drawLine(r.x()+5, r.y()+1, r.right() - 2, r.y()+1);
+        p->setPen(g.mid());
+        p->drawLine(r.right()-1, r.y()+1, r.right()-1, r.bottom());
+    }
+
 }
 
 void HCStyle::drawTabMask(QPainter *p, const QTabBar*, QTab *tab,
@@ -1679,14 +1670,14 @@ void HCStyle::tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
                             int &overlap)
 {
     if(t->shape() == QTabBar::RoundedAbove){
-        overlap = 5;
+        overlap = 0;
         hFrame = 24;
         vFrame = 10;
     }
     else
         KStyle::tabbarMetrics(t, hFrame, vFrame, overlap);
 }
-*/
+
 
 
 void HCStyle::drawSplitter(QPainter *p, int x, int y, int w, int h,
