@@ -1168,10 +1168,10 @@ void KCookieJar::loadConfig(KConfig *_config)
     // Read the old group name if we did not yet save to
     // the new group name.
     if( _config->hasGroup( "Browser Settings/HTTP" ) &&
-	!_config->hasGroup( "Cookie Policy" ) )
-	_config->setGroup( "Browser Settings/HTTP" );	
+		!_config->hasGroup( "Cookie Policy" ) )
+		_config->setGroup( "Browser Settings/HTTP" );	
     else
-	_config->setGroup("Cookie Policy");
+		_config->setGroup("Cookie Policy");
     value = _config->readEntry("CookieGlobalAdvice", "Ask");
     globalAdvice = strToAdvice(value);
     domainSettings = _config->readListEntry("CookieDomainAdvice");
