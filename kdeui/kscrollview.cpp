@@ -24,6 +24,8 @@
 
 #include "kscrollview.h"
 #include <kdebug.h>
+#include <kconfig.h>
+#include <kglobal.h>
 
 struct KScrollView::KScrollViewPrivate {
     KScrollViewPrivate() : dx(0), dy(0), ddx(0), ddy(0), rdx(0), rdy(0), scrolling(false) {}
@@ -52,6 +54,11 @@ KScrollView::~KScrollView()
 
 void KScrollView::scrollBy(int dx, int dy)
 {
+    KConfigGroup cfg( KGlobal::config(), "KDE" );
+    if( !cfg.readBoolEntry( "SmoothScrolling", true )) {
+        QScrollView::scrollBy( dx, dy );
+        return;
+    }
     // scrolling destination
     int full_dx = d->dx + dx;
     int full_dy = d->dy + dy;
@@ -161,6 +168,7 @@ void KScrollView::startScrolling()
 void KScrollView::stopScrolling()
 {
     d->timer.stop();
+    d->dx = d->dy = 0;
     d->scrolling = false;
 }
 
