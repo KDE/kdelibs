@@ -46,7 +46,6 @@ class QMovie;
 #include <qlist.h>
 
 #include "dom_string.h"
-using namespace DOM;
 
 class KHTMLWidget;
 
@@ -276,7 +275,7 @@ public:
      * this function, to tell the cache, the image is not used
      * anymore.
      */
-    static void free( DOMString _url, HTMLImageRequester *o = 0);
+    static void free( DOM::DOMString _url, HTMLImageRequester *o = 0);
 
     /**
      * this is called from the KHTMLWidget to indicate that a

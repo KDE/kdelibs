@@ -46,6 +46,8 @@
 
 #include <kdebug.h>
 
+using namespace DOM;
+
 HTMLURLRequest::HTMLURLRequest()
 {
 }

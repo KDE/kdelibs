@@ -41,9 +41,13 @@
 #include "khtmlio.h"
 #include "html_elementimpl.h"
 
+#include "kjs.h"
+
 #define SCROLLBARWIDTH 16
 
 QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
+
+using namespace DOM;
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     : QScrollView( parent, name)
@@ -76,15 +80,10 @@ KHTMLWidget::~KHTMLWidget()
   slotStop();
   lstViews->removeRef( this );
 
-  if(document)
-      {	
-	  document-> detach();
-	  document->deref();
-      }
-  if(decoder) delete decoder;
+  clear();
+
   if(cache) delete cache;
   if(defaultSettings) delete defaultSettings;
-  if(settings) delete settings;
 }
 
 void KHTMLWidget::init()
@@ -100,7 +99,10 @@ void KHTMLWidget::init()
   m_bComplete          = true;
   m_bReload            = false;
   m_bEnableImages      = true;
-
+  _javaEnabled = false;
+  _jScriptEnabled = false;
+  jscript = 0;
+  
     if ( lstViews == 0L )
 	lstViews = new QList<KHTMLWidget>;
     lstViews->setAutoDelete( FALSE );
@@ -117,6 +119,32 @@ void KHTMLWidget::init()
   defaultSettings = new HTMLSettings;
   settings = 0;
   _width = width()- SCROLLBARWIDTH - 10;
+}
+
+void KHTMLWidget::clear()
+{
+    if(document)
+    {		
+	document->detach();
+	document->deref();
+    }
+    document = 0;
+    if(decoder) delete decoder;
+    decoder = 0;
+    delete jscript;
+    jscript = 0;
+    if ( settings ) delete settings;
+    settings = 0;
+    
+    m_lstChildren.clear();
+
+    if ( bIsTextSelected )
+    {
+	bIsTextSelected = false;
+	emit textSelected( false );
+    }
+
+    pressed = false;
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
@@ -138,6 +166,34 @@ bool KHTMLWidget::imagesEnabled() const
 {
     return m_bEnableImages;
 }
+
+void KHTMLWidget::enableJava( bool enable )
+{
+    _javaEnabled = enable;
+}
+
+bool KHTMLWidget::javaEnabled() const
+{
+    return _javaEnabled;
+}
+
+void KHTMLWidget::enableJScript( bool enable )
+{
+    _jScriptEnabled = enable;
+}
+
+bool KHTMLWidget::jScriptEnabled() const
+{
+    return _jScriptEnabled;
+}
+
+void KHTMLWidget::executeScript(const QString &c) 
+{ 
+    if(!_jScriptEnabled) return;
+    if(!jscript) jscript = new KJSWorld(this);
+    jscript->evaluate(c); 
+}
+
 
 KHTMLWidget* KHTMLWidget::topView()
 {
@@ -197,14 +253,8 @@ KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, const char *_name )
 void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 {
     debug("KHTMLWidget::begin(....)");
-    // Delete all frames in this view
-    m_lstChildren.clear();
 
-    if ( bIsTextSelected )
-    {
-	bIsTextSelected = false;
-	emit textSelected( false );
-    }
+    clear();
 
     //emit scrollHorz( _x_offset );
     //emit scrollVert( _y_offset );
@@ -212,19 +262,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     // ###
     //stopParser();
 
-//    reference = QString::null;
-//    actualURL = "";
-//    baseURL = "";
-
-    pressed = false;
-
     if ( !_url.isEmpty() )
     {
-	//m_strURL = _url;
-	//m_strWorkingURL = QString::null;
-//        reference = actualURL.ref();
-//        setBaseURL( _url);
-
         // Set a default title
         KURL title(_url);
         title.setRef(QString::null);
@@ -236,11 +275,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
         emit setTitle( "* Unknown *" );
     }
 
-    if(document)
-    {
-	document->detach();
-	document->deref();
-    }
     document = new HTMLDocumentImpl(this, cache);
     document->ref();
     document->open();
@@ -251,9 +285,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     // ###
     //emit documentStarted();
-
-    if ( settings )
-    	delete settings;
 
     settings = new HTMLSettings( *defaultSettings);
 

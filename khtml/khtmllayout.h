@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
@@ -27,10 +27,10 @@
 
 
 /*
- * this namespace contains definitions for various types needed for 
+ * this namespace contains definitions for various types needed for
  * layouting.
  */
-namespace khtmlLayout
+namespace khtml
 {
 
     const int UNDEFINED = -1;
@@ -38,7 +38,7 @@ namespace khtmlLayout
     // alignment
     enum VAlign { Bottom=0, VNone=0, VCenter=1, Top=2 };
     enum HAlign { HDefault, Left, HCenter, Right, HNone = 0 };
-  
+
     /*
      * %multiLength and %Length
      */
@@ -98,11 +98,11 @@ namespace khtmlLayout
     };
 
     // Lists
-    enum ListType { Disc, Circle, Square, 
+    enum ListType { Disc, Circle, Square,
 		    Num, LowRoman, UpRoman, LowAlpha, UpAlpha };
 
 
 };
-using namespace khtmlLayout;
+using namespace khtml;
 
 #endif

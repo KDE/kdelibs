@@ -16,17 +16,7 @@
 #include "khtmldata.h"
 #include "khtmlfont.h"
 #include "khtmlio.h"
-#include "kjs.h"
 #include <qcursor.h>
-
-class TestBrowser : public KHTMLWidget {
-public:
-  TestBrowser() { kjs = new KJSWorld(this); }
-  ~TestBrowser() { delete kjs; }
-  virtual void executeScript(const QString &c) { kjs->evaluate(c); }
-private:
-  KJSWorld *kjs;
-};
 
 int main(int argc, char *argv[])
 {
@@ -34,9 +24,10 @@ int main(int argc, char *argv[])
 
     KApplication a(argc, argv);
 
-    TestBrowser *doc = new TestBrowser;
+    KHTMLWidget *doc = new KHTMLWidget;
     doc->resize(800,500);
-
+    doc->enableJScript(true);
+    
     a.setTopWidget(doc);
     doc->openURL(argv[1]);
     a.setTopWidget(doc);

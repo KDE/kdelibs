@@ -21,8 +21,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef KBROWSER_H
-#define KBROWSER_H
+#ifndef KHTML_H
+#define KHTML_H
 
 // constants used when dragging a selection rectange outside the browser window
 #define AUTOSCROLL_DELAY 150
@@ -30,14 +30,16 @@
 
 #define MAX_REQUEST_JOBS 4
 
+// qt includes and classes
 #include <qscrollview.h>
 #include <qstring.h>
 
 class QPainter;
-class KHTMLDecoder;
-class HTMLSettings;
 
+// khtml includes and classes
 #include "html_document.h"
+
+// ### FIXME: get rid of this include
 #include "khtmlio.h"
 
 namespace DOM {
@@ -47,7 +49,12 @@ namespace DOM {
 
 class KHTMLCache;
 class KHTMLDecoder;
+class HTMLSettings;
 class SavedPage;
+
+// JScript class
+class KJSWorld;
+
 
 /**
  * If you derive from KHTMLWidget you must overload the method @ref #createFrame
@@ -57,8 +64,8 @@ class KHTMLWidget : public QScrollView
     Q_OBJECT
 
     friend HTMLURLRequestJob;
-    friend HTMLDocumentImpl;
-    friend HTMLElementImpl;
+    friend DOM::HTMLDocumentImpl;
+    friend DOM::HTMLElementImpl;
 
 public:
     KHTMLWidget( QWidget *parent=0, const char *name=0 );
@@ -67,6 +74,7 @@ public:
 
 protected:
     void init();
+    void clear();
 public:
 
     virtual void openURL( const QString &_url, bool _reload = false, int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
@@ -77,8 +85,23 @@ public:
     void setFollowsLinks( bool follow );
     bool followsLinks();
 
+    /**
+     * should images be loaded automatically? Default is true
+     */
     void enableImages( bool enable );
     bool imagesEnabled() const;
+
+    /**
+     * Enable disable Java. Default is disabled.
+     */
+    void enableJava( bool enable );
+    bool javaEnabled() const;
+
+    /**
+     * enable/disable JScript. Default is disabled.
+     */
+    void enableJScript( bool enable );
+    bool jScriptEnabled() const;
 
     /**
      * @return the parent KHTMLWidget of this one or 0L is this is the top level
@@ -448,8 +471,6 @@ signals:
     void formSubmitted( const QString &_method, const QString &_url,
 			const char *_data, const QString &_target );
 
-    virtual void executeScript( const QString &script );
-
     void frameInserted( KHTMLWidget *frame );
 
     void textSelected( bool );
@@ -485,12 +506,17 @@ protected:
     virtual void servePendingURLRequests();
     virtual void urlRequestFinished( HTMLURLRequestJob* _request );
 
-    void paintElement( NodeImpl *e, bool recursive=false );
+    void paintElement( DOM::NodeImpl *e, bool recursive=false );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
 public:
     void layout();
 protected:
+
+    /**
+     * This function is called, when a user action triggers a script.
+     */
+    virtual void executeScript( const QString &script );
 
     void urlSelected( const QString &_url, int _button, const QString & _target );
 
@@ -683,6 +709,10 @@ private:
     QString overURL;
     int _width;
     bool _followLinks;
+    bool _javaEnabled;
+    bool _jScriptEnabled;
+
+    KJSWorld *jscript;
 };
 
 #endif
