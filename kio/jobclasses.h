@@ -34,7 +34,6 @@
 #include <sys/stat.h>
 
 #include <kio/global.h>
-#include <kfileitem.h>
 
 class Observer;
 class QTimer;
