@@ -26,7 +26,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kconfigbackend.h kcolorgroup.h kapp.h kcharsets.h \
 	kurl.h ksock.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
-	kstdaccel.h kwinmodule.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
+	kstdaccel.h kwinmodule.h kwm.h krootprop.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h ltdl.h \
 	kprotocolmanager.h kregexp.h kstyle.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h qvariant.h \
