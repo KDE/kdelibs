@@ -232,7 +232,7 @@ public final class KJASAppletClassLoader
                 try {
                     rval =  super.findClass(name);
                 } catch (ClassFormatError cfe) {
-                    Main.info(name + ": Catched " + cfe + ". Trying to repair...");
+                    Main.debug(name + ": Catched " + cfe + ". Trying to repair...");
                     rval = loadFixedClass( name );
                 }
             }
@@ -367,7 +367,7 @@ public final class KJASAppletClassLoader
     {
         KJASBrokenClassFixer fixer = new KJASBrokenClassFixer();
         if (fixer.process(b, off, len)) {
-            Main.info(name + " fixed");
+            Main.debug(name + " fixed");
         } else {
             Main.info(name + " could not be fixed");
         }

@@ -56,7 +56,7 @@ public class KJASBrokenClassFixer {
             };
             URLClassLoader loader = new URLClassLoader(urls);
             fixerClass = Class.forName(fixerClassName, true, loader);
-            Main.info("Loaded " + fixerClass);
+            Main.debug("Loaded " + fixerClass);
             final Class [] parameterTypes = {
                 (new byte[1]).getClass(), 
                 Integer.TYPE, 
