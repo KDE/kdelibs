@@ -266,7 +266,12 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
 
 void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
 {
-  QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
+  QString path;
+  QCString ksycoca_env = getenv("KDESYCOCA");
+  if (ksycoca_env.isEmpty())
+     path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
+  else
+     path = QFile::decodeName(ksycoca_env);
 
   // KSaveFile first writes to a temp file.
   // Upon close() it moves the stuff to the right place.
@@ -307,7 +312,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   }
 
   // update the timestamp file
-  QString stamppath = KGlobal::dirs()->saveLocation("tmp")+"ksycocastamp";
+  QString stamppath = path + "stamp";
   QFile ksycocastamp(stamppath);
   ksycocastamp.open( IO_WriteOnly );
   QDataStream str( &ksycocastamp );

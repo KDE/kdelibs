@@ -102,8 +102,12 @@ Kded::Kded(bool checkUpdates, int pollInterval, int NFSPollInterval)
     m_PollInterval(pollInterval), 
     m_NFSPollInterval(NFSPollInterval)
 {
-  QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
-  QCString cPath = QFile::encodeName(path);
+  QCString cPath;
+  QCString ksycoca_env = getenv("KDESYCOCA");
+  if (ksycoca_env.isEmpty())
+     cPath = QFile::encodeName(KGlobal::dirs()->saveLocation("tmp")+"ksycoca");
+  else
+     cPath = ksycoca_env;
   m_pTimer = new QTimer(this);
   connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
