@@ -95,34 +95,45 @@ QStringList KIMProxy::imAddresseeUids()
 	return value;
 }
 
-void KIMProxy::messageContactById( const QString& uid, const QString& message )
+QStringList KIMProxy::reachableContacts()
 {
+	QStringList value;
+	
 	if ( initialize() )
 	{
-		m_im_client_stub->messageContact( uid, message );
+		value = m_im_client_stub->reachableContacts( );
 	}
-	return;
+	return value;
 }
 
-void KIMProxy::chatContactById( const QString& uid )
+QStringList KIMProxy::onlineContacts()
 {
+	QStringList value;
+	
 	if ( initialize() )
 	{
-		m_im_client_stub->chatWithContact( uid );
+		value = m_im_client_stub->onlineContacts( );
 	}
-	return;
+	return value;
 }
 
-void KIMProxy::sendFileToId(const QString &metaContactId, const KURL &sourceURL, const QString &altFileName, uint fileSize )
+QStringList KIMProxy::fileTransferContacts()
 {
+	QStringList value;
+	
 	if ( initialize() )
 	{
-		m_im_client_stub->sendFile( metaContactId, sourceURL, altFileName, fileSize );
+		value = m_im_client_stub->fileTransferContacts( );
 	}
-	return;
+	return value;
 }
 
-int KIMProxy::statusNumeric( const QString& uid )
+bool KIMProxy::isPresent( const QString& uid )
+{
+	return m_im_client_stub->isPresent( uid );
+}
+
+int KIMProxy::presenceNumeric( const QString& uid )
 {
 	if ( initialize() )
 	{
@@ -133,7 +144,7 @@ int KIMProxy::statusNumeric( const QString& uid )
 	return -1;
 }
 
-QString KIMProxy::statusString( const QString& uid )
+QString KIMProxy::presenceString( const QString& uid )
 {
 	if ( initialize() )
 	{
@@ -141,10 +152,10 @@ QString KIMProxy::statusString( const QString& uid )
 		// and turn it into an OnlineStatus enum
 		return m_im_client_stub->presenceString( uid );
 	}
-	return QString("NONE");
+	return QString::null;
 }
 
-QPixmap KIMProxy::statusIcon( const QString& uid )
+QPixmap KIMProxy::presenceIcon( const QString& uid )
 {
 	if ( initialize() )
 	{
@@ -152,7 +163,79 @@ QPixmap KIMProxy::statusIcon( const QString& uid )
 	}
 	return QPixmap();
 }
+
+bool KIMProxy::canReceiveFiles( const QString & uid )
+{
+	if ( initialize() )
+	{
+		return m_im_client_stub->canReceiveFiles( uid );
+	}
+	return false;
+}
+
+bool KIMProxy::canRespond( const QString & uid )
+{
+	if ( initialize() )
+	{
+		return m_im_client_stub->canRespond( uid );
+	}
+	return false;
+}
+
+QString KIMProxy::locate( const QString & contactId, const QString & protocol )
+{
+	if ( initialize() )
+	{
+		return m_im_client_stub->locate( contactId, protocol );
+	}
+	return QString::null;
+}
+
+QString KIMProxy::context( const QString & uid )
+{
+	if ( initialize() )
+	{
+		return m_im_client_stub->context( uid );
+	}
+	return QString::null;
+}
 	
+void KIMProxy::chatWithContact( const QString& uid )
+{
+	if ( initialize() )
+	{
+		m_im_client_stub->chatWithContact( uid );
+	}
+	return;
+}
+
+void KIMProxy::messageContact( const QString& uid, const QString& message )
+{
+	if ( initialize() )
+	{
+		m_im_client_stub->messageContact( uid, message );
+	}
+	return;
+}
+
+void KIMProxy::sendFile(const QString &metaContactId, const KURL &sourceURL, const QString &altFileName, uint fileSize )
+{
+	if ( initialize() )
+	{
+		m_im_client_stub->sendFile( metaContactId, sourceURL, altFileName, fileSize );
+	}
+	return;
+}
+
+bool KIMProxy::addContact( const QString &contactId, const QString &protocol )
+{
+	if ( initialize() )
+	{
+		return m_im_client_stub->addContact( contactId, protocol );
+	}
+	return false;
+}
+
 void KIMProxy::unregisteredFromDCOP( const QCString& appId )
 {
 	if ( m_im_client_stub && m_im_client_stub->app() == appId )

@@ -67,7 +67,7 @@ k_dcop:
 	/**
 	 * Open a chat to a contact, and optionally set some initial text
 	 */
-	virtual void messageNewContact( const QString &protocol, const QString &contactId ) = 0;
+	virtual void messageNewContact( const QString &contactId, const QString &protocol ) = 0;
 
 	/**
 	 * Message a contact by their uid, aka their uid in KABC.
@@ -75,14 +75,14 @@ k_dcop:
 	virtual void chatWithContact( const QString &uid ) = 0;
 
 	/**
-	 * Send the file to the contact
+	 * Send a file to the contact
 	 */
 	virtual void sendFile(const QString &uid, const KURL &sourceURL,
 		const QString &altFileName = QString::null, uint fileSize = 0) = 0;
 
 // MUTATORS
 // Contact list
-	virtual bool addContact( const QString &protocol, const QString &contactId ) = 0;
+	virtual bool addContact( const QString &contactId, const QString &protocol ) = 0;
 // SIGNALS
 k_dcop_signals:
 	void contactStatusChanged( const QString &uid);
