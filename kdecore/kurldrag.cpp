@@ -73,7 +73,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     QStrList lst;
     bool ret = QUriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
-      uris.append(urlToString(*it);
+      uris.append(urlToString(*it));
     return ret;
 }
 
