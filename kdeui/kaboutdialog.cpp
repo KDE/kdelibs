@@ -322,7 +322,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
   if( layoutType & AbtProduct )
   {
     QWidget *productArea = new  QWidget( this, "area" );
-    mTopLayout->addWidget( productArea, 0, AlignLeft );
+    mTopLayout->addWidget( productArea, 0, QApplication::reverseLayout() ? AlignRight : AlignLeft );
 
     QHBoxLayout *hbox = new QHBoxLayout(productArea,0,KDialog::spacingHint());
     if( hbox == 0 ) { return; }
@@ -505,10 +505,9 @@ QFrame *KAboutContainerBase::addLicensePage( const QString &title,
   textEdit->setFont( KGlobalSettings::fixedFont() );
   textEdit->setReadOnly( true );
   textEdit->setWordWrap( QTextEdit::NoWrap );
-  textEdit->setText( text ); 
+  textEdit->setText( text );
   textEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
   vbox->addWidget( textEdit );
-
   return( page );
 }
 
