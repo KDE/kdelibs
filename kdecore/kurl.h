@@ -51,6 +51,12 @@ class KURLPrivate;
 class KURL
 {
 public:
+  enum AdjustementFlags
+  {
+    NoAdjustements = 0,
+    StripFileProtocol = 1
+  };
+  
   class List : public QValueList<KURL>
   {
   public:
@@ -436,6 +442,14 @@ public:
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
   QString prettyURL( int _trailing = 0) const;
+  
+  /**
+   * @return A human readable URL, with no non-necessary encodings/escaped
+   * characters.
+   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
+   */
+  QString prettyURL( int _trailing, AdjustementFlags _flags) const;
+  // ### BIC: Merge the two above
 
   /**
    * Test to see if the KURL is empty.

@@ -1221,6 +1221,14 @@ QString KURL::prettyURL( int _trailing ) const
   return u;
 }
 
+QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
+{
+	QString u = prettyURL(_trailing);
+	if (_flags & StripFileProtocol && u.startsWith("file:"))
+		u.remove(0, 5);
+	return u;
+}
+
 KURL::List KURL::split( const KURL& _url )
 {
   QString ref;
