@@ -35,6 +35,7 @@
 #include <qtextcodec.h>
 #include <qtimer.h>
 #include <kapplication.h>
+#include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include "kspell.h"
@@ -115,8 +116,9 @@ KSpell::startIspell()
 
   kdDebug(750) << "Try #" << trystart << endl;
 
-  if ( trystart>0 )
+  if ( trystart > 0 ) {
     proc->resetAll();
+  }
 
   switch ( ksconfig->client() )
   {
@@ -133,11 +135,11 @@ KSpell::startIspell()
     kdDebug(750) << "Using hspell" << endl;
     break;
   }
-  kdDebug()<<"here 0.1"<<endl;
+
   if ( ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL )
   {
     *proc << "-a" << "-S";
-    kdDebug()<<"here 0.2"<<endl;
+
     switch ( d->type )
     {
     case HTML:
@@ -159,10 +161,8 @@ KSpell::startIspell()
     case Text:
     default:
       //nothing
-      kdDebug()<<"here 2"<<endl;
       break;
     }
-    kdDebug()<<"here 0.3"<<endl;
     if (ksconfig->noRootAffix())
     {
       *proc<<"-m";
@@ -176,7 +176,6 @@ KSpell::startIspell()
       *proc << "-C";
     }
 
-    kdDebug()<<"here 3"<<endl;
 
     if (trystart<2)
     {
@@ -253,7 +252,6 @@ KSpell::startIspell()
 
   if ( proc->start() == false )
   {
-    kdDebug()<<"BAD ERROR"<<endl;
     m_status = Error;
     QTimer::singleShot( 0, this, SLOT(emitDeath()));
   }
@@ -509,7 +507,6 @@ void KSpell::suggestWord( KProcIO * )
 {
   QString word;
   QString line;
-  kdDebug()<<"HERE 3 "<<endl;
   proc->fgets( line, true ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
@@ -587,7 +584,6 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
 
   sugg.clear();
 
-  kdDebug(750)<<"XXX = "<<buffer<<endl;
   if ( buffer[0] == '*' || buffer[0] == '+' || buffer[0] == '-' )
   {
     return GOOD;
@@ -851,8 +847,13 @@ void KSpell::checkList4 ()
   case KS_CONFIG:
     ksdlg->hide();
     emit done( false );
-    check( origbuffer.mid( lastpos ), true );
-    break;
+    //check( origbuffer.mid( lastpos ), true );
+    //trystart = 0;
+    //proc->disconnect();
+    //proc->kill();
+    //delete proc;
+    //proc = new KProcIO( codec );
+    //startIspell();
     return;
   };
 
@@ -1060,7 +1061,8 @@ void KSpell::check3 ()
   case KS_CONFIG:
     ksdlg->hide();
     emit done( origbuffer );
-    check( origbuffer.mid( lastpos ), true );
+    KMessageBox::information( 0, i18n("You have to restart the dialog for changes to take effect") );
+    //check( origbuffer.mid( lastpos ), true );
     return;
   case KS_STOP:
     ksdlg->hide();
@@ -1149,7 +1151,6 @@ void KSpell::dialog2( int result )
   }
     break;
   case KS_SUGGEST:
-    kdDebug()<<"SUGGESTING " << ksdlg->replacement() <<endl;
     checkWord( ksdlg->replacement(), false, true );
     return;
     break;
@@ -1188,7 +1189,7 @@ void KSpell::cleanUp ()
   proc->closeStdin();
 }
 
-void KSpell::ispellExit (KProcess *)
+void KSpell::ispellExit( KProcess* )
 {
   kdDebug() << "KSpell::ispellExit() " << m_status << endl;
 
