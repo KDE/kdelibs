@@ -67,7 +67,23 @@ class KApplicationPrivate;
 * avoid zombie children. If you want to catch this signal yourself or
 * don't want it to be caught at all, you have set a new signal handler
 * (or SIG_IGN) after KApplication's constructor has run.
+* @li It can start new services
 *
+*
+* The way a service gets started depends on the 'X-DCOP-ServiceType'
+* entry in the desktop file of the service:
+*
+* There are three possibilities:
+* @li X-DCOP-ServiceType=None (default)
+*    Always start a new service,
+*    don't wait till the service registers with dcop.
+* @li X-DCOP-ServiceType=Multi
+*    Always start a new service,
+*    wait until the service has registered with dcop.
+* @li X-DCOP-ServiceType=Unique
+*    Only start the service if it isn't already running,
+*    wait until the service has registered with dcop.
+* 
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 * @version $Id$
@@ -157,6 +173,7 @@ public:
    * more than one cannot be created in the same application. It
    * saves you the trouble of having to pass the pointer explicitly
    * to every function that may require it.
+   * @return the current application object
    */
   static KApplication* kApplication() { return KApp; }
 
@@ -164,7 +181,7 @@ public:
    * Returns the application session config object.
    *
    * @return A pointer to the application's instance specific
-   *    @ref KConfig object.
+   * @ref KConfig object.
    * @see KConfig
    */
   KConfig* sessionConfig();
@@ -172,10 +189,10 @@ public:
   /**
    * Is the application restored from the session manager?
    *
-   * @return If @p true, this application was restored by the session manager.
+   * @return If true, this application was restored by the session manager.
    *    Note that this may mean the config object returned by
-   *    @ref sessionConfig() contains data saved by a session closedown.
-   * @see sessionConfig()
+   * @ref sessionConfig() contains data saved by a session closedown.
+   * @see #sessionConfig()
    */
   bool isRestored() const { return QApplication::isSessionRestored(); }
 
@@ -188,7 +205,7 @@ public:
   void disableSessionManagement();
 
   /**
-   * The possible values for the @p confirm parameter of #requestShutDown.
+   * The possible values for the @p confirm parameter of requestShutDown().
    */
   enum ShutdownConfirm {
     /**
@@ -206,7 +223,7 @@ public:
   };
 
   /**
-   * The possible values for the @p sdtype parameter of #requestShutDown.
+   * The possible values for the @p sdtype parameter of requestShutDown().
    */
   enum ShutdownType {
     /**
@@ -228,7 +245,7 @@ public:
   };
 
   /**
-   * The possible values for the @p sdmode parameter of #requestShutDown.
+   * The possible values for the @p sdmode parameter of requestShutDown().
    */
   enum ShutdownMode {
     /**
@@ -267,7 +284,7 @@ public:
    * interface. The remaining two combinations use the standard XSMP and
    * will work with any session manager compliant with it.
    *
-   * Returns TRUE on sucess, FALSE if the session manager could not be
+   * @return true on sucess, false if the session manager could not be
    * contacted.
    */
   bool requestShutDown( ShutdownConfirm confirm = ShutdownConfirmDefault,
@@ -307,6 +324,7 @@ public:
    * Returns a pointer to a @ref DCOPClient for the application.
    * If a client does not exist yet, it is created when this
    * function is called.
+   * @return the DCOPClient for the application
    */
   static DCOPClient *dcopClient();
 
@@ -318,32 +336,35 @@ public:
 
   /**
    * Returns a @ref QPixmap with the application icon.
+   * @return the application icon
    */
   QPixmap icon() const;
 
   /**
    * Returns the name of the application icon.
+   * @return the icon's name
    */
   QString iconName() const;
 
   /**
    * Returns the mini-icon for the application as a @ref QPixmap.
+   * @return the application's mini icon
    */
   QPixmap miniIcon() const;
 
   /**
    * Returns the name of the mini-icon for the application.
+   * @return the mini icon's name
    */
   QString miniIconName() const;
 
   /**
-   *   Sets the top widget of the application.
-   *
-   *   @param topWidget A top widget of the application.
-   *
+   *  Sets the top widget of the application.
    *  This means basically applying the right window caption and
    *  icon. An application may have several top widgets. You don't
    *  need to call this function manually when using @ref KMainWindow.
+   *
+   *  @param topWidget A top widget of the application.
    *
    *  @see icon(), caption()
    **/
@@ -425,43 +446,53 @@ public:
   /**
    * Returns the DCOP name of the service launcher. This will be something like
    * klaucher_$host_$uid.
+   * @return the name of the service launcher
    */
   static QCString launcher();
-
-  /**
-   * The way a service gets started depends on the 'X-DCOP-ServiceType'
-   * entry in the desktop file of the service:
-   *
-   * There are three possibilities:
-   * @li X-DCOP-ServiceType=None (default)
-   *    Always start a new service,
-   *    don't wait till the service registers with dcop.
-   * @li X-DCOP-ServiceType=Multi
-   *    Always start a new service,
-   *    wait until the service has registered with dcop.
-   * @li X-DCOP-ServiceType=Unique
-   *    Only start the service if it isn't already running,
-   *    wait until the service has registered with dcop.
-   */
 
   /**
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
    *
-   * @param URL - if not empty this URL is passed to the service
-   * @param startup_id - for app startup notification, "0" for none,
+   * @param name the name of the service
+   * @param URL if not empty this URL is passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
-   * @param noWait - if set, the function does not wait till the service is running.
-   *
+   * @param noWait if set, the function does not wait till the service is running.
    * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occurred.
    */
   static int startServiceByName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
+
+  /**
+   * Starts a service based on the (translated) name of the service.
+   * E.g. "Web Browser"
+   *
+   * @param name the name of the service
+   * @param URLs if not empty these URLs will be passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
+   * @param noWait if set, the function does not wait till the service is running.
+   * @return an error code indicating success (== 0) or failure (> 0).
+   */
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
                 QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
 
@@ -469,20 +500,45 @@ public:
    * Starts a service based on the desktop path of the service.
    * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
    *
-   * @param URL - if not empty this URL is passed to the service
-   * @param startup_id - for app startup notification, "0" for none,
+   * @param name the path of the desktop file
+   * @param URL if not empty this URL is passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
-   * @param noWait - if set, the function does not wait till the service is running.
-   *
+   * @param noWait if set, the function does not wait till the service is running.
    * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.
    */
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+
+  /**
+   * Starts a service based on the desktop path of the service.
+   * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
+   *
+   * @param name the path of the desktop file
+   * @param URLs if not empty these URLs will be passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
+   * @param noWait if set, the function does not wait till the service is running.
+   * @return an error code indicating success (== 0) or failure (> 0).
+   */
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
                 QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
 
@@ -490,21 +546,45 @@ public:
    * Starts a service based on the desktop name of the service.
    * E.g. "konqueror"
    *
-   * @param URL - if not empty this URL is passed to the service
-   * @param startup_id - for app startup notification, "0" for none,
+   * @param name the desktop name of the service
+   * @param URL if not empty this URL is passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
-   * @param noWait - if set, the function does not wait till the service is running.
-   *
+   * @param noWait if set, the function does not wait till the service is running.
    * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'dcopService' contains the DCOP name under which
-   *         this service is available. If empty, the service does
-   *         not provide DCOP services. If a process was started, 'pid'
-   *         contains its pid.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
+
+  /**
+   * Starts a service based on the desktop name of the service.
+   * E.g. "konqueror"
+   *
+   * @param name the desktop name of the service
+   * @param URLs if not empty these URLs will be passed to the service
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param dcopService On success, @p dcopService contains the DCOP name 
+   *         under which this service is available. If empty, the service does
+   *         not provide DCOP services. If the pointer is 0 the argument
+   *         will be ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
+   * @param noWait if set, the function does not wait till the service is running.
+   * @return an error code indicating success (== 0) or failure (> 0).
+   */
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
                 QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
 
@@ -516,13 +596,14 @@ public:
    * program name and arguments are converted to according to the
    * local encoding and passed as is to kdeinit.
    *
-   * @param prog Name of the program to start
+   * @param name Name of the program to start
    * @param args Arguments to pass to the program
-   *
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
    * @return an error code indicating success (== 0) or failure (> 0).
-   * @return On success, 'pid' contains the pid of the started process.
-   * @return On failure, 'error' contains a description of the error
-   *         that occured.
    */
   static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
@@ -530,8 +611,17 @@ public:
   /**
    * Starts a program via kdeinit and wait for it to finish.
    *
-   * Like kdeinitExec but it waits till the program is finished.
+   * Like @ref kdeinitExec(), but it waits till the program is finished.
    * As such it behaves similar to the system(...) function.
+   *
+   * @param name Name of the program to start
+   * @param args Arguments to pass to the program
+   * @param error On failure, @p error contains a description of the error
+   *         that occurred. If the pointer is 0, the argument will be
+   *         ignored
+   * @param pid On success, the process id of the new service will be written
+   *        here. If the pointer is 0, the argument will be ignored.
+   * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
@@ -542,6 +632,7 @@ public:
    * This may be set by
    * "-caption", otherwise it will be equivalent to the name of the
    * executable.
+   * @return the text for the window caption
    */
   QString caption() const;
 
@@ -565,6 +656,7 @@ public:
    * @param modified If true, a 'modified' sign will be included in the
    * returned string. This is useful when indicating that a file is
    * modified, i.e., it contains data that has not been saved.
+   * @return the created caption
    */
   QString makeStdCaption( const QString &userCaption,
                           bool withAppName=true, bool modified=false ) const;
@@ -592,6 +684,7 @@ public:
 #ifdef Q_WS_X11
   /**
    * Get the X11 display
+   * @return the X11 Display
    */
   Display *getDisplay() { return display; }
 #endif
@@ -610,7 +703,7 @@ public:
    *
    * Current style plugins do not get unloaded.
    *
-   * This is only useful when used in combination with @ref enableStyles.
+   * This is only useful when used in combination with @ref enableStyles().
    */
   void disableStyles();
 
@@ -634,6 +727,7 @@ public:
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.
+   * @return the random string
    */
   static QString randomString(int length);
 
@@ -641,31 +735,37 @@ public:
    * Adds a message type to the KIPC event mask. You can only add "system
    * messages" to the event mask. These are the messages with id < 32.
    * Messages with id >= 32 are user messages.
-   * @param id The message id. See @ref #KIPC::Message.
+   * @param id The message id. See @ref KIPC::Message.
+   * @see KIPC
    */
   void addKipcEventMask(int id);
 
   /**
-   * Removes a message type from the KIPC event mask. This message will not
-   * be handled anymore.
+   * Removes a message type from the @ref KIPC event mask. This message will 
+   * not be handled anymore.
    * @param id The message id.
+   * @see KIPC
    */
   void removeKipcEventMask(int id);
 
   /**
-   * Returns the app startup notification identifier for this running application.
+   * Returns the app startup notification identifier for this running 
+   * application.
+   * @return the startup notification identifier
    */
   QCString startupId() const;
 
   /**
    * Sets a new value for the application startup notification window property for newly
    * created toplevel windows.
+   * @param the startup notification identifier
    */
   void setStartupId( const QCString& startup_id );
 
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
+    * @return the geometry argument, or QString::null if there is none
     */
   QString geometryArgument() const;
 
@@ -678,6 +778,7 @@ public:
   /**
    * Returns whether a certain action is authorized
    * @param genericAction The name of a generic  action
+   * @return true if the action is authorized
    */
   bool authorize(const QString &genericAction);
 
@@ -686,6 +787,7 @@ public:
    *
    * @param action The name of a KAction action. The name is prepended
    * with "action/" before being passed to @ref authorize()
+   * @return true if the KAction is authorized
    */
   bool authorizeKAction(const char *action);
 
@@ -693,10 +795,10 @@ public:
    * Returns whether a certain URL related action is authorized.
    *
    * @param action The name of the action. Known actions are
-   * list - May be listed (e.g. in file selection dialog)
-   * link - May be linked to
-   * open - May open
-   * redirect - May be redirected to
+   * list (may be listed (e.g. in file selection dialog)),
+   * link (may be linked to),
+   * open (may open) and
+   * redirect (may be redirected to)
    * @param baseURL The url where the action originates from
    * @param destURL The object of the action
    * @return true when the action is authorized, false otherwise.
@@ -716,9 +818,11 @@ public:
   /**
    * Returns the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * Usually you simply want to test for those in key events, in which case
-   * QKeyEvent::state() does the job (or QKeyEvent::key() to notice when a modifier is pressed alone).
+   * @ref QKeyEvent::state() does the job (or @ref QKeyEvent::key() to 
+   * notice when a modifier is pressed alone).
    * But it can be useful to query for the status of the modifiers at another moment
    * (e.g. some KDE apps do that upon a drop event).
+   * @return the keyboard modifiers
    */
   static uint keyboardModifiers();
 
@@ -731,9 +835,10 @@ public:
   /**
    * Returns the currently pressed mouse buttons.
    * Usually you simply want to test for those in mouse events, in which case
-   * QMouseEvent::button() does the job (or QMouseEvent::state()).
+   * @ref QMouseEvent::button() does the job (or @ref QMouseEvent::state()).
    * But it can be useful to query for the status of the mouse buttons at another moment.
-   * To query for the mouse pointer position, use QCursor::pos().
+   * To query for the mouse pointer position, use @ref QCursor::pos().
+   * @return the currently pressed mouse buttons 
    */
   static uint mouseState();
 
@@ -748,7 +853,7 @@ public slots:
   void ref();
 
   /**
-   * Tells KApplication that one operation such as those described in #ref just finished.
+   * Tells KApplication that one operation such as those described in @ref just finished.
    * The application exits if the counter is back to 0.
    */
   void deref();
@@ -890,11 +995,16 @@ signals:
 
   /**
    * Emitted when the global icon settings have been changed.
+   * @param group the new group
    */
   void iconChanged(int group);
 
   /**
    * Emitted when a KIPC user message has been received.
+   * @param id the message id
+   * @param data the data
+   * @see KIPC
+   * @see KIPC::Message
    */
   void kipcMessage(int id, int data);
 
