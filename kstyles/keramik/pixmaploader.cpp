@@ -142,7 +142,13 @@ QPixmap PixmapLoader::scale( const QCString& name, int width, int height, const 
 	if ( disabled ) cacheName += "-disabled";
 	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
-		img = new QImage( qembed_findImage( name ) );
+		const QImage& image = qembed_findImage( name );
+		if ( image.isNull() )
+		{
+			QPixmapCache::insert( key, result );
+			return result;
+		}
+
 		if ( disabled )
 			makeDisabled( *img, color );
 		else
