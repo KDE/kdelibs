@@ -101,7 +101,7 @@ k_dcop:
 	Returns a dcop reference to the selected KAction
 	@param action The name of the action to activate, The names of valid
 	actions can be found by calling @actions().
-	@return A @DCOPRef for the kaction.
+	@return A @ref DCOPRef for the kaction.
 	**/
 	DCOPRef action( const QCString &name );
 

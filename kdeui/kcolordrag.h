@@ -54,9 +54,9 @@ public:
      */
     static bool canDecode(QMimeSource *e);
     /**
-     * Decodes the MIME source @e and puts the resulting color into @p col.
+     * Decodes the MIME source @p e and puts the resulting color into @p col.
      */
-    static bool decode(QMimeSource *, QColor &col);
+    static bool decode(QMimeSource *e, QColor &col);
     /**
      * @deprecated This is equivalent with "new KColorDrag(color, dragsource)".
      */
