@@ -97,7 +97,8 @@ void KPassivePopup::setView( const QString &caption, const QString &text )
 void KPassivePopup::setTimeout( int delay )
 {
     hideDelay = delay;
-    hideTimer->changeInterval( delay );
+	if( hideTimer->isActive() )
+		hideTimer->changeInterval( delay );
 }
 
 void KPassivePopup::setAutoDelete( bool autoDelete )
