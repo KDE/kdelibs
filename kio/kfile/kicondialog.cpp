@@ -669,7 +669,7 @@ void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool u
 void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
-    setPixmap(mpLoader->loadIcon(mIcon, mGroup, d->iconSize));
+    setIconSet(mpLoader->loadIconSet(mIcon, mGroup, d->iconSize));
 
     if (!mpDialog)
     {
@@ -684,7 +684,7 @@ void KIconButton::setIcon(const QString& icon)
 void KIconButton::resetIcon()
 {
     mIcon = QString::null;
-    setPixmap(QPixmap());
+    setIconSet(QIconSet());
 }
 
 void KIconButton::slotChangeIcon()
@@ -704,8 +704,8 @@ void KIconButton::newIconName(const QString& name)
     if (name.isEmpty())
         return;
 
-    QPixmap pm = mpLoader->loadIcon(name, mGroup, d->iconSize);
-    setPixmap(pm);
+    QIconSet iconset = mpLoader->loadIconSet(name, mGroup, d->iconSize);
+    setIconSet(iconset);
     mIcon = name;
 
     if ( mbUser )
