@@ -276,12 +276,13 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     QString question;
     if ( suggestedFilename.isEmpty() )
     {
-        question = offer ? i18n("Open '%1' using '%2'?").
-                   arg( surl ).arg(offer->name())
-                   : i18n("Open '%1'?").arg( surl );
+        question = (offer && !offer->name().isEmpty())
+	       	   ? i18n("Open '%1' using '%2'?").arg(surl).arg(offer->name())
+                   : i18n("Open '%1'?").arg(surl);
     } else {
-        question = offer ? i18n("Open '%1' (%2) using '%3'?").
-                   arg( surl ).arg(suggestedFilename).arg(offer->name())
+        question = (offer && !offer->name().isEmpty())
+		   ? i18n("Open '%1' (%2) using '%3'?").
+                     arg( surl ).arg(suggestedFilename).arg(offer->name())
                    : i18n("Open '%1' (%2)?").arg( surl ).arg(suggestedFilename);
     }
     int choice = KMessageBox::questionYesNoCancel(
