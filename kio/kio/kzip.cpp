@@ -245,7 +245,7 @@ static bool parseExtraField(const char *buffer, int size, bool islocal,
   // don't bother parsing it
   if (!islocal) return true;
 
-  while (size >= 4) {	// as long as a potiential extra field can be read
+  while (size >= 4) {	// as long as a potential extra field can be read
     int magic = (uchar)buffer[0] | (uchar)buffer[1] << 8;
     buffer += 2;
     int fieldsize = (uchar)buffer[0] | (uchar)buffer[1] << 8;
@@ -292,6 +292,7 @@ public:
           m_currentFile( 0L ),
           m_currentDev( 0L ),
           m_compression( 8 ),
+          m_extraField( KZip::NoExtraField ),
 	  m_offset( 0L ) { }
 
     unsigned long           m_crc;         // checksum
@@ -299,6 +300,7 @@ public:
     QIODevice*              m_currentDev;  // filterdev used to write to the above file
     QPtrList<KZipFileEntry> m_fileList;    // flat list of all files, for the index (saves a recursive method ;)
     int                     m_compression;
+    KZip::ExtraField        m_extraField;
     unsigned int	        m_offset; // holds the offset of the place in the zip,
     // where new data can be appended. after openarchive it points to 0, when in
     // writeonly mode, or it points to the beginning of the central directory.
@@ -641,7 +643,7 @@ bool KZip::closeArchive()
 
     Q_LONG centraldiroffset = device()->at();
     //kdDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
-    Q_LONG atbackup = device()->at();
+    Q_LONG atbackup = centraldiroffset;
     QPtrListIterator<KZipFileEntry> it( d->m_fileList );
 
     for ( ; it.current() ; ++it )
@@ -900,7 +902,9 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     d->m_currentFile = e;
     d->m_fileList.append( e );
 
-    const int extra_field_len = 17;	// value also used in doneWriting()
+    int extra_field_len = 0;
+    if ( d->m_extraField == ModificationTime )
+        extra_field_len = 17;	// value also used in doneWriting()
 
     // write out zip header
     QCString encodedName = QFile::encodeName(name);
@@ -949,27 +953,31 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     strncpy( buffer + 30, encodedName, encodedName.length() );
 
     // extra field
-    char *extfield = buffer + 30 + encodedName.length();
-    extfield[0] = 'U';
-    extfield[1] = 'T';
-    extfield[2] = 13;
-    extfield[3] = 0;
-    extfield[4] = 1 | 2 | 4;	// contains mtime, atime, ctime
+    if ( d->m_extraField == ModificationTime )
+    {
+        char *extfield = buffer + 30 + encodedName.length();
+        // "Extended timestamp" header (0x5455)
+        extfield[0] = 'U';
+        extfield[1] = 'T';
+        extfield[2] = 13; // data size
+        extfield[3] = 0;
+        extfield[4] = 1 | 2 | 4;	// contains mtime, atime, ctime
 
-    extfield[5] = char(mtime);
-    extfield[6] = char(mtime >> 8);
-    extfield[7] = char(mtime >> 16);
-    extfield[8] = char(mtime >> 24);
+        extfield[5] = char(mtime);
+        extfield[6] = char(mtime >> 8);
+        extfield[7] = char(mtime >> 16);
+        extfield[8] = char(mtime >> 24);
 
-    extfield[9] = char(atime);
-    extfield[10] = char(atime >> 8);
-    extfield[11] = char(atime >> 16);
-    extfield[12] = char(atime >> 24);
+        extfield[9] = char(atime);
+        extfield[10] = char(atime >> 8);
+        extfield[11] = char(atime >> 16);
+        extfield[12] = char(atime >> 24);
 
-    extfield[13] = char(ctime);
-    extfield[14] = char(ctime >> 8);
-    extfield[15] = char(ctime >> 16);
-    extfield[16] = char(ctime >> 24);
+        extfield[13] = char(ctime);
+        extfield[14] = char(ctime >> 8);
+        extfield[15] = char(ctime >> 16);
+        extfield[16] = char(ctime >> 24);
+    }
 
     // Write header
     bool b = (device()->writeBlock( buffer, bufferSize ) == bufferSize );
@@ -1013,9 +1021,13 @@ bool KZip::doneWriting( uint size )
     //kdDebug(7040) << "filename: " << d->m_currentFile->path() << endl;
     //kdDebug(7040) << "getpos (at): " << device()->at() << endl;
     d->m_currentFile->setSize(size);
+    int extra_field_len = 0;
+    if ( d->m_extraField == ModificationTime )
+        extra_field_len = 17;	// value also used in doneWriting()
+
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
-		d->m_currentFile->path().length() - 17/*extra_field_len*/;
+		d->m_currentFile->path().length() - extra_field_len;
     d->m_currentFile->setCompressedSize(csize);
     //kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
     //kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
@@ -1128,6 +1140,16 @@ void KZip::setCompression( Compression c )
 KZip::Compression KZip::compression() const
 {
    return ( d->m_compression == 8 ) ? DeflateCompression : NoCompression;
+}
+
+void KZip::setExtraField( ExtraField ef )
+{
+    d->m_extraField = ef;
+}
+
+KZip::ExtraField KZip::extraField() const
+{
+    return d->m_extraField;
 }
 
 ///////////////

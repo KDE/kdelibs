@@ -45,7 +45,7 @@ class KZipFileEntry;
  *   to leak information of how intermediate versions of files in the zip
  *   were looking.
  *   For more information on the zip fileformat go to
- *   http://www.pkware.com/support/appnote.html .
+ *   http://www.pkware.com/products/enterprise/white_papers/appnote.html
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
  * @since 3.1
@@ -84,7 +84,30 @@ public:
     QString fileName() { return m_filename; }
 
     /**
-     * Describes the Zip's compression type.
+     * Describes the contents of the "extra field" for a given file in the Zip archive.
+     */
+    enum ExtraField { NoExtraField = 0,      /// No extra field
+                      ModificationTime = 1,  /// Modification time ("extended timestamp" header)
+                      DefaultExtraField = 1
+    };
+
+    /**
+     * Call this before writeFile or prepareWriting, to define what the next
+     * file to be written should have in its extra field.
+     * @param ef the type of "extra field"
+     * @see extraField()
+     */
+    void setExtraField( ExtraField ef );
+
+    /**
+     * The current type of "extra field" that will be used for new files.
+     * @return the current type of "extra field"
+     * @see setExtraField()
+     */
+    ExtraField extraField() const;
+
+    /**
+     * Describes the compression type for a given file in the Zip archive.
      */
     enum Compression { NoCompression = 0,     ///< Uncompressed.
 		       DeflateCompression = 1 ///< Deflate compression method.
@@ -217,14 +240,14 @@ public:
     int encoding() const { return m_encoding; }
     Q_LONG compressedSize() const { return m_compressedSize; }
 
-    // Only used when writing
+    /// Only used when writing
     void setCompressedSize(Q_LONG compressedSize) { m_compressedSize = compressedSize; }
 
-    // Header start: only used when writing
+    /// Header start: only used when writing
     void setHeaderStart(Q_LONG headerstart) { m_headerStart = headerstart; }
     Q_LONG headerStart() const {return m_headerStart; }
 
-    // CRC: only used when writing
+    /// CRC: only used when writing
     unsigned long crc32() const { return m_crc; }
     void setCRC32(unsigned long crc32) { m_crc=crc32; }
 
@@ -252,6 +275,7 @@ private:
     Q_LONG m_headerStart;
     int m_encoding;
     QString m_path;
+    // KDE4: d pointer or at least some int for future extensions
 };
 
 #endif
