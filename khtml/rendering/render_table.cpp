@@ -1141,8 +1141,9 @@ void RenderTable::calcColWidth(void)
     }
 
 #ifdef TABLE_DEBUG
-    if(m_width != columnPos[totalCols] ) kdDebug( 6040 ) << "========> table layout error!!! <===============================" << endl;
-    kdDebug( 6040 ) << "total width = " << m_width << endl;
+    if(m_width != columnPos[totalCols] )
+        kdDebug( 6040 ) << "========> table layout error!!! <===============================" << endl;
+    kdDebug( 6040 ) << "total width = " << m_width << " colpos = " << columnPos[totalCols] << endl;
 #endif
 
 }
@@ -1497,7 +1498,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     _ty += yPos();
 
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
+//    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if (!containsPositioned() && !isRelPositioned() && !isPositioned())
     {
@@ -1506,7 +1507,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
 
 #ifdef DEBUG_LAYOUT
-     kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
+//     kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
      if(isVisible())
@@ -1728,7 +1729,14 @@ void RenderTableCell::calcMinMaxWidth()
 
     RenderFlow::calcMinMaxWidth();
 
-    if(nWrap && style()->width().type!=Fixed) m_minWidth = m_maxWidth;
+    if(nWrap) {
+        if(style()->width().type!=Fixed)
+            m_minWidth = m_maxWidth;
+        else {
+            m_minWidth = QMAX( m_maxWidth, style()->width().value );
+            m_maxWidth = QMAX( m_maxWidth, m_minWidth );
+        }
+    }
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
         m_table->addColInfo(this);
