@@ -90,7 +90,7 @@ public:
     void setSteps(int minor, int major);
 
     /**
-     * Specifie that this widget may stretch horizontally, but is
+     * Specify that this widget may stretch horizontally, but is
      * fixed vertically (like @ref QSpinBox itself).
      */
     QSizePolicy sizePolicy() const;
