@@ -129,6 +129,7 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 //		kdDebug(282)<<"Set forced fixed width for widget 1 :"<<w<<endl;
 //		kdDebug(282)<<"Width() :"<<width()<<endl;
 	}
+	divider->hide();
 	setupMinMaxSize();
 }
 
@@ -152,6 +153,7 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 		setSeparatorPos((height()-h)*factor/height(),true);
 //		kdDebug(282)<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
+	divider->hide();
 	setupMinMaxSize();
 }
 
@@ -169,6 +171,7 @@ void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
 		fixedHeight1=-1;
 		setSeparatorPos(savedXPos,true);
 	}
+	divider->show();
 }
 
 
