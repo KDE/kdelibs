@@ -274,6 +274,7 @@
 10500        KBackgammon
 11000        libkdegames
 11001        libkdegames (KGame)
+11002        libkdegames (Highscores)
 11111        kpat
 12000        KPoker
 12001        KPoker (Server)
@@ -344,6 +345,7 @@
 30513        ole-winword
 30514        svgfilter
 30515        rtffilter
+30516        pdffilter
 31000        koffice
 32001        kword
 32002        kword (formatting)
