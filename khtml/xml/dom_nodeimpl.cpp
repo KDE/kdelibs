@@ -446,16 +446,18 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     }
 
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
-    DocumentImpl *doc = getDocument();
-
+    DocumentPtr *doc = document;
+    doc->ref();
+    
     // deref all nodes in chain
     it.toFirst();
     for (; it.current(); ++it)
         it.current()->deref(); // this may delete us
 
-    if (doc)
-        doc->updateRendering();
-
+    if (doc->document())
+        doc->document()->updateRendering();
+    doc->deref();
+    
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
 
