@@ -246,8 +246,6 @@ PluginBase::~PluginBase()
 
 KJSO Plugins::get(const UString &p) const
 {
-    kdDebug() << "Plugins::get " << p.qstring() << endl;
-
     if (p == "refresh")
         return Function(new PluginsFunc());
     else if( p=="length" )
@@ -275,8 +273,6 @@ KJSO Plugins::get(const UString &p) const
 
 KJSO MimeTypes::get(const UString &p) const
 {
-    kdDebug() << "Mimetypes::get " << p.qstring() << endl;
-
     if( p=="length" )
         return Number( mimes->count() );
     else {
@@ -303,19 +299,15 @@ KJSO MimeTypes::get(const UString &p) const
 
 KJSO Plugin::get(const UString &p) const
 {
-    kdDebug() << "Plugin::get " << p.qstring() << endl;
-
     if ( p=="name" )
         return String( m_info->name );
     else if ( p=="filename" )
         return String( m_info->file );
     else if ( p=="description" )
         return String( m_info->desc );
-    else if ( p=="length" ) {
-        unsigned num = m_info->mimes.count();
-        kdDebug() << "plugin.length = " << num << endl;
-        return Number(num);
-    } else {
+    else if ( p=="length" )
+        return Number( m_info->mimes.count() );
+    else {
 
         // plugin[#]
         bool ok;
@@ -341,7 +333,6 @@ KJSO Plugin::get(const UString &p) const
 
 KJSO MimeType::get(const UString &p) const
 {
-    kdDebug() <<"MimeType::get " << p.qstring() << endl;
     if ( p=="type" )
         return String( m_info->type );
     else if ( p=="suffixes" )

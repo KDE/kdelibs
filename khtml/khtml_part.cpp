@@ -978,7 +978,7 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
 {
     if ( d )
-	return d->m_doc;
+        return d->m_doc;
     return 0;
 }
 
@@ -1528,10 +1528,10 @@ void KHTMLPart::findTextBegin()
 bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 {
     if(!d->m_findNode) {
-	if (d->m_doc->isHTMLDocument())
-	    d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
-	else
-	    d->m_findNode = d->m_doc;
+        if (d->m_doc->isHTMLDocument())
+            d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+        else
+            d->m_findNode = d->m_doc;
     }
 
     if ( !d->m_findNode ||
@@ -1593,10 +1593,10 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive )
 {
     if(!d->m_findNode) {
-	if (d->m_doc->isHTMLDocument())
-	    d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
-	else
-	    d->m_findNode = d->m_doc;
+        if (d->m_doc->isHTMLDocument())
+            d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+        else
+            d->m_findNode = d->m_doc;
     }
 
     if ( !d->m_findNode ||
@@ -3290,9 +3290,9 @@ void KHTMLPart::slotFind()
   if ( !d->m_findDialog ) {
       d->m_findDialog = new KHTMLFind( part, part->widget(), "khtmlfind" );
       connect( d->m_findDialog, SIGNAL( done() ),
-	       this, SLOT( slotFindDone() ) );
+               this, SLOT( slotFindDone() ) );
       connect( d->m_findDialog, SIGNAL( destroyed() ),
-	       this, SLOT( slotFindDialogDestroyed() ) );
+               this, SLOT( slotFindDialogDestroyed() ) );
   }
 
   d->m_findDialog->setNewSearch();
