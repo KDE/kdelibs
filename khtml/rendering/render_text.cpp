@@ -470,7 +470,7 @@ void RenderText::calcMinMaxWidth()
         if (wordlen)
         {
             // DOH. this is slow. QConstString would be better
-            int w = fm->width(QString(str->s+i, wordlen));
+            int w = fm->width(QConstString(str->s+i, wordlen).string());
             currMinWidth += w;
             currMaxWidth += w;
         }

@@ -487,7 +487,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 try
                 {
                     parent->insertBefore(n, node);
-                    if(tagPriority[id] != 0)
+                    if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT )
                     {
                         pushBlock(id, tagPriority[id]);
                         current = n;
