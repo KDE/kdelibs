@@ -666,7 +666,7 @@ void RenderTable::calcColMinMax()
 
     int availableWidth = containingBlockWidth();
     Length ml = style()->marginLeft();
-    Length mr = style()->marginLeft();
+    Length mr = style()->marginRight();
     if (ml.type==Fixed && mr.type==Fixed)
     {
         if (style()->direction()==LTR)

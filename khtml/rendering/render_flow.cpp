@@ -979,10 +979,10 @@ void RenderFlow::calcMinMaxWidth()
             //  auto margins don't affect minwidth          
 
             Length ml = child->style()->marginLeft();
-            Length mr = child->style()->marginLeft();
+            Length mr = child->style()->marginRight();
             if (ml.type==Fixed && mr.type==Fixed)
             {
-                if (style()->direction()==LTR)
+                if (child->style()->direction()==LTR)
                     margin += child->marginLeft(); 
                 else
                     margin += child->marginRight();  
