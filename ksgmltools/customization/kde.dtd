@@ -68,6 +68,9 @@
 <!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
 %edbsyn; -->
 
+<!-- Perhaps language values could be defined here, to ensure
+     correct format?                                               -->
+
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
 <!-- ============================================================= -->

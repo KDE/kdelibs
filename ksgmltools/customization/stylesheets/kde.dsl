@@ -317,10 +317,14 @@
 	    (loop (cdr tl)))))
     ; == a hack, but keeps localisation code cleaner
     ; == tests for RFC1766 compliance of language code
+    ; == http://www.rfc-editor.org/rfc/rfc1766.txt
     ; == could go in the language-fix function
     (case ($lang$)
-      (("no_ny") (error "L10N ERROR: use no-NY instead of no_NY"))
+      (("no_ny") (error "L10N ERROR: use no-ny instead of no_ny")) ; ny is not a country but a language variant
       (("pt_br") (error "L10N ERROR: use pt-BR instead of pt_BR"))
+      ; the versions with the encodings are possible, but should be written like
+      ; this zh-CN-gb2312 and zh-TW-big5 (language info is lower case, country is upper case - none of this case sensitivity is compulsory: it's just convention
+      ; unregistered languages must be written as x-LL
       (("zh_cn") (error "L10N ERROR: use zh-CN instead of zh_CN"))
       (("zh_cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh_CN.GB2312"))
       (("zh-cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh-CN.GB2312"))
