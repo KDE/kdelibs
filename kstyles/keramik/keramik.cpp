@@ -2356,6 +2356,20 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 
 		case PM_TabBarTabOverlap:
 			return 0;
+			
+		case PM_TabBarTabShiftVertical:
+		{
+			const QTabBar* tb;
+			if (tb = ::qt_cast<const QTabBar*>(widget))
+			{
+				if (tb->shape() == QTabBar::RoundedBelow || 
+					tb->shape() == QTabBar::TriangularBelow)
+					return 0;
+			}
+			
+			return 2; //For top, or if not sure
+		}
+			
 
 		case PM_TitleBarHeight:
 			return titleBarH;
