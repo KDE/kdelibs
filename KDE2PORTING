@@ -236,3 +236,9 @@ These classes have been replaced by QSpinBox. API is almost the same
 HINTS:
   - valueincreased()/valuedecreased -> valueChanged()
   - getValue() -> value()
+
+////////////////////////////////////////////////////////////////////////
+// * KClipboard
+
+In case you've been using KClipboard, QClipboard is the way to go now.
+
