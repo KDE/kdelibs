@@ -385,19 +385,15 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Status:
       return String(UString(m_part->jsStatusBarText()));
     case Document:
-      if (isSafeScript(exec))
-      {
-        if (m_part->document().isNull()) {
-          kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
-          m_part->begin();
-          m_part->write("<HTML><BODY>");
-          m_part->end();
-        }
-        Value val = getDOMNode(exec,m_part->document());
-        return val;
+      // no isSafeScript() test. Getting hold of the document object itself is allowed
+      // (to test it for null, for instance).
+      if (m_part->document().isNull()) {
+        kdDebug(6070) << "Document.write: adding <HTML><BODY> to create document" << endl;
+        m_part->begin();
+        m_part->write("<HTML><BODY>");
+        m_part->end();
       }
-      else
-        return Undefined();
+      return getDOMNode(exec,m_part->document());
     case Node:
       return getNodeConstructor(exec);
     case Range:

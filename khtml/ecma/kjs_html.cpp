@@ -157,6 +157,11 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  if ( !win || !win->isSafeScript(exec) )
+    return false;
+
   // Keep in sync with tryGet
   DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
   if ( list.length() )
@@ -164,7 +169,6 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
   if ( list.length() )
     return true;
-  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
   if ( view && view->part() )
   {
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
@@ -180,7 +184,13 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
 #endif
+
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+
+  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  if ( !win || !win->isSafeScript(exec) )
+    return Undefined();
 
   // Check for images with name==propertyName, return item or list if found
   // We don't use the images collection because
@@ -220,8 +230,6 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     return getDOMNodeList( exec, list );
   }
 
-  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
-
   // Check for frames/iframes with name==propertyName
   if ( view && view->part() )
   {
@@ -246,16 +254,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Body:
       return getDOMNode(exec,doc.body());
     case Location:
-      Q_ASSERT(view);
-      Q_ASSERT(view->part());
-      if ( view && view->part() )
-      {
-        Window* win = Window::retrieveWindow(view->part());
-        if (win)
-          return Value(win->location());
-	else
-          return Undefined();
-      }
+      if (win)
+        return Value(win->location());
       else
         return Undefined();
     case Cookie:
@@ -321,17 +321,16 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case LastModified:
       return String(doc.lastModified());
     case Height:
-      return Number(view ? view->visibleWidth() : 0);
+      return Number(view ? view->visibleHeight() : 0);
     case Width:
       return Number(view ? view->visibleWidth() : 0);
     case Dir:
       return String(body.dir());
     case Frames:
-      if ( view && view->part() )
-      {
-        Window* win = Window::retrieveWindow(view->part());
+      if ( win )
         return Value(win->frames(exec));
-      }
+      else
+        return Undefined();
     }
   }
   if (DOMDocument::hasProperty(exec, propertyName))
@@ -348,12 +347,19 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, con
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
 #endif
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(node.handle())->view();
+
+  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  if ( !win || !win->isSafeScript(exec) )
+    return;
+
   DOMObjectLookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
 }
 
 void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
+
   DOM::HTMLBodyElement body = doc.body();
 
   switch (token) {
@@ -373,13 +379,10 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
     doc.setCookie(value.toString(exec).string());
     break;
   case Location: {
-    KHTMLView *view = static_cast<DOM::DocumentImpl *>( doc.handle() )->view();
-    Q_ASSERT(view);
-    if (view)
-    {
-      KHTMLPart *part = view->part();
+    KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+    if ( view && view->part() ) {
       QString str = value.toString(exec).qstring();
-      part->scheduleRedirection(-1, str);
+      view->part()->scheduleRedirection(-1, str);
     }
     break;
   }
