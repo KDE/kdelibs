@@ -4402,14 +4402,16 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   {
     int i = 0;
     while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
-    if ( strncasecmp( p, "realm=\"", 7 ) == 0 )
+    if ( strncasecmp( p, "realm=", 6 ) == 0 )
     {
-      p += 7;
-      while( p[i] != '"' ) i++;
+      p += 6;
+      if (*p == '"') p++;
+      while( p[i] && p[i] != '"' ) i++;
       if( b )
         m_strProxyRealm = QString::fromLatin1( p, i );
       else
         m_strRealm = QString::fromLatin1( p, i );
+      if (!p[i]) break;
     }
     p+=(i+1);
   }
