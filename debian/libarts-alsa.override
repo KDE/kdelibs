@@ -9,4 +9,11 @@ libarts-alsa: shlib-with-non-pic-code usr/lib/libkmedia2_idl.so.0.0.0
 libarts-alsa: shlib-with-non-pic-code usr/lib/libkmedia2.so.0.0.0
 libarts-alsa: shlib-with-non-pic-code usr/lib/libsoundserver_idl.so.0.0.0
 libarts-alsa: shlib-with-non-pic-code usr/lib/libx11globalcomm.so.0.0.0
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/mcopidl.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artsd.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artsplay.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artscat.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artswrapper.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artsdsp.1.gz
+libarts-alsa: link-to-undocumented-manpage usr/share/man/man1/artsshell.1.gz
 
