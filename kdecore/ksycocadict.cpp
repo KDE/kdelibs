@@ -18,6 +18,7 @@
 
 #include "ksycocadict.h"
 #include "ksycocaentry.h"
+#include "ksycoca.h"
 
 #include <qptrlist.h>
 #include <qvaluelist.h>
@@ -55,6 +56,17 @@ KSycocaDict::KSycocaDict()
 KSycocaDict::KSycocaDict(QDataStream *str, int offset)
   : d(0), mStr(str), mOffset(offset)
 {
+   Q_UINT32 test1, test2;
+   str->device()->at(offset);
+   (*str) >> test1 >> test2;
+   if ((test1 > 0x000fffff) || (test2 > 1024))
+   {
+       KSycoca::flagError();
+       mHashTableSize = 0;
+       mOffset = 0;
+       return;
+   }
+
    str->device()->at(offset);
    (*str) >> mHashTableSize;
    (*str) >> mHashList;
