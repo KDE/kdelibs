@@ -51,7 +51,7 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    
+
     virtual void close();
     	
 //    virtual void layout(bool);  // just use BlockElement layout instead
@@ -127,6 +127,15 @@ protected:
     QList<Length> *cols;
     int *rowHeight;
     int *colWidth;
+    bool *rowResize;
+    bool *colResize;
+    
+    // mozilla and other's use this in the frameset, although it's not standard html4
+    bool frameborder;
+    int border;
+    bool noresize;
+
+    KHTMLWidget *view;
 };
 
 // -------------------------------------------------------------------------

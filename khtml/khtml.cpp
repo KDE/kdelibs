@@ -63,6 +63,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
 
     kimgioRegister();
 
+    _isFrame = false;
+    
     init();
 }
 
@@ -78,6 +80,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const c
 
     kimgioRegister();
 
+    _isFrame = true;
+    
     init();
 }
 
@@ -834,8 +838,8 @@ void KHTMLWidget::end()
   KURL u(m_strURL);
   if ( !u.htmlRef().isEmpty() )
       gotoAnchor( u.htmlRef() );
- 
-  
+
+
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
@@ -884,9 +888,15 @@ void KHTMLWidget::layout()
 	{
 	    setVScrollBarMode(AlwaysOff);
 	    setHScrollBarMode(AlwaysOff);
+	    _width = width();
+	    
+	    document->setAvailableWidth(_width);
+	    document->layout(true);
+	    return;
 	}
 
 	int w = width() - SCROLLBARWIDTH - 10;
+
 	if(w < _width-5 || w > _width + 10)
 	{
 	    printf("layouting document\n");
@@ -947,7 +957,7 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
     {
 	// find top level frame
 	KHTMLWidget *w = this;
-	while(w->isFrame())
+	while(w && w->isFrame())
 	    w = static_cast<KHTMLWidget *>(w->parentWidget());
 	// ####
 	//w->setSelected(this);
@@ -1232,22 +1242,22 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	scrollBy( 0, 10 );
 	flushKeys();
 	break;
-    
+
     case Key_Next:
 	scrollBy( 0, viewport()->height()*8/10 );
 	flushKeys();
 	break;
-    
+
     case Key_Up:
 	scrollBy( 0, -10 );
 	flushKeys();
 	break;
-    
+
     case Key_Prior:
 	scrollBy( 0, -viewport()->height()*8/10 );
 	flushKeys();
 	break;
-    
+
     case Key_Right:
 	scrollBy( 10, 0 );
 	flushKeys();
@@ -1371,7 +1381,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 bool KHTMLWidget::isFrameSet()
 {
     if(!document || !document->body()) return false;
-    
+
     if(document->body()->id() == ID_FRAMESET) return true;
     return false;
 }

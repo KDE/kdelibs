@@ -202,6 +202,12 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 	name = attr->value();
 	break;
     }
+    case ATTR_FRAMEBORDER:
+    case ATTR_MARGINWIDTH:
+    case ATTR_MARGINHEIGHT:
+    case ATTR_NORESIZE:
+    case ATTR_SCROLLING:
+	// ####
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -268,11 +274,20 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
 {
     rowHeight = 0;
     colWidth = 0;
-
+    
+    rowResize = 0;
+    colResize = 0;
+    
     // default value for rows and cols...
     rows = 0;
     cols = 0;
 
+    frameborder = true;
+    border = 0;
+    noresize = false;
+
+    view = 0;
+    
     setBlocking();
 }
 
@@ -302,6 +317,16 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
     case ATTR_COLS:
 	cols = attr->val()->toLengthList();
 	break;
+    case ATTR_FRAMEBORDER:
+	if(attr->value() == "0" || attr->value() == "no")
+	    frameborder = false;
+	break;
+    case ATTR_NORESIZE:
+	noresize = true;
+	break;
+    case ATTR_BORDER:
+	border = attr->val()->toInt();
+	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -309,50 +334,16 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLFrameSetElementImpl::layout(bool deep)
 {
+    
 #ifdef DEBUG_LAYOUT
     printf("%s(FrameSet)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
 #endif
 
-    int r;
-    int c;
-    NodeImpl *child = _first;
-    int yPos = 0;
-    int totalRows = 1;
-    if(rows)
-	totalRows = rows->count();
-    int totalCols = 1;
-    if(cols)
-	totalCols = cols->count();
-
-    for(r = 0; r < totalRows; r++)
-    {
-	int xPos = 0;
-	for(c = 0; c < totalCols; c++)
-	{
-	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
-	    e->setXPos(xPos);
-	    e->setYPos(yPos);
-	    e->setWidth(colWidth[c]);
-	    e->setDescent(rowHeight[r]);
-	    if(deep)
-		e->layout();
-	    xPos += colWidth[c];
-	    child = child->nextSibling();
-	    if(!child) goto end;
-	}
-	yPos += rowHeight[r];
-    }
-
- end:
-    setLayouted();
-}
-
-void HTMLFrameSetElementImpl::attach(KHTMLWidget *)
-{
     width = availableWidth;
 
-    int remainingWidth = width;
-    int remainingHeight = descent;
+    if(_parent->id() == ID_HTML && view)
+	descent = view->height();
+    
     int totalRows = 1;
     if(rows)
 	totalRows = rows->count();
@@ -361,6 +352,12 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *)
 	totalCols = cols->count();
     ascent = 0;
 
+    // ### get the right value here!!!
+    int remainingWidth = width - (totalCols-1)*border;
+    if(remainingWidth<0) remainingWidth=0;
+    int remainingHeight = descent - (totalRows-1)*border;
+    if(remainingHeight<0) remainingHeight=0;
+    
     if(rowHeight) delete [] rowHeight;
     if(colWidth) delete [] colWidth;
     rowHeight = new int[totalRows];
@@ -405,6 +402,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *)
 		else
 		  rowHeight[i] = remainingRelativeWidth;
 	  	remainingHeight -= rowHeight[i];
+		totalRelative--;
 	    }
 	}
     }
@@ -435,7 +433,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *)
 	if ( !totalRelative && colsRelative )
 	  remainingRelativeWidth = remainingWidth/colsRelative;
 
-	for(i = 0; i< totalCols; i++)
+	for(i = 0; i < totalCols; i++)
 	{
 	    if(cols->at(i)->type == Relative)
 	    {
@@ -444,12 +442,48 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *)
 		else
 		  colWidth[i] = remainingRelativeWidth;
 		remainingWidth -= colWidth[i];
+		totalRelative--;
 	    }
 	}
     }
     else
 	colWidth[0] = width;
 
+    int r;
+    int c;
+    NodeImpl *child = _first;
+    if(!child) return;
+
+    int yPos = 0;
+
+    for(r = 0; r < totalRows; r++)
+    {
+	int xPos = 0;
+	for(c = 0; c < totalCols; c++)
+	{
+	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
+	    e->setXPos(xPos);
+	    e->setYPos(yPos);
+	    e->setWidth(colWidth[c]);
+	    e->setDescent(rowHeight[r]);
+	    if(deep)
+		e->layout();
+	    xPos += colWidth[c];
+	    child = child->nextSibling();
+	    if(!child) goto end;
+	}
+	yPos += rowHeight[r];
+    }
+
+ end:
+    setLayouted();
+}
+
+void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
+{
+    // ensure the htmlwidget knows we have a frameset, and adjusts the width accordingly
+    w->layout();
+    view = w;
 }
 
 void HTMLFrameSetElementImpl::detach()

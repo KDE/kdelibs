@@ -27,9 +27,9 @@ using namespace DOM;
 
 #include <stdio.h>
 
-DOMStringImpl::DOMStringImpl(QChar *str, uint len) 
-{ 
-    s = str, l = len; 
+DOMStringImpl::DOMStringImpl(QChar *str, uint len)
+{
+    s = str, l = len;
 }
 
 void DOMStringImpl::append(DOMStringImpl *str)
@@ -47,7 +47,7 @@ void DOMStringImpl::append(DOMStringImpl *str)
 
 void DOMStringImpl::insert(DOMStringImpl *str, uint pos)
 {
-    if(pos > l) 
+    if(pos > l)
     {
 	append(str);
 	return;
@@ -79,16 +79,21 @@ DOMStringImpl *DOMStringImpl::copy() const
     QChar *c = new QChar[l];
     memcpy(c, s, l*sizeof(QChar));
     return new DOMStringImpl(c, l);
-}   
+}
 
-static Length parseLength(QChar *s, unsigned int l) 
+static Length parseLength(QChar *s, unsigned int l)
 {
     if ( *(s+l-1) == QChar('%'))
 	return Length(QConstString(s, l-1).string().toInt(), Percent);
 
     if ( *(s+l-1) == QChar('*'))
-	return Length(QConstString(s, l-1).string().toInt(), Relative);
-
+    {
+	if(l == 1)
+	    return Length(1, Relative);
+	else
+	    return Length(QConstString(s, l-1).string().toInt(), Relative);
+    }
+    
     int v = QConstString(s, l).string().toInt();
     if(v)
 	return Length(v, Fixed);
@@ -121,11 +126,11 @@ QList<Length> *DOMStringImpl::toLengthList() const
 	list->append(l);
 	pos = pos2+1;
     }
-    
+
     Length *l = new Length(parseLength(s+pos, str.length()-pos));
     printf("got length %d, type=%d\n", l->value, l->type);
     list->append(l);
-    
+
     return list;
 }
 
