@@ -69,7 +69,7 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     if(prev)
 	xp += static_cast<RenderFlow *>(prev)->leftMargin( prev->height() );
 
-    
+
     int yp = _ty ;
 
     int lw = size/2;
@@ -93,6 +93,7 @@ void RenderHR::layout(bool)
     m_height = size+2;
     if (m_width==0)
     	m_width = containingBlockWidth();
+    calcHeight();
     setLayouted(true);
 }
 

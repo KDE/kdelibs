@@ -70,7 +70,7 @@
       BLOCKQUOTE, UL,
       FIELDSET, FORM,
       OL, DL, DIR,
-      MENU            { margin: 1.33em 0 }
+      MENU            { margin: 1.0em 0 }
       H5              { font-size: .83em; line-height: 1.17em; margin: 1.67em 0 }
       H6              { font-size: .67em; margin: 2.33em 0 }
       H1, H2, H3, H4,
