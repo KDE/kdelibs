@@ -46,6 +46,7 @@ static mutex_t spinlock = MUTEX_INITIALIZER;
 #define MALLOC_POSTACTION  unlock( &spinlock )
 ----------
 public functions call either functions in this malloc or in libc, depending on $KDE_MALLOC
+the kde_malloc_is_used hack
 
 
 TODO:

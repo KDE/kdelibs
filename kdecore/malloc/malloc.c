@@ -1,5 +1,12 @@
 #include <config.h>
 
+/* awful hack
+ This variable is set to 1 after a call to calloc() if this malloc
+ implementation is active. This is used in konqueror when calling
+ mallinfo(), which doesn't seem to be that much standardized :(.
+*/
+int kde_malloc_is_used = 0;
+
 #ifdef KDE_MALLOC
 
 #ifdef KDE_MALLOC_DEBUG
@@ -4236,6 +4243,9 @@ Void_t* cALLOc(n_elements, elem_size) size_t n_elements; size_t elem_size;
   unsigned long nclears;
   INTERNAL_SIZE_T* d;
 
+  /* hack */
+  kde_malloc_is_used = 1;
+  
   Void_t* mem = mALLOc(n_elements * elem_size);
 
   if (mem != 0) {
