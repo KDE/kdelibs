@@ -26,7 +26,7 @@
 #define KCOOKIESERVER_H
 
 #include <qstringlist.h>
-#include <kdedmodule.h>
+#include <kded/kdedmodule.h>
 
 class KHttpCookieList;
 class KCookieJar;
