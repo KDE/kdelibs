@@ -65,6 +65,7 @@ public:
     Range();
     Range(const Document rootContainer);
     Range(const Range &other);
+    Range(const Node sc, const long so, const Node ec, const long eo);
 
     Range & operator = (const Range &other);
 

@@ -63,6 +63,18 @@ Range::Range(const Range &other)
     detached = false;
 }
 
+Range::Range(const Node sc, const long so, const Node ec, const long eo)
+{
+    startContainer = sc;
+    startOffset = so;
+    endContainer = ec;
+    endOffset = eo;
+    commonAncestorContainer = getCommonAncestorContainer();
+    if( startContainer == endContainer && startOffset == endOffset )  collapsed = true;
+    else  collapsed = false;
+    detached = false;
+}
+
 Range &Range::operator = (const Range &other)
 {
     startContainer = other.startContainer;
