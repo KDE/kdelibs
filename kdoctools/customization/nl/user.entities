@@ -116,18 +116,19 @@
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
-<!ENTITY LMB     "<mousebutton>linker</mousebutton> muisknop">
-<!ENTITY MMB     "<mousebutton>middelste</mousebutton> muisknop">
-<!ENTITY RMB     "<mousebutton>rechter</mousebutton> muisknop">
+<!ENTITY LMB     "<mousebutton>linkermuisknop</mousebutton>">
+<!ENTITY MMB     "<mousebutton>middelstemuisknop</mousebutton>">
+<!ENTITY RMB     "<mousebutton>rechtermuisknop</mousebutton>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 <!ENTITY Backspace   "<keycap>Backspace</keycap>">
 <!ENTITY Esc     "<keycap>Escape</keycap>">
 <!ENTITY Enter   "<keycap>Enter</keycap>">
-<!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
-<!ENTITY HTML    "<abbrev>HTML</abbrev>">
-<!ENTITY OS      "<abbrev>O.S.</abbrev>">
+<!ENTITY FAQ     "<acronym>FAQ</acronym>">
+<!ENTITY HTML    "<acronym>HTML</acronym>">
+<!-- Dubbelzinnig!  Wat betekent OS?  OS trademark of luie versie voor besturingssysteem? -->
+<!ENTITY OS      "<acronym>OS</acronym>">
 <!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
-<!ENTITY cdrom   "<abbrev>cd-rom</abbrev>">
+<!ENTITY cdrom   "<acronym>CD-ROM</acronym>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
