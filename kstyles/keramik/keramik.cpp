@@ -1168,11 +1168,16 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 		{
 			const QSlider* slider = static_cast< const QSlider* >( widget );
 			bool horizontal = slider->orientation() == Horizontal;
+			
+			Keramik::TilePainter::PaintMode pmod = Keramik::TilePainter::PaintNormal;
+			
+			if (slider->erasePixmap() && !slider->erasePixmap()->isNull())
+				pmod = Keramik::TilePainter::PaintFullBlend;
 
 			if ( horizontal )
-				Keramik::RectTilePainter( keramik_slider_hgroove, false ).draw(p, r, cg.button(), cg.background(), disabled);
+				Keramik::RectTilePainter( keramik_slider_hgroove, false ).draw(p, r, cg.button(), cg.background(), disabled, pmod);
 			else
-				Keramik::RectTilePainter( keramik_slider_vgroove, true, false ).draw( p, r, cg.button(), cg.background(), disabled);
+				Keramik::RectTilePainter( keramik_slider_vgroove, true, false ).draw( p, r, cg.button(), cg.background(), disabled, pmod);
 
 			break;
 		}
