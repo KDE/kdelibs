@@ -425,12 +425,16 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
             in_buf[count] == '\t' || in_buf[count] == ' ') )
         count++;
 
-    if ( strncasecmp(in_buf, "begin", 5) == 0 )
+    if ( strncasecmp(in_buf+count, "begin", 5) == 0 )
     {
         count += 5;
         while ( count < len && in_buf[count] != '\n' && in_buf[count] != '\r' )
             count++;
-        in_buf += (++count);
+
+        while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r') )
+            count ++;
+
+        in_buf += count;
         tail = (len -= count);
     }
 
