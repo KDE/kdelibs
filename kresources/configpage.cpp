@@ -99,7 +99,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mListView->addColumn( i18n( "Standard" ) );
 
   groupBoxLayout->addWidget( mListView, 1, 0 );
-
+  connect(  mListView, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int ) ), this, SLOT( slotEdit() ) );
   KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
   mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
   mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
