@@ -310,7 +310,7 @@ void KProtocolManager::badProxy( const QString &proxy )
 */
 static bool revmatch(const char *host, const char *nplist)
 {
-  if (0 == host)
+  if (host == 0)
     return false;
 
   const char *hptr = host + strlen( host ) - 1;
@@ -322,8 +322,10 @@ static bool revmatch(const char *host, const char *nplist)
     if ( *hptr != *nptr )
     {
       hptr = shptr;
+
       // Try to find another domain or host in the list
       while(--nptr>=nplist && *nptr!=',' && *nptr!=' ') ;
+
       // Strip out multiple spaces and commas
       while(--nptr>=nplist && (*nptr==',' || *nptr==' ')) ;
     }
@@ -331,7 +333,9 @@ static bool revmatch(const char *host, const char *nplist)
     {
       if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
         return true;
-      hptr--; nptr--;
+
+      hptr--;
+      nptr--;
     }
   }
 
@@ -359,11 +363,12 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         bool useRevProxy = ( (type == ManualProxy || type == EnvVarProxy) &&
                             useReverseProxy() );
         bool isRevMatch = false;
+
         if (!noProxy.isEmpty())
         {
            QString qhost = url.host().lower();
            const char *host = qhost.latin1();
-           QString qno_proxy = noProxy.lower();
+           QString qno_proxy = noProxy.stripWhiteSpace().lower();
            const char *no_proxy = qno_proxy.latin1();
            isRevMatch = revmatch(host, no_proxy);
            // If the hostname does not contain a dot, check if
@@ -371,8 +376,8 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            if (!isRevMatch && host && (strchr(host, '.') == NULL))
               isRevMatch = revmatch("<local>", no_proxy);
         }
-        if ( (!useRevProxy && !isRevMatch) ||
-             (useRevProxy && isRevMatch) )
+
+        if ( (!useRevProxy && !isRevMatch) || (useRevProxy && isRevMatch) )
         {
            // Let's not assume all proxying is done through
            // the http io-slave.  Instead attempt to determine
