@@ -151,6 +151,20 @@ public:
     static bool exists(const KURL& url);
 
     /**
+     * Overloaded version of exists
+     * A stat() can have two meanings. Either we want to read from this URL,
+     * or to check if we can write to it. First case is "source", second is "dest".
+     * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
+     * (e.g. with FTP)
+     * Tests whether a URL exists.
+     *
+     * @param url the url we are testing
+     * @param source if true, we want to read from that URL.
+     * If false, we want to write to it.
+     */
+    static bool exists(const KURL& url, bool source);
+
+    /**
      * Tests whether a URL exists and return information on it.
      *
      * This is a convenience function for @ref KIO::stat
@@ -219,7 +233,7 @@ private:
      */
     bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
     bool dircopyInternal(const KURL& src, const KURL& target);
-    bool statInternal(const KURL & url);
+    bool statInternal(const KURL & url, int details, bool source);
     UDSEntry m_entry;
     bool delInternal(const KURL & url);
     bool mkdirInternal(const KURL & url, int permissions);

@@ -108,13 +108,21 @@ bool NetAccess::exists( const KURL & url )
   if ( url.isLocalFile() )
     return QFile::exists( url.path() );
   NetAccess kioNet;
-  return kioNet.statInternal( url );
+  return kioNet.statInternal( url, 0 /*no details*/, true /*source assumed*/ );
+}
+
+bool NetAccess::exists( const KURL & url, bool source )
+{
+  if ( url.isLocalFile() )
+    return QFile::exists( url.path() );
+  NetAccess kioNet;
+  return kioNet.statInternal( url, 0 /*no details*/, source );
 }
 
 bool NetAccess::stat( const KURL & url, KIO::UDSEntry & entry )
 {
   NetAccess kioNet;
-  bool ret = kioNet.statInternal( url );
+  bool ret = kioNet.statInternal( url, 2 /*all details*/, true /*source*/ );
   if (ret)
     entry = kioNet.m_entry;
   return ret;
@@ -170,10 +178,12 @@ bool NetAccess::dircopyInternal(const KURL& src, const KURL& target)
   return bJobOK;
 }
 
-bool NetAccess::statInternal( const KURL & url )
+bool NetAccess::statInternal( const KURL & url, int details, bool source )
 {
   bJobOK = true; // success unless further error occurs
-  KIO::Job * job = KIO::stat( url, !url.isLocalFile() );
+  KIO::StatJob * job = KIO::stat( url, !url.isLocalFile() );
+  job->setDetails( details );
+  job->setSide( source );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
   enter_loop();
