@@ -76,18 +76,29 @@ static bool hasIPv6()
 }
 
 // blacklist management
+static QMutex blacklistMutex;	// KDE4: change to a QReadWriteLock
 QStringList KBlacklistWorker::blacklist;
 
 void KBlacklistWorker::init()
 {
+  // HACK!
+  // FIXME KDE4: How do I detect there is an instance, without triggering
+  // its creation or an assertion fault?
+  if (!KGlobal::_instance)
+    return;
+
+  static bool beenhere = false;
+
+  if (beenhere)
+    return;
+
+  beenhere = true;
   loadBlacklist();
 }
 
 void KBlacklistWorker::loadBlacklist()
 {
-  if (!kapp)
-    return;
-
+  QMutexLocker locker(&blacklistMutex);
   QStringList filelist = KGlobal::dirs()->findAllResources("config", "ipv6blacklist");
 
   QStringList::ConstIterator it = filelist.constBegin(),
@@ -122,12 +133,16 @@ void KBlacklistWorker::loadBlacklist()
 // it matches the domain ending part
 bool KBlacklistWorker::isBlacklisted(const QString& host)
 {
+  KBlacklistWorker::init();
+
   // empty hostnames cannot be blacklisted
   if (host.isEmpty())
     return false;
 
   // KDE4: QLatin1String
   QString ascii = QString::fromLatin1(KResolver::domainToAscii(host));
+
+  QMutexLocker locker(&blacklistMutex);
 
   // now find out if this hostname is present
   QStringList::ConstIterator it = blacklist.constBegin(),
@@ -1004,8 +1019,6 @@ bool KGetAddrinfoWorker::wantThis(int family)
 
 void KNetwork::Internal::initStandardWorkers()
 {
-  KBlacklistWorker::init();
-
   //KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KBlacklistWorker>);
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
 
