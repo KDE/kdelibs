@@ -509,7 +509,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
        }
    } while ( query == KMessageBox::Cancel );
 
-  if ( !destURL.isMalformed() )
+  if ( destURL.isValid() )
     saveURL(url, destURL, metadata, cacheId);
 }
 
@@ -517,7 +517,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                                    const QMap<QString, QString> &metadata,
                                    long cacheId )
 {
-    if ( !destURL.isMalformed() )
+    if ( destURL.isValid() )
     {
         bool saved = false;
         if (KHTMLPageCache::self()->isComplete(cacheId))

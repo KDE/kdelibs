@@ -2877,7 +2877,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   if ( typ )
     com = typ->comment( u, false );
 
-  if ( u.isMalformed() ) {
+  if ( !u.isValid() ) {
     setStatusBarText(u.htmlURL(), BarHoverText);
     return;
   }
