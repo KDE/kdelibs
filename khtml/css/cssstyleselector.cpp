@@ -409,14 +409,16 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoLink ) {
-		dynamicPseudo = RenderStyle::LINK;
+		if ( dynamicPseudo != RenderStyle::HOVER )
+		    dynamicPseudo = RenderStyle::LINK;
 		return true;
 	    }
 	} else if ( sel->value == ":visited" ) {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoVisited ) {
-		dynamicPseudo = RenderStyle::LINK;
+		if ( dynamicPseudo != RenderStyle::HOVER )
+		    dynamicPseudo = RenderStyle::LINK;
 		return true;
 	    }
 	} else if ( sel->value == ":first-line" ) {
