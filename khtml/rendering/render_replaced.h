@@ -40,8 +40,8 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    short calcReplacedWidth(bool* ieHack=0) const;
-    int   calcReplacedHeight() const;
+    virtual short calcReplacedWidth(bool* ieHack=0) const;
+    virtual int   calcReplacedHeight() const;
 
     virtual int lineHeight( bool firstLine) const;
     virtual short baselinePosition( bool firstLine ) const;
@@ -51,6 +51,16 @@ public:
     virtual void print( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
     virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty) = 0;
+    
+    virtual short intrinsicWidth() const { return m_intrinsicWidth; }
+    virtual int intrinsicHeight() const { return m_intrinsicHeight; }
+
+    void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
+    void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
+
+private:
+    short m_intrinsicWidth;
+    short m_intrinsicHeight;
 };
 
 
@@ -64,9 +74,6 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty);
-
-    virtual short intrinsicWidth() const;
-    virtual int intrinsicHeight() const;
 
     virtual bool isWidget() const { return true; };
 

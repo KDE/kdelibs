@@ -72,16 +72,42 @@ RenderFormElement::~RenderFormElement()
 {
 }
 
-void RenderFormElement::applyLayout(int iWidth, int iHeight)
+short RenderFormElement::baselinePosition( bool f ) const
 {
-    if(!style()->width().isVariable())
-        iWidth = style()->width().width(containingBlock()->contentWidth());
+    return RenderWidget::baselinePosition( f ) - 2 - QFontMetrics( style()->font() ).descent();
+}
 
-    if(!style()->height().isVariable())
-        iHeight = style()->height().width(containingBlock()->contentHeight());
+short RenderFormElement::calcReplacedWidth(bool*) const
+{
+    Length w = style()->width();
+    if ( w.isVariable() )
+        return intrinsicWidth();
+    else
+        return RenderReplaced::calcReplacedWidth();
+}
 
-    if(m_widget) {
-        m_widget->resize(iWidth, iHeight);
+int RenderFormElement::calcReplacedHeight() const
+{
+    Length h = style()->height();
+    if ( h.isVariable() )
+        return intrinsicHeight();
+    else
+        return RenderReplaced::calcReplacedHeight();
+}
+
+void RenderFormElement::layout()
+{
+    if ( layouted() ) return;
+
+    // minimum height
+    m_height = 0;
+
+    calcWidth();
+    calcHeight();
+
+    if ( m_widget ) {
+        m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                          m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
         m_widget->setEnabled(!m_element->disabled());
 
 	QColor color = style()->color();
@@ -118,10 +144,7 @@ void RenderFormElement::applyLayout(int iWidth, int iHeight)
 		pal.setColor(QPalette::Disabled,QColorGroup::Button, backgroundColor);
 		pal.setColor(QPalette::Disabled,QColorGroup::Base,backgroundColor);
 	    }
-            // never inherit the color!
-            // this hack is not 100% safe though..
-            if ( color.isValid() && RenderReplaced::parent() && RenderReplaced::parent()->style() &&
-                 RenderReplaced::parent()->style()->color() != style()->color() ) {
+            if ( color.isValid() ) {
 		pal.setColor(QPalette::Active,QColorGroup::Foreground,color);
 		pal.setColor(QPalette::Active,QColorGroup::ButtonText,color);
 		pal.setColor(QPalette::Active,QColorGroup::Text,color);
@@ -151,18 +174,8 @@ void RenderFormElement::applyLayout(int iWidth, int iHeight)
             m_widget->unsetPalette();
     }
 
-    m_width  = iWidth  + borderLeft() + paddingLeft() + paddingRight() + borderRight();
-    m_height = iHeight + borderTop() + paddingTop() + paddingBottom() + borderBottom();
-}
-
-void RenderFormElement::calcMinMaxWidth()
-{
-    layout();
-
-    //kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
-
-    m_minWidth = m_width;
-    m_maxWidth = m_width;
+    if ( !style()->width().isPercent() )
+        setLayouted();
 }
 
 bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
@@ -282,20 +295,9 @@ RenderButton::RenderButton(QScrollView *view,
 {
 }
 
-void RenderButton::layout()
+short RenderButton::baselinePosition( bool f ) const
 {
-    QSize s(0, 0);
-
-    if(m_widget)
-        s = m_widget->sizeHint();
-
-    applyLayout(s.width(), s.height());
-    if (isPositioned()) {
-	calcAbsoluteHorizontal();
-	calcAbsoluteVertical();
-    }
-
-    setLayouted();
+    return RenderWidget::baselinePosition( f ) - 2;
 }
 
 // -------------------------------------------------------------------------------
@@ -314,9 +316,25 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
+
+void RenderCheckBox::calcMinMaxWidth()
+{
+    if ( minMaxKnown() ) return;
+
+    QSize s = static_cast<QCheckBox*>( m_widget )->style().indicatorSize();
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
+
+    RenderButton::calcMinMaxWidth();
+}
+
 void RenderCheckBox::layout()
 {
-    static_cast<QCheckBox*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+    if ( layouted() ) return;
+
+    QCheckBox* cb = static_cast<QCheckBox*>( m_widget );
+    cb->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+
     RenderButton::layout();
 }
 
@@ -356,9 +374,24 @@ void RenderRadioButton::slotClicked()
     RenderButton::slotClicked();
 }
 
+void RenderRadioButton::calcMinMaxWidth()
+{
+    if ( minMaxKnown() ) return;
+
+    QSize s = static_cast<QRadioButton*>( m_widget )->style().exclusiveIndicatorSize();
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
+
+    RenderButton::calcMinMaxWidth();
+}
+
 void RenderRadioButton::layout()
 {
-    static_cast<QRadioButton*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+    if ( layouted() ) return;
+
+    QRadioButton* rb = static_cast<QRadioButton*>( m_widget );
+    rb->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
+
     RenderButton::layout();
 }
 
@@ -375,12 +408,10 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
-RenderSubmitButton::~RenderSubmitButton()
+void RenderSubmitButton::calcMinMaxWidth()
 {
-}
+    if ( minMaxKnown() ) return;
 
-void RenderSubmitButton::layout()
-{
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
     value = value.visual();
@@ -405,13 +436,10 @@ void RenderSubmitButton::layout()
         h = 22;
     QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
 
-    applyLayout(s.width(), s.height());
-    if (isPositioned()) {
-	calcAbsoluteHorizontal();
-	calcAbsoluteVertical();
-    }
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
 
-    setLayouted();
+    RenderButton::calcMinMaxWidth();
 }
 
 QString RenderSubmitButton::defaultLabel() {
@@ -519,17 +547,17 @@ void RenderLineEdit::slotReturnPressed()
 	fe->submit();
 }
 
-void RenderLineEdit::layout()
+void RenderLineEdit::calcMinMaxWidth()
 {
-    QFontMetrics fm = fontMetrics( m_widget->font() );
+    if ( minMaxKnown() ) return;
+
+    QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
 
     KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
 
     int size = input->size();
-
-    edit->constPolish();
 
     int h = fm.height();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
@@ -548,13 +576,24 @@ void RenderLineEdit::layout()
     } else
 	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
 
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
+
+    RenderFormElement::calcMinMaxWidth();
+}
+
+void RenderLineEdit::layout()
+{
+    if ( layouted() ) return;
+
+    KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
+    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
     edit->blockSignals(true);
     int pos = edit->cursorPosition();
     edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string().visual());
     edit->setCursorPosition(pos);
     edit->blockSignals(false);
 
-    // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
     int ml = input->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
@@ -562,12 +601,7 @@ void RenderLineEdit::layout()
 
     edit->setReadOnly(m_element->readOnly());
 
-    applyLayout(s.width(), s.height());
-    if (isPositioned()) {
-	calcAbsoluteHorizontal();
-	calcAbsoluteVertical();
-    }
-    setLayouted();
+    RenderFormElement::layout();
 }
 
 void RenderLineEdit::slotTextChanged(const QString &string)
@@ -607,13 +641,38 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     m_button->setFocusPolicy(QWidget::ClickFocus);
     connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
 
-    if (element->maxLength() > 0) m_edit->setMaxLength(element->maxLength());
-
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
 
     setQWidget(w);
     m_haveFocus = false;
+}
+
+void RenderFileButton::calcMinMaxWidth()
+{
+    if ( minMaxKnown() ) return;
+
+    QFontMetrics fm = fontMetrics( style()->font() );
+    QSize s;
+    HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
+    int size = input->size();
+
+    int h = fm.height();
+    int w = fm.width( 'x' ) * (size > 0 ? size : 17);
+    w += fm.width( m_button->text() ) + 2*fm.width( ' ' );
+
+    if ( m_edit->frame() ) {
+        h += 8;
+        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
+            h = 22;
+        s = QSize( w + 8, h );
+    } else
+        s = QSize( w + 4, h + 4 );
+
+    setIntrinsicWidth( s.width() );
+    setIntrinsicHeight( s.height() );
+
+    RenderFormElement::calcMinMaxWidth();
 }
 
 void RenderFileButton::slotClicked()
@@ -630,35 +689,18 @@ void RenderFileButton::layout( )
 {
     // this is largely taken from the RenderLineEdit layout
     QFontMetrics fm = fontMetrics( m_edit->font() );
-    QSize s;
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
-    int size = input->size();
-
-    int h = fm.height();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17);
-    w += m_button->sizeHint().width();
-
-    if ( m_edit->frame() ) {
-        h += 8;
-        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
-            h = 22;
-        s = QSize( w + 8, h );
-    } else
-        s = QSize( w + 4, h + 4 );
 
     m_edit->blockSignals(true);
     m_edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->filename().string());
     m_edit->blockSignals(false);
-    m_edit->setMaxLength(input->maxLength());
-
+    int ml = input->maxLength();
+    if ( ml < 0 || ml > 1024 )
+        ml = 1024;
+    m_edit->setMaxLength( ml );
     m_edit->setReadOnly(m_element->readOnly());
 
-    applyLayout(s.width(), s.height());
-    if (isPositioned()) {
-	calcAbsoluteHorizontal();
-	calcAbsoluteVertical();
-    }
-    setLayouted();
+    RenderFormElement::layout();
 }
 
 void RenderFileButton::slotReturnPressed()
@@ -763,6 +805,15 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
         setQWidget(createListBox());
     else
 	setQWidget(createComboBox());
+}
+
+
+void RenderSelect::calcMinMaxWidth()
+{
+    // ### FIXME
+    layout();
+
+    RenderFormElement::calcMinMaxWidth();
 }
 
 void RenderSelect::layout( )
@@ -875,13 +926,13 @@ void RenderSelect::layout( )
         // check if multiple and size was not given or invalid
         // Internet Exploder sets size to QMIN(number of elements, 4)
         // Netscape seems to simply set it to "number of elements"
-        // the average of that is IMHO QMIN(number of elements, 15)
+        // the average of that is IMHO QMIN(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
+            size = QMIN(static_cast<KListBox*>(m_widget)->count(), 10);
 
-        height = size*height + 2*w->frameWidth();
-        applyLayout(width, height);
+        setIntrinsicWidth( width );
+        setIntrinsicHeight( height );
     }
     else {
         QSize s(m_widget->sizeHint());
@@ -891,13 +942,13 @@ void RenderSelect::layout( )
         if(!w->count())
             w->setEnabled(false);
 
-        applyLayout(s.width(), s.height());
+        setIntrinsicWidth( s.width() );
+        setIntrinsicHeight( s.height() );
     }
 
-    setLayouted();
+    RenderFormElement::layout();
 
     m_ignoreSelectEvents = false;
-
 }
 
 void RenderSelect::close()
@@ -1090,6 +1141,24 @@ RenderTextArea::~RenderTextArea()
     }
 }
 
+void RenderTextArea::calcMinMaxWidth()
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
+    QFontMetrics m = fontMetrics(style()->font());
+    QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
+                w->verticalScrollBar()->sizeHint().width(),
+                QMAX(f->rows(), 1)*m.height() + w->frameWidth()*3 +
+                (w->wordWrap() == QMultiLineEdit::NoWrap ?
+                 w->horizontalScrollBar()->sizeHint().height() : 0)
+        );
+
+    setIntrinsicWidth( size.width() );
+    setIntrinsicHeight( size.height() );
+
+    RenderFormElement::calcMinMaxWidth();
+}
+
 void RenderTextArea::layout( )
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
@@ -1105,17 +1174,7 @@ void RenderTextArea::layout( )
 	w->blockSignals(false);
     }
 
-    QFontMetrics m = fontMetrics(w->font());
-    QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
-                w->verticalScrollBar()->sizeHint().width(),
-                QMAX(f->rows(), 1)*m.height() + w->frameWidth()*3 +
-                (w->wordWrap() == QMultiLineEdit::NoWrap ?
-                 w->horizontalScrollBar()->sizeHint().height() : 0)
-        );
-
-    applyLayout(size.width(), size.height());
-
-    setLayouted();
+    RenderFormElement::layout();
 }
 
 void RenderTextArea::close( )

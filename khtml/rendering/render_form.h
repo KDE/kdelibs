@@ -72,7 +72,13 @@ public:
     virtual bool isRendered() const  { return true; }
     virtual bool isFormElement() const { return true; }
 
-    virtual void calcMinMaxWidth();
+    // IE does not scale according to intrinsicWidth/Height
+    // aspect ratio :-(
+    virtual short calcReplacedWidth(bool* ieHack=0) const;
+    virtual int   calcReplacedHeight() const;
+
+    virtual void layout();
+    virtual short baselinePosition( bool ) const;
 
     DOM::HTMLGenericFormElementImpl *element() { return m_element; }
 
@@ -85,7 +91,6 @@ protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
 
-    void applyLayout(int iWidth, int iHeight);
     void handleMousePressed(QMouseEvent* e);
 
     DOM::HTMLGenericFormElementImpl *m_element;
@@ -107,8 +112,7 @@ public:
     RenderButton(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderButton"; }
-
-    virtual void layout();
+    virtual short baselinePosition( bool ) const;
 
 protected:
     virtual bool isRenderButton() const { return true; }
@@ -123,8 +127,9 @@ public:
     RenderCheckBox(QScrollView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
-
+    virtual void calcMinMaxWidth();
     virtual void layout( );
+    
 public slots:
     virtual void slotStateChanged(int state);
 };
@@ -141,6 +146,7 @@ public:
 
     virtual void setChecked(bool);
 
+    virtual void calcMinMaxWidth();
     virtual void layout();
 
 public slots:
@@ -153,13 +159,12 @@ class RenderSubmitButton : public RenderButton
 {
 public:
     RenderSubmitButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
-    virtual ~RenderSubmitButton();
 
     virtual const char *renderName() const { return "RenderSubmitButton"; }
 
     virtual QString defaultLabel();
 
-    virtual void layout();
+    virtual void calcMinMaxWidth();
     bool clicked() { return m_clicked; }
     void setClicked(bool _clicked) { m_clicked = _clicked; }
 
@@ -210,6 +215,7 @@ class RenderLineEdit : public RenderFormElement
 public:
     RenderLineEdit(QScrollView *view, DOM::HTMLInputElementImpl *element);
 
+    virtual void calcMinMaxWidth();
     virtual void layout();
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
@@ -254,6 +260,7 @@ public:
     RenderFileButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderFileButton"; }
+    virtual void calcMinMaxWidth();
     virtual void layout();
     void select();
 
@@ -315,6 +322,7 @@ public:
 
     virtual const char *renderName() const { return "RenderSelect"; }
 
+    virtual void calcMinMaxWidth();
     virtual void layout();
     virtual void close( );
 
@@ -367,7 +375,7 @@ public:
     ~RenderTextArea();
 
     virtual const char *renderName() const { return "RenderTextArea"; }
-
+    virtual void calcMinMaxWidth();
     virtual void layout();
     virtual void close ( );
 

@@ -38,6 +38,9 @@ RenderReplaced::RenderReplaced()
 {
     // init RenderObject attributes
     setReplaced(true);
+
+    m_intrinsicWidth = 200;
+    m_intrinsicHeight = 150;
 }
 
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
@@ -263,22 +266,6 @@ void RenderWidget::placeWidget(int xPos, int yPos)
     bool oldMouseTracking = m_widget->hasMouseTracking();
     m_view->addChild(m_widget,  xPos+borderLeft()+paddingLeft(), yPos+borderTop()+paddingTop());
     m_widget->setMouseTracking(oldMouseTracking);
-}
-
-short RenderWidget::intrinsicWidth() const
-{
-    if (m_widget)
-        return m_widget->width();
-    else
-        return 0;
-}
-
-int RenderWidget::intrinsicHeight() const
-{
-    if (m_widget)
-        return m_widget->height();
-    else
-        return 0;
 }
 
 void RenderWidget::focus()
