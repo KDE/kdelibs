@@ -390,8 +390,8 @@ signals:
 
     /**
      * Emitted whenever the current fileview is changed, either by an explicit
-     * call to @ref setView() or by the user selecting a different view thru the
-     * GUI.
+     * call to @ref setView() or by the user selecting a different view thru 
+     * the GUI.
      */
     void viewChanged( KFileView * newView );
 

@@ -639,10 +639,7 @@ void KDirOperator::setView( KFile::FileView view )
         }
     }
 
-    setFocusProxy(new_view->widget());
-    new_view->setSorting( mySorting );
-    new_view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
-    connectView(new_view);
+    setView( new_view );
 }
 
 void KDirOperator::deleteOldView()
@@ -720,6 +717,7 @@ void KDirOperator::setView(KFileView *view)
     KFileView *oldView = fileView;
     setFocusProxy(view->widget());
     view->setSorting( mySorting );
+    view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
     connectView(view);
     if ( view != oldView )
 	emit viewChanged( view );
@@ -827,7 +825,7 @@ void KDirOperator::prepareCompletionObjects()
 {
     if ( !fileView )
 	return;
-    
+
     if ( myCompleteListDirty ) { // create the list of all possible completions
         KFileViewItemListIterator it( *(fileView->items()) );
         for( ; it.current(); ++it ) {
