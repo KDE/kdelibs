@@ -69,7 +69,7 @@ public:
     void copy(void *dest, Block *src, int _offset = 0, size_t length = 0);
      
     /**
-     * Copy @p length bytes from normal memory at address @src to 
+     * Copy @p length bytes from normal memory at address @p src to 
      * @p _offset in the virtual memory block @p dest.
      */
     void copy(Block *dest, void *src, int _offset = 0, size_t length = 0);  
