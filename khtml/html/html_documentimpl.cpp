@@ -392,7 +392,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
             pMode = hMode == Html3 ? Compat : publicId;
         else if ( ( publicId == Transitional && systemId == Strict ) ||
                   ( publicId == Strict && systemId == Transitional ) ) {
-            pMode = hMode == Html3 ? Compat : kMin( publicId, systemId );
+            pMode = hMode == Html3 ? Compat : Transitional;
         } else {
             pMode = Compat;
         }
