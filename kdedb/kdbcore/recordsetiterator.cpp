@@ -59,6 +59,7 @@ RecordsetIterator::initFields()
     QStringList fld = m_handler->fields();
     QStringList::Iterator it = fld.begin();
 
+    m_fields.clear();
     while (it != fld.end() ) {
         m_fields.append(new Field(m_handler, (*it), this));
         ++it;
@@ -82,7 +83,7 @@ RecordsetIterator::operator =(const RecordsetIterator &iter)
     m_handler = iter.m_handler;
     m_rset = iter.m_rset;
     connect(m_rset, SIGNAL(changed()),SLOT(recordsetChanged()));
-
+    initFields();
     return *this;
 }
 

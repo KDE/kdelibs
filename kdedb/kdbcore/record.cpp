@@ -85,10 +85,11 @@ Record::field(int index)
 Field &
 Record::field(const QString &n)
 {
+    kdDebug(20000) << k_funcinfo << n << endl;
     FieldIterator it = begin();
 
     while ( it.current() ) {
-        if (it.current()->name() == n)
+        if (n == it.current()->name())
             break;
         ++it;
     }
