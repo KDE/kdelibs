@@ -66,7 +66,7 @@ KService::init( KDesktopFile *config )
 
   config->setDesktopGroup();
   config->setDollarExpansion( true ); // mainly for Exec and Path
-  if(access(QFile::encodeName(entryPath()), R_OK))
+  if(absPath && access(QFile::encodeName(entryPath()), R_OK))
   {
     m_bValid = false;
     return;
