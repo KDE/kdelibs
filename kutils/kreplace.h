@@ -40,25 +40,56 @@ class KReplaceNextDialog;
  *
  * To use the class to implement a complete replace feature:
  *
+ * In the slot connect to the replace action, after using KReplaceDialog:
  * <pre>
  *
  *  // This creates a replace-on-prompt dialog if needed.
- *  dialog = new KReplace(find, replace, options);
+ *  m_replace = new KReplace(pattern, replacement, options);
  *
  *  // Connect signals to code which handles highlighting
  *  // of found text, and on-the-fly replacement.
- *  QObject::connect(
- *      dialog, SIGNAL( highlight( const QString &, int, int, const QRect & ) ),
- *      this, SLOT( highlight( const QString &, int, int, const QRect & ) ) );
- *  QObject::connect(
- *      dialog, SIGNAL( replace( const QString &, int, int, const QRect & ) ),
- *      this, SLOT( replace( const QString &, int, int, const QRect & ) ) );
+ *  connect( m_replace, SIGNAL( highlight( const QString &, int, int ) ),
+ *          this, SLOT( slotHighlight( const QString &, int, int ) ) );
+ *  // Connect findNext signal - called when pressing the button in the dialog
+ *  connect( m_replace, SIGNAL( findNext() ),
+ *          this, SLOT( slotReplaceNext() ) );
+ *  // Connect replace signal - called when doing a replacement
+ *  connect( m_replace, SIGNAL( replace(const QString &, int, int, int) ),
+ *          this, SLOT( slotReplace(const QString &, int, int, int) ) );
  *
- *  for (text chosen by option SelectedText and in a direction set by FindBackwards)
+ *  Then initialize the variables determining the "current position"
+ *  (to the cursor, if the option FromCursor is set,
+ *   to the beginning of the selection if the option SelectedText is set,
+ *   and to the beginning of the document otherwise).
+ *  Initialize the "end of search" variables as well (end of doc or end of selection).
+ *  Swap begin and end if FindBackwards.
+ *  Finally, call slotReplaceNext();
+ *
+ * <pre>
+ *  void slotReplaceNext()
  *  {
- *      dialog->replace()
+ *      KFind::Result res = KFind::NoMatch;
+ *      while ( res == KFind::NoMatch && <position not at end> ) {
+ *          if ( m_replace->needData() )
+ *              m_replace->setData( <current text fragment> );
+ *
+ *          // Let KReplace inspect the text fragment, and display a dialog if a match is found
+ *          res = m_replace->res();
+ *
+ *          if ( res == KFind::NoMatch ) {
+ *              <Move to the next non-empty text fragment, honouring the FindBackwards setting for the direction>
+ *          }
+ *      }
+ *
+ *      if ( res == KFind::NoMatch ) // i.e. at end
+ *          <Call either  m_replace->displayFinalDialog(); delete m_replace; m_replace = 0L;
+ *           or           if ( m_replace->shouldRestart() ) { reinit and call slotReplaceNext(); }
+ *                        else { delete m_replace; m_replace = 0L; }>
  *  }
- *  delete dialog;
+ * </pre>
+ *
+ *  Don't forget delete m_find in the destructor of your class,
+ *  unless you gave it a parent widget on construction.
  *
  * </pre>
  */

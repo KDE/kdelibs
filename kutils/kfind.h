@@ -39,7 +39,7 @@
  *
  * To use the class to implement a complete find feature:
  *
- * In the slot connected to the find action:
+ * In the slot connected to the find action, after using KFindDialog:
  * <pre>
  *
  *  // This creates a find-next-prompt dialog if needed.
@@ -47,10 +47,10 @@
  *
  *  // Connect highlight signal to code which handles highlighting
  *  // of found text.
- *  connect(m_find, SIGNAL( highlight( const QString &, int, int ) ),
+ *  connect( m_find, SIGNAL( highlight( const QString &, int, int ) ),
  *          this, SLOT( slotHighlight( const QString &, int, int ) ) );
  *  // Connect findNext signal - called when pressing the button in the dialog
- *  connect(m_find, SIGNAL( findNext() ),
+ *  connect( m_find, SIGNAL( findNext() ),
  *          this, SLOT( slotFindNext() ) );
  * </pre>
  *
@@ -59,6 +59,7 @@
  *   to the beginning of the selection if the option SelectedText is set,
  *   and to the beginning of the document otherwise).
  *  Initialize the "end of search" variables as well (end of doc or end of selection).
+ *  Swap begin and end if FindBackwards.
  *  Finally, call slotFindNext();
  *
  * <pre>
@@ -80,7 +81,7 @@
  *      if ( res == KFind::NoMatch ) // i.e. at end
  *          <Call either  m_find->displayFinalDialog(); delete m_find; m_find = 0L;
  *           or           if ( m_find->shouldRestart() ) { reinit and call slotFindNext(); }
-                          else { delete m_find; m_find = 0L; }>
+ *                        else { delete m_find; m_find = 0L; }>
  *  }
  * </pre>
  *
