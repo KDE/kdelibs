@@ -50,6 +50,7 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
     void addParameter(const Identifier &n);
+    Identifier parameterProperty(int index) const;
     // parameters in string representation, e.g. (a, b, c)
     UString parameterString() const;
     virtual CodeType codeType() const = 0;
@@ -97,10 +98,19 @@ namespace KJS {
 
   class ArgumentsImp : public ObjectImp {
   public:
-    ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args);
+    ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act);
+
+    virtual void mark();
+
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName,
+		     const Value &value, int attr = None);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+
+  private:
+    ActivationImp *activation;
   };
 
   class ActivationImp : public ObjectImp {
@@ -117,8 +127,6 @@ namespace KJS {
     virtual void mark();
 
   private:
-    void createArgumentsObject(ExecState *exec) const;
-    
     FunctionImp *_function;
     List _arguments;
     mutable ArgumentsImp *_argumentsObject;

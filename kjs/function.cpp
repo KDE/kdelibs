@@ -148,6 +148,26 @@ void FunctionImp::addParameter(const Identifier &n)
   *p = new Parameter(n);
 }
 
+Identifier FunctionImp::parameterProperty(int index) const
+{
+  // Find the property name corresponding to the given parameter
+  int pos = 0;
+  Parameter *p;
+  for (p = param; p && pos < index; p = p->next)
+    pos++;
+
+  if (!p)
+    return Identifier::null();
+
+  // Are there any subsequent parameters with the same name?
+  Identifier name = p->name;
+  for (p = p->next; p; p = p->next)
+    if (p->name == name)
+      return Identifier::null();
+
+  return name;
+}
+
 UString FunctionImp::parameterString() const
 {
   UString s;
@@ -316,13 +336,38 @@ void DeclaredFunctionImp::processVarDecls(ExecState *exec)
   body->processVarDecls(exec);
 }
 
+// ------------------------------- ShadowImp -----------------------------------
+
+// Acts as a placeholder value to indicate that the actual value is kept
+// in the activation object
+class ShadowImp : public ObjectImp {
+public:
+  ShadowImp(ObjectImp *_obj, Identifier _prop) : obj(_obj), prop(_prop) {}
+  virtual void mark();
+
+  virtual const ClassInfo *classInfo() const { return &info; }
+  static const ClassInfo info;
+
+  ObjectImp *obj;
+  Identifier prop;
+};
+
+const ClassInfo ShadowImp::info = {"Shadow", 0, 0, 0};
+
+void ShadowImp::mark()
+{
+  if (!obj->marked())
+    obj->mark();
+}
+
 // ------------------------------ ArgumentsImp ---------------------------------
 
 const ClassInfo ArgumentsImp::info = {"Arguments", 0, 0, 0};
 
 // ECMA 10.1.8
-ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype())
+ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args,
+			   ActivationImp *act)
+  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), activation(act)
 {
   Value protect(this);
   putDirect(calleePropertyName, func, DontEnum);
@@ -330,8 +375,49 @@ ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
   if (!args.isEmpty()) {
     ListIterator arg = args.begin();
     for (int i = 0; arg != args.end(); arg++, i++) {
-      put(exec,i, *arg, DontEnum);
+      Identifier prop = func->parameterProperty(i);
+      if (!prop.isEmpty()) {
+	Object shadow(new ShadowImp(act,prop));
+	ObjectImp::put(exec,Identifier::from(i), shadow, DontEnum);
+      }
+      else {
+	ObjectImp::put(exec,Identifier::from(i), *arg, DontEnum);
+      }
     }
+  }
+}
+
+void ArgumentsImp::mark()
+{
+  ObjectImp::mark();
+  if (!activation->marked())
+    activation->mark();
+}
+
+Value ArgumentsImp::get(ExecState *exec, const Identifier &propertyName) const
+{
+  Value val = ObjectImp::get(exec,propertyName);
+  Object obj = Object::dynamicCast(val);
+  if (obj.isValid() && obj.inherits(&ShadowImp::info)) {
+    ShadowImp *shadow = static_cast<ShadowImp*>(val.imp());
+    return activation->get(exec,shadow->prop);
+  }
+  else {
+    return val;
+  }
+}
+
+void ArgumentsImp::put(ExecState *exec, const Identifier &propertyName,
+		       const Value &value, int attr)
+{
+  Value val = ObjectImp::get(exec,propertyName);
+  Object obj = Object::dynamicCast(val);
+  if (obj.isValid() && obj.inherits(&ShadowImp::info)) {
+    ShadowImp *shadow = static_cast<ShadowImp*>(val.imp());
+    activation->put(exec,shadow->prop,value,attr);
+  }
+  else {
+    ObjectImp::put(exec,propertyName,value,attr);
   }
 }
 
@@ -355,7 +441,7 @@ Value ActivationImp::get(ExecState *exec, const Identifier &propertyName) const
       return Value(imp);
 
     if (!_argumentsObject)
-      createArgumentsObject(exec);
+      _argumentsObject = new ArgumentsImp(exec, _function, _arguments, const_cast<ActivationImp*>(this));
     return Value(_argumentsObject);
   }
   return ObjectImp::get(exec, propertyName);
@@ -363,31 +449,26 @@ Value ActivationImp::get(ExecState *exec, const Identifier &propertyName) const
 
 bool ActivationImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
 {
-    if (propertyName == argumentsPropertyName)
-        return true;
-    return ObjectImp::hasProperty(exec, propertyName);
+  if (propertyName == argumentsPropertyName)
+    return true;
+  return ObjectImp::hasProperty(exec, propertyName);
 }
 
 bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
-    if (propertyName == argumentsPropertyName)
-        return false;
-    return ObjectImp::deleteProperty(exec, propertyName);
+  if (propertyName == argumentsPropertyName)
+    return false;
+  return ObjectImp::deleteProperty(exec, propertyName);
 }
 
 void ActivationImp::mark()
 {
-    if (_function && !_function->marked()) 
-        _function->mark();
-    _arguments.mark();
-    if (_argumentsObject && !_argumentsObject->marked())
-        _argumentsObject->mark();
-    ObjectImp::mark();
-}
-
-void ActivationImp::createArgumentsObject(ExecState *exec) const
-{
-  _argumentsObject = new ArgumentsImp(exec, _function, _arguments);
+  ObjectImp::mark();
+  if (_function && !_function->marked()) 
+    _function->mark();
+  _arguments.mark();
+  if (_argumentsObject && !_argumentsObject->marked())
+    _argumentsObject->mark();
 }
 
 // ------------------------------ GlobalFunc -----------------------------------

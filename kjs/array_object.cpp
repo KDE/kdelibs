@@ -438,6 +438,17 @@ bool ArrayProtoFuncImp::implementsCall() const
   return true;
 }
 
+UString valueToLocaleString(ExecState *exec, Value v)
+{
+  Object o = v.toObject(exec);
+  Object toLocaleString = Object::dynamicCast(o.get(exec,toLocaleStringPropertyName));
+  List args;
+  if (toLocaleString.isValid() && toLocaleString.implementsCall())
+    return toLocaleString.call(exec,o,args).toString(exec);
+  else
+    return o.toString(exec);
+}
+
 // ECMA 15.4.4
 Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
@@ -446,30 +457,26 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   Value result;
   switch (id) {
   case ToLocaleString:
-    // TODO  - see 15.4.4.3
     // fall through
   case ToString:
-
     if (!thisObj.inherits(&ArrayInstanceImp::info)) {
       Object err = Error::create(exec,TypeError);
       exec->setException(err);
       return err;
     }
-
     // fall through
-
   case Join: {
     UString separator = ",";
     UString str = "";
 
-    if (args.size() > 0 && !args[0].isA(UndefinedType))
+    if (id == Join && args.size() > 0 && !args[0].isA(UndefinedType))
       separator = args[0].toString(exec);
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
       Value element = thisObj.get(exec,k);
       if (element.type() != UndefinedType && element.type() != NullType)
-        str += element.toString(exec);
+        str += (id == ToLocaleString ? valueToLocaleString(exec,element) : element.toString(exec));
     }
     result = String(str);
     break;

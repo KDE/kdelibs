@@ -792,10 +792,10 @@ Value FunctionCallNode::evaluate(ExecState *exec) const
   KJS_CHECKEXCEPTIONVALUE
 
   List argList = args->evaluateList(exec);
-
   KJS_CHECKEXCEPTIONVALUE
 
   Value v = ref.getValue(exec);
+  KJS_CHECKEXCEPTIONVALUE
 
   if (v.type() != ObjectType) {
 #ifndef NDEBUG
@@ -2836,7 +2836,14 @@ Completion TryNode::execute(ExecState *exec)
   }
 
   if (!_catch) {
+    Value exception = exec->_exception;
+    exec->_exception = Value();
+
     c2 = _final->execute(exec);
+
+    if (!exec->hadException() && c2.complType() != Throw)
+      exec->_exception = exception;
+
     return (c2.complType() == Normal) ? c : c2;
   }
 

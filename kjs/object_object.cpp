@@ -39,6 +39,8 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
 {
   Value protect(this);
   putDirect(toStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
+  putDirect(toLocaleStringPropertyName, new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToLocaleString, 0),
+	    DontEnum);
   putDirect(valueOfPropertyName,  new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
 #ifndef KJS_PURE_ECMA // standard compliance location is the Global object
   // see http://www.devguru.com/Technologies/ecmascript/quickref/object.html
@@ -72,7 +74,7 @@ Value ObjectProtoFuncImp::call(ExecState */*exec*/, Object &thisObj, const List 
 {
   if (id == ValueOf)
     return thisObj;
-  else /* ToString */
+  else /* ToString or ToLocaleString */
     return String("[object "+thisObj.className()+"]");
 }
 
