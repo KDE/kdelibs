@@ -424,15 +424,15 @@ signals:
    */
   void moved();
 
-	/**
-	 * Connect to this signal if you want to do some preprocessing before
-	 * a move is made, for example, to disable sorting
-	 *
-	 * This is sent only once per each groups of moves.  That is, for each
-	 * drop that is a move this will be emitted once, before KListView calls
-	 * @ref moveItem()
-	 **/
-	void aboutToMove();
+  /**
+   * Connect to this signal if you want to do some preprocessing before
+   * a move is made, for example, to disable sorting
+   *
+   * This is sent only once per each groups of moves.  That is, for each
+   * drop that is a move this will be emitted once, before KListView calls
+   * @ref moveItem()
+   */
+  void aboutToMove();
 
   /**
    * This signal is emitted when ever the user moves an item in the list via
@@ -444,8 +444,7 @@ signals:
    * @param item the item that was moved
    * @param afterFirst the item that parameter item was in before the move, in the list
    * @param afterNow the item it's currently after.
-   *
-   **/
+   */
   void moved (QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
 
 
@@ -453,7 +452,7 @@ signals:
    * This signal is emitted after all the items have been moved. It reports info for
    * each and every item moved, in order.  The first element in @p items associates
    * with the first of afterFirst and afterNow.
-   **/
+   */
   void moved(QPtrList<QListViewItem> &items, QPtrList<QListViewItem> &afterFirst, QPtrList<QListViewItem> &afterNow);
 
   /**
@@ -507,7 +506,7 @@ public slots:
    * you'll have to derive from KListView,
    * and override @ref rename() and call only call it
    * if you want the item to be renamed.
-   **/
+   */
   void setRenameable (int column, bool yesno=true);
 
   /**
