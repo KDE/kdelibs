@@ -169,10 +169,6 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	
 //	int i = qGray(color.rgb());
 	
-	bool brightMode = false; //Hue, too?
-	//if (qGray(color.rgb())>220 || s<32 )
-		brightMode = true;
-		
 	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
 	
 	if (edata->haveAlpha)
@@ -190,7 +186,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 				Q_UINT32 alpha = edata->data[pos+2];
 				Q_UINT32 destAlpha = 256 - alpha;
 
-				if (brightMode && scale != 0)
+				if (scale != 0)
 					add = add*5/4;
 
 				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
@@ -216,7 +212,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 				Q_UINT32 scale  = edata->data[pos];
 				Q_UINT32 add    = edata->data[pos+1];
 				Q_UINT32 alpha = edata->data[pos+2];
-				if (brightMode && scale != 0)
+				if (scale != 0)
 					add = add*5/4;
 
 				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
@@ -239,7 +235,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		{
 			Q_UINT32 scale  = edata->data[pos];
 			Q_UINT32 add    = edata->data[pos+1];
-			if (brightMode && scale != 0)
+			if (scale != 0)
 				add = add*5/4;
 
 			Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
