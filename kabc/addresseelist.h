@@ -29,18 +29,18 @@
 namespace KABC {
 
 class Field;
-    
+
 /**
- * Each trait must implement one static function for equality, one for "less 
- * than". Class name should be the field name. A trait does not necessarily 
- * have to stick to just one field: a trait sorting by family name can e.g. 
+ * Each trait must implement one static function for equality, one for "less
+ * than". Class name should be the field name. A trait does not necessarily
+ * have to stick to just one field: a trait sorting by family name can e.g.
  * sort addressees with equal family name by given name.
  *
  * If you want to implement reverse sorting, you do not have to write another
  * trait, as AddresseeList takes care of that.
  */
 namespace SortingTraits
-{ 
+{
 
 class Uid
 {
@@ -65,22 +65,22 @@ class FormattedName
 
 class FamilyName // fallback to given name
 {
-  public: 
+  public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
 class GivenName  // fallback to family name
 {
-  public: 
+  public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
 }
 
-/** 
- * Addressee attribute used for sorting. 
+/**
+ * Addressee attribute used for sorting.
  */
 typedef enum { Uid, Name, FormattedName, FamilyName, GivenName } SortingCriterion;
 
@@ -94,18 +94,18 @@ typedef enum { Uid, Name, FormattedName, FamilyName, GivenName } SortingCriterio
  * An AddresseeList does not automatically keep sorted when addressees
  * are added or removed or the sorting order is changed, as this would
  * slow down larger operations by sorting after every step. So after
- * such operations you have to call {@link #sort} or {@link #sortBy} to 
+ * such operations you have to call {@link #sort} or {@link #sortBy} to
  * create a defined order again.
  *
  * Iterator usage is inherited by QValueList and extensively documented
- * there. Please remember that the state of an iterator is undefined 
+ * there. Please remember that the state of an iterator is undefined
  * after any sorting operation.
  *
  * For the enumeration Type SortingCriterion, which specifies the
  * field by the collection will be sorted, the following values exist:
  * Uid, Name, FormattedName, FamilyName, GivenName.
- * 
- * @author Jost Schenck jost@schenck.de 
+ *
+ * @author Jost Schenck jost@schenck.de
  */
 class AddresseeList : public QValueList<Addressee>
 {
@@ -119,8 +119,8 @@ class AddresseeList : public QValueList<Addressee>
      * Debug output.
      */
     void dump() const;
-  
-    /** 
+
+    /**
      * Determines the direction of sorting. On change, the list
      * will <em>not</em> automatically be resorted.
      * @param r   <tt>true</tt> if sorting should be done reverse, <tt>false</tt> otherwise
@@ -135,35 +135,35 @@ class AddresseeList : public QValueList<Addressee>
 
     /**
      * Sorts this list by a specific criterion.
-     * @param c    the criterion by which should be sorted 
+     * @param c    the criterion by which should be sorted
      */
     void sortBy( SortingCriterion c );
 
-    /** 
-     * Sorts this list by a specific field. If no parameter is given, the 
+    /**
+     * Sorts this list by a specific field. If no parameter is given, the
      * last used Field object will be used.
      * @param field    pointer to the Field object to be sorted by
      */
     void sortByField( Field *field = 0 );
 
     /**
-     * Sorts this list by its active sorting criterion. This normally is the 
-     * criterion of the last sortBy operation or <tt>FormattedName</tt> if up 
+     * Sorts this list by its active sorting criterion. This normally is the
+     * criterion of the last sortBy operation or <tt>FormattedName</tt> if up
      * to now there has been no sortBy operation.
      *
-     * Please note that the sorting trait of the last {@link #sortByTrait} 
-     * method call is not remembered and thus the action can not be repeated 
+     * Please note that the sorting trait of the last {@link #sortByTrait}
+     * method call is not remembered and thus the action can not be repeated
      * by this method.
      */
     void sort();
 
     /**
-     * Templated sort function. You normally will not want to use this but 
-     * {@link #sortBy} and {@link #sort} instead as the existing sorting 
+     * Templated sort function. You normally will not want to use this but
+     * {@link #sortBy} and {@link #sort} instead as the existing sorting
      * criteria completely suffice for most cases.
      *
-     * However, if you do want to use some special sorting criterion, you can 
-     * write a trait class that will be provided to this templated method. 
+     * However, if you do want to use some special sorting criterion, you can
+     * write a trait class that will be provided to this templated method.
      * This trait class has to have a class declaration like the following:
      * <pre>
      * class MySortingTrait {
@@ -178,32 +178,35 @@ class AddresseeList : public QValueList<Addressee>
      * <pre>
      * myAddresseelist.sortByTrait&lt;MySortingTrait&gt;();
      * </pre>
-     * Please note that the {@link #sort} method can not be used to repeat the 
+     * Please note that the {@link #sort} method can not be used to repeat the
      * sorting of the last <tt>sortByTrait</tt> action.
-     * 
-     * Right now this method uses the bubble sort algorithm. This should be 
-     * replaced for a better one when I have time. 
+     *
+     * Right now this method uses the bubble sort algorithm. This should be
+     * replaced for a better one when I have time.
      */
     template<class Trait> void sortByTrait();
 
-    /** 
-     * Returns the active sorting criterion, ie the sorting criterion that 
-     * will be used by a {@link #sort} call. 
+    /**
+     * Returns the active sorting criterion, ie the sorting criterion that
+     * will be used by a {@link #sort} call.
      */
     SortingCriterion sortingCriterion() const { return mActiveSortingCriterion; }
 
     /**
      * Returns the active sorting field, ie a pointer to the Field object
      * which was used for the last {@link #sortByField} operation.
+     * This function returns the last GLOBAL sorting field, not
+     * the class specific one.
+     * You're a lot better off by keeping track of this locally.
      */
-    Field* sortingField() const { return mActiveSortingField; }
+    Field* sortingField() const;
 
   private:
-    void quickSortByField( int, int );
+    void quickSortByField( Field*, int, int );
 
     bool mReverseSorting;
     SortingCriterion mActiveSortingCriterion;
-    Field* mActiveSortingField;
+    //KDE 4.0 - add a d-pointer here!
 };
 
 }

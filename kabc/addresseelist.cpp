@@ -66,7 +66,7 @@ bool SortingTraits::FormattedName::lt( const Addressee &a1, const Addressee &a2 
 
 bool SortingTraits::FamilyName::eq( const Addressee &a1, const Addressee &a2 )
 {
-  return ( QString::localeAwareCompare( a1.familyName(), a2.familyName() ) == 0 
+  return ( QString::localeAwareCompare( a1.familyName(), a2.familyName() ) == 0
            && QString::localeAwareCompare( a1.givenName(), a2.givenName() ) == 0 );
 }
 
@@ -82,7 +82,7 @@ bool SortingTraits::FamilyName::lt( const Addressee &a1, const Addressee &a2 )
 
 bool SortingTraits::GivenName::eq( const Addressee &a1, const Addressee &a2 )
 {
-  return ( QString::localeAwareCompare( a1.givenName(), a2.givenName() ) == 0 
+  return ( QString::localeAwareCompare( a1.givenName(), a2.givenName() ) == 0
            && QString::localeAwareCompare( a1.familyName(), a2.familyName() ) == 0 );
 }
 
@@ -102,12 +102,13 @@ bool SortingTraits::GivenName::lt( const Addressee &a1, const Addressee &a2 )
 //
 //
 
+static Field *sActiveField=0;
+
 AddresseeList::AddresseeList()
   : QValueList<Addressee>()
 {
   mReverseSorting = false;
   mActiveSortingCriterion = FormattedName;
-  mActiveSortingField = 0;
 }
 
 AddresseeList::~AddresseeList()
@@ -184,12 +185,12 @@ void AddresseeList::sortByTrait()
 {
   // FIXME: better sorting algorithm, bubblesort is not acceptable for larger lists.
   //
-  // for i := 1 to n - 1 
-  //   do for j := 1 to n - i 
-  //     do if A[j] > A[j+1] 
-  //       then temp :=  A[j] 
-  //         A[j] := A[j + 1] 
-  //         A[j + 1 ] := temp 
+  // for i := 1 to n - 1
+  //   do for j := 1 to n - i
+  //     do if A[j] > A[j+1]
+  //       then temp :=  A[j]
+  //         A[j] := A[j + 1]
+  //         A[j + 1 ] := temp
 
   iterator i1 = begin();
   iterator endIt = end();
@@ -217,21 +218,20 @@ void AddresseeList::sortByTrait()
 
 void AddresseeList::sortByField( Field *field )
 {
-  if ( field )
-    mActiveSortingField = field;
-
-  if ( !mActiveSortingField ) {
+  if ( !field ) {
     kdWarning(5700) << "sortByField called with no active sort field" << endl;
     return;
   }
 
+  sActiveField = field;
+
   if ( count() == 0 )
     return;
 
-  quickSortByField( 0, count() - 1 );
+  quickSortByField( field, 0, count() - 1 );
 }
 
-void AddresseeList::quickSortByField( int left, int right )
+void AddresseeList::quickSortByField( Field *field, int left, int right )
 {
   int i = left;
   int j = right;
@@ -241,14 +241,18 @@ void AddresseeList::quickSortByField( int left, int right )
 
   do {
     if ( !mReverseSorting ) {
-      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( i ) ).upper(), mActiveSortingField->value( *x ).upper() ) < 0 )
+      while ( QString::localeAwareCompare( field->value( *at( i ) ).upper(),
+                                           field->value( *x ).upper() ) < 0 )
         i++;
-      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( j ) ).upper(), mActiveSortingField->value( *x ).upper() ) > 0 )
+      while ( QString::localeAwareCompare( field->value( *at( j ) ).upper(),
+                                           field->value( *x ).upper() ) > 0 )
         j--;
     } else {
-      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( i ) ).upper(), mActiveSortingField->value( *x ).upper() ) > 0 )
+      while ( QString::localeAwareCompare( field->value( *at( i ) ).upper(),
+                                           field->value( *x ).upper() ) > 0 )
         i++;
-      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( j ) ).upper(), mActiveSortingField->value( *x ).upper() ) < 0 )
+      while ( QString::localeAwareCompare( field->value( *at( j ) ).upper(),
+                                           field->value( *x ).upper() ) < 0 )
         j--;
     }
     if ( i <= j ) {
@@ -258,6 +262,12 @@ void AddresseeList::quickSortByField( int left, int right )
     }
   } while ( i <= j );
 
-  if ( left < j ) quickSortByField( left, j );
-  if ( right > i ) quickSortByField( i, right );
+  if ( left < j ) quickSortByField( field, left, j );
+  if ( right > i ) quickSortByField( field,i, right );
+}
+
+Field*
+AddresseeList::sortingField() const
+{
+  return sActiveField;
 }

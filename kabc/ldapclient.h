@@ -39,7 +39,7 @@ typedef QValueList<QByteArray> LdapAttrValue;
 typedef QMap<QString,LdapAttrValue > LdapAttrMap;
 
 /**
-  * This class is internal. Binary compatibiliy might be broken any time 
+  * This class is internal. Binary compatibiliy might be broken any time
   * without notification. Do not use it.
   *
   * We mean it!
@@ -49,10 +49,10 @@ class LdapObject
 {
   public:
     LdapObject()
-      : dn( QString::null ) {};  
+      : dn( QString::null ) {};
     explicit LdapObject( QString _dn ) : dn( _dn ) {};
     LdapObject( const LdapObject& that ) { assign( that ); }
-  
+
     LdapObject& operator=( const LdapObject& that )
     {
       assign( that );
@@ -74,7 +74,7 @@ class LdapObject
 };
 
 /**
-  * This class is internal. Binary compatibiliy might be broken any time 
+  * This class is internal. Binary compatibiliy might be broken any time
   * without notification. Do not use it.
   *
   * We mean it!
@@ -118,22 +118,22 @@ class LdapClient : public QObject
     QString port() const { return mPort; }
 
     /*!
-     * Set the base DN 
+     * Set the base DN
      */
     void setBase( const QString& base );
     QString base() const { return mBase; }
 
     /*!
-     * Set the bind DN 
+     * Set the bind DN
      */
     void setBindDN( const QString& bindDN );
-    QString bindDN() const { return mBindDN; }
+    QString bindDN() const;
 
     /*!
-     * Set the bind password DN 
+     * Set the bind password DN
      */
     void setPwdBindDN( const QString& pwdBindDN );
-    QString pwdBindDN() const { return mPwdBindDN; }
+    QString pwdBindDN() const;
 
     /*! Set the attributes that should be
      * returned, or an empty list if
@@ -167,14 +167,12 @@ class LdapClient : public QObject
     QString mHost;
     QString mPort;
     QString mBase;
-    QString mBindDN;
-    QString mPwdBindDN;
     QString mScope;
     QStringList mAttrs;
-  
+
     QGuardedPtr<KIO::SimpleJob> mJob;
     bool mActive;
-  
+
     LdapObject mCurrentObject;
     QCString mBuf;
     QCString mLastAttrName;
@@ -182,12 +180,13 @@ class LdapClient : public QObject
     bool mIsBase64;
 
   private:
-    class LdapClientPrivate* d;
+    class LdapClientPrivate;
+    LdapClientPrivate* d;
 };
 
 
 /**
-  * This class is internal. Binary compatibiliy might be broken any time 
+  * This class is internal. Binary compatibiliy might be broken any time
   * without notification. Do not use it.
   *
   * We mean it!
@@ -228,5 +227,5 @@ class LdapSearch : public QObject
     class LdapSearchPrivate* d;
 };
 
-}    
+}
 #endif // KABC_LDAPCLIENT_H

@@ -36,6 +36,12 @@
 
 using namespace KABC;
 
+class LdapClient::LdapClientPrivate{
+public:
+  QString bindDN;
+  QString pwdBindDN;
+};
+
 QString LdapObject::toString() const
 {
   QString result = QString::fromLatin1( "\ndn: %1\n" ).arg( dn );
@@ -63,7 +69,7 @@ QString LdapObject::toString() const
     }
   }
 
-  return result;  
+  return result;
 }
 
 void LdapObject::clear()
@@ -77,17 +83,19 @@ void LdapObject::assign( const LdapObject& that )
   if ( &that != this ) {
     dn = that.dn;
     attrs = that.attrs;
-  }    
+  }
 }
 
 LdapClient::LdapClient( QObject* parent, const char* name )
   : QObject( parent, name ), mJob( 0 ), mActive( false )
 {
+  d = new LdapClientPrivate;
 }
 
 LdapClient::~LdapClient()
 {
   cancelQuery();
+  delete d; d = 0;
 }
 
 void LdapClient::setHost( const QString& host )
@@ -107,12 +115,12 @@ void LdapClient::setBase( const QString& base )
 
 void LdapClient::setBindDN( const QString& bindDN )
 {
-  mBindDN = bindDN;
+  d->bindDN = bindDN;
 }
 
 void LdapClient::setPwdBindDN( const QString& pwdBindDN )
 {
-  mPwdBindDN = pwdBindDN;
+  d->pwdBindDN = pwdBindDN;
 }
 
 void LdapClient::setAttrs( const QStringList& attrs )
@@ -128,10 +136,10 @@ void LdapClient::startQuery( const QString& filter )
     mScope = "sub";
 
   QString auth;
-  if ( !mBindDN.isEmpty() ) {
-    auth = mBindDN;
-    if ( !mPwdBindDN.isEmpty() )
-      auth += ":" + mPwdBindDN;
+  if ( !d->bindDN.isEmpty() ) {
+    auth = d->bindDN;
+    if ( !d->pwdBindDN.isEmpty() )
+      auth += ":" + d->pwdBindDN;
     auth += "@";
   }
 
@@ -196,7 +204,7 @@ void LdapClient::slotDone()
   int err = mJob->error();
   if ( err ) {
     emit error( KIO::buildErrorString( err, QString("%1:%2").arg( mHost ).arg( mPort ) ) );
-  } 
+  }
   emit done();
 }
 
@@ -226,7 +234,7 @@ void LdapClient::endParseLDIF()
 }
 
 void LdapClient::parseLDIF( const QByteArray& data )
-{  
+{
   // qDebug("%s: %s", __FUNCTION__, data.data());
   if ( data.isEmpty() )
     return;
@@ -256,7 +264,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
       continue;
 
     int colon = line.find(':');
-    if ( colon != -1 ) { // Found new attribute	
+    if ( colon != -1 ) { // Found new attribute
       if ( mLastAttrName == "dn" ) { // New object, store the current
         if ( !mCurrentObject.dn.isNull() ) {
           emit result( mCurrentObject );
@@ -294,6 +302,16 @@ void LdapClient::parseLDIF( const QByteArray& data )
   }
 }
 
+QString LdapClient::bindDN() const
+{
+  return d->bindDN;
+}
+
+QString LdapClient::pwdBindDN() const
+{
+  return d->pwdBindDN;
+}
+
 LdapSearch::LdapSearch()
     : mActiveClients( 0 ), mNoLDAPLookup( false )
 {
@@ -305,14 +323,14 @@ LdapSearch::LdapSearch()
   // stolen from KAddressBook
   KConfig config( "kabldaprc", true );
   config.setGroup( "LDAP" );
-  int numHosts = config.readUnsignedNumEntry( "NumSelectedHosts"); 
+  int numHosts = config.readUnsignedNumEntry( "NumSelectedHosts");
   if ( !numHosts ) {
     mNoLDAPLookup = true;
     return;
   } else {
     for ( int j = 0; j < numHosts; j++ ) {
       LdapClient* ldapClient = new LdapClient( this );
-    
+
       QString host =  config.readEntry( QString( "SelectedHost%1" ).arg( j ), "" ).stripWhiteSpace();
       if ( !host.isEmpty() )
         ldapClient->setHost( host );
@@ -340,14 +358,14 @@ LdapSearch::LdapSearch()
       connect( ldapClient, SIGNAL( result( const KABC::LdapObject& ) ),
                this, SLOT( slotLDAPResult( const KABC::LdapObject& ) ) );
       connect( ldapClient, SIGNAL( done() ),
-               this, SLOT( slotLDAPDone() ) ); 
+               this, SLOT( slotLDAPDone() ) );
       connect( ldapClient, SIGNAL( error( const QString& ) ),
                this, SLOT( slotLDAPError( const QString& ) ) );
 
-      mClients.append( ldapClient );     
+      mClients.append( ldapClient );
     }
   }
-  
+
   connect( &mDataTimer, SIGNAL( timeout() ), SLOT( slotDataTimer() ) );
 }
 
@@ -437,7 +455,7 @@ QStringList LdapSearch::makeSearchData()
       QString tmp = QString::fromUtf8((*it2).first());
       if ( it2.key() == "cn" )
         name = tmp; // TODO loop?
-      else if( it2.key() == "mail" ) 
+      else if( it2.key() == "mail" )
         mail = tmp;
       else if( it2.key() == "givenName" )
         givenname = tmp;
@@ -469,5 +487,7 @@ bool LdapSearch::isAvailable() const
 {
   return !mNoLDAPLookup;
 }
+
+
 
 #include "ldapclient.moc"
