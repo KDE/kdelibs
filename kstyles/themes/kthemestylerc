@@ -1,15 +1,2 @@
 [General]
-themes=marble^eriscos^esystem^esystemalt^e
-
-[marble]
-file=marble.themerc
-
-[riscos]
-file=riscos.themerc
-
-[system]
-file=system.themerc
-
-[systemalt]
-file=systemalt.themerc
-
+themes=
