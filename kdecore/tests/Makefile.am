@@ -27,7 +27,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
-	kcharsetstest kcalendartest kmacroexpandertest
+	kcharsetstest kcalendartest kmacroexpandertest kshelltest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h \
 		kipctest.h kprociotest.h
@@ -69,3 +69,4 @@ kprociotest_SOURCES = kprociotest.cpp
 kcharsetstest_SOURCES = kcharsetstest.cpp
 kcalendartest_SOURCES = kcalendartest.cpp
 kmacroexpandertest_SOURCES = kmacroexpandertest.cpp
+kshelltest_SOURCES = kshelltest.cpp
