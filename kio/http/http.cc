@@ -1114,7 +1114,6 @@ bool HTTPProtocol::readHeader()
 
     // We got a header back !
     if (strncasecmp(buf, "HTTP/", 5) == 0) {
-
       if (strncmp(buffer+5, "1.0 ",4) == 0)
       {
          m_HTTPrev = HTTP_10;
@@ -1575,9 +1574,15 @@ bool HTTPProtocol::readHeader()
   if (!locationStr.isEmpty())
   {
     KURL u(m_request.url, locationStr);
-    if(u.isMalformed() || u.isLocalFile() )
+    if(u.isMalformed())
     {
       error(ERR_MALFORMED_URL, u.url());
+      return false;
+    }
+    if ((u.protocol() != "http") && (u.protocol() != "https") &&
+       (u.protocol() != "ftp")) 
+    {
+      error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
 
