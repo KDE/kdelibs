@@ -81,8 +81,6 @@ ksockaddr_in *KSocket::cachedServerName = 0;
 KSocket::KSocket( int _sock)
  : sock(_sock), readNotifier(0), writeNotifier(0)
 {
-  kdDebug() << "Ksocket " << _sock << endl;
-
   struct sockaddr_in sin;
   ksize_t len = sizeof(sin);
 
@@ -555,8 +553,6 @@ void KServerSocket::slotAccept( int )
       qWarning("Error accepting\n");
       return;
     }
-    kdDebug() << "accepted " << new_sock << endl;
-
     emit accepted( new KSocket( new_sock ) );
   }
   else if ( domain == PF_UNIX )
@@ -572,7 +568,6 @@ void KServerSocket::slotAccept( int )
       return;
     }
 
-    kdDebug() << "accepted " << new_sock << endl;
     emit accepted( new KSocket( new_sock ) );
   }
 }
