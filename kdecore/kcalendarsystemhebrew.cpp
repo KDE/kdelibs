@@ -27,7 +27,8 @@
 
 #include "kcalendarsystemhebrew.h"
 
-static int jflg = 0;
+static int jflg = 0; // ### HPB Remove this!?!?
+
 int dysiz(int y);
 
 class hdate
