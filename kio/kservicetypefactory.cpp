@@ -159,7 +159,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
         it != list.end();
         ++it)
    {
-      KMimeType *newMimeType = dynamic_cast<KMimeType *>(static_cast<KSycocaEntry*>(*it));
+      KMimeType *newMimeType = dynamic_cast<KMimeType *>((*it).data());
       if (newMimeType)
          result.append( KMimeType::Ptr( newMimeType ) );
    }
@@ -174,7 +174,7 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
         it != list.end();
         ++it)
    {
-      KServiceType *newServiceType = dynamic_cast<KServiceType *>(static_cast<KSycocaEntry *>(*it));
+      KServiceType *newServiceType = dynamic_cast<KServiceType *>((*it).data());
       if (newServiceType)
          result.append( KServiceType::Ptr( newServiceType ) );
    }

@@ -181,7 +181,7 @@ KService::List KServiceFactory::allServices()
         it != list.end();
         ++it)
    {
-      KService *newService = dynamic_cast<KService *>(static_cast<KSycocaEntry *>(*it));
+      KService *newService = dynamic_cast<KService *>((*it).data());
       if (newService)
          result.append( KService::Ptr( newService ) );
    }
