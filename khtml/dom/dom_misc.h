@@ -22,6 +22,8 @@
 #ifndef _DOM_RefCountImpl_h_
 #define _DOM_RefCountImpl_h_
 
+#include <kdelibs_export.h>
+
 namespace DOM {
 
 /*
@@ -31,7 +33,7 @@ namespace DOM {
  * Other objects should overload deleteMe() to fit their needs. The default
  * implementation deletes the object if the ref count drops to 0.
  */
-class DomShared
+class KHTML_EXPORT DomShared
 {
 public:
   DomShared() : _ref( 0 ) {}

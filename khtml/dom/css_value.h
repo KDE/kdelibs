@@ -57,7 +57,7 @@ class CSSValue;
  * interface.
  *
  */
-class CSSStyleDeclaration
+class KHTML_EXPORT CSSStyleDeclaration
 {
 public:
     CSSStyleDeclaration();
@@ -240,7 +240,7 @@ class CSSValueImpl;
  * complexe value.
  *
  */
-class CSSValue
+class KHTML_EXPORT CSSValue
 {
 public:
     CSSValue();
@@ -313,7 +313,7 @@ class CSSValue;
  * of an ordered collection of CSS values.
  *
  */
-class CSSValueList : public CSSValue
+class KHTML_EXPORT CSSValueList : public CSSValue
 {
 public:
     CSSValueList();
@@ -370,7 +370,7 @@ class Rect;
  * \c CSSStyleDeclaration interface.
  *
  */
-class CSSPrimitiveValue : public CSSValue
+class KHTML_EXPORT CSSPrimitiveValue : public CSSValue
 {
 public:
     CSSPrimitiveValue();
@@ -587,7 +587,7 @@ public:
  * interface modify the style property.
  *
  */
-class RGBColor
+class KHTML_EXPORT RGBColor
 {
 public:
     RGBColor();
@@ -638,7 +638,7 @@ class RectImpl;
  * interface modify the style property.
  *
  */
-class Rect
+class KHTML_EXPORT Rect
 {
     friend class CSSPrimitiveValue;
 public:
@@ -739,5 +739,6 @@ protected:
 
 
 } // namespace
+
 
 #endif

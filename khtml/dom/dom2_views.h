@@ -23,6 +23,7 @@
 #ifndef _DOM_Views_h_
 #define _DOM_Views_h_
 
+#include <kdelibs_export.h>
 namespace DOM {
 
 class Document;
@@ -37,7 +38,7 @@ class DOMString;
  * A base interface that all views shall derive from.
  *
  */
-class AbstractView {
+class KHTML_EXPORT AbstractView {
     friend class Event;
     friend class UIEvent;
     friend class MouseEvent;
