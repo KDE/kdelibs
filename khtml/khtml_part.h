@@ -1077,7 +1077,7 @@ public slots:
    * default.
    *
    * @param enable @p true to enable, @p false to disable caret mode.
-   * @since 3.2 (pending, do not use)
+   * @since 3.2
    */
   void setCaretMode(bool enable);
 
