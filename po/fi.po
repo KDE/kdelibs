@@ -1,0 +1,207 @@
+#
+#	Version 0.3.1
+#
+#	Muutettu 11.10.1997 / Juha Tuomala
+#
+# general messages, that are often used
+msgid "Error"
+msgstr "Virhe"
+
+msgid "Malformed URL"
+msgstr "Virheellinen URL"
+
+msgid "Yes"
+msgstr "Kyllä"
+
+msgid "No"
+msgstr "Ei"
+
+msgid "Warning"
+msgstr "Varoitus"
+
+msgid "Open a file"
+msgstr "Avaa tiedosto"
+
+msgid "Save a file"
+msgstr "Tallenna tiedostoon"
+
+msgid "Contents"
+msgstr "Sisältö"
+
+msgid "About"
+msgstr "Tietoja"
+
+msgid "Open"
+msgstr "Avaa"
+
+msgid "Save"
+msgstr "&Tallenna"
+
+msgid "Save As"
+msgstr "Tallenna nimellä"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "Quit"
+msgstr "Lopeta"
+
+msgid "Untitled"
+msgstr "Nimeämätön"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Peruuta"
+
+msgid "Apply"
+msgstr "Käytä"
+
+msgid "File"
+msgstr "Tiedosto"
+
+msgid "Help"
+msgstr "Ohje"
+
+msgid "Edit"
+msgstr "Muokkaa"
+
+# libkdeui messages
+
+#: kcolordlg.cpp:239
+msgid "Select Color"
+msgstr "Valitse väri"
+
+#: kcolordlg.cpp:244
+msgid "System Colors"
+msgstr "Järjestelmän värit"
+
+#: kcolordlg.cpp:269
+msgid "Custom Colors"
+msgstr "Omat värit"
+
+#: kcolordlg.cpp:345
+msgid "Add to Custom Colors"
+msgstr "Lisää omiin väreihin"
+
+#: kcolordlg.cpp:649 kcolordlg.cpp:699
+msgid "Custom..."
+msgstr "Omat ..."
+
+#: kfontdialog.cpp:95
+msgid "Select Font"
+msgstr "Valitse fontti"
+
+#: kfontdialog.cpp:99
+msgid "Requested Font"
+msgstr "Pyydetty fontti"
+
+#: kfontdialog.cpp:104
+msgid "Actual Font"
+msgstr "Todellinen fontti"
+
+#: kfontdialog.cpp:108 kfontdialog.cpp:112
+msgid "Family:"
+msgstr "Perhe:"
+
+#: kfontdialog.cpp:119 kfontdialog.cpp:124
+msgid "Size:"
+msgstr "Koko:"
+
+#: kfontdialog.cpp:133 kfontdialog.cpp:138
+msgid "Weight:"
+msgstr "Paino:"
+
+#: kfontdialog.cpp:147 kfontdialog.cpp:155
+msgid "Style:"
+msgstr "Tyyli:"
+
+#: kfontdialog.cpp:190
+msgid "Size"
+msgstr "Koko"
+
+#: kfontdialog.cpp:229
+msgid "Weight"
+msgstr "Paino"
+
+#: kfontdialog.cpp:230 kfontdialog.cpp:327
+msgid "normal"
+msgstr "normaali"
+
+#: kfontdialog.cpp:231 kfontdialog.cpp:329
+msgid "bold"
+msgstr "lihavoitu"
+
+#: kfontdialog.cpp:240
+msgid "Style"
+msgstr "Tyyli"
+
+#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
+msgid "roman"
+msgstr "roman"
+
+#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
+msgid "italic"
+msgstr "kursivoitu"
+
+#: kfontdialog.cpp:270
+msgid "Dolor Ipse"
+msgstr "Dolor Ipse"
+
+#: kfontdialog.cpp:362
+msgid "Bold"
+msgstr "Lihavoitu"
+
+#: kfontdialog.cpp:364
+msgid "Normal"
+msgstr "Normaali"
+
+#: kiconloader.cpp:176
+msgid "Select Icon"
+msgstr "Valitse ikoni"
+
+#: kiconloader.cpp:182
+msgid "Filter:"
+msgstr "Suodata:"
+
+#: kiconloader.cpp:337
+#, c-format
+msgid "ERROR: couldn't find icon: %s"
+msgstr "VIRHE: Ikonia: %s ei löydy"
+
+#: kmenubar.cpp:106 ktoolbar.cpp:273
+msgid "Top"
+msgstr "Ylhäällä"
+
+#: kmenubar.cpp:107 ktoolbar.cpp:275
+msgid "Bottom"
+msgstr "Alhaalla"
+
+#: kmenubar.cpp:108 ktoolbar.cpp:276
+msgid "Floating"
+msgstr "Kelluva"
+
+#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
+msgid "Float"
+msgstr "Kellua"
+
+#: kmenubar.cpp:213 ktoolbar.cpp:1198
+msgid "UnFloat"
+msgstr "Upota"
+
+#: ktoolbar.cpp:87 ktoolbar.cpp:145
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: pixmap on tyhjä, ehkä jokin puuttuva tiedosto."
+
+#: ktoolbar.cpp:272
+msgid "Left"
+msgstr "Vasemmalla"
+
+#: ktoolbar.cpp:274
+msgid "Right"
+msgstr "Oikealla"
+
