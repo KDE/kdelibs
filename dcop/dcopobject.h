@@ -2,24 +2,24 @@
 
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************/
 
 #ifndef _DCOPOBJECT_H
@@ -115,14 +115,14 @@ class DCOPObject
    * @ref DCOPObjectProxy
    */
   static bool hasObject(const QCString &objId);
-    
+
   /**
    * @return the DCOPObject for the id @param objId.
    *
    * This function does not query the @ref DCOPObjectProxy.
    */
   static DCOPObject *find(const QCString &objId);
-    
+
   /**
    * Creates an object id for the QObject @param obj. This is done
    * using the @ref QObject::name function.
@@ -161,6 +161,9 @@ public:
      * This method is called of all proxies if the @ref DCOPClient
      * knows no object with the id @p obj. If the first proxy returns
      * TRUE, the DCOPClient will no longer call other proxies.
+     *
+     * The object id @p obj may be empty for app-wide function calls no
+     * associated with any object.
      */
     virtual bool process( const QCString& obj, const QCString& fun, const QByteArray& data,
 			  QCString& replyType, QByteArray &replyData );

@@ -2,24 +2,24 @@
 
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************/
 
 #include <dcopclient.moc>
@@ -196,7 +196,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 
     // first, check if serverAddr was ever set.
     if (!d->serverAddr) {
-      // here, we obtain the list of possible DCOP connections, 
+      // here, we obtain the list of possible DCOP connections,
       // and attach to them.
       QString fName = ::getenv("HOME");
       fName += "/.DCOPserver";
@@ -210,7 +210,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
       f.close();
     }
 
-    if ((d->iceConn = IceOpenConnection(d->serverAddr.data(), 
+    if ((d->iceConn = IceOpenConnection(d->serverAddr.data(),
 					0, False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
 	emit attachFailed(errBuf);
@@ -466,7 +466,9 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	  emit applicationRemoved( r );
 	  return true;
       }
-      return process( fun, data, replyType, replyData );
+      if ( process( fun, data, replyType, replyData ) )
+	  return true;
+      // fall through and send to object proxies
   }
   if (!DCOPObject::hasObject(objId)) {
 
