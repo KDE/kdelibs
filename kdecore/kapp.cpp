@@ -937,7 +937,6 @@ void KApplication::buildSearchPaths()
 {
   // Torben
   // We want to search the local files with highest priority
-        int num;
   QString tmp( getenv( "HOME" ) );
   tmp += "/.kde";
   appendSearchPath( tmp );
@@ -990,10 +989,10 @@ void KApplication::appendSearchPath( const char *path )
   // return if this path has already been added
 	str = config->readEntry( "WindowTextColor", "#000000" ); 
 	windowTextColor.setNamedColor( str );
+	  if ( !strcmp( it.current(), path ) )
+	str = config->readEntry( "Contrast", "7" );
 	contrast = atoi( str );
-	config->setGroup( "General Font" );
-
-	num = config->readNumEntry( "Charset",-1 );
+    }
 
   pSearchPaths->append( path );
 }
@@ -1013,7 +1012,7 @@ void KApplication::readSettings()
 		if ( !str.isNull() )
 		generalFont.setPointSize(atoi(str.data()));
   inactiveTitleColor.setNamedColor( str );
-				
+	str = config->readEntry( "Weight" );
 		if ( !str.isNull() )
   str = config->readEntry( "InactiveTitleTextColor", "#808080" );
   inactiveTextColor.setNamedColor( str );
