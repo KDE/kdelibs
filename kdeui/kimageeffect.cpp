@@ -232,13 +232,13 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
                     if (eff == EllipticGradient) {
                         rgb = qRgb(rcb - rSign *
                                    (int)sqrt((xtable[0][x]*xtable[0][x] +
-                                              ytable[0][y]*ytable[0][y])*2),
+                                              ytable[0][y]*ytable[0][y])*2.0),
                                    gcb - gSign *
                                    (int)sqrt((xtable[1][x]*xtable[1][x] +
-                                              ytable[1][y]*ytable[1][y])*2),
+                                              ytable[1][y]*ytable[1][y])*2.0),
                                    bcb - bSign *
                                    (int)sqrt((xtable[2][x]*xtable[2][x] +
-                                              ytable[2][y]*ytable[2][y])*2));
+                                              ytable[2][y]*ytable[2][y])*2.0));
                     }
 
                     sl1[x] = sl2[x] = rgb;
@@ -481,13 +481,13 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                   {
                       scanline[x] = qRgb(rcb - rSign *
                                          (int)sqrt((xtable[0][x]*xtable[0][x] +
-                                                    ytable[0][y]*ytable[0][y])*2),
+                                                    ytable[0][y]*ytable[0][y])*2.0),
                                          gcb - gSign *
                                          (int)sqrt((xtable[1][x]*xtable[1][x] +
-                                                    ytable[1][y]*ytable[1][y])*2),
+                                                    ytable[1][y]*ytable[1][y])*2.0),
                                          bcb - bSign *
                                          (int)sqrt((xtable[2][x]*xtable[2][x] +
-                                                    ytable[2][y]*ytable[2][y])*2));
+                                                    ytable[2][y]*ytable[2][y])*2.0));
                   }
               }
           }
