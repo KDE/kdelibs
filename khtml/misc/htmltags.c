@@ -368,6 +368,7 @@ static const DOMString tagList[] = {
     "UL",
     "VAR",
 "TEXT",
+"COMMENT",
     "/A",
     "/ABBR",
     "/ACRONYM",

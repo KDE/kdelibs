@@ -53,14 +53,15 @@ namespace khtml
     /**
      * @internal
      *
-     * a client who wants to load stylesheets or images from the web has to
-     * inherit from this class and overload one of the 2 functions
+     * a client who wants to load stylesheets, images or scripts from the web has to
+     * inherit from this class and overload one of the 3 functions
      */
     class CachedObjectClient
     {
     public:
 	virtual void setPixmap(const QPixmap &, CachedObject *) {}
 	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
+	virtual void notifyFinished(CachedObject */*finishedObj*/) {}
     };
 
     /**
@@ -76,7 +77,8 @@ namespace khtml
     public:
 	enum Type {
 	    Image,
-	    CSSStyleSheet
+	    CSSStyleSheet,
+	    Script
 	};
 	
 	enum Status {
@@ -162,6 +164,30 @@ namespace khtml
 	bool loading;
     };
 	
+    /**
+     * a cached script
+     */
+    class CachedScript : public CachedObject
+    {
+    public:
+	CachedScript(const DOM::DOMString &url, const DOM::DOMString &baseURL);
+	virtual ~CachedScript();
+	
+	const DOM::DOMString &script() const { return m_script; }
+
+	virtual void ref(CachedObjectClient *consumer);
+	virtual void deref(CachedObjectClient *consumer);
+
+	virtual void data( QBuffer &buffer, bool eof );
+	virtual void error( int err, const char *text );
+
+	void checkNotify();
+
+    protected:
+	DOM::DOMString m_script;
+	bool loading;
+    };
+
     class ImageSource;
 
     /**
@@ -301,6 +327,12 @@ namespace khtml
 	 */
 	static CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 
+	/**
+	 * Ask the cache for some url. Will return a cachedObject, and
+	 * load the requested data in case it's not cahced
+	 */
+	static CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
+	
 	/**
 	 * sets the size of the cache. This will only hod approximately, since the size some
 	 * cached objects (like stylesheets) take up in memory is not exaclty known.

@@ -553,7 +553,10 @@ private slots:
    * @internal
    */
   void slotFinished( KIO::Job* );
-
+  /**
+   * @internal
+   */
+  void slotFinishedParsing();
   /**
    * @internal
    */

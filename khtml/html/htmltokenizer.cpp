@@ -38,6 +38,7 @@
 #include "htmltoken.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "html_documentimpl.h"
 #include "dtd.h"
 #include "htmlhashes.h"
 #include <kcharsets.h>
@@ -65,12 +66,17 @@ HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = p;
     currToken = 0;
+    cachedScript = 0;
 
     reset();
 }
 
 void HTMLTokenizer::reset()
 {
+    if (cachedScript)
+	cachedScript->deref(this);
+    cachedScript = 0;
+
     if ( buffer )
 	delete [] buffer;
     buffer = 0;
@@ -109,6 +115,10 @@ void HTMLTokenizer::begin()
     tquote = NoQuote;
     searchCount = 0;
     charEntity = false;
+    loadingExtScript = false;
+    scriptSrc = "";
+    pendingSrc = "";
+    noMoreData = false;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
@@ -197,7 +207,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
     // which is either </script>, </style> or -->
     // otherwise print out every received character
 
+#ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
+#endif
 
     while ( src.length() )
     {
@@ -223,9 +235,23 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    if (comment) currToken->id = ID_COMMENT; /// ###
 	    if (script)
 	    {
-	        /* Parse scriptCode containing <script> info */
+#ifdef TOKEN_DEBUG
 		kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
-	  	view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+#endif
+		if (scriptSrc != "") {
+		    // forget what we just got; load from src url instead
+		    cachedScript = Cache::requestScript(scriptSrc, parser->doc()->baseURL());
+		    cachedScript->ref(this);
+		    loadingExtScript = true;
+		    pendingSrc = QString(src.current(), src.length());
+		    _src = "";
+		    src = DOMStringIt();
+		}
+		else {
+		    // Parse scriptCode containing <script> info
+		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
+		    view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+		}
 	    }
 	    else if (style)
 	    {
@@ -462,7 +488,9 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 		if (src[0] == ';')
 		    ++src;
 	    } else {
+#ifdef TOKEN_DEBUG
 		kdDebug( 6036 ) << "unknown entity!" << endl;
+#endif
 
 		checkBuffer(10);
 		// ignore the sequence, add it to the buffer as plaintext
@@ -546,7 +574,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
+#ifdef TOKEN_DEBUG
 		    kdDebug( 6036 ) << "bad HTML in parseTag: TagName" << endl;
+#endif
 		    searchCount = 0;
 		    ++src;
 		    break;
@@ -617,7 +647,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    QConstString tmp(ptr, len);
 		    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
 		    if (!tagID) {
+#ifdef TOKEN_DEBUG
 			kdDebug( 6036 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
+#endif
 			dest = buffer;
 			tag = SearchEnd; // ignore the tag
 		    }
@@ -641,7 +673,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
+#ifdef TOKEN_DEBUG
 		    kdDebug( 6036 ) << "broken HTML in parseTag: SearchAttribute " << endl;
+#endif
 		    tquote=NoQuote;
 		    ++src;
 		    break;
@@ -687,7 +721,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    dest = buffer;
 		    if (!a) {
 			// unknown attribute, ignore
+#ifdef TOKEN_DEBUG
 			kdDebug( 6036 ) << "Unknown attribute: \"" << tmp.string() << "\"" << endl;
+#endif
                         *dest++ = 0x0; /* ignore */
 		    }
 		    else
@@ -706,7 +742,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
+#ifdef TOKEN_DEBUG
 		      kdDebug( 6036 ) << "bad HTML in parseTag: SearchEqual" << endl;
+#endif
 		      // this is moslty due to a missing '"' somewhere before..
 		      // so let's start searching for a new tag
 		      tquote = NoQuote;
@@ -807,7 +845,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		  // additional quote. discard it, and define as end of
 		  // attribute
+#ifdef TOKEN_DEBUG
 		    kdDebug( 6036 ) << "bad HTML in parseTag: Value" << endl;
+#endif
 		    ++src;
 		    tquote = NoQuote;
 		}
@@ -879,6 +919,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    tagID -= ID_CLOSE_TAG;
 		}
 
+		if ( tagID == ID_SCRIPT  && beginTag ) {
+		    int attrIndex = currToken->attrs.find(ATTR_SRC);
+		    scriptSrc = (attrIndex == -1 ? (QString)"" : currToken->attrs[attrIndex]->value().string());
+		}
+		
 		processToken();
 		
 		if(pre)
@@ -902,7 +947,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    if (beginTag)
 		    {
-			kdDebug( 6036 ) << "start of script, token->id = " << currToken->id << endl; 
+#ifdef TOKEN_DEBUG
+			kdDebug( 6036 ) << "start of script, token->id = " << currToken->id << endl;
+#endif
 			script = true;
 			searchCount = 0;
 			searchFor = scriptEnd;		
@@ -910,7 +957,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			scriptCodeSize = 0;
 			scriptCodeMaxSize = 1024;
 			parseScript(src);
+#ifdef TOKEN_DEBUG
 			kdDebug( 6036 ) << "end of script" << endl;
+#endif
 		    }
 		}
 		else if ( tagID == ID_STYLE )
@@ -947,7 +996,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    }
 	    default:
 	    {
+#ifdef TOKEN_DEBUG
 		kdDebug( 6036 ) << "error in parseTag! " << __LINE__ << endl;
+#endif
 		return;
 	    }
 	
@@ -999,7 +1050,9 @@ void HTMLTokenizer::addPending()
 	    break;
 	
 	default:
+#ifdef TOKEN_DEBUG
 	    kdDebug( 6036 ) << "Assertion failed: pending = " << (int) pending << endl;
+#endif
 	    break;
 	}
     }
@@ -1039,6 +1092,7 @@ void HTMLTokenizer::write( const QString &str )
 	// reentrant...
 	// we just insert the code at the tokenizers current position. Parsing will continue once
 	// we return from the script stuff
+	// (this won't happen if we're in the middle of loading an external script)
 	QString newStr = str;
 	newStr += QString(src.current(), src.length());
 
@@ -1046,6 +1100,12 @@ void HTMLTokenizer::write( const QString &str )
 	src = DOMStringIt(_src);
 	return;
     }	
+
+    if (loadingExtScript) {
+	// don't parse; we will do this later
+	pendingSrc += str;
+	return;
+    }
 
     _src = str;
     src = DOMStringIt(_src);
@@ -1229,21 +1289,35 @@ void HTMLTokenizer::write( const QString &str )
 
 void HTMLTokenizer::end()
 {
-    if ( buffer == 0 )
+    if ( buffer == 0 ) {
+	emit finishedParsing();
 	return;
+    }
 
     processToken();
 
     delete [] buffer;
     buffer = 0;
+    emit finishedParsing();
+}
+
+void HTMLTokenizer::finish()
+{
+    // this indicates we will not recieve any more data... but if we are waiting on
+    // an external script to load, we can't finish parsing until that is done
+    noMoreData = true;
+    if (!loadingExtScript)
+	end();
 }
 
 void HTMLTokenizer::processToken()
 {
     if ( dest > buffer )
     {
+#ifdef TOKEN_DEBUG
 	if(currToken->id && currToken->id != ID_COMMENT)
 	    kdDebug( 6036 ) << "Error in processToken!!!" << endl;
+#endif
 /*
 	if(!pre && dest - buffer == 1 && *buffer == ' ')
 	{
@@ -1318,6 +1392,27 @@ void HTMLTokenizer::checkBuffer(int len)
 	    buffer = newbuf;
 	    size += 1024;
 	}
+}
+
+void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
+{
+    if (finishedObj == cachedScript) {
+#ifdef TOKEN_DEBUG
+	kdDebug( 6036 ) << "Finished loading an external script" << endl;
+#endif
+	loadingExtScript = false;
+	DOMString script = cachedScript->script();
+#ifdef TOKEN_DEBUG
+	kdDebug( 6036 ) << "External script is:" << endl << script.string() << endl;
+#endif
+	view->part()->executeScript(script.string());
+	write(pendingSrc); // ###
+	pendingSrc = "";
+	cachedScript->deref(this);
+	cachedScript = 0;
+	if (noMoreData)
+	    end();
+    }
 }
 
 //-----------------------------------------------------------------------------

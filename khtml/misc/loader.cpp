@@ -22,7 +22,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-//#define CACHE_DEBUG
+#define CACHE_DEBUG
 
 #include "loader.h"
 
@@ -47,6 +47,7 @@
 #include <kdebug.h>
 
 #include "css/css_stylesheetimpl.h"
+
 using namespace khtml;
 using namespace DOM;
 
@@ -124,6 +125,66 @@ void CachedCSSStyleSheet::checkNotify()
 
 
 void CachedCSSStyleSheet::error( int /*err*/, const char */*text*/ )
+{
+    loading = false;
+    checkNotify();
+}
+
+// -------------------------------------------------------------------------------------------
+
+CachedScript::CachedScript(const DOMString &url, const DOMString &baseURL)
+    : CachedObject(url, Script)
+{
+    // load the file
+    Cache::loader()->load(this, baseURL, false);
+    loading = true;
+}
+
+CachedScript::~CachedScript()
+{
+}
+
+void CachedScript::ref(CachedObjectClient *c)
+{
+    // make sure we don't get it twice...
+    m_clients.remove(c);
+    m_clients.append(c);
+
+    if(!loading) c->notifyFinished(this);
+}
+
+void CachedScript::deref(CachedObjectClient *c)
+{
+    m_clients.remove(c);
+    if ( m_clients.count() == 0 && m_free )
+      delete this;
+}
+
+void CachedScript::data( QBuffer &buffer, bool eof )
+{
+    if(!eof) return;
+    buffer.close();
+    buffer.open( IO_ReadOnly );
+    QTextStream t( &buffer );
+    QString data = t.read();
+
+    m_script = DOMString(data);
+    loading = false;
+
+    checkNotify();
+}	
+
+void CachedScript::checkNotify()
+{
+    if(loading) return;
+
+    CachedObjectClient *c;
+    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
+	c->notifyFinished(this);
+}
+
+
+void CachedScript::error( int /*err*/, const char */*text*/ )
 {
     loading = false;
     checkNotify();
@@ -867,6 +928,47 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 
     lru->touch( kurl.url() );
     return static_cast<CachedCSSStyleSheet *>(o);
+}
+
+CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
+{
+    // this brings the _url to a standard form...
+    KURL kurl = completeURL( url, baseUrl );
+    if( kurl.isMalformed() )
+    {
+      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
+      return 0;
+    }
+
+    CachedObject *o = cache->find(kurl.url());
+    if(!o)
+    {
+#ifdef CACHE_DEBUG
+	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
+#endif
+	CachedScript *script = new CachedScript(kurl.url(), baseUrl);
+	cache->insert( kurl.url(), script );
+	lru->append( kurl.url() );
+	return script;
+    }
+
+    if(!o->type() == CachedObject::Script)
+    {
+#ifdef CACHE_DEBUG
+	kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
+#endif
+	return 0;
+    }
+
+#ifdef CACHE_DEBUG
+    if( o->status() == CachedObject::Pending )
+	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
+    else
+	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
+#endif
+
+    lru->touch( kurl.url() );
+    return static_cast<CachedScript *>(o);
 }
 
 void Cache::flush()

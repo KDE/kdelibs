@@ -47,8 +47,9 @@ class DOMString;
 
 class StyleSheetListImpl;
 
-class HTMLDocumentImpl : public khtml::CachedObjectClient, public DocumentImpl
+class HTMLDocumentImpl : public QObject, public khtml::CachedObjectClient, public DocumentImpl
 {
+    Q_OBJECT
 public:
     HTMLDocumentImpl();
     HTMLDocumentImpl(KHTMLView *v);
@@ -72,6 +73,7 @@ public:
     void write ( const DOMString &text );
     void write ( const QString &text );
     void writeln ( const DOMString &text );
+    void finishParsing (  );
     ElementImpl *getElementById ( const DOMString &elementId );
     NodeListImpl *getElementsByName ( const DOMString &elementName );
 
@@ -106,6 +108,13 @@ public:
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 
     CSSStyleSheetImpl* elementSheet();
+
+signals:
+    void finishedParsing();
+
+public slots:
+    void slotFinishedParsing();
+
 protected:
     void clear();
 

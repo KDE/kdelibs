@@ -699,6 +699,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->open();
   // clear widget
   d->m_view->resizeContents( 0, 0 );
+  connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   d->m_bParsing = true;
 }
@@ -735,8 +736,14 @@ void KHTMLPart::write( const QString &str )
 
 void KHTMLPart::end()
 {
+    d->m_doc->finishParsing();
+}
+
+void KHTMLPart::slotFinishedParsing()
+{
   d->m_bParsing = false;
   d->m_doc->close();
+  disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   if (!d->m_view)
     return; // We are probably being destructed.

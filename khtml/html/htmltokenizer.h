@@ -49,6 +49,7 @@ class HTMLTokenizer;
 #include "stringit.h"
 #include "htmltoken.h"
 #include "htmlparser.h"
+#include "loader.h"
 
 class KHTMLParser;
 class KHTMLView;
@@ -63,8 +64,9 @@ class KHTMLView;
  * This class takes QStrings as input, and splits up the input streams into
  * tokens, which are passed on to the @ref KHTMLParser.
  */
-class HTMLTokenizer
+class HTMLTokenizer : public QObject, public khtml::CachedObjectClient
 {
+    Q_OBJECT
 public:
     HTMLTokenizer(KHTMLParser *, KHTMLView * = 0);
     ~HTMLTokenizer();
@@ -73,6 +75,10 @@ public:
     void setPlainText();
     void write( const QString &str );
     void end();
+    void finish();
+
+signals:
+    void finishedParsing();
 
 protected:
     void reset();
@@ -93,6 +99,9 @@ protected:
     // check if we have enough space in the buffer.
     // if not enlarge it
     void checkBuffer(int len = 10);
+
+    // from CachedObjectClient
+    void notifyFinished(khtml::CachedObject *finishedObj);
 protected:
     // Internal buffers
     ///////////////////
@@ -210,6 +219,17 @@ protected:
     int searchCount;
     // The string we are searching for
     const QChar *searchFor;
+    // true if we are waiting for an external script (<SCRIPT SRC=...) to load, i.e.
+    // we don't do any parsing while this is true
+    bool loadingExtScript;
+    // if no more data is coming, just parse what we have (including ext scripts that
+    // may be still downloading) and finish
+    bool noMoreData;
+    // URL to get source code of script from
+    QString scriptSrc;
+    // the HTML code we will parse after the external script we are waiting for has loaded
+    QString pendingSrc;
+    khtml::CachedScript *cachedScript;
 
     QChar entityBuffer[10];
     uint entityPos;

@@ -72,6 +72,8 @@ public:
 
     bool parsingBody() { return inBody; }
 
+    DOM::HTMLDocumentImpl *doc() { return document; }
+
 protected:
 
     KHTMLView *HTMLWidget;

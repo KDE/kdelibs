@@ -20,6 +20,9 @@
  *
  * $Id$
  */
+
+//#define CSS_STYLESHEET_DEBUG
+
 #include "css_stylesheetimpl.h"
 
 #include "css_stylesheet.h"
@@ -223,12 +226,16 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
 {
     QString preprocessed = preprocess(string.string());
 
+#ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
+#endif
 
     const QChar *curP = preprocessed.unicode();
     const QChar *endP = preprocessed.unicode()+preprocessed.length();
 
+#ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
+#endif
 
     // remove leading spaces
     while (curP && (curP < endP))
@@ -275,10 +282,14 @@ bool CSSStyleSheetImpl::isLoading()
 	if(rule->isImportRule())
 	{
 	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
+#ifdef CSS_STYLESHEET_DEBUG
 	    kdDebug( 6080 ) << "found import" << endl;
+#endif
 	    if(import->isLoading())
 	    {
+#ifdef CSS_STYLESHEET_DEBUG
 		kdDebug( 6080 ) << "--> not loaded" << endl;
+#endif
 		return true;
 	    }
 	}

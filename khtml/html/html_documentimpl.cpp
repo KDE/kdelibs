@@ -131,6 +131,7 @@ void HTMLDocumentImpl::open(  )
     clear();
     parser = new KHTMLParser(m_view, this);
     tokenizer = new HTMLTokenizer(parser, m_view);
+    connect(tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
     tokenizer->begin();
 }
 
@@ -161,6 +162,12 @@ void HTMLDocumentImpl::writeln( const DOMString &text )
 {
     write(text);
     write(DOMString("\n"));
+}
+
+void HTMLDocumentImpl::finishParsing (  )
+{
+    if(tokenizer)
+	tokenizer->finish();
 }
 
 ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
@@ -444,5 +451,10 @@ int HTMLDocumentImpl::findHighestTabIndex()
 	}
     }
   return retval;
+}
+
+void HTMLDocumentImpl::slotFinishedParsing()
+{
+  emit finishedParsing();
 }
 
