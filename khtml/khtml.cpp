@@ -133,7 +133,8 @@ void KHTMLWidget::init()
   m_lstURLRequestJobs.setAutoDelete( true );
   m_lstChildren.setAutoDelete( true );
 
-  setFocusPolicy( QWidget::StrongFocus );
+//  setFocusPolicy( QWidget::StrongFocus );
+  viewport()->setFocusPolicy( QWidget::WheelFocus );
 
   document = 0;
   decoder = 0;
@@ -1372,6 +1373,12 @@ QString KHTMLWidget::selectedText()
 {
     // ###
     return QString::null;
+}
+
+KHTMLWidget *KHTMLWidget::getSelectedFrame()
+{
+  #warning FIXME
+  return this;
 }
 
 void
