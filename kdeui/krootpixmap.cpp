@@ -112,8 +112,8 @@ void KRootPixmap::setFadeEffect(double fade, QColor color)
 
 bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 {
-    // Initialise after the first paint event on the managed widget.
-    if (!m_bInit && (event->type() == QEvent::Paint))
+    // Initialise after the first show or paint event on the managed widget.
+    if (!m_bInit && ((event->type() == QEvent::Show) || (event->type() == QEvent::Paint)))
     {
 	m_bInit = true;
 	m_Desk = currentDesktop();
@@ -169,8 +169,7 @@ void KRootPixmap::repaint(bool force)
     m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
-    if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
-	kdWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
+    m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect);
 }
 
 
@@ -220,6 +219,7 @@ void KRootPixmap::slotBackgroundChanged(int desk)
 {
     if (!m_bInit || !m_bActive)
 	return;
+
     if (desk == m_Desk)
 	repaint(true);
 }
