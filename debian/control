@@ -11,7 +11,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl
 Depends: ${shlibs:Depends}
-Recommends: kdelibs3-crypto
+Suggests: kdelibs3-crypto
 Conflicts: kdelibs3-nossl, kdeadmin, kdegames, kdegraphics, kdemultimedia, kdenetwork, kdepim, kdetoys, kdeutils, koffice
 Description: KDE core libraries (runtime files)
  KDE core libraries.
