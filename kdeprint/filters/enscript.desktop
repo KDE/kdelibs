@@ -1,0 +1,4 @@
+[KDE Print Filter Entry]
+Name=enscript
+Require=enscript
+Comment=Enscript text filter

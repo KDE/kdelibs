@@ -1,0 +1,4 @@
+[KDE Print Filter Entry]
+Name=psnup
+Require=psnup
+Comment=Multiple pages per sheet filter
