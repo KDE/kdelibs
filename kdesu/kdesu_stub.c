@@ -183,7 +183,7 @@ int main()
 {
     char buf[BUFSIZE+1];
     char command[200], xauthority[200], iceauthority[200];
-    char **host, **auth, *fname;
+    char **host, **auth, fname[24];
     int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
@@ -212,6 +212,7 @@ int main()
     printf("end\n");
     fflush(stdout);
 
+fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
     xsetenv("PATH", params[P_PATH].value);
     xsetenv("KDE_APP_START_PID", params[P_APP_START_PID].value);
 
@@ -361,6 +362,8 @@ int main()
     {
 	system("kdeinit");
     }
+
+fprintf(stderr," before forking\n");
 
     /* Execute the command */
 
