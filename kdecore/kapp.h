@@ -412,9 +412,11 @@ public:
   /**
    * The desktop background has been changed by kcmdisplay. 
    * 
+   * @param desk The desktop whose background has changed.
+   *
    * NOTE: this method should move out of here as soon as DCOP is in place.
    */
-  void backgroundChanged();
+  void backgroundChanged(int desk);
 
   /** Session management asks you to save the state of your application.
 	*
@@ -493,6 +495,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.111  1999/10/18 19:25:16  jansen
+// 1. Added KIPC class: "Old style" IPC for KDE applications.
+// 2. Added backgroundChanged() signal to KApplication.
+//
 // Revision 1.110  1999/10/15 15:06:51  pbrown
 // slot for DCOP communication faillures.
 //

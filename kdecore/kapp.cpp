@@ -647,7 +647,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
     if ( cme->message_type == KDEChangeBackground )
       {
-	emit backgroundChanged();
+        int data = cme->data.l[0];
+	emit backgroundChanged(data);
 	return True;
       }
   }
