@@ -32,6 +32,8 @@
 # endif
 #endif
 
+#include <sys/param.h>
+
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
@@ -334,7 +336,7 @@ Completion DateProtoFunc::execute(const List &)
 #ifndef BSD
     result = Number(timezone / 3600);
 #else
-    result = Number(-localtime(0)->tm_gmtoff);
+    result = Number(-localtime(&tv)->tm_gmtoff);
 #endif
     break;
   case SetTime:
