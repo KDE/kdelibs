@@ -1855,7 +1855,7 @@ QListViewItem* KListView::itemAtIndex(int index)
       return 0;
 
    int j(0);
-   for (QListViewItemIterator it=firstChild(); it.current(); it++)
+   for (QListViewItemIterator it=firstChild(); it.current(); ++it)
    {
       if (j==index)
          return it.current();
