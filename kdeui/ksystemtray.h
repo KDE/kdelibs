@@ -85,8 +85,20 @@ public:
      */
     ~KSystemTray();
 
+    /**
+       Access to the context menu. This makes it easy to add new items
+       to it.
+     */
+    KPopupMenu* contextMenu() const;
 
-protected:
+    /**
+       Easy access to the actions in the context menu
+       Currently includes KStdAction::Quit and minimizeRestore
+       @since 3.1
+    */
+    KActionCollection* actionCollection();
+
+   protected:
 
     /**
        Reimplemented to provide the standard show/raise behaviour
@@ -104,11 +116,6 @@ protected:
      */
     void mouseReleaseEvent( QMouseEvent * );
 
-    /**
-       Access to the context menu. This makes it easy to add new items
-       to it.
-     */
-    KPopupMenu* contextMenu() const;
 
 
     /**
@@ -116,14 +123,6 @@ protected:
        context menu becomes visible.
      */
     virtual void contextMenuAboutToShow( KPopupMenu* menu );
-
-
-    /**
-       Easy access to the actions in the context menu
-       Currently includes KStdAction::Quit and minimizeRestore
-       @since 3.1
-    */
-    KActionCollection* actionCollection();
 
     /**
        Reimplemented for internal reasons.
