@@ -31,6 +31,7 @@
 // ### HACK
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_imageimpl.h"
 #include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
 #include <kparts/browserextension.h>
@@ -845,6 +846,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   align		KJS::HTMLElement::ImageAlign		DontDelete
   alt		KJS::HTMLElement::ImageAlt		DontDelete
   border	KJS::HTMLElement::ImageBorder		DontDelete
+  complete	KJS::HTMLElement::ImageComplete		DontDelete|ReadOnly
   height	KJS::HTMLElement::ImageHeight		DontDelete
   hspace	KJS::HTMLElement::ImageHspace		DontDelete
   isMap		KJS::HTMLElement::ImageIsMap		DontDelete
@@ -1588,6 +1590,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
     case ImageBorder:          return Number(image.border());
+    case ImageComplete:        return Boolean(static_cast<DOM::HTMLImageElementImpl*>( image.handle() )->complete());
     case ImageHeight:          return Number(image.height());
     case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
