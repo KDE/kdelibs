@@ -212,8 +212,6 @@ void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
 
-   printf("Swallow window %d\n",w );
-
    XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());   
    QApplication::flushX();
 
