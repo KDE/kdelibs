@@ -341,7 +341,10 @@ KMimeType::Ptr KFileItem::determineMimeType()
 
 bool KFileItem::isMimeTypeKnown() const
 {
-  return d->bMimeTypeKnown;
+  // The mimetype isn't known if determineMimeType was never called (on-demand determination)
+  // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
+  // it always remains "not fully determined"
+  return d->bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
 }
 
 QString KFileItem::mimeComment()
@@ -382,9 +385,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
      _state |= KIcon::HiddenOverlay;
 
   KMimeType::Ptr mime;
-  // Use guessed mimetype if the main one is clueless
-  if ( m_pMimeType->name() == KMimeType::defaultMimeType()
-      && !d->m_guessedMimeType.isEmpty() )
+  // Use guessed mimetype if the main one hasn't been determined for sure
+  if ( !d->bMimeTypeKnown && !d->m_guessedMimeType.isEmpty() )
       mime = KMimeType::mimeType( d->m_guessedMimeType );
   else
       mime = m_pMimeType;
@@ -426,6 +428,15 @@ bool KFileItem::isReadable() const
   return true;
 }
 
+bool KFileItem::isDir() const
+{
+  if ( !d->bMimeTypeKnown && !d->m_guessedMimeType.isEmpty() )
+  {
+    kdDebug() << " KFileItem::isDir can't say -> false " << endl;
+    return false; // can't say for sure, so no
+  }
+  return S_ISDIR(m_fileMode);
+}
 
 bool KFileItem::acceptsDrops()
 {

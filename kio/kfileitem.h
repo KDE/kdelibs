@@ -140,7 +140,7 @@ public:
   /**
    * @returns true if this item represents a directory
    */
-  bool isDir() const { return S_ISDIR(m_fileMode); }
+  bool isDir() const;
 
   /**
    * @returns true if the file can be read - more precisely,
