@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000821-0), libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev | libasound1-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, mesag-dev, libssl095a-dev | libssl09-dev
+Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000821-0), libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev | libasound1-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, mesag-dev, libssl095a-dev
 Section: non-US/main
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -8,7 +8,7 @@ Standards-Version: 3.1.1
 Package: kdelibs3
 Architecture: any
 Section: non-US/main
-Depends: ${shlibs:Depends}, libssl095a | libssl09
+Depends: ${shlibs:Depends}, libssl095a
 Replaces: kdelibs3-cvs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
