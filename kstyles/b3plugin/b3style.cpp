@@ -42,7 +42,7 @@
 #include <kglobalsettings.h>
 
 B3Style::B3Style()
-    :B2Style()
+    :KDEStyle()
 {
 }
 

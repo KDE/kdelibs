@@ -29,7 +29,7 @@
 #ifndef B3STYLE_H
 #define B3STYLE_H
 
-#include <b2style.h>
+#include <kdestyle.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qpalette.h>
@@ -38,7 +38,7 @@
 #include <qscrollbar.h>
 #include <limits.h>
 
-class B3Style : public B2Style
+class B3Style : public KDEStyle
 {
 public:
     B3Style();

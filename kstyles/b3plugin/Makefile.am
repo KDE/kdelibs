@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= $(all_includes) -I$(top_srcdir)/kstyles/b2plugin
+INCLUDES= $(all_includes) 
 
 noinst_HEADERS = b3style.h 
 lib_LTLIBRARIES = b3style.la
