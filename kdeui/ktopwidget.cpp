@@ -554,14 +554,7 @@ void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KMenuBar::Floating:
                 entryList.append("Floating");
-                entry.setNum(kmenubar->x());
-                entryList.append(entry.data());
-                entry.setNum(kmenubar->y());
-                entryList.append(entry.data());
-                entry.setNum(kmenubar->width());
-                entryList.append(entry.data());
-                entry.setNum(kmenubar->height());
-                entryList.append(entry.data());
+                entryList.append(KWM::getProperties(kmenubar->winId()));
                 break;
         }
         config->writeEntry("MenuBar", entryList, ';');
@@ -592,14 +585,7 @@ void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KToolBar::Floating:
                 entryList.append("Floating");
-                entry.setNum(toolbar->x());
-                entryList.append(entry.data());
-                entry.setNum(toolbar->y());
-                entryList.append(entry.data());
-                entry.setNum(toolbar->width());
-                entryList.append(entry.data());
-                entry.setNum(toolbar->height());
-                entryList.append(entry.data());
+                entryList.append(KWM::getProperties(toolbar->winId()));
                 break;
         }
         toolKey.setNum(n);
@@ -618,7 +604,6 @@ void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
 bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
 {
     // All comments by sven
-    int xx, yy, ww, hh;
     
     QString entry;
     QStrList entryList;
@@ -672,14 +657,8 @@ bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
         {
             kmenubar->setMenuBarPos(KMenuBar::Floating);
             entry=entryList.next();
-            xx=entry.toInt();
-            entry=entryList.next();
-            yy=entry.toInt();
-            entry=entryList.next();
-            ww=entry.toInt();
-            entry=entryList.next();
-            hh=entry.toInt();
-            kmenubar->setGeometry (xx, yy, ww, hh);
+            kmenubar->setGeometry(KWM::setProperties(kmenubar->winId(), entry));
+	    kmenubar->show();
         }
         entryList.clear();
 	if (showmenubar) //Matthias
@@ -722,15 +701,9 @@ bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
         {
             toolbar->setBarPos(KToolBar::Floating);
             entry=entryList.next();
-            xx=entry.toInt();
-            entry=entryList.next();
-            yy=entry.toInt();
-            entry=entryList.next();
-            ww=entry.toInt();
-            entry=entryList.next();
-            hh=entry.toInt();
-            toolbar->setGeometry (xx, yy, ww, hh);
+            toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
             toolbar->updateRects(TRUE);
+	    toolbar->show();
         }
 	if (showtoolbar)
 	  toolbar->enable(KToolBar::Show); //Matthias

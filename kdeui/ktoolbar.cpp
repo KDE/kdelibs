@@ -278,6 +278,7 @@ void KToolBar::ContextCallback( int index )
      else{
        setBarPos( Floating );
        move(QCursor::pos());
+       show();
      }
     break;
   }
@@ -1305,7 +1306,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 	parentOffset = pos();
         hide();
         recreate(0, 0,
-                 p, TRUE);
+                 p, FALSE);
 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 	KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
@@ -1403,6 +1404,7 @@ void KToolBar::mouseMoveEvent(QMouseEvent* /* m */){
     
     XUngrabPointer( qt_xdisplay(), CurrentTime );
     setBarPos(Floating);
+    show();
     QApplication::syncX();
     while(XGrabPointer( qt_xdisplay(), winId(), TRUE,
 			ButtonPressMask | ButtonReleaseMask |
