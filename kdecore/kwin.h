@@ -351,7 +351,7 @@ public:
     /**
      * @deprecated Use WindowInfo .
      */
-    struct KDE_DEPRECATED Info
+    struct Info
     {
       /// The window's id.
 	WId win;
