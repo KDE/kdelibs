@@ -2218,7 +2218,7 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
 
 QString KURL::relativePath(const QString &base_dir, const QString &path, bool *isParent)
 {
-   bool parent;
+   bool parent = false;
    QString result = _relativePath(base_dir, path, parent);
    if (parent)
       result.prepend("./");
