@@ -142,36 +142,17 @@ KSSLCertificateCache::~KSSLCertificateCache() {
 
 
 void KSSLCertificateCache::saveToDisk() {
-#ifdef HAVE_SSL
   KSSLCNode *node;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->permanent || node->expires > QDateTime::currentDateTime()) {
       // First convert to a binary format and then write the kconfig entry
-      unsigned int certlen = d->kossl->i2d_X509(node->cert->getCert(), NULL);
-      // These should technically be unsigned char * but it doesn't matter
-      // for our purposes
-      char *cert = new char[certlen];
-      char *p = cert;
-        {
-        QByteArray qba;
- 
-        // FIXME: return code!
-        d->kossl->i2d_X509(node->cert->getCert(), (unsigned char **)&p);
-
-        // encode it into a QString
-        qba.setRawData(cert, certlen);
-        QString certEncoded = KCodecs::base64Encode(qba);
-        qba.resetRawData(cert, certlen);
-
-        // write the (CN, policy, cert) to KSimpleConfig
-        d->cfg->setGroup(node->cert->getSubject());
-        d->cfg->writeEntry("Certificate", certEncoded);
-        d->cfg->writeEntry("Policy", node->policy);
-        d->cfg->writeEntry("Expires", node->expires);
-        d->cfg->writeEntry("Permanent", node->permanent);
-        }
-      delete[] cert;
+      // write the (CN, policy, cert) to KSimpleConfig
+      d->cfg->setGroup(node->cert->getSubject());
+      d->cfg->writeEntry("Certificate", node->cert->toString());
+      d->cfg->writeEntry("Policy", node->policy);
+      d->cfg->writeEntry("Expires", node->expires);
+      d->cfg->writeEntry("Permanent", node->permanent);
     }
   }  
 
@@ -181,7 +162,6 @@ void KSSLCertificateCache::saveToDisk() {
   QString cfgName(KGlobal::dirs()->findResource("config", "ksslpolicies"));
   if (!cfgName.isEmpty())
     ::chmod(QFile::encodeName(cfgName), 0600);
-#endif
 }
 
 
@@ -196,7 +176,6 @@ void KSSLCertificateCache::clearList() {
 
 
 void KSSLCertificateCache::loadDefaultPolicies() {
-#ifdef HAVE_SSL
   QStringList groups = d->cfg->groupList();
 
   for (QStringList::Iterator i = groups.begin();
@@ -212,26 +191,16 @@ void KSSLCertificateCache::loadDefaultPolicies() {
     }
 
     QCString encodedCert = d->cfg->readEntry("Certificate").local8Bit();
-    if (encodedCert.length() == 0) continue;
+    KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
+    if (!newCert) continue;
     KSSLCNode *n = new KSSLCNode;
-    QByteArray qba, qbb = encodedCert.copy();
-    KCodecs::base64Decode(qbb, qba);
-    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
-    X509 *x5c = d->kossl->d2i_X509(NULL, &qbap, qba.size());
-    if (!x5c) {
-      delete n;
-      continue;
-    }
-
-    n->cert = new KSSLCertificate;
-    n->cert->setCert(x5c);
+    n->cert = newCert;
     n->policy = (KSSLCertificateCache::KSSLCertificatePolicy)
                 d->cfg->readNumEntry("Policy");
     n->permanent = d->cfg->readBoolEntry("Permanent");
     n->expires = d->cfg->readDateTimeEntry("Expires");
     d->certList.append(n); 
   }
-#endif
 }
 
 

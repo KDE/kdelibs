@@ -28,6 +28,7 @@
 #include "ksslutils.h"
 
 #include <kstddirs.h>
+#include <kmdcodec.h>
 
 #include <sys/types.h>
 
@@ -48,7 +49,7 @@
 #endif
 
 #include <kopenssl.h>
-
+#include <qcstring.h>
 #include <kdebug.h>
 
 class KSSLCertificatePrivate {
@@ -84,6 +85,26 @@ KSSLCertificate::~KSSLCertificate() {
 #endif
   delete d;
 }
+
+
+KSSLCertificate *KSSLCertificate::fromString(QCString cert) {
+KSSLCertificate *n = NULL;
+#ifdef HAVE_SSL
+    if (cert.length() == 0) return NULL;
+    QByteArray qba, qbb = cert.copy();
+    KCodecs::base64Decode(qbb, qba);
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
+    if (!x5c) {
+       return NULL;
+    }
+ 
+    n = new KSSLCertificate;
+    n->setCert(x5c);
+#endif
+    return n;
+}
+
 
 
 QString KSSLCertificate::getSubject() const {
@@ -374,4 +395,32 @@ KSSLCertificate *KSSLCertificate::replicate() {
   #endif
   return newOne;
 }
+
+
+QString KSSLCertificate::toString() {
+#ifdef HAVE_SSL
+      unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
+      // These should technically be unsigned char * but it doesn't matter
+      // for our purposes
+      QString certEncoded;
+      char *cert = new char[certlen];
+      char *p = cert;
+        {
+        QByteArray qba;
+ 
+        // FIXME: return code!
+        d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
+ 
+        // encode it into a QString
+        qba.setRawData(cert, certlen);
+        certEncoded = KCodecs::base64Encode(qba);
+        qba.resetRawData(cert, certlen);
+      }
+      delete[] cert;
+return certEncoded;
+#endif
+return QString::null;
+}
+
+
 

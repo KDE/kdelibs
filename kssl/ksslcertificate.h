@@ -36,6 +36,7 @@
 //
 
 class QString;
+class QCString;
 class KSSL;
 class KSSLCertificatePrivate;
 
@@ -50,6 +51,7 @@ friend class KSSLPeerInfo;
 
 public:
   ~KSSLCertificate();
+  static KSSLCertificate *fromString(QCString cert);
 
   // We need a static method to generate one of these, given a filename that
   // points to a PEM encoded certificate file.  It will return NULL on failure.
@@ -61,6 +63,7 @@ public:
                         Revoked, Untrusted, SignatureFailed,
                         Rejected };
 
+  QString toString();
   QString getSubject() const;
   QString getIssuer() const;
   QString getNotBefore() const;
