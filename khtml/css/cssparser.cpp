@@ -961,6 +961,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
+	//kdDebug(0) << "line-height: '" << QString(curP, endP-curP) << "'" << endl;
 	parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NUMBER);
 	break;
 
@@ -1324,6 +1325,7 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
 CSSValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
+    endP--;
     while(*endP == ' ' && endP > curP) endP--;
     const QChar *split = endP;
     // splt up number and unit
@@ -1335,12 +1337,12 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     bool isInt = false;
     if(s.find('.') == -1) isInt = true;
-
+ 
     bool ok;
     float value = s.toFloat(&ok);
     if(!ok) return 0;
 
-    if(split >= endP) // no unit
+    if(split > endP) // no unit
     {
 	if(allowedUnits & LENGTH && value == 0)
 	    return new CSSPrimitiveValueImpl(0., CSSPrimitiveValue::CSS_PX);
@@ -1362,6 +1364,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case '%':
 	type = CSSPrimitiveValue::CSS_PERCENTAGE;
 	unit = PERCENT;
+	break;
     case 'e':
 	split++;
 	if(split > endP) break;

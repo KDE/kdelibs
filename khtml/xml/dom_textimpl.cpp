@@ -258,7 +258,6 @@ void TextImpl::applyChanges(bool,bool force)
 	if(m_render) m_render->setStyle(m_style);
     }
     setChanged(false);
-    applyChanges(true, false);
 }
 
 bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,

@@ -397,7 +397,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
     catch(DOMException exception)
     {
 #ifdef PARSER_DEBUG
-	kdDebug( 6035 ) << "\nADDING NODE FAILED!!!!\ncurrent = " << current->nodeName().string() << ", new = " << n->nodeName().string() << "\n" << endl;
+	kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
 #endif
 	// error handling...
 	HTMLElementImpl *e;
@@ -430,6 +430,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		discard_until = ID_STYLE + ID_CLOSE_TAG;
 		throw exception;
 	    }
+	    break;
 	case ID_LI:
 	    e = new HTMLUListElementImpl(document);
             e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);

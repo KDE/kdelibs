@@ -262,7 +262,7 @@ void RenderFlow::layout( bool deep )
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
     //QTime t;
     //t.start();
-    
+
     assert(!isInline());
 
     int oldWidth = m_width;
