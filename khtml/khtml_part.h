@@ -348,7 +348,8 @@ public:
   /**
    * Set the encoding the page uses.
    *
-   * This can be different form the charset.
+   * This can be different from the charset. The widget will try to reload the current page in the new
+   * encoding, if url() is not empty.
    */
   bool setEncoding( const QString &name, bool override = false );
 

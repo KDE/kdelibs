@@ -131,6 +131,7 @@ public:
     m_userHeaders = QString::null;
     m_haveEncoding = false;
     m_activeFrame = 0L;
+    keepCharset = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -159,7 +160,8 @@ public:
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
-
+    bool keepCharset;
+    
   KHTMLSettings *m_settings;
 
   KIO::TransferJob * m_job;
@@ -168,7 +170,7 @@ public:
   bool m_bParsing;
   bool m_bReloading;
     bool m_haveEncoding;
-
+    
   KURL m_workingURL;
   KURL m_baseURL;
   QString m_baseTarget;
@@ -862,9 +864,11 @@ void KHTMLPart::write( const char *str, int len )
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       const QTextCodec *c = d->m_decoder->codec();
-      kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
-      d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
-      kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
+      if( !d->keepCharset ) {
+	  kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+	  d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
+	  kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
+      }
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
   }
@@ -1070,23 +1074,16 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
 }
 
 // ####
-bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
+bool KHTMLPart::setCharset( const QString &name, bool override )
 {
-  // ### hack: FIXME, use QFontDatabase!!!!!
-  KCharsets *c = KGlobal::charsets();
-  if(!c->isAvailable(name))
-  {
-      kdDebug(6005) << "charset not available" << endl;
-    return false;
-  }
-
   QFont f(settings()->stdFontName());
-  c->setQFont(f, name);
+  KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(name) );
 
   QFontInfo fi(f);
   kdDebug(6005) << "setting to charset " << (int)f.charSet() << endl;
 
   d->m_settings->setCharset( f.charSet() );
+  d->keepCharset = override;
   return true;
 }
 
@@ -1097,14 +1094,16 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
     // ### hack!!!!
     if(!d->m_settings->charset() == QFont::Unicode)
-        d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
+        d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(name) );
 
-    // reload document
-    closeURL();
-    KURL url = m_url;
-    m_url = 0;
-    openURL(url);
-
+    if( !m_url.isEmpty() ) {
+	// reload document
+	closeURL();
+	KURL url = m_url;
+	m_url = 0;
+	openURL(url);
+    }
+    
     return true;
 }
 
