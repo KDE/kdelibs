@@ -1,0 +1,5 @@
+- fix .xpm file stuff to be more KDE-conform
+- if QDockWindow becomes more protected and virtual than private, change from base class KDockWidget to QDockWindow
+- add splitter mode for Kate-like MDI appearance
+- add IDEA mode (like in Gideon)
+- fix KDE style guide (allow MDI for project-based apps)

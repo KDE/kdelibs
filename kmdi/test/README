@@ -1,0 +1,16 @@
+This example shows the use of KMdi.
+Either you inherit your views from KMdiChildView or you wrap your common widgets by KMdiChildViews.
+Your main widget must inherit from KMdiMainFrm.
+
+
+
+Call
+  qmake kFourChildren -o Makefile
+  make
+to build the example app.
+Likely you must set the environment variable KDEDIR (to e.g. /opt/kde3).
+
+
+
+Find more details on:
+ http://www.geocities.com/gigafalk/qextmdi.htm
