@@ -38,6 +38,9 @@ public:
 
 	QString text(int);
 
+protected:
+	QLineEdit* lineEdit( int );
+
 private:
 	QPtrList<QLabel>		m_labels;
 	QPtrList<QLineEdit>	m_edits;
