@@ -479,6 +479,7 @@ namespace KIO {
                STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES, STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
+        unsigned long m_fileProcessedSize;
         unsigned long m_percent;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
@@ -531,6 +532,7 @@ namespace KIO {
                STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
+        unsigned long m_fileProcessedSize;
         unsigned long m_percent;
         KURL::List files;
         KURL::List symlinks;

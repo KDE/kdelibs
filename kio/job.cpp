@@ -216,6 +216,7 @@ void SimpleJob::slotProcessedSize( unsigned long size )
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
+    kdDebug(7007) << "SimpleJob::slotProcessedSize - percent =  " << m_percent << endl;
   }
 }
 
@@ -929,7 +930,7 @@ void ListJob::start(Slave *slave)
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo )
   : Job(), m_move(move),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-      m_totalSize(0), m_processedSize(0), m_srcList(src), m_dest(dest),
+      m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_percent(0), m_srcList(src), m_dest(dest),
       m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
   if ( showProgressInfo ) {
@@ -1139,6 +1140,12 @@ void CopyJob::slotResultStating( Job *job )
     else
     {
         kdDebug(7007) << " Source is a file (or a symlink) " << endl;
+
+	kdDebug() << "totalSize: " << m_totalSize << endl;
+	// emit all signals for total numbers
+	emit totalSize( this, m_totalSize );
+	emit totalFiles( this, 1 );
+	emit totalDirs( this, 0 );
 
         // Skip the "listing" stage and go directly copying the file
         state = STATE_COPYING_FILES;
@@ -1479,6 +1486,11 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 void CopyJob::copyNextFile()
 {
     kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
+
+    // clear processed size for last file and add it to overall processed size
+    m_processedSize += m_fileProcessedSize;
+    m_fileProcessedSize = 0;
+
     // Take the first file in the list
     QValueList<CopyInfo>::Iterator it = files.begin();
     bool bCopyFile = false; // get into the loop
@@ -1587,9 +1599,10 @@ void CopyJob::deleteNextDir()
 
 void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
-  kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
-  m_processedSize += data_size;
-  emit processedSize( this, m_processedSize );
+  m_fileProcessedSize = data_size;
+
+  kdDebug(7007) << "CopyJob::slotProcessedSize " << m_processedSize + m_fileProcessedSize << endl;
+  emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
   // calculate percents
   unsigned long ipercent = m_percent;
@@ -1597,10 +1610,11 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   if ( m_totalSize == 0 )
     m_percent = 100;
   else
-    m_percent = (unsigned long)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+    m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
+    kdDebug(7007) << "CopyJob::slotProcessedSize - percent =  " << m_percent << endl;
   }
 }
 
@@ -1636,7 +1650,7 @@ void CopyJob::slotResult( Job *job )
             slotResultStating( job );
             break;
         case STATE_LISTING: // recursive listing finished
-            debug("totalSize: %ld files: %d dirs: %d", m_totalSize, files.count(), dirs.count());
+	    kdDebug() << "totalSize: " << m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?
             if (job->error())
             {
@@ -1704,7 +1718,7 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressIn
 }
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(), m_totalSize(0), m_processedSize(0), m_srcList(src), m_shred(shred)
+    : Job(), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_percent(0), m_srcList(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
@@ -1850,9 +1864,10 @@ void DeleteJob::deleteNextDir()
 
 void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
-  kdDebug(7007) << "DeleteJob::slotProcessedSize " << data_size << endl;
-  m_processedSize += data_size;
-  emit processedSize( this, m_processedSize );
+  m_fileProcessedSize = data_size;
+
+  kdDebug(7007) << "DeleteJob::slotProcessedSize " << m_processedSize + m_fileProcessedSize << endl;
+  emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
   // calculate percents
   unsigned long ipercent = m_percent;
@@ -1860,11 +1875,13 @@ void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   if ( m_totalSize == 0 )
     m_percent = 100;
   else
-    m_percent = (unsigned long)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+    m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
+    kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << m_percent << endl;
   }
+
 }
 
 void DeleteJob::slotResult( Job *job )
