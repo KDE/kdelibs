@@ -45,7 +45,7 @@ namespace khtml
     enum LengthType { Undefined = 0, Variable = 1, Relative, Percent, Fixed, Static };
     struct Length
     {
-        Length() : value(0), type(Undefined)  {}
+        Length() : value(0), type(Variable)  {}
         Length(LengthType t) : value(0), type(t) {}
         Length(int v, LengthType t) : value(v), type(t) {}
         Length(const Length &l) : value(l.value), type(l.type) {}
