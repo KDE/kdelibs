@@ -92,9 +92,12 @@ public:
    * normally. If you do create an application with allowStyles set to false
    * that normally runs in the background but under special circumstances
    * displays widgets call enableStyles() before displaying any widgets.
+   *
+   * @param GUIenabled Set to false to disable all GUI stuff. This implies
+   * no styles either.
    */
   KApplication(int& argc, char** argv,
-              const QCString& rAppName, bool allowStyles=true);
+              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
   /** Destructor */
   virtual ~KApplication();
@@ -363,7 +366,7 @@ private:
   void* styleHandle; // A KDE style dlopen handle, if used
   QWidget *smw;
 
-  void init( );
+  void init( bool GUIenabled );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
 
   virtual void kdisplaySetPalette();
@@ -542,6 +545,15 @@ public:
 #endif
 
 // $Log$
+// Revision 1.127  1999/12/21 17:39:06  faure
+// Here comes the new kDebug. Merged into kdebug.h, but keeping support
+// for kdebug(), for compatibility. Also fixed it to work without a KInstance,
+// just in case.
+// The implementation looks a bit ugly (va_start/va_end for each API call,
+// but I didn't find another way. Nice API but heavy code for it).
+// Removed kdebug-specific event filter from KApplication.
+// kdebugdialog moved to kdebase, as a separate app.
+//
 // Revision 1.126  1999/12/10 16:47:32  waba
 // WABA: Adding KApplication::random() for real random numbers.
 //

@@ -170,15 +170,17 @@ static QString sessionConfigName()
 }
 
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
-                            bool allowStyles) :
-    QApplication( argc, argv ), KInstance(rAppName)
+                            bool allowStyles, bool GUIenabled ) :
+    QApplication( argc, argv, GUIenabled ), KInstance(rAppName)
 {
+    if (!GUIenabled)
+       allowStyles = false;
     useStyles = allowStyles;
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
     pAppData = new KApplicationPrivate;
 
-    init();
+    init(GUIenabled);
     parseCommandLine( argc, argv );
 }
 
@@ -198,51 +200,49 @@ public:
   }
 };
 
-void KApplication::init()
+void KApplication::init(bool GUIenabled)
 {
   QApplication::setDesktopSettingsAware( false );
-  // this is important since we fork() to launch the help (Matthias)
-  fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
-  // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
-  XSetErrorHandler( kde_x_errhandler );
-  XSetIOErrorHandler( kde_xio_errhandler );
 
-  connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
-
-  // CC: install KProcess' signal handler
-  // by creating the KProcController instance (if its not already existing)
-  // This is handled be KProcess (stefh)
-  /*
-  if ( KProcessController::theKProcessController == 0L)
-    KProcessController::theKProcessController = new KProcessController();
-  */
   KApp = this;
 
   styleHandle = 0;
   pKStyle = 0;
+  smw = 0;
 
-  display = desktop()->x11Display();
+  if (GUIenabled)
+  {
+    // this is important since we fork() to launch the help (Matthias)
+    fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
+    // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
+    XSetErrorHandler( kde_x_errhandler );
+    XSetIOErrorHandler( kde_xio_errhandler );
 
-  KDEChangePalette = XInternAtom( display, "KDEChangePalette", false );
-  KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", false );
-  KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", false);
-  KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
+    connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 
-  readSettings(false);
-  kdisplaySetStyleAndFont();
-  kdisplaySetPalette();
+    display = desktop()->x11Display();
+
+    KDEChangePalette = XInternAtom( display, "KDEChangePalette", false );
+    KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", false );
+    KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", false);
+    KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
+
+    readSettings(false);
+    kdisplaySetStyleAndFont();
+    kdisplaySetPalette();
+  }
 
   installTranslator(new KDETranslator(this));
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
                                    + name() + "/");
-
   pSessionConfig = 0L;
   pDCOPClient = 0L; // don't instantiate until asked to do so.
   bSessionManagement = true;
 
   // register a communication window for desktop changes (Matthias)
+  if (GUIenabled)
   {
     Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", false);
     smw = new QWidget(0,0);

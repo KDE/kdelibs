@@ -165,8 +165,9 @@ KUniqueApplication::start(int& argc, char** argv,
 
 KUniqueApplication::KUniqueApplication(int& argc, char** argv,
 				       const QCString& rAppName,
-                                       bool allowStyles)
-  : KApplication(argc, argv, rAppName, allowStyles), DCOPObject(rAppName)
+                                       bool allowStyles,
+                                       bool GUIenabled)
+  : KApplication(argc, argv, rAppName, allowStyles, GUIenabled), DCOPObject(rAppName)
 {
   if (!s_DCOPClient)
   {

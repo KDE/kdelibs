@@ -42,7 +42,9 @@ public:
    * Parameters : See KApplication constructor.
    */
   KUniqueApplication( int& argc, char** argv,
-		      const QCString& rAppName = 0, bool allowStyles=true);
+		      const QCString& rAppName = 0, 
+		      bool allowStyles=true, 
+		      bool GUIenabled=true);
 
   /**
    * Fork and register with dcop.
