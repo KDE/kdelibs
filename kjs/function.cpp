@@ -25,6 +25,9 @@
 #include "internal.h"
 #include "operations.h"
 #include "nodes.h"
+#ifndef NDEBUG
+#include <stdio.h>
+#endif
 
 using namespace KJS;
 
