@@ -1136,9 +1136,14 @@ bool QXEmbed::x11Event( XEvent* e)
                 break;
                 // L2085: The client asks for the focus.
             case XEMBED_REQUEST_FOCUS:
-                QFocusEvent::setReason( QFocusEvent::Mouse );
-                setFocus();
-                QFocusEvent::resetReason();
+                if( ((QPublicWidget*)topLevelWidget())->topData()->embedded ) {
+                    WId window = ((QPublicWidget*)topLevelWidget())->topData()->parentWinId;
+                    sendXEmbedMessage( window, XEMBED_REQUEST_FOCUS );
+                } else {
+                    QFocusEvent::setReason( QFocusEvent::Mouse );
+                    setFocus();
+                    QFocusEvent::resetReason();
+                }
                 break;
             default:
                 break;
