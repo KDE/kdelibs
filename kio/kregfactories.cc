@@ -7,6 +7,8 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 #include <stdlib.h>
 
@@ -211,6 +213,7 @@ KServiceFactory::KServiceFactory()
   QString tmp = kapp->localkdedir();
   tmp += "/share/applnk";
   m_pathList.append( tmp );
+  m_pathList += KGlobal::dirs()->getResourceDirs( "services" );
 }
 
 KServiceFactory::KServiceFactory( const QStringList& _path_list )
