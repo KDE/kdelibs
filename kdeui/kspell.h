@@ -463,6 +463,7 @@ protected slots:
   void ispellExit (KProcess *);
   void emitDeath();
   void ispellErrors (KProcess *, char *, int);
+  void checkNext();
 
 private slots:
   /**

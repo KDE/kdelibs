@@ -52,6 +52,16 @@ enum {
   MISTAKE=  3
 };
 
+enum checkMethod { Method1 = 0, Method2 };
+
+struct BufferedWord
+{
+  checkMethod method;
+  QString word;
+  bool useDialog;
+  bool suggest;
+};
+
 class KSpell::KSpellPrivate
 {
 public:
@@ -61,8 +71,9 @@ public:
   bool m_bNoMisspellingsEncountered;
   SpellerType type;
   KSpell* suggestSpell;
+  bool checking;
+  QValueList<BufferedWord> unchecked;
 };
-
 
 //TODO
 //Parse stderr output
@@ -409,10 +420,21 @@ KSpell::cleanFputs( const QString & s, bool appendCR )
 
 bool KSpell::checkWord( const QString & buffer, bool _usedialog )
 {
+  if (d->checking) { // don't check multiple words simultaneously
+    BufferedWord bufferedWord;
+    bufferedWord.method = Method1;
+    bufferedWord.word = buffer;
+    bufferedWord.useDialog = _usedialog;
+    d->unchecked.append( bufferedWord );
+    return true;
+  }
+  d->checking = true;
   QString qs = buffer.simplifyWhiteSpace();
 
-  if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+  if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
+    QTimer::singleShot( 0, this, SLOT(checkNext()) );
     return false;
+  }
   ///set the dialog signal handler
   dialog3slot = SLOT(checkWord3());
 
@@ -436,10 +458,22 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
 
 bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
 {
+  if (d->checking) { // don't check multiple words simultaneously
+    BufferedWord bufferedWord;
+    bufferedWord.method = Method2;
+    bufferedWord.word = buffer;
+    bufferedWord.useDialog = _usedialog;
+    bufferedWord.suggest = suggest;
+    d->unchecked.append( bufferedWord );
+    return true;
+  }
+  d->checking = true;
   QString qs = buffer.simplifyWhiteSpace();
 
-  if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
+  if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
+    QTimer::singleShot( 0, this, SLOT(checkNext()) );
     return false;
+  }
 
   ///set the dialog signal handler
   if ( !suggest ) {
@@ -470,10 +504,15 @@ void KSpell::checkWord2( KProcIO* )
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
-   the input line." */
+   the input line."
+   <sanders>
+   But there can be multiple lines returned in the case of an error,
+   in this case we should consume all the output given otherwise spell checking
+   can get out of sync.
+   </sanders>
+*/
   QString blank_line;
-  proc->readln( blank_line, true ); // eat the blank line
-
+  while (proc->readln( blank_line, true ) != -1); // eat the blank line
   NOOUTPUT(checkWord2);
 
   bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
@@ -481,6 +520,7 @@ void KSpell::checkWord2( KProcIO* )
   {
     cwword = word;
     dialog( word, sugg, SLOT(checkWord3()) );
+    QTimer::singleShot( 0, this, SLOT(checkNext()) );
     return;
   }
   else if( mistake )
@@ -491,6 +531,21 @@ void KSpell::checkWord2( KProcIO* )
   //emits a "corrected" signal _even_ if no change was made
   //so that the calling program knows when the check is complete
   emit corrected( word, word, 0L );
+  QTimer::singleShot( 0, this, SLOT(checkNext()) );
+}
+
+void KSpell::checkNext()
+{
+// Queue words to prevent kspell from turning into a fork bomb
+  d->checking = false;
+  if (!d->unchecked.empty()) {
+    BufferedWord buf = d->unchecked.front();
+    d->unchecked.pop_front();
+    if (buf.method == Method1)
+      checkWord( buf.word, buf.useDialog );
+    else
+      checkWord( buf.word, buf.useDialog, buf.suggest );
+  }
 }
 
 void KSpell::suggestWord( KProcIO * )
@@ -1092,7 +1147,7 @@ void KSpell::dialog( const QString & word, QStringList & sugg, const char *_slot
   QString tmpBuf = origbuffer;
   kdDebug(750)<<" position = "<<lastpos<<endl;
 
-  // extract a context string, replace all characters which might confuse 
+  // extract a context string, replace all characters which might confuse
   // the RichText display and highlight the possibly wrong word
   QString marker( "_MARKER_" );
   tmpBuf.replace( lastpos, word.length(), marker );
@@ -1336,6 +1391,7 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   d->m_bIgnoreTitleCase =false;
   d->m_bNoMisspellingsEncountered = true;
   d->type = type;
+  d->checking = false;
   autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;

@@ -35,10 +35,11 @@
 
 #include "ksyntaxhighlighter.h"
 
-static int dummy, dummy2, dummy3;
+static int dummy, dummy2, dummy3, dummy4;
 static int *Okay = &dummy;
 static int *NotOkay = &dummy2;
 static int *Ignore = &dummy3;
+static int *Unknown = &dummy4;
 
 class KSyntaxHighlighter::KSyntaxHighlighterPrivate
 {
@@ -196,7 +197,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
 	d->currentPos = 0;
 	d->currentWord = "";
 	for ( int i = 0; i < len; i++ ) {
-	    if ( text[i].isSpace() || text[i] == '-' ) {
+	    if ( !text[i].isLetter() && (!(text[i] == '\'')) ) {
 		if ( ( para != paraNo ) ||
 		    !intraWordEditing() ||
 		    ( i - d->currentWord.length() > (uint)index ) ||
@@ -247,9 +248,10 @@ void KSpellingHighlighter::flushCurrentWord()
 	d->currentWord.truncate( d->currentWord.length() - 1 );
 
     if ( !d->currentWord.isEmpty() ) {
-	if ( isMisspelled( d->currentWord ) )
+	if ( isMisspelled( d->currentWord ) ) {
 	    setFormat( d->currentPos, d->currentWord.length(), d->color );
 //	    setMisspelled( d->currentPos, d->currentWord.length(), true );
+	}
     }
     d->currentWord = "";
 }
@@ -326,6 +328,8 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
     }
     connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
 	     this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
+    connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
+	     this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
     d->rehighlightRequest->start( 0, true );
 }
 
@@ -345,30 +349,25 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
     QDict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
     if ( !dict->isEmpty() && (*dict)[word] == NotOkay ) {
 	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
-	    if ( !d->autoIgnoreDict[word] ) {
+	    if ( !d->autoIgnoreDict[word] )
 		++d->errorCount;
-		if ( d->autoDict[word] != Okay )
-		    ++d->wordCount;
-	    }
 	    d->autoDict.replace( word, NotOkay );
 	}
+
 	return d->active;
     }
     if ( !dict->isEmpty() && (*dict)[word] == Okay ) {
 	if ( d->autoReady && !d->autoDict[word] ) {
 	    d->autoDict.replace( word, Okay );
-	    if ( !d->autoIgnoreDict[word] )
-		++d->wordCount;
 	}
 	return false;
     }
 
-    // there is no 'spelt correctly' signal so default to Okay
-    dict->replace( word, Okay );
-
-    // yes I tried checkWord, the docs lie and it didn't give useful signals :-(
-    if ( d->spell )
-	d->spell->check( word, false );
+    if ((dict->isEmpty() || ((*dict)[word] == 0)) && d->spell ) {
+	++d->wordCount;
+	dict->replace( word, Unknown );
+	d->spell->checkWord( word, false );
+    }
     return false;
 }
 
@@ -397,7 +396,18 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
     emit newSuggestions( originalWord, suggestions, pos );
 
     // this is slow but since kspell is async this will have to do for now
-    d->rehighlightRequest->start( 0, true );
+    d->rehighlightRequest->start( 100, true );
+}
+
+void KDictSpellingHighlighter::slotCorrected(const QString &word,
+					     const QString &,
+					     unsigned int)
+
+{
+    QDict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
+    if ( !dict->isEmpty() && (*dict)[word] == Unknown ) {
+        dict->replace( word, Okay );
+    }
 }
 
 void KDictSpellingHighlighter::dictionaryChanged()
@@ -510,7 +520,7 @@ void KDictSpellingHighlighter::slotAutoDetection()
     bool savedActive = d->active;
 
     if ( d->automatic ) {
-	if ( d->active && ( d->errorCount * 3 >= d->wordCount ))
+	if ( d->active && ( d->errorCount * 3 >= d->wordCount )) // too many errors
 	    d->active = false;
 	else if ( !d->active && ( d->errorCount * 3 < d->wordCount ))
 	    d->active = true;

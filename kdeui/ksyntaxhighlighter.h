@@ -122,7 +122,7 @@ public:
      * Returns the state of spell checking.
      *
      * @return true if spell checking is active
-     * 
+     *
      * @see setActive()
      */
     bool isActive() const;
@@ -144,7 +144,7 @@ public:
      * Returns the state of automatic (de)activation.
      *
      * @return true if automatic (de)activation is enabled
-     * 
+     *
      * @see setAutomatic()
      */
     bool automatic() const;
@@ -160,6 +160,7 @@ protected:
 
 protected slots:
     void slotMisspelling( const QString &originalWord, const QStringList &suggestions, unsigned int pos );
+    void slotCorrected( const QString &originalWord, const QString &, unsigned int );
     void slotRehighlight();
     void slotDictionaryChanged();
     void slotSpellReady( KSpell *spell );
