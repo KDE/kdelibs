@@ -85,6 +85,8 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false), d(0)
 
 KStandardDirs::~KStandardDirs()
 {
+    delete d;
+    d = 0L;
 }
 
 bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPath) const
