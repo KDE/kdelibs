@@ -2,7 +2,9 @@
 Type=jp2
 Header=^\x01\x01\x01\x0C\x6A\x50
 Name=JPEG 2000-Pictures
+Name[da]=JPEG 2000-billeder
 Name[fa]=تصاویر JPEG 2000
+Name[hu]=JPEG 2000 képek
 Name[sv]=Jpeg 2000-bilder
 Read=true
 Write=false
