@@ -1340,7 +1340,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         if (widget) {
           // quit all dialogs of this view
           // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
-          QObjectList *dlgs = widget->topLevelWidget()->queryList("QDialog");
+          QObjectList *dlgs = widget->queryList("QDialog");
           for (QObject *dlg = dlgs->first(); dlg; dlg = dlgs->next())
             static_cast<QDialog*>(dlg)->hide();
           delete dlgs;

@@ -142,6 +142,11 @@ public:
      */
     void layout();
 
+    /**
+     * Close all child dialogs
+     **/
+    void closeChildDialogs();
+
 signals:
     void cleared();
     void zoomView( int );

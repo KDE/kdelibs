@@ -542,6 +542,9 @@ bool KHTMLPart::closeURL()
   // null node activated.
   emit nodeActivated(Node());
 
+  // make sure before clear() runs, we pop out of a dialog's message loop
+  d->m_view->closeChildDialogs();
+
   return true;
 }
 

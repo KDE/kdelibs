@@ -50,6 +50,7 @@
 #include <qtooltip.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qobjectlist.h>
 #include <kapplication.h>
 
 #include <kimageio.h>
@@ -457,6 +458,14 @@ void KHTMLView::layout()
     } else {
         _width = visibleWidth();
     }
+}
+
+void KHTMLView::closeChildDialogs()
+{
+    QObjectList *dlgs = queryList("QDialog");
+    for (QObject *dlg = dlgs->first(); dlg; dlg = dlgs->next())
+        static_cast<QWidget*>(dlg)->close();
+    delete dlgs;
 }
 
 //
