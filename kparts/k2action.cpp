@@ -43,6 +43,10 @@ int K2Action::plug( QWidget *w )
     int id = bar->insertButton( iconSet().pixmap(), 0, SIGNAL( activated() ), this, SLOT( slotActivated() ),
                                 isEnabled(), text() );
 
+    KToolBarButton *but = bar->getButton( id );
+    
+    connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
+
     addContainer( bar, id );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
