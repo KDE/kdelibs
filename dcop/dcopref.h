@@ -469,8 +469,9 @@ public:
      * @since 3.2
      */ 
     template <class T1>
-    DCOPReply callExt( const QCString& fun, const T1& t1,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+    DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
+		    const T1& t1) {
 	QCString args;
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
@@ -521,9 +522,9 @@ public:
      */ 
     template <class T1, class T2>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
-		    const T2& t2,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T2& t2) {
 	QCString args;
 	args.sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
@@ -579,10 +580,10 @@ public:
      */ 
     template <class T1, class T2, class T3>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
-		    const T3& t3,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T3& t3) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -643,11 +644,11 @@ public:
      */ 
     template <class T1,class T2,class T3,class T4>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
-		    const T4& t4,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T4& t4) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -713,12 +714,12 @@ public:
      */ 
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
-		    const T5& t5,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T5& t5 ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -789,13 +790,13 @@ public:
      */ 
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
-		    const T6& t6,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T6& t6) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -870,14 +871,14 @@ public:
      */ 
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6,
-		    const T7& t7,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T7& t7) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -958,6 +959,7 @@ public:
      */ 
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply callExt( const QCString& fun,
+		    EventLoopFlag useEventLoop, int timeout,
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
@@ -965,8 +967,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7,
-		    const T8& t8,
-		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+		    const T8& t8) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
