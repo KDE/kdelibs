@@ -345,7 +345,9 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   topLayout->addWidget(b);
 
   //edit->setText( _value );
-  resize( minimumWidth(), sizeHint().height() );
+  // This is what caused "can't click on items before clicking on Name header".
+  // Probably due to the resizeEvent handler using width().
+  //resize( minimumWidth(), sizeHint().height() );
   edit->setFocus();
 }
 
