@@ -1122,7 +1122,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   QString tot;
   if (neg) tot = '-';
 
-  tot += major + '.' + minor + exponentialPart;
+  tot += major + decimalSymbol() + minor + exponentialPart;
 
   return tot.toDouble(ok);
 }
