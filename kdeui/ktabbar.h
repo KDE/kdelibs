@@ -40,10 +40,10 @@ public:
     void setTabColor( int, const QColor& );
 
     void setTabReorderingEnabled( bool enable );
-    bool isTabReorderingEnabled() const;
+    inline bool isTabReorderingEnabled() const;
 
     void setHoverCloseButton( bool );
-    bool hoverCloseButton() const;
+    inline bool hoverCloseButton() const;
 
 signals:
     void contextMenu( const int, const QPoint & );

@@ -51,7 +51,7 @@ public:
       you from which index to which index a tab has been moved.
     */
     void setTabReorderingEnabled( bool enable );
-    bool isTabReorderingEnabled() const;
+    inline bool isTabReorderingEnabled() const;
 
     /*!
       If \a enable is TRUE, a close button will be shown on mouse hover
@@ -59,7 +59,7 @@ public:
       when pressed.
     */
     void setHoverCloseButton( bool enable );
-    bool hoverCloseButton() const;
+    inline bool hoverCloseButton() const;
 
 public slots:
     /*!
