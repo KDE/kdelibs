@@ -963,6 +963,7 @@ void Cache::init()
 
 void Cache::clear()
 {
+    if ( !cache ) return;
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Cache: CLEAR!" << endl;
     statistics();
