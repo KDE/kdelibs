@@ -36,6 +36,9 @@ struct KEntry
   bool    bDirty;  // must the entry be written back to disk?
   bool    bNLS;    // entry should be written with locale tag
   bool    bGlobal; // entry should be written to the global config file
+
+  struct KEntryPrivate;
+  KEntryPrivate *d;
 };
 
 /**
@@ -50,6 +53,9 @@ struct KEntryKey
       : group(_group), key(_key) {}
   QString group; // the "group" to which this EntryKey belongs
   QString key;   // the _actual_ key of the entry in question
+
+  struct KEntryKeyPrivate;
+  KEntryKeyPrivate *d;
 };
 
 /**
