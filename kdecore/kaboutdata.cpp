@@ -34,7 +34,7 @@ KAboutPerson::name() const
 QString
 KAboutPerson::task() const
 {
-   if (mTask)
+   if (mTask && *mTask)
       return i18n(mTask);
    else
       return QString::null;
@@ -180,7 +180,7 @@ KAboutData::version() const
 QString
 KAboutData::shortDescription() const
 {
-   if (mShortDescription)
+   if (mShortDescription && *mShortDescription)
       return i18n(mShortDescription);
    else
       return QString::null;
@@ -272,7 +272,7 @@ KAboutData::aboutTranslationTeam()
 QString
 KAboutData::otherText() const
 {
-   if (mOtherText)
+   if (mOtherText && *mOtherText)
       return i18n(mOtherText);
    else
       return QString::null;
@@ -289,8 +289,6 @@ KAboutData::license() const
     case License_File:
        f = QFile::decodeName(mLicenseText);
        break;
-    case License_Custom:
-       return( i18n(mLicenseText) );
     case License_GPL_V2:
        l = "GPL v2";
        f = locate("data", "LICENSES/GPL_V2");
@@ -311,6 +309,10 @@ KAboutData::license() const
        l = "QPL v1.0";
        f = locate("data", "LICENSES/QPL_V1.0");
        break;
+    case License_Custom:
+       if (mLicenseText && *mLicenseText)
+          return( i18n(mLicenseText) );
+       // fall through
     default:
        return i18n("No licensing terms for this program have been specified.\n"
                    "Please check the documentation or the source for any\n"
@@ -336,3 +338,11 @@ KAboutData::license() const
   return result;
 }
 
+QString
+KAboutData::copyrightStatement() const
+{
+  if (mCopyrightStatement && *mCopyrightStatement)
+     return i18n(mCopyrightStatement);
+  else
+     return QString::null;
+}

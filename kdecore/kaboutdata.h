@@ -412,8 +412,7 @@ class KAboutData
      * Returns the copyright statement.
      * @return the copyright statement. Can be QString::null if not set.
      */
-    QString copyrightStatement() const { return( i18n(mCopyrightStatement )); }
-
+    QString copyrightStatement() const;
 
   private:
     const char *mAppName;
