@@ -153,18 +153,45 @@ KServiceGroup::entries(bool sort)
 
     if (!sort)
 	return group->m_serviceList;
-
+   
+    
+    // Sort the list alphabetically.
+    // Groups come first, then services.
+    
+    QStringList slist;
+    QStringList glist;
+    for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
+	{
+	    if ((*it)->isType(KST_KServiceGroup))
+		glist.append((*it)->name());
+	    else
+		slist.append((*it)->name());
+	}
+		
+    glist.sort();
+    slist.sort();
+    
+    List lsort;
+    for(QStringList::ConstIterator it = glist.begin(); it != glist.end(); ++it)
+	for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
+	    if((*it) == (*sit)->name())
+		lsort.append(*sit);
+    
+    for(QStringList::ConstIterator it = slist.begin(); it != slist.end(); ++it)
+	for (List::Iterator sit(group->m_serviceList.begin()); sit != group->m_serviceList.end(); ++sit)
+	    if((*it) == (*sit)->name())
+		lsort.append(*sit);
+    
+    // honor the SortOrder Key
+    
     QString rp = relPath();
     if(rp == "/") rp = QString::null;
-    
+
     QStringList order =
 	KDesktopFile(rp + QString::fromUtf8(".directory")).sortOrder();
 
     if (order.isEmpty())
-	{
-	    //kdDebug() << "No SortOrder in " << rp + QString::fromUtf8(".directory") << endl;
-	    return group->m_serviceList;
-	}
+	return lsort;
 
     // Iterate through the sort spec list. If we find an entry that matches one
     // in the original list, take it out of the original list and add it to the
@@ -172,7 +199,7 @@ KServiceGroup::entries(bool sort)
     // to the end of the sorted list.
 
     List sorted;
-    List orig = group->m_serviceList;
+    List orig = lsort;
 
     for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
 	for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
@@ -191,7 +218,7 @@ KServiceGroup::entries(bool sort)
     return sorted;
 }
 
-  KServiceGroup::Ptr
+KServiceGroup::Ptr
 KServiceGroup::root()
 {
    return KServiceGroupFactory::self()->findGroupByDesktopPath("/", true);
