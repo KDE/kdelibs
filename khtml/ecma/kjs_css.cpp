@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -81,11 +82,11 @@ bool DOMCSSStyleDeclaration::hasProperty(const UString &p,
       p == "length" ||
       p == "item")
       return true;
-  
+
   DOM::DOMString cssprop = jsNameToProp(p);
   if (DOM::getPropertyID(cssprop.string().ascii(), cssprop.length()))
       return true;
-  
+
   return (recursive && HostImp::hasProperty(p, true));
 }
 
@@ -132,6 +133,9 @@ void DOMCSSStyleDeclaration::tryPut(const UString &p, const KJSO& v)
   else {
     QString prop = jsNameToProp(p);
     QString propvalue = v.toString().value().qstring();
+
+    if(prop.left(4) == "css-")
+      prop = prop.mid(4);
 
     if(prop.left(6) == "pixel-")
     {
