@@ -207,6 +207,29 @@ Your .mcoprc file should have this entry for GlobalComm:
    there you'll see what hostname and port aRts. For instance tcp:orion:1698
    would mean that any client trying to use artsd network transparent should
    know how to reach "orion".
+<table width="100%"><tr bgcolor="#fafacb"><h2>other issues</h2></tr></table>
+<p>
+<b>I can't use artsbuilder, it crashes on executing something?</b>
+<p>
+   The most likely cause is that you are using structures or modules which
+   you shouldn't use with the KDE2.x version. Currently, unfortunately the
+   documentation which is on the web refers to aRts-0.3.4.1, and like this
+   is quite somewhat outdated.
+<p>
+   The most often reported crash is:
+<pre>
+&gt; doing "execute structure" in artsbuilder results in the following:
+&gt;
+&gt; [artsd] Synth_PLAY: audio subsystem is already used
+</pre>
+<p>
+   You should use a Synth_AMAN_PLAY instead of a Synth_PLAY module here, and
+   the problem will go away - see also: artsbuilder help file (hit F1 in
+   artsbuilder).
+<p>
+   More recent artsbuilder versions (KDE2.1 beta 1 and higher) come with a
+   set of examples, which you can use.
+<p>
 <hr>
 <table width=100%>
 <tr><td><a href=index.html>Back to the index</a>
