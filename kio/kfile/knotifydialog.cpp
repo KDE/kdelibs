@@ -380,7 +380,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // other settings
-    m_messageBox->setChecked(event.presentation & KNotifyClient::Messagebox);
+    m_messageBox->setChecked(event.presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup));
     m_passivePopup->setChecked(event.presentation & KNotifyClient::PassivePopup);
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
 
@@ -399,7 +399,7 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
         item->setPixmap( COL_SOUND, SmallIcon("sound") );
     if ( event.presentation & KNotifyClient::Logfile )
         item->setPixmap( COL_LOGFILE, SmallIcon("log") );
-    if ( event.presentation & KNotifyClient::Messagebox )
+    if ( event.presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup) )
         item->setPixmap( COL_MESSAGE, SmallIcon("info") );
     if ( event.presentation & KNotifyClient::Stderr )
         item->setPixmap( COL_STDERR, SmallIcon("terminal") );
@@ -437,7 +437,7 @@ void KNotifyWidget::addToView( const EventList& events )
             item->setPixmap( COL_SOUND, psound );
         if ( event->presentation & KNotifyClient::Logfile )
             item->setPixmap( COL_LOGFILE, plogfile );
-        if ( event->presentation & KNotifyClient::Messagebox )
+        if ( event->presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup) )
             item->setPixmap( COL_MESSAGE, pmessage );
         if ( event->presentation & KNotifyClient::Stderr )
             item->setPixmap( COL_STDERR, pstderr );
