@@ -30,23 +30,50 @@
 
 namespace DOM {
 
-/*
-
-// Introduced in DOM Level 2: - user inherit
-class EventListener {
-public:
-    EventListener();
-    virtual ~EventListener();
-    virtual void handleEvent(const Event &evt);
-};
-
-*/
-
 class EventImpl : public DomShared
 {
 public:
+    enum EventId {
+	UNKNOWN_EVENT,
+	// UI events
+        DOMFOCUSIN_EVENT,
+        DOMFOCUSOUT_EVENT,
+        DOMACTIVATE_EVENT,
+        // Mouse events
+        CLICK_EVENT,
+        MOUSEDOWN_EVENT,
+        MOUSEUP_EVENT,
+        MOUSEOVER_EVENT,
+        MOUSEMOVE_EVENT,
+        MOUSEOUT_EVENT,
+        // Mutation events
+        DOMSUBTREEMODIFIED_EVENT,
+        DOMNODEINSERTED_EVENT,
+        DOMNODEREMOVED_EVENT,
+        DOMNODEREMOVEDFROMDOCUMENT_EVENT,
+        DOMNODEINSERTEDINTODOCUMENT_EVENT,
+        DOMATTRMODIFIED_EVENT,
+        DOMCHARACTERDATAMODIFIED_EVENT,
+	// HTML events
+	LOAD_EVENT,
+	UNLOAD_EVENT,
+	ABORT_EVENT,
+	ERROR_EVENT,
+	SELECT_EVENT,
+	CHANGE_EVENT,
+	SUBMIT_EVENT,
+	RESET_EVENT,
+	FOCUS_EVENT,
+	BLUR_EVENT,
+	RESIZE_EVENT,
+	SCROLL_EVENT
+    };
+
     EventImpl();
+    EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg);
     virtual ~EventImpl();
+
+    EventId id() { return m_id; }
 
     DOMString type() const;
     NodeImpl *target() const;
@@ -64,10 +91,20 @@ public:
     virtual bool isMutationEvent() { return false; }
     virtual DOMString eventModuleName() { return ""; }
 
+    virtual bool propagationStopped() { return m_propagationStopped; }
+    virtual bool defaultPrevented() { return m_defaultPrevented; }
+
+    static EventId typeToId(DOMString type);
+    static DOMString idToType(EventId id);
+
 protected:
     DOMStringImpl *m_type;
     bool m_canBubble;
     bool m_cancelable;
+
+    bool m_propagationStopped;
+    bool m_defaultPrevented;
+    EventId m_id;
 };
 
 
@@ -76,6 +113,11 @@ class UIEventImpl : public EventImpl
 {
 public:
     UIEventImpl();
+    UIEventImpl(EventId _id,
+		bool canBubbleArg,
+		bool cancelableArg,
+		AbstractViewImpl *viewArg,
+		long detailArg);
     virtual ~UIEventImpl();
     AbstractViewImpl *view() const;
     long detail() const;
@@ -99,6 +141,21 @@ protected:
 class MouseEventImpl : public UIEventImpl {
 public:
     MouseEventImpl();
+    MouseEventImpl(EventId _id,
+		   bool canBubbleArg,
+		   bool cancelableArg,
+		   AbstractViewImpl *viewArg,
+		   long detailArg,
+		   long screenXArg,
+		   long screenYArg,
+		   long clientXArg,
+		   long clientYArg,
+		   bool ctrlKeyArg,
+		   bool altKeyArg,
+		   bool shiftKeyArg,
+		   bool metaKeyArg,
+		   unsigned short buttonArg,
+		   NodeImpl *relatedTargetArg);
     virtual ~MouseEventImpl();
     long screenX() const;
     long screenY() const;
@@ -145,6 +202,14 @@ protected:
 class MutationEventImpl : public EventImpl {
 public:
     MutationEventImpl();
+    MutationEventImpl(EventId _id,
+		      bool canBubbleArg,
+		      bool cancelableArg,
+		      const Node &relatedNodeArg,
+		      const DOMString &prevValueArg,
+		      const DOMString &newValueArg,
+		      const DOMString &attrNameArg,
+		      unsigned short attrChangeArg);
     ~MutationEventImpl();
 
     Node relatedNode() const;
@@ -173,11 +238,11 @@ protected:
 
 class RegisteredEventListener {
 public:
-    RegisteredEventListener(DOMString _type, EventListener *_listener, bool _useCapture);
+    RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture);
 
     bool operator==(const RegisteredEventListener &other);
 
-    DOMString type;
+    EventImpl::EventId id;
     EventListener *listener;
     bool useCapture;
 };

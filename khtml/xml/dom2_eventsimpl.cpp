@@ -35,6 +35,24 @@ EventImpl::EventImpl()
     m_type = 0;
     m_canBubble = false;
     m_cancelable = false;
+
+    m_propagationStopped = false;
+    m_defaultPrevented = false;
+    m_id = UNKNOWN_EVENT;
+}
+
+EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
+{
+    DOMString t = EventImpl::idToType(_id);
+    m_type = t.implementation();
+    if (m_type)
+	m_type->ref();
+    m_canBubble = canBubbleArg;
+    m_cancelable = cancelableArg;
+
+    m_propagationStopped = false;
+    m_defaultPrevented = false;
+    m_id = _id;
 }
 
 EventImpl::~EventImpl()
@@ -84,12 +102,12 @@ DOMTimeStamp EventImpl::timeStamp()
 
 void EventImpl::stopPropagation()
 {
-    // ###
+    m_propagationStopped = true;
 }
 
 void EventImpl::preventDefault()
 {
-    // ###
+    m_defaultPrevented = true;
 }
 
 void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg)
@@ -102,12 +120,147 @@ void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool
     m_cancelable = cancelableArg;
 }
 
+EventImpl::EventId EventImpl::typeToId(DOMString type)
+{
+    if (type == "DOMFocusIn")
+	return DOMFOCUSIN_EVENT;
+    else if (type == "DOMFocusOut")
+	return DOMFOCUSOUT_EVENT;
+    else if (type == "DOMActivate")
+	return DOMACTIVATE_EVENT;
+    else if (type == "click")
+	return CLICK_EVENT;
+    else if (type == "mousedown")
+	return MOUSEDOWN_EVENT;
+    else if (type == "mouseup")
+	return MOUSEUP_EVENT;
+    else if (type == "mouseover")
+	return MOUSEOVER_EVENT;
+    else if (type == "mousemove")
+	return MOUSEMOVE_EVENT;
+    else if (type == "mouseout")
+	return MOUSEOUT_EVENT;
+    else if (type == "DOMSubtreeModified")
+	return DOMSUBTREEMODIFIED_EVENT;
+    else if (type == "DOMNodeInserted")
+	return DOMNODEINSERTED_EVENT;
+    else if (type == "DOMNodeRemoved")
+	return DOMNODEREMOVED_EVENT;
+    else if (type == "DOMNodeRemovedFromDocument")
+	return DOMNODEREMOVEDFROMDOCUMENT_EVENT;
+    else if (type == "DOMNodeInsertedIntoDocument")
+	return DOMNODEINSERTEDINTODOCUMENT_EVENT;
+    else if (type == "DOMAttrModified")
+	return DOMATTRMODIFIED_EVENT;
+    else if (type == "DOMCharacterDataModified")
+	return DOMCHARACTERDATAMODIFIED_EVENT;
+    else if (type == "load")
+	return LOAD_EVENT;
+    else if (type == "unload")
+	return UNLOAD_EVENT;
+    else if (type == "abort")
+	return ABORT_EVENT;
+    else if (type == "error")
+	return ERROR_EVENT;
+    else if (type == "select")
+	return SELECT_EVENT;
+    else if (type == "change")
+	return CHANGE_EVENT;
+    else if (type == "submit")
+	return SUBMIT_EVENT;
+    else if (type == "reset")
+	return RESET_EVENT;
+    else if (type == "focus")
+	return FOCUS_EVENT;
+    else if (type == "blur")
+	return BLUR_EVENT;
+    else if (type == "resize")
+	return RESIZE_EVENT;
+    else if (type == "scroll")
+	return SCROLL_EVENT;
+    return UNKNOWN_EVENT;
+}
+
+DOMString EventImpl::idToType(EventImpl::EventId id)
+{
+    switch (id) {
+	case DOMFOCUSIN_EVENT:
+	    return "DOMFocusIn";
+	case DOMFOCUSOUT_EVENT:
+	    return "DOMFocusOut";
+	case DOMACTIVATE_EVENT:
+	    return "DOMActivate";
+	case CLICK_EVENT:
+	    return "click";
+	case MOUSEDOWN_EVENT:
+	    return "mousedown";
+	case MOUSEUP_EVENT:
+	    return "mouseup";
+	case MOUSEOVER_EVENT:
+	    return "mouseover";
+	case MOUSEMOVE_EVENT:
+	    return "mousemove";
+	case MOUSEOUT_EVENT:
+	    return "mouseout";
+	case DOMSUBTREEMODIFIED_EVENT:
+	    return "DOMSubtreeModified";
+	case DOMNODEINSERTED_EVENT:
+	    return "DOMNodeInserted";
+	case DOMNODEREMOVED_EVENT:
+	    return "DOMNodeRemoved";
+	case DOMNODEREMOVEDFROMDOCUMENT_EVENT:
+	    return "DOMNodeRemovedFromDocument";
+	case DOMNODEINSERTEDINTODOCUMENT_EVENT:
+	    return "DOMNodeInsertedIntoDocument";
+	case DOMATTRMODIFIED_EVENT:
+	    return "DOMAttrModified";
+	case DOMCHARACTERDATAMODIFIED_EVENT:
+	    return "DOMCharacterDataModified";
+	case LOAD_EVENT:
+	    return "load";
+	case UNLOAD_EVENT:
+	    return "unload";
+	case ABORT_EVENT:
+	    return "abort";
+	case ERROR_EVENT:
+	    return "error";
+	case SELECT_EVENT:
+	    return "select";
+	case CHANGE_EVENT:
+	    return "change";
+	case SUBMIT_EVENT:
+	    return "submit";
+	case RESET_EVENT:
+	    return "reset";
+	case FOCUS_EVENT:
+	    return "focus";
+	case BLUR_EVENT:
+	    return "blur";
+	case RESIZE_EVENT:
+	    return "resize";
+	case SCROLL_EVENT:
+	    return "scroll";
+	default:
+	    return 0;
+	    break;
+    }
+}
+
+
 // -----------------------------------------------------------------------------
 
 UIEventImpl::UIEventImpl()
 {
     m_view = 0;
     m_detail = 0;
+}
+
+UIEventImpl::UIEventImpl(EventId _id, bool canBubbleArg, bool cancelableArg,
+		AbstractViewImpl *viewArg, long detailArg)
+		: EventImpl(_id,canBubbleArg,cancelableArg)
+{
+    m_view = viewArg;
+    m_detail = detailArg;
 }
 
 UIEventImpl::~UIEventImpl()
@@ -154,6 +307,37 @@ MouseEventImpl::MouseEventImpl()
     m_metaKey = false;
     m_button = 0;
     m_relatedTarget = 0;
+}
+
+MouseEventImpl::MouseEventImpl(EventId _id,
+		   bool canBubbleArg,
+		   bool cancelableArg,
+		   AbstractViewImpl *viewArg,
+		   long detailArg,
+		   long screenXArg,
+		   long screenYArg,
+		   long clientXArg,
+		   long clientYArg,
+		   bool ctrlKeyArg,
+		   bool altKeyArg,
+		   bool shiftKeyArg,
+		   bool metaKeyArg,
+		   unsigned short buttonArg,
+		   NodeImpl *relatedTargetArg)
+		   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
+{
+    m_screenX = screenXArg;
+    m_screenY = screenYArg;
+    m_clientX = clientXArg;
+    m_clientY = clientYArg;
+    m_ctrlKey = ctrlKeyArg;
+    m_altKey = altKeyArg;
+    m_shiftKey = shiftKeyArg;
+    m_metaKey = metaKeyArg;
+    m_button = buttonArg;
+    m_relatedTarget = relatedTargetArg;
+    if (m_relatedTarget)
+	m_relatedTarget->ref();
 }
 
 MouseEventImpl::~MouseEventImpl()
@@ -255,6 +439,31 @@ MutationEventImpl::MutationEventImpl()
     m_attrChange = 0;
 }
 
+MutationEventImpl::MutationEventImpl(EventId _id,
+		      bool canBubbleArg,
+		      bool cancelableArg,
+		      const Node &relatedNodeArg,
+		      const DOMString &prevValueArg,
+		      const DOMString &newValueArg,
+		      const DOMString &attrNameArg,
+		      unsigned short attrChangeArg)
+		      : EventImpl(_id,canBubbleArg,cancelableArg)
+{
+    m_relatedNode = relatedNodeArg.handle();
+    if (m_relatedNode)
+	m_relatedNode->ref();
+    m_prevValue = prevValueArg.implementation();
+    if (m_prevValue)
+	m_prevValue->ref();
+    m_newValue = newValueArg.implementation();
+    if (m_newValue)
+	m_newValue->ref();
+    m_attrName = attrNameArg.implementation();
+    if (m_newValue)
+	m_newValue->ref();
+    m_attrChange = attrChangeArg;
+}
+
 MutationEventImpl::~MutationEventImpl()
 {
     if (m_relatedNode)
@@ -320,16 +529,16 @@ void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
 
 // -----------------------------------------------------------------------------
 
-RegisteredEventListener::RegisteredEventListener(DOMString _type, EventListener *_listener, bool _useCapture)
+RegisteredEventListener::RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
 {
-    type = _type;
+    id = _id;
     listener = _listener;
     useCapture = _useCapture;
 }
 
 bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 {
-    return (type == other.type &&
+    return (id == other.id &&
 	    listener == other.listener &&
 	    useCapture == other.useCapture);
 }

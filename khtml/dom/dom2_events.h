@@ -108,6 +108,7 @@ protected:
  */
 class Event {
     friend class Document;
+    friend class NodeImpl;
 public:
     Event();
     Event(const Event &other);

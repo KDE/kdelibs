@@ -27,6 +27,7 @@
 #include "dom_string.h"
 #include "dom_nodeimpl.h"
 #include "dom_elementimpl.h"
+#include "dom2_events.h"
 #include <qstring.h>
 #include <qrect.h>
 using namespace DOM;
@@ -422,7 +423,7 @@ bool Node::dispatchEvent(const Event &evt)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    bool r = impl->dispatchEvent(evt,exceptioncode);
+    bool r = impl->dispatchEvent(evt.handle(),exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;

@@ -341,32 +341,28 @@ unsigned long NodeImpl::index() const
     return 0;
 }
 
-void NodeImpl::addEventListener(const DOMString &type,
-				  EventListener *listener,
-				  const bool useCapture,
-				  int &exceptioncode)
+void NodeImpl::addEventListener(int id, EventListener *listener,
+				const bool useCapture, int &exceptioncode)
 {
-    RegisteredEventListener *rl = new RegisteredEventListener(type,listener,useCapture);
+    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
 	m_regdListeners = new QList<RegisteredEventListener>;
     }
 
     // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
-    removeEventListener(type,listener,useCapture,exceptioncode);
+    removeEventListener(id,listener,useCapture,exceptioncode);
 
     m_regdListeners->append(rl);
     listener->ref();
 }
 
-void NodeImpl::removeEventListener(const DOMString &type,
-			     EventListener *listener,
-			     bool useCapture,
-			     int &/*exceptioncode*/)
+void NodeImpl::removeEventListener(int id, EventListener *listener,
+				   bool useCapture, int &/*exceptioncode*/)
 {
     if (!m_regdListeners) // nothing to remove
 	return;
 
-    RegisteredEventListener rl(type,listener,useCapture);
+    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
@@ -380,7 +376,19 @@ void NodeImpl::removeEventListener(const DOMString &type,
     return;
 }
 
-bool NodeImpl::dispatchEvent(const Event &evt,
+void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
+				  const bool useCapture, int &exceptioncode)
+{
+    addEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+}
+
+void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
+				     bool useCapture,int &exceptioncode)
+{
+    removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+}
+
+bool NodeImpl::dispatchEvent(EventImpl *evt,
 			     int &/*exceptioncode*/)
 {
     if (!m_regdListeners)
@@ -389,7 +397,7 @@ bool NodeImpl::dispatchEvent(const Event &evt,
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
     for (; it.current() && !found; ++it)
-	if (it.current()->type == evt.type())
+	if (it.current()->id == evt->id())
 	    it.current()->listener->handleEvent(evt);
 
     return false; // ### return whether or not preventDefault was called

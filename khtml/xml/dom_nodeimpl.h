@@ -51,6 +51,7 @@ class NamedNodeMapImpl;
 class DocumentImpl;
 class CSSStyleDeclarationImpl;
 class RegisteredEventListener;
+class EventImpl;
 
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementation, and derive all other
@@ -241,15 +242,16 @@ public:
     virtual DocumentImpl *getDocument()
 	{ return document; } // different from ownerDocument() in that it is never null
 
-    virtual void addEventListener(const DOMString &type,
-				  EventListener *listener,
-				  const bool useCapture,
-				  int &exceptioncode);
-    virtual void removeEventListener(const DOMString &type,
-			     EventListener *listener,
-			     bool useCapture,
-			     int &exceptioncode);
-    virtual bool dispatchEvent(const Event &evt,
+    virtual void addEventListener(int id, EventListener *listener,
+				  const bool useCapture, int &exceptioncode);
+    virtual void removeEventListener(int id, EventListener *listener,
+				     bool useCapture, int &exceptioncode);
+    virtual void addEventListener(const DOMString &type, EventListener *listener,
+				  const bool useCapture, int &exceptioncode);
+    virtual void removeEventListener(const DOMString &type, EventListener *listener,
+				     bool useCapture,int &exceptioncode);
+
+    virtual bool dispatchEvent(EventImpl *evt,
 			       int &exceptioncode);
 	
 protected:
