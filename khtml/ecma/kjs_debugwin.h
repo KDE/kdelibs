@@ -23,7 +23,7 @@
 
 #include <qglobal.h>
 
-#define KJS_DEBUGGER
+//#define KJS_DEBUGGER
 
 #ifdef KJS_DEBUGGER
 
@@ -31,7 +31,7 @@
 #include <qpixmap.h>
 #include <qptrlist.h>
 
-//#include <kjs/debugger.h>
+#include <kjs/debugger.h>
 
 #include "dom/dom_misc.h"
 
