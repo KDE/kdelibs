@@ -22,7 +22,23 @@
 #include <qpainter.h>
 #include <kstandarddirs.h>
 
-void draw3DPage(QPainter *p, QRect r);
+static void draw3DPage(QPainter *p, QRect r)
+{
+	// draw white page
+	p->fillRect(r,Qt::white);
+	// draw 3D border
+	p->setPen(Qt::black);
+	p->moveTo(r.left(),r.bottom());
+	p->lineTo(r.right(),r.bottom());
+	p->lineTo(r.right(),r.top());
+	p->setPen(Qt::darkGray);
+	p->lineTo(r.left(),r.top());
+	p->lineTo(r.left(),r.bottom());
+	p->setPen(Qt::gray);
+	p->moveTo(r.left()+1,r.bottom()-1);
+	p->lineTo(r.right()-1,r.bottom()-1);
+	p->lineTo(r.right()-1,r.top()+1);
+}
 
 ImagePosition::ImagePosition(QWidget *parent, const char *name)
 	: QWidget(parent,name)
