@@ -356,7 +356,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	    fill = &cg.brush(QColorGroup::Base);
 	drawLightBevel( p, r, cg, flags | Style_Sunken, 2, true, true, fill );
 
-	p->setPen(cg.foreground());
+	p->setPen(cg.text());
 	if (flags & Style_NoChange) {
 	    p->drawLine(r.x() + 3, r.y() + r.height() / 2,
 			r.x() + r.width() - 4, r.y() + r.height() / 2);
@@ -404,7 +404,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	    p->setPen( cg.background().light( 115 ) );
 	    p->drawArc( br, 235*16, 180*16 );
 
-	    p->setPen( cg.dark() );
+	    p->setPen( cg.text() );
 	    p->drawArc( lr, 0, 16*360 );
 
 	    if ( flags & Style_On ) {

@@ -224,7 +224,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	    fill = &cg.brush(QColorGroup::Base);
 	drawLightBevel(p, r, cg, flags | Style_Sunken, fill);
 
-	p->setPen(cg.foreground());
+	p->setPen(cg.text());
 	if (flags & Style_NoChange) {
 	    p->drawLine(r.x() + 3, r.y() + r.height() / 2,
 			r.x() + r.width() - 4, r.y() + r.height() / 2);
@@ -274,7 +274,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	    p->drawEllipse(cr);
 
 	    if (flags & Style_On) {
-		p->setBrush(cg.foreground());
+		p->setBrush(cg.text());
 		p->drawEllipse(ir);
 	    }
 
