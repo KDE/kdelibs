@@ -49,7 +49,6 @@
 
 #ifdef DO_SSL
 #include <kssl.h>
-#include <ksslinfodlg.h>
 #endif
 
 #ifdef DO_MD5
