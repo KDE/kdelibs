@@ -24,12 +24,14 @@ public:
     struct Bar {
       int i;
     };
+    class SomeForwardFooPrivate;
     Test();
     ~Test();
     int getPageOfObj( int obj );
     void setCell( KSpreadTable *table,
 		  const QPoint& point );
 
+    SomeForwardFooPrivate *d;
 k_dcop:
     virtual QString url();
     virtual DCOPRef firstView();

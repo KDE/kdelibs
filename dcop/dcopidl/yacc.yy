@@ -319,6 +319,10 @@ body
 	  {
 		$$ = $4;
 	  }
+	| T_CLASS Identifier T_SEMICOLON body
+	  {
+		$$ = $4;
+	  }
 
 enum
 	: T_ENUM T_IDENTIFIER T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_IDENTIFIER T_SEMICOLON
