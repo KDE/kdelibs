@@ -252,10 +252,14 @@ public:
     KToolBar *toolBar( const QString& name );
 
     /**
+     * @return An iterator over the list of all toolbars for this window.
+     */
+    QListIterator<KToolBar> toolBarIterator() const;
+
+    /**
      * Retrieve a pointer to the menu bar.
      *
-     * If there is no
-     * menu bar yet on will be created.
+     * If there is no menu bar yet on will be created.
      **/
     KMenuBar *menuBar();
 

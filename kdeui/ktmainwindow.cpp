@@ -748,6 +748,11 @@ KToolBar *KTMainWindow::toolBar( const QString& name )
     return result;
 }
 
+QListIterator<KToolBar> KTMainWindow::toolBarIterator() const
+{
+  return QListIterator<KToolBar>( toolbars );
+}
+
 void KTMainWindow::setEnableToolBar( KToolBar::BarStatus stat, const QString& name)
 {
     KToolBar *t = toolBar( name );
