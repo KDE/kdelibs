@@ -653,7 +653,7 @@ bool KDirLister::setURL( const KURL& url )
     if ( !validURL( url ) )
         return false;
 
-    d->urlChanged = !(url == m_url && m_bComplete);
+    d->urlChanged |= !(url == m_url && m_bComplete);
     stop();
     forgetDirs();
     m_url = url;
