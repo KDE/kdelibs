@@ -1674,6 +1674,7 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
+  d->m_referrer = QString::null;
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
