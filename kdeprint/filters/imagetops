@@ -5,9 +5,14 @@
 # is assumed to be another argument.
 FILE=
 ARGS=
+GRAYSCALE=
 for arg in "$@"; do
-	ARGS="$ARGS $FILE"
-	FILE=$arg;
+	if [ "$arg" = "-gray" ]; then
+		GRAYSCALE=1
+	else
+		ARGS="$ARGS $FILE"
+		FILE=$arg;
+	fi
 done
 
 # we're reading from STDIN, store it into a temporary file
@@ -50,4 +55,8 @@ case ${magic/image\//} in
 esac
 
 # executing command
-exec $cmd $FILE | pnmtops $ARGS
+if [ "$GRAYSCALE" = "1" ]; then
+	exec $cmd $FILE | ppmtopgm | pnmtops $ARGS
+else
+	exec $cmd $FILE | pnmtops $ARGS
+fi
