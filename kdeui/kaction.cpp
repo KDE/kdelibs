@@ -421,7 +421,11 @@ int KAction::plug( QWidget *w, int index )
                                d->m_accel, -1, index );
     }
 
-    menu->setItemEnabled( id, d->m_enabled );
+    // call setItemEnabled only if the item really should be disabled,
+    // because that method is slow and the item is per default enabled
+    if ( !d->m_enabled )
+        menu->setItemEnabled( id, false );
+
     if ( !d->m_whatsThis.isEmpty() )
         menu->setWhatsThis( id, d->m_whatsThis );
 
@@ -1343,7 +1347,8 @@ int KSelectAction::plug( QWidget *widget, int index )
         id = menu->insertItem( text(), d->m_menu, -1, index );
     }
 
-    menu->setItemEnabled( id, isEnabled() );
+    if ( !isEnabled() )
+        menu->setItemEnabled( id, false );
 
     QString wth = whatsThis();
     if ( !wth.isEmpty() )
@@ -2155,7 +2160,8 @@ int KActionMenu::plug( QWidget* widget, int index )
         id = menu->insertItem( text(), d->m_popup, -1, index );
     }
 
-    menu->setItemEnabled( id, isEnabled() );
+    if ( !isEnabled() )
+        menu->setItemEnabled( id, false );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -2204,7 +2210,9 @@ int KActionMenu::plug( QWidget* widget, int index )
     int id;
 
     id = bar->insertItem( text(), popupMenu(), -1, index );
-    bar->setItemEnabled( id, isEnabled() );
+
+    if ( !isEnabled() )
+        bar->setItemEnabled( id, false );
 
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
