@@ -296,8 +296,8 @@ void KURLBar::setListBox( KURLBarListBox *view )
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
 
-    connect( m_listBox, SIGNAL( clicked( QListBoxItem * ) ),
-             SLOT( slotSelected( QListBoxItem * )));
+    connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
+             SLOT( slotSelected( int, QListBoxItem * )));
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
     connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *,
@@ -374,6 +374,13 @@ QSize KURLBar::minimumSizeHint() const
     int w = s.width()  + m_listBox->verticalScrollBar()->width();
     int h = s.height() + m_listBox->horizontalScrollBar()->height();
     return QSize( w, h );
+}
+
+void KURLBar::slotSelected( int button, QListBoxItem *item )
+{
+    if (button != Qt::LeftButton) return;
+
+    slotSelected(item);
 }
 
 void KURLBar::slotSelected( QListBoxItem *item )
@@ -552,10 +559,6 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     static const int AddItem    = 20;
     static const int EditItem   = 30;
     static const int RemoveItem = 40;
-
-    // also emit activated(), as the item will be painted as "current" anyway
-    if ( item )
-        slotSelected( item );
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
