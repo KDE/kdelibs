@@ -400,6 +400,63 @@ public:
 	  @param pGroup the group to provide an iterator for
 	  @return The iterator for the group or 0, if the group does not
 	  exist. The caller is responsible for deleting the iterator after
+	  using it. 
+	  */  
+  KEntryIterator* entryIterator( const char* pGroup );
+
+  /** Reparses all configuration files. This is useful for programms
+	  which use standalone graphical configuration tools.
+   */
+  virtual void reparseConfiguration();
+};
+
+
+/** 
+  * Helper class to facilitate working with KConfig/KSimpleConfig groups
+  *
+  * Careful programmers always set the group of a
+  * KConfig/KSimpleConfig object to the group they want to read from
+  * and set it back to the old one of afterwards. This is usually
+  * written as  
+  *
+  * QString oldgroup config->group();
+  * config->setGroup( "TheGroupThatIWant" );
+  * ...
+  * config->writeEntry( "Blah", "Blubb" );
+  *
+  * config->setGroup( oldgroup );
+  *
+  * In order to facilitate this task, you can use
+  * KConfigGroupSaver. Simply construct such an object ON THE STACK
+  * @version $Id$
+  * out of scope, the group will automatically be restored. If you
+  * want to use several different groups within a function or method,
+  * you can still use KConfigGroupSaver: Simply enclose all work with
+  * one group (including the creation of the KConfigGroupSaver object)
+  * in one block.
+  *
+  * @author Kalle Dalheimer <kalle@kde.org>
+  * @version $Id$
+  * @see KConfigBase, KConfig, KSimpleConfig
+  * @short helper class for easier use of KConfig/KSimpleConfig groups
+  */
+
+class KConfigGroupSaver
+{
+public:
+  /** Constructor. You pass a pointer to the KConfig/KSimpleConfig
+	* object you want to work with and a string indicating the _new_
+	* group. 
+	* @param config the KConfig/KSimpleConfig object this
+	* KConfigGroupSaver works on 
+	* @param group the new group that the KConfig/KSimpleConfig object
+	* should switch to
+	*/
+  KConfigGroupSaver( KConfigBase* config, QString group )
+	{
+	  _config = config; 
+	  _oldgroup = _config->group();
+	  _config->setGroup( group );
 	};
 
   ~KConfigGroupSaver()
