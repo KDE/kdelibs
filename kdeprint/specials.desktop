@@ -2,25 +2,25 @@
 Number=3
 
 [Printer 0]
-Name=Print to file (PS)
-Description=Print to local file
+Name=Print To File (PostScript)
+Description=Write PostScript file
+Location=Local file
 Icon=filesave
 Command=
 File=1
-Location=
 
 [Printer 1]
-Name=PDF writer
+Name=Print To File (PDF/Acrobat)
 Description=Write PDF/Acrobat file
+Location=Local file
 Icon=acroread
 Command=ps2pdf -sPAPERSIZE=%psl %in %out
 File=1
-Location=
 
 [Printer 2]
 Name=Send To Fax
-Description=Send to serial fax/modem
+Description=Send to external fax system
+Location=External
 Icon=kfax
 Command=ksendfax %in
 File=0
-Location=
