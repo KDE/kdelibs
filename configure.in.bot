@@ -1,6 +1,19 @@
 dnl put here things which have to be done as very last part of configure
 
-echo ""
-echo "Good - your configure finished. Start make now"
-echo ""
+all_tests=fine
+
+if test "x$args_audiolib_found" = "xno"; then
+  echo ""
+  echo "You're missing libaudiofile. KDE won't be able to play"
+  echo "any sounds without it, so please install it."
+  echo "A copy of libaudiofile you can find in kdesupport"
+  echo ""
+  all_tests=bad
+fi
+
+if test "$all_tests" = "fine"; then
+  echo ""
+  echo "Good - your configure finished. Start make now"
+  echo ""
+fi
 
