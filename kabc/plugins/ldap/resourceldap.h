@@ -25,8 +25,7 @@
 #include <lber.h>
 #include <ldap.h>
 
-#include "addressbook.h"
-#include "resource.h"
+#include <kabc/resource.h>
 
 class KConfig;
 
@@ -34,57 +33,66 @@ namespace KABC {
 
 class ResourceLDAP : public Resource
 {
-public:
+  public:
+    ResourceLDAP( const KConfig* );
+    ResourceLDAP( const QString &user, const QString &passwd,
+                  const QString &dn, const QString &host,
+                  int port, const QString &filter, bool anonymous,
+                  const QMap<QString, QString> &attributes );
 
-  ResourceLDAP( const KConfig* );
+    virtual void writeConfig( KConfig* );
 
-  virtual void writeConfig( KConfig* );
+    virtual bool doOpen();
+    virtual void doClose();
 
-  virtual bool doOpen();
-  virtual void doClose();
+    virtual Ticket *requestSaveTicket();
 
-  virtual Ticket *requestSaveTicket();
+    virtual bool load();
+    virtual bool save( Ticket * );
 
-  virtual bool load();
-  virtual bool save( Ticket * );
+    virtual void removeAddressee( const Addressee& addr );
 
-  virtual void removeAddressee( const Addressee& addr );
+    void setUser( const QString &user );
+    QString user() const;
 
-  void setUser( const QString &user );
-  QString user() const;
+    void setPassword( const QString &password );
+    QString password() const;
 
-  void setPassword( const QString &password );
-  QString password() const;
+    void setDn( const QString &dn );
+    QString dn() const;
 
-  void setDn( const QString &dn );
-  QString dn() const;
+    void setHost( const QString &host );
+    QString host() const;
 
-  void setHost( const QString &host );
-  QString host() const;
+    void setPort( int port );
+    int port() const;
 
-  void setPort( int port );
-  int port() const;
+    void setFilter( const QString &filter );
+    QString filter() const;
 
-  void setFilter( const QString &filter );
-  QString filter() const;
+    void setIsAnonymous( bool value );
+    bool isAnonymous() const;
 
-  void setIsAnonymous( bool value );
-  bool isAnonymous() const;
+    void setAttributes( const QMap<QString, QString> &attributes );
+    QMap<QString, QString> attributes() const;
 
-  void setAttributes( const QMap<QString, QString> &attributes );
-  QMap<QString, QString> attributes() const;
+  protected:
+    void init( const QString &user, const QString &passwd,
+               const QString &dn, const QString &host,
+               int port, const QString &filter, bool anonymous,
+               const QMap<QString, QString> &attributes );
 
-private:
-  QString mUser;
-  QString mPassword;
-  QString mDn;
-  QString mHost;
-  QString mFilter;
-  int mPort;
-  bool mAnonymous;
-  QMap<QString, QString> mAttributes;
+  private:
+    QString mUser;
+    QString mPassword;
+    QString mDn;
+    QString mHost;
+    QString mFilter;
+    int mPort;
+    bool mAnonymous;
+    QMap<QString, QString> mAttributes;
 
-  LDAP *mLdap;
+    LDAP *mLdap;
 };
 
 }

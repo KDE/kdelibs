@@ -35,28 +35,27 @@
 
 using namespace KABC;
 
-extern "C"
+ResourceNet::ResourceNet( const KConfig *config )
+  : Resource( config ), mFormat( 0 ),
+    mLocalTempFile( 0 ), mUseLocalTempFile( false )
 {
-  void *init_kabc_net()
-  {
-    return new KRES::PluginFactory<ResourceNet,ResourceNetConfig>();
+  if ( config ) {
+    init( config->readPathEntry( "NetUrl" ), config->readEntry( "NetFormat" ) );
+  } else {
+    init( KURL(), "vcard" );
   }
 }
 
-
-ResourceNet::ResourceNet( const KConfig *config )
-    : Resource( config ), mFormat( 0 ),
-      mLocalTempFile( 0 ), mUseLocalTempFile( false )
+ResourceNet::ResourceNet( const KURL &url, const QString &format )
+  : Resource( 0 ), mFormat( 0 ),
+    mLocalTempFile( 0 ), mUseLocalTempFile( false )
 {
-  KURL url;
+  init( url, format );
+}
 
-  if ( config ) {
-    url = config->readPathEntry( "NetUrl" );
-    mFormatName = config->readEntry( "NetFormat" );
-  } else {
-    url = "";
-    mFormatName = "vcard";
-  }
+void ResourceNet::init( const KURL &url, const QString &format )
+{
+  mFormatName = format;
 
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );

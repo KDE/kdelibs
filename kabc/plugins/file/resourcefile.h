@@ -26,7 +26,7 @@
 
 #include <sys/types.h>
 
-#include "resource.h"
+#include <kabc/resource.h>
 
 class QTimer;
 

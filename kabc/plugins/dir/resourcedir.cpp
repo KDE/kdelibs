@@ -1,3 +1,23 @@
+/*
+    This file is part of libkabc.
+    Copyright (c) 2002 - 2003 Tobias Koenig <tokoe@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -36,18 +56,24 @@ extern "C"
 
 
 ResourceDir::ResourceDir( const KConfig *config )
-    : Resource( config )
+  : Resource( config )
 {
-  QString path;
-
   if ( config ) {
-     path = config->readPathEntry( "FilePath" );
-     mFormatName = config->readEntry( "FileFormat" );
+    init( config->readPathEntry( "FilePath" ), config->readEntry( "FileFormat" ) );
   } else {
-    path = StdAddressBook::directoryName();
-    mFormatName = "vcard";
+    init( StdAddressBook::directoryName(), "vcard" );
   }
+}
 
+ResourceDir::ResourceDir( const QString &path, const QString &format )
+  : Resource( 0 )
+{
+  init( path, format );
+}
+
+void ResourceDir::init( const QString &path, const QString &format )
+{
+  mFormatName = format;
 
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );

@@ -1,15 +1,19 @@
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_builddir) $(all_includes)
 
 # these are the headers for your project
-noinst_HEADERS   = resourcedir.h resourcedirconfig.h
+noinst_HEADERS = resourcedirconfig.h
+
+lib_LTLIBRARIES = libkabc_dir.la
+libkabc_dir_la_SOURCES = resourcedir.cpp resourcedirconfig.cpp
+libkabc_dir_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
+libkabc_dir_la_LIBADD = $(LIB_KABC)
+libkabc_dir_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 
 kde_module_LTLIBRARIES = kabc_dir.la
-
-kabc_dir_la_SOURCES = resourcedir.cpp resourcedirconfig.cpp
-
-kabc_dir_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
-kabc_dir_la_LIBADD	= $(LIB_KABC)
-kabc_dir_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
+kabc_dir_la_SOURCES = resourcedirplugin.cpp
+kabc_dir_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+kabc_dir_la_LIBADD = libkabc_dir.la
+kabc_dir_la_COMPILE_FIRST = libkabc_dir.la
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

@@ -25,7 +25,7 @@
 
 #include <sys/types.h>
 
-#include "resource.h"
+#include <kabc/resource.h>
 
 class QTimer;
 class KTempFile;
@@ -41,6 +41,7 @@ class ResourceNet : public Resource
 {
   public:
     ResourceNet( const KConfig* );
+    ResourceNet( const KURL &url, const QString &format );
     ~ResourceNet();
 
     virtual void writeConfig( KConfig* );
@@ -78,6 +79,9 @@ class ResourceNet : public Resource
       crashed
      */
     virtual void cleanUp();
+
+  protected:
+    void init( const KURL &url, const QString &format );
 
   private:
     FormatPlugin *mFormat;
