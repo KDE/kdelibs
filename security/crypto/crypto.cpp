@@ -1020,6 +1020,9 @@ QString iss = "";
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
+         untilDate->setText(x ? x->getExpires().toString()
+                            : QDateTime::currentDateTime().toString());
+         untilDate->setEnabled(true);
          delete cert;
       } else {
          validFrom->setText("");
@@ -1050,6 +1053,8 @@ QString iss = "";
       cacheUntil->setEnabled(false);
       validFrom->setText("");
       validUntil->setText("");
+      untilDate->setText("");
+      untilDate->setEnabled(false);
    }
 
    oSubject->setValues(x ? x->getSub() : QString(""));
