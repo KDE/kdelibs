@@ -256,7 +256,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "error", true, true,
-                       i18n("&OK"));
+                       i18n("&Close"));
 
     QWidget *contents = new QWidget(&dialog);
     QHBoxLayout * lay = new QHBoxLayout(contents);
@@ -284,7 +284,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "sorry", true, true,
-                       i18n("&OK"));
+                       i18n("&Close"));
 
     QWidget *contents = new QWidget(&dialog);
     QHBoxLayout * lay = new QHBoxLayout(contents);

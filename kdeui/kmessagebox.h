@@ -207,9 +207,9 @@ public:
   * not allowed, this should never be reported with error(). Use sorry()
   * instead to explain to the user that this action is not allowed. 
   *
-  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  * The default button is "&Close". Pressing "Esc" selects the Close-button.
   *
-  * NOTE: The OK button will always have the i18n'ed text '&OK'.
+  * NOTE: The Close button will always have the i18n'ed text '&Close'.
   */
   
   static void error(QWidget *parent, 
@@ -233,9 +233,9 @@ public:
   * To be used for small problems like 
   * "Sorry, I can't find the file you specified."
   *
-  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  * The default button is "&Close". Pressing "Esc" selects the close-button.
   *
-  * NOTE: The ok button will always have the i18n'ed text '&OK'.
+  * NOTE: The close button will always have the i18n'ed text '&Close'.
   */
   
   static void sorry(QWidget *parent, 
