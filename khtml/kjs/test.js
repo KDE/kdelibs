@@ -15,4 +15,5 @@ print("i = " + i);
 
 var b = new Boolean(1==1);
 print("b = " + b);
-
+b.toString=Object.prototype.toString;
+print("b = " + b.toString());

@@ -249,7 +249,9 @@ KJSO *EqualNode::evaluate()
   Ptr v1 = e1->getValue();
   Ptr v2 = e2->getValue();
 
-  return new KJSBoolean(compare(v1, oper, v2));
+  bool eq = equal(v1, v2);
+
+  return new KJSBoolean(oper == OpEqEq ? eq : !eq);
 }
 
 // ECMA 11.10

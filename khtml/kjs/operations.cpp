@@ -235,21 +235,46 @@ KJSO *KJS::toObject(KJSO *obj)
 
 
 // ECMA 11.9.3
-bool KJS::compare(KJSO *v1, Operator oper, KJSO *v2)
+bool KJS::equal(KJSO *v1, KJSO *v2)
 {
-  if (!v1->isA(Number) || !v2->isA(Number)) {
-    cerr << "Sorry. Can only handle numbers in compare() so far." << endl;
-    abort();
+  Type t1 = v1->type();
+  Type t2 = v2->type();
+
+  if (t1 == t2) {
+    if (t1 == Undefined || t1 == Null)
+      return true;
+    if (t1 == Number)
+      return (v1->dVal() == v2->dVal()); /* TODO: NaN, -0 ? */
+    if (t1 == String)
+      return (v1->sVal() == v2->sVal());
+    if (t1 == Boolean)
+      return (v1->bVal() == v2->bVal());
+    return (v1 == v2);
   }
-  if (oper != OpEqEq && oper != OpNotEq) {
-    cerr << "Sorry. Can only handle == and != in compare() so far." << endl;
-    abort();
+
+  // different types
+  if ((t1 == Null && t2 == Undefined) || (t1 == Undefined && t2 == Null))
+    return true;
+  if (t1 == Number && t2 == String) {
+    Ptr n2 = toNumber(v2);
+    return equal(v1, n2);
+  }
+  if ((t1 == String && t2 == Number) || t1 == Boolean) {
+    Ptr n1 = toNumber(v1);
+    return equal(n1, v2);
+  }
+  if (t2 == Boolean) {
+    Ptr n2 = toNumber(v2);
+    return equal(v1, n2);
+  }
+  if ((t1 == String || t1 == Number) && t2 == Object) {
+    Ptr p2 = toPrimitive(v2);
+    return equal(v1, p2);
+  }
+  if (t1 == Object && (t2 == String || t2 == Number)) {
+    Ptr p1 = toPrimitive(v1);
+    return equal(p1, v2);
   }
 
-  Ptr n1 = toNumber(v1);
-  Ptr n2 = toNumber(v2);
-
-  bool eq = (n1->dVal() == n2->dVal());
-
-  return (oper == OpEqEq) ? eq : !eq;
+  return false;
 }

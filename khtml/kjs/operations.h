@@ -37,7 +37,7 @@ unsigned short toUInt16(KJSO *obj);
 KJSO *toString(KJSO *obj);
 KJSO *toObject(KJSO *obj);
 
-bool compare(KJSO *v1, Operator oper, KJSO *v2);
+bool equal(KJSO *v1, KJSO *v2);
 
 };
 
