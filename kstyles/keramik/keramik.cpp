@@ -88,6 +88,7 @@ void KeramikStyle::polish(QWidget* widget)
  	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
 	    QListBox* listbox = (QListBox*) widget;
 	    listbox->setLineWidth( 4 );
+		listbox->setBackgroundMode( NoBackground );
 	    widget->installEventFilter( this );
 	}
 
@@ -1580,8 +1581,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		{
 			{
 				QPainter p( listbox );
-				p.setPen( blue );
-				p.drawRect( listbox->rect() );
+				Keramik::RectTilePainter( "combobox-list" ).draw( &p, 0, 0, listbox->width(), listbox->height() );
 			}
 			QPaintEvent newpaint( paint->region().intersect( listbox->contentsRect() ), paint->erased() );
 			recursion = true;
