@@ -27,6 +27,7 @@ class QStrList;
 class QDate;
 class QTime;
 class QDateTime;
+class KConfig;
 
 /*
   #ifndef klocale
