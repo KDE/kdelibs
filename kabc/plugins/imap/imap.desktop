@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+
+[Misc]
+Encoding=UTF-8
+Name=IMAP
+
+[Plugin]
+Type=imap
+X-KDE-Library=kabc_imap
