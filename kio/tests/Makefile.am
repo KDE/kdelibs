@@ -21,9 +21,9 @@ LDADD = $(top_builddir)/kio/libksycoca.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
-		kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
-		ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
-		kfiltertest
+                 kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
+                 ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
+                 kfiltertest kiopassdlgtest
 
 METASOURCES = AUTO
 
@@ -42,6 +42,7 @@ kclipboardtest_LDADD = $(top_builddir)/kio/libkio.la
 kclipboardtest_SOURCES = kclipboardtest.cpp
 
 ## libksycoca
+kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
 kurifiltertest_SOURCES = kurifiltertest.cpp
 ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_SOURCES = getalltest.cpp
@@ -52,4 +53,3 @@ kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
 ktradertest_SOURCES = ktradertest.cpp
 kmimemagictest_SOURCES = kmimemagictest.cpp
 kfiltertest_SOURCES = kfiltertest.cpp
-
