@@ -140,7 +140,6 @@ void KEdit::searchdone_slot(){
   srchdialog->hide();
   setFocus();
   last_search = NONE;
-
 }
 
 /* antlarr: KDE 4: make it const QString & */
@@ -223,12 +222,11 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 bool KEdit::repeatSearch() {
 
-  if(!srchdialog)
-      return false;
-
-
-  if(pattern.isEmpty()) // there wasn't a previous search
-    return false;
+  if(!srchdialog || pattern.isEmpty())
+  {
+      search();
+      return true;
+  }
 
   search_slot();
 
@@ -744,7 +742,6 @@ void KEdFind::textSearchChanged ( const QString &text )
 void KEdFind::slotCancel( void )
 {
   emit done();
-  d->combo->clearEdit();
   KDialogBase::slotCancel();
 }
 
