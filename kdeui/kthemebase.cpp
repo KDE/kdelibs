@@ -953,9 +953,11 @@ KThemeCache::KThemeCache(int maxSize, QObject *parent, const char *name)
 void KThemeCache::flushTimeout()
 {
     QIntCacheIterator<KThemePixmap> it(cache);
-    for(;it.current(); ++it){
+    while(it.current()){
         if(it.current()->isOld())
             cache.remove(it.currentKey());
+        else
+            ++it;
     }
 }
 
