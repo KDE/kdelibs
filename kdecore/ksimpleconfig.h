@@ -36,7 +36,7 @@
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
- * @see KApplication::getConfig KConfigBase KConfig
+ * @see KApplication::config KConfigBase KConfig
  * @short KDE Configuration Management class with deletion ability 
  */
 class KSimpleConfig : public KConfig
