@@ -1435,6 +1435,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifndef QT_NO_UNICODETABLES
         ( (start.current().unicode() == (ushort)0x0020) || // ASCII space
           (start.current().unicode() == (ushort)0x0009) || // ASCII tab
+          (start.current().unicode() == (ushort)0x000A) || // ASCII line feed
           (start.current().unicode() == (ushort)0x000C) || // ASCII form feed
           (start.current().unicode() == (ushort)0x200B) || // Zero-width space
           start.obj->isFloatingOrPositioned() )
