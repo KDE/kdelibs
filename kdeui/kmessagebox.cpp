@@ -627,6 +627,13 @@ KMessageBox::detailedSorry(QWidget *parent, const QString &text,
 
 void
 KMessageBox::information(QWidget *parent,const QString &text,
+			 const QString &caption, const QString &dontShowAgainName, int options)
+{
+  informationList(parent, text, QStringList(), caption, dontShowAgainName, options);
+}
+
+void
+KMessageBox::informationList(QWidget *parent,const QString &text, const QStringList & strlist,
                          const QString &caption, const QString &dontShowAgainName, int options)
 {
     KConfig *config = 0;
@@ -653,7 +660,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     bool checkboxResult;
 
-    createKMessageBox(dialog, QMessageBox::Information, text, QStringList(),
+    createKMessageBox(dialog, QMessageBox::Information, text, strlist,
 		dontShowAgainName.isEmpty() ? QString::null : i18n("&Do not show this message again"),
                 &checkboxResult, options);
 

@@ -217,6 +217,21 @@ case 21:
   }
   break;
 
+case 22:
+  i = KMessageBox::Ok;
+  KMessageBox::informationList(0, "The following words have been found:",list);
+  break;
+
+case 23:
+  i = KMessageBox::Ok;
+  KMessageBox::informationList(0, "The following words have been found:", list, "Search Words");
+  break;
+
+case 24:
+  i = KMessageBox::Ok;
+  KMessageBox::informationList(0, "The follwoing words have been found:", list, QString::null, "Search_Words");
+  break;
+
 default:
   return 0;
          } // Switch

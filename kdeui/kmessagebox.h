@@ -505,6 +505,42 @@ public:
                           const QString &dontShowAgainName = QString::null,
                           int options = Notify);
 
+ /**
+  * Display an "Information" dialog with a listbox.
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string.
+  * @param strlist List of strings to be written in the listbox. If the 
+  *                list is empty, it doesn't show any listbox, working 
+  *                as information.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Information").
+  * @param dontShowAgainName If provided, a checkbox is added with which
+  *                further notifications can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  * @param options  @see OptionsType
+  *
+  *
+  * Your program wants to tell the user something.
+  * To be used for things like:
+  * "The following bookmarks have been rearranged:"
+  *
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  *
+  *  NOTE: The OK button will always have the i18n'ed text '&OK'.
+  */
+   
+  static void informationList(QWidget *parent, 
+			      const QString &text, 
+			      const QStringList & strlist,
+			      const QString &caption = QString::null,
+			      const QString &dontShowAgainName = QString::null, 
+			      int options = Notify);
+
   /**
    * Enable all messages which have been turned off with the
    * @p dontShowAgainName feature of the information dialog.
