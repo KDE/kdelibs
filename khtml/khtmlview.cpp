@@ -548,8 +548,6 @@ void KHTMLView::clear()
 
     QScrollView::setHScrollBarMode(d->hmode);
     QScrollView::setVScrollBarMode(d->vmode);
-    horizontalScrollBar()->setEnabled( false );
-    verticalScrollBar()->setEnabled( false );
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -2758,15 +2756,13 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     }
     else if( (   (e->orientation() == Vertical &&
                    ((d->ignoreWheelEvents && 
-                          (!verticalScrollBar()->isVisible() ||
-                           !verticalScrollBar()->isEnabled()))
+                          (!verticalScrollBar()->isVisible() || d->firstRelayout))
                      || e->delta() > 0 && contentsY() <= 0
                      || e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight()))
               ||
                  (e->orientation() == Horizontal &&
                     ((d->ignoreWheelEvents && 
-                          (!horizontalScrollBar()->isVisible() ||
-                           !horizontalScrollBar()->isEnabled()))
+                          (!horizontalScrollBar()->isVisible() || d->firstRelayout))
                      || e->delta() > 0 && contentsX() <=0
                      || e->delta() < 0 && contentsX() >= contentsWidth() - visibleWidth())))
             && m_part->parentPart()) 
@@ -2775,8 +2771,8 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();
     }
-    else if ( (e->orientation() == Vertical && (d->vmode == QScrollView::AlwaysOff || !verticalScrollBar()->isEnabled())) ||
-              (e->orientation() == Horizontal && (d->hmode == QScrollView::AlwaysOff || !horizontalScrollBar()->isEnabled()))) 
+    else if ( (e->orientation() == Vertical && (d->vmode == QScrollView::AlwaysOff || d->firstRelayout)) ||
+              (e->orientation() == Horizontal && (d->hmode == QScrollView::AlwaysOff || d->firstRelayout))) 
     {
         e->accept();
     }
@@ -2942,11 +2938,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     else if ( e->timerId() == d->layoutTimerId ) {
         d->dirtyLayout = true;
         layout();
-        if (d->firstRelayout) {
-            d->firstRelayout = false;
-            verticalScrollBar()->setEnabled( true );
-            horizontalScrollBar()->setEnabled( true );
-        }
+        d->firstRelayout = false;
     }
 #ifndef KHTML_NO_CARET
     else if (d->m_caretViewContext
