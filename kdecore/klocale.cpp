@@ -132,7 +132,7 @@ const char *KLocale::translate(const char *msgid)
 
 QString KLocale::directory() 
 {
-    return kapp->kdedir() + "/locale/share/" +  lang;
+    return kapp->kdedir() + "/share/locale/" +  lang;
 }
 
 void KLocale::aliasLocale( const char* text, long int index)
@@ -157,7 +157,7 @@ const char *KLocale::translate(const char *msgid)
 
 QString KLocale::directory() 
 {
-    return kapp->kdedir() + "/locale/share/";
+    return kapp->kdedir() + "/share/locale/";
 }
 
 void KLocale::aliasLocale(const char* text, long int index)
