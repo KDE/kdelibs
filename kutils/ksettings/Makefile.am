@@ -4,8 +4,6 @@ noinst_LTLIBRARIES = libksettings.la
 libksettings_la_SOURCES = dispatcher.cpp dialog.cpp pluginpage.cpp componentsdialog.cpp
 
 ksettingsincludedir = $(includedir)/ksettings
-ksettingsinclude_HEADERS = dispatcher.h dialog.h pluginpage.h
-
-noinst_HEADERS = componentsdialog.h
+ksettingsinclude_HEADERS = dispatcher.h dialog.h pluginpage.h componentsdialog.h
 
 METASOURCES = AUTO

@@ -95,6 +95,11 @@ void ComponentsDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
     }
 }
 
+void ComponentsDialog::setPluginInfos( const QValueList<KPluginInfo *> &plugins )
+{
+    d->plugininfolist = plugins;
+}
+
 void ComponentsDialog::show()
 {
     // construct the treelist

@@ -28,14 +28,34 @@ class KPluginInfo;
 namespace KSettings
 {
 
+/**
+  Dialog for selecting which plugins should be active for an application. Set
+  the list of available plugins with setPluginInfos(). The dialog will save the
+  configuration on clicking ok or apply to the applications config file. Connect
+  to the okClicked() and applyClicked() signals to be notified about
+  configuration changes.
+*/
 class ComponentsDialog : public KDialogBase
 {
     Q_OBJECT
     public:
+        /**
+          Create Dialog.
+          
+          @param parent parent widget
+          @param name   name
+        */
         ComponentsDialog( QWidget * parent = 0, const char * name = 0 );
         ~ComponentsDialog();
 
+        /**
+          Set list of plugins the dialog offers for selection.
+        */
         void setPluginInfos( const QMap<QString, KPluginInfo*> & plugininfos );
+        /**
+          Set list of plugins the dialog offers for selection.
+        */
+        void setPluginInfos( const QValueList<KPluginInfo *> &plugins );
 
         /**
          * @reimplemented
