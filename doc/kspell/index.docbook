@@ -3,23 +3,26 @@
  <!ENTITY % addindex "IGNORE">
  <![ %addindex; [ <!ENTITY docindex SYSTEM "docindex.docbook"> ]]>
 ]>
+
 <book lang="en">
 <bookinfo>
 <title>The KSpell Handbook</title>
 <authorgroup>
 <author>
-<surname>David Sweet, &lt;dsweet@chaos.umd.edu&gt;</surname>
+<firstname>David</firstname>
+<surname>Sweet</surname>
+<affiliation>
+<address><email>dsweet@chaos.umd.edu</email></address>
+</affiliation>
 </author>
 </authorgroup>
-<date>Last updated 5 Oct 1999</date>
-<releaseinfo><!-- information about this particular version --></releaseinfo>
+<date>05/10/1999</date>
+<releaseinfo>1.00.00</releaseinfo>
 <abstract>
 <para>KSpell is the spelling checker used by KDE applications such as KEdit,
 KMail, KRN, and KWord. It is a GUI frontend to International ISpell
-and ASpell. (If you do not have Ispell installed you can obtain it
-from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International ISpell home page</ulink>.  ASpell is available from the
-<ulink url="http://metalab.unc.edu/kevina/aspell/">ASpell home page</ulink>.)</para>
-<para>KSpell: Spelling checking for KDE.</para><!-- Merge this with the previous paragraph; it comes from <META NAME="description" CONTENT="..."> --></abstract>
+and ASpell.</para>
+</abstract>
 <keywordset>
 <keyword>kspell</keyword>
 <keyword>ispell</keyword>
@@ -33,7 +36,13 @@ from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International
 <chapter id="misspelled-word-dialog">
 <title>Misspelled Word Dialog</title>
 
-<sect1 id="general-use-">
+<!-- This one might need a paragraph of its own) -->
+<para>(If you do not have Ispell installed you can obtain it
+from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International ISpell home page</ulink>.
+ASpell is available from the <ulink url="http://metalab.unc.edu/kevina/aspell/">ASpell home page</ulink>.)
+</para>
+
+<sect1 id="general-use">
 <title>General Use </title>
 
 <para><anchor id="spelldlg">
