@@ -393,7 +393,16 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "alt")             return getString(input.alt());
       else if (p == "checked")         return Boolean(input.checked());
       else if (p == "disabled")        return Boolean(input.disabled());
-      else if (p == "length")          return Number(input.form().getElementsByNameAttr(input.name()).length());
+
+      else if (p == "length") {
+        // SLOOOOOOW
+        DOM::HTMLCollection c( input.form().elements() );
+        unsigned long len = 0;
+        for ( unsigned long i = 0; i < c.length(); i++ )
+          if ( static_cast<DOM::Element>( c.item( i ) ).getAttribute( "name" ) == input.name() )
+            len++;
+        return Number(len);
+      }
       else if (p == "maxLength")       return Number(input.maxLength());
       else if (p == "name")            return getString(input.name());
       else if (p == "readOnly")        return Boolean(input.readOnly());
@@ -412,10 +421,16 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "click")           return new HTMLElementFunction(element,HTMLElementFunction::Click);
       else
       {
-          // it might be an index
-          bool ok;
-          uint u = p.toULong(&ok);
-          if(ok)  return getDOMNode(input.form().getElementsByNameAttr(input.name()).item(u));
+        // ### SLOOOOOOOW
+        bool ok;
+        uint u = p.toULong(&ok);
+        if ( !ok ) break;
+
+        DOM::HTMLCollection c( input.form().elements() );
+         for ( unsigned long i = 0; i < c.length(); i++ )
+           if ( static_cast<DOM::Element>( c.item( i ) ).getAttribute( "name" ) == input.name() )
+             if ( u-- == 0 )
+               return getDOMNode( c.item( i ) );
       }
     }
     break;
@@ -1052,7 +1067,10 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       // read-only: length
       if (p == "name")                 { form.setName(str); return; }
       else if (p == "acceptCharset")   { form.setAcceptCharset(str); return; }
-      else if (p == "action")          { form.setAction(str); return; }
+      else if (p == "action") {
+        form.setAction(getInstance()->completeURL( str.string() ).url());
+        return;
+      }
       else if (p == "enctype")         { form.setEnctype(str); return; }
       else if (p == "method")          { form.setMethod(str); return; }
       else if (p == "target")          { form.setTarget(str); return; }
