@@ -46,7 +46,8 @@ KFM::KFM()
     ok = FALSE;
     ipc = 0L;
     allowRestart = FALSE;
-    
+    modal_hack_widget = 0;
+
     init();
 }
 
@@ -55,6 +56,57 @@ KFM::~KFM()
     if ( ipc )
 	delete ipc;
 }              
+
+
+bool KFM::download(const QString & src, QString & target){
+  KURL u (src);
+  if (qstrcmp( u.protocol(), "file")==0){
+    // file protocol. We do not need the network
+    target = u.path();
+    return true;
+  }
+  KFM* kfm = new KFM;
+  bool result = kfm->downloadInternal(src,target);
+  delete kfm;
+  return result;
+}
+
+QStrList* KFM::tmpfiles = 0;
+
+void KFM::removeTempFile(const QString & name){
+  if (!tmpfiles)
+    return;
+  if (tmpfiles->contains(name)){
+    QFile::remove(name);
+    tmpfiles->remove(name);
+  }
+}
+
+bool KFM::downloadInternal(const QString & src, QString & target){
+  if (target.isEmpty()){
+    target = tmpnam(0);
+    if (!tmpfiles)
+      tmpfiles = new QStrList;
+    tmpfiles->append(qstrdup(target.data()));
+  }
+  download_state = true; // success
+
+  /* this is a bit tricky. We use a faked modal dialog to be able to
+     process the download syncronious. For the user it will look
+     (almost) as if the kfm-dialog is the modal dialog of your
+     application. After show() we will also enter a local event loop
+     within Qt. The modal_hack_widget will be hidden and destroyed in
+     the finish slot. This will implictly exit the local event loop
+     in addition (Matthias) 
+  */
+  modal_hack_widget = new QWidget(0,0,WType_Modal);
+  modal_hack_widget->setGeometry(-10,-10,2,2);
+  copy(src, target);
+  modal_hack_widget->show();
+  qApp->enter_loop();
+  return download_state; 
+}
+
 
 void KFM::init()
 {
@@ -267,7 +319,12 @@ void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 
 void KFM::slotFinished()
 {
-    emit finished();
+  if (modal_hack_widget){
+    modal_hack_widget->close(true);
+    modal_hack_widget = 0;
+    qApp->exit_loop();
+  }
+  emit finished();
 }
 
 bool KFM::test()
@@ -308,6 +365,7 @@ bool KFM::isKFMRunning()
 
 void KFM::slotError( int _kerror, const char *_text )
 {
+  download_state = false;
   emit error( _kerror, _text );
 }
 

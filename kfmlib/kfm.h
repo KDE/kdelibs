@@ -25,6 +25,7 @@
 #include <qpushbt.h>
 #include <qlabel.h>
 #include <qstring.h>
+#include <kurl.h>
 
 #include "kfmclient_ipc.h"
 
@@ -51,6 +52,45 @@ public:
      */
     KFM();
     ~KFM();
+
+
+    /* This function is probably what you are looking for.  It can be
+     * used to download a file from an arbitrary URL (source) to a
+     * temporary file on the local filesystem (target). If the argument
+     * for target is an empty string, download will generate a 
+     * unique temporary filename in /tmp. Since target is a reference
+     * to QString you can access this filename easily. Download will
+     * return true if the download was successful, otherwise false.
+     *
+     * Special case:
+     * If the url is of kind "file:" then no downloading is 
+     * processed but the full filename returned in target.
+     * That means: you _have_ to take care about the target argument.
+     * (This is very comfortable, please see the example below.)
+     *
+     * Download is synchronous. That means you can use it like
+     * this, (assuming u is a string which represents a URL and your
+     * application has a loadFile function):
+     * 
+     *       QString s;
+     *       if (KFM::download(u, s)){
+     *         loadFile(s);
+     *         KFM::removeTempFile(s);
+     *       }
+     *
+     * Of course your user interface will still process exposure/repaint
+     * events during the download.
+     *
+     * (Matthias) 
+     */
+    static bool download(const QString & src, QString & target);
+    
+    /* Remove the specified file if and only if it was created
+     * by KFM as temporary file for a former download.
+     * (Matthias)
+     */
+    static void removeTempFile(const QString & name);
+
     
     bool isOK() { return ok; }
 
@@ -102,6 +142,12 @@ protected:
     KfmIpc *ipc;
 
     KDirEntry entry;
+
+ private:
+    bool downloadInternal(const QString & src, QString & target);
+    QWidget* modal_hack_widget;
+    bool download_state; /* to indicate wether the download was successful */
+    static QStrList* tmpfiles;
 };
 
 /// Asking for a location
