@@ -1047,7 +1047,7 @@ private:
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
     void removeWidgetInternal( QWidget *w );
-    void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );
+    void getAttributes( QString &position, QString &icontext, int &index );
     KPopupMenu *contextMenu();
 
     QMap<QWidget*, int > widget2id;

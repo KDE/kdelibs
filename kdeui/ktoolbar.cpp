@@ -94,6 +94,14 @@ public:
         oldPos = Qt::DockUnmanaged;
 
         modified = m_isHorizontal = positioned = FALSE;
+
+        HiddenDefault = false;
+        IconSizeDefault = 0;
+        IconTextDefault = "IconOnly";
+        IndexDefault = -1;
+        NewLineDefault = false;
+        OffsetDefault = -1;
+        PositionDefault = "Top";
     }
 
     int m_iconSize;
@@ -130,9 +138,9 @@ public:
   bool HiddenDefault;
   int IconSizeDefault;
   QString IconTextDefault;
-  QString IndexDefault;
-  QString NewLineDefault;
-  QString OffsetDefault;
+  int IndexDefault;
+  bool NewLineDefault;
+  int OffsetDefault;
   QString PositionDefault;
 
 };
@@ -962,9 +970,6 @@ int KToolBar::count() const
 
 void KToolBar::saveState()
 {
-    QString position, icontext, index, offset, newLine;
-    getAttributes( position, icontext, index, offset, newLine );
-
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
         // go down one level to get to the right tags
@@ -1050,40 +1055,48 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
         configGroup = settingsGroup();
     //kdDebug(220) << "KToolBar::saveSettings group=" << _configGroup << " -> " << configGroup << endl;
 
-    QString position, icontext, index, offset, newLine;
-    getAttributes( position, icontext, index, offset, newLine );
+    QString position, icontext;
+    int index;
+    getAttributes( position, icontext, index );
 
     //kdDebug(220) << "KToolBar::saveSettings " << name() << " newLine=" << newLine << endl;
 
     KConfigGroupSaver saver(config, configGroup);
 
-    if(position != d->PositionDefault)
+    if ( position != d->PositionDefault )
       config->writeEntry("Position", position);
     else
       config->deleteEntry("Position");
 
-    if(icontext != d->IconTextDefault)
+    if ( icontext != d->IconTextDefault )
       config->writeEntry("IconText", icontext);
     else
       config->deleteEntry("IconText");
 
-    if(iconSize() != d->IconSizeDefault)
+    if ( iconSize() != d->IconSizeDefault )
       config->writeEntry("IconSize", iconSize());
-    else config->deleteEntry("IconSize");
+    else
+      config->deleteEntry("IconSize");
 
-    config->writeEntry("Hidden", isHidden());
+    if ( isHidden() != d->HiddenDefault )
+      config->writeEntry("Hidden", isHidden());
+    else
+      config->deleteEntry("Hidden");
 
-    if ( !index.isEmpty() && index != d->IndexDefault )
-        config->writeEntry( "Index", index );
-    else config->deleteEntry("Index");
+    if ( index != d->IndexDefault )
+      config->writeEntry( "Index", index );
+    else
+      config->deleteEntry("Index");
 
-    if ( !offset.isEmpty() && offset != d->OffsetDefault )
-        config->writeEntry( "Offset", offset );
-    else config->deleteEntry("Offset");
+    if ( offset() != d->OffsetDefault )
+      config->writeEntry( "Offset", offset() );
+    else
+      config->deleteEntry("Offset");
 
-    if ( !newLine.isEmpty() && newLine != d->NewLineDefault )
-        config->writeEntry( "NewLine", newLine );
-    else config->deleteEntry("NewLine");
+    if ( newLine() != d->NewLineDefault )
+      config->writeEntry( "NewLine", newLine() );
+    else
+      config->deleteEntry("NewLine");
 }
 
 
@@ -1475,12 +1488,12 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         // we read in the IconText property *only* if we intend on actually
         // honoring it
         if (d->m_honorStyle)
-            d->IconTextDefault = gconfig->readEntry(attrIconText, "IconOnly");
+            d->IconTextDefault = gconfig->readEntry(attrIconText, d->IconTextDefault);
         else
             d->IconTextDefault = "IconOnly";
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = gconfig->readNumEntry(attrSize, 0);
+        d->IconSizeDefault = gconfig->readNumEntry(attrSize, d->IconSizeDefault);
 
         if ( !forceGlobal && config->hasGroup(configGroup) )
         {
@@ -1581,11 +1594,11 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         static const QString &attrNewLine  = KGlobal::staticQString("NewLine");
         static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
-        QString position = config->readEntry(attrPosition, "Top");
-        int index = config->readNumEntry(attrIndex, 0 );
-        int offset = config->readNumEntry(attrOffset, -1 );
-        bool newLine = config->readEntry(attrNewLine).lower() == "true"; // someone used "TRUE" we can't use readBoolEntry :(
-        bool hidden = config->readBoolEntry(attrHidden, false);
+        QString position = config->readEntry(attrPosition, d->PositionDefault);
+        int index = config->readNumEntry(attrIndex, d->IndexDefault);
+        int offset = config->readNumEntry(attrOffset, d->OffsetDefault);
+        bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
+        bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
 
         Dock pos(DockTop);
         if ( position == "Top" )
@@ -1672,107 +1685,112 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 void KToolBar::loadState( const QDomElement &element )
 {
     //kdDebug(220) << "KToolBar::loadState " << this << endl;
-    if ( !mainWindow() || !mainWindow()->inherits( "KMainWindow") )
+    if ( !mainWindow() )
         return;
-    KMainWindow *mw = static_cast<KMainWindow *>( mainWindow() );
 
-    QCString text = element.namedItem( "text" ).toElement().text().utf8();
-    if ( text.isEmpty() )
-        text = element.namedItem( "Text" ).toElement().text().utf8();
+    {
+        QCString text = element.namedItem( "text" ).toElement().text().utf8();
+        if ( text.isEmpty() )
+            text = element.namedItem( "Text" ).toElement().text().utf8();
+        if ( !text.isEmpty() )
+            setText( i18n( text ) );
+    }
 
-    if ( !text.isEmpty() )
-        setText( i18n( text ) );
-
-    mw->addToolBar( this );
-    QCString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
-    QCString attrPosition = element.attribute( "position" ).lower().latin1();
-    QCString attrIconText = element.attribute( "iconText" ).lower().latin1();
-    QString attrIconSize = element.attribute( "iconSize" ).lower();
-    QString attrIndex = element.attribute( "index" ).lower();
-    QString attrOffset = element.attribute( "offset" ).lower();
-    QString attrNewLine = element.attribute( "newline" ).lower();
-    QString attrHidden = element.attribute( "hidden" ).lower();
-
-    d->HiddenDefault =  attrHidden == "true" ? TRUE : FALSE;
-
-    if ( !attrFullWidth.isEmpty() ) {
-        if ( attrFullWidth == "true" )
-            setFullSize( TRUE );
-        else
-            setFullSize( FALSE );
+    {
+        QCString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
+        if ( !attrFullWidth.isEmpty() )
+            setFullSize( attrFullWidth == "true" );
     }
 
     Dock dock = DockTop;
-    int index = -1 /*append by default*/, offset = -1;
-    bool nl = FALSE;
-
-    //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
-    if ( !attrPosition.isEmpty() ) {
-        if ( attrPosition == "top" )
-            dock = DockTop;
-        else if ( attrPosition == "left" )
-            dock = DockLeft;
-        else if ( attrPosition == "right" )
-            dock = DockRight;
-        else if ( attrPosition == "bottom" )
-            dock = DockBottom;
-        else if ( attrPosition == "floating" )
-            dock = DockTornOff;
-        else if ( attrPosition == "flat" )
-            dock = DockMinimized;
-    }
-
-    if ( !attrIndex.isEmpty() )
-        index = attrIndex.toInt();
-    if ( !attrOffset.isEmpty() )
-        offset = attrOffset.toInt();
-    if ( !attrNewLine.isEmpty() )
-        nl = attrNewLine == "true" ? TRUE : FALSE;
-
-    //kdDebug(220) << "KToolBar::loadState creating ToolBarInfo with dock=" << dock << endl;
-    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, nl, offset );
-    if ( mw )
     {
-       mw->moveDockWindow( this, dock, nl, index, offset );
-       //kdDebug(220) << "moveDockWindow in loadState for " << name() << " dock=" << dock << " nl=" << nl << " offset=" << offset << endl;
+        QCString attrPosition = element.attribute( "position" ).lower().latin1();
+        //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
+        if ( !attrPosition.isEmpty() ) {
+            if ( attrPosition == "top" )
+                dock = DockTop;
+            else if ( attrPosition == "left" )
+                dock = DockLeft;
+            else if ( attrPosition == "right" )
+                dock = DockRight;
+            else if ( attrPosition == "bottom" )
+                dock = DockBottom;
+            else if ( attrPosition == "floating" )
+                dock = DockTornOff;
+            else if ( attrPosition == "flat" )
+                dock = DockMinimized;
+        }
     }
 
-    if ( !attrIconText.isEmpty() ) {
-        //kdDebug(220) << "KToolBar::loadState attrIconText=" << attrIconText << endl;
-        if ( attrIconText == "icontextright" )
-            setIconText( KToolBar::IconTextRight );
-        else if ( attrIconText == "textonly" )
-            setIconText( KToolBar::TextOnly );
-        else if ( attrIconText == "icontextbottom" )
-            setIconText( KToolBar::IconTextBottom );
-        else if ( attrIconText == "icononly" )
-            setIconText( KToolBar::IconOnly );
-    } else
-        // Use global setting
-        setIconText( iconTextSetting() );
+    {
+        QCString attrIconText = element.attribute( "iconText" ).lower().latin1();
+        if ( !attrIconText.isEmpty() ) {
+            //kdDebug(220) << "KToolBar::loadState attrIconText=" << attrIconText << endl;
+            if ( attrIconText == "icontextright" )
+                setIconText( KToolBar::IconTextRight );
+            else if ( attrIconText == "textonly" )
+                setIconText( KToolBar::TextOnly );
+            else if ( attrIconText == "icontextbottom" )
+                setIconText( KToolBar::IconTextBottom );
+            else if ( attrIconText == "icononly" )
+                setIconText( KToolBar::IconOnly );
+        } else
+            // Use global setting
+            setIconText( iconTextSetting() );
+    }
 
-    if ( !attrIconSize.isEmpty() )
-        setIconSize( attrIconSize.toInt() );
-    d->IconSizeDefault = iconSize();
+    {
+        QString attrIconSize = element.attribute( "iconSize" ).lower();
+        if ( !attrIconSize.isEmpty() )
+            d->IconSizeDefault = attrIconSize.toInt();
+        setIconSize( d->IconSizeDefault );
+    }
+
+    {
+        QString attrIndex = element.attribute( "index" ).lower();
+        if ( !attrIndex.isEmpty() )
+            d->IndexDefault = attrIndex.toInt();
+    }
+
+    {
+        QString attrOffset = element.attribute( "offset" ).lower();
+        if ( !attrOffset.isEmpty() )
+            d->OffsetDefault = attrOffset.toInt();
+    }
+
+    {
+        QString attrNewLine = element.attribute( "newline" ).lower();
+        if ( !attrNewLine.isEmpty() )
+            d->NewLineDefault = attrNewLine == "true";
+    }
+
+    {
+        QString attrHidden = element.attribute( "hidden" ).lower();
+        if ( !attrHidden.isEmpty() )
+            d->HiddenDefault  = attrHidden  == "true";
+    }
+
+    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, d->IndexDefault, d->NewLineDefault, d->OffsetDefault );
+    mainWindow()->addDockWindow( this, dock, d->NewLineDefault );
+    mainWindow()->moveDockWindow( this, dock, d->NewLineDefault, d->IndexDefault, d->OffsetDefault );
 
     // Apply the highlight button setting
     d->m_highlight = highlightSetting();
 
     // Apply transparent-toolbar-moving setting (ok, this is global to the mainwindow,
     // but we do it only if there are toolbars...)
-    if ( transparentSetting() != (!mw->opaqueMoving()) )
-        mw->setOpaqueMoving( !transparentSetting() );
+    if ( transparentSetting() != !mainWindow()->opaqueMoving() )
+        mainWindow()->setOpaqueMoving( !transparentSetting() );
 
-    if ( attrHidden == "true" )
+    if ( d->HiddenDefault )
         hide();
     else
         show();
 
-    getAttributes(d->PositionDefault, d->IconTextDefault, d->IndexDefault,
-		   d->OffsetDefault,  d->NewLineDefault);
+    getAttributes( d->PositionDefault, d->IconTextDefault, d->IndexDefault );
 }
 
-void KToolBar::getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine )
+void KToolBar::getAttributes( QString &position, QString &icontext, int &index )
 {
     // get all of the stuff to save
     switch ( barPos() ) {
@@ -1796,15 +1814,12 @@ void KToolBar::getAttributes( QString &position, QString &icontext, QString &ind
         position = "Top";
         break;
     }
+
     if ( mainWindow() ) {
         QMainWindow::ToolBarDock dock;
-        int index_;
-        bool nl;
-        int offset_;
-        mainWindow()->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
-        index = QString::number( index_ );
-        offset = QString::number( offset_ );
-        newLine = nl ? "true" : "false";
+        bool newLine;
+        int offset;
+        mainWindow()->getLocation( this, dock, index, newLine, offset );
     }
 
     switch (d->m_iconText) {
@@ -1826,18 +1841,16 @@ void KToolBar::getAttributes( QString &position, QString &icontext, QString &ind
 
 void KToolBar::saveState( QDomElement &current )
 {
-    QString position, icontext, index, offset, newLine;
-    getAttributes( position, icontext, index, offset, newLine );
+    QString position, icontext;
+    int index = -1;
+    getAttributes( position, icontext, index );
 
     current.setAttribute( "noMerge", "1" );
     current.setAttribute( "position", position );
     current.setAttribute( "iconText", icontext );
-    if ( !index.isEmpty() )
-        current.setAttribute( "index", index );
-    if ( !offset.isEmpty() )
-        current.setAttribute( "offset", offset );
-    if ( !newLine.isEmpty() )
-        current.setAttribute( "newline", newLine );
+    current.setAttribute( "index", index );
+    current.setAttribute( "offset", offset() );
+    current.setAttribute( "newline", newLine() );
     if ( isHidden() )
         current.setAttribute( "hidden", "true" );
     d->modified = true;
