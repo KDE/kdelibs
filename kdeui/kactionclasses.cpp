@@ -2007,6 +2007,7 @@ KWidgetAction::KWidgetAction( QWidget* widget,
   , m_widget( widget )
   , m_autoSized( false )
 {
+  connect( this, SIGNAL(enabled(bool)), widget, SLOT(setEnabled(bool)) );
 }
 
 KWidgetAction::~KWidgetAction()
