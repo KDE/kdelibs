@@ -2468,14 +2468,14 @@ void NETWinInfo::setWindowType(WindowType type) {
 
     case Utility:
 	data[0] = net_wm_window_type_utility;
-	data[1] = None;
-	len = 1;
+	data[1] = net_wm_window_type_dialog; // fallback for old netwm version
+	len = 2;
 	break;
 
     case Splash:
 	data[0] = net_wm_window_type_splash;
-	data[1] = None;
-	len = 1;
+	data[1] = net_wm_window_type_dock; // fallback (dock seems best)
+	len = 2;
 	break;
 
     default:
