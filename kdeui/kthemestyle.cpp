@@ -35,19 +35,13 @@ void KThemeStyle::polish(QApplication *app)
         }
         app->setPalette(newPalette);
     }
-#if QT_VERSION ==  210
-#warning Using Qt2.1.0 CVS scrollbar extents (mosfet).
     setScrollBarExtent(getSBExtent());
-#endif
 }
 
 void KThemeStyle::unPolish(QApplication *app)
 {
     app->setPalette(oldPalette, true);
-#if QT_VERSION ==  210
-#warning Using Qt2.1.0 CVS scrollbar extents (mosfet).
     setScrollBarExtent(16);
-#endif
 }
 
 void KThemeStyle::polish(QWidget *w)
