@@ -98,6 +98,23 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   return item->button;
 }	
 
+  QPushButton *
+KButtonBox::addButton(
+  const QString & text,
+  QObject *       receiver,
+  const char *    slot,
+  bool            noexpand
+)
+{
+  QPushButton * pb = addButton(text, noexpand);
+
+  if ((0 != receiver) && (0 != slot))
+    QObject::connect(pb, SIGNAL(clicked()), receiver, slot);
+
+  return pb;
+}	
+
+
 void KButtonBox::addStretch(int scale) {
   if(scale > 0) {
     Item *item = new Item;

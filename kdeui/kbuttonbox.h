@@ -84,6 +84,20 @@ public:
   QPushButton *addButton(const QString& text, bool noexpand = FALSE);
 
   /**
+    * Add a new @ref QPushButton.  
+    *
+    * @param receiver An object to connect to.
+    * @param slot A Qt slot to connect the 'clicked()' signal to.
+    * @param noexpand If @p noexpand is @p false, the width
+    * of the button is adjusted to fit the other buttons (the maximum
+    * of all buttons is taken). If @p noexpand @p true, the width of this
+    * button will be set to the minimum width needed for the given text).
+    *
+    * @return A pointer to the new button.
+    */
+  QPushButton *addButton(const QString& text, QObject * receiver, const char * slot, bool noexpand = FALSE);
+
+  /**
     * Add a stretch to the buttonbox. 
     *
     * Can be used to separate buttons (i.e. if you add the buttons "OK",
