@@ -41,7 +41,8 @@ DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
-stdsynthmodule.h: artsflow.h
+$(srcdir)/stdsynthmodule.h: artsflow.h
+$(srcdir)/synth_play_impl.cc: artsflow.h
 
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 	$(MCOPIDL) -t $(top_srcdir)/arts/flow/artsflow.idl
