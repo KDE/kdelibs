@@ -1188,7 +1188,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 int bWidth = borderWidth( widget );
                 int hWidth = highlightWidth( widget );
                 handled = true;
-                if ( tbs == QTabBar::RoundedAbove )
+                if ( tbs == QTabBar::RoundedAbove || tbs == QTabBar::TriangularAbove )
                 {
                     if ( !selected )
                     {
@@ -1255,7 +1255,8 @@ void KThemeStyle::drawControl( ControlElement element,
                     else
                         p->fillRect( x, y, x2 - x + 1, y2 - y + 1, cg->background() );
                 }
-                else if ( tb->shape() == QTabBar::RoundedBelow )
+                else if ( tb->shape() == QTabBar::RoundedBelow ||
+                        tb->shape() == QTabBar::TriangularBelow )
                 {
                     if ( !selected )
                     {
