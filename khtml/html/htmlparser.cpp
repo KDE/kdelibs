@@ -787,7 +787,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
             break;
 	    case ID_OBJECT:
-		kdDebug() << "KHTMLParser::insertNode " << id << endl; 
 		discard_until = id + ID_CLOSE_TAG;
 		return false;
 	    case ID_UL:
