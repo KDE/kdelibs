@@ -91,12 +91,9 @@ QFont KGlobal::generalFont()
     KConfig *c = KGlobal::config();
 
     c->setGroup( "General" );
-    _generalFont = new QFont(c->readFontEntry("font"));
-    if( *_generalFont == QFont::defaultFont() )
-    {
-        *_generalFont = QFont("helvetica", 12, QFont::Normal);
-        charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
-    }                                                                                  
+    _generalFont = new QFont("helvetica", 12, QFont::Normal);
+    charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
+    *_generalFont = c->readFontEntry("font", _generalFont);
     return *_generalFont;
 }
 	
