@@ -31,6 +31,7 @@
   <!ENTITY kde-html-faq.dsl SYSTEM "kde-faq.dsl">
   <!ENTITY kde-html-navig.dsl SYSTEM "kde-navig.dsl">
   <!ENTITY kde-html-anchor.dsl SYSTEM "kde-anchor.dsl">
+  <!ENTITY kde-html-search.dsl SYSTEM "kde-search.dsl">
 ]>
 <!--
     USAGE
@@ -454,6 +455,38 @@
 
 ;; Creates file with list of anchors
 &kde-html-anchor.dsl;
+;; Creates file with search terms
+&kde-html-search.dsl;
+
+;; Origin: html/docbook.dsl
+;; How:    removed comments;
+;;         Added as last sexp in (make sequence ...)
+;;         (if %anchor/search-index% (with-mode anchor/searchindex (process-children)) (empty-sosofo))
+;; Related: added (define %anchor/search-index% ...);
+;;          added (mode anchor/searchindex ...);
+;;          added (define %anchor/search-index-filename% ...)
+;; Why:    creates file %anchor/search-index-filename% with anchors for referencing
+;;         and keywords for searching
+;;         from applications (not necessarily HTML only: could be PDF/PostScript as well)
+;;         TO MAKE MORE GENERAL FOR THIS PURPOSE (eg no href)
+;; Watch out: - if (root ...) is modified in html/docbook.dsl
+(root
+ (make sequence
+   (process-children)
+   (with-mode manifest
+     (process-children))
+   (if html-index
+       (with-mode htmlindex
+	 (process-children))
+       (empty-sosofo))
+   (if %anchor-index% ; this was added
+       (with-mode anchorindex
+	 (process-children))
+       (empty-sosofo))
+   (if %search-index% ; this was added
+       (with-mode searchindex
+	 (process-children))
+       (empty-sosofo))))
 
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>

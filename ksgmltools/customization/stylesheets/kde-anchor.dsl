@@ -47,28 +47,3 @@
 	(htmlnewline)))
 ; one problem left: it seems a bit pointless to refer to sections with anchors when they already have IDs.  Is that true?
   )
-
-;; Origin: html/docbook.dsl
-;; How:    removed comments;
-;;         Added as last sexp in (make sequence ...)
-;;         (if %anchor-index% (with-mode anchorindex (process-children)) (empty-sosofo))
-;; Related: added (define %anchor-index% ...);
-;;          added (mode anchorindex ...);
-;;          added (define %anchor-index-filename% ...)
-;; Why:    creates file %anchor-index-filename% with anchors for referencing 
-;;         from applications (not necessarily HTML only: could be PDF/PostScript as well)
-;;         TO MAKE MORE GENERAL FOR THIS PURPOSE (eg no href)
-;; Watch out: - if (root ...) is modified in html/docbook.dsl
-(root
- (make sequence
-   (process-children)
-   (with-mode manifest
-     (process-children))
-   (if html-index
-       (with-mode htmlindex
-	 (process-children))
-       (empty-sosofo))
-   (if %anchor-index% ; this was added
-       (with-mode anchorindex
-	 (process-children))
-       (empty-sosofo))))
