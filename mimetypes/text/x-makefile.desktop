@@ -10,7 +10,7 @@ Comment[es]=Script Makefile
 Comment[fr]=Fichier d'instructions Makefile
 Comment[he]=קובץ Make
 Comment[hu]=Makefájl
-Comment[is]=Make-skrÃ¡
+Comment[is]=Make-skrá
 Comment[ko]=Make 파일
 Comment[mk]=Makefile датотека
 Comment[nn]=Make-fil
@@ -21,7 +21,7 @@ Comment[ven]=Itanifaela
 Comment[xh]=Yenza ifayile
 Comment[zu]=Yenza ifayela
 Type=MimeType
-Patterns=Makefile;makefile;Makefile.*;makefile.*
+Patterns=GNUmakefile;Makefile;makefile;Makefile.*;makefile.*
 Icon=make
 
 [Property::X-KDE-text]
