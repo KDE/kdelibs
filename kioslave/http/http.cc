@@ -2639,13 +2639,7 @@ bool HTTPProtocol::readBody()
 
   if ( useMD5 )
   {
-    KMD5::Digest digest;
-    QString calculatedMD5;
-    QByteArray md5Checksum(16);
-
-    context.rawDigest(digest);
-    md5Checksum.setRawData(reinterpret_cast<const char*>(&digest), 16);
-    calculatedMD5 = KCodecs::base64Encode(md5Checksum);
+    QString calculatedMD5 = QString::fromLatin1(context.base64Digest());
 
     if ( m_sContentMD5 == calculatedMD5 )
       kdDebug(7113) << "(" << m_pid << ") MD5 checksum MATCHED!!" << endl;
