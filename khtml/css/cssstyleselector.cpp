@@ -1709,6 +1709,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             c = CRIGHT; break;
         case CSS_VAL_BOTH:
             c = CBOTH; break;
+        case CSS_VAL_NONE:
+            c = CNONE; break;
         default:
             return;
         }

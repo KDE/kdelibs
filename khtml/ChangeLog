@@ -1,3 +1,7 @@
+2003-11-01  Dirk Mueller  <mueller@kde.org>
+
+	* css/cssstyleselector.cpp (applyRule): handle clear: none (#57676)
+
 2003-10-31  David Faure  <faure@kde.org>
 
 	* html/html_inlineimpl.cpp (defaultEventHandler): Another wrong use of detail()
