@@ -1,5 +1,5 @@
 #ifndef __open_with_h__
-#define __open_with_h__
+#define __open_with_h__ "$Id$"
 
 #include <qwidget.h>
 #include <qfileinfo.h>

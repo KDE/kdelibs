@@ -1,7 +1,5 @@
 #ifndef __kio_rename_dlg__
-#define __kio_rename_dlg__
-
-#include <string>
+#define __kio_rename_dlg__ "$Id$"
 
 #include <qwidget.h>
 #include <qdialog.h>
@@ -28,8 +26,7 @@ protected:
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout;
   
-  string src;
-  string dest;
+  QString src, dest;
     
   bool modal;
 

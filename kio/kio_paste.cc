@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_job.h" 
 #include "kio_paste.h"
 #include "kio_error.h"
@@ -15,8 +17,6 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <list>
-#include <string>
 
 bool isClipboardEmpty()
 {

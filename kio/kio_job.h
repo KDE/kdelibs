@@ -2,8 +2,6 @@
 #define __kio_job_h__
 
 #include <map>
-#include <list>
-#include <string>
                      
 #include "kio_base.h"
 

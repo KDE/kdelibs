@@ -3,8 +3,6 @@
 
 #include "kio_connection.h"
 
-#include <list>
-#include <string>
 #include <vector>
 
 #include <qstringlist.h>
@@ -131,7 +129,7 @@ struct UDSAtom
   /**
    * Wether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
    */
-  string m_str;
+  QString m_str;
   long m_long;
   /**
    * Holds one of the UDS_XXX constants

@@ -24,8 +24,6 @@
 #include <time.h>
 #include <sys/wait.h>
 
-#include <iostream.h>
-
 #ifdef __FreeBSD__
 #include <sys/param.h>
 #include <sys/ucred.h>
@@ -164,7 +162,6 @@ void KIOJob::createGUI() {
 
 void KIOJob::connectProgress( KIOLittleProgressDlg *dlg )
 {
-  cerr << "connecting progress\n";
   m_pLittleProgressDlg = dlg;
   m_pLittleProgressDlg->setJob( this );
 }

@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_base.h"
 
 #include <assert.h>

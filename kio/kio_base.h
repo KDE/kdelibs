@@ -1,10 +1,7 @@
 #ifndef __iojob_h__
-#define __iojob_h__
+#define __iojob_h__ "$Id$"
 
 #include "kio_interface.h"
-
-#include <string>
-#include <list>
 
 class IOJob : public IOProtocol
 {
@@ -47,7 +44,7 @@ public:
   bool hasFinished() { return ( m_cmd == CMD_NONE ); }
   bool hasError() { return m_bError; }
   int errorId() { return m_iError; }
-  const char* errorText() { return m_strError.c_str(); }
+  QString errorText() { return m_strError; }
   void clearError() { m_bError = false; }
   
 protected:
@@ -55,8 +52,7 @@ protected:
   bool m_bIsReady;
   bool m_bError;
   int m_iError;
-  string m_strError;
+  QString m_strError;
 };
 
 #endif
-

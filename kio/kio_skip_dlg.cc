@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_skip_dlg.h"
 
 #include <stdio.h>

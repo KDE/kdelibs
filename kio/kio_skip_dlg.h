@@ -1,7 +1,5 @@
 #ifndef __kio_skip_dlg__
-#define __kio_skip_dlg__
-
-#include <string>
+#define __kio_skip_dlg__ "$Id$"
 
 #include <qwidget.h>
 #include <qdialog.h>

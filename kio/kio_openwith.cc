@@ -1,3 +1,5 @@
+// $Id$
+
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>

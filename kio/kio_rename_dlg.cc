@@ -74,7 +74,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
 
-    lb = new QLabel( src.c_str(), this );
+    lb = new QLabel( src, this );
     lb->setFixedHeight( lb->sizeHint().height() );
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
@@ -85,7 +85,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   }
   else if ( _mode & M_OVERWRITE )
   {	    
-    QLabel *lb = new QLabel( dest.c_str(), this );
+    QLabel *lb = new QLabel( dest, this );
     lb->setFixedHeight( lb->sizeHint().height() );
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
@@ -95,9 +95,9 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
 
-    string str = src;
+    QString str = src;
     str += " ?";
-    lb = new QLabel( str.c_str(), this );
+    lb = new QLabel( str, this );
     lb->setFixedHeight( lb->sizeHint().height() );
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
@@ -108,7 +108,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
   }
   else if ( !(_mode & M_OVERWRITE ) )
   {
-    QLabel *lb = new QLabel( src.c_str(), this );
+    QLabel *lb = new QLabel( src, this );
     lb->setFixedHeight( lb->sizeHint().height() );
     m_pLayout->addWidget( lb );
     m_pLayout->addSpacing( 5 );
@@ -126,7 +126,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
     assert( 0 );
   
   m_pLineEdit = new QLineEdit( this );
-  m_pLineEdit->setText( dest.c_str() );
+  m_pLineEdit->setText( dest );
   m_pLineEdit->setFixedHeight( m_pLineEdit->sizeHint().height() );
   m_pLayout->addSpacing( 10 );
   m_pLayout->addWidget( m_pLineEdit );
@@ -197,7 +197,7 @@ void KIORenameDlg::b0Pressed()
   if ( modal )
     done( 0 );
   else
-    emit result( this, 0, src.c_str(), dest.c_str() );
+    emit result( this, 0, src, dest );
 }
 
 // Rename
@@ -215,13 +215,12 @@ void KIORenameDlg::b1Pressed()
     return;
   }
 
-  KURL d( dest.c_str() );
-  if ( u.protocol() != d.protocol() )
-  {
+  KURL d( dest );
+  if ( u.protocol() != d.protocol() ) {
     QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "OK" ) );
     return;
   }
-  
+
   /*
   if ( dest == m_pLineEdit->text() )
   {
@@ -233,7 +232,7 @@ void KIORenameDlg::b1Pressed()
   if ( modal )
     done( 1 );
   else
-    emit result( this, 1, src.c_str(), m_pLineEdit->text().ascii() );
+    emit result( this, 1, src.ascii(), m_pLineEdit->text().ascii() );
 }
 
 void KIORenameDlg::b2Pressed()
@@ -241,7 +240,7 @@ void KIORenameDlg::b2Pressed()
   if ( modal )
     done( 2 );
   else
-    emit result( this, 2, src.c_str(), dest.c_str() );
+    emit result( this, 2, src.ascii(), dest.ascii() );
 }
 
 void KIORenameDlg::b3Pressed()
@@ -249,7 +248,7 @@ void KIORenameDlg::b3Pressed()
   if ( modal )
     done( 3 );
   else
-    emit result( this, 3, src.c_str(), dest.c_str() );
+    emit result( this, 3, src.ascii(), dest.ascii() );
 }
 
 void KIORenameDlg::b4Pressed()
@@ -257,7 +256,7 @@ void KIORenameDlg::b4Pressed()
   if ( modal )
     done( 4 );
   else
-    emit result( this, 4, src.c_str(), dest.c_str() );
+    emit result( this, 4, src.ascii(), dest.ascii() );
 }
 
 void KIORenameDlg::b5Pressed()
@@ -265,7 +264,7 @@ void KIORenameDlg::b5Pressed()
   if ( modal )
     done( 5 );
   else
-    emit result( this, 5, src.c_str(), dest.c_str() );
+    emit result( this, 5, src.ascii(), dest.ascii() );
 }
 
 void KIORenameDlg::b6Pressed()
@@ -273,7 +272,7 @@ void KIORenameDlg::b6Pressed()
   if ( modal )
     done( 6 );
   else
-    emit result( this, 6, src.c_str(), dest.c_str() );
+    emit result( this, 6, src.ascii(), dest.ascii() );
 }
 
 void KIORenameDlg::b7Pressed()
@@ -281,7 +280,7 @@ void KIORenameDlg::b7Pressed()
   if ( modal )
     done( 7 );
   else
-    emit result( this, 7, src.c_str(), dest.c_str() );
+    emit result( this, 7, src.ascii(), dest.ascii() );
 }
 
 RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new )
