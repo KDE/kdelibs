@@ -25,6 +25,8 @@
 #include <kapp.h>
 #include <kcharsets.h>
 
+#include <assert.h>
+
 #ifdef GrayScale
 #undef GrayScale
 #endif
@@ -1096,6 +1098,9 @@ void KHTMLWidget::print()
 		pgWidth = 540;
 		pgHeight = 720;
 		break;
+
+            default:
+	      assert( 0 );
 	}
 
 	if ( printer.orientation() == QPrinter::Landscape )

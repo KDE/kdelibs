@@ -704,5 +704,15 @@ void KHTMLView::setCharset( const char *_c)
     view->setCharset(_c);
 }
 
+KHTMLView* KHTMLView::topView()
+{
+  KHTMLView *v = this;
+  
+  while( v->getParentView() )
+    v = v->getParentView();
+  
+  return v;
+}
+
 #include "htmlview.moc"
 

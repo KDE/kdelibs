@@ -453,6 +453,11 @@ public:
     KHTMLView* getParentView() { return parentView; }
     
     /**
+     * Never returns 0L.
+     */
+    KHTMLView* topView();
+  
+    /**
      * Called when a URL is encountered.  Overload this method to indicate
      * which links have been visited previously.
      *
@@ -484,7 +489,6 @@ public:
 	{ printf("Setting cookie '%s'\n",_c); cookie = _c; }
 
     void cancelAllRequests();
-
 
 signals:
     /**
