@@ -349,6 +349,11 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 		    << ") for " << e->path << endl;
     }
   }
+
+  // handle FAM events to avoid deadlock
+  // (FAM sends back all files in a directory when monitoring)
+  famEventReceived();
+
   return true;
 }
 #endif
