@@ -204,7 +204,7 @@ private slots:
     void tripleClickTimeout();
 
 private:
-    void scheduleRelayout(bool repaint);
+    void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
 
     void scheduleRepaint(int x, int y, int w, int h);

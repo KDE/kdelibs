@@ -268,7 +268,7 @@ void RenderCanvas::repaint(bool immediate)
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
             if (!layouted()) {
-                m_view->scheduleRelayout(true);
+                m_view->scheduleRelayout();
                 return;
             }
 	    // ### same as in repaintRectangle

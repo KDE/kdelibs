@@ -178,7 +178,6 @@ public:
         firstRelayout = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
-        repaintLayout = false;
         updateRect = QRect();
         m_dialogsAllowed = true;
 #ifndef KHTML_NO_CARET
@@ -279,7 +278,6 @@ public:
     bool layoutSchedulingEnabled;
     bool possibleTripleClick;
     bool dirtyLayout;
-    bool repaintLayout;
     bool m_dialogsAllowed;
     QRect updateRect;
     KHTMLToolTip *tooltip;
@@ -589,8 +587,7 @@ void KHTMLView::layout()
 	    showCaret();
         }/*end if*/
 #endif
-        if( d->repaintLayout )
-          root->repaint();
+	root->repaint();
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     }
     else
@@ -599,7 +596,6 @@ void KHTMLView::layout()
     killTimer(d->layoutTimerId);
     d->layoutTimerId = 0;
     d->layoutSchedulingEnabled=true;
-    d->repaintLayout = false;
 }
 
 void KHTMLView::closeChildDialogs()
@@ -2101,14 +2097,13 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 }
 
-void KHTMLView::scheduleRelayout(bool dorepaint)
+void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)
 {
     if (!d->layoutSchedulingEnabled || d->layoutTimerId)
         return;
 
     d->layoutTimerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
                              ? 1000 : 0 );
-    d->repaintLayout = dorepaint;
 }
 
 void KHTMLView::unscheduleRelayout()

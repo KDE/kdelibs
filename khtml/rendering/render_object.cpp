@@ -1486,12 +1486,12 @@ void RenderObject::recalcMinMaxWidths()
     m_recalcMinMax = false;
 }
 
-void RenderObject::scheduleRelayout(bool repaint)
+void RenderObject::scheduleRelayout(RenderObject *clippedObj)
 {
     if (!isCanvas()) return;
     KHTMLView *view = static_cast<RenderCanvas *>(this)->view();
     if ( view )
-        view->scheduleRelayout(repaint);
+        view->scheduleRelayout(clippedObj);
 }
 
 

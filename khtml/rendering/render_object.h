@@ -271,7 +271,7 @@ public:
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
-    void scheduleRelayout(bool repaint);
+    void scheduleRelayout(RenderObject *clippedObj = 0);
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
 

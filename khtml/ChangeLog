@@ -1,4 +1,7 @@
 2003-10-24  Lars Knoll <knoll@kde.org>
+	* Hopefully fixed most repainting problems.
+
+2003-10-24  Lars Knoll <knoll@kde.org>
 	* Fix most of the form related regressions introduced by my
 	changes earlier on. onfoo event handlers are now fired in a
 	way that is mostly compatible to IE for <input type=xxx>.
