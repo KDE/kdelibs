@@ -766,8 +766,7 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
   else
   {
     // Get the closest item before us ('atpos' or the one above, if any)
-      if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2)
-          && atpos->itemAbove() )
+      if (p.y() - itemRect(atpos).topLeft().y() < (atpos->height()/2))
           above = atpos->itemAbove();
       else
           above = atpos;
