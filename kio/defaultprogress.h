@@ -30,7 +30,7 @@ class DefaultProgress : public ProgressBase {
 
 public:
 
-  DefaultProgress();
+  DefaultProgress( bool showNow = true );
   ~DefaultProgress() {}
 
 public slots:

@@ -28,7 +28,7 @@
 #include "defaultprogress.h"
 
 
-DefaultProgress::DefaultProgress()
+DefaultProgress::DefaultProgress( bool showNow )
   : ProgressBase( 0 ) {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
@@ -81,7 +81,10 @@ DefaultProgress::DefaultProgress()
   hBox->addWidget( pb );
 
   resize( sizeHint() );
-  show();
+
+  if ( showNow ) {
+    show();
+  }
 }
 
 
@@ -165,6 +168,8 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second )
   } else {
     speedLabel->setText( i18n( "%1/s").arg( KIO::convertSize( _bytes_per_second )) );
   }
+
+  // TODO : put somewhere remaining time
 }
 
 
