@@ -49,6 +49,7 @@ namespace KJS {
     virtual Boolean toBoolean() const;
     int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
+    void scheduleClose();
   private:
     QGuardedPtr<KHTMLPart> part;
     QGuardedPtr<KHTMLPart> opener;
@@ -84,6 +85,9 @@ namespace KJS {
     void clearTimeout(int timerId);
   public slots:
     void timeout();
+    void timeoutClose();
+  protected slots:
+    void parentDestroyed();
   private:
     Window *parent;
     QTimer *timer;

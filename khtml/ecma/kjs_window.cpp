@@ -278,6 +278,14 @@ void Window::clearTimeout(int timerId)
     winq->clearTimeout(timerId);
 }
 
+void Window::scheduleClose()
+{
+  if (!winq)
+    winq = new WindowQObject(this);
+  kdDebug(6070) << "WindowFunc::tryExecute window.close() " << part << endl;
+  QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
+}
+
 Completion WindowFunc::tryExecute(const List &args)
 {
   KJSO result;
@@ -436,13 +444,14 @@ Completion WindowFunc::tryExecute(const List &args)
         */
     if (window->opener.isNull())
     {
-        // TODO confirmation, see above
-        kdWarning(6070) << "KJS: window.close() not implemented for windows not opened with window.open()" << endl;
+        // To conform to the SPEC, we should only ask if the window
+        // has more than one entry in the history (NS does that too). Bah.
+        if ( KMessageBox::questionYesNo( window->part->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
+            (const_cast<Window*>(window))->scheduleClose();
     }
     else
     {
-        kdDebug(6070) << "WindowFunc::tryExecute window.close. Deleting part " << window->part << endl;
-        delete window->part;
+        (const_cast<Window*>(window))->scheduleClose();
     }
 
     result = Undefined();
@@ -465,11 +474,19 @@ void WindowFunc::initJScript(KHTMLPart *p)
 WindowQObject::WindowQObject(Window *w)
   : parent(w), timer(0L)
 {
+    connect( parent->part, SIGNAL( destroyed() ),
+             this, SLOT( parentDestroyed() ) );
 }
 
 WindowQObject::~WindowQObject()
 {
   delete timer;
+}
+
+void WindowQObject::parentDestroyed()
+{
+  delete timer;
+  timer = 0;
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
@@ -498,6 +515,15 @@ void WindowQObject::timeout()
 {
   if (!parent->part.isNull())
     parent->part->executeScript(timeoutHandler.qstring());
+}
+
+void WindowQObject::timeoutClose()
+{
+  if (!parent->part.isNull())
+  {
+    kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
+    delete parent->part;
+  }
 }
 
 KJSO FrameArray::get(const UString &p) const
