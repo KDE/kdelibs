@@ -29,6 +29,7 @@
 #include <qvbox.h>
 #include <qlabel.h>
 #include <qbuttongroup.h>
+#include <qhbuttongroup.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
 #include <qpushbutton.h>
@@ -172,7 +173,7 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 8, 2);
+  grid = new QGridLayout(tabYourSSLCert, 7, 2);
 
   yourSSLBox = new QListBox(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
@@ -182,10 +183,40 @@ QString whatstr;
   yourSSLBox->setColumnMode(QListBox::FixedNumber);
   grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 0);
 
+  yourSSLAdd = new QPushButton(i18n("&Add..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLAdd, 0, 1);
+
+  yourSSLView = new QPushButton(i18n("&View/Edit..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLView, 1, 1);
+
+  yourSSLRemove = new QPushButton(i18n("&Remove..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLRemove, 2, 1);
+
+  yourSSLExport = new QPushButton(i18n("&Export..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLExport, 3, 1);
+
+  yourSSLDefault = new QPushButton(i18n("&Set Default..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLDefault, 4, 1);
+
+  yourSSLVerify = new QPushButton(i18n("Verif&y..."), tabYourSSLCert);
+  //connect(yourSSLAdd, SIGNAL(), SLOT());
+  grid->addWidget(yourSSLVerify, 5, 1);
+
+  QHButtonGroup *ocbg = new QHButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
+  yourSSLUseDefault = new QRadioButton(i18n("&Use default certificate"), ocbg);
+  yourSSLList = new QRadioButton(i18n("&List upon connection"), ocbg);
+  yourSSLDont = new QRadioButton(i18n("&Do not use certificates"), ocbg);
+  grid->addMultiCellWidget(ocbg, 6, 6, 0, 1);
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabYourSSLCert);
+  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 1);
 #endif
 
 
@@ -194,11 +225,79 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabOtherSSLCert = new QFrame(this);
 
+#ifdef HAVE_SSL
+  grid = new QGridLayout(tabOtherSSLCert, 4, 2);
+
+  otherSSLBox = new QListBox(tabOtherSSLCert);
+  whatstr = i18n("This list box shows which site and person certificates KDE"
+                " knows about.  You can easily manage them from here.");
+  QWhatsThis::add(otherSSLBox, whatstr);
+  otherSSLBox->setSelectionMode(QListBox::Single);
+  otherSSLBox->setColumnMode(QListBox::FixedNumber);
+  grid->addMultiCellWidget(otherSSLBox, 0, 3, 0, 0);
+
+  otherSSLImport = new QPushButton(i18n("&Import..."), tabOtherSSLCert);
+  //connect(otherSSLImport, SIGNAL(), SLOT());
+  grid->addWidget(otherSSLImport, 0, 1);
+
+  otherSSLView = new QPushButton(i18n("&View/Edit..."), tabOtherSSLCert);
+  //connect(otherSSLView, SIGNAL(), SLOT());
+  grid->addWidget(otherSSLView, 1, 1);
+
+  otherSSLRemove = new QPushButton(i18n("&Remove..."), tabOtherSSLCert);
+  //connect(otherSSLRemove, SIGNAL(), SLOT());
+  grid->addWidget(otherSSLRemove, 2, 1);
+
+  otherSSLVerify = new QPushButton(i18n("Verif&y..."), tabOtherSSLCert);
+  //connect(otherSSLVerify, SIGNAL(), SLOT());
+  grid->addWidget(otherSSLVerify, 3, 1);
+
+#else
+  nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
+                               " because this module was not linked"
+                               " with OpenSSL."), tabOtherSSLCert);
+  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+#endif
+
 
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCA = new QFrame(this);
+
+#ifdef HAVE_SSL
+  grid = new QGridLayout(tabSSLCA, 4, 2);
+
+  caSSLBox = new QListBox(tabSSLCA);
+  whatstr = i18n("This list box shows which certificate authorities KDE"
+                " knows about.  You can easily manage them from here.");
+  QWhatsThis::add(caSSLBox, whatstr);
+  caSSLBox->setSelectionMode(QListBox::Single);
+  caSSLBox->setColumnMode(QListBox::FixedNumber);
+  grid->addMultiCellWidget(caSSLBox, 0, 3, 0, 0);
+
+  caSSLImport = new QPushButton(i18n("&Import..."), tabSSLCA);
+  //connect(caSSLImport, SIGNAL(), SLOT());
+  grid->addWidget(caSSLImport, 0, 1);
+
+  caSSLView = new QPushButton(i18n("&View/Edit..."), tabSSLCA);
+  //connect(caSSLView, SIGNAL(), SLOT());
+  grid->addWidget(caSSLView, 1, 1);
+
+  caSSLRemove = new QPushButton(i18n("&Remove..."), tabSSLCA);
+  //connect(caSSLRemove, SIGNAL(), SLOT());
+  grid->addWidget(caSSLRemove, 2, 1);
+
+  caSSLVerify = new QPushButton(i18n("Verif&y..."), tabSSLCA);
+  //connect(caSSLVerify, SIGNAL(), SLOT());
+  grid->addWidget(caSSLVerify, 3, 1);
+
+#else
+  nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
+                               " because this module was not linked"
+                               " with OpenSSL."), tabSSLCA);
+  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+#endif
 
 
   ///////////////////////////////////////////////////////////////////////////

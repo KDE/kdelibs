@@ -54,7 +54,14 @@ private:
   QWidget *tabSSL, *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave, *mWarnOnUnencrypted, *mWarnOnMixed;
-  QListBox *SSLv2Box, *SSLv3Box, *yourSSLBox, *otherSSLBox;
+  QListBox *SSLv2Box, *SSLv3Box, *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QPushButton *otherSSLImport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
+  QPushButton *caSSLImport, *caSSLView, *caSSLRemove, *caSSLVerify;
+  QPushButton *yourSSLAdd, *yourSSLView, *yourSSLRemove, *yourSSLExport,
+              *yourSSLDefault, *yourSSLVerify;
+  QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
+
+  
 };
 
 #endif
