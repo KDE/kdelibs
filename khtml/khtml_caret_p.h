@@ -106,7 +106,7 @@ protected:
 public:
   /** dereferences current line.
    *
-   * Note: The returned inline flow box may be empty. This does <b>not<b>
+   * Note: The returned inline flow box may be empty. This does <b>not</b>
    *	indicate the end
    *	of the document, but merely that the current paragraph does not contain
    *	any lines.
@@ -214,7 +214,7 @@ protected:
  * SGML documents are trees. But for navigation, this representation is
  * not practical. Therefore this class serves as a helper to represent the
  * document as a linear list of lines. Its usage somewhat resembles STL
- * semantics like @ref begin and @ref end as well as iterators.
+ * semantics like begin and end as well as iterators.
  *
  * The lines itself are represented as pointers to InlineFlowBox objects.
  *
@@ -614,7 +614,7 @@ public:
   /** Constructs a new iterator.
    * @param table table to iterate through.
    * @param fromEnd @p true to iterate towards the beginning
-   * @param startRow pointer to row to start with, 0 starts at the first/last
+   * @param row pointer to row to start with, 0 starts at the first/last
    *	row.
    */
   TableRowIterator(RenderTable *table, bool fromEnd = false,
