@@ -39,8 +39,7 @@
 // SOME DEFAULT HEADER VALUES
 #define DEFAULT_LANGUAGE_HEADER         "en"
 #define DEFAULT_MIME_TYPE               "text/html"
-#define DEFAULT_FULL_CHARSET_HEADER     "iso-8859-1, utf-8, *"
-#define DEFAULT_PARIAL_CHARSET_HEADER   ", utf-8, *"
+#define DEFAULT_PARTIAL_CHARSET_HEADER   ", utf-8;q=0.5, *;q=0.5"
 
 #define DEFAULT_ACCEPT_HEADER           "text/*, image/jpeg, image/png, image/*, */*"
 
