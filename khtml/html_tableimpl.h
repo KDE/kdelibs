@@ -144,8 +144,10 @@ public:
     virtual void close();
     
     virtual void updateSize();
+    
+    virtual VAlign vAlign() { return valign; } 
 
-protected:
+protected:    
     /*
      * For each table element with a different width a ColInfo struct is
      * maintained. Consider for example the following table:
@@ -232,6 +234,7 @@ protected:
     
     Length vspace;
     Length hspace;
+    VAlign valign;
 
     QColor bg;
     Frame frame;
@@ -242,17 +245,19 @@ protected:
 
 // -------------------------------------------------------------------------
 
+
 class HTMLTablePartElementImpl : public HTMLBlockElementImpl
 {
 public:
     HTMLTablePartElementImpl(DocumentImpl *doc)
 	: HTMLBlockElementImpl(doc) 
-	{ table = 0; }
+	{ table = 0; valign=VNone; }
     HTMLTablePartElementImpl(DocumentImpl *doc, HTMLTableElementImpl *t)
 	: HTMLBlockElementImpl(doc) 
 	{ table = t; }
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
+    void setRowImpl(HTMLTableRowElementImpl *r) { rowimpl = r; }
 
     virtual NodeImpl *addChild(NodeImpl *child)
 	{
@@ -273,9 +278,13 @@ public:
 	setLayouted(false);
 	if(_parent) _parent->updateSize(); 
     }
+    
+    virtual VAlign vAlign() { return valign; } 
 
 protected:
-    HTMLTableElementImpl *table;
+    VAlign valign;
+    HTMLTableElementImpl *table;    
+    HTMLTableRowElementImpl *rowimpl;
 };
 
 // -------------------------------------------------------------------------
@@ -400,6 +409,8 @@ public:
 	    return HTMLBlockElementImpl::mouseEvent(_x, _y, button, t, 
 						    _tx, _ty, url);
 	} 
+        
+    virtual void calcVerticalAlignment();
    
 protected:
     int _row;
@@ -435,8 +446,11 @@ public:
 
     // overrides
     virtual void parseAttribute(Attribute *attr);
+    
+    virtual VAlign vAlign() { return valign; } 
 
 protected:
+    VAlign valign;
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
     // this, but since both elements work quite similar, we use one
     // DOMElement for them...

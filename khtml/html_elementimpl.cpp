@@ -1263,7 +1263,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
     printf("calcParagraph end\n");
 #endif
-    descent += 4;
+//    descent += 4;    
     return retval;
 }
 

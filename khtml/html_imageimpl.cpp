@@ -419,6 +419,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	{
 	    if(nodeStack.isEmpty()) break;
 	    current = nodeStack.pop();
+	    current = current->nextSibling();
 	    continue;
 	}
 	if(current->id()==ID_AREA || current->id()==ID_P)

@@ -36,7 +36,7 @@ namespace khtml
     const int UNDEFINED = -1;
 
     // alignment
-    enum VAlign { Bottom=0, VNone=0, VCenter=1, Top=2 };
+    enum VAlign { VNone=0, Bottom, VCenter, Top, Baseline };
     enum HAlign { HDefault, Left, HCenter, Right, HNone = 0 };
 
     /*

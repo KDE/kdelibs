@@ -27,10 +27,11 @@
 
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
-//#define TABLE_DEBUG
-//#define DEBUG_LAYOUT
+#define TABLE_DEBUG
+#define DEBUG_LAYOUT
 
 #include <qlist.h>
+#include <qstack.h>
 #include <qbrush.h>
 #include <qpainter.h>
 #include <qpalette.h>
@@ -39,6 +40,7 @@
 #include "dom_string.h"
 #include "dom_nodeimpl.h"
 #include "dom_exception.h"
+#include "dom_textimpl.h"
 
 #include "html_misc.h"
 #include "html_element.h"
@@ -49,6 +51,7 @@ using namespace DOM;
 
 #include "khtmlattrs.h"
 #include "khtmlstyle.h"
+#include "khtmltext.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -77,6 +80,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     head = 0;
     foot = 0;
     firstBody = 0;
+    
+    valign=VNone;
 
     width = -1;
     availableWidth = 0;
@@ -367,6 +372,16 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	    halign = HCenter;	
 	break;
     }
+    case ATTR_VALIGN:
+	if ( strcasecmp( attr->value(), "top" ) == 0 )
+	    valign = Top;
+	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
+	    valign = VCenter;
+	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
+	    valign = Bottom;
+	else if ( strcasecmp( attr->value(), "baseline" ) == 0 )
+	    valign = Baseline;
+	break;
     case ATTR_VSPACE:
 	vspace = attr->val()->toLength();
 	break;
@@ -1306,6 +1321,8 @@ void HTMLTableElementImpl::layout(bool deep)
 	    cell->setPos( columnPos[indx] + pad,
 			  rowHeights[rindx] );
 	    cell->setRowHeight(cellHeight);
+	    
+	    cell->calcVerticalAlignment();
 	}
     }
 #endif
@@ -1759,6 +1776,7 @@ NodeImpl *HTMLTableRowElementImpl::addChild(NodeImpl *child)
     HTMLTableCellElementImpl *cell =
 	static_cast<HTMLTableCellElementImpl *>(child);
     cell->setTable(this->table);
+    cell->setRowImpl(this);
     table->addCell(cell);
 
     return ret;
@@ -1771,6 +1789,16 @@ void HTMLTableRowElementImpl::parseAttribute(Attribute *attr)
     case ATTR_BGCOLOR:
 	setNamedColor( bg, attr->value().string() );
 	break;
+    case ATTR_VALIGN:
+	if ( strcasecmp( attr->value(), "top" ) == 0 )
+	    valign = Top;
+	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
+	    valign = VCenter;
+	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
+	    valign = Bottom;
+	else if ( strcasecmp( attr->value(), "baseline" ) == 0 )
+	    valign = Baseline;
+	break;	
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
     }
@@ -1787,6 +1815,7 @@ HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentImpl *doc, int tag)
   nWrap = false;
   _id = tag;
   rowHeight = 0;
+  valign=VNone;
 }
 
 HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
@@ -1827,6 +1856,16 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
 	    halign = Right;
 	else if ( strcasecmp( attr->value(), "center" ) == 0 )
 	    halign = HCenter;
+	break;
+    case ATTR_VALIGN:
+	if ( strcasecmp( attr->value(), "top" ) == 0 )
+	    valign = Top;
+	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
+	    valign = VCenter;
+	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
+	    valign = Bottom;
+	else if ( strcasecmp( attr->value(), "baseline" ) == 0 )
+	    valign = Baseline;
 	break;
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
@@ -1902,6 +1941,76 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     }
 }
 
+void HTMLTableCellElementImpl::calcVerticalAlignment() 
+{
+    // reposition everything within the cell according to valign.
+    // called after the cell has been layouted and rowheight is known.
+    // probably non-optimal...  -AKo
+
+//    printf("HTMLTableCellElementImpl::calcVerticalAlignment()\n");
+
+    int hh = rowHeight-table->cellPadding();
+
+//    printf("hh=%d, d=%d\n",hh,descent+ascent);
+
+    if (valign==Top || hh <= getHeight())
+    	return;
+    int vdelta;
+    
+    VAlign va = valign;
+    if (rowimpl && va==VNone)
+    	va = rowimpl->vAlign();
+    if (table && va==VNone)
+    	va = table->vAlign();
+    switch (va)
+    {
+    case VNone:
+    case Baseline:
+    case VCenter:
+    	vdelta=(hh-descent)/2;
+	break;
+    case Bottom:
+    	vdelta=hh-descent;
+	break;            
+    }
+    
+    QStack<NodeImpl> nodeStack;
+
+    NodeImpl *current = firstChild();
+    while(1)
+    {
+	if(!current)
+	{
+	    if(nodeStack.isEmpty()) break;
+	    current = nodeStack.pop();
+	    current = current->nextSibling();
+	    continue;
+	}
+	if (current->isTextNode())
+    	{
+	    TextSlave* sl = static_cast<TextImpl*>(current)->first;
+	    while (sl)
+	    {
+	    	sl->y+=vdelta;
+	    	sl=sl->next();
+	    }
+	}
+	else
+	    current->setYPos(current->getYPos()+vdelta);
+	NodeImpl *child = current->firstChild();
+	if(child)
+	{	    
+	    nodeStack.push(current);
+	    current = child;
+	}
+	else
+	{
+	    current = current->nextSibling();
+	}
+    }
+
+}
+
 // -------------------------------------------------------------------------
 
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
@@ -1935,9 +2044,20 @@ void HTMLTableColElementImpl::parseAttribute(Attribute *attr)
     case ATTR_WIDTH:
 	predefinedWidth = attr->val()->toLength();
 	break;
+    case ATTR_VALIGN:
+	if ( strcasecmp( attr->value(), "top" ) == 0 )
+	    valign = Top;
+	else if ( strcasecmp( attr->value(), "middle" ) == 0 )
+	    valign = VCenter;
+	else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
+	    valign = Bottom;
+	else if ( strcasecmp( attr->value(), "baseline" ) == 0 )
+	    valign = Baseline;
+	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
+    
 }
 
 // -------------------------------------------------------------------------
