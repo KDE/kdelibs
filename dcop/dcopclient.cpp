@@ -25,6 +25,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/file.h>
 
 #define INT32 QINT32
 
@@ -201,14 +202,13 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	emit attachFailed("Could not read network connection list.");
 	return false;
       }
-
       QTextStream t(&f);
       d->serverAddr = t.readLine().latin1();
       f.close();
     }
 
     if ((d->iceConn = IceOpenConnection(d->serverAddr.data(), 
-					0, 0, d->majorOpcode,
+					0, False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
 	emit attachFailed(errBuf);
 	d->iceConn = 0;
@@ -220,7 +220,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     int setupstat;
     setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
 				 (IcePointer) d,
-				 False, /* must authenticate */
+				 True, /* must authenticate */
 				 &(d->majorVersion), &(d->minorVersion),
 				 &(d->vendor), &(d->release), 1024, errBuf);
 
