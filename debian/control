@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000821-0), libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev | libasound1-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, mesag-dev, libssl095a-dev
+Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000906-0), libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev | xlibs, libasound0.4-dev | libasound1-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, mesag-dev, libssl095a-dev
 Section: non-US/main
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -28,7 +28,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: non-US/main
 Replaces: kdelibs-dev, kdelibs2g-dev
-Depends: kdelibs3 (= ${Source-Version}), libqt2.2-dev, libjpeg62-dev, xlib6g-dev
+Depends: kdelibs3 (= ${Source-Version}), libqt2.2-dev, libjpeg62-dev, xlib6g-dev | xlibs
 Suggests: kdelibs-doc
 Replaces: kdelibs3-dev-cvs
 Conflicts: kdelibs0-dev, kdelibs2g-dev
