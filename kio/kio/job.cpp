@@ -164,9 +164,17 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
 
 void Job::removeSubjob( Job *job )
 {
+    removeSubjob( job, false, true );
+}
+
+void Job::removeSubjob( Job *job, bool mergeMetaData, bool emitResultIfLast )
+{
     //kdDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs.count() << endl;
+    // Merge metadata from subjob
+    if ( mergeMetaData )
+        m_incomingMetaData += job->metaData();
     subjobs.remove(job);
-    if (subjobs.isEmpty())
+    if ( subjobs.isEmpty() && emitResultIfLast )
         emitResult();
 }
 
@@ -1128,7 +1136,7 @@ void TransferJob::slotResult( KIO::Job *job)
       m_subJob = 0; // No action required
       resume(); // Make sure we get the remaining data.
    }
-   subjobs.remove(job); // Remove job, but don't kill this job.
+   removeSubjob( job, false, false ); // Remove job, but don't kill this job.
 }
 
 TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
@@ -2965,7 +2973,8 @@ void CopyJob::slotResultCopyingFiles( Job * job )
     m_fileProcessedSize = 0;
 
     //kdDebug(7007) << files.count() << " files remaining" << endl;
-    subjobs.remove( job );
+
+    removeSubjob( job, true, false ); // merge metadata
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     copyNextFile();
 }
@@ -3404,7 +3413,7 @@ void CopyJob::slotResult( Job *job )
         case STATE_RENAMING: // We were trying to do a direct renaming, before even stat'ing
         {
             int err = job->error();
-            subjobs.remove( job );
+            removeSubjob( job, true, false ); // merge metadata
             assert ( subjobs.isEmpty() );
             // Determine dest again
             KURL dest = m_dest;
