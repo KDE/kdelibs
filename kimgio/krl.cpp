@@ -11,6 +11,8 @@
 #include"config.h"
 #endif
 
+#include "krl.h"
+
 #include<qimage.h>
 #include<qfile.h>
 #include<qglobal.h>
