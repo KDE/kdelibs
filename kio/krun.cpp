@@ -406,10 +406,11 @@ QString KRun::binaryName( const QString & execLine )
   return _bin_name.mid(lastSlash + 1);
 }
 
-KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
+KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
 {
   m_bFault = false;
-  m_bAutoDelete = _auto_delete;
+  m_bAutoDelete = true;
+  m_bProgressInfo = _showProgressInfo;
   m_bFinished = false;
   m_job = 0L;
   m_strURL = _url;
@@ -520,7 +521,7 @@ void KRun::init()
   kdDebug(7010) << "Testing directory (stating)" << endl;
 
   // It may be a directory or a file, let's stat
-  KIO::StatJob *job = KIO::stat( m_strURL );
+  KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
   connect( job, SIGNAL( result( KIO::Job * ) ),
 	   this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
@@ -564,7 +565,7 @@ void KRun::scanFile()
   }
   kdDebug(7010) << "Scanning file " << m_strURL.url() << endl;
 
-  KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
+  KIO::MimetypeJob *job = KIO::mimetype( m_strURL, m_bProgressInfo );
   connect(job, SIGNAL( result( KIO::Job *)),
           this, SLOT( slotScanFinished(KIO::Job *)));
   m_job = job;
@@ -706,7 +707,7 @@ void KRun::foundMimeType( const QString& type )
     // We don't know if this is a file or a directory. Let's test this first.
     // (For instance a tar.gz is a directory contained inside a file)
     // It may be a directory or a file, let's stat
-    KIO::StatJob *job = KIO::stat( m_strURL );
+    KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
     connect( job, SIGNAL( result( KIO::Job * ) ),
 	     this, SLOT( slotStatResult( KIO::Job * ) ) );
     m_job = job;

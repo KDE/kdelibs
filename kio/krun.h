@@ -45,19 +45,35 @@ class KRun : public QObject
   Q_OBJECT
 public:
   /**
-   * @param _mode The @p st_mode field of <tt>struct stat</tt>. If
-   *        you dont know this set it to 0.
+   * Create a KRun object to run the preferred application for a file/URL.
+   * KRun will first determine the type of the file, and will then
+   * run the associated application.
    *
-   * @param _is_local_file
-   *        If this parameter is set to @p false then @p _url is
-   *        examnined to find out whether it is a local URL or
+   * @param url the URL of the file or directory to 'run'
+   *
+   * @param mode The @p st_mode field of <tt>struct stat</tt>. If
+   *        you don't know this set it to 0.
+   *
+   * @param isLocalFile
+   *        If this parameter is set to @p false then @p url is
+   *        examined to find out whether it is a local URL or
    *        not. This flag is just used to improve speed, since the
    *        function @ref KURL::isLocalFile is a bit slow.
+   *
+   * @param showProgressInfo
+   *        Whether to show progress information when determining the
+   *        type of the file (i.e. when using KIO::stat and KIO::mimetype)
+   *        Before you set this to false to avoid a dialog box, think about
+   *        a very slow FTP server...
+   *        It is always better to provide progress info in such cases.
    */
-  KRun( const KURL& _url, mode_t _mode = 0,
-	bool _is_local_file = false, bool _auto_delete = true );
-  //BCI: add bool for showProgressInfo ! (default value true)
+  KRun( const KURL& url, mode_t mode = 0,
+	bool isLocalFile = false, bool showProgressInfo = true );
 
+  /**
+   * Destructor. Don't call it yourself, since a KRun object auto-deletes
+   * itself.
+   */
   virtual ~KRun();
 
   bool hasError() const { return m_bFault; }
@@ -67,7 +83,7 @@ public:
    * By default auto deletion is on.
    */
   bool autoDelete() const { return m_bAutoDelete; }
-  void setAutoDelete() { m_bAutoDelete = m_bAutoDelete; }
+  void setAutoDelete(bool b) { m_bAutoDelete = b; }
 
   /**
    * Open a list of URLs with a certain service.
@@ -147,6 +163,7 @@ protected:
   KURL m_strURL;
   bool m_bFault;
   bool m_bAutoDelete;
+  bool m_bProgressInfo;
   bool m_bFinished;
   KIO::Job * m_job;
   QTimer m_timer;
@@ -166,6 +183,9 @@ protected:
 
   bool m_bIsLocalFile;
   mode_t m_mode;
+
+  class KRunPrivate;
+  KRunPrivate *d;
 
   /**
    * For remote URLs to be opened with apps that don't support
