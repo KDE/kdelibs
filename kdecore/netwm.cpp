@@ -354,6 +354,12 @@ static void readIcon(NETWinInfoPrivate *p) {
     unsigned long nitems_ret = 0, after_ret = 0;
     unsigned char *data_ret = 0;
 
+    // reset
+    for (int i = 0; i < p->icons.size(); i++)
+        delete [] p->icons[i].data;
+    p->icons.reset();
+    p->icon_count = 0;
+    
     // allocate buffers
     unsigned char *buffer = 0;
     unsigned long offset = 0;
@@ -425,10 +431,11 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 	    *data32++ = (CARD32) *d++;
 	}
 	j++;
+        p->icon_count++;
     }
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NET: readIcon got %d icons\n", p->icons.size());
+    fprintf(stderr, "NET: readIcon got %d icons\n", p->icon_count);
 #endif
 
     free(buffer);
@@ -436,24 +443,32 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 
 
 template <class Z>
-RArray<Z>::RArray() {
-  sz = 0;
-  d = 0;
+RArray<Z>::RArray()
+  : sz( 0 ),
+    d( NULL )
+{
 }
 
 
 template <class Z>
 RArray<Z>::~RArray() {
-    if (d) delete [] d;
+    delete [] d;
 }
 
+
+template <class Z>
+void RArray<Z>::reset() {
+    sz = 0;
+    delete[] d;
+    d = NULL;
+}
 
 template <class Z>
 Z &RArray<Z>::operator[](int index) {
     if (!d) {
 	d = new Z[index + 1];
 	memset( (void*) &d[0], 0, sizeof(Z) );
-	sz = 1;
+	sz = index + 1;
     } else if (index >= sz) {
 	// allocate space for the new data
 	Z *newdata = new Z[index + 1];
@@ -1310,6 +1325,7 @@ void NETRootInfo::update(unsigned long dirty) {
     dirty &= p->protocols;
 
     if (dirty & ClientList) {
+        bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, net_client_list,
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -1359,18 +1375,28 @@ void NETRootInfo::update(unsigned long dirty) {
 
 		p->clients_count = nitems_ret;
 		p->clients = nwindup(wins, p->clients_count);
+                read_ok = true;
 	    }
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
-		    p->clients_count);
-#endif
 	    if ( data_ret )
 		XFree(data_ret);
 	}
+        if( !read_ok ) {
+            for( unsigned int i = 0; i < p->clients_count; ++ i )
+	        removeClient(p->clients[i]);
+            p->clients_count = 0;
+            delete[] p->clients;
+            p->clients = NULL;
+        }
+            
+#ifdef    NETWMDEBUG
+	fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
+		p->clients_count);
+#endif
     }
 
     if (dirty & KDESystemTrayWindows) {
+        bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, kde_net_system_tray_windows,
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -1418,24 +1444,31 @@ void NETRootInfo::update(unsigned long dirty) {
 		    delete [] p->kde_system_tray_windows;
 		p->kde_system_tray_windows =
 		    nwindup(wins, p->kde_system_tray_windows_count);
+                read_ok = true;
 	    }
 
 	    if ( data_ret )
 		XFree(data_ret);
 	}
+        if( !read_ok ) {
+            for( unsigned int i = 0; i < p->kde_system_tray_windows_count; ++i )
+                removeSystemTrayWin(p->kde_system_tray_windows[i]);
+            p->kde_system_tray_windows_count = 0;
+	    delete [] p->kde_system_tray_windows;
+            p->kde_system_tray_windows = NULL;
+        }
     }
 
     if (dirty & ClientListStacking) {
+        p->stacking_count = 0;
+        delete[] p->stacking;
+        p->stacking = NULL;
 	if (XGetWindowProperty(p->display, p->root, net_client_list_stacking,
 			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
 		Window *wins = (Window *) data_ret;
-
-		if (p->stacking) {
-		    delete [] p->stacking;
-		}
 
 		p->stacking_count = nitems_ret;
 		p->stacking = nwindup(wins, p->stacking_count);
@@ -1472,6 +1505,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & DesktopGeometry) {
+        p->geometry = p->rootSize;
 	if (XGetWindowProperty(p->display, p->root, net_desktop_geometry,
 			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -1490,12 +1524,11 @@ void NETRootInfo::update(unsigned long dirty) {
 	    if ( data_ret )
 		XFree(data_ret);
 	}
-    } else {
-	// insurance
-	p->geometry = p->rootSize;
     }
 
     if (dirty & DesktopViewport) {
+	for (int i = 0; i < p->viewport.size(); i++)
+	    p->viewport[i].x = p->viewport[i].y = 0;
 	if (XGetWindowProperty(p->display, p->root, net_desktop_viewport,
 			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -1526,11 +1559,6 @@ void NETRootInfo::update(unsigned long dirty) {
 	    if ( data_ret )
 		XFree(data_ret);
 	}
-    } else {
-	int i;
-	for (i = 0; i < p->viewport.size(); i++) {
-	    p->viewport[i].x = p->viewport[i].y = 0;
-	}
     }
 
     if (dirty & CurrentDesktop) {
@@ -1553,6 +1581,9 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & DesktopNames) {
+        for( int i = 0; i < p->desktop_names.size(); ++i )
+            delete[] p->desktop_names[ i ];
+        p->desktop_names.reset();
 	if (XGetWindowProperty(p->display, p->root, net_desktop_names,
 			       0l, (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
@@ -1581,6 +1612,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & ActiveWindow) {
+        p->active = None;
 	if (XGetWindowProperty(p->display, p->root, net_active_window, 0l, 1l,
 			       False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -1599,6 +1631,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WorkArea) {
+        p->workarea.reset();
 	if (XGetWindowProperty(p->display, p->root, net_workarea, 0l,
 			       (p->number_of_desktops * 4), False, XA_CARDINAL,
 			       &type_ret, &format_ret, &nitems_ret, &unused,
@@ -1627,6 +1660,9 @@ void NETRootInfo::update(unsigned long dirty) {
 
 
     if (dirty & SupportingWMCheck) {
+        p->supportwindow = None;
+        delete[] p->name;
+        p->name = NULL;
 	if (XGetWindowProperty(p->display, p->root, net_supporting_wm_check,
 			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -1659,16 +1695,15 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & VirtualRoots) {
+        p->virtual_roots_count = 0;
+        delete[] p->virtual_roots;
+        p->virtual_roots = NULL;
 	if (XGetWindowProperty(p->display, p->root, net_virtual_roots,
 			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32) {
 		Window *wins = (Window *) data_ret;
-
-		if (p->virtual_roots) {
-		    delete [] p->virtual_roots;
-		}
 
 		p->virtual_roots_count = nitems_ret;
 		p->virtual_roots = nwindup(wins, p->virtual_roots_count);
@@ -1745,13 +1780,13 @@ int NETRootInfo::kdeSystemTrayWindowsCount() const {
 
 
 NETSize NETRootInfo::desktopGeometry(int) const {
-    return p->geometry;
+    return p->geometry.width != 0 ? p->geometry : p->rootSize;
 }
 
 
 NETPoint NETRootInfo::desktopViewport(int desktop) const {
     if (desktop < 1) {
-	NETPoint pt;
+	NETPoint pt; // set to (0,0)
 	return pt;
     }
 
@@ -2368,7 +2403,7 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 NETIcon NETWinInfo::icon(int width, int height) const {
     NETIcon result;
 
-    if ( !p->icons.size() ) {
+    if ( !p->icon_count ) {
 	result.size.width = 0;
 	result.size.height = 0;
 	result.data = 0;
@@ -2673,12 +2708,13 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMName) {
+        delete[] p->name;
+        p->name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		if (p->name) delete [] p->name;
 		p->name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
@@ -2688,12 +2724,13 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMVisibleName) {
+        delete[] p->visible_name;
+        p->visible_name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		if (p->visible_name) delete [] p->visible_name;
 		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
@@ -2703,14 +2740,14 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMIconName) {
-
+        delete[] p->icon_name;
+        p->icon_name = NULL;
 	char* text_ret = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		if (p->icon_name) delete [] p->icon_name;
 		p->icon_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
@@ -2719,7 +2756,6 @@ void NETWinInfo::update(unsigned long dirty) {
 	}
 
 	if ( !p->visible_icon_name &&  XGetIconName(p->display, p->window, &text_ret) ) {
-	    if (p->icon_name) delete [] p->icon_name;
 	    p->icon_name = strdup((const char *) text_ret);
 
 	    if( text_ret )
@@ -2729,13 +2765,13 @@ void NETWinInfo::update(unsigned long dirty) {
 
     if (dirty & WMVisibleIconName)
     {
-	char* text_ret = 0;
+        delete[] p->visible_icon_name;
+        p->visible_icon_name = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_icon_name, 0l,
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		if (p->visible_icon_name) delete [] p->visible_icon_name;
 		p->visible_icon_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
@@ -2744,13 +2780,6 @@ void NETWinInfo::update(unsigned long dirty) {
 	}
 
 
-	if ( !p->visible_icon_name && XGetIconName(p->display, p->window, &text_ret) ) {
-	    if (p->visible_icon_name) delete [] p->visible_icon_name;
-	    p->visible_icon_name = strdup((const char *) text_ret);
-
-	    if( text_ret )
-		XFree(text_ret);
-	}
     }
 
     if (dirty & WMWindowType) {
@@ -2811,6 +2840,7 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMStrut) {
+        p->strut = NETStrut();
 	if (XGetWindowProperty(p->display, p->window, net_wm_strut, 0l, 4l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -2829,6 +2859,7 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMIconGeometry) {
+        p->icon_geom = NETRect();
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_geometry, 0l, 4l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -2868,6 +2899,7 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMKDEFrameStrut) {
+        p->frame_strut = NETStrut();
 	if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_strut,
 			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {

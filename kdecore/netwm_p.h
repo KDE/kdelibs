@@ -61,6 +61,11 @@ public:
      **/
 
     int size() const { return sz; }
+    
+    /**
+       Resets the array (size == 0).
+     **/
+    void reset();
 
 private:
     int sz;
