@@ -37,8 +37,17 @@ public:
   KXMLGUIClient( KXMLGUIClient *parent );
   virtual ~KXMLGUIClient();
 
+  /**
+   * Retrieve an action by name.
+   */
   KAction* action( const char* name );
+  /**
+   * Retrieve an action for a given @ref QDomElement.
+   */
   virtual KAction *action( const QDomElement &element );
+  /**
+   * Retrieve the entire action collection for the GUI client
+   */
   virtual KActionCollection* actionCollection() const;
 
   /**
