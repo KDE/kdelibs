@@ -227,5 +227,7 @@ AC_OUTPUT(Makefile \
 	doc/Makefile \
 	doc/kfile/Makefile \
 	doc/kdebug/Makefile \
-	doc/kspell/Makefile )
+	doc/kspell/Makefile \
+	doc/kded/Makefile \
+	doc/komop/Makefile )
 
