@@ -65,6 +65,7 @@ extern "C" {
 #include <qgroupbox.h>
 #include <qwhatsthis.h>
 #include <qtooltip.h>
+#include <qstyle.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -795,7 +796,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !isDevice && !isIntoTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
-    iconButton->setFixedSize(70, 70);
+    int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
+    iconButton->setFixedSize(bsize, bsize);
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
@@ -819,7 +821,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
              this, SLOT( slotIconChanged() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
-    iconLabel->setFixedSize(70, 70);
+    int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
+    iconLabel->setFixedSize(bsize, bsize);
     iconLabel->setPixmap( DesktopIcon( iconStr ) );
     iconArea = iconLabel;
   }
@@ -2628,7 +2631,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   layout->addMultiCellWidget(sep, 4, 4, 0, 2);
 
   unmounted = new KIconButton( d->m_frame );
-  unmounted->setFixedSize(70, 70);
+  int bsize = 66 + 2 * unmounted->style().pixelMetric(QStyle::PM_ButtonMargin);
+  unmounted->setFixedSize(bsize, bsize);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 5, 0);
 
