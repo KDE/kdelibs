@@ -79,6 +79,7 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     int oldtab;
     int m_previousTab;
     int m_position;
+    int m_separatorPos;
     QMap<KDockWidget*,int> m_map;
     QMap<int,KDockWidget*> m_revMap;
     QMap<KDockWidget*,KDockButton_Private*> m_overlapButtons;
