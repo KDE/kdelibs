@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = qk dcop libltdl kdecore kdeui kformula mimetypes \
+SUBDIRS = dcop libltdl kdecore kdeui kformula mimetypes \
 	kspell kio kimgio kinit kfile kab kparts kjs khtml kstyles \
 	libkmid arts kdesu ksgmltools doc pics
 
