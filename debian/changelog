@@ -1,6 +1,15 @@
-kdelibs-cvs (4:2.0-20000512-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-20000515-1.0) experimental; urgency=low
+ 
+  * More CVS updates
+  * Turning on debugging
+  * Fixes to preinst script
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 15 May 2000 20:30:00 -0700
+
+kdelibs-cvs (4:2.0-20000512-1.2) experimental; urgency=low
 
   * New upstream beta version
+  * Turning on debugging
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 12 May 2000 20:30:00 -0700
 
