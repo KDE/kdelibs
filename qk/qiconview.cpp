@@ -1511,28 +1511,30 @@ void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 
 	if ( isSelected() ) {
 	    QPixmap *pix = pixmap() ? pixmap() : unknown_icon;
-	    QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
-	    QBitmap mask = view->mask( pix );
+	    if ( pix && !pix->isNull() ) {
+		QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
+		QBitmap mask = view->mask( pix );
 
-	    QPainter p2( buffer );
-	    p2.fillRect( pix->rect(), Qt::white );
-	    p2.drawPixmap( 0, 0, *pix );
-	    p2.end();
-	    buffer->setMask( mask );
-	    p2.begin( buffer );
+		QPainter p2( buffer );
+		p2.fillRect( pix->rect(), Qt::white );
+		p2.drawPixmap( 0, 0, *pix );
+		p2.end();
+		buffer->setMask( mask );
+		p2.begin( buffer );
 #if defined(_WS_X11_)
-	    p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
+		p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
 #else // in WIN32 Dense4Pattern doesn't work correctly (transparence problem), so work around it
-	    p2.setPen( cg.highlight() );
-	    for ( int i = 0; i < pix->width() / 2; ++i ) {
-		for ( int j = 0; j < pix->height(); ++j ) {
-		    p2.drawPoint( i * 2 + j % 2, j );
+		p2.setPen( cg.highlight() );
+		for ( int i = 0; i < pix->width() / 2; ++i ) {
+		    for ( int j = 0; j < pix->height(); ++j ) {
+			p2.drawPoint( i * 2 + j % 2, j );
+		    }
 		}
-	    }
 #endif	
-	    p2.end();
-	    QRect cr = pix->rect();
-	    p->drawPixmap( x() + ( width() - w ) / 2, y(), *buffer, 0, 0, cr.width(), cr.height() );
+		p2.end();
+		QRect cr = pix->rect();
+		p->drawPixmap( x() + ( width() - w ) / 2, y(), *buffer, 0, 0, cr.width(), cr.height() );
+	    }
 	} else {
 	    p->drawPixmap( x() + ( width() - w ) / 2, y(), *( pixmap() ? pixmap() : unknown_icon ) );
 	}
@@ -1555,19 +1557,30 @@ void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 
 	if ( isSelected() ) {
 	    QPixmap *pix = pixmap() ? pixmap() : unknown_icon;
-	    QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
-	    QBitmap mask = view->mask( pix );
+	    if ( pix && !pix->isNull() ) {
+		QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
+		QBitmap mask = view->mask( pix );
 
-	    QPainter p2( buffer );
-	    p2.fillRect( pix->rect(), Qt::white );
-	    p2.drawPixmap( 0, 0, *pix );
-	    p2.end();
-	    buffer->setMask( mask );
-	    p2.begin( buffer );
-	    p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern ) );
-	    p2.end();
-	
-	    p->drawPixmap( x() , y() + ( height() - h ) / 2, *buffer );
+		QPainter p2( buffer );
+		p2.fillRect( pix->rect(), Qt::white );
+		p2.drawPixmap( 0, 0, *pix );
+		p2.end();
+		buffer->setMask( mask );
+		p2.begin( buffer );
+#if defined(_WS_X11_)
+		p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
+#else // in WIN32 Dense4Pattern doesn't work correctly (transparence problem), so work around it
+		p2.setPen( cg.highlight() );
+		for ( int i = 0; i < pix->width() / 2; ++i ) {
+		    for ( int j = 0; j < pix->height(); ++j ) {
+			p2.drawPoint( i * 2 + j % 2, j );
+		    }
+		}
+#endif	
+		p2.end();
+		QRect cr = pix->rect();
+		p->drawPixmap( x() , y() + ( height() - h ) / 2, *buffer, 0, 0, cr.width(), cr.height() );
+	    }
 	} else {
 	    p->drawPixmap( x() , y() + ( height() - h ) / 2, *( pixmap() ? pixmap() : unknown_icon ) );
 	}
