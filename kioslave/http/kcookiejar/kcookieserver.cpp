@@ -51,8 +51,8 @@ public:
    RequestList() : QList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer(int argc, char *argv[]) 
-  : KUniqueApplication( argc, argv, "kcookiejar" )
+KCookieServer::KCookieServer() 
+  : KUniqueApplication()
 {
    mCookieJar = new KCookieJar;
    mPendingCookies = new KCookieList;

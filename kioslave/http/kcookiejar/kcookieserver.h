@@ -38,7 +38,7 @@ class KCookieServer : public KUniqueApplication
 {
   Q_OBJECT 
 public:
-  KCookieServer(int argc, char *argv[]);
+  KCookieServer();
   ~KCookieServer();
 
   virtual bool process(const QCString &fun, const QByteArray &data,

@@ -23,16 +23,25 @@
  */
 
 #include "kcookieserver.h"
+#include <kcmdlineargs.h>
+#include <klocale.h>
 #include <stdlib.h>
 #include <stdio.h>
 
+static const char *description = 
+	I18N_NOOP("HTTP Cookie Daemon");
+
+static const char *version = "1.0";
+
+
 int main(int argc, char *argv[])
 {
-   if (!KCookieServer::start(argc, argv, "kcookiejar"))
+   KCmdLineArgs::init(argc, argv, "kcookiejar", description, version);
+   if (!KCookieServer::start())
    {
       printf("KCookieJar already running.\n");
       exit(0);
    }
-   KCookieServer server(argc, argv);
+   KCookieServer server;
    return server.exec(); // keep running
 }
