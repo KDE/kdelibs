@@ -40,6 +40,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.41  1998/11/07 17:13:57  radej
+// sven: Fixed KAccel, for now
+//
 // Revision 1.40  1998/11/06 17:59:55  radej
 // sven: fixed dynamic style change (QMenuBar is buggy)
 //
@@ -489,7 +492,7 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, FALSE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), 2);
+	KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
