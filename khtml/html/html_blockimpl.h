@@ -118,7 +118,7 @@ public:
 class HTMLPreElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLPreElementImpl(DocumentPtr *doc);
+    HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid);
 
     ~HTMLPreElementImpl();
 
@@ -126,6 +126,9 @@ public:
     void setWidth( long w );
 
     virtual ushort id() const;
+
+protected:
+    ushort _id;
 };
 
 // -------------------------------------------------------------------------
@@ -137,7 +140,7 @@ public:
     ~HTMLLayerElementImpl();
 
     virtual ushort id() const;
-    
+
     virtual void parseAttribute(AttrImpl *);
 
     bool fixed;

@@ -422,7 +422,9 @@ SAMP {
 	font-family: monospace; 
 }
       
-PRE { 
+PRE,
+XMP, 
+PLAINTEXT { 
 	display: block;
 	font-family: monospace; 
 	white-space: pre; 

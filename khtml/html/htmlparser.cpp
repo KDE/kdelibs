@@ -857,7 +857,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_XMP:
     case ID_PRE:
     case ID_PLAINTEXT:
-        n = new HTMLPreElementImpl(document);
+        n = new HTMLPreElementImpl(document, t->id);
         break;
 
 // font stuff
@@ -998,6 +998,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_NOSCRIPT:
         if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
+
         return 0;
     case ID_NOLAYER:
 //        discard_until = ID_NOLAYER + ID_CLOSE_TAG;

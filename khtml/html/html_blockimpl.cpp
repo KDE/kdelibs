@@ -204,9 +204,10 @@ ushort HTMLParagraphElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc)
+HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid)
     : HTMLElementImpl(doc)
 {
+    _id = _tagid;
 }
 
 HTMLPreElementImpl::~HTMLPreElementImpl()
@@ -215,7 +216,7 @@ HTMLPreElementImpl::~HTMLPreElementImpl()
 
 ushort HTMLPreElementImpl::id() const
 {
-    return ID_PRE;
+    return _id;
 }
 
 long HTMLPreElementImpl::width() const

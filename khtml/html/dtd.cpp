@@ -117,7 +117,7 @@ const unsigned short DOM::tagPriority[] = {
     2, // ID_OPTION
     3, // ID_P
     0, // ID_PARAM
-    1, // ID_PLAIN
+    5, // ID_PLAINTEXT
     5, // ID_PRE
     1, // ID_Q
     1, // ID_S
@@ -145,7 +145,7 @@ const unsigned short DOM::tagPriority[] = {
     4, // ID_UL
     1, // ID_VAR
     1, // ID_WBR
-    1, // ID_XMP
+    5, // ID_XMP
     0, // ID_TEXT
 };
 
@@ -223,7 +223,7 @@ const tagStatus DOM::endTag[] = {
     OPTIONAL,  // ID_OPTION
     OPTIONAL,  // ID_P
     FORBIDDEN, // ID_PARAM
-    REQUIRED,  // ID_PLAIN
+    REQUIRED,  // ID_PLAINTEXT
     REQUIRED,  // ID_PRE
     REQUIRED,  // ID_Q
     REQUIRED,  // ID_S
@@ -318,6 +318,7 @@ static const ushort tag_list_1[] = {
     ID_DIR,
     ID_MENU,
     ID_PRE,
+    ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
     ID_LAYER,
@@ -401,6 +402,7 @@ static const ushort tag_list_3[] = {
     ID_DIR,
     ID_MENU,
     ID_PRE,
+    ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
     ID_LAYER,
@@ -435,6 +437,7 @@ static const ushort tag_list_4[] = {
     ID_DIR,
     ID_MENU,
     ID_PRE,
+    ID_PLAINTEXT,
     ID_DL,
     ID_DIV,
     ID_LAYER,
@@ -656,6 +659,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // OBJECT: _4 *
         return check_array(childID, tag_list_4);
     case ID_PRE:
+    case ID_XMP:
+    case ID_PLAINTEXT:
         // PRE: _0 * - _5
         return check_array(childID, tag_list_1);
     case ID_DL:
@@ -765,6 +770,8 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         //forbiddenTags[ID_A]++;
         break;
     case ID_PRE:
+    case ID_PLAINTEXT:
+    case ID_XMP:
         //forbiddenTags[ID_IMG]++;
         forbiddenTags[ID_OBJECT]++;
         forbiddenTags[ID_EMBED]++;
@@ -790,6 +797,8 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         forbiddenTags[ID_DIR]++;
         forbiddenTags[ID_MENU]++;
         forbiddenTags[ID_PRE]++;
+        forbiddenTags[ID_PLAINTEXT]++;
+        forbiddenTags[ID_XMP]++;
         forbiddenTags[ID_DL]++;
         forbiddenTags[ID_DIV]++;
         forbiddenTags[ID_CENTER]++;
@@ -835,6 +844,8 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
         //forbiddenTags[ID_A]--;
         break;
     case ID_PRE:
+    case ID_XMP:
+    case ID_PLAINTEXT:
         //forbiddenTags[ID_IMG]--;
         forbiddenTags[ID_OBJECT]--;
         forbiddenTags[ID_EMBED]--;
@@ -859,6 +870,8 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
         forbiddenTags[ID_DIR]--;
         forbiddenTags[ID_MENU]--;
         forbiddenTags[ID_PRE]--;
+        forbiddenTags[ID_PLAINTEXT]--;
+        forbiddenTags[ID_XMP]--;
         forbiddenTags[ID_DL]--;
         forbiddenTags[ID_DIV]--;
         forbiddenTags[ID_CENTER]--;

@@ -305,7 +305,7 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
     while ( src.length() ) {
         checkScriptBuffer();
         unsigned char ch = src->latin1();
-        if ( !scriptCodeResync && !textarea && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
+        if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
             comment = true;
             parseComment( src );
             continue;
@@ -1487,10 +1487,8 @@ void HTMLTokenizer::finish()
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos;
         QString food;
-        if ( script || style || textarea || xmp ) {
-            pos = QConstString( scriptCode, scriptCodeSize ).string().find( searchStopper, 0, false );
-            if ( pos >= 0 )
-                food.setUnicode( scriptCode+pos, scriptCodeSize-pos ); // deep copy
+        if (script || style) {
+            food.setUnicode(scriptCode, scriptCodeSize);
         }
         else if (server) {
             food = "<";
