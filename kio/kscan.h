@@ -42,20 +42,22 @@ private:
 class KScanDialogFactory : public KLibFactory
 {
 public:
-    ~KScanDialogFactory();
-
-    KScanDialog * create( QWidget *parent=0, const char *name=0,
-			  bool modal=false );
-
-protected:
-    KScanDialogFactory( QObject *parent=0, const char *name=0 );
+    virtual ~KScanDialogFactory();
 
     /**
      * Your library should reimplement this method to return your KScanDialog
      * derived dialog.
      */
     virtual KScanDialog * createDialog( QWidget *parent=0, const char *name=0,
-					bool modal=false );
+					bool modal=false ) = 0;
+
+protected:
+    KScanDialogFactory( QObject *parent=0, const char *name=0 );
+
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, 
+                                   const char* classname = "QObject", 
+                                   const QStringList &args = QStringList() );
+
 
     void setName( const QCString& instanceName ) {
 	delete m_instance;
