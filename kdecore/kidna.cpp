@@ -42,7 +42,12 @@ QCString KIDNA::toAsciiCString(const QString &idna)
 QString KIDNA::toAscii(const QString &idna)
 {
   if (idna.length() && (idna[0] == "."))
-     return idna[0] + QString::fromLatin1(toAsciiCString(idna.mid(1)));
+  {
+     QString host = QString::fromLatin1(toAsciiCString(idna.mid(1)));
+     if (host.isEmpty())
+        return QString::null; // Error
+     return idna[0] + host;
+  }
   return QString::fromLatin1(toAsciiCString(idna));
 }
 
