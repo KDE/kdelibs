@@ -76,8 +76,7 @@ static KStaticDeleter<KServiceFactory> ksd;
 KServiceFactory * KServiceFactory::self()
 {
     if (!_self) {
-        _self = new KServiceFactory();
-        ksd.deleteit = _self;
+        _self = ksd.setObject(new KServiceFactory());
     }
     return _self;
 }

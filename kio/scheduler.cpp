@@ -22,6 +22,7 @@
 #include <qlist.h>
 #include <qdict.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kprotocolmanager.h>
 #include <assert.h>
 
@@ -86,6 +87,17 @@ Scheduler::Scheduler()
 	    SLOT(slotCleanIdleSlaves()));
     joblist.setAutoDelete(false);
     busy = false;
+}
+
+Scheduler::~Scheduler()
+{
+fprintf(stderr, "Desctructing KIO::Scheduler...\n");
+    protInfoDict->setAutoDelete(true);
+    delete protInfoDict; protInfoDict = 0;
+    delete idleSlaves; idleSlaves = 0;
+    slaveList->setAutoDelete(true);
+    delete slaveList; slaveList = 0;
+    instance = 0;
 }
 
 void
@@ -405,9 +417,11 @@ void Scheduler::_removeSlaveOnHold()
    urlOnHold = KURL();
 }
 
+static KStaticDeleter<Scheduler> ksds;
+
 Scheduler* Scheduler::self() {
     if ( !instance )
-	instance = new Scheduler;
+	instance = ksds.setObject(new Scheduler);
 
     return instance;
 }

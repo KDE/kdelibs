@@ -36,6 +36,8 @@ namespace KIO {
 	Q_OBJECT
 
     public:
+	~Scheduler();
+
 	static void doJob(SimpleJob *job)
 		{ self()->_doJob(job); }
 	static void cancelJob(SimpleJob *job)
