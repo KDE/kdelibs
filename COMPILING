@@ -12,7 +12,7 @@ qt-copy (This is qt-2.1.1)
 kde-qt-addon (stuff which TrollTech forgot to add to Qt :-)
 kdesupport (stuff from others which we use)
 kdelibs
-kdebase (strongly recommended but not strictly necassery)
+kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
 
 It is important that you compile AND INSTALL the above packages in the 
