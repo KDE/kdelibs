@@ -682,6 +682,9 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
     m_multiple = element->multiple();
     m_size = element->size();
     m_useListBox = (m_multiple || m_size > 1);
+    m_selectionChanged = false;
+    m_optionsChanged = false;
+
 
     if(m_useListBox)
         setQWidget(createListBox());
