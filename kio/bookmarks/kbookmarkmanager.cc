@@ -61,7 +61,8 @@ class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
     KBookmarkMap( KBookmarkManager * );
     void update();
-    QValueList<KBookmark> find( const KURL &url ) const;
+    QValueList<KBookmark> find( const QString &url ) const
+    { return m_bk_map[url]; }
 private:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &) { ; }
@@ -89,15 +90,10 @@ void KBookmarkMap::visit(const KBookmark &bk)
 {
     if (!bk.isSeparator()) {
         // add bookmark to url map
-        m_bk_map[bk.url().url()].append(bk);
+        m_bk_map[bk.internalElement().attribute("href")].append(bk);
     }
 }
 
-QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
-{
-    return m_bk_map.contains(url.url()) 
-         ? m_bk_map[url.url()] : QValueList<KBookmark>();
-}
 
 KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
 {
@@ -245,6 +241,8 @@ void KBookmarkManager::parse() const
     }
 
     file.close();
+    if ( s_bk_map )
+        s_bk_map->update();
 }
 
 void KBookmarkManager::convertToXBEL( QDomElement & group )
@@ -648,7 +646,6 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
 {
     if (!s_bk_map) 
         s_bk_map = new KBookmarkMap(this);
-    s_bk_map->update(); // TODO - should make update only when dirty
     
     QValueList<KBookmark> list = s_bk_map->find(url);
     if ( list.count() == 0 )
@@ -670,7 +667,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 
     if (!s_bk_map) 
         s_bk_map = new KBookmarkMap(this);
-    s_bk_map->update(); // TODO - should make update only when dirty
+
     QValueList<KBookmark> list = s_bk_map->find(url);
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
           it != list.end(); ++it )
