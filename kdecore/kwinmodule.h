@@ -126,6 +126,11 @@ public:
      **/
     QString desktopName( int desktop ) const;
 
+    /**
+     * Sets the name of the specified desktop
+     **/
+    void setDesktopName( int desktop, const QString& name );
+
 
 signals:
 

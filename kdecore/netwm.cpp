@@ -601,14 +601,14 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
     // return immediately if the requested desk is out of range
     if (desktop < 1 || desktop > p->number_of_desktops) return;
 
-    if (p->desktop_names[desktop - 1]) delete p->desktop_names[desktop - 1];
+    if (p->desktop_names[desktop - 1]) delete [] p->desktop_names[desktop - 1];
     p->desktop_names[desktop - 1] = nstrdup(desktopName);
 
     unsigned int i, proplen,
 	num = ((p->number_of_desktops < p->desktop_names.size()) ?
 	       p->number_of_desktops : p->desktop_names.size());
     for (i = 0, proplen = 0; i < num; i++)
-	proplen += strlen(p->desktop_names[i]) + 1;
+	proplen += (p->desktop_names[i] != 0 ? strlen(p->desktop_names[i]) : 1 ) + 1;
 
     char *prop = new char[proplen], *propp = prop;
 
