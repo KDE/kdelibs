@@ -19,9 +19,11 @@
 
 #include "config.h"
 
+#include "kapp.h"
 #include "klauncher.h"
 #include "kcmdlineargs.h"
 #include <stdio.h>
+#include <qcstring.h>
 
 
 extern "C" { int start_launcher(int); }
@@ -29,7 +31,8 @@ extern "C" { int start_launcher(int); }
 int
 start_launcher(int socket)
 {
-   const char *name = "klauncher";
+   QCString cname = KApplication::launcher();
+   char *name = cname.data();
    // Started via kdeinit.
    KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.", 
                        "v0.1");

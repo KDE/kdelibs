@@ -69,6 +69,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
 
 #include "kprocctrl.h"
 
@@ -1222,6 +1225,29 @@ void KApplication::invokeBrowser( const QString &url )
 
 }
 
+QCString
+KApplication::launcher()
+{
+   char host[200];
+   if (gethostname(host, 200) == -1) {
+      kdDebug(101) << "gethostname(): " << strerror(errno) << "\n";
+      return 0;
+   }
+   // Try to resolve to FQDN
+   struct hostent *h = gethostbyname(host);
+   if (h == 0L) {
+      kdDebug(101) << "gethostbyname(): " << hstrerror(h_errno) << "\n";
+   } else {
+      if (strlen(h->h_name) < 200)
+         strcpy(host, h->h_name);
+      else
+         kdDebug(101) << "host name too long\n";
+   }
+   QCString name;
+   name.sprintf("klauncher_%s_%d", host, getuid());
+   return name;
+}   
+
 static int
 startServiceInternal( const QCString &function,
                       const QString& _name, const QString &URL,
@@ -1254,7 +1280,8 @@ startServiceInternal( const QCString &function,
    stream << _name << URL;
    QCString replyType;
    QByteArray replyData;
-   if (!dcopClient->call("klauncher", "klauncher",
+   QCString _launcher = KApplication::launcher();
+   if (!dcopClient->call(_launcher, _launcher,
 	function, params, replyType, replyData))
    {
 	error = i18n("KLauncher could not be reached via DCOP.\n");

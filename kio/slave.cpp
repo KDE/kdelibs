@@ -204,7 +204,9 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     QDataStream stream(params, IO_WriteOnly);
     stream << url.protocol() << url.host() << socketfile.name();
 
-    if (!client->call("klauncher", "klauncher", "requestSlave(QString,QString,QString)", params, replyType, reply)) {
+    QCString launcher = KApplication::launcher();
+    if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)", 
+	    params, replyType, reply)) {
 	error_text = i18n("can't talk to klauncher");
 	error = KIO::ERR_INTERNAL;
         delete slave;

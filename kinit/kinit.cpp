@@ -389,11 +389,26 @@ static void init_kdeinit_socket()
      sock_file[strlen(sock_file)-1] = 0;
   
   strcat(sock_file, "/.kdeinit-");
+  // GJ: This should be the fully qualified hostname, IMHO.
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
      exit(255);
   }
+  // GJ: Append $DISPLAY, too.
+  char *display = getenv("DISPLAY");
+  if (!display) 
+  {
+     fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+     exit(255);
+  }
+  if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
+  {
+     fprintf(stderr, "Aborting. Socket name will be too long.\n");
+     exit(255);
+  }
+  strcat(sock_file, "-");
+  strcat(sock_file, display);
 
   if (strlen(sock_file) >= sizeof(sa.sun_path))
   {

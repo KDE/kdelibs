@@ -251,6 +251,13 @@ public:
   void invokeBrowser( const QString &url );
 
   /**
+   * Get the DCOP name of the service launcher. This will be something like
+   * klaucher_$host_$uid.
+   * @return The DCOP name of the launcher.
+   */
+  static QCString launcher();
+
+  /**
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
    *
@@ -626,6 +633,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.135  2000/02/26 13:53:10  waba
+// WABA: Added some examples to startServiceBy....()
+//
 // Revision 1.134  2000/02/23 17:11:12  waba
 // WABA: Moved KService::startServiceByXXX to KApplication.
 //
