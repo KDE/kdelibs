@@ -170,17 +170,12 @@ void KHTMLView::clear()
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
-    //kdDebug() << "KHTMLView::resizeEvent" << endl;
-    int oldWidth = visibleWidth();
-
     QScrollView::resizeEvent(e);
 
     int w = visibleWidth();
     int h = visibleHeight();
 
-    // only relayout if the width has changed
-    if(w != oldWidth)
-        layout();
+    layout();
 
     //  this is to make sure we get the right width even if the scrolbar has dissappeared
     // due to the size change.
@@ -246,7 +241,7 @@ void KHTMLView::layout(bool)
             setVScrollBarMode(AlwaysOff);
             setHScrollBarMode(AlwaysOff);
             _width = visibleWidth();
-
+	    body->setLayouted(false);
             root->layout();
             return;
         }

@@ -229,10 +229,13 @@ void RenderRoot::updateHeight()
     if(parsing())
 	updateTimer.start();
 
+    int h = docHeight();
+    if( h < m_view->visibleHeight() )
+	h = m_view->visibleHeight();
     if(docHeight() != oldHeight || docHeight() < m_view->visibleHeight())
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
-    	m_view->resizeContents(docWidth(), docHeight());    	
+    	m_view->resizeContents(docWidth(), h);    	
     } else {
 	m_view->repaintContents(0,0,1000000,1000000, FALSE);	//sync repaint!
     }

@@ -68,7 +68,7 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     }
 
     int w = width();
-    int h = height();
+    int h = QMAX(height(), parent()->height());
 
     //kdDebug(0) << "width = " << w <<endl;
 
@@ -84,6 +84,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     else
     	mh = QMIN(_h,h);
 
+    //kdDebug() << "my=" << my << " mh=" << mh <<" by=" << by << " height = " << bh << endl;
+    
     printBackground(p, c, bg, my, mh, bx, by, bw, bh);
 
     if(m_style->hasBorder())
