@@ -37,7 +37,7 @@ namespace KABC {
  * Example:
  *
  * <pre>
- * KABC::Resource *res = KABC::ResourceSelectDialog::getResource;
+ * KABC::Resource *res = KABC::ResourceSelectDialog::getResource();
  * if ( !( res ) ) {
  *   // no resource selected
  * } else {
@@ -50,23 +50,23 @@ class ResourceSelectDialog : KDialog
     Q_OBJECT
   public:
     /**
-      Constructor.
-      @param ab     The address book you want to select the resource from
-      @param parent The parent widget
-      @param name   The name of the dialog
-   */
+     * Constructor.
+     * @param ab     The address book you want to select the resource from
+     * @param parent The parent widget
+     * @param name   The name of the dialog
+     */
     ResourceSelectDialog( AddressBook *ab, QWidget *parent = 0,
                           const char *name = 0);
 
     /**
-      Return selected resource.
-    */
+     * Return selected resource.
+     */
     Resource *resource();
 
     /**
-      Open a dialog showing the available resources and return the resource the
-      user has selected. Returns 0, if the dialog was canceled.
-    */
+     * Open a dialog showing the available resources and return the resource the
+     * user has selected. Returns 0, if the dialog was canceled.
+     */
     static Resource *getResource( AddressBook *ab, QWidget *parent = 0 );
 
   private:

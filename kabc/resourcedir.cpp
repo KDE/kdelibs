@@ -25,7 +25,7 @@ using namespace KABC;
 extern "C"
 {
   ResourceConfigWidget *config_widget( QWidget *parent ) {
-    return new ResourceDirConfig( parent, "ResourceSqlConfig" );
+    return new ResourceDirConfig( parent, "ResourceDirConfig" );
   }
 
   Resource *resource( AddressBook *ab, const KConfig *config ) {
@@ -80,6 +80,8 @@ void ResourceDir::init( const QString &path, Format *format )
   }
 
   connect( &mDirWatch, SIGNAL( dirty() ), SLOT( pathChanged() ) );
+  connect( &mDirWatch, SIGNAL( created() ), SLOT( pathChanged() ) );
+  connect( &mDirWatch, SIGNAL( deleted() ), SLOT( pathChanged() ) );
 
   setPath( path );
 }
@@ -258,6 +260,7 @@ QString ResourceDir::path() const
 
 void ResourceDir::pathChanged()
 {
+  kdDebug() << "ResourceDir::pathChanged()" << endl;
   load();
   addressBook()->emitAddressBookChanged();
 }

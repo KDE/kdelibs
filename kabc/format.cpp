@@ -48,6 +48,9 @@ bool Format::checkFormat( const QString &fileName ) const
 {
   QFile file( fileName );
 
+  if ( !file.exists() ) // we can't destroy any data
+    return true;
+
   if ( !file.open( IO_ReadOnly ) ) return false;
 
   bool result = checkFormat( &file );
