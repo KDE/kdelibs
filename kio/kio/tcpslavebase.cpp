@@ -620,42 +620,43 @@ KSSLCertificateHome::KSSLAuthAction aa;
   // We're almost committed.  If we can read the cert, we'll send it now.
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
   if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
+     KIO::AuthInfo ai;
      do {
         QString pass;
         QByteArray authdata, authval;
         QCString rettype;
-        KIO::AuthInfo ai;
         QDataStream qds(authdata, IO_WriteOnly);
         ai.prompt = i18n("Enter the certificate password:");
         ai.caption = i18n("SSL Certificate Password");
         ai.setModified(true);
         ai.username = certname;
-        ai.keepPassword = false;
-        qds << ai;
+        ai.keepPassword = true;
+        if (!checkCachedAuthentication(ai)) {
+           qds << ai;
 
-        if (!d->dcc) {
-           d->dcc = new DCOPClient;
-           d->dcc->attach();
-           if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-              KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
-                                                      QStringList() );
+           if (!d->dcc) {
+              d->dcc = new DCOPClient;
+              d->dcc->attach();
+              if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+                 KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                         QStringList() );
+             }
            }
-        }
 
-        bool rc = d->dcc->call("kio_uiserver", "UIServer",
+           bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                    "openPassDlg(KIO::AuthInfo)",
                                    authdata, rettype, authval);
-        if (!rc) break;
-        if (rettype != "QByteArray") continue;
+           if (!rc) break;
+           if (rettype != "QByteArray") continue;
 
-        QDataStream qdret(authval, IO_ReadOnly);
-        QByteArray authdecode;
-        qdret >> authdecode;
-        QDataStream qdtoo(authdecode, IO_ReadOnly);
-        qdtoo >> ai;
-        if (!ai.isModified()) break;
+           QDataStream qdret(authval, IO_ReadOnly);
+           QByteArray authdecode;
+           qdret >> authdecode;
+           QDataStream qdtoo(authdecode, IO_ReadOnly);
+           qdtoo >> ai;
+           if (!ai.isModified()) break;
+        }
         pass = ai.password;
-
         pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
 
         if (!pkcs) {
@@ -666,6 +667,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
               if (rc == KMessageBox::No) break;
         }
      } while (!pkcs);
+     cacheAuthentication(ai);
   }
 
    // If we could open the certificate, let's send it
