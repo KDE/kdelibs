@@ -71,6 +71,7 @@
 #include <pwd.h>
 
 #include <qapplication.h>
+#include <kdebug.h>
 
 /////////////////////////////
 // public member functions //
@@ -196,7 +197,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
         }
 	// The child process
 	if(!commSetupDoneC())
-	  debug("Could not finish comm setup in child!");
+	  qDebug("Could not finish comm setup in child!");
 
 	// Matthias
 	if (run_mode == DontCare)

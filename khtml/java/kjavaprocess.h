@@ -19,6 +19,9 @@ class KJavaProcessPrivate;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.3  1999/11/12 01:22:34  rich
  * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
  *
@@ -44,24 +47,24 @@ public:
      */
     KJavaProcess();
     virtual ~KJavaProcess();
-    
+
     /**
      * Invoke the JVM.
      */
     void startJava();
-    
+
     /**
      * Stop the JVM (if it's running).
      */
     void stopJava();
-    
+
     bool isOK();
     bool isRunning();
-    
+
     /**
      * Used to specify the location of the JVM.
      */
-    void setJVMPath( const QString path );
+    void setJVMPath( const QString& path );
 
     /**
      * Used to decide the parameter names for JVM stack size etc.
@@ -71,38 +74,38 @@ public:
     /**
      * The HTTP proxy.
      */
-    void setHTTPProxy( const QString host, int port );
+    void setHTTPProxy( const QString& host, int port );
 
     /**
      * The FTP proxy.
      */
-    void setFTPProxy( const QString host, int port );
+    void setFTPProxy( const QString& host, int port );
 
     /**
      * Set system properties by adding -D<I>name</I>=<I>value</I> to
      * the java command line.
      */
-    void setSystemProperty( const QString name, const QString value );
+    void setSystemProperty( const QString& name, const QString& value );
 
     /**
      * The class to be called when startJava() is called.
      */
-    void setMainClass( const QString clazzName );
+    void setMainClass( const QString& clazzName );
 
     /**
      * Extra flags passed to the JVM.
      */
-    void setExtraArgs( const QString args );
+    void setExtraArgs( const QString& args );
 
     /**
      * Arguments passed to the main class.
      */
-    void setClassArgs( const QString classArgs );
+    void setClassArgs( const QString& classArgs );
 
     /**
      * Send a string to the standard input (System.in) of the JVM.
      */
-    void send( const QString command );
+    void send( const QString& command );
 
 protected slots:
     void wroteData();

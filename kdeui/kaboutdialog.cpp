@@ -523,7 +523,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 }
 
 
-KAboutContainer *KAboutContainerBase::addScrolledContainerPage( 
+KAboutContainer *KAboutContainerBase::addScrolledContainerPage(
 				      const QString &title,
 				      int childAlignment,
 				      int innerAlignment )
@@ -837,7 +837,7 @@ QSize KAboutContainer::minimumSizeHint( void ) const
 
 void KAboutContainer::addWidget( QWidget *widget )
 {
-  widget->recreate( this, 0, QPoint(0,0) );
+  widget->reparent( this, 0, QPoint(0,0) );
 }
 
 
@@ -1302,7 +1302,7 @@ KAboutWidget::KAboutWidget(QWidget* parent, const char* name)
   if( version==0 || cont==0 || logo==0 || author==0 || maintainer==0 )
   {
     // this will nearly never happen (out of memory in about box?)
-    debug("KAboutWidget::KAboutWidget: Out of memory.");
+    qDebug("KAboutWidget::KAboutWidget: Out of memory.");
     kapp->quit();
   }
   // -----

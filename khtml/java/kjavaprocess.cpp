@@ -1,4 +1,5 @@
 #include "kjavaprocess.moc"
+#include "kdebug.h"
 
 typedef QMap<QString, QString> PropsMap;
 
@@ -45,7 +46,7 @@ KJavaProcess::~KJavaProcess()
 {
   if ( d->ok && isRunning() )
     stopJava();
- 
+
   delete javaProcess;
   delete d;
 }
@@ -75,7 +76,7 @@ void KJavaProcess::stopJava()
    killJVM();
 }
 
-void KJavaProcess::setJVMPath( const QString path )
+void KJavaProcess::setJVMPath( const QString& path )
 {
    d->jvmPath = path;
 }
@@ -87,49 +88,50 @@ void KJavaProcess::setJVMVersion( int major, int minor, int patch )
    d->versionPatch = patch;
 }
 
-void KJavaProcess::setHTTPProxy( const QString host, int port )
+void KJavaProcess::setHTTPProxy( const QString& host, int port )
 {
    d->httpProxyHost = host;
    d->httpProxyPort = port;
 }
 
-void KJavaProcess::setFTPProxy( const QString host, int port )
+void KJavaProcess::setFTPProxy( const QString& host, int port )
 {
    d->ftpProxyHost = host;
    d->ftpProxyPort = port;
 }
 
-void KJavaProcess::setSystemProperty( const QString name, const QString value )
+void KJavaProcess::setSystemProperty( const QString& name,
+				      const QString& value )
 {
    systemProps.insert( name, value );
 }
 
-void KJavaProcess::setMainClass( const QString clazzName )
+void KJavaProcess::setMainClass( const QString& clazzName )
 {
    d->mainClass = clazzName;
 }
 
-void KJavaProcess::setExtraArgs( const QString args )
+void KJavaProcess::setExtraArgs( const QString& args )
 {
    d->extraArgs = args;
 }
 
-void KJavaProcess::setClassArgs( const QString args )
+void KJavaProcess::setClassArgs( const QString& args )
 {
    d->classArgs = args;
 }
 
-void KJavaProcess::send( const QString command )
+void KJavaProcess::send( const QString& command )
 {
     inputBuffer.append( command );
 
-warning("sendRequest: %s", command.data() );
+    kdWarning() << "sendRequest: " << command;
 
     // If there's nothing being sent right now
     if ( inputBuffer.count() == 1 ) {
 	if ( !javaProcess->writeStdin( inputBuffer.first(),
 				       qstrlen( inputBuffer.first() ) ) ) {
-	    warning( "Could not write %s command", command.data() );
+	    kdWarning() << "Could not write " << command << " command\n";
 	}
     }
 }
@@ -149,23 +151,23 @@ void KJavaProcess::wroteData( )
 void KJavaProcess::invokeJVM()
 {
     *javaProcess << d->jvmPath;
-        
-    if( d->extraArgs != QString::null ) 
+
+    if( d->extraArgs != QString::null )
     {
-        // BUG HERE: if an argument contains space (-Dname="My name") 
+        // BUG HERE: if an argument contains space (-Dname="My name")
         // this parsing will fail. Need more sofisticated parsing
         QStringList args = QStringList::split( " ", d->extraArgs );
         for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
             *javaProcess << *it;
     }
-    
+
     *javaProcess << d->mainClass;
-    
+
     if ( d->classArgs != QString::null )
         *javaProcess << d->classArgs;
 
     warning( "Invoking JVM now..." );
-    
+
     KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
     javaProcess->start( KProcess::NotifyOnExit, comms );
 }

@@ -4,7 +4,7 @@
 #include <qtimer.h>
 #include <kwinmodule.h>
 
-#include <unistd.h>  
+#include <unistd.h>
 
 // For future expansion
 struct KJavaAppletWidgetPrivate
@@ -151,7 +151,7 @@ void KJavaAppletWidget::showApplet()
    KWM::doNotManage( swallowTitle );
 
    connect( kwm, SIGNAL( windowAdd( WId ) ),
-	    this, SLOT( setWindow( WId ) ) ); 
+	    this, SLOT( setWindow( WId ) ) );
 
    applet->show( swallowTitle );
 }
@@ -169,13 +169,13 @@ void KJavaAppletWidget::stop()
 void KJavaAppletWidget::setWindow( WId w )
 {
    XTextProperty titleProperty;
-   
+
    XGetWMName( qt_xdisplay(), w, &titleProperty );
 
-   if ( strcmp( swallowTitle.data(), (char *) titleProperty.value ) == 0 )
+   if ( swallowTitle == titleProperty.value )
        {
          swallowWindow( w );
-	   
+	
          // disconnect from KWM events
          disconnect( kwm, SIGNAL( windowAdd( WId ) ),
                      this, SLOT( setWindow( WId ) ) );
@@ -185,15 +185,15 @@ void KJavaAppletWidget::setWindow( WId w )
 void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
-   
+
    KWM::prepareForSwallowing( w );
-   
+
 #warning FIXME, KWin guru! Remove this ugly sleep()
-   
+
    // NASTY WORKAROUND:
-   // KWin reparents the window back to the root window if 
-   // we do not sleep this second. Somehow this method is called 
-   // before KWin is done with window mapping. As a result Java 
+   // KWin reparents the window back to the root window if
+   // we do not sleep this second. Somehow this method is called
+   // before KWin is done with window mapping. As a result Java
    // window ends up being outside of the khtml window.
    // The problem never happens under KWM.
    sleep(1);
@@ -201,12 +201,12 @@ void KJavaAppletWidget::swallowWindow( WId w )
    XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), window );
    XSync( qt_xdisplay(), False );
-   
-   // HACK here: If we do not wait this second resize event 
+
+   // HACK here: If we do not wait this second resize event
    // is ignored and applet stays of size 1x1->invisible
    // (Note: This happens for IBM JDK 1.1.8 but not for SUN JDK 1.2.2)
    sleep(1);
- 
+
    XResizeWindow( qt_xdisplay(), window, width(), height() );
 }
 

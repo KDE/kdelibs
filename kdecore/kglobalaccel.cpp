@@ -26,6 +26,7 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
+#include <kdebug.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -168,7 +169,7 @@ bool grabFailed;
 extern "C" {
   static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
 	if ( e->error_code != BadAccess ) {
-		warning( "grabKey: got X error %d instead of BadAccess", e->type );
+	    kdWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
 	}
 	grabFailed = true;
 	return 0;
@@ -363,10 +364,9 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 {	
 
     KKeyEntry *pEntry = aKeyDict[ action ];
-	if ( !pEntry ) {
-	    QString str = i18n("KGlobalAccel : cannot enable action %1 "
-			       "which is not in the object dictionary").arg(action);
-	    warning( str.ascii() );
+    if ( !pEntry ) {
+	kdDebug() << QString::fromLatin1("KGlobalAccel : cannot enable action %1 "
+					 "which is not in the object dictionary\n").arg(action);
 	    return;
 	}
 
