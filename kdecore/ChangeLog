@@ -1,3 +1,7 @@
+1999-05-05  Woohyun JANG  <louis@mizi.co.kr>
+
+	* klocale.cpp: change translate() to use QString::fromLocal8Bit().
+
 1999-04-07  Harri Porten  <porten@kde.org>
 
 	* kprocess.cpp: restore default SIGPIPE handler in forked child process 
