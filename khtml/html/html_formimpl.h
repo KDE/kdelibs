@@ -120,6 +120,7 @@ public:
 class HTMLGenericFormElementImpl : public HTMLElementImpl
 {
     friend class HTMLFormElementImpl;
+    friend class khtml::RenderFormElement;
 
 public:
     HTMLGenericFormElementImpl(DocumentImpl *doc);

@@ -76,34 +76,22 @@ public:
 
     DOM::HTMLGenericFormElementImpl *element() { return m_element; }
 
-    virtual void blur();
-    virtual void focus();
+    virtual bool eventFilter(QObject*, QEvent*);
 
 public slots:
-    virtual void slotBlurred();
-    virtual void slotFocused();
-    virtual void slotSelected();
     virtual void slotClicked();
-    virtual void slotMousePressed(QMouseEvent *e);
-    virtual void slotMouseReleased(QMouseEvent *e);
-    virtual void slotMouseDoubleClicked(QMouseEvent *e);
-    virtual void slotMouseMoved(QMouseEvent *e);
 
 protected:
+    virtual bool isRenderButton() const { return false; }
+    virtual bool isEditable() const { return false; }
 
     void applyLayout(int iWidth, int iHeight);
-
-    void editableWidgetFocused( QWidget *widget );
-    void editableWidgetBlurred( QWidget *widget );
+    void handleMousePressed(QMouseEvent* e);
 
     DOM::HTMLGenericFormElementImpl *m_element;
-    int m_clickX;
-    int m_clickY;
+    QPoint m_pressPos;
     int m_clickCount;
-    bool m_clicked;
-
-private:
-    KHTMLPartBrowserExtension *browserExt() const;
+    bool m_isDoubleClick;
 };
 
 
@@ -119,46 +107,10 @@ public:
     virtual const char *renderName() const { return "RenderButton"; }
 
     virtual void layout();
-};
-
-// -------------------------------------------------------------------------
-
-class PushButtonWidget : public QPushButton
-{
-    Q_OBJECT
-public:
-    PushButtonWidget(QWidget *parent);
-    PushButtonWidget(const QString &text, QWidget *parent) : QPushButton(text,parent) {}
 
 protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
+    virtual bool isRenderButton() const { return true; }
 };
-
-
-
-// -------------------------------------------------------------------------
-
-class RenderHiddenButton : public RenderButton
-{
-public:
-    RenderHiddenButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
-
-    virtual const char *renderName() const { return "RenderHiddenButton"; }
-};
-
 
 // -------------------------------------------------------------------------
 
@@ -177,33 +129,6 @@ public slots:
 
 // -------------------------------------------------------------------------
 
-class CheckBoxWidget : public QCheckBox
-{
-    Q_OBJECT
-public:
-    CheckBoxWidget(QWidget *parent);
-
-protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
-};
-
-
-
-// -------------------------------------------------------------------------
-
 class RenderRadioButton : public RenderButton
 {
     Q_OBJECT
@@ -216,55 +141,25 @@ public:
 
     virtual void layout();
 
- public slots:
+public slots:
     void slotClicked();
 };
 
 // -------------------------------------------------------------------------
 
-class RadioButtonWidget : public QRadioButton
-{
-    Q_OBJECT
-public:
-    RadioButtonWidget(QWidget *parent);
-
-protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
-};
-
-
-// -------------------------------------------------------------------------
-
 class RenderSubmitButton : public RenderButton
 {
-    Q_OBJECT
 public:
     RenderSubmitButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
     virtual ~RenderSubmitButton();
 
-    virtual const char *renderName() const { return "RenderButton"; }
+    virtual const char *renderName() const { return "RenderSubmitButton"; }
 
     virtual QString defaultLabel();
 
     virtual void layout();
     bool clicked() { return m_clicked; }
     void setClicked(bool _clicked) { m_clicked = _clicked; }
-
-public slots:
-    virtual void slotClicked();
 
 protected:
     bool m_clicked;
@@ -276,7 +171,6 @@ class RenderImageButton : public RenderImage
 {
 public:
     RenderImageButton(DOM::HTMLInputElementImpl *element);
-    virtual ~RenderImageButton();
 
     virtual const char *renderName() const { return "RenderImageButton"; }
 
@@ -290,25 +184,20 @@ class RenderResetButton : public RenderSubmitButton
 {
 public:
     RenderResetButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
-    virtual ~RenderResetButton();
+
+    virtual const char *renderName() const { return "RenderResetButton"; }
 
     virtual QString defaultLabel();
-    virtual void slotClicked();
 };
 
 // -------------------------------------------------------------------------
-
-// these define <Input type=button>, and can only work with scripts
 
 class RenderPushButton : public RenderSubmitButton
 {
 public:
     RenderPushButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
-    virtual ~RenderPushButton();
 
     virtual QString defaultLabel();
-
-    virtual void slotClicked();
 };
 
 // -------------------------------------------------------------------------
@@ -327,37 +216,20 @@ public:
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-    virtual void slotFocused();
-    virtual void slotBlurred();
+
+private:
+    virtual bool isEditable() const { return true; }
 };
 
 // -------------------------------------------------------------------------
 
 class LineEditWidget : public KLineEdit
 {
-    Q_OBJECT
 public:
     LineEditWidget(QWidget *parent);
 
 protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void keyPressEvent(QKeyEvent *);
-    virtual void keyReleaseEvent(QKeyEvent *);
     virtual bool event( QEvent *e );
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-signals:
-    void focused();
-    void blurred();
-    void onKeyDown();
-    void onKeyUp();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
 };
 
 // -------------------------------------------------------------------------
@@ -366,7 +238,6 @@ class RenderFieldset : public RenderFormElement
 {
 public:
     RenderFieldset(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
-    virtual ~RenderFieldset();
 
     virtual const char *renderName() const { return "RenderFieldSet"; }
 };
@@ -379,7 +250,6 @@ class RenderFileButton : public RenderFormElement
     Q_OBJECT
 public:
     RenderFileButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
-    virtual ~RenderFileButton();
 
     virtual const char *renderName() const { return "RenderFileButton"; }
     virtual void layout();
@@ -389,10 +259,10 @@ public slots:
     virtual void slotClicked();
     virtual void slotReturnPressed();
     virtual void slotTextChanged(const QString &string);
-    virtual void slotBlurred();
-    virtual void slotFocused();
 
 protected:
+    virtual bool isEditable() const { return true; }
+    
     bool m_clicked;
     bool m_haveFocus;
     KLineEdit   *m_edit;
@@ -406,7 +276,6 @@ class RenderLabel : public RenderFormElement
 {
 public:
     RenderLabel(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
-    virtual ~RenderLabel();
 
     virtual const char *renderName() const { return "RenderLabel"; }
 };
@@ -418,87 +287,20 @@ class RenderLegend : public RenderFormElement
 {
 public:
     RenderLegend(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
-    virtual ~RenderLegend();
 
     virtual const char *renderName() const { return "RenderLegend"; }
 };
 
 // -------------------------------------------------------------------------
 
-class ListBoxWidget : public KListBox
-{
-    Q_OBJECT
-public:
-    ListBoxWidget(QWidget *parent);
-
-protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void activated(int);
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
-private slots:
-    void slotPressed(QListBoxItem*);
-};
-
-
-// -------------------------------------------------------------------------
-
 class ComboBoxWidget : public KComboBox
 {
-    Q_OBJECT
 public:
     ComboBoxWidget(QWidget *parent);
 
 protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    virtual void focused();
-    virtual void blurred();
-    virtual void mousePressed(QMouseEvent *e);
-    virtual void mouseReleased(QMouseEvent *e);
-    virtual void mouseDoubleClicked(QMouseEvent *e);
-    virtual void mouseMoved(QMouseEvent *e);
-};
-
-class FileHBoxWidget : public QHBox
-{
-    Q_OBJECT
-public:
-    FileHBoxWidget(QWidget* parent);
-
-protected:
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void clicked();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
 };
 
 // -------------------------------------------------------------------------
@@ -522,7 +324,7 @@ public:
     void updateSelection();
 
 protected:
-    ListBoxWidget *createListBox();
+    KListBox *createListBox();
     ComboBoxWidget *createComboBox();
 
     unsigned  m_size;
@@ -539,33 +341,15 @@ protected slots:
 
 class TextAreaWidget : public QMultiLineEdit
 {
-    Q_OBJECT
 public:
     TextAreaWidget(int wrap, QWidget* parent);
 
-    QScrollBar* verticalScrollBar () const
-        { return QTableView::verticalScrollBar(); };
-    QScrollBar* horizontalScrollBar () const
-        { return QTableView::horizontalScrollBar(); };
-
-    bool hasMarkedText() const { return QMultiLineEdit::hasMarkedText(); }
+    using QMultiLineEdit::verticalScrollBar;
+    using QMultiLineEdit::horizontalScrollBar;
+    using QMultiLineEdit::hasMarkedText;
 
 protected:
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
     virtual bool event (QEvent *e );
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-
-signals:
-    void focused();
-    void blurred();
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
-    void mouseDoubleClicked(QMouseEvent *e);
-    void mouseMoved(QMouseEvent *e);
 };
 
 
@@ -588,8 +372,9 @@ public:
 
 protected slots:
     void slotTextChanged();
-    virtual void slotFocused();
-    virtual void slotBlurred();
+
+protected:
+    virtual bool isEditable() const { return true; }
 };
 
 // -------------------------------------------------------------------------

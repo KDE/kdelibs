@@ -646,7 +646,7 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (m_type != BUTTON && (evt->id() == EventImpl::CLICK_EVENT) || (evt->id() == EventImpl::MOUSEUP_EVENT)) {
+    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT)) {
         m_clicked = true;
 
 	if(m_form && m_type == SUBMIT) {
@@ -1195,7 +1195,7 @@ void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->id() == EventImpl::CLICK_EVENT &&
+    if (evt->id() == EventImpl::DOMACTIVATE_EVENT &&
         (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)) {
 	if (!m_form || !m_render)
 	    return;
