@@ -1150,11 +1150,11 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m,
 	    case BYTE:
 		if ( offset + 1 > nbytes-1 ) // nbytes = (size of file) + 1
 		    return 0;
-		break; 
+		break;
 	    case SHORT:
 	    case BESHORT:
 	    case LESHORT:
-	       	if ( offset + 2 > nbytes-1 );
+	       	if ( offset + 2 > nbytes-1 )
 		    return 0;
 		break;
 	    case LONG:
@@ -1163,7 +1163,7 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m,
 	    case DATE:
 	    case BEDATE:
 	    case LEDATE:
-	       	if ( offset + 4 > nbytes-1 );
+	       	if ( offset + 4 > nbytes-1 )
 		    return 0;
 		break;
 	    case STRING:
@@ -1841,7 +1841,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
             {
 		conf->accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
 #ifdef DEBUG_MIMEMAGIC
-                kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
+                kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << conf->accuracy << endl;
 #endif
 		conf->resultBuf = QString(types[mostaccurate].type);
 		return 1;
