@@ -404,6 +404,9 @@ void KCharsets::setQFont(QFont &f, QString charset) const
 
 void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 {
+    if(QFontInfo(f).charSet() == charset)
+        return;
+
     if(!d->db)
         d->db = new QFontDatabase;
 
@@ -413,14 +416,14 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 
     QValueList<QCString> chFamilies = (*d->availableCharsets)[charset];
     if(chFamilies.contains(family)) {
-	//kdDebug() << "KCharsets::setQFont: charsetAvailable in family" << endl; 
+	//kdDebug() << "KCharsets::setQFont: charsetAvailable in family" << endl;
         f.setCharSet(charset);
         return;
     }
 
     QValueList<QCString> ucFamilies = (*d->availableCharsets)[QFont::Unicode];
     if(ucFamilies.contains(family)) {
-	//kdDebug() << "KCharsets::setQFont: using unicode" << endl; 
+	//kdDebug() << "KCharsets::setQFont: using unicode" << endl;
 	// just setting the charset to unicode should work
         f.setCharSet(QFont::Unicode);
         return;
@@ -430,7 +433,7 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     // try to find a replacement.
 
     if(chFamilies.count() != 0) {
-	//kdDebug() << "KCharsets::setQFont: using family " << chFamilies.first() << " in native charset " << charset << endl; 
+	//kdDebug() << "KCharsets::setQFont: using family " << chFamilies.first() << " in native charset " << charset << endl;
         f.setFamily(chFamilies.first());
         f.setCharSet(charset);
         return;
@@ -438,7 +441,7 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 
     // Unicode and any family
     if(ucFamilies.count() != 0) {
-	//kdDebug() << "KCharsets::setQFont: using family " << chFamilies.first() << " in unicode" << endl; 
+	//kdDebug() << "KCharsets::setQFont: using family " << chFamilies.first() << " in unicode" << endl;
         f.setFamily(ucFamilies.first());
         f.setCharSet(QFont::Unicode);
         return;
@@ -666,7 +669,7 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     conf.setGroup("charsetsForEncoding");
 
     kdDebug(0) << "list for " << encoding << " is: " << conf.readEntry(encoding) << endl;
-    
+
     QString enc = conf.readEntry(encoding);
     if(enc.isEmpty()) {
 	conf.setGroup("builtin");
@@ -678,7 +681,7 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
 
     QStringList charsets;
     charsets = conf.readListEntry(encoding);
-    
+
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
         if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
