@@ -4,6 +4,7 @@
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
                   1999,2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
+                  2003 Clarence Dang <dang@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +27,7 @@
 #include <stdio.h>
 
 #include <qptrcollection.h>
+#include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -48,6 +50,7 @@
 #include <kiconloader.h>
 #include <kimageio.h>
 #include <kio/job.h>
+#include <kio/netaccess.h>
 #include <kio/previewjob.h>
 #include <kio/scheduler.h>
 #include <klocale.h>
@@ -119,6 +122,11 @@ struct KFileDialogPrivate
     KFileSpeedBar *urlBar;
     QHBoxLayout *urlBarLayout;
     QWidget *customWidget;
+
+    // Automatically Select Extension stuff
+    QCheckBox *autoSelectExtCheckBox;
+    bool autoSelectExtChecked; // whether or not the _user_ has checked the above box
+    QString extension; // current extension for this filter
 
     QPtrList<KIO::StatJob> statJobs;
 
@@ -216,6 +224,8 @@ void KFileDialog::setFilter(const QString& filter)
     ops->setNameFilter(filterWidget->currentFilter());
     d->hasDefaultFilter = false;
     filterWidget->setEditable( true );
+
+    updateAutoSelectExtension ();
 }
 
 QString KFileDialog::currentFilter() const
@@ -251,6 +261,8 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     d->hasDefaultFilter = !defaultType.isEmpty();
     filterWidget->setEditable( !d->hasDefaultFilter ||
                                d->operationMode != Saving );
+
+    updateAutoSelectExtension ();
 }
 
 void KFileDialog::clearFilter()
@@ -260,6 +272,8 @@ void KFileDialog::clearFilter()
     ops->clearFilter();
     d->hasDefaultFilter = false;
     filterWidget->setEditable( true );
+
+    updateAutoSelectExtension ();
 }
 
 QString KFileDialog::currentMimeFilter() const
@@ -288,6 +302,27 @@ void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {
     ops->setPreviewWidget(w);
     ops->clearHistory();
     d->hasView = true;
+}
+
+KURL KFileDialog::getCompleteURL(const QString &url)
+{
+    KURL u;
+
+    if ( KURL::isRelativeURL(url) ) // only a full URL isn't relative. Even /path is.
+    {
+        if (!url.isEmpty() && url[0] == '/' ) // absolute path
+            u.setPath( url );
+        else
+        {
+            u = ops->url();
+            u.addPath( url ); // works for filenames and relative paths
+            u.cleanPath(); // fix "dir/.."
+        }
+    }
+    else // complete URL
+        u = url;
+
+    return u;
 }
 
 // FIXME: check for "existing" flag here?
@@ -387,19 +422,10 @@ void KFileDialog::slotOk()
     }
 
     else {
-        QString text = locationEdit->currentText();
-        if ( KURL::isRelativeURL(text) ) // only a full URL isn't relative. Even /path is.
-        {
-            if ( !text.isEmpty() && text[0] == '/' ) // absolute path
-                selectedURL.setPath( text );
-            else
-            {
-                selectedURL = ops->url();
-                selectedURL.addPath( text ); // works for filenames and relative paths
-                selectedURL.cleanPath (); // fix "dir/../"
-            }
-        } else // complete URL
-            selectedURL = text;
+        selectedURL = getCompleteURL(locationEdit->currentText());
+
+        // appendExtension() may change selectedURL
+        appendExtension (selectedURL);
     }
 
     if ( selectedURL.isMalformed() ) {
@@ -511,6 +537,24 @@ void KFileDialog::slotOk()
 }
 
 
+static bool isDirectory (const KIO::UDSEntry &t)
+{
+    bool isDir = false;
+
+    for (KIO::UDSEntry::ConstIterator it = t.begin();
+         it != t.end();
+         it++)
+    {
+        if ((*it).m_uds == KIO::UDS_FILE_TYPE)
+        {
+            isDir = S_ISDIR ((mode_t) ((*it).m_long));
+            break;
+        }
+    }
+
+    return isDir;
+}
+
 // FIXME : count all errors and show messagebox when d->statJobs.count() == 0
 // in case of an error, we cancel the whole operation (clear d->statJobs and
 // don't call accept)
@@ -529,21 +573,12 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     // Can we be sure that it is exististant at all? (pfeiffer)
     if (sJob->error() && count == 0 && !ops->dirOnlyMode())
     {
-       accept();
-       return;
+        accept();
+        return;
     }
 
     KIO::UDSEntry t = sJob->statResult();
-    bool isDir = false;
-    for (KIO::UDSEntry::ConstIterator it = t.begin();
-        it != t.end(); ++it) {
-       if ((*it).m_uds == KIO::UDS_FILE_TYPE ) {
-           isDir = S_ISDIR( (mode_t)((*it).m_long));
-           break;
-       }
-    }
-
-    if (isDir)
+    if (isDirectory (t))
     {
         if ( ops->dirOnlyMode() )
         {
@@ -562,7 +597,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
         d->statJobs.clear();
         return;
     }
-    else if ( ops->dirOnlyMode() && !isDir )
+    else if ( ops->dirOnlyMode() )
     {
         return; // ### error message?
     }
@@ -572,7 +607,6 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     if ( count == 0 )
         accept();
 }
-
 
 void KFileDialog::accept()
 {
@@ -745,6 +779,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
     d->customWidget = widget;
+    d->autoSelectExtCheckBox = 0; // delayed loading
+    d->autoSelectExtChecked = false;
     d->urlBar = 0; // delayed loading
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, ConfigGroup );
@@ -964,6 +1000,11 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
 
+    // the Automatically Select Extension checkbox
+    // (the text, visibility etc. is set in updateAutoSelectExtension(), which is called by readConfig())
+    d->autoSelectExtCheckBox = new QCheckBox (d->mainWidget);
+    connect(d->autoSelectExtCheckBox, SIGNAL(clicked()), SLOT(slotAutoSelectExtClicked()));
+
     initGUI(); // activate GM
 
     readRecentFiles( config );
@@ -1008,7 +1049,7 @@ void KFileDialog::initGUI()
     vbox->addSpacing(3);
 
     QGridLayout* lafBox= new QGridLayout(2, 3, KDialog::spacingHint());
-    vbox->addLayout(lafBox, 0);
+
     lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
     lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
     lafBox->addWidget(d->okButton, 0, 2, AlignVCenter);
@@ -1019,9 +1060,15 @@ void KFileDialog::initGUI()
 
     lafBox->setColStretch(1, 4);
 
+    vbox->addLayout(lafBox, 0);
     vbox->addSpacing(3);
 
-    setTabOrder(ops,  locationEdit);
+    // add the Automatically Select Extension checkbox
+    vbox->addWidget (d->autoSelectExtCheckBox);
+    vbox->addSpacing (3);
+
+    setTabOrder(ops, d->autoSelectExtCheckBox);
+    setTabOrder (d->autoSelectExtCheckBox, locationEdit);
     setTabOrder(locationEdit, filterWidget);
     setTabOrder(filterWidget, d->okButton);
     setTabOrder(d->okButton, d->cancelButton);
@@ -1037,6 +1084,7 @@ void KFileDialog::initGUI()
         d->customWidget->reparent( d->mainWidget, QPoint() );
 
         vbox->addWidget( d->customWidget );
+        vbox->addSpacing(3);
 
         // FIXME: This should adjust the tab orders so that the custom widget
         // comes after the Cancel button. The code appears to do this, but the result
@@ -1068,6 +1116,9 @@ void KFileDialog::slotFilterChanged()
         ops->setNameFilter( filter );
 
     ops->updateDir();
+
+    updateAutoSelectExtension ();
+
     emit filterChanged( filter );
 }
 
@@ -1199,20 +1250,7 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    // This code is the same as the one in slotOK
-    KURL u;
-    if ( KURL::isRelativeURL(url) )
-    {
-        if (!url.isEmpty() && url[0] == '/' ) // absolute path
-            u.setPath( url );
-        else
-        {
-            u = ops->url();
-            u.addPath( url ); // works for filenames and relative paths
-        }
-    } else // complete URL
-        u = url;
-
+    KURL u = getCompleteURL(url);
     if (u.isMalformed()) { // if it still is
         kdWarning() << url << " is not a correct argument for setSelection!" << endl;
         return;
@@ -1635,6 +1673,8 @@ void KFileDialog::setMode( KFile::Mode m )
     else {
         filterWidget->setDefaultFilter( i18n("*|All Files") );
     }
+
+    updateAutoSelectExtension ();
 }
 
 void KFileDialog::setMode( unsigned int m )
@@ -1682,6 +1722,10 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     // show or don't show the speedbar
     toggleSpeedbar( kc->readBoolEntry(ShowSpeedbar, true) );
 
+    // does the user want Automatically Select Extension?
+    d->autoSelectExtChecked = kc->readBoolEntry (AutoSelectExtChecked, DefaultAutoSelectExtChecked);
+    updateAutoSelectExtension ();
+
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
@@ -1704,8 +1748,9 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
     saveDialogSize( group, true );
     kc->writeEntry( PathComboCompletionMode, static_cast<int>(d->pathCombo->completionMode()) );
-    kc->writeEntry(LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
+    kc->writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
     kc->writeEntry( ShowSpeedbar, d->urlBar && !d->urlBar->isHidden() );
+    kc->writeEntry( AutoSelectExtChecked, d->autoSelectExtChecked );
 
     ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
@@ -1770,12 +1815,314 @@ void KFileDialog::setOperationMode( OperationMode mode )
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
     updateLocationWhatsThis ();
+    updateAutoSelectExtension ();
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
 {
     return d->operationMode;
 }
+
+void KFileDialog::slotAutoSelectExtClicked()
+{
+    kdDebug (kfile_area) << "slotAutoSelectExtClicked(): "
+                         << d->autoSelectExtCheckBox->isChecked () << endl;
+
+    // whether the _user_ wants it on/off
+    d->autoSelectExtChecked = d->autoSelectExtCheckBox->isChecked ();
+
+    // update the current filename's extension
+    updateLocationEditExtension (d->extension /* extension hasn't changed */);
+}
+
+static QString getExtensionFromPatternList (const QStringList &patternList)
+{
+    QString ret;
+    kdDebug (kfile_area) << "\tgetExtension " << patternList << endl;
+
+    QStringList::ConstIterator patternListEnd = patternList.end ();
+    for (QStringList::ConstIterator it = patternList.begin ();
+         it != patternListEnd;
+         it++)
+    {
+        kdDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'" << endl;
+
+        // is this pattern like "*.BMP" rather than useless things like:
+        //
+        // README
+        // *.
+        // *.*
+        // *.JP*G
+        // *.JP?
+        if ((*it).startsWith ("*.") &&
+            (*it).length () > 2 &&
+            (*it).find ('*', 2) < 0 && (*it).find ('?', 2) < 0)
+        {
+            ret = (*it).mid (1);
+            break;
+        }
+    }
+
+    return ret;
+}
+
+static QString stripUndisplayable (const QString &string)
+{
+    QString ret = string;
+
+    ret.remove (':');
+    ret.remove ('&');
+
+    return ret;
+}
+
+
+QString KFileDialog::currentFilterExtension (void)
+{
+    return d->extension;
+}
+
+void KFileDialog::updateAutoSelectExtension (void)
+{
+    if (!d->autoSelectExtCheckBox) return;
+
+    //
+    // Figure out an extension for the Automatically Select Extension thing
+    // (some Windows users apparently don't know what to do when confronted
+    // with a text file called "COPYING" but do know what to do with
+    // COPYING.txt ...)
+    //
+
+    kdDebug (kfile_area) << "Figure out an extension: " << endl;
+    QString lastExtension = d->extension;
+    d->extension = QString::null;
+
+    // Automatically Select Extension is only valid if the user is _saving_ a _file_
+    if ((operationMode () == Saving) && (mode () & KFile::File))
+    {
+        //
+        // Get an extension from the filter
+        //
+
+        QString filter = currentFilter ();
+        if (!filter.isEmpty ())
+        {
+            // e.g. "*.cpp"
+            if (filter.find ('/') < 0)
+            {
+                d->extension = getExtensionFromPatternList (QStringList::split (" ", filter)).lower ();
+                kdDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
+                                    << d->extension << "\'" << endl;
+            }
+            // e.g. "text/html"
+            else
+            {
+                KMimeType::Ptr mime = KMimeType::mimeType (filter);
+
+                // first try X-KDE-NativeExtension
+                QString nativeExtension = mime->property ("X-KDE-NativeExtension").toString ();
+                if (nativeExtension.at (0) == '.')
+                {
+                    d->extension = nativeExtension.lower ();
+                    kdDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
+                                         << d->extension << "\'" << endl;
+                }
+
+                // no X-KDE-NativeExtension
+                if (d->extension.isEmpty ())
+                {
+                    d->extension = getExtensionFromPatternList (mime->patterns ()).lower ();
+                    kdDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
+                                         << d->extension << "\'" << endl;
+                }
+            }
+        }
+
+
+        //
+        // GUI: checkbox
+        //
+
+        QString whatsThisExtension;
+        if (!d->extension.isEmpty ())
+        {
+            // remember: sync any changes to the string with below
+            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension (%1)").arg (d->extension));
+            whatsThisExtension = i18n ("the extension <b>%1</b>").arg (d->extension);
+
+            d->autoSelectExtCheckBox->setEnabled (true);
+            d->autoSelectExtCheckBox->setChecked (d->autoSelectExtChecked);
+        }
+        else
+        {
+            // remember: sync any changes to the string with above
+            d->autoSelectExtCheckBox->setText (i18n ("Automatically select filename e&xtension"));
+            whatsThisExtension = i18n ("a suitable extension");
+
+            d->autoSelectExtCheckBox->setChecked (false);
+            d->autoSelectExtCheckBox->setEnabled (false);
+        }
+
+        const QString locationLabelText = stripUndisplayable (d->locationLabel->text ());
+        const QString filterLabelText = stripUndisplayable (d->filterLabel->text ());
+        QWhatsThis::add (d->autoSelectExtCheckBox,
+            "<qt>" +
+                i18n (
+                  "This option enables some convenient features for "
+                  "saving files with extensions:<br>"
+                  "<ol>"
+                    "<li>Any extension specified in the <b>%1</b> text "
+                    "area will be updated if you change the <b>%2</b>.<br>"
+                    "<br></li>"
+                    "<li>If no extension is specified in the <b>%3</b> "
+                    "text area when you click "
+                    "<b>Save</b>, %4 will be added to the end of the "
+                    "filename (if the filename does not already exist). "
+                    "This extension is based on the <b>%5</b> you have "
+                    "specified.<br>"
+                    "<br>"
+                    "If you don't want KDE to supply an extension for the "
+                    "filename, you can either turn this option off or you "
+                    "can suppress it by adding a period (.) to the end of "
+                    "the filename (the period will be automatically "
+                    "removed)."
+                    "</li>"
+                  "</ol>"
+                  "If unsure, keep this option enabled as it makes your "
+                  "files more manageable."
+                    )
+                .arg (locationLabelText)
+                .arg (filterLabelText)
+                .arg (locationLabelText)
+                .arg (whatsThisExtension)
+                .arg (filterLabelText)
+            + "</qt>"
+            );
+
+        d->autoSelectExtCheckBox->show ();
+
+
+        // update the current filename's extension
+        updateLocationEditExtension (lastExtension);
+    }
+    // Automatically Select Extension not valid
+    else
+    {
+        d->autoSelectExtCheckBox->setChecked (false);
+        d->autoSelectExtCheckBox->hide ();
+    }
+}
+
+// Updates the extension of the filename specified in locationEdit if the
+// Automatically Select Extension feature is enabled.
+// (this prevents you from accidently saving "file.kwd" as RTF, for example)
+void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
+{
+    if (!d->autoSelectExtCheckBox->isChecked () || d->extension.isEmpty ())
+        return;
+
+    QString urlStr = locationEdit->currentText ();
+    if (urlStr.isEmpty ())
+        return;
+
+    KURL url = getCompleteURL (urlStr);
+    kdDebug (kfile_area) << "updateLocationEditExtension (" << url << ")" << endl;
+
+    const int dot = urlStr.findRev ('.');
+    const int len = urlStr.length ();
+    if (dot > 0 && // has an extension already and it's not a hidden file
+                   // like ".hidden" (but we do accept ".hidden.ext")
+        dot != len - 1 // and not deliberately suppressing extension
+    )
+    {
+        // exists?
+        KIO::UDSEntry t;
+        if (KIO::NetAccess::stat (url, t, NULL))
+        {
+            kdDebug (kfile_area) << "\tfile exists" << endl;;
+
+            if (isDirectory (t))
+            {
+                kdDebug (kfile_area) << "\tisDir - won't alter extension" << endl;
+                return;
+            }
+
+            // --- fall through ---
+        }
+
+
+        //
+        // try to get rid of the current extension
+        //
+
+        // catch "double extensions" like ".tar.gz"
+        if (lastExtension.length () && urlStr.endsWith (lastExtension))
+            urlStr.truncate (len - lastExtension.length ());
+        // can only handle "single extensions"
+        else
+            urlStr.truncate (dot);
+
+        // add extension
+        locationEdit->setCurrentText (urlStr + d->extension);
+        locationEdit->lineEdit()->setEdited (true);
+    }
+}
+
+// applies only to a file that doesn't already exist
+void KFileDialog::appendExtension (KURL &url)
+{
+    if (!d->autoSelectExtCheckBox->isChecked () || d->extension.isEmpty ())
+        return;
+
+    QString urlStr = url.path ();
+    if (urlStr.isEmpty ())
+        return;
+
+    kdDebug (kfile_area) << "appendExtension(" << url << ")" << endl;
+
+    const int len = urlStr.length ();
+    const int dot = urlStr.findRev ('.');
+
+    const bool suppressExtension = (dot == len - 1);
+    const bool unspecifiedExtension = (dot < 0);
+
+    // don't KIO::NetAccess::Stat if unnecessary
+    if (!(suppressExtension || unspecifiedExtension))
+        return;
+
+    // exists?
+    KIO::UDSEntry t;
+    if (KIO::NetAccess::stat (url, t, NULL))
+    {
+        kdDebug (kfile_area) << "\tfile exists - won't append extension" << endl;
+        return;
+    }
+
+    // suppress automatically append extension?
+    if (suppressExtension)
+    {
+        //
+        // Strip trailing dot
+        // This allows lazy people to have autoSelectExtCheckBox->isChecked
+        // but don't want a file extension to be appended
+        // e.g. "README." will make a file called "README"
+        //
+        // If you really want a name like "README.", then type "README.."
+        // and the trailing dot will be removed (or just stop being lazy and
+        // turn off this feature so that you can type "README.")
+        //
+        kdDebug (kfile_area) << "\tstrip trailing dot" << endl;
+        url.setPath (urlStr.left (len - 1));
+    }
+    // evilmatically append extension :) if the user hasn't specified one
+    else if (unspecifiedExtension)
+    {
+        kdDebug (kfile_area) << "\tappending extension \'" << d->extension << "\'..." << endl;
+        url.setPath (urlStr + d->extension);
+        kdDebug (kfile_area) << "\tsaving as \'" << url << "\'" << endl;
+    }
+}
+
 
 // adds the selected files/urls to 'recent documents'
 void KFileDialog::addToRecentDocuments()

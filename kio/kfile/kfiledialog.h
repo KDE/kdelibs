@@ -831,6 +831,31 @@ protected:
      */
     KURL::List tokenize(const QString& line) const;
 
+    /**
+     * Returns the absolute version of the URL specified in locationEdit.
+     * @since 3.2
+     */
+    KURL getCompleteURL(const QString&);
+
+    /**
+     * Returns the filename extension associated with the currentFilter().
+     * QString::null is returned if an extension is not available or if
+     * operationMode() != Saving.
+     * @since 3.2
+     */
+    QString currentFilterExtension();
+
+    /**
+     * Updates the currentFilterExtension and the availability of the
+     * Automatically Select Extension Checkbox (visible if operationMode()
+     * == Saving and enabled if an extension _will_ be associated with the
+     * currentFilter(), _after_ this call).  You should call this after
+     * filterWidget->setCurrentItem().
+     * @since 3.2
+     */
+    void updateAutoSelectExtension();
+
+
 protected slots:
     void urlEntered( const KURL& );
     void enterURL( const KURL& url );
@@ -865,6 +890,7 @@ protected slots:
     virtual void accept();
     virtual void slotCancel();
 
+    void slotAutoSelectExtClicked();
     void addToRecentDocuments();
     void initSpeedbar();
 
@@ -873,6 +899,9 @@ private:
     KFileDialog operator=(const KFileDialog&);
 
     void updateLocationWhatsThis();
+
+    void appendExtension(KURL &url);
+    void updateLocationEditExtension(const QString &);
 
     static void initStatic();
 

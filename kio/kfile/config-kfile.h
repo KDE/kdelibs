@@ -13,6 +13,7 @@ const int kfile_area = 250;
 #define DefaultSortReversed false
 #define DefaultRecentURLsNumber 15
 #define DefaultDirectoryFollowing true
+#define DefaultAutoSelectExtChecked true
 #define ConfigGroup QString::fromLatin1("KFileDialog Settings")
 #define RecentURLs QString::fromLatin1("Recent URLs")
 #define RecentFiles QString::fromLatin1("Recent Files")
@@ -25,5 +26,6 @@ const int kfile_area = 250;
 #define PathComboCompletionMode QString::fromLatin1("PathCombo Completionmode")
 #define LocationComboCompletionMode QString::fromLatin1("LocationCombo Completionmode")
 #define ShowSpeedbar QString::fromLatin1("Show Speedbar")
+#define AutoSelectExtChecked QString::fromLatin1("Automatically select filename extension")
 
 #endif
