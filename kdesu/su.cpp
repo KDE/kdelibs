@@ -110,6 +110,13 @@ int SuProcess::exec(const char *password, int check)
 	    ptr[i] = '\000';
     }
 
+    if (ret == 2)
+    {
+	kill(m_Pid, SIGTERM);
+	waitForChild();
+	return SuIncorrectPassword;
+    }
+
     ret = ConverseStub(check);
     if (ret < 0)
     {
@@ -122,6 +129,7 @@ int SuProcess::exec(const char *password, int check)
 	waitForChild();
 	return SuIncorrectPassword;
     }
+
     if (check == 1)
     {
 	waitForChild();
@@ -137,7 +145,7 @@ int SuProcess::exec(const char *password, int check)
 
 /*
  * Conversation with su: feed the password.
- * Return values: -1 = error, 0 = ok, 1 = kill me
+ * Return values: -1 = error, 0 = ok, 1 = kill me, 2 not authorized
  */
 
 int SuProcess::ConverseSU(const char *password)
@@ -146,11 +154,11 @@ int SuProcess::ConverseSU(const char *password)
     unsigned i, j;
 
     QCString line;
-    while (state < 2) 
+    while (true)
     {
 	line = readLine(); 
 	if (line.isNull())
-	    return -1;
+	    return ( state == 2 ? 2 : -1);
 	
 	switch (state) 
 	{
@@ -184,7 +192,8 @@ int SuProcess::ConverseSU(const char *password)
 	    }
 	    break;
 
-	case 1:
+	case 1: 
+	{
 	    QCString s = line.stripWhiteSpace();
 	    if (s.isEmpty()) 
 	    {
@@ -197,6 +206,16 @@ int SuProcess::ConverseSU(const char *password)
 		    return -1;
 	    }
 	    state++;
+	    break;
+	}
+
+	case 2:
+	    // Read till we get "kdesu_stub"
+	    if (line == "kdesu_stub")
+	    {
+		unreadLine(line);
+		return 0;
+	    }
 	    break;
 	}
     }
