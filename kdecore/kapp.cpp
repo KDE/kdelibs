@@ -165,11 +165,13 @@ public:
     bool eventFilter( QObject * , QEvent * e) {
 	if ( block )
 	    return false;
-	if ( e->type() == QEvent::KeyPress ) {
+	if ( e->type() == QEvent::Accel ) {
 	    if ( ( (QKeyEvent*) e )->key() == key ) {
 		block = true;
 		checkAccelerators();
 		block = false;
+		( (QKeyEvent*) e )->accept();
+		return true;
 	    }
 	}
 	return false;
@@ -204,7 +206,7 @@ public:
 	}
     }
 
-    
+
     void checkMenuData( const QString& prefix, QMenuData* m, QMap<QChar, AccelInfoList > accels  ) {
 	QMenuItem* mi;
 	int i;
@@ -285,7 +287,7 @@ public:
 	    AccelInfoList list = it.data();
   	    if ( list.count() <= 1 )
   		continue;
-	    
+	
 	    if ( ++num_clashes == 1 ) {
 		s += "<table border>";
 		s += "<tr><th>Accel</th><th>String</th><th>Widget</th></tr>";
@@ -361,7 +363,7 @@ public:
 	    } else {
 		m += "<h3>No clashes detected</h3>";
 	    }
-	    
+	
 	    m.prepend( "<h2>Menubar</h2>" );
 	    m += "<h2>Other control elements</h2>";
 	    s.prepend( m );
@@ -386,7 +388,7 @@ private:
     int key;
     bool block;
     QMap<QChar, AccelInfoList > menuAccels;
-    
+
 };
 
 /*
