@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 
 #include <qfile.h>
 
@@ -32,14 +33,15 @@
 using namespace KRES;
 
 QDict<ResourceFactory> *ResourceFactory::mSelves = 0;
+static KStaticDeleter< QDict<ResourceFactory> > staticDeleter;
 
 ResourceFactory *ResourceFactory::self( const QString& resourceFamily )
 {
   kdDebug(5700) << "ResourceFactory::self()" << endl;
 
   ResourceFactory *factory = 0;
-  if ( ! mSelves )
-    mSelves = new QDict<ResourceFactory>;
+  if ( !mSelves )
+    staticDeleter.setObject( mSelves, new QDict<ResourceFactory> );
 
   factory = mSelves->find( resourceFamily );
 
