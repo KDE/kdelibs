@@ -51,12 +51,15 @@ public:
         fm = 0L;
         doAutoSelect = true;
         textHeight = 0;
+        dragHoldItem = 0L;
     }
     KIconView::Mode mode;
     bool doAutoSelect;
     QFontMetrics *fm;
     QPixmapCache maskCache;
     int textHeight;
+    QIconViewItem *dragHoldItem;
+    QTimer dragHoldTimer;
 };
 
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
@@ -81,6 +84,8 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     m_pAutoSelect = new QTimer( this );
     connect( m_pAutoSelect, SIGNAL( timeout() ),
              this, SLOT( slotAutoSelect() ) );
+
+    connect( &d->dragHoldTimer, SIGNAL(timeout()), this, SLOT(slotDragHoldTimeout()) );
 }
 
 KIconView::~KIconView()
@@ -336,6 +341,56 @@ void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
     d->doAutoSelect = true;
     QIconView::contentsMouseReleaseEvent( e );
 }
+
+void KIconView::contentsDragEnterEvent( QDragEnterEvent *e )
+{
+    QIconViewItem *item = findItem( e->pos() );
+
+    if ( d->dragHoldItem != item)
+    {
+        d->dragHoldItem = item;
+        if( item != 0L )
+        {
+            d->dragHoldTimer.start( 1000, true );
+        }
+        else
+        {
+            d->dragHoldTimer.stop();
+        }
+    }
+
+    QIconView::contentsDragEnterEvent( e );
+}
+
+void KIconView::contentsDragMoveEvent( QDragMoveEvent *e )
+{
+    QIconViewItem *item = findItem( e->pos() );
+
+    if ( d->dragHoldItem != item)
+    {
+        d->dragHoldItem = item;
+        if( item != 0L )
+        {
+            d->dragHoldTimer.start( 1000, true );
+        }
+        else
+        {
+            d->dragHoldTimer.stop();
+        }
+    }
+
+    QIconView::contentsDragMoveEvent( e );
+}
+
+void KIconView::slotDragHoldTimeout()
+{
+    QIconViewItem *tmp = d->dragHoldItem;
+    d->dragHoldItem = 0L;
+
+    emit held( tmp );
+}
+
+
 
 void KIconView::setFont( const QFont &font )
 {

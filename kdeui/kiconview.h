@@ -120,6 +120,16 @@ signals:
   void executed( QIconViewItem *item, const QPoint &pos );
 
   /**
+   * This signal is emitted whenever the user hold something on an iconview
+   * during a drag'n'drop.
+   * @param item is the pointer to the iconview item the hold event occur.
+   *
+   * Note that you may not delete any QIconViewItem objects in slots
+   * connected to this signal.
+   */
+  void held( QIconViewItem *item );
+
+  /**
    * This signal gets emitted whenever the user double clicks into the
    * iconview.
    * @param item is the pointer to the clicked iconview item.
@@ -152,9 +162,12 @@ protected:
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
+  virtual void contentsDragEnterEvent( QDragEnterEvent *e );
+  virtual void contentsDragMoveEvent( QDragMoveEvent *e );
 
 private slots:
   void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
+  void slotDragHoldTimeout();
 
 private:
   /**
