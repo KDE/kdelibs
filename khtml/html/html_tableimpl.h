@@ -97,8 +97,7 @@ public:
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttributeImpl *attr);
-
-    virtual void init();
+    virtual void attach();
 
 protected:
     HTMLTableSectionElementImpl *head;
@@ -188,14 +187,14 @@ public:
     void setCol(int col) { _col = col; }
     int row() const { return _row; }
     void setRow(int r) { _row = r; }
-    
+
     int colSpan() const { return cSpan; }
     int rowSpan() const { return rSpan; }
     bool noWrap() const { return m_nowrap; }
 
     virtual Id id() const { return _id; }
     virtual void parseAttribute(AttributeImpl *attr);
-    virtual void init();
+    virtual void attach();
 
 protected:
     int _row;
@@ -225,7 +224,7 @@ public:
 
     // overrides
     virtual void parseAttribute(AttributeImpl *attr);
-    
+
     int span() const { return _span; }
 
 protected:

@@ -739,8 +739,8 @@ void HTMLButtonElementImpl::attach()
     // skip the generic handler
     HTMLElementImpl::attach();
     // doesn't work yet in the renderer ### fixme
-//     if (renderer())
-//         renderer()->setReplaced(true);
+    if (renderer())
+        renderer()->setReplaced(true);
 }
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
@@ -801,6 +801,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_haveType = false;
     m_activeSubmit = false;
     m_autocomplete = true;
+    m_inited = false;
 
     xPos = 0;
     yPos = 0;
@@ -984,9 +985,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLInputElementImpl::init()
+void HTMLInputElementImpl::attach()
 {
-    HTMLGenericFormElementImpl::init();
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
 
     // make sure we don't inherit a color to the form elements
     // by adding a non-CSS color property. this his higher
@@ -1011,24 +1014,21 @@ void HTMLInputElementImpl::init()
             addCSSLength(CSS_PROP_WIDTH, getAttribute(ATTR_WIDTH));
         break;
     };
-    if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
-    if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
-        QString value = m_value.string();
-        // remove newline stuff..
-        QString nvalue;
-        for (unsigned int i = 0; i < value.length(); ++i)
-            if (value[i] >= ' ')
-                nvalue += value[i];
-        m_value = nvalue;
-    }
-    m_checked = (getAttribute(ATTR_CHECKED) != 0);
-}
 
-void HTMLInputElementImpl::attach()
-{
-    assert(!attached());
-    assert(!m_render);
-    assert(parentNode());
+    if (!m_inited) {
+        if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
+        if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
+            QString value = m_value.string();
+            // remove newline stuff..
+            QString nvalue;
+            for (unsigned int i = 0; i < value.length(); ++i)
+                if (value[i] >= ' ')
+                    nvalue += value[i];
+            m_value = nvalue;
+        }
+        m_checked = (getAttribute(ATTR_CHECKED) != 0);
+        m_inited = true;
+    }
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -1597,18 +1597,13 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLSelectElementImpl::init()
-{
-    HTMLGenericFormElementImpl::init();
-
-    addCSSProperty(CSS_PROP_COLOR, "text");
-}
-
 void HTMLSelectElementImpl::attach()
 {
     assert(!attached());
     assert(parentNode());
     assert(!renderer());
+
+    addCSSProperty(CSS_PROP_COLOR, "text");
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -2088,18 +2083,13 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLTextAreaElementImpl::init()
-{
-    HTMLGenericFormElementImpl::init();
-
-    addCSSProperty(CSS_PROP_COLOR, "text");
-}
-
 void HTMLTextAreaElementImpl::attach()
 {
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
+
+    addCSSProperty(CSS_PROP_COLOR, "text");
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();

@@ -57,7 +57,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *);
-    virtual void init();
     virtual void attach();
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
@@ -83,7 +82,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *);
-    virtual void init();
     virtual void attach();
     virtual void detach();
 
@@ -122,7 +120,6 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *);
-    virtual void init();
     virtual void attach();
 
     virtual void defaultEventHandler(EventImpl *evt);

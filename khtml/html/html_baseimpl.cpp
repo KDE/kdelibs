@@ -156,9 +156,11 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLBodyElementImpl::init()
+void HTMLBodyElementImpl::attach()
 {
-    HTMLElementImpl::init();
+    assert(!m_render);
+    assert(parentNode());
+    assert(parentNode()->renderer());
 
     KHTMLView* w = getDocument()->view();
     if(w->marginWidth() != -1) {
@@ -176,15 +178,6 @@ void HTMLBodyElementImpl::init()
 
     if ( m_bgSet && !m_fgSet )
         addCSSProperty(CSS_PROP_COLOR, "#000000");
-
-    getDocument()->updateStyleSelector();
-}
-
-void HTMLBodyElementImpl::attach()
-{
-    assert(!m_render);
-    assert(parentNode());
-    assert(parentNode()->renderer());
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
@@ -263,9 +256,11 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLFrameElementImpl::init()
+void HTMLFrameElementImpl::attach()
 {
-    HTMLElementImpl::init();
+    assert(!attached());
+    assert(parentNode());
+    assert(parentNode()->renderer());
 
     // we should first look up via id, then via name.
     // this shortterm hack fixes the ugly case. ### rewrite needed for next release
@@ -286,13 +281,6 @@ void HTMLFrameElementImpl::init()
         }
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
-}
-
-void HTMLFrameElementImpl::attach()
-{
-    assert(!attached());
-    assert(parentNode());
-    assert(parentNode()->renderer());
 
     // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
@@ -447,9 +435,11 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLFrameSetElementImpl::init()
+void HTMLFrameSetElementImpl::attach()
 {
-    HTMLElementImpl::init();
+    assert(!m_render);
+    assert(parentNode());
+    assert(parentNode()->renderer());
 
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
@@ -464,13 +454,6 @@ void HTMLFrameSetElementImpl::init()
         }
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
-}
-
-void HTMLFrameSetElementImpl::attach()
-{
-    assert(!m_render);
-    assert(parentNode());
-    assert(parentNode()->renderer());
 
     // ignore display: none
     m_render = new RenderFrameSet(this);

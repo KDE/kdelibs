@@ -264,7 +264,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
-    virtual void init();
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
@@ -294,6 +293,7 @@ protected:
     bool m_haveType : 1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
+    bool m_inited : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -377,7 +377,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
-    virtual void init();
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
@@ -516,7 +515,6 @@ public:
     void select (  );
 
     virtual void parseAttribute(AttributeImpl *attr);
-    virtual void init();
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();

@@ -903,10 +903,6 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
-void NodeImpl::init()
-{
-}
-
 void NodeImpl::attach()
 {
     assert(!attached());
@@ -1045,7 +1041,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     NodeImpl *prev = refChild->previousSibling();
     if ( prev == newChild || refChild == newChild ) // nothing to do
 	return newChild;
-    
+
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
 
@@ -1090,7 +1086,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
     if ( oldChild == newChild ) // nothing to do
 	return oldChild;
-    
+
     // Make sure adding the new child is ok
     checkAddChild(newChild, exceptioncode);
     if (exceptioncode)
@@ -1242,7 +1238,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
     checkAddChild(newChild, exceptioncode);
     if (exceptioncode)
         return 0;
-    
+
     if ( newChild == _last ) // nothing to do
 	return newChild;
 

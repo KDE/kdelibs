@@ -448,10 +448,8 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLTableElementImpl::init()
+void HTMLTableElementImpl::attach()
 {
-    HTMLElementImpl::init();
-
     if (!m_noBorder) {
         int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
         addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
@@ -459,6 +457,8 @@ void HTMLTableElementImpl::init()
         addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
         addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
     }
+
+    HTMLElementImpl::attach();
 }
 
 // --------------------------------------------------------------------------
@@ -712,10 +712,8 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLTableCellElementImpl::init()
+void HTMLTableCellElementImpl::attach()
 {
-    HTMLTablePartElementImpl::init();
-
     HTMLElementImpl* p = static_cast<HTMLElementImpl*>(parentNode());
     while(p && p->id() != ID_TABLE)
         p = static_cast<HTMLElementImpl*>(p->parentNode());
@@ -737,6 +735,8 @@ void HTMLTableCellElementImpl::init()
                 addCSSProperty(CSS_PROP_BORDER_COLOR, "inherit");
         }
     }
+
+    HTMLTablePartElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
