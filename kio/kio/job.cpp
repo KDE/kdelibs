@@ -1082,7 +1082,8 @@ class PostErrorJob : public TransferJob
 public:
 
   // KDE 4: Make it const QString &
-  PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
+  PostErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
+      : TransferJob(KURL(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
     m_error = KIO::ERR_POST_DENIED;
     m_errorText = url;
@@ -2004,8 +2005,11 @@ void CopyJob::slotResultStating( Job *job )
 
         m_bCurrentSrcIsDir = true; // used by slotEntries
         if ( destinationState == DEST_IS_DIR ) // (case 1)
-            // Use <desturl>/<directory_copied> as destination, from now on
-            m_currentDest.addPath( srcurl.fileName() );
+        {
+            if ( !m_asMethod )
+                // Use <desturl>/<directory_copied> as destination, from now on
+                m_currentDest.addPath( srcurl.fileName() );
+        }
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
             m_error = ERR_IS_FILE;
@@ -2131,9 +2135,12 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
             info.uDest = m_currentDest;
-            //kdDebug(7007) << "uDest(1)=" << info.uDest.prettyURL() << endl;
+            //kdDebug(7007) << " uSource=" << info.uSource << " uDest(1)=" << info.uDest.prettyURL() << endl;
             // Append filename or dirname to destination URL, if allowed
-            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+            if ( destinationState == DEST_IS_DIR &&
+                 // "copy/move as <foo>" means 'foo' is the dest for the base srcurl
+                 // (passed here during stating) but not its children (during listing)
+                 ( ! ( m_asMethod && state == STATE_STATING ) ) )
             {
                 // Here we _really_ have to add some filename to the dest.
                 // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
@@ -2143,7 +2150,8 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 else
                     info.uDest.addPath( relName );
             }
-            //kdDebug(7007) << "uDest(2)=" << info.uDest.prettyURL() << endl;
+            //kdDebug(7007) << " uDest(2)=" << info.uDest.prettyURL() << endl;
+            //kdDebug(7007) << " " << info.uSource << " -> " << info.uDest << endl;
             if ( info.linkDest.isEmpty() && (isDir /*S_ISDIR(info.type)*/) && m_mode != Link ) // Dir
             {
                 dirs.append( info ); // Directories
@@ -2409,21 +2417,33 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             (*it).uDest = newUrl.path( -1 );
             newPath = newUrl.path( 1 ); // With trailing slash
             QValueList<CopyInfo>::Iterator renamedirit = it;
-            renamedirit++;
+            ++renamedirit;
             // Change the name of subdirectories inside the directory
             for( ; renamedirit != dirs.end() ; ++renamedirit )
             {
                 QString path = (*renamedirit).uDest.path();
-                if ( path.left(oldPath.length()) == oldPath )
-                    (*renamedirit).uDest.setPath( path.replace( 0, oldPath.length(), newPath ) );
+                if ( path.left(oldPath.length()) == oldPath ) {
+                    QString n = path;
+                    n.replace( 0, oldPath.length(), newPath );
+                    kdDebug(7007) << "dirs list: " << (*renamedirit).uSource.path()
+                                  << " was going to be " << path
+                                  << ", changed into " << n << endl;
+                    (*renamedirit).uDest.setPath( n );
+                }
             }
             // Change filenames inside the directory
             QValueList<CopyInfo>::Iterator renamefileit = files.begin();
             for( ; renamefileit != files.end() ; ++renamefileit )
             {
                 QString path = (*renamefileit).uDest.path();
-                if ( path.left(oldPath.length()) == oldPath )
-                    (*renamefileit).uDest.setPath( path.replace( 0, oldPath.length(), newPath ) );
+                if ( path.left(oldPath.length()) == oldPath ) {
+                    QString n = path;
+                    n.replace( 0, oldPath.length(), newPath );
+                    kdDebug(7007) << "files list: " << (*renamefileit).uSource.path()
+                                  << " was going to be " << path
+                                  << ", changed into " << n << endl;
+                    (*renamefileit).uDest.setPath( n );
+                }
             }
             if (!dirs.isEmpty())
                 emit aboutToCreate( this, dirs );
@@ -3013,7 +3033,7 @@ void CopyJob::slotResult( Job *job )
                 // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
                 if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
                      m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
-                     ( job->error() == ERR_FILE_ALREADY_EXIST || job->error() == ERR_DIR_ALREADY_EXIST ) )
+                     ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
                 {
                     kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
                     QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
