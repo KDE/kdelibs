@@ -104,6 +104,9 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
 	    if ( errno == EACCES ) {
 		error( KIO::ERR_ACCESS_DENIED, url.path() );
 		return;
+	    } else if ( errno == ENOSPC ) {
+		error( KIO::ERR_DISK_FULL, url.path() );
+		return;
 	    } else {
 		error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
 		return;
