@@ -135,7 +135,6 @@
   (let ((giname (if (string? target) (normalize target) (gi target)))
 	(lang   (if (string? target) ($lang$) ($lang$ target))))
     (case lang
-      ;; ISO 639/ISO 3166/RFC 1766
       <![%l10n-ca[ (("ca") (gentext-ca-xref-strings giname)) ]]>
       <![%l10n-cs[ (("cs") (gentext-cs-xref-strings giname)) ]]>
       <![%l10n-da[ (("da") (gentext-da-xref-strings giname)) ]]>
@@ -586,6 +585,7 @@
     <![%l10n-sv[ (("sv") %gentext-sv-start-nested-quote%) ]]>
     <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-start-nested-quote%) ]]>
     <![%l10n-zhtw[ (("zh_tw") %gentext-zhtw-start-nested-quote%) ]]>
+
     (else (error "L10N ERROR: gentext-start-nested-quote"))))
 
 (define (gentext-end-nested-quote)
@@ -617,6 +617,7 @@
     <![%l10n-sv[ (("sv") %gentext-sv-end-nested-quote%) ]]>
     <![%l10n-zhcn[ (("zh_cn") %gentext-zhcn-end-nested-quote%) ]]>
     <![%l10n-zhtw[ (("zh_tw") %gentext-zhtw-end-nested-quote%) ]]>
+
     (else (error "L10N ERROR: gentext-end-nested-quote"))))
 
 (define (gentext-by)
