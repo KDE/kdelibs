@@ -3393,7 +3393,7 @@ void MultiGetJob::flushQueue(QPtrList<GetRequest> &queue)
       }
    }
    // Send number of URLs, (URL, metadata)*
-   KIO_ARGS << (Q_INT32) m_activeQueue.count();
+   KIO_ARGS << (Q_INT32) queue.count();
    for(entry = queue.first(); entry; entry = queue.next())
    {
       stream << entry->url << entry->metaData;
