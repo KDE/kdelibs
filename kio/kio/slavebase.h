@@ -767,7 +767,7 @@ public:
      */
     void setKillFlag();
 
-private:
+protected:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
@@ -776,8 +776,6 @@ private:
     QString mAppSocket;
     bool mConnectedToApp;
     static long s_seqNr;
-
-protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
