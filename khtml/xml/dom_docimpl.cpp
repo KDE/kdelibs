@@ -932,10 +932,7 @@ void DocumentImpl::determineParseMode( const QString &str )
                             //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
                             if( version > 3 ) {
                                 htmlMode = Html4;
-                                if( isTransitional( val, tagPos ) )
-                                    publicId = Transitional;
-                                else
-                                    publicId = Strict;
+                                publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
                             }
                         }
                     }
@@ -946,11 +943,9 @@ void DocumentImpl::determineParseMode( const QString &str )
 
         if( systemId == publicId )
             pMode = publicId;
-        else if ( systemId == Unknown ) {
-            pMode = publicId;
-            if ( publicId == Transitional && htmlMode == Html4 )
-                pMode = Compat;
-        } else if ( publicId == Transitional && systemId == Strict ) {
+        else if ( systemId == Unknown )
+            pMode = htmlMode == Html4 ? Compat : publicId;
+        else if ( publicId == Transitional && systemId == Strict ) {
             if ( htmlMode == Html3 )
                 pMode = Compat;
             else
