@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@ class KMWSocketUtil;
 
 class KMWSocket : public KMWizardPage
 {
-	Q_OBJECT;
+	Q_OBJECT
 public:
 	KMWSocket(QWidget *parent = 0, const char *name = 0);
 	~KMWSocket();

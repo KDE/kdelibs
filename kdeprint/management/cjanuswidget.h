@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -44,10 +44,12 @@ public:
 protected slots:
 	void slotSelected(QListBoxItem*);
 
-private:
+public:
+	class CPage;
 	class CListBox;
 	class CListBoxItem;
-	struct CPage;
+
+private:
 	CPage* findPage(QWidget *w);
 	CPage* findPage(QListBoxItem *i);
 	QListBoxItem* findPrevItem(CPage*);
