@@ -1904,6 +1904,9 @@ void KHTMLPart::slotRedirect()
     args.reload = true;
   }
 
+  // Indicate that this request is due to a redirection.
+  args.setEnableRedirectedRequest (true);
+
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
   urlSelected( u, 0, 0, "_self", args );
