@@ -96,7 +96,7 @@ public:
 
 class ResolveNode : public Node {
 public:
-  ResolveNode(const CString &s) : ident(s) { }
+  ResolveNode(const CString *s) : ident(*s) { }
   KJSO *evaluate();
 private:
   CString ident;
@@ -121,7 +121,7 @@ private:
 
 class AccessorNode2 : public Node {
 public:
-  AccessorNode2(Node *e, const CString &s) : expr(e), ident(s) { }
+  AccessorNode2(Node *e, const CString *s) : expr(e), ident(*s) { }
   KJSO *evaluate();
 private:
   Node *expr;
@@ -353,7 +353,7 @@ private:
 
 class VarDeclNode : public Node {
 public:
-  VarDeclNode(const CString &id, AssignExprNode *in);
+  VarDeclNode(const CString *id, AssignExprNode *in);
   KJSO *evaluate();
 private:
   CString ident;
@@ -443,8 +443,8 @@ class ForInNode : public StatementNode {
 public:
   ForInNode(Node *l, Node *e, StatementNode *s) :
     init(0L), lexpr(l), expr(e), stat(s) {}
-  ForInNode(const CString &i, AssignExprNode *in, Node *e, StatementNode *s) :
-    ident(i), init(in), lexpr(0L), expr(e), stat(s) {}
+  ForInNode(const CString *i, AssignExprNode *in, Node *e, StatementNode *s) :
+    ident(*i), init(in), lexpr(0L), expr(e), stat(s) {}
   KJSO *evaluate();
 private:
   CString ident;
@@ -456,7 +456,7 @@ private:
 class ContinueNode : public StatementNode {
 public:
   ContinueNode() { }
-  ContinueNode(const CString &i) : ident(i) { }
+  ContinueNode(const CString *i) : ident(*i) { }
   KJSO *evaluate();
 private:
   CString ident;
@@ -465,7 +465,7 @@ private:
 class BreakNode : public StatementNode {
 public:
   BreakNode() { }
-  BreakNode(const CString &i) : ident(i) { }
+  BreakNode(const CString *i) : ident(*i) { }
   KJSO *evaluate();
 private:
   CString ident;
@@ -534,7 +534,7 @@ private:
 
 class LabelNode : public StatementNode {
 public:
-  LabelNode(const CString &l, StatementNode *s) : label(l), stat(s) { }
+  LabelNode(const CString *l, StatementNode *s) : label(*l), stat(s) { }
   KJSO *evaluate();
 private:
   CString label;
@@ -571,8 +571,8 @@ public:
 
 class ParameterNode : public Node {
 public:
-  ParameterNode(const CString &i) : id(i), next(0L) { }
-  ParameterNode(ParameterNode *l, const CString &i) : id(i), next(l) { } 
+  ParameterNode(const CString *i) : id(*i), next(0L) { }
+  ParameterNode(ParameterNode *l, const CString *i) : id(*i), next(l) { } 
   KJSO *evaluate();
   CString ident() { return id; }
   ParameterNode *nextParam() { return next; }
@@ -583,8 +583,8 @@ private:
 
 class FuncDeclNode : public StatementNode {
 public:
-  FuncDeclNode(const CString &i, ParameterNode *p, StatementNode *b)
-    : ident(i), param(p), block(b) { }
+  FuncDeclNode(const CString *i, ParameterNode *p, StatementNode *b)
+    : ident(*i), param(p), block(b) { }
   KJSO *evaluate() { /* empty */ return 0L; }
   void processFuncDecl();
 private:

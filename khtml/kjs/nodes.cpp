@@ -1054,8 +1054,8 @@ KJSO *DebugNode::evaluate()
 
 ArgumentListNode::ArgumentListNode(Node *e) : list(0L), expr(e) {}
 
-VarDeclNode::VarDeclNode(const CString &id, AssignExprNode *in)
-    : ident(id), init(in) { }
+VarDeclNode::VarDeclNode(const CString *id, AssignExprNode *in)
+    : ident(*id), init(in) { }
 
 ArgumentListNode::ArgumentListNode(ArgumentListNode *l, Node *e) :  
     list(l), expr(e) {}
