@@ -226,6 +226,7 @@ KSpellConfig::sChangeClient (int i)
   emit configChanged();
 }
 
+// KDE 4: Make it const QString & fname (only fname)
 bool
 KSpellConfig::interpret (QString &fname, QString &lname,
 			      QString &hname)
@@ -767,6 +768,7 @@ KSpellConfig::operator= (const KSpellConfig &ksc)
   fillInDialog();
 }
 
+// KDE 4: Make it const QStringList &
 void
 KSpellConfig::setIgnoreList (QStringList _ignorelist)
 {
@@ -779,6 +781,7 @@ KSpellConfig::ignoreList () const
   return ignorelist;
 }
 
+// KDE 4: Make it const QStringList &
 void
 KSpellConfig::setReplaceAllList (QStringList _replacelist)
 {
