@@ -71,12 +71,12 @@ public:
     *
     * @return Number of references
     */
-   int _KShared_count() { return count; }
+   int _KShared_count() const { return count; }
 
 protected:
    virtual ~KShared() { }
-   int count; // ### KDE 3.0: rename to something like _KShared_count
-              // or make private
+private:
+   int count;
 };
 
 /**

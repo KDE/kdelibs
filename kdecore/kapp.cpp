@@ -1959,13 +1959,6 @@ KApplication::startServiceByName( const QString& _name, const QString &URL,
 }
 
 int
-KApplication::startServiceByName( const QString& _name, const QString &URL,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByName( _name, URL, error, dcopService, pid, "" );
-}
-
-int
 KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
                   QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
 {
@@ -1975,13 +1968,6 @@ KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
 }
 
 int
-KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByName( _name, URLs, error, dcopService, pid, "" );
-}
-
-int
 KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
                   QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
 {
@@ -1994,26 +1980,12 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QString &UR
 }
 
 int
-KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByDesktopPath( _name, URL, error, dcopService, pid, "" );
-}
-
-int
 KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
                   QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
 {
    return startServiceInternal(
                       "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)",
                       _name, URLs, error, dcopService, pid, startup_id);
-}
-
-int
-KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByDesktopPath( _name, URLs, error, dcopService, pid, "" );
 }
 
 int
@@ -2029,26 +2001,12 @@ KApplication::startServiceByDesktopName( const QString& _name, const QString &UR
 }
 
 int
-KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByDesktopName( _name, URL, error, dcopService, pid, "" );
-}
-
-int
 KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
                   QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
 {
    return startServiceInternal(
                       "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)",
                       _name, URLs, error, dcopService, pid, startup_id);
-}
-
-int
-KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                              QString *error, QCString *dcopService, int *pid )
-{
-    return startServiceByDesktopName( _name, URLs, error, dcopService, pid, "" );
 }
 
 int

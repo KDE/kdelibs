@@ -345,16 +345,11 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByName( const QString& _name, const QString &URL,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  static int startServiceByName( const QString& _name, const QStringList &URLs,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // KDE 3.0: BCI merge with the above
   // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid=0 );
+                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "" );
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid=0 );
+                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "" );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -371,16 +366,11 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // KDE 3.0: BCI merge with the above
   // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -398,16 +388,11 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopName( const QString& _name, const QString &URL,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  static int startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // KDE 3.0: BCI merge with the above
   // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0 );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
 
   /**
    * Start a program via kdeinit.
@@ -851,6 +836,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.228  2001/08/06 17:17:42  mueller
+// increasing version number
+//
 // Revision 1.227  2001/07/29 06:03:38  waba
 // -#define KDE_VERSION_STRING "2.2beta1"
 // +#define KDE_VERSION_STRING "2.2"
