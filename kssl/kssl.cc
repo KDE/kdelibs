@@ -183,7 +183,7 @@ char buf[1024];
 
 void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-
+  m_pi.m_cert.m_cert = SSL_get_peer_certificate(m_ssl);
 #endif
 }
 

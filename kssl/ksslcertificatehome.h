@@ -21,6 +21,29 @@
 #ifndef _KSSLCERTIFICATEHOME_H
 #define _KSSLCERTIFICATEHOME_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
+#ifdef HAVE_SSL
+#include <openssl/ssl.h>
+#endif
+ 
+#include <kssl.h>
+ 
+ 
+class KSSLCertificateHome {
+ 
+public:
+ 
+private:
+ 
+  class KSSLCertificateHomePrivate;
+  KSSLCertificateHomePrivate *d;
+ 
+protected:
+
+};
 
 #endif
 

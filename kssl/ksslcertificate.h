@@ -21,6 +21,20 @@
 #ifndef _KSSLCERTIFICATE_H
 #define _KSSLCERTIFICATE_H
 
+// UPDATE: I like the structure of this class less and less every time I look
+//         at it.  I think it needs to change.
+//
+
+//
+//  The biggest reason for making everything protected here is so that
+//  the class can have all it's methods available even if openssl is not
+//  available.  Also, to create a new certificate you should use the
+//  KSSLCertificateFactory, and to manage the user's database of certificates,
+//  you should go through the KSSLCertificateHome.
+//
+//  There should be no reason to touch the X509 stuff directly.
+//
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -29,10 +43,39 @@
 #include <openssl/ssl.h>
 #endif
  
-#include <kssl.h>
- 
+#include <qstring.h>
+
+class KSSL;
  
 class KSSLCertificate {
+friend class KSSL;
+friend class KSSLCertificateHome;
+friend class KSSLCertificateFactory;
+friend class KSSLPeerInfo;
+
+public:
+  ~KSSLCertificate();
+
+  QString getSubject() const;
+  QString getIssuer() const;
+  // getSerialNumber() const;
+  // getNotBefore() const;
+  // getNotAfter() const;
+  // getSignatureType() const;
+  // get public key ??
+  bool isValid() const;
+  
+
+private:
+
+  class KSSLCertificatePrivate;
+  KSSLCertificatePrivate *d;
+
+protected:
+  KSSLCertificate();
+#ifdef HAVE_SSL
+  X509 *m_cert;
+#endif
 
 };
 

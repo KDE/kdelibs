@@ -33,24 +33,24 @@
 
 class KSSL;
 
+#include <ksslcertificate.h>
+
 class KSSLPeerInfo {
 friend class KSSL;
 public:
   ~KSSLPeerInfo();
 
-  enum KSSLType {KSSL_SSLv2, KSSL_SSLv3, KSSL_TLSv1};
-
-  // KSSLCertificate *getPeerCertificate() const;
-
-private:
-
-
+  const KSSLCertificate& getPeerCertificate() const;
+  
 protected:
   KSSLPeerInfo();
 
+  KSSLCertificate m_cert;
+
 private:
-    class KSSLPeerInfoPrivate;
-    KSSLPeerInfoPrivate *d;
+  class KSSLPeerInfoPrivate;
+  KSSLPeerInfoPrivate *d;
+
 };
 
 

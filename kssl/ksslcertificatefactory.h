@@ -21,6 +21,29 @@
 #ifndef _KSSLCERTIFICATEFACTORY_H
 #define _KSSLCERTIFICATEFACTORY_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
+#ifdef HAVE_SSL
+#include <openssl/ssl.h>
+#endif
+ 
+#include <kssl.h>
+ 
+ 
+class KSSLCertificateFactory {
+ 
+public:
+ 
+private:
+ 
+  class KSSLCertificateFactoryPrivate;
+  KSSLCertificateFactoryPrivate *d;
+ 
+protected:
+
+};
 
 #endif
 
