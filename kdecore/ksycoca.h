@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 73
+#define KSYCOCA_VERSION 74
 
 /**
  * @internal
@@ -96,8 +96,8 @@ public:
 
    /**
     * @internal - returns update signature of database
-    * 
-    * Signature that keeps track of changes to 
+    *
+    * Signature that keeps track of changes to
     * $KDEDIR/share/services/update_ksycoca
     *
     * Touching this file causes the database to be recreated
@@ -106,7 +106,7 @@ public:
    Q_UINT32 updateSignature();
 
    /**
-    * @internal - returns all directories with information 
+    * @internal - returns all directories with information
     * stored inside sycoca.
     */
    QStringList allResourceDirs();
@@ -138,12 +138,12 @@ public:
     * @see KStandardDirs for the various resource types.
     */
    static bool isChanged(const char *type);
-   
+
    /**
     * A read error occurs.
     */
    static void flagError();
-   
+
    /**
     * Returns read error status and clears flag.
     */
