@@ -135,10 +135,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     m_button->setDefault( true );
     m_button = bbox->addButton( i18n("&Reject"), this, SLOT(reject()), false );
     bbox->addStretch();
-    m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
+    m_button = bbox->addButton(m_showDetails ? i18n("<< &Details"):i18n(">> &Details"),
                                 this, SLOT(slotCookieDetails()), false );
     QWhatsThis::add( m_button, i18n("Click this button to show or hide the detailed "
-				    "cookie information") );
+                                    "cookie information") );
     bbox->layout();
     vlayout->addWidget( bbox, 0, Qt::AlignCenter );
     setFixedSize( sizeHint() );
@@ -155,7 +155,7 @@ void KCookieWin::slotCookieDetails()
         m_detailView->setMaximumSize( 0, 0 );
         m_detailView->adjustSize();
         m_detailView->hide();
-        m_button->setText( i18n( "&Details >>" ) );
+        m_button->setText( i18n( ">> &Details" ) );
         m_showDetails = false;
     }
     else
@@ -163,7 +163,7 @@ void KCookieWin::slotCookieDetails()
         m_detailView->setMaximumSize( 1000, 1000 );
         m_detailView->adjustSize();
         m_detailView->show();
-        m_button->setText( i18n( "&Details <<" ) );
+        m_button->setText( i18n( "<< &Details" ) );
         m_showDetails = true;
     }
 }
@@ -201,7 +201,7 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     setTitle( i18n("Cookie details") );
 
     QString val = cookie->value();
-    val.truncate(100);
+    val.truncate( 40 );
     m_value = new QLabel( i18n("Value: %1").arg( val ), this );
     QToolTip::add( m_value, cookie->value() );
     vlayout->addWidget( m_value );
@@ -247,13 +247,14 @@ KCookieDetail::~KCookieDetail()
 void KCookieDetail::slotNextCookie()
 {
     m_cookie = m_cookie->next();
+
     if ( !m_cookie )
         m_cookie = m_cookie_orig;
 
     if ( m_cookie )
     {
         QString val = m_cookie->value();
-        val.truncate( 100 );
+        val.truncate( 40 );
         m_value->setText( i18n("Value: %1").arg( m_cookie->value() ) );
         QToolTip::add( m_value, m_cookie->value() );
 
