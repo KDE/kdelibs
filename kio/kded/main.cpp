@@ -11,7 +11,7 @@
 
 main(int argc, char *argv[])
 {
-  KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
+     KApplication k(argc,argv, "kded", false /* not GUI */);
 
      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
      
