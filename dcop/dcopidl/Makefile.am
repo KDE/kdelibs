@@ -6,7 +6,7 @@ LDFLAGS   = $(all_libraries)
 
 bin_PROGRAMS = kidl
 
-kidl_SOURCES = main.cpp scanner.cc yacc.cc
+kidl_SOURCES = main.cpp yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
 
 kidl_LDADD = $(LIB_QT)
