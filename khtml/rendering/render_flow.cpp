@@ -213,7 +213,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
-
     bool clipped = false;
     // overflow: hidden
     if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
@@ -226,13 +225,9 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print contents
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
-        if(!child->isFloating() && !child->isPositioned())
+    for ( RenderObject* child = firstChild(); child; child = child->nextSibling() )
+        if(!child->isSpecial())
             child->print(p, _x, _y, _w, _h, _tx, _ty);
-        child = child->nextSibling();
-    }
 
     // 3. print floats and other non-flow objects
     if(specialObjects)
