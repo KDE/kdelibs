@@ -427,7 +427,7 @@ QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part
 		
 		    QPopupMenu* menu;
 		    if ( shellmenu )
-			menu = createMenu( e, QDomElement() );
+			menu = createMenu( f, QDomElement() );
 		    else
 			menu = createMenu( QDomElement(), f );
 		    QDomElement n = f.namedItem("text").toElement();
