@@ -457,6 +457,8 @@ int KAction::plug( QWidget *w, int index )
     }
 
     QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
+    if ( !d->m_toolTip.isEmpty() )
+      QToolTip::add( bar->getButton(id_), d->m_toolTip );
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
