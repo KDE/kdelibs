@@ -1281,7 +1281,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
                 end_pos = index;
           }
         }
-        scheduleRedirection( delay, completeURL( qData.mid( pos, end_pos ) ) );
+        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ) );
       }
       d->m_bHTTPRefresh = true;
     }
@@ -1663,7 +1663,7 @@ void KHTMLPart::checkCompleted()
 
           QString href = link->getAttribute( "HREF" ).string();
           if ( !href.isEmpty() && d->m_doc ) {
-            href = completeURL( href );
+            href = d->m_doc->completeURL(href);
             emit d->m_extension->setIconURL( KURL( href ) );
             break;
           }
