@@ -24,8 +24,8 @@
 
 #include <qvaluelist.h>
 
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
+#include "../kio_rename_dlg.h"
+#include "../kio_skip_dlg.h"
 #include <kurl.h>
 #include <kprotocolmanager.h>
 
