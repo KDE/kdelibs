@@ -480,9 +480,9 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
     // restore the size
-    QSize size( config->readNumEntry( QString::fromLatin1("Width"), sizeHint().width() ),
-                config->readNumEntry( QString::fromLatin1("Height"), sizeHint().height() ) );
-    if ( size.isValid() )
+    QSize size( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
+                config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+    if ( !size.isEmpty() )
         resize( size );
 
     if (internalStatusBar()) {
