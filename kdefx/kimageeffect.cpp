@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <config.h>
 
-#if 0 
+#if 0
 //disabled until #74478 fixed.
 
 #if defined(__i386__) && ( defined(__GNUC__) || defined(__INTEL_COMPILER) )
@@ -297,7 +297,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
                 ytable[1][y] = (unsigned char) abs((int)gd);
                 ytable[2][y] = (unsigned char) abs((int)bd);
             }
-            unsigned int rgb;
+
             int h = (size.height()+1)>>1;
             for (y = 0; y < h; y++) {
                 unsigned int *sl1 = (unsigned int *)image.scanLine(y);
@@ -307,7 +307,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
                 int x2 = size.width()-1;
 
                 for (x = 0; x < w; x++, x2--) {
-		    rgb = 0;
+		    unsigned int rgb = 0;
                     if (eff == PyramidGradient) {
                         rgb = qRgb(rcb-rSign*(xtable[0][x]+ytable[0][y]),
                                    gcb-gSign*(xtable[1][x]+ytable[1][y]),
@@ -365,8 +365,8 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
 			     gca + gDiff * i / ( ncols - 1 ),
 			     bca + bDiff * i / ( ncols - 1 ) );
 	}
-    dither(image, dPal, ncols);
-	delete [] dPal;
+        dither(image, dPal, ncols);
+        delete [] dPal;
     }
 
     return image;
@@ -458,25 +458,25 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
 	  unsigned int *src = (unsigned int *)image.scanLine(0);
 	  for(x = 0; x < size.width(); x++ )
-	    {
+          {
 	      dir = _xanti ? x : size.width() - 1 - x;
 	      rat = 1 - exp( - (float)x  * xbal );
 
-	      src[dir] = qRgb(rcb - (int) ( rDiff * rat ),
-			    gcb - (int) ( gDiff * rat ),
-			    bcb - (int) ( bDiff * rat ));
-	    }
+              src[dir] = qRgb(rcb - (int) ( rDiff * rat ),
+                              gcb - (int) ( gDiff * rat ),
+                              bcb - (int) ( bDiff * rat ));
+          }
 
 	  // Believe it or not, manually copying in a for loop is faster
 	  // than calling memcpy for each scanline (on the order of ms...).
 	  // I think this is due to the function call overhead (mosfet).
 
 	  for(y = 1; y < size.height(); ++y)
-	    {
+          {
 	      scanline = (unsigned int *)image.scanLine(y);
 	      for(x=0; x < size.width(); ++x)
-		scanline[x] = src[x];
-	    }
+                  scanline[x] = src[x];
+          }
 	}
     }
 
@@ -493,7 +493,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
       ytable[2] = new unsigned char[h];
 
       if ( eff == DiagonalGradient || eff == CrossDiagonalGradient)
-	{
+      {
 	  for (x = 0; x < w; x++) {
               dir = _xanti ? x : w - 1 - x;
               rat = 1 - exp( - (float)x * xbal );
@@ -520,7 +520,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                                      bcb - (xtable[2][x] + ytable[2][y]));
               }
           }
-        }
+      }
 
       else if (eff == RectangleGradient ||
                eff == PyramidGradient ||
@@ -532,14 +532,14 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
           int bSign = bDiff>0? 1: -1;
 
           for (x = 0; x < w; x++)
-	    {
-                dir = _xanti ? x : w - 1 - x;
-                rat =  1 - exp( - (float)x * xbal );
+          {
+              dir = _xanti ? x : w - 1 - x;
+              rat =  1 - exp( - (float)x * xbal );
 
-                xtable[0][dir] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
-                xtable[1][dir] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
-                xtable[2][dir] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
-            }
+              xtable[0][dir] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
+              xtable[1][dir] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
+              xtable[2][dir] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
+          }
 
           for (y = 0; y < h; y++)
           {
@@ -561,7 +561,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                                          gcb-gSign*(xtable[1][x]+ytable[1][y]),
                                          bcb-bSign*(xtable[2][x]+ytable[2][y]));
                   }
-                  if (eff == RectangleGradient)
+                  else if (eff == RectangleGradient)
                   {
                       scanline[x] = qRgb(rcb - rSign *
                                          QMAX(xtable[0][x], ytable[0][y]) * 2,
@@ -570,7 +570,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                                          bcb - bSign *
                                          QMAX(xtable[2][x], ytable[2][y]) * 2);
                   }
-                  if (eff == PipeCrossGradient)
+                  else if (eff == PipeCrossGradient)
                   {
                       scanline[x] = qRgb(rcb - rSign *
                                          QMIN(xtable[0][x], ytable[0][y]) * 2,
@@ -579,7 +579,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                                          bcb - bSign *
                                          QMIN(xtable[2][x], ytable[2][y]) * 2);
                   }
-                  if (eff == EllipticGradient)
+                  else if (eff == EllipticGradient)
                   {
                       scanline[x] = qRgb(rcb - rSign *
                                          (int)sqrt((xtable[0][x]*xtable[0][x] +
@@ -661,9 +661,9 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     int pixels = image.depth() > 8 ? image.width()*image.height() :
-        image.numColors();
+                 image.numColors();
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
-        (unsigned int *)image.colorTable();
+                         (unsigned int *)image.colorTable();
 
     bool brighten = (percent >= 0);
     if(percent < 0)
@@ -887,7 +887,7 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
                 data[i] = qRgba(c, qGreen(data[i]), qBlue(data[i]), qAlpha(data[i]));
             }
         }
-        if(channel == Green){
+        else if(channel == Green){
             for(int i=0; i < pixels; ++i){
                 int c = qGreen(data[i]);
                 c = c + segTbl[c] > 255 ? 255 : c + segTbl[c];
@@ -911,7 +911,7 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
                 data[i] = qRgba(c, qGreen(data[i]), qBlue(data[i]), qAlpha(data[i]));
             }
         }
-        if(channel == Green){
+        else if(channel == Green){
             for(int i=0; i < pixels; ++i){
                 int c = qGreen(data[i]);
                 c = c - segTbl[c] < 0 ? 0 : c - segTbl[c];
@@ -1075,8 +1075,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         return dst;
     }
 
-    int depth = dst.depth();
-    if (depth != 32)
+    if (dst.depth() != 32)
         dst = dst.convertDepth(32);
 
     int pixels = dst.width() * dst.height();
@@ -1086,21 +1085,22 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
 
         KIE8Pack packedalpha = { { alpha, alpha, alpha, 256,
-                                      alpha, alpha, alpha, 256 } };
+                                   alpha, alpha, alpha, 256 } };
 
         Q_UINT16 red   = Q_UINT16( clr.red()   * 256 * opacity );
         Q_UINT16 green = Q_UINT16( clr.green() * 256 * opacity );
         Q_UINT16 blue  = Q_UINT16( clr.blue()  * 256 * opacity );
 
         KIE8Pack packedcolor = { { blue, green, red, 0,
-                                      blue, green, red, 0 } };
+                                   blue, green, red, 0 } };
 
         // Prepare the XMM5, XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
         "pxor        %%xmm7,  %%xmm7\n\t" // Zero out XMM7 for unpacking
         "movdqu        (%0),  %%xmm6\n\t" // Set up (1 - alpha) * 256 in XMM6
         "movdqu        (%1),  %%xmm5\n\t" // Set up color * alpha * 256 in XMM5
-        : : "r"(&packedalpha), "r"(&packedcolor), "m"(packedcolor), "m"(packedalpha) );
+        : : "r"(&packedalpha), "r"(&packedcolor),
+            "m"(packedcolor),  "m"(packedalpha) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
@@ -1511,7 +1511,7 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
         {
 #ifdef WORDS_BIGENDIAN
             *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
-            data1++;            
+            data1++;
             *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
             data1++;
             *data1 += (unsigned char)((*(data2++) - *data1) * opacity);
@@ -2230,7 +2230,7 @@ QImage& KImageEffect::contrast(QImage &img, int c)
         else{
             if(r + c <= 255)
                 r += c;
-            else 
+            else
                 r = 255;
             if(g + c <= 255)
                 g += c;
