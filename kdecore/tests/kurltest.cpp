@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
     printf("---> %s\n",u->url().data());
 */
 
+  KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
+  check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
 
   KURL udir;
   printf("\n* Empty URL\n");
