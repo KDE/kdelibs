@@ -221,10 +221,21 @@ void DownloadDialog::addProvider(Provider *p)
   kdDebug() << "addProvider()/begin" << endl;
 
   ret = true;
-  if(!p->icon().isValid()) ret = false;
-  else ret = KIO::NetAccess::download(p->icon(), tmp, this);
-  if(ret) pix = QPixmap(tmp);
-  else pix = KGlobal::iconLoader()->loadIcon("knewstuff", KIcon::Panel);
+  if(p->icon().path().isEmpty()) ret = false;
+  else
+  {
+    if(!p->icon().protocol().isEmpty())
+    {
+      ret = KIO::NetAccess::download(p->icon(), tmp, this);
+      if(ret) pix = QPixmap(tmp);
+    }
+    else
+    {
+      pix = KGlobal::iconLoader()->loadIcon(p->icon().path(), KIcon::Panel);
+      ret = true;
+    }
+  }
+  if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", KIcon::Panel);
   frame = addPage(p->name(), p->name(), pix);
   m_frame = frame;
 

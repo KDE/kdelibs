@@ -117,7 +117,10 @@ void Provider::parseDomElement( const QDomElement &element )
   setDownloadUrl( KURL( element.attribute("downloadurl") ) );
   setUploadUrl( KURL( element.attribute("uploadurl") ) );
   setNoUploadUrl( KURL( element.attribute("nouploadurl") ) );
-  setIcon( KURL( element.attribute("icon") ) );
+
+  KURL iconurl( element.attribute("icon") );
+  if(!iconurl.isValid()) iconurl.setPath( element.attribute("icon") );
+  setIcon( iconurl );
 
   QDomNode n;
   for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
