@@ -288,26 +288,39 @@ private:
 #ifndef KDE_NO_COMPAT
 public:
   KActionCollection( QObject *parent, const char *name = 0, KInstance *instance = 0 );
+#endif
 
+public:
+  /**
+   * Add an action to the collection.
+   * Generally you don't have to call this. The action inserts itself automatically
+   * into its parent collection. This can be useful however for a short-lived
+   * collection (e.g. for a popupmenu, where the signals from the collection are needed too).
+   * (don't forget that in the simple case, a list of actions should be a simple KActionPtrList).
+   * If you manually insert actions into a 2nd collection, don't forget to take them out
+   * again before destroying the collection.
+   * @param action The KAction to add.
+   */
   void insert( KAction* );
 
   /**
    * Removes an action from the collection and deletes it.
-   * @deprecated Remove without substitution; the KAction destructor
-   * will remove the action itself.
+   * Since the KAction destructor removes the action from the collection, you generally
+   * don't have to call this.
    * @param action The KAction to remove.
    */
-  void remove( KAction* action ) KDE_DEPRECATED;
+  void remove( KAction* action );
 
   /**
    * Removes an action from the collection.
-   * @deprecated Remove without substitution; the KAction destructor
-   * will remove the action itself.
+   * Since the KAction destructor removes the action from the collection, you generally
+   * don't have to call this.
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
    */
-  KAction* take( KAction* action ) KDE_DEPRECATED;
+  KAction* take( KAction* action );
 
+#ifndef KDE_NO_COMPAT
   KActionCollection operator+ ( const KActionCollection& ) const;
   KActionCollection& operator= ( const KActionCollection& );
   KActionCollection& operator+= ( const KActionCollection& );
