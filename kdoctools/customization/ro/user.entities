@@ -10,24 +10,27 @@
 
 <!ENTITY tradClaudiuCostin   '<othercredit role="translator"><firstname>Claudiu</firstname><surname>Costin</surname><affiliation><address><email>claudiuc@kde.org</email></address></affiliation><contrib>Traducerea în română</contrib></othercredit>'>
 <!ENTITY coreClaudiuCostin   '<othercredit role="reviewer"><firstname>Claudiu</firstname><surname>Costin</surname><affiliation><address><email>>claudiuc@kde.org</email></address></affiliation><contrib>Corectura traducerii în română</contrib></othercredit>'>
+<!ENTITY tradIulianaCostin   '<othercredit role="translator"><firstname>Iuliana</firstname><surname>Costin</surname><affiliation><address><email>iulianacostin@yahoo.com</email></address></affiliation><contrib>Traducerea în română</contrib></othercredit>'>
+<!ENTITY coreIulianaCostin   '<othercredit role="reviewer"><firstname>Iuliana</firstname><surname>Costin</surname><affiliation><address><email>iulianacostin@yahoo.com</email></address></affiliation><contrib>Corectura traducerii în română</contrib></othercredit>'>
 
 <!-- OTHER USER ENTITIES -->
 
-<!ENTITY BMS            	"butonul de mouse <mousebutton>stînga</mousebutton>">  <!-- English: &LMB; -->
-<!ENTITY BMM            	"butonul de mouse <mousebutton>mijloc</mousebutton>"> <!-- English: &MMB; -->
-<!ENTITY BMD            	"butonul de mouse <mousebutton>dreapta</mousebutton>">   <!-- English: &RMB; -->
-<!ENTITY cdrom          	'<hardware>unitate CD-ROM</hardware>'>
-<!ENTITY Alt			        "<keycap>Alt</keycap>">
-<!ENTITY Ctrl        		  "<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
-<!ENTITY dpi            	'<acronym>dpi</acronym>'>
-<!ENTITY Escape          	'<keycap>Escape</keycap>'>                               <!-- English: &Esc; -->
-<!ENTITY Enter			      '<keycap>Enter</keycap>'>
-<!ENTITY etc            	"<abbrev>etc.</abbrev>">
-<!ENTITY RIF            	'<acronym>R.I.F.</acronym>'>
-<!ENTITY kcontrol       	'<application>Centrul de Control &kde;</application>'>
-<!ENTITY kcontrolcenter 	'<application>Centrul de Control &kde;</application>'>
-<!ENTITY khelpcenter    	'<application>Sistemul de Ajutor &kde;</application>'>
-<!ENTITY ex            		"exemplu">                                               <!-- English: &eg; -->
-<!ENTITY eg            		"de exemplu">                                            <!-- English: &eg; -->
-<!ENTITY ie            		"de exemplu">                                            <!-- English: &eg; -->
-<!ENTITY Tab              "<keycap>TAB</keycap>">                                  <!-- English: Tab -->
+<!ENTITY BMS                    "butonul de mouse <mousebutton>stînga</mousebutton>">    <!-- English: &LMB; -->
+<!ENTITY BMM                    "butonul de mouse <mousebutton>mijloc</mousebutton>">    <!-- English: &MMB; -->
+<!ENTITY BMD                    "butonul de mouse <mousebutton>dreapta</mousebutton>">   <!-- English: &RMB; -->
+<!ENTITY cdrom                  '<hardware>unitate CD-ROM</hardware>'>
+<!ENTITY Alt                    "<keycap>Alt</keycap>">
+<!ENTITY Ctrl                   "<keycap>Ctrl</keycap>">                                 <!-- English: &Ctrl; -->
+<!ENTITY dpi                    '<acronym>dpi</acronym>'>
+<!ENTITY Escape                 '<keycap>Escape</keycap>'>                               <!-- English: &Esc; -->
+<!ENTITY Enter                  '<keycap>Enter</keycap>'>
+<!ENTITY etc                    "<abbrev>etc.</abbrev>">
+<!ENTITY RIF                    '<acronym>R.I.F.</acronym>'>
+<!ENTITY FAQ                    '<acronym>R.I.F.</acronym>'>
+<!ENTITY kcontrol               '<application>Centrul de Control &kde;</application>'>
+<!ENTITY kcontrolcenter         '<application>Centrul de Control &kde;</application>'>
+<!ENTITY khelpcenter            '<application>Sistemul de Ajutor &kde;</application>'>
+<!ENTITY ex                     "exemplu">                                               <!-- English: &eg; -->
+<!ENTITY eg                     "de exemplu">                                            <!-- English: &eg; -->
+<!ENTITY ie                     "de exemplu">                                            <!-- English: &eg; -->
+<!ENTITY Tab                    "<keycap>TAB</keycap>">                                  <!-- English: Tab -->

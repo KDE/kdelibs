@@ -7,8 +7,8 @@
 
    <l:gentext key="Abstract" text="Rezumat"/>
    <l:gentext key="abstract" text="Rezumat"/>
-   <l:gentext key="Answer" text="A:"/>
-   <l:gentext key="answer" text="A:"/>
+   <l:gentext key="Answer" text="R:"/>
+   <l:gentext key="answer" text="R:"/>
    <l:gentext key="Appendix" text="Anexa"/>
    <l:gentext key="appendix" text="anexa"/>
    <l:gentext key="Article" text="Articol"/>
@@ -22,15 +22,15 @@
    <l:gentext key="Caution" text="Aten&#254;ie"/>
    <l:gentext key="Chapter" text="Cap."/>
    <l:gentext key="chapter" text="cap."/>
-   <l:gentext key="Colophon" text="Colophon"/>
-   <l:gentext key="colophon" text="Colophon"/>
+   <l:gentext key="Colophon" text="Colofon"/>
+   <l:gentext key="colophon" text="Colofon"/>
    <l:gentext key="Copyright" text="Copyright"/>
    <l:gentext key="copyright" text="Copyright"/>
    <l:gentext key="Dedication" text="Dedica&#254;ie"/>
    <l:gentext key="dedication" text="Dedica&#254;ie"/>
    <l:gentext key="Edition" text="Edi&#254;ie"/>
    <l:gentext key="edition" text="Edi&#254;ie"/>
-   <l:gentext key="Equation" text="ecua&#254;ia"/>
+   <l:gentext key="Equation" text="Ecua&#254;ia"/>
    <l:gentext key="equation" text="ecua&#254;ia"/>
    <l:gentext key="Example" text="Exemplu"/>
    <l:gentext key="example" text="Exemplu"/>
@@ -38,67 +38,67 @@
    <l:gentext key="figure" text="Fig."/>
    <l:gentext key="Glossary" text="Glosar"/>
    <l:gentext key="glossary" text="Glosar"/>
-   <l:gentext key="GlossSee" text="Vezi"/>
-   <l:gentext key="glosssee" text="Vezi"/>
-   <l:gentext key="GlossSeeAlso" text="Vezi &#351;i"/>
-   <l:gentext key="glossseealso" text="Vezi &#351;i"/>
+   <l:gentext key="GlossSee" text="Vede&#254;i"/>
+   <l:gentext key="glosssee" text="vede&#254;i"/>
+   <l:gentext key="GlossSeeAlso" text="Vede&#254;i &#351;i"/>
+   <l:gentext key="glossseealso" text="vede&#254;i &#351;i"/>
    <l:gentext key="IMPORTANT" text="IMPORTANT"/>
    <l:gentext key="Important" text="Important"/>
-   <l:gentext key="important" text="Important"/>
+   <l:gentext key="important" text="important"/>
    <l:gentext key="Index" text="Index"/>
-   <l:gentext key="index" text="Index"/>
+   <l:gentext key="index" text="index"/>
    <l:gentext key="ISBN" text="ISBN"/>
-   <l:gentext key="isbn" text="ISBN"/>
-   <l:gentext key="LegalNotice" text=""/>
-   <l:gentext key="legalnotice" text=""/>
+   <l:gentext key="isbn" text="isbn"/>
+   <l:gentext key="LegalNotice" text="Not&#227; legal&#227;"/>
+   <l:gentext key="legalnotice" text="not&#227; legal&#227;"/>
    <l:gentext key="MsgAud" text=""/>
    <l:gentext key="msgaud" text=""/>
    <l:gentext key="MsgLevel" text="Nivel"/>
-   <l:gentext key="msglevel" text="Nivel"/>
+   <l:gentext key="msglevel" text="nivel"/>
    <l:gentext key="MsgOrig" text="Origine"/>
-   <l:gentext key="msgorig" text="Origine"/>
+   <l:gentext key="msgorig" text="origine"/>
    <l:gentext key="NOTE" text="NOT&#195;"/>
-   <l:gentext key="note" text="Not&#227;"/>
+   <l:gentext key="note" text="not&#227;"/>
    <l:gentext key="Note" text="Not&#227;"/>
    <l:gentext key="Part" text="Parte"/>
-   <l:gentext key="part" text="Parte"/>
+   <l:gentext key="part" text="parte"/>
    <l:gentext key="Preface" text="Prefa&#254;&#227;"/>
-   <l:gentext key="preface" text="Prefa&#254;&#227;"/>
+   <l:gentext key="preface" text="prefa&#254;&#227;"/>
    <l:gentext key="Procedure" text="Procedur&#227;"/>
-   <l:gentext key="procedure" text="Procedur&#227;"/>
+   <l:gentext key="procedure" text="procedur&#227;"/>
    <l:gentext key="Published" text="Publicat"/>
-   <l:gentext key="published" text="Publicat"/>
-   <l:gentext key="Question" text="Q:"/>
-   <l:gentext key="question" text="Q:"/>
+   <l:gentext key="published" text="publicat"/>
+   <l:gentext key="Question" text="&#206;:"/>
+   <l:gentext key="question" text="&#206;:"/>
    <l:gentext key="RefEntry" text=""/>
    <l:gentext key="refentry" text=""/>
    <l:gentext key="Reference" text="Referin&#254;&#227;"/>
-   <l:gentext key="reference" text="Referin&#254;&#227;"/>
-   <l:gentext key="refname" text="Nume"/>
+   <l:gentext key="reference" text="referin&#254;&#227;"/>
+   <l:gentext key="refname" text="nume"/>
    <l:gentext key="RefName" text="Nume"/>
    <l:gentext key="RefSection" text=""/>
    <l:gentext key="refsection" text=""/>
    <l:gentext key="RefSynopsisDiv" text="Rezumat"/>
-   <l:gentext key="refsynopsisdiv" text="Rezumat"/>
+   <l:gentext key="refsynopsisdiv" text="rezumat"/>
    <l:gentext key="RevHistory" text="Istoricul versiunilor"/>
-   <l:gentext key="revhistory" text="Istoricul versiunilor"/>
-   <l:gentext key="Revision" text="Versiune"/>
-   <l:gentext key="revision" text="Versiune"/>
-   <l:gentext key="Section" text="Sec&#254;iune"/>
-   <l:gentext key="section" text="sec."/>
-   <l:gentext key="See" text="Vezi"/>
-   <l:gentext key="see" text="Vezi"/>
-   <l:gentext key="SeeAlso" text="Vezi &#351;i"/>
-   <l:gentext key="seealso" text="Vezi &#351;i"/>
-   <l:gentext key="Seealso" text="Vezi &#351;i"/>
+   <l:gentext key="revhistory" text="istoricul versiunilor"/>
+   <l:gentext key="Revision" text="Versiunea"/>
+   <l:gentext key="revision" text="versiunea"/>
+   <l:gentext key="Section" text="Sec&#254;iunea"/>
+   <l:gentext key="section" text="sec&#254;iunea"/>
+   <l:gentext key="See" text="Vede&#254;i"/>
+   <l:gentext key="see" text="Vede&#254;i"/>
+   <l:gentext key="SeeAlso" text="Vede&#254;i &#351;i"/>
+   <l:gentext key="seealso" text="vede&#254;i &#351;i"/>
+   <l:gentext key="Seealso" text="Vede&#254;i &#351;i"/>
    <l:gentext key="Set" text="Set"/>
-   <l:gentext key="set" text="Set"/>
+   <l:gentext key="set" text="set"/>
    <l:gentext key="SetIndex" text="Index"/>
-   <l:gentext key="setindex" text="Index"/>
+   <l:gentext key="setindex" text="index"/>
    <l:gentext key="Sidebar" text=""/>
    <l:gentext key="sidebar" text="sidebar"/>
    <l:gentext key="Step" text="Opera&#254;ie"/>
-   <l:gentext key="step" text="opera&#254;iune"/>
+   <l:gentext key="step" text="opera&#254;ie"/>
    <l:gentext key="Table" text="Tabel"/>
    <l:gentext key="table" text="Tabel"/>
    <l:gentext key="TIP" text="INDICA&#222;IE"/>
@@ -121,14 +121,14 @@
    <l:gentext key="Notes" text="Note"/>
    <l:gentext key="Pgs" text="Pagini"/>
    <l:gentext key="pgs" text="Pagini"/>
-   <l:gentext key="Revisedby" text="Revised by: "/>
-   <l:gentext key="revisedby" text="Revised by: "/>
+   <l:gentext key="Revisedby" text="Corectat de: "/>
+   <l:gentext key="revisedby" text="Corectat de: "/>
    <l:gentext key="TableNotes" text="Remarci"/>
    <l:gentext key="tablenotes" text="Remarci"/>
    <l:gentext key="TableofContents" text="Cuprins"/>
    <l:gentext key="tableofcontents" text="Cuprins"/>
    <l:gentext key="unexpectedelementname" text="Nume de element nea&#351;teptat"/>
-   <l:gentext key="unsupported" text="nerecunoscut de sisitem"/>
+   <l:gentext key="unsupported" text="nesuportat de sistem"/>
    <l:gentext key="xrefto" text="referin&#254;&#227; c&#227;tre"/>
    <l:gentext key="listofequations" text="List&#227; de ecua&#254;ii"/>
    <l:gentext key="ListofEquations" text="List&#227; de ecua&#254;ii"/>
@@ -139,13 +139,17 @@
    <l:gentext key="listoftables" text="List&#227; de tabele"/>
    <l:gentext key="ListofTables" text="List&#227; de tabele"/>
    <l:gentext key="ListofUnknown" text="List&#227; de necunoscute"/>
-   <l:gentext key="listofunknown" text="List&#227; de necunoscute"/>
+   <l:gentext key="listofunknown" text="list&#227; de necunoscute"/>
    <l:gentext key="nav-home" text="Acas&#227;"/>
    <l:gentext key="nav-next" text="&#206;nainte"/>
    <l:gentext key="nav-next-sibling" text="Repede &#239;nainte"/>
    <l:gentext key="nav-prev" text="&#206;napoi"/>
    <l:gentext key="nav-prev-sibling" text="Repede &#238;napoi"/>
    <l:gentext key="nav-up" text="Sus"/>
+   <l:gentext key="sectioncalled" text="sec&#254;iunea cu numele"/>
+   <l:gentext key="index symbols" text="Simboluri"/>
+   <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyz"/>
+   <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
    <l:dingbat key="startquote" text="&#8220;"/>
    <l:dingbat key="endquote" text="&#8221;"/>
    <l:dingbat key="nestedstartquote" text="&#8216;"/>
@@ -327,8 +331,8 @@
    </l:context>
 
    <l:context name="glossary">
-      <l:template name="see" text="Vezi "/>
-      <l:template name="seealso" text="Vezi &#351;i "/>
+      <l:template name="see" text="Vede&#254;i "/>
+      <l:template name="seealso" text="Vede&#254;i &#351;i "/>
    </l:context>
 
    <l:context name="msgset">
