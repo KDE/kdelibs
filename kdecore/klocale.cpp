@@ -1069,6 +1069,20 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   if (neg)
     str.remove( 0, negativeSign().length() );
 
+  /* will hold the scientific notation portion of the number.
+     Example, with 2.34E+23, exponentialPart == "E+23"
+  */
+  QString exponentialPart;
+  int EPos;
+
+  EPos = str.find('E', 0, false);
+
+  if (EPos != -1)
+  {
+    exponentialPart = str.mid(EPos);
+    str = str.left(EPos);
+  }
+
   int pos = str.find(decimalSymbol());
   QString major;
   QString minor;
@@ -1107,7 +1121,8 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
 
   QString tot;
   if (neg) tot = '-';
-  tot += major + '.' + minor;
+
+  tot += major + '.' + minor + exponentialPart;
 
   return tot.toDouble(ok);
 }
