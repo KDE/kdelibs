@@ -1173,7 +1173,15 @@ private:
 };
 
 /**
- * An action for switching between to/from full screen mode
+ * An action for switching between to/from full screen mode. Note that
+ * QWidget::isFullScreen() may reflect the new or the old state
+ * depending on how the action was triggered (by the application or
+ * from the window manager). Rely on this action's state instead.
+ *
+ * Important: If you need to set/change the fullscreen state manually,
+ * use the relevant QWidget function (showFullScreen etc.), do not
+ * call directly the slot connected to the toggled() signal. The slot
+ * still needs to explicitly set the window state though.
  * @since 3.2
  */
 class KToggleFullScreenAction : public KToggleAction

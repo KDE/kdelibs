@@ -26,6 +26,7 @@ class KActionCollection;
 class KRecentFilesAction;
 class KToggleAction;
 class KToggleToolBarAction;
+class KToggleFullScreenAction;
 
 #include <qstringlist.h>
 
@@ -511,7 +512,7 @@ namespace KStdAction
 	* Switch to/from full screen mode
 	* @since 3.2
 	*/
-	KToggleAction *fullScreen(const QObject *recvr, const char *slot,
+	KToggleFullScreenAction *fullScreen(const QObject *recvr, const char *slot,
 					KActionCollection* parent, QWidget* window, const char *name = 0 );
 
 	/**

@@ -260,7 +260,7 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
     return ret;
 }
 
-KToggleAction *fullScreen( const QObject *recvr, const char *slot, KActionCollection* parent,
+KToggleFullScreenAction *fullScreen( const QObject *recvr, const char *slot, KActionCollection* parent,
     QWidget* window, const char *name )
 {
     KToggleFullScreenAction *ret;
