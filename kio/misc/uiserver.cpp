@@ -110,7 +110,7 @@ class ProgressConfigDialog:public KDialogBase
       ~ProgressConfigDialog()  {}
       void setChecked(int i, bool on);
       bool isChecked(int i) const;
-      friend UIServer;
+      friend class UIServer;
    private:
       QCheckBox *m_showSystemTrayCb;
       QCheckBox *m_keepOpenCb;
@@ -646,7 +646,7 @@ void UIServer::applySettings()
      toolBar()->show();
 }
 
-void UIServer::slotShowContextMenu(KListView*, QListViewItem *item, const QPoint& pos)
+void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QPoint& pos)
 {
    if (m_contextMenu==0)
    {
