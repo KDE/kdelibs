@@ -1,3 +1,9 @@
+2003-11-17  David Faure  <faure@kde.org>
+
+	* khtml_part.cpp (processObjectRequest):
+	Stop the spinning wheel on <frame src="">.
+	Testcase: webcore's fast/frames/empty-frame-src.html
+
 2003-11-17  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_*.cpp: changing the output of dump to
@@ -39,6 +45,13 @@
 
 	* misc/loader.cpp (CachedCSSStyleSheet): add "*/*;q=0.1" to the
 	accept header (#67803).
+
+2003-11-10  David Faure  <faure@kde.org>
+
+	* khtml_part.cpp: Ask the user "open or save?" before embedding a 
+	non-usual mimetype into a frame (e.g. ZIP files or PS files).
+	(html and images are the 'usual' exceptions)
+	Includes a dontshowagain checkbox, so this shouldn't be too annoying.
 
 2003-11-07  Stephan Kulow  <coolo@kde.org>
 
