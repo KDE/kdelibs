@@ -1492,8 +1492,15 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
     QRgb c = khtml::invalidColor;
     Value *value = valueList->current();
     if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
-         value->unit == CSSPrimitiveValue::CSS_IDENT )
+         value->unit == CSSPrimitiveValue::CSS_IDENT ||
+	 (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION ) )
 	c = ::parseColor( qString( value->string ));
+    else if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&
+	      value->fValue >= 0. && value->fValue < 1000000. ) {
+	QString str;
+	str.sprintf( "%06d", (int)(value->fValue+.5) );
+	c = ::parseColor( str );
+    }
     else if ( value->unit == Value::Function &&
 		value->function->args->numValues == 5 /* rgb + two commas */ &&
 		qString( value->function->name ).lower() == "rgb(" ) {
