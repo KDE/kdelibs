@@ -120,8 +120,6 @@ else
 fi
 
 if test "$qt_libraries" = "$x_libraries"; then
- QT_LDF
-if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else
  QT_LDFLAGS="-L$qt_libraries"
@@ -158,7 +156,8 @@ kde_libdirs="/usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 ac_kde_libraries=$kde_libdir
-NO; then
+
+if test "$ac_kde_includes" = NO || test "$ac_kde_libraries" = NO; then
   ac_cv_have_kde="have_kde=no"
 else
   ac_cv_have_kde="have_kde=yes \
@@ -245,9 +244,7 @@ CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LD="$LD" RANLIB="$RANLIB" \
 $ac_aux_dir/ltconfig $libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
 || AC_MSG_ERROR([libtool configure failed])
 ])
- 
 
-cÌg•†√7X4‹'‚ à#îêà%ŸÌ#´∞”Éåèˇ&vÃ)dªEıV¶∑…·wcò∞˘Ã.ùÎ
 # Do all the work for Automake.  This macro actually does too much --
 # some checks are only needed if your package does certain things.
 # But this isn't really a big deal.
