@@ -126,8 +126,8 @@ public:
      * Returns true if the URI has been filtered.
      *
      * This function returns true whenever one of
-     * the URI filters plug-ins sucessfully filter
-     * a given URL.  Use this function to check whether
+     * the URI filters plug-ins sucessfully filters
+     * the given URL.  Use this function to check whether
      * a URL has been filtered or not.
      *
      * @return true if the URL has been filtered.
@@ -162,7 +162,7 @@ public:
      * Returns the URI type.
      *
      * This method always returns KURIFilterData::UNKNOWN
-     * if the give URL was not filtered.
+     * if the given URL was not filtered.
      */
     URITypes uriType() const { return m_iType; }
 
