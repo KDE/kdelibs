@@ -80,16 +80,10 @@
 <!ENTITY % addindex "IGNORE">
 <![%addindex;[
 <!ENTITY kdedocindex SYSTEM "docindex.docbook">
+<!ENTITY documentation.index SYSTEM "docindex.docbook">
 ]]>
 <!ENTITY kdedocindex "">
-
-<!-- ONLY FOR BACKWARDS COMPATIBILITY; to be removed after the release -->
-<!ENTITY license-links SYSTEM "../entities/license-links.docbook">
-<!ENTITY gpllicense-links SYSTEM "../entities/license-links.docbook">
-<!ENTITY bsdlicense-links SYSTEM "../entities/bsdlicense-links.docbook">
-<!ENTITY artisticlicense-links SYSTEM "../entities/artisticlicense-links.docbook">
-<!ENTITY x11license-links SYSTEM "../entities/x11license-links.docbook">
-<!ENTITY qpllicense-links SYSTEM "../entities/qpllicense-links.docbook">
+<!ENTITY documentation.index "">
 
 <!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">

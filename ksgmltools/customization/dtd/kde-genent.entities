@@ -66,6 +66,35 @@
   NDATA linespecific       -- http://www.gnu.org/copyleft/fdl.html -->
 <!-- FDLNotice is defined in kde-prologue.entities (why?) -->
 
+<!-- These are the language-independent entities.  They can be (more
+     or less) freely extended.  Keep this list sorted and sensible.  
+     Make sure you always add full markup to the text.
+     Good naming strategy: name the entity exactly like you would
+     see the text.
+ -->
+
+<!ENTITY AIX	'<trademark>AIX</trademark>'>
+<!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
+<!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
+<!ENTITY Java	'<trademark>Java</trademark>'>
+<!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
+<!ENTITY LinuxPPC	'<trademark>LinuxPPC</trademark>'>
+<!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
+<!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
+<!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
+<!ENTITY NeXTSTEP	'<trademark>NeXTSTEP</trademark>'>
+<!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
+<!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
+<!ENTITY Qt	'<trademark>Qt</trademark>'>
+<!ENTITY SGI	'<trademark>SGI</trademark>'>
+<!ENTITY Solaris	'<trademark>Solaris</trademark>'>
+<!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
+<!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
+<!ENTITY X	'<trademark>X Window System</trademark>'>
+<!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
+<!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
+
+
 <!-- KDE olink specification -->
 <!ENTITY kde-modespec
 	'<modespec id="kde-doc-modespec" xreflabel="see &percnt;t">/path/to/documentation</modespec>
@@ -79,6 +108,3 @@
      Scripts should generate the index in docindex.docbook in the same directory
  -->
 <!ENTITY kdedocindex SYSTEM "docindex.docbook">
-
-<!-- For entities that may be defined by the document author or that are
-     different for every document, see kde-prologue.entities. -->
