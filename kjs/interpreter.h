@@ -271,14 +271,15 @@ namespace KJS {
     Object builtinTypeErrorPrototype() const;
     Object builtinURIErrorPrototype() const;
 
+    enum CompatMode { NativeMode, IECompat, NetscapeCompat };
     /**
-     * Call this to enable or disable the Internet Explorer compat mode
-     * (which is disabled by default).
-     * Currently this only changes the behaviour of Date::getYear() which
-     * returns the full year under IE.
+     * Call this to enable a compatibility mode with another browser.
+     * (by default konqueror is in "native mode").
+     * Currently, in KJS, this only changes the behaviour of Date::getYear()
+     * which returns the full year under IE.
      */
-    void setIECompatMode(bool compatMode);
-    bool isIECompatMode() const;
+    void setCompatMode(CompatMode mode);
+    CompatMode compatMode() const;
 
 #ifdef KJS_DEBUG_MEM
     /**

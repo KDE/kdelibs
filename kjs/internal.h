@@ -391,8 +391,8 @@ namespace KJS {
     Object builtinTypeErrorPrototype() const { return b_typeErrorPrototype; }
     Object builtinURIErrorPrototype() const { return b_uriErrorPrototype; }
 
-    void setIECompatMode(bool compatMode) { m_bIECompatMode = compatMode; }
-    bool isIECompatMode() const { return m_bIECompatMode; }
+    void setCompatMode(Interpreter::CompatMode mode) { m_compatMode = mode; }
+    Interpreter::CompatMode compatMode() const { return m_compatMode; }
   private:
     void clear();
     Interpreter *interpreter;
@@ -438,7 +438,7 @@ namespace KJS {
     Object b_uriErrorPrototype;
 
     ExecState *globExec;
-    bool m_bIECompatMode;
+    Interpreter::CompatMode m_compatMode;
 
     // Chained list of interpreters (ring) - for collector
     static InterpreterImp* s_hook;

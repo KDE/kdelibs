@@ -783,7 +783,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   global = glob;
   globExec = new ExecState(interpreter,0);
   dbg = 0;
-  m_bIECompatMode = false;
+  m_compatMode = Interpreter::NativeMode;
 
   // initialize properties of the global object
 

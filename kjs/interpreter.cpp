@@ -284,14 +284,14 @@ Object Interpreter::builtinURIErrorPrototype() const
   return rep->builtinURIErrorPrototype();
 }
 
-void Interpreter::setIECompatMode(bool compatMode)
+void Interpreter::setCompatMode(CompatMode mode)
 {
-  rep->setIECompatMode(compatMode);
+  rep->setCompatMode(mode);
 }
 
-bool Interpreter::isIECompatMode() const
+Interpreter::CompatMode Interpreter::compatMode() const
 {
-  return rep->isIECompatMode();
+  return rep->compatMode();
 }
 
 #ifdef KJS_DEBUG_MEM
