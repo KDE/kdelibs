@@ -2532,7 +2532,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
  *  in HTML, but case-sensitive in XML.
  */
 
-QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
+const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 {
   // ### use DOMString here to avoid coversions
   QString processed;
