@@ -50,7 +50,7 @@ class KIPC
 {
 public:
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
-	    BackgroundChanged, SettingsChanged, 
+	    BackgroundChanged, SettingsChanged, IconChanged,
 	    UserMessage=32 };
 
     /**

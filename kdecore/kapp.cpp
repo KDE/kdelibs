@@ -36,6 +36,7 @@
 #include <qsessionmanager.h>
 #include <qlist.h>
 #include <qtranslator.h>
+#include <qpixmapcache.h>
 
 #include <kapp.h>
 #include <kglobal.h>
@@ -879,6 +880,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	    case KIPC::SettingsChanged:
 		KGlobal::config()->reparseConfiguration();
                 emit settingsChanged(arg);
+		break;
+
+	    case KIPC::IconChanged:
+		QPixmapCache::clear();
+		KGlobal::config()->reparseConfiguration();
+		KGlobal::instance()->newIconLoader();
+		emit iconChanged(arg);
 		break;
 	    }
 	}

@@ -601,6 +601,11 @@ public:
   void settingsChanged(int category);
 
   /**
+   * The global icon settings have been changed.
+   */
+  void iconChanged(int group);
+
+  /**
    * Emitted when a KIPC user message has been received.
    */
   void kipcMessage(int id, int data);
@@ -710,6 +715,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.142  2000/04/13 19:14:34  sschiman
+// Added KApp constructor to pass a X display handle to Qt.
+//
 // Revision 1.141  2000/03/25 20:08:00  charles
 // Why have we had a random() function, but not a randomString function?
 // What gives?!
