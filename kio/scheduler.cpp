@@ -758,8 +758,6 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
                 SLOT(slotSlaveError(int, const QString &)));
 
     coSlaves.insert(slave, new QList<SimpleJob>());
-    coIdleSlaves->append(slave);    
-
     return slave;
 }
 
@@ -808,16 +806,19 @@ void
 Scheduler::slotSlaveConnected()
 {
     Slave *slave = (Slave *)sender();
+    slave->setConnected(true);
     emit slaveConnected(slave);
+    coIdleSlaves->append(slave);
+    coSlaveTimer.start(0, true);
 }
 
 void
 Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = (Slave *)sender();
-    if (coIdleSlaves->find(slave) != -1)
+    if (!slave->isConnected() || (coIdleSlaves->find(slave) != -1))
     {
-       // Only forward to application if slave is idle 
+       // Only forward to application if slave is idle or still connecting.
        emit slaveError(slave, errorNr, errorMsg);
     }
 }
@@ -867,6 +868,7 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
        idleSlaves->append(slave);
        slave->connection()->send( CMD_DISCONNECT );
        slave->setIdle();
+       slave->setConnected(false);
        _scheduleCleanup();
     }
     return true;
