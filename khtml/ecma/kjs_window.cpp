@@ -59,7 +59,7 @@ KJSO Window::tryGet(const UString &p) const
   else if (p == "clearTimeout")
     return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
 
-  return Undefined();
+  return Imp::get(p);
 }
 
 void Window::tryPut(const UString &p, const KJSO &v)
@@ -72,7 +72,8 @@ void Window::tryPut(const UString &p, const KJSO &v)
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
       widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
     }
-  }
+  } else
+    Imp::put(p, v);
 }
 
 int Window::installTimeout(const UString &handler, int t)
