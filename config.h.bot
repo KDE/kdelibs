@@ -65,7 +65,7 @@ void srandom(unsigned int seed);
 #ifdef __cplusplus
 extern "C"
 #endif
-int seteuid(uid_t euid); /* defined in fakes.c */
+int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #endif
 
 #ifndef HAVE_S_ISSOCK
