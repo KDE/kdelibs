@@ -22,22 +22,32 @@
 
 using namespace KABC;
 
+class VCardLine::VCardLinePrivate
+{
+  public:
+    QString mGroup;
+};
+
 VCardLine::VCardLine()
+  : d( 0 )
 {
 }
 
 VCardLine::VCardLine( const QString &identifier )
+  : d( 0 )
 {
   mIdentifier = identifier;
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
+  : d( 0 )
 {
   mIdentifier = identifier;
   mValue = value;
 }
 
 VCardLine::VCardLine( const VCardLine& line )
+  : d( 0 )
 {
   mParamMap = line.mParamMap;
   mValue = line.mValue;
@@ -46,6 +56,7 @@ VCardLine::VCardLine( const VCardLine& line )
 
 VCardLine::~VCardLine()
 {
+  delete d;
 }
 
 VCardLine& VCardLine::operator=( const VCardLine& line )
@@ -78,6 +89,30 @@ void VCardLine::setValue( const QVariant& value )
 QVariant VCardLine::value() const
 {
   return mValue;
+}
+
+void VCardLine::setGroup( const QString& group )
+{
+  if ( !d )
+    d = new VCardLinePrivate();
+
+  d->mGroup = group;
+}
+
+QString VCardLine::group() const
+{
+  if ( d )
+    return d->mGroup;
+  else
+    return QString();
+}
+
+bool VCardLine::hasGroup() const
+{
+  if ( !d )
+    return false;
+  else
+    return d->mGroup.isEmpty();
 }
 
 QStringList VCardLine::parameterList() const

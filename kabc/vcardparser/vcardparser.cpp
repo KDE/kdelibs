@@ -38,11 +38,13 @@ VCardParser::~VCardParser()
 
 VCard::List VCardParser::parseVCards( const QString& text )
 {
+  static QRegExp sep( "[\x0d\x0a]" );
+
   VCard currentVCard;
   VCard::List vCardList;
   QString currentLine;
 
-  QStringList lines = QStringList::split( QRegExp( "[\x0d\x0a]" ), text );
+  QStringList lines = QStringList::split( sep, text );
   QStringList::Iterator it;
 
   bool inVCard = false;
@@ -63,11 +65,19 @@ VCard::List VCardParser::parseVCards( const QString& text )
         }
 
         VCardLine vCardLine;
-        QString key = currentLine.left( colon ).stripWhiteSpace();
+        const QString key = currentLine.left( colon ).stripWhiteSpace();
         QString value = currentLine.mid( colon + 1 );
 
         QStringList params = QStringList::split( ';', key );
-        vCardLine.setIdentifier( params[0] );
+
+        // check for group
+        if ( params[0].find( '.' ) != -1 ) {
+          const QStringList groupList = QStringList::split( '.', params[0] );
+          vCardLine.setGroup( groupList[0] );
+          vCardLine.setIdentifier( groupList[1] );
+        } else
+          vCardLine.setIdentifier( params[0] );
+
         if ( params.count() > 1 ) { // find all parameters
           for ( uint i = 1; i < params.count(); ++i ) {
             QStringList pair = QStringList::split( '=', params[i] );
@@ -85,7 +95,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
             }
             //This is pretty much a faster pair[1].contains( ',' )...
             if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
-              QStringList args = QStringList::split( ',', pair[ 1 ] );
+              const QStringList args = QStringList::split( ',', pair[ 1 ] );
               for ( uint j = 0; j < args.count(); ++j )
                 vCardLine.addParameter( pair[0].lower(), args[j] );
             } else
@@ -170,7 +180,10 @@ QString VCardParser::createVCards( const VCard::List& list )
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
-          textLine = (*lineIt).identifier();
+          if ( (*lineIt).hasGroup() )
+            textLine = (*lineIt).group() + "." + (*lineIt).identifier();
+          else
+            textLine = (*lineIt).identifier();
 
           params = (*lineIt).parameterList();
           hasEncoding = false;

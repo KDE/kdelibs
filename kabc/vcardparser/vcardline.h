@@ -65,6 +65,21 @@ class VCardLine
     QVariant value() const;
 
     /**
+     * Sets the group the line belongs to.
+     */
+    void setGroup( const QString& group );
+
+    /**
+     * Returns the group the line belongs to.
+     */
+    QString group() const;
+
+    /**
+     * Returns whether the line belongs to a group.
+     */
+    bool hasGroup() const;
+
+    /**
      * Returns all parameters.
      */
     QStringList parameterList() const;
