@@ -61,10 +61,10 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
-libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
-		ktoolbar.cpp klineedit.cpp kprogress.cpp kimageeffect.cpp \
-		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
-		kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
+libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
+		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
+		kimageeffect.cpp kcolordlg.cpp kselect.cpp kdatepik.cpp \
+		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \
@@ -80,7 +80,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
 		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp kdrawutil.cpp \
-		kiconview.cpp klistview.cpp klistbox.cpp kbugreport.cpp \
+		kiconview.cpp klistbox.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlgui.cpp \
 		kxmlguibuilder.cpp kpixmapio.cpp kedittoolbar.cpp \
 		kdocktabctl.cpp kdockwidget.cpp kdockwidget_private.cpp \
