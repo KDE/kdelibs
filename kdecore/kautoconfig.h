@@ -4,7 +4,6 @@
 #include <qobject.h>
 #include <kglobal.h>
 #include <qptrlist.h>
-#include <kglobal.h>
 
 class KConfig;
 class QWidget;
@@ -90,6 +89,15 @@ signals:
    */
   void settingsChanged(QWidget *widget);
 	
+  /**
+   * If @ref retreiveSettings was told to track changes
+   * then if any known setting was changed this signal will be emited.  Note
+   * that a settings can be modified several times and then back to the 
+   * original state.  @ref hasChanged() will tell you if anything has
+   * actually changed from the saved values.
+   */
+  void widgetModified();
+	  
 public:
   /**
    * Constructor.
@@ -140,8 +148,11 @@ public slots:
   /**
    * Traverse the specified widgets, retrieve the settings for all known
    * widgets that aren't being ignored.
+   * @param trackChanges - If any changes by the widgets should be tracked
+   * emiting the modified signal when changed.
+   * @return bool if any setting was changed from the default returns true.
    */ 
-  void retrieveSettings();
+  bool retrieveSettings(bool trackChanges=false);
   
   /**
    * Traverse the specified widgets, saving the settings for all known
@@ -159,17 +170,22 @@ public slots:
   void resetSettings(); 
 
 protected:
+  // KConfig used to get/save values
   KConfig *config;
-  
+  // Map of the classes and the singnals that they emit when changed. 
+  QMap<QString, const char *> changedMap;
+
   /**
    * Recursive function that finds all known children.
    * Goes through the children of widget and if any are known, stores them in
    * currentGroup.
    * @param widget - Parent of the children to look at.
    * @param currentGroup - Place to store known children of widget.
+   * @param trackChanges - If changes by children of widget should be tracked.
+   * @return bool - If a widget was changed from the default
    */ 
-  void parseChildren(const QWidget *widget,
-		  QPtrList<QWidget>&currentGroup);
+  bool parseChildren(const QWidget *widget,
+		  QPtrList<QWidget>&currentGroup, bool trackChanges);
  
 private:
   class KAutoConfigPrivate;
