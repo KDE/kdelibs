@@ -198,6 +198,25 @@ KEdit::cleanWhiteSpace()
       repaint();
       return;
    }
+   if (wordWrap() == NoWrap)
+   {
+      // If wordwrap is off, we have to do some line-wrapping ourselves now
+      // We use another QMultiLineEdit for this, so that we get nice undo
+      // behaviour.
+      QMultiLineEdit *we = new QMultiLineEdit();
+      we->setWordWrap(FixedColumnWidth);
+      we->setWrapColumnOrWidth(78);
+      we->setText(newText);
+      newText = QString::null;
+      for(int i = 0; i < we->numLines(); i++)
+      {
+        QString line = we->textLine(i);
+        if (line.right(1) != "\n")
+           line += '\n';
+        newText += line;
+      }
+      delete we;
+   }
 
    insert(newText);
    setAutoUpdate(TRUE);
