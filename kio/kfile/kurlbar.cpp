@@ -565,6 +565,8 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             editItem( static_cast<KURLBarItem *>( item ) );
             break;
         case RemoveItem:
+            if ( item == m_activeItem )
+                m_activeItem = 0L;
             delete item;
             m_isModified = true;
             break;
