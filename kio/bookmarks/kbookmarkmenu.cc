@@ -805,12 +805,12 @@ void KBookmarkEditFields::setLocation(const QString &str)
 /********************************************************************/
 
 // TODO - make the dialog use Properties as a title when in Modify mode... (dirk noticed the bug...)
-KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
-                                         QWidget * parent, const char * name, const QString& caption)
+KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
+                                         QWidget * parent, const char * name, const QString& caption )
   : KDialogBase(parent, name, true, caption,
                 (editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel),
                 Ok, false, KGuiItem()),
-    m_folderTree(0), m_mgr(mgr), m_editType(editType)
+    m_folderTree(0), m_mgr(mgr), m_editType(editType), m_address(address)
 {
   setButtonOK( KGuiItem((editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" )) );
   if (editType == InsertionMode) {
@@ -837,7 +837,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 
   if ( editType == InsertionMode )
   {
-    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name, m_address );
     connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ),
              this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
     vbox->addWidget( m_folderTree );
@@ -902,21 +902,26 @@ void KBookmarkEditDialog::slotUser1()
 /********************************************************************/
 /********************************************************************/
 
-static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group )
+static void fillGroup( QListView* listview, KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group, bool expandOpenGroups = true, const QString& address = QString::null )
 {
   bool noSubGroups = true;
   KBookmarkFolderTreeItem * lastItem = 0L;
+  KBookmarkFolderTreeItem * item = 0L;
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
     if ( bk.isGroup() )
     {
       KBookmarkGroup grp = bk.toGroup();
-      KBookmarkFolderTreeItem * item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
-      fillGroup( item, grp );
-      if ( grp.isOpen() )
+      item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
+      fillGroup( listview, item, grp, expandOpenGroups, address );
+      if ( expandOpenGroups && grp.isOpen() )
         item->setOpen( true );
       lastItem = item;
       noSubGroups = false;
+    }
+    if (bk.address() == address) {
+      listview->setCurrentItem( lastItem );
+      listview->ensureItemVisible( item );
     }
   }
   if ( noSubGroups ) {
@@ -924,7 +929,7 @@ static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup grou
   }
 }
 
-QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name )
+QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name, const QString& address )
 {
   QListView *listview = new QListView( parent, name );
 
@@ -937,23 +942,21 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
   listview->setResizeMode( QListView::AllColumns );
   listview->setMinimumSize( 60, 100 );
 
-  fillTree( listview, mgr );
+  fillTree( listview, mgr, address );
 
   return listview;
 }
 
-void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr )
+void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr, const QString& address )
 {
   listview->clear();
-
+  
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
-  fillGroup( rootItem, root );
-  rootItem->setOpen( true );
-
-  listview->setFocus();
   listview->setCurrentItem( rootItem );
   rootItem->setSelected( true );
+  fillGroup( listview, rootItem, root, (address == root.groupAddress() || address == QString::null) ? true : false, address );
+  rootItem->setOpen( true );
 }
 
 static KBookmarkFolderTreeItem* ft_cast( QListViewItem *i )
