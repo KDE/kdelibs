@@ -1286,12 +1286,17 @@ void KApplication::parseCommandLine( )
     {
 
        QStringList styles = QStyleFactory::keys();
-       QString reqStyle(args->getOption("style"));
+       QString reqStyle(args->getOption("style").lower());
 
-       if ((*styles.find(reqStyle)).isEmpty())
+	   for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
+		   if ((*it).lower() == reqStyle)
+		   {
+			   d->overrideStyle = *it;
+			   break;
+		   }
+
+       if (d->overrideStyle.isEmpty())
           fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).local8Bit().data());
-       else
-          d->overrideStyle = reqStyle;
     }
 
     if (args->isSet("caption"))
