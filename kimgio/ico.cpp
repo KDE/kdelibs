@@ -126,7 +126,6 @@ void kimgio_ico_read(QImageIO *io)
 
 	QPaintDeviceMetrics metrics(QApplication::desktop());
 	uchar prefSize = 32;
-	uchar prefHeight = 32;
 	uint prefDepth = metrics.depth() > 8 ? 0 : 16;
 	if (io->parameters())
 	{
@@ -153,7 +152,9 @@ void kimgio_ico_read(QImageIO *io)
 			continue;
 		if (abs(rec.width - prefSize) < abs(iconList[preferred].width - prefSize))
 			preferred = i;
-		if (abs(rec.colors - prefDepth) < abs(iconList[preferred].colors - prefDepth))
+        if (prefDepth == 0 && (iconList[preferred].colors == 0 || iconList[preferred].colors > rec.colors))
+            continue;
+        if (abs(rec.colors - prefDepth) < abs(iconList[preferred].colors - prefDepth))
 			preferred = i;
 	}
 	kdDebug() << "Using: " << preferred << endl;
