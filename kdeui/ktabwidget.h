@@ -28,6 +28,8 @@
 class KTabWidgetPrivate;
 
 /**
+ * \brief A widget containing multiple tabs
+ *
  * @since 3.2
  */
 class KDEUI_EXPORT KTabWidget : public QTabWidget
