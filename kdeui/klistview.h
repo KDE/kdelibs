@@ -234,7 +234,6 @@ public:
    * @param index doesn't exist in this list view. This function takes
    * all items into account not only the visible ones.
    */
-
   QListViewItem* itemAtIndex(int index);
 
 
