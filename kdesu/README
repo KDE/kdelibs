@@ -1,3 +1,7 @@
+Maintainer: Adriaan de Groot <groot@kde.org>
+Maintainer: kdesu was maintained by Alan Eldridge until his
+            death in 2003.
+
 README for libkdesu.
 
 Libkdesu provides functionality for building GUI front ends for 
