@@ -1704,12 +1704,6 @@ KURL KHTMLPart::completeURL( const QString &url )
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
-    if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url))
-    {
-      kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << m_url.prettyURL() << " to " << url << " REJECTED!" << endl;
-      return;
-    }
-
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
        d->m_delayRedirect = delay;
@@ -1744,6 +1738,13 @@ void KHTMLPart::slotRedirect()
   // Redirecting to the current URL leads to a reload.
   // But jumping to an anchor never leads to a reload.
   KURL url( u );
+
+  if (!kapp || !kapp->kapp->authorizeURLAction("redirect", m_url, url))
+  {
+    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+    return;
+  }
+
   if ( !url.hasRef() && urlcmp( u, m_url.url(), true, true ) )
   {
     args.reload = true;
