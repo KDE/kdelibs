@@ -178,7 +178,7 @@ protected:
     */
   void addEncoding(QString, QStringList &);
 
-  void configAuth(const char *, bool);
+  void configAuth(const char *, bool, bool firstCall = true );
 #ifdef DO_SSL
   void initSSL();
   void closeSSL();
