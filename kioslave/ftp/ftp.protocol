@@ -11,3 +11,4 @@ deleting=true
 Icon=ftp
 maxInstances=2
 DocPath=kioslave/ftp.html
+Class=:internet
