@@ -28,6 +28,7 @@
 #include <qcommonstyle.h>
 #endif // QT_H
 
+#include "kstyle.h"
 
 #ifdef QT_PLUGIN
 #  define Q_EXPORT_STYLE_LIGHT_V3
@@ -36,7 +37,7 @@
 #endif // QT_PLUGIN
 
 
-class Q_EXPORT_STYLE_LIGHT_V3 LightStyleV3 : public QCommonStyle
+class Q_EXPORT_STYLE_LIGHT_V3 LightStyleV3 : public KStyle
 {
     Q_OBJECT
     QStyle *basestyle;

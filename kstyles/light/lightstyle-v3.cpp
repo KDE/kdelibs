@@ -43,7 +43,7 @@
 // The Light Style, 3rd revision
 
 LightStyleV3::LightStyleV3()
-    : QCommonStyle()
+    : KStyle(AllowMenuTransparency)
 {
     basestyle = QStyleFactory::create( "Windows" );
     if ( ! basestyle )
@@ -57,8 +57,9 @@ LightStyleV3::~LightStyleV3()
     delete basestyle;
 }
 
-void LightStyleV3::polishPopupMenu( QPopupMenu * )
+void LightStyleV3::polishPopupMenu( QPopupMenu * menu)
 {
+    KStyle::polishPopupMenu(menu);
     // empty to satisy pure virtual requirements
 }
 
@@ -881,8 +882,10 @@ void LightStyleV3::drawControl( ControlElement control,
 	    int maxpmw = data.maxIconWidth();
 
 	    if ( mi && mi->isSeparator() ) {
-		// draw separator
-		p->fillRect(r, cg.brush(QColorGroup::Button));
+            	if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+                	p->drawPixmap( r.topLeft(), *widget->erasePixmap(), r );
+		else
+			p->fillRect(r, cg.brush(QColorGroup::Button));
 		p->setPen( cg.mid() );
 		p->drawLine(r.left() + 12,  r.top() + 1,
 			    r.right() - 12, r.top() + 1);
@@ -895,6 +898,8 @@ void LightStyleV3::drawControl( ControlElement control,
 	    if (flags & Style_Active)
 		qDrawShadePanel(p, r, cg, TRUE, 1,
 				&cg.brush(QColorGroup::Midlight));
+	     else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+		p->drawPixmap( r.topLeft(), *widget->erasePixmap(), r );
 	    else
 		p->fillRect(r, cg.brush(QColorGroup::Button));
 
