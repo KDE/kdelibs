@@ -1027,3 +1027,5 @@ int IconListItem::width( const QListBox *lb ) const
 
 
 #include "kjanuswidget.moc"
+#include "kjanuswidget_private.moc"
+
