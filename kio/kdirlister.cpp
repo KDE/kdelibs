@@ -38,6 +38,7 @@ class KDirLister::KDirListerPrivate
 public:
     KDirListerPrivate() { }
     KURL::List lstPendingUpdates;
+    bool autoUpdate;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -50,6 +51,7 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_rootFileItem = 0L;
   m_bDirOnlyMode = false;
   m_bDelayedMimeTypes = _delayedMimeTypes;
+  d->autoUpdate = true;
 }
 
 KDirLister::~KDirLister()
@@ -97,12 +99,8 @@ void KDirLister::slotURLDirty( const KURL & dir )
 
 void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
 {
-  if ( _url.isMalformed() )
-  {
-    QString tmp = i18n("Malformed URL\n%1").arg(_url.url());
-    KMessageBox::error( (QWidget*)0L, tmp);
+  if ( !validURL( _url ) )
     return;
-  }
 
   m_isShowingDotFiles = _showDotFiles;
 
@@ -114,7 +112,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     forgetDirs();
 
   // Automatic updating of directories ?
-  if ( _url.isLocalFile() )
+  if ( d->autoUpdate && _url.isLocalFile() )
   {
     //kdDebug(7003) << "adding " << _url.path() << endl;
     kdirwatch->addDir( _url.path() );
@@ -204,10 +202,8 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     else
     {
       //kdDebug(7003)<< "Adding " << u.url() << endl;
-      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes,
-					true );
+      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes, true);
       assert( item != 0L );
-
       if ( (m_bDirOnlyMode && !S_ISDIR( item->mode() )) || !matchesFilter( item ))
       {
         delete item;
@@ -310,7 +306,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       u.addPath( name );
       //kdDebug(7003) << "slotUpdateFinished : found " << name << endl;
 
-      // Find this icon
+      // Find this item
       bool done = false;
       QListIterator<KFileItem> kit ( m_lstFileItems );
       for( ; kit.current() && !done; ++kit )
@@ -394,12 +390,29 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
   }
 }
 
+bool KDirLister::showingDotFiles() const
+{
+  return m_isShowingDotFiles;
+}
+
 KFileItem* KDirLister::find( const KURL& _url )
 {
   QListIterator<KFileItem> it = m_lstFileItems;
   for( ; it.current(); ++it )
   {
     if ( (*it)->url() == _url )
+      return (*it);
+  }
+
+  return 0L;
+}
+
+KFileItem* KDirLister::find( const QString& name )
+{
+  QListIterator<KFileItem> it = m_lstFileItems;
+  for( ; it.current(); ++it )
+  {
+    if ( (*it)->name() == name )
       return (*it);
   }
 
@@ -431,8 +444,8 @@ KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
 bool KDirLister::matchesFilter( const KFileItem *item )
 {
     assert( item != 0L );
+    static const QString& dotdot = KGlobal::staticQString("..");
 
-    static const QString dotdot = QString::fromLatin1("..");
     if ( item->text() == dotdot )
 	return false;
 
@@ -524,5 +537,65 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
 
   deleteUnmarkedItems();
 }
+
+void KDirLister::setAutoUpdate( bool enable )
+{
+    if ( d->autoUpdate == enable )
+	return;
+
+    d->autoUpdate = enable;
+
+    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end();
+	  ++it ) {
+	if ( (*it).isLocalFile() ) {
+	    if ( enable )
+		kdirwatch->addDir( (*it).path() );
+	    else
+		kdirwatch->removeDir( (*it).path() );
+	}
+    }
+
+    if ( enable ) {
+      connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
+               this, SLOT( slotDirectoryDirty( const QString& ) ) );
+      connect( kdirwatch, SIGNAL( fileDirty( const QString& ) ),
+               this, SLOT( slotFileDirty( const QString& ) ) );
+    }
+    else
+	kdirwatch->disconnect( this );
+}
+
+bool KDirLister::autoUpdate() const
+{	
+    return d->autoUpdate;
+}
+
+bool KDirLister::setURL( const KURL& url )
+{
+    if ( !validURL( url ) )
+	return false;
+
+    stop();
+    forgetDirs();
+    m_url = url;
+    return true;
+}	
+
+void KDirLister::listDirectory()
+{
+    openURL( m_url, showingDotFiles() );
+}
+
+bool KDirLister::validURL( const KURL& url )
+{
+  if ( url.isMalformed() )
+  {
+    QString tmp = i18n("Malformed URL\n%1").arg(url.url());
+    KMessageBox::error( (QWidget*)0L, tmp);
+    return false;
+  }
+  return true;
+}
+
 
 #include "kdirlister.moc"

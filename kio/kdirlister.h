@@ -73,6 +73,10 @@ public:
    * @param _keep if true the previous directories aren't forgotten
    * (they are still watched by kdirwatch and their items are kept in
    * m_lstFileItems)
+   *
+   * The @ref newItems() signal may be emitted more than once to supply you
+   * with KFileItems, up until the signal @ref completed() is emitted
+   * (and isFinished() returns true).
    */
   virtual void openURL( const KURL& _url, bool _showDotFiles, bool _keep = false );
 
@@ -88,12 +92,39 @@ public:
   virtual const KURL & url() const { return m_url; }
 
   /**
-   * Update the currently displayed directory
+   * Sets @p url as the current url, forgetting any previous ones and stopping
+   * any pending job. If @p url is malformed, the previous url will be kept
+   * and false will be returned.
+   *
+   * Does _not_ start loading that url,
+   */
+  virtual bool setURL( const KURL& url );
+
+  /**
+   * Update @p url.
    * The current implementation calls it automatically for
-   * local files, using KDirWatch, but it might be useful to force an
-   * update manually.
+   * local files, using KDirWatch (if autoUpdate() is true), but it might be
+   * useful to force an update manually.
    */
   virtual void updateDirectory( const KURL& dir );
+
+  /**
+   * Convenience method. Starts loading the current directory, e.g. set via
+   * @ref setURL().
+   */
+  void listDirectory();
+
+  /**
+   * Enable/disable automatic directory updating, when a directory changes
+   * (using KDirWatch).
+   */
+  void setAutoUpdate( bool enable );
+
+  /**
+   * @returns whether KDirWatch is used to automatically update directories.
+   * enabled by default.
+   */
+  bool autoUpdate() const;
 
   /**
    * Changes the "is viewing dot files" setting.
@@ -102,16 +133,30 @@ public:
   virtual void setShowingDotFiles( bool _showDotFiles );
 
   /**
-   * Find an item
+   * @returns whether dotfiles are shown
+   */
+  virtual bool showingDotFiles() const;
+
+  /**
+   * Find an item by its URL
    * @param _url the item URL
-   * @return the pointer to the KFileItem
+   * @returns the pointer to the KFileItem
    **/
   KFileItem* find( const KURL& _url );
 
   /**
-   * @return the list of file items currently displayed
+   * Find an item by its name
+   * @param name the item name
+   * @returns the pointer to the KFileItem
+   **/
+  KFileItem* find( const QString& name );
+
+  /**
+   * @returns the list of file items. The list may be incomplete if
+   * @ref isFinished() is false, i.e. it is still loading items.
    */
   QList<KFileItem> & items() { return m_lstFileItems; }
+
   /**
    * @return the file item for url() itself (".")
    */
@@ -164,6 +209,11 @@ public:
    */
   virtual void FilesRemoved( const KURL::List & fileList );
 
+  /**
+   * Returns true if no io operation is currently in progress.
+   */
+  bool isFinished() const { return (m_job == 0); }
+
 signals:
   /**
    * Tell the view that we started to list _url.
@@ -182,16 +232,16 @@ signals:
 
   /** Clear all items */
   void clear();
-  /** Signal new items */
+  /** Signal new items, @p complete is true when the directory loading has
+   *  finished */
   void newItems( const KFileItemList & items );
-  /** Signal a item to remove */
+  /** Signal an item to remove */
   void deleteItem( KFileItem * _fileItem );
   /**
    * Signal an item to refresh (its mimetype/icon/name has changed)
    * Note: KFileItem::refresh has already been called on those items.
    */
   void refreshItems( const KFileItemList & items );
-
   /**
    * Instruct the view to close itself, since the dir was just deleted.
    */
@@ -245,6 +295,12 @@ protected:
    * Delete unmarked items, as it says on the tin
    */
   void deleteUnmarkedItems();
+
+  /**
+   * Checks if a url is malformed or not and displays an error message if it
+   * is. Returns true if it is valid, otherwise false.
+   */
+  bool validURL( const KURL& );
 
   /**
    * The url that we used to list (can be different in case of redirect)
