@@ -31,6 +31,7 @@
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qcleanuphandler.h>
+#include <qmap.h>
 #include <qimage.h>
 #include <qlistview.h>
 #include <qmenubar.h>
@@ -50,39 +51,52 @@
 #include <kimageeffect.h>
 #include "kstyle.h"
 
-#ifdef HAVE_XRENDER
 #include <X11/Xlib.h>
+#ifdef HAVE_XRENDER
 #include <X11/extensions/Xrender.h>
 extern bool qt_use_xrender;
 #endif
 
-
-// INTERNAL
-enum TransparencyEngine { 
-	Disabled = 0, 
-	SoftwareTint, 
-	SoftwareBlend, 
-	XRender
-};
-
-class TransparencyHandler : public QObject
+namespace
 {
-	public:
-		TransparencyHandler(KStyle* style, TransparencyEngine tEngine, float menuOpacity);
-		~TransparencyHandler();
-		bool eventFilter(QObject* object, QEvent* event);
+	// INTERNAL
+	enum TransparencyEngine { 
+		Disabled = 0, 
+		SoftwareTint, 
+		SoftwareBlend, 
+		XRender
+	};
 
-	protected:
-		void blendToColor(const QColor &col);
-		void blendToPixmap(const QColorGroup &cg, const QPopupMenu* p);
-#ifdef HAVE_XRENDER
-		void XRenderBlendToPixmap(const QPopupMenu* p);
-#endif
-	private:
-		float   opacity;
-		QPixmap pix;
-		KStyle* kstyle;
-		TransparencyEngine te;
+	// Drop Shadow
+	struct ShadowElements {
+		QWidget* w1;
+		QWidget* w2;
+	};
+	typedef QMap<const QPopupMenu*,ShadowElements> ShadowMap;
+	ShadowMap shadowMap;
+
+	// DO NOT ASK ME HOW I MADE THESE TABLES!
+	// (I probably won't remember anyway ;)
+	const double top_right_corner[16] = 
+		{ 0.949, 0.965, 0.980, 0.992,
+		  0.851, 0.890, 0.945, 0.980,
+		  0.706, 0.780, 0.890, 0.960,
+		  0.608, 0.706, 0.851, 0.949 };
+
+	const double bottom_right_corner[16] =
+		{ 0.608, 0.706, 0.851, 0.949,
+		  0.706, 0.780, 0.890, 0.960,
+		  0.851, 0.890, 0.945, 0.980,
+		  0.949, 0.965, 0.980, 0.992 };
+
+	const double bottom_left_corner[16] =
+		{ 0.949, 0.851, 0.706, 0.608,
+		  0.965, 0.890, 0.780, 0.706,
+		  0.980, 0.945, 0.890, 0.851,
+		  0.992, 0.980, 0.960, 0.949 };
+
+	const double shadow_strip[4] = 
+		{ 0.565, 0.675, 0.835, 0.945 };
 };
 
 
@@ -92,6 +106,7 @@ struct KStylePrivate
 	bool  useFilledFrameWorkaround : 1;
 	bool  etchDisabledText         : 1;
 	bool  menuAltKeyNavigation     : 1;
+	bool  menuDropShadow           : 1;
 	int   popupMenuDelay;
 	float menuOpacity;
 
@@ -100,6 +115,34 @@ struct KStylePrivate
 	TransparencyHandler* menuHandler;
 	KStyle::KStyleFlags flags;
 };
+
+
+class TransparencyHandler : public QObject
+{
+	public:
+		TransparencyHandler(KStyle* style, TransparencyEngine tEngine,
+							float menuOpacity, bool useDropShadow);
+		~TransparencyHandler();
+		bool eventFilter(QObject* object, QEvent* event);
+
+	protected:
+		void blendToColor(const QColor &col);
+		void blendToPixmap(const QColorGroup &cg, const QPopupMenu* p);
+#ifdef HAVE_XRENDER
+		void XRenderBlendToPixmap(const QPopupMenu* p);
+#endif
+		void createShadowWindows(const QPopupMenu* p);
+		void removeShadowWindows(const QPopupMenu* p);
+		void rightShadow(QImage& dst);
+		void bottomShadow(QImage& dst);
+	private:
+		bool    dropShadow;
+		float   opacity;
+		QPixmap pix;
+		KStyle* kstyle;
+		TransparencyEngine te;
+};
+
 
 // -----------------------------------------------------------------------------
 
@@ -118,6 +161,7 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
 	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
+	d->menuDropShadow       = settings.readBoolEntry("/KStyle/Settings/MenuDropShadow", false);
 	d->menuHandler = NULL;
 
 	if (useMenuTransparency) {
@@ -140,9 +184,14 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 		if (d->transparencyEngine != Disabled) {
 			// Create an instance of the menu transparency handler
 			d->menuOpacity = settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
-			d->menuHandler = new TransparencyHandler(this, d->transparencyEngine, d->menuOpacity);
+			d->menuHandler = new TransparencyHandler(this, d->transparencyEngine, 
+													 d->menuOpacity, d->menuDropShadow);
 		}
 	}
+
+	// Create a transparency handler if only drop shadows are enabled.
+	if (!d->menuHandler && d->menuDropShadow)
+		d->menuHandler = new TransparencyHandler(this, Disabled, 1.0, d->menuDropShadow);
 }
 
 
@@ -1678,57 +1727,207 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 // -----------------------------------------------------------------------------
 
 TransparencyHandler::TransparencyHandler( KStyle* style, 
-	TransparencyEngine tEngine, float menuOpacity ) 
+	TransparencyEngine tEngine, float menuOpacity, bool useDropShadow ) 
 	: QObject() 
 { 
 	te = tEngine;
 	kstyle = style;
 	opacity = menuOpacity; 
+	dropShadow = useDropShadow;
 	pix.setOptimization(QPixmap::BestOptim);
 };
-
 
 TransparencyHandler::~TransparencyHandler() 
 {
 };
 
+// This is meant to be ugly but fast.
+void TransparencyHandler::rightShadow(QImage& dst)
+{
+	if (dst.depth() != 32)
+		dst = dst.convertDepth(32);
+
+	// blend top-right corner.
+	int pixels = dst.width() * dst.height();
+#ifdef WORDS_BIGENDIAN
+	register unsigned char* data = dst.bits() + 1;	// Skip alpha
+#else
+	register unsigned char* data = dst.bits();		// Skip alpha
+#endif
+	for(register int i = 0; i < 16; i++) {
+		*data++ = (unsigned char)((*data)*top_right_corner[i]);
+		*data++ = (unsigned char)((*data)*top_right_corner[i]);
+		*data++ = (unsigned char)((*data)*top_right_corner[i]);
+		data++;	// skip alpha
+	}
+
+	pixels -= 32;	// tint right strip without rounded edges.
+	register int c = 0;
+	for(register int i = 0; i < pixels; i++) {
+		*data++ = (unsigned char)((*data)*shadow_strip[c]);
+		*data++ = (unsigned char)((*data)*shadow_strip[c]);
+		*data++ = (unsigned char)((*data)*shadow_strip[c]);
+		data++; // skip alpha
+		c = ++c % 4;
+	}
+
+	// tint bottom edge
+	for(register int i = 0; i < 16; i++) {
+		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
+		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
+		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
+		data++;	// skip alpha
+	}
+}
+
+void TransparencyHandler::bottomShadow(QImage& dst)
+{
+	if (dst.depth() != 32)
+		dst = dst.convertDepth(32);
+
+	int line = 0;
+	int width = dst.width() - 4;
+	double strip_data = shadow_strip[0];
+	double* corner = const_cast<double*>(bottom_left_corner);
+
+#ifdef WORDS_BIGENDIAN
+	register unsigned char* data = dst.bits() + 1;	// Skip alpha
+#else
+	register unsigned char* data = dst.bits();	// Skip alpha
+#endif
+
+	for(int y = 0; y < 4; y++)
+	{
+		// Bottom-left Corner
+		for(register int x = 0; x < 4; x++) {
+			*data++ = (unsigned char)((*data)*(*corner));
+			*data++ = (unsigned char)((*data)*(*corner));
+			*data++ = (unsigned char)((*data)*(*corner));
+			data++; // skip alpha
+			corner++;
+		}
+	
+		// Scanline
+		for(register int x = 0; x < width; x++) {
+			*data++ = (unsigned char)((*data)*strip_data);
+			*data++ = (unsigned char)((*data)*strip_data);
+			*data++ = (unsigned char)((*data)*strip_data);
+			data++;
+		}
+
+		strip_data = shadow_strip[++line];
+	}
+}
+
+// Create a shadow of thickness 4.
+void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
+{
+	int x2 = p->x()+p->width();
+	int y2 = p->y()+p->height();
+	QRect shadow1(x2, p->y() + 4, 4, p->height());
+	QRect shadow2(p->x() + 4, y2, p->width() - 4, 4);
+
+	// Create a fake drop-down shadow effect via blended Xwindows
+	ShadowElements se;
+	se.w1 = new QWidget(0, 0, WStyle_Customize | WType_Popup | WX11BypassWM );
+	se.w2 = new QWidget(0, 0, WStyle_Customize | WType_Popup | WX11BypassWM );
+	se.w1->setGeometry(shadow1);
+	se.w2->setGeometry(shadow2);
+	// Insert a new ShadowMap entry
+	shadowMap[p] = se;
+
+	// Some hocus-pocus here to create the drop-shadow. 
+	QPixmap pix_shadow1 = QPixmap::grabWindow(qt_xrootwin(), 
+			shadow1.x(), shadow1.y(), shadow1.width(), shadow1.height());
+	QPixmap pix_shadow2 = QPixmap::grabWindow(qt_xrootwin(),
+			shadow2.x(), shadow2.y(), shadow2.width(), shadow2.height());
+	
+	QImage img;
+	img = pix_shadow1.convertToImage();
+	rightShadow(img);
+	pix_shadow1.convertFromImage(img);
+	img = pix_shadow2.convertToImage();
+	bottomShadow(img);
+	pix_shadow2.convertFromImage(img);
+
+	// Set the background pixmaps
+	se.w1->setErasePixmap(pix_shadow1);
+	se.w2->setErasePixmap(pix_shadow2);
+
+	// Show the 'shadow' just before showing the popup menu window
+	// Don't use QWidget::show() so we don't confuse QEffects, thus causing broken focus.
+	XMapWindow(qt_xdisplay(), se.w1->winId());
+	XMapWindow(qt_xdisplay(), se.w2->winId());
+}
+
+void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
+{
+	ShadowMap::iterator it = shadowMap.find(p);
+	if (it != shadowMap.end())
+	{
+		ShadowElements se = it.data();
+		XUnmapWindow(qt_xdisplay(), se.w1->winId());	// hide
+		XUnmapWindow(qt_xdisplay(), se.w2->winId());
+		delete se.w1;
+		delete se.w2;
+		shadowMap.erase(it);
+	}
+}
 
 bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 {
 	// Transparency idea was borrowed from KDE2's "MegaGradient" Style,
 	// Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
+
+	// Added 'fake' menu shadows <04-Jul-2002> -- Karol
 	QPopupMenu* p = (QPopupMenu*)object;
 	QEvent::Type et = event->type();
 
-	if (et == QEvent::Show) 
+	if (et == QEvent::Show)	
 	{
-		pix = QPixmap::grabWindow(qt_xrootwin(),
-				p->x(), p->y(), p->width(), p->height());
+		// Handle translucency
+		if (te != Disabled)
+		{
+			pix = QPixmap::grabWindow(qt_xrootwin(),
+					p->x(), p->y(), p->width(), p->height());
 
-		switch (te) {
+			switch (te) {
 #ifdef HAVE_XRENDER
-			case XRender:
-				if (qt_use_xrender) {
-					XRenderBlendToPixmap(p);
-					break;
-				}
-				// Fall through intended
+				case XRender:
+					if (qt_use_xrender) {
+						XRenderBlendToPixmap(p);
+						break;
+					}
+					// Fall through intended
 #else
-			case XRender:
+				case XRender:
 #endif
-			case SoftwareBlend:
-				blendToPixmap(p->colorGroup(), p);
-				break;
+				case SoftwareBlend:
+					blendToPixmap(p->colorGroup(), p);
+					break;
 
-			case SoftwareTint:
-			default:
-				blendToColor(p->colorGroup().button());
-		};
+				case SoftwareTint:
+				default:
+					blendToColor(p->colorGroup().button());
+			};
 
-		p->setErasePixmap(pix);
-	} 
+			p->setErasePixmap(pix);
+		}
+		
+		// Handle drop shadow
+		if (dropShadow && p->width() > 16 && p->height() > 16)
+			createShadowWindows(p);
+	}
 	else if (et == QEvent::Hide)
-		p->setErasePixmap(QPixmap());
+	{
+		// Handle drop shadow
+		if (dropShadow && p->width() > 16 && p->height() > 16)
+			removeShadowWindows(p);
+
+		// Handle translucency
+		if (te != Disabled)
+			p->setErasePixmap(QPixmap());
+	}
 
 	return false;
 }
