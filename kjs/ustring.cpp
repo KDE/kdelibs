@@ -162,6 +162,13 @@ UChar& UCharReference::ref() const
     return UChar::null;
 }
 
+// return an uninitialized UChar array of size s
+static inline UChar* allocateChars(int s)
+{
+  // work around default UChar constructor code
+  return reinterpret_cast<UChar*>(new short[s]);
+}
+
 UString::Rep *UString::Rep::create(UChar *d, int l)
 {
   Rep *r = new Rep;
@@ -180,7 +187,7 @@ UString::UString()
 
 UString::UString(char c)
 {
-    UChar *d = new UChar[1];
+    UChar *d = allocateChars(1);
     d[0] = UChar(0, c);
     rep = Rep::create(d, 1);
 }
@@ -193,7 +200,7 @@ UString::UString(const char *c)
 
 UString::UString(const UChar *c, int length)
 {
-  UChar *d = new UChar[length];
+  UChar *d = allocateChars(length);
   memcpy(d, c, length * sizeof(UChar));
   rep = Rep::create(d, length);
 }
@@ -202,7 +209,7 @@ UString::UString(UChar *c, int length, bool copy)
 {
   UChar *d;
   if (copy) {
-    d = new UChar[length];
+    d = allocateChars(length);
     memcpy(d, c, length * sizeof(UChar));
   } else
     d = c;
@@ -263,7 +270,7 @@ UString UString::from(double d)
 UString &UString::append(const UString &t)
 {
   int l = size();
-  UChar *n = new UChar[l+t.size()];
+  UChar *n = allocateChars(l+t.size());
   memcpy(n, data(), l * sizeof(UChar));
   memcpy(n+l, t.data(), t.size() * sizeof(UChar));
   release();
@@ -302,7 +309,7 @@ UString &UString::operator=(const char *c)
 {
   release();
   int l = c ? strlen(c) : 0;
-  UChar *d = new UChar[l];
+  UChar *d = allocateChars(l);
   for (int i = 0; i < l; i++)
     d[i].uc = (unsigned char)c[i];
   rep = Rep::create(d, l);
@@ -485,7 +492,7 @@ UString UString::substr(int pos, int len) const
   if (pos + len >= (int) size())
     len = size() - pos;
 
-  UChar *tmp = new UChar[len];
+  UChar *tmp = allocateChars(len);
   memcpy(tmp, data()+pos, len * sizeof(UChar));
   UString result(tmp, len);
   delete [] tmp;
@@ -503,7 +510,7 @@ void UString::detach()
 {
   if (rep->rc > 1) {
     int l = size();
-    UChar *n = new UChar[l];
+    UChar *n = allocateChars(l);
     memcpy(n, data(), l * sizeof(UChar));
     release();
     rep = Rep::create(n, l);
