@@ -1606,6 +1606,10 @@ bool EditableCaretBoxIterator::isEditable(const CaretBoxIterator &boxit, bool fr
     return false;
   }
 
+  // generally exclude replaced elements with no children from navigation
+  if (!b->isOutside() && r->isRenderReplaced() && !r->firstChild())
+    return false;
+
   RenderObject *eff_r = r;
   bool globallyNavigable = m_part->isCaretMode() || m_part->isEditable();
 
@@ -1619,7 +1623,7 @@ bool EditableCaretBoxIterator::isEditable(const CaretBoxIterator &boxit, bool fr
     eff_r = node->renderer();
     Q_ASSERT(eff_r);	// this is a hard requirement
   }
-
+  
   bool result = globallyNavigable || eff_r->style()->userInput() == UI_ENABLED;
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << result << endl;
