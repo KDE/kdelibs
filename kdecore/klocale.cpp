@@ -134,12 +134,12 @@ const char *KLocale::translate(const char *msgid)
     return msgid;
 }
 
-const QString& KLocale::directory() 
+QString KLocale::directory() 
 {
     return kapp->kdedir() + "/locale/share/";
 }
 
-void KLocale::alias(long index, const char* text)
+void KLocale::aliasLocale(const char* text, long int index)
 {
     aliases.insert(index, text);
 }
