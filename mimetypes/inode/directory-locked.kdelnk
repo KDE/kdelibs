@@ -5,6 +5,7 @@ Comment[de]=Gesperrter Ordner
 Comment[pl]=Zablokowany katalog
 Comment[fi]=Lukittu hakemisto
 Comment[fr]=Répertoire bloqué
+Comment[pt]=Directoria inacessivel
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

@@ -5,6 +5,7 @@ Comment[de]=Block-Orientiertes Gerät
 Comment[pl]=Urz±dzenie blokowe
 Comment[fi]=Blokkilaite
 Comment[fr]=Périphérique bloc
+Comment[pt]=Dispositivo Bloco
 Icon=blockdevice.xpm
 Type=MimeType
 MimeType=inode/blockdevice

@@ -6,6 +6,7 @@ Comment[nl]=Gecomprimeerd lettertypebestand
 Comment[pl]=Spakowana czcionka Tex'a
 Comment[fi]=Pakattu kirjasin
 Comment[fr]=Fichier de police compressé pour TeX
+Comment[pt]=Fonte comprimida
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk

@@ -6,6 +6,7 @@ Comment[nl]=Algemeen-lettertype bestand
 Comment[pl]=Czcionka Tex'a
 Comment[fr]=Fichier de police générique pour TeX
 Comment[fi]=Yleiset kirjasintiedostot
+Comment[pt]=Ficheiro de genérico de fontes
 Icon=gf.xpm
 Type=MimeType
 Mimetype=application/x-tex-gf
