@@ -1,3 +1,8 @@
+2004-01-13  Dirk Mueller  <mueller@kde.org>
+
+	* css/css_ruleimpl.cpp (CSSMediaRuleImpl): set parent to 0
+	to avoid leak (#70731).
+
 2004-01-13  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_canvas.cpp (layout):

@@ -253,6 +253,8 @@ CSSMediaRuleImpl::~CSSMediaRuleImpl()
 	m_lstMedia->setParent( 0 );
         m_lstMedia->deref();
     }
+    for ( int i = 0; i < m_lstCSSRules->length(); ++i )
+        m_lstCSSRules->item(  i )->setParent(  0 );
     m_lstCSSRules->deref();
 }
 
