@@ -20,38 +20,45 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+// C headers
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <iostream.h>
+
+// C++ headers
+#include <iostream>
 #include <string>
 
-#include <kdebug.h>
-#include <kmessagebox.h>
-#include <kstandarddirs.h>
-#include <kuniqueapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kconfig.h>
-#include <kprocess.h>
-#include <kcrash.h>
-#include <dcopclient.h>
-#include <soundserver.h>
+// aRts headers
+#include <connect.h>
 #include <dispatcher.h>
 #include <flowsystem.h>
-#include <connect.h>
+#include <soundserver.h>
+
+// QT headers
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qiomanager.h>
+#include <qmessagebox.h>
+#include <qstringlist.h>
+#include <qtextstream.h>
+
+// KDE headers
+#include <dcopclient.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+#include <kconfig.h>
+#include <kcrash.h>
+#include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kprocess.h>
+#include <kstandarddirs.h>
+#include <kuniqueapplication.h>
 
 #include "knotify.h"
 #include "knotify.moc"
-
-#include <qiomanager.h>
-#include <qfile.h>
-#include <qmessagebox.h>
-#include <qfileinfo.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
 
 class KNotifyPrivate
 {
