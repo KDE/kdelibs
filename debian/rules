@@ -42,6 +42,9 @@ $(BUILDDIR)/build-stamp:
 debian-clean:
 	dh_testdir
 	-rm -f $(BUILDDIR)/build-stamp
+	-rm -f debian/files
+	-rm -f debian/*substvars
+	-rm -f configure
 
 clean: debian-clean
 	-rm -rf $(BUILDDIR)
@@ -79,7 +82,7 @@ binary-arch:  build
 	perl -w debian/kderules 
 	dh_movefiles 
 	dh_installdocs 
-	dh_installchangelogs ChangeLog
+	dh_installchangelogs 
 	dh_strip 
 	dh_compress 
 	dh_fixperms 
