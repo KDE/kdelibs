@@ -703,8 +703,8 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry HTMLImageElementTableEntries[] = {
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "x", KJS::HTMLElement::ImageX, DontDelete|ReadOnly, 0, 0 },
+   { "y", KJS::HTMLElement::ImageY, DontDelete|ReadOnly, 0, 0 },
    { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, &HTMLImageElementTableEntries[14] },
    { 0, 0, 0, 0, 0 },
    { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, &HTMLImageElementTableEntries[15] },
