@@ -925,6 +925,11 @@ bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     return true;
 }
 
+void HTMLButtonElementImpl::attach()
+{
+    // skip the generic handler
+    HTMLElementImpl::attach();
+}
 
 // -------------------------------------------------------------------------
 

@@ -190,6 +190,7 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     void activate();
+    virtual void attach();
 
 protected:
     DOMString m_value;
