@@ -3530,6 +3530,7 @@ void KImageEffect::normalize(QImage &image)
         if(normalize_map)
             liberateMemory((void **) &normalize_map);
         qWarning("KImageEffect::normalize(): Unable to allocate memory!");
+        return;
     }
 
     /*

@@ -388,7 +388,7 @@ public:
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
-     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The embossed image. The original is not changed.
      */
@@ -416,7 +416,7 @@ public:
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
-     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The charcoal image. The original is not changed.
      */
@@ -468,7 +468,7 @@ public:
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
-     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The blurred image. The original is not changed.
      */
@@ -529,7 +529,7 @@ public:
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
-     * @param sigma The standard deviation of the gaussian. Use 1 if your not
+     * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The sharpened image. The original is not changed.
      */
