@@ -319,8 +319,6 @@ public:
   virtual ~IOProtocol() { }
   
   void setConnection( Connection* _conn );
-protected:
-  virtual bool initSockaddr( struct sockaddr_in *server_name, const char *hostname, unsigned int port);
 };
 
 

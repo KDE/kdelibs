@@ -800,19 +800,3 @@ void IOProtocol::setConnection( Connection* _conn )
   ConnectionSignals::setConnection( _conn );
   ConnectionSlots::setConnection( _conn );
 }
-
-bool IOProtocol::initSockaddr( struct sockaddr_in *server_name, const char *hostname, unsigned int port)
-{
-  struct hostent *hostinfo;
-  server_name->sin_family = AF_INET;
-  server_name->sin_port = htons( port );
-
-  hostinfo = gethostbyname( hostname );
-
-  if ( hostinfo == 0L )
-    return false;
-
-  server_name->sin_addr = *(struct in_addr*) hostinfo->h_addr;
-  return true;
-}
-
