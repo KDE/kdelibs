@@ -94,6 +94,7 @@ void SocketConnection::qSendBuffer(Buffer *buffer)
 	pending.push_back(buffer);
 }
 
+#ifdef DEBUG_CONNECTION_DATA
 static void connection_hex_dump(unsigned char *buffer, long len)
 {
 	int i = 0;
@@ -118,6 +119,7 @@ static void connection_hex_dump(unsigned char *buffer, long len)
 		printf ("\n");
 	}
 }
+#endif
 
 void SocketConnection::notifyIO(int _fd, int types)
 {
