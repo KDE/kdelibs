@@ -243,6 +243,17 @@ void RenderFlow::layout( bool deep )
     else
 	layoutBlockChildren(deep);
 
+    Length h = style()->height();
+    
+    if (h.isFixed()) 
+    	m_height = MAX (h.value, m_height);
+    else if (h.isPercent())
+    {
+    	Length ch = containingBlock()->style()->height();
+	if (ch.isFixed())
+    	    m_height = MAX (h.width(ch.value), m_height);
+    }
+
     if(floatBottom() > m_height)	
     {
 	if(isFloating())
@@ -256,6 +267,7 @@ void RenderFlow::layout( bool deep )
 	    m_next->layout();
 	}
     }
+    
     setLayouted();
 }
 
