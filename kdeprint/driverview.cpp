@@ -25,6 +25,8 @@
 #include <qlistview.h>
 #include <qheader.h>
 #include <qlayout.h>
+#include <qwhatsthis.h>
+#include <klocale.h>
 
 DrListView::DrListView(QWidget *parent, const char *name)
 : KListView(parent,name)
@@ -40,10 +42,61 @@ DrListView::DrListView(QWidget *parent, const char *name)
 DriverView::DriverView(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
+	//WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisPPDOptionsDriverPage = i18n( " <qt> "
+			" <b>List of Driver Options (from PPD)</b>. "
+			" <p>The upper pane of this dialog page contains all printjob options as layed "
+			" down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
+			" <p>Click on any item in the list and watch the lower pane of this dialog page "
+			" display the available values. </p> "
+			" <p>Set the values as needed. Then use one of the pushbuttons below to proceed:</p> "
+			" <ul> "
+			" <li><em>'Save'</em> your settings if you want to re-use "
+			" them in your next job(s) too. <em>'Save'</em> will store your settings permanently until "
+			" you change them again. </li>."
+			" <li>Click <em>'OK'</em> if you want to use your selected settings just once, for the "
+			" next print job. <em>'OK'</em> "
+			" will forget your current settings when kprinter is closed again, and will start next time "
+			" with your previous defaults. </li>"
+			" <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking "
+			" <em>'Cancel'</em>, the job will print with the default settings of this queue. "
+			" </ul>"
+			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
+			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
+			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thusly not present "
+			" in the kprinter dialog.</p> "
+			" </qt>" );
+
+	QString whatsThisOptionSettingsDriverPage = i18n( " <qt> "
+			" <b>List of Possible Values for given Option (from PPD)</b>. "
+			" <p>The lower pane of this dialog page contains all possible values of the printoption "
+			" highlighted above, as layed "
+			" down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
+			" <p>Select the value you want and proceed. </p> "
+			" <p>Then use one of the pushbuttons below to leave this dialog:</p> "
+			" <ul> "
+			" <li><em>'Save'</em> your settings if you want to re-use "
+			" them in your next job(s) too. <em>'Save'</em> will store your settings permanently until "
+			" you change them again. </li>."
+			" <li>Click <em>'OK'</em> if you want to use your selected settings just once, for the "
+			" next print job. <em>'OK'</em> "
+			" will forget your current settings when kprinter is closed again, and will start next time "
+			" with your previous defaults. </li>"
+			" <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking "
+			" <em>'Cancel'</em>, the job will print with the default settings of this queue. "
+			" </ul>"
+			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
+			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
+			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thusly not present "
+			" in the kprinter dialog.</p> "
+			" </qt>" );
+
 	m_driver = 0;
 
 	m_view = new DrListView(this);
+	  QWhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
 	m_optview = new DrOptionView(this);
+	  QWhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	main_->addWidget(m_view,1);
