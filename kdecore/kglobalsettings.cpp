@@ -315,7 +315,6 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
 {
     if ( s_desktopPath != 0 )
         return;
-    kdDebug() << "KGlobalSettings::initStatic" << endl;
 
     s_desktopPath = new QString();
     s_autostartPath = new QString();
