@@ -499,7 +499,7 @@ bool KPty::chownpty(bool grant)
     return true;
 
   KProcess proc;
-  proc << BASE_CHOWN << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
+  proc << locate("exe", BASE_CHOWN) << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
   return proc.start(KProcess::Block) && proc.normalExit() && !proc.exitStatus();
 }
 
