@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=KDE Color Theme
+Icon=colors
+MimeType=application/x-kcsrc
+Patterns=*.kcsrc;*.KCSRC
+Type=MimeType
