@@ -140,9 +140,9 @@ KPixmapIO::KPixmapIO()
     {
 	m_bShm = false;
 	kdWarning(290) << "Byte order not supported!" << endl;
-	kdWarning(290) << "red = " << d->ximage->red_mask
-		<< ", green = " << d->ximage->green_mask
-		<< ", blue = " << d->ximage->blue_mask << endl;
+	kdWarning(290) << "red = " << red_shift
+		<< ", green = " << green_shift
+		<< ", blue = " << blue_shift << endl;
 	kdWarning(290) << "Please report to <jansen@kde.org>\n";
     }
 #endif
