@@ -41,6 +41,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+// defines MAXDNAME under Solaris
+#include <arpa/nameser.h>
 #include <resolv.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +77,7 @@ KSocket::KSocket( int _sock)
  : sock(_sock), readNotifier(0), writeNotifier(0)
 {
   struct sockaddr_in sin;
-  socklen_t len = sizeof(sin);
+  ksize_t len = sizeof(sin);
 
   memset(&sin, 0, len);
 
@@ -283,7 +285,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
       {
          int errcode;
          ksize_t len = sizeof(errcode);
-         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (void*)&errcode, &len);
+         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&errcode, &len);
          if ((ret == -1) || (errcode != 0))
          {
             ::close(sock);
@@ -310,8 +312,10 @@ unsigned long KSocket::ipv4_addr()
   getsockname(sock, (struct sockaddr *) &name, &len);
   if (name.sin_family == AF_INET) // It's IPv4
     return ntohl(name.sin_addr.s_addr);
+#ifdef INET6
   else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
     return 0;
+#endif
   else // We dunno what it is
     return 0;
 }
@@ -523,8 +527,10 @@ unsigned long KServerSocket::ipv4_addr()
   getsockname(sock, (struct sockaddr *) &name, &len);
   if (name.sin_family == AF_INET) // It's IPv4
     return ntohl(name.sin_addr.s_addr);
+#ifdef INET6
   else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
     return 0;
+#endif
   else // We dunno what it is
     return 0;
 }
