@@ -57,11 +57,6 @@ KLineEdit::~KLineEdit ()
 
 void KLineEdit::setCompletionObject ( KCompletion* obj, bool autoDelete )
 {
-    // Ignore NULL assignments.  If programmer needs to delete
-    // the completion object, (s)he should invoke disableCompletion().
-    if( obj == 0 )
-        return;
-
     comp = obj;
     m_bAutoDelCompObj = autoDelete;
 }
