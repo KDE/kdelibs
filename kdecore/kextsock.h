@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000,2001 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2002 Thiago Macieira <thiagom@mail.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -127,22 +127,22 @@ public:
 
     nothing = 0,		// no status, the class has just been created
 
-    lookupInProgress = 4,	// lookup is in progress. Signals will be sent
-    lookupDone = 5,		// lookup has been done. Flags cannot be changed
+    lookupInProgress = 50,	// lookup is in progress. Signals will be sent
+    lookupDone = 70,		// lookup has been done. Flags cannot be changed
 				// from this point on
 
-    created = 10,		// ::socket() has been called, a socket exists
-    bound = 11,			// socket has been bound
+    created = 100,		// ::socket() has been called, a socket exists
+    bound = 140,		// socket has been bound
 
-    connecting = 20,		// socket is connecting (not passiveSocket)
-    connected = 21,		// socket has connected (not passiveSocket)
+    connecting = 200,		// socket is connecting (not passiveSocket)
+    connected = 220,		// socket has connected (not passiveSocket)
 
-    listening = 20,		// socket is listening (passiveSocket)
-    accepting = 21,		// socket is accepting (passiveSocket)
+    listening = 200,		// socket is listening (passiveSocket)
+    accepting = 220,		// socket is accepting (passiveSocket)
 
-    closing = 35,		// socket is closing (delayed close)
+    closing = 350,		// socket is closing (delayed close)
 
-    done = 40			// socket has been closed
+    done = 400			// socket has been closed
   };
 
 public:
@@ -180,16 +180,14 @@ public:
   /**
    * Returns the class status
    */
-  inline int socketStatus() const
-  { return m_status; }
+  int socketStatus() const;
 
   /**
    * Returns the related system error code
    * Except for IO_LookupError errors, these are codes found in
    * errno
    */
-  inline int systemError() const
-  { return m_syserror; }
+  int systemError() const;
 
   /**
    * Sets the given flags. Will return the new flags status, or
@@ -201,8 +199,7 @@ public:
   /**
    * Returns the current flags
    */
-  inline int socketFlags() const
-  { return m_flags; }
+  int socketFlags() const;
 
   /**
    * Sets the hostname to the given value.
@@ -400,8 +397,9 @@ public:
   /**
    * Performs lookup on the addresses we were given before.
    *
-   * Returns 0 or an error.
-   * This will perform lookups on the bind addresses if they were given
+   * This will perform lookups on the bind addresses if they were given.
+   * Returns 0 or an error. Do not rely on the values returned by lookup
+   * as of now. They are not specified.
    */
   virtual int lookup();
 
@@ -717,10 +715,6 @@ signals:
   void connectionFailed(int error);
 
 protected:
-  int m_flags;			// current flags
-  int m_status;			// status
-  int m_syserror;		// the system error code
-
   int sockfd;			// file descriptor of the socket
 
 protected slots:
@@ -739,6 +733,13 @@ private:
   KExtendedSocket(KExtendedSocket&);
   KExtendedSocket& operator=(KExtendedSocket&);
 
+  /**
+   * This is actually a wrapper around getaddrinfo().
+   * @internal
+   */
+  static int doLookup(const QString& host, const QString& serv, addrinfo& hint,
+		      kde_addrinfo** result);
+
 protected:
   /**
    * Sets the error code
@@ -749,11 +750,9 @@ protected:
   { setError(IO_Ok, 0); }
 
   /**
-   * This is actually a wrapper around getaddrinfo()
-   * @internal
+   * Sets the socket status. For derived classes only.
    */
-  static int doLookup(const QString& host, const QString& serv, addrinfo& hint,
-		      kde_addrinfo** result);
+  void setSocketStatus(int status);
 
 public:
   /**

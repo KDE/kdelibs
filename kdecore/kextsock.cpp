@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000,2001 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2002 Thiago Macieira <thiagom@mail.com>
  *
  *  $Id$
  *
@@ -88,6 +88,10 @@
 class KExtendedSocket::KExtendedSocketPrivate
 {
 public:
+  int flags;			// socket flags
+  int status;			// status
+  int syserror;			// the system error value
+
   timeval timeout;		// connection/acception timeout
   QString host;			// requested hostname
   QString service;		// requested service
@@ -107,6 +111,7 @@ public:
   KExtendedSocketLookup *dns, *dnsLocal;
 
   KExtendedSocketPrivate() :
+    flags(0), status(0), syserror(0),
     host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
     resolution(0), bindres(0), current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
@@ -392,15 +397,13 @@ void KExtendedSocketLookup::freeresults(kde_addrinfo *res)
 
 // default constructor
 KExtendedSocket::KExtendedSocket() :
-  m_flags(0), m_status(0), m_syserror(0), sockfd(-1),
-  d(new KExtendedSocketPrivate)
+  sockfd(-1), d(new KExtendedSocketPrivate)
 {
 }
 
 // constructor with hostname
 KExtendedSocket::KExtendedSocket(const QString& host, int port, int flags) :
-  m_flags(0), m_status(0), m_syserror(0), sockfd(-1),
-  d(new KExtendedSocketPrivate)
+  sockfd(-1), d(new KExtendedSocketPrivate)
 {
   setAddress(host, port);
   setSocketFlags(flags);
@@ -408,8 +411,7 @@ KExtendedSocket::KExtendedSocket(const QString& host, int port, int flags) :
 
 // same
 KExtendedSocket::KExtendedSocket(const QString& host, const QString& service, int flags) :
-  m_flags(0), m_status(0), m_syserror(0), sockfd(-1),
-  d(new KExtendedSocketPrivate)
+  sockfd(-1), d(new KExtendedSocketPrivate)
 {
   setAddress(host, service);
   setSocketFlags(flags);
@@ -436,16 +438,42 @@ KExtendedSocket::~KExtendedSocket()
   delete d;
 }
 
+int KExtendedSocket::socketStatus() const
+{
+  return d->status;
+}
+
+void KExtendedSocket::setSocketStatus(int newstatus)
+{
+  d->status = newstatus;
+}
+
+void KExtendedSocket::setError(int errorcode, int syserror)
+{
+  setStatus(errorcode);
+  d->syserror = syserror;
+}
+
+int KExtendedSocket::systemError() const
+{
+  return d->syserror;
+}
+
 /*
  * Sets socket flags
  * This is only allowed if we are in nothing state
  */
 int KExtendedSocket::setSocketFlags(int flags)
 {
-  if (m_status > nothing)
+  if (d->status > nothing)
     return -1;			// error!
 
-  return m_flags = flags;
+  return d->flags = flags;
+}
+
+int KExtendedSocket::socketFlags() const
+{
+  return d->flags;
 }
 
 /*
@@ -454,7 +482,7 @@ int KExtendedSocket::setSocketFlags(int flags)
  */
 bool KExtendedSocket::setHost(const QString& host)
 {
-  if (m_status > nothing)
+  if (d->status > nothing)
     return false;		// error!
 
   d->host = host;
@@ -480,7 +508,7 @@ bool KExtendedSocket::setPort(int port)
 
 bool KExtendedSocket::setPort(const QString& service)
 {
-  if (m_status > nothing)
+  if (d->status > nothing)
     return false;		// error
 
   d->service = service;
@@ -518,7 +546,7 @@ bool KExtendedSocket::setAddress(const QString& host, const QString& serv)
  */
 bool KExtendedSocket::setBindHost(const QString& host)
 {
-  if (m_status > nothing || m_flags & passiveSocket)
+  if (d->status > nothing || d->flags & passiveSocket)
     return false;		// error
 
   d->localhost = host;
@@ -531,7 +559,7 @@ bool KExtendedSocket::setBindHost(const QString& host)
  */
 bool KExtendedSocket::unsetBindHost()
 {
-  if (m_status > nothing || m_flags & passiveSocket)
+  if (d->status > nothing || d->flags & passiveSocket)
     return false;		// error
 
   d->localhost.truncate(0);
@@ -557,7 +585,7 @@ bool KExtendedSocket::setBindPort(int port)
 
 bool KExtendedSocket::setBindPort(const QString& service)
 {
-  if (m_status > nothing || m_flags & passiveSocket)
+  if (d->status > nothing || d->flags & passiveSocket)
     return false;		// error
 
   d->localservice = service;
@@ -569,7 +597,7 @@ bool KExtendedSocket::setBindPort(const QString& service)
  */
 bool KExtendedSocket::unsetBindPort()
 {
-  if (m_status > nothing || m_flags & passiveSocket)
+  if (d->status > nothing || d->flags & passiveSocket)
     return false;
 
   d->localservice.truncate(0);
@@ -613,7 +641,7 @@ bool KExtendedSocket::unsetBindAddress()
  */
 bool KExtendedSocket::setTimeout(int secs, int usecs)
 {
-  if (m_status >= connected)	// closed?
+  if (d->status >= connected)	// closed?
     return false;
 
   d->timeout.tv_sec = secs;
@@ -635,7 +663,7 @@ timeval KExtendedSocket::timeout() const
 bool KExtendedSocket::setBlockingMode(bool enable)
 {
   cleanError();
-  if (m_status < created)
+  if (d->status < created)
     return false;
 
   if (sockfd == -1)
@@ -664,7 +692,7 @@ bool KExtendedSocket::setBlockingMode(bool enable)
 bool KExtendedSocket::blockingMode()
 {
   cleanError();
-  if (m_status < created)
+  if (d->status < created)
     return false;		// sockets not created are in blocking mode
 
   if (sockfd == -1)
@@ -685,7 +713,7 @@ bool KExtendedSocket::blockingMode()
 bool KExtendedSocket::setAddressReusable(bool enable)
 {
   cleanError();
-  if (m_status < created)
+  if (d->status < created)
     return false;
 
   if (sockfd == -1)
@@ -707,7 +735,7 @@ bool KExtendedSocket::setAddressReusable(bool enable)
 bool KExtendedSocket::addressReusable()
 {
   cleanError();
-  if (m_status < created)
+  if (d->status < created)
     return false;
 
   if (sockfd == -1)
@@ -731,13 +759,13 @@ bool KExtendedSocket::addressReusable()
 bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 {
   cleanError();
-  if (m_status < created)
+  if (d->status < created)
     return false;
 
   if (sockfd == -1)
     return false;
 
-  if (m_flags & passiveSocket)
+  if (d->flags & passiveSocket)
     return false;		// no I/O on passive sockets
 
   if (rsize < -2)
@@ -748,10 +776,10 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 
   // LOCK BUFFER MUTEX
 
-  if (rsize == 0 && m_flags & inputBufferedSocket)
+  if (rsize == 0 && d->flags & inputBufferedSocket)
     {
       // user wants to disable input buffering
-      m_flags &= ~inputBufferedSocket;
+      d->flags &= ~inputBufferedSocket;
       if (d->qsnIn && !d->emitRead)
 	d->qsnIn->setEnabled(false);
 
@@ -762,7 +790,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
     {
       // enabling input buffering
       if (rsize)
-	m_flags |= inputBufferedSocket;
+	d->flags |= inputBufferedSocket;
       d->inMaxSize = rsize;
 
       if (rsize > 0 && (unsigned)rsize < readBufferSize())
@@ -776,10 +804,10 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 	}
     }
 
-  if (wsize == 0 & m_flags & outputBufferedSocket)
+  if (wsize == 0 & d->flags & outputBufferedSocket)
     {
       // disabling output buffering
-      m_flags &= ~outputBufferedSocket;
+      d->flags &= ~outputBufferedSocket;
       if (d->qsnOut && !d->emitWrite)
 	d->qsnOut->setEnabled(false);
       consumeWriteBuffer(writeBufferSize());
@@ -789,7 +817,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
     {
       // enabling input buffering
       if (wsize)
-	m_flags |= outputBufferedSocket;
+	d->flags |= outputBufferedSocket;
       d->outMaxSize = wsize;
 
       if (wsize > 0 && (unsigned)wsize < writeBufferSize())
@@ -808,7 +836,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 
   // UNLOCK BUFFER MUTEX
 
-  setFlags((mode() & ~IO_Raw) | ((m_flags & bufferedSocket) ? 0 : IO_Raw));
+  setFlags((mode() & ~IO_Raw) | ((d->flags & bufferedSocket) ? 0 : IO_Raw));
 
   return true;
 }
@@ -822,7 +850,7 @@ const KSocketAddress *KExtendedSocket::localAddress()
 {
   if (d->local != NULL)
     return d->local;
-  if (m_status < bound)
+  if (d->status < bound)
     return NULL;
 
   return d->local = localAddress(sockfd);
@@ -837,7 +865,7 @@ const KSocketAddress* KExtendedSocket::peerAddress()
 {
   if (d->peer != NULL)
     return d->peer;
-  if (m_flags & passiveSocket || m_status < connected)
+  if (d->flags & passiveSocket || d->status < connected)
     return NULL;
 
   return d->peer = peerAddress(sockfd);
@@ -849,7 +877,7 @@ const KSocketAddress* KExtendedSocket::peerAddress()
 int KExtendedSocket::lookup()
 {
   cleanError();
-  if (m_status >= lookupInProgress)
+  if (d->status >= lookupInProgress)
     return EAI_BADFLAGS;	// we needed an error...
 
   addrinfo hint;
@@ -861,7 +889,7 @@ int KExtendedSocket::lookup()
   if (d->resolution == NULL)
     {
       /* check socket type flags */
-      if (!process_flags(m_flags, hint))
+      if (!process_flags(d->flags, hint))
 	return EAI_BADFLAGS;
 
       int err = doLookup(d->host, d->service, hint, &d->resolution);
@@ -885,7 +913,7 @@ int KExtendedSocket::lookup()
 	}
     }
 
-  m_status = lookupDone;
+  d->status = lookupDone;
   return 0;
 }
 
@@ -895,9 +923,9 @@ int KExtendedSocket::lookup()
 int KExtendedSocket::startAsyncLookup()
 {
   cleanError();
-  if (m_status > lookupInProgress)
+  if (d->status > lookupInProgress)
     return -1;
-  if (m_status == lookupInProgress)
+  if (d->status == lookupInProgress)
     // already in progress
     return 0;
 
@@ -905,13 +933,13 @@ int KExtendedSocket::startAsyncLookup()
   memset(&hint, 0, sizeof(hint));
   hint.ai_family = AF_UNSPEC;
 
-  if (!process_flags(m_flags, hint))
+  if (!process_flags(d->flags, hint))
     return -1;
 
   int n = 0;			// number of asynchronous lookups
   if (d->host.length() > 0)
     {
-      if ((m_flags & noResolve) == 0)
+      if ((d->flags & noResolve) == 0)
 	{
 	  d->dns = new KExtendedSocketLookup(d->host, d->service, hint);
 	  QObject::connect(d->dns, SIGNAL(resultsReady()), this, SLOT(dnsResultsReady()));
@@ -930,7 +958,7 @@ int KExtendedSocket::startAsyncLookup()
 
   if (d->localhost.length() > 0)
     {
-      if ((m_flags & noResolve) == 0)
+      if ((d->flags & noResolve) == 0)
 	{
 	  hint.ai_flags |= AI_PASSIVE;
 	  d->dnsLocal = new KExtendedSocketLookup(d->localhost, d->localservice, hint);
@@ -956,10 +984,10 @@ int KExtendedSocket::startAsyncLookup()
 
   // if we are here, there were no errors
   if (n)
-    m_status = lookupInProgress; // only if there actually is a running lookup
+    d->status = lookupInProgress; // only if there actually is a running lookup
   else
     {
-      m_status = lookupDone;
+      d->status = lookupDone;
       dnsResultsReady();
     }
   return 0;
@@ -968,10 +996,10 @@ int KExtendedSocket::startAsyncLookup()
 void KExtendedSocket::cancelAsyncLookup()
 {
   cleanError();
-  if (m_status != lookupInProgress)
+  if (d->status != lookupInProgress)
     return;			// what's to cancel?
 
-  m_status = nothing;
+  d->status = nothing;
   if (d->dns)
     {
       delete d->dns;
@@ -991,9 +1019,9 @@ void KExtendedSocket::cancelAsyncLookup()
 int KExtendedSocket::listen(int N)
 {
   cleanError();
-  if ((m_flags & passiveSocket) == 0 || m_status >= listening)
+  if ((d->flags & passiveSocket) == 0 || d->status >= listening)
     return -2;
-  if (m_status < lookupDone)
+  if (d->status < lookupDone)
     if (lookup() < 0)
       return -2;		// error!
 
@@ -1003,7 +1031,7 @@ int KExtendedSocket::listen(int N)
   for (p = d->resolution->data; p; p = p->ai_next)
     {
       // check for family restriction
-      if (!valid_family(p, m_flags))
+      if (!valid_family(p, d->flags))
 	continue;
 
       //kdDebug(170) << "Trying to listen on " << pretty_sock(p) << endl;
@@ -1026,7 +1054,7 @@ int KExtendedSocket::listen(int N)
       // ok, socket has bound
       // kdDebug(170) << "Socket bound: " << sockfd << endl;
 
-      m_status = bound;
+      d->status = bound;
       break;
     }
 
@@ -1037,7 +1065,7 @@ int KExtendedSocket::listen(int N)
       return -1;
     }
 
-  m_status = listening;
+  d->status = listening;
   setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
 
   int retval = KSocks::self()->listen(sockfd, N);
@@ -1050,9 +1078,9 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
 {
   cleanError();
   sock = NULL;
-  if ((m_flags & passiveSocket) == 0 || m_status >= accepting)
+  if ((d->flags & passiveSocket) == 0 || d->status >= accepting)
     return -2;
-  if (m_status < listening)
+  if (d->status < listening)
     if (listen() < 0)
       return -2;		// error!
 
@@ -1104,7 +1132,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
   setBlockingMode(block);	// restore blocking mode
 
   sock = new KExtendedSocket;
-  sock->m_status = connected;
+  sock->d->status = connected;
   sock->sockfd = newfd;
   sock->setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
   sock->setBufferSize(0, 0);	// always unbuffered here. User can change that later
@@ -1121,9 +1149,9 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
 int KExtendedSocket::connect()
 {
   cleanError();
-  if (m_flags & passiveSocket)
+  if (d->flags & passiveSocket)
     return -2;
-  if (m_status < lookupDone)
+  if (d->status < lookupDone)
     if (lookup() < 0)
       return -2;
 
@@ -1157,7 +1185,7 @@ int KExtendedSocket::connect()
   for (p = d->resolution->data; p; p = p->ai_next)
     {
       // check for family restriction
-      if (!valid_family(p, m_flags))
+      if (!valid_family(p, d->flags))
 	continue;
 
 //      kdDebug(170) << "Trying to connect to " << pretty_sock(p) << endl;
@@ -1204,7 +1232,7 @@ int KExtendedSocket::connect()
 	}
 
 //      kdDebug(170) << "Socket " << sockfd << " created" << endl;
-      m_status = created;
+      d->status = created;
 
       // check if we have to do timeout
       if (doingtimeout)
@@ -1243,7 +1271,7 @@ int KExtendedSocket::connect()
 		  sockfd = -1;
 		  kdDebug(170) << "Time out while trying to connect to " <<
 		    pretty_sock(p) << endl;
-		  m_status = lookupDone;
+		  d->status = lookupDone;
 		  setError(IO_TimeOutError, 0);
 		  return -3;	// time out
 		}
@@ -1276,7 +1304,7 @@ int KExtendedSocket::connect()
 		  // this is HIGHLY UNLIKELY
 		  if (d->timeout.tv_sec == 0 && d->timeout.tv_usec == 0)
 		    {
-		      m_status = lookupDone;
+		      d->status = lookupDone;
 		      setError(IO_TimeOutError, 0);
 		      return -3; // time out
 		    }
@@ -1288,10 +1316,10 @@ int KExtendedSocket::connect()
 
 	  // getting here means it connected
 	  setBlockingMode(true);
-	  m_status = connected;
+	  d->status = connected;
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
-	  setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
-			m_flags & outputBufferedSocket ? -1 : 0);
+	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
+			d->flags & outputBufferedSocket ? -1 : 0);
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;
 	}
@@ -1307,10 +1335,10 @@ int KExtendedSocket::connect()
 	      continue;
 	    }
 
-	  m_status = connected;
+	  d->status = connected;
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
-	  setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
-			m_flags & outputBufferedSocket ? -1 : 0);
+	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
+			d->flags & outputBufferedSocket ? -1 : 0);
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;		// it connected
 	}
@@ -1325,37 +1353,37 @@ int KExtendedSocket::startAsyncConnect()
 {
   cleanError();
   // check status
-  if (m_status >= connected || m_flags & passiveSocket)
+  if (d->status >= connected || d->flags & passiveSocket)
     return -2;
 
-  if (m_status == connecting)
+  if (d->status == connecting)
     // already on async connect
     return 0;
 
   // check if we have to do lookup
   // if we do, then we'll use asynchronous lookup and use
   // signal lookupFinished to do connection
-  if (m_status < lookupDone)
+  if (d->status < lookupDone)
     {
       QObject::connect(this, SIGNAL(lookupFinished(int)), this, SLOT(startAsyncConnectSlot()));
-      if (m_status < lookupInProgress)
+      if (d->status < lookupInProgress)
 	return startAsyncLookup();
       else
 	return 0;		// we still have to wait
     }
 
-  // here we have m_status >= lookupDone and <= connecting
+  // here we have d->status >= lookupDone and <= connecting
   // we can do our connection
-  m_status = connecting;
+  d->status = connecting;
   connectionEvent();
-  if (m_status < connecting)
+  if (d->status < connecting)
     return -1;
   return 0;
 }
 
 void KExtendedSocket::cancelAsyncConnect()
 {
-  if (m_status != connecting)
+  if (d->status != connecting)
     return;
 
   if (sockfd != -1)
@@ -1370,7 +1398,7 @@ void KExtendedSocket::cancelAsyncConnect()
       ::close(sockfd);
       sockfd = -1;
     }
-  m_status = lookupDone;
+  d->status = lookupDone;
 }
 
 bool KExtendedSocket::open(int mode)
@@ -1378,9 +1406,9 @@ bool KExtendedSocket::open(int mode)
   if (mode != IO_Raw | IO_ReadWrite)
     return false;		// invalid open mode
 
-  if (m_flags & passiveSocket)
+  if (d->flags & passiveSocket)
     return listen() == 0;
-  else if (m_status < connecting)
+  else if (d->status < connecting)
     return connect() == 0;
   else
     return false;
@@ -1392,10 +1420,10 @@ void KExtendedSocket::close()
     return;			// nothing to close
 
   // LOCK BUFFER MUTEX
-  if (m_flags & outputBufferedSocket && writeBufferSize() > 0)
+  if (d->flags & outputBufferedSocket && writeBufferSize() > 0)
     {
       // write buffer not empty, go into closing state
-      m_status = closing;
+      d->status = closing;
       if (d->qsnIn)
 	delete d->qsnIn;
       d->qsnIn = NULL;
@@ -1413,7 +1441,7 @@ void KExtendedSocket::close()
       d->qsnIn = d->qsnOut = NULL;
 
       ::close(sockfd);
-      m_status = done;
+      d->status = done;
       emit closed(readBufferSize() != 0 ? availRead : 0);
     }
   // UNLOCK BUFFER MUTEX
@@ -1422,7 +1450,7 @@ void KExtendedSocket::close()
 
 void KExtendedSocket::closeNow()
 {
-  m_status = done;
+  d->status = done;
 
   if (sockfd == -1)
     return;			// nothing to close
@@ -1446,7 +1474,7 @@ void KExtendedSocket::release()
 {
   // release our hold on the socket
   sockfd = -1;
-  m_status = done;
+  d->status = done;
 
   // also do some garbage collecting
   local_freeaddrinfo(d->resolution);
@@ -1479,13 +1507,13 @@ void KExtendedSocket::release()
 void KExtendedSocket::flush()
 {
   cleanError();
-  if (m_status < connected || m_status >= done || m_flags & passiveSocket)
+  if (d->status < connected || d->status >= done || d->flags & passiveSocket)
     return;
 
   if (sockfd == -1)
     return;
 
-  if ((m_flags & outputBufferedSocket) == 0)
+  if ((d->flags & outputBufferedSocket) == 0)
     return;			// nothing to do
 
   // LOCK MUTEX
@@ -1538,14 +1566,14 @@ void KExtendedSocket::flush()
 Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
 {
   cleanError();
-  if (m_status < connected || m_flags & passiveSocket)
+  if (d->status < connected || d->flags & passiveSocket)
     return -2;
   if (sockfd == -1)
     return -2;
 
   int retval;
 
-  if ((m_flags & inputBufferedSocket) == 0)
+  if ((d->flags & inputBufferedSocket) == 0)
     {
       // we aren't buffering this socket, so just pass along
       // the call to the real read method
@@ -1581,7 +1609,7 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
 Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
 {
   cleanError();
-  if (m_status < connected || m_status >= closing || m_flags & passiveSocket)
+  if (d->status < connected || d->status >= closing || d->flags & passiveSocket)
     return -2;
   if (sockfd == -1)
     return -2;
@@ -1591,7 +1619,7 @@ Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
 
   int retval;
 
-  if ((m_flags & outputBufferedSocket) == 0)
+  if ((d->flags & outputBufferedSocket) == 0)
     {
       // socket not buffered. Just call write
       retval = KSocks::self()->write(sockfd, data, len);
@@ -1632,14 +1660,14 @@ Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
 
 int KExtendedSocket::peekBlock(char *data, uint maxlen)
 {
-  if (m_status < connected || m_flags & passiveSocket)
+  if (d->status < connected || d->flags & passiveSocket)
     return -2;
   if (sockfd == -1)
     return -2;
 
   // need to LOCK MUTEX around this call...
 
-  if (m_flags & inputBufferedSocket)
+  if (d->flags & inputBufferedSocket)
     return consumeReadBuffer(maxlen, data, false);
 
   return 0;
@@ -1655,7 +1683,7 @@ int KExtendedSocket::unreadBlock(const char *, uint)
 int KExtendedSocket::waitForMore(int msecs)
 {
   cleanError();
-  if (m_flags & passiveSocket || m_status < connected || m_status >= closing)
+  if (d->flags & passiveSocket || d->status < connected || d->status >= closing)
     return -2;
   if (sockfd == -1)
     return -2;
@@ -1694,12 +1722,6 @@ int KExtendedSocket::putch(int ch)
 {
   char c = (char)ch;
   return writeBlock(&c, sizeof(ch));
-}
-
-void KExtendedSocket::setError(int errorcode, int syserror)
-{
-  setStatus(errorcode);
-  m_syserror = syserror;
 }
 
 int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo &hint,
@@ -1742,7 +1764,7 @@ void KExtendedSocket::enableRead(bool enable)
   // saves us a few cycles
   // this is so because in buffering mode, we rely on these signals
   // being emitted to do our I/O. We couldn't disable them here
-  if (!enable && (m_flags & inputBufferedSocket) == 0 && d->qsnIn)
+  if (!enable && (d->flags & inputBufferedSocket) == 0 && d->qsnIn)
     d->qsnIn->setEnabled(false);
   else if (enable && d->qsnIn)
     // we can enable it always
@@ -1754,7 +1776,7 @@ void KExtendedSocket::enableRead(bool enable)
 void KExtendedSocket::enableWrite(bool enable)
 {
   // same thing as above
-  if (!enable && (m_flags & outputBufferedSocket) == 0 && d->qsnOut)
+  if (!enable && (d->flags & outputBufferedSocket) == 0 && d->qsnOut)
     d->qsnOut->setEnabled(false);
   else if (enable && d->qsnOut)
     // we can enable it always
@@ -1766,18 +1788,18 @@ void KExtendedSocket::enableWrite(bool enable)
 // this is connected to d->qsnIn::activated(int)
 void KExtendedSocket::socketActivityRead()
 {
-  if (m_flags & passiveSocket)
+  if (d->flags & passiveSocket)
     return;
-  if (m_status == connecting)
+  if (d->status == connecting)
     {
       connectionEvent();
       return;
     }
-  if (m_status != connected)
+  if (d->status != connected)
     return;
 
   // do we need to do I/O here?
-  if (m_flags & inputBufferedSocket)
+  if (d->flags & inputBufferedSocket)
     {
       // aye. Do read from the socket and feed our buffer
       QByteArray a;
@@ -1816,7 +1838,7 @@ void KExtendedSocket::socketActivityRead()
 			      (readBufferSize() ? availRead : 0) |
 			      (writeBufferSize() ? dirtyWrite : 0));
 		  sockfd = -1;	// we're closed
-		  m_status = done;
+		  d->status = done;
 		  return;
 		}
 	      else
@@ -1841,14 +1863,14 @@ void KExtendedSocket::socketActivityRead()
 
 void KExtendedSocket::socketActivityWrite()
 {
-  if (m_flags & passiveSocket)
+  if (d->flags & passiveSocket)
     return;
-  if (m_status == connecting)
+  if (d->status == connecting)
     {
       connectionEvent();
       return;
     }
-  if (m_status != connected && m_status != closing)
+  if (d->status != connected && d->status != closing)
     return;
 
   flush();
@@ -1862,10 +1884,10 @@ void KExtendedSocket::socketActivityWrite()
       // check if we can disable the notifier
       d->qsnOut->setEnabled(!empty); // leave it enabled only if we have more data to send
     }
-  if (m_status == closing && empty)
+  if (d->status == closing && empty)
     {
       // done sending the missing data!
-      m_status = done;
+      d->status = done;
       emit closed(delayed | (readBufferSize() ? availRead : 0));
 
       delete d->qsnOut;
@@ -1881,7 +1903,7 @@ void KExtendedSocket::socketActivityWrite()
 // an event
 void KExtendedSocket::connectionEvent()
 {
-  if (m_status != connecting)
+  if (d->status != connecting)
     return;			// move along. There's nothing to see here
 
   int errcode = 0;
@@ -1914,11 +1936,11 @@ void KExtendedSocket::connectionEvent()
 	  // that means it connected
 	  // YAY!
 	  cleanError();
-	  m_status = connected;
+	  d->status = connected;
 	  setBlockingMode(true);
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
-	  setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
-			m_flags & outputBufferedSocket ? -1 : 0);
+	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
+			d->flags & outputBufferedSocket ? -1 : 0);
 	  emit connectionSuccess();
 	  return;
 	}
@@ -2004,24 +2026,24 @@ void KExtendedSocket::connectionEvent()
       // already?
       // I suppose that could happen...
       cleanError();
-      m_status = connected;
+      d->status = connected;
       setBlockingMode(true);
       setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
-      setBufferSize(m_flags & inputBufferedSocket ? -1 : 0,
-		    m_flags & outputBufferedSocket ? -1 : 0);
+      setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
+		    d->flags & outputBufferedSocket ? -1 : 0);
       emit connectionSuccess();
       return;
     }
 
   // if we got here, it means that there are no more options to connect
   emit connectionFailed(errcode);
-  m_status = lookupDone;	// go back
+  d->status = lookupDone;	// go back
 }
 
 void KExtendedSocket::dnsResultsReady()
 {
   // check that this function was called in a valid state
-  if (m_status != lookupInProgress)
+  if (d->status != lookupInProgress)
     return;
 
   // valid state. Are results fully ready?
@@ -2043,7 +2065,7 @@ void KExtendedSocket::dnsResultsReady()
     n++;
   for (p = d->bindres->data; p; p = p->ai_next)
     n++;
-  m_status = lookupDone;
+  d->status = lookupDone;
   emit lookupFinished(n);
 
   return;
