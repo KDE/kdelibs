@@ -57,7 +57,6 @@ class KSlider : public QSlider
 {
   Q_OBJECT
     public:
-  enum Orientation { Horizontal, Vertical };
 
   KSlider( QWidget *parent = 0L, const char *name = 0L );
   KSlider( Orientation o, QWidget *parent = 0L, const char *name = 0L );
