@@ -35,6 +35,7 @@ HTMLObject::HTMLObject()
     descent = 0;
     percent = 0;
     objCount++;
+    nextObj = 0;
 }
 
 HTMLObject* HTMLObject::checkPoint( int _x, int _y )
@@ -64,21 +65,34 @@ void HTMLObject::select( QPainter *_painter, QRect &_rect, int _tx, int _ty )
 
 void HTMLObject::getSelected( QStrList &_list )
 {
-    if ( isSelected() && !url.isEmpty() )
+    if ( &_list == NULL )
+    {
+	debugM( "HTMLObject::getSelected(): _list is NULL\n" );
+	return;
+    }
+
+    char *u = getURL();
+
+    if ( u != 0 && *u != '\0' && isSelected() )
     {
 	char *s;
 	
-    for ( s = _list.first(); s != 0L; s = _list.next() )
-	if ( strcmp( url, s ) == 0 )
-	    return;
+	for ( s = _list.first(); s != 0L; s = _list.next() )
+	    if ( strcmp( u, s ) == 0 )
+		return;
 	
-	_list.append( url.data() );
+	_list.append( u );
     }
 }
 
 void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
 {
-    if ( _url == url )
+    char *u = getURL();
+
+    if ( u == 0 )
+	return;
+
+    if ( strcmp( _url, u ) == 0 )
     {
 	setSelected( _select );
 
@@ -89,11 +103,13 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 
 void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    if ( url.isEmpty() )
+    char *u = getURL();
+
+    if ( u == 0 || *u == '\0' )
 	return;
     
-    KURL u( url.data() );
-    QString filename = u.filename();
+    KURL ku( u );
+    QString filename = ku.filename();
     
     if ( filename.find( _pattern ) != -1 )
     {
@@ -106,7 +122,8 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
-    if ( _select == isSelected() || url.isEmpty() )
+    char *u = getURL();
+    if ( u == 0 || *u == '\0' || _select == isSelected() )
 	return;
 	
     setSelected( _select );
@@ -181,18 +198,14 @@ HTMLVSpace::HTMLVSpace( int _vspace ) : HTMLObject()
 
 //-----------------------------------------------------------------------------
 
-HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter,
-		    const char *_url, const char *_target ) : HTMLObject()
+HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter)
+    : HTMLObject()
 {
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent()+1;
     width = _painter->fontMetrics().width( (const char*)_text );
-    url = _url;
-    url.detach();
-    target = _target;
-    target.detach();
     selStart = 0;
     selEnd = strlen( text );
 }
@@ -575,7 +588,7 @@ void HTMLImage::cacheImage( const char *_filename )
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
-	const char* _url, const char *_target,
+	char *_url, const char *_target,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
@@ -588,9 +601,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     htmlWidget = widget;
     
     url = _url;
-    url.detach();
     target = _target;
-    target.detach();
     
     cached = TRUE;
 
@@ -881,188 +892,190 @@ HTMLArea::HTMLArea( int _x, int _y, int _r, const char *_url,
 HTMLMap::HTMLMap( KHTMLWidget *w, const char *_url )
 	: HTMLObject()
 {
-	areas.setAutoDelete( true );
-	url = _url;
-	htmlWidget = w;
+    areas.setAutoDelete( true );
+    mapurl = _url;
+    htmlWidget = w;
 
-	if ( url.contains( ':' ) )
-		htmlWidget->requestFile( this, url );
+    if ( strchr ( mapurl, ':' ) )
+	htmlWidget->requestFile( this, mapurl );
 }
 
 // The external map has been downloaded
 void HTMLMap::fileLoaded( const char *_filename )
 {
-	QFile file( _filename );
-	QString buffer;
-	QString href;
-	QString coords;
-	HTMLArea::Shape shape = HTMLArea::Rect;
-	char ch;
+    QFile file( _filename );
+    QString buffer;
+    QString href;
+    QString coords;
+    HTMLArea::Shape shape = HTMLArea::Rect;
+    char ch;
 
-	if ( file.open( IO_ReadOnly ) )
+    if ( file.open( IO_ReadOnly ) )
+    {
+	while ( !file.atEnd() )
 	{
-		while ( !file.atEnd() )
-		{
-			// read in a line
-			buffer.data()[0] = '\0';
-			do
-			{
-				ch = file.getch();
-				if ( ch != '\n' && ch != -1 );
-					buffer += ch;
-			}
-			while ( ch != '\n' && ch != -1 );
+	    // read in a line
+	    buffer.data()[0] = '\0';
+	    do
+	    {
+		ch = file.getch();
+		if ( ch != '\n' && ch != -1 );
+		    buffer += ch;
+	    }
+	    while ( ch != '\n' && ch != -1 );
 
-			// comment?
-			if ( buffer[0] == '#' )
-				continue;
+	    // comment?
+	    if ( buffer[0] == '#' )
+		continue;
 
-			StringTokenizer st( buffer, " " );
+	    StringTokenizer st( buffer, " " );
 
-			// get shape
-			const char *p = st.nextToken();
+	    // get shape
+	    const char *p = st.nextToken();
 
-			if ( strncasecmp( p, "rect", 4 ) == 0 )
-				shape = HTMLArea::Rect;
-			else if ( strncasecmp( p, "poly", 4 ) == 0 )
-				shape = HTMLArea::Poly;
-			else if ( strncasecmp( p, "circle", 6 ) == 0 )
-				shape = HTMLArea::Circle;
+	    if ( strncasecmp( p, "rect", 4 ) == 0 )
+		shape = HTMLArea::Rect;
+	    else if ( strncasecmp( p, "poly", 4 ) == 0 )
+		shape = HTMLArea::Poly;
+	    else if ( strncasecmp( p, "circle", 6 ) == 0 )
+		shape = HTMLArea::Circle;
 
-			// get url
+	    // get url
+	    p = st.nextToken();
+
+	    if ( *p == '#' )
+	    {// reference
+		KURL u( htmlWidget->getDocumentURL() );
+		u.setReference( p + 1 );
+		href = u.url();
+	    }
+	    else if ( strchr( p, ':' ) )
+	    {// full URL
+		href =  p;
+	    }
+	    else
+	    {// relative URL
+		KURL u2( htmlWidget->getBaseURL(), p );
+		href = u2.url();
+	    }
+
+	    // read coords and create object
+	    HTMLArea *area = 0;
+
+	    switch ( shape )
+	    {
+		case HTMLArea::Rect:
+		    {
 			p = st.nextToken();
+			int x1, y1, x2, y2;
+			sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+			QRect rect( x1, y1, x2-x1, y2-y1 );
+			area = new HTMLArea( rect, href, "" );
+			printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
+		    }
+		    break;
 
-			if ( *p == '#' )
-			{// reference
-				KURL u( htmlWidget->getDocumentURL() );
-				u.setReference( p + 1 );
-				href = u.url();
-			}
-			else if ( strchr( p, ':' ) )
-			{// full URL
-				href =  p;
-			}
-			else
-			{// relative URL
-				KURL u2( htmlWidget->getBaseURL(), p );
-				href = u2.url();
-			}
+		case HTMLArea::Circle:
+		    {
+			p = st.nextToken();
+			int xc, yc, rc;
+			sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
+			area = new HTMLArea( xc, yc, rc, href, "" );
+			printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
+		    }
+		    break;
 
-			// read coords and create object
-			HTMLArea *area = 0;
-
-			switch ( shape )
+		case HTMLArea::Poly:
+		    {
+			printf( "Area Poly " );
+			int count = 0, x, y;
+			QPointArray parray;
+			while ( st.hasMoreTokens() )
 			{
-				case HTMLArea::Rect:
-					{
-						p = st.nextToken();
-						int x1, y1, x2, y2;
-						sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
-						QRect rect( x1, y1, x2-x1, y2-y1 );
-						area = new HTMLArea( rect, href, "" );
-						printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
-					}
-					break;
-
-				case HTMLArea::Circle:
-					{
-						p = st.nextToken();
-						int xc, yc, rc;
-						sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
-						area = new HTMLArea( xc, yc, rc, href, "" );
-						printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
-					}
-					break;
-
-				case HTMLArea::Poly:
-					{
-						printf( "Area Poly " );
-						int count = 0, x, y;
-						QPointArray parray;
-						while ( st.hasMoreTokens() )
-						{
-							p = st.nextToken();
-							sscanf( p, "%d,%d", &x, &y );
-							parray.resize( count + 1 );
-							parray.setPoint( count, x, y );
-							printf( "%d, %d  ", x, y );
-							count++;
-						}
-						printf( "\n" );
-						if ( count > 2 )
-							area = new HTMLArea( parray, href, "" );
-					}
-					break;
+			    p = st.nextToken();
+			    sscanf( p, "%d,%d", &x, &y );
+			    parray.resize( count + 1 );
+			    parray.setPoint( count, x, y );
+			    printf( "%d, %d  ", x, y );
+			    count++;
 			}
+			printf( "\n" );
+			if ( count > 2 )
+			    area = new HTMLArea( parray, href, "" );
+		    }
+		    break;
+	    }
 
-			if ( area )
-				addArea( area );
-		}
+	    if ( area )
+		addArea( area );
 	}
+    }
 }
 
 const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 {
-	const HTMLArea *area;
+    const HTMLArea *area;
 
-	for ( area = areas.first(); area != 0; area = areas.next() )
-	{
-		if ( area->contains( QPoint( _x, _y ) ) )
-			return area;
-	}
+    for ( area = areas.first(); area != 0; area = areas.next() )
+    {
+	if ( area->contains( QPoint( _x, _y ) ) )
+	    return area;
+    }
 
-	return 0;
+    return 0;
 }
 
 //----------------------------------------------------------------------------
 
 HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
-		const char* _url, const char *_target,
-		int _max_width, int _width, int _height, int _percent, int bdr )
-	: HTMLImage( widget, _filename, _url, _target, _max_width, _width,
-		_height, _percent, bdr )
+	    char *_url, const char *_target,
+	    int _max_width, int _width, int _height, int _percent, int bdr )
+    : HTMLImage( widget, _filename, _url, _target, _max_width, _width,
+	    _height, _percent, bdr )
 {
-	type = ClientSide;
-	serverurl = _url;
+    type = ClientSide;
+    serverurl = _url;
+    serverurl.detach();
 }
 
 HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 {
-	if ( _x >= x && _x < x + width )
+    if ( _x >= x && _x < x + width )
+    {
+	if ( _y > y - ascent && _y < y + descent + 1 )
 	{
-		if ( _y > y - ascent && _y < y + descent + 1 )
+	    if ( type == ClientSide )
+	    {
+		HTMLMap *map = htmlWidget->getMap( mapurl );
+		if ( map )
 		{
-			if ( type == ClientSide )
-			{
-				HTMLMap *map = htmlWidget->getMap( mapurl );
-				if ( map )
-				{
-					const HTMLArea *area = map->containsPoint( _x - x,
-						_y - ( y -ascent ) );
-					if ( area )
-					{
-						url = area->getURL();
-						target = area->getTarget();
-						return this;
-					}
-					else
-					{
-						url.resize( 0 );
-						target.resize( 0 );
-					}
-				}
-			}
-			else
-			{
-				QString coords;
-				coords.sprintf( "?%d,%d", _x - x, _y - ( y -ascent ) );
-				url = serverurl + coords;
-				return this;
-			}
+		    const HTMLArea *area = map->containsPoint( _x - x,
+			_y - ( y -ascent ) );
+		    if ( area )
+		    {
+			strcpy( url, area->getURL() );
+			target = area->getTarget();
+			return this;
+		    }
+		    else
+		    {
+			*url = '\0';
+			target = 0;
+		    }
 		}
+	    }
+	    else
+	    {
+		QString coords;
+		coords.sprintf( "?%d,%d", _x - x, _y - ( y -ascent ) );
+		strcpy( url, serverurl );
+		strcat( url, coords );
+		return this;
+	    }
 	}
+    }
 
-	return 0;
+    return 0;
 }
 
 //-----------------------------------------------------------------------------

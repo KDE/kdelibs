@@ -737,32 +737,32 @@ protected:
      * &lt;img ...  is processed by KHTMLWidget::parseI()
      * &lt;/ul&gt;     is processed by KHTMLWidget::parseU()
      */
-	void parseA( HTMLClueV *_clue, const char *str );
-	void parseB( HTMLClueV *_clue, const char *str );
-	void parseC( HTMLClueV *_clue, const char *str );
-	void parseD( HTMLClueV *_clue, const char *str );
-	void parseE( HTMLClueV *_clue, const char *str );
-	void parseF( HTMLClueV *_clue, const char *str );
-	void parseG( HTMLClueV *_clue, const char *str );
-	void parseH( HTMLClueV *_clue, const char *str );
-	void parseI( HTMLClueV *_clue, const char *str );
-	void parseJ( HTMLClueV *_clue, const char *str );
-	void parseK( HTMLClueV *_clue, const char *str );
-	void parseL( HTMLClueV *_clue, const char *str );
-	void parseM( HTMLClueV *_clue, const char *str );
-	void parseN( HTMLClueV *_clue, const char *str );
-	void parseO( HTMLClueV *_clue, const char *str );
-	void parseP( HTMLClueV *_clue, const char *str );
-	void parseQ( HTMLClueV *_clue, const char *str );
-	void parseR( HTMLClueV *_clue, const char *str );
-	void parseS( HTMLClueV *_clue, const char *str );
-	void parseT( HTMLClueV *_clue, const char *str );
-	void parseU( HTMLClueV *_clue, const char *str );
-	void parseV( HTMLClueV *_clue, const char *str );
-	void parseW( HTMLClueV *_clue, const char *str );
-	void parseX( HTMLClueV *_clue, const char *str );
-	void parseY( HTMLClueV *_clue, const char *str );
-	void parseZ( HTMLClueV *_clue, const char *str );
+    void parseA( HTMLClueV *_clue, const char *str );
+    void parseB( HTMLClueV *_clue, const char *str );
+    void parseC( HTMLClueV *_clue, const char *str );
+    void parseD( HTMLClueV *_clue, const char *str );
+    void parseE( HTMLClueV *_clue, const char *str );
+    void parseF( HTMLClueV *_clue, const char *str );
+    void parseG( HTMLClueV *_clue, const char *str );
+    void parseH( HTMLClueV *_clue, const char *str );
+    void parseI( HTMLClueV *_clue, const char *str );
+    void parseJ( HTMLClueV *_clue, const char *str );
+    void parseK( HTMLClueV *_clue, const char *str );
+    void parseL( HTMLClueV *_clue, const char *str );
+    void parseM( HTMLClueV *_clue, const char *str );
+    void parseN( HTMLClueV *_clue, const char *str );
+    void parseO( HTMLClueV *_clue, const char *str );
+    void parseP( HTMLClueV *_clue, const char *str );
+    void parseQ( HTMLClueV *_clue, const char *str );
+    void parseR( HTMLClueV *_clue, const char *str );
+    void parseS( HTMLClueV *_clue, const char *str );
+    void parseT( HTMLClueV *_clue, const char *str );
+    void parseU( HTMLClueV *_clue, const char *str );
+    void parseV( HTMLClueV *_clue, const char *str );
+    void parseW( HTMLClueV *_clue, const char *str );
+    void parseX( HTMLClueV *_clue, const char *str );
+    void parseY( HTMLClueV *_clue, const char *str );
+    void parseZ( HTMLClueV *_clue, const char *str );
  
     /*
      * This function is called after the <cell> tag.
@@ -814,13 +814,13 @@ protected:
      * If we are in an <a href=..> ... </a> tag then the href
      * is stored in this string.
      */
-    char url[1024];
+    char *url;
 
     /*
-     * If we are in an <a target=..> ... </a> tag then the target
-     * is stored in this string.
+     * If we are in an <a target=..> ... </a> tag then this points to the
+     * target.
      */
-    char target[1024];
+    char *target;
 
     /*
      * This is the URL that the cursor is currently over
@@ -1085,6 +1085,12 @@ protected:
      * e.g. The numbers in an ordered list.
      */
     QStrList tempStrings;
+
+    /*
+     * This list holds all <a href= urls in the document.
+     */
+    QStrList parsedURLs;
+    QStrList parsedTargets;
 
     QPixmap bgPixmap;
 

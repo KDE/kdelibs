@@ -40,7 +40,7 @@ class HTMLObject
 {
 public:
     HTMLObject();
-	virtual ~HTMLObject() {}
+    virtual ~HTMLObject() { objCount--; }
 
     enum VAlign { Top, Bottom, VCenter, VNone };
     enum HAlign { Left, HCenter, Right, HNone };
@@ -75,7 +75,8 @@ public:
      * by _x,_y,_width,_ascender. (_x|_y) is the lower left corner relative
      * to the parent of this object ( usually HTMLClue ).
      */
-    virtual bool print( QPainter *, int, int, int, int, int, int, bool ) { return false; }
+    virtual bool print( QPainter *, int, int, int, int, int, int, bool )
+	{ return false; }
     virtual void print( QPainter *, HTMLObject *, int, int, int, int, int, int )
 	{}
     /************************************************************
@@ -86,17 +87,18 @@ public:
     virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *, bool, int _tx, int _ty );
     /**
-     * Selects the object if it is inside the rectangle and deselects it otherwise.
+     * Selects the object if it is inside the rectangle and deselects it
+     * otherwise.
      */
     virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     /// Select all objects matching the regular expression.
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( bool _s ) { setSelected( _s ); }
-	// select text.  returns whether any text was selected.
-	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
+    // select text.  returns whether any text was selected.
+    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty );
     virtual void getSelected( QStrList & );
-	virtual void getSelectedText( QString & ) {}
+    virtual void getSelectedText( QString & ) {}
 
     /************************************************************
      * Some objects may need to know their absolute position on the page.
@@ -106,20 +108,20 @@ public:
     
     virtual void reset() { setPrinted( false ); }
 
-	/*
-	 * These functions are overloaded by objects that need to have a remote
-	 * file downloaded, e.g. HTMLImage.
-	 */
-	virtual void fileLoaded( const char * /* _filename */ ) { }
-	virtual const char *requestedFile() { return 0; }
+    /*
+     * These functions are overloaded by objects that need to have a remote
+     * file downloaded, e.g. HTMLImage.
+     */
+    virtual void fileLoaded( const char * /* _filename */ ) { }
+    virtual const char *requestedFile() { return 0; }
 
-	enum ObjectType { Object, Clue };
+    enum ObjectType { Object, Clue };
     /************************************************************
-	 * sometimes a clue would like to know if an object is a 
-	 * clue or a basic object.
-	 */
-	virtual ObjectType getObjectType() const
-		{	return Object; }
+     * sometimes a clue would like to know if an object is a 
+     * clue or a basic object.
+     */
+    virtual ObjectType getObjectType() const
+	    {	return Object; }
 
     /************************************************************
      * Get X-Position of this object relative to its parent
@@ -135,16 +137,16 @@ public:
     int getDescent() const { return descent; }
     int getMaxWidth() const { return max_width; }
     int getPercent() const { return percent; }
-    const char* getURL() const { return url; }
-    const char* getTarget() const { return target; }
+    virtual const char* getURL() const { return 0; }
+    virtual const char* getTarget() const { return 0; }
 
     void setPos( int _x, int _y ) { y=_y; x=_x; }
     void setXPos( int _x ) { x=_x; }
     void setYPos( int _y ) { y=_y; }
 
-	enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-				FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20,
-				Printed = 0x40 };
+    enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
+			FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20,
+			Printed = 0x40 };
 
     bool isSeparator() const { return flags & Separator; }
     bool isNewline() const { return flags & NewLine; }
@@ -171,20 +173,22 @@ public:
     virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
 			{ return 0L; }
 
+    void setNext( HTMLObject *n ) { nextObj = n; }
+    HTMLObject *next() const { return nextObj; }
+
     void printCount() { printf( "Object count: %d\n", objCount ); }
 
 protected:
     int x;
     int y;
-    int width;
     int ascent;
     int descent;
-    int max_width;
+    short width;
+    short max_width;
     // percent stuff added for table support
     short percent;	// width = max_width * percent / 100
     unsigned char flags;
-    QString url;
-    QString target;
+    HTMLObject *nextObj;
     static int objCount;
 };
 
@@ -193,27 +197,47 @@ protected:
 class HTMLText : public HTMLObject
 {
 public:
-    HTMLText( const char*, const HTMLFont *, QPainter *, const char *_url, const char *_target );
+    HTMLText( const char*, const HTMLFont *, QPainter * );
     HTMLText( const HTMLFont *, QPainter * );
-	virtual ~HTMLText() { }
+    virtual ~HTMLText() { }
 
-	virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
-	virtual void getSelectedText( QString & );
-	virtual void recalcBaseSize( QPainter *_painter );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
+    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
+	int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & );
+    virtual void recalcBaseSize( QPainter *_painter );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	    int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
-	int getCharIndex( QPainter *_painter, int _xpos );
+    int getCharIndex( QPainter *_painter, int _xpos );
 
 protected:
     const char* text;
     const HTMLFont *font;
-	// This is a rediculous waste of memory, but I can't think of another
-	// way at the moment.
-	short selStart;
-	short selEnd;
+    // This is a rediculous waste of memory, but I can't think of another
+    // way at the moment.
+    short selStart;
+    short selEnd;
+};
+
+//-----------------------------------------------------------------------------
+
+class HTMLLinkText : public HTMLText
+{
+public:
+    HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
+	    char *_url, const char *_target )
+	: HTMLText( _str, _font, _painter )
+	    { url = _url; target = _target; }
+    virtual ~HTMLLinkText() { }
+
+    virtual const char* getURL() const { return url; }
+    virtual const char* getTarget() const { return target; }
+
+protected:
+    char *url;
+    const char *target;
 };
 
 //-----------------------------------------------------------------------------
@@ -223,12 +247,11 @@ class HTMLRule : public HTMLObject
 public:
     HTMLRule( int _max_width, int _percent, int _size=1, bool _shade=TRUE );
 
-	virtual int  calcMinWidth();
-	virtual int  calcPreferredWidth() { return calcMinWidth(); }
-	virtual void setMaxWidth( int );
+    virtual int  calcMinWidth();
+    virtual int  calcPreferredWidth() { return calcMinWidth(); }
+    virtual void setMaxWidth( int );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
-
 
 protected:
 	bool shade;
@@ -240,14 +263,14 @@ class HTMLBullet : public HTMLObject
 {
 public:
     HTMLBullet( int _height, int _level, const QColor &col );
-	virtual ~HTMLBullet() { }
+    virtual ~HTMLBullet() { }
 
     virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
-	char level;
-	QColor color;
+    char level;
+    QColor color;
 };
 
 //-----------------------------------------------------------------------------
@@ -256,7 +279,7 @@ class HTMLVSpace : public HTMLObject
 {
 public:
     HTMLVSpace( int _vspace );
-	virtual ~HTMLVSpace() { }
+    virtual ~HTMLVSpace() { }
 };
 
 //-----------------------------------------------------------------------------
@@ -267,9 +290,9 @@ class HTMLAnchor : public HTMLObject
 {
 public:
     HTMLAnchor( const char *_name ) : name( _name ) {}
-	virtual ~HTMLAnchor() { }
+    virtual ~HTMLAnchor() { }
 
-    const char* getName() { return name.data(); }
+    const char* getName() { return name; }
 
     virtual void setMaxAscent( int _a );
     virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
@@ -300,7 +323,7 @@ class HTMLImage : public QObject, public HTMLObject
 {
     Q_OBJECT
 public:
-    HTMLImage( KHTMLWidget *widget, const char*, const char *_url,
+    HTMLImage( KHTMLWidget *widget, const char *, char *_url,
 		const char *_target, int _max_width, int _width = -1,
 		int _height = -1, int _percent = 0, int bdr = 0 );
     virtual ~HTMLImage();
@@ -321,6 +344,9 @@ public:
     virtual void fileLoaded( const char *_filename );
     virtual const char *requestedFile()
        	{	return imageURL.data(); }
+
+    virtual const char* getURL() const { return url; }
+    virtual const char* getTarget() const { return target; }
 
     void setBorderColor( const QColor &color )
 	{   borderColor = color; }
@@ -401,6 +427,9 @@ protected:
     int border;
 
     QColor borderColor;
+
+    char *url;
+    const char *target;
 };
 
 //----------------------------------------------------------------------------
@@ -423,7 +452,7 @@ public:
 
 	const QString &getURL() const
 		{	return url; }
-	const QString &getTarget() const
+	const char *getTarget() const
 		{	return target; }
 
 protected:
@@ -448,18 +477,19 @@ public:
 
 	virtual void fileLoaded( const char *_filename );
 	virtual const char *requestedFile()
-		{	return url.data(); }
+		{	return mapurl; }
 
 	void addArea( HTMLArea *_area )
 		{	areas.append( _area ); }
 	const HTMLArea *containsPoint( int, int );
 
-	const QString &mapURL() const
-		{	return url; }
+	const char *mapURL() const
+		{	return mapurl; }
 
 protected:
 	QList<HTMLArea> areas;
 	KHTMLWidget *htmlWidget;
+	QString mapurl;
 };
 
 //----------------------------------------------------------------------------
@@ -467,7 +497,7 @@ protected:
 class HTMLImageMap : public HTMLImage
 {
 public:
-	HTMLImageMap( KHTMLWidget *widget, const char*, const char *_url,
+	HTMLImageMap( KHTMLWidget *widget, const char*, char *_url,
 		const char *_target, int _max_width, int _width = -1,
 		int _height = -1, int _percent = 0, int brd = 0 );
 	virtual ~HTMLImageMap() {}

@@ -38,7 +38,7 @@
 #endif
 
 #define PRINTING_MARGIN		36	// printed margin in 1/72in units
-#define INDENT_SIZE			30
+#define INDENT_SIZE		30
 
 //----------------------------------------------------------------------------
 // convert number to roman numerals
@@ -114,7 +114,8 @@ parseFunc KHTMLWidget::parseFuncArray[26] = {
 
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
-    : KDNDWidget( parent, name ), tempStrings( TRUE )
+    : KDNDWidget( parent, name ), tempStrings( true ), parsedURLs( false ),
+	parsedTargets( false )
 {
     jsEnvironment = 0L;      
     leftBorder = LEFT_BORDER;
@@ -124,7 +125,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     setBackgroundColor( lightGray );
     x_offset = 0;
     y_offset = 0;
-    url[ 0 ] = 0;
+    url = 0;
     title = "";    
     clue = 0L;
     italic = false;
@@ -157,6 +158,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     listStack.setAutoDelete( true );
     mapList.setAutoDelete( true );
     colorStack.setAutoDelete( true );
+    parsedURLs.setAutoDelete( true );
+    parsedTargets.setAutoDelete( true );
 
     standardFont = "times";
     fixedFont = "courier";
@@ -1157,6 +1160,8 @@ void KHTMLWidget::parse()
     painter->begin( this );
 
     tempStrings.clear();
+    parsedURLs.clear();
+    parsedTargets.clear();
 
     // Initialize the font stack with the default font.
     italic = false;
@@ -1315,6 +1320,13 @@ void KHTMLWidget::slotTimeout()
 	}
 	if ( ( s = framesetList.getFirst() ) )
 	    s->setGeometry( 0, 0, width(), height() );
+
+	clue->printCount();
+	debugM( "HTMLObject   Size: %d\n", sizeof( HTMLObject ) );
+	debugM( "HTMLText     Size: %d\n", sizeof( HTMLText ) );
+	debugM( "HTMLClue     Size: %d\n", sizeof( HTMLClue ) );
+	debugM( "HTMLClueFlow Size: %d\n", sizeof( HTMLClueFlow ) );
+	debugM( "QList<int>   Size: %d\n", sizeof( QList<int> ) );
     }
 }
 
@@ -1376,7 +1388,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    {
 		// tack a space on the end to ensure the previous line is not
 		// zero pixels high
-		if ( flow && flow->objectCount() == 0 )
+		if ( flow && !flow->hasChildren() )
 		    flow->append( new HTMLText( currentFont(), painter ) );
 		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		_clue->append( flow );
@@ -1424,16 +1436,20 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    }
 	    else
 	    {
-	    vspace_inserted = FALSE;
+		vspace_inserted = FALSE;
 
-	    if ( flow == 0 )
-	    {
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
-	    }
-	    flow->append( new HTMLText( str, currentFont(), painter, url, target ) );
+		if ( flow == 0 )
+		{
+		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		    flow->setIndent( indent );
+		    flow->setHAlign( divAlign );
+		    _clue->append( flow );
+		}
+		if ( url || target )
+		    flow->append( new HTMLLinkText( str, currentFont(), painter,
+			 url, target ) );
+		else
+		    flow->append( new HTMLText( str, currentFont(), painter ) );
 	    }
 	}
 
@@ -1466,7 +1482,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 
 	QString href;
 	QString coords;
-	QString target;
+	QString atarget;
 	HTMLArea::Shape shape = HTMLArea::Rect;
 
 	while ( st.hasMoreTokens() )
@@ -1503,7 +1519,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( p, "target=", 7 ) == 0 )
 	    {
-		target = p+7;
+		atarget = p+7;
 	    }
 	    else if ( strncasecmp( p, "coords=", 7 ) == 0 )
 	    {
@@ -1522,7 +1538,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 			int x1, y1, x2, y2;
 			sscanf( coords, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 			QRect rect( x1, y1, x2-x1, y2-y1 );
-			area = new HTMLArea( rect, href, target );
+			area = new HTMLArea( rect, href, atarget );
 			debugM( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 		    }
 		    break;
@@ -1531,7 +1547,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		    {
 			int xc, yc, rc;
 			sscanf( coords, "%d,%d,%d", &xc, &yc, &rc );
-			area = new HTMLArea( xc, yc, rc, href, target );
+			area = new HTMLArea( xc, yc, rc, href, atarget );
 			debugM( "Area Circle %d, %d, %d\n", xc, yc, rc );
 		    }
 		    break;
@@ -1559,7 +1575,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 			}
 			debugM( "\n" );
 			if ( count > 2 )
-				area = new HTMLArea( parray, href, target );
+				area = new HTMLArea( parray, href, atarget );
 		    }
 		    break;
 	    }
@@ -1570,9 +1586,10 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "<a ", 3 ) == 0 )
     {
+	char tmpurl[1024];
+	tmpurl[0] = '\0';
+	target = 0;
 	vspace_inserted = false;
-	url[0] = '\0';
-	target[0] = '\0';
 	bool visited = false;
 
 	QString s = str + 3;
@@ -1590,36 +1607,36 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		{// reference
 		    KURL u( actualURL );
 		    u.setReference( p + 1 );
-		    strcpy( url, u.url() );
+		    strcpy( tmpurl, u.url() );
 		}
 		else if ( strchr( p, ':' ) )
 		{// full URL
-		    strcpy( url, p );
+		    strcpy( tmpurl, p );
 		}
 		else
 		{// relative URL
 		    KURL u( baseURL );
 		    KURL u2( baseURL, p );
-		    strcpy( url, u2.url() );
+		    strcpy( tmpurl, u2.url() );
 		}
 
-		visited = URLVisited( url );
+		visited = URLVisited( tmpurl );
 	    }
 	    else if ( strncasecmp( p, "name=", 5 ) == 0 )
 	    {
-		p += 5;
-
 		if ( flow == 0 )
-		    _clue->append( new HTMLAnchor( p ) );
+		    _clue->append( new HTMLAnchor( p+5 ) );
 		else
-		    flow->append( new HTMLAnchor( p ) );
+		    flow->append( new HTMLAnchor( p+5 ) );
 	    }
 	    else if ( strncasecmp( p, "target=", 7 ) == 0 )
 	    {
+		target = new char [ strlen( p+7 ) + 1 ];
 		strcpy( target, p+7 );
+		parsedTargets.append( target );
 	    }
 	}
-	if ( url[0] != '\0' )
+	if ( tmpurl[0] != '\0' )
 	{
 	    if ( visited )
 		colorStack.push( new QColor( vLinkColor ) );
@@ -1627,18 +1644,21 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		colorStack.push( new QColor( linkColor ) );
 	    underline = true;
 	    selectFont();
+	    url = new char [ strlen( tmpurl ) + 1 ];
+	    strcpy( url, tmpurl );
+	    parsedURLs.append( url );
 	}
     }
     else if ( strncasecmp( str, "</a>", 4 ) == 0 )
     {
-	if ( url[0] != '\0' )
+	if ( url )
 	{
 	    popColor();
 	    popFont();
 	}
 	vspace_inserted = FALSE;
-	url[ 0 ] = 0;
-	target[ 0 ] = 0;
+	url = 0;
+	target = 0;
     }
     else if ( strncasecmp( str, "<address", 8) == 0 )
     {
@@ -1971,6 +1991,8 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	}
 	else if ( strncasecmp( str, "<frameset", 9 ) == 0 )
         {
+	  if ( !htmlView )
+	      return;
 	  // Determine the parent for the frameset
 	  QWidget *p = this;
 	  if ( framesetStack.count() > 0 )
@@ -1989,6 +2011,8 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	}
 	else if ( strncasecmp( str, "</frameset", 10 ) == 0 )
         {
+	  if ( !htmlView )
+	      return;
 	    // Is it the toplevel frameset ?
 	    if ( framesetStack.count() == 1 )
 	    {
@@ -2073,7 +2097,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	      html->setMarginWidth( marginwidth );
 	      html->setMarginHeight( marginheight );
 	      // Determine the complete URL for this widget
-	      KURL u( actualURL, src.data() );
+	      KURL u( baseURL, src.data() );
 	      connect( html, SIGNAL( frameSelected( KHTMLView * ) ),
 		       this, SLOT( slotFrameSelected( KHTMLView * ) ) );
 	      framesetStack.getLast()->append( html );
@@ -2290,7 +2314,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	int width = -1;
 	int height = -1;
 	int percent = 0;
-	int border = url[0] == '\0' ? 0 : 2;
+	int border = url == 0 ? 0 : 2;
 	HTMLClue::HAlign align = HTMLClue::HNone;
 
 	StringTokenizer st( s, " >" );
@@ -2361,6 +2385,15 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    }
 	    else
 	    {
+		// allocate enough mem for any URL which might be in the
+		// image map
+		char *newurl = new char [1024];
+		strcpy( newurl, url );
+		delete [] url;
+		url = newurl;
+		parsedURLs.removeLast();
+		parsedURLs.append( url );
+
 		image =  new HTMLImageMap( this, kurl.url(), url, target,
 			 _clue->getMaxWidth(), width, height, percent, border );
 		if ( !usemap.isEmpty() )
@@ -2499,7 +2532,7 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 		item += ". ";
 		tempStrings.append( item );
 		flow->append(new HTMLText(tempStrings.getLast(),currentFont(),
-			painter,"", ""));
+			painter));
 		break;
 
 	    default:
@@ -2655,7 +2688,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		_clue->append( flow );
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}	
-	else if ( strncasecmp( str, "</pre>", 6 ) == 0 )
+	else if ( strncasecmp( str, "</pre", 5 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		flow = 0;
@@ -3546,34 +3579,46 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 void KHTMLWidget::slotScrollVert( int _val )
 {
-	if ( !isUpdatesEnabled() )
-		return;
+    if ( !isUpdatesEnabled() )
+	return;
 
-	if ( clue == 0L )
-		return;
-    
+    if ( clue == 0 )
+	return;
+
+    if ( abs( y_offset - _val ) < height() )
+    {
 	if ( bIsSelected )	
-	  bitBlt( this, 2, 2 + ( y_offset - _val ), this, 2, 2, width() - 4, height() - 4 );
+	{
+	    bitBlt( this, 2, 2 + ( y_offset - _val ), this, 2, 2, width() - 4,
+		height() - 4 );
+	}
 	else 
-	  bitBlt( this, 0, ( y_offset - _val ), this );
+	{
+	    bitBlt( this, 0, ( y_offset - _val ), this );
+	}
+    }
 
-	if ( _val > y_offset)
-	{
-		int diff = _val - y_offset + 2;
-		y_offset = _val;
-		// update region without clearing background
-		QPaintEvent *e = new QPaintEvent( QRect( 0, height() - diff,
-		    width(), diff ) );
-		QApplication::postEvent( this, e );
-	}
-	else
-	{
-		int diff = y_offset - _val + 2;
-		y_offset = _val;
-		// update region without clearing background
-		QPaintEvent *e = new QPaintEvent( QRect(0, 0, width(), diff) );
-		QApplication::postEvent( this, e );
-	}
+    if ( _val > y_offset)
+    {
+	int diff = _val - y_offset + 2;
+	if ( diff > height() )
+	    diff = height();
+	y_offset = _val;
+	// update region without clearing background
+	QPaintEvent *e = new QPaintEvent( QRect( 0, height() - diff,
+	    width(), diff ) );
+	QApplication::postEvent( this, e );
+    }
+    else
+    {
+	int diff = y_offset - _val + 2;
+	if ( diff > height() )
+	    diff = height();
+	y_offset = _val;
+	// update region without clearing background
+	QPaintEvent *e = new QPaintEvent( QRect(0, 0, width(), diff) );
+	QApplication::postEvent( this, e );
+    }
 }
 
 void KHTMLWidget::slotScrollHorz( int _val )
@@ -3672,8 +3717,8 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
 
     emit scrollVert( p.y() );
 
-	// MRJ - I've turned this off for now.  It doesn't produce very nice
-	// output.
+    // MRJ - I've turned this off for now.  It doesn't produce very nice
+    // output.
 //    emit scrollHorz( p.x() );
 
     return TRUE;

@@ -166,11 +166,11 @@ void KHTMLView::initGUI()
 
 void KHTMLView::resizeEvent( QResizeEvent * )
 {
-    if ( url.isNull() )
-	return;
-
     // resize the view - it will handle object size/pos calc
     view->setGeometry( 0, 0, width(), height() );
+
+    if ( url.isEmpty() )
+	return;
 
     // place/hide scrollbars
     calcScrollBars();
@@ -183,8 +183,6 @@ void KHTMLView::resizeEvent( QResizeEvent * )
 
     vert->setSteps( 12, view->height() );
     horz->setSteps( 12, view->width() );
-
-//    view->parse();
 }
     
 void KHTMLView::closeEvent( QCloseEvent *e )

@@ -52,7 +52,7 @@ public:
      *     _percent == +ve     width = _percent * 100 / _max_width
      */
     HTMLClue( int _x, int _y, int _max_width, int _percent = 100);
-	virtual ~HTMLClue() { }
+    virtual ~HTMLClue();
 
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
@@ -95,14 +95,24 @@ public:
 
     virtual ObjectType getObjectType() const
 	    {	return Clue; }
-    uint objectCount() const
-	    {	return list.count(); }
+    bool hasChildren() const
+	    {	return head; }
 
     /************************************************************
      * Make an object a child of this Box.
      */
     void append( HTMLObject *_object )
-	    {	list.append( _object ); }
+	{
+	    if ( !head )
+	    {
+		head = tail = _object;
+	    }
+	    else
+	    {
+		tail->setNext( _object );
+		tail = _object;
+	    }
+	}
 	
     virtual void appendLeftAligned( HTMLClueAligned * ) { }
     virtual void appendRightAligned( HTMLClueAligned * ) { }
@@ -119,17 +129,16 @@ public:
     virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
 
 protected:
-    QList<HTMLObject> list;
-
-    int prevCalcObj;
+    HTMLObject *head;
+    HTMLObject *tail;
+    HTMLObject *curr;
 
     VAlign valign;
     HAlign halign;
 };
 
 //-----------------------------------------------------------------------------
-// This clue is very experimental.  It is to be used for aligning images etc.
-// to the left or right of the page.
+// Used for aligning images etc. to the left or right of the page.
 //
 class HTMLClueAligned : public HTMLClue
 {
@@ -137,7 +146,7 @@ public:
     HTMLClueAligned( HTMLClue *_parent, int _x, int _y, int _max_width,
 		     int _percent = 100 )
 	: HTMLClue( _x, _y, _max_width, _percent )
-    { prnt = _parent; setAligned( true ); }
+    { prnt = _parent; nextAligned = 0; setAligned( true ); }
     virtual ~HTMLClueAligned() { }
     
     virtual void setMaxWidth( int );
@@ -145,10 +154,15 @@ public:
     virtual void calcSize( HTMLClue *_parent = NULL );
     
     HTMLClue *parent()
-    {	return prnt; }
+	{ return prnt; }
+    HTMLClueAligned *nextClue() const
+	{ return nextAligned; }
+    void setNextClue( HTMLClueAligned *n )
+	{ nextAligned = n; }
     
 private:
     HTMLClue *prnt;
+    HTMLClueAligned *nextAligned;
 };
 
 //-----------------------------------------------------------------------------
@@ -174,7 +188,7 @@ public:
 	    {	indent = i; }
 
 private:
-    int indent;
+    short indent;
 };
 
 //-----------------------------------------------------------------------------
@@ -183,8 +197,7 @@ private:
 class HTMLClueV : public HTMLClue
 {
 public:
-    HTMLClueV( int _x, int _y, int _max_width, int _percent = 100 )
-		: HTMLClue( _x, _y, _max_width, _percent ) { }
+    HTMLClueV( int _x, int _y, int _max_width, int _percent = 100 );
     virtual ~HTMLClueV() { }
 
     virtual void reset();
@@ -198,18 +211,16 @@ public:
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClue::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
-    virtual void appendLeftAligned( HTMLClueAligned *_clue )
-		{	alignLeftList.append( _clue ); }
-    virtual void appendRightAligned( HTMLClueAligned *_clue )
-		{	alignRightList.append( _clue ); }
+    virtual void appendLeftAligned( HTMLClueAligned *_clue );
+    virtual void appendRightAligned( HTMLClueAligned *_clue );
     virtual int  getLeftMargin( int _y );
     virtual int  getRightMargin( int _y );
 
 protected:
     // These are the objects which are left or right aligned within this
     // clue.  Child objects must wrap their contents around these.
-    QList<HTMLClueAligned> alignLeftList;
-    QList<HTMLClueAligned> alignRightList;
+    HTMLClueAligned *alignLeftList;
+    HTMLClueAligned *alignRightList;
 };
 
 //-----------------------------------------------------------------------------
