@@ -21,6 +21,7 @@ static int registered = 0;
 
 #include <ltdl.h>
 #include "kimgio-config.h"
+#include <klocale.h>
 
 #ifdef LINKED_png
 extern "C" void kimgio_init_png();
@@ -97,4 +98,33 @@ void kimgioRegister(void)
 	kimgio_init_tiff();
 #endif
 
+}
+
+QString kimgio_patterns() {
+
+  // this is hardcoded for the moment - but better hardcoded centrally :/
+  return i18n( "*.gif *GIF *.bmp *.BMP *.xbm *.XBM *.xpm *.XPM *.pnm *.PNM "
+	       "*.PBM *.PGM *.PPM *.PBMRAW *.PGMRAW *.PPMRAW *.jpg *.JPG *.jpeg *.JPEG "
+	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw *.png *.PNG|All pictures\n"
+	       "*.png *.PNG|PNG-Pictures\n"
+	       "*.gif *.GIF|GIF-Pictures\n"
+	       "*.jpg *.JPG *.jpeg *.JPEG|JPEG-Pictures\n"
+	       "*.bmp *.BMP|Windows Bitmaps\n"
+	       "*.xbm *.XBM|XWindow Pitmaps\n"
+	       "*.xpm *.XPM|Pixmaps\n"
+	       "*.pnm *.PNM *.PBM *.PGM *.PPM *.PBMRAW *.PGMRAW *.PPMRAW "
+	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw|PNM-Pictures" );
+}
+
+QStringList kimgio_types() {
+  static QStringList types;
+  if (types.isEmpty()) {
+    types.append("GIF");
+    types.append("JPEG");
+    types.append("JPG");
+    types.append("XPM");
+    types.append("XBM");
+    types.append("PNG");
+  }
+  return types;
 }

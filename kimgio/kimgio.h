@@ -16,6 +16,17 @@
 void kimgioRegister(void);
 
 /**
+ * Returns all image types accessible in KDE when using kimgio.
+ * Includes Qt internal types
+ **/
+QStringList kimgio_types();
+
+/**
+ * Returns a pattern list useful for KFileDialog
+ **/
+QString kimgio_patterns();
+
+/**
 * Interface to the KDE Image IO library.
 *
 * Just call KImageIO::registerFormats to register all extra
