@@ -49,13 +49,13 @@ synthOut::synthOut(int d)
     rate=100;
 #endif
     ok=1;
-};
+}
 
 synthOut::~synthOut()
 {
     delete Map;
     closeDev();
-};
+}
 
 void synthOut::openDev (int sqfd)
 {
@@ -103,11 +103,13 @@ void synthOut::openDev (int sqfd)
         
         // Enable layered patches ....
         AWE_SET_CHANNEL_MODE(device,1);
+#ifdef SYNTHOUTDEBUG
         printf(" Found AWE32 dev=%d \n",device);
+#endif
     }
 #endif
     
-};
+}
 
 void synthOut::closeDev (void)
 {
@@ -119,7 +121,7 @@ void synthOut::closeDev (void)
     //if (seqfd>=0)
     //    close(seqfd);
     seqfd=-1;
-};
+}
 
 void synthOut::initDev (void)
 {
@@ -143,7 +145,7 @@ void synthOut::initDev (void)
         chnController(chn, 0x4a, 127);
         
     }
-};
+}
 
 void synthOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
@@ -160,44 +162,43 @@ void synthOut::noteOn  (uchar chn, uchar note, uchar vel)
 #ifdef SYNTHOUTDEBUG
     printf("Note ON >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void synthOut::noteOff (uchar chn, uchar note, uchar vel)
 {
-    
     SEQ_STOP_NOTE(device, Map->Channel(chn),
                   Map->Key(chn,chn_patch[chn],note), 0);
 #ifdef SYNTHOUTDEBUG
     printf("Note OFF >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void synthOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
     // Hmmm is this implemented in /dev/sequencer ?
     // Yes, it is.
     SEQ_KEY_PRESSURE(device, Map->Channel(chn), Map->Key(chn,chn_patch[chn],note),vel);
-};
+}
 
 void synthOut::chnPatchChange (uchar chn, uchar patch)
 {
     
     SEQ_SET_PATCH(device,Map->Channel(chn),Map->Patch(chn,patch)); 
     chn_patch[chn]=patch;
-};
+}
 
 void synthOut::chnPressure (uchar chn, uchar vel)
 {
     
     SEQ_CHN_PRESSURE(device, Map->Channel(chn) , vel);
     chn_pressure[chn]=vel;
-};
+}
 
 void synthOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
     chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
     SEQ_PITCHBEND(device, Map->Channel(chn), chn_bender[chn]);
-};
+}
 
 void synthOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
@@ -209,22 +210,22 @@ void synthOut::chnController (uchar chn, uchar ctl, uchar v)
     
     SEQ_CONTROL(device, Map->Channel(chn), ctl, v);
     chn_controller[chn][ctl]=v;
-};
+}
 
 void synthOut::sysex(uchar *, ulong )
 {
     // AWE32 doesn't respond to sysex (IFAIK)
     /*
-     #ifndef HAVE_AWE32
-     ulong i=0;
-     SEQ_MIDIOUT(device, MIDI_SYSTEM_PREFIX);
-     while (i<size)
-     {
+#ifndef HAVE_AWE32
+    ulong i=0;
+    SEQ_MIDIOUT(device, MIDI_SYSTEM_PREFIX);
+    while (i<size)
+    {
         SEQ_MIDIOUT(device, *data);
         data++;
         i++;
-     };
-     printf("sysex\n");
-     #endif
-     */
-};
+    };
+    printf("sysex\n");
+#endif
+    */
+}

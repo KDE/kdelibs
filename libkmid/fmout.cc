@@ -55,7 +55,7 @@ fmOut::fmOut(int d,int total)
     
     nvoices=total;
     vm=new voiceManager(nvoices);
-};
+}
 
 fmOut::~fmOut()
 {
@@ -66,8 +66,8 @@ fmOut::~fmOut()
         delete FM_patches_directory;
         delete_FM_patches_directory = 0;
         FM_patches_directory="/etc";
-    };
-};
+    }
+}
 
 void fmOut::openDev (int sqfd)
 {
@@ -98,7 +98,7 @@ void fmOut::openDev (int sqfd)
     
     loadFMPatches();
     
-};
+}
 
 void fmOut::closeDev (void)
 {
@@ -111,7 +111,7 @@ void fmOut::closeDev (void)
     //if (seqfd>=0)
     //    close(seqfd);
     seqfd=-1;
-};
+}
 
 void fmOut::initDev (void)
 {
@@ -133,7 +133,7 @@ void fmOut::initDev (void)
         chnController(chn, CTL_EXT_EFF_DEPTH, 0);
         chnController(chn, CTL_CHORUS_DEPTH, 0);
         chnController(chn, 0x4a, 127);
-    };
+    }
     
     if (opl==3) ioctl(seqfd, SNDCTL_FM_4OP_ENABLE, &device);
     SEQ_VOLUME_MODE(device,VOL_METHOD_LINEAR);
@@ -142,8 +142,8 @@ void fmOut::initDev (void)
     {
         SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
         SEQ_STOP_NOTE(device, i, vm->Note(i), 64);
-    };
-};
+    }
+}
 
 void fmOut::loadFMPatches(void)
 {
@@ -168,7 +168,7 @@ void fmOut::loadFMPatches(void)
     {
         sprintf(patchesfile,"%s/std.sb",FM_patches_directory);
         size=52;
-    };
+    }
     fh=fopen(patchesfile,"rb");
     if (fh==NULL) return;
     
@@ -186,7 +186,7 @@ void fmOut::loadFMPatches(void)
         for (j=0; j<22; j++)
             instr.operators[j] = tmp[j+36];
         SEQ_WRPATCH(&instr,sizeof(instr));
-    };
+    }
     fclose(fh);
     
     if (opl==3)
@@ -196,7 +196,7 @@ void fmOut::loadFMPatches(void)
     else
     {
         sprintf(drumsfile,"%s/drums.sb",FM_patches_directory);
-    };
+    }
     
     fh=fopen(drumsfile,"rb");
     if (fh==NULL) return;
@@ -215,13 +215,13 @@ void fmOut::loadFMPatches(void)
         for (j=0; j<22; j++)
             instr.operators[j] = tmp[j+36];
         SEQ_WRPATCH(&instr,sizeof(instr));
-    };
+    }
     fclose(fh);
     
 #ifdef FMOUTDEBUG
     printf("Patches loaded\n");
 #endif
-};
+}
 
 int fmOut::Patch(int p)
 {
@@ -232,7 +232,7 @@ int fmOut::Patch(int p)
     p=0;
     while ((p<256)&&(patchloaded[p]==0)) p++;
     return p;
-};
+}
 
 void fmOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
@@ -247,7 +247,7 @@ void fmOut::noteOn  (uchar chn, uchar note, uchar vel)
             if (patchloaded[note+128]==0) return;
             else
                 if (patchloaded[chn_patch[chn]]==0) return;
-        };
+        }
         int v=vm->allocateVoice(chn,note);
         int p;
         if (chn==PERCUSSION_CHANNEL)
@@ -265,7 +265,7 @@ void fmOut::noteOn  (uchar chn, uchar note, uchar vel)
 #ifdef FMOUTDEBUG
     printf("Note ON >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void fmOut::noteOff (uchar chn, uchar note, uchar vel)
 {
@@ -280,7 +280,7 @@ void fmOut::noteOff (uchar chn, uchar note, uchar vel)
 #ifdef FMOUTDEBUG
     printf("Note OFF >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void fmOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
@@ -288,7 +288,7 @@ void fmOut::keyPressure (uchar chn, uchar note, uchar vel)
     vm->initSearch();
     while ((i=vm->Search(chn,note))!=-1)
         SEQ_KEY_PRESSURE(device, i, note,vel);
-};
+}
 
 void fmOut::chnPatchChange (uchar chn, uchar patch)
 {
@@ -299,7 +299,7 @@ void fmOut::chnPatchChange (uchar chn, uchar patch)
         SEQ_SET_PATCH(device,i,Map->Patch(chn,patch)); 
     chn_patch[chn]=patch;
     
-};
+}
 
 void fmOut::chnPressure (uchar chn, uchar vel)
 {
@@ -308,7 +308,7 @@ void fmOut::chnPressure (uchar chn, uchar vel)
     while ((i=vm->Search(chn))!=-1)
         SEQ_CHN_PRESSURE(device, i , vel);
     chn_pressure[chn]=vel;
-};
+}
 
 void fmOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
@@ -331,7 +331,7 @@ void fmOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
      i++;
      };
      */
-};
+}
 
 void fmOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
@@ -339,7 +339,7 @@ void fmOut::chnController (uchar chn, uchar ctl, uchar v)
     {
         v=(v*volumepercentage)/100;
         if (v>127) v=127;
-    };
+    }
     int i;
     vm->initSearch();
     while ((i=vm->Search(chn))!=-1)
@@ -355,12 +355,12 @@ void fmOut::chnController (uchar chn, uchar ctl, uchar v)
      };
      */
     chn_controller[chn][ctl]=v;
-};
+}
 
 void fmOut::sysex(uchar *, ulong )
 {
     
-};
+}
 
 void fmOut::setFMPatchesDirectory(const char *dir)
 {
@@ -369,7 +369,7 @@ void fmOut::setFMPatchesDirectory(const char *dir)
     FM_patches_directory=new char[strlen(dir)+1];
     strcpy(FM_patches_directory,dir);
     delete_FM_patches_directory=1;
-};
+}
 
 void fmOut::setVolumePercentage    ( int i )
 {
@@ -381,7 +381,7 @@ void fmOut::setVolumePercentage    ( int i )
     if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a)==-1) printf("ERROR writing to mixer\n");
     close(fd);
     volumepercentage=i;
-};
+}
 
 
 char *fmOut::FM_patches_directory="/etc";

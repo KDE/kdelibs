@@ -31,7 +31,6 @@
 #include "mt32togm.h"
 
 //#define PLAYERDEBUG
-//#define PLAYERDEBUG2
 
 #define T2MS(ticks) (((double)ticks)*(double)60000L)/((double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)
 
@@ -48,13 +47,13 @@ player::player(DeviceManager *midi_,PlayerController *pctl)
     spev=NULL;
     na=NULL;
     parseSong=true;
-};
+}
 
 player::~player()
 {
     removeSpecialEvents();
     removeSong();
-};
+}
 
 void player::removeSong(void)
 {
@@ -76,9 +75,9 @@ void player::removeSong(void)
             delete info;
             info=NULL;
         }
-    };
+    }
     songLoaded=0;
-};
+}
 
 int player::loadSong(char *filename)
 {
@@ -91,27 +90,22 @@ int player::loadSong(char *filename)
     tracks=readMidiFile(filename,info,ok);
     if (ok<0) return ok;
     if (tracks==NULL) return -4;
-
+    
     parseInfoData(info,tracks,ctl->ratioTempo);
-
+    
     if (parseSong)
     {
         parseSpecialEvents();
         generateBeats();
-    };
-        
+    }
+    
     songLoaded=1;
     return 0;
-};
+}
 
 void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
 {
     SpecialEvent *beat=new SpecialEvent;
-/*
-    static beatcount=0;
-
-    printf("BeatCount %d\n",beatcount++);
-*/
     beat->next=ev->next;
     ev->next=beat;
     beat->id=1;
@@ -119,7 +113,7 @@ void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
     beat->absmilliseconds=ms;
     beat->num=num;
     beat->den=den;
-};
+}
 
 
 void player::generateBeats(void)
@@ -161,7 +155,7 @@ void player::generateBeats(void)
                 ticksleft=MS2T(nextbeatms-lastbeatms);
                 tempo=ev->tempo;
                 nextbeatms=lastbeatms+T2MS(ticksleft);
-//                printf("Change at %lu to %d\n",ev->absmilliseconds,ev->tempo);
+                //                printf("Change at %lu to %d\n",ev->absmilliseconds,ev->tempo);
                 //                beatstep=((double)tempo*4/(den*1000));
                 beatstep=T2MS((((double)info->ticksPerCuarterNote*4)/den));
             };break;
@@ -170,9 +164,9 @@ void player::generateBeats(void)
                 num=ev->num;
                 i=1;
                 den=ev->den;
-//                printf("Change at %lu to %d/%d\n",ev->absmilliseconds,num,den);
+                //                printf("Change at %lu to %d/%d\n",ev->absmilliseconds,num,den);
                 //                beatstep=((double)tempo*4/(den*1000));
-//                beatstep=T2MS(info->ticksPerCuarterNote*(4/den));
+                //                beatstep=T2MS(info->ticksPerCuarterNote*(4/den));
                 beatstep=T2MS((((double)info->ticksPerCuarterNote*4)/den));
                 nextbeatms=ev->absmilliseconds;
             };break;
@@ -180,22 +174,22 @@ void player::generateBeats(void)
         if (nextev->absmilliseconds>nextbeatms)
         {
             //            printf("Adding %d,%d\n",num,tot);
-//            printf("beat at %g , %d/%d\n",nextbeatms,i,num);
+            //            printf("beat at %g , %d/%d\n",nextbeatms,i,num);
             if (i==1) measurems=nextbeatms;
             insertBeat(ev,nextbeatms,i++,num);
             if (i>num) i=1;
             lastbeatms=nextbeatms;
             nextbeatms+=beatstep;
-//            nextbeatms=measurems+beatstep*i;
+            //            nextbeatms=measurems+beatstep*i;
             
             ticksleft=(((double)info->ticksPerCuarterNote*4)/den);
             
-        };
-
+        }
+        
         ev=ev->next;
         nextev=ev->next;
     }
-
+    
     /* ev==NULL doesn't indicate the end of the song, so continue generating beats */
     
     if (ev!=NULL)
@@ -206,33 +200,33 @@ void player::generateBeats(void)
             /* Looking if ev->next is NULL is not needed because
              we are sure that a ev->type == 0 exists */
             while (ev->next->type!=0) ev=ev->next;
-        };
+        }
         while (nextbeatms<info->millisecsTotal)
         {
-//            printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
+            //            printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
             if (i==1) measurems=nextbeatms;
             insertBeat(ev,nextbeatms,i++,num);
             if (i>num) i=1;
             nextbeatms+=beatstep;
             ev=ev->next;
-        };
-    };
+        }
+    }
     
     /* Regenerate IDs */
-
+    
     ev=spev;
     i=1;
     while (ev!=NULL)
     {
         ev->id=i++;
         ev=ev->next;
-    };
+    }
     
     
 #ifdef PLAYERDEBUG
     printf("player::Beats Generated\n");
 #endif
-
+    
 }
 
 void player::removeSpecialEvents(void)
@@ -243,8 +237,8 @@ void player::removeSpecialEvents(void)
         ev=spev->next;
         delete spev;
         spev=ev;
-    };
-};
+    }
+}
 
 void player::parseSpecialEvents(void)
 {
@@ -270,7 +264,7 @@ void player::parseSpecialEvents(void)
     {
         tracks[i]->init();
         tracks[i]->changeTempo(tempo);
-    }; 
+    }
     Midi_event *ev=new Midi_event;
     //ulong mspass;
     double prevms=0;
@@ -290,9 +284,9 @@ void player::parseSpecialEvents(void)
             {
                 minTrk=trk;
                 minTime=tracks[minTrk]->absMsOfNextEvent();
-            };
+            }
             trk++;
-        };
+        }
         if ((minTime==maxTime))
         {
             parsing=0;
@@ -308,8 +302,8 @@ void player::parseSpecialEvents(void)
             {
                 tracks[trk]->currentMs(minTime);
                 trk++;
-            };
-        };
+            }
+        }
         trk=minTrk;
         tracks[trk]->readEvent(ev);
         switch (ev->command)
@@ -333,32 +327,32 @@ void player::parseSpecialEvents(void)
                     case (1) :
                     case (5) :
                         {
-		            if (pspev!=NULL)
+                            if (pspev!=NULL)
                             {
-                            pspev->absmilliseconds=(ulong)minTime;
-                            pspev->type=ev->d1;
-                            pspev->id=spev_id++;
+                                pspev->absmilliseconds=(ulong)minTime;
+                                pspev->type=ev->d1;
+                                pspev->id=spev_id++;
 #ifdef PLAYERDEBUG
-                            printf("ev->length %d\n",ev->length);
-			
+                                printf("ev->length %d\n",ev->length);
+                                
 #endif
-                            strncpy(pspev->text,(char *)ev->data,
-				(ev->length>1024)? (1023) : (ev->length) );
-                            pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
+                                strncpy(pspev->text,(char *)ev->data,
+                                        (ev->length>1024)? (1023) : (ev->length) );
+                                pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
 #ifdef PLAYERDEBUG
-                            printf("(%s)\n",pspev->text);
+                                printf("(%s)\n",pspev->text);
 #endif
-                            pspev->next=new SpecialEvent;
+                                pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
-			    if (pspev->next==NULL) printf("pspev->next=NULL\n");
+                                if (pspev->next==NULL) printf("pspev->next=NULL\n");
 #endif
-		            pspev=pspev->next;
-                            };
-                        };
+                                pspev=pspev->next;
+                            }
+                        }
                         break;
                     case (ME_SET_TEMPO) :
                         {
-		            if (pspev!=NULL)
+                            if (pspev!=NULL)
                             {
                                 pspev->absmilliseconds=(ulong)minTime;
                                 pspev->type=3;
@@ -369,11 +363,11 @@ void player::parseSpecialEvents(void)
                                 for (j=0;j<info->ntracks;j++)
                                 {
                                     tracks[j]->changeTempo(tempo);
-                                };
+                                }
                                 pspev->next=new SpecialEvent;
                                 pspev=pspev->next;
-                            };
-                        };
+                            }
+                        }
                         break;
                     case (ME_TIME_SIGNATURE) :
                         {
@@ -386,15 +380,15 @@ void player::parseSpecialEvents(void)
                                 pspev->den=ev->d3;
                                 pspev->next=new SpecialEvent;
                                 pspev=pspev->next;
-                            };
-                        };
+                            }
+                        }
                         break;
-                    };
-                };
-            };
+                    }
+                }
+            }
             break;
-        };
-    };   
+        }
+    }
     
     delete ev;
     pspev->type=0;
@@ -402,18 +396,18 @@ void player::parseSpecialEvents(void)
     pspev->next=NULL;
     if (firsttempo==0) firsttempo=tempo;
     ctl->tempo=firsttempo;
-
+    
     //writeSPEV();
     for (int i=0;i<info->ntracks;i++)
     {
         tracks[i]->init();
-    };
-};
+    }
+}
 
 /*NoteArray *player::parseNotes(void)
-{
-#ifdef PLAYERDEBUG
-printf("player::Parsing Notes...\n");
+ {
+ #ifdef PLAYERDEBUG
+ printf("player::Parsing Notes...\n");
 #endif
 NoteArray *na=new NoteArray();
 int trk;
@@ -508,7 +502,7 @@ void player::play(int calloutput,void output(void))
     midi->initDev();
     //    parsePatchesUsed(tracks,info,ctl->gm);
     midi->setPatchesToUse(info->patchesUsed);
-
+    
     int trk;
     int minTrk;
     double minTime=0;
@@ -519,7 +513,7 @@ void player::play(int calloutput,void output(void))
     {
         tracks[i]->init();
         tracks[i]->changeTempo(tempo);
-    };
+    }
     
     midi->tmrStart();
     Midi_event *ev=new Midi_event;
@@ -564,175 +558,177 @@ void player::play(int calloutput,void output(void))
             if (ctl->forcepgm[i])
             {
                 midi->chnPatchChange(i, ctl->pgm[i]);
+            }
+        }
+    
+    timeval begintv;
+    gettimeofday(&begintv, NULL);
+    ctl->beginmillisec=begintv.tv_sec*1000+begintv.tv_usec/1000;
+    ctl->OK=1;
+    ctl->playing=playing=1;
+    while (playing)
+    {
+        /*
+        if (ctl->message!=0)
+        {
+            if (ctl->message & PLAYER_DOPAUSE)
+            {
+                diffTime=minTime;
+                ctl->message&=~PLAYER_DOPAUSE;
+                midi->sync(1);
+                midi->tmrStop();
+                ctl->paused=1; 
+                midi->closeDev();
+                while ((ctl->paused)&&(!(ctl->message&PLAYER_DOSTOP))
+                       &&(!(ctl->message&PLAYER_HALT))) sleep(1);
+                midi->openDev();
+                midi->tmrStart();
+                ctl->OK=1;
+                printf("Continue playing ... \n");
+            };
+            if (ctl->message & PLAYER_DOSTOP)
+            {
+                ctl->message&=~PLAYER_DOSTOP;
+                playing=0;
+            };
+            if (ctl->message & PLAYER_HALT)
+            {
+                ctl->message&=~PLAYER_HALT;
+                playing=0;
+                halt=1;
+            };
+            if (ctl->message & PLAYER_SETPOS)
+            {
+                ctl->moving=1;
+                ctl->message&=~PLAYER_SETPOS;
+                midi->sync(1);
+                midi->tmrStop();
+                midi->closeDev();
+                midistat = new midiStat();
+                SetPos(ctl->gotomsec,midistat);
+                minTime=ctl->gotomsec;
+                prevms=(ulong)minTime;
+                midi->openDev();
+                midi->tmrStart();
+                diffTime=ctl->gotomsec;
+                ctl->moving=0;
+                midistat->sendData(midi,ctl->gm);
+                delete midistat;
+                ctl->OK=1;
+                while (ctl->OK==1) ;
+                ctl->moving=0;
             };
         };
-        
-        timeval begintv;
-        gettimeofday(&begintv, NULL);
-        ctl->beginmillisec=begintv.tv_sec*1000+begintv.tv_usec/1000;
-        ctl->OK=1;
-        ctl->playing=playing=1;
-        while (playing)
+        */
+        prevms=minTime;
+        //    ctl->millisecsPlayed=minTime;
+        trk=0;
+        minTrk=0;
+        maxTime=minTime + 120000L /* milliseconds */;
+        minTime=maxTime;
+        while (trk<info->ntracks)
         {
-/*            if (ctl->message!=0)
+            if (tracks[trk]->absMsOfNextEvent()<minTime)
             {
-                if (ctl->message & PLAYER_DOPAUSE)
-                {
-                    diffTime=minTime;
-                    ctl->message&=~PLAYER_DOPAUSE;
-                    midi->sync(1);
-                    midi->tmrStop();
-                    ctl->paused=1; 
-                    midi->closeDev();
-                    while ((ctl->paused)&&(!(ctl->message&PLAYER_DOSTOP))
-                           &&(!(ctl->message&PLAYER_HALT))) sleep(1);
-                    midi->openDev();
-                    midi->tmrStart();
-                    ctl->OK=1;
-                    printf("Continue playing ... \n");
-                };
-                if (ctl->message & PLAYER_DOSTOP)
-                {
-                    ctl->message&=~PLAYER_DOSTOP;
-                    playing=0;
-                };
-                if (ctl->message & PLAYER_HALT)
-                {
-                    ctl->message&=~PLAYER_HALT;
-                    playing=0;
-                    halt=1;
-                };
-  */              /*	if (ctl->message & PLAYER_SETPOS)
-                 {
-                 ctl->moving=1;
-                 ctl->message&=~PLAYER_SETPOS;
-                 midi->sync(1);
-                 midi->tmrStop();
-                 midi->closeDev();
-                 midistat = new midiStat();
-                 SetPos(ctl->gotomsec,midistat);
-                 minTime=ctl->gotomsec;
-                 prevms=(ulong)minTime;
-                 midi->openDev();
-                 midi->tmrStart();
-                 diffTime=ctl->gotomsec;
-                 ctl->moving=0;
-                 midistat->sendData(midi,ctl->gm);
-                 delete midistat;
-                 ctl->OK=1;
-                 while (ctl->OK==1) ;
-                 ctl->moving=0;
-                 };
-                 */	/*};*/
-                 prevms=minTime;
-                 //    ctl->millisecsPlayed=minTime;
-                 trk=0;
-                 minTrk=0;
-                 maxTime=minTime + 120000L /* milliseconds */;
-                 minTime=maxTime;
-                 while (trk<info->ntracks)
-                 {
-                     if (tracks[trk]->absMsOfNextEvent()<minTime)
-                     {
-                         minTrk=trk;
-                         minTime=tracks[minTrk]->absMsOfNextEvent();
-                     };
-                     trk++;
-                 };
-                 if ((minTime==maxTime)/* || (minTicks> 60000L)*/)
-                 {
-                     playing=0;
+                minTrk=trk;
+                minTime=tracks[minTrk]->absMsOfNextEvent();
+            }
+            trk++;
+        }
+        if ((minTime==maxTime)/* || (minTicks> 60000L)*/)
+        {
+            playing=0;
 #ifdef PLAYERDEBUG
-                     printf("END of playing\n");
+            printf("END of playing\n");
 #endif
-                 }
-                 else
-                 {	
-                     //	mspass=(ulong)(minTime-prevms);
-                     trk=0;
-                     while (trk<info->ntracks)
-                     {
-                         tracks[trk]->currentMs(minTime);
-                         trk++;
-                     };
-                     midi->wait(minTime-diffTime);
-                 };
-                 trk=minTrk;
-                 tracks[trk]->readEvent(ev);
-                 switch (ev->command)
-                 {
-                 case (MIDI_NOTEON) : 
-                     midi->noteOn(ev->chn, ev->note, ev->vel);break;
-                 case (MIDI_NOTEOFF): 
-                     midi->noteOff(ev->chn, ev->note, ev->vel);break;
-                 case (MIDI_KEY_PRESSURE) :
-                     midi->keyPressure(ev->chn, ev->note,ev->vel);break;
-                 case (MIDI_PGM_CHANGE) :
-                     if (!ctl->forcepgm[ev->chn])
-                         midi->chnPatchChange(ev->chn, (ctl->gm==1)?(ev->patch):(MT32toGM[ev->patch]));break;
-                 case (MIDI_CHN_PRESSURE) :
-                     midi->chnPressure(ev->chn, ev->vel);break;
-                 case (MIDI_PITCH_BEND) :
-                     midi->chnPitchBender(ev->chn, ev->d1,ev->d2);break;
-                 case (MIDI_CTL_CHANGE) :
-                     midi->chnController(ev->chn, ev->ctl,ev->d1);break;
-                 case (MIDI_SYSTEM_PREFIX) :
-                     if ((ev->command|ev->chn)==META_EVENT)
-                     {
-                         if ((ev->d1==5)||(ev->d1==1))
-                         {
-                             ctl->SPEVplayed++;
-                         };
-                         if (ev->d1==ME_SET_TEMPO)
-                         {
-                             absTimeAtChangeTempo=absTime;
-                             ticksplayed=0;
-                             ctl->SPEVplayed++;
-                             tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]))*ctl->ratioTempo);
+        }
+        else
+        {	
+            //	mspass=(ulong)(minTime-prevms);
+            trk=0;
+            while (trk<info->ntracks)
+            {
+                tracks[trk]->currentMs(minTime);
+                trk++;
+            }
+            midi->wait(minTime-diffTime);
+        }
+        trk=minTrk;
+        tracks[trk]->readEvent(ev);
+        switch (ev->command)
+        {
+        case (MIDI_NOTEON) : 
+            midi->noteOn(ev->chn, ev->note, ev->vel);break;
+        case (MIDI_NOTEOFF): 
+            midi->noteOff(ev->chn, ev->note, ev->vel);break;
+        case (MIDI_KEY_PRESSURE) :
+            midi->keyPressure(ev->chn, ev->note,ev->vel);break;
+        case (MIDI_PGM_CHANGE) :
+            if (!ctl->forcepgm[ev->chn])
+                midi->chnPatchChange(ev->chn, (ctl->gm==1)?(ev->patch):(MT32toGM[ev->patch]));break;
+        case (MIDI_CHN_PRESSURE) :
+            midi->chnPressure(ev->chn, ev->vel);break;
+        case (MIDI_PITCH_BEND) :
+            midi->chnPitchBender(ev->chn, ev->d1,ev->d2);break;
+        case (MIDI_CTL_CHANGE) :
+            midi->chnController(ev->chn, ev->ctl,ev->d1);break;
+        case (MIDI_SYSTEM_PREFIX) :
+            if ((ev->command|ev->chn)==META_EVENT)
+            {
+                if ((ev->d1==5)||(ev->d1==1))
+                {
+                    ctl->SPEVplayed++;
+                }
+                if (ev->d1==ME_SET_TEMPO)
+                {
+                    absTimeAtChangeTempo=absTime;
+                    ticksplayed=0;
+                    ctl->SPEVplayed++;
+                    tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]))*ctl->ratioTempo);
 #ifdef PLAYERDEBUG
-                             printf("Tempo : %ld %g (ratio : %g)\n",tempo,tempoToMetronomeTempo(tempo),ctl->ratioTempo);
+                    printf("Tempo : %ld %g (ratio : %g)\n",tempo,tempoToMetronomeTempo(tempo),ctl->ratioTempo);
 #endif
-                             midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
-                             ctl->tempo=tempo;
-                             for (j=0;j<info->ntracks;j++)
-                             {
-                                 tracks[j]->changeTempo(tempo);
-                             }; 
-                         };
-                         if (ev->d1==ME_TIME_SIGNATURE)
-                            {
-				ctl->num=ev->d2;
-				ctl->den=ev->d3;
-                                ctl->SPEVplayed++;
-                            };
-                     };
-                     break;
-                 };
-                 
-                 if (calloutput)
-                 {
-                     midi->sync();
-                     output();
-                 };
-                 
-        };
-        ctl->ev=NULL;
-        delete ev;
-#ifdef PLAYERDEBUG
-        printf("Syncronizing ...\n");
-#endif
-        if (halt) 
-            midi->sync(1);
-        else 
+                    midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
+                    ctl->tempo=tempo;
+                    for (j=0;j<info->ntracks;j++)
+                    {
+                        tracks[j]->changeTempo(tempo);
+                    }
+                }
+                if (ev->d1==ME_TIME_SIGNATURE)
+                {
+                    ctl->num=ev->d2;
+                    ctl->den=ev->d3;
+                    ctl->SPEVplayed++;
+                }
+            }
+            break;
+        }
+        
+        if (calloutput)
+        {
             midi->sync();
-        midi->closeDev();
-        ctl->playing=0;
+            output();
+        }
+        
+    }
+    ctl->ev=NULL;
+    delete ev;
 #ifdef PLAYERDEBUG
-        printf("Bye...\n");
+    printf("Syncronizing ...\n");
 #endif
-        ctl->OK=1;
-        ctl->finished=1;
-};
+    if (halt) 
+        midi->sync(1);
+    else 
+        midi->sync();
+    midi->closeDev();
+    ctl->playing=0;
+#ifdef PLAYERDEBUG
+    printf("Bye...\n");
+#endif
+    ctl->OK=1;
+    ctl->finished=1;
+}
 
 
 void player::SetPos(ulong gotomsec,midiStat *midistat)
@@ -748,12 +744,12 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
     {
         tracks[i]->init();
         tracks[i]->changeTempo(tempo);
-    };
+    }
     
     for (i=0;i<16;i++)
     {
         if (ctl->forcepgm[i]) midistat->chnPatchChange(i, ctl->pgm[i]);
-    };
+    }
     
     while (likeplaying)
     {
@@ -767,9 +763,9 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
             {
                 minTrk=trk;
                 minTime=tracks[minTrk]->absMsOfNextEvent();
-            };
+            }
             trk++;
-        };
+        }
         if (minTime==maxTime) 
         {
             likeplaying=0;
@@ -791,15 +787,16 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
             else
             {
                 prevms=minTime;
-            };
+            }
             trk=0;
             while (trk<info->ntracks)
             {
                 tracks[trk]->currentMs(minTime);
                 trk++;
-            };
-        };
-        if (likeplaying) 
+            }
+        }
+        
+        if (likeplaying)
         {
             trk=minTrk;
             tracks[trk]->readEvent(ev);
@@ -826,7 +823,7 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
                     if ((ev->d1==5)||(ev->d1==1))
                     {
                         ctl->SPEVplayed++;
-                    };
+                    }
                     if (ev->d1==ME_SET_TEMPO)
                     {
                         ctl->SPEVplayed++;
@@ -836,22 +833,22 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
                         for (j=0;j<info->ntracks;j++)
                         {
                             tracks[j]->changeTempo(tempo);
-                        };	
-                    };
+                        }
+                    }
                     if (ev->d1==ME_TIME_SIGNATURE)
                     {
-			ctl->num=ev->d2;
-			ctl->den=ev->d3;
+                        ctl->num=ev->d2;
+                        ctl->den=ev->d3;
                         ctl->SPEVplayed++;
-                    };
-                };
+                    }
+                }
                 break;
-            };
-        };
-    };
+            }
+        }
+    }
     delete ev;
     ctl->tempo=tempo;
-};
+}
 
 
 void player::writeSPEV(void)
@@ -862,14 +859,14 @@ void player::writeSPEV(void)
     {
         printf("t:%d ticks:%d diff:%ld abs:%ld s:%s tempo:%ld\n",pspev->type,pspev->ticks,pspev->diffmilliseconds,pspev->absmilliseconds,pspev->text,pspev->tempo);
         pspev=pspev->next;
-    };
+    }
     
-};
+}
 
 void player::setParseSong(bool b)
 {
     parseSong=b;
-};
+}
 
 void player::changeTempoRatio(double ratio)
 {
@@ -881,13 +878,13 @@ void player::changeTempoRatio(double ratio)
         {
             parseSpecialEvents();
             generateBeats();
-
-        };
+            
+        }
     }
     else
     {
         ctl->tempo=(ulong)((ctl->tempo*ctl->ratioTempo)/ratio);
         ctl->ratioTempo=ratio;
-    };
-
-};
+    }
+    
+}

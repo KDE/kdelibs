@@ -36,25 +36,30 @@
 #include "../version.h"
 
 SEQ_DEFINEBUF (2048);
+
 #define CONTROLTIMER
 
 #ifdef GENERAL_DEBUG_MESSAGES 
 void DEBUGPRINTF(const char *format)
 {
-printf(format);
-};
+    printf(format);
+}
+
 void DEBUGPRINTF(const char *format,int i)
 {
-printf(format,i);
-};
+    printf(format,i);
+}
+
 void DEBUGPRINTF(const char *format,const char *s)
 {
-printf(format,s);
-};
+    printf(format,s);
+}
+
 #else
-void DEBUGPRINTF(const char *) { };
-void DEBUGPRINTF(const char *,int ) { };
-void DEBUGPRINTF(const char *,const char * ) { };
+
+void DEBUGPRINTF(const char *) { }
+void DEBUGPRINTF(const char *,int ) { }
+void DEBUGPRINTF(const char *,const char * ) { }
 
 #endif
 
@@ -72,187 +77,188 @@ mapper_tmp = NULL;
 seqfd=-1;
 timerstarted=0;
 for (int i=0;i<16;i++) chn2dev[i]=default_dev;
-};
+}
 
 DeviceManager::~DeviceManager(void)
 {
-closeDev();
-if (device!=NULL)
-   {
-   for (int i=0;i<n_midi;i++)
-	delete device[i];
-   delete device;
-   device=NULL;
-   };
-};
+    closeDev();
+    if (device!=NULL)
+    {
+        for (int i=0;i<n_midi;i++)
+            delete device[i];
+        delete device;
+        device=NULL;
+    }
+}
 
 int DeviceManager::OK(void)
 {
-int r=ok;
-ok=1;
-return r;
-};
+    int r=ok;
+    ok=1;
+    return r;
+}
 
 int DeviceManager::checkInit(void)
 {
-if (initialized==0) 
+    if (initialized==0) 
     {
-    int r=initManager();
-    setMidiMap(mapper_tmp);
-    DEBUGPRINTF("check : %d\n",r);
-    return r;
-    };
-return 0;
-};
+        int r=initManager();
+        setMidiMap(mapper_tmp);
+        DEBUGPRINTF("check : %d\n",r);
+        return r;
+    }
+    return 0;
+}
 
 /*
-midiOut *DeviceManager::chntodev(int chn)
-{
-return device[chn2dev[chn]];
-};
-*/
+ midiOut *DeviceManager::chntodev(int chn)
+ {
+ return device[chn2dev[chn]];
+ };
+ */
 
 int DeviceManager::initManager(void)
 {
-seqfd = open("/dev/sequencer", O_WRONLY, 0);
-if (seqfd==-1)
+    seqfd = open("/dev/sequencer", O_WRONLY, 0);
+    if (seqfd==-1)
     {
-    printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
-    ok=0;
-    return -1;
+        printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
+        ok=0;
+        return -1;
     };
-n_synths=0;
-n_midi=0;
-ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&n_synths);
-ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&n_midi);
-n_total=n_midi+n_synths;
-if (n_midi==0) 
+    n_synths=0;
+    n_midi=0;
+    ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&n_synths);
+    ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&n_midi);
+    n_total=n_midi+n_synths;
+    if (n_midi==0) 
     {
-    printf("ERROR: There's no midi port");
-//    ok=0;
-//    return 1;
-    };
-device=new midiOut*[n_total];
-midiinfo=new midi_info[n_midi];
-synthinfo=new synth_info[n_synths];
-
-int i;
-for (i=0;i<n_midi;i++)
+        printf("ERROR: There's no midi port");
+        //    ok=0;
+        //    return 1;
+    }
+    
+    device=new midiOut*[n_total];
+    midiinfo=new midi_info[n_midi];
+    synthinfo=new synth_info[n_synths];
+    
+    int i;
+    for (i=0;i<n_midi;i++)
     {
-    midiinfo[i].device=i;
-    if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo[i])!=-1)
+        midiinfo[i].device=i;
+        if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo[i])!=-1)
         {
 #ifdef GENERAL_DEBUG_MESSAGES
-        printf("----");
-        printf("Device : %d\n",i);
-        printf("Name : %s\n",midiinfo[i].name);
-        printf("Device type : %d\n",midiinfo[i].dev_type);
+            printf("----");
+            printf("Device : %d\n",i);
+            printf("Name : %s\n",midiinfo[i].name);
+            printf("Device type : %d\n",midiinfo[i].dev_type);
 #endif
-        };
-    device[i]=new midiOut(i);
-    };
- 
-for (i=0;i<n_synths;i++)
+        }
+        device[i]=new midiOut(i);
+    }
+    
+    for (i=0;i<n_synths;i++)
     {
-    synthinfo[i].device=i;
-    if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
+        synthinfo[i].device=i;
+        if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
         {
 #ifdef GENERAL_DEBUG_MESSAGES  
-        printf("----");
-        printf("Device : %d\n",i);
-        printf("Name : %s\n",synthinfo[i].name);
-        switch (synthinfo[i].synth_type)
+            printf("----");
+            printf("Device : %d\n",i);
+            printf("Name : %s\n",synthinfo[i].name);
+            switch (synthinfo[i].synth_type)
             {
             case (SYNTH_TYPE_FM) : printf("FM\n");break;
             case (SYNTH_TYPE_SAMPLE) : printf("Sample\n");break;
             case (SYNTH_TYPE_MIDI) : printf("Midi\n");break;
             default : printf("default type\n");break;
             };
-        switch (synthinfo[i].synth_subtype)
+            switch (synthinfo[i].synth_subtype)
             {
             case (FM_TYPE_ADLIB) : printf("Adlib\n");break;
             case (FM_TYPE_OPL3) : printf("Opl3\n");break;
             case (MIDI_TYPE_MPU401) : printf("Mpu-401\n");break;
             case (SAMPLE_TYPE_GUS) : printf("Gus\n");break;
             default : printf("default subtype\n");break;
-            };
+            }
 #endif
-	if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
-	    device[i+n_midi]=new fmOut(i,synthinfo[i].nr_voices);
-	   else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
-	         (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
-       device[i+n_midi]=new gusOut(i,synthinfo[i].nr_voices);
-      else
-       device[i+n_midi]=new synthOut(i);
-        };
-    };
-
-close(seqfd);
-
-//#ifdef AT_HOME
-//MidiMapper *map=new MidiMapper("/opt/kde/share/apps/kmid/maps/yamaha790.map");
-//device[0]->useMapper(map);
-//#endif
-
-initialized=1;
-
-return 0;
-};
+            if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
+                device[i+n_midi]=new fmOut(i,synthinfo[i].nr_voices);
+            else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
+                     (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
+                device[i+n_midi]=new gusOut(i,synthinfo[i].nr_voices);
+            else
+                device[i+n_midi]=new synthOut(i);
+        }
+    }
+    
+    close(seqfd);
+    
+    //#ifdef AT_HOME
+    //MidiMapper *map=new MidiMapper("/opt/kde/share/apps/kmid/maps/yamaha790.map");
+    //device[0]->useMapper(map);
+    //#endif
+    
+    initialized=1;
+    
+    return 0;
+}
 
 void DeviceManager::openDev(void)
 {
-if (checkInit()<0) 
-	{
-	DEBUGPRINTF("DeviceManager::openDev : Not initialized\n");
-	ok = 0;
-	return;
-	};
-ok=1;
-seqfd = open("/dev/sequencer", O_WRONLY, 0);
-if (seqfd==-1)
-   {
-   printf("Couldn't open\n");
-   ok=0;
-   return;
-   };
-_seqbufptr = 0;
-ioctl(seqfd,SNDCTL_SEQ_RESET);
-//ioctl(seqfd,SNDCTL_SEQ_PANIC);
-
-#ifndef HANDLETIMEINDEVICES
-rate=0;
-int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-if ((r==-1)||(rate<=0)) rate=HZ;
-
-convertrate=1000/rate;
-#endif
-
-DEBUGPRINTF("Opening devices : ");
-for (int i=0;i<n_total;i++) 
+    if (checkInit()<0) 
     {
-    device[i]->openDev(seqfd);
-    DEBUGPRINTF("%s ",device[i]->devName());
-    };
-DEBUGPRINTF("\n");
-for (int i=0;i<n_total;i++) if (!device[i]->OK()) ok=0;
-if (ok==0)
-   {
-   for (int i=0;i<n_total;i++) device[i]->closeDev();
-   printf("DeviceMan :: ERROR : Closing devices\n");
-   return;
-   };
-
-#ifdef DEVICEMANDEBUG
-printf("Devices opened\n");
-printf("rate: %d\n",rate);
+        DEBUGPRINTF("DeviceManager::openDev : Not initialized\n");
+        ok = 0;
+        return;
+    }
+    ok=1;
+    seqfd = open("/dev/sequencer", O_WRONLY, 0);
+    if (seqfd==-1)
+    {
+        printf("Couldn't open\n");
+        ok=0;
+        return;
+    }
+    _seqbufptr = 0;
+    ioctl(seqfd,SNDCTL_SEQ_RESET);
+    //ioctl(seqfd,SNDCTL_SEQ_PANIC);
+    
+#ifndef HANDLETIMEINDEVICES
+    rate=0;
+    int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
+    if ((r==-1)||(rate<=0)) rate=HZ;
+    
+    convertrate=1000/rate;
 #endif
-};
+    
+    DEBUGPRINTF("Opening devices : ");
+    for (int i=0;i<n_total;i++) 
+    {
+        device[i]->openDev(seqfd);
+        DEBUGPRINTF("%s ",device[i]->devName());
+    }
+    DEBUGPRINTF("\n");
+    for (int i=0;i<n_total;i++) if (!device[i]->OK()) ok=0;
+    if (ok==0)
+    {
+        for (int i=0;i<n_total;i++) device[i]->closeDev();
+        printf("DeviceMan :: ERROR : Closing devices\n");
+        return;
+    }
+    
+#ifdef DEVICEMANDEBUG
+    printf("Devices opened\n");
+    printf("rate: %d\n",rate);
+#endif
+}
 
 void DeviceManager::closeDev(void)
 {
-if (seqfd==-1) return;
+    if (seqfd==-1) return;
 #ifndef HANDLETIMEINDEVICES
-tmrStop();
+    tmrStop();
 #endif
 /*
 DEBUGPRINTF("Closing devices : ");
@@ -265,251 +271,251 @@ if (device!=NULL) for (int i=0;i<n_total;i++)
     };
 DEBUGPRINTF("\n");
 */
-close(seqfd);
-seqfd=-1;
-};
+    close(seqfd);
+    seqfd=-1;
+}
 
 void DeviceManager::initDev(void)
 {
-if (device!=NULL) 
+    if (device!=NULL) 
     {
-    DEBUGPRINTF("Initializing devices :");
-    for (int i=0;i<n_total;i++) 
-	{
-	device[i]->initDev();
-	DEBUGPRINTF("%s ",device[i]->devName());
-	};
-    DEBUGPRINTF("\n");
-    };
-};
+        DEBUGPRINTF("Initializing devices :");
+        for (int i=0;i<n_total;i++) 
+        {
+            device[i]->initDev();
+            DEBUGPRINTF("%s ",device[i]->devName());
+        }
+        DEBUGPRINTF("\n");
+    }
+}
 
 void DeviceManager::noteOn         ( uchar chn, uchar note, uchar vel )
 {
-midiOut *midi=chntodev(chn);
-midi->noteOn(chn,note,vel);
-};
-
+    midiOut *midi=chntodev(chn);
+    midi->noteOn(chn,note,vel);
+}
 void DeviceManager::noteOff        ( uchar chn, uchar note, uchar vel )
 {
-midiOut *midi=chntodev(chn);
-midi->noteOff(chn,note,vel);
-};
+    midiOut *midi=chntodev(chn);
+    midi->noteOff(chn,note,vel);
+}
 void DeviceManager::keyPressure    ( uchar chn, uchar note, uchar vel )
 {
-midiOut *midi=chntodev(chn);
-midi->keyPressure(chn,note,vel);
-};
+    midiOut *midi=chntodev(chn);
+    midi->keyPressure(chn,note,vel);
+}
 void DeviceManager::chnPatchChange ( uchar chn, uchar patch )
 {
-midiOut *midi=chntodev(chn);
-midi->chnPatchChange(chn,patch);
-};
+    midiOut *midi=chntodev(chn);
+    midi->chnPatchChange(chn,patch);
+}
 void DeviceManager::chnPressure    ( uchar chn, uchar vel )
 {
-midiOut *midi=chntodev(chn);
-midi->chnPressure(chn,vel);
-};
+    midiOut *midi=chntodev(chn);
+    midi->chnPressure(chn,vel);
+}
 void DeviceManager::chnPitchBender ( uchar chn, uchar lsb,  uchar msb )
 {
-midiOut *midi=chntodev(chn);
-midi->chnPitchBender(chn,lsb,msb);
-};
+    midiOut *midi=chntodev(chn);
+    midi->chnPitchBender(chn,lsb,msb);
+}
 void DeviceManager::chnController  ( uchar chn, uchar ctl , uchar v )
 {
-midiOut *midi=chntodev(chn);
-midi->chnController(chn,ctl,v);
-};
+    midiOut *midi=chntodev(chn);
+    midi->chnController(chn,ctl,v);
+}
 void DeviceManager::sysex          ( uchar *data,ulong size)
 {
-for (int i=0;i<n_midi;i++)
-    device[i]->sysex(data,size);
-};
+    for (int i=0;i<n_midi;i++)
+        device[i]->sysex(data,size);
+}
 
 void DeviceManager::wait (double ticks)
 {
-unsigned long int t=(unsigned long int)(ticks/convertrate);
-if (lastwaittime==t) return;
-lastwaittime=t;
+    unsigned long int t=(unsigned long int)(ticks/convertrate);
+    if (lastwaittime==t) return;
+    lastwaittime=t;
 #ifdef HANDLETIMEINDEVICES
-device[default_dev]->wait(ticks);
+    device[default_dev]->wait(ticks);
 #else
-//printf("%ld\n",t);
-SEQ_WAIT_TIME(t);
-SEQ_DUMPBUF();
+    //printf("%ld\n",t);
+    SEQ_WAIT_TIME(t);
+    SEQ_DUMPBUF();
 #endif
-};
+}
 
 void DeviceManager::tmrSetTempo(int v)
 {
-//device[default_dev]->tmrSetTempo(v);
-SEQ_SET_TEMPO(v);
-SEQ_DUMPBUF();
-};
+    //device[default_dev]->tmrSetTempo(v);
+    SEQ_SET_TEMPO(v);
+    SEQ_DUMPBUF();
+}
 
 void DeviceManager::tmrStart(void)
 {
 #ifdef HANDLETIMEINDEVICES
-  device[default_dev]->tmrStart();
+    device[default_dev]->tmrStart();
 #else
 #ifdef CONTROLTIMER
-  if (!timerstarted)
-     {
-     SEQ_START_TIMER();
-     SEQ_DUMPBUF();
-     timerstarted=1;
-     };
-  lastwaittime=0;
+    if (!timerstarted)
+    {
+        SEQ_START_TIMER();
+        SEQ_DUMPBUF();
+        timerstarted=1;
+    }
+    lastwaittime=0;
 #else
-  SEQ_START_TIMER();
-  SEQ_DUMPBUF();
+    SEQ_START_TIMER();
+    SEQ_DUMPBUF();
 #endif
 #endif
-};
+}
 
 void DeviceManager::tmrStop(void)
 {
 #ifdef HANDLETIMEINDEVICES
-device[default_dev]->tmrStop();
+    device[default_dev]->tmrStop();
 #else
 #ifdef CONTROLTIMER
-  if (timerstarted)
-     {
-     SEQ_STOP_TIMER();
-     SEQ_DUMPBUF();
-     timerstarted=0;
-     };
+    if (timerstarted)
+    {
+        SEQ_STOP_TIMER();
+        SEQ_DUMPBUF();
+        timerstarted=0;
+    }
 #else
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
+    SEQ_STOP_TIMER();
+    SEQ_DUMPBUF();
 #endif
 #endif
-};
+}
 
 void DeviceManager::tmrContinue(void)
 {
 #ifdef HANDLETIMEINDEVICES
-device[default_dev]->tmrContinue();
+    device[default_dev]->tmrContinue();
 #else
 #ifdef CONTROLTIMER
-  if (timerstarted)
-     {
-     SEQ_CONTINUE_TIMER();
-     SEQ_DUMPBUF();
-     };
+    if (timerstarted)
+    {
+        SEQ_CONTINUE_TIMER();
+        SEQ_DUMPBUF();
+    }
 #else
-  SEQ_CONTINUE_TIMER();
-  SEQ_DUMPBUF();
+    SEQ_CONTINUE_TIMER();
+    SEQ_DUMPBUF();
 #endif
 #endif
-};
+}
 
 void DeviceManager::sync(int i)
 {
 #ifdef HANDLETIMEINDEVICES
-device[default_dev]->sync(i);
+    device[default_dev]->sync(i);
 #else
 #ifdef DEVICEMANDEBUG
-printf("Sync %d\n",i);
+    printf("Sync %d\n",i);
 #endif
-if (i==1) 
+    if (i==1) 
     {    
-    seqbuf_clean();
-/* If you have any problem, try removing the next 2 lines, 
-	I though they would be useful here, but I don't know
-	what they exactly do :-) */
-    ioctl(seqfd,SNDCTL_SEQ_RESET);
-    ioctl(seqfd,SNDCTL_SEQ_PANIC);
-    };
-ioctl(seqfd, SNDCTL_SEQ_SYNC);
+        seqbuf_clean();
+        /* If you have any problem, try removing the next 2 lines, 
+         I though they would be useful here, but I don't know
+         what they exactly do :-) */
+        ioctl(seqfd,SNDCTL_SEQ_RESET);
+        ioctl(seqfd,SNDCTL_SEQ_PANIC);
+    }
+    ioctl(seqfd, SNDCTL_SEQ_SYNC);
 #endif
-};
+}
+
 void DeviceManager::seqbuf_dump (void)
 {
-   if (_seqbufptr)
-      if (write (seqfd, _seqbuf, _seqbufptr) == -1)
-         {
-         printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
-         perror ("write /dev/sequencer in seqbuf_dump\n");
-         exit (-1);
-         }
-   _seqbufptr = 0;
-};
+    if (_seqbufptr)
+        if (write (seqfd, _seqbuf, _seqbufptr) == -1)
+        {
+            printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
+            perror ("write /dev/sequencer in seqbuf_dump\n");
+            exit (-1);
+        }
+    _seqbufptr = 0;
+}
 
 void DeviceManager::seqbuf_clean(void)
 {
-   _seqbufptr=0;
-};
+    _seqbufptr=0;
+}
 
 
 char *DeviceManager::name(int i)
 {
-if (checkInit()<0) {ok = 0; return NULL;};
-
-if (i<n_midi) return midiinfo[i].name; 
-if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
-return (char *)"";
-};
+    if (checkInit()<0) {ok = 0; return NULL;}
+    
+    if (i<n_midi) return midiinfo[i].name; 
+    if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
+    return (char *)"";
+}
 
 char *DeviceManager::type(int i)
 {
-if (checkInit()<0) {ok = 0; return NULL;};
-
-if (i<n_midi) 
+    if (checkInit()<0) {ok = 0; return NULL;}
+    
+    if (i<n_midi) 
     {
-    return "External Midi Port"; 
-    };
-if (i<n_midi+n_synths) 
+        return "External Midi Port"; 
+    }
+    if (i<n_midi+n_synths) 
     {
-    switch (synthinfo[i-n_midi].synth_subtype)
+        switch (synthinfo[i-n_midi].synth_subtype)
         {
         case (FM_TYPE_ADLIB) : return "Adlib";break;
         case (FM_TYPE_OPL3) : return "FM";break;
         case (MIDI_TYPE_MPU401) : return "MPU 401";break;
         case (SAMPLE_TYPE_GUS) : return "GUS";break;
-        };
+        }
+        return (char *)"";
+    }
     return (char *)"";
-    };
-return (char *)"";
-};
+}
 
 int DeviceManager::getDefaultDevice(void)
 {
-return default_dev;
-};
+    return default_dev;
+}
 
 void DeviceManager::setDefaultDevice(int i)
 {
-if (i>=n_total) return;
-default_dev=i;
-for (int i=0;i<16;i++) chn2dev[i]=default_dev; 
-};
+    if (i>=n_total) return;
+    default_dev=i;
+    for (int i=0;i<16;i++) chn2dev[i]=default_dev;
+}
 
 char *DeviceManager::getMidiMapFilename(void)
 {
-if (device==NULL) return (char *)"";
-return (device[default_dev]!=NULL) ? 
-	device[default_dev]->getMidiMapFilename() : (char *)"";
-};
+    if (device==NULL) return (char *)"";
+    return (device[default_dev]!=NULL) ? 
+        device[default_dev]->getMidiMapFilename() : (char *)"";
+}
 
 void DeviceManager::setMidiMap(MidiMapper *map)
 {
-if (map==NULL) return;
-mapper_tmp=map;
-if ((device==NULL)||(device[default_dev]==NULL)) return;
-device[default_dev]->useMapper(map);
-};
+    if (map==NULL) return;
+    mapper_tmp=map;
+    if ((device==NULL)||(device[default_dev]==NULL)) return;
+    device[default_dev]->useMapper(map);
+}
 
 int DeviceManager::setPatchesToUse(int *patchesused)
 {
-if (checkInit()<0) return -1;
-
-if ((device[getDefaultDevice()]->devType())==KMID_GUS)
-   {
-   gusOut *gus=(gusOut *)device[getDefaultDevice()];
-   gus->setPatchesToUse(patchesused);
-   };
-return 0;
-};
+    if (checkInit()<0) return -1;
+    
+    if ((device[getDefaultDevice()]->devType())==KMID_GUS)
+    {
+        gusOut *gus=(gusOut *)device[getDefaultDevice()];
+        gus->setPatchesToUse(patchesused);
+    }
+    return 0;
+}
 
 void DeviceManager::setVolumePercentage(int v)
 {
@@ -518,6 +524,6 @@ void DeviceManager::setVolumePercentage(int v)
         for (int i=0;i<n_total;i++)
         {
             device[i]->setVolumePercentage(v);
-        };
-    };
-};
+        }
+    }
+}

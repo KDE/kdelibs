@@ -29,13 +29,14 @@ NoteArray::NoteArray(void)
     totalAllocated=50;
     data=new noteCmd[totalAllocated];
     lastAdded=NULL;
-};
+}
 
 NoteArray::~NoteArray()
 {
     delete data;
     totalAllocated=0;
 }
+
 noteCmd *NoteArray::pointerTo(ulong pos)
 {
     if (pos<totalAllocated) return &data[pos];
@@ -46,9 +47,9 @@ noteCmd *NoteArray::pointerTo(ulong pos)
         delete data;
         data=tmp;
         totalAllocated*=2;
-    };
+    }
     return &data[pos];
-};
+}
 
 void NoteArray::at(ulong pos, ulong ms,int chn,int cmd,int note)
 {
@@ -57,7 +58,7 @@ void NoteArray::at(ulong pos, ulong ms,int chn,int cmd,int note)
     tmp->chn=chn;
     tmp->cmd=cmd;
     tmp->note=note;
-};
+}
 
 void NoteArray::at(ulong pos, noteCmd s)
 {
@@ -66,12 +67,12 @@ void NoteArray::at(ulong pos, noteCmd s)
     tmp->chn=s.chn;
     tmp->cmd=s.cmd;
     tmp->note=s.note;
-};
+}
 
 noteCmd NoteArray::at(int pos)
 {
     return *pointerTo(pos);
-};
+}
 
 void NoteArray::add(ulong ms,int chn,int cmd,int note)
 {
@@ -85,18 +86,18 @@ void NoteArray::add(ulong ms,int chn,int cmd,int note)
         last++;
         if (last==totalAllocated) lastAdded=pointerTo(totalAllocated);
         else lastAdded++;
-    };
+    }
     lastAdded->ms=ms;
     lastAdded->chn=chn;
     lastAdded->cmd=cmd;
     lastAdded->note=note;
-};
+}
 
 void NoteArray::next(void)
 {
     if (it==lastAdded) {it=NULL;return;};
     it++;
-};
+}
 
 void NoteArray::moveIteratorTo(ulong ms,int *pgm)
 {
@@ -110,9 +111,9 @@ void NoteArray::moveIteratorTo(ulong ms,int *pgm)
         if (ncmd->cmd==2) pgm2[ncmd->chn]=ncmd->note;
         next();
         ncmd=get();
-    };
+    }
     if (pgm!=NULL)
     {
         for (int i=0;i<16;i++) pgm[i]=pgm2[i];
-    };
-};
+    }
+}

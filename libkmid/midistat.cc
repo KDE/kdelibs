@@ -30,58 +30,58 @@ extern int MT32toGM[128];
 
 midiStat::midiStat()
 {
-int i;
-tempo=1000000;
-for (int chn=0;chn<N_CHANNELS;chn++)
-	{
-	chn_patch[chn]=0;
-	chn_bender[chn]=0x4000;
-	chn_pressure[chn]=127;
-	for (i=0;i<N_CTL;i++)
-		chn_controller[chn][i]=0;
-	chn_controller[chn][CTL_MAIN_VOLUME]=127;
-	chn_controller[chn][11]=127;
-	chn_controller[chn][0x4a]=127;
+    int i;
+    tempo=1000000;
+    for (int chn=0;chn<N_CHANNELS;chn++)
+    {
+        chn_patch[chn]=0;
+        chn_bender[chn]=0x4000;
+        chn_pressure[chn]=127;
+        for (i=0;i<N_CTL;i++)
+            chn_controller[chn][i]=0;
+        chn_controller[chn][CTL_MAIN_VOLUME]=127;
+        chn_controller[chn][11]=127;
+        chn_controller[chn][0x4a]=127;
         chn_lastisvolumeev[chn]=1;
-        };
-
-
-};
+    }
+    
+    
+}
 
 midiStat::~midiStat()
 {
-};
+}
 
 //    void noteOn	( uchar chn, uchar note, uchar vel );
 //    void noteOff	( uchar chn, uchar note, uchar vel );
 
 void midiStat::chnPatchChange	( uchar chn, uchar patch )
 {
-chn_patch[chn]=patch;
-};
+    chn_patch[chn]=patch;
+}
 
 void midiStat::chnPressure	( uchar chn, uchar vel )
 {
-chn_pressure[chn]=vel;
-};
+    chn_pressure[chn]=vel;
+}
 
 void midiStat::chnPitchBender	( uchar chn, uchar lsb,  uchar msb )
 {
-chn_bender[chn]=((int)msb<<8|lsb);
-};
+    chn_bender[chn]=((int)msb<<8|lsb);
+}
 
 void midiStat::chnController	( uchar chn, uchar ctl , uchar v )
 {
     if (ctl==7) chn_lastisvolumeev[chn]=1;
     else if (ctl==11) chn_lastisvolumeev[chn]=0;
-
+    
     chn_controller[chn][ctl]=v;
-};
+}
 
 void midiStat::tmrSetTempo(int v)
 {
-tempo=v;
-};
+    tempo=v;
+}
 
 void midiStat::sendData(DeviceManager *midi,int gm)
 {
@@ -101,12 +101,12 @@ void midiStat::sendData(DeviceManager *midi,int gm)
         } else {
             midi->chnController(chn,CTL_MAIN_VOLUME,chn_controller[chn][CTL_MAIN_VOLUME]);
             midi->chnController(chn,11,chn_controller[chn][11]);
-        };
+        }
         /*
-        for (int i=0;i<N_CTL;i++)
-        midi->chnController(chn,i,chn_controller[chn][i]);
-        */
-    };
+         for (int i=0;i<N_CTL;i++)
+         midi->chnController(chn,i,chn_controller[chn][i]);
+         */
+    }
     midi->tmrSetTempo(tempo);
     midi->sync();
-};
+}

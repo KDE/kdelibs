@@ -86,14 +86,14 @@ void consoleOutput(void)
             if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')||(c=='@')) cout << endl;
             cout << text;
             cout.flush();
-        };
+        }
         if (pctl.ev->d1==ME_SET_TEMPO)
         {
             printf("\n[Tempo : %g]\n",tempoToMetronomeTempo((pctl.ev->data[0]<<16)|(pctl.ev->data[1]<<8)|(pctl.ev->data[2])));
-        };
-    };
+        }
+    }
     
-};
+}
 
 int main(int argc, char **argv)
 {
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 #else
         c=getopt( argc, argv, "d:lm:v:f:3iqh");
 #endif
-    };
+    }
     
     if (inputfile!=NULL)
     {
@@ -188,9 +188,9 @@ int main(int argc, char **argv)
         {
             printf("Error: Cannot open input file %s\n",inputfile);
             error=1;
-        };
+        }
         delete inputfile;
-    };
+    }
     
     if (error) exit(0);
     printf("ConsoleKMid version %s, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n",VERSION_SHORTTXT);
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
         printf("ConsoleKMid comes with ABSOLUTELY NO WARRANTY; for details view file COPYING\n");
         printf("This is free software, and you are welcome to redistribute it\n");
         printf("under certain conditions\n");
-    };
+    }
     
     if ((argc<2)||(help))
     {
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
                "  -h, --help \t\tDisplay this help and exit\n");
         printf("\nPlease report bugs to Antonio Larrosa (antlarr@arrakis.es)\n");
         exit(0);
-    };
+    }
     
     
     DeviceManager * devman=new DeviceManager(device);
@@ -231,10 +231,10 @@ int main(int argc, char **argv)
                 printf("%d) %s - %s\n",i,devman->name(i),devman->type(i));
             else
                 printf("%d) %s\n",i,devman->name(i));
-        };
+        }
         delete devman;
         exit(0);
-    };
+    }
     MidiMapper *map=new MidiMapper(map_path);
     if (!map->OK()) exit(0);
     devman->setMidiMap(map);
@@ -245,16 +245,16 @@ int main(int argc, char **argv)
     {
         songlist->AddSong(argv[nmid]);
         nmid++;
-    };
+    }
     if (inputfh!=NULL)
     {
         char s[400];
         while (!feof(inputfh))
         {
             if (fscanf(inputfh,"%s",s)!=EOF) songlist->AddSong(s);
-        };
+        }
         fclose(inputfh);
-    };
+    }
     
     player *Player=new player(devman,&pctl);
     Player->setParseSong(false);
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
     {
         pctl.forcepgm[i]=0;
         pctl.pgm[i]=0;
-    };
+    }
     
     songlist->setActiveSong(1);
     int ok=1;
@@ -293,9 +293,9 @@ int main(int argc, char **argv)
                 {	
                     playfile=1;
                     if ((c[0]=='A')||(c[0]=='a')||(c[0]=='*')) interactive=0;
-                };
-            };
-        };
+                }
+            }
+        }
         if (playfile)
         {
             cout << "Loading song : " << name << endl;
@@ -303,11 +303,11 @@ int main(int argc, char **argv)
             if (Player->loadSong(name)==0)
                 Player->play(1,consoleOutput);
             if (!quiet) cout << endl;
-        };
+        }
         ok=songlist->next();
-    };
+    }
     delete songlist;
     delete Player;
     delete devman;
     exit(0);
-};
+}

@@ -36,12 +36,12 @@
 double tempoToMetronomeTempo(ulong x)
 {
     return 60/((double)x/1000000);
-};
+}
 
 double metronomeTempoToTempo(ulong x)
 {
     return ((double)60*x)/1000000;
-};
+}
 
 int decompressFile(char *gzname,char *tmpname)
 // Returns 0 if OK, 1 if error (tmpname not set)
@@ -52,14 +52,14 @@ int decompressFile(char *gzname,char *tmpname)
     if (infile==NULL)
     {
         fprintf(stderr,"ERROR : popen failed : %s\n",cmd);
-    };
+    }
     char *tmp=tempnam(NULL,"KMid");
     if (tmp==NULL) 
     {
         pclose(infile);
         delete cmd;
         return 1;
-    };
+    }
     strcpy(tmpname,tmp);
     FILE *outfile= fopen(tmpname,"wb");
     if (outfile==NULL)
@@ -67,7 +67,7 @@ int decompressFile(char *gzname,char *tmpname)
         pclose(infile);
         delete cmd;
         return 1;
-    };
+    }
     int n=getc(infile);
     if (n==EOF) 
     {
@@ -84,7 +84,7 @@ int decompressFile(char *gzname,char *tmpname)
     {
         fwrite(buf, 1, n, outfile);
         n = fread(buf, 1, BUFSIZ, infile);
-    };
+    }
     
     pclose(infile);
     
@@ -94,7 +94,7 @@ int decompressFile(char *gzname,char *tmpname)
     fclose(outfile);
     delete cmd;
     return 0;
-};
+}
 
 track **readMidiFile(char *name,midifileinfo *info,int &ok)
 {
@@ -106,7 +106,7 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
         printf("ERROR: Can't open file\n");
         ok=-1;
         return NULL;
-    };
+    }
     char text[4];
     fread(text,1,4,fh);
     if ((strncmp(text,"MThd",4)!=0)&&(strcmp(&name[strlen(name)-3],".gz")==0))
@@ -119,11 +119,11 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
             printf("ERROR: %s is not a (zipped) midi file\n",name);
             ok=-2;
             return NULL;
-        };
+        }
         fh=fopen(tempname,"rb");
         fread(text,1,4,fh);
         unlink(tempname);
-    };
+    }
     
     if (strncmp(text,"MThd",4)!=0)
     {
@@ -135,10 +135,10 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
             printf("ERROR: %s is not a midi file.\n",name);
             ok=-2;
             return NULL;
-        };
+        }
         fseek(fh,pos,SEEK_SET);
         fread(text,1,4,fh);
-    };
+    }
     long header_size=readLong(fh);
     info->format=readShort(fh);
     info->ntracks=readShort(fh);
@@ -150,7 +150,7 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
         fclose(fh);
         ok=-3;
         return NULL;
-    };
+    }
     if (header_size>6) fseek(fh,header_size-6,SEEK_CUR);
     Tracks=new track*[info->ntracks];
     if (Tracks==NULL)
@@ -159,7 +159,7 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
         fclose(fh);
         ok=-4;
         return NULL;
-    };
+    }
     int i=0;
     while (i<info->ntracks)
     {
@@ -171,7 +171,7 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
             fclose(fh);
             ok=-5;
             return NULL;
-        };
+        }
         Tracks[i]=new track(fh,info->ticksPerCuarterNote,i);
         if (Tracks[i]==NULL)
         {
@@ -179,21 +179,21 @@ track **readMidiFile(char *name,midifileinfo *info,int &ok)
             fclose(fh);
             ok=-4;
             return NULL;
-        };
+        }
         i++;
-    };
+    }
     
     fclose(fh);
-
+    
     /*
      parseInfoData(info,Tracks,1.0);
      
      Since now, this function will be called from the player.
      */
-
+    
     return Tracks;
-
-};
+    
+}
 
 void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
 {
@@ -205,12 +205,10 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     for (i=0;i<256;i++)
     {
         info->patchesUsed[i]=0;
-    };
+    }
     
-    //ulong tempticks=0;
     int parsing=1;
     int trk,minTrk;
-    //ulong minTicks;
     ulong tempo=(ulong)(500000 * ratioTempo);
     
 #ifdef MIDFILEDEBUG
@@ -221,14 +219,14 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     for (i=0;i<16;i++) 
     {
         pgminchannel[i]=0;
-    };
+    }
     
     int j;
     for (i=0;i<info->ntracks;i++)
     {
         Tracks[i]->init();
         Tracks[i]->changeTempo(tempo);
-    };
+    }
     double prevms=0;
     double minTime=0;
     double maxTime;
@@ -246,9 +244,9 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
             {
                 minTrk=trk;
                 minTime=Tracks[minTrk]->absMsOfNextEvent();
-            };
+            }
             trk++;
-        };
+        }
         if ((minTime==maxTime))
         {
             parsing=0;
@@ -263,8 +261,8 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
             {
                 Tracks[trk]->currentMs(minTime);
                 trk++;
-            };
-        };
+            }
+        }
         trk=minTrk;
         Tracks[trk]->readEvent(ev);
         
@@ -283,15 +281,14 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
             if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
             {
                 tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ratioTempo);
-                //               printf("setTempo %ld\n",tempo);
                 for (j=0;j<info->ntracks;j++)
                 {
                     Tracks[j]->changeTempo(tempo);
-                };
-            };
+                }
+            }
             break;
-        };
-    };
+        }
+    }
     
     delete ev;
     info->millisecsTotal=prevms;
@@ -308,7 +305,7 @@ void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo)
     printf("info.TicksPerCN = %d \n",info->ticksPerCuarterNote);
 #endif
     
-};
+}
 
 
 void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
@@ -317,7 +314,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     for (i=0;i<256;i++)
     {
         info->patchesUsed[i]=0;
-    };
+    }
     int parsing=1;
     int trk,minTrk;
     ulong tempo=500000;
@@ -330,7 +327,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     for (i=0;i<info->ntracks;i++)
     {
         Tracks[i]->init();
-    };
+    }
     double prevms=0;
     double minTime=0;
     double maxTime;
@@ -340,7 +337,7 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
     for (i=0;i<16;i++)
     {
         pgminchannel[i]=0;
-    };
+    }
     
     while (parsing)
     {
@@ -355,9 +352,9 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
             {
                 minTrk=trk;
                 minTime=Tracks[minTrk]->absMsOfNextEvent();
-            };
+            }
             trk++;
-        };
+        }
         if ((minTime==maxTime))
         {
             parsing=0;
@@ -372,8 +369,8 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
             {
                 Tracks[trk]->currentMs(minTime);
                 trk++;
-            };
-        };
+            }
+        }
         trk=minTrk;
         Tracks[trk]->readEvent(ev);
         switch (ev->command)
@@ -397,21 +394,21 @@ void parsePatchesUsed(track **Tracks,midifileinfo *info,int gm)
                     for (j=0;j<info->ntracks;j++)
                     {
                         Tracks[j]->changeTempo(tempo);
-                    };
-                };
-            };
+                    }
+                }
+            }
             break;   
-        };
-    };
+        }
+    }
     
     delete ev;
     
     for (i=0;i<info->ntracks;i++)
     {
         Tracks[i]->init();
-    };
+    }
     
-};
+}
 
 int fsearch(FILE *fh,const char *text,long *ptr)
 // Search for "text" throught the fh file and then returns :
@@ -442,15 +439,15 @@ int fsearch(FILE *fh,const char *text,long *ptr)
                     if (fread(tmp,1,l,fh)<(uint)l) return 0;
                     fseek(fh,pos+k,SEEK_SET);
                     r=strncmp(text,tmp,l);
-                };
+                }
                 if (r==0)
                 {
                     if (ptr!=NULL) *ptr=pos+i;
                     return 1;
-                };
-            };
+                }
+            }
             i++;
-        };
-    };
+        }
+    }
     return 0;
-};
+}

@@ -29,422 +29,422 @@
 
 MidiMapper::MidiMapper(const char *name)
 {
-ok=1;
-keymaps=NULL;
-filename=NULL;
-mapPitchBender=0;
-mapExpressionToVolumeEvents=0;
-if ((name==NULL)||(name[0]==0))
+    ok=1;
+    keymaps=NULL;
+    filename=NULL;
+    mapPitchBender=0;
+    mapExpressionToVolumeEvents=0;
+    if ((name==NULL)||(name[0]==0))
     {
-    DeallocateMaps();    
-    int i;
-    for (i=0;i<16;i++) 
-	{
-	channel[i]=i;
-	channelPatchForced[i]=-1;
-	};
-    for (i=0;i<128;i++) patchmap[i]=i;
+        DeallocateMaps();    
+        int i;
+        for (i=0;i<16;i++) 
+        {
+            channel[i]=i;
+            channelPatchForced[i]=-1;
+        }
+        for (i=0;i<128;i++) patchmap[i]=i;
     }
-   else
-    LoadFile(name);
-};
+    else
+        LoadFile(name);
+}
 
 MidiMapper::~MidiMapper()
 {
-if (filename!=NULL) delete filename;
-DeallocateMaps();
-};
+    if (filename!=NULL) delete filename;
+    DeallocateMaps();
+}
 
 void MidiMapper::DeallocateMaps(void)
 {
-int i;
-for (i=0;i<16;i++) channelKeymap[i]=NULL;
-for (i=0;i<128;i++) patchKeymap[i]=NULL;
-Keymap *km;
-while (keymaps!=NULL)
+    int i;
+    for (i=0;i<16;i++) channelKeymap[i]=NULL;
+    for (i=0;i<128;i++) patchKeymap[i]=NULL;
+    Keymap *km;
+    while (keymaps!=NULL)
     {
-    km=keymaps->next;
-    delete keymaps;
-    keymaps=km;
-    };
+        km=keymaps->next;
+        delete keymaps;
+        keymaps=km;
+    }
 }
 
 void MidiMapper::getValue(char *s,char *v)
 {
-char *c=s;
-while ((*c!=0)&&(*c!='=')) c++;
-if (c==0) v[0]=0;
-   else
+    char *c=s;
+    while ((*c!=0)&&(*c!='=')) c++;
+    if (c==0) v[0]=0;
+    else
     {
-    c++;
-    while (*c!=0)
+        c++;
+        while (*c!=0)
         {
-        *v=*c;
-        c++;v++;
-        };
-    *v=0;
-    };
-};
+            *v=*c;
+            c++;v++;
+        }
+        *v=0;
+    }
+}
 
 void MidiMapper::removeSpaces(char *s)
 {
-char *a=s;
-while ((*a!=0)&&(*a==' ')) a++;
-if (*a==0) {*s=0;return;};
-while (*a!=0)
-    {
-    while ((*a!=0)&&(*a!=' ')&&(*a!=10)&&(*a!=13))    
-        {
-        *s=*a;
-        s++;
-        a++;
-        };
-    while ((*a!=0)&&((*a==' ')||(*a==10)||(*a==13))) a++;
-    *s=' ';s++;
+    char *a=s;
+    while ((*a!=0)&&(*a==' ')) a++;
     if (*a==0) {*s=0;return;};
-    };
-*s=0;
-
-};
+    while (*a!=0)
+    {
+        while ((*a!=0)&&(*a!=' ')&&(*a!=10)&&(*a!=13))    
+        {
+            *s=*a;
+            s++;
+            a++;
+        }
+        while ((*a!=0)&&((*a==' ')||(*a==10)||(*a==13))) a++;
+        *s=' ';s++;
+        if (*a==0) {*s=0;return;};
+    }
+    *s=0;
+    
+}
 
 int MidiMapper::countWords(char *s)
 {
-int c=0;
-while (*s!=0)
+    int c=0;
+    while (*s!=0)
     {
-    if (*s==' ') c++;
-    s++;
-    };
-return c;
-};
+        if (*s==' ') c++;
+        s++;
+    }
+    return c;
+}
 
 void MidiMapper::getWord(char *t,char *s,int w)
 {
-int i=0;
-*t=0;
-while ((*s!=0)&&(i<w))
+    int i=0;
+    *t=0;
+    while ((*s!=0)&&(i<w))
     {
-    if (*s==' ') i++;
-    s++;
-    };
-while ((*s!=0)&&(*s!=' ')&&(*s!=10)&&(*s!=13))
+        if (*s==' ') i++;
+        s++;
+    }
+    while ((*s!=0)&&(*s!=' ')&&(*s!=10)&&(*s!=13))
     {
-    *t=*s;
-    t++;s++;
-    };
-*t=0;
-};
+        *t=*s;
+        t++;s++;
+    }
+    *t=0;
+}
 
 
 void MidiMapper::LoadFile(const char *name)
 {
-ok=1;
-FILE *fh=fopen(name,"rt");
-if (fh==NULL) {ok=-1;return;};
-char s[101];
-s[0]=0;
-if (filename!=NULL) delete filename;
-filename=new char[strlen(name)+1];
-strcpy(filename,name);
-#ifdef MIDIMAPPERDEBUG
-printf("Loading mapper ...\n");
-#endif
-while (!feof(fh))
-    {
+    ok=1;
+    FILE *fh=fopen(name,"rt");
+    if (fh==NULL) {ok=-1;return;};
+    char s[101];
     s[0]=0;
-    while ((!feof(fh))&&((s[0]==0)||(s[0]=='#'))) fgets(s,100,fh);
-    if (strncmp(s,"DEFINE",6)==0)
+    if (filename!=NULL) delete filename;
+    filename=new char[strlen(name)+1];
+    strcpy(filename,name);
+#ifdef MIDIMAPPERDEBUG
+    printf("Loading mapper ...\n");
+#endif
+    while (!feof(fh))
+    {
+        s[0]=0;
+        while ((!feof(fh))&&((s[0]==0)||(s[0]=='#'))) fgets(s,100,fh);
+        if (strncmp(s,"DEFINE",6)==0)
         {
-        if (strncmp(&s[7],"PATCHMAP",8)==0) readPatchmap(fh);
-           else
-            if (strncmp(&s[7],"KEYMAP",6)==0) readKeymap(fh,s);
-           else
-            if (strncmp(&s[7],"CHANNELMAP",10)==0) readChannelmap(fh);
-               else
-                {
-                printf("ERROR: Unknown DEFINE line in map file\n");
-		ok=0;
-                };
-	if (ok==0)
-	    {
-	    printf("The midi map file will be ignored\n");
-	    fclose(fh);
-	    return;
-	    };
+            if (strncmp(&s[7],"PATCHMAP",8)==0) readPatchmap(fh);
+            else
+                if (strncmp(&s[7],"KEYMAP",6)==0) readKeymap(fh,s);
+                else
+                    if (strncmp(&s[7],"CHANNELMAP",10)==0) readChannelmap(fh);
+                    else
+                    {
+                        printf("ERROR: Unknown DEFINE line in map file\n");
+                        ok=0;
+                    }
+                    if (ok==0)
+                    {
+                        printf("The midi map file will be ignored\n");
+                        fclose(fh);
+                        return;
+                    }
         }
-       else if (strncmp(s,"OPTIONS",7)==0) readOptions(fh);	
-    };
-fclose(fh);
-};
+        else if (strncmp(s,"OPTIONS",7)==0) readOptions(fh);	
+    }
+    fclose(fh);
+}
 
 Keymap *MidiMapper::createKeymap(char *name,uchar use_same_note,uchar note)
 {
-Keymap *km=new Keymap;
-strcpy(km->name,name);
-int i;
-if (use_same_note==1)
+    Keymap *km=new Keymap;
+    strcpy(km->name,name);
+    int i;
+    if (use_same_note==1)
     {
-    for (i=0;i<128;i++)
-	km->key[i]=note;
+        for (i=0;i<128;i++)
+            km->key[i]=note;
     }
-   else
+    else
     {
-    for (i=0;i<128;i++)
-	km->key[i]=i;
-    };
-AddKeymap(km);
-return km;
-};
+        for (i=0;i<128;i++)
+            km->key[i]=i;
+    }
+    AddKeymap(km);
+    return km;
+}
 
 void MidiMapper::AddKeymap(Keymap *newkm)
 {
-Keymap *km=keymaps;
-if (keymaps==NULL)
+    Keymap *km=keymaps;
+    if (keymaps==NULL)
     {
-    keymaps=newkm;
+        keymaps=newkm;
+        newkm->next=NULL;
+        return;
+    }
+    while (km->next!=NULL) km=km->next;
+    km->next=newkm;
     newkm->next=NULL;
     return;
-    };
-while (km->next!=NULL) km=km->next;
-km->next=newkm;
-newkm->next=NULL;
-return;
-};
+}
 
 Keymap *MidiMapper::GiveMeKeymap(char *n)
 {
-Keymap *km=keymaps;
-while ((km!=NULL)&&(strcmp(km->name,n)!=0)) km=km->next;
-return km;
-};
+    Keymap *km=keymaps;
+    while ((km!=NULL)&&(strcmp(km->name,n)!=0)) km=km->next;
+    return km;
+}
 
 void MidiMapper::readOptions(FILE *fh)
 {
 #ifdef MIDIMAPPERDEBUG
-printf("Loading Options ... \n");
+    printf("Loading Options ... \n");
 #endif
-char s[101];
-char v[101];
-char t[101];
-int fin=0;
-mapPitchBender=0;
-while (!fin)
+    char s[101];
+    char v[101];
+    char t[101];
+    int fin=0;
+    mapPitchBender=0;
+    while (!fin)
     {
-    s[0]=0;
-    while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
-    if (strncmp(s,"PitchBenderRatio",16)==0) 
-	{
-        getValue(s,v);
-        removeSpaces(v);
-        getWord(t,v,0);
-	mapPitchBender=1;
-        PitchBenderRatio=atoi(t);
-	}
-	else if (strncmp(s,"MapExpressionToVolumeEvents",27)==0) mapExpressionToVolumeEvents=1;
-	else if (strncmp(s,"END",3)==0) 
-	  {
-	fin=1;
-	}
+        s[0]=0;
+        while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
+        if (strncmp(s,"PitchBenderRatio",16)==0) 
+        {
+            getValue(s,v);
+            removeSpaces(v);
+            getWord(t,v,0);
+            mapPitchBender=1;
+            PitchBenderRatio=atoi(t);
+        }
+        else if (strncmp(s,"MapExpressionToVolumeEvents",27)==0) mapExpressionToVolumeEvents=1;
+        else if (strncmp(s,"END",3)==0) 
+        {
+            fin=1;
+        }
         else 
-	  {
-          printf("ERROR: Invalid option in OPTIONS section of map file : (%s)\n",s);
-	  ok=0;
-	  return;
-          };
-   };
-};
+        {
+            printf("ERROR: Invalid option in OPTIONS section of map file : (%s)\n",s);
+            ok=0;
+            return;
+        }
+    }
+}
 
 void MidiMapper::readPatchmap(FILE *fh)
 {
-char s[101];
-char v[101];
-char t[101];
-char name[101];
-int i=0;
-int j,w;
+    char s[101];
+    char v[101];
+    char t[101];
+    char name[101];
+    int i=0;
+    int j,w;
 #ifdef MIDIMAPPERDEBUG
-printf("Loading Patch map ... \n");
+    printf("Loading Patch map ... \n");
 #endif
-while (i<128)
+    while (i<128)
     {
-    s[0]=0;
-    while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
-    getValue(s,v);
-    removeSpaces(v);
-    w=countWords(v);
-    j=0;
-    patchKeymap[i]=NULL;
-    patchmap[i]=i;
-    while (j<w)
+        s[0]=0;
+        while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
+        getValue(s,v);
+        removeSpaces(v);
+        w=countWords(v);
+        j=0;
+        patchKeymap[i]=NULL;
+        patchmap[i]=i;
+        while (j<w)
         {
-        getWord(t,v,j);
-        if (strcmp(t,"AllKeysTo")==0)
-            {
-            j++;
-            if (j>=w) 
-                {
-                printf("ERROR: Invalid option in PATCHMAP section of map file\n");
-		ok=0;
-		return;
-                };
             getWord(t,v,j);
-	    sprintf(name,"AllKeysTo%s",t);
-            patchKeymap[i]=createKeymap(name,1,atoi(t));
-            }
-           else
+            if (strcmp(t,"AllKeysTo")==0)
             {
-            patchmap[i]=atoi(t);
-            };
-        j++;
-        };
-    i++;
-    };
-s[0]=0;
-while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
-if (strncmp(s,"END",3)!=0)
+                j++;
+                if (j>=w) 
+                {
+                    printf("ERROR: Invalid option in PATCHMAP section of map file\n");
+                    ok=0;
+                    return;
+                }
+                getWord(t,v,j);
+                sprintf(name,"AllKeysTo%s",t);
+                patchKeymap[i]=createKeymap(name,1,atoi(t));
+            }
+            else
+            {
+                patchmap[i]=atoi(t);
+            }
+            j++;
+        }
+        i++;
+    }
+    s[0]=0;
+    while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
+    if (strncmp(s,"END",3)!=0)
     {
-    printf("ERROR: End of section not found in map file\n");
-    ok=0;
-    return;
-    };
-};
+        printf("ERROR: End of section not found in map file\n");
+        ok=0;
+        return;
+    }
+}
 
 void MidiMapper::readKeymap(FILE *fh,char *first_line)
 {
-char s[101];
-char v[101];
+    char s[101];
+    char v[101];
 #ifdef MIDIMAPPERDEBUG
-printf("Loading Key map ... %s",first_line);
+    printf("Loading Key map ... %s",first_line);
 #endif
-removeSpaces(first_line);
-getWord(v,first_line,2);
-Keymap *km=new Keymap;
-strcpy(km->name,v);
-int i=0;
-while (i<128)
+    removeSpaces(first_line);
+    getWord(v,first_line,2);
+    Keymap *km=new Keymap;
+    strcpy(km->name,v);
+    int i=0;
+    while (i<128)
     {
+        s[0]=0;
+        while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
+        getValue(s,v);
+        removeSpaces(v);
+        km->key[i]=atoi(v);
+        i++;
+    }
     s[0]=0;
-    while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
-    getValue(s,v);
-    removeSpaces(v);
-    km->key[i]=atoi(v);
-    i++;
-    };
-s[0]=0;
-while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
-if (strncmp(s,"END",3)!=0)
+    while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
+    if (strncmp(s,"END",3)!=0)
     {
-    printf("ERROR: End of section not found in map file\n");
-    ok=0;
-    return;
-    };
-AddKeymap(km);
-};
+        printf("ERROR: End of section not found in map file\n");
+        ok=0;
+        return;
+    }
+    AddKeymap(km);
+}
 
 void MidiMapper::readChannelmap(FILE *fh)
 {
-char s[101];
-char v[101];
-char t[101];
-int i=0;
-int w,j;
+    char s[101];
+    char v[101];
+    char t[101];
+    int i=0;
+    int w,j;
 #ifdef MIDIMAPPERDEBUG
-printf("Loading Channel map ... \n");
+    printf("Loading Channel map ... \n");
 #endif
-while (i<16)
+    while (i<16)
     {
-    s[0]=0;
-    while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
-    getValue(s,v);
-    removeSpaces(v);
-    w=countWords(v);
-    j=0;
-    channelKeymap[i]=NULL;
-    channelPatchForced[i]=-1;
-    channel[i]=i;
-    while (j<w)
+        s[0]=0;
+        while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
+        getValue(s,v);
+        removeSpaces(v);
+        w=countWords(v);
+        j=0;
+        channelKeymap[i]=NULL;
+        channelPatchForced[i]=-1;
+        channel[i]=i;
+        while (j<w)
         {
-        getWord(t,v,j);
-        if (strcmp(t,"Keymap")==0)
-            {
-            j++;
-            if (j>=w) 
-                {
-                printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
-		ok=0;
-		return;
-                };
             getWord(t,v,j);
-            channelKeymap[i]=GiveMeKeymap(t); 
+            if (strcmp(t,"Keymap")==0)
+            {
+                j++;
+                if (j>=w) 
+                {
+                    printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
+                    ok=0;
+                    return;
+                }
+                getWord(t,v,j);
+                channelKeymap[i]=GiveMeKeymap(t); 
             }
-        else if (strcmp(t,"ForcePatch")==0)
-	    {
-            j++;
-            if (j>=w) 
-                {
-                printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
-		ok=0;
-		return;
-                };
-            getWord(t,v,j);
-	    channelPatchForced[i]=atoi(t); 
-	    }
-           else
+            else if (strcmp(t,"ForcePatch")==0)
             {
-            channel[i]=atoi(t); 
-            };
-        j++;
-        };
-    i++;
-    };
-s[0]=0;
-while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
-if (strncmp(s,"END",3)!=0)
+                j++;
+                if (j>=w) 
+                {
+                    printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
+                    ok=0;
+                    return;
+                }
+                getWord(t,v,j);
+                channelPatchForced[i]=atoi(t); 
+            }
+            else
+            {
+                channel[i]=atoi(t); 
+            }
+            j++;
+        }
+        i++;
+    }
+    s[0]=0;
+    while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
+    if (strncmp(s,"END",3)!=0)
     {
-    printf("END of section not found in map file\n");
-    ok=0;
-    return;
-    };
-
-};
+        printf("END of section not found in map file\n");
+        ok=0;
+        return;
+    }
+    
+}
 
 uchar MidiMapper::Key(uchar chn,uchar pgm, uchar note)
 {
-uchar notemapped=note;
-if (patchKeymap[pgm]!=NULL) notemapped=patchKeymap[pgm]->key[note];
-if (channelKeymap[chn]!=NULL) notemapped=channelKeymap[chn]->key[note];
-return notemapped;
-};
+    uchar notemapped=note;
+    if (patchKeymap[pgm]!=NULL) notemapped=patchKeymap[pgm]->key[note];
+    if (channelKeymap[chn]!=NULL) notemapped=channelKeymap[chn]->key[note];
+    return notemapped;
+}
 
 
 char *MidiMapper::getFilename(void)
 {
-return (filename!=NULL)? filename : (char *)"";
-};
+    return (filename!=NULL)? filename : (char *)"";
+}
 
 uchar MidiMapper::Patch(uchar chn,uchar pgm)
 {
-return (channelPatchForced[chn] == -1) ? 
-		patchmap[pgm] : (uchar)channelPatchForced[chn] ;
-};
+    return (channelPatchForced[chn] == -1) ? 
+        patchmap[pgm] : (uchar)channelPatchForced[chn] ;
+}
 
 void MidiMapper::PitchBender(uchar chn,uchar &lsb,uchar &msb)
 {
-if (mapPitchBender)
-   {
-   short pbs=((short)msb<<7) | (lsb & 0x7F);
-   pbs=pbs-0x2000;
-   short pbs2=(((long)pbs*PitchBenderRatio)/4096);
+    if (mapPitchBender)
+    {
+        short pbs=((short)msb<<7) | (lsb & 0x7F);
+        pbs=pbs-0x2000;
+        short pbs2=(((long)pbs*PitchBenderRatio)/4096);
 #ifdef MIDIMAPPERDEBUG
-   printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
+        printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
 #endif
-   pbs2=pbs2+0x2000;
-   lsb=pbs2 & 0x7F;
-   msb=(pbs2 >> 7)&0x7F;  
-   };
-};
+        pbs2=pbs2+0x2000;
+        lsb=pbs2 & 0x7F;
+        msb=(pbs2 >> 7)&0x7F;  
+    }
+}
 
 void MidiMapper::Controller(uchar chn,uchar &ctl, uchar &v)
 {
-if ((mapExpressionToVolumeEvents)&&(ctl==11)) ctl=7;
-};
+    if ((mapExpressionToVolumeEvents)&&(ctl==11)) ctl=7;
+}

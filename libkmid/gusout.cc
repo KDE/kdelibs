@@ -40,7 +40,7 @@
 SEQ_USE_EXTBUF();
 
 struct pat_header
-  {
+{
     char            magic[12];
     char            version[10];
     char            description[60];
@@ -50,9 +50,9 @@ struct pat_header
     unsigned short  nr_waveforms;
     unsigned short  master_volume;
     unsigned long   data_size;
-  };
+};
 struct sample_header
-  {
+{
     char            name[7];
     unsigned char   fractions;
     long            len;
@@ -64,10 +64,10 @@ struct sample_header
     long            base_note;
     short           detune;
     unsigned char   panning;
-
+    
     unsigned char   envelope_rate[6];
     unsigned char   envelope_offset[6];
-
+    
     unsigned char   tremolo_sweep;
     unsigned char   tremolo_rate;
     unsigned char   tremolo_depth;
@@ -80,7 +80,7 @@ struct sample_header
     
     short           scale_frequency;
     unsigned short  scale_factor;
-  };
+};
 
 int get_dint(unsigned char *p)
 {
@@ -117,7 +117,7 @@ gusOut::gusOut(int d,int total)
     use8bit=0;
     nvoices=total;
     vm=new voiceManager(nvoices);
-};
+}
 
 gusOut::~gusOut()
 {
@@ -128,8 +128,8 @@ gusOut::~gusOut()
         delete GUS_patches_directory;
         delete_GUS_patches_directory = 0;
         GUS_patches_directory="/etc";
-    };
-};
+    }
+}
 
 void gusOut::openDev (int sqfd)
 {
@@ -155,7 +155,7 @@ void gusOut::openDev (int sqfd)
     lastcount=0.0;
     
 #endif
-//seqbuf_clean();
+    //seqbuf_clean();
     //ioctl(seqfd,SNDCTL_SEQ_RESET);
     //ioctl(seqfd,SNDCTL_SEQ_PANIC);
     
@@ -168,7 +168,7 @@ void gusOut::openDev (int sqfd)
     ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &totalmemory);
     freememory = device;
     ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
-
+    
 #ifdef GUSOUTDEBUG
     printf("GUS Device %d opened (%d voices)\n",device,nvoices);
 #ifdef HANDLETIMEINDEVICES
@@ -179,7 +179,7 @@ void gusOut::openDev (int sqfd)
 #endif
     
 
-};
+}
 
 void gusOut::closeDev (void)
 {
@@ -192,7 +192,7 @@ void gusOut::closeDev (void)
     //if (seqfd>=0)
     //    close(seqfd);
     seqfd=-1;
-};
+}
 
 void gusOut::initDev (void)
 {
@@ -214,16 +214,16 @@ void gusOut::initDev (void)
         chnController(chn, CTL_EXT_EFF_DEPTH, 0);
         chnController(chn, CTL_CHORUS_DEPTH, 0);
         chnController(chn, 0x4a, 127);
-    };
+    }
     
     
     for (int i = 0; i < nvoices; i++)
     {
         SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
         SEQ_STOP_NOTE(device, i, vm->Note(i), 64);
-    };
+    }
     
-};
+}
 
 
 int gusOut::Patch(int p)
@@ -233,7 +233,7 @@ int gusOut::Patch(int p)
     p=0;
     while ((p<256)&&(patchloaded[p]==0)) p++;
     return p;
-};
+}
 
 void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
@@ -258,14 +258,14 @@ void gusOut::noteOn  (uchar chn, uchar note, uchar vel)
         SEQ_BENDER(device, v, chn_bender[chn]);
         
         SEQ_START_NOTE(device, v, note, vel);
-        SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
+        //        SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
         SEQ_CHN_PRESSURE(device, v , chn_pressure[chn]);
     }
     
 #ifdef GUSOUTDEBUG
     printf("Note ON >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void gusOut::noteOff (uchar chn, uchar note, uchar vel)
 {
@@ -280,7 +280,7 @@ void gusOut::noteOff (uchar chn, uchar note, uchar vel)
 #ifdef GUSOUTDEBUG
     printf("Note OFF >\t chn : %d\tnote : %d\tvel: %d\n",chn,note,vel);
 #endif
-};
+}
 
 void gusOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
@@ -288,7 +288,7 @@ void gusOut::keyPressure (uchar chn, uchar note, uchar vel)
     vm->initSearch();
     while ((i=vm->Search(chn,note))!=-1)
         SEQ_KEY_PRESSURE(device, i, note,vel);
-};
+}
 
 void gusOut::chnPatchChange (uchar chn, uchar patch)
 {
@@ -299,7 +299,7 @@ void gusOut::chnPatchChange (uchar chn, uchar patch)
         SEQ_SET_PATCH(device,i,Map->Patch(chn,patch)); 
     chn_patch[chn]=patch;
     
-};
+}
 
 void gusOut::chnPressure (uchar chn, uchar vel)
 {
@@ -308,7 +308,7 @@ void gusOut::chnPressure (uchar chn, uchar vel)
     while ((i=vm->Search(chn))!=-1)
         SEQ_CHN_PRESSURE(device, i , vel);
     chn_pressure[chn]=vel;
-};
+}
 
 void gusOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
@@ -330,7 +330,7 @@ void gusOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
      i++;
      };
      */
-};
+}
 
 void gusOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
@@ -355,12 +355,12 @@ void gusOut::chnController (uchar chn, uchar ctl, uchar v)
      };
      */
     chn_controller[chn][ctl]=v;
-};
+}
 
 void gusOut::sysex(uchar *, ulong )
 {
     
-};
+}
 
 void gusOut::setGUSPatchesDirectory(const char *dir)
 {
@@ -369,12 +369,12 @@ void gusOut::setGUSPatchesDirectory(const char *dir)
     GUS_patches_directory=new char[strlen(dir)+1];
     strcpy(GUS_patches_directory,dir);
     delete_GUS_patches_directory=1;
-};
+}
 
 char *gusOut::patchName(int pgm)
 {
     return GUS_voice_names[pgm];
-};
+}
 
 
 int gusOut::loadPatch(int pgm)
@@ -385,12 +385,12 @@ int gusOut::loadPatch(int pgm)
     {
         printf("Trying to reload a patch. This should never happen, please report.\n");
         return 0;
-    };
+    }
     if ((patchName(pgm)==NULL)||((patchName(pgm))[0]==0))
     {
         printf("Couldn't guess patch name for patch number %d\n",pgm);
         return -1;
-    };
+    }
     char *s=new char[strlen(GUS_patches_directory)+strlen(patchName(pgm))+10];
     if (s==NULL) return -1;
     sprintf(s,"%s/%s.pat",GUS_patches_directory,patchName(pgm));
@@ -401,14 +401,14 @@ int gusOut::loadPatch(int pgm)
     {
         printf("File %s doesn't exist\n",s);
         return -1;
-    };
+    }
     
     FILE *fh=fopen(s,"rb");
     if (fh==NULL)
     {
         printf("Couldn't open patch %s\n",s);
         return -1;
-    };
+    }
     
     unsigned char tmp[256];
     if (fread(tmp,1,0xef,fh)!=0xef)
@@ -416,19 +416,19 @@ int gusOut::loadPatch(int pgm)
         fclose(fh);
         printf("Short file ! \n");
         return -1;
-    };
+    }
     memcpy ((char *) &header, tmp, sizeof (header)); 
     
     if (strncmp(header.magic,"GF1PATCH110",12)!=0)
     {
         printf("File %s is corrupted or it isn't a patch file\n",s);
         return -1;
-    };
+    }
     if (strncmp(header.version,"ID#000002",10)!=0)
     {
         printf("File %s's version is not supported\n",s);
         return -1;
-    };
+    }
     unsigned short nWaves= *(unsigned short *)&tmp[85];
     unsigned short masterVolume= *(unsigned short *)&tmp[87];
 #ifdef GUSOUTDEBUG
@@ -447,7 +447,7 @@ int gusOut::loadPatch(int pgm)
             fclose(fh);
             printf("Short file\n");
             return -1;
-        };
+        }
         memcpy ((char *) &sample, tmp, sizeof (sample));
         sample.fractions = (char)tmp[7];
         sample.len = get_dint(&tmp[8]);
@@ -481,7 +481,7 @@ int gusOut::loadPatch(int pgm)
         {
             printf("Not enough memory\n");
             return -1;
-        };
+        }
         patch->key = GUS_PATCH;
         patch->device_no = device;
         patch->instr_no = pgm;
@@ -528,7 +528,7 @@ int gusOut::loadPatch(int pgm)
         
         offset = offset + sample.len;
         
-    };
+    }
     patchloaded[pgm]=1;
     
     fclose(fh);
@@ -537,7 +537,7 @@ int gusOut::loadPatch(int pgm)
     freememory = device;
     ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
     return 0;
-};
+}
 
 
 void gusOut::setPatchesToUse(int *patchesused)
@@ -557,12 +557,12 @@ void gusOut::setPatchesToUse(int *patchesused)
     for (k=0;k<256;k++)
     {
         if (patchesused[k]!=-1) printf("%d,",patchesused[k]);
-    };
+    }
     printf("\n Patches used, smartly sorted :\n");
     for (k=0;k<256;k++)
     {
         if (patchesordered[k]!=-1) printf("%d,",patchesordered[k]);
-    };
+    }
     
     int i=0;
     while (patchesordered[i]!=-1)
@@ -570,8 +570,9 @@ void gusOut::setPatchesToUse(int *patchesused)
         printf("Load Patch : %d\n",patchesordered[i]);
         loadPatch(patchesordered[i]);
         i++;
-    };
-};
+    }
+}
+
 int compare_decreasing(const void *a,const void *b)
 {
     struct instr_gm
@@ -582,7 +583,7 @@ int compare_decreasing(const void *a,const void *b)
     instr_gm *ai=(instr_gm *)a;
     instr_gm *bi=(instr_gm *)b;
     return ai->used<bi->used;
-};
+}
 
 void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
 {
@@ -601,7 +602,7 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
         tempmelody[i].pgm=i;
         tempdrums[i].used=patchesused[j];
         tempdrums[i].pgm=j;
-    };
+    }
     /* SORT */ // Decreasing order (first most used patch, then less used patch)
     qsort(&tempmelody[0],128,sizeof(instr_gm),compare_decreasing);
     qsort(&tempdrums[0],128,sizeof(instr_gm),compare_decreasing);
@@ -618,7 +619,7 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
     for (int k=0;k<128;k++)
     {
         printf("%d - %d\n",tempmelody[k].used,tempmelody[k].pgm);
-    };
+    }
     for (int k=0;k<128;k++)
     {
         printf("%d : %d\n",tempdrums[k].used,tempdrums[k].pgm);
@@ -631,14 +632,14 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
     {
         totalmelody++;
         i++;
-    };
+    }
     i=0;
     int totaldrums=0;
     while ((i<128)&&(tempdrums[i].used!=0))
     {
         totaldrums++;
         i++;
-    };
+    }
     printf("Totalmelody : %d,totaldrums : %d\n",totalmelody,totaldrums);
     int tgt=0;
     
@@ -666,34 +667,35 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
                 patchesordered[tgt]=tempmelody[cm].pgm;
                 cm++;
                 tm--;
-            };
+            }
             tgt++;	
-        };
-    };
+        }
+    }
     while (tm>0)
     {
         patchesordered[tgt]=tempmelody[cm].pgm;
         tgt++;
         cm++;
         tm--;
-    };
+    }
     while (td>0)
     {
         patchesordered[tgt]=tempdrums[cd].pgm;
         tgt++;
         cd++;
         td--;
-    };
+    }
     
     // Now we put as not used (-1) the rest of the array
     while (tgt<256)
     {
         patchesordered[tgt]=-1;
         tgt++;
-    };
-};
+    }
+}
 
-char *gusOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
+//char *gusOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
+char *gusOut::GUS_patches_directory="/dos/ultrasnd/midi";
 
 int gusOut::delete_GUS_patches_directory = 0;
 /* No, this doesn't delete any file :-) it's just for internal use */
