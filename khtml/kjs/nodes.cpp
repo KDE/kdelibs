@@ -103,7 +103,7 @@ KJSO *ResolveNode::evaluate()
   while (scope) {
     KJSO *obj = scope->object;
     if (obj->hasProperty(ident)) {
-      cout << "Resolve: found '" << ident.ascii() << "'" << endl;
+      //      cout << "Resolve: found '" << ident.ascii() << "'" << endl;
       return new KJSReference(obj, ident);
     }
     scope = scope->next;
@@ -111,7 +111,7 @@ KJSO *ResolveNode::evaluate()
 
   // identifier not found
   cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
-  return new KJSReference(new KJSNull(), ident); // TODO: use a global Null
+  return new KJSReference(zeroRef(new KJSNull()), ident); // TODO: use a global Null
 }
 
 // ECMA 11.1.4
@@ -123,27 +123,25 @@ KJSO *GroupNode::evaluate()
 // ECMA 11.2.1a
 KJSO *AccessorNode1::evaluate()
 {
-  KJSO *e1 = expr1->evaluate();
-  KJSO *v1 = e1->getValue();
-  KJSO *e2 = expr2->evaluate();
-  KJSO *v2 = e2->getValue();
-  KJSO *o = toObject(v1);
-  KJSO *s = toString(v2);
-  KJSO *ref = new KJSReference(o, s->sVal().ascii());
+  Ptr e1 = expr1->evaluate();
+  Ptr v1 = e1->getValue();
+  Ptr e2 = expr2->evaluate();
+  Ptr v2 = e2->getValue();
+  Ptr o = toObject(v1);
+  Ptr s = toString(v2);
+  KJSReference *ref = new KJSReference(o, s->sVal().ascii());
 
-  //  delete s;
   return ref;
 }
 
 // ECMA 11.2.1b
 KJSO *AccessorNode2::evaluate()
 {
-  KJSO *e = expr->evaluate();
-  KJSO *v = e->getValue();
-  KJSO *o = toObject(v);
-  KJSO *ref = new KJSReference(o, ident);
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr o = toObject(v);
+  KJSReference *ref = new KJSReference(o, ident);
 
-  // delete string
   return ref;
 }
 
@@ -179,13 +177,11 @@ KJSO *NewExprNode::evaluate()
 // ECMA 11.2.3
 KJSO *FunctionCallNode::evaluate()
 {
-  Debug("FunctionCallNode::evaluate()\n");
+  Ptr e = expr->evaluate();
 
-  KJSO *e = expr->evaluate();
+  KJSArgList *argList = args->evaluateList();
 
-  KJSO *tmp = args->evaluate();
-  KJSArgList *argList = static_cast<KJSArgList*>(tmp);
-  KJSO *v = e->getValue();
+  Ptr v = e->getValue();
 
   if (!v->isObject()) {
     /* TODO: Runtime Error */
@@ -197,38 +193,42 @@ KJSO *FunctionCallNode::evaluate()
     assert(!"FunctionCallNode::evaluate(): Runtime Error II");
   }
 
-  KJSO *o;
+  Ptr o;
   if (e->isA(Reference))
     o = e->getBase();
   else
     o = new KJSNull();
 
   if (o->isA(Activation))
-    o = new KJSNull(); // memory leak
+    o = new KJSNull();
 
-  return v->executeCall(o, argList);
+  KJSO *result = v->executeCall(o, argList);
+
+  delete argList;
+  return result;
 }
 
 // ECMA 11.2.4
-KJSO *ArgumentsNode::evaluate()
+KJSArgList *ArgumentsNode::evaluateList()
 {
   if (!list)
     return new KJSArgList();
 
-  return list->evaluate();
+  return list->evaluateList();
 }
 
 // ECMA 11.2.4
-KJSO *ArgumentListNode::evaluate()
+KJSArgList *ArgumentListNode::evaluateList()
 {
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+
   if (!list) {
     KJSArgList *l = new KJSArgList();
-    return l->append(expr->evaluate()->getValue());
+    return l->append(v);
   }
 
-  KJSO *tmp = list->evaluate();
-  KJSArgList *l = static_cast<KJSArgList*>(tmp);
-  KJSO *v = expr->evaluate()->getValue();
+  KJSArgList *l = list->evaluateList();
 
   return l->append(v);
 }
@@ -242,8 +242,10 @@ KJSO *RelationalNode::evaluate()
 // ECMA 11.9
 KJSO *EqualNode::evaluate()
 {
-  KJSO *v1 = expr1->evaluate()->getValue();
-  KJSO *v2 = expr2->evaluate()->getValue();
+  Ptr e1 = expr1->evaluate();
+  Ptr e2 = expr2->evaluate();
+  Ptr v1 = e1->getValue();
+  Ptr v2 = e2->getValue();
 
   return new KJSBoolean(compare(v1, oper, v2));
 }
@@ -263,18 +265,22 @@ KJSO *BinaryLogicalNode::evaluate()
 // ECMA 11.12
 KJSO *ConditionalNode::evaluate()
 {
-  KJSO *b = toBoolean(logical->evaluate()->getValue());
+  Ptr e = logical->evaluate();
+  Ptr v = e->getValue();
+  Ptr b = toBoolean(v);
 
   if (b->bVal())
-    return expr1->evaluate()->getValue();
+    e = expr1->evaluate();
   else
-    return expr2->evaluate()->getValue();
+    e = expr2->evaluate();
+
+  return e->getValue();
 }
 
 // ECMA 11.13
 KJSO *AssignNode::evaluate()
 {
-  KJSO *l, *e, *v;
+  Ptr l, e, v;
   switch (oper)
     {
     case OpEqual:
@@ -282,7 +288,7 @@ KJSO *AssignNode::evaluate()
       e = expr->evaluate();
       v = e->getValue();
       l->putValue(v);
-      return v;
+      return v.ref();
       break;
     default:
       assert(!"AssignNode: unhandled switch case");
@@ -292,7 +298,6 @@ KJSO *AssignNode::evaluate()
 // ECMA 11.3
 KJSO *PostfixNode::evaluate()
 {
-  cout << "PostfixNode::evaluate()" << endl;
   /* TODO */
 }
 
@@ -305,7 +310,8 @@ KJSO *DeleteNode::evaluate()
 // ECMA 11.4.2
 KJSO *VoidNode::evaluate()
 {
-  (void) expr->evaluate()->getValue();
+  Ptr dummy1 = expr->evaluate();
+  Ptr dummy2 = dummy1->getValue();
 
   return new KJSUndefined();
 }
@@ -314,10 +320,13 @@ KJSO *VoidNode::evaluate()
 KJSO *TypeOfNode::evaluate()
 {
   const char *s = 0L;
-  KJSO *e = expr->evaluate();
-  if (e->isA(Reference) && e->getBase()->isA(Null))
-    return new KJSUndefined();
-  KJSO *v = e->getValue();
+  Ptr e = expr->evaluate();
+  if (e->isA(Reference)) {
+    Ptr b = e->getBase();
+    if (b->isA(Null))
+      return new KJSUndefined();
+  }
+  Ptr v = e->getValue();
   switch (v->type())
     {
     case Undefined:
@@ -351,15 +360,14 @@ KJSO *TypeOfNode::evaluate()
 // ECMA 11.4.4 and 11.4.5
 KJSO *PrefixNode::evaluate()
 {
-  cout << "PrefixNode::evaluate()" << endl;
   /* TODO */
 }
 
 // ECMA 11.4.6
 KJSO *UnaryPlusNode::evaluate()
 {
-  KJSO *e = expr->evaluate();
-  KJSO *v = e->getValue();
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
   
   return toNumber(v);
 }
@@ -367,10 +375,11 @@ KJSO *UnaryPlusNode::evaluate()
 // ECMA 11.4.7
 KJSO *NegateNode::evaluate()
 {
-  KJSO *e = expr->evaluate();
-  KJSO *v = e->getValue();
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr n = toNumber(v);
   
-  double d = -toNumber(v)->dVal();
+  double d = -n->dVal();
   /* TODO: handle NaN */
 
   return new KJSNumber(d);
@@ -385,22 +394,23 @@ KJSO *BitwiseNotNode::evaluate()
 // ECMA 11.4.9
 KJSO *LogicalNotNode::evaluate()
 {
-  KJSO *v = expr->evaluate()->getValue();
-  KJSO *b = toBoolean(v);
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr b = toBoolean(v);
 
   return new KJSBoolean(!b->bVal());
 }
 
 KJSO *MultNode::evaluate()
 {
-  KJSO *t1 = term1->evaluate();
-  KJSO *v1 = t1->getValue();
+  Ptr t1 = term1->evaluate();
+  Ptr v1 = t1->getValue();
 
-  KJSO *t2 = term2->evaluate();
-  KJSO *v2 = t2->getValue();
+  Ptr t2 = term2->evaluate();
+  Ptr v2 = t2->getValue();
 
-  KJSO *n1 = toNumber(v1);
-  KJSO *n2 = toNumber(v2);
+  Ptr n1 = toNumber(v1);
+  Ptr n2 = toNumber(v2);
 
   KJSNumber *result;
 
@@ -411,8 +421,6 @@ KJSO *MultNode::evaluate()
   //  else
   //    result = new KJSNumber(n1->dVal() % n2->dVal()); // TODO: Double, NaN ...
 
-  //  delete n1;
-  //  delete n2;
   return result;
 }
 
@@ -424,18 +432,18 @@ KJSO *ShiftNode::evaluate()
 
 KJSO *AddNode::evaluate()
 {
-  KJSO *t1 = term1->evaluate();
-  KJSO *v1 = t1->getValue();
+  Ptr t1 = term1->evaluate();
+  Ptr v1 = t1->getValue();
 
-  KJSO *t2 = term2->evaluate();
-  KJSO *v2 = t2->getValue();
+  Ptr t2 = term2->evaluate();
+  Ptr v2 = t2->getValue();
 
-  KJSO *p1 = toPrimitive(v1);
-  KJSO *p2 = toPrimitive(v2);
+  Ptr p1 = toPrimitive(v1);
+  Ptr p2 = toPrimitive(v2);
 
   if ((p1->isA(String) || p2->isA(String)) && oper == '+') {
-    KJSO *s1 = toString(p1);
-    KJSO *s2 = toString(p2);
+    Ptr s1 = toString(p1);
+    Ptr s2 = toString(p2);
  
     UString s = s1->sVal() + s2->sVal();
 
@@ -444,8 +452,8 @@ KJSO *AddNode::evaluate()
     return res;
   }
 
-  KJSO *n1 = toNumber(p1);
-  KJSO *n2 = toNumber(p2);
+  Ptr n1 = toNumber(p1);
+  Ptr n2 = toNumber(p2);
 
   KJSNumber *result;
   if (oper == '+')
@@ -453,16 +461,14 @@ KJSO *AddNode::evaluate()
   else
     result = new KJSNumber(n1->dVal() - n2->dVal());
 
-  //  delete n1;
-  //  delete n2;
   return result;
 }
 
 // ECMA 11.14
 KJSO *CommaNode::evaluate()
 {
-  KJSO *e = expr1->evaluate();
-  e->getValue(); // ignore return value
+  Ptr e = expr1->evaluate();
+  Ptr dummy = e->getValue(); // ignore return value
   e = expr2->evaluate();
 
   return e->getValue();
@@ -483,15 +489,15 @@ KJSO *StatListNode::evaluate()
   if (!list)
     return statement->evaluate();
 
-  KJSO *l = list->evaluate();
+  Ptr l = list->evaluate();
   if (l->isA(Completion) && l->cVal() != Normal) // Completion check needed ?
-    return l;
-  KJSO *e = statement->evaluate();
+    return l->ref();
+  Ptr e = statement->evaluate();
   if (e->isValueCompletion())
-    return e;
+    return e->ref();
   if (!l->isValueCompletion())
-    return e;
-  KJSO *v = l->getValue();
+    return e->ref();
+  Ptr v = l->getValue();
   if (e->isA(Completion) && e->cVal() == Break)
     return new KJSCompletion(Break, v);
   if (e->isA(Completion) && e->cVal() == Continue)
@@ -515,15 +521,14 @@ KJSO *VarDeclNode::evaluate()
 
   // TODO: coded with help of 10.1.3. Correct ?
   if (!variable->hasProperty(ident)) {
-    KJSO *v = new KJSUndefined();
-    variable->put(ident, v);
-    // TODO: this looks strange (and leaks memory)
-    KJSO *r = new KJSReference(variable, ident);
-
+    //    KJSO *val;
+    Ptr val, tmp;
     if (init) {
-      KJSO *val = init->evaluate()->getValue();
-      r->putValue(val);
-    }
+      tmp = init->evaluate();
+      val = tmp->getValue();
+    } else
+      val = new KJSUndefined();
+    variable->put(ident, val);
   }
 }
 
@@ -556,8 +561,8 @@ KJSO *ForNode::evaluate()
 // ECMA 12.4
 KJSO *ExprStatementNode::evaluate()
 {
-  KJSO *e = expr->evaluate();
-  KJSO *v = e->getValue();
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
 
   return new KJSCompletion(Normal, v);
 }
@@ -565,9 +570,9 @@ KJSO *ExprStatementNode::evaluate()
 // ECMA 12.5
 KJSO *IfNode::evaluate()
 {
-  KJSO *e = expr->evaluate();
-  KJSO *v = e->getValue();
-  KJSO *b = toBoolean(v);
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr b = toBoolean(v);
 
   // if ... then
   if (b->bVal())
@@ -584,10 +589,13 @@ KJSO *IfNode::evaluate()
 // ECMA 12.6
 KJSO *WhileNode::evaluate()
 {
-  KJSO *b, *e, *value = 0L;
+  Ptr b, be, bv, e;
+  KJSO *value = 0L;
 
   while (1) {
-    b = toBoolean(expr->evaluate()->getValue());
+    be = expr->evaluate();
+    bv = be->getValue();
+    b = toBoolean(bv);
 
     if (!b->bVal())
       break;
@@ -601,7 +609,7 @@ KJSO *WhileNode::evaluate()
       if (e->cVal() == Continue)
 	continue;
       if (e->cVal() == ReturnValue)
-	return e;
+	return e->ref();
     }
   }
   return new KJSCompletion(Normal, value);
@@ -623,9 +631,10 @@ KJSO *BreakNode::evaluate()
 KJSO *ReturnNode::evaluate()
 {
   if (!value)
-    return new KJSCompletion(ReturnValue, new KJSUndefined());
+    return new KJSCompletion(ReturnValue, zeroRef(new KJSUndefined()));
 
-  KJSO *v = value->evaluate()->getValue();
+  Ptr e = value->evaluate();
+  Ptr v = e->getValue();
 
   return new KJSCompletion(ReturnValue, v);
 }
@@ -639,9 +648,9 @@ KJSO *WithNode::evaluate()
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
-  int num = 1;
+  int num = 0;
   ParameterNode *p = param;
-  while (p->nextParam()) {
+  while (p) {
     p = p->nextParam();
     num++;
   }
@@ -650,7 +659,7 @@ void FuncDeclNode::processFuncDecl()
   for(int i = 0; i < num; i++, p = p->nextParam())
     plist->insert(num - i - 1, p->ident());
 
-  KJSO *f = new KJSDeclaredFunction(plist, block);
+  Ptr f = new KJSDeclaredFunction(plist, block);
 
   /* TODO: decide between global and activation object */
   KJSWorld::global->put(ident, f);
@@ -665,7 +674,6 @@ KJSO *ParameterNode::evaluate()
 // ECMA 14
 KJSO *ProgramNode::evaluate()
 {
-  fprintf(stderr , "ProgramNode::evaluate()\n");
   source->processFuncDecl();
 
   return source->evaluate();
@@ -677,13 +685,13 @@ KJSO *SourceElementsNode::evaluate()
   if (!elements)
     return element->evaluate();
 
-  KJSO *res1 = elements->evaluate();
-  KJSO *res2 = element->evaluate();
+  Ptr res1 = elements->evaluate();
+  Ptr res2 = element->evaluate();
 
   if (res2->isA(Completion))
-    return res2;
-
-  return res1;
+    return res2.ref();
+  
+  return res1.ref();
 }
 
 // ECMA 14
@@ -714,8 +722,9 @@ void SourceElementNode::processFuncDecl()
 // for debugging purposes
 KJSO *PrintNode::evaluate()
 {
-  KJSO *v = expr->evaluate()->getValue();
-  KJSO *s = toString(v);
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr s = toString(v);
 
   cout << "---> " << s->sVal().ascii() << endl;
 
@@ -725,8 +734,9 @@ KJSO *PrintNode::evaluate()
 // for debugging purposes
 KJSO *AlertNode::evaluate()
 {
-  KJSO *v = expr->evaluate()->getValue();
-  KJSO *s = toString(v);
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr s = toString(v);
 
   cout << "---> " << s->sVal().ascii() << endl;
   QMessageBox::information(0L, "KJS", QString(s->sVal().ascii()));

@@ -99,7 +99,6 @@ int KJSLexer::lex()
       } else if (current == 0) {
 	setDone(Eof);
       } else if (isLineTerminator()) {
-	cout << "Line terminator" << endl;
 	yylineno++;
       } else if (current == '"' || current == '\'') {
 	state = InString;
@@ -283,10 +282,12 @@ int KJSLexer::lex()
   // terminate string
   buffer8[pos8] = '\0';
 
+#ifdef KJS_DEBUG_LEX
   fprintf(stderr, "line: %d ", lineNo());
   fprintf(stderr, "yytext (%x): ", buffer8[0]);
   if (state != Eol)
     fprintf(stderr, "%s ", buffer8);
+#endif
 
   int i;
   // scan integer and hex numbers
@@ -302,32 +303,52 @@ int KJSLexer::lex()
     state = Int;
   }
 
+#ifdef KJS_DEBUG_LEX
   switch (state) {
   case Eof:
     printf("(EOF)\n");
-    return 0;
+    break;
   case Eol:
     printf("(EOL)\n");
-    return LF;
+    break;
   case Other:
     printf("(Other)\n");
+    break;
+  case Identifier:
+    printf("(Identifier)/(Keyword)\n");
+    break;
+  case String:
+    printf("(String)\n");
+    break;
+  case Int:
+    printf("(Int)\n");
+    break;
+  case Decimal:
+    printf("(Decimal)\n");
+    break;
+  default:
+    printf("(unknown)");
+  }
+#endif
+
+  switch (state) {
+  case Eof:
+    return 0;
+  case Eol:
+    return LF;
+  case Other:
     return token;
   case Identifier:
     if (!(token = lookupKeyword(buffer8))) {
-      printf("(Identifier)\n");
       yylval.cstr = new CString(buffer8);
       return IDENT;
     }
-    printf("(Keyword)\n");
     return token;
   case String:
-    printf("(String)\n");
     yylval.ustr = new UString(buffer16, pos16); return STRING;
   case Int:
-    printf("(Int)\n");
     yylval.ival = i; return INTEGER;
   case Decimal:
-    printf("(Decimal)\n");
     yylval.dval = strtod(buffer8, 0L); return DOUBLE;
   default:
     assert(!"unhandled numeration value in switch");

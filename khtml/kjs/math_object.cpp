@@ -32,22 +32,24 @@ KJSMath::KJSMath()
 {
   const int attr = DontEnum | DontDelete | ReadOnly;
 #ifdef M_E
-  put("E", new KJSNumber(M_E), attr);
+  put("E", zeroRef(new KJSNumber(M_E)), attr);
 #else
-  put("E", new KJSNumber(::exp(1)), attr);
+  put("E", zeroRef(new KJSNumber(::exp(1))), attr);
 #endif
 
-  put("sin", new KJSInternalFunction(&sin));
+  put("sin", zeroRef(new KJSInternalFunction(&sin)));
 }
 
 double KJSMath::darg(const char *a)
 {
-  return toNumber(KJSARG(a))->dVal();
+  Ptr v = KJSARG(a);
+  Ptr n = toNumber(v);
+  return n->dVal();
 }
 
 KJSO* KJSMath::sin()
 {
   double d = ::sin(darg("0"));
-  KJSRETURN(new KJSNumber(d));
+  KJSRETURN(zeroRef(new KJSNumber(d)));
 }
 

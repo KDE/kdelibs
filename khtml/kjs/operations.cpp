@@ -30,8 +30,9 @@ using namespace KJS;
 // ECMA 9.1
 KJSO *KJS::toPrimitive(KJSO *obj, Type preferred)
 {
-  if (!obj->isA(Object))
-    return obj;
+  if (!obj->isA(Object)) {
+    return obj->ref();
+  }
 
   /* TODO */
 }
@@ -48,7 +49,7 @@ KJSO *KJS::toBoolean(KJSO *obj)
       b = false;
       break;
     case Boolean:
-      return obj;
+      return obj->ref();
     case Number:
       b = !((obj->dVal() == 0) /* || (obj->iVal() == N0) */ ||
 	(obj->dVal() == NaN));
@@ -64,7 +65,6 @@ KJSO *KJS::toBoolean(KJSO *obj)
       assert(!"unhandled object type in switch");
     }
 
-  delete obj;
   return new KJSBoolean(b);
 }
 
@@ -72,7 +72,7 @@ KJSO *KJS::toBoolean(KJSO *obj)
 KJSO *KJS::toNumber(KJSO *obj)
 {
   double d;
-  KJSO *tmp, *res;
+  Ptr tmp, res;
 
   switch (obj->type())
     {
@@ -86,23 +86,20 @@ KJSO *KJS::toNumber(KJSO *obj)
       d = obj->bVal() ? 1 : 0;
       break;
     case Number:
-      return obj;
+      return obj->ref();
     case String:
       /* TODO */
       break;
     case Object:
       tmp = toPrimitive(obj, Number);
       res = toNumber(tmp);
-      delete obj;
-      delete tmp;
-      return res;
+      return res->ref();
     default:
       cerr << "type = " << obj->type() << endl;
       assert(!"toNumber: unhandled switch case");
       exit(1);
     }
 
-  delete obj;
   return new KJSNumber(d);
 }
 
@@ -136,7 +133,7 @@ KJSO *KJS::toString(KJSO *obj)
   const char *c;
   double d;
   char buffer[40];
-  KJSO *res, *tmp;
+  Ptr res, tmp;
 
   switch (obj->type())
     {
@@ -159,18 +156,17 @@ KJSO *KJS::toString(KJSO *obj)
       c = buffer;
       break;
     case String:
-      return obj;
+      return obj->ref();
     case Object:
       tmp = toPrimitive(obj, String);
       res = toString(tmp);
-      delete obj;
-      delete tmp;
-      return res;
+      return res->ref();
     default:
       assert(!"toString: unhandled switch case");
       exit(1);
     }
-  return new KJSString(c);
+  res = new KJSString(c);
+  return res->ref();
 }
 
 // ECMA 9.9
@@ -201,13 +197,12 @@ KJSO *KJS::toObject(KJSO *obj)
     case DeclaredFunction:
     case InternalFunction:
     case AnonymousFunction:
-      return obj;
+      return obj->ref();
     default:
       assert(!"toObject: unhandled switch case");
       exit(1);
     }
 
-  //  delete obj;
   return o;
 }
 
@@ -224,8 +219,8 @@ bool KJS::compare(KJSO *v1, Operator oper, KJSO *v2)
     abort();
   }
 
-  KJSO *n1 = toNumber(v1);
-  KJSO *n2 = toNumber(v2);
+  Ptr n1 = toNumber(v1);
+  Ptr n2 = toNumber(v2);
 
   bool eq = (n1->dVal() == n2->dVal());
 

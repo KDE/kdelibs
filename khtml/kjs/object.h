@@ -44,11 +44,20 @@ class StatementNode;
 class KJSO {
 public:
   KJSO() { init(); }
-  virtual ~KJSO() { /* TODO: delete String object */ }
-  void init() { proto = 0L; prop = 0L; call = 0L; }
+  virtual ~KJSO();
+public:
+  void init();
   virtual Type type() const { assert(!"Undefined type()"); return Undefined; };
   bool isA(Type t) const { return (type() == t); }
   bool isObject() const { return (type() >= Object); }
+
+#ifdef KJS_DEBUG_MEM
+  static int count;
+  static KJSO* firstObject;
+  KJSO* nextObject, *prevObject;
+  int objId;
+  static int lastId;
+#endif
 
   // Properties
   KJSO *prototype() const { return proto; }
@@ -61,6 +70,13 @@ public:
   KJSO defaultValue(Hint hint = NoneHint);
   void dump(int level = 0);
   virtual KJSO *construct() { return 0L; }
+
+  //private:
+public:
+  int refCount;
+public:
+  KJSO *ref() { refCount++; return this; }
+  void deref() { assert(refCount > 0); if(!--refCount) delete this; }
 
   // Reference
   KJSO *getBase();
@@ -105,15 +121,33 @@ protected:
   KJSO *complVal;
 };
 
+class Ptr {
+public:
+  Ptr() { obj = 0L; }
+  Ptr(KJSO *o) { assert(o); obj = o; }
+  ~Ptr() { if (obj) obj->deref(); }
+  Ptr *operator=(KJSO *o) { if (obj) obj->deref(); obj = o; return this; }
+  KJSO* operator->() { return obj; }
+
+  operator KJSO*() { return obj; }
+  void release() { obj->deref(); obj = 0L; }
+  KJSO *ref() { obj->ref(); return obj; }
+  Ptr(const Ptr &) { assert(0); }
+private:
+  Ptr& operator=(const Ptr &);
+  KJSO *obj;
+};
+
+KJSO *zeroRef(KJSO *obj);
+
 class KJSProperty {
 public:
   KJSProperty(const CString &n, KJSO *o, int attr = None);
-  ~KJSProperty();
   Type type() const { return Property; }
 public:
   CString name;
   int attribute;
-  KJSO *object;
+  Ptr object;
   KJSProperty *next;
 };
 
@@ -121,6 +155,7 @@ public:
 class KJSReference : public KJSO {
 public:
   KJSReference(KJSO *b, const CString &s);
+  ~KJSReference();
   Type type() const { return Reference; }
 };
 
@@ -200,7 +235,8 @@ public:
 class KJSCompletion : public KJSO {
 public:
   KJSCompletion(Compl c, KJSO *v = 0L)
-    { val.c = c; complVal = v; }
+    { val.c = c; complVal = v ? v->ref() : 0L; }
+  virtual ~KJSCompletion() { if (complVal) complVal->deref(); }
   Type type() const { return Completion; }
 };
 
@@ -212,18 +248,18 @@ public:
 
 class KJSScope : public KJSO {
 public:
-  KJSScope(KJSO *o) : object(o), next(0L) {}
+  KJSScope(KJSO *o) : next(0L) { object = o->ref(); }
   Type type() const { return Scope; }
   void append(KJSO *o) { next = new KJSScope(o); next->next = 0L; }
 
-  KJSO *object;
+  Ptr object;
   KJSScope *next;
 };
 
 class KJSActivation : public KJSO {
 public:
   KJSActivation(KJSFunction *f, KJSArgList *args);
-  ~KJSActivation();
+  virtual ~KJSActivation();
   Type type() const { return Object; }
 private:
   KJSFunction *func;
@@ -239,7 +275,7 @@ class KJSContext {
 public:
   KJSContext(CodeType type = GlobalCode, KJSContext *callingContext = 0L,
 	     KJSFunction *func = 0L, KJSArgList *args = 0L, KJSO *thisV = 0L);
-  ~KJSContext();
+  virtual ~KJSContext();
   KJSScope *firstScope() const { return scopeChain; }
   void insertScope(KJSO *s);
   KJSScope *copyOfChain() { /* TODO */ return scopeChain; }
@@ -266,19 +302,18 @@ class KJSArgList;
 class KJSArg {
   friend KJSArgList;
 public:
-  KJSArg(KJSO *o) : obj(o), next(0L) {}
-  //  Type type() const { return ArgList; }
+  KJSArg(KJSO *o) : next(0L) { obj = o->ref(); }
   KJSArg *nextArg() const { return next; }
-  KJSO *object() const { return obj; }
+  KJSO *object() { return obj; }
 private:
-  KJSO *obj;
+  Ptr obj;
   KJSArg *next;
 };
 
-class KJSArgList : public KJSO {
+class KJSArgList {
 public:
   KJSArgList() : first(0L) {}
-  Type type() const { return ArgList; }
+  ~KJSArgList();
   KJSArgList *append(KJSO *o);
   KJSArg *firstArg() const { return first; }
   int count() const;

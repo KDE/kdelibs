@@ -27,6 +27,10 @@
 
 extern int yyparse();
 
+#ifdef KJS_DEBUG_MEM
+extern const char* typeName[];
+#endif
+
 using namespace KJS;
 
 KJSLexer*    KJSWorld::lexer     = 0L;
@@ -68,13 +72,27 @@ bool KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
   }
 
   global = new KJSGlobal();
+
   context = new KJSContext();
-  context->insertScope(global);
 
   assert(prog);
-  prog->evaluate();
+  Ptr res = prog->evaluate();
+  res.release();
 
-  // TODO: delete context and global
+  delete context;
+  global->deref();
+
+#ifdef KJS_DEBUG_MEM
+  if (KJSO::count != 0) {
+    fprintf(stderr, "MEMORY LEAK: %d unfreed objects\n", KJS::KJSO::count);
+    KJSO *o = KJS::KJSO::firstObject;
+    while (o) {
+      fprintf(stderr, "id = %d type = %d %s refCount = %d\n",
+	      o->objId, o->type(), typeName[o->type()], o->refCount);
+      o = o->nextObject;
+    }
+  }
+#endif
 
   delete prog;
   prog = 0L;

@@ -30,9 +30,79 @@ namespace KJS {
   const double NaN = 0.0/0.;
   const double Inf = 1.0/.0;
   // TODO: -0
+
+#ifdef KJS_DEBUG_MEM
+  int KJSO::count = 0;
+  KJSO* KJSO::firstObject = 0L;
+  int KJSO::lastId = 0;
+#endif
 };
 
 using namespace KJS;
+
+#ifdef KJS_DEBUG_MEM
+const char *typeName[] = {
+  "Undefined",
+  "Null",
+  "Boolean",
+  "Number",
+  "String",
+  "Object",
+  "Reference",
+  "ListType",
+  "Completion",
+  "Property",
+  "Scope",
+  "InternalFunction",
+  "DeclaredFunction",
+  "AnonymousFunction",
+  "Activation"
+};
+#endif
+
+KJSO *KJS::zeroRef(KJSO *obj)
+{
+  obj->refCount = 0;
+  return obj;
+}
+
+void KJSO::init()
+{
+  proto = 0L; prop = 0L; call = 0L;
+  refCount = 1;
+
+#ifdef KJS_DEBUG_MEM
+  count++;
+  if (firstObject)
+    firstObject->prevObject = this;
+  nextObject = firstObject;
+  prevObject = 0L;
+  firstObject = this;
+  objId = ++lastId;
+  printf("++ count: %d id: %d\n", count, objId);
+#endif
+}
+
+KJSO::~KJSO()
+{ /* TODO: delete String object ???*/
+  KJSProperty *tmp, *p = prop;
+  while (p) {
+    tmp = p;
+    p = p->next;
+    delete tmp;
+  }
+
+#ifdef KJS_DEBUG_MEM
+  if (prevObject)
+    prevObject->nextObject = nextObject;
+  if (nextObject)
+    nextObject->prevObject = prevObject;
+  if (firstObject == this)
+    firstObject = nextObject;
+
+  --count;
+#endif
+}
 
 // [[call]]
 KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
@@ -44,15 +114,16 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
   CodeType ctype = func->codeType();
   KJSWorld::context = new KJSContext(ctype, save, func, args, thisV);
 
-  // assign user supplied arguments to parameter
+  // assign user supplied arguments to parameters
   func->processParameters(args);
 
-  KJSO *compl = func->execute();
+  Ptr compl = func->execute();
 
+  delete KJSWorld::context;
   KJSWorld::context = save;
 
-  if(compl->isValueCompletion())
-    return compl->complValue();
+  if (compl->isValueCompletion())
+    return compl->complValue()->ref();
   else
     return new KJSUndefined();
 }
@@ -66,7 +137,7 @@ KJSO *KJSO::getBase()
     exit(1);
   }
 
-  return base;
+  return base->ref();
 }
 
 // ECMA 8.7.2
@@ -85,9 +156,9 @@ CString KJSO::getPropertyName()
 KJSO *KJSO::getValue()
 {
   if (!isA(Reference)) {
-    return this;
+    return this->ref();
   }
-  KJSO *o = getBase();
+  Ptr o = getBase();
   if (o->isA(Null)) {
     /* TODO: runtime error */
     cerr << "KJSO::getValue(): RUNTIME ERROR" << endl;
@@ -105,7 +176,7 @@ void KJSO::putValue(KJSO *v)
     cerr << "KJSO::putValue(): RUNTIME ERROR" << endl;
     exit(1);
   }
-  KJSO *o = getBase();
+  Ptr o = getBase();
   if (o->isA(Null)) {
     KJSWorld::global->put(getPropertyName(), v);
   } else
@@ -114,8 +185,13 @@ void KJSO::putValue(KJSO *v)
 
 KJSReference::KJSReference(KJSO *b, const CString &s)
 {
-  base = b;
+  base = b->ref();
   propname = s;
+}
+
+KJSReference::~KJSReference()
+{
+  base->deref();
 }
 
 // ECMA 10.1.7 (draft April 98, 10.1.6 previously)
@@ -126,14 +202,15 @@ KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
 
   func = f;
 
-  put("arguments", this, DontDelete | DontEnum);
+  /* TODO: solve deleting problem due to circular reference */
+  // put("arguments", this, DontDelete | DontEnum);
   if (func->hasProperty("arguments"))
     put("OldArguments", func->get("arguments"));
   put("callee", func, DontEnum);
 
   if (args) {
     int iarg = args->count();
-    put("length", new KJSNumber(iarg), DontEnum);
+    put("length", zeroRef(new KJSNumber(iarg)), DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
       sprintf(buffer, "%d", i);
@@ -141,7 +218,8 @@ KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
       arg = arg->nextArg();
     }
   }
-  func->put("arguments", this);
+  /* TODO: solve deleting problem due to circular reference */
+  //  func->put("arguments", this);
 }
 
 // ECMA 10.1.6
@@ -164,9 +242,9 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
   // TODO:
   // put("Prototype", _Object.prototype_ );
   put("callee", func, DontEnum);
-  if(args) {
+  if (args) {
     int iarg = args->count();
-    put("length", new KJSNumber(iarg), DontEnum);
+    put("length", zeroRef(new KJSNumber(iarg)), DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
       sprintf(buffer, "%d", i);
@@ -180,13 +258,13 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 
 KJSGlobal::KJSGlobal()
 {
-  put("NaN", new KJSNumber(NaN));
-  put("Infinity", new KJSNumber(Inf));
+  put("NaN", zeroRef(new KJSNumber(NaN)));
+  put("Infinity", zeroRef(new KJSNumber(Inf)));
 
-  put("Math", new KJSMath(), DontEnum);
+  put("Math", zeroRef(new KJSMath()), DontEnum);
 
   // TODO: add function properties
-  put("eval", new KJSInternalFunction(&eval));
+  //  put("eval", new KJSInternalFunction(&eval));
 }
 
 KJSO* KJSGlobal::eval()
@@ -255,7 +333,15 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
 
 KJSContext::~KJSContext()
 {
-  /* TODO: deleting */
+  KJSScope *s = scopeChain;
+  while (s) {
+    KJSScope *tmp = s;
+    s = s->next;
+    tmp->deref();
+  }
+  if (activation)
+    activation->deref();
+    // delete activation;
 }
 
 void KJSContext::insertScope(KJSO *s)
@@ -305,6 +391,16 @@ void KJSO::dump(int level)
     cout << "-------------------------" << endl;
 }
 
+KJSArgList::~KJSArgList()
+{
+  KJSArg *tmp, *a = first;
+  while (a) {
+    tmp = a;
+    a = a->nextArg();
+    delete tmp;
+  }
+}
+
 KJSArgList *KJSArgList::append(KJSO *o)
 {
   if (!first) {
@@ -340,14 +436,15 @@ void KJSFunction::processParameters(KJSArgList *args)
   KJSO *variable = KJSWorld::context->variableObject();
 
   assert(args);
+
   if (param) {
     KJSArg *arg = args->firstArg();
-    for(int i = 0; i < param->count(); i++)
+    for(int i = 0; i < param->count() && i < 100; i++)
       if (arg) {
 	variable->put(param->at(i), arg->object());
 	arg = arg->nextArg();
       } else
-	variable->put(param->at(i), new KJSUndefined());
+	variable->put(param->at(i), zeroRef(new KJSUndefined()));
   }
 }
 

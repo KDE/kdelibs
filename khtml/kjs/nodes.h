@@ -31,6 +31,7 @@
 namespace KJS {
 
 class KJSO;
+class KJSArgList;
 
 class Node {
 public:
@@ -127,7 +128,8 @@ class ArgumentListNode : public Node {
 public:
   ArgumentListNode(Node *e) : list(0L), expr(e) {}
   ArgumentListNode(ArgumentListNode *l, Node *e) :  list(l), expr(e) {}
-  KJSO *evaluate();
+  KJSO *evaluate() { return 0L; }
+  KJSArgList *evaluateList();
 private:
   ArgumentListNode *list;
   Node *expr;
@@ -136,7 +138,8 @@ private:
 class ArgumentsNode : public Node {
 public:
   ArgumentsNode(ArgumentListNode *l) : list(l) {}
-  KJSO *evaluate();
+  KJSO *evaluate() { return 0L; }
+  KJSArgList *evaluateList();
 private:
   ArgumentListNode *list;
 };
@@ -347,8 +350,8 @@ private:
 
 class VarDeclNode : public Node {
 public:
-  VarDeclNode(const CString &id) : ident(id), init(0L) { }
-  VarDeclNode(const CString &id, AssignExprNode *in) : ident(id), init(in) { }
+  VarDeclNode(const CString &id, AssignExprNode *in = 0L)
+    : ident(id), init(in) { }
   KJSO *evaluate();
 private:
   CString ident;

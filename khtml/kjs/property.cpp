@@ -29,12 +29,8 @@ using namespace KJS;
 KJSProperty::KJSProperty(const CString &n, KJSO *o, int attr)
 {
   name = n;
-  object = o;
+  object = o->ref();
   attribute = attr;
-}
-
-KJSProperty::~KJSProperty()
-{
 }
 
 // ECMA 8.6.2.1
@@ -44,7 +40,7 @@ KJSO *KJSO::get(const CString &p) const
     KJSProperty *pr = prop;
     while (pr) {
       if (pr->name == p)
-	return pr->object;
+	return pr->object->ref();
       pr = pr->next;
     }
   }
@@ -66,7 +62,8 @@ void KJSO::put(const CString &p, KJSO *v, int attr)
     pr = prop;
     while (pr) {
       if (pr->name == p) {
-	pr->object = v;
+	// replace old value
+	pr->object = v->ref();
 	pr->attribute = attr;
 	return;
       }

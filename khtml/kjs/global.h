@@ -38,9 +38,8 @@ namespace KJS {
 	      InternalFunction,
 	      DeclaredFunction,
 	      AnonymousFunction,
-	      ArgList,
 	      Activation
-};
+  };
 
   enum Attribute { None       = 0,
 		   ReadOnly   = 1 >> 1,
