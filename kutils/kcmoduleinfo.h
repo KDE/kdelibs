@@ -44,22 +44,22 @@ class KCModuleInfo
 public:
 
   /**
-   * Constructs a CSModuleInfo, note that you will have to take care about the deletion
-   * yoruself!
+   * Constructs a KCModuleInfo, note that you will have to take care about the deletion
+   * yourself!
    **/
   KCModuleInfo(const QString& desktopFile, const QString& baseGroup /* = QString::fromLatin1("settings")*/);
   KCModuleInfo( const KCModuleInfo &rhs );
   KCModuleInfo &operator=( const KCModuleInfo &rhs );
   ~KCModuleInfo();
 
-  /** @return the filename pass in the constructor **/
+  /** @return the filename passed in the constructor **/
   QString fileName() const { return _fileName; };
-  /** @return **/
+  /** @return the list of **/
   const QStringList &groups() const { return _groups; };
   /** @return **/
   const QStringList &keywords() const { return _keywords; };
   
-  // changed from moduleName() to avoid abiguity with QObject::moduleName() on multiple inheritance
+  // changed from name() to avoid abiguity with QObject::name() on multiple inheritance
   /** @return the modules name **/
   QString moduleName() const { return _name; };
   /** @return a pointer to KService created from the modules .desktop file **/
