@@ -164,7 +164,7 @@ int KProgress::recalcValue(int range)
 {
 	int abs_value = value() - minValue();
 	int abs_range = maxValue() - minValue();
-	return range * abs_value / abs_range;
+	return abs_range ? range * abs_value / abs_range : 0;
 }
 
 void KProgress::valueChange()
