@@ -104,25 +104,30 @@ again1:
   p = buffer + 5;
   while( *p == ' ' ) p++;
   long int cmd = strtol( p, 0L, 16 );
-  
-again2:
-  n = ::read( m_in, m_pBuffer, len );
-  if ( n == -1 && errno == EINTR )
-    goto again2;
-  
-  if ( n == -1 )
-  {
-    cerr << "ERRNO is " << errno << endl;
-    exit(3);
-  }
-  
-  if ( n != len )
-  {
-    cerr << "Not enough data " << n << " instead of " << len << endl;
-    return 0L;
-  }
 
-  m_pBuffer[ n ] = 0;
+  if ( len > 0L )
+  {
+    again2:
+    n = ::read( m_in, m_pBuffer, len );
+    if ( n == -1 && errno == EINTR )
+      goto again2;
+  
+    if ( n == -1 )
+    {
+      cerr << "ERRNO is " << errno << endl;
+      exit(3);
+    }
+  
+    if ( n != len )
+    {
+      cerr << "Not enough data " << n << " instead of " << len << endl;
+      return 0L;
+    }
+
+    m_pBuffer[ n ] = 0;
+  }
+  else
+    m_pBuffer[ 0 ] = 0;
   
   *_cmd = cmd;
   *_len = len;
