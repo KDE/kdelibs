@@ -7,25 +7,24 @@
 %kde.translated;
 
 <!-- The following entities should only use &kappname; in their 
-     text                                                          -->
-
+     text        
+                                                  -->
 <!-- Licence links; see ksgmltools/TODO -->
-<!ENTITY underGPL           SYSTEM
+<!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//EL"
   "entities/underGPL.docbook"                       ><!-- level: para -->
-<!ENTITY underFDL           SYSTEM
+<!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//EL"
   "entities/underFDL.docbook"                       ><!-- level: para -->
-<!ENTITY underBSDLicense    SYSTEM
+<!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//EL"
   "entities/underBSDLicense.docbook"                ><!-- level: para -->
-<!ENTITY underArtisticLicense SYSTEM
+<!ENTITY underArtisticLicense PUBLIC "-//KDE//DOCUMENT Artistic Licence Declaration//EL"
   "entities/underArtisticLicense.docbook"           ><!-- level: para -->
-<!ENTITY underX11License    SYSTEM
+<!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//EL"
   "entities/underX11License.docbook"                ><!-- level: para -->
 
-<!ENTITY reporting.bugs     SYSTEM
+<!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//EL"
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
-<!ENTITY updating.documentation SYSTEM
+<!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//EL"
   "entities/update-doc.docbook"                     ><!-- level: para -->
-
 
 <!-- FDL notice -->
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EL"
