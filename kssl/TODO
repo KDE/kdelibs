@@ -17,10 +17,5 @@
 
 - Document libkssl interface
 
-- Make a tamper proof certificate repository of some sort
-
-- Is it possible to provide warning if a particular attack is detected?
-  (OpenSSL looks for these if it knows about them)
-
-- Use libkssl in kcmcrypto - libkssl needs lots of work first.
+- Use libkssl in kcmcrypto
 
