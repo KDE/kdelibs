@@ -1255,7 +1255,8 @@ QSize KToolBar::sizeHint() const
 
     this_too->polish();
 
-    int margin = ((QWidget *)this)->layout()->margin();
+    int margin = ((QWidget *)this)->layout()->margin() + frameWidth();
+
     switch( barPos() )
     {
      case KToolBar::Top:
