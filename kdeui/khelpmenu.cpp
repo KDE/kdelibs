@@ -77,37 +77,19 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
   mShowWhatsThis = showWhatsThis;
 
   d->mAboutData = aboutData;
-  if (aboutData)
-  {
-    mAboutAppText = aboutData->programName() + " " + aboutData->version() +
-                    "\n" + aboutData->shortDescription();
 
-    if (!aboutData->homepage().isNull())
-      mAboutAppText += "\n" + aboutData->homepage();
-
-    QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->authors().begin();
-         it != aboutData->authors().end(); ++it)
-    {
-      mAboutAppText += "\n" + (*it).name() + " <"+(*it).emailAddress()+">";
-    }
-
-    if (!aboutData->copyrightStatement().isNull())
-      mAboutAppText += "\n" + aboutData->copyrightStatement();
-    mAboutAppText += "\n";
-  }
-  else
+  if (!aboutData)
     mAboutAppText = QString::null;
 
-    if (actions)
-    {
-        KStdAction::helpContents(this, SLOT(appHelpActivated()), actions);
-        if (showWhatsThis)
-            KStdAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
-        KStdAction::reportBug(this, SLOT(reportBug()), actions);
-        KStdAction::aboutApp(this, SLOT(aboutApplication()), actions);
-        KStdAction::aboutKDE(this, SLOT(aboutKDE()), actions);
-    }
+  if (actions)
+  {
+    KStdAction::helpContents(this, SLOT(appHelpActivated()), actions);
+    if (showWhatsThis)
+      KStdAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
+    KStdAction::reportBug(this, SLOT(reportBug()), actions);
+    KStdAction::aboutApp(this, SLOT(aboutApplication()), actions);
+    KStdAction::aboutKDE(this, SLOT(aboutKDE()), actions);
+  }
 }
 
 KHelpMenu::~KHelpMenu()
@@ -181,7 +163,7 @@ void KHelpMenu::aboutApplication()
   {
     if( mAboutApp == 0 )
     {
-      mAboutApp = new KAboutApplication( mParent, "about", false );
+      mAboutApp = new KAboutApplication( d->mAboutData, mParent, "about", false );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
     }
     mAboutApp->show();
