@@ -847,7 +847,6 @@ int TCPSlaveBase::verifyCertificate()
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
       if (doAddHost) d->cc->addHost(pc, d->host);
-      // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
