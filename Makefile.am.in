@@ -21,6 +21,7 @@
 COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kio
 COMPILE_BEFORE_doc = kdoctools
 COMPILE_BEFORE_khtml = kparts kdeprint kspell kjs
+COMPILE_BEFORE_kio = kjs
 COMPILE_BEFORE_kdeprint = kparts
 COMPILE_BEFORE_kinit = kparts
 
