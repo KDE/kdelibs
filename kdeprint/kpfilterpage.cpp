@@ -88,17 +88,23 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
 	l1->addMultiCellWidget(m_info, 1, 1, 0, 1);
-
-	m_remove->setEnabled(false);
-	m_up->setEnabled(false);
-	m_down->setEnabled(false);
-	m_configure->setEnabled(false);
+        updateButton();
 
 	resize(100,50);
 }
 
 KPFilterPage::~KPFilterPage()
 {
+}
+
+void KPFilterPage::updateButton()
+{
+  QListViewItem	*item = m_view->currentItem();
+  bool state=(item!=0);
+  m_remove->setEnabled(state);
+  m_up->setEnabled((state && item->itemAbove() != 0));
+  m_down->setEnabled((state && item->itemBelow() != 0));
+  m_configure->setEnabled(state);
 }
 
 void KPFilterPage::slotAddClicked()
@@ -136,6 +142,7 @@ void KPFilterPage::slotAddClicked()
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
+	updateButton();
 }
 
 void KPFilterPage::slotRemoveClicked()
@@ -147,6 +154,7 @@ void KPFilterPage::slotRemoveClicked()
 		m_activefilters.remove(idname);
 		checkFilterChain();
 		slotItemSelected(m_view->currentItem());
+                updateButton();
 	}
 }
 

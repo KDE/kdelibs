@@ -55,7 +55,7 @@ protected:
 	void checkFilterChain();
 	void updateInfo();
 	QStringList activeList();
-
+    void updateButton();
 private:
 	KListView		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
