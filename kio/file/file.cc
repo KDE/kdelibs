@@ -25,6 +25,7 @@
 
 #include <qvaluelist.h>
 
+#include <kdebug.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
 #include <kinstance.h>
@@ -46,16 +47,16 @@ int main( int , char ** )
 #ifdef NDEBUG
   signal(SIGSEGV, KIOProtocol::sigsegv_handler);
 #endif
-  qDebug( "kio_file : Starting");
-
   KInstance instance( "kio_file" );
+
+  kdebug( KDEBUG_INFO, 0, "Starting");
 
   KIOConnection parent( 0, 1 );
 
   FileProtocol file( &parent );
   file.dispatchLoop();
 
-  qDebug( "kio_file : Done" );
+  kdebug( KDEBUG_INFO, 0, "Done" );
 }
 
 FileProtocol::FileProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
@@ -154,12 +155,12 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   if ( _rename )
     assert( _source.count() == 1 );
 
-  qDebug( "kio_file : Making copy to %s", _dest );
+  kdebug( KDEBUG_INFO, 0, "Making copy to %s", _dest );
 
   // Check whether the URLs are wellformed
   QStringList::Iterator source_files_it = _source.begin();
   while (source_files_it != _source.end()) {
-    qDebug( "kio_file : Checking %s", (*source_files_it).ascii() );
+    kdebug( KDEBUG_INFO, 0, "Checking %s", (*source_files_it).ascii() );
     KURL usrc(*source_files_it);
     if ( usrc.isMalformed() ) {
       error( ERR_MALFORMED_URL, *source_files_it );
@@ -174,7 +175,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     ++source_files_it;
   }
 
-  qDebug( "kio_file : All URLs ok %s", _dest );
+  kdebug( KDEBUG_INFO, 0, "All URLs ok %s", _dest );
 
   // Make a copy of the parameter. if we do IPC calls from here, then we overwrite
   // our argument. This is tricky! ( but saves memory and speeds things up )
@@ -188,7 +189,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     return;
   }
 
-  qDebug( "kio_file : Dest ok %s", dest.ascii() );
+  kdebug( KDEBUG_INFO, 0, "Dest ok %s", dest.ascii() );
 
   // Find IO server for destination
   QString exec = KProtocolManager::self().executable( udest.protocol() );
@@ -206,20 +207,20 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     return;
   }
 
-  qDebug( "kio_file : IO server ok %s", dest.ascii() );
+  kdebug( KDEBUG_INFO, 0, "IO server ok %s", dest.ascii() );
 
   // Get a list of all source files and directories
   QValueList<Copy> files;
   QValueList<CopyDir> dirs;
   int size = 0;
-  qDebug( "kio_file : Iterating" );
+  kdebug( KDEBUG_INFO, 0, "Iterating" );
 
   source_files_it = _source.begin();
-  qDebug( "kio_file : Looping" );
+  kdebug( KDEBUG_INFO, 0, "Looping" );
   while ( source_files_it != _source.end()) {
-    qDebug( "kio_file : Executing %s", (*source_files_it).ascii() );
+    kdebug( KDEBUG_INFO, 0, "Executing %s", (*source_files_it).ascii() );
     KURL usrc( (*source_files_it).ascii() );
-    qDebug( "kio_file : Parsed URL" );
+    kdebug( KDEBUG_INFO, 0, "Parsed URL" );
     // Did an error occur ?
     int s;
     if ( ( s = listRecursive( usrc.path(), files, dirs, _rename ) ) == -1 ) {
@@ -232,7 +233,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     ++source_files_it;
   }
 
-  qDebug( "kio_file : Recursive 1 %s", dest.data() );
+  kdebug( KDEBUG_INFO, 0, "Recursive 1 %s", dest.data() );
 
   // Check whether we do not copy a directory in itself or one of its subdirectories
   struct stat buff2;
@@ -267,7 +268,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     }
   }
 
-  qDebug( "kio_file : Recursive ok %s", dest.data() );
+  kdebug( KDEBUG_INFO, 0, "Recursive ok %s", dest.data() );
 
   m_cmd = CMD_GET;
 
@@ -282,7 +283,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   // Put a protocol on top of the job
   FileIOJob job( &slave, this );
 
-  qDebug( "kio_file : Job started ok %s", dest.ascii() );
+  kdebug( KDEBUG_INFO, 0, "Job started ok %s", dest.ascii() );
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
@@ -319,7 +320,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     (*fit).m_strRelDest += tmp2;
   }
 
-  qDebug( "kio_file : Destinations ok %s", dest.data() );
+  kdebug( KDEBUG_INFO, 0, "Destinations ok %s", dest.data() );
 
   /*****
    * Make directories
@@ -366,7 +367,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       // Tell what we are doing
       makingDir( d );
 
-      // qDebug( "kio_file : Making remote dir %s", d );
+      // kdebug( KDEBUG_INFO, 0, "Making remote dir %s", d );
       // Create the directory
       job.mkdir( d, (*dir_it).m_mode );
       while( !job.hasFinished() )
@@ -463,7 +464,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     ++dir_it;
   }
 
-  qDebug( "kio_file : Created directories %s", dest.data() );
+  kdebug( KDEBUG_INFO, 0, "Created directories %s", dest.data() );
 
   /*****
    * Copy files
@@ -500,7 +501,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       QString realpath = "file:"; realpath += (*fit).m_strAbsSource;
       copyingFile( realpath, d );
 
-      // qDebug( "kio_file : Writing to %s", d );
+      // kdebug( KDEBUG_INFO, 0, "Writing to %s", d );
 
       // Is this URL on the overwrite list ?
       QStringList::Iterator oit = overwrite_list.begin();
@@ -518,7 +519,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       if ( job.hasError() ) {
 	int currentError = job.errorId();
 
-	qDebug("################# COULD NOT PUT %d", currentError);
+	kdebug(KDEBUG_ERROR, 0, "################# COULD NOT PUT %d", currentError);
 	// if ( /* m_bGUI && */ job.errorId() == ERR_WRITE_ACCESS_DENIED )
 	if ( /* m_bGUI && */ currentError != ERR_DOES_ALREADY_EXIST &&
 			     currentError != ERR_DOES_ALREADY_EXIST_FULL )
@@ -620,7 +621,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     if ( skip_copying )
       continue;
 
-    //qDebug( "kio_file : Opening %s", (*fit).m_strAbsSource );
+    //kdebug( KDEBUG_INFO, 0, "Opening %s", (*fit).m_strAbsSource );
 
     FILE *f = fopen( (*fit).m_strAbsSource, "rb" );
     if ( f == 0L ) {
@@ -681,7 +682,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     processedFiles( ++processed_files );
   }
 
-  qDebug( "kio_file : Copied files %s", dest.data() );
+  kdebug( KDEBUG_INFO, 0, "Copied files %s", dest.data() );
 
   if ( _move ) {
     slotDel( _source );
@@ -873,7 +874,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   // if we are using marking of partial downloads -> add .part extension
   if ( m_bMarkPartial ) {
-    qDebug( "kio_file : Adding .part extension to %s", udest_orig.path().ascii() );
+    kdebug( KDEBUG_INFO, 0, "Adding .part extension to %s", udest_orig.path().ascii() );
     udest = udest_part;
   } else
     udest = udest_orig;
@@ -881,7 +882,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   /* if ( access( udest.path(), W_OK ) == -1 )
   {
-    qDebug("Write Access denied for '%s' %d",udest.path(),errno );
+    kdebug(KDEBUG_ERROR, 0, "Write Access denied for '%s' %d",udest.path(),errno );
 
     error( ERR_WRITE_ACCESS_DENIED, strdup(_url) );
     finished();
@@ -895,7 +896,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
     m_fPut = fopen( udest.path(), "wb" );
 
   if ( m_fPut == 0L ) {
-    qDebug( "kio_file : ####################### COULD NOT WRITE %s", udest.path().ascii() );
+    kdebug( KDEBUG_INFO, 0, "####################### COULD NOT WRITE %s", udest.path().ascii() );
     if ( errno == EACCES )
       error( ERR_WRITE_ACCESS_DENIED, udest.path() );
     else
@@ -956,7 +957,7 @@ void FileProtocol::slotDel( QStringList& _source )
   // Check whether the URLs are wellformed
   QStringList::Iterator source_it = _source.begin();
   for( ; source_it != _source.end(); ++source_it ) {
-    qDebug( "kio_file : Checking %s", (*source_it).ascii() );
+    kdebug( KDEBUG_INFO, 0, "Checking %s", (*source_it).ascii() );
     KURL usrc( *source_it );
     if ( usrc.isMalformed() ) {
       error( ERR_MALFORMED_URL, *source_it );
@@ -970,18 +971,18 @@ void FileProtocol::slotDel( QStringList& _source )
     }
   }
 
-  qDebug( "kio_file : All URLs ok" );
+  kdebug( KDEBUG_INFO, 0, "All URLs ok" );
 
   // Get a list of all source files and directories
   QValueList<Copy> fs;
   QValueList<CopyDir> ds;
   int size = 0;
-  qDebug( "kio_file : Iterating" );
+  kdebug( KDEBUG_INFO, 0, "Iterating" );
 
   source_it = _source.begin();
-  qDebug( "kio_file : Looping" );
+  kdebug( KDEBUG_INFO, 0, "Looping" );
   for( ; source_it != _source.end(); ++source_it ) {
-    qDebug( "kio_file : Checking %s", (*source_it).ascii() );
+    kdebug( KDEBUG_INFO, 0, "Checking %s", (*source_it).ascii() );
     KURL victim( (*source_it) );
     int s;
     if ( ( s = listRecursive( victim.path(), fs, ds, false ) ) == -1 ) {
@@ -991,10 +992,10 @@ void FileProtocol::slotDel( QStringList& _source )
     }
     // Sum up the total amount of bytes we have to copy
     size += s;
-    qDebug( "kio_file : Parsed URL OK and added to appropiate list" );
+    kdebug( KDEBUG_INFO, 0, "Parsed URL OK and added to appropiate list" );
   }
 
-  qDebug( "kio_file : Recursive ok" );
+  kdebug( KDEBUG_INFO, 0, "Recursive ok" );
 
   if ( fs.count() == 1 )
     m_cmd = CMD_DEL;
@@ -1014,7 +1015,7 @@ void FileProtocol::slotDel( QStringList& _source )
   for( ; fit != fs.end(); fit++ ) {
 
     QString filename = (*fit).m_strAbsSource;
-    qDebug( "kio_file : Deleting file %s", filename.ascii() );
+    kdebug( KDEBUG_INFO, 0, "Deleting file %s", filename.ascii() );
 
     deletingFile( filename );
 
@@ -1033,7 +1034,7 @@ void FileProtocol::slotDel( QStringList& _source )
   for( ; dit != ds.end(); dit-- ) {
 
     QString dirname = (*dit).m_strAbsSource;
-    qDebug( "kio_file : Deleting directory %s", dirname.ascii() );
+    kdebug( KDEBUG_INFO, 0, "Deleting directory %s", dirname.ascii() );
 
     deletingFile( dirname );
 
@@ -1051,7 +1052,7 @@ void FileProtocol::slotDel( QStringList& _source )
 
 void FileProtocol::slotListDir( const char *_url )
 {
-  qDebug( "kio_file : =============== LIST %s ===============", _url  );
+  kdebug( KDEBUG_INFO, 0, "=============== LIST %s ===============", _url  );
 
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
@@ -1097,10 +1098,8 @@ void FileProtocol::slotListDir( const char *_url )
   KUDSEntry entry;
   KUDSAtom atom;
   while ( ( ep = readdir( dp ) ) != 0L ) {
-    if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
-      continue;
 
-    qDebug( "kio_file : Listing %s", ep->d_name );
+    //kdebug( KDEBUG_INFO, 0, "Listing %s", ep->d_name );
 
     entry.clear();
 
@@ -1219,13 +1218,13 @@ void FileProtocol::slotListDir( const char *_url )
   for (; it != end; ++it )
     listEntry( *it );
 
-  qDebug( "kio_file : ============= COMPLETED LIST ============" );
+  kdebug( KDEBUG_INFO, 0, "============= COMPLETED LIST ============" );
 
   m_cmd = CMD_NONE;
 
   finished();
 
-  qDebug( "kio_file : =============== BYE ===========" );
+  kdebug( KDEBUG_INFO, 0, "=============== BYE ===========" );
 }
 
 
@@ -1365,7 +1364,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
 
   QString p( _path );
   p.truncate( len );
-  qDebug( "kio_file : ########## RECURSIVE LISTING %s", p.ascii() );
+  kdebug( KDEBUG_INFO, 0, "########## RECURSIVE LISTING %s", p.ascii() );
 
   if ( stat( p, &buff ) == -1 ) {
     error( ERR_DOES_NOT_EXIST, p );
@@ -1417,7 +1416,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
   c.m_mode = buff.st_mode;
   c.m_ino = buff.st_ino;
   _dirs.append( c );
-  qDebug( "kio_file : ########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
+  kdebug( KDEBUG_INFO, 0, "########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
 
   return listRecursive2( tmp1, tmp2, _files, _dirs );
 }
@@ -1444,8 +1443,9 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 
   while ( ( ep = readdir( dp ) ) != 0L )
   {
-    if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
-      continue;
+    //Now emitted as well
+    //if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
+    //  continue;
 
     QString p2 = p;
     p2 += "/";
@@ -1588,10 +1588,4 @@ again:
     return 1;
 
   return 0;
-}
-
-
-void openFileManagerWindow( const char * )
-{
-  assert( 0 );
 }
