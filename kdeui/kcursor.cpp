@@ -280,6 +280,13 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if ( !enabled || !o->isWidgetType() )
         return false;
 
+    if ( hideWidget ) {
+	disconnect( hideWidget, SIGNAL( destroyed() ), 
+		    this, SLOT( slotWidgetDestroyed()));
+    }
+    connect( o, SIGNAL( destroyed() ), 
+	     this, SLOT( slotWidgetDestroyed()));
+
     int t = e->type();
     QWidget *w = static_cast<QWidget *>( o );
     hideWidget = w;
@@ -344,6 +351,11 @@ void KCursorPrivate::slotHideCursor()
 {
     if ( !isCursorHidden )
         hideCursor( hideWidget );
+}
+
+void KCursorPrivate::slotWidgetDestroyed()
+{
+    hideWidget = 0L;
 }
 
 bool KCursorPrivate::insideWidget( const QPoint &p, QWidget *w )

@@ -34,6 +34,7 @@ public:
 
 private slots:
     void slotHideCursor();
+    void slotWidgetDestroyed();
 
 private:
     KCursorPrivate();
