@@ -211,8 +211,13 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 #ifdef HAVE_MITSHM
 	initXImage(src->width(), src->height());
 	convertToXImage(*src);
+#if QT_VERSION < 300
 	XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(), d->ximage,
 		dx, dy, 0, 0, src->width(), src->height(), false);
+#else
+	XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
+		dx, dy, 0, 0, src->width(), src->height(), false);
+#endif
 	XSync(qt_xdisplay(), false);
 	doneXImage();
 #endif
