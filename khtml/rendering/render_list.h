@@ -57,7 +57,7 @@ public:
 
     virtual short verticalPositionHint( bool firstLine ) const;
 
-    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
+    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
     virtual void calcWidth();
 

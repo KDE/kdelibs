@@ -118,12 +118,11 @@ public:
     bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
-    bool isText() const  { return m_isText; }   // inherits RenderText
+    bool isText() const  { return m_isText; }
     bool isInline() const { return m_inline; }  // inline object
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
     bool hasSpecialObjects() const { return m_printSpecial; }
     bool layouted() const   { return m_layouted; }
-    bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool overhangingContents() const { return m_overhangingContents; }
     bool hasFirstLine() const { return m_hasFirstLine; }
@@ -151,7 +150,10 @@ public:
 	    root->scheduleRelayout();
 	}
     }
-    void setParsing(bool b=true) { m_parsing = b; }
+    // hack to block inline layouts during parsing
+    // evil, evil. I didn't do it. <tm>
+    virtual void setBlockBidi() {}
+
     void setMinMaxKnown(bool b=true) {
 	m_minMaxKnown = b;
 	if ( !b ) {
@@ -236,7 +238,7 @@ public:
     virtual void updateFromElement() {};
 
     // The corresponding closing element has been parsed.
-    virtual void close() { setParsing(false); }
+    virtual void close() { }
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
@@ -375,7 +377,7 @@ private:
     short m_verticalPosition;
 
     bool m_layouted                  : 1;
-    bool m_parsing                   : 1;
+    bool m_unused                   : 1;
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
 

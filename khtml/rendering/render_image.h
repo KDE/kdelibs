@@ -54,7 +54,7 @@ public:
 
     virtual void layout();
 
-    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
+    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
     QPixmap pixmap() const { return pix; }
 

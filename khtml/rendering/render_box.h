@@ -82,7 +82,7 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
 
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
+    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
 
     virtual short containingBlockWidth() const;
 
@@ -117,13 +117,13 @@ protected:
     int m_height;
 
     int m_y;
-    short m_x;
 
-    // the actual width of the contents + borders + padding
+    short m_x;
     short m_width;
 
     short m_marginTop;
     short m_marginBottom;
+
     short m_marginLeft;
     short m_marginRight;
 

@@ -25,8 +25,6 @@
 
 #include "render_flow.h"
 
-#include <qdatetime.h>
-
 class KHTMLView;
 class QScrollView;
 
@@ -59,7 +57,7 @@ public:
     virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
     void printObject(QPainter *p, int _x, int _y,
                      int _w, int _h, int _tx, int _ty);
-    
+
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
@@ -67,7 +65,7 @@ public:
 
     void setPrintingMode(bool print) { m_printingMode = print; }
     bool printingMode() const { return m_printingMode; }
-    
+
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
 
@@ -79,8 +77,6 @@ protected:
 
     KHTMLView *m_view;
 
-    QTime updateTimer;
-
     RenderObject* m_selectionStart;
     RenderObject* m_selectionEnd;
     int m_selectionStartPos;
@@ -88,9 +84,6 @@ protected:
 
     int m_rootWidth;
     int m_rootHeight;
-
-    int oldLayoutTime;
-    int timeout;
 
     // used to ignore viewport width when printing to the printer
     bool m_printingMode;

@@ -52,7 +52,8 @@ RenderReplaced::RenderReplaced()
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
-    if (style()->visibility() != VISIBLE || !layouted()) return;
+    // not visible or nont even once layouted?
+    if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
 
     _tx += m_x;
     _ty += m_y;
@@ -179,6 +180,8 @@ void RenderWidget::setQWidget(QWidget *widget)
                 RenderWidget::layout();
                 setLayouted();
             }
+            else
+                setPos(xPos(), -500000);
         }
     }
 }

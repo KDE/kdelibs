@@ -1587,7 +1587,6 @@ void RenderTable::calcMinMaxWidth()
 void RenderTable::close()
 {
 //    kdDebug( 6040 ) << "RenderTable::close()" << endl;
-    setParsing(false);
     setLayouted(false);
     setMinMaxKnown(false);
 }

@@ -123,7 +123,6 @@ public:
     typedef Q_UINT32 Id;
     static const Q_UINT32 IdNSMask    = 0xffff0000;
     static const Q_UINT32 IdLocalMask = 0x0000ffff;
-    static const Q_UINT32 IdIllegal        = 0xffffffff;
     // id() is used to easily and exactly identify a node. It
     // is optimized for quick comparison and low memory consumption.
     // its value depends on the owner document of the node and is

@@ -959,9 +959,6 @@ void DocumentImpl::close(  )
 {
     if (parsing()) return;
 
-    for ( RenderObject* o = m_render; o; o = o->lastChild() )
-        o->setParsing( false );
-
     if ( m_render )
         m_render->close();
 
@@ -1472,8 +1469,8 @@ NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_
         if (DOMString(m_attrNames[id]) == nme)
             return ATTR_LAST_ATTR+id;
 
-    if (readonly)
-        return NodeImpl::IdIllegal; // invalid / unknown
+    // unknown
+    if (readonly) return 0;
 
     // Name not found in m_attrNames, so let's add it
     // ### yeah, this is lame. use a dictionary / map instead
@@ -1511,7 +1508,7 @@ DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
-    if (!_name) return NodeImpl::IdIllegal;
+    if (!_name) return 0;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
     NodeImpl::Id id = 0;
@@ -1567,8 +1564,8 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
         if (DOMString(m_elementNames[id]) == nme)
             return ID_LAST_TAG+id;
 
-    if (readonly)
-        return IdIllegal; // invalid / unknown
+    // unknown
+    if (readonly) return 0;
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {

@@ -59,6 +59,7 @@ RenderFlow::RenderFlow()
     m_childrenInline = true;
     m_pre = false;
     firstLine = false;
+    m_blockBidi = false;
     m_clearStatus = CNONE;
 
     specialObjects = 0;
@@ -264,7 +265,7 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline()) {
         // ### make bidi resumeable so that we can get rid of this ugly hack
-        if(!parsing())
+        if (!m_blockBidi)
             layoutInlineChildren();
     }
     else
@@ -1167,6 +1168,9 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
+    // ### get rid of me
+    m_blockBidi = false;
+
     if(lastChild() && lastChild()->isAnonymousBox()) {
         lastChild()->close();
     }
@@ -1182,6 +1186,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
     setLayouted( false );
+
+    if (m_blockBidi)
+        newChild->setBlockBidi();
 
     RenderStyle* pseudoStyle=0;
     if ( ( !firstChild() || firstChild() == beforeChild )

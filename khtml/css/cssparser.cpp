@@ -523,22 +523,17 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (doc->isHTMLDocument())
                     tag = tag.lower();
                 const DOMString dtag(tag);
-                NodeImpl::Id id = doc->tagId(0, dtag.implementation(), true);
-                if (id == NodeImpl::IdIllegal) {
-                    delete cs;
-                    return 0;
-                }
-                cs->tag = id;
+                cs->tag = doc->tagId(0, dtag.implementation(), true);
             }
             else {
                 cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
-                if (!cs->tag) {
-                    // this case should never happen - only when loading
-                    // the default stylesheet - which must not contain unknown tags
-                    assert(0);
-                    delete cs;
-                    return 0;
-                }
+                // this case should never happen - only when loading
+                // the default stylesheet - which must not contain unknown tags
+                assert(cs->tag);
+            }
+            if (!cs->tag) {
+                delete cs;
+                return 0;
             }
         }
    }

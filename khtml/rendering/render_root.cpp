@@ -55,9 +55,6 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_selectionEnd = 0;
     m_selectionStartPos = -1;
     m_selectionEndPos = -1;
-    oldLayoutTime = 0;
-    timeout = 800;
-    setParsing();
 }
 
 RenderRoot::~RenderRoot()
@@ -91,11 +88,11 @@ void RenderRoot::calcWidth()
 void RenderRoot::calcMinMaxWidth()
 {
     assert( !minMaxKnown() );
-    
+
     RenderFlow::calcMinMaxWidth();
 
     m_maxWidth = m_minWidth;
-    
+
     setMinMaxKnown();
 }
 

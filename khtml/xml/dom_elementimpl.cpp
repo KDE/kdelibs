@@ -751,7 +751,7 @@ NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& namespaceURI,
                                      const DOMString& localName, bool readonly)
 {
     assert(element);
-    if (!element) return NodeImpl::IdIllegal;
+    if (!element) return 0;
     return element->getDocument()->attrId(namespaceURI.implementation(),
                                             localName.implementation(), readonly);
 }

@@ -94,7 +94,6 @@ RenderObject::RenderObject()
     m_style = 0;
 
     m_layouted = false;
-    m_parsing = false;
     m_minMaxKnown = false;
 
     m_parent = 0;
@@ -539,7 +538,6 @@ void RenderObject::printTree(int indent) const
                  << " oc=" << (int)overhangingContents()
                  << " lt=" << (int)layouted()
                  << " mk=" << (int)minMaxKnown()
-                 << " pa=" << (int)parsing()
                   << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 		 << endl;
     RenderObject *child = firstChild();
@@ -561,7 +559,6 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
     if (isReplaced()) { *stream << " replaced"; }
     if (hasSpecialObjects()) { *stream << " specialObjects"; }
     if (layouted()) { *stream << " layouted"; }
-    if (parsing()) { *stream << " parsing"; }
     if (minMaxKnown()) { *stream << " minMaxKnown"; }
     if (overhangingContents()) { *stream << " overhangingContents"; }
     if (hasFirstLine()) { *stream << " hasFirstLine"; }
@@ -899,7 +896,7 @@ void RenderObject::recalcMinMaxWidths()
     while( child ) {
 	int cmin, cmax;
 	bool test = false;
-	if ( m_minMaxKnown && child->m_recalcMinMax || !child->m_minMaxKnown ) {
+	if ( ( m_minMaxKnown && child->m_recalcMinMax ) || !child->m_minMaxKnown ) {
 	    cmin = child->minWidth();
 	    cmax = child->maxWidth();
 	    test = true;

@@ -296,9 +296,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             current = newNode;
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget ) {
-		n->init();
-		n->attach();
-	    }
+                n->init();
+                n->attach();
+                if (n->renderer())
+                    n->renderer()->setBlockBidi();
+            }
 #endif
             //_inline = current->isInline();
             if(current->isInline()) _inline = true;

@@ -199,7 +199,7 @@ DOMString Element::getAttributeNS( const DOMString &namespaceURI,
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
                                                  localName.implementation(), true);
-    if (id == NodeImpl::IdIllegal) return DOMString();
+    if (!id) return DOMString();
     return static_cast<ElementImpl*>(impl)->getAttribute(id);
 }
 
@@ -229,7 +229,7 @@ void Element::removeAttributeNS( const DOMString &namespaceURI,
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
                                                     localName.implementation(), true);
-    if (id == NodeImpl::IdIllegal) return;
+    if (!id) return;
 
     int exceptioncode = 0;
     ((ElementImpl *)impl)->removeAttribute(id, exceptioncode);
@@ -243,7 +243,7 @@ Attr Element::getAttributeNodeNS( const DOMString &namespaceURI,
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
                                                     localName.implementation(), true);
-    if (id == NodeImpl::IdIllegal) return 0;
+    if (!id) return 0;
 
     ElementImpl* e = static_cast<ElementImpl*>(impl);
     if (!e->attributes()) return 0; // exception ?
@@ -279,7 +279,7 @@ bool Element::hasAttributeNS( const DOMString &namespaceURI,
     if (!impl || !static_cast<ElementImpl*>(impl)->attributes()) return false; // ### throw ?
     NodeImpl::Id id = impl->getDocument()->attrId(namespaceURI.implementation(),
                                                     localName.implementation(), true);
-    if (id == NodeImpl::IdIllegal) return false;
+    if (!id) return false;
 
     if (!static_cast<ElementImpl*>(impl)->attributes(true /*readonly*/)) return false;
     return static_cast<ElementImpl*>(impl)->attributes(true)->getAttributeItem(id) != 0;

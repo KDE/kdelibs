@@ -46,7 +46,6 @@ using namespace khtml;
 RenderImage::RenderImage(HTMLElementImpl *_element)
     : RenderReplaced()
 {
-    setParsing(false);
     setSpecialObjects();
     image = 0;
     berrorPic = false;
@@ -76,23 +75,13 @@ void RenderImage::setStyle(RenderStyle* _style)
     }
 }
 
-void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
+void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 {
     if(o != image) {
-        RenderReplaced::setPixmap(p, r, o, manualUpdate);
+        RenderReplaced::setPixmap(p, r, o);
         return;
     }
 
-#if 0
-    if (manualUpdate && *manualUpdate)
-    {
-	// ### only do that if size changed!!!!
-	setMinMaxKnown( false );
-	setLayouted( false );
-        return;
-    }
-#endif
-    
     bool iwchanged = false;
 
     if(o->isErrorImage()) {
@@ -157,9 +146,6 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 
 //         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
 //         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
-        if (manualUpdate) {
-           *manualUpdate = true;
-        }
     }
     else
     {
@@ -309,7 +295,7 @@ void RenderImage::layout()
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
-    setLayouted();
+    setLayouted(!style()->width().isPercent());
 }
 
 void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)

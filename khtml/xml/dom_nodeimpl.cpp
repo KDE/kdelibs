@@ -1953,7 +1953,7 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return ( testNode->isElementNode() &&
+    return ( testNode->isElementNode() && m_id &&
              (testNode->id() & m_idMask) == m_id);
 }
 

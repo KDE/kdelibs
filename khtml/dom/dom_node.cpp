@@ -384,7 +384,7 @@ bool Node::dispatchEvent(const Event &evt)
 
 unsigned int Node::elementId() const
 {
-    if (!impl) return NodeImpl::IdIllegal;
+    if (!impl) return 0;
     return impl->id();
 }
 

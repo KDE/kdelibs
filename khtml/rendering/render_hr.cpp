@@ -42,7 +42,6 @@ RenderHR::RenderHR()
     // init RenderObject attributes
     setInline( false );
     setSpecialObjects( false );
-    setParsing( false );
 
     hr_shade = false;
     m_length = 0;

@@ -353,28 +353,17 @@ void RenderListMarker::layout()
     setLayouted();
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate)
+void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 {
     if(o != m_listImage) {
-        RenderBox::setPixmap(p, r, o, 0);
+        RenderBox::setPixmap(p, r, o);
         return;
     }
-
-#if 0
-    if (manualUpdate && *manualUpdate) {
-	setLayouted( false );
-	setMinMaxKnown( false );
-        return;
-    }
-#endif
 
     if(m_width != m_listImage->pixmap_size().width() || m_height != m_listImage->pixmap_size().height())
     {
         setLayouted(false);
         setMinMaxKnown(false);
-        if (manualUpdate) {
-            *manualUpdate = true;
-        }
     }
     else
         repaintRectangle(0, 0, m_width, m_height);

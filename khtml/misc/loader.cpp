@@ -454,7 +454,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
     // for mouseovers, dynamic changes
     if ( m_status >= Persistent && !valid_rect().isNull() )
-        c->setPixmap( pixmap(), valid_rect(), this, 0L);
+        c->setPixmap( pixmap(), valid_rect(), this);
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -592,28 +592,13 @@ QRect CachedImage::valid_rect() const
 
 void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
-    // do not chang the hack with the update list unless you know what you are doing.
-    // When removing this hack, directory listings as eg produced by apache will
-    // get *really* slow
-    QPtrList<CachedObjectClient> updateList;
     CachedObjectClient *c;
 
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "found a client to update: " << c << endl;
 #endif
-        bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( p, r, this, &manualUpdate);
-        if (manualUpdate)
-            updateList.append(c);
-    }
-    for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-        bool manualUpdate = true; // Update!
-            // Actually we want to do c->updateSize()
-            // This is a terrible hack which does the same.
-            // updateSize() does not exist in CachecObjectClient only
-            // in RenderBox()
-        c->setPixmap( p, r, this, &manualUpdate);
+        c->setPixmap( p, r, this);
     }
 }
 
@@ -666,9 +651,9 @@ void CachedImage::movieStatus(int status)
         delete bg;
         bg = 0;
     }
-        
 
-    if((status == QMovie::EndOfMovie) || 
+
+    if((status == QMovie::EndOfMovie) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
        ((status == QMovie::EndOfFrame) && (m_showAnimations == KHTMLSettings::KAnimationDisabled))
       )
@@ -682,13 +667,13 @@ void CachedImage::movieStatus(int status)
         // We might want to do a pause instead in some cases if there is
         // a chance that we want to play the movie again.
         if(imgSource)
-#endif        
+#endif
         {
             setShowAnimations( KHTMLSettings::KAnimationDisabled );
 
             // monochrome alphamasked images are usually about 10000 times
             // faster to draw, so this is worth the hack
-            if ( p && monochrome && p->depth() > 1 ) 
+            if ( p && monochrome && p->depth() > 1 )
             {
                 QPixmap* pix = new QPixmap;
                 pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );

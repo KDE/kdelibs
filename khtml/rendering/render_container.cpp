@@ -64,9 +64,6 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
-    if(parsing())
-        newChild->setParsing();
-
     bool needsTable = false;
 
     if(!newChild->isText()) {
