@@ -483,6 +483,10 @@ bool KAction::setShortcut( const KShortcut& cut )
 
 bool KAction::updateKAccelShortcut( KAccel* kaccel )
 {
+  // Check if action is permitted
+  if (kapp && !kapp->authorizeKAction(name()))
+    return false;
+
   bool b = true;
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
