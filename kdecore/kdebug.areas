@@ -337,6 +337,8 @@
 30513        ole-winword
 30514        svgfilter
 30515        rtffilter
+30516        pdffilter
+30517        applixgraphics-filter
 31000        koffice
 32001        kword
 32002        kword (formatting)
