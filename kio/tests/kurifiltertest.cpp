@@ -31,9 +31,11 @@ int main(int argc, char **argv) {
     filter( "linuxtoday.com" );
     filter( "kde.org" );
     filter( "mosfet.org" );
+    filter( "~/.kde", "ShortURIFilter" );
 
     // SMB share test with a specific filter chosen
     filter( "\\\\THUNDER\\", "ShortURIFilter" );
+    filter( "smb://", "ShortURIFilter" );
     filter( "smb:///", "ShortURIFilter" ); // use specific filter.
     filter( "smb:", "ShortURIFilter" ); // use specific filter.
     filter( "smb:/", "ShortURIFilter" ); // use specific filter.
