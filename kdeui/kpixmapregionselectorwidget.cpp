@@ -24,6 +24,9 @@
 #include <qlayout.h>
 #include <kimageeffect.h>
 #include <kdebug.h>
+#include <klocale.h>
+#include <kpopupmenu.h>
+#include <kaction.h>
 #include <stdlib.h>
 #include <qcursor.h>
 #include <qapplication.h>
@@ -123,12 +126,92 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    m_label->setPixmap(pixmap);
 }
 
+
+KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
+{
+   KPopupMenu *popup=new KPopupMenu(this, "PixmapRegionSelectorPopup");
+   popup->insertTitle(i18n("Image Operations"));
+   
+   KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
+                                0, this, SLOT(rotateClockwise()),
+                                popup, "rotateclockwise");
+   action->plug(popup);
+
+   action = new KAction(i18n("Rotate &Counterclockwise"), "rotate_ccw",
+                                0, this, SLOT(rotateCounterclockwise()),
+                                popup, "rotatecounterclockwise");
+   action->plug(popup);
+ 
+/*
+   I wonder if it would be appropiate to have here an "Open with..." option to
+   edit the image (antlarr)
+*/
+   return popup;
+}
+
+void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction)
+{
+   int w=m_originalPixmap.width();
+   int h=m_originalPixmap.height();
+   QImage img=m_unzoomedPixmap.convertToImage();
+   img= KImageEffect::rotate(img, direction);
+   m_unzoomedPixmap.convertFromImage(img);
+
+   img=m_originalPixmap.convertToImage();
+   img= KImageEffect::rotate(img, direction);
+   m_originalPixmap.convertFromImage(img);
+
+   m_linedPixmap=QPixmap();
+
+   if (m_forcedAspectRatio>0 && m_forcedAspectRatio!=1) 
+      resetSelection();
+   else
+   {
+      switch (direction)
+      {
+         case ( KImageEffect::Rotate90 ):
+            {
+              int x=h-m_selectedRegion.y()-m_selectedRegion.height();
+              int y=m_selectedRegion.x();
+              m_selectedRegion.setRect(x, y, m_selectedRegion.height(), m_selectedRegion.width() );
+              updatePixmap();
+            } break;
+         case ( KImageEffect::Rotate270 ):
+            {
+              int x=m_selectedRegion.y();
+              int y=w-m_selectedRegion.x()-m_selectedRegion.width();
+              m_selectedRegion.setRect(x, y, m_selectedRegion.height(), m_selectedRegion.width() );
+              updatePixmap();
+            } break;
+         default: resetSelection();
+      }
+   }
+}
+
+void KPixmapRegionSelectorWidget::rotateClockwise()
+{
+   rotate(KImageEffect::Rotate90);
+}
+
+void KPixmapRegionSelectorWidget::rotateCounterclockwise()
+{
+   rotate(KImageEffect::Rotate270);
+}
+
 bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 {
    if ( ev->type() == QEvent::MouseButtonPress )
    {
       QMouseEvent *mev= (QMouseEvent *)(ev);
       //kdDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
+
+      if ( mev->button() == RightButton )
+      {
+         KPopupMenu *popup = createPopupMenu( );
+         popup->exec( mev->globalPos() );
+         delete popup;
+         return TRUE;
+      };
 
       QCursor cursor;
 

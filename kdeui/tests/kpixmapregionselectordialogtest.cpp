@@ -25,7 +25,7 @@ int main(int argc, char**argv)
   }
 
   QImage image=
-     KPixmapRegionSelectorDialog::getSelectedImage(QPixmap(args->arg(0)),100,140);
+     KPixmapRegionSelectorDialog::getSelectedImage(QPixmap(args->arg(0)),100,100);
 
   image.save("output.png", "PNG");
 

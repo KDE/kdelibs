@@ -23,6 +23,9 @@
 #include <qpixmap.h>
 #include <qrect.h>
 #include <qlabel.h>
+#include <kimageeffect.h>
+
+class KPopupMenu;
 
 #include <kdelibs_export.h>
 
@@ -35,6 +38,7 @@
  */
 class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
+   Q_OBJECT
 public:
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
@@ -103,6 +107,30 @@ public:
     * size (preserving the aspect ratio)
     */
    void setMaximumWidgetSize( int width, int height );
+
+   /**
+    * Rotates the image as specified by the @p direction parameter, also tries
+    * to rotate the selected region so that it doesn't change, as long as the
+    * forced aspect ratio setting is respected, in other case, the selected region
+    * is resetted.
+    */
+   void rotate(KImageEffect::RotateDirection direction);
+
+public slots:
+   /**
+    * Rotates the current image 90º clockwise
+    */
+   void rotateClockwise();
+   /**
+    * Rotates the current image 90º counterclockwise
+    */
+   void rotateCounterclockwise();
+
+protected:
+   /**
+    * Creates a KPopupMenu with the menu that appears when clicking with the right button on the label
+    */
+   virtual KPopupMenu *createPopupMenu();
 
 private:
    bool eventFilter(QObject *obj, QEvent *ev);
