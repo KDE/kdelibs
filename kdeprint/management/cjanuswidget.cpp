@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,8 +27,9 @@
 #include <klistbox.h>
 #include <qlayout.h>
 
-struct CJanusWidget::CPage
+class CJanusWidget::CPage
 {
+public:
 	QWidget		*m_widget;
 	QString		m_text;
 	QString		m_header;
