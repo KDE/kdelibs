@@ -47,6 +47,7 @@ class KServiceType : public KSycocaEntry
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
+  typedef QValueList<KService::Ptr> List;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
@@ -136,12 +137,6 @@ protected:
   QMap<QString,QVariant::Type> m_mapPropDefs;
 
   bool m_bValid;
-};
-
-class KServiceTypeList : public QValueList<KServiceType::Ptr>
-{
-public:
-   KServiceTypeList() { };
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );
