@@ -35,7 +35,7 @@ Completion BooleanObject::execute(const List &args)
   else
     b = args[0].toBoolean();
 
-  return Completion(Normal, b);
+  return Completion(ReturnValue, b);
 }
 
 // ECMA 15.6.2
@@ -92,5 +92,5 @@ Completion BooleanProtoFunc::execute(const List &)
   else
     result = v.toBoolean();
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }

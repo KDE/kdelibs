@@ -252,7 +252,7 @@ Completion GlobalFunc::execute(const List &args)
       if (kjsyyparse()) {
 	// TODO: stop this from growing (will be deleted at end of global eval)
 	//	KJS::Node::deleteAllNodes();
-	return Completion(Normal, Error::create(SyntaxError));
+	return Completion(ReturnValue, Error::create(SyntaxError));
       }
 
       res = KJScriptImp::current()->progNode->evaluate();
@@ -277,7 +277,7 @@ Completion GlobalFunc::execute(const List &args)
       radix = 10;
     else if (radix < 2 || radix > 36) {
       res = Number(NaN);
-      return Completion(Normal, res);
+      return Completion(ReturnValue, res);
     }
     /* TODO: use radix */
     int i = 0;
@@ -334,5 +334,5 @@ Completion GlobalFunc::execute(const List &args)
     res = String(s);
   }
 
-  return Completion(Normal, res);
+  return Completion(ReturnValue, res);
 }

@@ -31,7 +31,7 @@ Completion ArrayObject::execute(const List &args)
   // equivalent to 'new Array(....)'
   KJSO result = construct(args);
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // ECMA 15.6.2
@@ -301,5 +301,5 @@ Completion ArrayProtoFunc::execute(const List &args)
     result = Undefined();
   }
 
-  return Completion(Normal,result);
+  return Completion(ReturnValue,result);
 }

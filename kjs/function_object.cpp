@@ -24,7 +24,7 @@ using namespace KJS;
 // ECMA 15.3.1 The Function Constructor Called as a Function
 Completion FunctionObject::execute(const List &args)
 {
-  return Completion(Normal, construct(args));
+  return Completion(ReturnValue, construct(args));
 }
 
 // ECMA 15.3.2 The Function Constructor

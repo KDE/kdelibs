@@ -47,7 +47,7 @@ Completion StringObject::execute(const List &args)
     s = v.toString();
   }
 
-  return Completion(Normal, s);
+  return Completion(ReturnValue, s);
 }
 
 // ECMA 15.5.2
@@ -79,7 +79,7 @@ Completion StringObjectFunc::execute(const List &args)
   } else
     s = "";
 
-  return Completion(Normal, String(s));
+  return Completion(ReturnValue, String(s));
 }
 
 // ECMA 15.5.4
@@ -376,5 +376,5 @@ Completion StringProtoFunc::execute(const List &args)
 #endif
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }

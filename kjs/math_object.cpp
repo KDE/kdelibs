@@ -159,5 +159,5 @@ Completion MathFunc::execute(const List &args)
     assert(0);
   }
 
-  return Completion(Normal, Number(result));
+  return Completion(ReturnValue, Number(result));
 }

@@ -65,7 +65,7 @@ ErrorObject::ErrorObject(const Object& proto, ErrorType t,
 Completion ErrorObject::execute(const List &args)
 {
   // "Error()" gives the sames result as "new Error()"
-  return Completion(Normal, construct(args));
+  return Completion(ReturnValue, construct(args));
 }
 
 // ECMA 15.9.3
@@ -117,6 +117,6 @@ Completion ErrorProtoFunc::execute(const List &)
   // toString()
   const char *s = "Error message.";
 
-  return Completion(Normal, String(s));
+  return Completion(ReturnValue, String(s));
 }
 

@@ -57,7 +57,7 @@ debugger: $(libkjs_la_SOURCES) $(kjsinclude_HEADERS) $(noinst_HEADERS)
 ## test program (in one program for easier profiling/memory debugging)
 EXTRA_PROGRAMS = testkjs_static
 testkjs_static_SOURCES = testkjs.cpp  $(libkjs_la_SOURCES)
-testkjs_static_LDADD = 
+testkjs_static_LDADD = $(LIBPCRE)
 
 ## test program (linked to libkjs)
 check_PROGRAMS = testkjs

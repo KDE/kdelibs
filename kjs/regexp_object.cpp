@@ -31,7 +31,7 @@ using namespace KJS;
 // ECMA 15.9.2
 Completion RegExpObject::execute(const List &)
 {
-  return Completion(Normal, Undefined());
+  return Completion(ReturnValue, Undefined());
 }
 
 // ECMA 15.9.3
@@ -135,5 +135,5 @@ Completion RegExpProtoFunc::execute(const List &args)
     break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }

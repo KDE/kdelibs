@@ -39,7 +39,7 @@ Completion ObjectObject::execute(const List &args)
     } else
       result = arg.toObject();
   }
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // ECMA 15.2.2
@@ -107,7 +107,7 @@ Completion ObjectProtoFunc::execute(const List &)
   // valueOf()
   if (id == ObjectPrototype::ValueOf)
     /* TODO: host objects*/
-    return Completion(Normal, thisObj);
+    return Completion(ReturnValue, thisObj);
 
   // toString()
   UString str;
@@ -130,5 +130,5 @@ Completion ObjectProtoFunc::execute(const List &)
     str = "[undefined object]";
   }
 
-  return Completion(Normal, String(str));
+  return Completion(ReturnValue, String(str));
 }

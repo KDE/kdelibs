@@ -139,7 +139,7 @@ Completion DateObject::execute(const List &)
   UString s(ctime(&t));
 
   // return formatted string minus trailing \n
-  return Completion(Normal, String(s.substr(0, s.size() - 1)));
+  return Completion(ReturnValue, String(s.substr(0, s.size() - 1)));
 }
 
 // ECMA 15.9.3
@@ -224,7 +224,7 @@ Completion DateObjectFunc::execute(const List &args)
     result = Number(mktime(&t) * 1000.0 + ms);
   }
 
-  return Completion(Normal,result);
+  return Completion(ReturnValue, result);
 }
 
 // ECMA 15.9.4
@@ -435,5 +435,5 @@ Completion DateProtoFunc::execute(const List &args)
     thisObj.setInternalValue(result);
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }

@@ -49,7 +49,7 @@ Completion NumberObject::execute(const List &args)
   else
     n = args[0].toNumber();
 
-  return Completion(Normal, n);
+  return Completion(ReturnValue, n);
 }
 
 // ECMA 15.7.2
@@ -98,7 +98,7 @@ Completion NumberProtoFunc::execute(const List &)
     break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // ECMA 15.7.4

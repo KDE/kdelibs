@@ -161,7 +161,7 @@ String InternalFunctionImp::toString() const
 
 Completion InternalFunctionImp::execute(const List &)
 {
-  return Completion(Normal, Undefined());
+  return Completion(ReturnValue, Undefined());
 }
 
 ConstructorImp::ConstructorImp() {
@@ -195,7 +195,7 @@ ConstructorImp::~ConstructorImp() { }
 Completion ConstructorImp::execute(const List &)
 {
   /* TODO */
-  return Completion(Normal, Null());
+  return Completion(ReturnValue, Null());
 }
 
 Function::Function(Imp *d)
@@ -259,7 +259,7 @@ Constructor::~Constructor()
 Completion Constructor::execute(const List &)
 {
   /* TODO: call construct instead ? */
-  return Completion(Normal, Undefined());
+  return Completion(ReturnValue, Undefined());
 }
 
 Object Constructor::construct(const List &args)
