@@ -5824,6 +5824,8 @@ void KHTMLWidget::cellSequenceChanged()
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
     emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
 
   emit onURL( next->pCell->getURL() );
 
