@@ -449,7 +449,7 @@ static void cleanpath(QString &path)
 static void checkPseudoState( DOM::ElementImpl *e )
 {
     DOMString attr;
-    if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isEmpty() ) {
+    if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isNull() ) {
 	pseudoState = PseudoNone;
 	return;
     }
