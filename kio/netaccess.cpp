@@ -169,7 +169,7 @@ bool NetAccess::dircopyInternal(const KURL& src, const KURL& target, bool overwr
 bool NetAccess::statInternal( const KURL & url )
 {
   bJobOK = true; // success unless further error occurs
-  KIO::Job * job = KIO::stat( url );
+  KIO::Job * job = KIO::stat( url, !url.isLocalFile() );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
   enter_loop();
