@@ -1,6 +1,7 @@
 /*
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
+   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,19 +30,35 @@
 #include <klibloader.h>
 #include <krun.h>
 #include <kprocess.h>
+#include <kaboutdata.h>
 
 #include "kcmultidialog.h"
 #include "kcmultidialog.moc"
 #include "kcmoduleloader.h"
+#include <assert.h>
 
 KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const char *name, bool modal)
   : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply | Ok, Ok,
-                parent, name, modal, true), d(0L)
+                parent, name, modal, true)
+  , _baseGroup(baseGroup)
 {
+    init();
+}
+
+KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent, const char * name, bool modal )
+    : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok, Ok,
+                   parent, name, modal, true )
+{
+    init();
+}
+
+inline void KCMultiDialog::init()
+{
+    d = 0L;
     enableButton(Apply, false);
     connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
     setInitialSize(QSize(640,480));
-	_baseGroup = baseGroup;
+    modulePrefParent.setAutoDelete( true );
 }
 
 KCMultiDialog::~KCMultiDialog()
@@ -65,12 +82,32 @@ void KCMultiDialog::slotDefault()
     }
 }
 
+void KCMultiDialog::apply()
+{
+    QStringList updatedModules;
+    for( KCModule * m = modules.first(); m; m = modules.next() )
+    {
+        kdDebug() << k_funcinfo << m->name() << ' ' << ( m->aboutData() ? m->aboutData()->appName() : "" ) << endl;
+        if( m->changed() )
+        {
+            m->save();
+            QStringList * names = modulePrefParent[ m ];
+            kdDebug() << k_funcinfo << *names << " saved and added to the list" << endl;
+            for( QStringList::ConstIterator it = names->begin(); it != names->end(); ++it )
+                if( updatedModules.find( *it ) == updatedModules.end() )
+                    updatedModules.append( *it );
+        }
+    }
+    for( QStringList::const_iterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
+    {
+        kdDebug() << k_funcinfo << *it << " " << ( *it ).latin1() << endl;
+        emit configCommitted( ( *it ).latin1() );
+    }
+}
+
 void KCMultiDialog::slotApply()
 {
-    QPtrListIterator<KCModule> it(modules);
-    for (; it.current(); ++it)
-      (*it)->save();
-    clientChanged(false);
+    apply();
 
     emit applyClicked();
 }
@@ -78,9 +115,7 @@ void KCMultiDialog::slotApply()
 
 void KCMultiDialog::slotOk()
 {
-    QPtrListIterator<KCModule> it(modules);
-    for (; it.current(); ++it)
-      (*it)->save();
+    apply();
     accept();
 
     emit okClicked();
@@ -103,7 +138,14 @@ void KCMultiDialog::slotHelp()
 
 void KCMultiDialog::clientChanged(bool state)
 {
-    enableButton(Apply, state);
+    kdDebug( 1208 ) << k_funcinfo << state << endl;
+    for( KCModule * m = modules.first(); m; m = modules.next() )
+        if( m->changed() )
+        {
+            enableButton( Apply, true );
+            return;
+        }
+    enableButton( Apply, false );
 }
 
 void KCMultiDialog::addModule(const QString& path, bool withfallback)
@@ -116,18 +158,27 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
     }
 
     KCModuleInfo info(path, _baseGroup);
+    addModule(info, withfallback);
+}
+
+void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
+{
+    kdDebug(1208) << "KCMultiDialog::addModule " << moduleinfo.moduleName() << " for KCDParents=" << moduleinfo.KCDParents() << endl;
 
     QHBox* page = 0;
-    if (!info.service()->noDisplay())
-        page = addHBoxPage(info.moduleName(), info.comment(),
-                              KGlobal::iconLoader()->loadIcon(info.icon(), KIcon::Desktop, KIcon::SizeMedium));
+    if (!moduleinfo.service()->noDisplay())
+        page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
+                              KGlobal::iconLoader()->loadIcon(moduleinfo.icon(), KIcon::Desktop, KIcon::SizeMedium));
     if(!page) {
-        KCModuleLoader::unloadModule(info);
+        KCModuleLoader::unloadModule(moduleinfo);
         return;
     }
-    moduleDict.insert(page, new LoadInfo(path, withfallback));
+    moduleDict.insert(page, new LoadInfo(moduleinfo, withfallback));
     if (modules.isEmpty())
-       slotAboutToShow(page);
+    {
+        kdDebug() << k_funcinfo << moduleinfo.KCDParents() << endl;
+        slotAboutToShow(page);
+    }
 }
 
 void KCMultiDialog::slotAboutToShow(QWidget *page)
@@ -136,13 +187,15 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
     if (!loadInfo)
        return;
 
+    kdDebug() << k_funcinfo << loadInfo->info.KCDParents() << endl;
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     moduleDict.remove(page);
 
-    KCModuleInfo info(loadInfo->path, _baseGroup);
+    KCModule *module = KCModuleLoader::loadModule(loadInfo->info, loadInfo->withfallback);
 
-    KCModule *module = KCModuleLoader::loadModule(info, loadInfo->withfallback);
+    kdDebug() << k_funcinfo << loadInfo->info.KCDParents() << endl;
 
     if (!module)
     {
@@ -152,10 +205,17 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
         return;
     }
 
+    kdDebug() << k_funcinfo << "KCDParents=" << loadInfo->info.KCDParents() << endl;
+    modulePrefParent.insert( module, new QStringList( loadInfo->info.KCDParents() ) );
     module->reparent(page,0,QPoint(0,0),true);
     connect(module, SIGNAL(changed(bool)), this, SLOT(clientChanged(bool)));
+    if( module->changed() )
+    {
+        kdWarning() << "Just loaded a KCModule but it's already changed.";
+        clientChanged( true );
+    }
     //setHelp( docpath, QString::null );
-    _docPath = info.docPath();
+    _docPath = loadInfo->info.docPath();
     modules.append(module);
 
     //KCGlobal::repairAccels( topLevelWidget() );
@@ -164,3 +224,5 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
 
     QApplication::restoreOverrideCursor();
 }
+
+// vim: sw=4 et sts=4

@@ -2,6 +2,7 @@
   Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
   Copyright (c) 2000 Matthias Elter <elter@kde.org>
   Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
+  Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
 
   This file is part of the KDE project
   
@@ -21,10 +22,12 @@
 */
 
 
+#include "kcmoduleinfo.h"
+
 #include <kdesktopfile.h>
 #include <kdebug.h>
-
-#include "kcmoduleinfo.h"
+#include <kglobal.h>
+#include <kstandarddirs.h>
 
 KCModuleInfo::KCModuleInfo(const QString& desktopFile, const QString& baseGroup)
   : _fileName(desktopFile), d(0L)
@@ -62,6 +65,31 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile, const QString& baseGroup)
   setGroups(groups);
 }
 
+KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
+  : _fileName( KGlobal::dirs()->findResource( "services", moduleInfo->desktopEntryPath() ) )
+{
+  kdDebug() << k_funcinfo << _fileName << endl;
+  _allLoaded = false;
+
+  _service = moduleInfo;
+  Q_ASSERT(_service != 0L);
+
+  // set the modules simple attributes
+  setName(_service->name());
+  setComment(_service->comment());
+  setIcon(_service->icon());
+
+  // library and factory
+  setLibrary(_service->library());
+
+  // get the keyword list
+  setKeywords(_service->keywords());
+
+  // get the groups list
+  KDesktopFile desktop(_fileName);
+  setGroups( QStringList::split( ';', desktop.readEntry( "X-KDE-Groups" ) ) );
+}
+
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
     : d( 0 )
 {
@@ -82,6 +110,7 @@ KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
     _fileName = rhs._fileName;
     _doc = rhs._doc;
     _comment = rhs._comment;
+    _kcdparents = rhs._kcdparents;
     _needsRootPrivileges = rhs._needsRootPrivileges;
     _isHiddenByDefault = rhs._isHiddenByDefault;
     _allLoaded = rhs._allLoaded;
@@ -103,6 +132,9 @@ KCModuleInfo::loadAll()
 
   // library and factory
   setHandle(desktop.readEntry("X-KDE-FactoryName"));
+
+  // KCD parent
+  setKCDParents(desktop.readListEntry("X-KDE-KCDParents"));
 
   // does the module need super user privileges?
   setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
@@ -149,6 +181,15 @@ KCModuleInfo::handle() const
      return _lib;
 
   return _handle;
+}
+
+const QStringList &
+KCModuleInfo::KCDParents() const
+{
+  if( !_allLoaded )
+    const_cast<KCModuleInfo*>( this )->loadAll();
+
+  return _kcdparents;
 }
 
 bool

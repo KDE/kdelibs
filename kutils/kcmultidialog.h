@@ -1,6 +1,7 @@
 /*
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
+   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,6 +28,7 @@
 
 #include <kdialogbase.h>
 #include <kcmodule.h>
+#include "kcmoduleinfo.h"
 
 /**
  * A class that offers a KDialogBase containing arbitrary KControl Modules
@@ -56,6 +58,21 @@ public:
                   bool modal=false);
 
     /**
+     * Construct a personalized KCMultiDialog.
+     *
+     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
+     *        IconList.
+     * @param caption The dialog caption. Do not specify the application name
+     *        here. The class will take care of that.
+     * @param parent Parent of the dialog.
+     * @param name Dialog name (for internal use only).
+     * @param modal Controls dialog modality. If @p false, the rest of the
+     *        program interface (example: other dialogs) is accessible while
+     *        the dialog is open.
+     */
+    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0, const char * name = 0, bool modal = false );
+
+    /**
      * Destructor
      **/
    virtual ~KCMultiDialog();
@@ -70,6 +87,21 @@ public:
      *                     in the module appearing outside the dialog.
      **/
     void addModule(const QString& module, bool withfallback=true);
+
+    /**
+     * Add a module.
+     *
+     * @param moduleinfo Pass a @ref KCModuleInfo object which will be
+     *                   used for creating the module. It will be added
+     *                   to the list of modules the dialog will show.
+     *
+     * @param withfallback Try harder to load the module. Might result
+     *                     in the module appearing outside the dialog.
+     **/
+    void addModule(const KCModuleInfo& moduleinfo, bool withfallback=false);
+
+signals:
+    void configCommitted( const QCString & instanceName );
 
 protected slots:
     /**
@@ -111,15 +143,19 @@ private slots:
     void clientChanged(bool state);
 
 private:
+    void init();
+    void apply();
+
     struct LoadInfo {
-      LoadInfo(const QString &_path, bool _withfallback)
-         : path(_path), withfallback(_withfallback)
+      LoadInfo(const KCModuleInfo &_info, bool _withfallback)
+         : info(_info), withfallback(_withfallback)
          { }
-      QString path;
+      KCModuleInfo info;
       bool withfallback;
     };
     QPtrList<KCModule> modules;
     QPtrDict<LoadInfo> moduleDict;
+    QPtrDict<QStringList>  modulePrefParent;
     QString _docPath;
     QString _baseGroup;
 
