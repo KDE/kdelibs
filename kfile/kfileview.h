@@ -28,7 +28,6 @@ class KActionCollection;
 #include <qwidget.h>
 
 #include "kfileitem.h"
-#include "kfilereader.h"
 #include "kfile.h"
 
 /**
