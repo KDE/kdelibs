@@ -44,7 +44,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
     setViewName( i18n("Icon View") );
-    myIconSize = KIconLoader::Small;
+    myIconSize = KIcon::SizeSmall;
 
     toolTip = 0;
     setResizeMode( Adjust );
@@ -239,7 +239,7 @@ void KFileIconView::updateView( const KFileViewItem *i )
       item->setPixmap( i->pixmap( myIconSize ) );
 }
 
-void KFileIconView::setIconSize( KIconLoader::Size size )
+void KFileIconView::setIconSize( int size )
 {
     myIconSize = size;
     updateView( true );

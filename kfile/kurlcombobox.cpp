@@ -291,7 +291,7 @@ QPixmap KURLComboBox::getPixmap( const KURL& url ) const
     if ( myMode == Directories )
 	return dirpix;
     else
-	return KMimeType::pixmapForURL( url, 0, KIconLoader::Small );
+	return KMimeType::pixmapForURL( url, 0, KIcon::Small );
 }
 
 

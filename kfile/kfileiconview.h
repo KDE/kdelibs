@@ -76,8 +76,8 @@ public:
     virtual bool isSelected(const KFileViewItem *i) const;
     virtual void clearSelection();
 
-    void setIconSize( KIconLoader::Size size );
-    KIconLoader::Size iconSize() const { return myIconSize; }
+    void setIconSize( int size );
+    int iconSize() const { return myIconSize; }
 
     void ensureItemVisible( const KFileViewItem * );
 
@@ -91,7 +91,7 @@ private slots:
 private:
     QLabel *toolTip;
     int th;
-    KIconLoader::Size myIconSize;
+    int myIconSize;
 
 private:
     class KFileIconViewPrivate;

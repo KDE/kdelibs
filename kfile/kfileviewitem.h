@@ -125,14 +125,14 @@ public:
      * @param size specifies the size of the icon.
      * The default icon is only available in small size, so far.
      */
-    QPixmap pixmap( KIconLoader::Size size ) const;
+    QPixmap pixmap( int size ) const;
 
     /**
      * Returns a pixmap for this file. The only semantic difference to the
      * other pixmap() method is that the last used Pixmap-size will be used.
-     * E.g. if you call pixmap( KIconLoader::Large ) once, you can refer to
+     * E.g. if you call pixmap( KIcon::SizeSmall ) once, you can refer to
      * this pixmap thru this method without specifying the size.
-     * The default size is KIconLoader::Small
+     * The default size is KIcon::SizeSmall. Use 0 for the default size.
      */
     QPixmap pixmap() const { return pixmap( myPixmapSize ); }
 
@@ -241,7 +241,7 @@ private:
 
     mutable const QPixmap *myPixmap;
     mutable bool myPixmapDirty;
-    mutable KIconLoader::Size myPixmapSize;
+    mutable int myPixmapSize;
     KMimeType::Ptr myMimeType;
 
     // cache for passwd and group entries

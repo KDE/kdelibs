@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kfile.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -98,10 +98,12 @@ public:
      * used outside the dialog.
      * @param context The initial icon context. Initially, the icons having
      * this context are shown in the dialog. The user can change this.
+     * @param user Begin with the "user icons" instead of "system icons".
      * @return The name of the icon, suitable for loading with KIconLoader.
      */
-    QString selectIcon(int group=KIcon::Desktop, int context=KIcon::Application);
-
+    QString selectIcon(int group=KIcon::Desktop, int
+	    context=KIcon::Application, bool user=false);
+    
 private slots:
     void slotButtonClicked(int);
     void slotContext(int);
@@ -145,7 +147,7 @@ public:
     ~KIconButton();
 
     /** Set the icon group and context. */
-    void setIconType(int group, int context);
+    void setIconType(int group, int context, bool user=false);
 
     /** Set the button's initial icon. */
     void setIcon(QString icon);
@@ -161,6 +163,7 @@ private slots:
     void slotChangeIcon();
 
 private:
+    bool mbUser;
     int mGroup, mContext;
 
     QString mIcon;

@@ -142,20 +142,19 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
 
-    KIconLoader::Size size = KIconLoader::Small;
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
 					    toolbar, "path combo" );
     KURL u = QDir::rootDirPath();
     QString text = i18n("Root Directory: %1").arg( u.path() );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, size ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
     u = QDir::homeDirPath();
     text = i18n("Home Directory: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, size ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
     u = KGlobalSettings::desktopPath();
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, size ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
     connect( combo, SIGNAL( urlActivated( const KURL&  )),
 	     this,  SLOT( pathComboActivated( const KURL& ) ));
@@ -231,7 +230,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
     toolbar->setItemAutoSized (PATH_COMBO);
-    toolbar->setIconSize(KIconLoader::Medium);
     toolbar->setIconText(KToolBar::IconOnly);
     toolbar->setBarPos(KToolBar::Top);
     toolbar->enableMoving(false);

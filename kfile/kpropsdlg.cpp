@@ -404,8 +404,7 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
     QLabel *iconLabel = new QLabel(this);
     iconLabel->setFixedSize(50, 50);
     iconLabel->setPixmap(KMimeType::pixmapForURL(properties->kurl(),
-                                                 item->mode(),
-                                                 KIconLoader::Medium));
+	    item->mode(), KIcon::Desktop));
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);

@@ -228,7 +228,7 @@ void KFileViewItem::init()
     myMimeType = 0L;
     myHidden = false;
     myPixmapDirty = false;
-    myPixmapSize = KIconLoader::Small;
+    myPixmapSize = KIcon::SizeSmall;
 }
 
 
@@ -425,14 +425,14 @@ QString KFileViewItem::mimeType()
 }
 
 
-QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
+QPixmap KFileViewItem::pixmap( int size ) const
 {
     if ( !myPixmapDirty ) {
 	if ( myPixmapSize != size || !myPixmap ) {
 	    delete myPixmap;
 	    if ( !myMimeType )
 		myPixmap = new QPixmap( KGlobal::iconLoader()->loadIcon(defaultIcon(),
-			KIcon::NoGroup, size, KIcon::DefaultState, 0L, false));
+			KIcon::Desktop, size) );
 	    else
 		myPixmap = new QPixmap( myMimeType->pixmap( url(), size ));
 	}
@@ -447,7 +447,7 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	
 	    delete myPixmap;
 	    KIconLoader *loader = KGlobal::iconLoader();
-	    myPixmap = new QPixmap( loader->loadIcon(icon, KIcon::NoGroup, size) );
+	    myPixmap = new QPixmap( loader->loadIcon(icon, KIcon::Desktop, size) );
 	
 	    // we either have found the correct pixmap, or there is none,
 	    // anyway, we won't ever search for one again

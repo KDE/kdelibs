@@ -204,23 +204,14 @@ void KIconDialog::showIcons()
 	mpCanvas->loadFiles(mFileList);
 }
 
-QString KIconDialog::selectIcon(int group, int context)
+QString KIconDialog::selectIcon(int group, int context, bool user)
 {
-    if (group == KIcon::User)
-    {
-	mType = 1; mGroup = 0;
-	mpRb1->setChecked(false);
-	mpRb2->setChecked(true);
-	mpCombo->setEnabled(false);
-	mpBrowseBut->setEnabled(true);
-    } else
-    {
-	mType = 0; mGroup = group;
-	mpRb1->setChecked(true);
-	mpRb2->setChecked(false);
-	mpCombo->setEnabled(true);
-	mpBrowseBut->setEnabled(false);
-    }
+    mGroup = group;
+    mType = user ? 1 : 0;
+    mpRb1->setChecked(!user);
+    mpRb2->setChecked(user);
+    mpCombo->setEnabled(!user);
+    mpBrowseBut->setEnabled(user);
     mContext = context;
     mpCombo->setCurrentItem(mContext-1);
     showIcons();
@@ -331,10 +322,11 @@ KIconButton::~KIconButton()
     delete mpDialog;
 }
 
-void KIconButton::setIconType(int group, int context)
+void KIconButton::setIconType(int group, int context, bool user)
 {
     mGroup = group;
     mContext = context;
+    mbUser = user;
 }
 
 void KIconButton::setIcon(QString icon)
@@ -345,7 +337,7 @@ void KIconButton::setIcon(QString icon)
 
 void KIconButton::slotChangeIcon()
 {
-    QString name = mpDialog->selectIcon(mGroup, mContext);
+    QString name = mpDialog->selectIcon(mGroup, mContext, mbUser);
     if (name.isNull())
 	return;
     QPixmap pm = mpLoader->loadIcon(name, mGroup);
