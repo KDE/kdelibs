@@ -20,7 +20,7 @@ class KInstance;
  *     return new KSpreadFactory;
  *   }
  * };
- * <pre>
+ * </pre>
  * You should especially see that the function must follow the naming pattern
  * "init_libname".
  *
@@ -28,7 +28,7 @@ class KInstance;
  * like this:
  * <pre>
  *     s_global = new KInstance( "kspread" );
- * <pre>
+ * </pre>
  * This KInstance is compareable to @ref KGlobal used by normal applications.
  * It allows you to find ressource files (images, XML, sound etc.) belonging
  * to the library.
