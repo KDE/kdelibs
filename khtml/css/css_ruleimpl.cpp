@@ -265,9 +265,12 @@ void CSSMediaRuleImpl::deleteRule( unsigned long index )
 
 CSSRuleListImpl::~CSSRuleListImpl()
 {
-    CSSRuleImpl* rule;
-    while ( ( rule = m_lstCSSRules.take( 0 ) ) )
-        rule->deref();
+    if ( !m_lstCSSRules.isEmpty() )
+    {
+        CSSRuleImpl* rule;
+        while ( ( rule = m_lstCSSRules.take( 0 ) ) )
+            rule->deref();
+    }
 }
 
 // ---------------------------------------------------------------------------
