@@ -26,7 +26,7 @@ KProtocolManager::KProtocolManager()
 
 void KProtocolManager::scanConfig( const QString& _dir )
 {
-  QDir dir( _dir );
+  QDir dir( _dir, QString::null, QDir::Unsorted, QDir::Files | QDir::Readable );
   if (!dir.exists())
     return;
   QStringList p = dir.entryList();
