@@ -1349,6 +1349,7 @@ bool HTTPProtocol::readHeader()
 	// The deprecated Refresh Response
 	else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
 	    kdDebug(7113) << buffer << endl;
+		mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
 	    setMetaData( "meta-refresh", trimLead(buffer+8) );
 	}
     // We got the header
@@ -2560,7 +2561,7 @@ bool HTTPProtocol::readBody( )
        speed(sz / (t_last - t_start));
      } else {
        speed(0);
-     }
+     }	 
      data( QByteArray() );
      return true;
   }
