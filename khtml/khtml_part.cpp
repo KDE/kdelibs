@@ -168,6 +168,7 @@ public:
   KURL m_baseURL;
   QString m_baseTarget;
 
+  QTimer m_redirectionTimer;
   int m_delayRedirect;
   QString m_redirectURL;
 
@@ -359,10 +360,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 	   this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
 
   findTextBegin(); //reset find variables
+
+  connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
+	   this, SLOT( slotRedirect() ) );
 }
 
 KHTMLPart::~KHTMLPart()
 {
+  d->m_redirectionTimer.stop();
   closeURL();
 
   clear();
@@ -384,6 +389,8 @@ bool KHTMLPart::openURL( const KURL &url )
 {
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
   static QString http_protocol = QString::fromLatin1( "http" );
+
+  d->m_redirectionTimer.stop();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
   if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
@@ -775,7 +782,8 @@ void KHTMLPart::slotFinishedParsing()
 
   if ( !d->m_redirectURL.isEmpty() )
   {
-    QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
+  //    QTimer::singleShot( 1000 * d->m_delayRedirect, this, SLOT( slotRedirect() ) );
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
     return;
   }
 
