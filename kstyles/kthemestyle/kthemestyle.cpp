@@ -38,11 +38,8 @@ Port version 0.9.7
  Boston, MA 02111-1307, USA.
 */
 
-#include <qglobal.h>
-
-
-#include <kthemestyle.h>
-#include <kthemebase.h>
+#include "kthemestyle.h"
+#include "kthemebase.h"
 #include <qstyleplugin.h>
 #include <qstylefactory.h>
 #include <kimageeffect.h>
@@ -55,7 +52,6 @@ Port version 0.9.7
 #include <qpalette.h>
 #include <qtabbar.h>
 #include <qtoolbutton.h>
-#include <qglobal.h>
 #include <kglobalsettings.h>
 #include <kdrawutil.h>
 #include <qdrawutil.h>

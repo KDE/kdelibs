@@ -39,7 +39,7 @@
  Boston, MA 02111-1307, USA.
 */
 
-#include <kthemebase.h>
+#include "kthemebase.h"
 #include <kpixmapeffect.h>
 #include <qimage.h>
 #include <qpainter.h>

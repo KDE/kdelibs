@@ -42,7 +42,7 @@ Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
 
 #include <qglobal.h>
 
-#include <kthemebase.h>
+#include "kthemebase.h"
 #include <qwindowdefs.h>
 #include <qobject.h>
 #include <qbutton.h>
