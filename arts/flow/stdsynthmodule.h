@@ -36,5 +36,7 @@ public:
 	void initialize();
 	void start();
 	void deInitialize();
+
+	AutoSuspendState autoSuspend();
 };
 #endif /* STDSYNTHMODULE_H */

@@ -46,3 +46,8 @@ void StdSynthModule::start()
 void StdSynthModule::deInitialize()
 {
 }
+
+AutoSuspendState StdSynthModule::autoSuspend()
+{
+	return asNoSuspend;
+}

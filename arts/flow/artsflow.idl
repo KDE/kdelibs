@@ -226,6 +226,8 @@
  * new stuff (introduced in the MCOP version of aRts, done differently before)
  */
 
+enum AutoSuspendState { asNoSuspend, asSuspend, asSuspendStop };
+
 interface SynthModule {
 	/**
 	 * this initialization is called before anything is done with the module
@@ -252,6 +254,47 @@ interface SynthModule {
 	 * stop the thing again
 	 */
 	void deInitialize();
+
+	/**
+	 * autosuspend
+	 *
+	 * If you run a mixer desk (without anything connected), no calculations
+	 * need to be done - since the output is silent anyway. For this reason,
+	 * there exists this autosuspend attribute. It has three possible values:
+	 *
+	 *   asNoSuspend - this one is appropriate when you have a module that
+	 *                 is active by itself
+	 *   asSuspend   - this one is appropriate for modules that "do nothing"
+	 *                 by themselves
+	 *   asSuspendStop - this one is for modules that should be stopped, when
+	 *                 the system gets suspended, and restarted when the
+	 *                 system will start again - an example for this is
+	 *                 soundcard output
+	 *
+	 * A module should choose asSuspend (or asSuspendStop) only if the
+	 * following conditions are true:
+	 *
+	 *  - given constant inputs (like 3.0 on all ports), the module will
+	 *    give constant output after some time
+	 *  - given only 0.0 inputs, the module will give only 0.0 outputs
+	 *    after some time
+	 *  - the module does not synchronize itself through signal flow (i.e.
+	 *    a midi sequence which "knows" when a second has passed through
+	 *    the signal flow breaks when suspension happens)
+	 *  - the module can't be brought to do something with a method
+	 *    invocation (i.e. a module which starts generating noise for
+	 *    a second whenever the noise() method is called is not suspendable)
+	 *  - the module has no internal state that changes over time when only
+	 *    constant inputs are given
+	 *
+	 * Typical examples for suspendable modules are arithmetic operations,
+	 * filters, delay/hall/reverb, soundcard output.
+	 *
+	 * Typical examples for non-suspendable modules are sequences, midi stuff,
+	 * soundcard input (isn't constant even when nothing else happens),
+	 * oscillators, sample players,...
+	 */
+	readonly attribute AutoSuspendState autoSuspend;
 };
 
 interface Synth_PLAY : SynthModule {

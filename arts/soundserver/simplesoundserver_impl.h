@@ -51,6 +51,7 @@ protected:
 	std::list<ByteStreamToAudio_base *> activeConverters;
 	std::list<AttachedProducer *> activeProducers;
 	StereoEffectStack_var _outstack;
+	long asCount;
 
 public:
 	SimpleSoundServer_impl();

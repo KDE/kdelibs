@@ -158,6 +158,8 @@ public:
 		}
 		reconnect();
 	}
+
+	AutoSuspendState autoSuspend() { return asSuspend; }
 };
 
 REGISTER_IMPLEMENTATION(StereoEffectStack_impl);

@@ -126,6 +126,11 @@ public:
 		}
 	}
 
+	AutoSuspendState autoSuspend()
+	{
+		return asSuspendStop;
+	}
+
 	void calculateBlock(unsigned long samples)
 	{
 		// no audio subsystem, no play

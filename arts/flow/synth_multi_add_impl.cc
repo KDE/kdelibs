@@ -27,6 +27,7 @@ class Synth_MULTI_ADD_impl :public Synth_MULTI_ADD_skel, StdSynthModule
 {
 public:
 	void calculateBlock(unsigned long cycles);
+	AutoSuspendState autoSuspend() { return asSuspend; }
 };
 
 REGISTER_IMPLEMENTATION(Synth_MULTI_ADD_impl);

@@ -78,6 +78,7 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 	addRight->_node()->start();
 	playSound->_node()->start();
 
+	asCount = 0; // AutoSuspend
 	Dispatcher::the()->ioManager()->addTimer(200,this);
 }
 
@@ -231,6 +232,21 @@ void SimpleSoundServer_impl::notifyTime()
 		}
 		else ci++;
 	}
+/*
+ * AutoSuspend
+ */
+	if(Dispatcher::the()->flowSystem()->suspendable() &&
+	  !Dispatcher::the()->flowSystem()->suspended())
+	{
+		asCount++;
+		if(asCount > 300)
+		{
+			Dispatcher::the()->flowSystem()->suspend();
+			cout << "[artsd] suspend" << endl;
+		}
+	}
+	else
+		asCount = 0;
 	lock--;
 }
 

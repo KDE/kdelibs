@@ -184,6 +184,7 @@ public:
 class StdScheduleNode :public ScheduleNode
 {
 	bool running;
+	bool suspended;
 
 	Object_skel *_object;
 	SynthModule_base *module;
@@ -217,6 +218,10 @@ public:
 	void stop();
 	void requireFlow();
 
+	// AutoSuspend stuff
+	bool suspendable();
+	void suspend();
+	void restart();
 
 	void connect(std::string port, ScheduleNode *dest, std::string destport);
 	void disconnect(std::string port, ScheduleNode *dest, std::string destport);
@@ -232,9 +237,20 @@ public:
 
 class StdFlowSystem :public FlowSystem_impl
 {
+protected:
+	list<StdScheduleNode *> nodes;
+	bool _suspended;
 public:
+	StdFlowSystem();
+
 	ScheduleNode *addObject(Object_skel *object);
 	void removeObject(ScheduleNode *node);
+
+	/* AutoSuspend */
+	bool suspendable();
+	bool suspended();
+	void suspend();
+	void restart();
 
 	/* remote accessibility */
 	void startObject(Object* node);

@@ -102,6 +102,10 @@ class FlowSystem_impl :virtual public FlowSystem_skel
 public:
 	virtual ScheduleNode *addObject(Object_skel *object) = 0;
 	virtual void removeObject(ScheduleNode *node) = 0;
+	virtual bool suspendable() = 0;
+	virtual bool suspended() = 0;
+	virtual void suspend() = 0;
+	virtual void restart() = 0;
 };
 
 #endif

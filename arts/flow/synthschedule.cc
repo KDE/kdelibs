@@ -340,6 +340,7 @@ StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem_impl *flowSyste
 	_object = object;
 	this->flowSystem = flowSystem;
 	running = false;
+	suspended = false;
 	module = 0;
 	inConn = outConn = 0;
 	inConnCount = outConnCount = 0;
@@ -446,6 +447,34 @@ void StdScheduleNode::requireFlow()
 {
 	// cout << "rf" << module->_interfaceName() << endl;
 	request(requestSize());
+}
+
+bool StdScheduleNode::suspendable()
+{
+	accessModule();
+	if(running) {
+		return (module->autoSuspend() != asNoSuspend);
+	}
+	// if its not running, who cares?
+	return true;
+}
+
+void StdScheduleNode::suspend()
+{
+	accessModule();
+	if(running) {
+		suspended = true;
+		if(module->autoSuspend() == asSuspendStop) stop();
+	}
+}
+
+void StdScheduleNode::restart()
+{
+	accessModule();
+	if(running == false && suspended == true) {
+		suspended = false;
+		if(module->autoSuspend() == asSuspendStop) start();
+	}
 }
 
 Port *StdScheduleNode::findPort(string name)
@@ -689,14 +718,71 @@ unsigned long StdScheduleNode::calc(unsigned long cycles)
 	return(cycles);
 }
 
+StdFlowSystem::StdFlowSystem()
+{
+	_suspended = false;
+}
+
 ScheduleNode *StdFlowSystem::addObject(Object_skel *object)
 {
-	return new StdScheduleNode(object,this);
+	// do not add new modules when being in suspended state
+	restart();
+
+	StdScheduleNode *node = new StdScheduleNode(object,this);
+	nodes.push_back(node);
+	return node;
 }
 
 void StdFlowSystem::removeObject(ScheduleNode *node)
 {
-	delete node;
+	StdScheduleNode *xnode = (StdScheduleNode *)node->cast("StdScheduleNode");
+	assert(xnode);
+	nodes.remove(xnode);
+	delete xnode;
+}
+
+bool StdFlowSystem::suspended()
+{
+	return _suspended;
+}
+
+bool StdFlowSystem::suspendable()
+{
+	list<StdScheduleNode *>::iterator i;
+	for(i = nodes.begin();i != nodes.end();i++)
+	{
+		StdScheduleNode *node = *i;
+		if(!node->suspendable()) return false;
+	}
+	return true;
+}
+
+void StdFlowSystem::suspend()
+{
+	if(!_suspended)
+	{
+		list<StdScheduleNode *>::iterator i;
+		for(i = nodes.begin();i != nodes.end();i++)
+		{
+			StdScheduleNode *node = *i;
+			node->suspend();
+		}
+		_suspended = true;
+	}
+}
+
+void StdFlowSystem::restart()
+{
+	if(_suspended)
+	{
+		list<StdScheduleNode *>::iterator i;
+		for(i = nodes.begin();i != nodes.end();i++)
+		{
+			StdScheduleNode *node = *i;
+			node->restart();
+		}
+		_suspended = false;
+	}
 }
 
 /* remote accessibility */
