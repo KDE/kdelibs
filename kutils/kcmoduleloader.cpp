@@ -46,7 +46,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, 
       KLibFactory *factory = lib->factory();
       if ( factory )
       {
-        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory, parent, name, args );
+        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory, parent, name ? name : mod.handle().latin1(), args );
         if (module)
           return module;
       }
