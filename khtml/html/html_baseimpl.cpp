@@ -418,8 +418,8 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
     return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, ev->type );
 }
 
-int HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                                DOM::Node & node, int & offset )
+khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                                                DOM::Node & node, int & offset )
 {
     _x-=_tx;
     _y-=_ty;
@@ -430,7 +430,7 @@ int HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty
 	    return child->findSelectionNode( _x, _y, _tx, _ty, node, offset ); // to be checked
 	child = child->nextSibling();
     }
-    return -1; //?
+    return SelectionPointAfter;
 }
 
 // -------------------------------------------------------------------------
@@ -541,7 +541,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
     depth++;
   if (depth > 10)
     return;
-	
+
   setStyle(document->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();

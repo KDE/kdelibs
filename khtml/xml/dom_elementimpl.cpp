@@ -705,7 +705,7 @@ void ElementImpl::setPressed(bool down)
     NodeBaseImpl::setPressed(down);
 }
 
-int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
+khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
 {
     //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
     //           << " _tx=" << _tx << " _ty=" << _ty << endl;
@@ -713,7 +713,7 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
     // ######### Duplicated code from mouseEvent
     // TODO put the code above (getting _tx,_ty) in a common place and call it from here
 
-    if (!m_render) return -1;
+    if (!m_render) return SelectionPointAfter;
 
     RenderObject *p = m_render->parent();
     while( p && p->isAnonymousBox() ) {
@@ -735,28 +735,28 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
     NodeImpl *child = firstChild();
     while(child != 0)
     {
-	int pos = child->findSelectionNode(_x, _y, _tx, _ty, nod, off);
+	khtml::FindSelectionResult pos = child->findSelectionNode(_x, _y, _tx, _ty, nod, off);
         //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
-        if ( pos == 0 ) // perfect match
+        if ( pos == SelectionPointInside ) // perfect match
         {
             node = nod;
             offset = off;
             //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " match offset=" << offset << endl;
-            return 0;
-        } else if ( pos == -2 )
+            return SelectionPointInside;
+        } else if ( pos == SelectionPointBefore )
         {
             //x,y is before this element -> stop here
             if ( !lastNode.isNull() ) {
                 node = lastNode;
                 offset = lastOffset;
-                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning 0, offset=" << offset << endl;
-                return 0;
+                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning offset=" << offset << endl;
+                return SelectionPointInside;
             } else {
                 //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
-                return -2;
+                return SelectionPointBefore;
             }
         }
-        ASSERT( pos == -1 ); // the only allowable values are -2/-1/0
+        // SelectionPointAfter -> keep going
         if ( !nod.isNull() )
         {
             lastNode = nod;
@@ -766,7 +766,7 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
     }
     node = lastNode;
     offset = lastOffset;
-    return -1; // after
+    return SelectionPointAfter;
 }
 
 bool ElementImpl::isSelectable()

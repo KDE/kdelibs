@@ -37,6 +37,11 @@ class QRect;
 namespace khtml {
     class RenderStyle;
     class RenderObject;
+
+    //enumerator for findSelectionNode
+    enum FindSelectionResult { SelectionPointBefore,
+                               SelectionPointAfter,
+                               SelectionPointInside };
 };
 
 namespace DOM {
@@ -166,9 +171,9 @@ public:
                              int /*_tx*/, int /*_ty*/,
                              MouseEvent */*ev*/ ) { return false; }
 
-    // Return -2 = before, -1 = after, 0 = inside the text, at @p node et @p offset
-    virtual int findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
-                                    DOM::Node & /*node*/, int & /*offset*/ ) { return -2; }
+    virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
+                                                   DOM::Node & /*node*/, int & /*offset*/ )
+                                                   { return khtml::SelectionPointBefore; }
 
     virtual void setStyle(khtml::RenderStyle *) {}
     virtual khtml::RenderStyle *style() { return 0; }

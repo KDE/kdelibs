@@ -174,30 +174,29 @@ bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
     return true;
 }
 
-// Return -2 = before, -1 = after (offset set to max), 0 = inside the text, at @p offset
-int TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset)
+FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset)
 {
     //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
     //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
     if ( _y < _ty + m_y )
-        return -2; // above -> before
+        return SelectionPointBefore; // above -> before
 
     if ( _y > _ty + m_y + m_height || _x > _tx + m_x + m_width )
     {
         // below or on the right -> after
         // Set the offset to the max
         offset = m_len;
-        return -1;
+        return SelectionPointAfter;
     }
 
     // The Y matches, check if we're on the left
     if ( _x < _tx + m_x )
-        return -2; // on the left (and not below) -> before
+        return SelectionPointBefore; // on the left (and not below) -> before
 
     if ( m_reversed )
-        return -2; // Abort if RTL (TODO)
+        return SelectionPointBefore; // Abort if RTL (TODO)
 
     int delta = _x - (_tx + m_x);
     //kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
@@ -215,7 +214,7 @@ int TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetric
     }
     //kdDebug( 6040 ) << " Text  --> inside at position " << pos << endl;
     offset = pos;
-    return 0;
+    return SelectionPointInside;
 }
 
 // -----------------------------------------------------------------------------
@@ -357,23 +356,25 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty)
     return false;
 }
 
-int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offset)
+FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offset)
 {
+    //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+    //              << " _tx=" << _tx << " _ty=" << _ty << endl;
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
         if ( s->m_reversed )
-            return -2; // abort if RTL (TODO)
+            return SelectionPointBefore; // abort if RTL (TODO)
 	QFontMetrics fm = metrics();
         int result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset);
-        //kdDebug(6040) << "RenderText::checkSelectionPoint line " << si << " result=" << result << endl;
-        if ( result == 0 ) // x,y is inside the textslave
+        //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
+        if ( result == SelectionPointInside ) // x,y is inside the textslave
         {
             // ### only for visuallyOrdered !
             offset += s->m_text - str->s; // add the offset from the previous lines
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
-            return 0;
-        } else if ( result == -2 )
+            return SelectionPointInside;
+        } else if ( result == SelectionPointBefore )
         {
             // x,y is before the textslave -> stop here
             if ( si > 0 )
@@ -381,19 +382,19 @@ int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offse
                 // ### only for visuallyOrdered !
                 offset = s->m_text - str->s - 1;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
-                return 0;
+                return SelectionPointInside;
             } else
             {
                 offset = 0;
-                //kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning -2" << endl;
-                return -2;
+                //kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning Before" << endl;
+                return SelectionPointBefore;
             }
         }
     }
 
     // set offset to max
     offset = str->l;
-    return -1; // after
+    return SelectionPointAfter;
 }
 
 void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)

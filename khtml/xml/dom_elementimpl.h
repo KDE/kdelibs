@@ -160,8 +160,8 @@ public:
     virtual void setFocus(bool = true);
     virtual void setPressed(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
-    virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                    DOM::Node & node, int & offset );
+    virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                                   DOM::Node & node, int & offset );
     virtual bool isSelectable();
     virtual bool childAllowed( NodeImpl *newChild );
 

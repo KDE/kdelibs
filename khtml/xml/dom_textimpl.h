@@ -109,8 +109,8 @@ public:
 			     int _tx, int _ty,
                              MouseEvent *ev);
 
-    virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                    DOM::Node & node, int & offset );
+    virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                                   DOM::Node & node, int & offset );
 
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();

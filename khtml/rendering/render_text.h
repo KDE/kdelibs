@@ -66,8 +66,8 @@ public:
 
     bool checkPoint(int _x, int _y, int _tx, int _ty);
 
-    // Return -2 = before, -1 = after (offset set to max), 0 = inside the text, at @p offset
-    int checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset);
+    // Return before, after (offset set to max), or inside the text, at @p offset
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset);
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
@@ -141,8 +141,8 @@ public:
 
     bool checkPoint(int _x, int _y, int _tx, int _ty);
 
-    // Return -2 = before, -1 = after, 0 = inside the text, at @p offset
-    virtual int checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
+    // Return before, after (offset set to max), or inside the text, at @p offset
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
 
     virtual unsigned int length() const { return str->l; }
     // no need for this to be virtual, however length needs to be!
