@@ -1031,6 +1031,24 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
             valid = false;
             break;
         }
+	
+    if( !valid )
+    {
+	static bool override_loaded = false;
+	static QValueList< int >* overriden_ports = NULL;
+	if( !override_loaded )
+	{
+	    KConfig cfg( "kio_httprc", true );
+	    overriden_ports = new QValueList< int >;
+	    *overriden_ports = cfg.readIntListEntry( "OverridenPorts" );
+	    override_loaded = true;
+	}
+	for( QValueList< int >::ConstIterator it = overriden_ports->begin();
+	     it != overriden_ports->end();
+	     ++it )
+	if( overriden_ports->contains( url.port()))
+	    valid = true;
+    }
 
     // if request is not valid, return an invalid transfer job
     if (!valid)
