@@ -8,9 +8,14 @@
 #include "pillbox.h"
 #include <kapp.h>
 #include <kdrawutil.h>
+#include <kpixmapeffect.h>
+#include <qimage.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
+#include <qobjectlist.h>
+#include "../highcolor/paperbits.h"
+
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
@@ -45,35 +50,146 @@ PillBoxStyle::PillBoxStyle()
     checkFill = new QBitmap(10, 12, checkfill_bits, true);
     checkFill->setMask(*checkFill);
     setButtonDefaultIndicatorWidth(0);
+
+    if(QPixmap::defaultDepth() > 8){
+        vSmall = new KPixmap;
+        vSmall->resize(20, 24);
+        vMed = new KPixmap;
+        vMed->resize(20, 34);
+        vLarge = new KPixmap;
+        vLarge->resize(20, 64);
+        hSmall = new KPixmap;
+        hSmall->resize(24, 20);
+        hMed = new KPixmap;
+        hMed->resize(34, 20);
+        hLarge = new KPixmap;
+        hLarge->resize(64, 20);
+    }
+    else{
+        vSmall = vMed = vLarge = NULL;
+        hSmall = hMed = hLarge = NULL;
+    }
+
 }
 
 PillBoxStyle::~PillBoxStyle()
 {
     delete checkOutline;
     delete checkFill;
+    if(vSmall){
+        delete vSmall;
+        delete vMed;
+        delete vLarge;
+        delete hSmall;
+        delete hMed;
+        delete hLarge;
+    }
 }
 
-void PillBoxStyle::polish(QPalette &)
+
+bool PillBoxStyle::eventFilter(QObject *obj, QEvent *ev)
+{
+    if(ev->type() == QEvent::Resize){
+        // must be a toolbar resize
+        QObjectList *tbChildList = obj->queryList("KToolBarButton", NULL,
+                                                  false, false);
+        QObjectListIt it(*tbChildList);
+        QObject *child;
+        while((child = it.current()) != NULL){
+            ++it;
+            if(child->isWidgetType())
+                ((QWidget *)child)->repaint(false);
+        }
+    }
+    return(false);
+}
+
+
+void PillBoxStyle::polish(QPalette &pal)
 {
     KConfig *config = KGlobal::config();
+    QString oldGrp = config->group();
     config->setGroup("KDE");
     macMode = config->readBoolEntry("macStyle", true);
+
+    QColorGroup g = pal.active();
+    if(vSmall){
+        KPixmapEffect::gradient(*vSmall, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::VerticalGradient);
+        KPixmapEffect::gradient(*vMed, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::VerticalGradient);
+        KPixmapEffect::gradient(*vLarge, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::VerticalGradient);
+        KPixmapEffect::gradient(*hSmall, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::HorizontalGradient);
+        KPixmapEffect::gradient(*hMed, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::HorizontalGradient);
+        KPixmapEffect::gradient(*hLarge, g.midlight(),
+                                g.mid(),
+                                KPixmapEffect::HorizontalGradient);
+    }
+    config->setGroup("Highcolor");
+    QString tmpStr = config->readEntry("CustomWallpaper", "");
+    if(!tmpStr.isEmpty()){
+        QPixmap wallPaper(tmpStr);
+        if(!wallPaper.isNull())
+            pal.setBrush(QColorGroup::Background,
+                 QBrush(pal.color(QPalette::Active, QColorGroup::Background),
+                        wallPaper));
+        else
+            warning("Highcolor PillBox: Unable to load wallpaper %s",
+                    tmpStr.latin1());
+    }
+    else if(config->readBoolEntry("UseWallpaper", true)){
+        QPixmap wallPaper;
+        makeWallpaper(wallPaper,pal.color(QPalette::Active,
+                                          QColorGroup::Background));
+        pal.setBrush(QColorGroup::Background,
+                     QBrush(pal.color(QPalette::Active, QColorGroup::Background),
+                            wallPaper));
+    }
+    config->setGroup(oldGrp);
+
 }
 
 void PillBoxStyle::polish(QWidget *w)
 {
     if ( !w->isTopLevel() ) {
-        if (w->inherits("QPushButton"))
+        if (w->inherits("QPushButton")
+            || w->inherits("QComboBox")
+            //|| w->inherits("QSlider")
+            || w->inherits("QRadioButton"))
             w->setAutoMask(true);
     }
+
+    if(QPixmap::defaultDepth() > 8){
+        if(w->inherits("KToolBar"))
+            w->installEventFilter(this);
+        if(w->inherits("KToolBarButton"))
+            w->setBackgroundMode(QWidget::NoBackground);
+    }
+
 }
 
 void PillBoxStyle::unPolish(QWidget *w)
 {
     if ( !w->isTopLevel() ) {
-        if (w->inherits("QLabel") || w->inherits("QPushButton")
-            || w->inherits("QSlider"))
+        if (w->inherits("QPushButton")
+            || w->inherits("QComboBox")
+            //|| w->inherits("QSlider")
+            || w->inherits("QRadioButton"))
             w->setAutoMask(false);
+    }
+    if(QPixmap::defaultDepth() > 8){
+        if(w->inherits("KToolBar"))
+            w->removeEventFilter(this);
+        if(w->inherits("KToolBarButton"))
+            w->setBackgroundMode(QWidget::PaletteBackground);
     }
 }
 
@@ -99,8 +215,8 @@ void PillBoxStyle::drawPushButton(QPushButton *btn, QPainter *p)
     bool sunken = btn->isOn() || btn->isDown();
     QRect r = btn->rect();
 
-    p->fillRect(r, sunken ? cg.brush(QColorGroup::Mid) :
-                cg.brush(QColorGroup::Button));
+    drawVGradient(p, cg.brush(QColorGroup::Mid), r.x(), r.y(), r.width(),
+                  r.height());
     kDrawRoundButton(p, r, cg, sunken);
 }
 
@@ -124,13 +240,12 @@ QRect PillBoxStyle::buttonRect(int x, int y, int w, int h)
 
 void PillBoxStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &cg, bool sunken,
-                                  bool, bool, const QBrush *fill)
+                                  bool, bool, const QBrush *)
 {
     static QBitmap comboDeco(8, 8, combodeco_bits, true);
     if(!comboDeco.mask())
         comboDeco.setMask(comboDeco);
     
-    p->fillRect(x, y, w, h, cg.brush(QColorGroup::Background));
     p->setPen(Qt::black);
     int x2 = x+w-1;
     int y2 = y+h-1;
@@ -138,8 +253,8 @@ void PillBoxStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x, y+1, x, y2-1);
     p->drawLine(x+1, y2, x2-1, y2);
     p->drawLine(x2, y+1, x2, y2-1);
-    qDrawShadeRect(p, x+1, y+1, w-2, h-2, cg, sunken, 1, 0,
-                   fill ? fill : &cg.brush(QColorGroup::Background));
+    qDrawShadeRect(p, x+1, y+1, w-2, h-2, cg, sunken, 1, 0);
+    drawVGradient(p, cg.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
 
     int right = x+w-1;
     int bottom = y+h-1;
@@ -161,40 +276,47 @@ QRect PillBoxStyle::comboButtonRect(int x, int y, int w, int h)
 void PillBoxStyle::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
 {
     p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
+    p->setPen(Qt::color0);
+    int x2 = x+y-1;
+    int y2 = y+h-1;
+    p->drawPoint(x, y);
+    p->drawPoint(x2, y);
+    p->drawPoint(x, y2);
+    p->drawPoint(x2, y2);
+    
 }
 
 void PillBoxStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
-                                 const QBrush *fill)
+                                 const QBrush *)
 {
     if(w > 2 && h > 2){
         p->setPen(Qt::black);
         p->drawRect(x, y, w, h);
-        qDrawShadeRect(p, x+1, y+1, w-2, h-2, g, sunken, 1, 0,
-                       fill ? fill : &g.brush(QColorGroup::Button));
+        qDrawShadeRect(p, x+1, y+1, w-2, h-2, g, sunken, 1, 0);
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
+        
     }
-    else
-        qDrawShadeRect(p, x, y, w, h, g, sunken, 1, 0,
-                       fill ? fill : &g.brush(QColorGroup::Button));
+    else{
+        qDrawShadeRect(p, x, y, w, h, g, sunken, 1, 0);
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
+    }
 }
 
 
 void PillBoxStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, KToolBarPos, QBrush *)
 {
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
+    if(w > h)
+        drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
+    else
+        drawHGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
 }
 
 void PillBoxStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool, QBrush *fill)
+                                const QColorGroup &g, bool, QBrush *)
 {
-    /*
-    if(macMode){
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
-        kDrawRoundButton(p, x, y, w, h, g, false);
-    }
-    else */
-    p->fillRect(x, y, w, h, fill ? *fill : g.brush(QColorGroup::Background));
+    drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
 }
 
 void PillBoxStyle::drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
@@ -216,15 +338,16 @@ void PillBoxStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, KToolBarPos,
                                  QBrush *)
 {
-    qDrawShadeRect(p, x, y, w, h, g, false, 1, 0,
-                   &g.brush(QColorGroup::Background));
+    qDrawShadeRect(p, x, y, w, h, g, false, 1, 0);
     if(h > w){
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
         x += 2;
         y += 3;
         w = 5;
         h = 9;
     }
     else{
+        drawHGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
         x += 3;
         y += 2;
         w = 9;
@@ -235,19 +358,24 @@ void PillBoxStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 
 void PillBoxStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool active,
-                                QMenuItem *mi, QBrush *fill)
+                                QMenuItem *mi, QBrush *)
 {
-    if(active)
-        qDrawShadeRect(p, x, y, w, h, g, false, 1, 0,
-                       fill ? fill : &g.brush(QColorGroup::Mid));
+    if ( p->font() == KGlobal::generalFont() )
+      p->setFont( KGlobal::menuFont() );
+
+    if(active){
+        qDrawShadePanel(p, x, y, w, h, g, true, 1,
+                        &g.brush(QColorGroup::Midlight));
+        QApplication::style().drawItem(p, x, y, w, h,
+                                       AlignCenter|ShowPrefix|DontClip|SingleLine,
+                                       g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                                       -1, &g.text());
+    }
     else
-        p->fillRect(x, y, w, h, fill ? *fill :
-                    g.brush(QColorGroup::Background));
-    
-    QApplication::style().drawItem(p, x, y, w, h,
-                                   AlignCenter|ShowPrefix|DontClip|SingleLine,
-                                   g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                   -1, active ? &g.light() : &g.buttonText());
+        QApplication::style().drawItem(p, x, y, w, h,
+                                       AlignCenter|ShowPrefix|DontClip|SingleLine,
+                                       g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                                       -1, &g.text() );
 }
 
 void PillBoxStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -255,10 +383,11 @@ void PillBoxStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      bool raised, bool enabled, bool popup,
                                      KToolButtonType icontext,
                                      const QString& btext, const QPixmap *pixmap,
-                                     QFont *font, QWidget *)
+                                     QFont *font, QWidget *btn)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
+    int dx, dy;
 
     if(raised || sunken){
         p->setPen(sunken ? g.dark() : g.light());
@@ -268,18 +397,57 @@ void PillBoxStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         p->setPen(sunken ? g.light() : g.dark());
         p->drawLine(x, y2, x2-1, y2);
         p->drawLine(x2, y, x2, y2-1);
-        p->fillRect(x+1, y+1, w-2, h-2, sunken ? g.brush(QColorGroup::Mid) :
-                    g.brush(QColorGroup::Midlight));
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
     }
-    else
-        p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
+    else{
+        if(btn->parent() && btn->parent()->isWidgetType()){
+            QWidget *toolbar = (QWidget*)btn->parent();
+            // horizontal toolbar
+            if(toolbar->width() > toolbar->height()){
+                // See if we are top row. Buttons are offset a few pixels
+                // but not visibly.
+                if(btn->y() <= 3){
+                    if(toolbar->height() <= 24)
+                        p->drawTiledPixmap(x, y, w, h, *vSmall);
+                    else if(toolbar->height() <= 34)
+                        p->drawTiledPixmap(x, y, w, h, *vMed);
+                    else
+                        p->drawTiledPixmap(x, y, w, h, *vLarge);
 
+                }
+                // See if we are in the gradient at all. Two rows always are
+                // large.
+                else if(btn->y() <= 64){
+                    p->fillRect(x, y, w, h, g.mid());
+                    p->drawTiledPixmap(x, y, w, 64-btn->y(),
+                                       *vLarge, 0, btn->y());
+                }
+                // nope, we are not in the gradient
+                else
+                    p->fillRect(x, y, w, h, g.mid());
+            }
+            // vertical toolbar
+            else{
+                if(btn->x() <= 3){
+                    if(toolbar->width() <= 24)
+                        p->drawTiledPixmap(x, y, w, h, *hSmall);
+                    else if(toolbar->width() <= 34)
+                        p->drawTiledPixmap(x, y, w, h, *hMed);
+                    else
+                        p->drawTiledPixmap(x, y, w, h, *hLarge);
 
-    int dx, dy;
-    if(sunken)
-        p->setPen(g.light());
-    else
-        p->setPen(g.text());
+                }
+                else if(btn->x() <= 64){
+                    p->fillRect(x, y, w, h, g.mid());
+                    p->drawTiledPixmap(x, y, 64-btn->x(), h,
+                                       *hLarge, btn->x(), 0);
+                }
+                else
+                    p->fillRect(x, y, w, h, g.mid());
+            }
+        }
+    }
+    p->setPen(g.text());
     
     if (icontext == Icon){ // icon only
         if (pixmap){
@@ -451,9 +619,25 @@ void PillBoxStyle::drawScrollBarControls( QPainter *p, const QScrollBar *sb,
         drawScrollBarBackground(p, addPageR.x(), addPageR.y(), addPageR.width(),
                                 addPageR.height(), g, horiz );
     if(controls & Slider){
-        drawBevelButton(p, sliderR.x(), sliderR.y(), sliderR.width(),
-                        sliderR.height(), g, false,
-                        &g.brush(QColorGroup::Background));
+        if(sliderR.width() > 4 && sliderR.height() > 4){
+            p->setPen(Qt::black);
+            p->drawRect(sliderR);
+            qDrawShadeRect(p, sliderR.x()+1, sliderR.y()+1, sliderR.width()-2,
+                           sliderR.height()-2, g, false, 1, 0);
+            if(horiz)
+                drawVGradient(p, g.brush(QColorGroup::Mid), sliderR.x()+2,
+                              sliderR.y()+2, sliderR.width()-4,
+                              sliderR.height()-4);
+            else
+                drawHGradient(p, g.brush(QColorGroup::Mid), sliderR.x()+2,
+                              sliderR.y()+2, sliderR.width()-4,
+                              sliderR.height()-4);
+        }
+        else{
+            drawBevelButton(p, sliderR.x(), sliderR.y(), sliderR.width(),
+                            sliderR.height(), g, false,
+                            &g.brush(QColorGroup::Background));
+        }
 
         if(sliderR.width() >= 14 && sliderR.height() >= 14){
             int x = sliderR.x() + (sliderR.width()-8)/2;
@@ -561,12 +745,15 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
 
 void PillBoxStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QCOORD,
-                                    Orientation)
+                                    Orientation orient)
 {
     p->setPen(Qt::black);
     p->drawRect(x, y, w, h);
-    qDrawShadeRect(p, x+1, y+1, w-2, h-2, g, true, 1, 0,
-                   &g.brush(QColorGroup::Mid));
+    qDrawShadeRect(p, x+1, y+1, w-2, h-2, g, true, 1, 0);
+    if(orient == Horizontal)
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
+    else
+        drawHGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
 }
 
 int PillBoxStyle::sliderLength() const
@@ -580,22 +767,23 @@ void PillBoxStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
 {
     p->setPen(Qt::black);
     p->drawRect(x+1, y+1, w-2, h-2);
-    qDrawShadeRect(p, x+2, y+2, w-4, h-4, g, false, 1, 0,
-                   &g.brush(QColorGroup::Background));
+    qDrawShadeRect(p, x+2, y+2, w-4, h-4, g, false, 1, 0);
 
     if(orient == Horizontal){
         int mid = x+w/2;
+        drawVGradient(p, g.brush(QColorGroup::Mid), x+3, y+3, w-6, h-6);
         qDrawShadeLine(p, mid, y+3, mid, y+h-3, g, true, 1);
     }
     else{
         int mid = y+w/2;
+        drawHGradient(p, g.brush(QColorGroup::Mid), x+3, y+3, w-6, h-6);
         qDrawShadeLine(p, x+3, mid, x+w-3, mid, g, true, 1);
     }
 }
 
 void PillBoxStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
-                            bool enabled, const QBrush *fill)
+                            bool enabled, const QBrush *)
 {
     static QBitmap up(8, 8, up_bits, true);
     static QBitmap down(8, 8, down_bits, true);
@@ -610,15 +798,10 @@ void PillBoxStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
     }
     
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
-    if(w < 12 || h < 12){
-        KStyle::drawArrow(p, type, on, x, y, w, h, g, enabled, fill);
-        return;
-    }
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;
     }
-
     switch(type){
     case Qt::UpArrow:
         p->drawPixmap(x, y, up);
@@ -734,4 +917,70 @@ void PillBoxStyle::drawFocusRect(QPainter *p, const QRect &r,
 {
     QWindowsStyle::drawFocusRect(p, r, g, bg, f);
 }
-    
+
+// no check here, make sure your highcolor beforehand ;-)
+void PillBoxStyle::drawVGradient(QPainter *p, const QBrush &fill, int x, int y,
+                                 int w, int h)
+{
+    if(h <= 24){
+        p->drawTiledPixmap(x, y, w, h, *vSmall);
+    }
+    else if(h <= 34){
+        p->drawTiledPixmap(x, y, w, h, *vMed);
+    }
+    else if(h <= 64){
+        p->drawTiledPixmap(x, y, w, h, *vLarge);
+    }
+    else{
+        p->fillRect(x, y+vLarge->height(), w, h-vLarge->height(), fill);
+        p->drawTiledPixmap(x, y, w, vLarge->height(), *vLarge);
+    }
+}
+
+void PillBoxStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
+                                 int w, int h)
+{
+    if(w <= 24){
+        p->drawTiledPixmap(x, y, w, h, *hSmall);
+    }
+    else if(w <= 34){
+        p->drawTiledPixmap(x, y, w, h, *hMed);
+    }
+    else if(w <= 64){
+        p->drawTiledPixmap(x, y, w, h, *hLarge);
+    }
+    else{
+        p->fillRect(x+hLarge->width(), y, w-hLarge->width(), h, fill);
+        p->drawTiledPixmap(x, y, hLarge->width(), h, *hLarge);
+    }
+}
+
+void PillBoxStyle::makeWallpaper(QPixmap &dest, const QColor &base)
+{
+    static QBitmap paper3(100, 100, paper_3_bits, true);
+    static QBitmap paper4(100, 100, paper_4_bits, true);
+    static QBitmap paper6(100, 100, paper_6_bits, true);
+    static QBitmap paper7(100, 100, paper_7_bits, true);
+
+    if(!paper3.mask()){
+        paper3.setMask(paper3);
+        paper4.setMask(paper4);
+        paper6.setMask(paper6);
+        paper7.setMask(paper7);
+    }
+    dest.resize(100, 100);
+    dest.fill(base); // paper5
+    QPainter p;
+    p.begin(&dest);
+    p.setPen(base.dark(104));
+    p.drawPixmap(0, 0, paper3);
+    p.setPen(base.dark(102));
+    p.drawPixmap(0, 0, paper4);
+    p.setPen(base.light(102));
+    p.drawPixmap(0, 0, paper6);
+    p.setPen(base.light(104));
+    p.drawPixmap(0, 0, paper7);
+    p.end();
+}
+
+

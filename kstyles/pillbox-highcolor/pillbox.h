@@ -7,6 +7,7 @@
 #include <qpalette.h>
 #include <qwidget.h>
 #include <qbitmap.h>
+#include <kpixmap.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
 #include <limits.h>
@@ -79,10 +80,17 @@ public:
                             const QColorGroup &g, const QBrush *fill=NULL);
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *bg, bool f);
+    // for repainting toolbuttons when the toolbar is resized
+    bool eventFilter(QObject *obj, QEvent *ev);
 protected:
+    void makeWallpaper(QPixmap &dest, const QColor &base);
+    void drawVGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
+                       int h);
+    void drawHGradient(QPainter *p, const QBrush &fill, int x, int y, int w,
+                       int h);
     bool macMode;
     QBitmap *checkOutline, *checkFill;
-
+    KPixmap *vSmall, *vMed, *vLarge, *hSmall, *hMed, *hLarge;
 };
 
 #endif
