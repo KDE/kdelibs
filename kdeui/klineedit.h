@@ -77,7 +77,7 @@ class KURL;
  * can be overridden locally by invoking KCompletionBase::setKeyBinding().
  * The values can easily be reverted back to the default setting, by simply
  * calling useGlobalSettings(). An alternate method would be to default
- * individual key-bindings by usning setKeyBinding() with the default
+ * individual key-bindings by using setKeyBinding() with the default
  * second argument.
  *
  * If @p EchoMode for this widget is set to something other than @p QLineEdit::Normal, 
@@ -114,28 +114,32 @@ class KURL;
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * \endcode
  *
- * Note that you have to either delete the allocated completion object
- * when you don't need it anymore, or call
- * setAutoDeleteCompletionObject( true );
+ * Note if you specify your own completion object you have to either delete 
+ * it when you don't need it anymore, or you can tell KLineEdit to delete it 
+ * for you:
+ * \code 
+ * edit->setAutoDeleteCompletionObject( true );
+ * \endcode
  *
  * <b>Miscellaneous function calls :</b>\n
  *
  * \code
- * // Tell the widget not to handle completion and
- * // iteration internally.
+ * // Tell the widget to not handle completion and iteration automatically.
  * edit->setHandleSignals( false );
- * // Set your own completion key for manual completions.
+ *
+ * // Set your own key-bindings for a text completion mode.
  * edit->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
+ *
  * // Hide the context (popup) menu
  * edit->setContextMenuEnabled( false );
- * // Temporarly disable signal emitions
- * // (both completion & iteration signals)
+ *
+ * // Temporarily disable signal (both completion & iteration) emitions
  * edit->disableSignals();
- * // Default the key-bindings to system settings.
+ *
+ * // Default the key-bindings back to the default system settings.
  * edit->useGlobalKeyBindings();
  * \endcode
  *
- * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 
