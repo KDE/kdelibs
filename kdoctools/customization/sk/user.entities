@@ -12,3 +12,4 @@
 <!ENTITY Ctrl		"<keycap>Ctrl</keycap>">
 <!ENTITY Alt		"<keycap>Alt</keycap>">
 <!ENTITY Esc		"<keycap>Esc</keycap>">
+<!ENTITY Backspace        "<keycap>Backspace</keycap>">
