@@ -230,6 +230,12 @@ void KJanusWidget::pageGone( QObject *obj )
   removePage( static_cast<QWidget*>( obj ) );
 }
 
+void KJanusWidget::slotReopen( QListViewItem * item )
+{
+  if( item )
+    item->setOpen( true );
+}
+
 QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 			       const QPixmap &pixmap )
 {
@@ -829,6 +835,19 @@ void KJanusWidget::setRootIsDecorated( bool state )
   }
 }
 
+void KJanusWidget::unfoldTreeList( bool persist )
+{
+  if( mFace == TreeList )
+  {
+    if( persist )
+      connect( mTreeList, SIGNAL( collapsed( QListViewItem * ) ), this, SLOT( slotReopen( QListViewItem * ) ) );
+    else
+      disconnect( mTreeList, SIGNAL( collapsed( QListViewItem * ) ), this, SLOT( slotReopen( QListViewItem * ) ) );
+
+    for( QListViewItem * item = mTreeList->firstChild(); item; item = item->itemBelow() )
+      item->setOpen( true );
+  }
+}
 
 void KJanusWidget::showEvent( QShowEvent * )
 {

@@ -992,6 +992,11 @@ void KDialogBase::setRootIsDecorated( bool state )
   }
 }
 
+void KDialogBase::unfoldTreeList( bool persist )
+{
+  if( mJanus != 0 )
+    mJanus->unfoldTreeList( persist );
+}
 
 
 void KDialogBase::setIconListAllVisible( bool state )

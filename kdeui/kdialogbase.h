@@ -933,6 +933,20 @@ class KDialogBase : public KDialog
     void setRootIsDecorated( bool state );
 
     /**
+     * This function has only effect in TreeList mode.
+     *
+     * This tells the TreeList to unfold the whole tree so that all entries
+     * are visible.
+     *
+     * If the list is empty when you call this method newly created entries
+     * will not automatically be opened. If the @p persist flag is set opened
+     * entries cannot be closed again, though.
+     *
+     * @param persist If true the tree always stays unfolded.
+     */
+    void unfoldTreeList( bool persist = false );
+
+    /**
      * This function has only effect in IconList mode.
      *
      * Defines how the icon list widget is displayed. By default it is

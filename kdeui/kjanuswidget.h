@@ -428,6 +428,20 @@ class KJanusWidget : public QWidget
     virtual void setRootIsDecorated( bool state );
 
     /**
+     * This function has only effect in TreeList mode.
+     *
+     * This tells the TreeList to unfold the whole tree so that all entries
+     * are visible.
+     *
+     * If the list is empty when you call this method newly created entries
+     * will not automatically be opened. If the @p persist flag is set opened
+     * entries cannot be closed again, though.
+     *
+     * @param persist If true the tree always stays unfolded.
+     */
+    /*virtual*/ void unfoldTreeList( bool persist = false ); //### KDE4 BIC add virtual
+
+    /**
      * This function has only effect in IconList mode.
      *
      * Defines how the icon list widget is displayed. By default it is
@@ -479,6 +493,7 @@ class KJanusWidget : public QWidget
     void slotFontChanged();
     void slotItemClicked(QListViewItem *it);
     void pageGone(QObject *obj); // signal from the added page's "destroyed" signal
+    void slotReopen(QListViewItem *item);
 
   protected:
     bool showPage( QWidget *w );
