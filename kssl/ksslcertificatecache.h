@@ -67,6 +67,8 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 
   bool isPermanent(KSSLCertificate& cert);
 
+  void reload();
+
   // You shouldn't need to call this but in some weird circumstances
   // it might be necessary.
   void saveToDisk();

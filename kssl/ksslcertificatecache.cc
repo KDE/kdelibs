@@ -65,6 +65,16 @@ void KSSLCertificateCache::loadDefaultPolicies() {
 }
 
 
+void KSSLCertificateCache::reload() {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     d->dcc->call("kded", "kssld",
+                  "cacheReload()",
+                  data, rettype, retval);
+}
+
+
 void KSSLCertificateCache::addCertificate(KSSLCertificate& cert, 
                        KSSLCertificatePolicy policy, bool permanent) {
      QByteArray data, retval;
