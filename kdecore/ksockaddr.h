@@ -391,10 +391,10 @@ public:
 
   /**
    * Constructor from raw data
-   * @param sun		raw data
+   * @param raw_data	raw data
    * @param size	data length
    */
-  KUnixSocketAddress(sockaddr_un* sun, ksocklen_t size);
+  KUnixSocketAddress(sockaddr_un* raw_data, ksocklen_t size);
 
   /**
    * Constructor from pathname
@@ -409,10 +409,10 @@ public:
 
   /**
    * Sets this to given sockaddr_un
-   * @param sun		socket address
+   * @param socket_address socket address
    * @param size	the socket length
    */
-  bool setAddress(sockaddr_un* sun, ksocklen_t size);
+  bool setAddress(sockaddr_un* socket_address, ksocklen_t size);
 
   /**
    * Sets this to given pathname

@@ -588,9 +588,9 @@ void KInetSocketAddress::fromV6()
 class KUnixSocketAddress::Private
 {
 public:
-  sockaddr_un *sun;
+  sockaddr_un *m_sun;
 
-  Private() : sun(NULL)
+  Private() : m_sun(NULL)
   { }
 };
 
@@ -599,10 +599,10 @@ KUnixSocketAddress::KUnixSocketAddress() :
 {
 }
 
-KUnixSocketAddress::KUnixSocketAddress(sockaddr_un* sun, ksocklen_t size) :
+KUnixSocketAddress::KUnixSocketAddress(sockaddr_un* _sun, ksocklen_t size) :
   d(new Private)
 {
-  setAddress(sun, size);
+  setAddress(_sun, size);
 }
 
 KUnixSocketAddress::KUnixSocketAddress(QCString pathname) :
@@ -624,30 +624,30 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
       return false;
     }
 
-  if (owndata && d->sun != NULL && datasize >= _size)
+  if (owndata && d->m_sun != NULL && datasize >= _size)
     {
       // reuse this without reallocating
-      memcpy(d->sun, _sun, _size);
+      memcpy(d->m_sun, _sun, _size);
     }
   else
     {
-      if (owndata && d->sun != NULL)
-	free(d->sun);
+      if (owndata && d->m_sun != NULL)
+	free(d->m_sun);
 
-      (void*)d->sun = (sockaddr_un*)malloc(_size);
+      (void*)d->m_sun = (sockaddr_un*)malloc(_size);
 
-      if (d->sun == NULL)
+      if (d->m_sun == NULL)
 	{
 	  // problems
 	  owndata = false;
 	  return false;
 	}
 
-      memcpy(d->sun, _sun, _size);
+      memcpy(d->m_sun, _sun, _size);
     }
 
   datasize = _size;
-  data = (sockaddr*)d->sun;
+  data = (sockaddr*)d->m_sun;
   owndata = true;
 #ifdef HAVE_SOCKADDR_SA_LEN
   data->sa_len = _size;
@@ -657,11 +657,11 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
 
 bool KUnixSocketAddress::setAddress(QCString path)
 {
-  if (owndata && d->sun != NULL && 
+  if (owndata && d->m_sun != NULL && 
       datasize - offsetof(sockaddr_un, sun_path) > path.length())
     {
       // we can reuse this
-      strcpy(d->sun->sun_path, path);
+      strcpy(d->m_sun->sun_path, path);
 #ifdef HAVE_SOCKADDR_SA_LEN
       data->sa_len = _size;
 #endif
@@ -669,19 +669,19 @@ bool KUnixSocketAddress::setAddress(QCString path)
     }
 
   // nah, we have to do better
-  if (owndata && d->sun != NULL)
-    free(d->sun);
+  if (owndata && d->m_sun != NULL)
+    free(d->m_sun);
 
-  d->sun = (sockaddr_un*) malloc(offsetof(sockaddr_un, sun_path) + path.length());
-  if (d->sun == NULL)
+  d->m_sun = (sockaddr_un*) malloc(offsetof(sockaddr_un, sun_path) + path.length());
+  if (d->m_sun == NULL)
     {
       owndata = false;
       return false;
     }
 
-  d->sun->sun_family = AF_UNIX;
-  strcpy(d->sun->sun_path, path);
-  data = (sockaddr*)d->sun;
+  d->m_sun->sun_family = AF_UNIX;
+  strcpy(d->m_sun->sun_path, path);
+  data = (sockaddr*)d->m_sun;
 #ifdef HAVE_SOCKADDR_SA_LEN
   data->sa_len = _size;
 #endif
@@ -690,10 +690,10 @@ bool KUnixSocketAddress::setAddress(QCString path)
 
 QCString KUnixSocketAddress::pathname() const
 {
-  if (d->sun != NULL)
+  if (d->m_sun != NULL)
     {
       if (datasize > offsetof(sockaddr_un, sun_path))
-	return d->sun->sun_path;
+	return d->m_sun->sun_path;
       return "";
     }
   return QCString(0);
@@ -709,7 +709,7 @@ QString KUnixSocketAddress::pretty() const
 
 const sockaddr_un* KUnixSocketAddress::address() const
 {
-  return d->sun;
+  return d->m_sun;
 }
 
 #include "ksockaddr.moc"
