@@ -1997,7 +1997,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-    if ( ( e->state() & ShiftButton ) == ShiftButton )
+    if ( ( e->state() & ControlButton) == ControlButton )
     {
         emit zoomView( - e->delta() );
         e->accept();
