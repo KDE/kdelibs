@@ -473,7 +473,10 @@ void KBookmarkMenu::fillBookmarkMenu()
       m_parentMenu->insertSeparator();
     if (isAdvanced())
     {
-      fillContextMenu( m_parentMenu, m_parentAddress, 1 );
+      KActionMenu * actionMenu = new KActionMenu( i18n("Actions"), m_actionCollection, 0L );
+      fillContextMenu( actionMenu->popupMenu(), m_parentAddress, 1 );
+      actionMenu->plug( m_parentMenu );
+      m_actions.append( actionMenu );
     }
     else 
     {
