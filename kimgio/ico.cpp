@@ -151,7 +151,7 @@ void kimgio_ico_read(QImageIO *io)
 			preferred = i;
         if (prefDepth == 0 && (iconList[preferred].colors == 0 || iconList[preferred].colors > rec.colors))
             continue;
-        if (abs(rec.colors - prefDepth) < abs(iconList[preferred].colors - prefDepth))
+        if (abs(int(rec.colors - prefDepth)) < abs(int(iconList[preferred].colors - prefDepth)))
 			preferred = i;
 	}
 	kdDebug() << "Using: " << preferred << endl;
