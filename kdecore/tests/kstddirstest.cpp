@@ -3,9 +3,9 @@
 #include <kstddirs.h>
 #include <kconfig.h>
 
-int main(int, char **)
+int main(int argc, char **argv)
 {
-  (void) new KInstance("whatever");
+  KApplication a(argc, argv, "whatever", false);
   KStandardDirs t;
   t.addKDEDefaults();	
   KConfig config; // to add custom entries - a bit tricky :/
@@ -27,5 +27,9 @@ int main(int, char **)
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     debug("setting %s", (*it).ascii());
   }
-  
+
+  list = t.findDirs("data", "kwin");
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
+      debug("kwin dirs %s", (*it).ascii());
+  }
 }
