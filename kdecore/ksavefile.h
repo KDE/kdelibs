@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KFILE_H_
-#define _KFILE_H_
+#ifndef _KSAVEFILE_H_
+#define _KSAVEFILE_H_
 
 #include <qstring.h>
 #include <stdio.h>
