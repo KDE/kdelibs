@@ -2,7 +2,7 @@ INCLUDES                    =   $(all_includes) -I$(top_srcdir)/arts \
 			        -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
 				-I$(top_builddir)/arts/flow -I$(top_srcdir)/arts/soundserver \
 				-I$(top_builddir)/arts/soundserver -I$(top_builddir)/arts/kde/lib \
-				-I$(top_srcdir)/kio
+				-I$(top_srcdir)
 lib_LTLIBRARIES  	    =	libartskde.la
 libartskde_la_SOURCES	    =	artskde.cc kioinputstream_impl.cpp kplayobject.cc \
 				kplayobjectfactory.cc kartsfloatwatch.cpp

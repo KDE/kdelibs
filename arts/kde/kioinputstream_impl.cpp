@@ -21,6 +21,7 @@
 
 #include <kio/job.h>
 #include <kdebug.h>
+#include <kio/kmimetype.h>
 #include "kioinputstream_impl.moc"
 
 using namespace Arts;
