@@ -353,7 +353,7 @@ QString Address::formattedAddress( const QString &realName
         << "(no format for locale " << ciso 
         << " found). Using default address formatting." << endl;
     addrTemplate = 
-      "%0(%n\\n)%0(%cm\\n)%0(%s\\n)%0(PO BOX %p\\n)%l%w%r%,%z%0(\n%CO)";
+      "%0(%n\\n)%0(%cm\\n)%0(%s\\n)%0(PO BOX %p\\n)%0(%l%w%r)%,%z";
   }
   
   // scan
