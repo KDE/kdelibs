@@ -231,7 +231,7 @@ public:
    * @return a list of @ref KConfigDialogManager's in use, if any.
    * @since 3.4
    */
-  QPtrList<KConfigDialogManager> configs() const;
+  const QPtrList<KConfigDialogManager>& configs() const;
 
 protected:
   /**

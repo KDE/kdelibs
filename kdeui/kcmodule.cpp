@@ -172,7 +172,7 @@ QString KCModule::quickHelp() const
 }
 
 
-QPtrList<KConfigDialogManager> KCModule::configs() const
+const QPtrList<KConfigDialogManager>& KCModule::configs() const
 {
     return d->managers;
 }
