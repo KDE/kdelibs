@@ -153,6 +153,7 @@ QString Decoder::decode(const char *data, int len)
                         ptr++;
                         len++;
                     }
+		    tmp[len] = 0;
                     int id = khtml::getTagID(tmp, len);
                     if(end) id += ID_CLOSE_TAG;
 
@@ -212,9 +213,13 @@ QString Decoder::decode(const char *data, int len)
                     case ID_HTML:
                     case ID_HEAD:
                     case 0:
+                    case (0 + ID_CLOSE_TAG ):
                         break;
                     default:
                         body = true;
+#ifdef DECODE_DEBUG
+			kdDebug( 6005 ) << "Decoder: no charset found, using latin1. Id=" << id << endl;
+#endif
                         goto found;
                     }
                 }
