@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,6 +20,8 @@
  **/
 
 #include "kmdbentry.h"
+#include "kmfactory.h"
+#include "kmmanager.h"
 
 bool KMDBEntry::validate()
 {
@@ -45,5 +47,5 @@ bool KMDBEntry::validate()
 		if (model.isEmpty()) return false;
 	}
 
-	return true;
+	return KMFactory::self()->manager()->validateDbDriver(this);
 }

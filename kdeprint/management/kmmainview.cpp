@@ -346,6 +346,8 @@ void KMMainView::slotConfigure()
 					showErrorMsg(i18n("Unable to modify settings of printer <b>%1</b>.").arg(m_current->printerName()));
 			delete driver;
 		}
+		else
+			showErrorMsg(i18n("Unable to load a valud driver for printer <b>%1</b>.").arg(m_current->printerName()));
 		KMTimer::releaseTimer(false);
 	}
 }

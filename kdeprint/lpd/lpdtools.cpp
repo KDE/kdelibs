@@ -53,6 +53,24 @@ void setupBooleanOption(DrBooleanOption *opt)
 	}
 }
 
+QString nextWord(const QString& s, int& pos)
+{
+	int	p1(pos), p2(0);
+	while (s[p1].isSpace() && p1 < (int)s.length()) p1++;
+	if (s[p1] == '{')
+	{
+		p1++;
+		p2 = s.find('}',p1);
+	}
+	else
+	{
+		p2 = p1;
+		while (!s[p2].isSpace() && p2 < (int)s.length()) p2++;
+	}
+	pos = (p2+1);
+	return s.mid(p1,p2-p1);
+}
+
 //************************************************************************************************
 
 bool PrintcapEntry::readLine(const QString& line)
@@ -64,8 +82,10 @@ bool PrintcapEntry::readLine(const QString& line)
 		m_args.clear();
 		for (uint i=1; i<l.count(); i++)
 		{
-			QString	key = l[i].left(2);
-			QString	value = l[i].right(l[i].length()-(l[i][2] == '=' ? 3 : 2));
+			int	p = l[i].find('=');
+			if (p == -1) p = 2;
+			QString	key = l[i].left(p);
+			QString	value = l[i].right(l[i].length()-(l[i][p] == '=' ? p+1 : p));
 			m_args[key] = value;
 		}
 		return true;
@@ -75,7 +95,8 @@ bool PrintcapEntry::readLine(const QString& line)
 
 void PrintcapEntry::writeEntry(QTextStream& t)
 {
-	t << "# Entry for printer " << m_name << endl;
+	if (m_comment.isEmpty()) t << "# Entry for printer " << m_name << endl;
+	else t << m_comment << endl;
 	t << m_name << ":";
 	for (QMap<QString,QString>::ConstIterator it=m_args.begin(); it!=m_args.end(); ++it)
 	{
@@ -85,6 +106,18 @@ void PrintcapEntry::writeEntry(QTextStream& t)
 		t << ":";
 	}
 	t << endl << endl;
+}
+
+QString PrintcapEntry::comment(int index)
+{
+	QString	w;
+	if (m_comment.startsWith("##PRINTTOOL3##"))
+	{
+		int	p(0);
+		for (int i=0;i<index;i++)
+			w = nextWord(m_comment,p);
+	}
+	return w;
 }
 
 KMPrinter* PrintcapEntry::createPrinter()
@@ -178,6 +211,7 @@ DrMain* PrinttoolEntry::createDriver()
 {
 	// create driver
 	DrMain	*dr = new DrMain();
+	dr->setName(m_name);
 	dr->set("description",m_description);
 	dr->set("text",m_description);
 	dr->set("drtype","printtool");
@@ -242,7 +276,10 @@ DrMain* PrinttoolEntry::createDriver()
 			for (int i=0;it.current();++it,i++)
 			{
 				ch = new DrBase;
-				ch->setName(QString::fromLatin1("-dBitsPerPixel=%1").arg(it.current()->bpp));
+				if (m_gsdriver != "uniprint")
+					ch->setName(QString::fromLatin1("-dBitsPerPixel=%1").arg(it.current()->bpp));
+				else
+					ch->setName(it.current()->bpp);
 				if (it.current()->comment.isEmpty())
 					ch->set("text",it.current()->bpp);
 				else
@@ -351,14 +388,17 @@ DrMain* PrinttoolEntry::createDriver()
 
 //************************************************************************************************
 
-QString getPrintcapLine(QTextStream& t)
+QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 {
-	QString	line, buffer;
+	QString	line, buffer, comm;
 	while (!t.eof())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')
+		{
+			comm = buffer;
 			continue;
+		}
 		line.append(buffer);
 		if (line.right(1) == "\\")
 		{
@@ -367,5 +407,7 @@ QString getPrintcapLine(QTextStream& t)
 		}
 		else break;
 	}
+	if (lastcomment)
+		*lastcomment = comm;
 	return line;
 }

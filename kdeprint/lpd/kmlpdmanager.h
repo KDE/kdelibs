@@ -27,6 +27,7 @@
 
 class PrintcapEntry;
 class PrinttoolEntry;
+class GsChecker;
 
 class KMLpdManager : public KMManager
 {
@@ -47,21 +48,26 @@ public:
 	DrMain* loadDbDriver(KMDBEntry*);
 	DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
 	bool savePrinterDriver(KMPrinter*, DrMain*);
+	bool validateDbDriver(KMDBEntry*);
 
 protected:
 	void listPrinters();
+	bool writePrinters();
 	void loadPrintcapFile(const QString& filename);
 	bool writePrintcapFile(const QString& filename);
 	void loadPrinttoolDb(const QString& filename);
 	QMap<QString,QString> loadPrinttoolCfgFile(const QString& filename);
 	bool savePrinttoolCfgFile(const QString& templatefile, const QString& dirname, const QMap<QString,QString>& options);
-	PrinttoolEntry* findGsDriver(const QString& gsdriver);
+	bool checkGsDriver(const QString& gsdriver);
 	bool createSpooldir(PrintcapEntry*);
 	bool createPrinttoolEntry(KMPrinter*, PrintcapEntry*);
+	PrintcapEntry* findPrintcapEntry(const QString& name);
+	PrinttoolEntry* findPrinttoolEntry(const QString& name);
 
 private:
 	QDict<PrintcapEntry>	m_entries;
 	QDict<PrinttoolEntry>	m_ptentries;
+	GsChecker		*m_gschecker;
 };
 
 #endif

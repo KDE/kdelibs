@@ -29,6 +29,7 @@ public:
 	~KMLpdUiManager();
 
 	void setupWizard(KMWizard*);
+	void setupPropertyPages(KMPropertyPage*);
 };
 
 #endif

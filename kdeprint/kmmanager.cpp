@@ -322,3 +322,8 @@ void KMManager::discardAllPrinters(bool on)
 	for (;it.current();++it)
 		it.current()->setDiscarded(on);
 }
+
+bool KMManager::validateDbDriver(KMDBEntry*)
+{
+	return true;
+}

@@ -36,8 +36,10 @@ public:
 	void writeEntry(QTextStream&);
 	KMPrinter* createPrinter();
 	QString arg(const QString& key) const 	{ return m_args[key]; }
+	QString comment(int i);
 private:
 	QString			m_name;
+	QString			m_comment;
 	QMap<QString,QString>	m_args;
 };
 
@@ -69,6 +71,6 @@ private:
 
 //*****************************************************************************************************
 
-QString getPrintcapLine(QTextStream& t);
+QString getPrintcapLine(QTextStream& t, QString *lastcomment = NULL);
 
 #endif // LPDTOOLS_H

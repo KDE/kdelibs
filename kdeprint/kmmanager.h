@@ -92,6 +92,7 @@ public:
 	virtual DrMain* loadDbDriver(KMDBEntry *entry);
 	virtual DrMain* loadFileDriver(const QString& filename);
 	virtual bool savePrinterDriver(KMPrinter *p, DrMain *d);
+	virtual bool validateDbDriver(KMDBEntry *entry);
 
 	// configuration functions
 	virtual bool configure(QWidget *parent = 0);
