@@ -25,3 +25,4 @@
 	added some Q_OBJECT to drag.h
 0.9: added QTINC and QTLIB
 	updated khtmlw to 0.5.4
+	added new libtool
