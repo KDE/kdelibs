@@ -149,6 +149,8 @@ void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool
     m_type = eventTypeArg.implementation();
     if (m_type)
 	m_type->ref();
+
+    m_id = typeToId(eventTypeArg);
 	
     m_canBubble = canBubbleArg;
     m_cancelable = cancelableArg;

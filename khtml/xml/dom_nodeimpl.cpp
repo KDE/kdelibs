@@ -541,12 +541,12 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
 
 }
 
-bool NodeImpl::dispatchUIEvent(int _id, int detail = 0)
+bool NodeImpl::dispatchUIEvent(int _id, int detail)
 {
     if (_id != EventImpl::DOMFOCUSIN_EVENT &&
 	_id != EventImpl::DOMFOCUSOUT_EVENT &&
 	_id != EventImpl::DOMACTIVATE_EVENT)
-	return; // shouldn't happen
+	return false; // shouldn't happen
 				
     bool cancelable = false;
     if (_id == EventImpl::DOMACTIVATE_EVENT)
