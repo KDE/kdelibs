@@ -185,6 +185,7 @@ public:
     m_bHTTPRefresh = false;
 
     m_bFirstData = true;
+    m_submitForm = 0;
 
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -2682,14 +2683,12 @@ KParts::PartManager *KHTMLPart::partManager()
 
 void KHTMLPart::submitFormAgain()
 {
-  if( !d->m_bParsing )
-  {
+  if( !d->m_bParsing && d->m_submitForm)
     KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
-    delete d->m_submitForm;
-    d->m_submitForm = 0;
-  }
-  else
-    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
+
+  delete d->m_submitForm;
+  d->m_submitForm = 0;
+  disconnect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
 }
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
@@ -2751,7 +2750,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     d->m_submitForm->submitFormData = formData;
     d->m_submitForm->submitContentType = contentType;
     d->m_submitForm->submitBoundary = boundary;
-    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
+    connect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
   }
   else
     emit d->m_extension->openURLRequest( u, args );
