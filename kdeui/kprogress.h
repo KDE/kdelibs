@@ -216,6 +216,13 @@ class KProgressDialog : public KDialogBase
         KProgress* progressBar();
 
         /**
+         * Returns the @ref KProgress used in this dialog.
+         * To set the number of steps or other progress bar related
+         * settings, access the KProgress object directly via this method.
+         */
+        const KProgress* progressBar() const;
+
+        /**
          * Sets the text in the dialog
          *
          * @param text the text to display
@@ -224,8 +231,15 @@ class KProgressDialog : public KDialogBase
 
         /**
          * Returns the current dialog text
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         QString labelText();
+
+        /**
+         * Returns the current dialog text
+         */
+        QString labelText() const;
 
         /**
          * Sets whether or not the user can cancel the process.
@@ -240,8 +254,15 @@ class KProgressDialog : public KDialogBase
 
         /**
          * Returns true if the dialog can be cancelled, false otherwise
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         bool allowCancel();
+
+        /**
+         * Returns true if the dialog can be cancelled, false otherwise
+         */
+        bool allowCancel() const;
 
         /**
          * Sets whether the cancel button is visible. @ref setAllowCancel(false)
@@ -260,8 +281,16 @@ class KProgressDialog : public KDialogBase
         /**
          * Returns true if the dialog will close upon completion,
          * or false otherwise
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         bool autoClose();
+
+        /**
+         * Returns true if the dialog will close upon completion,
+         * or false otherwise
+         */
+        bool autoClose() const;
 
         /**
          * Sets whether the dialog should reset the KProgress dialog
@@ -273,15 +302,32 @@ class KProgressDialog : public KDialogBase
         /**
          * Returns true if the KProgress widget will be reset
          * upon completion, or false otherwise
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         bool autoReset();
+
+        /**
+         * Returns true if the KProgress widget will be reset
+         * upon completion, or false otherwise
+         */
+        bool autoReset() const;
+
+        /**
+         * Returns true if the dialog was closed or cancelled
+         * before completion. If the dialog is not cancellable
+         * it will always return false.
+         * @deprecated
+         */
+        // ### Remove this KDE 4.0
+        bool wasCancelled();
 
         /**
          * Returns true if the dialog was closed or cancelled
          * before completion. If the dialog is not cancellable
          * it will always return false.
          */
-        bool wasCancelled();
+        bool wasCancelled() const;
 
         /**
          * Sets the text to appear on the cancel button.
@@ -290,8 +336,15 @@ class KProgressDialog : public KDialogBase
 
         /**
          * Returns the text on the cancel button
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         QString buttonText();
+
+        /**
+         * Returns the text on the cancel button
+         */
+        QString buttonText() const;
 
         /**
          * Set the minimum number of milliseconds to wait before
@@ -301,8 +354,15 @@ class KProgressDialog : public KDialogBase
 
         /**
          * Returns the wait duration in milliseconds
+         * @deprecated
          */
+        // ### Remove this KDE 4.0
         int  minimumDuration();
+
+        /**
+         * Returns the wait duration in milliseconds
+         */
+        int  minimumDuration() const;
 
     protected slots:
         void slotAutoShow();

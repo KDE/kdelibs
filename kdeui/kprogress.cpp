@@ -235,6 +235,11 @@ bool KProgressDialog::wasCancelled()
     return d->Cancelled;
 }
 
+bool KProgressDialog::wasCancelled() const
+{
+    return d->Cancelled;
+}
+
 void KProgressDialog::setMinimumDuration(int ms)
 {
     d->MinDuration = ms;
@@ -250,6 +255,11 @@ int KProgressDialog::minimumDuration()
     return d->MinDuration;
 }
 
+int KProgressDialog::minimumDuration() const
+{
+    return d->MinDuration;
+}
+
 void KProgressDialog::setAllowCancel(bool allowCancel)
 {
     d->AllowCancel = allowCancel;
@@ -261,7 +271,17 @@ bool KProgressDialog::allowCancel()
     return d->AllowCancel;
 }
 
+bool KProgressDialog::allowCancel() const
+{
+    return d->AllowCancel;
+}
+
 KProgress* KProgressDialog::progressBar()
+{
+    return d->ProgressBar;
+}
+
+const KProgress* KProgressDialog::progressBar() const
 {
     return d->ProgressBar;
 }
@@ -272,6 +292,11 @@ void KProgressDialog::setLabel(const QString& text)
 }
 
 QString KProgressDialog::labelText()
+{
+    return d->Label->text();
+}
+
+QString KProgressDialog::labelText() const
 {
     return d->Label->text();
 }
@@ -296,6 +321,11 @@ bool KProgressDialog::autoReset()
     return d->AutoReset;
 }
 
+bool KProgressDialog::autoReset() const
+{
+    return d->AutoReset;
+}
+
 void KProgressDialog::setAutoReset(bool autoReset)
 {
     d->AutoReset = autoReset;
@@ -308,6 +338,11 @@ void KProgressDialog::setButtonText(const QString& text)
 }
 
 QString KProgressDialog::buttonText()
+{
+    return d->CancelText;
+}
+
+QString KProgressDialog::buttonText() const
 {
     return d->CancelText;
 }
