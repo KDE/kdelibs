@@ -13,6 +13,6 @@ messages:
 	$(XGETTEXT) $(kioexec_SOURCES) -o $(podir)/kioexec.pot
 
 install-exec-hook:
-	@-rm -f $(DESTDIR)/$(bindir)/kfmexec
+	@rm -f $(DESTDIR)/$(bindir)/kfmexec
 	@$(LN_S) kioexec $(DESTDIR)/$(bindir)/kfmexec
 
