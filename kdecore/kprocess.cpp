@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.4.2  1999/05/10 19:33:18  gehrmab
+   Fixed memory leak in KProcess
+
    Revision 1.29.4.1  1999/04/07 15:39:11  porten
    restore SIGPIPE handler
 
@@ -134,7 +137,7 @@ KProcess::~KProcess()
   // destroying the KProcess instance sends a SIGKILL to the
   // child process (if it is running) after removing it from the
   // list of valid processes (if the process is not started as
-  // "dont_care")
+  // "DontCare")
 
   theKProcessController->processList->remove(this);
   // this must happen before we kill the child
@@ -219,7 +222,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	if (run_mode == DontCare)
           setpgid(0,0);
 
-        // restore default SIGPIPE handler (restore)
+        // restore default SIGPIPE handler (Harri)
         struct sigaction act;
         sigemptyset(&(act.sa_mask));
         sigaddset(&(act.sa_mask), SIGPIPE);
@@ -309,7 +312,7 @@ bool KProcess::writeStdin(char *buffer, int buflen)
   if (0 != input_data)
     return FALSE;
 
-  if ( runs && communication) {
+  if (runs && (communication & Stdin)) {
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
@@ -626,7 +629,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	if (run_mode == DontCare)
           setpgid(0,0);
 
-        // restore default SIGPIPE handler (restore)
+        // restore default SIGPIPE handler (Harri)
         struct sigaction act;
         sigemptyset(&(act.sa_mask));
         sigaddset(&(act.sa_mask), SIGPIPE);
@@ -641,7 +644,6 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// forking failed
 
 	runs = FALSE;
-	//	free(arglist);
 	return FALSE;
 
   } else {
@@ -658,7 +660,6 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	  processHasExited(status);
 	}
   }
-  //  free(arglist);
   return TRUE;
 }
 
