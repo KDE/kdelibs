@@ -80,20 +80,20 @@ QString RenderFormElement::encodeString( QString e )
         if ( (( c >= 'A') && ( c <= 'Z')) ||
              (( c >= 'a') && ( c <= 'z')) ||
              (( c >= '0') && ( c <= '9')) ||
-             (strchr(safe, c))
+             (strchr(safe, c.latin1()))
             )
         {
             encoded += c;
         }
-        else if ( c == ' ' )
+        else if ( c.latin1() == ' ' )
         {
             encoded += '+';
         }
-        else if ( c == '\n' )
+        else if ( c.latin1() == '\n' )
         {
-            encoded += "%0D%0A";
+            encoded += QString::fromLatin1("%0D%0A");
         }
-        else if ( c != '\r' )
+        else if ( c.latin1() != '\r' )
         {
             // HACK! sprintf( buffer, "%%%02X", (int)c );
             //       encoded += buffer;
@@ -245,7 +245,7 @@ QString RenderCheckBox::encoding()
     {
 	encoding = encodeString( m_name.string() );
 	encoding += '=';
-	encoding += m_value.isEmpty() ? QString("on") : encodeString( m_value.string() );
+	encoding += m_value.isEmpty() ? QString::fromLatin1("on") : encodeString( m_value.string() );
     }
     return encoding;
 }
@@ -825,9 +825,9 @@ QString RenderSelect::state()
             if (current->id() == ID_OPTION)
             {
                if( w->isSelected(i))
-                  state += "X";
+                  state += 'X';
                else
-                  state += "O";
+                  state += 'O';
             }
             current = current->nextSibling();
             i++;
@@ -844,9 +844,9 @@ QString RenderSelect::state()
             if (current->id() == ID_OPTION )
             {
                if( i == w->currentItem())
-                  state += "X";
+                  state += 'X';
                else
-                  state += "O";
+                  state += 'O';
             }
             current = current->nextSibling();
             i++;

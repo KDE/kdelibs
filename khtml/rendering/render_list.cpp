@@ -303,27 +303,27 @@ void RenderListMarker::calcMinMaxWidth()
 	// ### unsupported, we use decimal instead
     case LDECIMAL:
 	item.sprintf( "%2ld", val );
-	item += ".";
+	item += '.';
 	break;
     case LOWER_ROMAN:
 	item = toRoman( val, false );
-	item += ".";
+	item += '.';
 	break;
     case UPPER_ROMAN:
 	item = toRoman( val, true );
-	item += ".";
+	item += '.';
 	break;
     case LOWER_GREEK:
 	// ### unsupported, use low-alpha instead
     case LOWER_ALPHA:
     case LOWER_LATIN:
 	item = (QChar) ((int)('a' + val - 1));
-	item += ".";
+	item += '.';
 	break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
 	item = (QChar) ((int)('A' + val - 1));
-	item += ".";
+	item += '.';
 	break;
     case LNONE:
 	break;

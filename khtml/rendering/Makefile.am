@@ -20,6 +20,8 @@
 #KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 #-Woverloaded-virtual
 
+AM_CPPFLAGS = -DQT_NO_CAST_ASCII
+
 noinst_LTLIBRARIES = libkhtmlrender.la
 libkhtmlrender_la_SOURCES = \
 	bidi.cpp \

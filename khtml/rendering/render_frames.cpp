@@ -498,7 +498,7 @@ void RenderPartObject::close()
       url = o->url;
       serviceType = o->serviceType;
       if(serviceType.isEmpty() || serviceType.isNull()) {
-	  if(o->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
+	  if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
 	      // Flash. set the mimetype
 	      serviceType = "application/x-shockwave-flash";
 	  }
@@ -527,9 +527,9 @@ void RenderPartObject::close()
 	      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
 	      QString aStr = p->name();
-	      aStr += "=\"";
+	      aStr += QString::fromLatin1("=\"");
 	      aStr += p->value();
-	      aStr += "\"";
+	      aStr += QString::fromLatin1("\"");
 	      params.append(aStr);
 	  }
 	  child = child->nextSibling();

@@ -102,22 +102,22 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
 {
     KJavaAppletWidget *tmp = (KJavaAppletWidget*) m_widget;
 
-    tmp->setBaseURL( args["baseURL"] );
-    tmp->setAppletClass( args["code"] );
+    tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
+    tmp->setAppletClass( args[QString::fromLatin1("code") ] );
 
-    m_width = args["width"].toInt();
-    m_height = args["height"].toInt();
+    m_width = args[QString::fromLatin1("width") ].toInt();
+    m_height = args[QString::fromLatin1("height") ].toInt();
     tmp->resize( m_width, m_height );
 
-    if( args["codeBase"] != "")
-        tmp->setCodeBase( args["codeBase"] );
-    if( !args["name"].isNull() )
-        tmp->setAppletName( args["name"] );
+    if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
+        tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
+    if( !args[QString::fromLatin1("name") ].isNull() )
+        tmp->setAppletName( args[QString::fromLatin1("name") ] );
     else
-        tmp->setAppletName( args["code"] );
+        tmp->setAppletName( args[QString::fromLatin1("code") ] );
 
-    if( args["archive"] )
-        tmp->setJARFile( args["archive"] );
+    if( args[QString::fromLatin1("archive") ] )
+        tmp->setJARFile( args[QString::fromLatin1("archive") ] );
 }
 
 
