@@ -24,6 +24,7 @@
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"
+#include <assert.h>
 
 class KSycoca;
 class KSycocaDict;
@@ -51,9 +52,9 @@ public:
   virtual ~KServiceTypeFactory();
 
   /**
-   * Construct a KServiceType from a config file.
+   * Not meant to be called at this level
    */
-  virtual KSycocaEntry *createEntry(const QString &file);
+  virtual KSycocaEntry *createEntry(const QString &) { assert(0); }
 
   /**
    * Find a service type in the database file (allocates it)

@@ -26,33 +26,34 @@
 #include <kdebug.h>
 #include <qsmartptr.h>
 
-KServiceType::KServiceType( KSimpleConfig& _cfg )
+KServiceType::KServiceType( const QString & _fullpath )
 {
-  _cfg.setDesktopGroup();
+  KSimpleConfig config( _fullpath, true );
+  config.setDesktopGroup();
 
   // Is it a mimetype ?
-  m_strName = _cfg.readEntry( "MimeType" );
+  m_strName = config.readEntry( "MimeType" );
 
   // Or is it a servicetype ?
   if ( m_strName.isEmpty() ) 
   {
-    m_strName = _cfg.readEntry( "X-KDE-ServiceType" );
+    m_strName = config.readEntry( "X-KDE-ServiceType" );
   }
 
-  m_strComment = _cfg.readEntry( "Comment" );
-  m_strIcon = _cfg.readEntry( "Icon" );
+  m_strComment = config.readEntry( "Comment" );
+  m_strIcon = config.readEntry( "Icon" );
 
-  QStringList tmpList = _cfg.groupList();
+  QStringList tmpList = config.groupList();
   QStringList::Iterator gIt = tmpList.begin();
 
   for( ; gIt != tmpList.end(); ++gIt )
   {
     if ( (*gIt).find( "Property::" ) == 0 )
     {
-      _cfg.setGroup( *gIt );
+      config.setGroup( *gIt );
       m_mapProps.insert( (*gIt).mid( 10 ),
-			 _cfg.readPropertyEntry( "Value",
-						 QVariant::nameToType( _cfg.readEntry( "Type" ) ) ) );
+			 config.readPropertyEntry( "Value",
+						 QVariant::nameToType( config.readEntry( "Type" ) ) ) );
     }
   }
 
@@ -61,17 +62,19 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
   {
     if( (*gIt).find( "PropertyDef::" ) == 0 )
     {
-      _cfg.setGroup( *gIt );
+      config.setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
-			    QVariant::nameToType( _cfg.readEntry( "Type" ) ) );
+			    QVariant::nameToType( config.readEntry( "Type" ) ) );
     }
   }
 
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( const QString& _type, const QString& _icon, const QString& _comment )
+KServiceType::KServiceType( const QString & _fullpath, const QString& _type, 
+                            const QString& _icon, const QString& _comment )
 {
+  // TODO determine relative path from fullpath (problem if mimetype !)
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;

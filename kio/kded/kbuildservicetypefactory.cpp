@@ -22,7 +22,9 @@
 
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kmessageboxwrapper.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <assert.h>
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
@@ -41,3 +43,47 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
    return (KServiceType *) servType;
 }
 
+
+KSycocaEntry * KBuildServiceTypeFactory::createEntry(const QString &file)
+{
+  //debug("KBuildServiceTypeFactory::createEntry(%s)",file.ascii());
+  // Just a backup file ?
+  if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
+      return 0;
+
+  KSimpleConfig cfg( file, true);
+  cfg.setDesktopGroup();
+
+  // TODO check Type field first
+  QString mime = cfg.readEntry( "MimeType" );
+  QString service = cfg.readEntry( "X-KDE-ServiceType" );
+
+  if ( mime.isEmpty() && service.isEmpty() )
+  {
+    QString tmp = i18n( "The service/mime type config file\n%1\n"
+			"does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
+    KMessageBoxWrapper::error( 0L, tmp);
+    return 0;
+  }
+  
+  KServiceType* e;
+  if ( mime == "inode/directory" )
+    e = new KFolderType( file );
+  else if ( mime == "application/x-desktop" )
+    e = new KDEDesktopMimeType( file );
+  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
+    e = new KExecMimeType( file );
+  else if ( !mime.isEmpty() )
+    e = new KMimeType( file );
+  else
+    e = new KServiceType( file );
+
+  if ( !(e->isValid()) )
+  {
+    kdebug( KDEBUG_WARN, 7012, "Invalid ServiceType : %s", file.ascii() );
+    delete e;
+    return 0;
+  }
+
+  return e;
+}

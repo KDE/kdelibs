@@ -53,12 +53,12 @@ public:
    * Constructor.  You may pass in arguments to create a servicetype with
    * specific properties
    */
-  KServiceType( const QString& _name, const QString& _icon, 
-		const QString& _comment );
+  KServiceType( const QString & _fullpath, const QString& _name,
+                const QString& _icon, const QString& _comment );
   /**
    * Construct a service type and take all informations from a @ref KSimpleConfig object.
    */
-  KServiceType( KSimpleConfig& _cfg );
+  KServiceType( const QString & _fullpath );
   /**
    * @internal construct a service from a stream. 
    * The stream must already be positionned at the correct offset

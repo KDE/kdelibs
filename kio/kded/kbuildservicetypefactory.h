@@ -41,6 +41,12 @@ public:
    * @return a pointer to the servicetype in the memory dict (don't free!)
    */
   virtual KServiceType * findServiceTypeByName(const QString &_name);
+
+  /**
+   * Construct a KServiceType from a config file.
+   */
+  virtual KSycocaEntry * createEntry(const QString &file);
+
 };
 
 #endif

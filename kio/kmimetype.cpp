@@ -62,7 +62,7 @@ void KMimeType::check()
   if ( !s_pDefaultType )
   {
     QStringList tmp;
-    s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.png", "", tmp );
+    s_pDefaultType = new KMimeType( "", "application/octet-stream", "unknown.png", "", tmp );
     assert(s_pDefaultType);
   }
 
@@ -219,15 +219,16 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
-KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
-		      const QStringList& _patterns )
-  : KServiceType( _type, _icon, _comment )
+KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+                      const QString& _comment, const QStringList& _patterns )
+  : KServiceType( _fullpath, _type, _icon, _comment )
 {
   m_lstPatterns = _patterns;
 }
 
-KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
+KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
 {
+  KSimpleConfig _cfg( _fullpath, true);
   _cfg.setDesktopGroup();
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
@@ -293,9 +294,9 @@ KMimeType::~KMimeType()
  *
  ******************************************************/
 
-KFolderType::KFolderType( const QString& _type, const QString& _icon, const QString& _comment,
-			  const QStringList& _patterns )
-  : KMimeType( _type, _icon, _comment, _patterns )
+KFolderType::KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+                          const QString& _comment, const QStringList& _patterns )
+  : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
 
@@ -379,9 +380,9 @@ QString KFolderType::comment( const KURL& _url, bool _is_local ) const
  *
  ******************************************************/
 
-KDEDesktopMimeType::KDEDesktopMimeType( const QString& _type, const QString& _icon, const QString& _comment,
-				const QStringList& _patterns )
-  : KMimeType( _type, _icon, _comment, _patterns )
+KDEDesktopMimeType::KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+                                        const QString& _comment, const QStringList& _patterns )
+  : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
 
@@ -725,8 +726,8 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
  *
  ******************************************************/
 
-KExecMimeType::KExecMimeType( const QString& _type, const QString& _icon, const QString& _comment,
-			      const QStringList& _patterns )
-  : KMimeType( _type, _icon, _comment, _patterns )
+KExecMimeType::KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+                              const QString& _comment, const QStringList& _patterns )
+  : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
