@@ -25,9 +25,13 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
+#include <qevent.h>
+
+#include <kconfig.h>
 #include "kmenubar.h"
 #include <kstyle.h>
 #include <kapp.h>
+#include <kwm.h>
 
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
@@ -43,16 +47,48 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
 #define KTHEMESTYLE_CONSTANTS
 #endif
 
+class KMenuBar::KMenuBarPrivate
+{
+public:
+    KMenuBarPrivate(QWidget *parent)
+    {
+      m_macMode = false;
+      m_parent  = parent;
+    }
+    bool m_macMode;
+    QWidget *m_parent;
+};
+
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
+    d = new KMenuBarPrivate(parent);
+
     mouseActive = false;
     setFont(KGlobal::menuFont());
+
+    connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+
+    slotReadConfig();
+}
+
+KMenuBar::~KMenuBar()
+{
+  delete d; d = 0;
+}
+
+void KMenuBar::slotReadConfig()
+{
+  static QString grpKDE = QString::fromLatin1("KDE");
+  static QString keyMac = QString::fromLatin1("macStyle");
+
+  KConfig *config = KGlobal::config();
+  config->setGroup( grpKDE );
+  d->m_macMode = config->readBoolEntry( keyMac, false );
 }
 
 void KMenuBar::drawContents(QPainter *p)
 {
-
     KStyle *stylePtr = kapp->kstyle();
     if(!stylePtr)
         QMenuBar::drawContents(p);
@@ -110,4 +146,40 @@ void KMenuBar::leaveEvent(QEvent *ev)
     QMenuBar::leaveEvent(ev);
 }
 
+bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
+{
+  // we only do this if we are in Mac mode
+  if ( d->m_macMode == false )
+    return false;
+
+  // we also demand that the object be our parent
+  if ( obj != d->m_parent )
+    return false;
+
+  // finally, ensure that this is a Show event
+  if ( ev->type() != QEvent::Show )
+    return false;
+
+  hide();
+
+  recreate(0, 0, mapToGlobal(QPoint(0,0)), false);
+
+  KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar |
+                              KWM::noFocus);
+  KWM::moveToDesktop(winId(), KWM::currentDesktop());
+
+  QRect r =  KWM::windowRegion(KWM::currentDesktop());
+  setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(),
+              heightForWidth(r.width()) - 9);
+  setFixedWidth(r.width());
+
+  QString title(d->m_parent->caption());
+  title.append(" [menu]");
+  setCaption( title );
+
+  setFrameStyle( NoFrame );
+
+  show();
+  return false;
+}
 #include "kmenubar.moc"

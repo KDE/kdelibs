@@ -45,12 +45,16 @@ class KMenuBar : public QMenuBar
 public:
 
     KMenuBar (QWidget *parent=0, const char *name=0);
-    ~KMenuBar (){;}
+    ~KMenuBar ();
+
+protected slots:
+    void slotReadConfig();
 
 protected:
     void drawContents(QPainter *p);
     void enterEvent(QEvent *ev);
     void leaveEvent(QEvent *ev);
+    bool eventFilter(QObject *, QEvent *);
 
     bool mouseActive;
 

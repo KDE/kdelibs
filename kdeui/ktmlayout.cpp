@@ -25,6 +25,7 @@
 
 #include <qlist.h>
 
+#include <kconfig.h>
 #include <ktoolbar.h>
 #include <ktmlayout.h>
 
@@ -64,8 +65,15 @@ KTMLayout::setGeometry(const QRect& rect)
     if (indicatorWidget && !topMenuBar && !statusBar)
         indicatorWidget->hide();
 
+    static QString grpKDE = QString::fromLatin1("KDE");
+    static QString keyMac = QString::fromLatin1("macStyle");
+
+    KConfig *config = KGlobal::config();
+    config->setGroup( grpKDE );
+    bool mac_mode = config->readBoolEntry( keyMac, false );
+
 	/* position top menu bar */
-	if (topMenuBar)
+	if (topMenuBar && !mac_mode)
 	{
 		int hfw = topMenuBar->heightForWidth(rect.width());
 		if (hfw == 0)
