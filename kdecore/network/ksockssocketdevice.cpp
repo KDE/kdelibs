@@ -23,6 +23,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+
 #include "ksocks.h"
 #include "ksocketaddress.h"
 #include "kresolver.h"
