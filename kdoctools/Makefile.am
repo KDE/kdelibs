@@ -61,3 +61,5 @@ uninstall-local:
 
 kbzip2filter.cpp:
 	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
+
+CLEANFILES = kbzip2filter.cpp xslt_pure.o xslt_pure.cpp checkXML
