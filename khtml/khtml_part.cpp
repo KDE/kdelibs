@@ -1889,9 +1889,13 @@ QString KHTMLPart::selectedText() const
           case ID_DL:
           case ID_DT:
           case ID_PRE:
-          case ID_DIV:
           case ID_BLOCKQUOTE:
             text += "\n";
+            break;
+          case ID_DIV:
+            // Empty divs have no height. Check div isn't empty.
+            if ( !n.firstChild().isNull() )
+                text += "\n";
             break;
           case ID_P:
           case ID_TR:
