@@ -964,7 +964,7 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
 
     //printf("columnOpt3: ");
     //for ( c = 0; c < totalCols; c++ )
-    //	printf("%d ", columnOpt[c+1]);
+    //	//printf("%d ", columnOpt[c+1]);
     //printf("\n");
 
     // Spread the remaining space equally across all percentage columns
@@ -1222,10 +1222,10 @@ void HTMLTable::calcColInfo()
     
     // DEBUG: Show the results :)
 #if 0    
-    printf("---- %d ----\n", totalColInfos);
+    //printf("---- %d ----\n", totalColInfos);
     for(i = 0; i < totalColInfos; i++)
     {
-        printf("col #%d: %d - %d, min: %3d pref: %3d max: %3d type: %d\n",
+        //printf("col #%d: %d - %d, min: %3d pref: %3d max: %3d type: %d\n",
                  i,
                  colInfo[i].startCol, colInfo[i].colSpan,
                  colInfo[i].minSize, colInfo[i].prefSize,
@@ -1233,15 +1233,15 @@ void HTMLTable::calcColInfo()
     }
     for(i = 0; i < totalRowInfos; i++)
     {
-        printf("row #%d: ", i);
+        //printf("row #%d: ", i);
         for(j = 0; j < rowInfo[i].nrEntries; j++)
         {
            if (j == 0)
-              printf("%d", rowInfo[i].entry[j]);
+              //printf("%d", rowInfo[i].entry[j]);
            else
-              printf("- %d", rowInfo[i].entry[j]);
+              //printf("- %d", rowInfo[i].entry[j]);
         } 
-        printf(" ! %d : %d\n", rowInfo[i].minSize, rowInfo[i].prefSize);
+        //printf(" ! %d : %d\n", rowInfo[i].minSize, rowInfo[i].prefSize);
     }
 #endif
 }

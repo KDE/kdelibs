@@ -242,7 +242,7 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
   // waitingFileList.append( _obj );
   // emit fileRequest( _url );
 
-  printf("========================= REQUEST %s  ================\n", _url );
+  //printf("========================= REQUEST %s  ================\n", _url );
   
   ///////////////
   // The new code
@@ -364,7 +364,7 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
 
 void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 {
-  printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
+  //printf("///////// FileLoaded %s %s ////////////\n",_url,_filename );
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
@@ -738,7 +738,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     // else
     if ( _mouse->button() != RightButton )
     {
-//	printf("pressedURL='%s'\n",pressedURL.data());
+//	//printf("pressedURL='%s'\n",pressedURL.data());
 	emit URLSelected( pressedURL.data(), _mouse->button(), pressedTarget.data() );
 	// required for backward compatability
 	emit URLSelected( pressedURL.data(), _mouse->button() );
@@ -1955,7 +1955,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
 	{
-	    printf("isFrameSet=%d, docHeight=%d\n",bIsFrameSet, docHeight());
+	    //printf("isFrameSet=%d, docHeight=%d\n",bIsFrameSet, docHeight());
 	    y_offset = docHeight() - height();
 	    if ( y_offset < 0 )
 		y_offset = 0;
@@ -3040,8 +3040,10 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 			st.tokenize( token+5, " ," );
 			while ( st.hasMoreTokens() )
 			{
-			    const char *fname = st.nextToken();
-			    QFont tryFont( fname );
+			    QString fname( st.nextToken());
+			    fname = fname.lower();
+			    
+			    QFont tryFont( fname.data() );
 			    QFontInfo fi( tryFont );
 			    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
 			    {
@@ -5478,7 +5480,7 @@ bool KHTMLWidget::setCharset(const char *name){
 	    charset=charsets->defaultCharset();
 	else
 	    charset=KCharset(name);
-	printf("setting charset to %s.\n", charset.name());
+	//printf("setting charset to %s.\n", charset.name());
 	if (!charset.isDisplayable()){
 		if (charsetConverter) delete charsetConverter;
 	        charsetConverter=0;
@@ -5956,7 +5958,7 @@ void KHTMLWidget::cellContextMenu()
   if ( curr == 0 )
     return;
 
-//  printf("curr->url='%s'\n",curr->pCell->getURL());
+//  //printf("curr->url='%s'\n",curr->pCell->getURL());
   
   if ( curr->pCell->getURL() == 0 )
     return;
@@ -5974,7 +5976,7 @@ void KHTMLWidget::cellSequenceChanged()
   if ( clue == 0 || parsing || currentKeySeq.isEmpty())
     return ;
   
-  printf( QString("Sequence is : '")+currentKeySeq+"'\n" );
+  //printf( QString("Sequence is : '")+currentKeySeq+"'\n" );
 
   QList<HTMLCellInfo> list;
   list.setAutoDelete( true );
@@ -6013,7 +6015,7 @@ void KHTMLWidget::cellSequenceChanged()
       QString filename = ku.filename();
       if (strnicmp (filename, currentKeySeq, strlen(currentKeySeq)) == 0)
       {
-          printf("Selecting : %s\n",filename.data());
+          //printf("Selecting : %s\n",filename.data());
           next = info;
           break;
       }
@@ -6125,7 +6127,7 @@ KHTMLWidget::saveYourself(SavedPage *p)
     p->url = getDocumentURL().url();
     p->xOffset = x_offset;
     p->yOffset = y_offset;
-    printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
+    //printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
 
     if(isFrameSet() && !parsing)
 	buildFrameTree(p, frameSet);
@@ -6174,11 +6176,11 @@ KHTMLWidget::restore(SavedPage *p)
 	// the easy part...
 	if(htmlView)
 	{
-	    printf("restoring view\n");
-	    printf("framename = %s\n",p->frameName.data());
-	    printf("url = %s\n",p->url.data());
+	    //printf("restoring view\n");
+	    //printf("framename = %s\n",p->frameName.data());
+	    //printf("url = %s\n",p->url.data());
 	    htmlView->restorePosition(p->xOffset, p->yOffset);
-	    printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
+	    //printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
 	    htmlView->openURL( p->url );
 	    htmlView->setIsFrame( p->isFrame );
 	    if( p->isFrame )
@@ -6193,7 +6195,7 @@ KHTMLWidget::restore(SavedPage *p)
 	}
 	else
 	{
-	    printf("NO VIEW!!!!\n");
+	    //printf("NO VIEW!!!!\n");
 	    emit URLSelected( p->url, LeftButton, 0L );
 	}
     }
@@ -6209,7 +6211,7 @@ KHTMLWidget::restore(SavedPage *p)
 	buildFrameSet(p, &s);
 	s += "</body></html>\n";
 
-	printf("restoring frameset:\n%s\n", s.data());
+	//printf("restoring frameset:\n%s\n", s.data());
 	begin();
 	parse();
 	write(s);

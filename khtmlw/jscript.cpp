@@ -34,7 +34,7 @@ JSEnvironment::JSEnvironment( KHTMLWidget *_view )
 
     globalScope = makeGlobalScope();
     
-    printf("MAKING BULILTIN STUFF\n");
+    //printf("MAKING BULILTIN STUFF\n");
 
     jsWindowObject = new JSWindowObject( this );
 
@@ -84,9 +84,9 @@ KHTMLView* JSEnvironment::getKHTMLView()
 
 JSEnvironment::~JSEnvironment()
 {
-    printf("================================ DEL JSEnv 1 ========================\n");
+    //printf("================================ DEL JSEnv 1 ========================\n");
     delete globalScope;
-    printf("================================ DEL JSEnv 2 ========================\n");
+    //printf("================================ DEL JSEnv 2 ========================\n");
 }
 
 /**********************************************************
@@ -132,7 +132,7 @@ JSWindowObject::JSWindowObject( JSEnvironment *_jsenv ) : JSUserDefinedObject()
 
 JSWindowObject::~JSWindowObject()
 {
-    printf("============================== DEL JSWindowObject ======================\n");
+    //printf("============================== DEL JSWindowObject ======================\n");
 }
 
 /**********************************************************
@@ -149,7 +149,7 @@ JSWindowArrayObject::JSWindowArrayObject( JSWindowObject *_win, int _kind )
 
 int JSWindowArrayObject::rightValue( JSObject *_index, JSValue *_rv )
 {
-    printf("Accessing array\n");
+    //printf("Accessing array\n");
     
     int ret = 0;
     
@@ -184,7 +184,7 @@ int JSWindowArrayObject::rightValue( JSObject *_index, JSValue *_rv )
 
 JSWindowArrayObject::~JSWindowArrayObject()
 {
-    printf("============================== DEL JSWindowArrayObject ======================\n");
+    //printf("============================== DEL JSWindowArrayObject ======================\n");
 }
 
 /**********************************************************
@@ -264,7 +264,7 @@ void JSWindowVarObject::setValue( JSObject* _val )
     case KIND_JSWindowStatus:
 	if ( _val->inherits( TYPE_JSStringObject ) )
 	{
-	    printf("STATUS BAR->'%s'\n",((JSStringObject*)_val)->getString());
+	    //printf("STATUS BAR->'%s'\n",((JSStringObject*)_val)->getString());
 	}
 	break;
     }
@@ -275,14 +275,14 @@ void JSWindowVarObject::clear()
     switch ( kind )
     {
     case KIND_JSWindowStatus:
-	printf("STATUS BAR->\"\"\n");
+	//printf("STATUS BAR->\"\"\n");
 	break;
     }
 }
 
 JSWindowVarObject::~JSWindowVarObject()
 {
-    printf("============================== DEL JSWindowVarObject ======================\n");
+    //printf("============================== DEL JSWindowVarObject ======================\n");
 }
 
 /**********************************************************
@@ -301,7 +301,7 @@ JSDocumentObject::JSDocumentObject( JSWindowObject *_window ) : JSUserDefinedObj
 
 JSDocumentObject::~JSDocumentObject()
 {
-    printf("============================== DEL JSDocumentObject ======================\n");
+    //printf("============================== DEL JSDocumentObject ======================\n");
     // delete jsDocumentWrite;
 }
 
@@ -336,13 +336,13 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 	    {
 		out.sprintf("%i",((JSIntegerObject*)(v->getObject()))->getValue() );
 		object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
-		printf( "%i ", ((JSIntegerObject*)(v->getObject()))->getValue() );
+		//printf( "%i ", ((JSIntegerObject*)(v->getObject()))->getValue() );
 	    }
 	    else if ( v->getObject()->isA() == TYPE_JSStringObject )
 	    {
 		out = ((JSStringObject*)(v->getObject()))->getString();
 		object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
-		printf( "%s ", ((JSStringObject*)(v->getObject()))->getString() );
+		//printf( "%s ", ((JSStringObject*)(v->getObject()))->getString() );
 	    }
 	    else if ( v->getObject()->isA() == TYPE_JSBoolObject )
 	    {
@@ -350,20 +350,20 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 		{
 		    out = "TRUE";
 		    object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
-		    printf( "TRUE " );
+		    //printf( "TRUE " );
 		}
 		else
 		{
 		    out = "FALSE";
 		    object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
-		    printf( "FALSE " );
+		    //printf( "FALSE " );
 		}
 	    }
 	    else if ( v->getObject()->isA() == TYPE_JSFloatObject )
 	    {
 		out.sprintf( "%f", ((JSFloatObject*)(v->getObject()))->getValue() );	    
 		object->getJSWindowObject()->getJSEnvironment()->writeOutput( out.data() );
-		printf( "%f ", ((JSFloatObject*)(v->getObject()))->getValue() );	    
+		//printf( "%f ", ((JSFloatObject*)(v->getObject()))->getValue() );	    
 	    }
 	}
     }
@@ -377,7 +377,7 @@ int JSDocumentWriteFunction::rightValue( JSScopeStack*, JSValue *rv, JSParameter
 
 JSDocumentWriteFunction::~JSDocumentWriteFunction()
 {
-    printf("============================== DEL JSDocumentWriteFunction ======================\n");
+    //printf("============================== DEL JSDocumentWriteFunction ======================\n");
 }
 
 /**********************************************************
@@ -395,7 +395,7 @@ JSEventHandler::JSEventHandler( JSEnvironment *_env, const char *_name, const ch
 
 JSEventHandler::~JSEventHandler()
 {
-    printf("============================== DEL JSEventHandler ======================\n");
+    //printf("============================== DEL JSEventHandler ======================\n");
     if ( code )
 	delete code;
 }
@@ -406,7 +406,7 @@ int JSEventHandler::exec( JSInstanceScope *_scope )
 	return ERROR_JSInternal;
     
     int ret = jsEnvironment->exec( code, _scope );
-    printf("RETURN '%i'\n",ret);
+    //printf("RETURN '%i'\n",ret);
     return ret;
 }
 

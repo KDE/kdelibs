@@ -749,28 +749,28 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
 
 #ifdef DEBUG_ALIGN
 // Debug alignment lists
-    printf("Find w,h = %d,%d from Y-pos %d on\n", _width, _height, _y);
-    printf("aligLeftList:\n");
+    //printf("Find w,h = %d,%d from Y-pos %d on\n", _width, _height, _y);
+    //printf("aligLeftList:\n");
 
     for ( clue = alignLeftList; clue != 0; clue = clue->nextClue() )
     {
         base_y = clue->getYPos() + clue->parent()->getYPos() -
          		 clue->parent()->getAscent();
 	top_y = base_y - clue->getAscent();
-        printf("    x,y [x,y] / w,h = %d,%d [%d,%d] / %d, %d\n",
+        //printf("    x,y [x,y] / w,h = %d,%d [%d,%d] / %d, %d\n",
         	clue->getXPos()+clue->parent()->getXPos(), 
         	top_y,
         	clue->getXPos(), clue->getYPos(),
         	clue->getWidth(), clue->getHeight());
     }
-    printf("aligRightList:\n");
+    //printf("aligRightList:\n");
 
     for ( clue = alignRightList; clue != 0; clue = clue->nextClue() )
     {
         base_y = clue->getYPos() + clue->parent()->getYPos() -
          		 clue->parent()->getAscent();
 	top_y = base_y - clue->getAscent();
-        printf("    x,y [x,y] / w,h = %d,%d [%d,%d] / %d, %d\n",
+        //printf("    x,y [x,y] / w,h = %d,%d [%d,%d] / %d, %d\n",
         	clue->getXPos()+clue->parent()->getXPos(), 
         	top_y,
         	clue->getXPos(), clue->getYPos(),
@@ -842,7 +842,7 @@ void HTMLClueV::findFreeArea( int _y, int _width, int _height, int _indent,
     *_lmargin = lmargin;
 
 #ifdef DEBUG_ALIGN
-    printf("Got y=%d, lmargin = %d, rmargin =%d\n", try_y, lmargin, rmargin);
+    //printf("Got y=%d, lmargin = %d, rmargin =%d\n", try_y, lmargin, rmargin);
 #endif
 }
 
@@ -904,14 +904,14 @@ void HTMLClueV::appendLeftAligned( HTMLClueAligned *_clue )
 	{
 	    if ( obj == _clue )
 	    {
-	    	printf("%s:%d Clue already in alignLeftList\n", __FILE__, __LINE__);
+	    	//printf("%s:%d Clue already in alignLeftList\n", __FILE__, __LINE__);
 		return;
 	    }
 	    obj = obj->nextClue();
 	}
 	if ( obj == _clue )
 	{
-	    printf("%s:%d Clue already in alignLeftList\n", __FILE__, __LINE__);
+	    //printf("%s:%d Clue already in alignLeftList\n", __FILE__, __LINE__);
 	    return;
 	}
 	obj->setNextClue( _clue );
@@ -971,14 +971,14 @@ void HTMLClueV::appendRightAligned( HTMLClueAligned *_clue )
 	{
 	    if ( obj == _clue )
 	    {
-		printf("%s:%d Clue already in alignRightList\n", __FILE__, __LINE__);
+		//printf("%s:%d Clue already in alignRightList\n", __FILE__, __LINE__);
 		return;
 	    }
 	    obj = obj->nextClue();
 	}
 	if ( obj == _clue )
 	{
-	    printf("%s:%d Clue already in alignRightList\n", __FILE__, __LINE__);
+	    //printf("%s:%d Clue already in alignRightList\n", __FILE__, __LINE__);
 	    return;
 	}
 	obj->setNextClue( _clue );

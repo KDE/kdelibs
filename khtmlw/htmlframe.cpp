@@ -230,7 +230,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	const char* token = st.nextToken();
 	if ( token[0] != 0 )
 	{
-	    printf("WIDTH='%s'\n",token);
+	    //printf("WIDTH='%s'\n",token);
 	    value[i] = atoi( token );
 	    if ( strchr( token, '%' ) != 0 )
 	    {
@@ -265,14 +265,14 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	    joker = TRUE;
     }
     
-    printf("s1 = %i\n", s1);
+    //printf("s1 = %i\n", s1);
     int k;
     if ( s1 <= _max && !joker )
     {
 	for ( k = 0; k < i; k++ )
 	{
 	    size[k] = ( value[k] * _max ) / s1;
-	    printf("%i %i %i -> %i\n",value[k],_max,s1,size[k] );
+	    //printf("%i %i %i -> %i\n",value[k],_max,s1,size[k] );
 	}
 
 	// Calculate the error
@@ -281,7 +281,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	{
 	    s2 += size[k];
 	}
-	printf("Error is %i\n",_max - s2);
+	//printf("Error is %i\n",_max - s2);
 	// Add the error to the last frame
 	size[ i - 1 ] += _max - s2;
     }
@@ -324,27 +324,27 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	    if ( mode[k] == 0 || mode[k] == 1 )
 		s2 += size[k];
 	}
-	printf("Error is %i\n",_max - s2);
+	//printf("Error is %i\n",_max - s2);
 	// Add the error to the last frame
 	size[ i - 1 ] += _max - s2;	
     }
 
-    for ( k = 0; k < i; k++ )
-	printf("SIZE=%i\n",size[k]);
+//    for ( k = 0; k < i; k++ )
+	//printf("SIZE=%i\n",size[k]);
 	
     return i;
 }
 
 KHTMLView* HTMLFrameSet::getSelectedFrame()
 {
-  printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+  //printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     QWidget *w;
     for ( w = widgetList.first(); w != 0L; w = widgetList.next() )
     {
-      printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 2 '%s'<<<<<<<<<<<<<<<<<<<<<<<<\n",w->className());
+      //printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 2 '%s'<<<<<<<<<<<<<<<<<<<<<<<<\n",w->className());
       if ( w->inherits( "KHTMLView" ) )
       {
-	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+	//printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
 	KHTMLView *v = (KHTMLView*)w;
 	KHTMLView *ret = v->getSelectedView();
 	if ( ret )
@@ -352,7 +352,7 @@ KHTMLView* HTMLFrameSet::getSelectedFrame()
       }
     }
     
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 4 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    //printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 4 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     return 0L;
 }
 

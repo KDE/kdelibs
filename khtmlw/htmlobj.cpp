@@ -646,7 +646,7 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, bool firstRun,
     if (next_obj && next_obj->isSlave())
     {
 	// 
-	printf("TextSlave: recover layout\n");
+	//printf("TextSlave: recover layout\n");
 	do
 	{
     	    setNext(next_obj->next());
@@ -1971,7 +1971,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 	  QRect rect( x1, y1, x2-x1, y2-y1 );
 	  area = new HTMLArea( rect, href, "" );
-	  printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
+	  //printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 	}
       break;
       
@@ -1981,13 +1981,13 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  int xc, yc, rc;
 	  sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
 	  area = new HTMLArea( xc, yc, rc, href, "" );
-	  printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
+	  //printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
 	}
       break;
 
       case HTMLArea::Poly:
 	{
-	  printf( "Area Poly " );
+	  //printf( "Area Poly " );
 	  int count = 0, x, y;
 	  QPointArray parray;
 	  while ( st.hasMoreTokens() )
@@ -1996,10 +1996,10 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	      sscanf( p, "%d,%d", &x, &y );
 	      parray.resize( count + 1 );
 	      parray.setPoint( count, x, y );
-	      printf( "%d, %d  ", x, y );
+	      //printf( "%d, %d  ", x, y );
 	      count++;
 	    }
-	  printf( "\n" );
+	  //printf( "\n" );
 	  if ( count > 2 )
 	    area = new HTMLArea( parray, href, "" );
 	}
