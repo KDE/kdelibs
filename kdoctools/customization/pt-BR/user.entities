@@ -15,4 +15,4 @@
 <!ENTITY kcontrol       "<application>Centro de Controle do &kde;</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
 <!ENTITY khelpcenter    "<application>Centro de Informações do &kde;</application>">
-<!ENTITY RMB    "botão <mousebutton>direto</mousebutton> do mouse">
+<!ENTITY BDM    "botão <mousebutton>direto</mousebutton> do mouse">
