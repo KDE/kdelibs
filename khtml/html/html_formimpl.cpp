@@ -752,6 +752,18 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
+    if (evt->target() == this && evt->isMouseEvent() &&
+        renderer() && renderer()->isWidget() &&
+        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView"))
+        switch(evt->id())  {
+        case EventImpl::MOUSEDOWN_EVENT:
+        case EventImpl::MOUSEUP_EVENT:
+        case EventImpl::MOUSEMOVE_EVENT:
+            static_cast<RenderWidget*>(renderer())->handleEvent(*static_cast<MouseEventImpl*>(evt));
+        default:
+            break;
+        }
+
     if (evt->target()==this && !m_disabled)
     {
         // Report focus in/out changes to the browser extension (editable widgets only)

@@ -38,10 +38,11 @@
 #include "khtmlview.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
-#include "xml/dom_docimpl.h" // ### remove dependency
+#include "xml/dom_docimpl.h"
 #include <kdebug.h>
 
 bool khtml::allowWidgetPaintEvents = false;
+bool khtml::allowWidgetMouseEvents = true;
 
 using namespace khtml;
 using namespace DOM;
@@ -474,6 +475,41 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     deref( arena );
 
     return filtered;
+}
+
+void RenderWidget::handleEvent(const DOM::MouseEventImpl& ev)
+{
+    allowWidgetMouseEvents = false;
+
+    int absx = 0;
+    int absy = 0;
+
+    absolutePosition(absx, absy);
+
+    QPoint p(ev.clientX()-absx, ev.clientY()-absy);
+    QMouseEvent::Type type;
+    int button;
+
+    switch(ev.id())  {
+    case EventImpl::MOUSEDOWN_EVENT:
+        type = QMouseEvent::MouseButtonPress;
+        button = Qt::LeftButton; // ###
+        break;
+    case EventImpl::MOUSEUP_EVENT:
+        type = QMouseEvent::MouseButtonRelease;
+        button = Qt::LeftButton; // ###
+        break;
+    case EventImpl::MOUSEMOVE_EVENT:
+    default:
+        type = QMouseEvent::MouseMove;
+        button = Qt::NoButton;
+        break;
+    }
+
+    QMouseEvent e(type, p, button, button);
+    QApplication::sendEvent(m_widget, &e);
+
+    allowWidgetMouseEvents = true;
 }
 
 void RenderWidget::deref(RenderArena *arena)

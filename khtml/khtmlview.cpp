@@ -1303,7 +1303,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (!w->inherits("QScrollBar")) {
+		if (allowWidgetMouseEvents && !w->inherits("QScrollBar")) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());

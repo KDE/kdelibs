@@ -28,6 +28,11 @@
 class KHTMLView;
 class QWidget;
 
+namespace DOM
+{
+    class MouseEventImpl;
+}
+
 namespace khtml {
 
 class RenderReplaced : public RenderBox
@@ -102,6 +107,8 @@ public:
     void deref(RenderArena *arena);
 
     static void paintWidget(QPainter *p, QWidget *w, int x, int y, int w, int h, int tx, int ty);
+    void handleEvent(const DOM::MouseEventImpl& ev);
+
 public slots:
     void slotWidgetDestructed();
 
@@ -118,6 +125,7 @@ protected:
 };
 
 extern bool allowWidgetPaintEvents;
+extern bool allowWidgetMouseEvents;
 
 class RenderReplacedFlow : public RenderFlow
 {
