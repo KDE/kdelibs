@@ -284,7 +284,7 @@ public class KJASProtocolHandler
         if (cmd_code_value == CallMember)
         {
             currentcommand = command;
-            new Thread() {
+            new Thread("CallMember") {
                 public void run() {
                     String contextID = getArg( currentcommand );
                     String appletID  = getArg( currentcommand );
