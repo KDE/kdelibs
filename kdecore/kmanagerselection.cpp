@@ -436,6 +436,7 @@ Window KSelectionWatcher::owner()
         {
 //        kdDebug() << "isOwner: " << current_owner << endl;
         selection_owner = current_owner;
+        emit newOwner( selection_owner );
         }
     else
         selection_owner = None;
@@ -468,10 +469,9 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
         {
         if( selection_owner == None || ev_P->xdestroywindow.window != selection_owner )
             return;
+        selection_owner = None; // in case the exactly same ID gets reused as the owner
         if( owner() == None )
             emit lostOwner(); // it must be safe to delete 'this' in a slot
-        else
-            emit newOwner( selection_owner );
         return;
         }
     return;
