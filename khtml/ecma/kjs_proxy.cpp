@@ -194,6 +194,7 @@ void KJSProxyImpl::clear() {
   // (we used to delete and re-create it, previously)
   if (m_script) {
 #ifdef KJS_DEBUGGER
+    // ###
     KJSDebugWin *debugWin = KJSDebugWin::instance();
     if (debugWin) {
       if (debugWin->getExecState() &&

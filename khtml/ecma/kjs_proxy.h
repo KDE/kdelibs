@@ -27,7 +27,6 @@
 #include <sys/time.h>
 
 class KHTMLPart;
-class KJSDebugWin;
 
 namespace DOM {
   class Node;
@@ -39,6 +38,7 @@ namespace KJS {
   class List;
   class Interpreter;
   class Completion;
+  class KJSDebugWin;
 }
 
 /**
