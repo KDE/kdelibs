@@ -85,7 +85,7 @@ int Ftp::readline(char *buf,int max,netbuf *ctl)
     }
     if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
     {
-      perror("read");
+      debug("read failed");
       retval = -1;
       break;
     }
@@ -440,9 +440,69 @@ bool Ftp::ftpSendCmd( const char *cmd, char expresp )
   return readresp( expresp );
 }
 
+/*
+ * ftpOpenDataConnection - set up data connection, using PASV mode
+ *
+ * return 1 if successful, 0 otherwise
+ * doesn't set error message, since non-pasv mode will always be tried if
+ * this one fails
+ */
+bool Ftp::ftpOpenPASVDataConnection()
+{
+  int i[6], j;
+  unsigned char n[6];
+  int on=1;
+  union {
+    struct sockaddr sa;
+    struct sockaddr_in in;
+  } sin;
+  struct linger lng = { 0, 0 }; 
+
+  m_bPasv = true;
+  sDatal = socket( AF_INET, SOCK_STREAM, 0 );
+  if ( (setsockopt( sDatal,SOL_SOCKET,SO_REUSEADDR,(char*)&on, sizeof(on) ) == -1)
+       || (sDatal < 0) )
+  {
+    ::close( sDatal );
+    return false;
+  }
+ 
+  /* Let's PASsiVe*/
+  if (!(ftpSendCmd("PASV",'2')))
+  {
+    ::close( sDatal );
+    return false;
+  }
+ 
+  if (sscanf(rspbuf, "%*[^(](%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6)
+  {
+    ::close( sDatal );
+    return false;
+  }
+ 
+  for (j=0; j<6; j++)
+  {
+    n[j] = (unsigned char) (i[j] & 0xff);
+  }
+ 
+  memset( &sin,0, sizeof(sin) );
+  sin.in.sin_family = AF_INET;
+  memcpy( &sin.in.sin_addr, &n[0], (size_t) 4 );
+  memcpy( &sin.in.sin_port, &n[4], (size_t) 2 );
+  
+  if( ::connect( sDatal, &sin.sa, sizeof(sin) ) == -1)
+  {
+    ::close( sDatal );
+    return false;
+  }
+ 
+  if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
+    if ( ftplib_debug > 1 ) debug("Linger mode was not allowed.");
+  return 1; 
+}
 
 /*
- * ftpOpenDataConnection - set up date connection
+ * ftpOpenDataConnection - set up data connection
  *
  * return 1 if successful, 0 otherwise
  */
@@ -461,6 +521,14 @@ bool Ftp::ftpOpenDataConnection()
   char buf[64];
   int on = 1;
 
+  ////////////// First try PASV mode
+  
+  if (ftpOpenPASVDataConnection())
+    return true;
+
+  ////////////// Fallback : non-PASV mode
+  m_bPasv = false;
+  
   l = sizeof(sin);
   if ( getsockname( sControl, &sin.sa, &l ) < 0 )
     return false;
@@ -533,12 +601,14 @@ int Ftp::ftpAcceptConnect(void)
   FD_ZERO(&mask);
   FD_SET(sDatal,&mask);
 
-  if (select( sDatal + 1, &mask, NULL, NULL, 0L) == 0)
+  if ( select( sDatal + 1, &mask, NULL, NULL, 0L ) == 0)
   {
     ::close( sDatal );
     return -2;
   }
-
+  if ( m_bPasv )
+    return sDatal;
+      
   l = sizeof(addr);
   if ( ( sData = accept( sDatal, &addr, &l ) ) > 0 )
     return sData;
@@ -641,9 +711,10 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     tmp += _path;
   }
       
-  if ( !ftpSendCmd( tmp.c_str(), '1' ) )
+  if ( !ftpSendCmd( tmp.c_str(), '1' ) ) {
     // We can not give any error code here since the error depends on the command
     return false;
+  }
 
   if ( ( sData = ftpAcceptConnect() ) < 0 )
   {
@@ -808,6 +879,7 @@ FtpEntry* Ftp::stat( KURL& _url )
 FtpEntry* Ftp::ftpStat( KURL& _url )
 {
   static FtpEntry fe;
+  m_error = 0;
 
   cerr << "ftpStat : " << _url.url() << endl;
 
@@ -845,7 +917,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   FtpEntry *e;
   while( ( e = readdir() ) && !found )
   {
-    if ( error() )
+    if ( m_error )
     {
       cerr << "FAILED: Read " << error() << " " << errorText() << endl;
       return 0L;

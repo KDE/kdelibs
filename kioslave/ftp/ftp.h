@@ -85,6 +85,7 @@ private:
 
   bool m_bLoggedOn;
   bool m_bFtpStarted;
+  bool m_bPasv;
 
   bool m_bPersistent;
   
@@ -137,6 +138,10 @@ private:
    */
   bool ftpOpenCommand( const char *command, const char *path, char mode, unsigned long offset = 0 );
 
+  /**
+   * Used by @ref #ftpOpenCommand
+   */
+  bool ftpOpenPASVDataConnection();
   /**
    * Used by @ref #ftpOpenCommand
    */
