@@ -1240,7 +1240,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     {
       connect( child->m_extension, SIGNAL( openURLNotify() ),
 	       d->m_extension, SIGNAL( openURLNotify() ) );
-      
+
       connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
 	       this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
 
@@ -1433,16 +1433,16 @@ void KHTMLPart::slotChildCompleted()
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
+  
+  static QString _top = QString::fromLatin1( "_top" );
+  static QString _self = QString::fromLatin1( "_self" );
+  static QString _parent = QString::fromLatin1( "_parent" );
+  static QString _blank = QString::fromLatin1( "_blank" );
 
-  if ( !args.frameName.isEmpty() )
+  QString frameName = args.frameName.lower();
+  
+  if ( !frameName.isEmpty() )
   {
-    static QString _top = QString::fromLatin1( "_top" );
-    static QString _self = QString::fromLatin1( "_self" );
-    static QString _parent = QString::fromLatin1( "_parent" );
-    static QString _blank = QString::fromLatin1( "_blank" );
-
-    QString frameName = args.frameName.lower();
-
     if ( frameName == _top )
     {
       emit d->m_extension->openURLRequest( url, args );
@@ -1474,6 +1474,12 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
   if ( child )
     requestObject( child, url, args );
+  else if ( frameName == _self ) // this is for embedded objects (via <object>) which want to replace the current document
+  {
+    KParts::URLArgs newArgs( args );
+    newArgs.frameName = QString::null;
+    emit d->m_extension->openURLRequest( url, newArgs );
+  }
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
