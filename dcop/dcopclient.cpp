@@ -50,6 +50,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef QT_CLEAN_NAMESPACE
 #define QT_CLEAN_NAMESPACE
 #endif
+#include <qguardedptr.h>
 #include <qtextstream.h>
 #include <qfile.h>
 #include <qapplication.h>
