@@ -120,6 +120,7 @@ class KStandardDirsPrivate;
  *          home directory of root, usually "/root/.kde".
  *          Note that the setting of $HOME is ignored in this case.
  *
+ * @see KGlobalSettings
  */
 class KStandardDirs
 {
