@@ -28,7 +28,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     if (KURIFilter::self()->filterURI(*m_filterData, list))
     {
         // From minicli
-        if ( m_filterData->uri().isLocalFile() )
+        if ( m_filterData->uri().isLocalFile() && !m_filterData->uri().hasRef() )
             cmd = m_filterData->uri().path();
         else
             cmd = m_filterData->uri().url();
@@ -90,6 +90,8 @@ int main(int argc, char **argv) {
     // URI that should require no filtering
     filter( "http://www.kde.org", "http://www.kde.org", KURIFilterData::NET_PROTOCOL );
     filter( "http://www.kde.org/developer//index.html", "http://www.kde.org/developer//index.html", KURIFilterData::NET_PROTOCOL );
+    filter( "http://www.kde.org/index.html#q8", "http://www.kde.org/index.html#q8", KURIFilterData::NET_PROTOCOL );
+    filter( "file:/etc/passwd#q8", "file:/etc/passwd#q8", KURIFilterData::LOCAL_FILE );
     filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
             "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
     filter( "ftp://ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
@@ -130,6 +132,8 @@ int main(int argc, char **argv) {
     filter( "xemacs", "xemacs", KURIFilterData::EXECUTABLE, minicliFilters );
     filter( "KDE", "KDE", NO_FILTERING, minicliFilters );
     filter( "I/dont/exist", "I/dont/exist", NO_FILTERING, minicliFilters );
+    filter( "/I/dont/exist", 0, KURIFilterData::ERROR, minicliFilters );
+    filter( "/I/dont/exist#a", 0, KURIFilterData::ERROR, minicliFilters );
     filter( "kppp --help", "kppp --help", KURIFilterData::EXECUTABLE, minicliFilters ); // the args are in argsAndOptions()
     filter( "/usr/bin/gs", "/usr/bin/gs", KURIFilterData::EXECUTABLE, minicliFilters );
     filter( "/usr/bin/gs -q -option arg1", "/usr/bin/gs -q -option arg1", KURIFilterData::EXECUTABLE, minicliFilters ); // the args are in argsAndOptions()
@@ -137,8 +141,11 @@ int main(int argc, char **argv) {
     // ENVIRONMENT variable
     setenv( "SOMEVAR", "/somevar", 0 );
     setenv( "ETC", "/etc", 0 );
+    QCString qtdir=getenv("QTDIR");
     filter( "$SOMEVAR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
     filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
+    filter( "$QTDIR/doc/html/functions.html#s", QCString("file:")+qtdir+"/doc/html/functions.html#s", KURIFilterData::LOCAL_FILE );
+    filter( "http://www.kde.org/$USER", "http://www.kde.org/$USER", KURIFilterData::NET_PROTOCOL ); // no expansion
 
     QCString home = getenv("HOME");
     filter( "$HOME/.kde/share", home+"/.kde/share", KURIFilterData::LOCAL_DIR );
@@ -166,8 +173,6 @@ int main(int argc, char **argv) {
     filter( "av:+rock +sample", "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock%20%2Bsample", KURIFilterData::NET_PROTOCOL );
     filter( "gg:é" /*eaccent in utf8*/, "http://www.google.com/search?q=%C3%A9&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "gg:прйвет" /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-
-    filter( "about:", "about:konqueror", KURIFilterData::NET_PROTOCOL ); // cf kshorturifilter
 
     // Absolute Path tests for kshorturifilter
     filter( "./", home+"/.kde/share", KURIFilterData::LOCAL_DIR, "kshorturifilter", home+"/.kde/share/" ); // cleanDirPath removes the trailing slash
