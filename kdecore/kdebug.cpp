@@ -68,19 +68,19 @@ class KDebugEntry;
 class KDebugEntry
 {
 public:
-    KDebugEntry (int n, QString d) {number=n; descr=d;}
+    KDebugEntry (int n, const QCString& d) {number=n; descr=d;}
     unsigned int number;
-    QString descr;
+    QCString descr;
 };
 
 static QIntDict<KDebugEntry> *KDebugCache;
 
 static KStaticDeleter< QIntDict<KDebugEntry> > kdd;
 
-static QString getDescrFromNum(unsigned int _num)
+static QCString getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
-    kdd.setObject(KDebugCache, new QIntDict<KDebugEntry>);
+    kdd.setObject(KDebugCache, new QIntDict<KDebugEntry>( 601 ));
     // Do not call this deleter from ~KApplication
     KGlobal::unregisterStaticDeleter(&kdd);
     KDebugCache->setAutoDelete(true);
@@ -91,69 +91,59 @@ static QString getDescrFromNum(unsigned int _num)
     return ent->descr;
 
   if ( !KDebugCache->isEmpty() ) // areas already loaded
-    return QString::null;
+    return QCString();
 
   QString filename(locate("config","kdebug.areas"));
   if (filename.isEmpty())
-      return QString::null;
+      return QCString();
 
   QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
     qWarning("Couldn't open %s", filename.local8Bit().data());
     file.close();
-    return QString::null;
+    return QCString();
   }
 
   uint lineNumber=0;
   QCString line(1024);
-  while (file.readLine(line.data(),line.size()-1) > 0) {
-    lineNumber++;
-    char ch=line[0];
-    if (ch=='#' || ch=='\n')
-      continue; // We have a comment or an empty line
-    int i=0;
-    while (ch > 0 && ch <= ' ')
-      ch=line[++i];
-    if (!ch) // End of line
-      continue; // Line with only control characters
-    if (ch < '0' && ch > '9') {
-      qWarning("Syntax error: no number (line %u)",lineNumber);
-      continue;
-    }
-    const int numStart=i;
-    do
-    {
-        ch=line[++i];
-    }
-    while ( ch >= '0' && ch <= '9');
-    if ( !ch ) { // End of line
-      qWarning("Syntax error: number at end of line (line %u)",lineNumber);
-      continue;
-    }
-    bool ok=false;
-    const unsigned long number=line.mid(numStart,i).toULong(&ok);
-    if (!ok) {
-      qWarning("Syntax error: wrong number (line %u)",lineNumber);
-      continue;
-    }
-    while (ch > 0 && ch <= ' ')
-      ch=line[++i];
-    if ( !ch ) { // End of line
-      qWarning("Syntax error: no description (line %u)",lineNumber);
-      continue;
-    }
-    // Using QString::stripWhiteSpace seems to be a little faster than using QCString's
-    const QString description(QString::fromLatin1(line.data()+i).stripWhiteSpace());
-    KDebugCache->insert(number, new KDebugEntry(number,description));
-  }
+  int len;
 
+  while (( len = file.readLine(line.data(),line.size()-1) ) > 0) {
+      int i=0;
+      ++lineNumber;
+
+      while (line[i] && line[i] <= ' ')
+        i++;
+
+      unsigned char ch=line[i];
+
+      if ( !ch || ch =='#' || ch =='\n')
+          continue; // We have an eof, a comment or an empty line
+
+      if (ch < '0' && ch > '9') {
+          qWarning("Syntax error: no number (line %u)",lineNumber);
+          continue;
+      }
+
+      const int numStart=i;
+      do {
+          ch=line[++i];
+      } while ( ch >= '0' && ch <= '9');
+
+      const Q_ULONG number =line.mid(numStart,i).toULong();
+
+      while (line[i] && line[i] <= ' ')
+        i++;
+
+      KDebugCache->insert(number, new KDebugEntry(number, line.mid(i, len-i-1)));
+  }
   file.close();
 
   ent = KDebugCache->find( _num );
   if ( ent )
       return ent->descr;
 
-  return QString::null;
+  return QCString();
 }
 
 enum DebugLevels {
@@ -170,7 +160,7 @@ struct kDebugPrivate {
 
   ~kDebugPrivate() { delete config; }
 
-  QString aAreaName;
+  QCString aAreaName;
   unsigned int oldarea;
   KConfig *config;
 };
@@ -221,32 +211,32 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
     /* Determine output */
 
-    QString key;
-    switch( nLevel )
-      {
-      case KDEBUG_INFO:
-	key = "InfoOutput";
-	aCaption = "Info";
-	nPriority = LOG_INFO;
+  QString key;
+  switch( nLevel )
+  {
+  case KDEBUG_INFO:
+      key = "InfoOutput";
+      aCaption = "Info";
+      nPriority = LOG_INFO;
+      break;
+  case KDEBUG_WARN:
+      key = "WarnOutput";
+      aCaption = "Warning";
+      nPriority = LOG_WARNING;
 	break;
-      case KDEBUG_WARN:
-	key = "WarnOutput";
-	aCaption = "Warning";
-	nPriority = LOG_WARNING;
-	break;
-      case KDEBUG_FATAL:
-	key = "FatalOutput";
-	aCaption = "Fatal Error";
-	nPriority = LOG_CRIT;
-	break;
-      case KDEBUG_ERROR:
-      default:
-	/* Programmer error, use "Error" as default */
-	key = "ErrorOutput";
-	aCaption = "Error";
-	nPriority = LOG_ERR;
-	break;
-      }
+  case KDEBUG_FATAL:
+      key = "FatalOutput";
+      aCaption = "Fatal Error";
+      nPriority = LOG_CRIT;
+      break;
+  case KDEBUG_ERROR:
+  default:
+      /* Programmer error, use "Error" as default */
+      key = "ErrorOutput";
+      aCaption = "Error";
+      nPriority = LOG_ERR;
+      break;
+  }
 
   short nOutput = kDebug_data->config ? kDebug_data->config->readNumEntry(key, 2) : 2;
 
@@ -254,80 +244,73 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   // a messagebox.
   if (!kapp && (nOutput == 1))
     nOutput = 2;
+  else if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
+      return;
+
+  const int BUFSIZE = 4096;
+  char buf[BUFSIZE];
+  int nSize;
+  if ( !kDebug_data->aAreaName.isEmpty() ) {
+      strlcpy( buf, kDebug_data->aAreaName.data(), BUFSIZE );
+      strlcat( buf, ": ", BUFSIZE );
+      strlcat( buf, data, BUFSIZE );
+      nSize = strlen( buf );
+  }
+  else
+      nSize = strlcpy( buf, data, BUFSIZE );
+
 
   // Output
   switch( nOutput )
-        {
-        case 0: // File
-          {
-                QString aKey;
-                switch( nLevel )
-                {
-                    case KDEBUG_INFO:
-                        aKey = "InfoFilename";
-                        break;
-                    case KDEBUG_WARN:
-                        aKey = "WarnFilename";
-                        break;
-                    case KDEBUG_FATAL:
-                        aKey = "FatalFilename";
-                        break;
-                    case KDEBUG_ERROR:
-                    default:
-                        aKey = "ErrorFilename";
-                        break;
-                }
-                QString aOutputFileName = kDebug_data->config->readPathEntry(aKey, "kdebug.dbg");
-
-                const int BUFSIZE = 4096;
-                char buf[BUFSIZE];
-		int nSize;
-                if ( !kDebug_data->aAreaName.isEmpty() )
-		    nSize = snprintf( buf, BUFSIZE, "%s: %s", kDebug_data->aAreaName.ascii(), data);
-		else
-		    nSize = snprintf( buf, BUFSIZE, "%s", data);
-
-                QFile aOutputFile( aOutputFileName );
-                aOutputFile.open( IO_WriteOnly | IO_Append );
-                if ( ( nSize == -1 ) || ( nSize >= BUFSIZE ) )
-                    aOutputFile.writeBlock( buf, BUFSIZE-1 );
-                else
-                    aOutputFile.writeBlock( buf, nSize );
-                aOutputFile.close();
-                break;
-          }
-        case 1: // Message Box
-          {
-                // Since we are in kdecore here, we cannot use KMsgBox and use
-                // QMessageBox instead
-	      if ( !kDebug_data->aAreaName.isEmpty() ) aCaption += QString("(")+kDebug_data->aAreaName+")";
-	      QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
-	      break;
-          }
-        case 2: // Shell
-          {
-              FILE *output;
-              /* we used to use stdout for debug
-              if (nPriority == LOG_INFO)
-                  output = stderr;
-              else */
-                  output = stderr;
-              // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
-	      // if ( !kDebug_data->aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), kDebug_data->aAreaName.ascii() );
-	      if ( !kDebug_data->aAreaName.isEmpty() ) fprintf( output, "%s: ", kDebug_data->aAreaName.ascii() );
-	      fputs(  data, output);
-	      break;
-          }
-        case 3: // syslog
-          {
-	      syslog( nPriority, "%s", data);
-	      break;
-          }
-        case 4: // nothing
-          {
-	      break;
-          }
-        }
+  {
+  case 0: // File
+  {
+      const char* aKey;
+      switch( nLevel )
+      {
+      case KDEBUG_INFO:
+          aKey = "InfoFilename";
+          break;
+      case KDEBUG_WARN:
+          aKey = "WarnFilename";
+          break;
+      case KDEBUG_FATAL:
+          aKey = "FatalFilename";
+          break;
+      case KDEBUG_ERROR:
+      default:
+          aKey = "ErrorFilename";
+          break;
+      }
+      QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, "kdebug.dbg") );
+      aOutputFile.open( IO_WriteOnly | IO_Append | IO_Raw );
+      if ( ( nSize == -1 ) || ( nSize >= BUFSIZE ) )
+          aOutputFile.writeBlock( buf, BUFSIZE-1 );
+      else
+          aOutputFile.writeBlock( buf, nSize );
+      aOutputFile.close();
+      break;
+  }
+  case 1: // Message Box
+  {
+      // Since we are in kdecore here, we cannot use KMsgBox and use
+      // QMessageBox instead
+      if ( !kDebug_data->aAreaName.isEmpty() )
+          aCaption += QString("(%1)").arg( kDebug_data->aAreaName );
+      QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
+      break;
+  }
+  case 2: // Shell
+  {
+      write( 2, buf, nSize ); //fputs( buf, stderr );
+      break;
+  }
+  case 3: // syslog
+  {
+      syslog( nPriority, "%s", buf);
+      break;
+  }
+  }
 
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL )
