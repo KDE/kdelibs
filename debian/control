@@ -2,7 +2,7 @@ Source: kdelibs-cvs
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
-Standards-Version: 3.0.1.1
+Standards-Version: 3.0.1
 
 Package: kdelibs3-cvs
 Architecture: any
@@ -27,9 +27,9 @@ Package: kdelibs3-dev-cvs
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev
-Depends: kdelibs3-cvs (= ${Source-Version}), qt2-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev (>= 2.3.0)
+Depends: kdelibs3-cvs (= ${Source-Version}), libqt2-dev | libqt2-cvs-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.0-dev (>= 2.3.0)
 Suggests: kdelibs-doc
-Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-cvs-dev, kdelibs3-dev
+Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-dev
 Provides: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.

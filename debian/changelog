@@ -1,11 +1,12 @@
-kdelibs-cvs (4:2.0-19991005-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-19991013-1.0) experimental; urgency=low
 
+  * More upstream changes
   * More cleanup
   * Removing conffiles for compile time creaction of it
   * Adding in pre* scripts
   * Commenting out dh_link piece to see if we still need it
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 05 Oct 1999 22:30:00 -0400
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 13 Oct 1999 23:30:00 -0400
 
 kdelibs-cvs (4:2.0-19991001-0.1) experimental; urgency=low
 
