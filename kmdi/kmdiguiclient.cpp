@@ -118,7 +118,7 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
     m_toolMenu=new KActionMenu(i18n("Tool Views"),actionCollection(),"kmdi_toolview_menu");
     m_mdiModeAction=new KSelectAction(i18n("&MDI Mode"),0,actionCollection());
     QStringList modes;
-    modes<<i18n("&Toplevel mode")<<i18n("C&hildframe mode")<<i18n("Ta&b Page mode")<<i18n("I&DEAL mode");
+    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
     m_mdiModeAction->setItems(modes);
     connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
     connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
@@ -145,10 +145,10 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
    m_pWindowMenu->insertSeparator();
    m_pWindowMenu->insertItem(tr("&MDI Mode..."), m_pMdiModeMenu);
    m_pMdiModeMenu->clear();
-   m_pMdiModeMenu->insertItem(tr("&Toplevel mode"), this, SLOT(switchToToplevelMode()));
-   m_pMdiModeMenu->insertItem(tr("C&hildframe mode"), this, SLOT(switchToChildframeMode()));
-   m_pMdiModeMenu->insertItem(tr("Ta&b Page mode"), this, SLOT(switchToTabPageMode()));
-   m_pMdiModeMenu->insertItem(tr("I&DEAl  mode"), this, SLOT(switchToIDEAlMode()));
+   m_pMdiModeMenu->insertItem(tr("&Toplevel Mode"), this, SLOT(switchToToplevelMode()));
+   m_pMdiModeMenu->insertItem(tr("C&hildframe Mode"), this, SLOT(switchToChildframeMode()));
+   m_pMdiModeMenu->insertItem(tr("Ta&b Page Mode"), this, SLOT(switchToTabPageMode()));
+   m_pMdiModeMenu->insertItem(tr("I&DEAl Mode"), this, SLOT(switchToIDEAlMode()));
 #endif
 }
 
