@@ -62,7 +62,7 @@
 #include <qpixmap.h>
 
 #include "kfilereader.h"
-#include <kio_job.h>
+#include <kio/job.h>
 #include <kdebug.h>
 #include <config-kfile.h>
 #include <kdebug.h>

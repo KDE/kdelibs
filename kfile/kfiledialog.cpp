@@ -1128,7 +1128,6 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 	startpos = desktopDir.length();
 
     int pos = startpos;
-    int indent = 2;
     int w = opendirPix.width();
     int h = opendirPix.height();
     if ( w == 0 ) { // empty pixmap
@@ -1152,8 +1151,9 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 
 	// item->icon = KMimeType::pixmapForURL(item->url, 0, KIconLoader::Small);
 	
-	item->icon = opendirPix;
+	item->icon = opendirPix;	
 	/*
+	  const int indent = 2;
 	int pixw = (indent -1) * w;
 	QPixmap indentPix( indent * w, h );
 	indentPix.fill( Qt::white );

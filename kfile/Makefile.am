@@ -19,7 +19,7 @@
 
 AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
 
-INCLUDES= -I$(top_srcdir)/kio $(all_includes)
+INCLUDES= -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
 
@@ -44,8 +44,8 @@ kde_toolbar_DATA = configure.png
 
 EXTRA_DIST = configure.png KFile.kdoc NOTES
 
-libkfile_la_LDFLAGS = -no-undefined -version-info 3:0 
-libkfile_la_LIBADD =  $(top_builddir)/kio/libkio.la 
+libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
+libkfile_la_LIBADD =  $(top_builddir)/kio/libkio.la
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(KDE_RPATH)
