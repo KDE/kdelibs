@@ -453,7 +453,6 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
     formElements.remove(e);
 }
 
-
 // -------------------------------------------------------------------------
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
@@ -1118,8 +1117,9 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 if (file.open(IO_ReadOnly))
                 {
                     QCString filearray(file.size()+1);
-                    file.readBlock( filearray.data(), file.size());
-                    filearray[filearray.size()-1] = '\0';
+                    int readbytes = file.readBlock( filearray.data(), file.size());
+                    if ( readbytes >= 0 )
+                        filearray[readbytes] = '\0';
                     file.close();
 
                     encoding += filearray;
