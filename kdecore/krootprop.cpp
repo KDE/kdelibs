@@ -92,7 +92,8 @@ void KRootProp::setProp( const QString& rProp )
                         (unsigned char **)&buf);
     s += QString::fromUtf8(buf);
     offset += nitems/4;
-    XFree(buf);
+    if (buf)
+      XFree(buf);
   }
 			
   // Parse through the property string stripping out key value pairs
