@@ -29,6 +29,7 @@
 #include <qpointarray.h>
 #include <qpainter.h>
 #include <qtextstream.h>
+#include <qfileinfo.h>
 
 #include <kinstance.h>
 #include <klocale.h>
@@ -338,11 +339,12 @@ bool ReadOnlyPart::openURL( const KURL &url )
   {
     m_bTemp = true;
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-    QString extension;
     QString fileName = url.fileName();
-    int extensionPos = fileName.findRev( '.' );
-    if ( extensionPos != -1 && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
-        extension = fileName.mid( extensionPos ); // keep the '.'
+    QFileInfo fileInfo(fileName);
+    QString ext = fileInfo.extension();
+    QString extension;
+    if ( !ext.isEmpty() && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
+        extension = "."+ext; // keep the '.'
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
