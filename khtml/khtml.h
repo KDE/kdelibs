@@ -65,39 +65,40 @@ class KJSWorld;
  *
  * The easiest way to use this class (if you just want to display a HTML
  * page at some URL) is the following:
- * <code>
+ *
+ * <pre>
  * QString url = "http://www.kde.org";
  * KHTMLWidget *w = new KHTMLWidget();
  * w->openURL(url);
  * w->resize(500, 400);
  * w->show();
- * </code>
+ * </pre>
  *
  * By default the Widget behaves as a full browser, so clicking on some link
  * on the page you just opened will lead yu to that page. This is inconvenient,
  * if you want to use the widget to display for example formatted emails, but
  * don't want the widget to open the site in this window in case someone
  * clicks on an embedded link. In this case just use
- * @see #setFollowsLinks(false). You will then get a Signal @see #urlClicked()
+ * @ref setFollowsLinks(false). You will then get a Signal @ref urlClicked()
  * instead of KHTMLWidget following the links directly.
  *
  * By default Java and JavaScript support is disabled. You can enable it by
- * using the @see #setEnableJava() and @see #setEnableJScript() methods.
+ * using the @ref enableJava() and @ref enableJScript() methods.
  *
  * Some apps want to write their HTML code directly into the widget instead of
  * it opening an url. You can also do that in the following way:
  *
- * <code>
+ * <pre>
  * QString myHTMLCode = ...;
  * KHTMLWidget *w = new KHTMLWidget();
  * w->begin();
  * w->write(myHTMLCode);
  * ...
  * w->end();
- * </code>
+ * </pre>
  *
- * You can do as many calls to write as you want. But there are two write()
- * methods, one accepting a QString one accepting a char * argument. These
+ * You can do as many calls to write as you want. But there are two @ref write()
+ * methods, one accepting a @ref QString one accepting a char * argument. These
  * should not get mixed, since the method usnig the char * argument does an
  * additional decoding step to convert the written data to Unicode.
  *
@@ -224,10 +225,10 @@ public:
 
     /**
      * Clears the widget and prepares it for new content.
-     * If you want @see #url() to return
+     * If you want @ref url() to return
      * for example "file:/tmp/test.html", you can use the following code:
      * <PRE>
-     * view->begin( QString("file:/tmp/test.html" );
+     * view->begin( QString("file:/tmp/test.html" ) );
      * </PRE>
      *
      * @param _url is the url of the document to be displayed.  Even if you
