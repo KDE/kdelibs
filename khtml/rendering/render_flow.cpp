@@ -1258,6 +1258,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
     setLayouted( false );
+    
+    bool madeBoxesNonInline = FALSE;
 
     if ( newChild->isPositioned() ) {
 	m_blockBidi = false;
@@ -1328,8 +1330,10 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             RenderObject *anonBox = beforeChild->parent();
             KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
 
-	    if ( anonBox->childrenInline() )
+	    if ( anonBox->childrenInline() ) {
 		static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
+		madeBoxesNonInline = true;
+	    }
             beforeChild = beforeChild->parent();
 
             RenderObject *child;
@@ -1361,8 +1365,10 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // inline children into anonymous block boxes
     if ( m_childrenInline && !newChild->isInline() && !newChild->isSpecial() )
     {
-	if ( m_childrenInline )
+	if ( m_childrenInline ) {
 	    makeChildrenNonInline(beforeChild);
+	    madeBoxesNonInline = true;
+	}
         if (beforeChild) {
 	    if ( beforeChild->parent() != this ) {
 		beforeChild = beforeChild->parent();
@@ -1432,6 +1438,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	    RenderObject *p = parent();
             if (p && p->isFlow() && p->childrenInline() ) {
                 static_cast<RenderFlow*>(p)->makeChildrenNonInline();
+		madeBoxesNonInline = true;
             }
         }
     }
@@ -1442,7 +1449,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
     insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
-
+    
+    if ( madeBoxesNonInline )
+	removeLeftoverAnonymousBoxes();
 }
 
 void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
@@ -1497,14 +1506,14 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
         child = next;
     }
 
-
     if (isInline()) {
         setInline(false);
         if (parent()->isFlow()) {
             KHTMLAssert(parent()->childrenInline());
 	    static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
         }
-    }
+    } 
+    
     setLayouted(false);
 }
 

@@ -43,6 +43,7 @@ class KHTMLView;
 #define KHTMLAssert( x ) if( !(x) ) { \
     const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
+    qDebug(" this object = %p", this ); \
     assert( false ); \
 }
 #else
@@ -422,7 +423,6 @@ public:
     const QFontMetrics &fontMetrics(bool firstLine) const {
 	return style( firstLine )->fontMetrics();
     }
-
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -441,6 +441,8 @@ protected:
     void invalidateVerticalPositions();
     short getVerticalPosition( bool firstLine ) const;
 
+    virtual void removeLeftoverAnonymousBoxes();
+    
 private:
     RenderStyle* m_style;
     DOM::NodeImpl* m_node;

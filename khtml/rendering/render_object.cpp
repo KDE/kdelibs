@@ -1028,3 +1028,8 @@ void RenderObject::scheduleRelayout()
     if ( view )
 	view->scheduleRelayout();
 }
+
+
+void RenderObject::removeLeftoverAnonymousBoxes()
+{
+}
