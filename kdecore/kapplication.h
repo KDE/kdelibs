@@ -527,7 +527,7 @@ public slots:
   void clear();
 
   /**
-   * If the widget with focus provides a cut() slot, call that slot.  Thus for a
+   * If the widget with focus provides a selectAll() slot, call that slot.  Thus for a
    * simple application select all can be implemented as:
    * <pre>
    * KStdAction::selectAll( kapp, SLOT( selectAll() ), actionCollection() );
