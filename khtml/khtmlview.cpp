@@ -289,7 +289,7 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-    if(!m_part->xmlDocImpl()) {
+    if(!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
