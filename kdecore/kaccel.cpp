@@ -747,16 +747,16 @@ uint KAccel::stringToKey(const QString& key)
 	QString str;
 	uint keyCode = 0;
 	for (uint i=0; i<k; i++) {
-		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1).upper();
+		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
 		str.stripWhiteSpace();
 		if ( str.isEmpty() ) {
 			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
 			return 0;
 		}
 
-		if ( str=="SHIFT" )     keyCode |= Qt::SHIFT;
-		else if ( str=="CTRL" ) keyCode |= Qt::CTRL;
-		else if ( str=="ALT" )  keyCode |= Qt::ALT;
+		if ( str.upper()=="SHIFT" )     keyCode |= Qt::SHIFT;
+		else if ( str.upper()=="CTRL" ) keyCode |= Qt::CTRL;
+		else if ( str.upper()=="ALT" )  keyCode |= Qt::ALT;
 		else if (codeFound) {
 			kdebug(KDEBUG_WARN, 125, 
 				"stringToKey::Duplicate keycode");
