@@ -117,6 +117,12 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    assert( about == 0 );	// Don't call init twice.
    argc = _argc;
    argv = _argv;
+   
+   // Strip path from argv[0]
+   char *p = strrchr( argv[0], '/');
+   if (p)
+      argv[0] = p+1;
+
    about = _about;
    parsed = false;
    mCwd = new char [PATH_MAX+1];
@@ -361,7 +367,7 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
    if (!args || !result) 
    {
       enable_i18n();
-      usage( i18n("Unknown option '%1'.\n").arg(_opt));
+      usage( i18n("Unknown option '%1'.").arg(_opt));
    }
 
    if (result == 3) // This option takes an argument
@@ -369,19 +375,18 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
       if (!enabled) 
       {
          enable_i18n();
-         usage( i18n("Unknown option '%1'.\n").arg(_opt));
+         usage( i18n("Unknown option '%1'.").arg(_opt));
       }
       i++;
       if (i >= argc) 
       {
          enable_i18n();
-         usage( i18n("'%1' missing.\n").arg( opt_name));
+         usage( i18n("'%1' missing.").arg( opt_name));
       }
       args->setOption(opt, argv[i]);
    }   
    else
    {
-fprintf(stderr, "SetOption( %s, %s )\n", opt.data(), enabled ? "true" : "false");
       args->setOption(opt, enabled);
    }
 }
@@ -402,10 +407,11 @@ KCmdLineArgs::parseAllArgs()
    if (!appOptions->id)
    {
      const KCmdLineOptions *option = appOptions->options;
-     while(option && option->name && !allowArgs)
+     while(option && option->name)
      {
        if (option->name[0] == '+')
           allowArgs = true;
+       
        option++;
      }
    }
@@ -415,6 +421,7 @@ KCmdLineArgs::parseAllArgs()
       {
          bool enabled = true;
          const char *option = &argv[i][1]; 
+         const char *orig = argv[i];
          if (option[0] == '-')
          {
             option++;
@@ -448,7 +455,7 @@ KCmdLineArgs::parseAllArgs()
               option += 2;
               enabled = false;
            }
-           findOption(argv[i], option, i, enabled);
+           findOption(orig, option, i, enabled);
          }
       }
       else
@@ -457,7 +464,7 @@ KCmdLineArgs::parseAllArgs()
          if (!allowArgs)
          {
             enable_i18n();
-            usage( i18n("Unexpected argument '%1'.\n").arg( argv[i]));
+            usage( i18n("Unexpected argument '%1'.").arg( argv[i]));
          }
          else
          {
@@ -525,8 +532,14 @@ void
 KCmdLineArgs::usage(const QString &error)
 {
    QCString localError = error.local8Bit();
-   fprintf(stderr, "%s: %s", about->appName(), localError.data());
-   usage();
+   if (localError[error.length()-1] == '\n') 
+      localError = localError.left(error.length()-1);
+   fprintf(stderr, "%s: %s\n", argv[0], localError.data());
+
+   QString tmp = i18n("Use --help to get a list of available command line options."); 
+   localError = tmp.local8Bit();
+   fprintf(stderr, "%s: %s\n", argv[0], localError.data());
+   exit(254);
 }
 
 void 
@@ -544,9 +557,10 @@ KCmdLineArgs::usage(const char *id)
     
    KCmdLineArgs *args = argsList->last();
    
-   if (!args->id) 
+   if (!(args->id) && (args->options) && 
+       (args->options->name) && (args->options->name[0] != '+')) 
    {
-      usage = i18n("[options]")+usage;
+      usage = i18n("[options] ")+usage;
    }  
 
    while(args)
@@ -566,14 +580,14 @@ KCmdLineArgs::usage(const char *id)
      {
        if (option->name[0] == '+')
        {
-          usage = usage + " " + (option->name+1);
+          usage = usage + (option->name+1) + " ";
        }
 
        option++;
      }
    }
 
-   printQ(i18n("Usage: %1 %2\n").arg(about->appName()).arg(usage));
+   printQ(i18n("Usage: %1 %2\n").arg(argv[0]).arg(usage));
    printQ("\n"+about->shortDescription()+"\n");
 
    printQ(optionHeaderString.arg(i18n("Generic")));
@@ -610,18 +624,10 @@ KCmdLineArgs::usage(const char *id)
      }
    }
 
-   bool hasArgs = false;
-
    while(args)
    {
-     if (args)
-     {
-       if (!args->name)
-         printQ(i18n("\nOptions:\n"));
-       else if (args->name)
-         printQ(optionHeaderString.arg(args->name));
-     }
-
+     bool hasArgs = false;
+     bool hasOptions = false;
      while (args)
      {
        const KCmdLineOptions *option = args->options;
@@ -642,15 +648,29 @@ KCmdLineArgs::usage(const char *id)
          QCString name = option->name;
          if (name[0] == '+')
          {
-            name = name.mid(1);
             if (!hasArgs)
+            {
                printQ(i18n("\nArguments:\n"));
-            hasArgs = true;
+               hasArgs = true;
+            }
+
+            name = name.mid(1);
+            if ((name[0] == '[') && (name[name.length()-1] == ']'))
+	       name = name.mid(1, name.length()-2);
             printQ(optionFormatString.arg(name, -25)
 		 .arg(description));
          }
          else 
          {
+            if (!hasOptions)
+            {
+               if (!args->name)
+                  printQ(i18n("\nOptions:\n"));
+               else if (args->name)
+                  printQ(optionHeaderString.arg(args->name));
+               hasOptions = true;
+            }
+
             if ((name.length() == 1) || (name[1] == ' '))
                name = "-"+name;
             else 
@@ -898,9 +918,15 @@ KCmdLineArgs::count()
 const char *
 KCmdLineArgs::arg(int n)
 {
-   assert(parsedArgList);
-
-   assert(n < (int) parsedArgList->count());
+   if (!parsedArgList || (n >= (int) parsedArgList->count()))
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs): Argument out of bounds\n");
+      fprintf(stderr, "Application requests for arg(%d) without checking count() first.\n", 
+                      n);
+ 
+      assert( 0 ); 
+      exit(255);
+   }
 
    return parsedArgList->at(n);
 }
