@@ -613,8 +613,8 @@ bool HTTPProtocol::http_open()
 #endif
      {
         m_fcache = checkCacheEntry( m_state.cef );
-        m_bCachedWrite = true;
      }
+     m_bCachedWrite = true;
 
      if (m_fcache)
      {
