@@ -108,8 +108,18 @@ public slots:
   virtual void setOverwriteMode( bool b ) = 0;
 
 signals:
+  /**
+   * Connect here when you want to implement a custom popup menu.
+   */
   void contextPopupMenu( const QPoint &p );
 
+  /**
+   * Connect here if you want to track the scrolling within the editor. This
+   * allows you to add specialised borders that displays extra data about
+   * particular lines such as breakpoints etc.
+   */
+  void scrollValueChanged( int value );
+  
 private:
   class ViewPrivate;
   ViewPrivate *d;
@@ -186,6 +196,14 @@ signals:
    */
   void textChanged();
 
+  /**
+   */
+  void deleted( int startLine, int endLine );
+  
+  /**
+   */
+  void inserted( int startLine, int endLine );
+
 protected:
   /**
    * Call this method in your document implementation whenever you created a new
@@ -204,7 +222,9 @@ protected:
 private slots:
 		
   /**
-   * TODO: I have no idea what this does :-) Which view gets destroyed???
+   * The view emits a destroyed() signal which is connected to this slot
+   * and removed from our internal list. Note: The view* is obtained from
+   * the QObject::sender() method.
    */
   void slotViewDestroyed();
 
