@@ -1,0 +1,47 @@
+msgid "Error"
+msgstr "Error"
+
+msgid "Malformed URL"
+msgstr "URL maf formada"
+
+msgid "Yes"
+msgstr "Si"
+
+msgid "No"
+msgstr "No"
+
+msgid "Warning"
+msgstr "Advertencia"
+
+msgid "Open a file"
+msgstr "Abrir un archivo"
+
+msgid "Save a file"
+msgstr "Guardar un archivo"
+
+msgid "Contents"
+msgstr "Contenidos"
+
+msgid "About"
+msgstr "Sobre"
+
+msgid "Open"
+msgstr "Abrir"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Save As"
+msgstr "Guardar como"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Quit"
+msgstr "Salir"
+
+msgid "Untitled"
+msgstr "Sin titulo"
+
+msgid "OK"
+msgstr "OK"
