@@ -439,7 +439,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     d->mPageToInt[static_cast<QWidget*>(page)] = d->mNextPageIndex;
     mPageStack->addWidget( page, 0 );
 
-    if (!items.count()) {
+    if (items.isEmpty()) {
       kdDebug() << "Invalid QStringList, with zero items" << endl;
       return;
     }
@@ -502,10 +502,8 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   //
   // Remove current layout and make a new.
   //
-  if( mSwallowPage->layout() )
-  {
-    delete mSwallowPage->layout();
-  }
+  delete mSwallowPage->layout();
+
   QGridLayout *gbox = new QGridLayout( mSwallowPage, 1, 1, 0 );
 
   //

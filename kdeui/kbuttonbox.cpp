@@ -264,7 +264,7 @@ QSize KButtonBox::bestButtonSize() const {
 QSize KButtonBox::sizeHint() const {
   unsigned int i, dw;
 
-  if(!data->buttons.count())
+  if(data->buttons.isEmpty())
     return QSize(0, 0);
   else {
     dw = 2 * data->border;

@@ -555,7 +555,7 @@ int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSe
 	KKeyDialog dlg( bAllowLetterShortcuts, dynamic_cast<QWidget*>(parent()) );
 	QPtrListIterator<KXMLGUIClient> it( d->m_clients );
 	KXMLGUIClient *client;
-	while( (client=it.current())  )
+	while( (client=it.current()) !=0 )
 	{
 		++it;
 		if(!client->xmlFile().isEmpty())

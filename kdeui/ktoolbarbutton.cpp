@@ -191,7 +191,7 @@ void KToolBarButton::modeChange()
 
   // we'll start with the size of our pixmap
   int pix_width  = d->m_iconSize;
-  if ( !d->m_iconSize ) {
+  if ( d->m_iconSize == 0 ) {
       if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
           pix_width = IconSize( KIcon::MainToolbar );
       else

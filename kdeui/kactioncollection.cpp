@@ -535,7 +535,7 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
 
   actionList->removeRef( action );
 
-  if ( !actionList->count() )
+  if ( actionList->isEmpty() )
     d->m_dctHighlightContainers.remove( container );
 }
 

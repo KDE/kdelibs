@@ -84,7 +84,7 @@ KWindowListMenu::~KWindowListMenu()
 static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfoList& list )
 {
     WId group = info->groupLeader();
-    if( !group )
+    if( group == 0 )
     {
         return info->transientFor() == qt_xrootwin();
     }
@@ -184,7 +184,7 @@ void KWindowListMenu::init()
     }
 
     // no windows?
-    if (!i)
+    if (i == 0)
     {
         if (nd > 1)
         {

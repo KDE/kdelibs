@@ -177,10 +177,7 @@ QString KAboutContributor::getWork( void ) const
 
 void KAboutContributor::updateLayout( void )
 {
-  if( layout() )
-  {
-    delete layout();
-  }
+  delete layout();
 
   int row = 0;
   if( !mText[0]->text().isEmpty() ) { ++row; }
@@ -190,7 +187,7 @@ void KAboutContributor::updateLayout( void )
 
 
   QGridLayout *gbox;
-  if( !row  )
+  if( row == 0 )
   {
     gbox = new QGridLayout( this, 1, 1, 0 );
     for( int i=0; i<4; ++i )

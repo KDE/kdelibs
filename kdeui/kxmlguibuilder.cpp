@@ -306,7 +306,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
          }
       }
       // Don't insert a separator at the top of the menu
-      if(!count)
+      if(count == 0)
         return 0;
       else
         return menu->insertSeparator( index );

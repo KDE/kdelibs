@@ -1157,7 +1157,7 @@ KActionCollection *KAction::parentCollection() const
 
 void KAction::unplugAll()
 {
-  while ( containerCount() )
+  while ( containerCount() != 0 )
     unplug( container( 0 ) );
 }
 

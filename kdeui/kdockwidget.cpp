@@ -1562,7 +1562,7 @@ void KDockWidget::dockBack()
     QObjectList* cl = queryList("KDockWidget");
     QObjectListIt it( *cl );
     QObject * obj;
-    while ( !found && (obj=it.current()) ) {
+    while ( !found && (obj=it.current()) != 0 ) {
       ++it;
       QWidget* widg = (QWidget*)obj;
       if( widg == formerBrotherDockWidget)
@@ -3049,7 +3049,7 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
     QObjectListIt it( *list ); // iterate over the buttons
     QObject *obj;
 
-    while ( (obj = it.current()) ) {
+    while ( (obj = it.current()) != 0 ) {
         // for each found object...
         ((QWidget*)obj)->setGeometry(QRect(QPoint(0,0),size()));
 	break;

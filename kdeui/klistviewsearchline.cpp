@@ -270,7 +270,7 @@ void KListViewSearchLine::activateSearch()
 {
     --(d->queuedSearches);
 
-    if(!d->queuedSearches)
+    if(d->queuedSearches == 0)
         updateSearch(d->search);
 }
 

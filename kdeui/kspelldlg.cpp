@@ -128,7 +128,7 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
 
   d->ui->m_unknownWord->setText( _word );
 
-  if ( !sugg->count() ) {
+  if ( sugg->count() == 0 ) {
     d->ui->m_replacement->setText( _word );
     d->ui->m_replaceBtn->setEnabled( false );
     d->ui->m_replaceAllBtn->setEnabled( false );
@@ -164,7 +164,7 @@ KSpellDlg::init( const QString& _word, QStringList* _sugg,
   d->ui->m_unknownWord->setText( _word );
   d->ui->m_contextLabel->setText( context );
 
-  if ( !sugg->count() ) {
+  if ( sugg->count() == 0 ) {
     d->ui->m_replacement->setText( _word );
     d->ui->m_replaceBtn->setEnabled( false );
     d->ui->m_replaceAllBtn->setEnabled( false );

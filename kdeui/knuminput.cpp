@@ -347,7 +347,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 
 	// calculate (upper-lower)/10 without overflowing int's:
         int major = calcDiffByTen( upper, lower );
-	if ( !major ) major = step; // #### workaround Qt bug in 2.1-beta4
+	if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
 
         m_slider->setSteps(step, major);
         m_slider->setTickInterval(major);
@@ -902,7 +902,7 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
     uint overhead = pref.length() + suff.length();
     State state = Invalid;
 
-    if ( !overhead ) {
+    if ( overhead == 0 ) {
         state = KDoubleValidator::validate( str, pos );
     } else {
         bool stripedVersion = false;
@@ -1064,7 +1064,7 @@ int KDoubleSpinBox::maxPrecision() const {
     // ==> precision < log10 ( INT_MAX / maxAbsValue )
     // ==> maxPrecision = floor( log10 ( INT_MAX / maxAbsValue ) );
     double maxAbsValue = kMax( fabs(minValue()), fabs(maxValue()) );
-    if ( !maxAbsValue ) return 6; // return arbitrary value to avoid dbz...
+    if ( maxAbsValue == 0 ) return 6; // return arbitrary value to avoid dbz...
 
     return int( floor( log10( double(INT_MAX) / maxAbsValue ) ) );
 }

@@ -146,7 +146,7 @@ void KShortcutDialog::updateShortcutDisplay()
 		m_ptxtCurrent->setFocus();
 
 		// Display modifiers for the first key in the KKeySequence
-		if( !m_iKey ) {
+		if( m_iKey == 0 ) {
 			if( m_mod ) {
 				QString keyModStr;
 				if( m_mod & KKey::WIN )   keyModStr += KKey::modFlagLabel(KKey::WIN) + "+";
@@ -177,7 +177,7 @@ void KShortcutDialog::updateShortcutDisplay()
 	// Determine the enable state of the 'Less' button
 	bool bLessOk;
 	// If there is no shortcut defined,
-	if( !m_shortcut.count() )
+	if( m_shortcut.count() == 0 )
 		bLessOk = true;
 	// If there is a single shortcut defined, and it is not a multi-key shortcut,
 	else if( m_shortcut.count() == 1 && m_shortcut.seq(0).count() <= 1 )
@@ -369,7 +369,7 @@ void KShortcutDialog::x11KeyReleaseEvent( XEvent* pEvent )
 {
 	// We're only interested in the release of modifier keys,
 	//  and then only when it's for the first key in a sequence.
-	if( m_bRecording && !m_iKey ) {
+	if( m_bRecording && m_iKey == 0 ) {
 		KKeyNative keyNative( pEvent );
 		uint keyModX = keyNative.mod();
 		uint keySymX = keyNative.sym();
@@ -401,7 +401,7 @@ void KShortcutDialog::keyPressed( KKey key )
 	}
 
 	KKeySequence seq;
-	if( !m_iKey )
+	if( m_iKey == 0 )
 		seq = key;
 	else {
 		// Remove modifiers

@@ -126,28 +126,28 @@ KPixmapIO::KPixmapIO()
     // this has to be done for every pixel!
 
     if ((bpp == 32) && (red_shift == 16) && (green_shift == 8) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo32_ARGB;
     else if ((bpp == 33) && (red_shift == 16) && (green_shift == 8) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo32_BGRA;
     else if ((bpp == 24) && (red_shift == 16) && (green_shift == 8) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo24_RGB;
     else if ((bpp == 25) && (red_shift == 16) && (green_shift == 8) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo24_BGR;
     else if ((bpp == 16) && (red_shift == 11) && (green_shift == 5) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo16_RGB_565;
     else if ((bpp == 16) && (red_shift == 10) && (green_shift == 5) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo16_RGB_555;
     else if ((bpp == 17) && (red_shift == 11) && (green_shift == 5) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo16_BGR_565;
     else if ((bpp == 17) && (red_shift == 10) && (green_shift == 5) &&
-	    (!blue_shift))
+	    (blue_shift == 0))
 	d->byteorder = bo16_BGR_555;
     else if ((bpp == 8) || (bpp == 9))
 	d->byteorder = bo8;

@@ -186,9 +186,9 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     p->drawLine( x2, 0, x2, y2 );
     p->drawLine( 0, y2, x2, y2 );
 
-    if ( !row )
+    if ( row == 0 )
 	p->drawLine( 0, 0, x2, 0 );
-    if ( !col )
+    if ( col == 0 )
 	p->drawLine( 0, 0, 0, y2 );
 }
 

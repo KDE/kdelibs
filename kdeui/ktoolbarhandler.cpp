@@ -78,7 +78,7 @@ namespace
 
             QPtrList<KAction> actions;
 
-            if ( !m_toolBarActions.count() )
+            if ( m_toolBarActions.count() == 0 )
                 return actions;
 
             if ( m_toolBarActions.count() == 1 ) {

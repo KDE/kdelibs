@@ -198,8 +198,8 @@ void KEditListBox::moveItemUp()
         return;
     }
 
-    unsigned int selIndex = m_listBox->currentItem();
-    if (!selIndex)
+    const unsigned int selIndex = m_listBox->currentItem();
+    if (selIndex == 0)
     {
         KNotifyClient::beep();
         return;
@@ -327,7 +327,7 @@ void KEditListBox::enableMoveButtons(int index)
             servUpButton->setEnabled(true);
             servDownButton->setEnabled(false);
         }
-        else if (!index)
+        else if (index == 0)
         {
             servUpButton->setEnabled(false);
             servDownButton->setEnabled(true);

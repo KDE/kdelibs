@@ -153,8 +153,7 @@ KRootPermsIcon::~KRootPermsIcon()
 
 void KRootPermsIcon::updateStatus()
 {
-  bool newRoot;
-  newRoot = (!geteuid());
+  const bool newRoot = (geteuid() == 0);
   lockBox->setPixmap(newRoot ? openLockPM : lockPM);
   lockLabel->setText(newRoot ? openLockText : lockText);
   update();

@@ -363,7 +363,7 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
             thisText = text(j);
 
         // if there is an accelerator present, remove it
-        if ((int)accel(j) )
+        if ((int)accel(j) != 0)
             thisText = thisText.replace("&", QString::null);
 
         // chop text to the search length

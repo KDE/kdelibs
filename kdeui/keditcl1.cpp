@@ -414,7 +414,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
         killbufferstring += '\n';
       }
 
-      if( !killstring.length() && !killtrue){
+      if( (killstring.length() == 0) && !killtrue){
         killbufferstring += '\n';
         lastwasanewline = true;
       }

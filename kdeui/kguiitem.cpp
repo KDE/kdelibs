@@ -124,9 +124,9 @@ QString KGuiItem::text() const
 
 QString KGuiItem::plainText() const
 {
-    int len = d->m_text.length();
+    const int len = d->m_text.length();
 
-    if (!len)
+    if (len == 0)
         return d->m_text;
 
     //Can assume len >= 1 from now on.
@@ -136,7 +136,7 @@ QString KGuiItem::plainText() const
     stripped.setLength(len);
 
     const QChar* data    = d->m_text.unicode();
-    for ( int pos = 0; pos < len; pos++ )
+    for ( int pos = 0; pos < len; ++pos )
     {
         if ( data[ pos ] != '&' )
             stripped[ resultLength++ ] = data[ pos ];

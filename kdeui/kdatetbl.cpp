@@ -188,7 +188,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QFont font=KGlobalSettings::generalFont();
   // -----
 
-  if(!row)
+  if(row == 0)
     { // we are drawing the headline
       font.setBold(true);
       painter->setFont(font);

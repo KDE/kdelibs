@@ -68,7 +68,7 @@ static int minimumListWidth( const QListBox *list )
     int itemWidth = list->item(i)->width(list);
     w = QMAX(w,itemWidth);
   }
-  if( !w ) { w = 40; }
+  if( w == 0 ) { w = 40; }
   w += list->frameWidth() * 2;
   w += list->verticalScrollBar()->sizeHint().width();
   return w;
@@ -205,7 +205,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QWhatsThis::add(diff?(QWidget *) familyCheckbox:(QWidget *) familyLabel, fontFamilyWhatsThisText );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
-  if(fontList.count())
+  if(!fontList.isEmpty())
   {
     familyListBox->insertStringList(fontList);
   }
@@ -483,7 +483,7 @@ void KFontChooser::family_chosen_slot(const QString& family)
             currentStyles.insert(i18n(style.utf8()), *it);
         }
     }
-    if(!styleListBox->count()) {
+    if(styleListBox->count()==0) {
         styleListBox->insertItem(i18n("Regular"));
         currentStyles.insert(i18n("Regular"), "Normal");
     }
@@ -662,7 +662,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     if((fontListCriteria & FixedWidthFonts) > 0) {
         // Fallback.. if there are no fixed fonts found, it's probably a
         // bug in the font server or Qt.  In this case, just use 'fixed'
-        if (!lstFonts.count())
+        if (lstFonts.count() == 0)
           lstFonts.append("fixed");
     }
 

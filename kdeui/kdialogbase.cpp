@@ -556,7 +556,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 				 const KGuiItem &user1, const KGuiItem &user2,
 				 const KGuiItem &user3 )
 {
-  if( !buttonMask )
+  if( buttonMask == 0 )
   {
     d->mButton.box = 0;
     return; // When we want no button box
@@ -1560,7 +1560,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   // Reimplemented from KDialog to remove the default behavior
   // and to add F1 (help) sensitivity and some animation.
   //
-  if( !e->state() )
+  if( e->state() == 0 )
   {
     if( e->key() == Key_F1 )
     {
@@ -1665,7 +1665,7 @@ void KDialogBase::cancel()
 
 bool KDialogBase::haveBackgroundTile()
 {
-  return ( !mTile || !mTile->get() ? false : true );
+  return ( !mTile || mTile->get() );
 }
 
 // Deprecated. For compatibility only.

@@ -204,7 +204,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         for ( int index = 0; index < pos; index++ )
             fieldX += p->columnWidth( p->header()->mapToSection( index ));
 
-        if ( !col ) {
+        if ( col == 0 ) {
             int d = i->depth() + (p->rootIsDecorated() ? 1 : 0);
             d *= p->treeStepSize();
             fieldX += d;

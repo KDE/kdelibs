@@ -547,7 +547,7 @@ void KKeyChooser::updateButtons()
 		// Enable buttons if this key is configurable.
 		// The 'Default Key' button must also have a default key.
 		m_prbNone->setEnabled( bConfigurable );
-		m_prbDef->setEnabled( bConfigurable && cutDef.count() );
+		m_prbDef->setEnabled( bConfigurable && cutDef.count() != 0 );
 		m_prbCustom->setEnabled( bConfigurable );
 		d->pbtnShortcut->setEnabled( bConfigurable );
 	}
@@ -711,7 +711,7 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 		const KKeySequence& seq = cut.seq(i);
 		const KKey& key = seq.key(0);
 
-		if( !d->bAllowLetterShortcuts && !key.modFlags()
+		if( !d->bAllowLetterShortcuts && key.modFlags() == 0
 		    && key.sym() < 0x3000 && QChar(key.sym()).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
@@ -1017,7 +1017,7 @@ void KKeyChooserItem::commitChanges()
 
 QString KKeyChooserItem::text( int iCol ) const
 {
-	if( !iCol ) {
+	if( iCol == 0 ) {
 		// Quick HACK to get rid of '&'s.
 		QString s = m_pList->label(m_iAction);
 		QString s2;
@@ -1035,7 +1035,7 @@ QString KKeyChooserItem::text( int iCol ) const
 int KKeyChooserItem::compare( QListViewItem* item, int iCol, bool bAscending ) const
 {
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( item );
-	if( !iCol && pItem ) {
+	if( iCol == 0 && pItem ) {
 		QString psName1 = m_pList->name(m_iAction);
 		QString psName2 = pItem->m_pList->name(pItem->m_iAction);
 		QRegExp rxNumber1( " (\\d+)$" );

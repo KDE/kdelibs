@@ -244,7 +244,7 @@ KSpell::startIspell()
   else       // hspell doesn't need all the rest of the options
     *proc << "-a";
 
-  if (!trystart) //don't connect these multiple times
+  if (trystart == 0) //don't connect these multiple times
   {
     connect( proc, SIGNAL(receivedStderr(KProcess *, char *, int)),
              this, SLOT(ispellErrors(KProcess *, char *, int)) );
@@ -725,7 +725,7 @@ bool KSpell::checkList (QStringList *_wordlist, bool _usedialog)
   // prepare check of string list
 {
   wordlist=_wordlist;
-  if (!(totalpos=wordlist->count()))
+  if ((totalpos=wordlist->count())==0)
     return false;
   wlIt = wordlist->begin();
   usedialog=_usedialog;
@@ -803,7 +803,7 @@ void KSpell::checkList3a (KProcIO *)
     //kdDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
 
 
-    if ( !tempe ) {
+    if ( tempe == 0 ) {
       d->endOfResponse = true;
       //kdDebug(750) << "checkList3a: end of resp" << endl;
     } else if ( tempe>0 ) {
@@ -926,7 +926,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   kdDebug(750) << "KS: check" << endl;
   origbuffer = _buffer;
-  if ( !( totalpos = origbuffer.length() ) )
+  if ( ( totalpos = origbuffer.length() ) == 0 )
   {
     emit done( origbuffer );
     return false;

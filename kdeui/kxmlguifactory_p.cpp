@@ -321,7 +321,7 @@ bool ContainerNode::destruct( QDomElement element, BuildState &state )
             ++cmIt;
 
     // ### check for merging index count, too?
-    if ( !clients.count() && !children.count() && container &&
+    if ( clients.count() == 0 && children.count() == 0 && container &&
          client == state.guiClient )
     {
         QWidget *parentContainer = 0L;
@@ -625,7 +625,7 @@ bool BuildHelper::processCustomElement( const QDomElement &e, int idx )
     assert( parentNode->builder );
 
     int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
-    if ( !id )
+    if ( id == 0 )
         return false;
 
     containerClient->customElements.append( id );

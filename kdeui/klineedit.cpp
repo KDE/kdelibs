@@ -717,7 +717,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 // and the cursor is at the end of the string.
                 QString txt = text();
                 int len = txt.length();
-                if ( cursorPosition() == len && len )
+                if ( cursorPosition() == len && len != 0 )
                 {
                     if ( emitSignals() )
                         emit completion( txt );

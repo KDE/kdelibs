@@ -2167,7 +2167,7 @@ void KToolBar::slotContextAboutToHide()
 
   QPtrListIterator<QWidget> it( widgets );
   QWidget *wdg;
-  while ( ( wdg = it.current() ) ) {
+  while ( ( wdg = it.current() ) != 0 ) {
     if ( wdg->inherits( "QToolButton" ) )
       static_cast<QToolButton*>( wdg )->setDown( false );
     ++it;
