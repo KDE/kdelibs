@@ -104,8 +104,8 @@ const lt_dlsymlist lt_preloaded_symbols[1] = { { 0, 0 } };
 
 static const char *last_error = 0;
 
-lt_ptr_t (*lt_dlmalloc) __P((size_t size)) = malloc;
-void	 (*lt_dlfree)  __P((lt_ptr_t ptr)) = free;
+lt_ptr_t (*lt_dlmalloc) __P((size_t size)) = (lt_ptr_t(*)__P((size_t)))malloc;
+void	 (*lt_dlfree)  __P((lt_ptr_t ptr)) = (void(*)__P((lt_ptr_t)))free;
 
 typedef struct lt_dltype_t {
 	struct lt_dltype_t *next;
@@ -135,7 +135,8 @@ typedef	struct lt_dlhandle_t {
 #define strdup xstrdup
 
 static inline char *
-strdup(const char *str)
+strdup(str)
+	const char *str;
 {
 	char *tmp;
 
@@ -245,20 +246,21 @@ strrchr(str, ch)
 #endif
 
 static int
-dl_init ()
+dl_init __P((void))
 {
 	return 0;
 }
 
 static int
-dl_exit ()
+dl_exit __P((void))
 {
 	return 0;
 }
 
 static int
-dl_open (lt_dlhandle handle,
-	const char *filename)
+dl_open (handle, filename)
+	lt_dlhandle handle;
+	const char *filename;
 {
 	handle->handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
 	if (!handle->handle) {
@@ -273,7 +275,8 @@ dl_open (lt_dlhandle handle,
 }
 
 static int
-dl_close (lt_dlhandle handle)
+dl_close (handle)
+	lt_dlhandle handle;
 {
 	if (dlclose(handle->handle) != 0) {
 #if HAVE_DLERROR
@@ -287,8 +290,9 @@ dl_close (lt_dlhandle handle)
 }
 
 static lt_ptr_t
-dl_sym (lt_dlhandle handle,
-	const char *symbol)
+dl_sym (handle, symbol)
+	lt_dlhandle handle;
+	const char *symbol;
 {
 	lt_ptr_t address = dlsym(handle->handle, symbol);
 	
@@ -360,13 +364,13 @@ dl = { LTDL_TYPE_TOP, 0, dl_init, dl_exit,
 #define	LTDL_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | BIND_VERBOSE | DYNAMIC_PATH)
 
 static int
-shl_init ()
+shl_init __P((void))
 {
 	return 0;
 }
 
 static int
-shl_exit ()
+shl_exit __P((void))
 {
 	return 0;
 }
@@ -388,7 +392,7 @@ static int
 shl_close (handle)
 	lt_dlhandle handle;
 {
-	if (shl_unload((shl_t*) (handle->handle)) != 0) {
+	if (shl_unload((shl_t) (handle->handle)) != 0) {
 		last_error = cannot_close_error;
 		return 1;
 	}
@@ -402,7 +406,7 @@ shl_sym (handle, symbol)
 {
 	lt_ptr_t address;
 
-	if (handle->handle && shl_findsym((shl_t*) (handle->handle),
+	if (handle->handle && shl_findsym((shl_t*) &(handle->handle),
 	    symbol, TYPE_UNDEFINED, &address) == 0)
 		if (address)
 			return address;
@@ -429,13 +433,13 @@ shl = { LTDL_TYPE_TOP, 0, shl_init, shl_exit,
 #endif
 
 static int
-dld_init ()
+dld_init __P((void))
 {
 	return 0;
 }
 
 static int
-dld_exit ()
+dld_exit __P((void))
 {
 	return 0;
 }
@@ -499,13 +503,13 @@ dld = { LTDL_TYPE_TOP, 0, dld_init, dld_exit,
 #include <windows.h>
 
 static int
-wll_init ()
+wll_init __P((void))
 {
 	return 0;
 }
 
 static int
-wll_exit ()
+wll_exit __P((void))
 {
 	return 0;
 }
@@ -563,13 +567,13 @@ wll = { LTDL_TYPE_TOP, 0, wll_init, wll_exit,
 #include <kernel/image.h>
 
 static int
-bedl_init ()
+bedl_init __P((void))
 {
 	return 0;
 }
 
 static int
-bedl_exit ()
+bedl_exit __P((void))
 {
 	return 0;
 }
@@ -584,8 +588,8 @@ bedl_open (handle, filename)
 	if (filename) {
 		image = load_add_on(filename);
 	} else {
-		image_info info;
-		int32 cookie = 0;
+		image_info info; 
+		int32 cookie = 0; 
 		if (get_next_image_info(0, &cookie, &info) == B_OK)
 			image = load_add_on(info.name);
 	}
@@ -615,7 +619,7 @@ bedl_sym (handle, symbol)
 {
 	lt_ptr_t address = 0;
 	image_id image = (image_id)handle->handle;
-
+   
 	if (get_image_symbol(image, symbol, B_SYMBOL_TYPE_ANY,
 		&address) != B_OK) {
 		last_error = symbol_error;
@@ -645,7 +649,7 @@ static const lt_dlsymlist *default_preloaded_symbols = 0;
 static lt_dlsymlists_t *preloaded_symbols = 0;
 
 static int
-presym_init ()
+presym_init __P((void))
 {
 	preloaded_symbols = 0;
 	if (default_preloaded_symbols)
@@ -654,7 +658,7 @@ presym_init ()
 }
 
 static int
-presym_free_symlists ()
+presym_free_symlists __P((void))
 {
 	lt_dlsymlists_t	*lists = preloaded_symbols;
 	
@@ -669,14 +673,15 @@ presym_free_symlists ()
 }
 
 static int
-presym_exit ()
+presym_exit __P((void))
 {
 	presym_free_symlists();
 	return 0;
 }
 
 static int
-presym_add_symlist (const lt_dlsymlist *preloaded)
+presym_add_symlist (preloaded)
+	const lt_dlsymlist *preloaded;
 {
 	lt_dlsymlists_t *tmp;
 	lt_dlsymlists_t *lists = preloaded_symbols;
@@ -707,8 +712,9 @@ presym_add_symlist (const lt_dlsymlist *preloaded)
 }
 
 static int
-presym_open (lt_dlhandle handle,
-	const char *filename)
+presym_open (handle, filename)
+	lt_dlhandle handle;
+	const char *filename;
 {
 	lt_dlsymlists_t *lists = preloaded_symbols;
 
@@ -736,14 +742,18 @@ presym_open (lt_dlhandle handle,
 }
 
 static int
-presym_close (lt_dlhandle handle)
+presym_close (handle)
+	lt_dlhandle handle;
 {
+	/* Just to silence gcc -Wall */
+	handle = 0;
 	return 0;
 }
 
 static lt_ptr_t
-presym_sym (lt_dlhandle handle,
-	const char *symbol)
+presym_sym (handle, symbol)
+	lt_dlhandle handle;
+	const char *symbol;
 {
 	lt_dlsymlist *syms = (lt_dlsymlist*)(handle->handle);
 
@@ -773,7 +783,7 @@ static lt_dltype_t *types = LTDL_TYPE_TOP;
 #undef LTDL_TYPE_TOP
 
 int
-lt_dlinit ()
+lt_dlinit __P((void))
 {
 	/* initialize libltdl */
 	lt_dltype_t **type = &types;
@@ -804,7 +814,8 @@ lt_dlinit ()
 }
 
 int
-lt_dlpreload (const lt_dlsymlist *preloaded)
+lt_dlpreload (preloaded)
+	const lt_dlsymlist *preloaded;
 {
 	if (preloaded)
 		return presym_add_symlist(preloaded);
@@ -815,14 +826,15 @@ lt_dlpreload (const lt_dlsymlist *preloaded)
 }
 
 int
-lt_dlpreload_default (const lt_dlsymlist *preloaded)
+lt_dlpreload_default (preloaded)
+	const lt_dlsymlist *preloaded;
 {
 	default_preloaded_symbols = preloaded;
 	return 0;
 }
 
 int
-lt_dlexit ()
+lt_dlexit __P((void))
 {
 	/* shut down libltdl */
 	lt_dltype_t *type = types;
@@ -853,8 +865,9 @@ lt_dlexit ()
 }
 
 static int
-tryall_dlopen (lt_dlhandle *handle,
-	const char *filename)
+tryall_dlopen (handle, filename)
+	lt_dlhandle *handle;
+	const char *filename;
 {
 	lt_dlhandle cur;
 	lt_dltype_t *type = types;
@@ -865,7 +878,7 @@ tryall_dlopen (lt_dlhandle *handle,
 	while (cur) {
 		if (!cur->filename && !filename)
 			break;
-		if (cur->filename && filename &&
+		if (cur->filename && filename && 
 		    strcmp(cur->filename, filename) == 0)
 			break;
 		cur = cur->next;
@@ -901,16 +914,17 @@ tryall_dlopen (lt_dlhandle *handle,
 }
 
 static int
-find_module (lt_dlhandle *handle,
-	const char *dir,
-	const char *libdir,
-	const char *dlname,
-	const char *old_name,
-	int installed)
+find_module (handle, dir, libdir, dlname, old_name, installed)
+	lt_dlhandle *handle;
+	const char *dir;
+	const char *libdir;
+	const char *dlname;
+	const char *old_name;
+	int installed;
 {
 	int	error;
 	char	*filename;
-	/* try to open the old library first; if it was dlpreopened,
+	/* try to open the old library first; if it was dlpreopened, 
 	   we want the preopened version of it, even if a dlopenable
 	   module is available */
 	if (old_name && tryall_dlopen(handle, old_name) == 0)
@@ -975,11 +989,11 @@ find_module (lt_dlhandle *handle,
 }
 
 static lt_ptr_t
-find_file (
-	const char *basename,
-	const char *search_path,
-	char **pdir,
-	lt_dlhandle *handle)
+find_file (basename, search_path, pdir, handle)
+	const char *basename;
+	const char *search_path;
+	char **pdir;
+	lt_dlhandle *handle;
 {
 	/* when handle != NULL search a library, otherwise a file */
 	/* return NULL on failure, otherwise the file/handle */
@@ -1051,30 +1065,34 @@ find_file (
 }
 
 static int
-load_deplibs(
-	lt_dlhandle handle,
-	const char *deplibs)
+load_deplibs(handle, deplibs)
+	lt_dlhandle handle;
+	const char *deplibs;
 {
 	/* FIXME: load deplibs */
 	handle->depcount = 0;
 	handle->deplibs = 0;
+	/* Just to silence gcc -Wall */
+	deplibs = 0;
 	return 0;
 }
 
 static int
-unload_deplibs(
-	lt_dlhandle handle)
+unload_deplibs(handle)
+	lt_dlhandle handle;
 {
 	/* FIXME: unload deplibs */
+	/* Just to silence gcc -Wall */
+	handle = 0;
 	return 0;
 }
 
 static inline int
-trim (
-	char **dest,
-	const char *str)
+trim (dest, str)
+	char **dest;
+	const char *str;
 {
-	/* remove the leading and trailing "'" from str
+	/* remove the leading and trailing "'" from str 
 	   and store the result in dest */
 	char *tmp;
 	char *end = strrchr(str, '\'');
@@ -1097,13 +1115,13 @@ trim (
 }
 
 static inline int
-free_vars(
-	char *dir,
-	char *name,
-	char *dlname,
-	char *oldname,
-	char *libdir,
-	char *deplibs)
+free_vars(dir, name, dlname, oldname, libdir, deplibs)
+	char *dir;
+	char *name;
+	char *dlname;
+	char *oldname;
+	char *libdir;
+	char *deplibs;
 {
 	if (dir)
 		lt_dlfree(dir);
@@ -1121,8 +1139,8 @@ free_vars(
 }
 
 lt_dlhandle
-lt_dlopen (
-	const char *filename)
+lt_dlopen (filename)
+	const char *filename;
 {
 	lt_dlhandle handle, newhandle;
 	const char *basename, *ext;
@@ -1170,7 +1188,7 @@ lt_dlopen (
 		/* if we can't find the installed flag, it is probably an
 		   installed libtool archive, produced with an old version
 		   of libtool */
-		int     installed = 1;
+		int     installed = 1; 
 
 		/* extract the module name from the file name */
 		name = (char*) lt_dlmalloc(ext - basename + 1);
@@ -1182,7 +1200,7 @@ lt_dlopen (
 		}
 		/* canonicalize the module name */
 		for (i = 0; i < ext - basename; i++)
-			if (isalnum(basename[i]))
+			if (isalnum((int)(basename[i])))
 				name[i] = basename[i];
 			else
 				name[i] = '_';
@@ -1193,7 +1211,7 @@ lt_dlopen (
 			last_error = file_not_found_error;
 		if (!file && !dir) {
 			/* try other directories */
-			file = (FILE*) find_file(basename,
+			file = (FILE*) find_file(basename, 
 						 user_search_path,
 						 &dir, 0);
 			if (!file)
@@ -1278,7 +1296,7 @@ lt_dlopen (
 		if (load_deplibs(handle, deplibs) == 0) {
 			newhandle = handle;
 			/* find_module may replace newhandle */
-			if (find_module(&newhandle, dir, libdir,
+			if (find_module(&newhandle, dir, libdir, 
 					dlname, old_name, installed)) {
 				unload_deplibs(handle);
 				error = 1;
@@ -1345,8 +1363,8 @@ register_handle:
 }
 
 lt_dlhandle
-lt_dlopenext (
-	const char *filename)
+lt_dlopenext (filename)
+	const char *filename;
 {
 	lt_dlhandle handle;
 	char	*tmp;
@@ -1404,8 +1422,8 @@ lt_dlopenext (
 }
 
 int
-lt_dlclose (
-	lt_dlhandle handle)
+lt_dlclose (handle)
+	lt_dlhandle handle;
 {
 	lt_dlhandle cur, last;
 	
@@ -1440,9 +1458,9 @@ lt_dlclose (
 }
 
 lt_ptr_t
-lt_dlsym (
-	lt_dlhandle handle,
-	const char *symbol)
+lt_dlsym (handle, symbol)
+	lt_dlhandle handle;
+	const char *symbol;
 {
 	int	lensym;
 	char	lsym[LTDL_SYMBOL_LENGTH];
@@ -1500,7 +1518,7 @@ lt_dlsym (
 }
 
 const char *
-lt_dlerror ()
+lt_dlerror __P((void))
 {
 	const char *error = last_error;
 	
@@ -1509,8 +1527,8 @@ lt_dlerror ()
 }
 
 int
-lt_dladdsearchdir (
-	const char *search_dir)
+lt_dladdsearchdir (search_dir)
+	const char *search_dir;
 {
 	if (!search_dir || !strlen(search_dir))
 		return 0;
@@ -1522,7 +1540,7 @@ lt_dladdsearchdir (
 		}
 	} else {
 		char	*new_search_path = (char*)
-			lt_dlmalloc(strlen(user_search_path) +
+			lt_dlmalloc(strlen(user_search_path) + 
 				strlen(search_dir) + 2); /* ':' + '\0' == 2 */
 		if (!new_search_path) {
 			last_error = memory_error;
@@ -1538,8 +1556,8 @@ lt_dladdsearchdir (
 }
 
 int
-lt_dlsetsearchpath (
-	const char *search_path)
+lt_dlsetsearchpath (search_path)
+	const char *search_path;
 {
 	if (user_search_path)
 		lt_dlfree(user_search_path);
@@ -1553,7 +1571,7 @@ lt_dlsetsearchpath (
 }
 
 const char *
-lt_dlgetsearchpath ()
+lt_dlgetsearchpath __P((void))
 {
 	return user_search_path;
 }
