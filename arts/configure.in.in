@@ -5,17 +5,21 @@ dnl libaudiofile is used for loading wave files
 AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
 [
   ac_ldflags_save="$LDFLAGS"
+  ac_CPPFLAGS_save="$CPPFLAGS"
   LDFLAGS="$all_libraries $LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $all_includes"
   dnl WAV reading
   AC_CHECK_HEADER(audiofile.h,
   [
     AC_CHECK_LIB(audiofile,afOpenFile,[
-      LIBAUDIOFILE="-laudiofile"
+      dnl LDFLAGS in case it's in KDEDIR/lib
+      LIBAUDIOFILE="$LDFLAGS -laudiofile"
       AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
         [Define if you have libaudiofile (required for playing wavs with aRts)])
     ])
   ])
   AC_SUBST(LIBAUDIOFILE)
+  CPPFLAGS="$ac_CPPFLAGS_save"
   LDFLAGS="$ac_ldflags_save"
 ])
 
