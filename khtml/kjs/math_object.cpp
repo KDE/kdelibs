@@ -33,51 +33,51 @@ KJSMath::KJSMath()
 {
   const int attr = DontEnum | DontDelete | ReadOnly;
 #ifdef M_E
-  put("E", zeroRef(new KJSNumber((double)M_E)), attr);
+  put("E", (double)M_E, attr);
 #else
-  put("E", zeroRef(new KJSNumber(exp(1))), attr);
+  put("E", exp(1), attr);
 #endif
 
 #ifdef M_LN2
-  put("LN2", zeroRef(new KJSNumber((double)M_LN2)), attr);
+  put("LN2", (double)M_LN2, attr);
 #else
-  put("LN2", zeroRef(new KJSNumber(log(2))), attr);
+  put("LN2", log(2), attr);
 #endif
 
 #ifdef M_LN10
-  put("LN10", zeroRef(new KJSNumber((double)M_LN10)), attr);
+  put("LN10", (double)M_LN10, attr);
 #else
-  put("LN10", zeroRef(new KJSNumber(log(10))), attr);
+  put("LN10", log(10), attr);
 #endif
 
 #ifdef M_LOG2E
-  put("LOG2E", zeroRef(new KJSNumber((double)M_LOG2E)), attr);
+  put("LOG2E", (double)M_LOG2E, attr);
 #else
-  put("LOG2E", zeroRef(new KJSNumber(1.0/log(2))), attr);
+  put("LOG2E", 1.0/log(2), attr);
 #endif
 
 #ifdef M_LOG10E
-  put("LOG10E", zeroRef(new KJSNumber((double)M_LOG10E)), attr);
+  put("LOG10E", (double)M_LOG10E, attr);
 #else
-  put("LOG10E", zeroRef(new KJSNumber(1.0/log(10))), attr);
+  put("LOG10E", 1.0/log(10), attr);
 #endif
 
 #ifdef M_PI
-  put("PI", zeroRef(new KJSNumber((double)M_PI)), attr);
+  put("PI", (double)M_PI, attr);
 #else
-  put("PI", zeroRef(new KJSNumber(2.0 * asin(1))), attr);
+  put("PI", 2.0 * asin(1), attr);
 #endif
 
 #ifdef M_SQRT1_2
-  put("SQRT1_2", zeroRef(new KJSNumber((double)M_SQRT1_2)), attr);
+  put("SQRT1_2", (double)M_SQRT1_2, attr);
 #else
-  put("SQRT1_2", zeroRef(new KJSNumber(sqrt(0.5))), attr);
+  put("SQRT1_2", sqrt(0.5), attr);
 #endif
 
 #ifdef M_SQRT2
-  put("SQRT2", zeroRef(new KJSNumber((double)M_SQRT2)), attr);
+  put("SQRT2", (double)M_SQRT2, attr);
 #else
-  put("SQRT2", zeroRef(new KJSNumber(sqrt(2))), attr);
+  put("SQRT2", sqrt(2), attr);
 #endif
 
   put("abs", new KJSMathFunc(IDAbs), attr, true);

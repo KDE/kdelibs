@@ -42,7 +42,7 @@ ObjectObject::ObjectObject(KJSGlobal *glob)
 
   ctor->deref();
 
-  put("length", zeroRef(new KJSNumber(1)), DontEnum);
+  put("length", 1, DontEnum);
 }
 
 KJSO *ObjectObject::execute(KJSContext *context)

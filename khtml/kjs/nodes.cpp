@@ -111,7 +111,7 @@ KJSO *ResolveNode::evaluate()
   }
 
   // identifier not found
-  cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
+  //  cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
   return new KJSReference(zeroRef(new KJSNull()), ident); // TODO: use a global Null
 }
 

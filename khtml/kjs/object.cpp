@@ -18,7 +18,6 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#include <stdio.h>
 #include <iostream.h>
 
 #ifdef HAVE_CONFIG_H
@@ -209,8 +208,13 @@ ErrorCode KJSO::putValue(KJSO *v)
   Ptr o = getBase();
   if (o->isA(Null)) {
     KJSWorld::global->put(getPropertyName(), v);
-  } else
-    o->put(getPropertyName(), v);
+  } else {
+    // are we writing into an array ?
+    if (o->isA(Object) && (((KJSObject*)(KJSO*)o)->getClass() == ArrayClass))
+      o->putArrayElement(getPropertyName(), v);
+    else
+      o->put(getPropertyName(), v);
+  }
 
   return ErrOK;
 }
@@ -245,7 +249,6 @@ KJSReference::~KJSReference()
 // ECMA 10.1.7 (draft April 98, 10.1.6 previously)
 KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
 {
-  char buffer[10];
   KJSArg *arg;
 
   func = f;
@@ -258,11 +261,10 @@ KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
 
   if (args) {
     int iarg = args->count();
-    put("length", zeroRef(new KJSNumber(iarg)), DontEnum);
+    put("length", iarg, DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
-      sprintf(buffer, "%d", i);
-      put(buffer, arg->object());
+      put(CString(i), arg->object());
       arg = arg->nextArg();
     }
   }
@@ -283,7 +285,6 @@ KJSActivation::~KJSActivation()
 // ECMA 10.1.8
 KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 {
-  char buffer[10];
   KJSArg *arg;
 
   assert(func);
@@ -292,11 +293,10 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
   put("callee", func, DontEnum);
   if (args) {
     int iarg = args->count();
-    put("length", zeroRef(new KJSNumber(iarg)), DontEnum);
+    put("length", iarg, DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
-      sprintf(buffer, "%d", i);
-      put(buffer, arg->object());
+      put(CString(i), arg->object());
       arg = arg->nextArg();
     }
     /* TODO: length != num. of arguments */
@@ -307,8 +307,8 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 {
   // value properties
-  put("NaN", zeroRef(new KJSNumber(NaN)));
-  put("Infinity", zeroRef(new KJSNumber(Inf)));
+  put("NaN", NaN);
+  put("Infinity", Inf);
 
   // function properties
   //  put("eval", new KJSInternalFunction(&eval));

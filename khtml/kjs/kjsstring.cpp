@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <iostream.h>
 #include <strings.h>
 
@@ -37,43 +38,49 @@ CString::CString(char c)
   data = new char[2];
   data[0] = c;
   data[1] = '\0';
-  //  cout << "CString(" << data << ")" << endl;
 }
 
 CString::CString(const char *c)
 {
   data = new char[strlen(c)+1];
   strcpy(data, c);
-  //  cout << "CString(" << data << ")" << endl;
 }
 
 CString::CString(const CString &b)
 {
   data = new char[b.length()+1];
   strcpy(data, b.ascii());
-  //  cout << "CString(" << data << ") (copy constructor)" << endl;
 }
 
 CString::CString(const CString *b)
 {
   data = new char[b->length()+1];
   strcpy(data, b->ascii());
-  //  cout << "CString(" << data << ") (copy constructor)" << endl;
+}
+
+CString::CString(unsigned int u)
+{
+  char buf[20];
+  sprintf(buf, "%u", u);
+  data = new char[strlen(buf)+1];
+  strcpy(data, buf);
+}
+
+CString::CString(int i)
+{
+  char buf[20];
+  sprintf(buf, "%d", i);
+  data = new char[strlen(buf)+1];
+  strcpy(data, buf);
 }
 
 CString::~CString()
 {
-//   if (data)
-//     cout << "~CString(" << data << ")" << endl;
-//   else
-//     cout << "~CString()" << endl;
-
   delete [] data;
 }
 
 CString &CString::operator=(const char *c)
 {
-  //  cout << "operator=(const char *)" << endl;
   if (data)
     delete [] data;
   data = new char[strlen(c)+1];
@@ -84,7 +91,6 @@ CString &CString::operator=(const char *c)
 
 CString &CString::operator=(const CString &str)
 {
-  //  cout << "operator=(const CString &)" << endl;
   if (data)
     delete [] data;
   data = new char[str.length()+1];
@@ -105,8 +111,6 @@ const char * CString::ascii() const
 
 bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 {
-  //  cout << "operator==(const CString &, const CString &)" << endl;
-
   return (strcmp(c1.ascii(), c2.ascii()) == 0);
 }
 
@@ -149,16 +153,10 @@ UString::UString(const UString *b)
   l = b->length();
   s = new UnicodeChar[l];
   memcpy(s, b->unicode(), l * sizeof(UnicodeChar));
-  //  cout << "UString(" /* << s << */ ") (copy constructor)" << endl;
 }
 
 UString::~UString()
 {
-//   if (s)
-//     cout << "~UString(" << s << ")" << endl;
-//   else
-//     cout << "~UString()" << endl;
-
   delete [] s;
 }
 
@@ -175,7 +173,6 @@ void UString::append(const UString &t)
 
 UString &UString::operator=(const char *c)
 {
-  //  cout << "operator=(const char *)" << endl;
   if (s)
     delete [] s;
 
@@ -189,7 +186,6 @@ UString &UString::operator=(const char *c)
 
 UString &UString::operator=(const UString &str)
 {
-  //  cout << "operator=(const UString &)" << endl;
   if (s)
     delete [] s;
 
@@ -212,8 +208,6 @@ const UnicodeChar* UString::unicode() const
 
 const char* UString::ascii() const
 {
-//  cerr << "UString::ascii() not fully implemented yet" << endl;
-
   char *memoryLeak = new char[l+1];
   for(unsigned int i = 0; i < l; i++)
     memoryLeak[i] = s[i].lo;

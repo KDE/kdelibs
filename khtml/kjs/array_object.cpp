@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-
 #include "kjs.h"
 #include "operations.h"
 #include "array_object.h"
@@ -36,7 +34,7 @@ ArrayObject::ArrayObject(KJSGlobal *global)
 
   ctor->deref();
 
-  put("length", zeroRef(new KJSNumber(1)), DontEnum);
+  put("length", 1.0, DontEnum);
 }
 
 // ECMA 15.6.1
@@ -46,11 +44,9 @@ KJSO* ArrayObject::execute(KJSContext *context)
   KJSArgList argList;
   Ptr length = context->activation->get("length");
   unsigned int numArgs = (unsigned int) length->dVal();
-  char str[20];
-  for (unsigned int u = 0; u < numArgs; u++) {
-    sprintf(str, "%u", u);
-    argList.append(context->activation->get(str));
-  }
+  for (unsigned int u = 0; u < numArgs; u++)
+    argList.append(context->activation->get(CString(u)));
+
   Ptr result = construct(&argList);
 
   KJSRETURN(result);
@@ -77,16 +73,14 @@ KJSObject* ArrayConstructor::construct(KJSArgList *args)
   else {
     // initialize array
     len = args->count();
-    char str[20];
     for (unsigned int u = 0; u < len; u++) {
-      sprintf(str, "%u", u);
-      result->put(str, arg->object());
+      result->put(CString(u), arg->object());
       arg = arg->nextArg();
     }
   }
 
   // array size
-  result->put("length", zeroRef(new KJSNumber(len)));
+  result->put("length", len, DontEnum | DontDelete);
 
   return result;
 }
@@ -99,7 +93,7 @@ ArrayPrototype::ArrayPrototype(KJSGlobal *global)
   setClass(ArrayClass);
   setPrototype(global->objProto);
 
-  put("length", zeroRef(new KJSNumber(0)));
+  put("length", 0u);
 
   /* TODO: put() properties */
 }

@@ -19,10 +19,12 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <strings.h>
 #include <iostream.h>
 
 #include "object.h"
+#include "operations.h"
 
 using namespace KJS;
 
@@ -81,6 +83,63 @@ void KJSO::put(const CString &p, KJSO *v, int attr, bool z)
   prop = pr;
 }
 
+// provided for convenience.
+void KJSO::put(const CString &p, double d, int attr)
+{
+  put(p, zeroRef(new KJSNumber(d)), attr);
+}
+
+// provided for convenience.
+void KJSO::put(const CString &p, int i, int attr)
+{
+  put(p, zeroRef(new KJSNumber(i)), attr);
+}
+
+// provided for convenience.
+void KJSO::put(const CString &p, unsigned int u, int attr)
+{
+  put(p, zeroRef(new KJSNumber(u)), attr);
+}
+
+// ECMA 15.4.5.1
+void KJSO::putArrayElement(const CString &p, KJSO *v)
+{
+  if (!canPut(p))
+    return;
+  
+  if (hasProperty(p)) {
+    if (p == "length") {
+      Ptr len = get("length");
+      unsigned int oldLen = toUInt32(len);
+      unsigned int newLen = toUInt32(v);
+      // shrink array
+      for (unsigned int u = newLen; u < oldLen; u++) {
+	CString p(u);
+	if (hasProperty(p, false))
+	  deleteProperty(p);
+      }
+      put("length", newLen);
+      return;
+    }
+    //    put(p, v);
+    } //  } else
+    put(p, v);
+
+  // array index ?
+  unsigned int idx;
+  if (!sscanf(p.ascii(), "%u", &idx))
+    return;
+  
+  // do we need to update/create the length property ?
+  if (hasProperty("length", false)) {
+    Ptr len = get("length");
+    if (idx < toUInt32(len))
+      return;
+  }
+
+  put("length", idx+1);
+}
+
 // ECMA 8.6.2.3
 bool KJSO::canPut(const CString &p) const
 {
@@ -99,7 +158,7 @@ bool KJSO::canPut(const CString &p) const
 }
 
 // ECMA 8.6.2.4
-bool KJSO::hasProperty(const CString &p) const
+bool KJSO::hasProperty(const CString &p, bool recursive) const
 {
   if (!prop)
     return false;
@@ -111,7 +170,7 @@ bool KJSO::hasProperty(const CString &p) const
     pr = pr->next;
   }
 
-  if (!prototype())
+  if (!prototype() || !recursive)
     return false;
 
   return prototype()->hasProperty(p);

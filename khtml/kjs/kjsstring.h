@@ -36,6 +36,9 @@ namespace KJS {
     CString(const char *c);
     CString(const CString &);
     CString(const CString *);
+    // conversions
+    CString(int i);
+    CString(unsigned int u);
 
     ~CString();
 

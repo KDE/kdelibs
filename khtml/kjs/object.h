@@ -71,15 +71,20 @@ public:
   void setPrototype(KJSPrototype *p);
   KJSPrototype *prototype() const { return proto; }
   KJSO *get(const CString &p) const;
-  bool hasProperty(const CString &p) const;
+  bool hasProperty(const CString &p, bool recursive = true) const;
   void put(const CString &p, KJSO *v, int attr = None, bool z = false);
+  void put(const CString &p, double d, int attr = None);
+  void put(const CString &p, int i, int attr = None);
+  void put(const CString &p, unsigned int u, int attr = None);
   bool canPut(const CString &p) const;
   void deleteProperty(const CString &p);
   KJSO *defaultValue(Hint hint = NoneHint);
   void dump(int level = 0);
   virtual KJSObject *construct() { return 0L; }
 
-  //private:
+private:
+  void putArrayElement(const CString &p, KJSO *v);
+
 public:
   int refCount;
 public:
@@ -257,7 +262,7 @@ public:
 
 class KJSObject : public KJSO {
 public:
-  KJSObject() : internVal(0L) { }
+  KJSObject() : cl(UndefClass), internVal(0L) { }
   ~KJSObject() { if (internVal) internVal->deref(); }
   Type type() const { return Object; }
   void setClass(Class c) { cl = c; } 
