@@ -62,9 +62,7 @@ enum {
     CONTEXT_TEXT = 7,
     CONTEXT_TEXTRIGHT = 8,
     CONTEXT_TEXTUNDER = 9,
-    CONTEXT_SMALL = 10,
-    CONTEXT_MEDIUM = 11,
-    CONTEXT_LARGE = 12
+    CONTEXT_ICONSIZES = 50 // starting point for the icon size list, put everything else before
 };
 
 class KToolBarPrivate
@@ -163,9 +161,22 @@ void KToolBar::init()
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
 
   QPopupMenu *size = new QPopupMenu( context, "size" );
-  size->insertItem( i18n("Small icons"), CONTEXT_SMALL );
-  size->insertItem( i18n("Medium icons"), CONTEXT_MEDIUM );
-  size->insertItem( i18n("Large icons"), CONTEXT_LARGE );
+  // Query the current theme for available sizes
+  KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
+  QValueList<int> avSizes = theme->querySizes( d->m_honorStyle ? KIcon::MainToolbar : KIcon::Toolbar );
+  QValueList<int>::Iterator it;
+  for (it=avSizes.begin(); it!=avSizes.end(); it++)
+  {
+      QString text;
+      if ( *it < 19 )
+          text = i18n("Small (%1x%2)").arg(*it).arg(*it);
+      else if (*it < 25)
+          text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
+      else
+          text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+      //we use the size as an id, with an offset
+      size->insertItem( text, CONTEXT_ICONSIZES + *it );
+  }
 
   context->setFont(KGlobal::menuFont());
 
@@ -174,7 +185,6 @@ void KToolBar::init()
   context->insertItem( i18n("Text position"), mode );
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon size"), size );
-  context->setItemChecked(CONTEXT_MEDIUM, true);
 
   // set some more defaults
   fullSizeMode  = true;
@@ -231,17 +241,14 @@ void KToolBar::slotReadConfig()
 
   // we read in the IconText property *only* if we intend on actually
   // honoring it
-  if (d->m_honorStyle || name() == "mainToolBar")
+  if (d->m_honorStyle)
     icontext = (IconText)config->readNumEntry(attrIconText, IconOnly);
   else
     icontext = IconOnly;
 
   // now get the size conditionally
-  if (d->m_honorStyle || name() == "mainToolBar")
-    iconsize = KGlobal::instance()->iconLoader()->currentSize( KIcon::MainToolbar );
-      //(KIconLoader::Size)config->readNumEntry(attrSize, KIconLoader::Medium);
-  else
-    iconsize = KGlobal::instance()->iconLoader()->currentSize( KIcon::Toolbar );
+  iconsize = KGlobal::instance()->iconLoader()->currentSize(
+      d->m_honorStyle ? KIcon::MainToolbar : KIcon::Toolbar );
 
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
@@ -1557,13 +1564,7 @@ int KToolBar::insertAnimatedWidget( int id, QObject *receiver,
                                     const QStringList& icons,
                                     int index )
 {
-  KAnimWidget *anim;
-
-  //if ( d->m_honorStyle || name() == "mainToolBar" )
-  //  anim = new KAnimWidget(icons, KIconLoader::Default, this);
-  //else
-  //  anim = new KAnimWidget(icons, KIconLoader::Medium, this);
-  anim = new KAnimWidget( icons, d->m_iconSize, this );
+  KAnimWidget *anim = new KAnimWidget( icons, d->m_iconSize, this );
 
   if ( receiver )
     connect( anim, SIGNAL(clicked()), receiver, signal);
@@ -2320,10 +2321,16 @@ void KToolBar::setIconSize(int size)
 
 void KToolBar::setIconSize(int size, bool update)
 {
+  kdDebug() << "KToolBar::setIconSize ( " << size << " ) " << endl;
+
   bool doUpdate=false;
 
   if (size != d->m_iconSize)
   {
+    // Uncheck old item
+    if (context)
+      context->setItemChecked( d->m_iconSize + CONTEXT_ICONSIZES, false );
+
     d->m_maxItemWidth  = 0;
     d->m_maxItemHeight = 0;
 
@@ -2332,28 +2339,8 @@ void KToolBar::setIconSize(int size, bool update)
     doUpdate=true;
   }
 
-  /*
-    TODO: use mpTheme->querySizes(i), see kcontrol/display/icons.cpp
   if (context)
-  {
-    for(int i = CONTEXT_SMALL; i <= CONTEXT_LARGE; ++i)
-      context->setItemChecked(i, false);
-
-    switch (size)
-    {
-    case KIconLoader::Small:
-      context->setItemChecked(CONTEXT_SMALL, true);
-      break;
-    case KIconLoader::Medium:
-    default:
-      context->setItemChecked(CONTEXT_MEDIUM, true);
-      break;
-    case KIconLoader::Large:
-      context->setItemChecked(CONTEXT_LARGE, true);
-      break;
-    }
-  }
-  */
+    context->setItemChecked( d->m_iconSize + CONTEXT_ICONSIZES, true );
 
   if (update == false)
     return;
@@ -2500,18 +2487,12 @@ void KToolBar::ContextCallback( int )
     case CONTEXT_TEXTUNDER:
       setIconText( IconTextBottom );
       break;
-      /*
-        Needs to be dynamic
-    case CONTEXT_SMALL:
-      setIconSize( KIconLoader::Small );
-      break;
-    case CONTEXT_MEDIUM:
-      setIconSize( KIconLoader::Medium );
-      break;
-    case CONTEXT_LARGE:
-      setIconSize( KIconLoader::Large );
-      break;
-      */
+    default:
+      if ( i > CONTEXT_ICONSIZES )
+      {
+          setIconSize( i - CONTEXT_ICONSIZES );
+      } else
+          kdWarning() << "No such menu item " << i << " in toolbar context menu" << endl;
     }
 
   mouseEntered=false;
