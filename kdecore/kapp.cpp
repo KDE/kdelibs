@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.118  1998/12/13 20:04:16  ettrich
+// yet another fix for user defined SM
+//
 // Revision 1.117  1998/12/13 18:03:54  ettrich
 // bugfix for user defined session management
 //
@@ -563,7 +566,6 @@ void KApplication::enableSessionManagement(bool userdefined){
   bSessionManagementUserDefined = userdefined;
   if (topWidget()){
     KWM::enableSessionManagement(topWidget()->winId());
-    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
   }
 }
 
@@ -1742,7 +1744,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     if (bSessionManagement)
       enableSessionManagement(bSessionManagementUserDefined);
 
-    if (bSessionManagementUserDefined || !bSessionManagement)
+    if (!bSessionManagement)
 	KWM::setWmCommand( topWidget->winId(), aWmCommand);
   }
 }
