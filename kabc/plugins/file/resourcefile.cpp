@@ -259,8 +259,11 @@ bool ResourceFile::lock( const QString &fileName )
       QFile::remove( lockName );
       kdError() << "dedect stale lock file from process '" << app << "'" << endl;
       file.close();
-    } else
+    } else {
+      addressBook()->error( i18n( "The resource '%1' is locked by application '%2'." )
+                            .arg( resourceName() ).arg( app )  );
       return false;
+    }
   }
 
   QString lockUniqueName;

@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <errno.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -238,7 +240,27 @@ bool ResourceDir::lock( const QString &path )
   QString lockName = locateLocal( "data", "kabc/lock/" + p + ".lock" );
   kdDebug(5700) << "-- lock name: " << lockName << endl;
 
-  if ( QFile::exists( lockName ) ) return false;
+  if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
+    QFile file( lockName );
+    if ( !file.open( IO_ReadOnly ) )
+      return false;
+
+    QDataStream t( &file );
+
+    QString app; int pid;
+    t >> pid >> app;
+
+    int retval = ::kill( pid, 0 );
+    if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
+      QFile::remove( lockName );
+      kdError() << "dedect stale lock file from process '" << app << "'" << endl;
+      file.close();
+    } else {
+      addressBook()->error( i18n( "The resource '%1' is locked by application '%2'." )
+                            .arg( resourceName() ).arg( app )  );
+      return false;
+    }
+  }
 
   QString lockUniqueName;
   lockUniqueName = p + kapp->randomString( 8 );
@@ -248,6 +270,8 @@ bool ResourceDir::lock( const QString &path )
   // Create unique file
   QFile file( mLockUniqueName );
   file.open( IO_WriteOnly );
+  QDataStream t( &file );
+  t << ::getpid() << QString( KGlobal::instance()->instanceName() );
   file.close();
 
   // Create lock file
