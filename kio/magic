@@ -564,7 +564,10 @@
 
 # EXR images
 0	lelong		0x762f3101	image/x-exr
- 
+
+# SGI images (*.rgb, *.rgba, *.bw, *.sgi)
+0	beshort		474		image/x-rgb
+
 #------------------------------------------------------------------------------
 # lisp:  file(1) magic for lisp programs
 #
