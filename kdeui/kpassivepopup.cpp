@@ -65,7 +65,7 @@ void KPassivePopup::setView( QWidget *child )
 
 void KPassivePopup::setView( const QString &caption, const QString &text, const QPixmap &icon )
 {
-    kdDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
+    // kdDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
     QWidget *vb = new QVBox( this );
 
     QHBox *hb=0;
