@@ -324,6 +324,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
+
+    emit m_part->sigNodeSelected(mev.innerNode);
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -716,8 +718,8 @@ bool KHTMLView::gotoLink(bool forward)
     // find a new node
     d->newNode = m_part->xmlDocImpl()->findNextLink(d->currentNode, forward);
 
-    //    if (d->newNode) emit m_part->nodeActivated(Node(d->newNode));
-    //
+    if (d->newNode) emit m_part->sigNodeSelected(Node(d->newNode));
+
     // none found ? abort
     if (!d->newNode)
     {

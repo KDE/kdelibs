@@ -622,6 +622,9 @@ signals:
 
   void selectionChanged();
 
+  void sigNodeSelected(const DOM::Node &);
+
+
 protected:
 
   virtual bool event( QEvent *event );
