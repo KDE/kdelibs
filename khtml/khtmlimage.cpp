@@ -43,7 +43,7 @@ KInstance *KHTMLImageFactory::s_instance = 0;
 
 KHTMLImageFactory::KHTMLImageFactory()
 {
-    s_instance = new KInstance( "khtmlimagepart" );
+    s_instance = new KInstance( "khtmlimage" );
 }
 
 KHTMLImageFactory::~KHTMLImageFactory()
