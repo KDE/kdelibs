@@ -1519,7 +1519,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
         case PE_ButtonTool:
         case PE_ButtonDropDown:
         case PE_ButtonCommand: {
-            bool khtmlMode = khtmlWidgets.contains(opt.widget());
+            bool khtmlMode = opt.isDefault() ? false : khtmlWidgets.contains(opt.widget());
             renderButton(p, r, cg, (on||down), mouseOver, true, enabled, khtmlMode );
             break;
         }
