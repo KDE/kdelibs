@@ -45,7 +45,7 @@ QString toRoman( int number, bool upper )
     int i, d = 0;
 
     do
-    {   
+    {
 	int num = number % 10;
 
 	if ( num % 5 < 4 )
@@ -69,7 +69,7 @@ QString toRoman( int number, bool upper )
     return roman;
 }
 
-HTMLUListElementImpl::HTMLUListElementImpl(DocumentImpl *doc) 
+HTMLUListElementImpl::HTMLUListElementImpl(DocumentImpl *doc)
     : HTMLBlockElementImpl(doc)
 {
     _type = Disc;
@@ -126,7 +126,7 @@ void HTMLUListElementImpl::layout(bool deep)
 	{
 	    printf("wrong structured document in HTMLUListElement!\n");
 	}
-	else 
+	else
 	{
 	    child->setXPos(INDENT);
 	    child->setYPos(descent);
@@ -140,7 +140,7 @@ void HTMLUListElementImpl::layout(bool deep)
     setLayouted();
 }
 
-void HTMLUListElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h, 
+void HTMLUListElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 		       int _tx, int _ty)
 {
     _tx += x;
@@ -153,14 +153,14 @@ void HTMLUListElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
     NodeImpl *child;
 
     child = firstChild();
-    while(child != 0) 
+    while(child != 0)
     {
 	child->print(p, _x, _y, _w, _h, _tx, _ty);
 	child = child->nextSibling();
     }
 }
 
-void HTMLUListElementImpl::printObject(QPainter *, int, int, 
+void HTMLUListElementImpl::printObject(QPainter *, int, int,
 				       int, int, int, int)
 {
 #ifdef DEBUG_LAYOUT
@@ -196,7 +196,7 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
     printf("%s(UList)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
 #endif
 
-    if(w != -1) 
+    if(w != -1)
     {
 	availableWidth = w;
 	setLayouted(false);
@@ -209,7 +209,7 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
 	childWidth = 0;
 
     NodeImpl *child = firstChild();
-    while(child != 0) 
+    while(child != 0)
     {
     	if (child->getMinWidth() > availableWidth)
 	{
@@ -221,7 +221,7 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
 	child->setAvailableWidth(childWidth);
 	child = child->nextSibling();
     }
-}    
+}
 
 void HTMLUListElementImpl::calcMinMaxWidth()
 {
@@ -232,7 +232,7 @@ void HTMLUListElementImpl::calcMinMaxWidth()
 // -------------------------------------------------------------------------
 
 
-HTMLDirectoryElementImpl::HTMLDirectoryElementImpl(DocumentImpl *doc) 
+HTMLDirectoryElementImpl::HTMLDirectoryElementImpl(DocumentImpl *doc)
     : HTMLUListElementImpl(doc)
 {
 }
@@ -322,7 +322,7 @@ void HTMLOListElementImpl::layout(bool deep)
 	{
 	    printf("wrong structured document in HTMLUListElement!\n");
 	}
-	else 
+	else
 	{
 	    HTMLLIElementImpl *i = static_cast<HTMLLIElementImpl *>(child);
 	    num = i->calcListValue(num);
@@ -381,7 +381,7 @@ int HTMLLIElementImpl::calcListValue( long v )
     return val+1;
 }
 
-void HTMLLIElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h, 
+void HTMLLIElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
@@ -401,7 +401,7 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
     int yp = _ty + 4;
     int xp = _tx - 10;
 
-    QColor color(pSettings->fontBaseColor);
+    QColor color( style()->font.color );
     p->setPen( QPen( color ) );
 
    // Just print the item identifier, then do usual BlockElement rendering
@@ -412,10 +412,10 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 	p->drawEllipse( xp, yp, 7, 7 );
 	break;	
     case Circle:
-	p->setBrush( QBrush() );
+	p->setBrush( QBrush( color ) );
 	p->drawEllipse( xp, yp, 7, 7 );
 	break;
-    case Square: 
+    case Square:
 	p->setBrush( QBrush( color ) );
 	p->drawRect( xp, yp, 7, 7 );
 	break;
@@ -514,7 +514,7 @@ void HTMLDListElementImpl::layout(bool deep)
 	    descent += child->getHeight();
 	    child = child->nextSibling();
 	}
-	else 
+	else
 	{
 	    printf("wrong structured document in HTMLUListElement!\n");
 	    child = child->nextSibling();
