@@ -29,7 +29,7 @@
  *
  * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 5
+ * @version 1.0 Draft 6
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
@@ -384,7 +384,7 @@
  *
  *   <voice lang="en" name="kal" gender="male"/>
  *   <prosody volume="soft" rate="fast"/>
- *   <kttsd synthesizer="Festival" codec="Local"/>
+ *   <kttsd synthesizer="Festival" />
  *
  * (The @e voice and @e prosody tags are adapted from the W3C Speech Synthesis
  * Markup Language (SSML) and Java Speech Markup Language (JSML).
@@ -395,7 +395,7 @@
  * becomes
  *
  *   lang="en" name="kal" gender="male" volume="soft" rate="fast"
- *   synthesizer="Festival" codec="Local"
+ *   synthesizer="Festival"
  *
  * Since this is the preferred format for Talker Codes, the rest of the discussion
  * will omit the @e voice, @e prosody, and @e kttsd tags.
@@ -408,7 +408,6 @@
  *                    are case in-sensitive and hyphen (-) or underscore (_) may be
  *                    used to separate the country code from the language code.
  * - @e synthesizer.  The name of the synthesizer (plugin) used to produce the speech.
- * - @e codec.        May be any of the text encoding names returned by QTextCodec::names().
  * - @e gender.       May be either "male", "female", or "neutral".
  * - @e name.         The name of the voice code.
  *                    The choice of voice codes is synthesizer-specific.
@@ -483,12 +482,12 @@
  * following talkers.
  *
   @verbatim
-  #  lang synthesizer      codec   gender    name   volume  rate
-  -  ---- ---------------- ------  -------   ------ ------- -------
-  1   en  Festival Lite    Local   male      Kal    medium  medium
-  2   en  Festival Lite    Local   female    Us1    soft    medium
-  3   en  Festival Int     Local   male      Kal    medium  slow
-  4   de  Hadifax          Local   male      de1    medium  medium
+  #  lang synthesizer      gender    name   volume  rate
+  -  ---- ---------------- -------   ------ ------- -------
+  1   en  Festival Lite    male      Kal    medium  medium
+  2   en  Festival Lite    female    Us1    soft    medium
+  3   en  Festival Int     male      Kal    medium  slow
+  4   de  Hadifax          male      de1    medium  medium
   @endverbatim
  *
  * In this example, the user has specified that his default language code is en,
@@ -555,8 +554,8 @@
  * then a talker configured as lang="en" gender="male" volume="medium" would be
  * picked over one configured as lang="en_GB" gender="female" volume="soft",
  * since the former matches on two preferred attributes and the latter only on the
- * preferred attribute GB. An application can override this and make the secondary
- * language attribute priority with an asterisk.  For example,
+ * preferred attribute GB. An application can override this and make the country
+ * code priority with an asterisk.  For example,
  *
  *   lang="*en_GB" gender="male" volume="medium"
  *
@@ -1163,7 +1162,7 @@ class kspeech : virtual public DCOPObject {
         *
         * @see talkers
         */
-        virtual QStringList getTalkers() { };
+        virtual QStringList getTalkers() = 0;
         
         /**
         * Change the talker for a text job.
@@ -1189,7 +1188,7 @@ class kspeech : virtual public DCOPObject {
         * @see talkers
         * @see getTalkers
         */
-        virtual QString userTalkerPreferences() { };
+        virtual QString userTalkerPreferences() = 0;
         
         /**
         * Move a text job down in the queue so that it is spoken later.
