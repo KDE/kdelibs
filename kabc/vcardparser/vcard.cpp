@@ -20,51 +20,42 @@
 
 #include "vcard.h"
 
-class VCard::VCardPrivate
-{
-  public:
-    QMap< QString, VCardLine::List > mLineMap;
-};
-
 VCard::VCard()
-  : d( new VCardPrivate )
 {
 }
 
 VCard::~VCard()
 {
-  delete d;
-  d = 0;
 }
 
 void VCard::clear()
 {
-  d->mLineMap.clear();
+  mLineMap.clear();
 }
 
 QStringList VCard::identifiers() const
 {
-  return d->mLineMap.keys();
+  return mLineMap.keys();
 }
 
 void VCard::addLine( const VCardLine& line )
 {
-  d->mLineMap[ line.identifier() ].append( line );
+  mLineMap[ line.identifier() ].append( line );
 }
 
 VCardLine::List VCard::lines( const QString& identifier )
 {
-  return d->mLineMap[ identifier.lower() ];
+  return mLineMap[ identifier.lower() ];
 }
 
 VCardLine VCard::line( const QString& identifier )
 {
-  return d->mLineMap[ identifier.lower() ][0];
+  return mLineMap[ identifier.lower() ][ 0 ];
 }
 
 void VCard::setVersion( Version version )
 {
-  d->mLineMap.erase( "version" );
+  mLineMap.erase( "version" );
 
   VCardLine line;
   line.setIdentifier( "version" );
@@ -73,12 +64,12 @@ void VCard::setVersion( Version version )
   if ( version == v3_0 )
     line.setIdentifier( "3.0" );
 
-  d->mLineMap[ "version" ].append( line );
+  mLineMap[ "version" ].append( line );
 }
 
 VCard::Version VCard::version() const
 {
-  VCardLine line = d->mLineMap[ "version" ][0];
+  VCardLine line = mLineMap[ "version" ][ 0 ];
   if ( line.value() == "2.1" )
     return v2_1;
   else

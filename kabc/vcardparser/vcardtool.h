@@ -70,6 +70,9 @@ class VCardTool
     Agent parseAgent( const VCardLine &line );
     VCardLine createAgent( VCard::Version version, const Agent &agent );
 
+    QMap<QString, int> mAddressTypeMap;
+    QMap<QString, int> mPhoneTypeMap;
+
     class VCardToolPrivate;
     VCardToolPrivate *d;
 };

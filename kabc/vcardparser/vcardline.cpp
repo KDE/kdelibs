@@ -20,64 +20,53 @@
 
 #include "vcardline.h"
 
-class VCardLine::VCardLinePrivate
-{
-  public:
-    QMap< QString, QStringList > mParamMap;
-    QString mIdentifier;
-    QVariant mValue;
-};
-
 VCardLine::VCardLine()
-  : d( new VCardLinePrivate )
 {
 }
 
 VCardLine::VCardLine( const QString &identifier )
 {
-  d->mIdentifier = identifier.lower();
+  mIdentifier = identifier.lower();
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
 {
-  d->mIdentifier = identifier.lower();
-  d->mValue = value;
+  mIdentifier = identifier.lower();
+  mValue = value;
 }
 
 VCardLine::~VCardLine()
 {
-  delete d;
-  d = 0;
 }
 
 void VCardLine::setIdentifier( const QString& identifier )
 {
-  d->mIdentifier = identifier.lower();
+  mIdentifier = identifier.lower();
 }
 
 QString VCardLine::identifier() const
 {
-  return d->mIdentifier;
+  return mIdentifier;
 }
 
 void VCardLine::setValue( const QVariant& value )
 {
-  d->mValue = value;
+  mValue = value;
 }
 
 QVariant VCardLine::value() const
 {
-  return d->mValue;
+  return mValue;
 }
 
 QStringList VCardLine::parameterList() const
 {
-  return d->mParamMap.keys();
+  return mParamMap.keys();
 }
 
 void VCardLine::addParameter( const QString& param, const QString& value )
 {
-  QValueList<QString> &list = d->mParamMap[ param ];
+  QValueList<QString> &list = mParamMap[ param ];
 
   if ( list.find( value ) == list.end() ) // not included yet
     list.append( value );
@@ -85,10 +74,10 @@ void VCardLine::addParameter( const QString& param, const QString& value )
 
 QStringList VCardLine::parameters( const QString& param ) const
 {
-  return d->mParamMap[ param ];
+  return mParamMap[ param ];
 }
 
 QString VCardLine::parameter( const QString& param ) const
 {
-  return d->mParamMap[ param ][ 0 ];
+  return mParamMap[ param ][ 0 ];
 }
