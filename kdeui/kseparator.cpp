@@ -21,7 +21,7 @@
 #include <kdebug.h>
 #include <kapp.h>
 
-#include "kseparator.h"
+#include "kseparator.moc"
 
 
 KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)

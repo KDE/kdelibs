@@ -30,6 +30,8 @@
 */
 class KSeparator : public QFrame
 {
+  Q_OBJECT
+  Q_PROPERTY( int orientation READ orientation WRITE setOrientation )
  public:
   /**
    * Constructor.
