@@ -90,6 +90,7 @@ list-item, CSS_VAL_LIST_ITEM
 run-in, CSS_VAL_RUN_IN
 compact, CSS_VAL_COMPACT
 marker, CSS_VAL_MARKER
+-konq-ruler, CSS_VAL__KONQ_RULER
 table, CSS_VAL_TABLE
 inline-table, CSS_VAL_INLINE_TABLE
 table-row-group, CSS_VAL_TABLE_ROW_GROUP

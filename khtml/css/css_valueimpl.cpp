@@ -69,6 +69,14 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyNa
     return val->cssText();
 }
 
+DOMString CSSStyleDeclarationImpl::getPropertyValue( int id )
+{
+    CSSValueImpl *val = getPropertyCSSValue( id );
+    if ( !val )
+	return 0;
+    return val->cssText();
+}
+
 CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( const DOMString &propertyName )
 {
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());

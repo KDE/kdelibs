@@ -52,6 +52,7 @@ public:
     unsigned long length() const;
     CSSRuleImpl *parentRule() const;
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
+    DOM::DOMString getPropertyValue ( int id );
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( int propertyId );
