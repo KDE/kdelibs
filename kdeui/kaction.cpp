@@ -558,21 +558,18 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if (d->m_kaccel)
     unplugAccel();
   d->m_kaccel = kacc;
-  d->m_kaccel->insertAction(name(), d->plainText(),
-      KShortcuts((QString)d->m_accel), KShortcuts((QString)d->m_accel),
+  d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->m_plainText,
+      KKeySequence(d->m_accel),
       this, SLOT(slotActivated()),
       0, 0, configurable, isEnabled());
-  d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
   connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
-  // FIXME: add keycodeChanged() to KAccel
-//   connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+  connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
 }
 
 void KAction::unplugAccel()
 {
   if ( d->m_kaccel )
   {
-    // FIXME: do we need to disconnect() here too?
     d->m_kaccel->removeAction(name());
     d->m_kaccel = 0;
     d->m_pAccelAction = 0;
