@@ -107,7 +107,7 @@
 2300        kwallet
 
 # kdeadmin
-3000        ksysv 
+3000        ksysv
 3100    ksysv (model)
 
 # kdegraphics
@@ -239,6 +239,7 @@
 7032        kio (KURLCompletion)
 7033        KFileMetaInfo
 7034        KFileMetainfo (plugins)
+7035        kio (KPasswdServer)
 7040        KZip
 7041        KTar
 7042        KAr
@@ -272,6 +273,7 @@
 7125        kio_ldap
 7126        kio_devices
 
+
 # kdesdk
 8100        kompare
 8101        kompare (libs)
@@ -302,7 +304,7 @@
 9012        kdevelop (debugger)
 9013        kdevelop (java support)
 9014        kdevelop (python support)
-9015        kdevelop (script project) 
+9015        kdevelop (script project)
 9016        kdevelop (perl support)
 9017        kdevelop (file view)
 9018        kdevelop (php support)
