@@ -74,7 +74,7 @@ KLocale::KLocale( const char *_catalogue )
 #endif
     
     if ( ! _catalogue )
-      _catalogue = kapp->appName().data();
+	_catalogue = kapp->appName().data();
     
     catalogue = new char[ strlen(_catalogue) + 12 ];
     strcpy(catalogue, _catalogue);
@@ -94,25 +94,34 @@ KLocale::KLocale( const char *_catalogue )
       languages = g_lang;
     
     if (languages.isEmpty())
-      languages = "C";
+	languages = "C";
     else languages += ":C";
     
-    QString directory = KApplication::kdedir() + "/share/locale";
+    QString directory = KApplication::kde_localedir();
     
     while (1) {
-      lang = languages.left(languages.find(':'));
-      languages = languages.right(languages.length() - lang.length() - 1);
-      if (lang.isEmpty() || lang == "C")
-	break;
-      QDir d(directory + "/" +  lang + "/LC_MESSAGES");
-      if (d.exists(QString(catalogue) + ".mo") && 
-	  d.exists(QString(SYSTEM_MESSAGES) + ".mo"))
-	break;
+	lang = languages.left(languages.find(':'));
+	languages = languages.right(languages.length() - lang.length() - 1);
+	if (lang.isEmpty() || lang == "C")
+	    break;
+	
+	while (!lang.isEmpty()) {
+		QDir d(directory + "/" +  lang + "/LC_MESSAGES");
+	    if (d.exists(QString(catalogue) + ".mo") && 
+		d.exists(QString(SYSTEM_MESSAGES) + ".mo")) 
+		goto found; // my first time ;-)
+	    int f = lang.findRev('_');
+	    if (f > 0)
+		lang = lang.left(lang.findRev('_'));
+	    else 
+		lang = "";
+	}
     }
+ found:
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
-
+    
 }
 
 KLocale::~KLocale()
@@ -132,7 +141,7 @@ const char *KLocale::translate(const char *msgid)
 
 QString KLocale::directory() 
 {
-    return kapp->kdedir() + "/share/locale/" +  lang;
+    return KApplication::kde_localedir() +  lang;
 }
 
 void KLocale::aliasLocale( const char* text, long int index)
