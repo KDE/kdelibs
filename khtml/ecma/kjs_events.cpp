@@ -35,11 +35,9 @@ using namespace KJS;
 // -------------------------------------------------------------------------
 
 JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _html)
+  : listener( _listener ), html( _html ), win( _win )
 {
-    listener = _listener;
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
-    html = _html;
-    win = _win;
     static_cast<Window*>(win.imp())->jsEventListeners.append(this);
 }
 
