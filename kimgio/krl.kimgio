@@ -2,6 +2,7 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL Image
+Name[ga]=Íomhá KRL
 Name[sv]=KRL-bild
 Read=true
 Write=true

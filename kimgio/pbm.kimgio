@@ -2,6 +2,7 @@
 Type=PBM
 Header=
 Name=Portable Bitmap Image
+Name[ga]=Íomhá PBM (Portable Bitmap)
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW

@@ -2,6 +2,7 @@
 Type=ICO
 Header=^\001\001[\001|\002]\001
 Name=Windows Icon
+Name[ga]=Deilbhín MS Windows
 Name[sv]=Windows-ikon
 Read=true
 Write=false

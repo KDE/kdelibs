@@ -2,6 +2,7 @@
 Type=JPEG
 Header=
 Name=JPEG Image
+Name[ga]=Íomhá JPEG
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

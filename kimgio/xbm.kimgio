@@ -2,6 +2,7 @@
 Type=XBM
 Header=
 Name=X BitMap Image
+Name[ga]=Íomhá "X BitMap"
 Read=true
 Write=true
 Suffices=xbm,XBM

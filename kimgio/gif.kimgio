@@ -2,6 +2,7 @@
 Type=GIF
 Header=
 Name=GIF Image
+Name[ga]=Íomhá GIF
 Read=true
 Write=false
 Suffices=gif,GIF

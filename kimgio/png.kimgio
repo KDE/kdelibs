@@ -2,6 +2,7 @@
 Type=PNG
 Header=
 Name=PNG Image
+Name[ga]=Íomhá PNG
 Read=true
 Write=true
 Suffices=png,PNG

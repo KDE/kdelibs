@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Image
+Name[ga]=Íomhá "Portable Pixmap"
 Read=true
 Write=true
 Suffices=PPM,ppmraw,PPMRAW,pnm,PNM

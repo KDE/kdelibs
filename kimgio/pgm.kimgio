@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[ga]=Íomhá "Portable Graymap"
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

@@ -2,6 +2,7 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF Image
+Name[ga]=Íomhá TIFF
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 

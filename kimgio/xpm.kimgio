@@ -2,6 +2,7 @@
 Type=XPM
 Header=
 Name=X PixMap Image
+Name[ga]=Íomhá "X PixMap"
 Read=true
 Write=true
 Suffices=xpm,XPM

@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=Windows BMP Image
+Name[ga]=Íomhá Windows BMP
 Read=true
 Write=true
 Suffices=bmp,BMP
