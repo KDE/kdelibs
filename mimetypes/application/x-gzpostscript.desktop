@@ -1,0 +1,8 @@
+[Desktop Entry]
+Comment=Gzipped Postscript File
+Hidden=false
+Icon=tgz
+MimeType=application/x-gzip
+Patterns=*.ps.gz
+Type=MimeType
+X-KDE-AutoEmbed=true
