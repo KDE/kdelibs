@@ -21,40 +21,40 @@
 #include "kwalletentry.h"
 
 
+using namespace KWallet;
 
 
-
-KWalletEntry::KWalletEntry() {
+Entry::Entry() {
 	_dirty = false;
 }
 
 
-KWalletEntry::~KWalletEntry() {
+Entry::~Entry() {
 	_value.fill(0);
 }
 
 
-void KWalletEntry::clearDirty() {
+void Entry::clearDirty() {
 	_dirty = false;
 }
 
 
-bool KWalletEntry::isDirty() const {
+bool Entry::isDirty() const {
 	return _dirty;
 }
 
 
-const QStringList& KWalletEntry::key() const {
+const Key& Entry::key() const {
 	return _key;
 }
 
 
-const QByteArray& KWalletEntry::value() const {
+const Value& Entry::value() const {
 	return _value;
 }
 
 
-void KWalletEntry::setValue(QByteArray& val) {
+void Entry::setValue(const Value& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
 	_value.fill(0);
@@ -63,14 +63,14 @@ void KWalletEntry::setValue(QByteArray& val) {
 }
 
 
-void KWalletEntry::setKey(QStringList key) {
+void Entry::setKey(const Key& key) {
 	_key = key;
 	_dirty = true;
 }
 
 
-void KWalletEntry::addKey(QString key) {
-	_key << key;
+void Entry::addKey(const NVPair& key) {
+	_key.append(key);
 }
 
 

@@ -26,34 +26,41 @@
 #include <qcstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qpair.h>
+#include <qvaluelist.h>
 
+namespace KWallet {
 
-class KWalletEntry {
+typedef QPair<QString,QString> NVPair;
+typedef QValueList<NVPair> Key;
+typedef QByteArray Value;
+
+class Entry {
 	public:
-		KWalletEntry();
-		~KWalletEntry();
+		Entry();
+		~Entry();
 		
 		bool isDirty() const;
 		void clearDirty();
 
-		const QStringList& key() const;
-		const QByteArray& value() const;
+		const Key& key() const;
+		const Value& value() const;
 
-		void setValue(QByteArray& val);
-		void setKey(QStringList key);
-		void addKey(QString key);
-
-	protected:
+		void setValue(const Value& val);
+		void setKey(const Key& key);
+		void addKey(const NVPair& key);
 
 	private:
 		class KWalletEntryPrivate;
 		KWalletEntryPrivate *d;
 		QString _app;
 		bool _dirty;
-		QStringList _key;
-		QByteArray _value;
+		Key _key;
+		Value _value;
 };
 
+
+};
 
 #endif
 

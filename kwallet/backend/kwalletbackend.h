@@ -30,10 +30,12 @@
 #include "kwalletentry.h"
 
 
-class KWalletBackend {
+namespace KWallet {
+
+class Backend {
 	public:
-		KWalletBackend(const QString& name = "kdewallet");
-		~KWalletBackend();
+		Backend(const QString& name = "kdewallet");
+		~Backend();
 		
 		// Open and unlock the wallet
 		int open(const QByteArray& password);
@@ -55,20 +57,19 @@ class KWalletBackend {
 		// remove
 
 		//
-		const QPtrList<KWalletEntry>& getEntriesByApp(const QString& app) const;
+		const QPtrList<Entry>& getEntriesByApp(const QString& app) const;
 
 		const QStringList getAppList() const;
 
-	protected:
-
 	private:
-		class KWalletBackendPrivate;
-		KWalletBackendPrivate *d;
+		class BackendPrivate;
+		BackendPrivate *d;
 		QString _name;
 		bool _open;
-		QMap< QString,QPtrList< KWalletEntry > > _entries;
+		QMap< QString,QPtrList< Entry > > _entries;
 };
 
+};
 
 #endif
 

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,16 +30,18 @@
 
 
 
+using namespace KWallet;
+
 #define KWMAGIC "KWALLET\n\0"
 #define KWMAGIC_LEN 9
 
-KWalletBackend::KWalletBackend(const QString& name) : _name(name) {
+Backend::Backend(const QString& name) : _name(name) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	_open = false;
 }
 
 
-KWalletBackend::~KWalletBackend() {
+Backend::~Backend() {
 	if (_open) {
 		// FIXME: Discard changes
 	}
@@ -47,6 +49,7 @@ KWalletBackend::~KWalletBackend() {
 
 
 static int getRandomBlock(QByteArray& randBlock) {
+	// First try /dev/urandom
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
 		if (devrand.open(IO_ReadOnly)) {
@@ -60,6 +63,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 		}
 	}
 
+	// If that failed, try /dev/random
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
 		if (devrand.open(IO_ReadOnly)) {
@@ -87,6 +91,8 @@ static int getRandomBlock(QByteArray& randBlock) {
 
 	// EGD method?
 
+
+	// Couldn't get any random data!!
 
 	return -1;
 }
@@ -153,7 +159,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 }
 
 
-int KWalletBackend::open(const QByteArray& password) {
+int Backend::open(const QByteArray& password) {
 
 	if (_open)
 		return -255;  // already open
@@ -272,7 +278,7 @@ int KWalletBackend::open(const QByteArray& password) {
 }
 
 	
-int KWalletBackend::close(const QByteArray& password) {
+int Backend::close(const QByteArray& password) {
 	if (!_open)
 		return -255;  // not open yet
 
@@ -374,17 +380,17 @@ int KWalletBackend::close(const QByteArray& password) {
 }
 
 
-const QString& KWalletBackend::walletName() const {
+const QString& Backend::walletName() const {
 	return _name;
 }
 
 
-bool KWalletBackend::isOpen() const {
+bool Backend::isOpen() const {
 	return _open;
 }
 
 
-bool KWalletBackend::changeWallet(const QString& name) {
+bool Backend::changeWallet(const QString& name) {
 	if (_open)
 		return false;
 
@@ -393,15 +399,15 @@ bool KWalletBackend::changeWallet(const QString& name) {
 }
 
 
-const QPtrList<KWalletEntry>& KWalletBackend::getEntriesByApp(const QString& app) const {
+const QPtrList<Entry>& Backend::getEntriesByApp(const QString& app) const {
 	return _entries[app];
 }
 
 
-const QStringList KWalletBackend::getAppList() const {
+const QStringList Backend::getAppList() const {
 QStringList list;
 
-	for (QMap< QString, QPtrList< KWalletEntry > >::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+	for (QMap< QString, QPtrList< Entry > >::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		list << i.key();
 	}
 	return list;
