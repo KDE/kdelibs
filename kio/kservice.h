@@ -116,7 +116,8 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * @return a pixmap for this service (finds and loads icon())
    */
-  QPixmap pixmap( int _size, QString * _path = 0L ) const;
+  QPixmap pixmap( int _group, int _force_size = 0, int _state = 0, 
+                  QString * _path = 0L ) const;
   /**
    * @return Run the service in a terminal?
    */

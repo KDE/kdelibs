@@ -294,23 +294,25 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( int _size, QString * _path ) const
+QPixmap KMimeType::pixmap( int _group, int _force_size, int _state, 
+                           QString * _path ) const
 {
   return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ), 
-	KIcon::Desktop, _size, KIcon::DefaultState, _path, false );
+	_group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmap( const KURL& _url, int _size, QString * _path ) const
+QPixmap KMimeType::pixmap( const KURL& _url, int _group, int _force_size, 
+                           int _state, QString * _path ) const
 {
   return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ), 
-	KIcon::Desktop, _size, KIcon::DefaultState, _path, false );
+	_group, _force_size, _state, _path, false );
 }
 
-QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
-                                 int _group_or_size, QString * _path )
+QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, int _group, 
+                                 int _force_size, int _state, QString * _path )
 {
   return KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
-    pixmap( _url, _group_or_size, _path );
+	pixmap( _url, _group, _force_size, _state, _path );
 }
 
 /*******************************************************
@@ -442,26 +444,12 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, int size, QString * _path ) const
+QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, int _group, int _force_size, 
+	                            int _state, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
-  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, KIcon::Desktop, 
-	size, KIcon::DefaultState, _path, false );
-  #if 0
-  if (pix.isNull())
-  {
-    KSimpleConfig cfg( _url.path(), true );
-    cfg.setDesktopGroup();
-    QString type = cfg.readEntry( "Type" );
-    if ( type == "FSDevice" )
-    {
-      //kdDebug(7009) << "trying to load devices/" << _icon << endl;
-      // KDE-1.x kdelnks contain "cdrom_mount.xpm" instead of "devices/cdrom_mount"
-      return KGlobal::iconLoader()->loadIcon( QString("devices/"+_icon), _group_or_size, _path, false );
-    }
-    return KGlobal::iconLoader()->loadIcon("unknown", _group_or_size, _path, false);
-  }
-  #endif
+  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group, 
+	_force_size, _state, _path, false );
   return pix;
 }
 
