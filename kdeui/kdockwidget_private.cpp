@@ -343,6 +343,7 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,splitPosInPercent(50)
   ,pendingFocusInEvent(false)
   ,blockHasUndockedSignal(false)
+  ,pendingDtor(false)
 {
 #ifndef NO_KDE2
   windowType = NET::Normal;

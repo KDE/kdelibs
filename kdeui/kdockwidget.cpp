@@ -366,6 +366,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
 KDockWidget::~KDockWidget()
 {
+  d->pendingDtor = true;
   if ( !manager->undockProcess ){
     d->blockHasUndockedSignal = true;
     undock();
@@ -833,7 +834,10 @@ void KDockWidget::undock()
 
       if ( isV ) secondWidget->show();
     } else {
-      applyToWidget( 0L );
+      if (!d->pendingDtor) {
+        // don't reparent in the dtor of this
+        applyToWidget( 0L );
+      }
     }
 /*********************************************************************************************/
   }
