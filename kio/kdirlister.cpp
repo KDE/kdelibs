@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2001 Michael Brade <brade@informatik.uni-muenchen.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 #include <assert.h>
 
 #include <qdir.h>
+#include <qmap.h>
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -45,6 +47,8 @@ public:
     QString nameFilter;
     QStringList mimeFilter;
     QString deprecated_mimeFilter;
+    QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> > jobs;
+    static const uint MAX_JOBS = 5;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -58,16 +62,16 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_bDirOnlyMode = false;
   m_bDelayedMimeTypes = _delayedMimeTypes;
   m_isShowingDotFiles = false;
-  setAutoUpdate( true );
   d->urlChanged = false;
+  setAutoUpdate( true );
 }
 
 KDirLister::~KDirLister()
 {
-  // Stop running jobs
+  // Stop all running jobs
   stop();
-  delete m_rootFileItem;
   forgetDirs();
+  delete m_rootFileItem;
   delete d;
 }
 
@@ -113,14 +117,29 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     return;
 
   kdDebug(7003) << "KDirLister::openURL " << _url.prettyURL() << " keep=" << _keep << endl;
-  m_isShowingDotFiles = _showDotFiles;
-
-  // Stop running jobs, if any
-  stop();
 
   // Complete switch, don't keep previous URLs
   if ( !_keep )
+  {
+    // Stop running jobs, if any
+    stop();
+
+    // clear our internal list
     forgetDirs();
+    m_lstFileItems.clear();
+    delete m_rootFileItem;
+    m_rootFileItem = 0L;
+
+    emit clear();
+  }
+  else if ( m_lstDirs.contains( _url ) )
+    return;
+
+  // TODO: hmm, this means that we could change (!) this setting with _keep == true
+  // what about setShowingDotFiles?
+  m_isShowingDotFiles = _showDotFiles;
+
+  m_lstDirs.append( _url );
 
   // Automatic updating of directories ?
   if ( d->autoUpdate && _url.isLocalFile() )
@@ -128,63 +147,123 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     //kdDebug(7003) << "adding to kdirwatch " << kdirwatch << " " << _url.path() << endl;
     kdirwatch->addDir( _url.path() );
   }
-  m_lstDirs.append( _url );
+
+  // we have a limit of MAX_JOBS concurrently running jobs
+  if ( d->jobs.count() >= d->MAX_JOBS )
+  {
+    d->lstPendingUpdates.append( _url );
+    return;
+  }
+
+  if ( m_url.isEmpty() || !_keep )
+    m_url = _url;     // the root
 
   m_bComplete = false;
-
   d->urlChanged = false;
-  m_url = _url; // keep a copy
-  m_job = KIO::listDir( m_url, false /* no default GUI */ );
-  connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-           SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+
+  m_job = KIO::listDir( _url, false /* no default GUI */ );
+  d->jobs.insert( m_job, QValueList<KIO::UDSEntry>() );
+
+  connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
+           SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
   connect( m_job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotResult( KIO::Job * ) ) );
   connect( m_job, SIGNAL( redirection( KIO::Job *, const KURL & ) ),
            this, SLOT( slotRedirection( KIO::Job *, const KURL & ) ) );
 
-  emit started( m_url.url() );
-  if ( !_keep )
-  {
-    emit clear();
-    m_lstFileItems.clear(); // clear our internal list
-    delete m_rootFileItem;
-    m_rootFileItem = 0L;
-  }
+  emit started( _url.url() );
 }
 
 void KDirLister::stop()
 {
-  // Stop running jobs
-  if ( m_job )
+  // Stop all running jobs
+  KIO::ListJob* job;
+  QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = d->jobs.begin();
+  while ( it != d->jobs.end() )
   {
-    m_job->disconnect( this );
-    m_job->kill();
-    m_job = 0;
+    job = it.key();
+    job->disconnect( this );
+    job->kill();
+    ++it;
   }
+
+  d->jobs.clear();
+  m_job = 0L;
   m_bComplete = true;
 }
 
-void KDirLister::slotResult( KIO::Job * job )
+void KDirLister::stop( const KURL& _url )
 {
-  m_job = 0;
-  m_bComplete = true;
-  if (job && job->error())
+  // TODO: consider to stop all the "child jobs" of _url as well
+
+  KIO::ListJob *job;
+  QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = d->jobs.begin();
+  while ( it != d->jobs.end() )
+  {
+    job = it.key();
+    if ( job->url() == _url )
+    {
+      if ( m_job == job )
+        m_job = 0L;
+
+      d->jobs.remove( it );
+      job->disconnect( this );
+      job->kill();
+      break;
+    }
+    else
+      ++it;
+  }
+
+  if ( d->jobs.isEmpty() )    // m_job already 0L
+    m_bComplete = true;
+  else if ( !m_job )
+    m_job = d->jobs.begin().key();
+}
+
+void KDirLister::slotResult( KIO::Job* j )
+{
+  assert( j );
+  KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
+  d->jobs.remove( job );
+
+  if ( d->jobs.isEmpty() )
+  {
+    m_job = 0;
+    m_bComplete = true;
+  }
+  else if ( m_job == job )
+    m_job = d->jobs.begin().key();
+
+  if ( job->error() )
   {
     job->showErrorDialog();
-    emit canceled();
-  } else
-  {
-      emit completed();
-      processPendingUpdates();
+
+    if ( m_lstDirs.count() > 1 )
+      emit canceled( job->url() );
+    if ( m_bComplete )
+      emit canceled();
   }
+  else
+  {
+    if ( m_lstDirs.count() > 1 )
+      emit completed( job->url() );
+    if ( m_bComplete )
+      emit completed();
+  }
+
+  // TODO: hmm, if there was an error and job is a parent of one or more
+  // of the pending urls we should cancel it/them as well
+  processPendingUpdates();
 }
 
-
-void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
+void KDirLister::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
 {
   KFileItemList lstNewItems, lstFilteredItems;
   KIO::UDSEntryListConstIterator it = entries.begin();
   KIO::UDSEntryListConstIterator end = entries.end();
+
+  const KURL& url = static_cast<KIO::ListJob *>(job)->url();
 
   // avoid creating these QStrings again and again
   static const QString& dot = KGlobal::staticQString(".");
@@ -196,7 +275,10 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     KIO::UDSEntry::ConstIterator entit = (*it).begin();
     for( ; entit != (*it).end(); ++entit )
       if ( (*entit).m_uds == KIO::UDS_NAME )
+      {
         name = (*entit).m_str;
+        break;
+      }
 
     ASSERT( !name.isEmpty() );
     if ( name.isEmpty() )
@@ -206,105 +288,172 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     {
       if ( !m_rootFileItem ) // only if we didn't keep the previous dir
       {
-        m_rootFileItem = createFileItem( *it, m_url, m_bDelayedMimeTypes );
+        m_rootFileItem = createFileItem( *it, url, m_bDelayedMimeTypes );
       }
     }
     else
     {
-      //kdDebug(7003)<< "Adding " << u.prettyURL() << endl;
-      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes);
+      //kdDebug(7003)<< "Adding " << url.prettyURL() << endl;
+      KFileItem* item = createFileItem( *it, url, m_bDelayedMimeTypes);
       assert( item != 0L );
       bool isNamedFilterMatch = ((m_bDirOnlyMode && !item->isDir()) ||
                                  !matchesFilter( item ));
       bool isMimeFilterMatch = !matchesMimeFilter( item );
       if ( isNamedFilterMatch || isMimeFilterMatch )
       {
+        // save only files that are filtered out by mime
         if ( !isNamedFilterMatch && isMimeFilterMatch )
           lstFilteredItems.append( item );
         else
           delete item;
         continue;
       }
-      lstNewItems.append( item );
-      m_lstFileItems.append( item );
+      // make sure we save and emit every item only once
+      KFileItem* kit;
+      for ( kit = m_lstFileItems.first(); kit; kit = m_lstFileItems.next() )
+        if ( kit->url() == item->url() )
+          break;
+
+      if ( !kit )
+      {
+        lstNewItems.append( item );
+        m_lstFileItems.append( item );
+      }
+      // TODO: else add to items to be refreshed?
     }
   }
-  if (!lstNewItems.isEmpty())
+
+  if ( !lstNewItems.isEmpty() )
     emit newItems( lstNewItems );
   if ( !lstFilteredItems.isEmpty() )
     emit itemsFilteredByMime( lstFilteredItems );
 }
 
-void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
+void KDirLister::slotRedirection( KIO::Job *job, const KURL & url )
 {
   kdDebug(7003) << "KDirLister::slotRedirection " << url.prettyURL() << endl;
-  KURL oldUrl = m_url;
-  m_url = url;
+
+  KURL oldUrl;
+  if ( job )
+  {
+    oldUrl = static_cast<KIO::ListJob *>( job )->url();
+    if ( m_url == oldUrl )
+      m_url = url;
+  }
+  else
+  {
+    oldUrl = m_url;
+    m_url = url;
+  }
+
+  *m_lstDirs.find( oldUrl ) = url;
+
   if ( m_lstDirs.count() == 1 )
   {
-      //kdDebug( 7003 ) << "setting first URL to " << url.prettyURL() << endl;
-      m_lstDirs.first() = m_url;
+    m_lstFileItems.clear();
+    emit clear();
+    emit redirection( url );
   }
-  if ( !m_lstFileItems.isEmpty() )
+  else
   {
-      //kdDebug( 7003 ) << "getting rid of current stuff by emitting clear" << endl;
-      emit clear();
+    for ( KFileItem *item = m_lstFileItems.first(); item; item = m_lstFileItems.next() )
+    {
+      if ( oldUrl.isParentOf( item->url() ) )
+        item->unmark();
+      else
+        item->mark();
+    }
+    deleteUnmarkedItems();
+
+    emit redirection( oldUrl, url );
   }
-  emit redirection( url );
-  emit redirection( oldUrl, url );
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
 {
   kdDebug(7003) << "KDirLister::updateDirectory( " << _dir.prettyURL() << " )" << endl;
-  if ( !m_bComplete )
+
+  // we have a limit of MAX_JOBS concurrently running jobs
+  if ( d->jobs.count() >= d->MAX_JOBS )
   {
-    //kdDebug(7003) << "KDirLister::updateDirectory -> appending to pending updates " << endl;
-    d->lstPendingUpdates.append( _dir );
+    if ( d->lstPendingUpdates.find( _dir ) == d->lstPendingUpdates.end() )
+    {
+      //kdDebug(7003) << "KDirLister::updateDirectory -> appending to pending updates" << endl;
+      d->lstPendingUpdates.append( _dir );
+    }
+    else
+    {
+      //kdDebug(7003) << "KDirLister::updateDirectory -> discarding, already queued" << endl;
+    }
+
     return;
   }
 
-  // Stop running jobs
-  stop();
-
   m_bComplete = false;
-  m_buffer.clear();
-
   d->urlChanged = false;
-  m_url = _dir;
-  m_job = KIO::listDir( m_url, false /* no default GUI */ );
-  connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-           SLOT( slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList&)));
-  connect( m_job, SIGNAL( result( KIO::Job * ) ),
+
+  KIO::ListJob* job = KIO::listDir( _dir, false /* no default GUI */ );
+  d->jobs.insert( job, QValueList<KIO::UDSEntry>() );
+
+  if ( !m_job )
+    m_job = job;
+
+  connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
+           SLOT( slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
+  connect( job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotUpdateResult( KIO::Job * ) ) );
 
-  kdDebug(7003) << "update started in " << m_url.prettyURL() << endl;
+  kdDebug(7003) << "update started in " << _dir.prettyURL() << endl;
 
-  emit started( m_url.url() );
+  emit started( _dir.url() );
 }
 
-void KDirLister::slotUpdateResult( KIO::Job * job )
+void KDirLister::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList& list )
 {
-  m_job = 0;
-  m_bComplete = true;
-  if (job->error())
+  d->jobs[static_cast<KIO::ListJob*>(job)] += list;
+}
+
+void KDirLister::slotUpdateResult( KIO::Job * j )
+{
+  assert( j );
+  KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
+
+  if ( d->jobs.count() == 1 )
+  {
+    m_job = 0;
+    m_bComplete = true;
+  }
+  else if ( m_job == job )
+  {
+    if ( job == d->jobs.end().key() )
+      m_job = d->jobs.begin().key();
+    else
+      m_job = d->jobs.end().key();
+  }
+
+  if ( job->error() )
   {
     //don't bother the user
     //job->showErrorDialog();
-    //emit canceled();
+    //if ( m_lstDirs.count() > 1 )
+    //  emit canceled( job->url() );
+    //if ( m_bComplete )
+    //  emit canceled();
+    // TODO: if job is a parent of one or more
+    // of the pending urls we should cancel them
+    processPendingUpdates();
     return;
   }
 
+  const KURL& url = job->url();
+
   KFileItemList lstNewItems, lstFilteredItems;
   KFileItemList lstRefreshItems;
-  KURL::List::Iterator pendingIt = d->lstPendingUpdates.find( m_url );
-  if ( pendingIt != d->lstPendingUpdates.end() )
-    d->lstPendingUpdates.remove( pendingIt );
 
-  // Unmark all items whose path is m_url
-  QString sPath = m_url.path( 1 ); // with trailing slash
-  QListIterator<KFileItem> kit ( m_lstFileItems );
-  for( ; kit.current(); ++kit )
+  // Unmark all items whose path is url
+  QString sPath = url.path( 1 ); // with trailing slash
+  KFileItemListIterator kit ( m_lstFileItems );
+  for ( ; kit.current(); ++kit )
   {
     if ( (*kit)->url().directory( false /* keep trailing slash */, false ) == sPath )
     {
@@ -316,8 +465,9 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
   static const QString& dot = KGlobal::staticQString(".");
   static const QString& dotdot = KGlobal::staticQString("..");
-  QValueListIterator<KIO::UDSEntry> it = m_buffer.begin();
-  for( ; it != m_buffer.end(); ++it )
+  QValueList<KIO::UDSEntry> buf = d->jobs[job];
+  QValueListIterator<KIO::UDSEntry> it = buf.begin();
+  for( ; it != buf.end(); ++it )
   {
     QString name;
 
@@ -337,13 +487,13 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
     if ( m_isShowingDotFiles || name[0]!='.' )
     {
       // Form the complete url
-      KURL u( m_url );
+      KURL u( url );
       u.addPath( name );
       //kdDebug(7003) << "slotUpdateFinished : found " << name << endl;
 
       // Find this item
       bool found = false;
-      QListIterator<KFileItem> kit ( m_lstFileItems );
+      kit.toFirst();
       for( ; kit.current(); ++kit )
       {
         if ( u == (*kit)->url() )
@@ -355,7 +505,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
         }
       }
 
-      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
+      KFileItem* item = createFileItem( *it, url, m_bDelayedMimeTypes );
 
       if ( found )
       {
@@ -386,8 +536,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
         }
 
         //kdDebug(7003) << "slotUpdateFinished : URL= " << item->url().prettyURL() << endl;
-        m_lstFileItems.append( item );
         lstNewItems.append( item );
+        m_lstFileItems.append( item );
         item->mark();
       }
     }
@@ -400,11 +550,26 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   if ( !lstFilteredItems.isEmpty() )
       emit itemsFilteredByMime( lstFilteredItems );
 
+  // unmark the childs
+  kit.toFirst();
+  for ( ; kit.current(); ++kit )
+    if ( !(*kit)->isMarked() )
+    {
+      KFileItemListIterator kit2( m_lstFileItems );
+      for ( ; kit2.current(); ++kit2 )
+        if ( (*kit)->url().isParentOf( (*kit2)->url() ) )
+          (*kit2)->unmark();
+    }
+
   deleteUnmarkedItems();
 
-  m_buffer.clear();
+  d->jobs.remove( job );
 
-  emit completed();
+  if ( m_lstDirs.count() > 1 )
+    emit completed( job->url() );
+  if ( m_bComplete )
+    emit completed();
+
   processPendingUpdates();
 }
 
@@ -419,8 +584,10 @@ void KDirLister::processPendingUpdates()
     for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
       if ( (*pendingIt).cmp( (*it), true /* ignore trailing slash */ ) )
       {
-        kdDebug(7003) << "KDirLister::processPendingUpdates pending update in " << (*pendingIt).prettyURL() << endl;
-        updateDirectory( *pendingIt );
+        kdDebug(7003) << "KDirLister::processPendingUpdates: pending update in " << (*pendingIt).prettyURL() << endl;
+        KURL copy = KURL( *pendingIt );  // keep a copy to prevent a crash
+        d->lstPendingUpdates.remove( pendingIt );
+        updateDirectory( copy );
         return;
       }
     // Drop this update, we're not interested anymore
@@ -432,28 +599,34 @@ void KDirLister::processPendingUpdates()
 void KDirLister::deleteUnmarkedItems()
 {
   // Find all unmarked items and delete them
-  QList<KFileItem> lst;
-  QListIterator<KFileItem> kit ( m_lstFileItems );
-  for( ; kit.current(); ++kit )
-  {
-    if ( !(*kit)->isMarked() )
+  KFileItem* item;
+  m_lstFileItems.first();
+  while ( (item = m_lstFileItems.current()) )
+    if ( !item->isMarked() )
     {
-      //kdDebug(7003) << "Removing " << (*kit)->text() << endl;
-      lst.append( *kit );
+      // unregister and remove the deleted child folders
+      // (the child items should have been unmarked already)
+      KURL::List::Iterator it = m_lstDirs.begin();
+      while ( it != m_lstDirs.end() )
+        if ( item->url().isParentOf( *it ) )
+        {
+          if ( (*it).isLocalFile() )
+          {
+            //kdDebug(7003) << "forgetting about " << (*it).path() << endl;
+            kdirwatch->removeDir( (*it).path() );
+          }
+
+          it = m_lstDirs.remove( it );
+        }
+        else
+          ++it;
+
+      m_lstFileItems.take();
+      emit deleteItem( item );
+      delete item;
     }
-  }
-
-  KFileItem* kci;
-  for( kci = lst.first(); kci != 0L; kci = lst.next() )
-  {
-    emit deleteItem( kci );
-    m_lstFileItems.remove( kci );
-  }
-}
-
-void KDirLister::slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& list )
-{
-  m_buffer += list;
+    else
+      m_lstFileItems.next();
 }
 
 void KDirLister::setShowingDotFiles( bool _showDotFiles )
@@ -461,8 +634,26 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
   if ( m_isShowingDotFiles != _showDotFiles )
   {
     m_isShowingDotFiles = _showDotFiles;
-    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
-      updateDirectory( *it ); // update all directories
+
+    if ( !_showDotFiles )
+    {
+      bool found = false;
+      KFileItemListIterator it( m_lstFileItems );
+      for ( ; it.current(); ++it )
+        if ( (*it)->text()[0] == '.' )
+        {
+          (*it)->unmark();
+          found = true;
+        }
+        else
+          (*it)->mark();
+
+      if ( found )
+        deleteUnmarkedItems();
+    }
+    else
+      for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
+        updateDirectory( *it ); // update all directories
   }
 }
 
@@ -473,7 +664,7 @@ bool KDirLister::showingDotFiles() const
 
 KFileItem* KDirLister::find( const KURL& _url ) const
 {
-  QListIterator<KFileItem> it = m_lstFileItems;
+  KFileItemListIterator it = m_lstFileItems;
   for( ; it.current(); ++it )
   {
     if ( (*it)->url() == _url )
@@ -485,7 +676,7 @@ KFileItem* KDirLister::find( const KURL& _url ) const
 
 KFileItem* KDirLister::findByName( const QString& name ) const
 {
-  QListIterator<KFileItem> it = m_lstFileItems;
+  KFileItemListIterator it = m_lstFileItems;
   for( ; it.current(); ++it )
   {
     if ( (*it)->name() == name )
@@ -597,12 +788,14 @@ void KDirLister::clearMimeFilter()
 // ## the deprecated one
 void KDirLister::setMimeFilter( const QString& mimefilter )
 {
+    //kdWarning(7003) << "This is the deprecated setMimeFilter( " << mimefilter << " )!!!" << endl;
     d->mimeFilter = QStringList::split(' ', mimefilter);
 }
 
 // ## the deprecated one
 const QString& KDirLister::mimeFilter() const
 {
+    //kdWarning(7003) << "This is the deprecated mimeFilter()!!!" << endl;
     d->deprecated_mimeFilter = QString::null;
     QStringList::ConstIterator it = d->mimeFilter.begin();
     while ( it != d->mimeFilter.end() ) {
@@ -631,7 +824,7 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
 {
   ASSERT( !fileList.isEmpty() );
   // Mark all items
-  QListIterator<KFileItem> kit ( m_lstFileItems );
+  KFileItemListIterator kit ( m_lstFileItems );
   for( ; kit.current(); ++kit )
     (*kit)->mark();
 
@@ -671,13 +864,24 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
     }
   }
 
+  // unmark the childs
+  kit.toFirst();
+  for ( ; kit.current(); ++kit )
+    if ( !(*kit)->isMarked() )
+    {
+      KFileItemListIterator kit2( m_lstFileItems );
+      for ( ; kit2.current(); ++kit2 )
+        if ( (*kit)->url().isParentOf( (*kit2)->url() ) )
+          (*kit2)->unmark();
+    }
+
   deleteUnmarkedItems();
 }
 
 void KDirLister::FilesChanged( const KURL::List & fileList )
 {
   KURL::List dirs;
-  QListIterator<KFileItem> kit ( m_lstFileItems );
+  KFileItemListIterator kit ( m_lstFileItems );
   KURL::List::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
@@ -700,7 +904,10 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
   // Tricky. If an update is running at the same time, it might have
   // listed those files before, and emit outdated info (reverting this method's work)
   // So we need to abort any running update, and relaunch it.
-  if ( d->autoUpdate && !m_bComplete )
+  //
+  // even more tricky: we need to relaunch even if there is a new listjob
+  // running, not just an update. (Michael)
+  if ( !m_bComplete )
   {
       stop();
       KURL::List::ConstIterator it = dirs.begin();
@@ -722,7 +929,7 @@ void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
     }
     else
     {
-        QListIterator<KFileItem> kit ( m_lstFileItems );
+        KFileItemListIterator kit ( m_lstFileItems );
         for( ; kit.current(); ++kit )
         {
           if ( (*kit)->url().cmp( src, true /* ignore trailing slash */ ) )
@@ -733,6 +940,7 @@ void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
               KFileItemList lst;
               lst.append( *kit );
               emit refreshItems( lst );
+              break;
           }
         }
     }
@@ -772,7 +980,7 @@ bool KDirLister::autoUpdate() const
 
 bool KDirLister::setURL( const KURL& url )
 {
-    if ( !validURL( url ) )
+   if ( !validURL( url ) )
         return false;
 
     d->urlChanged |= !(url == m_url && m_bComplete);
@@ -785,12 +993,13 @@ bool KDirLister::setURL( const KURL& url )
 void KDirLister::listDirectory()
 {
     if ( m_bComplete && !d->urlChanged ) {
-	emit clear();
-	emit newItems( m_lstFileItems );
-	emit completed();
+        emit clear();
+        emit newItems( m_lstFileItems );
+        emit completed();
     }
-    else
-	openURL( m_url, showingDotFiles() );
+    else {
+        openURL( m_url, showingDotFiles() );
+    }
 }
 
 void KDirLister::setURLDirty( bool dirty )
@@ -806,6 +1015,9 @@ bool KDirLister::validURL( const KURL& url ) const
     KMessageBox::error( (QWidget*)0L, tmp);
     return false;
   }
+
+  // TODO: perhaps verify that this is really a directory?
+
   return true;
 }
 

@@ -23,7 +23,6 @@
 #include "kfileitem.h"
 #include "kdirnotify.h"
 
-#include <qtimer.h>
 #include <qstringlist.h>
 #include <qlist.h>
 #include <qregexp.h>
@@ -34,24 +33,24 @@
 namespace KIO { class Job; class ListJob; }
 
 /**
- * The dir lister deals with the kiojob used to list and update a directory,
- * handles the timer, and has signals for the user of this class (e.g.
- * konqueror view or kdesktop) to create/destroy its items when asked.
+ * The dir lister deals with the kiojob used to list and update a directory
+ * and has signals for the user of this class (e.g. konqueror view or
+ * kdesktop) to create/destroy its items when asked.
  *
  * This class is independent from the graphical representation of the dir
  * (icon container, tree view, ...) and it stores the items (as KFileItems).
  *
  * Typical usage :
- * Create an instance,
- * Connect to at least update, clear, newItem, and deleteItem
- * Call openURL - the signals will be called
- * Reuse the instance when opening a new url (openURL)
- * Destroy the instance when not needed anymore (usually destructor)
+ * Create an instance.
+ * Connect to at least update, clear, newItem, and deleteItem.
+ * Call openURL - the signals will be called.
+ * Reuse the instance when opening a new url (openURL).
+ * Destroy the instance when not needed anymore (usually destructor).
  *
  * Advanced usage : call openURL with _keep = true to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
  *
- *@short Helper class for the kiojob used to list and update a directory.
+ * @short Helper class for the kiojob used to list and update a directory.
  */
 class KDirLister : public QObject, public KDirNotify
 {
@@ -67,7 +66,7 @@ public:
   virtual ~KDirLister();
 
   /**
-   * Run the directory lister on the given url
+   * Run the directory lister on the given url.
    * @param _url the directory URL
    * @param _showDotFiles whether to return the "hidden" files
    * @param _keep if true the previous directories aren't forgotten
@@ -81,12 +80,19 @@ public:
   virtual void openURL( const KURL& _url, bool _showDotFiles, bool _keep = false );
 
   /**
-   * Stop listing the current directory
+   * Stop listing all directories currently being listed.
    */
   virtual void stop();
 
   /**
-   * @return the url used by this instance to list the files
+   * Stop listing the given directory.
+   * @param _url the directory URL
+   */
+  void stop( const KURL& _url );
+
+  /**
+   * @return the url used by this instance to list the files, with _keep == true,
+   *         this is the first url opened (in e.g. a treeview this is the root).
    * It might be different from the one we gave, if there was a redirection.
    */
   virtual const KURL & url() const { return m_url; }
@@ -132,7 +138,7 @@ public:
 
   /**
    * @returns whether KDirWatch is used to automatically update directories.
-   * enabled by default.
+   * This is enabled by default.
    */
   bool autoUpdate() const;
 
@@ -172,10 +178,13 @@ public:
    */
   KFileItem * rootItem() const { return m_rootFileItem; }
 
+  /**
+   * ## problem, if there are more jobs running (merge?)
+   */
   KIO::ListJob * job() const { return m_job; }
 
   /**
-   * Call this with @p dirsOnly = true to list only directories
+   * Call this with @p dirsOnly == true to list only directories
    */
   void setDirOnlyMode( bool dirsOnly ) { m_bDirOnlyMode = dirsOnly; }
 
@@ -194,12 +203,12 @@ public:
    *
    * @see #matchesFilter
    */
-  void setNameFilter(const QString&);
+  void setNameFilter( const QString& );
 
   /**
    * Set mime-based filter to only list items matching the given mimetypes
    *
-   * NOTE: setting the filter does not automatically reload direcory.  
+   * NOTE: setting the filter does not automatically reload direcory.
    * Also calling this function will not affect any named filter already set.
    *
    * @see #clearMimeFilter
@@ -215,13 +224,13 @@ public:
    * @see #setMimeFilter
    */
   void clearMimeFilter();
-    
+
   /**
    * @deprecated
    * Sets mime filters separated with space.
    * ## remove for 3.0
    */
-  void setMimeFilter(const QString&);
+  void setMimeFilter( const QString& );
 
   /**
    * @returns the current name filter, as set via @ref setNameFilter()
@@ -233,7 +242,7 @@ public:
    * Empty, when no mime filter is set.
    */
   QStringList mimeFilters() const;
-    
+
   /**
    * @deprecated
    * @returns the current mime filter as set via @ref setMimeFilter()
@@ -242,7 +251,7 @@ public:
 
   /**
    * @returns true if @p name matches a filter in the list,
-   * otherwise fale.
+   * otherwise false.
    * @see #setNameFilter
    */
   bool matchesFilter( const QString& name ) const;
@@ -286,27 +295,39 @@ public:
   /**
    * Returns true if no io operation is currently in progress.
    */
-  bool isFinished() const { return (m_job == 0); }
+  bool isFinished() const { return m_bComplete; }
 
 signals:
   /**
    * Tell the view that we started to list _url.
    * The view knows that openURL should start it, so it might seem useless,
    * but the view also needs to know when an automatic update happens.
+   *
+   * ## KDE 3.0: change to const KURL&
    */
   void started( const QString& _url );
 
   /** Tell the view that listing is finished */
   void completed();
+  void completed( const KURL& _url );
+
   /** Tell the view that user canceled the listing */
   void canceled();
+  void canceled( const KURL& _url );
 
-  /** Signal a redirection */
+  /**
+   * Signal a redirection.
+   * Only emitted if _keep == false
+   */
   void redirection( const KURL & url );
-  /** Alternative signal for indicating a redirection */
+
+  /**
+   * Signal a redirection.
+   * Only emitted if _keep == true, i.e. there are more than one dirs to list
+   */
   void redirection( const KURL & oldUrl, const KURL & newUrl );
 
-  /** Clear all items */
+  /** Signal to clear all items in case of _keep == false */
   void clear();
   /** Signal new items, @p complete is true when the directory loading has
    *  finished */
@@ -314,7 +335,11 @@ signals:
 
   /** Send a list of items filtered-out by mime-type. */
   void itemsFilteredByMime( const KFileItemList & items );
-  /** Signal an item to remove */
+
+  /**
+   * Signal an item to remove.
+   * ## change to const KFileItem in 3.0
+   */
   void deleteItem( KFileItem * _fileItem );
 
   /**
@@ -396,24 +421,30 @@ protected:
   void processPendingUpdates();
 
   /**
-   * The url that we used to list (can be different in case of redirect)
+   * The url that we used to list the root (can be different in case of redirect)
+   * ## KDE 3.0: remove this, use m_rootFileItem->url()
    */
   KURL m_url;
 
+  /**
+   * This is a pointer to the most recently started job.
+   * ## KDE 3.0: remove! (KDirListerPrivate::lstJobs is to be used)
+   */
   KIO::ListJob * m_job;
 
   /**
    * The internal storage of file items
    */
   QList<KFileItem> m_lstFileItems;
+
   /**
    * File Item for m_url itself (".")
    */
   KFileItem * m_rootFileItem;
 
   /**
-   * List of dirs handled by this instance. Same as m_url if only one dir
-   * But for a tree view, it contains all the dirs shown
+   * List of dirs handled by this instance. Same as m_url if only one dir.
+   * But for a tree view, it contains all the dirs shown.
    * (Used to unregister from kdirwatch)
    */
   KURL::List m_lstDirs;
@@ -421,7 +452,10 @@ protected:
   bool m_isShowingDotFiles;
   bool m_bComplete;
 
-  /** Keep entries found - used by slotUpdate* */
+  /**
+   * Keep entries found - used by slotUpdate*
+   * ## in 3.0 replace with d->buffer;
+   */
   QValueList<KIO::UDSEntry> m_buffer;
 
   /** List only directories */
