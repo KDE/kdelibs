@@ -35,7 +35,7 @@
  * KProgress is derived from @ref QProgressBar, so
  * you can use all the methods from that class. The only real difference
  * is that a signal is emitted on changes to the value and you do not need
- * to subclass KProgress just to change the format of the indicator text. 
+ * to subclass KProgress just to change the format of the indicator text.
  *
  * @sect Details
  *
@@ -112,7 +112,7 @@ public slots:
    * The default format is "%p%" (which looks like "42%".)
    *
    * Note: Setting the format to anything other then "%p%" will force centerIndicator to true,
-   * since it's often impossible to layout a progressbar with a more general format with the 
+   * since it's often impossible to layout a progressbar with a more general format with the
    * indicator string anywhere else.
    *
    * @param format %p is replaced by percentage done, %v is replaced by actual
@@ -142,7 +142,7 @@ public slots:
    *
    * This method is
    * provided for convenience and is equivalent with
-   * @ref setValue(value()+prog).
+   * @ref setProgress(progress()+prog).
    */
   virtual void advance(int offset);
 
@@ -209,7 +209,7 @@ class KProgressDialog : public KDialogBase
         ~KProgressDialog();
 
         /**
-         * Returns the @ref KProgress used in this dialog. 
+         * Returns the @ref KProgress used in this dialog.
          * To set the number of steps or other progress bar related
          * settings, access the KProgress object directly via this method.
          */
@@ -221,7 +221,7 @@ class KProgressDialog : public KDialogBase
          * @param text the text to display
          */
         void    setLabel(const QString&);
-        
+
         /**
          * Returns the current dialog text
          */
@@ -293,7 +293,7 @@ class KProgressDialog : public KDialogBase
          */
         QString buttonText();
 
-        /** 
+        /**
          * Set the minimum number of milliseconds to wait before
          * actually showing the dialog
          */
