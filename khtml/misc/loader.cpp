@@ -935,6 +935,21 @@ void Loader::cancelRequests( const DOMString &baseURL )
     }
 }
 
+KIO::Job *Loader::jobForRequest( const DOM::DOMString &url )
+{
+    QPtrDictIterator<Request> it( m_requestsLoading );
+
+    for (; it.current(); ++it )
+    {
+        CachedObject *obj = it.current()->object;
+
+        if ( obj && obj->url() == url )
+            return static_cast<KIO::Job *>( it.currentKey() );
+    }
+
+    return 0;
+}
+
 // ----------------------------------------------------------------------------
 
 QDict<CachedObject> *Cache::cache = 0;

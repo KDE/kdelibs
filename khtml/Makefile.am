@@ -35,7 +35,7 @@ AM_CPPFLAGS = -DQT_NO_COMPAT
 
 SUBDIRS = misc dom css xml html rendering pics java . ecma
 
-lib_LTLIBRARIES = libkhtml.la
+lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp
 
@@ -43,10 +43,15 @@ libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
-noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h khtml_pagecache.h
+noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h khtml_pagecache.h \
+		 khtmlimage.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la $(top_builddir)/kssl/libkssl.la
+
+libkhtmlimage_la_SOURCES = khtmlimage.cpp
+libkhtmlimage_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
+libkhtmlimage_la_LIBADD = libkhtml.la
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
@@ -55,7 +60,7 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(top_srcdir)/kssl -I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
-service_DATA = khtml.desktop
+service_DATA = khtml.desktop khtmlimage.desktop
 
 rcdir = $(kde_datadir)/khtml
 rc_DATA = khtml.rc khtml_browser.rc khtml_popupmenu.rc

@@ -319,6 +319,9 @@ namespace khtml
 
         void cancelRequests( const DOM::DOMString &baseURL );
 
+        // may return 0L
+        KIO::Job *jobForRequest( const DOM::DOMString &url );
+
     signals:
 	void requestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
 	void requestFailed( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
