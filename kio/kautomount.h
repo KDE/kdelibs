@@ -25,28 +25,54 @@ namespace KIO {
 class Job;
 }
 
+/**
+ * This class implements synchronous mounting of devices,
+ * as well as showing a file-manager window after mounting a device, optionally.
+ * It is a wrapper around the asychronous KIO::special call for mount, used by KMimeType.
+ */
 class KAutoMount : public QObject
 {
   Q_OBJECT
 public:
-  KAutoMount( bool _readonly, const QString& _format, const QString& _device, const QString& _mountpoint,
-              const QString & _desktopFile, bool _show_filemanager_window = true );
-    
+  /**
+   * Mount a device
+   * @param readonly if true, the device is mounted read-only
+   * @param format the file system (e.g. vfat, ext2...) [optional, fstab is used otherwise]
+   * @param device the path to the device (e.g. /dev/fd0)
+   * @param mountpoint the directory where to mount the device [optional, fstab is used otherwise]
+   * @param desktopFile the file the user clicked on - to notify KDirWatch of the fact that
+   * it should emit fileDirty for it (to have the icon change)
+   * @param show_filemanager_window if true, a file-manager window for that mountpoint is shown after
+   * the mount, if successful.
+   */
+  KAutoMount( bool readonly, const QString& format, const QString& device, const QString& mountpoint,
+              const QString & desktopFile, bool show_filemanager_window = true );
+
 protected slots:
   void slotResult( KIO::Job * );
-    
+
 protected:
   QString m_strDevice;
   bool m_bShowFilemanagerWindow;
   QString m_desktopFile;
 };
 
+/**
+ * This class implements synchronous unmounting of devices,
+ * It is a wrapper around the asychronous KIO::special call for unmount, used by KMimeType.
+ */
 class KAutoUnmount : public QObject
 {
   Q_OBJECT
 public:
-  KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile );
-    
+  /**
+   * Unmount a device
+   * @param mountpoint the mount point - KAutoUnmount finds the device from that
+   * @param desktopFile the file the user clicked on - to notify KDirWatch of the fact that
+   * it should emit fileDirty for it (to have the icon change)
+   */
+  KAutoUnmount( const QString & mountpoint, const QString & desktopFile );
+
 protected slots:
   void slotResult( KIO::Job * );
 private:
