@@ -76,7 +76,8 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
 					      MouseEvent *ev )
 {
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
-    if ( (usemap.length() > 0) &&
+    bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
+    if ( inside && usemap.length() > 0 &&
          ( ! (m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN) ) )
     {
         RenderObject* p = m_render->parent();
@@ -102,7 +103,7 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
                                       renderer()->width(), renderer()->height(), ev);
 	}
     }
-    return HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
+    return inside;
 }
 
 void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
