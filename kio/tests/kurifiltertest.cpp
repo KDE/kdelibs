@@ -10,11 +10,11 @@
 void filter( const char* u, QStringList list = QStringList() )
 {
     QString a = QString::fromLatin1( u );
-    cout << "Filtering: " << a << endl;
+    cout << "***********************************\nFiltering: " << a << endl;
     if (KURIFilter::self()->filterURI(a, list))
-        cout << "After filtering: " << a << endl;
+        cout << "After filtering: " << a << "\n***********************************\n" << endl;
     else
-        cout << "No filtering required" << endl;
+        cout << "No filtering required\n***********************************\n" << endl;
 }
 
 int main(int argc, char **argv) {
@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
     filter( "mosfet.org" );
 
     // SMB share test with a specific filter chosen
+    filter( "\\\\THUNDER\\", "ShortURIFilter" );
     filter( "smb:///", "ShortURIFilter" ); // use specific filter.
     filter( "smb:", "ShortURIFilter" ); // use specific filter.
     filter( "smb:/", "ShortURIFilter" ); // use specific filter.
