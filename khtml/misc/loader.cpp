@@ -561,7 +561,7 @@ void CachedImage::movieStatus(int status)
 
     if ( m )
     {
-	if(m->finished())
+	if(m->finished() && (status == QMovie::EndOfLoop))
 	    m->restart();
 	if(m->paused())
 	    m->unpause();
@@ -591,7 +591,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 	clear();
 	formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
 	typeChecked = true;
-	
+
 	if ( formatType )  // movie format exists
 	{
 	    imgSource = new ImageSource( _buffer.buffer());
