@@ -206,7 +206,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   {
     bool bReencode = false;
     unsigned char character = csegment[ i++ ];
-    if ((character == ' ') || (character > 127))
+    if ((character <= ' ') || (character > 127))
        bReencode = true;
 
     new_usegment [ new_length2++ ] = character;
