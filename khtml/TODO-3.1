@@ -1,0 +1,81 @@
+
+- rendertable/htmltableimpl cleanups. This is the biggest and the
+  most urgent of the pending jobs. 
+   - finally get rid of the "setLayouted(false)" hacks in many wrong
+     places in the code and fix the regressions in a sane way. 
+   - adding / removing a table cell should never invalidate the layout,
+     unless the colinfo structure changes in a way it makes a relayout
+     necessary. (this is only rarely needed if the colinfo is maybe
+     slightly changed). will fix the O(n^2) behaviour which currenty
+     is the biggest slowdown for khtml
+   - remove all the hacks that were added from various people
+     to fix one or the other rare problem (mostly layout invalidation
+     and complete repaint related). collect testcases, think about
+     the right way to fix the regressions.
+   - fix the painting routines to not iterate over all cells  
+     i.e. change the O(n) to O(log n) by binary-searching the right cell
+     to print.
+   - rework the progressive update behaviour of table cells. do not
+     distribute extra width over cells as long as the table is not
+     yet completely loaded (assume that most pages set good 
+     colum width hints). wait for the first 2 rows of the table to be
+     received until starting to distribute width. (one row for the initial
+     colinfo allocation, row 2 for the usual colinfo - overwriting 
+     many pages use to overcome netscape brokenness). 
+   - try to avoid the massive relayouts of tablecells during loading
+     the table. the IE way is considered to be better than netscape
+     (wait till everything is there), however exact functioning is 
+     not yet known. we couldn't agree on good heuristics, needs
+     investigation.
+   - try to clean up the code, think about reducing the massive
+     memory overhead of rendertable. 
+
+   expecting many regressions. needs discipline and much time
+   for testing. However we think its urgent enough for 3.0. 
+
+- renderlists should not use floats for inset markers. use
+  display: run-in or compact instead. 
+  
+  easy to do. possible performance improvement for pages with
+  long lists. no regressions expected. 
+
+- paint buffer optimisations. always paint full paint buffer height,
+  cache the currently unneeded parts for possible later paint events.
+  disable paintevent clipmasks in scrollview as we always paint  
+  rectangular areas. make sure the repaint event compression is 
+  not lost.
+
+  low priority, but easy to do. 
+
+- implement progressive loading in the xml tokenizer (Qt supports
+  it now). try to merge some of the html parser / xml parser code,
+  which is currently fully duplicated. 
+
+- stabilize the XML support. possibly parse strict and namespaced
+  xhtml documents with the xml parser and not the html one for
+  improved compatibility and as a testbed for keeping the xml 
+  code parts stable (IE 6 also parses with a nonvalidating xml parser)
+
+- adding an "extra" pointer to renderflow. possible with several overloaded
+   meanings for extra structs on demand: 
+
+    - elements iwth overflow: scroll will be able to store 2 qscrollbar
+      implementations as well as the needed extra variables for 
+      correct support
+
+    - flows with complex border / inline css attributes will be able to
+      cache often-calculated pixelsize representations in such a struct
+      (like contentwidth / height). 
+   
+   - possibly a jump table for faster searching in long child node lists
+
+  overflow: scroll should go into 3.0. the rest can wait. when doing the
+  above memory optimisations, the overhead for this one is neglectible. 
+
+- rethink the khtmlpart / plugin API. possibly see if we can work
+  out a common plugin interface with opera / mozilla guys. 
+
+  nobody volunteered for this, although it is agreed to have
+  high priority. 
+   
+- doing the still pending form fixes. Dirk's work. 
