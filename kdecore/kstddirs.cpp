@@ -661,25 +661,45 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     return true;
 }
 
+static QString readEnvPath(const char *env)
+{
+   QCString c_path = getenv(env);
+   if (c_path.isEmpty()) 
+      return QString::null;
+   return QFile::decodeName(c_path);
+}
+
+static void fixHomeDir(QString &dir)
+{
+   if (dir[0] == '~')
+   {
+      dir = QDir::homeDirPath() + dir.mid(1);
+   }
+}
+
 void KStandardDirs::addKDEDefaults()
 {
     QStringList kdedirList;
 
-    const char *kdedirs = getenv("KDEDIRS");
-    if (kdedirs)
+    QString kdedirs = readEnvPath("KDEDIRS");
+    if (!kdedirs.isEmpty()) 
+    {
 	tokenize(kdedirList, kdedirs, ":");
-    else {
-	QString kdedir = getenv("KDEDIR");
+    }
+    else 
+    {
+	QString kdedir = readEnvPath("KDEDIR");
 	if (!kdedir.isEmpty())
-	  kdedirList.append(kdedir);
+        {
+           fixHomeDir(kdedir);
+	   kdedirList.append(kdedir);
+        }
     }
     kdedirList.append(KDEDIR);
 
-    QString localKdeDir;
-    const char *localkde = getenv("KDEHOME");
-    if (localkde && strlen(localkde))
+    QString localKdeDir = readEnvPath("KDEHOME");
+    if (!localKdeDir.isEmpty())
     {
-       localKdeDir = QFile::decodeName(localkde);
        if (localKdeDir[localKdeDir.length()-1] != '/')
           localKdeDir += '/';
     }
@@ -687,11 +707,16 @@ void KStandardDirs::addKDEDefaults()
     {
        localKdeDir =  QDir::homeDirPath() + "/.kde/";
     }
+    fixHomeDir(localKdeDir);
     addPrefix(localKdeDir);
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
-	addPrefix(*it);
+    {
+        QString dir = *it;
+        fixHomeDir(dir);
+	addPrefix(dir);
+    }
 
     uint index = 0;
     while (types[index] != 0) {
