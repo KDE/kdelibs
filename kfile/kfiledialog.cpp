@@ -44,6 +44,7 @@
 #include <qtextstream.h>
 #include <qtooltip.h>
 #include <qtimer.h>
+#include <qdockarea.h>
 
 #include <kapp.h>
 #include <kaction.h>
@@ -153,6 +154,8 @@ struct KFileDialogPrivate
 
     // The file class used for KRecentDirs
     QString fileClass;
+
+    QDockArea *toolBarDock;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -180,7 +183,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     d->myStatusLine = 0;
 
-    toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
+    d->toolBarDock = new QDockArea( Horizontal, QDockArea::Normal, 
+                                    d->mainWidget, "KFileDialog::toolBarDock" );
+    toolbar= new KToolBar( d->toolBarDock, "KFileDialog::toolbar", true);
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
                                             toolbar, "path combo" );
@@ -338,7 +343,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setIconText(KToolBar::IconOnly);
     toolbar->setBarPos(KToolBar::Top);
-    toolbar->enableMoving(false);
+    toolbar->setMovingEnabled(false);
     toolbar->adjustSize();
 
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
@@ -853,7 +858,8 @@ void KFileDialog::initGUI()
         delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
-    d->boxLayout->addWidget(toolbar, AlignTop);
+    //d->boxLayout->addWidget(toolbar, AlignTop);
+    d->boxLayout->addWidget(d->toolBarDock);
     d->boxLayout->addWidget(ops, 4);
     d->boxLayout->addSpacing(3);
 
