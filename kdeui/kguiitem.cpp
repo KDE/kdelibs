@@ -18,6 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qregexp.h>
 #include <qstring.h>
 #include <qiconset.h>
 #include <qpixmap.h>
@@ -119,9 +120,7 @@ QString KGuiItem::text() const {
 }
 QString KGuiItem::plainText() const {
   QString stripped( d->m_text );
-  int pos;
-  while( ( pos = stripped.find( '&' ) ) != -1 )
-    stripped.replace( pos, 1, QString::null );
+  stripped.replace( QRegExp( "&(?!&)" ), QString::null );
 
   return stripped;
 }
