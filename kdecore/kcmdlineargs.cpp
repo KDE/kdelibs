@@ -19,6 +19,7 @@
 #include "config.h"
 
 #include "kcmdlineargs.h"
+#include <kaboutdata.h>
 #include <klocale.h>
 #include <kapp.h>
 #include <kglobal.h>
@@ -47,9 +48,7 @@ public:
 KCmdLineArgsList *KCmdLineArgs::argsList = 0;
 int KCmdLineArgs::argc = 0;
 char **KCmdLineArgs::argv = 0;
-const char *KCmdLineArgs::appname = 0;
-const char *KCmdLineArgs::description = 0;
-const char *KCmdLineArgs::version = 0;
+const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 
 //
@@ -58,20 +57,25 @@ bool KCmdLineArgs::parsed = false;
 
 void
 KCmdLineArgs::init(int _argc, char **_argv, const char *_appname,
-                   const char *_description, const char *_version)
+                   const char *_description, const char *_version, bool noKApp)
+{
+   init(_argc, _argv, 
+        new KAboutData(_appname, _appname, _version, _description, noKApp));
+}
+
+void
+KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKApp)
 {
    assert( argsList == 0 );	// Don't call init twice.
    assert( argc == 0 );		// Don't call init twice.
    assert( argv == 0 );		// Don't call init twice.
-   assert( appname == 0 );	// Don't call init twice.
-   assert( description == 0 );	// Don't call init twice.
-   assert( version == 0 );	// Don't call init twice.
+   assert( about == 0 );	// Don't call init twice.
    argc = _argc;
    argv = _argv;
-   appname = _appname;
-   description = _description;
-   version = _version;
+   about = _about;
    parsed = false;
+   if (!noKApp)
+      KApplication::addCmdLineOptions();
 }
 
 void
@@ -201,6 +205,13 @@ KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
 }
 
 void
+KCmdLineArgs::printQ(const QString &msg)
+{
+   QCString localMsg = msg.local8Bit();
+   fprintf(stdout, "%s", localMsg.data());  
+}
+
+void
 KCmdLineArgs::parseAllArgs()
 {
    bool allowArgs = false;
@@ -243,9 +254,10 @@ KCmdLineArgs::parseAllArgs()
          else if ( (strcmp(option, "version") == 0) ||
                    (strcmp(option, "V") == 0))
          {
-            fprintf(stdout, "Qt: %s\n", qVersion());
-            fprintf(stdout, "KDE: %s\n", VERSION);
-            fprintf(stdout, "%s: %s\n", appname, version);
+            printQ( QString("Qt: %1\n").arg(qVersion()));
+            printQ( QString("KDE: %1\n").arg(VERSION));
+            printQ( QString("%1: %2\n").
+			arg(about->appName()).arg(about->version()));
             exit(0);
          }
          else {
@@ -311,23 +323,17 @@ KCmdLineArgs::qt_argv()
 void
 KCmdLineArgs::enable_i18n()
 {
-   KInstance *instance = new KInstance(appname);
+   KInstance *instance = new KInstance(about);
    (void) instance->config();
    // Don't delete instance!
 }
 
-void
-KCmdLineArgs::printQ(const QString &msg)
-{
-   QCString localMsg = msg.local8Bit();
-   fprintf(stdout, "%s", localMsg.data());  
-}
 
 void
 KCmdLineArgs::usage(const QString &error)
 {
    QCString localError = error.local8Bit();
-   fprintf(stderr, "%s: %s", appname, localError.data());
+   fprintf(stderr, "%s: %s", about->appName(), localError.data());
    usage();
 }
 
@@ -376,8 +382,8 @@ KCmdLineArgs::usage(const char *id)
      }
    }
 
-   printQ(i18n("Usage: %1 %2\n").arg(appname).arg(usage));
-   printQ("\n"+i18n(description)+"\n");
+   printQ(i18n("Usage: %1 %2\n").arg(about->appName()).arg(usage));
+   printQ("\n"+about->shortDescription()+"\n");
 
    printQ(optionHeaderString.arg(i18n("Generic")));
    printQ(optionFormatString.arg("help", -23).arg(i18n("Show help about options")));

@@ -36,6 +36,7 @@ struct KCmdLineOptions
 class KCmdLineArgsList;
 class KApplication;
 class KCmdLineParsedArgs;
+class KAboutData;
 
 /**
  *  Simple access to the command-line arguments.
@@ -66,11 +67,25 @@ public:
    * @param appname The untranslated name of your application. This should
    *                match with argv[0].
    * @param description A short description of what your application is about.
-   * @param version A version and copyright message.
+   * @param version A version.
+   * @param noKApp Don't add commandline options for QApplication/KApplication
    */
   static void init(int _argc, char **_argv, 
                    const char *_appname, const char *_description,
-                   const char *_version);
+                   const char *_version, bool noKApp = false);
+
+  /**
+   * Initialization function.
+   *
+   * This function should be called as the very first thing in
+   *  your application.
+   * @param argc As passed to main(...).
+   * @param argv As passed to main(...).
+   * @param about A KAboutData object describing your program.
+   * @param noKApp Don't add commandline options for QApplication/KApplication
+   */
+  static void init(int _argc, char **_argv, 
+                   const KAboutData *about, bool noKApp = false);
 
   /**
    * Add options to your application.
@@ -240,9 +255,8 @@ protected:
   QList<char> *parsedArgList;
 
   static KCmdLineArgsList *argsList; // All options.
-  static const char *appname; // Appname
-  static const char *description; // Desciption
-  static const char *version; // Version
+  static const KAboutData *about;
+
   static int argc; // The original argc
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
