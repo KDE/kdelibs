@@ -77,7 +77,8 @@ bool NetAccess::download(const KURL& u, QString & target, QWidget* window)
   NetAccess kioNet;
   KURL dest;
   dest.setPath( target );
-  return kioNet.copyInternal( u, dest, -1, true /*overwrite*/, false, window);
+  return kioNet.filecopyInternal( u, dest, -1, true /*overwrite*/,
+                                  false, window, false /*copy*/);
 }
 
 bool NetAccess::upload(const QString& src, const KURL& target)
@@ -99,7 +100,8 @@ bool NetAccess::upload(const QString& src, const KURL& target, QWidget* window)
   NetAccess kioNet;
   KURL s;
   s.setPath(src);
-  return kioNet.copyInternal( s, target, -1, true /*overwrite*/, false, window );
+  return kioNet.filecopyInternal( s, target, -1, true /*overwrite*/,
+                                  false, window, false /*copy*/ );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target )
@@ -113,10 +115,20 @@ bool NetAccess::copy( const KURL & src, const KURL & target, QWidget* window )
 }
 
 bool NetAccess::file_copy( const KURL& src, const KURL& target, int permissions,
- bool overwrite, bool resume, QWidget* window )
+                           bool overwrite, bool resume, QWidget* window )
 {
   NetAccess kioNet;
-  return kioNet.copyInternal( src, target, permissions, overwrite, resume, window );
+  return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
+                                  window, false /*copy*/ );
+}
+
+
+bool NetAccess::file_move( const KURL& src, const KURL& target, int permissions,
+                           bool overwrite, bool resume, QWidget* window )
+{
+  NetAccess kioNet;
+  return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
+                                  window, true /*move*/ );
 }
 
 bool NetAccess::dircopy( const KURL & src, const KURL & target )
@@ -126,8 +138,28 @@ bool NetAccess::dircopy( const KURL & src, const KURL & target )
 
 bool NetAccess::dircopy( const KURL & src, const KURL & target, QWidget* window )
 {
+  KURL::List srcList;
+  srcList.append( src );
+  return NetAccess::dircopy( srcList, target, window );
+}
+
+bool NetAccess::dircopy( const KURL::List & srcList, const KURL & target, QWidget* window )
+{
   NetAccess kioNet;
-  return kioNet.dircopyInternal( src, target, window );
+  return kioNet.dircopyInternal( srcList, target, window, false /*copy*/ );
+}
+
+bool NetAccess::move( const KURL& src, const KURL& target, QWidget* window )
+{
+  KURL::List srcList;
+  srcList.append( src );
+  return NetAccess::move( srcList, target, window );
+}
+
+bool NetAccess::move( const KURL::List& srcList, const KURL& target, QWidget* window )
+{
+  NetAccess kioNet;
+  return kioNet.dircopyInternal( srcList, target, window, true /*move*/ );
 }
 
 bool NetAccess::exists( const KURL & url )
@@ -226,13 +258,15 @@ void NetAccess::removeTempFile(const QString& name)
   }
 }
 
-bool NetAccess::copyInternal(const KURL& src, const KURL& target, int permissions,
-                             bool overwrite, bool resume, QWidget* window)
+bool NetAccess::filecopyInternal(const KURL& src, const KURL& target, int permissions,
+                                 bool overwrite, bool resume, QWidget* window, bool move)
 {
   bJobOK = true; // success unless further error occurs
 
   KIO::Scheduler::checkSlaveOnHold(true);
-  KIO::Job * job = KIO::file_copy( src, target, permissions, overwrite, resume );
+  KIO::Job * job = move
+                   ? KIO::file_move( src, target, permissions, overwrite, resume )
+                   : KIO::file_copy( src, target, permissions, overwrite, resume );
   job->setWindow (window);
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
@@ -241,12 +275,14 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, int permission
   return bJobOK;
 }
 
-bool NetAccess::dircopyInternal(const KURL& src, const KURL& target,
-                                QWidget* window)
+bool NetAccess::dircopyInternal(const KURL::List& src, const KURL& target,
+                                QWidget* window, bool move)
 {
   bJobOK = true; // success unless further error occurs
 
-  KIO::Job * job = KIO::copy( src, target );
+  KIO::Job * job = move
+                   ? KIO::move( src, target )
+                   : KIO::copy( src, target );
   job->setWindow (window);
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );

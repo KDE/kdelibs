@@ -96,7 +96,7 @@ public:
      * @param src URL Reference to the file to download.
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
-     *               return a location in a temporary spot. <B>Note:</B> 
+     *               return a location in a temporary spot. <B>Note:</B>
      *               you are responsible for the removal of this file when
      *               you are finished reading it using @ref removeTempFile.
      * @param window main window associated with this job. This is used to
@@ -157,6 +157,7 @@ public:
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::file_copy (not KIO::copy!).
+     * It will be renamed file_copy in KDE4, so better use file_copy.
      *
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the file.
@@ -169,11 +170,13 @@ public:
      * @return true if successful, false for failure
      */
     static bool copy( const KURL& src, const KURL& target, QWidget* window );
+    // KDE4: rename to file_copy
 
     /**
      * @deprecated. Use the function above instead.
      */
     static bool copy( const KURL& src, const KURL& target );
+    // KDE4: merge with above
 
     /**
      * Full-fledged equivalent of KIO::file_copy
@@ -182,11 +185,23 @@ public:
                             bool overwrite=false, bool resume=false, QWidget* window = 0L );
 
     /**
+     * Full-fledged equivalent of KIO::file_move.
+     * Moves or renames *one file*.
+     * @since 3.2
+     */
+    static bool file_move( const KURL& src, const KURL& target, int permissions=-1,
+                           bool overwrite=false, bool resume=false, QWidget* window = 0L );
+
+
+    /**
      * Alternative method for copying over the network.
      * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::copy!.
+     * This means that it can copy files and directories alike
+     * (it should have been named copy()).
+     *
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the
      *               file.
@@ -202,7 +217,26 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool dircopy( const KURL& src, const KURL& target );
+    static bool dircopy( const KURL& src, const KURL& target ); // KDE4: merge
+
+    /**
+     * Overloaded method, which takes a list of source urls
+     */
+    static bool dircopy( const KURL::List& src, const KURL& target, QWidget* window = 0L );
+
+    /**
+     * Full-fledged equivalent of KIO::move.
+     * Moves or renames one file or directory.
+     * @since 3.2
+     */
+    static bool move( const KURL& src, const KURL& target, QWidget* window = 0L );
+
+    /**
+     * Full-fledged equivalent of KIO::move.
+     * Moves or renames a list of files or directories.
+     * @since 3.2
+     */
+    static bool move( const KURL::List& src, const KURL& target, QWidget* window = 0L );
 
     /**
      * Tests whether a URL exists.
@@ -385,9 +419,10 @@ private:
     /**
      * Internal methods
      */
-    bool copyInternal(const KURL& src, const KURL& target, int permissions,
-                      bool overwrite, bool resume, QWidget* window);
-    bool dircopyInternal(const KURL& src, const KURL& target, QWidget* window = 0);
+    bool filecopyInternal(const KURL& src, const KURL& target, int permissions,
+                          bool overwrite, bool resume, QWidget* window, bool move);
+    bool dircopyInternal(const KURL::List& src, const KURL& target,
+                         QWidget* window, bool move);
     bool statInternal(const KURL & url, int details, bool source, QWidget* window = 0);
     UDSEntry m_entry;
     bool delInternal(const KURL & url, QWidget* window = 0);
