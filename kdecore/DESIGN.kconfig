@@ -1,0 +1,85 @@
+kconfigdata.h contains definitions of the data formats used by kconfig.
+
+Configuration entries are stored as "KEntry". They are indexed with "KEntryKey".
+The primary store is a "KEntryMap" which is defined as a QMap from "KEntryKey"
+to "KEntry"
+
+KEntry's are stored in order in the KEntryMap. The most significant sort 
+criteria is mGroup. This means that all entries who belong in the same group,
+are grouped in the QMap as well. 
+
+The start of a group is indicated with a KEntryKey with an empty mKey and a 
+dummy KEntry. This allows us to search for the start of the group and then to 
+iterate until we end up in another group. That way we will find all entries
+of a certain group.
+
+Entries that are localised with the _current_ locale are stored with bLocal 
+set to true. Entries that are localised with another locale are either not
+stored at all (default), or with the localisation as part of the key (when
+reading a file in order to merge it). 
+[WABA: Does it make sense to keep both localized and non-localised around?
+Can't we just let the localised version override the non-localised version?]
+
+Currently the localisation bit is the least significant sort criteria, that 
+means that the localised version always follows the non-localised version
+immediately.
+
+<planned changes>
+[WABA: Possible scenario #1 for enhancement]
+Entries that are being read from a location other than the location to
+which is written back are marked as "default" and will be added both as
+normal entry as well as an entry with the key marked as default.
+
+When entries are written to disk, it is checked whether the entry to write 
+is equal to the default, if so the entry will not be written. The default
+entry always follows directly after the normal entry, due to the sorting.
+(After that the localised version follows)
+
+[WABA: Possible scenario #2 for enhancement]
+The "KEntry" structure is expanded with a "default" field. Entries that 
+are being read from a location other than the location to which is written 
+back will fill in the default field as well.
+
+When entries are written to disk, it is checked whether the entry to write 
+is equal to the default, if so the entry will not be written.
+
+Open question:
+Should unmodified entries that are written back be compared with the default
+too? This seems to be mostly a transition issue.
+
+Extra functions:
+
+bool isEntryFixed(key); // Can entry be modified?
+bool isEntryDefault(key); // Is entry equal to the default?
+void resetEntry(key); // Restore to default
+void deleteEntry(key); // Remove entry
+
+Note that there is a subtle difference between resetEntry() and deleteEntry().
+resetEntry() will change the entry to the default value set by the system 
+administrator (Via e.g. $KDEDIR/share/config) or, if no such default was set,
+non-existant.
+deleteEntry() will make the entry non-existant.
+
+Entries are marked "fixed" if the key is followed by [$fixed]. This means
+that a user can not override these entries.
+
+Entries can be marked as deleted if they are followed by [$deleted]. This
+is needed if the system administrator has specified a default value but the
+entry was deleted (made 'non-existant'). In that case we can't just leave 
+the entry out since that would mean we get the default from the system 
+administrator back the next time we read the file.
+</planned changes>
+
+
+When an entry is read with readEntry(key, defaultValue), non-existing
+entries will return "defaultValue" while hasKey(key) will return "false"
+for such entries.
+
+Currently all entries are stored in memory. When KConfig is "sync()'ed"
+it reads the file that it is about to overwrite (for the second time), it 
+then merges in the entries it has in memory and writes the result back to 
+the file. It does NOT update its map of entries in memory with the entries
+(re)read from disk. It only updates the entries in memory when 
+"reparseConfiguration()" is called.
+
+
