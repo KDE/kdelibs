@@ -756,7 +756,13 @@ void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
     closedir( dp );
     totalSize( entryNames.count() );
 
-    // set the current dir
+    /* set the current dir to the path to speed up 
+       in not having to pass an absolute path.
+       We restore the path later to get out of the
+       path - the kernel wouldn't unmount or delete
+       directories we keep as active directory. And
+       as the slave runs in the background, it's hard
+       to see for the user what the problem would be */
     char path_buffer[PATH_MAX];
     getcwd(path_buffer, PATH_MAX - 1);
     chdir( path );
