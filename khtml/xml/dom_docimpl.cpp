@@ -451,15 +451,16 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         _namespaceURI == XHTML_NAMESPACE) {
         // User requested an element in the XHTML namespace - this means we create a HTML element
         // (elements not in this namespace are treated as normal XML elements)
-        e = createHTMLElement(qName.mid(colonPos+1), pExceptioncode);
-        if ( pExceptioncode && *pExceptioncode )
-            return 0;
-        int _exceptioncode = 0;
-        if (colonPos >= 0)
-            e->setPrefix(qName.left(colonPos), _exceptioncode);
-        if ( _exceptioncode ) {
-            if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
-            return 0;
+        e = createHTMLElement(qName.mid(colonPos+1));
+        if ( e )
+        {
+            int _exceptioncode = 0;
+            if (colonPos >= 0)
+                e->setPrefix(qName.left(colonPos), _exceptioncode);
+            if ( _exceptioncode ) {
+                if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
+                return 0;
+            }
         }
     }
     if (!e)
@@ -540,7 +541,7 @@ unsigned short DocumentImpl::nodeType() const
     return Node::DOCUMENT_NODE;
 }
 
-ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name, int *pExceptioncode )
+ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
     QString qstr = name.string().lower();
     uint id = khtml::getTagID( qstr.latin1(), qstr.length() );
@@ -796,14 +797,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name, int *pExcep
     default:
         if ( id )  // known tag but missing in this list
             kdDebug( 6020 ) << "Unsupported tag " << qstr << " id=" << id << endl;
-        else // unknown tag
-        {
-            kdDebug( 6020 ) << "Unknown tag " << qstr << endl;
-            if (pExceptioncode && !Element::khtmlValidQualifiedName(name)) {
-                *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
-                return 0;
-            }
-        }
         break;
     }
     return n;
