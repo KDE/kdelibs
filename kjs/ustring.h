@@ -41,6 +41,8 @@ class QConstString;
 #define KJS_PACKED
 #endif
 
+#define KJS_SWAPPED_CHAR
+
 namespace KJS {
 
   class UCharReference;
