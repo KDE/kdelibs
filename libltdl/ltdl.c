@@ -2301,6 +2301,8 @@ lt_dlopen (filename)
     if (handle != newhandle)
       {
 	unload_deplibs (handle);
+      } else {
+	handle->info.filename = strdup( filename );
       }
     }
   else
@@ -2389,7 +2391,6 @@ lt_dlopenext (filename)
       return 0;
     }
 
-  /* try "filename.la" */
   tmp = LT_DLMALLOC (char, len+4);
   if (!tmp)
     {
@@ -2397,14 +2398,6 @@ lt_dlopenext (filename)
       return 0;
     }
   strcpy (tmp, filename);
-  strcat (tmp, ".la");
-  handle = lt_dlopen (tmp);
-  if (handle)
-    {
-      MUTEX_SETERROR (saved_error);
-      LT_DLFREE (tmp);
-      return handle;
-    }
 
 #ifdef _AIX
   tmp[len] = '\0';
@@ -2426,7 +2419,20 @@ lt_dlopenext (filename)
       LT_DLFREE (tmp);
       return handle;
     }
+#endif /* _AIX */
 
+  /* try "filename.la" */
+  strcat (tmp, ".la");
+  handle = lt_dlopen (tmp);
+  if (handle)
+    {
+      MUTEX_SETERROR (saved_error);
+      LT_DLFREE (tmp);
+      return handle;
+    }
+
+
+#ifdef _AIX
   /* versioned shared objects can be in .a's */
   strcat(tmp, ".a");
   handle = lt_dlopen (tmp);
@@ -3318,23 +3324,33 @@ sys_dl_search_by_name( const char* name )
 {
   lt_dlhandle cur;
   const char* la;
+  int         inlen;
 
   cur = handles;
 
   while (cur)
     {
-      if( cur->info.name && name &&
-	  !strcmp( cur->info.name, name ) )
+      if( cur->info.name && name )
         {
-	  if( cur->info.filename )
-	    {
-	      la = strrchr( cur->info.filename, '.' );
-	      if( !la || strcmp(la,".la") )
+	  if( !strcmp( cur->info.name, name ) )
+            {
+	      if( cur->info.filename )
 	        {
-	          return cur;
+	          la = strrchr( cur->info.filename, '.' );
+	          if( !la || strcmp(la,".la") )
+	            {
+	              return cur;
+	            }
 	        }
-	    }
+            }
         }
+      if( cur->info.filename && name )
+	{
+	  if( !strcmp( cur->info.filename, name ) )
+	    {
+	      return cur;
+	    }
+	}
       cur = cur->next;
     }
   return NULL;
