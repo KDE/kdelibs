@@ -1669,11 +1669,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         case CSS_VAL_NORMAL:
         default:               s = NORMAL;      break;
         }
-        qDebug("CSS_PROP_WHITE_SPACE: %d", s);
-
         style->setWhiteSpace(s);
-        break;
 
+        break;
 
 // special properties (css_extensions)
 //    case CSS_PROP_AZIMUTH:
