@@ -190,6 +190,7 @@ Object DateObject::construct(const List &args)
     t.tm_hour = (numArgs >= 4) ? args[3].toInt32() : 0;
     t.tm_min = (numArgs >= 5) ? args[4].toInt32() : 0;
     t.tm_sec = (numArgs >= 6) ? args[5].toInt32() : 0;
+    t.tm_isdst = -1;
     int ms = (numArgs >= 7) ? args[6].toInt32() : 0;
     value = Number(mktime(&t) * 1000.0 + ms);
   }
