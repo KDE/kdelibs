@@ -28,7 +28,7 @@
 #include <kconfig.h>
 #include <ktoolbar.h>
 
-#define DOCK_CONFIG_VERSION "0.0.4"
+#define DOCK_CONFIG_VERSION "0.0.5"
 
 static const char*close_xpm[]={
 "5 5 2 1",
@@ -636,7 +636,6 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
   if ( parent() != s ){
     hide();
     reparent(s, 0, QPoint(0,0), false);
-//    QApplication::syncX();
   }
 
   if ( s && s->inherits("KDockMainWindow") ){
@@ -844,9 +843,6 @@ void KDockWidget::undock()
     return;
   }
 
-  if ( parentW == manager->main || eDocking == KDockWidget::DockNone )
-    return;
-
   manager->blockSignals(true);
   manager->undockProcess = true;
 
@@ -936,6 +932,8 @@ void KDockWidget::undock()
       delete group;
 
       if ( isV ) secondWidget->show();
+    } else {
+      applyToWidget( 0L );
     }
 /*********************************************************************************************/
   }
@@ -1251,12 +1249,12 @@ void KDockManager::findChildDockWidget( const QWidget* p, WidgetList*& list )
 void KDockManager::startDrag( KDockWidget* w )
 {
   currentMoveWidget = 0L;
-	currentDragWidget = w;
+  currentDragWidget = w;
   childDockWidgetList = new WidgetList();
   childDockWidgetList->append( w );
   findChildDockWidget( w, childDockWidgetList );
-
-	if ( mg ) delete mg;
+  
+  if ( mg ) delete mg;
   mg = new KDockMoveManager( w );
   curPos = KDockWidget::DockDesktop;
   draging = true;
@@ -1278,10 +1276,10 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
   int w = r.width() / 3;
   int h = r.height() / 3;
 
-	if ( pos.y() <= h ){
+  if ( pos.y() <= h ){
     curPos = KDockWidget::DockTop;
     w = r.width();
-	} else
+  } else
     if ( pos.y() >= 2*h ){
       curPos = KDockWidget::DockBottom;
       p.setY( p.y() + 2*h );
@@ -1302,7 +1300,7 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
             p.setY( p.y() + h );
           }
 
-	if ( oldPos != curPos ) mg->setGeometry( p.x(), p.y(), w, h );
+  if ( oldPos != curPos ) mg->setGeometry( p.x(), p.y(), w, h );
 }
 
 void KDockManager::drop()
@@ -1327,23 +1325,25 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   c->setGroup( group );
   c->writeEntry( "Version", DOCK_CONFIG_VERSION );
 
-	QStrList nameList;
-	QStrList findList;
+  QStrList nameList;
+  QStrList findList;
   QObjectListIt it( *childDock );
   KDockWidget * obj;
-
-	// collect KDockWidget's name
-	QStrList nList;
+  
+  // collect KDockWidget's name
+  QStrList nList;
   while ( (obj=(KDockWidget*)it.current()) ) {
-	  ++it;
+    ++it;
     //debug("  +Add subdock %s", obj->name());
-		nList.append( obj->name() );
+    nList.append( obj->name() );
+    if ( obj->parent() == main )
+      c->writeEntry( "Main:view", obj->name() );
   }
 
-	nList.first();
+  nList.first();
   while ( nList.current() ){
     //debug("  -Try to save %s", nList.current());
-		obj = getDockWidgetFromName( nList.current() );
+    obj = getDockWidgetFromName( nList.current() );
     QString cname = obj->name();
     if ( obj->header ){
       obj->header->saveConfig( c );
@@ -1552,6 +1552,14 @@ void KDockManager::readConfig( KConfig* c, QString group )
       KDockWidget* mvd  = getDockWidgetFromName( md );
       dmain->setMainDockWidget( mvd );
     }
+  } else {
+    QString mv = c->readEntry( "Main:view" );
+    if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
+      KDockWidget* mvd  = getDockWidgetFromName( mv );
+      mvd->applyToWidget( main );
+      mvd->show();
+    }
+  
   }
 
   QRect mr = c->readRectEntry("Main:Geometry");
