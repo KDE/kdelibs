@@ -146,5 +146,6 @@ Group=Input (KDE)
 [KIntNumInput]
 ToolTip=Integer Input Widget (KDE)
 WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
-Include=knuminput.h
+IncludeFile=knuminput.h
+Group=Input (KDE)
 

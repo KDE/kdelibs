@@ -3,6 +3,7 @@
  */
 
 #include <qwidgetplugin.h>
+// for pixmap search
 #include <kstandarddirs.h>
 
 #include "kinstance.h"
@@ -21,6 +22,7 @@
 #include "kselect.h"
 #include "kcolordialog.h"
 #include "kcombobox.h"
+#include "knuminput.h"
 #include "knuminput.h"
 #include "kled.h"
 #include "klineedit.h"
@@ -45,7 +47,6 @@ public:
 	virtual QStringList keys() const
 	{
 		QStringList result;
-
 		for (WidgetInfos::ConstIterator it = m_widgets.begin(); it != m_widgets.end(); ++it)
 			result << it.key();
 		return result;
@@ -208,6 +209,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	m_widgets.insert("KHistoryCombo", widget);
 
 	widget.group = "Input (KDE)";
+	widget.iconSet = "kintnuminput.png";
+	widget.includeFile = "knuminput.h";
+	widget.toolTip = "Integer Input Widget (KDE)";
+	widget.whatsThis = "KIntNumInput";
+	widget.isContainer = false;
+	m_widgets.insert("KIntNumInput", widget);
+
+	widget.group = "Input (KDE)";
 	widget.iconSet = "kintspinbox.png";
 	widget.includeFile = "knuminput.h";
 	widget.toolTip = "Enhanced Spinbox for Integer Values (KDE)";
@@ -356,6 +365,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KHSSelector(parent, name);
 	if (key == "KHistoryCombo")
 		return new KHistoryCombo(parent, name);
+	if (key == "KIntNumInput")
+		return new KIntNumInput(parent, name);
 	if (key == "KIntSpinBox")
 		return new KIntSpinBox(parent, name);
 	if (key == "KLed")
