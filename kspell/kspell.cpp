@@ -134,9 +134,9 @@ KSpell::startIspell(void)
 
   if (trystart<2)
     {
-      if (ksconfig->dictionary()[0]!='\0')
+      if (! ksconfig->dictionary().isEmpty())
 	{
-	  //	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary().data());
+	  kdebug(KDEBUG_INFO, 750,"using dictionary [%s]",ksconfig->dictionary().latin1());
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}
