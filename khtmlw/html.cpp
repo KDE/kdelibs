@@ -970,7 +970,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		c->append( vc );
 		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
 		vc->append( flow );
-		str = parseBody( vc, end, NULL );
+		str = parseBody( vc, end);
 
 		vc = new HTMLClueV( 0, 0, 30, 0 );	// fixed width spacer
 		c->append( vc );

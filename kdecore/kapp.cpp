@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.3  1997/04/21 22:37:23  kalle
+// Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
+// kcolordlg und kapp abgedated (von Martin Jones)
+//
 // Revision 1.2  1997/04/15 20:01:55  kalle
 // Kalles changes for 0.8
 //
@@ -576,7 +580,7 @@ void KApplication::changeGeneral()
       path.append("/doc/HTML/");
       path.append(filename);
 						backgroundColor.dark(), 
-	  if( topic )
+	  if( topic.isEmpty() )
 		{
 		  path.append( "#" );
 		  path.append(topic);

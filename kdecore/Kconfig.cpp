@@ -1,6 +1,10 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.5  1997/04/21 22:37:22  kalle
+ * Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
+ * kcolordlg und kapp abgedated (von Martin Jones)
+ *
  * Revision 1.4  1997/04/20 21:27:28  kalle
  * Bug fix: writeConfigFile legt neues Datei an, wenn möglich und notwendig
  *
@@ -342,7 +346,7 @@ QFont KConfig::readFontEntry( const QString& rKey ) const
 	  nIndex = aValue.find( ',', nOldIndex+1 );
 	  if( nIndex == -1 )
 		return aRetFont;
-	  aRetFont.setStyleHint( (StyleHint)aValue.mid( nOldIndex+1, 
+	  aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1, 
 													nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find fourth part (char set)
@@ -350,7 +354,7 @@ QFont KConfig::readFontEntry( const QString& rKey ) const
 	  nIndex = aValue.find( ',', nOldIndex+1 );
 	  if( nIndex == -1 )
 		return aRetFont;
-	  aRetFont.setCharSet( (CharSet)aValue.mid( nOldIndex+1, 
+	  aRetFont.setCharSet( (QFont::CharSet)aValue.mid( nOldIndex+1, 
 									   nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find fifth part (weight)
