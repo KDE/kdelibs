@@ -127,11 +127,23 @@ int open (const char *pathname, int flags, mode_t mode)
   return sndfd;
 }
 
-int ioctl (int fd, int request, void *argp)
+int ioctl (int fd, int request, ...)
 {
   static int channels;
   static int bits;
   static int speed;
+
+  /*
+   * FreeBSD needs ioctl with varargs. However I have no idea how to "forward"
+   * the variable args ioctl to the orig_ioctl routine. So I expect the ioctl
+   * to have exactly one pointer-like parameter and forward that, hoping that
+   * it works
+   */
+  va_list args;
+  void *argp;
+  va_start(args,request);
+  argp = va_arg(args, void *);
+  va_end(args);
 
   CHECK_INIT();
 
