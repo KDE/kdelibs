@@ -37,8 +37,9 @@ void KSqueezedTextLabel::resizeEvent( QResizeEvent * ) {
 
 QSize KSqueezedTextLabel::minimumSizeHint() const
 {
-  // Don't let QLabel return anything as minimum
-  return QSize( -1, -1 );
+  QSize sh = QLabel::minimumSizeHint();
+  sh.setWidth(-1);
+  return sh;
 }
 
 void KSqueezedTextLabel::setText( const QString &text ) {
