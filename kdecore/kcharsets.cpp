@@ -315,7 +315,9 @@ QStringList KCharsets::availableCharsetNames(QString family)
 
 QStringList KCharsets::availableEncodingNames()
 {
+#ifdef __GNUC__
 #warning Lars, implement this
+#endif
   return availableCharsetNames();
 }
 
