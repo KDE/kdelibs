@@ -198,7 +198,7 @@ void KDirOperator::updateSelectionDependentActions()
     bool hasSelection = fileView && fileView->selectedItems() &&
                         !fileView->selectedItems()->isEmpty();
     myActionCollection->action( "delete" )->setEnabled( hasSelection );
-    myActionCollection->action( "properties")->setEnabled( hasSelection );
+    myActionCollection->action( "properties" )->setEnabled( hasSelection );
 }
 
 void KDirOperator::setPreviewWidget(const QWidget *w)
@@ -818,22 +818,22 @@ void KDirOperator::setView( KFile::FileView view )
     // if we don't have any files, we can't separate dirs from files :)
     if ( (mode() & KFile::File) == 0 && mode() & KFile::Files == 0 ) {
         separateDirs = false;
- 		separateDirsAction->setEnabled( false );
+        separateDirsAction->setEnabled( false );
     }
 
     viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
 
     KFileView *new_view = createView( this, view );
-	if( preview ) {
-		// we keep the preview-_widget_ around, but not the KFilePreview.
-		// So in order to reuse the widget, we have to prevent it from
-		// being deleted by ~KFilePreview().
-		if ( myPreview && myPreview->parent() ) {
-			myPreview->parent()->removeChild( (QWidget*) myPreview );
-		}
+    if( preview ) {
+        // we keep the preview-_widget_ around, but not the KFilePreview.
+        // So in order to reuse the widget, we have to prevent it from
+        // being deleted by ~KFilePreview().
+        if ( myPreview && myPreview->parent() ) {
+            myPreview->parent()->removeChild( (QWidget*) myPreview );
+        }
 
-		dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
-	}
+        dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
+    }
     setView( new_view );
 }
 
@@ -1060,40 +1060,43 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    actionMenu = new KActionMenu( i18n("Menu"), this, "popupMenu" );
+    kdDebug(125) << "KDirOperator::setupActions()" << endl; // --ellis
 
-    upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
+    myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
+    actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
+
+    upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Directory") );
-    backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
-    forwardAction = KStdAction::forward(this, SLOT(forward()), this,"forward");
-    homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
+    backAction = KStdAction::back( this, SLOT( back() ), myActionCollection, "back" );
+    forwardAction = KStdAction::forward( this, SLOT(forward()), myActionCollection, "forward" );
+    homeAction = KStdAction::home( this, SLOT( home() ), myActionCollection, "home" );
     homeAction->setText(i18n("Home Directory"));
-    reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
+    reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
-                                 this, SLOT( mkdir() ), this, "mkdir");
+                                 this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     KAction * deleteAction = new KAction( i18n( "Delete" ), "editdelete",
                                           Key_Delete, this,
                                           SLOT( deleteSelected() ),
-                                          this, "delete" );
+                                          myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
 
 
     // the sort menu actions
-    sortActionMenu = new KActionMenu( i18n("Sorting"), this, "sorting menu");
+    sortActionMenu = new KActionMenu( i18n("Sorting"), myActionCollection, "sorting menu");
     byNameAction = new KRadioAction( i18n("By Name"), 0,
                                      this, SLOT( slotSortByName() ),
-                                     this, "by name" );
+                                     myActionCollection, "by name" );
     byDateAction = new KRadioAction( i18n("By Date"), 0,
                                      this, SLOT( slotSortByDate() ),
-                                     this, "by date" );
+                                     myActionCollection, "by date" );
     bySizeAction = new KRadioAction( i18n("By Size"), 0,
                                      this, SLOT( slotSortBySize() ),
-                                     this, "by size" );
+                                     myActionCollection, "by size" );
     reverseAction = new KToggleAction( i18n("Reverse"), 0,
                                        this, SLOT( slotSortReversed() ),
-                                       this, "reversed" );
+                                       myActionCollection, "reversed" );
 
     QString sortGroup = QString::fromLatin1("sort");
     byNameAction->setExclusiveGroup( sortGroup );
@@ -1102,9 +1105,9 @@ void KDirOperator::setupActions()
 
 
     dirsFirstAction = new KToggleAction( i18n("Directories First"), 0,
-                                         this, "dirs first");
+                                         myActionCollection, "dirs first");
     caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), 0,
-                                              this, "case insensitive" );
+                                              myActionCollection, "case insensitive" );
 
     connect( dirsFirstAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleDirsFirst() ));
@@ -1114,26 +1117,26 @@ void KDirOperator::setupActions()
 
 
     // the view menu actions
-    viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
+    viewActionMenu = new KActionMenu( i18n("View"), myActionCollection, "view menu" );
     shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn",
-                                    0, this, "short view" );
+                                    0, myActionCollection, "short view" );
     detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
-                                       0, this, "detailed view" );
+                                       0, myActionCollection, "detailed view" );
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
-                                          this, "show hidden" );
+                                          myActionCollection, "show hidden" );
     KRadioAction *singleAction = new KRadioAction( i18n("Single View"), 0,
                                                    this,
                                                    SLOT( slotSingleView() ),
-                                                   this, "single" );
+                                                   myActionCollection, "single" );
     separateDirsAction = new KRadioAction( i18n("Separate Directories"), 0,
                                             this,
                                             SLOT(slotSeparateDirs()),
-                                            this, "separate dirs" );
+                                            myActionCollection, "separate dirs" );
     KRadioAction *previewAction = new KRadioAction(i18n("Preview"), 0,
                                                    this,
                                                    SLOT(slotDefaultPreview()),
-                                                   this, "preview" );
+                                                   myActionCollection, "preview" );
 
     QString combiView = QString::fromLatin1("combiview");
     singleAction->setExclusiveGroup( combiView );
@@ -1152,36 +1155,8 @@ void KDirOperator::setupActions()
              SLOT( slotToggleHidden( bool ) ));
 
     KAction *props = new KAction( i18n("Properties..."), ALT+Key_Return, this,
-                                  SLOT(slotProperties()), this, "properties" );
-
-    // insert them into the actionCollection
-    myActionCollection = new KActionCollection( this, "action collection" );
-    myActionCollection->insert( actionMenu );
-    myActionCollection->insert( backAction );
-    myActionCollection->insert( forwardAction );
-    myActionCollection->insert( homeAction );
-    myActionCollection->insert( upAction );
-    myActionCollection->insert( reloadAction );
-    myActionCollection->insert( actionSeparator );
-    myActionCollection->insert( mkdirAction );
-    myActionCollection->insert( deleteAction );
-    myActionCollection->insert( sortActionMenu );
-    myActionCollection->insert( byNameAction );
-    myActionCollection->insert( byDateAction );
-    myActionCollection->insert( bySizeAction );
-    myActionCollection->insert( reverseAction );
-    myActionCollection->insert( dirsFirstAction );
-    myActionCollection->insert( caseInsensitiveAction );
-    myActionCollection->insert( viewActionMenu );
-    myActionCollection->insert( shortAction );
-    myActionCollection->insert( detailedAction );
-    myActionCollection->insert( showHiddenAction );
-    myActionCollection->insert( singleAction );
-    myActionCollection->insert( previewAction );
-    myActionCollection->insert( separateDirsAction );
-    myActionCollection->insert( props );
+                                  SLOT(slotProperties()), myActionCollection, "properties" );
 }
-
 
 void KDirOperator::setupMenu()
 {
@@ -1224,7 +1199,6 @@ void KDirOperator::setupMenu()
     actionMenu->insert( myActionCollection->action( "properties" ) );
 }
 
-
 void KDirOperator::updateSortActions()
 {
     if ( KFile::isSortByName( mySorting ) )
@@ -1251,7 +1225,6 @@ void KDirOperator::updateViewActions()
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
 }
-
 
 void KDirOperator::readConfig( KConfig *kc, const QString& group )
 {
