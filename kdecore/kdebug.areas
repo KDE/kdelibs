@@ -160,6 +160,7 @@
 7116        kio_imap
 7117	    kio_audiocd
 7118        kio_bzip2
+7119        kio_help
 
 # kdevelop
 9000        kdevelop (core)
