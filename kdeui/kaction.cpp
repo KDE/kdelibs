@@ -474,7 +474,9 @@ int KSelectAction::plug( QWidget *widget )
 	int id_ = get_toolbutton_id();
 	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( int ) ),
 			  this, SLOT( slotActivated( int ) ) );
-	
+	QComboBox *cb = bar->getCombo( id_ );
+	if ( cb )
+	    cb->setMinimumWidth( cb->sizeHint().width() );
 	addContainer( bar, id_ );
 
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -510,7 +512,6 @@ void KSelectAction::clear()
 KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
     : KSelectAction( text, accel, parent, name )
 {
-    QStringList fonts;
     get_fonts( fonts );
     setItems( fonts );
     setEditable( TRUE );
@@ -520,7 +521,6 @@ KFontAction::KFontAction( const QString& text, int accel,
 	       QObject* receiver, const char* slot, QObject* parent, const char* name )
     : KSelectAction( text, accel, receiver, slot, parent, name )
 {
-    QStringList fonts;
     get_fonts( fonts );
     setItems( fonts );
     setEditable( TRUE );
@@ -530,7 +530,6 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 	       QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, parent, name )
 {
-    QStringList fonts;
     get_fonts( fonts );
     setItems( fonts );
     setEditable( TRUE );
@@ -540,7 +539,6 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 	       QObject* receiver, const char* slot, QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    QStringList fonts;
     get_fonts( fonts );
     setItems( fonts );
     setEditable( TRUE );
@@ -549,11 +547,18 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 KFontAction::KFontAction( QObject* parent, const char* name )
     : KSelectAction( parent, name )
 {
-    QStringList fonts;
     get_fonts( fonts );
     setItems( fonts );
     setEditable( TRUE );
 }
+
+void KFontAction::setFont( const QString &family )
+{
+    int i = fonts.findIndex( family );
+    if ( i != -1 )
+	setCurrentItem( i );
+}
+
 
 #include "kaction.moc"
 

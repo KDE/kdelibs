@@ -95,6 +95,14 @@ public:
 		 QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KFontAction( QObject* parent = 0, const char* name = 0 );
 
+    void setFont( const QString &family );
+    QString font() {
+	return currentText();
+    }
+    
+private:
+    QStringList fonts;
+    
 };
 
 #endif
