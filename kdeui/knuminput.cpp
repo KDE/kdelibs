@@ -408,19 +408,19 @@ QSize KIntNumInput::minimumSizeHint() const
 {
     constPolish();
 
-    int w = 0;
-    int h = 0;
+    int w;
+    int h;
+
+    h = 2 + QMAX(m_sizeSpin.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
     if(m_label && (m_alignment & (AlignBottom|AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
-        // no extra frame space
-        h += m_sizeLabel.height();
+        // label is in the same row as the other widgets
+        h = QMAX(h, m_sizeLabel.height() + 2);
 
-    h += 2 + QMAX(m_sizeSpin.height(), m_sizeSlider.height());
-
-    w += m_slider ? m_slider->sizeHint().width() + 8 : 0;
+    w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
     if(m_alignment & (AlignTop|AlignBottom))
@@ -660,19 +660,19 @@ QSize KDoubleNumInput::minimumSizeHint() const
 {
     constPolish();
 
-    int w = 0;
-    int h = 0;
+    int w;
+    int h;
+
+    h = 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
     if(m_label && (m_alignment & (AlignBottom|AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
-        // no extra frame space
-        h += m_sizeLabel.height();
+        // label is in the same row as the other widgets
+	h = QMAX(h, m_sizeLabel.height() + 2);
 
-    h += 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
-
-    w += m_slider ? m_slider->sizeHint().width() + 8 : 0;
+    w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
     if(m_alignment & (AlignTop|AlignBottom))
