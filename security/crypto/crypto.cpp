@@ -1807,11 +1807,10 @@ QString certtext;
 			qf.readLine(xx, qf.size());
 			certtext += xx;
 		}
-		//certtext = certtext.replace(certtext.find("-----BEGIN CERTIFICATE-----"), 27, "");
-		//certtext = certtext.replace(certtext.find("-----END CERTIFICATE-----"), 25, "");
 		certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
 		certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
 		certtext = certtext.stripWhiteSpace();
+		certtext = certtext.replace(QRegExp("\n"), "");
 	} else {
 		// Must [could?] be DER
 		qf.close();
@@ -1827,7 +1826,6 @@ QString certtext;
 	
 	qf.close();
 
-	kdDebug() << "CERT TEXT: " << certtext << endl;
 	x = KSSLCertificate::fromString(certtext.latin1());
 
 	if (!x) {
