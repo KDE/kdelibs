@@ -500,7 +500,7 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 	DIR *dp;
 	struct dirent *ep;
 	
-	dp = opendir( dir.latin1() );
+	dp = opendir( QFile::encodeName(dir) );
 	if ( dp == NULL ) {
 	    kdDebug() << "Failed to open dir: " << dir << endl;
 	    return;
@@ -513,7 +513,7 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 		if (strcmp (ep->d_name, ".") == 0 || strcmp (ep->d_name, "..") == 0)
 			continue;
 		
-		QString file = QString::fromLocal8Bit( ep->d_name );
+		QString file = QFile::decodeName( ep->d_name );
 
 		//kDebugInfo("  list: '%s'", file.latin1() );
 
@@ -524,7 +524,7 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 	
 			//kDebugInfo("  list match: '%s'", full_path.latin1() );
 
-			if ( stat( full_path.latin1(), &sbuff ) == 0 ) {
+			if ( stat( QFile::encodeName(full_path), &sbuff ) == 0 ) {
 				// Verify executable
 				//
 				if ( only_exe && 0 == (sbuff.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) ) )
