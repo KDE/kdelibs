@@ -1724,10 +1724,12 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
     commentEdit->setText( commentStr );
   if ( !nameStr.isNull() )
     nameEdit->setText( nameStr );
+
+  extensions.sort();
   QStringList::Iterator sit = extensions.begin();
   for( ; sit != extensions.end(); ++sit ) {
     if ( !((*sit).isEmpty()) )
-      extensionsList->inSort( *sit );
+      extensionsList->insertItem( *sit );
   }
 
   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
@@ -1770,7 +1772,10 @@ void KApplicationPropsPlugin::addMimeType( const QString & name )
       insert = false;
 
   if ( insert )
-    availableExtensionsList->inSort( name );
+  {
+    availableExtensionsList->insertItem( name );
+    availableExtensionsList->sort();
+  }
 }
 
 bool KApplicationPropsPlugin::supports( KFileItemList _items )
@@ -1819,7 +1824,8 @@ void KApplicationPropsPlugin::slotAddExtension()
   if ( pos == -1 )
     return;
 
-  extensionsList->inSort( availableExtensionsList->text( pos ) );
+  extensionsList->insertItem( availableExtensionsList->text( pos ) );
+  extensionsList->sort();
   availableExtensionsList->removeItem( pos );
 }
 
@@ -1830,7 +1836,8 @@ void KApplicationPropsPlugin::slotDelExtension()
   if ( pos == -1 )
     return;
 
-  availableExtensionsList->inSort( extensionsList->text( pos ) );
+  availableExtensionsList->insertItem( extensionsList->text( pos ) );
+  availableExtensionsList->sort();
   extensionsList->removeItem( pos );
 }
 
