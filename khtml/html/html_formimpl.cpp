@@ -55,6 +55,7 @@
 #include <netaccess.h>
 #include <kfileitem.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <qtextcodec.h>
 
 // for keygen
