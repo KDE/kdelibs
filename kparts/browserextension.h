@@ -31,8 +31,8 @@
 #include <kparts/part.h>
 #include <kparts/event.h>
 
-class KFileItem;
-typedef QList<KFileItem> KFileItemList;
+class KonqFileItem;
+typedef QList<KonqFileItem> KonqFileItemList;
 
 class QString;
 
@@ -193,7 +193,7 @@ signals:
    * Emit this to make the browser show a standard popup menu
    * at the point @p global for the files @p items.
    */
-  void popupMenu( const QPoint &global, const KFileItemList &items );
+  void popupMenu( const QPoint &global, const KonqFileItemList &items );
 
   void popupMenu( const QPoint &global, const KURL &url, const QString &mimeType, mode_t mode = -1 );
 
