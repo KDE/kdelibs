@@ -344,6 +344,7 @@ namespace KIO {
         bool m_suspended;
         QByteArray staticData;
         KURL m_redirectionURL;
+        KURL::List m_redirectionList;
     };
 
     // Mimetype Job

@@ -359,9 +359,20 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
-    m_redirectionURL = url; // We'll remember that when the job finishes
-    // Tell the user that we haven't finished yet
-    emit redirection(this, m_redirectionURL);
+
+    if (m_redirectionList.contains(url))
+    {
+       kdDebug(7007) << "TransferJob::slotRedirection: CYCLCIC REDIRECTION!" << endl;
+       m_error = ERR_CYCLIC_LINK;
+       m_errorText = m_url.url();
+    }
+    else
+    {
+       m_redirectionURL = url; // We'll remember that when the job finishes
+       m_redirectionList.append(url);
+       // Tell the user that we haven't finished yet
+       emit redirection(this, m_redirectionURL);
+    }
 }
 
 void TransferJob::slotFinished()
@@ -369,6 +380,7 @@ void TransferJob::slotFinished()
     if ( m_redirectionURL.isEmpty() || m_error )
         SimpleJob::slotFinished();
     else {
+        kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.url() << endl;
         // Honour the redirection
         // We take the approach of "redirecting this same job"
         // Another solution would be to create a subjob, but the same problem
@@ -542,7 +554,7 @@ void MimetypeJob::slotFinished( )
         // Return slave to the scheduler
         TransferJob::slotFinished();
     } else {
-        kdDebug(7007) << "Redirection to " << m_redirectionURL.url() << endl;
+        kdDebug(7007) << "MimetypeJob: Redirection to " << m_redirectionURL.url() << endl;
         staticData.truncate(0);
         m_suspended = false;
         m_url = m_redirectionURL;
