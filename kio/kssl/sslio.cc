@@ -771,3 +771,5 @@ bool SSLIODevice::takeOver(SSLIODevice *other)
     mutex->unlock();
     return rc;
 }
+
+#include "sslio.moc"

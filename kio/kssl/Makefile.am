@@ -63,9 +63,7 @@ libkssl_la_SOURCES	= \
 			ksslsession.cc		  \
 			keygenwizard.ui		  \
 			keygenwizard2.ui	  \
-			ksmimecrypto.cc		  \
-			sslio.cc		  \
-			sslserversocket.cc
+			ksmimecrypto.cc
 
 SUBDIRS = kssl
 

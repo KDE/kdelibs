@@ -149,3 +149,5 @@ QSocketDevice *SSLServerSocket::socketDevice()
     return sd; // might be zero!
 }
 
+
+#include "sslserversocket.moc"
