@@ -6,7 +6,7 @@ LDFLAGS =       $(all_libraries) $(KDE_RPATH)
 LDADD = $(LIB_KIO)
 ####### Files
 
-bin_PROGRAMS = klaunchertest
+check_PROGRAMS = klaunchertest
 
 klaunchertest_SOURCES = klaunchertest.cpp 
 

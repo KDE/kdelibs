@@ -23,14 +23,7 @@
 #include <dcopclient.h>
 #include <stdio.h>
 #include <qvaluelist.h>
-
-
-struct serviceResult 
-{
-   int result;
-   QCString dcopName;
-   QString error;
-};
+#include <kservice.h>
 
 static void
 exec_blind( QCString name, const QValueList<QCString> &args)
@@ -43,30 +36,6 @@ exec_blind( QCString name, const QValueList<QCString> &args)
 	printf("There was some error using DCOP!\n");
 }
 
-static int
-start_service( const QString &name, const QString &filename, 
-               QCString &dcopService, QString &error)
-{
-   QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
-   stream << name << filename;
-   QCString replyType;
-   QByteArray replyData;
-   if (!kapp->dcopClient()->call("klauncher", "klauncher", 
-	"start_service(QString,QString)", params, replyType, replyData))
-   {
-	printf("There was some error using DCOP!\n");
-        return -1;
-   }
-
-   QDataStream stream2(replyData, IO_ReadOnly);
-   serviceResult result;
-   stream2 >> result.result >> result.dcopName >> result.error;
-   dcopService = result.dcopName;
-   error = result.error;
-   return result.result;
-}
-
 int main(int argc, char *argv[])
 {
    KApplication k(argc, argv, "klaunchertest");
@@ -77,13 +46,17 @@ int main(int argc, char *argv[])
 
    exec_blind("konsole", args);
 
-   char buffer[1023];
-   gets(buffer);
-  
    QString error;
    QCString dcopService;
-   int result = start_service("Terminal", QString::null, dcopService, error);
+   int result = KService::startServiceByDesktopName(
+		"konsole", QString::null, dcopService, error);
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
-      result, dcopService.data(), error.ascii());
+      result, error.ascii(), dcopService.data());
+
+   result = KService::startServiceByDesktopName(
+		"konqueror", QString::null, dcopService, error);
+
+   printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
+      result, error.ascii(), dcopService.data());
 }

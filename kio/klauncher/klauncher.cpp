@@ -54,20 +54,17 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    if (fun == "exec_blind(QCString,QValueList<QCString>)")
    {
       QDataStream stream(data, IO_ReadOnly);
-      
-      KLaunchRequest *request = new KLaunchRequest;
-      stream >> request->name >> request->arg_list;
-fprintf(stderr, "KLauncher: Got exec_blind('%s', ...)\n", request->name.data());
-      request->dcop_name = request->name;
-      request->pid = 0;
-      request->status = KLaunchRequest::Launching;
-      request->transaction = 0; // No confirmation is send
-      requestStart(request);
-      // We don't care about this request any longer....
-      requestList.removeRef( request ); 
+
+      QCString name;
+      QValueList<QCString> arg_list;      
+      stream >> name >> arg_list;
+fprintf(stderr, "KLauncher: Got exec_blind('%s', ...)\n", name.data());
+      exec_blind( name, arg_list);
       return true;
    }   
-   if (fun == "start_service(QString,QString)")
+   if ((fun == "start_service_by_name(QString,QString)") ||
+       (fun == "start_service_by_desktop_path(QString,QString)")||
+       (fun == "start_service_by_desktop_name(QString,QString)"))
    {
       QDataStream stream(data, IO_ReadOnly);
       
@@ -77,8 +74,23 @@ fprintf(stderr, "KLauncher: Got exec_blind('%s', ...)\n", request->name.data());
       DCOPresult.dcopName = 0;
       DCOPresult.error = QString::null;
       stream >> serviceName >> filename;
-fprintf(stderr, "KLauncher: Got start_service('%s', ...)\n", serviceName.data());
-      if (!start_service(serviceName, filename))
+      bool finished;
+      if (fun == "start_service_by_name(QString,QString)")
+      {
+fprintf(stderr, "KLauncher: Got start_service_by_name('%s', ...)\n", serviceName.data());
+         finished = start_service_by_name(serviceName, filename);
+      }
+      else if (fun == "start_service_by_desktop_path(QString,QString)")
+      {
+fprintf(stderr, "KLauncher: Got start_service_by_desktop_path('%s', ...)\n", serviceName.data());
+         finished = start_service_by_desktop_path(serviceName, filename);
+      }
+      else 
+      {
+fprintf(stderr, "KLauncher: Got start_service_by_desktop_name('%s', ...)\n", serviceName.data());
+         finished = start_service_by_desktop_name(serviceName, filename);
+      }
+      if (!finished)
       {
          replyType = "serviceResult";
          QDataStream stream2(replyData, IO_WriteOnly);
@@ -86,7 +98,7 @@ fprintf(stderr, "KLauncher: Got start_service('%s', ...)\n", serviceName.data())
       }
       return true;
    }
-   else if (KUniqueApplication::process(fun, data, replyType, replyData))
+   if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
       return true;
    }
@@ -151,10 +163,30 @@ KLauncher::slotKInitData(int)
      long *request_data;
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
-     if (lastRequest->dcop_name.isEmpty())
-        lastRequest->status = KLaunchRequest::Running;
-     else
-        lastRequest->status = KLaunchRequest::Launching;
+     fprintf(stderr, "KLauncher: %s (pid %d) up and running.\n", 
+               lastRequest->name.data(), lastRequest->pid);
+     switch(lastRequest->dcop_service_type)
+     {
+       case KService::DCOP_None:
+     fprintf(stderr, "KLauncher: DCOP_None, ready.\n");
+         lastRequest->status = KLaunchRequest::Running;
+         break;
+
+       case KService::DCOP_Unique:
+     fprintf(stderr, "KLauncher: DCOP_Unique, waiting for '%s' to register.\n", 
+		lastRequest->dcop_name.data());
+         lastRequest->status = KLaunchRequest::Launching;
+         break;
+
+       case KService::DCOP_Multi:
+         lastRequest->status = KLaunchRequest::Launching;
+         QCString pidStr;
+         pidStr.setNum(lastRequest->pid);
+         lastRequest->dcop_name = lastRequest->name + "-" + pidStr;
+     fprintf(stderr, "KLauncher: DCOP_Multi, waiting for '%s' to register.\n", 
+		lastRequest->dcop_name.data());
+         break;
+     }
      lastRequest = 0;
      return;
    }
@@ -277,8 +309,41 @@ fprintf(stderr, "args = %d arg_length = %d\n", request->arg_list.count()+1, leng
    while (lastRequest != 0);
 }
 
+void
+KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_list)
+{
+   KLaunchRequest *request = new KLaunchRequest;
+   request->name = name;
+   request->arg_list =  arg_list;
+   request->dcop_name = QString::null;
+   request->dcop_service_type = KService::DCOP_None;
+   request->pid = 0;
+   request->status = KLaunchRequest::Launching;
+   request->transaction = 0; // No confirmation is send
+   requestStart(request);
+   // We don't care about this request any longer....
+   requestDone(request);
+   requestList.removeRef( request ); 
+}
+
+
 bool
-KLauncher::start_service(const QString &serviceName, const QString &filename)
+KLauncher::start_service_by_name(const QString &serviceName, const QString &filename)
+{
+   KService::Ptr service = 0;
+   // Find service
+   service = KService::serviceByName(serviceName);
+   if (!service)
+   {
+      DCOPresult.result = ENOENT;
+      DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      return false;
+   }
+   return start_service(service, filename);
+}
+
+bool
+KLauncher::start_service_by_desktop_path(const QString &serviceName, const QString &filename)
 {
    KService::Ptr service = 0;
    // Find service
@@ -289,7 +354,7 @@ KLauncher::start_service(const QString &serviceName, const QString &filename)
    }
    else
    {
-      service = KService::service(serviceName);
+      service = KService::serviceByDesktopPath(serviceName);
    }
    if (!service)
    {
@@ -297,13 +362,33 @@ KLauncher::start_service(const QString &serviceName, const QString &filename)
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
+   return start_service(service, filename);
+}
+
+bool
+KLauncher::start_service_by_desktop_name(const QString &serviceName, const QString &filename)
+{
+   KService::Ptr service = 0;
+   // Find service
+   service = KService::serviceByDesktopName(serviceName);
+   if (!service)
+   {
+      DCOPresult.result = ENOENT;
+      DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      return false;
+   }
+   return start_service(service, filename);
+}
+
+bool 
+KLauncher::start_service(KService::Ptr service, const QString &filename)
+{
    if (!service->isValid())
    {
       DCOPresult.result = ENOEXEC;
       DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
       return false;
    }
-
    KLaunchRequest *request = new KLaunchRequest;
 
    createArgs(request, service, filename);
@@ -313,15 +398,33 @@ KLauncher::start_service(const QString &serviceName, const QString &filename)
    {
       DCOPresult.result = ENOEXEC;
       DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
+      delete request;
       return false;
    }
 
    request->name = request->arg_list.first();
    request->arg_list.remove(request->arg_list.begin());
-// WABA: We need to find out the service name!
-//   request->dcop_name = request->name;
-   // Are we already running?
 
+   request->dcop_service_type =  service->DCOPServiceType();
+
+   if (request->dcop_service_type == KService::DCOP_None)
+      request->dcop_name = QString::null;
+   else
+      request->dcop_name = request->name;
+   
+   // Are we already running?
+   if (request->dcop_service_type == KService::DCOP_Unique)
+   {
+      if (dcopClient()->isApplicationRegistered(request->dcop_name))
+      {
+         // Yes, service is already running.
+         request->status = KLaunchRequest::Running;
+         // Request handled.
+         requestDone( request );
+         requestList.removeRef( request );
+         return false;
+      }
+   }
 
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
@@ -341,7 +444,7 @@ KLauncher::start_service(const QString &serviceName, const QString &filename)
 }
 
 void
-KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service,
+KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
                        const QString &url)
 {
   QString exec = service->exec();
@@ -372,7 +475,16 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service,
          it != args.end();
          it++)
      {
-         request->arg_list.append(QCString((*it).ascii()));
+         QString arg = *it;
+         // Unquote.
+         if ((arg.length() > 1) && 
+             ((arg[0] == '\"') && (arg[arg.length()-1] == '\"') ||
+              (arg[0] == '\'') && (arg[arg.length()-1] == '\''))
+            )
+         {
+            arg = arg.mid(1, arg.length()-2);
+         }
+         request->arg_list.append(QCString(arg.ascii()));
      }
   }
 

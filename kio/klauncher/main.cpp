@@ -29,7 +29,6 @@ extern "C" { int start_launcher(int); }
 int
 start_launcher(int socket)
 {
-   fprintf(stderr, "KLauncher: start_launcher\n");
    QCString appName = "klauncher";
    char *argv[2];
    argv[0] = appName.data();

@@ -38,6 +38,7 @@ public:
    pid_t pid;
    status_t status;
    DCOPClientTransaction *transaction;
+   KService::DCOPServiceType_t dcop_service_type;
 };
 
 struct serviceResult
@@ -63,7 +64,11 @@ protected:
    void requestStart(KLaunchRequest *request);
    void requestDone(KLaunchRequest *request);
 
-   bool start_service(const QString &serviceName, const QString &filename);
+   void exec_blind(const QCString &name, const QValueList<QCString> &arg_list);
+   bool start_service(KService::Ptr service, const QString &filename);
+   bool start_service_by_name(const QString &serviceName, const QString &filename);
+   bool start_service_by_desktop_path(const QString &serviceName, const QString &filename);
+   bool start_service_by_desktop_name(const QString &serviceName, const QString &filename);
 
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QString &url);
