@@ -92,14 +92,6 @@ public:
      */
     virtual ~KSocket();
 
-    // BCI: remove in libkdecore.so.4
-    /**
-      *  A small wrapper around @ref gethostbyname() and such.
-      *  Don't use this in new programs. Use @ref KExtendedSocket::lookup
-      *  @deprecated
-      */
-    static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
-    
     /** 
      * Returns a file descriptor for this socket.
      * Returns -1 when an error occured.
@@ -127,6 +119,7 @@ public:
      */
     void enableWrite( bool );
     
+#ifndef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
     /**
      * Return address.
@@ -136,7 +129,16 @@ public:
      * @deprecated
      */
     unsigned long ipv4_addr();
-    
+
+    // BCI: remove in libkdecore.so.4
+    /**
+      *  A small wrapper around @ref gethostbyname() and such.
+      *  Don't use this in new programs. Use @ref KExtendedSocket::lookup
+      *  @deprecated
+      */
+    static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
+#endif
+        
 signals:
     /** 
      * Data has arrived for reading.
@@ -181,25 +183,16 @@ public slots:
     void slotRead( int );
     
 protected:
-    bool connect( const QString& _host, unsigned short int _port );
+    bool connect( const QString& _host, unsigned short int _port, int timeout = 0 );
     bool connect( const char *_path );
   
-    bool init_sockaddr( const QString& hostname, unsigned short int port );
-
     /******************************************************
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
      */
     int sock;
-
-    int domain;
   
-    QSocketNotifier *readNotifier;
-    QSocketNotifier *writeNotifier;
-
 private:
-    int timeOut;
-    
     KSocket(const KSocket&);
     KSocket& operator=(const KSocket&);
 
@@ -209,6 +202,9 @@ private:
 
 
 /**
+ * @deprecated
+ * Please use the more powerful KExtendedSocket class.
+ *
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
  * is created and the signal accepted is raised. Make sure you
@@ -232,12 +228,7 @@ public:
      *                  This gives you the opportunity to set options on the
      *                  socket.
      */
-    KServerSocket( unsigned short int _port, bool _bind );
-    /**
-     * @deprecated
-     * Same as above with _bind true.
-     */
-    KServerSocket( unsigned short int _port );
+    KServerSocket( unsigned short int _port, bool _bind = true );
 
     /**
      * Creates a UNIX domain server socket.
@@ -246,14 +237,8 @@ public:
      *                  This gives you the opportunity to set options on the
      *                  socket.
      */
-    KServerSocket( const char *_path, bool _bind );
+    KServerSocket( const char *_path, bool _bind = true);
 
-    /**
-     * @deprecated
-     * Same as above with _bind true.
-     */
-    KServerSocket( const char *_path );
-  
     /** 
      * Destructor. Closes the socket if it was not already closed.
      */
@@ -279,6 +264,7 @@ public:
      */
     unsigned short int port();
 
+#ifndef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
     /** 
      * The address.
@@ -287,6 +273,7 @@ public:
      * @deprecated
      */
     unsigned long ipv4_addr();
+#endif
 
 public slots: 
     /** 
@@ -298,6 +285,10 @@ signals:
     /**
      * A connection has been accepted.
      * It is your task to delete the KSocket if it is no longer needed.
+     *
+     * WARNING: this signal is always emitted, even if you don't connect
+     * anything to it. That would mean memory loss, because the KSockets
+     * created go to oblivion.
      */
     void accepted( KSocket* );
 
@@ -306,17 +297,10 @@ protected:
     bool init( const char *_path );
   
     /** 
-     * Notifies us when there is something to read on the port.
-     */
-    QSocketNotifier *notifier;
-    
-    /** 
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
      */    
     int sock;  
-
-    int domain;
 
 private:
     KServerSocket(const KServerSocket&);

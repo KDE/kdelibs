@@ -37,6 +37,8 @@ extern "C" {
 
 #include <arpa/inet.h>
 }
+
+//#define KSOCK_NO_BROKEN
 #include "kdebug.h"
 #include "ksock.h"
 #include "kextsock.h"
@@ -83,11 +85,21 @@ extern "C" {
 
 #include "netsupp.h"		// leave this last
 
+class KSocketPrivate
+{
+public:
+  QSocketNotifier *readNotifier;
+  QSocketNotifier *writeNotifier;
+
+  KSocketPrivate() :
+    readNotifier(0), writeNotifier(0)
+  { }
+};
 
 // I moved this into here so we could accurately detect the domain, for
 // posterity.  Really.
 KSocket::KSocket( int _sock)
- : sock(_sock), readNotifier(0), writeNotifier(0)
+  : sock(_sock), d(new KSocketPrivate)
 {
   struct sockaddr_in sin;
   ksocklen_t len = sizeof(sin);
@@ -98,20 +110,16 @@ KSocket::KSocket( int _sock)
   // since sockaddr_in will exist everywhere and is somewhat compatible
   // with sockaddr_in6, we can use it to avoid needless ifdefs.
   KSocks::self()->getsockname(_sock, (struct sockaddr *)&sin, &len);
-
-  // Now that we've got the domain, remember it
-  domain = sin.sin_family;
 }
 
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
-  sock( -1 ), domain( AF_UNSPEC ), readNotifier( 0L ), writeNotifier( 0L )
+  sock( -1 ), d(new KSocketPrivate)
 {
-    timeOut = _timeout;
-    connect( _host, _port );
+    connect( _host, _port, _timeout );
 }
 
 KSocket::KSocket( const char *_path ) :
-  sock( -1 ), domain( AF_UNSPEC ), readNotifier( 0L ), writeNotifier( 0L )
+  sock( -1 ), d(new KSocketPrivate)
 {
   connect( _path );
 }
@@ -120,33 +128,33 @@ void KSocket::enableRead( bool _state )
 {
   if ( _state )
     {
-	  if ( !readNotifier  )
+	  if ( !d->readNotifier  )
 		{
-		  readNotifier = new QSocketNotifier( sock, QSocketNotifier::Read );
-		  QObject::connect( readNotifier, SIGNAL( activated(int) ), this, SLOT( slotRead(int) ) );
+		  d->readNotifier = new QSocketNotifier( sock, QSocketNotifier::Read );
+		  QObject::connect( d->readNotifier, SIGNAL( activated(int) ), this, SLOT( slotRead(int) ) );
 		}
 	  else
-	    readNotifier->setEnabled( true );
+	    d->readNotifier->setEnabled( true );
     }
-  else if ( readNotifier )
-	readNotifier->setEnabled( false );
+  else if ( d->readNotifier )
+	d->readNotifier->setEnabled( false );
 }
 
 void KSocket::enableWrite( bool _state )
 {
   if ( _state )
     {
-	  if ( !writeNotifier )
+	  if ( !d->writeNotifier )
 		{
-		  writeNotifier = new QSocketNotifier( sock, QSocketNotifier::Write );
-		  QObject::connect( writeNotifier, SIGNAL( activated(int) ), this,
+		  d->writeNotifier = new QSocketNotifier( sock, QSocketNotifier::Write );
+		  QObject::connect( d->writeNotifier, SIGNAL( activated(int) ), this,
 							SLOT( slotWrite(int) ) );
 		}
 	  else
-	    writeNotifier->setEnabled( true );
+	    d->writeNotifier->setEnabled( true );
     }
-  else if ( writeNotifier )
-	writeNotifier->setEnabled( false );
+  else if ( d->writeNotifier )
+	d->writeNotifier->setEnabled( false );
 }
 
 void KSocket::slotRead( int )
@@ -166,14 +174,6 @@ void KSocket::slotWrite( int )
 }
 
 /*
- * This function is not used
- */
-bool KSocket::init_sockaddr( const QString& /*hostname*/, unsigned short int /*port*/ )
-{
-  return false;
-}
-
-/*
  * Connects the PF_UNIX domain socket to _path.
  */
 bool KSocket::connect( const char *_path )
@@ -184,28 +184,19 @@ bool KSocket::connect( const char *_path )
   sock = ks.fd();
   ks.release();
 
-  /* In this case, we are sure domain is PF_UNIX */
-  domain = PF_UNIX;
-
   return sock >= 0;
 }
 
 /*
  * Connects the socket to _host, _port.
  */
-bool KSocket::connect( const QString& _host, unsigned short int _port )
+bool KSocket::connect( const QString& _host, unsigned short int _port, int _timeout )
 {
   KExtendedSocket ks(_host, _port, KExtendedSocket::inetSocket);
-  ks.setTimeout(timeOut, 0);
+  ks.setTimeout(_timeout, 0);
 
   ks.connect();
   sock = ks.fd();
-  if (sock >= 0)
-    {
-      const KSocketAddress *sa = ks.localAddress();
-      if (sa != NULL)
-	domain = sa->family();
-    }
   ks.release();
 
   return sock >= 0;
@@ -264,8 +255,7 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
 KSocket::~KSocket()
 {
-  delete readNotifier;
-  delete writeNotifier;
+  delete d;
 
   if (sock != -1) {
     ::close( sock );
@@ -279,52 +269,32 @@ public:
    QCString path;
    unsigned short int port;
    KExtendedSocket *ks;
+   QSocketNotifier *notifier;
 };
 
 
-KServerSocket::KServerSocket( const char *_path ) :
-  notifier( 0L ), sock( -1 )
-{
-  domain = PF_UNIX;
-  d = new KServerSocketPrivate();
-  d->bind = true;
-
-  init ( _path );
-}
-
 KServerSocket::KServerSocket( const char *_path, bool _bind ) :
-  notifier( 0L ), sock( -1 )
+  sock( -1 )
 {
-  domain = PF_UNIX;
   d = new KServerSocketPrivate();
   d->bind = _bind;
+  d->notifier = 0;
 
   init ( _path );
-}
-
-KServerSocket::KServerSocket( unsigned short int _port ) :
-  notifier( 0L ), sock( -1 )
-{
-  d = new KServerSocketPrivate();
-  d->bind = true;
-
-  init ( _port );
 }
 
 KServerSocket::KServerSocket( unsigned short int _port, bool _bind ) :
-  notifier( 0L ), sock( -1 ), d(0)
+  sock( -1 )
 {
   d = new KServerSocketPrivate();
   d->bind = _bind;
+  d->notifier = 0;
 
   init ( _port );
 }
 
 bool KServerSocket::init( const char *_path )
 {
-  if ( domain != PF_UNIX )
-    return false;
-
   unlink(_path );
   d->path = _path;
 
@@ -366,14 +336,11 @@ bool KServerSocket::bindAndListen()
 	return false;
     }
 
-  const KSocketAddress *sa = d->ks->localAddress();
-  if (sa != NULL)
-    domain = sa->family();
 
   sock = d->ks->fd();
 
-  notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
-  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+  d->notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
+  connect( d->notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
   return true;
 }
 
@@ -446,7 +413,7 @@ void KServerSocket::slotAccept( int )
 
 KServerSocket::~KServerSocket()
 {
-  delete notifier;
+  delete d->notifier;
   if (d != NULL)
     {
       if (d->ks != NULL)
