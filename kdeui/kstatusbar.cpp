@@ -20,11 +20,14 @@
 
 #include <qpainter.h>
 
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 #include <kstatusbar.h>
 
 // $Id$
 // $Log$
+// Revision 1.23  1999/08/05 22:22:25  shausman
+// - implemented KStatusBarItem *KStatusBar::item( int id );
+//
 // Revision 1.22  1999/06/09 21:52:26  cschlaeg
 // serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
 //
