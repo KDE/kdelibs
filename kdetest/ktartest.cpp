@@ -50,7 +50,8 @@ int main( int argc, char** argv )
   char medium[ SIZE1 ];
   bzero( medium, SIZE1 );
   tar.writeFile( "mediumfile", "user", "group", SIZE1, medium );
-  tar.writeFile( "mediumfile2", "user", "group", SIZE1, medium );
+  // Another one, with an absolute path
+  tar.writeFile( "/dir/subdir/mediumfile2", "user", "group", SIZE1, medium );
 
   // Now a huge file : 20000 null bytes
   int n = 20000;
@@ -70,7 +71,7 @@ int main( int argc, char** argv )
   }
 
   const KTarDirectory* dir = tar.directory();
-  recursive_print(dir, "/");
+  recursive_print(dir, "");
 
   const KTarEntry* e = dir->entry( "mydir/test3" );
   ASSERT( e && e->isFile() );
@@ -102,7 +103,7 @@ int main( int argc, char** argv )
   const KTarDirectory* dir = tar.directory();
 
   //printf("calling recursive_print\n");
-  recursive_print( dir, "/" );
+  recursive_print( dir, "" );
   //printf("recursive_print called\n");
 
   tar.close();
