@@ -56,7 +56,7 @@ int kjsyylex()
 
 Lexer::Lexer()
   : yylineno(0),
-    size8(128), size16(128), restrKeyword(false), 
+    size8(128), size16(128), restrKeyword(false),
     stackToken(-1), pos(0),
     code(0), length(0),
 #ifndef KJS_PURE_ECMA
@@ -632,31 +632,22 @@ unsigned short Lexer::singleEscape(unsigned short c) const
   switch(c) {
   case 'b':
     return 0x08;
-    break;
   case 't':
     return 0x09;
-    break;
   case 'n':
     return 0x0A;
-    break;
   case 'v':
     return 0x0B;
-    break;
   case 'f':
     return 0x0C;
-    break;
   case 'r':
     return 0x0D;
-    break;
   case '"':
     return 0x22;
-    break;
   case '\'':
     return 0x27;
-    break;
   case '\\':
     return 0x5C;
-    break;
   default:
     return c;
   }
