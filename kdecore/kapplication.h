@@ -411,6 +411,9 @@ public:
 public slots:
   /**
    * Invokes the standard browser.
+   * Note that you should only do this when you know for sure that the browser can
+   * handle the URL (i.e. its mimetype). In doubt, if the URL can point to an image
+   * or anything else than directory or HTML, prefer to use new KRun( url ).
    *
    * @param url The destination address
    */
