@@ -112,6 +112,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
   connect( mListView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
 
+  connect( mListView, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int )), this, SLOT( slotEdit()));
+
   config = 0;
   mLastItem = 0;
 
@@ -137,7 +139,7 @@ void ConfigPage::load()
   bool haveStandardResource = false;
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     config->setGroup( "Resource_" + (*it) );
-    ConfigViewItem *item = new ConfigViewItem( mListView, 
+    ConfigViewItem *item = new ConfigViewItem( mListView,
     config->readEntry( "ResourceName" ),
     config->readEntry( "ResourceType" ) );
 
@@ -208,7 +210,7 @@ void ConfigPage::defaults()
   QStringList::Iterator it;
   for ( it = groups.begin(); it != groups.end(); ++it )
     config->deleteGroup( (*it) );
-    
+
   QString key = KApplication::randomString( 10 );
   QString type = "file";
 
@@ -218,7 +220,7 @@ void ConfigPage::defaults()
   config->setGroup( "General" );
   config->writeEntry( "ResourceKeys", groups );
   config->writeEntry( "Standard", key );
-    
+
   config->setGroup( "Resource_" + key );
   config->writeEntry( "ResourceName", "Default" );
   config->writeEntry( "ResourceType", type );
