@@ -1734,6 +1734,11 @@ void KHTMLPart::checkCompleted()
       bPendingChildRedirection = true;
   }
 
+  // Any object that hasn't completed yet ?
+  for (it = d->m_objects.begin(); it != d->m_objects.end(); ++it )
+    if ( !(*it).m_bCompleted )
+      return;
+
   // Are we still parsing - or have we done the completed stuff already ?
   if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
     return;
@@ -1818,6 +1823,10 @@ void KHTMLPart::checkEmitLoadEvent()
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
+      return;
+
+  for (it = d->m_objects.begin(); it != d->m_objects.end(); ++it )
+    if ( !(*it).m_bCompleted ) // still got a object running -> too early
       return;
 
 #ifndef Q_WS_QWS
@@ -3295,12 +3304,12 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     child->m_part = part;
     assert( ((void*) child->m_part) != 0);
 
+    connect( part, SIGNAL( started( KIO::Job *) ),
+             this, SLOT( slotChildStarted( KIO::Job *) ) );
+    connect( part, SIGNAL( completed() ),
+             this, SLOT( slotChildCompleted() ) );
     if ( child->m_type != khtml::ChildFrame::Object )
     {
-      connect( part, SIGNAL( started( KIO::Job *) ),
-               this, SLOT( slotChildStarted( KIO::Job *) ) );
-      connect( part, SIGNAL( completed() ),
-               this, SLOT( slotChildCompleted() ) );
       connect( part, SIGNAL( completed(bool) ),
                this, SLOT( slotChildCompleted(bool) ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
@@ -3373,7 +3382,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   // point the run object is to find out exactly the mimetype.
   child->m_args.serviceType = mimetype;
 
-  child->m_bCompleted = false;
+  // if not a frame set child as completed
+  child->m_bCompleted = child->m_type == khtml::ChildFrame::Object;
+
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
@@ -3828,6 +3839,10 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
     FrameIt it = d->m_frames.begin();
     FrameIt end = d->m_frames.end();
     for (; it != end; ++it )
+      if ( (KParts::ReadOnlyPart *)(*it).m_part == part )
+        return &(*it);
+
+    for (it = d->m_objects.begin(); it != d->m_objects.end(); ++it )
       if ( (KParts::ReadOnlyPart *)(*it).m_part == part )
         return &(*it);
 
