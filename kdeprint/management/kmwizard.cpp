@@ -249,4 +249,16 @@ void KMWizard::slotHelp()
 	kapp->invokeHelp(QString::null, "kdeprint");
 }
 
+void KMWizard::enableWizard()
+{
+	m_next->setEnabled( true );
+	m_prev->setEnabled( m_pagestack.top() != m_start );
+}
+
+void KMWizard::disableWizard()
+{
+	m_next->setEnabled( false );
+	m_prev->setEnabled( false );
+}
+
 #include "kmwizard.moc"

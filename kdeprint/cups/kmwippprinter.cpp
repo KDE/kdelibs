@@ -18,16 +18,15 @@
  **/
 
 #include "kmwippprinter.h"
-#include "kmwsocketutil.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
 #include "ipprequest.h"
 #include "kmcupsmanager.h"
+#include "networkscanner.h"
 
 #include <klistview.h>
 #include <qheader.h>
 #include <kpushbutton.h>
-#include <qprogressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <kmessagebox.h>
@@ -46,9 +45,6 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_ID = KMWizard::Custom+1;
 	m_nextpage = KMWizard::Driver;
 
-	m_util = new KMWSocketUtil();
-	m_util->setDefaultPort(631);
-
 	m_list = new KListView(this);
 	m_list->addColumn("");
 	m_list->header()->hide();
@@ -56,10 +52,8 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_list->setLineWidth(1);
 
 	QLabel	*l1 = new QLabel(i18n("&Printer URI:"),this);
-	QLabel	*l3 = new QLabel(i18n("Network scan:"), this);
 
 	m_uri = new QLineEdit(this);
-	m_bar = new QProgressBar(this);
 
 	l1->setBuddy(m_uri);
 
@@ -70,21 +64,21 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_ippreport = new KPushButton(KGuiItem(i18n("&IPP Report..."), "kdeprint_report"), this);
 	m_ippreport->setEnabled(false);
 
-	QPushButton	*settings_ = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
-	QPushButton	*scan_ = new KPushButton(KGuiItem(i18n("S&can"), "viewmag"), this);
+	m_scanner = new NetworkScanner( 631, this );
 
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(20);
 
 	connect(m_list,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
-	connect(scan_,SIGNAL(clicked()),SLOT(slotScan()));
-	connect(settings_,SIGNAL(clicked()),SLOT(slotSettings()));
+	connect( m_scanner, SIGNAL( scanStarted() ), SLOT( slotScanStarted() ) );
+	connect( m_scanner, SIGNAL( scanFinished() ), SLOT( slotScanFinished() ) );
+	connect( m_scanner, SIGNAL( scanStarted() ), parent, SLOT( disableWizard() ) );
+	connect( m_scanner, SIGNAL( scanFinished() ), parent, SLOT( enableWizard() ) );
 	connect(m_ippreport, SIGNAL(clicked()), SLOT(slotIppReport()));
 
 	// layout
 	QHBoxLayout	*lay3 = new QHBoxLayout(this, 0, 10);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
-	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
 	QHBoxLayout	*lay4 = new QHBoxLayout(0, 0, 0);
 
 	lay3->addWidget(m_list,1);
@@ -98,19 +92,11 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	lay4->addStretch(1);
 	lay4->addWidget(m_ippreport);
 	lay2->addWidget(sep);
-	lay2->addWidget(l3);
-	lay2->addSpacing(10);
-	lay2->addWidget(m_bar);
-	lay2->addSpacing(10);
-	lay2->addLayout(lay1);
-	//lay2->addStretch(1);
-	lay1->addWidget(settings_);
-	lay1->addWidget(scan_);
+	lay2->addWidget( m_scanner );
 }
 
 KMWIppPrinter::~KMWIppPrinter()
 {
-	delete m_util;
 }
 
 void KMWIppPrinter::updatePrinter(KMPrinter *p)
@@ -133,33 +119,26 @@ bool KMWIppPrinter::isValid(QString& msg)
 	return true;
 }
 
-void KMWIppPrinter::slotSettings()
+void KMWIppPrinter::slotScanStarted()
 {
-	m_util->configureScan(this);
+	m_list->clear();
 }
 
-void KMWIppPrinter::slotScan()
+void KMWIppPrinter::slotScanFinished()
 {
-	if (!m_util->scanNetwork(m_bar))
-		KMessageBox::error(this,i18n("Network scan failed"),title());
-	else
+	m_ippreport->setEnabled(false);
+	const QPtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
+	QPtrListIterator<NetworkScanner::SocketInfo>	it(*list);
+	for (;it.current();++it)
 	{
-		m_list->clear();
-		m_ippreport->setEnabled(false);
-		const QPtrList<SocketInfo>	*list = m_util->printerList();
-		QPtrListIterator<SocketInfo>	it(*list);
-		for (;it.current();++it)
-		{
-			QString	name;
-			if (it.current()->Name.isEmpty())
-				name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
-			else
-				name = it.current()->Name;
-			QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
-			item->setPixmap(0,SmallIcon("kdeprint_printer"));
-		}
+		QString	name;
+		if (it.current()->Name.isEmpty())
+			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
+		else
+		name = it.current()->Name;
+		QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
+		item->setPixmap(0,SmallIcon("kdeprint_printer"));
 	}
-	m_bar->reset();
 }
 
 void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)

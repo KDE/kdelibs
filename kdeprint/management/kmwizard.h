@@ -71,6 +71,10 @@ public:
 	KMWBackend* backendPage()	{ return m_backend; }
 	void setNextPage(int page, int next);
 
+public slots:
+	void enableWizard();
+	void disableWizard();
+
 protected slots:
 	void slotNext();
 	void slotPrev();

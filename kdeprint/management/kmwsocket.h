@@ -26,9 +26,8 @@
 
 class KListView;
 class QListViewItem;
-class QProgressBar;
 class QLineEdit;
-class KMWSocketUtil;
+class NetworkScanner;
 
 class KMWSocket : public KMWizardPage
 {
@@ -41,15 +40,14 @@ public:
 	void updatePrinter(KMPrinter*);
 
 protected slots:
-	void slotSettings();
-	void slotScan();
 	void slotPrinterSelected(QListViewItem*);
+	void slotScanStarted();
+	void slotScanFinished();
 
 private:
 	KListView	*m_list;
-	QProgressBar	*m_bar;
+	NetworkScanner *m_scanner;
 	QLineEdit	*m_printer, *m_port;
-	KMWSocketUtil	*m_util;
 };
 
 #endif

@@ -24,11 +24,10 @@
 
 class KListView;
 class QListViewItem;
-class QProgressBar;
 class QLineEdit;
-class KMWSocketUtil;
 class QTextView;
 class QPushButton;
+class NetworkScanner;
 
 class KMWIppPrinter : public KMWizardPage
 {
@@ -41,16 +40,15 @@ public:
 	void updatePrinter(KMPrinter*);
 
 protected slots:
-	void slotSettings();
-	void slotScan();
+	void slotScanStarted();
+	void slotScanFinished();
 	void slotPrinterSelected(QListViewItem*);
 	void slotIppReport();
 
 private:
 	KListView	*m_list;
-	QProgressBar	*m_bar;
+	NetworkScanner *m_scanner;
 	QLineEdit	*m_uri;
-	KMWSocketUtil	*m_util;
 	QTextView	*m_info;
 	QPushButton	*m_ippreport;
 };
