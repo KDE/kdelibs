@@ -1250,12 +1250,16 @@ DOMString HTMLSelectElementImpl::type() const
 long HTMLSelectElementImpl::selectedIndex() const
 {
     uint i;
+    bool hasOption = false;
     for (i = 0; i < m_listItems.size(); i++) {
+        if (m_listItems[i]->id() == ID_OPTION)
+            hasOption = true;
+
         if (m_listItems[i]->id() == ID_OPTION
             && static_cast<HTMLOptionElementImpl*>(m_listItems[i])->selected())
             return listToOptionIndex(int(i)); // selectedIndex is the *first* selected item; there may be others
     }
-    return -1;
+    return hasOption ? 0 : -1;
 }
 
 void HTMLSelectElementImpl::setSelectedIndex( long  index )
