@@ -30,6 +30,6 @@ include_HEADERS =
 
 noinst_HEADERS = kssld.h
 
-servicetype_DATA = kssld.desktop
-servicetypedir = $(kde_servicetypesdir)
+services_DATA = kssld.desktop
+servicesdir = $(kde_servicesdir)/kded
 
