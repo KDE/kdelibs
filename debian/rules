@@ -89,7 +89,7 @@ binary-arch:  build
 	/usr/doc/qt1g-doc/html ; \
 	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
 	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
-	done
+	fi
 	dh_movefiles
 	-rm -rf debian/tmp/usr/doc
 	dh_installdocs 
