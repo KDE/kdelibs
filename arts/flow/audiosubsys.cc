@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
 
@@ -250,7 +251,14 @@ int AudioSubSystem::open(bool wantfullduplex)
 		return -1;
 	}  
 
-	if (speed != _samplingRate)
+    /*
+	 * Some soundcards seem to be able to only supply "nearly" the requested
+	 * sampling rate - so allow a tolerance of 2%. This will result in slight
+	 * detuning, but at least it will work.
+	 */
+    int tolerance = _samplingRate/50+1;
+
+	if (abs(speed-_samplingRate) > tolerance)
 	{  
 		_error = "can't set requested samplingrate";
 
