@@ -198,9 +198,9 @@ void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* )
   QPainter paint;
 
   paint.begin( this );
- 
+
   style().drawPrimitive (QStyle::PE_DockWindowHandle, &paint, QRect(0,0,width(), height()), colorGroup());
-  
+
   paint.end();
 }
 /*************************************************************************/
@@ -216,7 +216,7 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   setCursor(QCursor(ArrowCursor));
 #endif
   d = new KDockWidgetHeaderPrivate( this );
-  
+
   layout = new QHBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
@@ -250,7 +250,7 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
 
   stayButton->hide();
-  
+
   layout->addWidget( drag );
   layout->addWidget( dockbackButton );
   layout->addWidget( d->toDesktopButton );
@@ -318,7 +318,7 @@ void KDockWidgetHeader::addButton(KDockButton_Private* btn) {
 	}
 	btn->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
 	if (!d->btns.containsRef(btn)) d->btns.append(btn);
-	
+
 	btn->show();
 
 	delete layout;
@@ -326,7 +326,7 @@ void KDockWidgetHeader::addButton(KDockButton_Private* btn) {
 	layout->setResizeMode( QLayout::Minimum );
 
 	layout->addWidget( drag );
- 	layout->addWidget( dockbackButton );	
+ 	layout->addWidget( dockbackButton );
 	layout->addWidget( d->toDesktopButton );
 	layout->addWidget( stayButton );
 	for (QPtrListIterator<KDockButton_Private> it( d->btns );it.current()!=0;++it) {
@@ -359,7 +359,7 @@ void KDockWidgetHeader::showUndockButton(bool show)
 {
   if( d->showToDesktopButton == show )
     return;
-  
+
   d->showToDesktopButton = show;
   if( !show || d->topLevel )
     d->toDesktopButton->hide( );
@@ -419,7 +419,7 @@ public:
   bool splitterHighResolution;
 
   QGuardedPtr<KDockWidget> mainDockWidget;
-  
+
   QObjectList containerDocks;
 };
 
@@ -434,7 +434,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   ,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
-  ,widget(0L)    
+  ,widget(0L)
   ,pix(new QPixmap(pixmap))
   ,prevSideDockPosBeforeDrag(DockNone)
 {
@@ -483,7 +483,7 @@ KDockWidget::~KDockWidget()
     undock();
     d->blockHasUndockedSignal = false;
   }
-  
+
   if (latestKDockContainer()) static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
   emit iMBeingClosed();
   if (manager->d) manager->d->containerDocks.remove(this);
@@ -534,7 +534,7 @@ void KDockWidget::mousePressEvent(QMouseEvent* mme)
  		d->resizing=true;
 		if (bright)
 		{
-			if (btop) 
+			if (btop)
 			{
 				d->resizeMode=KDockWidgetPrivate::ResizeTopRight;
 				d->resizePos=QPoint(width(),0)-mme->pos();
@@ -590,13 +590,13 @@ void  KDockWidget::mouseMoveEvent(QMouseEvent* mme)
 	{
 		switch (d->resizeMode)
 		{
-			case KDockWidgetPrivate::ResizeRight:	
+			case KDockWidgetPrivate::ResizeRight:
 				resize(mme->pos().x()+d->resizePos.x(),height());
 				break;
-			case KDockWidgetPrivate::ResizeBottomRight:	
+			case KDockWidgetPrivate::ResizeBottomRight:
 				resize(mme->pos().x()+d->resizePos.x(),mme->pos().y()+d->resizePos.y());
 				break;
-			case KDockWidgetPrivate::ResizeBottom:	
+			case KDockWidgetPrivate::ResizeBottom:
 				resize(width(),mme->pos().y()+d->resizePos.y());
 				break;
 			default:
@@ -719,7 +719,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 {
   if ( parent() != s )
   {
-    hide();  
+    hide();
     reparent(s, 0, QPoint(0,0), false);
   }
 
@@ -788,6 +788,10 @@ void KDockWidget::setDockWindowTransient (QWidget *parent, bool transientEnabled
   applyToWidget( parentWidget(), QPoint(0,0) );
 }
 
+QWidget *KDockWidget::transientTo() {
+	if (d->transient && d->_parent) return d->_parent; else return 0;
+}
+
 bool KDockWidget::event( QEvent *event )
 {
   switch ( event->type() )
@@ -852,8 +856,8 @@ KDockWidget *KDockWidget::findNearestDockWidget(DockPosition pos)
 			return neighbour;
 		}
 		else
-		return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));			
-		
+		return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
+
 	return 0;
 }
 
@@ -868,18 +872,18 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   // check allowed this dock submit this operations
   if ( !(eDocking & (int)dockPos) ){
     succes = false;
-//  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;  
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;
   }
 
   // check allowed target submit this operations
   if ( target && !(target->sDocking & (int)dockPos) ){
     succes = false;
-//  kdDebug()<<"KDockWidget::manualDock(): success = false (2)"<<endl;      
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (2)"<<endl;
   }
 
   if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() &&
   	!(parent()->qt_cast("KDockContainer")) && !parentDockContainer()){
-//  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;  	
+//  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;
 //  kdDebug()<<parent()->name()<<endl;
     succes = false;
   }
@@ -921,6 +925,10 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     applyToWidget( parentTab );
     parentTab->insertTab( this, icon() ? *icon() : QPixmap(),
                           tabPageLabel(), tabIndex );
+
+    QWidget *wantTransient=parentTab->transientTo();
+    target->setDockWindowTransient(wantTransient,wantTransient);
+
     setDockTabName( parentTab );
     if( !toolTipStr.isEmpty())
       parentTab->setTabToolTip( this, toolTipStr);
@@ -939,7 +947,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
 		  if (cont)
 		  {
-			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) 
+			if (latestKDockContainer() && (latestKDockContainer()!=contWid))
 				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
 //			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
@@ -989,10 +997,10 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     }
   newDock->formerDockPos = target->formerDockPos;
 
-  
- // HERE SOMETING CREATING CONTAINERS SHOULD BE ADDED !!!!! 
+
+ // HERE SOMETING CREATING CONTAINERS SHOULD BE ADDED !!!!!
   if ( dockPos == KDockWidget::DockCenter )
-  {    
+  {
     KDockTabGroup* tab = new KDockTabGroup( newDock, "_dock_tab");
     QObject::connect(tab, SIGNAL(currentChanged(QWidget*)), d, SLOT(slotFocusEmbeddedWidget(QWidget*)));
     newDock->setWidget( tab );
@@ -1003,11 +1011,20 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 
     tab->insertTab( target, target->icon() ? *(target->icon()) : QPixmap(),
                     target->tabPageLabel() );
+
+
+
     if( !target->toolTipString().isEmpty())
       tab->setTabToolTip( target, target->toolTipString());
 
     tab->insertTab( this, icon() ? *icon() : QPixmap(),
                     tabPageLabel(), tabIndex );
+
+    QRect geom=newDock->geometry();
+    QWidget *wantTransient=tab->transientTo();
+    newDock->setDockWindowTransient(wantTransient,wantTransient);
+    newDock->setGeometry(geom);
+
     if( !toolTipString().isEmpty())
       tab->setTabToolTip( this, toolTipString());
 
@@ -1125,12 +1142,12 @@ void KDockWidget::restoreFromForcedFixedSize()
 {
 	d->forcedWidth=-1;
 	setMinimumWidth(0);
-	setMaximumWidth(32000);	
+	setMaximumWidth(32000);
 	setMinimumHeight(0);
-	setMaximumHeight(32000);	
+	setMaximumHeight(32000);
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
-		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);	
+		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);
 }
 
 void KDockWidget::toDesktop()
@@ -1146,10 +1163,10 @@ void KDockWidget::toDesktop()
 void KDockWidget::undock()
 {
 //  kdDebug()<<"KDockWidget::undock()"<<endl;
-  
+
   manager->d->dragRect = QRect ();
   manager->drawDragRectangle ();
-  
+
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
@@ -1171,6 +1188,10 @@ void KDockWidget::undock()
   if ( parentTab ){
     d->index = parentTab->indexOf( this); // memorize the page position in the tab widget
     parentTab->removePage( this );
+/*
+    QWidget *wantTransient=parentTab->transientTo();
+    target->setDockWindowTransient(wantTransient,wantTransient);
+ */
     formerBrotherDockWidget = (KDockWidget*)parentTab->page(0);
     QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
                       this, SLOT(loseFormerBrotherDockWidget()) );
@@ -1180,6 +1201,9 @@ void KDockWidget::undock()
       // last subdock widget in the tab control
       KDockWidget* lastTab = (KDockWidget*)parentTab->page(0);
       parentTab->removePage( lastTab );
+/*      QWidget *wantTransient=parentTab->transientTo();
+      target->setDockWindowTransient(wantTransient,wantTransient);*/
+
       lastTab->applyToWidget( 0L );
       lastTab->move( parentTab->mapToGlobal(parentTab->frameGeometry().topLeft()) );
 
@@ -1225,7 +1249,7 @@ void KDockWidget::undock()
       setDockTabName( parentTab );
     }
   } else {
- /*********************************************************************************************/  
+ /*********************************************************************************************/
   //QWidget* containerWidget = (QWidget*)parent();
   bool undockedFromContainer=false;
   if (d->container)
@@ -1322,7 +1346,7 @@ void KDockWidget::setWidget( QWidget* mw )
   {
   	d->isContainer=false;
   }
-  
+
   {
      header->show();
      layout->addWidget( header );
@@ -1542,7 +1566,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 		// curdw->manualDock (0, KDockWidget::DockDesktop);
 	}
         break;
-    
+
       case QEvent::MouseButtonPress:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
           if ( curdw->eDocking != (int)KDockWidget::DockNone ){
@@ -1592,10 +1616,10 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         }
         break;
       case QEvent::MouseMove:
-        if ( draging ) {	  
+        if ( draging ) {
 
 #ifdef BORDERLESS_WINDOWS
-//BEGIN TEST       
+//BEGIN TEST
 	  KDockWidget *oldMoveWidget;
 	  if (curdw->parent()==0)
 	  {
@@ -1615,7 +1639,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 #endif
 
 	  if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
-            dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );	    
+            dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );
             break;
           } else {
             if (dropCancel && curdw) {
@@ -1650,8 +1674,8 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           if ( (((QMouseEvent*)event)->state() == LeftButton) &&
                (curdw->eDocking != (int)KDockWidget::DockNone) ) {
             startDrag( curdw);
-          }	  
-        }        
+          }
+        }
 	break;
       default:
         break;
@@ -1688,7 +1712,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   if ( qt_find_obj_child( w, "KDockSplitter", "_dock_split_" ) ) return 0L;
   if ( qt_find_obj_child( w, "KDockTabGroup", "_dock_tab" ) ) return 0L;
   if (w->qt_cast("KDockContainer")) return 0L;
-  
+
   if (!childDockWidgetList) return 0L;
   if ( childDockWidgetList->find(w) != -1 ) return 0L;
   if ( currentDragWidget->isGroup && ((KDockWidget*)w)->parentDockTabGroup() ) return 0L;
@@ -2223,14 +2247,14 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     if ( obj->parent() == main )
       c->writeEntry( "Main:view", obj->name() );
   }
-  
+
 //  kdDebug()<<QString("list size: %1").arg(nList.count())<<endl;
   for (QObjectListIt it(d->containerDocks);it.current();++it)
   {
   	static_cast<KDockContainer*>(((KDockWidget*)it.current())->widget->qt_cast("KDockContainer"))->prepareSave(nList);
   }
 //  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
-  
+
   QStringList::Iterator nListIt=nList.begin();
   while ( nListIt!=nList.end() ){
     //debug("  -Try to save %s", nList.current());
@@ -2818,13 +2842,35 @@ void KDockContainer::load (KConfig*){;}
 void KDockContainer::save (KConfig*){;}
 void KDockContainer::prepareSave(QStringList &names)
 {
-	
+
 	for (struct ListItem *tmp=m_childrenListBegin;tmp; tmp=tmp->next)
 		names.remove(tmp->data);
 //	for (uint i=0;i<m_children.count();i++)
 //	{
 //		names.remove(m_children.at(i));
 //	}
+}
+
+
+QWidget *KDockTabGroup::transientTo() {
+	QWidget *tT=0;
+	for (int i=0;i<count();i++) {
+		KDockWidget *dw=static_cast<KDockWidget*>(page(i)->qt_cast("KDockWidget"));
+		QWidget *tmp;
+		if ((tmp=dw->transientTo())) {
+			if (!tT) tT=tmp;
+			else {
+				if (tT!=tmp) {
+					kdDebug()<<"KDockTabGroup::transientTo: widget mismatch"<<endl;
+					return 0;
+				}
+			}
+		}
+	}
+  
+	kdDebug()<<"KDockTabGroup::transientTo: "<<((tT!=0)?"YES":"NO")<<endl;
+
+	return tT;
 }
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )

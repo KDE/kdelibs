@@ -297,7 +297,7 @@ public:
     * header file copying. (don't do it))
     */
     void removeButton(KDockButton_Private*);
-    
+
 
 
 protected slots:
@@ -362,6 +362,7 @@ public:
    */
   virtual ~KDockTabGroup(){};
 
+  QWidget *transientTo();
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
@@ -526,7 +527,7 @@ public:
    * @param ah A base class pointer to the dockwidget header
    */
   void setHeader( KDockWidgetAbstractHeader* ah);
- 
+
   /**@since 3.2
    * get the pointer to the header widget
    */
@@ -631,6 +632,12 @@ public:
    * @param windowType is type of dock window
    */
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
+
+  /**
+   * Returns the widget this dockwidget is set transient to, otherwise 0
+   * @since 3.2
+   */
+   QWidget *transientTo();
 
   /**
    * Lookup the nearest dockwidget docked left/right/top/bottom to this one or return 0
