@@ -961,10 +961,7 @@ Completion WindowFunc::tryExecute(const List &args)
         // prepare arguments
         KURL url;
         if (!str.isEmpty()) {
-	    if (part->baseURL().isEmpty())
-    	    url = KURL(part->url(), str);
-	    else
-	        url = KURL(part->baseURL(), str);
+            url = Window::retrieveActive()->part()->completeURL(str);
         }
         KParts::URLArgs uargs;
         uargs.frameName = args[1].isDefined() ?
