@@ -1150,8 +1150,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         isLink = false;
       if ( (*it)->isDir() != isDir )
         isDir = false;
-      else
-        hasDir = true;
+      hasDir |= (*it)->isDir();
       if ( (*it)->permissions() != permissions )
       {
         permissions &= (*it)->permissions();
@@ -1395,7 +1394,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   // "Apply recursive" checkbox
   if ( hasDir )
   {
-      d->cbRecursive = new QCheckBox( i18n("Apply changes recursively"), d->m_frame );
+      d->cbRecursive = new QCheckBox( i18n("Apply changes to all subdirectories and their contents"), d->m_frame );
       box->addWidget( d->cbRecursive );
       connect( d->cbRecursive, SIGNAL( clicked() ),
                this, SLOT( slotRecursiveClicked() ) );
