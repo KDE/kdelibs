@@ -29,7 +29,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::VerticalGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "Vertical";
+    say.setNum( ft - it); say += " ms, Vertical";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5 + (x++)*width()/cols, 15+y*height()/rows, say); // augment x
 
@@ -37,7 +37,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::HorizontalGradient);
     ft = time.elapsed() ;
-    say.setNum( ft - it); say = "Horizontal";
+    say.setNum( ft - it); say += " ms, Horizontal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -45,7 +45,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::EllipticGradient);
     ft = time.elapsed() ;
-    say.setNum( ft - it); say = "Elliptic";
+    say.setNum( ft - it); say += " ms, Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -56,7 +56,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::DiagonalGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "Diagonal";
+    say.setNum( ft - it); say += " ms, Diagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -64,7 +64,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::CrossDiagonalGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "CrossDiagonal";
+    say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -75,7 +75,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::PyramidGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "Pyramid";
+    say.setNum( ft - it); say += " ms, Pyramid";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
@@ -83,7 +83,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::RectangleGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "Rectangle";
+    say.setNum( ft - it); say += " ms, Rectangle";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
 
@@ -91,7 +91,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
     it = time.elapsed();
     KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::PipeCrossGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say = "PipeCross";
+    say.setNum( ft - it); say += " ms, PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
     p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
 }
