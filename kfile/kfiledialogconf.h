@@ -23,11 +23,11 @@
 #ifndef KFILEDIALOGCONF_H
 #define KFILEDIALOGCONF_H
 
-#include <qcheckbox.h>
-#include <qtabdialog.h>
-#include <qradiobutton.h>
-#include <qlabel.h>
-#include <qslider.h>
+class QRadioButton;
+class QCheckBox;
+
+
+#include <kdialogbase.h>
 
 /**
  * KFileDialog configuration widget.
@@ -40,35 +40,38 @@ class KFileDialogConfigure : public QWidget
 {
   Q_OBJECT
 
-public:
-  KFileDialogConfigure(QWidget *parent= 0, const char *name= 0);
+  public:
+    KFileDialogConfigure(QWidget *parent= 0, const char *name= 0);
 
-  enum ViewStyle { ShortView, DetailView };
+    enum ViewStyle { ShortView, DetailView };
 
-public slots:
-  void saveConfiguration();
+  public slots:
+    void saveConfiguration();
 
-protected:  
-  QRadioButton *myDetailView;
-  QRadioButton *myShortView;
+  protected:  
+    QRadioButton *myDetailView;
+    QRadioButton *myShortView;
   
-  QCheckBox *myShowFilter;
-  QCheckBox *myShowHidden;
-  QCheckBox *myShowStatusLine;
-  QCheckBox *useSingleClick;
-  QCheckBox *myShowListLabels;
-  QCheckBox *myMixDirsAndFiles;
-  QCheckBox *myKeepDirsFirst;
-
+    QCheckBox *myShowFilter;
+    QCheckBox *myShowHidden;
+    QCheckBox *myShowStatusLine;
+    QCheckBox *useSingleClick;
+    QCheckBox *myShowListLabels;
+    QCheckBox *myMixDirsAndFiles;
+    QCheckBox *myKeepDirsFirst;
 };
 
-class KFileDialogConfigureDlg : public QTabDialog
+
+class KFileDialogConfigureDlg : public KDialogBase
 {
   Q_OBJECT
 
-public:
-  KFileDialogConfigureDlg(QWidget *parent, 
-			  const char *name);
+  public:
+    KFileDialogConfigureDlg( QWidget *parent, const char *name );
+
+  private:
+    void setupConfigPage( const QString &title );
+    void setupAboutPage( const QString &title );
 
 };
 
