@@ -202,7 +202,12 @@ protected slots:
 private:
   
   KCModule    *_client;
-  QPushButton *_help, *_default, *_reset, *_cancel, *_apply, *_ok;
+  QPushButton *_help;
+  QPushButton *_default;
+  QPushButton *_reset;
+  QPushButton *_cancel;
+  QPushButton *_apply;
+  QPushButton *_ok;
   QWidget     *_buttons;
   QFrame      *_sep;
 
