@@ -1008,6 +1008,18 @@ class KDialogBase : public KDialog
     void unfoldTreeList( bool persist = false );
 
     /**
+     * Add a button at the bottom of the TreeList/IconList.
+     *
+     * @param text     The text on the PushButton.
+     * @param recv     The object that is to receive the signal when the button
+     *                 is clicked.
+     * @param slot     The slot to connect to the clicked signal of the button.
+     *
+     * @since 3.2
+     */
+    void addButtonBelowList( const QString & text, QObject * recv, const char * slot );
+
+    /**
      * This function has only effect in IconList mode.
      *
      * Defines how the icon list widget is displayed. By default it is
