@@ -50,7 +50,7 @@ using namespace DOM;
 #include "cssproperties.c"
 #include "cssvalues.c"
 
-static inline int DOM::getPropertyID(const char *tagStr, int len)
+inline int DOM::getPropertyID(const char *tagStr, int len)
 {
     const struct props *propsPtr = findProp(tagStr, len);
     if (!propsPtr)
@@ -453,6 +453,7 @@ selector_list:
     selector {
 	if ( $1 ) {
 	    $$ = new QPtrList<CSSSelector>;
+            $$->setAutoDelete( true );
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;
 	    $1->print();
@@ -465,7 +466,10 @@ selector_list:
     | selector_list ',' maybe_space selector {
 	$$ = $1;
 	if ( $4 ) {
-	    if ( !$$ ) $$ = new QPtrList<CSSSelector>;
+	    if ( !$$ ) {
+                $$ = new QPtrList<CSSSelector>;
+                $$->setAutoDelete(true);
+            }
 	    $$->append( $4 );
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;
