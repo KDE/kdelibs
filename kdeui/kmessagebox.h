@@ -73,12 +73,14 @@ public:
   * @li Notify Emit a KNotifyClient event
   * @li AllowLink The message may contain links.
   * @li Dangerous The action to be confirmed by the dialog is a potentially destructive one
+  * @li PlainCaption Do not use KApplication::makeStdCaption()
   */
  enum OptionsType
  {
    Notify = 1,
    AllowLink = 2,
-   Dangerous = 4
+   Dangerous = 4,
+   PlainCaption = 8
  };
 
  /**
