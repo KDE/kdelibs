@@ -473,6 +473,16 @@ public slots:
     virtual void slotStateChanged(const QString &newstate);
 
     /**
+     * Apply a state change
+     *
+     * Enable and disable actions as defined in the XML rc file,
+     * can "reverse" the state (disable the actions which should be
+     * enabled, and vice-versa) if specified.
+     */
+    virtual void slotStateChanged(const QString &newstate,
+                                  KXMLGUIClient::ReverseStateChange);
+
+    /**
      * @internal. Used for the auto-save-settings feature.
      */
     void setSettingsDirty();

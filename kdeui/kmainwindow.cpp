@@ -466,6 +466,12 @@ void KMainWindow::slotStateChanged(const QString &newstate)
   stateChanged(newstate);
 }
 
+void KMainWindow::slotStateChanged(const QString &newstate,
+                                   KXMLGUIClient::ReverseStateChange reverse)
+{
+  stateChanged(newstate, reverse);
+}
+
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
     if (queryClose()) {
