@@ -268,6 +268,7 @@ QPixmap KPopupMenu::titlePixmap(int id) const
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
+    d = new KPopupMenuPrivate;
     setTitle(title);
 }
 
