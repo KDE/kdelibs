@@ -32,6 +32,7 @@
 <!ENTITY Pieter.Hoekstra    '<othercredit role="translator"><firstname>Pieter</firstname><surname>Hoekstra</surname><affiliation><address><email>pieterhoekstra@tiscali.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Niels.Luten        '<othercredit role="translator"><firstname>Niels</firstname><surname>Luten</surname><affiliation><address><email>mail@niels1.tmfweb.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Rik.van.Achterberg '<othercredit role="translator"><firstname>Rik</firstname><surname>van Achterberg</surname><affiliation><address><email>rikratva@xs4all.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Daniel.Huisman	'<othercredit role="translator"><firstname>Daniel</firstname><surname>Huisman</surname><affiliation><address><email>phptesten@lycos.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -62,6 +63,7 @@
 <!ENTITY vertaling.pieter  "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
 <!ENTITY vertaling.niels.luten	"<para>Dit document is vertaald in het Nederlands door &Niels.Luten;.</para>">
 <!ENTITY vertaling.rik	   "<para>Dit document is vertaald in het Nederlands door &Rik.van.Achterberg;.</para>">
+<!ENTITY vertaling.daniel  "<para>Dit document is vertaald in het Nederlands door &Daniel.Huisman;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
@@ -93,6 +95,7 @@
 <!ENTITY nagelezen.rijk    "<para>De vertaling werd nagelezen door &Rijk.van.Wel;.</para>">
 <!ENTITY nagelezen.jonas   "<para>De vertaling werd nagelezen door &Jonas.Drieghe;.</para>">
 <!ENTITY nagelezen.pieter  "<para>De vertaling werd nagelezen door &Pieter.Hoekstra;.</para>">
+<!ENTITY nagelezen.daniel  "<para>De vertaling werd nagelezen door &Daniel.Huisman;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
