@@ -104,7 +104,7 @@ void KateCmdLine::slotReturnPressed ( const QString& cmd )
 
 void KateCmdLine::hideMe ()
 {
-  if (isVisibleTo(parentWidget())) {
+  if ( isVisibleTo(parentWidget()) && ! hasFocus() ) {
      m_view->toggleCmdLine ();
   }
   //m_view->/*show*/setCmdLine (false);
