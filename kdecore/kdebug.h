@@ -245,7 +245,8 @@ class kdbgstream {
      * @param widget the widget to print
      * @return this stream
      */
-    kdbgstream& operator << (QWidget* widget);
+    kdbgstream& operator << (const QWidget* widget);
+    kdbgstream& operator << (QWidget* widget); // KDE4 merge
 
     /**
      * Prints the given value.
@@ -439,7 +440,8 @@ class kndbgstream {
      * Does nothing.
      * @return this stream
      */
-    kndbgstream& operator << (QWidget*) { return *this; }
+    kndbgstream& operator << (const QWidget*) { return *this; }
+    kndbgstream& operator << (QWidget*) { return *this; } // KDE4 merge
     /**
      * Does nothing.
      * @return this stream

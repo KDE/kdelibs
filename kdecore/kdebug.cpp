@@ -392,6 +392,11 @@ kdbgstream& kdbgstream::operator << (char ch)
 
 kdbgstream& kdbgstream::operator << (QWidget* widget)
 {
+    return *this << const_cast< const QWidget* >( widget );
+}
+
+kdbgstream& kdbgstream::operator << (const QWidget* widget)
+{
   QString string, temp;
   // -----
   if(widget==0)
