@@ -69,7 +69,6 @@ using namespace KJS;
   ClauseListNode      *clist;
   CaseClauseNode      *ccl;
   ElementNode         *elm;
-  ElisionNode         *eli;
   Operator            op;
 }
 
@@ -150,7 +149,7 @@ using namespace KJS;
 %type <cblk>  CaseBlock
 %type <ccl>   CaseClause DefaultClause
 %type <clist> CaseClauses  CaseClausesOpt
-%type <eli>   Elision ElisionOpt
+%type <ival>  Elision ElisionOpt
 %type <elm>   ElementList
 
 %%
@@ -199,8 +198,8 @@ ElisionOpt:
 ;
 
 Elision:
-    ','                            { $$ = new ElisionNode(0L); }
-  | Elision ','                    { $$ = new ElisionNode($1); }
+    ','                            { $$ = 1; }
+  | Elision ','                    { $$ = $1 + 1; }
 ;
 
 PropertyNameAndValueList:

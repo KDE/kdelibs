@@ -102,24 +102,21 @@ void GroupNode::streamTo(SourceStream &s) const
   s << "(" << group << ")";
 }
 
-void ElisionNode::streamTo(SourceStream &s) const
-{
-  if (elision)
-    s << elision << ",";
-  else
-    s << ",";
-}
-
 void ElementNode::streamTo(SourceStream &s) const
 {
+  for (int i = 0; i < elision; i++)
+    s << ",";
+  s << node;
   if (list)
-    s << list << ",";
-  s << elision << node;
+    s << "," << list;
 }
 
 void ArrayNode::streamTo(SourceStream &s) const
 {
-  s << "[" << element << elision << "]";
+  s << "[" << element;
+  for (int i = 0; i < elision; i++)
+    s << ",";
+  s << "]";
 }
 
 void ObjectLiteralNode::streamTo(SourceStream &s) const

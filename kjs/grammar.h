@@ -20,7 +20,6 @@ typedef union {
   ClauseListNode      *clist;
   CaseClauseNode      *ccl;
   ElementNode         *elm;
-  ElisionNode         *eli;
   Operator            op;
 } YYSTYPE;
 

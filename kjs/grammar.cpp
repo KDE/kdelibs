@@ -145,7 +145,6 @@ typedef union {
   ClauseListNode      *clist;
   CaseClauseNode      *ccl;
   ElementNode         *elm;
-  ElisionNode         *eli;
   Operator            op;
 } YYSTYPE;
 
@@ -1391,7 +1390,7 @@ case 14:
     break;}
 case 15:
 #line 186 "grammar.y"
-{ yyval.node = new ArrayNode(yyvsp[-1].eli); ;
+{ yyval.node = new ArrayNode(yyvsp[-1].ival); ;
     break;}
 case 16:
 #line 187 "grammar.y"
@@ -1399,27 +1398,27 @@ case 16:
     break;}
 case 17:
 #line 188 "grammar.y"
-{ yyval.node = new ArrayNode(yyvsp[-1].eli, yyvsp[-3].elm); ;
+{ yyval.node = new ArrayNode(yyvsp[-1].ival, yyvsp[-3].elm); ;
     break;}
 case 18:
 #line 192 "grammar.y"
-{ yyval.elm = new ElementNode(yyvsp[-1].eli, yyvsp[0].node); ;
+{ yyval.elm = new ElementNode(yyvsp[-1].ival, yyvsp[0].node); ;
     break;}
 case 19:
 #line 194 "grammar.y"
-{ yyval.elm = new ElementNode(yyvsp[-3].elm, yyvsp[-1].eli, yyvsp[0].node); ;
+{ yyval.elm = new ElementNode(yyvsp[-3].elm, yyvsp[-1].ival, yyvsp[0].node); ;
     break;}
 case 20:
 #line 198 "grammar.y"
-{ yyval.eli = 0L; ;
+{ yyval.ival = 0; ;
     break;}
 case 22:
 #line 203 "grammar.y"
-{ yyval.eli = new ElisionNode(0L); ;
+{ yyval.ival = 1; ;
     break;}
 case 23:
 #line 204 "grammar.y"
-{ yyval.eli = new ElisionNode(yyvsp[-1].eli); ;
+{ yyval.ival = yyvsp[-1].ival + 1; ;
     break;}
 case 24:
 #line 208 "grammar.y"

@@ -1,20 +1,21 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2000, 2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2002 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
+ *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
  *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Library General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
+ *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
@@ -231,22 +232,10 @@ namespace KJS {
     Node *group;
   };
 
-  class ElisionNode : public Node {
-  public:
-    ElisionNode(ElisionNode *e) : elision(e) { }
-    virtual void ref();
-    virtual bool deref();
-    virtual Value value(ExecState *exec) const;
-    virtual double toNumber(ExecState *exec) const;
-    virtual void streamTo(SourceStream &s) const;
-  private:
-    ElisionNode *elision;
-  };
-
   class ElementNode : public Node {
   public:
-    ElementNode(ElisionNode *e, Node *n) : list(0L), elision(e), node(n) { }
-    ElementNode(ElementNode *l, ElisionNode *e, Node *n)
+    ElementNode(int e, Node *n) : list(0L), elision(e), node(n) { }
+    ElementNode(ElementNode *l, int e, Node *n)
       : list(l), elision(e), node(n) { }
     virtual void ref();
     virtual bool deref();
@@ -254,16 +243,16 @@ namespace KJS {
     virtual void streamTo(SourceStream &s) const;
   private:
     ElementNode *list;
-    ElisionNode *elision;
+    int elision;
     Node *node;
   };
 
   class ArrayNode : public Node {
   public:
-    ArrayNode(ElisionNode *e) : element(0L), elision(e), opt(true) { }
+    ArrayNode(int e) : element(0L), elision(e), opt(true) { }
     ArrayNode(ElementNode *ele)
       : element(ele), elision(0), opt(false) { }
-    ArrayNode(ElisionNode *eli, ElementNode *ele)
+    ArrayNode(int eli, ElementNode *ele)
       : element(ele), elision(eli), opt(true) { }
     virtual void ref();
     virtual bool deref();
@@ -271,7 +260,7 @@ namespace KJS {
     virtual void streamTo(SourceStream &s) const;
   private:
     ElementNode *element;
-    ElisionNode *elision;
+    int elision;
     bool opt;
   };
 

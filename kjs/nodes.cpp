@@ -1,20 +1,21 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2002, 2003 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2002 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
+ *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
  *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Library General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
+ *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
@@ -372,37 +373,6 @@ Value GroupNode::value(ExecState *exec) const
   return group->value(exec);
 }
 
-// ----------------------------- ElisionNode ----------------------------------
-
-void ElisionNode::ref()
-{
-  Node::ref();
-  if ( elision )
-    elision->ref();
-}
-
-bool ElisionNode::deref()
-{
-  if ( elision && elision->deref() )
-    delete elision;
-  return Node::deref();
-}
-
-// ECMA 11.1.4
-Value ElisionNode::value(ExecState *exec) const
-{
-  if (elision)
-    return Number(elision->toNumber(exec) + 1);
-  else
-    return Number(1);
-}
-
-// ECMA 11.1.4
-double ElisionNode::toNumber(ExecState *exec) const
-{
-  return elision ? elision->toNumber(exec) + 1.0 : 1.0;
-}
-
 // ----------------------------- ElementNode ----------------------------------
 
 void ElementNode::ref()
@@ -410,8 +380,6 @@ void ElementNode::ref()
   Node::ref();
   if ( list )
     list->ref();
-  if ( elision )
-    elision->ref();
   if ( node )
     node->ref();
 }
@@ -420,8 +388,6 @@ bool ElementNode::deref()
 {
   if ( list && list->deref() )
     delete list;
-  if ( elision && elision->deref() )
-    delete elision;
   if ( node && node->deref() )
     delete node;
   return Node::deref();
@@ -433,7 +399,6 @@ Value ElementNode::value(ExecState *exec) const
   Object array;
   Value val;
   int length = 0;
-  int elisionLen = elision ? elision->value(exec).toInt32(exec) : 0;
   KJS_CHECKEXCEPTIONVALUE
 
   if (list) {
@@ -448,7 +413,7 @@ Value ElementNode::value(ExecState *exec) const
     KJS_CHECKEXCEPTIONVALUE
   }
 
-  array.put(exec, UString::from(elisionLen + length), val);
+  array.put(exec, UString::from(elision + length), val);
 
   return array;
 }
@@ -460,16 +425,12 @@ void ArrayNode::ref()
   Node::ref();
   if ( element )
     element->ref();
-  if ( elision )
-    elision->ref();
 }
 
 bool ArrayNode::deref()
 {
   if ( element && element->deref() )
     delete element;
-  if ( elision && elision->deref() )
-    delete elision;
   return Node::deref();
 }
 
@@ -478,8 +439,6 @@ Value ArrayNode::value(ExecState *exec) const
 {
   Object array;
   int length;
-  int elisionLen = elision ? elision->value(exec).toInt32(exec) : 0;
-  KJS_CHECKEXCEPTIONVALUE
 
   if (element) {
     array = Object(static_cast<ObjectImp*>(element->value(exec).imp()));
@@ -492,7 +451,7 @@ Value ArrayNode::value(ExecState *exec) const
   }
 
   if (opt)
-    array.put(exec,"length", Number(elisionLen + length), DontEnum | DontDelete);
+    array.put(exec,"length", Number(elision + length), DontEnum | DontDelete);
 
   return array;
 }
