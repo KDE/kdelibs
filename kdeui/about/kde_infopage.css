@@ -74,35 +74,9 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 #bar {
   width: 100%;
   background-color: #7693BA;
+  padding-top: 0.5ex;
   border-bottom: 1px solid black;
-  padding-bottom: 3px;
-}
-
-#barT {
-  width: 100%;
-  height: 19px;
-  background-image: url(bar-top-middle.png);
-}
-
-#barTL {
-  width: 22px;
-  height: 19px;
-  float: left;
-  background-image: url(bar-top-left.png);
-}
-
-#barTR {
-  width: 22px;
-  height: 19px;
-  float: right;
-  background-image: url(bar-top-right.png);
-}
-
-#barL {
-  background-image: url(bar-middle-left.png);
-  background-repeat: repeat-y;
-  background-position: left;
-  padding-left: 22px;
+  padding-bottom: 0.5ex;
 }
 
 #barCenter {
@@ -142,33 +116,6 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 
 #barCenter li:not(:first-child):before { /* Aren't css3 selectors great? */
   content: " · ";
-}
-
-#barR {
-  background-image: url(bar-middle-right.png);
-  background-repeat: repeat-y;
-  background-position: right;
-  padding-right: 22px;
-}
-
-#barB {
-  width: 100%;
-  height: 25px;
-  background-image: url(bar-bottom-middle.png);
-}
-
-#barBL {
-  width: 22px;
-  height: 25px;
-  float: left;
-  background-image: url(bar-bottom-left.png);
-}
-
-#barBR {
-  width: 22px;
-  height: 25px;
-  float: right;
-  background-image: url(bar-bottom-right.png);
 }
 
 /*
