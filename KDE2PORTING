@@ -72,6 +72,8 @@ khtmlw has been replaced with khtml.
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobal::generalFont() and KGlobal::fixedFont() instead.
  
+  appName() is deprecated. Please use QApplication::name() instead.
+
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget
 
