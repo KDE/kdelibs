@@ -25,13 +25,16 @@
 #include "kjs_binding.h"
 
 class KHTMLView;
+class KHTMLPart;
 
 namespace KJS {
 
   class Navigator : public HostImp {
   public:
-    Navigator() { }
+    Navigator(KHTMLPart *p) : part(p) { }
     virtual KJSO get(const UString &p) const;
+  private:
+  KHTMLPart *part;
   };
 }; // namespace
 

@@ -23,12 +23,15 @@
 
 #include <kjs/types.h>
 #include <kjs/operations.h>
+#include <kurl.h>
+#include <kio/kprotocolmanager.h>
 #include "kjs_navigator.h"
+#include "khtml_part.h"
 
 using namespace KJS;
 
 namespace KJS {
-  
+
   class Plugins : public HostImp {
   public:
     Plugins() { }
@@ -45,15 +48,23 @@ namespace KJS {
 
 KJSO Navigator::get(const UString &p) const
 {
+  KURL url = part->url();
+  QString userAgent = KProtocolManager::userAgentForHost(url.host());
+
   if (p == "appCodeName")
     return String("Mozilla");
-  else if (p == "appName")
+  else if (p == "appName") {
+    if (userAgent.find(QString::fromLatin1("Netscape")) >= 0)
+      return String("Netscape");
+    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0)
+      return String("Microsoft Internet Explorer");
     return String("Konqueror");
-  else if (p == "appVersion")
-    return String("5.0 (X11; Konqueror; Unix)");
-  else if (p == "userAgent")
-    return String("Mozilla/5.0 (X11; Konqueror; Unix)");
-  else if (p == "plugins")
+  } else if (p == "appVersion"){
+    // We assume the string is something like Mozilla/version (properties)
+    return String(userAgent.mid(userAgent.find('/') + 1));
+  } else if (p == "userAgent") {
+    return String(userAgent);
+  } else if (p == "plugins")
     return KJSO(new Plugins());
   else
     return Undefined();
@@ -63,7 +74,7 @@ KJSO Plugins::get(const UString &p) const
 {
   if (p == "refresh")
     return Function(new PluginsFunc());
-  
+
   return Undefined();
 }
 

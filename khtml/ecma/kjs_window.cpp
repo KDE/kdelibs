@@ -61,7 +61,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "document")
     return getDOMNode(part->htmlDocument());
   else if (p == "navigator")
-    return KJSO(new Navigator());
+    return KJSO(new Navigator(part));
   else if (p == "self")
     return KJSO(new Window(part));
   else if (p == "parent")
