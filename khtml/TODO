@@ -1,18 +1,9 @@
 Here's what's still missing (without order):
 
-parts:
-	* split KHTMLWidget into a KHTMLPart and a KHTMLScrollview
-
 Rendering:
 	* text-align: Justify missing
 	* more thorough checks of reordering/line width calculations
 	  in a BiDi context
-	* a generic class to embed QWidgets (RenderEmbedded)
-	* class for framesets
-	* RenderRoot (the root of the document, will get applied to
-	  the HTML element) --> mostly done ;-)
-	* Document should have an HTMLScrollView as RenderObject
-	* tables
 
 General:
 	* move all internal classes into namespace khtml
@@ -29,8 +20,6 @@ DOM:
 	* some functions in the Impl classes
 	* fix the set/retrieve functions, which use boolean values
 	  -->> mostly done, still need to fix parseAttribute() calls	
-	* set functions should trigger a rescanning of m_style,
-	  and necessary repaints
 	* DOM level 2
 	* DOM stylesheets, changes need to trigger the appropriate changes
 	  in the rendering tree
@@ -43,13 +32,14 @@ XML:
 
 misc:
 	* mouse handling
-	* selection
+	* selection --> mostly done, still a bit buggy
 
 JScript:
 	* return value for events/ event propagation
 
 Java:
 	* support for the object element
+	    --> mostly done
 	* Java <--> HTMLWidget communication
 	* turn kjava into a kpart
 
@@ -62,107 +52,11 @@ Memory usage:
 	* try to make better use of shared objects, especially in the
 	  RenderStyle
 	* check for leaks
+	* there's a mem leak with the style objects of anonymous
+	  boxes (and ListMarkers).
 
-Tokenizer/Parser: 
-
+Other:
         * there's a bug on correctly retrieving <textarea> text.
           see test/forms.html and compare it with the way all other
           browsers handle that code
-
-Elements:
-some are still missing. Here comes a list.
-
-a	        mostly done
-abbr
-acronym
-address		done
-applet		mostly done
-area		done
-b		done
-base		done
-basefont
-bdo
-big		done
-blockquote	done (attrs missing)
-body		mostly
-br		done
-button		partly
-caption		mostly
-center		done
-cite		done
-code		done
-col		mostly
-colgroup	mostly
-dd		done
-del
-dfn
-dir		see ul
-div		should work
-dl		done
-dt		done
-em		done
-fieldset
-font		partly done
-form		partly done
-frame		done
-frameset	done (except for nice looking resizing... :)
-h1		done
-h2		done
-h3		done
-h4		done
-h5		done
-h6		done
-head		done
-hr		done
-html		done
-i		done
-iframe
-img		mostly
-input		partly done
-ins
-isindex
-kbd		done
-label
-legend
-li		done
-link		partly (linking to style sheets works)
-listing
-map 	    	non local and server side maps missing
-menu		see ul
-meta		charset partly done
-noframes	not needed
-noscript
-object
-ol		see ul
-optgroup	partly
-option		partly
-p		done
-param
-plain
-pre		done
-q
-s		done
-samp		done
-script	
-select		partly
-small		done
-span
-strike		done
-strong		done
-style		done
-sub		done
-sup		done
-table		mostly
-tbody		partly
-td		done
-textarea	done
-tfoot		partly
-th		done
-thead		partly
-title		done
-tr		done
-tt		done
-u		done
-ul		done
-var		done
 
