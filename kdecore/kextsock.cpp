@@ -31,12 +31,25 @@
 #include <sys/times.h>
 #include <sys/types.h>
 
+#include <qglobal.h>
 #include <qstring.h>
 #include <qiodevice.h>
 
 #include "kdebug.h"
 #include "kextsock.h"
 #include "ksockaddr.h"
+
+#include "netsupp.h"
+
+/*
+ * getaddrinfo is defined in IEEE POSIX 1003.1g (Protocol Independent Interfaces)
+ * and RFC 2553 extends that specification
+ */
+
+#ifndef AI_NUMERICHOST
+/* Some systems have getaddrinfo according to POSIX, but not the RFC */
+#define AI_NUMERICHOST		0
+#endif
 
 class KExtendedSocket::KExtendedSocketPrivate
 {
@@ -101,6 +114,7 @@ static bool valid_family(addrinfo *p, int flags)
 {
   if (flags & KExtendedSocket::knownSocket)
     {
+#ifdef PF_INET6
       if (p->ai_family == PF_INET6)
 	{
 	  if (flags & 0x0e && (flags & 0x4) == 0)
@@ -108,6 +122,7 @@ static bool valid_family(addrinfo *p, int flags)
 	  if (flags & 0xf00 && (flags & 0x200) == 0)
 	    return false;	// user hasn't asked for IPv6 sockets
 	}
+#endif
       else if (p->ai_family == PF_INET)
 	{
 	  if (flags & 0x0e && (flags & 0x4) == 0)
@@ -115,13 +130,16 @@ static bool valid_family(addrinfo *p, int flags)
 	  if (flags & 0xf00 && (flags & 0x100) == 0)
 	    return false;	// user hasn't asked for IPv4 sockets
 	}
-      else if (p->ai_family == PF_LOCAL)
+      else if (p->ai_family == PF_UNIX)
 	{
 	  if (flags & 0x0e && (flags & 0x2) == 0)
 	    return false;	// user hasn't asked for Unix Sockets
 	}
-      if (p->ai_family != PF_INET6 && p->ai_family != PF_INET && 
-	  p->ai_family != PF_LOCAL)
+      if (p->ai_family != PF_INET && p->ai_family != PF_UNIX
+#ifdef PF_INET6
+	  && p->ai_family != PF_INET6
+#endif
+	  )
 	return false;		// not a known socket
 
       // if we got here, the family is acceptable
@@ -140,7 +158,7 @@ static QString pretty_sock(addrinfo *p)
 
   switch (p->ai_family)
     {
-    case AF_LOCAL:
+    case AF_UNIX:
       ret = QString::fromLocal8Bit("Unix ");
       break;
 
@@ -148,9 +166,11 @@ static QString pretty_sock(addrinfo *p)
       ret = QString::fromLocal8Bit("Inet ");
       break;
 
+#ifdef AF_INET6
     case AF_INET6:
       ret = QString::fromLocal8Bit("Inet6 ");
       break;
+#endif
 
     default:
       ret = QString::fromLocal8Bit("<unknown> ");
@@ -861,7 +881,7 @@ void KExtendedSocket::close()
   if (m_flags & passiveSocket)
     {
       localAddress();
-      if (d->local != NULL && d->local->data != NULL && d->local->data->sa_family == PF_LOCAL &&
+      if (d->local != NULL && d->local->data != NULL && d->local->data->sa_family == PF_UNIX &&
 	  (m_flags & unixSocketKeep) == 0)
 	unlink( ((KUnixSocketAddress*)d->local)->pathname() );
     }
@@ -950,7 +970,8 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   int err;
 
   // FIXME! What is the encoding?
-  err = getaddrinfo(host.utf8(), serv.utf8(), &hint, res);
+  err = getaddrinfo(host.isNull() ? NULL : host.utf8(), serv.isNull() ? NULL : serv.utf8(),
+		    &hint, res);
   return err;
 }
 

@@ -86,7 +86,10 @@ public:
   enum Flags
   {
     /* socket address families */
-    /* NOTE: if you change this, you have to change function valid_socket() as well */
+    /*
+     * NOTE: if you change this, you have to change function valid_socket() as well
+     * These values are hard coded!
+     */
     anySocket = 0x00,
     knownSocket = 0x01,
     unixSocket = knownSocket | 0x02,
