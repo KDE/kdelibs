@@ -288,7 +288,8 @@ KConfig *cfg;
                                  shit != libnamesc.end();
                                  ++shit) {
          QString alib = *it+*shit;
-         _cryptoLib = ll->globalLibrary(alib.latin1());
+	 if (!access(alib.latin1(), R_OK))
+            _cryptoLib = ll->globalLibrary(alib.latin1());
          if (_cryptoLib) break;
       }
       if (_cryptoLib) break;
