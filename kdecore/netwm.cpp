@@ -1748,12 +1748,11 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
     p->icon_count++;
 
     // do a deep copy, we want to own the data
-    // NETIcon &ni = p->icons[p->icon_count - 1];
-    // sz = ni.size.width * ni.size.height;
-    // long *d = new long[sz];
-    // ni.data = (unsigned char *) d;
-    // for (i = 0; i < sz; i++) *d++ = *id++;
-    // memcpy(d, icon.data, sz * sizeof(long));
+    NETIcon &ni = p->icons[p->icon_count - 1];
+    sz = ni.size.width * ni.size.height;
+    long *d = new long[sz];
+    ni.data = (unsigned char *) d;
+    memcpy(d, icon.data, sz * sizeof(long));
 
     // compute property length
     for (i = 0, proplen = 0; i < p->icon_count; i++) {
