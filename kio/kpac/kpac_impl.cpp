@@ -67,7 +67,7 @@ QString KPACImpl::proxyForURL(const KURL &url)
         kdDebug(7025) << "KPACImpl::proxyForURL(): JS evaluation error, not using a proxy" << endl;
         return QString::null;
     }
-    
+
     KJS::Imp *retval = m_kjs->returnValue();
     if (retval)
     {
@@ -84,9 +84,12 @@ QString KPACImpl::proxyForURL(const KURL &url)
             if (proxy.left(5) == "PROXY")
             {
                 KURL proxyURL(proxy = proxy.mid(5).stripWhiteSpace());
-                // if the URL is invalid, simply calling setProtocol() on it
-                // trashes the whole URL
-                if (!proxyURL.isValid())
+                // if the URL is invalid or the URL is valid but in opaque
+                // format which indicates a port number being present in
+                // this particular case, simply calling setProtocol() on
+                // it trashes the whole URL.
+                if (!proxyURL.isValid() ||
+                    proxy.find(":/", proxyURL.protocol().length()) != 0)
                     proxy.prepend("http://");
                 time_t badMark = blackList.readNumEntry(proxy);
                 if (badMark < time(0) - 1800)
