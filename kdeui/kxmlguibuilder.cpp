@@ -57,6 +57,7 @@ public:
 
     QString attrText1;
     QString attrText2;
+    QString attrContext;
 
     QString attrIcon;
 
@@ -84,6 +85,7 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 
   d->attrText1 = QString::fromLatin1( "text" );
   d->attrText2 = QString::fromLatin1( "Text" );
+  d->attrContext = QString::fromLatin1( "context" );
 
   d->attrIcon = QString::fromLatin1( "icon" );
 
@@ -154,14 +156,18 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     KPopupMenu *popup = new KPopupMenu( p, name);
 
     QString i18nText;
-    QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
-    if ( text.isEmpty() ) // try with capital T
-      text = element.namedItem( d->attrText2 ).toElement().text().utf8();
+    QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
+    if ( textElem.isNull() ) // try with capital T
+      textElem = element.namedItem( d->attrText2 ).toElement();
+    QCString text = textElem.text().utf8();
+    QCString context = textElem.attribute(d->attrContext).utf8();
 
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text!" );
-    else
+    else if ( context.isEmpty() )
       i18nText = i18n( text );
+    else
+      i18nText = i18n( context, text );
 
     QString icon = element.attribute( d->attrIcon );
     QIconSet pix;

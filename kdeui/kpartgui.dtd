@@ -131,6 +131,9 @@
 <!-- Used to name a menu, the first letter in is generally preceded by an '&' to specify
   the menu's shortcut key -->
 <!ELEMENT text (#PCDATA)>
+<!ATTLIST text
+  context CDATA #IMPLIED
+>
 
 <!-- Specifies a dynamic list of actions, each of which can be changed by plugging/unplugging it -->
 <!ELEMENT ActionList EMPTY>
