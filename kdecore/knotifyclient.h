@@ -107,6 +107,14 @@ public slots:
 
 public: //static methods
 	/**
+	 * This starts the KNotify Daemon, if it's not already started.
+	 * This will be useful for games that use sound effects. Run this
+	 * at the start of the program, and there won't be a pause when it is
+	 * first triggered.
+	 * @returns if the daemon is still running.
+	 **/
+	static bool startDaemon();
+	/**
 	 * This should be the most used method in here.
 	 * Call it by KNotifyClient::event("EventName");
 	 * It will use KApplication::kApplication->dcopClient() to communicate to

@@ -37,7 +37,7 @@ KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QStr
 	levent->sound=sound;
 	levent->file=file;
 	levent->client=client;
-	KApplication::startServiceByDesktopName("knotify");
+	startDaemon();
 }
 
 KNotifyClient::~KNotifyClient()
@@ -134,6 +134,12 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 	}
 		
 	return 0;
+}
+
+bool KNotifyClient::startDaemon()
+{
+	KApplication::startServiceByDesktopName("knotify");
+	return true;
 }
 
 #include "knotifyclient.moc"
