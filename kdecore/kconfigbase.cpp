@@ -249,6 +249,24 @@ bool KConfigBase::entryIsImmutable(const QString &key) const
   return aEntryData.bImmutable;
 }
 
+
+QString KConfigBase::readEntryUntranslated( const QString& pKey,
+                                const QString& aDefault ) const
+{
+   return KConfigBase::readEntryUntranslated(pKey.utf8().data(), aDefault);
+}
+
+
+QString KConfigBase::readEntryUntranslated( const char *pKey,
+                                const QString& aDefault ) const
+{
+   QCString result = readEntryUtf8(pKey);
+   if (result.isNull())
+      return aDefault;
+   return QString::fromUtf8(result);
+}
+
+
 QString KConfigBase::readEntry( const QString& pKey,
                                 const QString& aDefault ) const
 {

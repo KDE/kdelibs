@@ -397,6 +397,19 @@ public:
   QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const;
 
   /**
+   * Reads the value of an entry specified by @p pKey in the current group.
+   * The untranslated entry is returned, you normally do not need this.
+   *
+   * @param pKey The key to search for.
+   * @param aDefault A default value returned if the key was not found.
+   * @return The value for this key.
+   */
+   QString readEntryUntranslated( const QString& pKey,
+                     const QString& aDefault = QString::null ) const;
+   QString readEntryUntranslated( const char *pKey,
+                     const QString& aDefault = QString::null ) const;
+
+  /**
    * Writes a key/value pair.
    *
    * This is stored in the most specific config file when destroying the
