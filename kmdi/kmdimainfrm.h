@@ -506,7 +506,7 @@ public slots:
     * Docks all view windows. Toolviews use dockcontainers
     */
     virtual void switchToIDEAlMode();
-    virtual void finishIDEAlMode();
+    virtual void finishIDEAlMode(bool full=true);
    /*
    * @return if the view taskbar should be shown if there are MDI views
    */
@@ -603,7 +603,7 @@ protected:
    void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
    QStringList prepareIdealToTabs(KDockWidget* container);
-   void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos);
+   void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
 
 
 protected slots: // Protected slots

@@ -1176,11 +1176,13 @@ void KMdiMainFrm::switchToChildframeMode()
       finishToplevelMode();
    } else if (m_mdiMode == KMdi::IDEAlMode) {
       finishIDEAlMode();
+
       // select the dockwidgets to be undocked and store their geometry
       QValueList<QRect> positionList;
       findRootDockWidgets(&rootDockWidgetList, &positionList);
 
       // undock all these found oldest ancestors (being KDockWidgets)
+
       QPtrListIterator<KDockWidget> it3( rootDockWidgetList);
       for (; it3.current(); ++it3 ) {
           KDockWidget* pDockW = it3.current();
@@ -1288,7 +1290,9 @@ void KMdiMainFrm::switchToTabPageMode()
    else if (m_mdiMode == KMdi::ToplevelMode) {
       finishToplevelMode();
    } else if (m_mdiMode == KMdi::IDEAlMode) {
-      finishIDEAlMode();
+      finishIDEAlMode(false);
+	m_mdiMode=KMdi::TabPageMode;
+      return;
    }
 
    // resize to childframe mode size of the mainwindow if we were in toplevel mode
@@ -1419,7 +1423,9 @@ void KMdiMainFrm::switchToIDEAlMode()
    else if (m_mdiMode == KMdi::ToplevelMode) {
       finishToplevelMode();
    } else if (m_mdiMode == KMdi::TabPageMode) {
-      finishTabPageMode();
+      m_mdiMode=KMdi::IDEAlMode;
+      setupToolViewsForIDEALMode();
+      return;
    }
 
    // resize to childframe mode size of the mainwindow if we were in toplevel mode
@@ -1615,7 +1621,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode() {
 
 
 
-void KMdiMainFrm::finishIDEAlMode()
+void KMdiMainFrm::finishIDEAlMode(bool full)
 {
    // if tabified, release all views from their docking covers
    if (m_mdiMode == KMdi::IDEAlMode) {
@@ -1625,33 +1631,38 @@ void KMdiMainFrm::finishIDEAlMode()
 
       QStringList leftNames;
       leftNames=prepareIdealToTabs(m_leftContainer);
+      int leftWidth=m_leftContainer->width();
 
       QStringList rightNames;
       rightNames=prepareIdealToTabs(m_rightContainer);
+      int rightWidth=m_rightContainer->width();
 
       QStringList topNames;
       topNames=prepareIdealToTabs(m_topContainer);
+      int topHeight=m_topContainer->height();
 
       QStringList bottomNames;
       bottomNames=prepareIdealToTabs(m_bottomContainer);
+      int bottomHeight=m_bottomContainer->height();
 
-   delete m_leftContainer;
-	   m_leftContainer=0;
-   delete m_rightContainer;
-	   m_rightContainer=0;
-   delete m_bottomContainer;
-	   m_bottomContainer=0;
-   delete m_topContainer;
-	   m_topContainer=0;
-
-
-    idealToolViewsToStandardTabs(leftNames,KDockWidget::DockLeft);
-    idealToolViewsToStandardTabs(rightNames,KDockWidget::DockRight);
-    idealToolViewsToStandardTabs(topNames,KDockWidget::DockTop);
-    idealToolViewsToStandardTabs(bottomNames,KDockWidget::DockBottom);
+     delete m_leftContainer;
+  	    m_leftContainer=0;
+     delete m_rightContainer;
+ 	    m_rightContainer=0;
+     delete m_bottomContainer;
+	    m_bottomContainer=0;
+     delete m_topContainer;
+	    m_topContainer=0;
 
 
+    idealToolViewsToStandardTabs(bottomNames,KDockWidget::DockBottom,bottomHeight);
+    idealToolViewsToStandardTabs(leftNames,KDockWidget::DockLeft,leftWidth);
+    idealToolViewsToStandardTabs(rightNames,KDockWidget::DockRight,rightWidth);
+    idealToolViewsToStandardTabs(topNames,KDockWidget::DockTop,topHeight);
 
+      QApplication::sendPostedEvents();
+
+    if (!full) return;
 
       QPtrListIterator<KMdiChildView> it( *m_pWinList);
       for( ; it.current(); ++it) {
@@ -1682,7 +1693,7 @@ void KMdiMainFrm::finishIDEAlMode()
 }
 
 QStringList KMdiMainFrm::prepareIdealToTabs(KDockWidget* container) {
-   QStringList widgetNames=static_cast<KDockContainer*>(m_leftContainer->getWidget()->
+   QStringList widgetNames=static_cast<KDockContainer*>(container->getWidget()->
 	qt_cast("KDockContainer"))->containedWidgets();
    for (QStringList::iterator it=widgetNames.begin();it!=widgetNames.end();++it) {
 	KDockWidget *dw=manager()->getDockWidgetFromName(*it);
@@ -1694,7 +1705,7 @@ QStringList KMdiMainFrm::prepareIdealToTabs(KDockWidget* container) {
    return widgetNames;
 }
 
-void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos) {
+void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int size) {
 
     KDockWidget *mainDock=getMainDockWidget();
     if (mainDockWidget->parentDockTabGroup()) {
@@ -1719,7 +1730,16 @@ void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidg
         	}
 		tmpdw->manualDock(dwpd,KDockWidget::DockCenter,20);
 	}
-		
+	
+#if 0
+	QWidget *wid=dwpd->parentDockTabGroup();
+	if (!wid) wid=dwpd;
+	wid->setGeometry(0,0,20,20);
+/*	wid->resize(
+		((pos==KDockWidget::DockLeft) || (pos==KDockWidget::DockRight))?size:wid->width(),
+		((pos==KDockWidget::DockLeft) || (pos==KDockWidget::DockRight))?wid->height():size);
+*/	
+#endif 
    }
 
 }
