@@ -731,14 +731,14 @@ public:
   /**
    * Turns on or off "dollar  expansion" (see @ref KConfigBase introduction)
    *  when reading config entries.
-   * Dollar sign expansion is initially ON.
+   * Dollar sign expansion is initially OFF.
    *
    * @param _bExpand Tf true, dollar expansion is turned on.
    */
   void setDollarExpansion( bool _bExpand = true ) { bExpand = _bExpand; }
 
   /**
-   * Returns whether dollar expansion is on or off.  It is initially ON.
+   * Returns whether dollar expansion is on or off.  It is initially OFF.
    *
    * @return true if dollar expansion is on.
    */
