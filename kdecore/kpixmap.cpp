@@ -26,7 +26,6 @@
 #include <qimage.h>
 #include <qbitmap.h>
 #include <qcolor.h>
-#include <qdatetime.h>
 
 #include <kapp.h>
 #include <dither.h>
