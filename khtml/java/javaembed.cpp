@@ -27,7 +27,7 @@
 #include <qapplication.h>
 #include <qevent.h>
 
-struct JavaEmbedPrivate
+struct KJavaEmbedPrivate
 {
 };
 
@@ -210,13 +210,13 @@ QString getQtEventName( QEvent* e )
 
 /*!\reimp
  */
-bool JavaEmbed::eventFilter( QObject* o, QEvent* e)
+bool KJavaEmbed::eventFilter( QObject* o, QEvent* e)
 {
     QEvent::Type t = e->type();
 
     if( t != QEvent::MouseMove && t != QEvent::Timer && t <= QEvent::User )
     {
-        kdDebug(6100) << "JavaEmbed::eventFilter, event = " << getQtEventName( e ) << endl;
+        kdDebug(6100) << "KJavaEmbed::eventFilter, event = " << getQtEventName( e ) << endl;
 
         if( o == this )
             kdDebug(6100) << "event is for me:)" << endl;
@@ -379,10 +379,10 @@ QString getX11EventName( XEvent* e )
   The \e parent, \e name and \e f arguments are passed to the QFrame
   constructor.
  */
-JavaEmbed::JavaEmbed( QWidget *parent, const char *name, WFlags f )
+KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
   : QWidget( parent, name, f )
 {
-    d = new JavaEmbedPrivate;
+    d = new KJavaEmbedPrivate;
 
     setFocusPolicy( StrongFocus );
     setKeyCompression( FALSE );
@@ -394,7 +394,7 @@ JavaEmbed::JavaEmbed( QWidget *parent, const char *name, WFlags f )
 /*!
   Destructor. Cleans up the focus if necessary.
  */
-JavaEmbed::~JavaEmbed()
+KJavaEmbed::~KJavaEmbed()
 {
     if ( window != 0 )
     {
@@ -405,92 +405,38 @@ JavaEmbed::~JavaEmbed()
     delete d;
 }
 
-
 /*!\reimp
  */
-void JavaEmbed::resizeEvent( QResizeEvent* e )
+void KJavaEmbed::resizeEvent( QResizeEvent* e )
 {
-//    kdDebug(6100) << "JavaEmbed::resizeEvent" << endl;
+//    kdDebug(6100) << "KJavaEmbed::resizeEvent" << endl;
+    QWidget::resizeEvent( e );
 
     if ( window != 0 )
-        XResizeWindow( qt_xdisplay(), window, width(), height() );
-    else
-        QWidget::resizeEvent( e );
+        XResizeWindow( qt_xdisplay(), window, e->size().width(), e->size().height() );
 }
 
-/*!\reimp
- */
-void JavaEmbed::showEvent( QShowEvent* )
+bool  KJavaEmbed::event( QEvent* e)
 {
-//    kdDebug(6100) << "JavaEmbed::showEvent" << endl;
-
-    if ( window != 0 )
-        XMapRaised( qt_xdisplay(), window );
-}
-
-bool  JavaEmbed::event( QEvent* e)
-{
-//    kdDebug(6100) << "JavaEmbed::event, event type = " << getQtEventName( e ) << endl;
-
-
-    return QWidget::event( e );
-
+//    kdDebug(6100) << "KJavaEmbed::event, event type = " << getQtEventName( e ) << endl;
     switch( e->type() )
     {
         case QEvent::ShowWindowRequest:
             XMapRaised( qt_xdisplay(), window );
-            return true;
             break;
 
         default:
             break;
     }
 
-
     return QWidget::event( e );
 }
 
-void JavaEmbed::enterEvent( QEvent* )
-{
-//    kdDebug(6100) << "JavaEmbed::enterEvent" << endl;
-}
-
-void JavaEmbed::leaveEvent( QEvent* )
-{
-//    kdDebug(6100) << "JavaEmbed::leaveEvent" << endl;
-}
-
 /*!\reimp
  */
-void JavaEmbed::keyPressEvent( QKeyEvent* )
+void KJavaEmbed::focusInEvent( QFocusEvent* )
 {
-//    kdDebug(6100) << "JavaEmbed::keyPressEvent" << endl;
-
-    if ( !window )
-        return;
-
-//    last_key_event.window = window;
-//    XSendEvent( qt_xdisplay(), window, FALSE, NoEventMask, (XEvent*)&last_key_event );
-}
-
-/*!\reimp
- */
-void JavaEmbed::keyReleaseEvent( QKeyEvent* )
-{
-//    kdDebug(6100) << "JavaEmbed::keyReleaseEvent" << endl;
-
-    if ( !window )
-        return;
-
-//    last_key_event.window = window;
-//    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, (XEvent*)&last_key_event);
-}
-
-/*!\reimp
- */
-void JavaEmbed::focusInEvent( QFocusEvent* )
-{
-//    kdDebug(6100) << "JavaEmbed::focusInEvent" << endl;
+//    kdDebug(6100) << "KJavaEmbed::focusInEvent" << endl;
 
     if ( !window )
         return;
@@ -505,9 +451,9 @@ void JavaEmbed::focusInEvent( QFocusEvent* )
 
 /*!\reimp
  */
-void JavaEmbed::focusOutEvent( QFocusEvent* )
+void KJavaEmbed::focusOutEvent( QFocusEvent* )
 {
-//    kdDebug(6100) << "JavaEmbed::focusOutEvent" << endl;
+//    kdDebug(6100) << "KJavaEmbed::focusOutEvent" << endl;
 
     if ( !window )
         return;
@@ -531,9 +477,9 @@ void JavaEmbed::focusOutEvent( QFocusEvent* )
 
   \sa embeddedWinId()
  */
-void JavaEmbed::embed( WId w )
+void KJavaEmbed::embed( WId w )
 {
-//    kdDebug(6100) << "JavaEmbed::embed" << endl;
+//    kdDebug(6100) << "KJavaEmbed::embed" << endl;
 
     if ( w == 0 )
         return;
@@ -544,7 +490,7 @@ void JavaEmbed::embed( WId w )
     XWithdrawWindow( qt_xdisplay(), window, qt_xscreen() );
     QApplication::flushX();
 
-    //now reparent the window to be swallowed by the JavaEmbed widget
+    //now reparent the window to be swallowed by the KJavaEmbed widget
     XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
     QApplication::syncX();
 
@@ -557,7 +503,7 @@ void JavaEmbed::embed( WId w )
 
 /*!\reimp
  */
-bool JavaEmbed::focusNextPrevChild( bool next )
+bool KJavaEmbed::focusNextPrevChild( bool next )
 {
     if ( window )
         return FALSE;
@@ -565,12 +511,11 @@ bool JavaEmbed::focusNextPrevChild( bool next )
         return QWidget::focusNextPrevChild( next );
 }
 
-
 /*!\reimp
  */
-bool JavaEmbed::x11Event( XEvent* e)
+bool KJavaEmbed::x11Event( XEvent* e)
 {
-//    kdDebug(6100) << "JavaEmbed::x11Event, event = " << getX11EventName( e )
+//    kdDebug(6100) << "KJavaEmbed::x11Event, event = " << getX11EventName( e )
 //        << ", window = " << e->xany.window << endl;
 
     switch ( e->type )
@@ -603,7 +548,7 @@ bool JavaEmbed::x11Event( XEvent* e)
   survive on less than sizeHint().
 */
 
-QSizePolicy JavaEmbed::sizePolicy() const
+QSizePolicy KJavaEmbed::sizePolicy() const
 {
     return QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 }
@@ -611,7 +556,7 @@ QSizePolicy JavaEmbed::sizePolicy() const
 /*!
   Returns a size sufficient for the embedded window
 */
-QSize JavaEmbed::sizeHint() const
+QSize KJavaEmbed::sizeHint() const
 {
     return minimumSizeHint();
 }
@@ -619,13 +564,13 @@ QSize JavaEmbed::sizeHint() const
 /*!
   Returns the minimum size specified by the embedded window.
 */
-QSize JavaEmbed::minimumSizeHint() const
+QSize KJavaEmbed::minimumSizeHint() const
 {
     int minw = 0;
     int minh = 0;
     if ( window )
     {
-        kdDebug(6100) << "JavaEmbed::minimumSizeHint, getting hints from window" << endl;
+        kdDebug(6100) << "KJavaEmbed::minimumSizeHint, getting hints from window" << endl;
 
         XSizeHints size;
         long msize;

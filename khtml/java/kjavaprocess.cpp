@@ -12,8 +12,6 @@
 
 typedef QMap<QString, QString> PropsMap;
 
-const int MAX_INPUT_SIZE = 1023;
-
 struct KJavaProcessPrivate
 {
    int versionMajor;
@@ -62,7 +60,7 @@ KJavaProcess::KJavaProcess()
 
 KJavaProcess::~KJavaProcess()
 {
-    kdDebug(6100) << "KJavaProcess::~KJavaProcess" << endl;
+//    kdDebug(6100) << "KJavaProcess::~KJavaProcess" << endl;
 
     if ( d->ok && isRunning() )
     {
@@ -151,7 +149,7 @@ void KJavaProcess::send( const QString& /*command*/ )
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
-    kdDebug(6100) << "KJavaProcess::send" << endl;
+//    kdDebug(6100) << "KJavaProcess::send" << endl;
 
     //the buffer to store stuff, etc.
     QByteArray* buff = new QByteArray();
@@ -163,7 +161,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     output << space;
 
     //write command code
-    kdDebug(6100) << "cmd_code = " << (int)cmd_code << endl;
+//    kdDebug(6100) << "cmd_code = " << (int)cmd_code << endl;
     output << cmd_code;
 
     //store the arguments...
@@ -186,7 +184,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
 
     int size = buff->size() - 8;  //subtract out the length of the size_str
     QString size_str = QString("%1").arg( size, 8 );
-    kdDebug(6100) << "size of message = " << size_str << endl;
+//    kdDebug(6100) << "size of message = " << size_str << endl;
 
     const char* size_ptr = size_str.latin1();
     for( int i = 0; i < 8; i++ )
@@ -194,7 +192,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
 
     d->BufferList.append( buff );
 
-    kdDebug(6100) << "just added this buffer of size: " << buff->size() << " to the queue: " << endl;
+//    kdDebug(6100) << "just added this buffer of size: " << buff->size() << " to the queue: " << endl;
 
     if( d->BufferList.count() == 1 )
     {
@@ -207,23 +205,23 @@ void KJavaProcess::popBuffer()
     QByteArray* buf = d->BufferList.first();
     if( buf )
     {
-        cout << "Sending buffer to java, buffer = >>";
-        for( unsigned int i = 0; i < buf->size(); i++ )
-        {
-            if( buf->at(i) == (char)0 )
-                cout << "<SEP>";
-            else if( buf->at(i) > 0 && buf->at(i) < 10 )
-                cout << "<CMD " << (int) buf->at(i) << ">";
-            else
-                cout << buf->at(i);
-        }
-        cout << "<<" << endl;
+//        cout << "Sending buffer to java, buffer = >>";
+//        for( unsigned int i = 0; i < buf->size(); i++ )
+//        {
+//            if( buf->at(i) == (char)0 )
+//                cout << "<SEP>";
+//            else if( buf->at(i) > 0 && buf->at(i) < 10 )
+//                cout << "<CMD " << (int) buf->at(i) << ">";
+//            else
+//                cout << buf->at(i);
+//        }
+//        cout << "<<" << endl;
 
         //write the data
         if ( !javaProcess->writeStdin( buf->data(),
                                        buf->size() ) )
         {
-            qWarning( "Could not write command" );
+            kdError(6100) << "Could not write command" << endl;
         }
     }
 }
@@ -242,6 +240,8 @@ void KJavaProcess::wroteData( )
 
 void KJavaProcess::invokeJVM()
 {
+    kdDebug(6100) << "invokeJVM()" << endl;
+
     *javaProcess << d->jvmPath;
 
     //set the system properties, iterate through the qmap of system properties
@@ -289,10 +289,8 @@ void KJavaProcess::invokeJVM()
     KProcess::Communication flags =  (KProcess::Communication)
                                      (KProcess::Stdin | KProcess::Stdout |
                                       KProcess::NoRead);
-    kdDebug(6100) << "kprocess flags = " << flags << endl;
     javaProcess->start( KProcess::NotifyOnExit, flags );
     javaProcess->resume(); //start processing stdout on the java process
-
 }
 
 void KJavaProcess::killJVM()
@@ -311,7 +309,7 @@ void KJavaProcess::processExited()
  */
 void KJavaProcess::receivedData( int fd, int& )
 {
-    kdDebug(6100) << "KJavaProcess::receivedData" << endl;
+//    kdDebug(6100) << "KJavaProcess::receivedData" << endl;
 
     //read out the length of the message,
     //read the message and send it to the applet server
@@ -319,7 +317,7 @@ void KJavaProcess::receivedData( int fd, int& )
     int num_bytes = ::read( fd, length, 8 );
     if( num_bytes == -1 )
     {
-        kdError(6002) << "could not read 8 characters for the message length!!!!" << endl;
+        kdError(6100) << "could not read 8 characters for the message length!!!!" << endl;
         return;
     }
 
@@ -328,18 +326,18 @@ void KJavaProcess::receivedData( int fd, int& )
     int num_len = lengthstr.toInt( &ok );
     if( !ok )
     {
-        kdError(6002) << "could not parse length out of: " << lengthstr << endl;
+        kdError(6100) << "could not parse length out of: " << lengthstr << endl;
         return;
     }
 
-    kdDebug(6100) << "msg length = " << num_len << endl;
+//    kdDebug(6100) << "msg length = " << num_len << endl;
 
     //now parse out the rest of the message.
     char* msg = new char[num_len];
     num_bytes = ::read( fd, msg, num_len );
     if( num_bytes == -1 ||  num_bytes != num_len )
     {
-        kdError(6002) << "could not read the msg, num_bytes = " << num_bytes << endl;
+        kdError(6100) << "could not read the msg, num_bytes = " << num_bytes << endl;
         return;
     }
 
@@ -350,9 +348,5 @@ void KJavaProcess::receivedData( int fd, int& )
     emit received( copied_data );
 }
 
-void KJavaProcess::receivedData( KProcess*, char*, int )
-{
-    kdWarning() << "This method is deprecated- it doesn't do anything anymore" << endl;
-}
 
 #include "kjavaprocess.moc"

@@ -24,15 +24,15 @@
 
 #include <qwidget.h>
 
-class JavaEmbedPrivate;
-class JavaEmbed : public QWidget
+class KJavaEmbedPrivate;
+class KJavaEmbed : public QWidget
 {
     Q_OBJECT
 
 public:
 
-    JavaEmbed( QWidget *parent=0, const char *name=0, WFlags f = 0 );
-    ~JavaEmbed();
+    KJavaEmbed( QWidget *parent=0, const char *name=0, WFlags f = 0 );
+    ~KJavaEmbed();
 
     void embed( WId w );
     bool embedded() { if( window != 0 ) return true; else return false; }
@@ -43,25 +43,22 @@ public:
 
     bool eventFilter( QObject *, QEvent * );
 
-signals:
-
 protected:
     bool event( QEvent * );
-    void enterEvent( QEvent* );
-    void leaveEvent( QEvent* );
-    void keyPressEvent( QKeyEvent * );
-    void keyReleaseEvent( QKeyEvent * );
+
     void focusInEvent( QFocusEvent * );
     void focusOutEvent( QFocusEvent * );
     void resizeEvent(QResizeEvent *);
-    void showEvent( QShowEvent * );
+
+    //void showEvent( QShowEvent * );
+
     bool x11Event( XEvent* );
 
     bool focusNextPrevChild( bool next );
 
 private:
     WId window;
-    JavaEmbedPrivate* d;
+    KJavaEmbedPrivate* d;
 };
 
 

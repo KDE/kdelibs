@@ -99,7 +99,6 @@ public:
 protected slots:
     void wroteData();
     void processExited();
-    void receivedData( KProcess *, char *, int );
     void receivedData( int, int& );
     void javaHasDied();
 
@@ -109,17 +108,15 @@ protected:
 
     void popBuffer();
 
-    KProcess *javaProcess;
+    KProcess* javaProcess;
 
 signals:
-    /* deprecated- use received(const QByteArray&) */
-    void received( const QString & );
     void received( const QByteArray& );
 
 private:
     KJavaProcessPrivate *d;
     QStrList inputBuffer;
-    QMap <QString, QString> systemProps;
+    QMap<QString, QString> systemProps;
 };
 
 #endif // KJAVAPROCESS_H

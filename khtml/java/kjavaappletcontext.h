@@ -40,8 +40,7 @@ public:
     // Forwarded from the applets
     void create      ( KJavaApplet* );
     void destroy     ( KJavaApplet* );
-    void setParameter( KJavaApplet*, const QString&, const QString& );
-    void show        ( KJavaApplet*, const QString& );
+
     void start       ( KJavaApplet* );
     void stop        ( KJavaApplet* );
 

@@ -21,6 +21,13 @@ Q_OBJECT
 
 public:
     /**
+     * Create the applet server.  These shouldn't be used directly,
+     * use allocateJavaServer instead
+     */
+    KJavaAppletServer();
+    ~KJavaAppletServer();
+
+    /**
      * A factory method that returns the default server. This is the way this
      * class is usually instantiated.
      */
@@ -30,7 +37,6 @@ public:
     /**
      * Create an applet context with the specified id.
      */
-    void createContext( int contextId );
     void createContext( int contextId, KJavaAppletContext* context );
 
     /**
@@ -46,29 +52,13 @@ public:
     void createApplet( int contextId, int appletId,
                        const QString name, const QString clazzName,
                        const QString baseURL, const QString codeBase,
-                       const QString jarFile, QSize size );
-
-    void createApplet( int contextId, int appletId,
-                       const QString name, const QString clazzName,
-                       const QString baseURL, const QString codeBase,
-                       const QString jarFile, QSize size, const QMap< QString, QString >& params );
+                       const QString jarFile, QSize size,
+                       const QMap< QString, QString >& params,
+                       const QString windowTitle );
     /**
      * Destroy an applet in the specified context with the specified id.
      */
     void destroyApplet( int contextId, int appletId );
-
-    /**
-     * Set a parameter for a specified applet. The parameter and value are both
-     * treated as strings (though the string might of course be a number e.g. "1".
-     */
-    void setParameter( int contextId, int appletId,
-                       const QString name, const QString value );
-
-    /**
-     * Display the specified applet and set the window title as specified.
-     */
-    void showApplet( int contextId, int appletId,
-                     const QString title );
 
     /**
      * Start the specified applet.
@@ -85,29 +75,18 @@ public:
      */
     void quit();
 
-signals:
-    /**
-     * Command received from java vm
-     */
-    void receivedCommand( const QString &cmd, const QStringList &arg );
-
 protected:
+    void setupJava( KJavaProcess *p );
+
     KJavaProcess *process;
     struct KJavaAppletServerPrivate *d;
 
-    /**
-     * Create the applet server.
-     */
-    KJavaAppletServer();
-    ~KJavaAppletServer();
+
 
 protected slots:
-    void received( const QString &s );
     void received( const QByteArray& qb );
     void checkShutdown();
 
-private:
-    void setupJava( KJavaProcess *p );
 };
 
 #endif // KJAVAAPPLETSERVER_H

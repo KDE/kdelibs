@@ -28,15 +28,13 @@ KJAS Grammar
 <createApplet>   -> <1 byte equal to 3 when cast as int><SEP><ContextID>
                     <SEP><AppletID><SEP><AppletName><SEP><ClassName><SEP>
                     <BaseURL><SEP><CodeBase><SEP><Archives>
-                    <SEP><Width><SEP><Height><SEP><ParamList>
+                    <SEP><Width><SEP><Height><SEP><WindowTitle><SEP><ParamList>
 <destroyApplet>  -> <1 byte equal to 4 when cast as int><SEP><ContextID>
                     <SEP><AppletID><END>
 <startApplet>    -> <1 byte equal to 5 when cast as int><SEP><ContextID>
                     <SEP><AppletID><END>
 <stopApplet>     -> <1 byte equal to 6 when cast as int><SEP><ContextID>
                     <SEP><AppletID><END>
-<showApplet>     -> <1 byte equal to 7 when cast as int><SEP><ContextID>
-                    <SEP><AppletID><SEP><Title><END>
 
 <shutDownServer> -> <1 byte equal to 9 when cast as int><END>
 
@@ -75,6 +73,7 @@ KJAS Grammar
 <Host>           -> string (must be a valid URL)
 <URL>            -> string (must be a valid URL)
 <targetFrame>    -> string
+<WindowTitle>    -> string
 <END>            -> <SEP>
 <SEP>            -> Null character- 1 byte = 0
 <StringNum>      -> padded string representation of integer, 8 characters long

@@ -9,8 +9,6 @@
 #include <qmap.h>
 
 
-
-
 /**
  * @short A Java applet
  *
@@ -20,6 +18,7 @@
 
 class KJavaAppletWidget;
 class KJavaAppletContext;
+class KJavaAppletPrivate;
 
 class KJavaApplet : public QObject
 {
@@ -27,53 +26,51 @@ Q_OBJECT
 
 public:
     KJavaApplet( KJavaAppletWidget* _parent, KJavaAppletContext* _context = 0 );
-    KJavaApplet( KJavaAppletContext* context = 0 );
-    virtual ~KJavaApplet();
-
-   //
-   // Stuff to do with the applet
-   //
+    ~KJavaApplet();
 
    /**
     * Specify the name of the class file to run. For example 'Lake.class'.
     */
-   void setAppletClass( const QString &clazzName );
-   QString &appletClass();
-
-   /**
-    * Specify the location of the jar file containing the class.
-    * (unimplemented)
-    */
-   void setJARFile( const QString &jar );
-   QString &jarFile();
-
-   /**
-    * Specify a parameter to be passed to the applet.
-    */
-   void setParameter( const QString &name, const QString &value );
-   QString &parameter( const QString &name );
-   QMap< QString, QString >& getParams();
+   void     setAppletClass( const QString& clazzName );
+   QString& appletClass();
 
    /**
     * Set the URL of the document embedding the applet.
     */
-   void setBaseURL( const QString &base );
+   void setBaseURL( const QString& base );
    QString &baseURL();
 
    /**
     * Set the codebase of the applet classes.
     */
-   void setCodeBase( const QString &codeBase );
-   QString &codeBase();
+   void     setCodeBase( const QString& codeBase );
+   QString& codeBase();
 
-   void setAppletName( const QString &name );
-   QString &appletName();
+   void     setArchives( const QString& _archives );
+   QString& archives();
+
+
+   void     setAppletName( const QString& name );
+   QString& appletName();
  
    /**
     * Set the size of the applet
     */
-   void setSize( QSize size );
+   void  setSize( QSize size );
    QSize size();
+
+   /**
+    * Specify a parameter to be passed to the applet.
+    */
+   void     setParameter( const QString& name, const QString& value );
+   QString& parameter( const QString& name );
+
+   QMap<QString,QString>& getParams();
+
+   /* Set the window title for swallowing
+    */
+   void     setWindowName( const QString& title );
+   QString& getWindowName();
 
    /**
     * Interface for applets to resize themselves
@@ -83,8 +80,6 @@ public:
    void create();
    bool isCreated();
  
-   void show( const QString &title );
-
    /**
     * Run the applet.
     */
@@ -95,15 +90,15 @@ public:
     */
    void stop();
 
-   int appletId();
+   int  appletId();
    void setAppletId( int id );
 
 private:
    // Applet info
-   struct KJavaAppletPrivate *d;
+   KJavaAppletPrivate*    d;
    QMap<QString, QString> params;
-   KJavaAppletContext *context;
-   int id;
+   KJavaAppletContext*    context;
+   int                    id;
 };
 
 #endif // KJAVAAPPLET_H

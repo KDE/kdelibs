@@ -6,6 +6,7 @@
 #include "kjavaappletcontext.h"
 #include "kjavaapplet.h"
 #include <javaembed.h>
+#include <kwinmodule.h>
 
 /**
  * @short A widget for displaying Java applets
@@ -46,131 +47,37 @@
  * @author Richard J. Moore, rich@kde.org
  */
 
-class KWinModule; 
- 
-class KJavaAppletWidget : public JavaEmbed
+class KJavaAppletWidgetPrivate;
+
+class KJavaAppletWidget : public KJavaEmbed
 {
-Q_OBJECT
-
+    Q_OBJECT
 public:
-    KJavaAppletWidget( KJavaAppletContext *context,
-                       QWidget *parent=0, const char *name=0 );
-
-    KJavaAppletWidget( KJavaApplet *applet,
-                       QWidget *parent=0, const char *name=0 );
-
-    KJavaAppletWidget( QWidget *parent=0, const char *name=0 );
+    KJavaAppletWidget( KJavaAppletContext* context,
+                       QWidget* parent=0, const char* name=0 );
 
    ~KJavaAppletWidget();
 
-    //
-    // Stuff to do with the applet
-    //
-    void setAppletName( const QString &appletName );
-    QString &appletName();
+    KJavaApplet* applet() { return m_applet; }
 
-    /**
-     * Specify the name of the class file to run. For example 'Lake.class'.
-     */
-    void setAppletClass( const QString &clazzName );
-
-    /**
-     * Get the name of the class file to run. For example 'Lake.class'.
-     */
-    QString &appletClass();
-
-    /**
-     * Specify the location of the jar file containing the class.
-     * (unimplemented)
-     */
-    void setJARFile( const QString &jar );
-
-    /**
-     * Get the location of the jar file containing the class.
-     * (unimplemented)
-     */
-    QString &jarFile();
-
-    /**
-     * Specify a parameter to be passed to the applet.
-     */
-    void setParameter( const QString &name, const QString &value );
-
-    /**
-     * Get the value of a parameter to be passed to the applet.
-     */
-    QString &parameter( const QString &name );
-
-    /**
-     * Set the URL of the document embedding the applet.
-     */
-    void setBaseURL( const QString &base );
-
-    /**
-     * Get the URL of the document embedding the applet.
-     */
-    QString &baseURL();
-
-   /**
-     * Set the codebase of the applet classes.
-     */
-    void setCodeBase( const QString &codeBase );
-
-    /**
-     * Get the codebase of the applet classes.
-     */
-    QString &codeBase();
-
-    /**
-     * Create the applet.
-     */
-    void create();
-
-    /**
-     * Shows applet on the screen
-     */
     void showApplet();
 
-    /**
-     * Run the applet.
-     */
-    void start();
-
-    /**
-     * Pause the applet.
-     */
-    void stop();
-
-    /**
-     *  For java-side callbacks to resize themselves
-     */
+    QSize sizeHint();
     void resize( int, int );
 
-    QSize sizeHint();
-
 protected slots:
-     //
-     // Stuff to do with swallowing the applet Frame
-     //
-     void setWindow( WId w );
+    void setWindow( WId w );
 
 protected:
-    void uniqueTitle();
+    void init();
 
 private:
-    // Applet info
-    KJavaApplet *applet;
-    bool shown;
+    KJavaAppletWidgetPrivate* d;
 
-    /** Used to find out when the applet window is mapped. */
-    KWinModule *kwm;
+    KJavaApplet* m_applet;
+    KWinModule*  m_kwm;
+    QString      m_swallowTitle;
 
-    // Swallowing info
-    QString swallowTitle;
-
-    struct KJavaAppletWidgetPrivate *d;
-
-    void init();
 };
 
 #endif // KJAVAAPPLETWIDGET_H
