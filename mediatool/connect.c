@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 #include "mediatool.h"
 #include "chunk.h"
 
@@ -173,10 +174,7 @@ void MdConnect(int shm_talkid, MediaCon *mcon)
 void MdConnectNew(MediaCon *mcon)
 {
   char	        *tmpadr, *StartAdr;
-  struct stat	finfo;
   int		ret, ref, newRefnum;
-  FILE		*fid;
-  int		fdes;
   MdCh_IHDR	HeadChunk;
   MdCh_KEYS	KeysChunk;
   MdCh_STAT	StatChunk;
@@ -197,25 +195,25 @@ void MdConnectNew(MediaCon *mcon)
   strcpy(pathkey,mckey);
   sprintf(pathkey+strlen(pathkey), "%i", newRefnum);
 
-  ret = stat(pathkey, &finfo);
-  if ( ret < 0 ) {
-    fdes = open(pathkey, O_WRONLY | O_CREAT | O_EXCL);
-    if (fdes != -1) {
-      // open() worked
-      if ( (fid = fdopen(fdes, "w") ) == NULL ) {
-        // open() worked, but fdopen() failed
-        LogError("Could not create a shared talk key file (fdopen).\n");
-        close (fdes);
-        return;
-      }
-      else // everything went well
-        fclose (fid);
-    }
-    else {
-      // open() failed
-      LogError("Could not create a shared talk key file (open).\n");
-      return;
-    }
+  /* Try to open temp file safely. We can't just do a
+   *    if (stat() < 0)
+   *            fopen(path, "w")
+   * because that is still raceable by flipping symlinks.
+   *
+   * ftok() is a stupid kludge anyway, and is likely to clutter
+   * your disk with stupid temp files. A better approach may be
+   * to do a SHM_INFO (get max shmid), loop over all shmids and
+   * do a SHM_STAT to see whether we can attach to that segment,
+   * if yes, attach to it and check for MDTO signature and
+   * pathkey in HeadChunk.ipcfname.     --okir
+   */
+  ret = open(pathkey, O_WRONLY|O_CREAT|O_EXCL, 0600);
+  if (ret >= 0)
+     close(ret);
+  else if (errno != EEXIST)
+  {
+     LogError("Could not create a shared talk key file.");
+     return;
   }
 
   /* Now it is guaranteed, a file exists. Get the adress. */
