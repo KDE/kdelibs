@@ -64,7 +64,7 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
     if ( e->state() == LeftButton ) {
-	int delay = KGlobalSettings::dndEventDelay();
+        int delay = KGlobalSettings::dndEventDelay();
         QPoint newPos = e->pos();
         if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
             newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
@@ -87,7 +87,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 if( tab!= 0L && mTabReordering ) {
                     reorderStartTab = indexOf( tab->identifier() );
                     grabMouse( sizeAllCursor );
-		    return;
+                    return;
                 }
             }
         }
@@ -108,17 +108,10 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
     if ( mHoverCloseButton ) {
         QTab *t = selectTab( e->pos() );
         if( t && t->iconSet() ) {
-	    if ( b ) {
-                if ( btab == t )
-                    return;
-                delete b;
-            }
-            b = new QToolButton( this );
             QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
-            b->setFixedSize( pixmap.width() + 4, pixmap.height() );
-            b->setIconSet( SmallIcon( "fileclose" ) );
-            int xoff = 0, yoff = 0;
+            QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() );
 
+            int xoff = 0, yoff = 0;
             // The additional offsets were found by try and error, TODO: find the rational behind them
             if ( t == tab( currentTab() ) ) {
                 xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
@@ -128,11 +121,23 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 xoff = 5;
                 yoff = 1;
             }
-            b->move( t->rect().left() + 2 + xoff, t->rect().center().y()-pixmap.height()/2 + yoff );
-            b->show();
-            btab = t;
-            connect( b, SIGNAL( clicked() ), SLOT( closeButtonClicked() ) );
-            return;
+            rect.moveLeft( t->rect().left() + 2 + xoff );
+            rect.moveTop( t->rect().center().y()-pixmap.height()/2 + yoff );
+            if ( rect.contains( e->pos() ) ) {
+                if ( b ) {
+                    if ( btab == t )
+                        return;
+                    delete b;
+                }
+
+                b = new QToolButton( this );
+                b->setIconSet( SmallIcon( "fileclose" ) );
+                b->setGeometry( rect );
+                b->show();
+                btab = t;
+                connect( b, SIGNAL( clicked() ), SLOT( closeButtonClicked() ) );
+                return;
+            }
         }
         if ( b ) {
             delete b;
