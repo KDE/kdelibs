@@ -47,9 +47,9 @@ class KStylePrivate;
  * the PopupMenuItems, ScrollBars and Sliders by providing extra "primitive
  * elements" which are simple to implement by the style writer.
  *
- * @author Karol Szwed (gallium@kde.org)
  * @see QStyle::QStyle
  * @see QCommonStyle::QCommonStyle
+ * @author Karol Szwed (gallium@kde.org)
  * @version $Id$
  */
 class KStyle: public QCommonStyle
@@ -76,9 +76,9 @@ class KStyle: public QCommonStyle
 		 */
 		typedef uint KStyleFlags;
 		enum KStyleOption {
-			Default 			  =		0x00000000,		// All options disabled.
-			AllowMenuTransparency =		0x00000001,
-			FilledFrameWorkaround = 	0x00000002
+			Default 	      =		0x00000000, //!< All options disabled
+			AllowMenuTransparency =		0x00000001, //!< Internal transparency enabled
+			FilledFrameWorkaround = 	0x00000002  //!< Filled frames enabled
 		};
 
 		/**
@@ -91,22 +91,24 @@ class KStyle: public QCommonStyle
 		 * @li WindowsStyleScrollBar - Two button scrollbar with the previous
 		 * button at the top/left, and the next button at the bottom/right.
 		 *
-		 * @li PlatinumStyleSrollBar - Two button scrollbar with both the 
+		 * @li PlatinumStyleScrollBar - Two button scrollbar with both the 
 		 * previous and next buttons at the bottom/right.
 		 *
-		 * @li ThreeButtonScrollBar - KDE style three button scrollbar with
+		 * @li ThreeButtonScrollBar - %KDE style three button scrollbar with
 		 * two previous buttons, and one next button. The next button is always
 		 * at the bottom/right, whilst the two previous buttons are on either 
 		 * end of the scrollbar.
 		 *
 		 * @li NextStyleScrollBar - Similar to the PlatinumStyle scroll bar, but
 		 * with the buttons grouped on the opposite end of the scrollbar.
+		 *
+		 * @see KStyle::KStyle()
 		 */
 		enum KStyleScrollBarType {
-			WindowsStyleScrollBar  = 	0x00000000,
-			PlatinumStyleScrollBar = 	0x00000001,
-			ThreeButtonScrollBar   = 	0x00000002,
-			NextStyleScrollBar     = 	0x00000004
+			WindowsStyleScrollBar  = 	0x00000000, //!< two button, windows style
+			PlatinumStyleScrollBar = 	0x00000001, //!< two button, platinum style
+			ThreeButtonScrollBar   = 	0x00000002, //!< three buttons, %KDE style
+			NextStyleScrollBar     = 	0x00000004  //!< two button, NeXT style
 		};
 
 		/** 
@@ -122,12 +124,14 @@ class KStyle: public QCommonStyle
 		 * style as a foundation for any new KStyle, so the limited number of
 		 * drawing fallbacks should not prove problematic.
 		 *
+		 * @param flags the style to be applied
+		 * @param sbtype the scroll bar type
 		 * @see KStyle::KStyleFlags
 		 * @see KStyle::KStyleScrollBarType
 		 * @author Karol Szwed (gallium@kde.org)
 		 */
 		KStyle( KStyleFlags flags = KStyle::Default, 
-				KStyleScrollBarType sbtype = KStyle::WindowsStyleScrollBar );
+			KStyleScrollBarType sbtype = KStyle::WindowsStyleScrollBar );
 
 		/** 
 		 * Destructs the KStyle object.
@@ -147,6 +151,8 @@ class KStyle: public QCommonStyle
 		 * style after performing some processing in your style's constructor.
 		 * In most situations however, setting the scrollbar type via the KStyle
 		 * constructor should suffice.
+		 * @param sbtype the scroll bar type
+		 * @see KStyle::KStyleScrollBarType
 		 */
 		void setScrollBarType(KStyleScrollBarType sbtype);
 
@@ -171,7 +177,7 @@ class KStyle: public QCommonStyle
 		 * the user in KDE's style control module.
 		 */
 		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-											const QPopupMenu* popup ) const;
+						    const QPopupMenu* popup ) const;
 
 		/**
 		 * KStyle Primitive Elements:
@@ -248,14 +254,13 @@ class KStyle: public QCommonStyle
 
 		enum KStylePixelMetric {
 			KPM_MenuItemSeparatorHeight		= 0x00000001,
-			KPM_MenuItemHMargin				= 0x00000002,
-			KPM_MenuItemVMargin				= 0x00000004,
-			KPM_MenuItemHFrame				= 0x00000008,
-			KPM_MenuItemVFrame				= 0x00000010,
-			KPM_MenuItemCheckMarkHMargin	= 0x00000020,
+			KPM_MenuItemHMargin			= 0x00000002,
+			KPM_MenuItemVMargin			= 0x00000004,
+			KPM_MenuItemHFrame			= 0x00000008,
+			KPM_MenuItemVFrame			= 0x00000010,
+			KPM_MenuItemCheckMarkHMargin	        = 0x00000020,
 			KPM_MenuItemArrowHMargin		= 0x00000040,
 			KPM_MenuItemTabSpacing			= 0x00000080,
-
 			KPM_ListViewBranchThickness		= 0x00000100
 		};
 

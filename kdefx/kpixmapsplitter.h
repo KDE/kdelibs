@@ -27,6 +27,8 @@
 
 class KPixmapSplitterPrivate;
 /**
+ * @short A class to split a pixmap into several items.
+ *
  * If you have a pixmap containing several items (icons), you can use this
  * class to get the coordinates of each item.
  *
@@ -44,20 +46,19 @@ class KPixmapSplitterPrivate;
  *     bitBlt( &item, QPoint(0,0), &somePixmap, rect, CopyROP );
  * \endcode
  *
- * @short A class to split a pixmap into several items.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KPixmapSplitter
 {
 public:
     /**
-     * Constructor, does nothing but initializing some default-values.
+     * Constructor, does nothing but initialise some default-values.
      */
     KPixmapSplitter();
     ~KPixmapSplitter();
 
     /**
-     * Sets the pixmap to be splitted.
+     * Sets the pixmap to be split.
      */
     void setPixmap( const QPixmap& pixmap );
 

@@ -55,8 +55,24 @@ class KPixmapPrivate;
 class KPixmap : public QPixmap
 {
 public:
-        enum ColorMode { Auto, Color, Mono, LowColor, WebColor };
-        enum GradientMode { Horizontal, Vertical, Diagonal, CrossDiagonal };
+	/**
+	 * This enumeration provides a color pallete specification
+	 * @see KPixmap::convertFromImage(), KPixmap::load()
+	 */
+        enum ColorMode { Auto,   //!< Convert to monochrome if possible
+			 Color,  //!< Native display depth
+			 Mono,   //!< Monochrome pixmap
+			 LowColor, //!< 3x3x3 color cube (or monochrome)
+			 WebColor //!< Netscape pallete (or monochrome)
+	};
+	/**
+	 * This enumeration provides a gradient mode specification
+	 */
+        enum GradientMode { Horizontal,
+			    Vertical,
+			    Diagonal,
+			    CrossDiagonal
+	};
 
 	/**
 	 * Constructs a null pixmap.
@@ -125,6 +141,9 @@ public:
 	 *
 	 * Passing 0 for @p conversion_flags gives all the default
 	 * options.
+	 *
+	 * @param img the image to convert
+	 * @param conversion_flags bitmask, described above
 	 * @return @p true if successful.
 	 **/
 	bool convertFromImage( const QImage &img, int conversion_flags );
@@ -133,6 +152,9 @@ public:
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
+	 * @param img the image to convert
+	 * @param mode a ColorMode to apply
+	 * @return @p true if successful.
 	 **/
 	bool convertFromImage( const QImage &img, ColorMode mode = WebColor );
 
@@ -144,14 +166,15 @@ public:
 	 * specified (default), the loader reads a few bytes from the
 	 * header to guess the file format.
 	 *
-	 * See the convertFromImage() documentation for a description
-	 * of the conversion_flags argument.
-	 *
 	 * The QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
 	 *
+	 * @param fileName the name of the file to load the image from
+	 * @param format the format for the image
+	 * @param conversion_flags a bitmask, as described in 
+	 *        convertFromImage()
 	 * @return @p true if successful, or false if the pixmap
-	 *  could not be loaded.
+	 *         could not be loaded.
 	 **/
 	bool load( const QString& fileName, const char *format,
 		int conversion_flags );
@@ -160,6 +183,11 @@ public:
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
+	 * @param fileName the name of the file to load the image from
+	 * @param format the format for the image
+	 * @param mode a ColorMode to apply
+	 * @return @p true if successful, or false if the pixmap
+	 *         could not be loaded.
 	 **/
 	bool load( const QString& fileName,
 		const char *format = 0,
@@ -172,6 +200,7 @@ public:
 	 * An image with one color not found in the Icon palette is
 	 * considered to be a match, since this extra color may be a
 	 * transparent background.
+	 * @param image the image to test
 	 **/
 	bool checkColorTable(const QImage &image);
 

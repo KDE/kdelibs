@@ -48,21 +48,77 @@ class QRect;
 class KImageEffect
 {
 public:
-    enum GradientType { VerticalGradient, HorizontalGradient,
-                        DiagonalGradient, CrossDiagonalGradient,
-                        PyramidGradient, RectangleGradient,
-                        PipeCrossGradient, EllipticGradient };
-    enum RGBComponent { Red, Green, Blue, Gray, All };
+    /** 
+     * This enum provides a gradient type specification
+     * @see KImageEffect::blend(), KImageEffect::gradient(),
+     * KImageEffect::unbalancedGradient()
+     */
+    enum GradientType { VerticalGradient,
+			HorizontalGradient,
+                        DiagonalGradient,
+			CrossDiagonalGradient,
+                        PyramidGradient,
+			RectangleGradient,
+                        PipeCrossGradient,
+			EllipticGradient
+    };
 
-    enum Lighting {NorthLite, NWLite, WestLite, SWLite,
-                   SouthLite, SELite, EastLite, NELite};
+    /** 
+     * This enum provides a RGB channel specification
+     * @see KImageEffect::blend(), KImageEffect::channelIntensity(),
+     * KImageEffect::modulate()
+     */
+    enum RGBComponent { Red,   //!< Red channel
+			Green, //!< Green channel
+			Blue,  //!< Blue channel
+			Gray,  //!< Grey channel
+			All    //!< All channels
+    };
 
-    enum ModulationType { Intensity, Saturation, HueShift, Contrast };
+    /** 
+     * This enum provides a lighting direction specification
+     * @see KImageEffect::hash()
+     */
+    enum Lighting {NorthLite, //!< Lighting from the top of the image
+		   NWLite,    //!< Lighting from the top left of the image
+		   WestLite,  //!< Lighting from the left of the image
+		   SWLite,    //!< Lighting from the bottom left of the image
+                   SouthLite, //!< Lighting from the bottom of the image
+		   SELite,    //!< Lighting from the bottom right of the image
+		   EastLite,  //!< Lighting from the right of the image
+		   NELite     //!< Lighting from the top right of the image
+    };
 
-    enum NoiseType { UniformNoise=0, GaussianNoise, MultiplicativeGaussianNoise,
-                     ImpulseNoise, LaplacianNoise, PoissonNoise};
+    /** 
+     * This enum provides a modulation type specification
+     * @see KImageEffect::modulate()
+     */
+    enum ModulationType { Intensity,  //!< Modulate image intensity
+			  Saturation, //!< Modulate image saturation
+			  HueShift,   //!< Modulate image hue
+			  Contrast    //!< Modulate image contrast
+    };
 
-    enum RotateDirection{ Rotate90, Rotate180, Rotate270 };
+    /** 
+     * This enum provides a noise type specification
+     * @see KImageEffect::addNoise()
+     */
+    enum NoiseType { UniformNoise=0,              //!< Uniform distribution
+		     GaussianNoise,               //!< Gaussian distribution
+		     MultiplicativeGaussianNoise, //!< Multiplicative Gaussian distribution
+                     ImpulseNoise,                //!< Impulse distribution
+		     LaplacianNoise,              //!< Laplacian distribution
+		     PoissonNoise                 //!< Poisson distribution
+    };  
+
+    /**
+     * This enum provides a rotation specification.
+     * @see KImageEffect::rotate()
+     */
+    enum RotateDirection{ Rotate90,  //!< Rotate 90 degrees to the right.
+			  Rotate180, //!< Rotate 180 degrees.
+			  Rotate270  //!< Rotate 90 degrees to the left.
+    };
 
     /**
      * Create a gradient from color a to color b of the specified type.
@@ -104,13 +160,13 @@ public:
      * This function uses MMX and SSE2 instructions to blend the
      * image on processors that support it.
      *
-     * @author Karol Szwed (gallium@kde.org)
-     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param clr source color to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
      * @param opacity opacity (between 0.0 and 1.0) which determines how much
      *             the source color will be blended into the destination image.
      * @return The destination image (dst) containing the result.
+     * @author Karol Szwed (gallium@kde.org)
+     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
     static QImage& blend(const QColor& clr, QImage& dst, float opacity);
 
@@ -122,13 +178,13 @@ public:
      * This function uses MMX and SSE2 instructions to blend the
      * images on processors that support it.
      *
-     * @author Karol Szwed (gallium@kde.org)
-     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param src source image to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
      * @param opacity opacity (between 0.0 and 1.0) which determines how much
      *             the source image will be blended into the destination image.
      * @return The destination image (dst) containing the result.
+     * @author Karol Szwed (gallium@kde.org)
+     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
     static QImage& blend(QImage& src, QImage& dst, float opacity);
 
@@ -172,7 +228,7 @@ public:
      * @param blendImage If the gray value of of pixel is 0, the result
      *               for this pixel is that of image1; for a gray value
      *               of 1, the pixel of image2 is used; for a value
-     *               inbetween, a corresponding blending is used.
+     *               in between, a corresponding blending is used.
      * @param channel The RBG channel to use for the blending decision.
      */
     static QImage& blend(QImage &image1, QImage &image2,
@@ -180,6 +236,9 @@ public:
 
     /**
      * Blend an image into another one, using alpha in the expected way.
+     * @param upper the "upper" image
+     * @param lower the "lower" image
+     * @param output the target image
      * @author Rik Hemsley (rikkus) <rik@kde.org>
      */
     static bool blend(const QImage & upper, const QImage & lower, QImage & output);
@@ -195,6 +254,11 @@ public:
      * painted on lower, if there has to be some clipping, output's size will
      * be the clipped area and x and y will be set to the correct up-left corner
      * where the clipped rectangle begins.
+     * @param x x-coordinate of lower image
+     * @param y y-coordinate of lower image
+     * @param upper the "upper" image
+     * @param lower the "lower" image
+     * @param output the target image
      */
     static bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
 
@@ -203,42 +267,61 @@ public:
      * over coordinates @p x and @p y with respect to the lower image.
      * The output is painted in the own @p lower image. This is an optimization
      * of the blend method above provided by convenience.
+     * @param x x-coordinate of lower image
+     * @param y y-coordinate of lower image
+     * @param upper the "upper" image
+     * @param lower the "lower" image, which becomes the output image
      */
     static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
-    /** @since 3.2
+    /** 
      * Blend part of an image into part of another, using the alpha channel in
      * the expected way.
      * Note that the destination rectangle will be correctly clipped.
      *
+     * @param upper the "upper" image
      * @param upperOffset Offset for the part of the upper image to be used.
+     * @param lower the "lower" image
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
+     * @since 3.2
      */
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);
 
-    /** @since 3.2
+    /** 
      * Blend part of an image into part of another, using the opacity value
      * and the alpha channel in the expected way.
      * Note that the destination rectangle will be correctly clipped.
      *
+     * @param upper the "upper" image
      * @param upperOffset Offset for the part of the upper image to be used.
+     * @param lower the "lower" image
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
      * @param opacity Opacity (between 0.0 and 1.0) which determines how much
      *             the source image will be blended into the destination image.
+     * @since 3.2
      */
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect, float opacity);
 
-    /** @since 3.2
+    /** 
      * Disposition of a source image on top of a destination image.
+     * @see KImageEffect::computeDestinationRect, KImageEffect::blendOnLower
+     * @since 3.2
      */
-    enum Disposition { NoImage = 0, Centered, Tiled, CenterTiled,
-                      CenteredMaxpect, TiledMaxpect, Scaled, CenteredAutoFit };
+    enum Disposition { NoImage = 0, //!< Don't overlay
+		       Centered,    //!< Centre top image on botton image
+		       Tiled,       //!< Tile top image on bottom image
+		       CenterTiled, //!< Centre and tile top image on bottom image
+		       CenteredMaxpect, //!< Centre and scale aspect
+		       TiledMaxpect, //!< Tile and scale aspect
+		       Scaled,      //!< Scale
+		       CenteredAutoFit //!< Centre and scale or scale aspect
+    };
 
-    /** @since 3.2
+    /**
      * Compute the destination rectangle where to draw the upper image on top
      * of another image using the given disposition. For tiled
      * disposition, the rectangle should be duplicated on the whole area to
@@ -250,14 +333,16 @@ public:
      *               adjust to the requested disposition.
      *
      * @return the computed rectangle. Its size may exceed @e lowerSize.
+     * @since 3.2
      */
     static QRect computeDestinationRect(const QSize &lowerSize,
                                       Disposition disposition, QImage &upper);
 
-    /** @since 3.2
+    /**
      * Blend an image on top of another using a given disposition and a given
      * opacity. The alpha channel of the upper image is used in the expected
      * way. Beware the upper image may be modified.
+     * @since 3.2
      */
     static void blendOnLower(QImage &upper, QImage &lower,
                              Disposition disposition, float opacity);
@@ -265,11 +350,11 @@ public:
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param percent Percent value. Use a negative value to dim.
      * @param channel Which channel(s) should be modified
      * @return The @p image, provided for convenience.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage& channelIntensity(QImage &image, float percent,
                                     RGBComponent channel);
@@ -305,7 +390,7 @@ public:
      *
      * @param image The QImage to process
      * @param lite The hash faces the indicated lighting (cardinal poles).
-     * @param spacing How many unmodified pixels inbetween hashes.
+     * @param spacing How many unmodified pixels in between hashes.
      * @return Returns the image(), provided for convenience.
      */
     static QImage& hash(QImage &image, Lighting lite=NorthLite,
@@ -318,11 +403,11 @@ public:
      * This function uses MMX instructions to process the image
      * on processors that support it.
      *
-     * @author Daniel M. Duley (mosfet)
-     * @author Benjamin Roe (ben@benroe.com)
      * @param image The QImage to process.
      * @param percent The percent value. Use a negative value to dim.
      * @return Returns The image(), provided for convenience.
+     * @author Daniel M. Duley (mosfet)
+     * @author Benjamin Roe (ben@benroe.com)
      */
     static QImage& intensity(QImage &image, float percent);
 
@@ -343,11 +428,11 @@ public:
     /**
      * Convert an image to grayscale.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param fast Set to @p true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the image(), provided for convenience.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage& toGray(QImage &image, bool fast = false);
 
@@ -363,10 +448,10 @@ public:
     /**
      * Fast, but low quality contrast of an image. Also see contrastHSV.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param c A contrast value between -255 to 255.
      * @return The image(), provided for convenience.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage& contrast(QImage &image, int c);
 
@@ -395,23 +480,25 @@ public:
      * channels above it and decrementing those below it, but this gives much
      * better results.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param img The QImage to process.
      * @param sharpen If true sharpness is increase, (spiffed). Otherwise
      * it is decreased, (dulled).
+     * @author Daniel M. Duley (mosfet)
      */
     static void contrastHSV(QImage &img, bool sharpen=true);
 
     /**
-     * Normalizes the pixel values to span the full range of color values.
+     * Normalises the pixel values to span the full range of color values.
      * This is a contrast enhancement technique.
+     * @param img the image that is normalised 
      * @author Daniel M. Duley (mosfet)
      */
     static void normalize(QImage &img);
 
     /**
-     * Performs histogram equalization on the reference
+     * Performs histogram equalisation on the reference
      * image.
+     * @param img the image that is equalised
      * @author Daniel M. Duley (mosfet)
      */
     static void equalize(QImage &img);
@@ -421,9 +508,9 @@ public:
      * ThresholdDither in the various QPixmap/QImage convert methods, but this
      * lets you specify a threshold value.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param img The QImage to process.
      * @param value The threshold value.
+     * @author Daniel M. Duley (mosfet)
      */
     static void threshold(QImage &img, unsigned int value=128);
 
@@ -431,9 +518,9 @@ public:
      * Produces a 'solarization' effect seen when exposing a photographic
      * film to light during the development process.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param img The QImage to process.
      * @param factor The extent of the solarization (0-99.9)
+     * @author Daniel M. Duley (mosfet)
      */
     static void solarize(QImage &img, double factor=50.0);
 
@@ -442,13 +529,13 @@ public:
      * and applying various other enhancements in order to get a metal
      * effect.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The embossed image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage emboss(QImage &src, double radius, double sigma);
 
@@ -461,22 +548,22 @@ public:
      * Minimizes speckle noise in the source image using the 8 hull
      * algorithm.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @return The despeckled image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage despeckle(QImage &src);
 
     /**
      * Produces a neat little "charcoal" effect.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The charcoal image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage charcoal(QImage &src, double radius, double sigma);
 
@@ -489,10 +576,10 @@ public:
     /**
      * Rotates the image by the specified amount
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param r The rotate direction.
      * @return The rotated image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage rotate(QImage &src, RotateDirection r);
 
@@ -501,34 +588,34 @@ public:
      * nearly as nice a result as QImage::smoothScale(), but has the
      * advantage of being much faster - only a few milliseconds.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param w The new width.
      * @param h The new height.
      * @return The scaled image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage sample(QImage &src, int w, int h);
 
     /**
      * Adds noise to an image.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param type The algorithm used to generate the noise.
      * @return The image with noise added. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
 
     /**
      * Blurs an image by convolving pixel neighborhoods.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The blurred image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage blur(QImage &src, double radius, double sigma);
 
@@ -542,23 +629,23 @@ public:
      * Detects edges in an image using pixel neighborhoods and an edge
      * detection mask.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @return The image with edges detected. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage edge(QImage &src, double radius);
 
     /**
      * Implodes an image by a specified percent.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param factor The extent of the implosion.
      * @param background An RGBA value to use for the background. After the
      * effect some pixels may be "empty". This value is used for those pixels.
      * @return The imploded image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage implode(QImage &src, double factor=30.0,
                    unsigned int background = 0xFFFFFFFF);
@@ -566,11 +653,11 @@ public:
     /**
      * Produces an oil painting effect.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @return The new image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage oilPaintConvolve(QImage &src, double radius);
 
@@ -583,13 +670,13 @@ public:
     /**
      * Sharpens the pixels in the image using pixel neighborhoods.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param radius The radius of the gaussian not counting the
      * center pixel. Use 0 and a suitable radius will be automatically used.
      * @param sigma The standard deviation of the gaussian. Use 1 if you're not
      * sure.
      * @return The sharpened image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage sharpen(QImage &src, double radius, double sigma);
 
@@ -602,34 +689,34 @@ public:
     /**
      * Randomly displaces pixels.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param amount The vicinity for choosing a random pixel to swap.
      * @return The image with pixels displaced. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage spread(QImage &src, unsigned int amount=3);
 
     /**
      * Shades the image using a distance light source.
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param color_shading If true do color shading, otherwise do grayscale.
      * @param azimuth Determines the light source and direction.
      * @param elevation Determines the light source and direction.
      * @return The shaded image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
     static QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
                         double elevation=30.0);
     /**
      * Swirls the image by a specified amount
      *
-     * @author Daniel M. Duley (mosfet)
      * @param src The QImage to process.
      * @param degrees The tightness of the swirl.
      * @param background An RGBA value to use for the background. After the
      * effect some pixels may be "empty". This value is used for those pixels.
      * @return The swirled image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
      */
      static QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
                          0xFFFFFFFF);
@@ -637,11 +724,13 @@ public:
      /**
       * Modifies the pixels along a sine wave.
       *
-      * @author Daniel M. Duley (mosfet)
       * @param src        The QImage to process.
       * @param amplitude  The amplitude of the sine wave.
       * @param frequency  The frequency of the sine wave.
+      * @param background An RGBA value to use for the background. After the
+      * effect some pixels may be "empty". This value is used for those pixels.
       * @return The new image. The original is not changed.
+      * @author Daniel M. Duley (mosfet)
       */
      static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
                         unsigned int background = 0xFFFFFFFF);
