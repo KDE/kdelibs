@@ -599,7 +599,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 void reportError(KPrinter *p)
 {
 	if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
-		kdDebug() << "could not send notify event" << endl;
+		kdDebug(500) << "could not send notify event" << endl;
 }
 
 KPrinter::PageSize pageNameToPageSize(const QString& name)
@@ -696,9 +696,9 @@ QSize rangeToSize(const QString& s)
 
 void dumpOptions(const QMap<QString,QString>& opts)
 {
-	kdDebug() << "********************" << endl;
+	kdDebug(500) << "********************" << endl;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		kdDebug() << it.key() << " = " << it.data() << endl;
+		kdDebug(500) << it.key() << " = " << it.data() << endl;
 }
 
 KPrinterImpl* KPrinter::implementation() const

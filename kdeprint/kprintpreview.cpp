@@ -69,7 +69,7 @@ void KPreviewProc::slotProcessExited(KProcess* proc)
 	if ( proc->normalExit() && proc->exitStatus() == 0 )
 		m_bOk = true;
 	else
-		kdDebug() << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
+		kdDebug(500) << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
 			<< " exitStatus=" << proc->exitStatus() << endl;
 }
 
@@ -106,7 +106,7 @@ public:
 
 KLibFactory* componentFactory()
 {
-	kdDebug() << "kdeprint: querying trader for 'application/postscript' service" << endl;
+	kdDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
 	KTrader::OfferList	offers = KTrader::self()->query(QString::fromLatin1("application/postscript"), QString::fromLatin1("'KParts/ReadOnlyPart' in ServiceTypes"));
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
@@ -144,7 +144,7 @@ bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly)
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 : KDialogBase(parent, "PreviewDlg", true, i18n("Print Preview"), 0)
 {
-	kdDebug() << "kdeprint: creating preview dialog" << endl;
+	kdDebug(500) << "kdeprint: creating preview dialog" << endl;
 	d = new KPrintPreviewPrivate(this);
 	d->previewonly_ = previewOnly;
 
