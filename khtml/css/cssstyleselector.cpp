@@ -200,9 +200,10 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     // for non important rules the order is reversed
 
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
-    // these count as author rules, and come before all other style sheets
-    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00400000, 0x01000000);
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
+    // inline style declarations, after all others. non css hints 
+    // count as author rules, and come before all other style sheets, see hack in append()
+    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00800000, 0x02000000);
 
     propsToApply->sort();
 
@@ -536,6 +537,8 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         int thisOffset = offset;
         CSSProperty *prop = values->at(i);
         if(prop->m_bImportant) thisOffset += important;
+	// one less than authorstyle, makes them come at the beginning
+	if( prop->nonCSSHint ) thisOffset = 0x003FFFFF; 
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
