@@ -210,6 +210,16 @@ static void addQuotes( QString &s )
   if ( s.right( 1 ) != "\"" ) s.append( "\"" );
 }
 
+static QString quoteString( const QString &s )
+{
+  QString r = s;
+  r.replace( "\\", "\\\\" );
+  r.replace( "\"", "\\\"" );
+  r.replace( "\r", "" );
+  r.replace( "\n", "\\n\"\n\"" );
+  return "\"" + r + "\"";
+}
+
 static QString dumpNode(const QDomNode &node)
 {
   QString msg;
@@ -699,20 +709,20 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
   QString txt;
   if (itemVarStr.isNull()) itemVarStr=itemVar(e);
   if ( !e->label().isEmpty() ) {
-    txt += "  " + itemVarStr + "->setLabel( i18n(\"";
+    txt += "  " + itemVarStr + "->setLabel( i18n(";
     if ( !e->param().isEmpty() )
-      txt += e->label().replace("$("+e->param()+")", i);
+      txt += quoteString(e->label().replace("$("+e->param()+")", i));
     else 
-      txt+= e->label();
-    txt+= "\") );\n";
+      txt+= quoteString(e->label());
+    txt+= ") );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
-    txt += "  " + itemVarStr + "->setWhatsThis( i18n(\"";
+    txt += "  " + itemVarStr + "->setWhatsThis( i18n(";
     if ( !e->param().isEmpty() )
-      txt += e->whatsThis().replace("$("+e->param()+")", i);
+      txt += quoteString(e->whatsThis().replace("$("+e->param()+")", i));
     else 
-      txt+= e->whatsThis();
-    txt+="\") );\n";
+      txt+= quoteString(e->whatsThis());
+    txt+=") );\n";
   }
   return txt;
 }
@@ -1240,9 +1250,9 @@ int main( int argc, char **argv )
         cpp << "    choice.name = QString::fromLatin1( \"" << (*it).name << "\" );" << endl;
         if ( setUserTexts ) {
           if ( !(*it).label.isEmpty() )
-            cpp << "    choice.label = i18n(\"" << (*it).label << "\");" << endl;
+            cpp << "    choice.label = i18n(" << quoteString((*it).label) << ");" << endl;
           if ( !(*it).whatsThis.isEmpty() )
-            cpp << "    choice.whatsThis = i18n(\"" << (*it).whatsThis << "\");" << endl;
+            cpp << "    choice.whatsThis = i18n(" << quoteString((*it).whatsThis) << ");" << endl;
         }
         cpp << "    values" << e->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;
