@@ -49,7 +49,7 @@ static void runBuildSycoca()
 {
    QStringList args;
    args.append("--incremental");
-   KApplication::kdeinitExecWait( "kbuildsycoca", args );
+   KApplication::kdeinitExec( "kbuildsycoca", args );
 }
 
 
