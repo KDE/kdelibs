@@ -1079,7 +1079,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
-                        scriptSrc = khtml::parseURL( a->value() ).string();
+                        scriptSrc = parser->doc()->view()->part()->completeURL(khtml::parseURL( a->value() ).string() ).url();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string().stripWhiteSpace();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
