@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-//      $Id$ 
+//      $Id$
 // File  : kpopupmenu.cpp
 // Author: Toivo Pedaste
 //
@@ -113,14 +113,17 @@ void KAccelMenu::popMsg () {
     kq = new KQuickHelpWindow();
 
   idx = indexOf(cid);
-  rowYPos(idx,&yp);
 
+  yp = 0;
+  for (int i = 0;i < idx;i++)
+    yp += itemHeight(i);
+  
   if (actions[cid]) {
     if (keys->configurable(actions[cid])) {
       msg = i18n("Change shortcut for: ");
       msg += keys->description(actions[cid]);
-      kq->popup(msg, pos().x() + cellWidth(idx)
-		,pos().y() + yp + cellHeight(idx));
+      kq->popup(msg, pos().x() + itemWidth(idx)
+		,pos().y() + yp + itemHeight(idx));
     } else {
       msg = i18n("Global Key: cannot change shortcut");
       QMessageBox::warning(this, "Kpackage", msg, i18n("OK"));
@@ -145,7 +148,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
     if (!quote) {
       switch ( e->key() ) {
 
-      case Key_Apostrophe: 
+      case Key_Apostrophe:
 	quote = TRUE;
 	popMsg();
 	return;
@@ -156,7 +159,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	break;
 
       case Key_Up: case Key_Down: case Key_Left: case Key_Right:
-      case Key_Alt: case Key_Escape: case Key_Space: 
+      case Key_Alt: case Key_Escape: case Key_Space:
       case Key_Return: case Key_Enter:
 	needQuote = TRUE;
 	break;
@@ -205,19 +208,19 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 void KAccelMenu::highl(int id) {
   cid = id;
   quote = FALSE;
-  if (kq) 
+  if (kq)
     kq->hide();
 }
 
 void KAccelMenu::aboutTS() {
   cid = idAt(1);
   quote = FALSE;
-  if (kq) 
+  if (kq)
     kq->hide();
 }
 
 void KAccelMenu::hide() {
-    if (kq) 
+    if (kq)
     kq->hide();
     QPopupMenu::hide();
 }
