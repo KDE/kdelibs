@@ -153,8 +153,11 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h )
 	}
       new_xpm.load( full_path );
       *pix = new_xpm;
-      name_list.append(name);
-      pixmap_list.append(pix);
+      if( !(pix->isNull()) )
+	{ 
+	  name_list.append(name);
+	  pixmap_list.append(pix);
+	}
     }
   else
     {
