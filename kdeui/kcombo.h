@@ -27,9 +27,6 @@ public:
  private:
 	bool set_text_called;
 	
- private slots:
-	void reset_text_called();
-
 };
 
 #endif // _KCOMBO_H_
