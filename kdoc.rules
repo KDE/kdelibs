@@ -3,6 +3,8 @@
 # dependencies.
 #
 # -Taj (Apr 1999)
+#
+# $Id$
 
 kde_MODULES = qk dcop kdecore kdeui kimgio kio kfile khtml kjs kformula kspell kab kparts mediatool
 
@@ -13,7 +15,7 @@ dcop_FILES = *.h
 dcop_LIBS = -lqk -lqt
 
 kdecore_FILES = *.h
-kdecore_LIBS = -lqk -lqt
+kdecore_LIBS = -lqk -ldcop -lqt
 
 kdeui_FILES = *.h
 kdeui_LIBS = -lkdecore -lqk -lqt
