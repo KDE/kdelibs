@@ -31,6 +31,9 @@ template class QList<QRect>;
 
  // $Id$
  // $Log$
+ // Revision 1.21  2000/07/09 21:05:50  reggie
+ // Fix placing the rectangle for moving a toolbar on the screen
+ //
  // Revision 1.20  2000/06/16 11:40:38  coolo
  // removing the #ifdef HAVE_CONFIG_H stuff. This isn't logical anymore now we
  // define even prototypes within config.h. someone I know tried kdevelop to setup
@@ -150,7 +153,7 @@ int KToolBoxManager::addHotSpot (const QRect& _r, bool mapToGlobal)
 {
   QRect *r = new QRect (_r.x(), _r.y(), _r.width(), _r.height());
   if (mapToGlobal)
-    r->moveTopLeft(widget->parentWidget()->mapToGlobal(r->topLeft()));
+    r->moveTopLeft( widget && widget->parentWidget() ? widget->parentWidget()->mapToGlobal(r->topLeft()) : r->topLeft() );
   hotspots.append(r);
   return hotspots.at();
 }
@@ -178,7 +181,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   hotspot_static = hot_static;
 
   QRect rr = widget->frameGeometry();
-  QPoint p( widget->parentWidget()->mapToGlobal( rr.topLeft()) );
+  QPoint p( widget && widget->parentWidget() ? widget->parentWidget()->mapToGlobal( rr.topLeft()) : rr.topLeft() );
 
   QPoint cp = QCursor::pos();
   offX = cp.x() - p.x();
