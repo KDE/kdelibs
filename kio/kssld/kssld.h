@@ -90,6 +90,10 @@ k_dcop:
 
   bool caRemove(QString subject);
 
+  QString caGetCert(QString subject);
+
+  bool caSetUse(QString subject, bool ssl, bool email, bool code);
+
   //
   //  Certificate Home methods
   //

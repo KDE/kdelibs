@@ -504,6 +504,33 @@ return true;
 }
 
 
+QString KSSLD::caGetCert(QString subject) {
+KConfig cfg("ksslcalist", true, false);
+	if (!cfg.hasGroup(subject))
+		return QString::null;
+
+	cfg.setGroup(subject);
+
+return cfg.readEntry("x509", QString::null);
+}
+
+
+bool KSSLD::caSetUse(QString subject, bool ssl, bool email, bool code) {
+KConfig cfg("ksslcalist", false, false);
+	if (!cfg.hasGroup(subject))
+		return false;
+
+	cfg.setGroup(subject);
+
+	cfg.writeEntry("site", ssl);
+	cfg.writeEntry("email", email);
+	cfg.writeEntry("code", code);
+
+return true;
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////
 
 
