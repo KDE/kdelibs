@@ -1393,6 +1393,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         {
             addPrefix(*it, priority);
 	    addXdgConfigPrefix(*it+"/etc/xdg", priority);
+	    addXdgDataPrefix(*it+"/share", priority);
 	}
 	// If there are no prefixes defined, check if there is a directory
 	// for this profile under <profileDirsPrefix>
@@ -1401,6 +1402,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	    QString dir = profileDirsPrefix + profile;
 	    addPrefix(dir, priority);
 	    addXdgConfigPrefix(dir+"/etc/xdg", priority);
+	    addXdgDataPrefix(dir+"/share", priority);
 	}
 
         // iterating over all entries in the group Directories
