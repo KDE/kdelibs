@@ -1,3 +1,17 @@
+2003-10-09  Dirk Mueller  <dmuell@gmx.net>
+
+	* ecma/kjs_dom.cpp (putValueProperty): don't scroll layer when there is is nothing
+	to scroll. (David Hyatt)
+
+	* rendering/render_object.cpp (scrollHeight): return overflowHeight() not contentHeight()
+	by default. (David Hyatt)
+	
+	* rendering/render_object.cpp (scrollWidth): return overflowWidth() not contentWidth()
+	by default. (David Hyatt)
+
+	* html/htmltokenizer.cpp (parseEntity): Improve tokenizing of unterminated
+	entities.
+
 2003-10-09  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_object.{cpp,h} (getTextDecorationColors),

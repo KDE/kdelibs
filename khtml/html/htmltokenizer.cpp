@@ -641,6 +641,13 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
                 cBuffer[cBufferPos++] = cc;
                 ++src;
+
+                // be IE compatible
+                const entity* e = kde_findEntity(cBuffer, cBufferPos);
+                if ( e && e->code < 256 ) {
+                    Entity = SearchSemicolon;
+                    break;
+                }
             }
             if(cBufferPos == 9) Entity = SearchSemicolon;
             if(Entity == SearchSemicolon) {
@@ -648,19 +655,15 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                     const entity *e = kde_findEntity(cBuffer, cBufferPos);
                     if(e)
                         EntityChar = e->code;
-
-                    // be IE compatible
-                    if(tag && EntityChar.unicode() > 255 && *src != ';')
-                        EntityChar = QChar::null;
                 }
             }
             else
                 break;
         }
         case SearchSemicolon:
-
-            //kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << ", " << res << endl;
-
+#ifdef TOKEN_DEBUG
+            kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << endl;
+#endif
             fixUpChar(EntityChar);
 
             if ( !EntityChar.isNull() ) {
