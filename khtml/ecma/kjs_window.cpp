@@ -360,13 +360,14 @@ Completion WindowFunc::tryExecute(const List &args)
   case ScrollBy:
     if(args.size() == 2 && part->view())
       part->view()->scrollBy(args[0].toInt32(), args[1].toInt32());
+    result = Undefined();
     break;
   case ScrollTo:
     if(args.size() == 2 && part->view())
       part->view()->setContentsPos(args[0].toInt32(), args[1].toInt32());
+    result = Undefined();
     break;
   case SetTimeout:
-    result = Undefined();
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32();
       int r = (const_cast<Window*>(window))->installTimeout(s.value(), i);
