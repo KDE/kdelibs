@@ -24,13 +24,12 @@
 
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <stdlib.h>
 
 #include <qsocketnotifier.h>
 
@@ -50,8 +49,11 @@ void KProcessController::destroy()
 
 KProcessController::KProcessController()
 {
-  if (0 > pipe(fd))
-	puts(strerror(errno));
+  if( pipe( fd ) )
+  {
+    perror( "pipe" );
+    abort();
+  }
 
   fcntl(fd[0], F_SETFL, O_NONBLOCK);
   fcntl(fd[0], F_SETFD, FD_CLOEXEC);
@@ -85,39 +87,37 @@ void KProcessController::setupHandlers()
 {
   if( handlerSet )
       return;
+  handlerSet = true;
+
   struct sigaction act;
-  act.sa_handler=theSigCHLDHandler;
-  sigemptyset(&(act.sa_mask));
-  sigaddset(&(act.sa_mask), SIGCHLD);
-  // Make sure we don't block this signal. gdb tends to do that :-(
-  sigprocmask(SIG_UNBLOCK, &(act.sa_mask), 0);
+  sigemptyset( &act.sa_mask );
 
+  act.sa_handler = SIG_IGN;
+  act.sa_flags = 0;
+  sigaction( SIGPIPE, &act, 0L );
+
+  act.sa_handler = theSigCHLDHandler;
   act.sa_flags = SA_NOCLDSTOP;
-
   // CC: take care of SunOS which automatically restarts interrupted system
   // calls (and thus does not have SA_RESTART)
-
 #ifdef SA_RESTART
   act.sa_flags |= SA_RESTART;
 #endif
-
   sigaction( SIGCHLD, &act, &oldChildHandlerData );
 
-  act.sa_handler=SIG_IGN;
-  sigemptyset(&(act.sa_mask));
-  sigaddset(&(act.sa_mask), SIGPIPE);
-  act.sa_flags = 0;
-  sigaction( SIGPIPE, &act, 0L);
-  handlerSet = true;
+  sigaddset( &act.sa_mask, SIGCHLD );
+  // Make sure we don't block this signal. gdb tends to do that :-(
+  sigprocmask( SIG_UNBLOCK, &act.sa_mask, 0 );
 }
 
 void KProcessController::resetHandlers()
 {
   if( !handlerSet )
       return;
+  handlerSet = false;
+
   sigaction( SIGCHLD, &oldChildHandlerData, 0 );
   // there should be no problem with SIGPIPE staying SIG_IGN
-  handlerSet = false;
 }
 
 // block SIGCHLD handler, because it accesses processList
