@@ -5,8 +5,6 @@
 #include <kstatusbar.h>
 #include "ktoolbar.h"
 
-// #define _HAVE_RADIOGROUP
-
 
 class testWindow  : public KTopLevelWidget
 {
@@ -62,9 +60,7 @@ protected:
     QMultiLineEdit *widget;
     QTimer *timer;
     QProgressBar *pr;
-#ifdef _HAVE_RADIOGROUP
     KRadioGroup *rg;
-#endif
 };
 
 

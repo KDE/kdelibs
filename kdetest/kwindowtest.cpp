@@ -195,7 +195,6 @@ testWindow::testWindow (QWidget *, const char *name)
     tb1->insertButton(pix, 7, true, "Radiobutton4");
     tb1->setToggle(7);
 
-#ifdef _HAVE_RADIOGROUP
     //Create
     rg = new KRadioGroup (tb1);
 
@@ -203,10 +202,6 @@ testWindow::testWindow (QWidget *, const char *name)
     rg->addButton(5);
     rg->addButton(6);
     rg->addButton(7);
-#else
-#warning Radio group not yet implemented in this version
-    debug ("WARNING: Radio group not yet implemented in this version");
-#endif
 
     connect (tb1, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
     
