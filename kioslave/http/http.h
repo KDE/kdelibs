@@ -417,6 +417,7 @@ protected:
 
   bool m_bBusy; // Busy handling request queue.
   bool m_bEOF;
+  bool m_bEOD;
 
 //--- Settings related to a single response only
   QStringList m_responseHeader; // All headers

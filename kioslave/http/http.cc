@@ -214,6 +214,7 @@ void HTTPProtocol::resetSessionSettings()
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
+  kdDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window << endl;
 
   bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
   if ( sendReferrer )
@@ -2179,12 +2180,13 @@ bool HTTPProtocol::httpOpen()
     // response was NOT a 401 or 407.
     if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 )
     {
+      kdDebug(7113) << "(" << m_pid << ") Calling checkCachedAuthentication " << endl;
       AuthInfo info;
       info.url = m_request.url;
       info.verifyPath = true;
       if ( !m_request.user.isEmpty() )
         info.username = m_request.user;
-      if ( checkCachedAuthentication( info ) )
+      if ( checkCachedAuthentication( info ) && !info.digestInfo.isEmpty() )
       {
         Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : AUTH_Digest ;
         m_state.user   = info.username;
@@ -2192,6 +2194,10 @@ bool HTTPProtocol::httpOpen()
         m_strRealm = info.realmValue;
         m_strAuthorization = info.digestInfo;
       }
+    }
+    else
+    {
+      kdDebug(7113) << "(" << m_pid << ") Not calling checkCachedAuthentication " << endl;
     }
 
     switch ( Authentication )
@@ -3729,7 +3735,10 @@ int HTTPProtocol::readUnlimited()
 void HTTPProtocol::slotData(const QByteArray &d)
 {
    if (!d.size())
+   {
+      m_bEOD = true;
       return;
+   }
       
    if ( !m_dataInternal )
    {
@@ -3756,6 +3765,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {  
   if (m_responseCode == 204)
      return true;
+     
+  m_bEOD = false;
   // Note that when dataInternal is true, we are going to:
   // 1) save the body data to a member variable, m_intData
   // 2) _not_ advertise the data, speed, size, etc., through the
@@ -3907,7 +3918,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     if (bytesReceived == -1)
     {
       // Oh well... log an error and bug out
-      kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1."
+      kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1 sz=" << (int)sz
                     << " Connnection broken !" << endl;
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
@@ -3992,11 +4003,19 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
         processedSize( sz );
     }
     m_bufReceive.resize(0); // res
+
+    if (m_iBytesLeft && m_bEOD && !m_bChunked)
+    {
+      // gzip'ed data sometimes reports a too long content-length.
+      // (The length of the unzipped data)
+      m_iBytesLeft = 0;
+    }
+
     if (m_iBytesLeft == 0)
-	{
-            kdDebug(7113) << "("<<m_pid<<") EOD received!\n";
-            break;
-	}
+    {
+      kdDebug(7113) << "("<<m_pid<<") EOD received! Left = "<< m_iBytesLeft << endl;
+      break;
+    }
   }
   chain.slotInput(QByteArray()); // Flush chain.
 
@@ -4482,7 +4501,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
     p += 5;
     strAuth = "Basic"; // Correct for upper-case variations.
   }
-  else if (strncasecmp (p, "Digest", 6) ==0 )
+  else if ( strncasecmp (p, "Digest", 6) == 0 )
   {
     f = AUTH_Digest;
     memcpy((void *)p, "Digest", 6); // Correct for upper-case variations.
@@ -4863,7 +4882,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
   authStr += info.password;
   md.update( authStr );
 
-  if ( info.algorithm == "md5-sess" )
+  if ( info.algorithm.lower() == "md5-sess" )
   {
     authStr = md.hexDigest();
     authStr += ':';
@@ -4996,14 +5015,14 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=9;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p, i+1).lower();
+      info.algorithm = QCString(p, i+1);
     }
     else if (strncasecmp(p, "algorithm=", 10)==0)
     {
       p+=10;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p,i+1).lower();
+      info.algorithm = QCString(p,i+1);
     }
     else if (strncasecmp(p, "domain=", 7)==0)
     {
@@ -5131,7 +5150,7 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     }
     else
     {
-      if ( checkCachedAuthentication(info) )
+      if ( checkCachedAuthentication(info) && !info.digestInfo.isEmpty() )
       {
         m_proxyURL.setUser( info.username );
         m_proxyURL.setPass( info.password );

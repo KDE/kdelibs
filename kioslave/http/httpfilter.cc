@@ -263,11 +263,10 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
            // Send as-is
            emit output(headerData);
            bHasFinished = true;
+           // End of data
+           emit output(QByteArray());
         }
      }
-     QByteArray
-     // End of data
-     emit output(QByteArray());
      if (!bHasFinished)
         emit error( KIO::ERR_SLAVE_DEFINED, i18n("Unexpected end of data, some information may be lost."));
      return;
@@ -334,6 +333,8 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
      if (result == Z_STREAM_END)
      {
         bHasFinished = true;
+        // End of data
+        emit output(QByteArray());
         return;
      }
   }  
