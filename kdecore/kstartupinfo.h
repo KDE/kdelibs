@@ -114,11 +114,15 @@ class KStartupInfo
          */
         static void silenceStartup( bool silence );
 
+	/**
+	 *
+	 */
 	enum {
 	    CleanOnCantDetect		= 1 << 0,
 	    DisableKWinModule		= 1 << 1,
 	    AnnounceSilenceChanges	= 1 << 2
 	    };
+	
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 * The various flags passed may be
@@ -328,6 +332,9 @@ class KStartupInfo
 	 */
         void gotRemoveStartup( const KStartupInfoId& id, const KStartupInfoData& data );
     protected:
+	/**
+	 * 
+	 */ 
 	virtual void customEvent( QCustomEvent* e_P );
     private slots:
         void startups_cleanup();
@@ -573,6 +580,9 @@ class KStartupInfoData
 	 */
         const QCString& hostname() const;
 	
+	/**
+	 *
+	 */
 	enum TriState { Yes, No, Unknown };
 	
 	/**
