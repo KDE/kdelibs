@@ -11,8 +11,8 @@ FEATURES:
 - Value based interface, addressbook entry data is implicitly shared.
 - Address book entries are identified by a unique id.
 - vCard backend (RFC 2425).
-- Locking mechanism to support concurrent access to the address book by multiple
-  processes.
+- Locking mechanism to support concurrent access to the address book by
+  multiple processes.
 - Notification on change of addressbook by other process.
 - Dialog for selecting address book entries, supports mouse and keyboard
   selection, supports automatic name completion.
