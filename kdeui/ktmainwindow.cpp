@@ -83,7 +83,7 @@ public:
 		cancelled = !last->queryExit();
 	    return !cancelled;
 	}
-	
+
 	// the user wants it, the user gets it
 	return TRUE;
     }
@@ -205,7 +205,7 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
       int not_withdrawn = 0;
       QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
       for (it.toFirst(); it.current(); ++it){
-	  if ( !it.current()->testWState( WState_Withdrawn ) )
+	  if ( !it.current()->testWState( WState_ForceHide ) )
 	      not_withdrawn++;
       }
 
@@ -654,7 +654,7 @@ bool KTMainWindow::event(QEvent* ev)
 	 * It has been added thanks to Nicolas Hadacek's hint. CS */
     if (ev->type() == QEvent::LayoutHint)
 		updateRects();
-	
+
     return QWidget::event(ev);
 }
 
