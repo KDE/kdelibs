@@ -407,9 +407,12 @@ void KFileDialog::slotOk()
 {
     kdDebug(kfile_area) << "slotOK\n";
 
+    // a list of all selected files/directories (if any)
+    // can only be used if the user didn't type any filenames/urls himself
+    const KFileViewItemList *items = ops->selectedItems();
+
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
-	    const KFileViewItemList *items = ops->selectedItems();
 	    if ( !items || items->isEmpty() )
 	        return;
 
@@ -438,9 +441,39 @@ void KFileDialog::slotOk()
 	}
     }
 
-    KURL selectedURL;
+    bool dirOnly = !(mode() & (KFile::KFile::File | KFile::Files));
 
-    // #warning TODO: check locationEdit->lineEdit()->edited()!
+    // we can use our kfileitems, no need to parse anything
+    if ( items && !locationEdit->lineEdit()->edited() &&
+	 !(items->isEmpty() && !dirOnly) ) {
+	
+	d->urlList.clear();
+	d->filenames = QString::null;
+	
+	if ( dirOnly ) {
+	    d->url = ops->url();
+	}
+	else {
+	    if ( !(mode() & KFile::Files) ) {// single selection
+		d->url = items->getFirst()->url();
+	    }
+
+	    else { // multi (dirs and/or files)
+		d->url = ops->url();
+		KFileViewItemListIterator it( *items );
+		while ( it.current() ) {
+		    d->urlList.append( (*it)->url() );
+		    ++it;
+		}
+	    }
+	}
+	
+	accept();
+	return;
+    }
+
+
+    KURL selectedURL;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
 	if ( locationEdit->currentText().contains( '/' )) {
@@ -453,9 +486,7 @@ void KFileDialog::slotOk()
 		selectedURL = ops->url();
 	}
 	else // simple filename -> just use the current URL
-        {
 	    selectedURL = ops->url();
-        }
     }
 
     else {
@@ -594,6 +625,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     if (isDir) {
         if ( count == 0 ) {
 	    locationEdit->clearEdit();
+	    locationEdit->lineEdit()->setEdited( false );
             setURL( sJob->url() );
 	}
         d->statJobs.clear();
@@ -1293,7 +1325,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
         return urls;
     }
 
-    if ( (count % 2) == 1 ) { // odd number of " -> error (FIXME: Messagebox?)
+    if ( (count % 2) == 1 ) { // odd number of " -> error
         QWidget *that = const_cast<KFileDialog *>(this);
         KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
         return urls;
