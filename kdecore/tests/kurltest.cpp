@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
   check("KURL::url()", udir.url(), QString::null);
   check("KURL::isEmpty()", udir.isEmpty() ? "ok" : "ko", "ok");
   check("KURL::isMalformed()", udir.isMalformed() ? "ok" : "ko", "ok");
+  udir = udir.upURL();
+  check("KURL::upURL()", udir.upURL().isEmpty() ? "ok" : "ko", "ok");
 
   udir.setPath("/home/dfaure/file.txt");
   printf("\n* URL is %s\n",udir.url().ascii());
