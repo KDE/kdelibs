@@ -98,17 +98,9 @@ inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
+    if (!str) return;
     QConstString cstr = QConstString(str, slen);
     QString qstr = cstr.string();
-    // hack for fonts that don't have a welldefined nbsp
-    if ( !fontDef.hasNbsp ) {
-	// str.setLength() always does a deep copy, so the replacement code below is safe.
-	qstr.setLength( slen );
-	QChar *uc = (QChar *)qstr.unicode();
-	for( int i = 0; i < slen; i++ )
-	    if ( uc[i].unicode() == 0xa0 )
-		uc[i] = ' ';
-    }
 
     // ### fixme for RTL
     if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
@@ -292,15 +284,6 @@ int Font::width( QChar *chs, int, int pos, int len ) const
     int w = 0;
 
     QString qstr = cstr.string();
-    // hack for fonts that don't have a welldefined nbsp
-    if ( !fontDef.hasNbsp ) {
-	// str.setLength() always does a deep copy, so the replacement code below is safe.
-	qstr.setLength( len );
-	QChar *uc = (QChar *)qstr.unicode();
-	for( int i = 0; i < len; i++ )
-	    if ( (uc+i)->unicode() == 0xa0 )
-		*(uc+i) = ' ';
-    }
     if ( scFont ) {
 	QString upper = qstr.upper();
 	const QChar *uc = qstr.unicode();
@@ -332,9 +315,6 @@ int Font::width( QChar *chs, int, int pos, int len ) const
 int Font::width( QChar *chs, int slen, int pos ) const
 {
     int w;
-    if ( !fontDef.hasNbsp && (chs+pos)->unicode() == 0xa0 )
-	w = fm.width( QChar( ' ' ) );
-    else {
 	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {
 	    QString str( chs, slen );
 	    str[pos] = chs[pos].upper();
@@ -343,7 +323,6 @@ int Font::width( QChar *chs, int slen, int pos ) const
 	    QConstString cstr( chs, slen );
 	    w = fm.charWidth( cstr.string(), pos );
 	}
-    }
     if ( letterSpacing )
 	w += letterSpacing;
 
