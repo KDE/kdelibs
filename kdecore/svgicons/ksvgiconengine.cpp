@@ -25,7 +25,6 @@
 #include <qregexp.h>
 #include <qwmatrix.h>
 
-#include <kdebug.h>
 #include <kmdcodec.h>
 
 #include <math.h>

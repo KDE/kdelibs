@@ -285,21 +285,8 @@ public:
 		art_free(vec);
 	}
 
-	void applyGradient(ArtSVP *svp, bool fill)
+	void applyLinearGradient(ArtSVP *svp, const QString &ref)
 	{
-		QString ref;
-		
-		if(fill)
-		{
-			m_useFillGradient = false;
-			ref = m_fillGradientReference;
-		}
-		else
-		{
-			m_useStrokeGradient = false;
-			ref = m_strokeGradientReference;
-		}
-
 		ArtGradientLinear *linear = m_linearGradientMap[ref];
 		if(linear)
 		{
@@ -335,7 +322,7 @@ public:
 			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
 			m.map(x1n, y1n, &x1n, &y1n);
 			m.map(x2n, y2n, &x2n, &y2n);
-			
+
 			double dx = x2n - x1n;
 			double dy = y2n - y1n;
 			double scale = 1.0 / (dx * dx + dy * dy);
@@ -350,76 +337,132 @@ public:
 			art_render_gradient_linear(render, linear, ART_FILTER_HYPER);
 			art_render_invoke(render);		
 		}
-		else
+	}
+
+	void applyRadialGradient(ArtSVP *svp, const QString &ref)
+	{
+		ArtGradientRadial *radial = m_radialGradientMap[ref];
+		if(radial)
 		{
-			ArtGradientRadial *radial = m_radialGradientMap[ref];
-			if(radial)
+			QDomElement element = m_radialGradientElementMap[radial];
+
+			double cx, cy, r, fx, fy;				
+			if(element.hasAttribute("cx"))
+				cx = m_painter->toPixel(element.attribute("cx"), true);
+			else
+				cx = 0.5;
+
+			if(element.hasAttribute("cy"))
+				cy = m_painter->toPixel(element.attribute("cy"), false);
+			else
+				cy = 0.5;
+
+			if(element.hasAttribute("r"))
+				r = m_painter->toPixel(element.attribute("r"), true);
+			else
+				r = 0.5;
+
+			if(element.hasAttribute("fx"))
+				fx = m_painter->toPixel(element.attribute("fx"), false);
+			else
+				fx = cx;
+
+			if(element.hasAttribute("fy"))
+				fy = m_painter->toPixel(element.attribute("fy"), false);
+			else
+				fy = cy;
+
+			radial->affine[0] = m_worldMatrix->m11();
+			radial->affine[1] = m_worldMatrix->m12();
+			radial->affine[2] = m_worldMatrix->m21();
+			radial->affine[3] = m_worldMatrix->m22();
+			radial->affine[4] = m_worldMatrix->dx();
+			radial->affine[5] = m_worldMatrix->dy();
+
+			radial->fx = (fx - cx) / r;
+			radial->fy = (fy - cy) / r;
+
+			double aff1[6], aff2[6], gradTransform[6];
+
+			// Respect gradientTransform
+			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+
+			gradTransform[0] = m.m11();
+			gradTransform[1] = m.m12();
+			gradTransform[2] = m.m21();
+			gradTransform[3] = m.m22();
+			gradTransform[4] = m.dx();
+			gradTransform[5] = m.dy();
+
+			art_affine_scale(aff1, r, r);
+			art_affine_translate(aff2, cx, cy);
+
+			art_affine_multiply(aff1, aff1, aff2);
+			art_affine_multiply(aff1, aff1, gradTransform);
+			art_affine_multiply(aff1, aff1, radial->affine);
+			art_affine_invert(radial->affine, aff1);
+
+			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+			art_render_svp(render, svp);
+
+			art_render_gradient_radial(render, radial, ART_FILTER_HYPER);
+			art_render_invoke(render);		
+		}
+	}
+
+	void applyGradient(ArtSVP *svp, const QString &ref)
+	{
+		ArtGradientLinear *linear = m_linearGradientMap[ref];
+		if(linear)
+		{
+			QDomElement element = m_linearGradientElementMap[linear];
+
+			if(!element.hasAttribute("xlink:href"))
 			{
-				QDomElement element = m_radialGradientElementMap[radial];
-
-				double cx, cy, r, fx, fy;				
-				if(element.hasAttribute("cx"))
-					cx = m_painter->toPixel(element.attribute("cx"), true);
-				else
-					cx = 0.5;
-
-				if(element.hasAttribute("cy"))
-					cy = m_painter->toPixel(element.attribute("cy"), false);
-				else
-					cy = 0.5;
-
-				if(element.hasAttribute("r"))
-					r = m_painter->toPixel(element.attribute("r"), true);
-				else
-					r = 0.5;
-
-				if(element.hasAttribute("fx"))
-					fx = m_painter->toPixel(element.attribute("fx"), false);
-				else
-					fx = cx;
-
-				if(element.hasAttribute("fy"))
-					fy = m_painter->toPixel(element.attribute("fy"), false);
-				else
-					fy = cy;
-
-				radial->affine[0] = m_worldMatrix->m11();
-				radial->affine[1] = m_worldMatrix->m12();
-				radial->affine[2] = m_worldMatrix->m21();
-				radial->affine[3] = m_worldMatrix->m22();
-				radial->affine[4] = m_worldMatrix->dx();
-				radial->affine[5] = m_worldMatrix->dy();
-
-				radial->fx = (fx - cx) / r;
-				radial->fy = (fy - cy) / r;
-
-				double aff1[6], aff2[6], gradTransform[6];
-
-				// Respect gradientTransform
-				QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
-						
-				gradTransform[0] = m.m11();
-				gradTransform[1] = m.m12();
-				gradTransform[2] = m.m21();
-				gradTransform[3] = m.m22();
-				gradTransform[4] = m.dx();
-				gradTransform[5] = m.dy();
-				
-				art_affine_scale(aff1, r, r);
-				art_affine_translate(aff2, cx, cy);
-
-				art_affine_multiply(aff1, aff1, aff2);
-				art_affine_multiply(aff1, aff1, gradTransform);
-				art_affine_multiply(aff1, aff1, radial->affine);
-				art_affine_invert(radial->affine, aff1);
-
-				ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
-				art_render_svp(render, svp);
-
-				art_render_gradient_radial(render, radial, ART_FILTER_HYPER);
-				art_render_invoke(render);		
+				applyLinearGradient(svp, ref);
+				return;
+			}
+			else
+			{
+				applyGradient(svp, element.attribute("xlink:href").mid(1));
+				return;
 			}
 		}
+		
+		ArtGradientRadial *radial = m_radialGradientMap[ref];
+		if(radial)
+		{
+			QDomElement element = m_radialGradientElementMap[radial];
+
+			if(!element.hasAttribute("xlink:href"))
+			{
+				applyRadialGradient(svp, ref);
+				return;
+			}
+			else
+			{
+				applyGradient(svp, element.attribute("xlink:href").mid(1));
+				return;
+			}
+		}
+	}
+
+	void applyGradient(ArtSVP *svp, bool fill)
+	{
+		QString ref;
+		
+		if(fill)
+		{
+			m_useFillGradient = false;
+			ref = m_fillGradientReference;
+		}
+		else
+		{
+			m_useStrokeGradient = false;
+			ref = m_strokeGradientReference;
+		}
+
+		applyGradient(svp, ref);
 	}
 
 	void blit()
@@ -544,7 +587,7 @@ public:
 		else if(th_arc > 0 && !sweepFlag)
 			th_arc -= 2 * M_PI;
 
-		n_segs = (int) ceil(fabs(th_arc / (M_PI * 0.5 + 0.001)));
+		n_segs = (int) (int) ceil(fabs(th_arc / (M_PI * 0.5 + 0.001)));
 
 		for(i = 0; i < n_segs; i++)
 		{
@@ -744,11 +787,11 @@ public:
 		{
 			z = affine[2] * (y + 0.5) + affine[4];
 			x_intercept = -z / affine[0];
-			xi = ceil (x_intercept + 1e-6 - 0.5);
+			xi = (int) (int) ceil (x_intercept + 1e-6 - 0.5);
 			if (xi > x0)
 				x0 = xi;
 			x_intercept = (-z + src_width) / affine[0];
-			xi = ceil (x_intercept - 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
 			if (xi < x1)
 				x1 = xi;
 		}
@@ -756,11 +799,11 @@ public:
 		{
 			z = affine[2] * (y + 0.5) + affine[4];
 			x_intercept = (-z + src_width) / affine[0];
-			xi = ceil (x_intercept + 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
 			if (xi > x0)
 				x0 = xi;
 			x_intercept = -z / affine[0];
-			xi = ceil (x_intercept - 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
 			if (xi < x1)
 				x1 = xi;
 		}
@@ -777,11 +820,11 @@ public:
 		{
 			z = affine[3] * (y + 0.5) + affine[5];
 			x_intercept = -z / affine[1];
-			xi = ceil (x_intercept + 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
 			if (xi > x0)
 				x0 = xi;
 			x_intercept = (-z + src_height) / affine[1];
-			xi = ceil (x_intercept - 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
 			if (xi < x1)
 				x1 = xi;
 		}
@@ -789,11 +832,11 @@ public:
 		{
 			z = affine[3] * (y + 0.5) + affine[5];
 			x_intercept = (-z + src_height) / affine[1];
-			xi = ceil (x_intercept + 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
 			if (xi > x0)
 				x0 = xi;
 			x_intercept = -z / affine[1];
-			xi = ceil (x_intercept - 1e-6 - 0.5);
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
 			if (xi < x1)
 				x1 = xi;
 		}
@@ -844,8 +887,8 @@ public:
 			{
 				pt.x = x + 0.5;
 				art_affine_point (&src_pt, &pt, inv);
-				src_x = floor (src_pt.x);
-				src_y = floor (src_pt.y);
+				src_x = (int) floor (src_pt.x);
+				src_y = (int) floor (src_pt.y);
 				src_p = src + (src_y * src_rowstride) + src_x * 4;
 				if (src_x >= 0 && src_x < src_width &&
 						src_y >= 0 && src_y < src_height)

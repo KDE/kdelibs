@@ -2,5 +2,4 @@
 * faster implementations of parseStyle, parseTransform, if needed
 * smaller art_render_new areas, if needed
 * make gradients work for boundingbox as well
-* gradient references
 * patterns
