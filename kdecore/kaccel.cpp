@@ -17,12 +17,21 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kaccel.h"
-
 #include <qaccel.h>
 #include <qpopupmenu.h>
 #include <qstring.h>
 #include <qtimer.h>
+
+#ifdef Q_WS_X11
+#	include <X11/Xlib.h>
+#	include <X11/keysymdef.h>
+
+	// defined by X11 headers
+	const int XKeyPress = KeyPress;
+#	undef KeyPress
+#endif
+
+#include "kaccel.h"
 
 #include <kaccelbase.h>
 #include <kapplication.h>
@@ -31,6 +40,77 @@
 #include <kshortcut.h>
 
 #include "kaccelprivate.h"
+
+// TODO: Put in kaccelbase.cpp
+//---------------------------------------------------------------------
+// KAccelEventHandler
+//---------------------------------------------------------------------
+
+class KAccelEventHandler : public QWidget
+{
+ public:
+	static KAccelEventHandler* self()
+	{
+		if( !g_pSelf )
+			g_pSelf = new KAccelEventHandler;
+		return g_pSelf;
+	}
+	
+	static bool active() { return g_bActive; }
+	static void accelActivated( bool b ) { g_bAccelActivated = b; }
+	
+ private:
+	KAccelEventHandler();
+
+#	ifdef Q_WS_X11
+	bool x11Event( XEvent* pEvent );
+#	endif
+
+	static KAccelEventHandler* g_pSelf;
+	static bool g_bActive;
+	static bool g_bAccelActivated;
+};
+
+KAccelEventHandler* KAccelEventHandler::g_pSelf = 0;
+bool KAccelEventHandler::g_bActive = false;
+bool KAccelEventHandler::g_bAccelActivated = false;
+
+KAccelEventHandler::KAccelEventHandler()
+{
+#	ifdef Q_WS_X11
+		kapp->installX11EventFilter( this );
+#	endif
+}
+
+#ifdef Q_WS_X11
+bool KAccelEventHandler::x11Event( XEvent* pEvent )
+{
+	if( QWidget::keyboardGrabber() || !kapp->focusWidget() )
+		return false;
+	
+	if( pEvent->type == XKeyPress ) {
+		KKeyNative keyNative( pEvent );
+		KKey key( keyNative );
+		key.simplify();
+		int keyCodeQt = key.keyCodeQt();
+		int state = 0;
+		if( key.modFlags() & KKey::SHIFT ) state |= Qt::ShiftButton;
+		if( key.modFlags() & KKey::CTRL )  state |= Qt::ControlButton;
+		if( key.modFlags() & KKey::ALT )   state |= Qt::AltButton;
+		
+		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
+		ke.ignore();
+		g_bActive = true;
+		kapp->sendEvent( kapp->focusWidget(), &ke );
+		g_bActive = false;
+		bool bHandled = g_bAccelActivated;
+		g_bAccelActivated = false;
+		return bHandled;
+	}
+	
+	return false;
+}
+#endif // Q_WS_X11
 
 //---------------------------------------------------------------------
 // KAccelPrivate
@@ -46,6 +126,7 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
 	
 	m_pWatch->installEventFilter( this );
+	KAccelEventHandler::self();
 }
 
 void KAccelPrivate::setEnabled( bool bEnabled )
@@ -208,16 +289,16 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 
 bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 {
-	if( pEvent->type() == QEvent::AccelOverride ) {
+	if( KAccelEventHandler::active() && pEvent->type() == QEvent::AccelOverride ) {
 		QKeyEvent* pKeyEvent = (QKeyEvent*) pEvent;
 		KKey key( pKeyEvent );
-		//kdDebug(125) << "KAccelPrivate::eventFilter( AccelOverride ): this = " << this << ", key = " << key.toStringInternal() << endl;
+		kdDebug(125) << "KAccelPrivate::eventFilter( AccelOverride ): this = " << this << ", key = " << key.toStringInternal() << endl;
 		int keyCodeQt = key.keyCodeQt();
 		QMap<int, int>::iterator it = m_mapIDToKey.begin();
 		for( ; it != m_mapIDToKey.end(); ++it ) {
 			if( (*it) == keyCodeQt ) {
 				int nID = it.key();
-				//kdDebug(125) << "shortcut found!" << endl;
+				kdDebug(125) << "shortcut found!" << endl;
 				if( m_mapIDToAction.contains( nID ) ) {
 					// TODO: reduce duplication between here and slotMenuActivated
 					KAccelAction* pAction = m_mapIDToAction[nID];
@@ -226,7 +307,9 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 					disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 				} else
 					slotKeyPressed( nID );
+				
 				pKeyEvent->accept();
+				KAccelEventHandler::accelActivated( true );
 				return true;
 			}
 		}
