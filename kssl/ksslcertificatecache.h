@@ -16,27 +16,40 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
+#ifndef _INCLUDE_KSSLCCACHE_H
+#define _INCLUDE_KSSLCCACHE_H
 
-#ifndef _KSSLCERTIFICATECACHE_H
-#define _KSSLCERTIFICATECACHE_H
-
-
-// This class is used to keep track of the certificates that we have
-// seen already.
+class QString;
+class KSSLCertificate;
+class QValueList;
 
 class KSSLCertificateCache {
- 
+
 public:
- 
+  KSSLCertificateCache();
+  ~KSSLCertificateCache();
+
+  enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt };
+
+  void addCertificate(KSSLCertificate& cert, KSSLCertificatePolicy policy);
+
+  KSSLCertificatePolicy getPolicyByCN(QString& cn) const;
+  KSSLCertificatePolicy getPolicyByCertificate(KSSLCertificate& cert) const;
+
+  bool seenCN(QString& cn) const;
+  bool seenCertificate(KSSLCertificate& cert) const;
+
+  bool removeByCN(QString& cn);
+  bool removeByCertificate(KSSLCertificate& cert);
+
 private:
- 
   class KSSLCertificateCachePrivate;
   KSSLCertificateCachePrivate *d;
- 
-protected:
 
 };
 
-#endif
 
+
+
+#endif
