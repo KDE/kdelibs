@@ -47,6 +47,7 @@
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
 #include <kipc.h>
+#include <kdebug.h>
 
 #include "ktoolbarbutton.h"
 #include "ktoolbaritem.h"

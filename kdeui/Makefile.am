@@ -47,7 +47,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		klineeditdlg.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
-		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
+		kjanuswidget.h kaboutdialog.h kaboutdialog_private.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
 		kdualcolorbtn.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \

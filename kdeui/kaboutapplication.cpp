@@ -22,7 +22,9 @@
 
 // I (espen) prefer that header files are included alphabetically
 
+#include <qlabel.h>
 #include <kaboutapplication.h>
+#include <kaboutdialog_private.h>
 #include <kaboutdata.h>
 #include <kapp.h>
 #include <kglobal.h>

@@ -32,11 +32,12 @@
 #include <iostream.h>
 
 #include <kapp.h>
-#include <kaboutdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <ktextbrowser.h>
 #include <kurllabel.h>
+#include <kaboutdialog.h>
+#include <kaboutdialog_private.h>
 
 template class QArray<QWidget*>;
 template class QList<KAboutContributor>;
