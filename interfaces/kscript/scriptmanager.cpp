@@ -84,14 +84,10 @@ void KScriptManager::clear()
 void KScriptManager::runScript( const QString &scriptName, QObject *context, const QVariant &arg)
 {
 	ScriptInfo *newScript = m_scripts[scriptName];
-	if(!newScript) {
-		KMessageBox::sorry(0, i18n("Script %1 not found.").arg(scriptName), i18n("KScript Error"));
-		return;
-	}
-	QString scriptType = "([X-KDE-Script-Runner] == '" + newScript->scriptType + "')";
-        kdDebug()<<"running script, type = '"<<scriptType<<"'"<<endl;
 	if (newScript)
 	{
+		QString scriptType = "([X-KDE-Script-Runner] == '" + newScript->scriptType + "')";
+		kdDebug()<<"running script, type = '"<<scriptType<<"'"<<endl;
 		// See if the script is already cached...
 		if ( !m_scriptCache[scriptName] )
 		{
@@ -107,7 +103,7 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
                         }
                         else
                         {
-                          KMessageBox::sorry(0, i18n("Unable to get KScript Runner for type <b>%1</b>.").arg(newScript->scriptType), i18n("KScript Error"));
+                          KMessageBox::sorry(0, i18n("Unable to get KScript Runner for type \"%1\".").arg(newScript->scriptType), i18n("KScript Error"));
                           return;
                         }
 		}
@@ -129,6 +125,8 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 			m_scriptCache.remove(m_currentScript);
 		}
 	}
+	else
+	  KMessageBox::sorry(0, i18n("Unable find script \"%1\".").arg(scriptName), i18n("KScript Error"));
 }
 #include "scriptmanager.moc"
 #include "scriptinterface.moc"
