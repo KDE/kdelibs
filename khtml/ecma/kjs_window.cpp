@@ -384,13 +384,13 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Undefined();
   }
   else if (p == "Node")
-    return getNodePrototype(exec);
+    return getNodeConstructor(exec);
   else if (p == "Range")
     return getRangePrototype(exec);
   else if (p == "NodeFilter")
     return getNodeFilterPrototype(exec);
   else if (p == "DOMException")
-    return getDOMExceptionPrototype(exec);
+    return getDOMExceptionConstructor(exec);
   else if (p == "frames")
     return Value(frames ? frames :
 		(const_cast<Window*>(this)->frames = new FrameArray(m_part)));

@@ -208,7 +208,7 @@ Value RangePrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getRangePrototype(ExecState *exec)
 {
   Value proto = exec->interpreter()->globalObject().get(exec, "[[range.prototype]]");
-  if (!proto.isNull())
+  if (proto.type() != UndefinedType)
     return proto;
   else
   {

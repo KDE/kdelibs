@@ -206,17 +206,17 @@ namespace KJS {
    */
   DOM::CSSRule toCSSRule(const Value&);
 
-  // Prototype object CSSRule
-  class CSSRulePrototype : public DOMObject {
+  // Constructor for CSSRule - currently only used for some global values
+  class CSSRuleConstructor : public DOMObject {
   public:
-    CSSRulePrototype() { }
+    CSSRuleConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getCSSRulePrototype(ExecState *exec);
+  Value getCSSRuleConstructor(ExecState *exec);
 
   class DOMCSSValue : public DOMObject {
   public:

@@ -131,7 +131,7 @@ Value EventPrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getEventPrototype(ExecState *exec)
 {
   Value proto = exec->interpreter()->globalObject().get(exec, "[[event.prototype]]");
-  if (!proto.isNull())
+  if (proto.type() != UndefinedType)
     return proto;
   else
   {
@@ -253,7 +253,7 @@ Value EventExceptionPrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getEventExceptionPrototype(ExecState *exec)
 {
   Value proto = exec->interpreter()->globalObject().get(exec, "[[eventException.prototype]]");
-  if (!proto.isNull())
+  if (proto.type() != UndefinedType)
     return proto;
   else
   {
@@ -401,7 +401,7 @@ Value MutationEventPrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getMutationEventPrototype(ExecState *exec)
 {
   Value proto = exec->interpreter()->globalObject().get(exec, "[[mutationEvent.prototype]]");
-  if (!proto.isNull())
+  if (proto.type() != UndefinedType)
     return proto;
   else
   {

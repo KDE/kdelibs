@@ -71,20 +71,6 @@ namespace KJS {
   };
 
   /**
-   * Base class for object prototypes
-   */
-  class DOMObjectProto : public DOMObject
-  {
-  public:
-    // Constructor taking "exec", for uniform api needed by IMPLEMENT_PROTOTYPE
-    DOMObjectProto(ExecState *exec)
-      : DOMObject( exec->interpreter()->builtinObjectPrototype() ) {}
-    // Simply needed for ParentClass::info in the IMPLEMENT_PROTOTYPE macro
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
-
-  /**
    * We inherit from Interpreter, to save a pointer to the HTML part
    * that the interpreter runs for.
    */
@@ -190,46 +176,89 @@ namespace KJS {
       thisObj->putValue(exec, entry->value, value, attr);
   }
 
+  /**
+   * This template method retrieves or create an object that is unique
+   * (for a given interpreter) The first time this is called (for a given
+   * property name), the Object will be constructed, and set as a property
+   * of the interpreter's global object. Later calls will simply retrieve
+   * that cached object. Note that the object constructor must take 1 argument, exec.
+   */
+  template <class ClassCtor>
+  inline Object cacheGlobalObject(ExecState *exec, const UString &propertyName)
+  {
+    ValueImp *obj = static_cast<ObjectImp*>(exec->interpreter()->globalObject().imp())->getDirect(propertyName);
+    if (obj)
+      return Object::dynamicCast(Value(obj));
+    else
+    {
+      Object newProto = new ClassCtor(exec);
+      exec->interpreter()->globalObject().put(exec, propertyName, newProto, Internal);
+      return newProto;
+    }
+  }
 
   /**
    * Helpers to define prototype objects (each of which simply implements
    * the functions for a type of objects).
    * Sorry for this not being very readable, but it actually saves much copy-n-paste.
+   * ParentProto is not our base class, it's the object we use as fallback.
+   * The reason for this is that there should only be ONE DOMNode.hasAttributes (e.g.),
+   * not one in each derived class. So we link the (unique) prototypes between them.
    *
    * Using those macros is very simple: define the hashtable (e.g. "DOMNodeProtoTable"), then
+   * DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
    * IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-   * IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc,DOMObjectProto)
+   * IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
    * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
+   * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
+   * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
    */
-#define IMPLEMENT_PROTOTYPE(Class,ClassProto,ClassFunc,ParentClass) \
-  class ClassProto : public ParentClass { \
+#define DEFINE_PROTOTYPE(ClassName,ClassProto) \
+  class ClassProto : public ObjectImp { \
+    friend Object cacheGlobalObject<ClassProto>(ExecState *exec, const UString &propertyName); \
   public: \
     static Object self(ExecState *exec) \
     { \
-      Value proto = exec->interpreter()->globalObject().get(exec, "[[" Class ".prototype]]"); \
-      if (proto.type() != UndefinedType) \
-        return Object::dynamicCast(proto); \
-      else \
-      { \
-        Object proto = new ClassProto(exec); \
-        exec->interpreter()->globalObject().put(exec, "[[" Class ".prototype]]", proto); \
-        return proto; \
-      } \
+      return cacheGlobalObject<ClassProto>( exec, "[[" ClassName ".prototype]]" ); \
     } \
   protected: \
     ClassProto( ExecState *exec ) \
-    : ParentClass( exec ) {} \
+      : ObjectImp( exec->interpreter()->builtinObjectPrototype() ) {} \
     \
   public: \
-    Value tryGet(ExecState *exec, const UString &propertyName) const \
-    { \
-      /*fprintf( stderr, Class "Proto::tryGet(%s) [in macro]\n", propertyName.ascii()); */ \
-      return DOMObjectLookupGetFunction<ClassFunc,ClassProto,ParentClass>(exec, propertyName, &ClassProto##Table, this ); \
-    } \
     virtual const ClassInfo *classInfo() const { return &info; } \
     static const ClassInfo info; \
+    Value get(ExecState *exec, const UString &propertyName) const; \
+    bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const; \
   }; \
-  const ClassInfo ClassProto::info = { Class, &ParentClass::info, &ClassProto##Table, 0 };
+  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 };
+
+#define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
+    Value ClassProto::get(ExecState *exec, const UString &propertyName) const \
+    { \
+      /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
+      return lookupGetFunction<ClassFunc,ClassProto,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+    } \
+    bool ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    { /*stupid but we need this to have a common macro for the declaration*/ \
+      return ObjectImp::hasProperty(exec, propertyName, recursive ); \
+    }
+
+#define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
+    Value ClassProto::get(ExecState *exec, const UString &propertyName) const \
+    { \
+      /*fprintf( stderr, "%sProto::get(%s) [in macro]\n", info.className, propertyName.ascii());*/ \
+      Value val = lookupGetFunction<ClassFunc,ClassProto,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+      if ( val.type() != UndefinedType ) return val; \
+      /* Not found -> forward request to "parent" prototype */ \
+      return ParentProto::self(exec).get( exec, propertyName ); \
+    } \
+    bool ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    { \
+      if ( ObjectImp::hasProperty(exec, propertyName, recursive ) ) \
+        return true; \
+      return ParentProto::self(exec).hasProperty(exec, propertyName, recursive); \
+    }
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \
   class ClassFunc : public DOMFunction { \

@@ -66,8 +66,9 @@ QPtrDict<DOMDOMImplementation> domImplementations;
   contains	DOMNode::Contains		DontDelete|Function 1
 @end
 */
+DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
 IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc,DOMObjectProto)
+IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
@@ -377,14 +378,15 @@ String DOMNode::toString(ExecState *) const
 {
   if (node.isNull())
     return String("null");
-  DOM::DOMString s = "DOMNode"; // fallback
+  UString s;
 
   DOM::Element e = node;
   if ( !e.isNull() ) {
-    s = e.nodeName();
-  }
+    s = e.nodeName().string();
+  } else
+    s = getClass(); // fallback
 
-  return String("[object " + UString(s) + "]");
+  return String("[object " + s + "]");
 }
 
 void DOMNode::setListener(ExecState *exec, int eventId, Value func) const
@@ -471,6 +473,14 @@ const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 DOMNodeList::~DOMNodeList()
 {
   nodeLists.remove(list.handle());
+}
+
+// We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
+bool DOMNodeList::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+{
+  if (p == "length" || p == "item")
+    return true;
+  return ObjectImp::hasProperty(exec,p,recursive);
 }
 
 Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
@@ -616,8 +626,9 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
   getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|Function 2
 @end
 */
+DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
 IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
-IMPLEMENT_PROTOTYPE("DOMDocument", DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
@@ -780,8 +791,9 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 #  hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2?
 @end
 */
+DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
 IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
-IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc, DOMNodeProto)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /*
@@ -887,8 +899,9 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 #  createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function ?
 @end
 */
+DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
 IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
-IMPLEMENT_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto,DOMDOMImplementationProtoFunc,DOMObjectProto)
+IMPLEMENT_PROTOTYPE(DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
 
@@ -968,65 +981,76 @@ Value DOMDocumentType::getValue(ExecState *exec, int token) const
 
 // -------------------------------------------------------------------------
 
+/*
+@begin DOMNamedNodeMapProtoTable 5
+  getNamedItem		DOMNamedNodeMap::GetNamedItem		DontDelete|Function 1
+  setNamedItem		DOMNamedNodeMap::SetNamedItem		DontDelete|Function 1
+  removeNamedItem	DOMNamedNodeMap::RemoveNamedItem	DontDelete|Function 1
+  item			DOMNamedNodeMap::Item			DontDelete|Function 1
+### new for DOM2 - not yet in khtml
+#  getNamedItemNS	DOMNamedNodeMap::GetNamedItemNS		DontDelete|Function 1
+#  setNamedItemNS	DOMNamedNodeMap::SetNamedItemNS		DontDelete|Function 1
+#  removeNamedItemNS	DOMNamedNodeMap::RemoveNamedItemNS	DontDelete|Function 1
+@end
+*/
+DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
+IMPLEMENT_PROTOFUNC(DOMNamedNodeMapProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
+
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, 0, 0 };
+
+DOMNamedNodeMap::DOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
+  : DOMObject(DOMNamedNodeMapProto::self(exec)), map(m) { }
 
 DOMNamedNodeMap::~DOMNamedNodeMap()
 {
   namedNodeMaps.remove(map.handle());
 }
 
+// We have to implement hasProperty since we don't use a hashtable for 'length'
+bool DOMNamedNodeMap::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+{
+  if (p == "length")
+    return true;
+  return DOMObject::hasProperty(exec,p,recursive);
+}
+
 Value DOMNamedNodeMap::tryGet(ExecState* exec, const UString &p) const
 {
-  Value result;
-
   if (p == "length")
     return Number(map.length());
-  else if (p == "getNamedItem")
-    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::GetNamedItem);
-  else if (p == "setNamedItem")
-    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::SetNamedItem);
-  else if (p == "removeNamedItem")
-    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::RemoveNamedItem);
-  else if (p == "item")
-    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::Item);
-//  else if (p == "getNamedItemNS") // new for DOM2 - not yet in khtml
-//    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::GetNamedItemNS);
-//  else if (p == "setNamedItemNS") // new for DOM2 - not yet in khtml
-//    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::SetNamedItemNS);
-//  else if (p == "removeNamedItemNS") // new for DOM2 - not yet in khtml
-//    result = new DOMNamedNodeMapFunction(map, DOMNamedNodeMapFunction::RemoveNamedItemNS);
-  else
-    result = Undefined();
 
   // array index ?
   bool ok;
   long unsigned int idx = p.toULong(&ok);
   if (ok)
-    result = getDOMNode(exec,map.item(idx));
+    return getDOMNode(exec,map.item(idx));
 
-  return result;
+  // Anything else (including functions, defined in the prototype)
+  return DOMObject::tryGet(exec, p);
 }
 
-Value DOMNamedNodeMapFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
+Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  DOM::NamedNodeMap map = static_cast<DOMNamedNodeMap *>(thisObj.imp())->toMap();
   Value result;
 
   switch(id) {
-    case GetNamedItem:
+    case DOMNamedNodeMap::GetNamedItem:
       result = getDOMNode(exec,map.getNamedItem(args[0].toString(exec).value().string()));
       break;
-    case SetNamedItem:
+    case DOMNamedNodeMap::SetNamedItem:
       result = getDOMNode(exec,map.setNamedItem((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
-    case RemoveNamedItem:
+    case DOMNamedNodeMap::RemoveNamedItem:
       result = getDOMNode(exec,map.removeNamedItem(args[0].toString(exec).value().string()));
       break;
-    case Item:
+    case DOMNamedNodeMap::Item:
       result = getDOMNode(exec,map.item(args[0].toNumber(exec).intValue()));
       break;
-/*    case GetNamedItemNS: // new for DOM2 - not yet in khtml
-    case SetNamedItemNS: // new for DOM2 - not yet in khtml
-    case RemoveNamedItemNS: // new for DOM2 - not yet in khtml*/
+/*    case DOMNamedNodeMap::GetNamedItemNS: // new for DOM2 - not yet in khtml
+    case DOMNamedNodeMap::SetNamedItemNS: // new for DOM2 - not yet in khtml
+    case DOMNamedNodeMap::RemoveNamedItemNS: // new for DOM2 - not yet in khtml*/
     default:
       result = Undefined();
   }
@@ -1036,22 +1060,38 @@ Value DOMNamedNodeMapFunction::tryCall(ExecState *exec, Object &/*thisObj*/, con
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, 0, 0 };
+const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, &DOMProcessingInstructionTable, 0 };
 
-Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &p) const
+/*
+@begin DOMProcessingInstructionTable 3
+  target	DOMProcessingInstruction::Target	DontDelete|ReadOnly
+  data		DOMProcessingInstruction::Data		DontDelete
+  sheet		DOMProcessingInstruction::Sheet		DontDelete|ReadOnly
+@end
+*/
+Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  if (p == "target")
+  DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
+}
+
+Value DOMProcessingInstruction::getValue(ExecState *exec, int token) const
+{
+  switch (token) {
+  case Target:
     return getString(static_cast<DOM::ProcessingInstruction>(node).target());
-  else if (p == "data")
+  case Data:
     return getString(static_cast<DOM::ProcessingInstruction>(node).data());
-  else if (p == "sheet")
+  case Sheet:
     return getDOMStyleSheet(static_cast<DOM::ProcessingInstruction>(node).sheet());
-  else
-    return DOMNode::tryGet(exec, p);
+  default:
+    kdWarning() << "DOMProcessingInstruction::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 void DOMProcessingInstruction::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
+  // Not worth using the hashtable for this one ;)
   if (propertyName == "data")
     static_cast<DOM::ProcessingInstruction>(node).setData(value.toString(exec).value().string());
   else
@@ -1191,9 +1231,9 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo NodePrototype::info = { "NodePrototype", 0, 0, 0 };
+const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, 0, 0 };
 
-Value NodePrototype::tryGet(ExecState *exec, const UString &p) const
+Value NodeConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "ELEMENT_NODE")
     return Number((unsigned int)DOM::Node::ELEMENT_NODE);
@@ -1223,24 +1263,16 @@ Value NodePrototype::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec, p);
 }
 
-Value KJS::getNodePrototype(ExecState *exec)
+Object KJS::getNodeConstructor(ExecState *exec)
 {
-  Value proto = exec->interpreter()->globalObject().get(exec, "[[node.prototype]]");
-  if (!proto.isNull())
-    return proto;
-  else
-  {
-    Value nodeProto( new NodePrototype );
-    exec->interpreter()->globalObject().put(exec, "[[node.prototype]]", nodeProto);
-    return nodeProto;
-  }
+  return cacheGlobalObject<NodeConstructor>(exec, "[[node.constructor]]");
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMExceptionPrototype::info = { "DOMExceptionPrototype", 0, 0, 0 };
+const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };
 
-Value DOMExceptionPrototype::tryGet(ExecState *exec, const UString &p) const
+Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "INDEX_SIZE_ERR")
     return Number((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
@@ -1276,16 +1308,7 @@ Value DOMExceptionPrototype::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec, p);
 }
 
-Value KJS::getDOMExceptionPrototype(ExecState *exec)
+Object KJS::getDOMExceptionConstructor(ExecState *exec)
 {
-  Value proto = exec->interpreter()->globalObject().get(exec, "[[DOMException.prototype]]");
-  if (!proto.isNull())
-    return proto;
-  else
-  {
-    Object domExceptionProto( new DOMExceptionPrototype );
-    exec->interpreter()->globalObject().put(exec, "[[DOMException.prototype]]", domExceptionProto /*, flags? */);
-    return domExceptionProto;
-  }
-
+  return cacheGlobalObject<DOMExceptionConstructor>(exec, "[[DOMException.constructor]]");
 }

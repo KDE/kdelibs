@@ -630,12 +630,10 @@ DOM::CSSRule KJS::toCSSRule(const Value& val)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo CSSRulePrototype::info = { "CSSRulePrototype", 0, 0, 0 };
+const ClassInfo CSSRuleConstructor::info = { "CSSRuleConstructor", 0, 0, 0 };
 
-Value CSSRulePrototype::tryGet(ExecState *exec, const UString &p) const
+Value CSSRuleConstructor::tryGet(ExecState *exec, const UString &p) const
 {
-
-// also prototype of CSSRule objects?
   if (p == "UNKNOWN_RULE")
     return Number(DOM::CSSRule::UNKNOWN_RULE);
   else if (p == "STYLE_RULE")
@@ -654,17 +652,9 @@ Value CSSRulePrototype::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getCSSRulePrototype(ExecState *exec)
+Value KJS::getCSSRuleConstructor(ExecState *exec)
 {
-  Value proto = exec->interpreter()->globalObject().get(exec, "[[cssRule.prototype]]");
-  if (!proto.isNull())
-    return proto;
-  else
-  {
-    Object cssRuleProto( new CSSRulePrototype );
-    exec->interpreter()->globalObject().put(exec, "[[cssRule.prototype]]", cssRuleProto);
-    return cssRuleProto;
-  }
+  return cacheGlobalObject<CSSRuleConstructor>( exec, "[[cssRule.prototype]]" );
 }
 
 // -------------------------------------------------------------------------
@@ -737,11 +727,11 @@ Value CSSValuePrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getCSSValuePrototype(ExecState *exec)
 {
   Value proto = exec->interpreter()->globalObject().get(exec, "[[cssValue.prototype]]");
-  if (!proto.isNull())
+  if (proto.type() != UndefinedType)
     return proto;
   else
   {
-    Object cssValueProto( new CSSRulePrototype );
+    Object cssValueProto( new CSSValuePrototype );
     exec->interpreter()->globalObject().put(exec, "[[cssValue.prototype]]", cssValueProto);
     return cssValueProto;
   }
@@ -850,11 +840,11 @@ Value CSSPrimitiveValuePrototype::tryGet(ExecState *exec, const UString &p) cons
 Value KJS::getCSSPrimitiveValuePrototype(ExecState *exec)
 {
     Value proto = exec->interpreter()->globalObject().get(exec, "[[cssPrimitiveValue.prototype]]");
-    if (!proto.isNull())
+    if (proto.type() != UndefinedType)
         return proto;
     else
     {
-        Object cssPrimitiveValueProto( new CSSRulePrototype );
+        Object cssPrimitiveValueProto( new CSSPrimitiveValuePrototype );
         exec->interpreter()->globalObject().put(exec, "[[cssPrimitiveValue.prototype]]", cssPrimitiveValueProto);
         return cssPrimitiveValueProto;
     }

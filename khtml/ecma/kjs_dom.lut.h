@@ -222,3 +222,31 @@ const struct HashEntry DOMDocumentTypeTableEntries[] = {
 const struct HashTable DOMDocumentTypeTable = { 2, 3, DOMDocumentTypeTableEntries, 3 };
 
 }; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "setNamedItem", DOMNamedNodeMap::SetNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[5] },
+   { 0, 0, 0, 0, 0 },
+   { "removeNamedItem", DOMNamedNodeMap::RemoveNamedItem, DontDelete|Function, 1, 0 },
+   { "getNamedItem", DOMNamedNodeMap::GetNamedItem, DontDelete|Function, 1, 0 },
+   { "item", DOMNamedNodeMap::Item, DontDelete|Function, 1, 0 }
+};
+
+const struct HashTable DOMNamedNodeMapProtoTable = { 2, 6, DOMNamedNodeMapProtoTableEntries, 5 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMProcessingInstructionTableEntries[] = {
+   { "sheet", DOMProcessingInstruction::Sheet, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "target", DOMProcessingInstruction::Target, DontDelete|ReadOnly, 0, &DOMProcessingInstructionTableEntries[3] },
+   { "data", DOMProcessingInstruction::Data, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInstructionTableEntries, 3 };
+
+}; // namespace

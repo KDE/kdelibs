@@ -144,7 +144,7 @@ Value NodeFilterPrototype::tryGet(ExecState *exec, const UString &p) const
 Value KJS::getNodeFilterPrototype(ExecState *exec)
 {
     Value proto = exec->interpreter()->globalObject().get(exec, "[[nodeFilter.prototype]]");
-    if (!proto.isNull())
+    if (proto.type() != UndefinedType)
         return proto;
     else
     {

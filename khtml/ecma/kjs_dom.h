@@ -74,6 +74,7 @@ namespace KJS {
   public:
     DOMNodeList(ExecState *, DOM::NodeList l) : list(l) { }
     ~DOMNodeList();
+    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -173,36 +174,30 @@ namespace KJS {
 
   class DOMNamedNodeMap : public DOMObject {
   public:
-    DOMNamedNodeMap(ExecState *, DOM::NamedNodeMap m) : map(m) { }
+    DOMNamedNodeMap(ExecState *, DOM::NamedNodeMap m);
     ~DOMNamedNodeMap();
+    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
     static const ClassInfo info;
-  private:
-    DOM::NamedNodeMap map;
-  };
-
-  class DOMNamedNodeMapFunction : public DOMFunction {
-  public:
-    DOMNamedNodeMapFunction(DOM::NamedNodeMap m, int i)
-      : DOMFunction(), map(m), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
     enum { GetNamedItem, SetNamedItem, RemoveNamedItem, Item,
            GetNamedItemNS, SetNamedItemNS, RemoveNamedItemNS };
+    DOM::NamedNodeMap toMap() const { return map; }
   private:
     DOM::NamedNodeMap map;
-    int id;
   };
 
   class DOMProcessingInstruction : public DOMNode {
   public:
     DOMProcessingInstruction(ExecState *exec, DOM::ProcessingInstruction pi) : DOMNode(exec, pi) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Target, Data, Sheet };
   };
 
   class DOMNotation : public DOMNode {
@@ -223,20 +218,20 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  // Prototype object Node
-  class NodePrototype : public DOMObject {
+  // Constructor for Node - constructor stuff not implemented yet
+  class NodeConstructor : public DOMObject {
   public:
-    NodePrototype() : DOMObject() { }
+    NodeConstructor(ExecState *) : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  // Prototype object DOMException
-  class DOMExceptionPrototype : public DOMObject {
+  // Constructor for DOMException - constructor stuff not implemented yet
+  class DOMExceptionConstructor : public DOMObject {
   public:
-    DOMExceptionPrototype() : DOMObject() { }
+    DOMExceptionConstructor(ExecState *) : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -247,8 +242,8 @@ namespace KJS {
   Value getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m);
   Value getDOMNodeList(ExecState *exec, DOM::NodeList l);
   Value getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i);
-  Value getNodePrototype(ExecState *exec);
-  Value getDOMExceptionPrototype(ExecState *exec);
+  Object getNodeConstructor(ExecState *exec);
+  Object getDOMExceptionConstructor(ExecState *exec);
 
 }; // namespace
 
