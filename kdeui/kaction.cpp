@@ -2029,18 +2029,21 @@ public:
   KActionMenuPrivate()
   {
     m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
+    m_delayed = true;
   }
   ~KActionMenuPrivate()
   {
     delete m_popup; m_popup = 0;
   }
   KPopupMenu *m_popup;
+  bool m_delayed;
 };
 
 KActionMenu::KActionMenu( QObject* parent, const char* name )
   : KAction( parent, name )
 {
   d = new KActionMenuPrivate;
+  setDelayed(true);
 }
 
 KActionMenu::KActionMenu( const QString& text, QObject* parent,
@@ -2091,6 +2094,13 @@ void KActionMenu::remove( KAction* cmd )
     cmd->unplug( d->m_popup );
 }
 
+bool KActionMenu::delayed() const {
+    return d->m_delayed;
+}
+
+void KActionMenu::setDelayed(bool _delayed) {
+    d->m_delayed = _delayed;
+}
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
@@ -2155,8 +2165,11 @@ int KActionMenu::plug( QWidget* widget, int index )
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    bar->setDelayedPopup( id_, popupMenu() );
+    if (delayed()) {
+        bar->setDelayedPopup( id_, popupMenu() );
+    } else {
+        bar->getButton(id_)->setPopup(popupMenu());
+    }
 
     return containerCount() - 1;
   }

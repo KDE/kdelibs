@@ -1277,6 +1277,7 @@ private:
 class KActionMenu : public KAction
 {
   Q_OBJECT
+  Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
 public:
     KActionMenu( const QString& text, QObject* parent = 0,
                  const char* name = 0 );
@@ -1292,6 +1293,18 @@ public:
 
     KPopupMenu* popupMenu();
     void popup( const QPoint& global );
+
+    /**
+       Returns true if this action creates a delayed popup menu
+       when plugged in a KToolbar
+     */
+    bool delayed() const;
+    /**
+       If set to true, this action will create a delayed popup menu
+       when plugged in a KToolbar. Otherwise it creates a normal popup.
+       Default: delayed.
+     */
+    void setDelayed(bool _delayed);
 
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
