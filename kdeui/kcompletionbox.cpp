@@ -87,30 +87,32 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
-                case Key_Tab:
+		case Qt::Key_Tab:
                     if ( ev->state() & ShiftButton )
                         up();
                     else if ( !ev->state() )
                         down(); // Only on TAB!!
                     ev->accept();
                     return true;
-                case Key_Down:
+		case Qt::Key_Right:		   
+		case Qt::Key_Down:
                     down();
                     ev->accept();
                     return true;
-                case Key_Up:
+		case Qt::Key_Left:
+		case Qt::Key_Up:
                     up();
                     ev->accept();
                     return true;
-                case Key_Prior:
+		case Qt::Key_Prior:
                     pageUp();
                     ev->accept();
                     return true;
-                case Key_Next:
+		case Qt::Key_Next:
                     pageDown();
                     ev->accept();
                     return true;
-                case Key_Home: {
+		case Qt::Key_Home: {
                     // shift/ctrl involved -> let our parent handle that!
                     bool ours = (ev->state() == 0 && currentItem() != -1);
                     if ( ours ) {
@@ -119,7 +121,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     }
                     return ours;
                 }
-                case Key_End: {
+		case Qt::Key_End: {
                     bool ours = (ev->state() == 0 && currentItem() != -1);
                     if ( ours ) {
                         end();
@@ -127,22 +129,21 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     }
                     return ours;
                 }
-                case  Key_Escape:
-                    ev->accept();
-                    if ( ev->state() && ShiftButton ) {
-                        hide();
-                        return true;
-                    }
-                    cancelled();
-                    return true;
-                case Key_Enter:
-                case Key_Return:
-                    hide();
+		case Qt::Key_Escape:
+		    cancelled();
                     ev->accept();
                     return true;
+		case Qt::Key_Enter:
+		case Qt::Key_Return:
+		    if ( ev->state() & Qt::ShiftButton ) {
+		       hide();
+		       ev->accept();  // Consume the Enter event
+		       return true;
+		    }
+		    break;		    
                 default:
-                    break;
-                }
+		    break;
+		}
             }
             // parent loses focus -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
