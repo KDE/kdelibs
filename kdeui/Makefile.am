@@ -28,7 +28,7 @@ libkdeui_la_LDFLAGS = -version-info 0:91
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		dither.h kdatepik.h kdatetbl.h \
 		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
-		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
+		ktreelist.h kstatusbar.h ktopwidget.h ktmainwindow.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
@@ -38,7 +38,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
-		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
+		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp kmenubar.cpp \
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
 		klined.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
@@ -50,7 +50,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
-		ktopwidget.moc kbutton.moc kslider.moc  \
+		ktopwidget.moc ktmainwindow.moc kbutton.moc kslider.moc  \
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
 		kspinbox.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
@@ -124,6 +124,10 @@ kmenubar.moc: kmenubar.h
 ktopwidget.cpp:ktopwidget.moc
 ktopwidget.moc: ktopwidget.h
 	$(MOC) ktopwidget.h -o ktopwidget.moc
+
+ktmainwindow.cpp:ktmainwindow.moc
+ktmainwindow.moc: ktmainwindow.h
+	$(MOC) ktmainwindow.h -o ktmainwindow.moc
 
 kbutton.cpp:kbutton.moc
 kbutton.moc: kbutton.h
