@@ -4,6 +4,8 @@
 //  (mostly SSL related)
 //
 
+#include <config.h>
+
 #ifdef HAVE_LIBZ
 #define DO_GZIP
 #endif
@@ -21,7 +23,6 @@
 #define DO_SSL
 #endif
 
-#include <config.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -147,7 +148,7 @@ static char * trimLead (char *orig_string)
   return orig_string;
 }
 
-/* 
+/*
     Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
     nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
     "localhost".
@@ -630,7 +631,7 @@ HTTPProtocol::http_openConnection()
       if (::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
         if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
-          if (m_state.port != m_DefaultPort) 
+          if (m_state.port != m_DefaultPort)
              error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
           else
              error(ERR_COULD_NOT_CONNECT, m_state.hostname );
@@ -639,7 +640,7 @@ HTTPProtocol::http_openConnection()
         // Wait for connection
         if (!waitForConnect(m_sock, m_remoteConnTimeout))
         {
-          if (m_state.port != m_DefaultPort) 
+          if (m_state.port != m_DefaultPort)
              error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
           else
              error(ERR_COULD_NOT_CONNECT, m_state.hostname );
