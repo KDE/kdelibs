@@ -150,6 +150,7 @@ bool KNotify::notifyBySound(const QString &sound)
 	if (QFileInfo(sound).isRelative())
 		f=locate("sounds", sound);
 
+	cerr << "KNotify::notifyBySound - Trying to play file " << sound << endl;
 	if(!server.isNull()) server.play((const char *)f);
 	
 	return true;
