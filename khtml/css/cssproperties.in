@@ -6,6 +6,9 @@
 # some properties are used in khtml, but are not part of CSS. They are used to get
 # HTML4 compatibilty in the rendering engine.
 #
+# Mircosoft extensions are documented here:
+# http://msdn.microsoft.com/workshop/author/css/reference/attributes.asp
+#
 #azimuth
 #
 # CSS_PROP_BACKGROUND_COLOR: 
@@ -15,6 +18,9 @@ background-image
 background-repeat
 background-attachment
 background-position
+# IE Extensions
+background-position-x
+background-position-y
 
 border-collapse
 border-spacing
@@ -140,5 +146,3 @@ scrollbar-darkshadow-color
 scrollbar-track-color
 scrollbar-arrow-color
 -konq-flow-mode
--konq-bgpos-x
--konq-bgpos-y

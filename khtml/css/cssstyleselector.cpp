@@ -1322,7 +1322,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BACKGROUND_POSITION:
         // CSS2BackgroundPosition
         break;
-    case CSS_PROP__KONQ_BGPOS_X:
+    case CSS_PROP_BACKGROUND_POSITION_X:
       {
       if(!primitiveValue) break;
       Length l;
@@ -1336,7 +1336,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
       style->setBackgroundXPosition(l);
       break;
       }
-    case CSS_PROP__KONQ_BGPOS_Y:
+    case CSS_PROP_BACKGROUND_POSITION_Y:
       {
       if(!primitiveValue) break;
       Length l;
