@@ -169,6 +169,7 @@ class Resource : public KRES::Resource
     /**
       Releases the ticket previousely requested with requestSaveTicket().
       The resource has to remove its locks in this function.
+	  This function is also responsible for deleting the ticket.
      */
     virtual void releaseSaveTicket( Ticket* ) = 0;
 
