@@ -35,14 +35,13 @@ public:
   {
   }
 
-  QDomDocument m_doc;
   QGuardedPtr<Part> m_activePart;
   bool m_bShellGUIActivated;
 };
 };
 
 MainWindow::MainWindow( const char *name, WFlags f )
-  : KTMainWindow( name, f ), m_actionCollection( this )
+  : KTMainWindow( name, f ), PartBase( this )
 {
   d = new MainWindowPrivate();
   m_factory = new XMLGUIFactory( this );
@@ -70,49 +69,9 @@ MainWindow::~MainWindow()
   delete m_factory;
 }
 
-QAction *MainWindow::action( const QDomElement &element )
-{
-  return m_actionCollection.action( element.attribute( "name" ) );
-}
-
 XMLGUIFactory *MainWindow::guiFactory() const
 {
   return m_factory;
-}
-
-QDomDocument MainWindow::document() const
-{
-  return d->m_doc;
-}
-
-void MainWindow::setXMLFile( QString file )
-{
-  if ( file[0] != '/' )
-    file = locate( "data", QString(KGlobal::instance()->instanceName())+"/"+file );
-
-  QString xml = XMLGUIFactory::readConfigFile( file );
-  setXML( xml );
-}
-
-void MainWindow::setXML( const QString &document )
-{
-  //XXX: We might eventually call removeServant( this ) and addServant( this ) to update
-  // the GUI dynamically! :-) (that'd be cool IMHO ;)
-  // It just needs testing, as although KXMLGUIFactory should handle that correctly, there might
-  // be bugs left :)
-  // (update) It should really work ;-) (see commented code below)
-  d->m_doc.setContent( document );
-  /*
-  if ( d->m_bShellGUIActivated )
-  {
-    KPart *part = d->m_activePart;
-    if ( part )
-      createGUI( 0L );
-    m_factory->removeServant( this );
-    d->m_bShellGUIActivated = false;
-    createGUI( part );
-  }
-  */
 }
 
 QWidget *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
