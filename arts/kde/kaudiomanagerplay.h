@@ -21,6 +21,7 @@
 #define KAUDIOMANAGERPLAY_H
 
 #include <artsflow.h>
+#include <qstring.h>
 
 class KArtsServer;
 class QString;
@@ -36,7 +37,7 @@ class QString;
 class KAudioManagerPlay
 {
 	public:
-		KAudioManagerPlay( KArtsServer * server, const QString & title =0 );
+		KAudioManagerPlay( KArtsServer * server, const QString & title = QString::null );
 		~KAudioManagerPlay();
 
 		/**
