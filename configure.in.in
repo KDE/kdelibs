@@ -102,9 +102,9 @@ dnl Checks for library functions.
 AC_CHECK_SETENV
 AC_CHECK_UNSETENV
 AC_CHECK_RANDOM
-AC_CHECK_MKSTEMP
 AC_CHECK_MKSTEMPS
-AC_CHECK_FUNCS(strtoll socket vsnprintf seteuid setegid strfmon stpcpy gettimeofday strlcpy strlcat)
+KDE_CHECK_STRLCPY
+AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday)
 
 AH_BOTTOM([
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
