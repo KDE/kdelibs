@@ -23,8 +23,8 @@
 
 #include <qmap.h>
 #include <qlist.h>
+#include <kurl.h>
 
-class KURL;
 
 namespace KIO {
 
