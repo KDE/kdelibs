@@ -340,39 +340,21 @@ bool KBugReport::sendBugReport()
     QString::fromLatin1("submit@bugs.kde.org") );
 
   QString command;
-  command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") );
-  if ( !command.isNull() )
-    command += QString::fromLatin1(" -oi -t -f\"") + m_from->text() + QString::fromLatin1("\"");
-  else
-  {
-    command = KStandardDirs::findExe( QString::fromLatin1("mail") );
-    if ( command.isNull() ) return false; // give up
+  command = locate("exe", "ksendbugmail");
+  if (command.isEmpty())
+      command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
 
-    command.append(QString::fromLatin1(" -s \x22"));
-    command.append(m_subject->text());
-    command.append(QString::fromLatin1("\x22 "));
-    command.append(recipient);
-    needHeaders = false;
-  }
+  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\"").arg(m_subject->text()).arg(recipient);
 
-  FILE * fd = popen(command.local8Bit(),"w");
+  FILE * fd = popen(command.local8Bit(), "w");
   if (!fd)
   {
     kdError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
 
-  QString textComplete;
-  if (needHeaders)
-  {
-    textComplete += QString::fromLatin1("From: ") + m_from->text() + '\n';
-    textComplete += QString::fromLatin1("To: ") + recipient + '\n';
-    textComplete += QString::fromLatin1("Subject: ") + m_subject->text() + '\n';
-  }
-  textComplete += '\n'; // end of headers
-  textComplete += text();
-
-  fwrite(textComplete.ascii(),textComplete.length(),1,fd);
+  QString btext = text();
+  fwrite(btext.ascii(),btext.length(),1,fd);
 
   pclose(fd);
 
