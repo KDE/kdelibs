@@ -169,7 +169,6 @@ public:
      */
     void processedSize( KIO::filesize_t _bytes );
 
-private:
     /**
      * Call this in @ref get and @ref copy, to give the current transfer
      * speed, but only if it can't be calculated out of the size you 
@@ -177,7 +176,6 @@ private:
      */
     void speed( unsigned long _bytes_per_second );
   
-public:
     /**
      * Call this to signal a redirection
      * The job will take care of going to that url.
