@@ -38,6 +38,7 @@ libkab_la_SOURCES	= \
 	keyvaluemap.cc \
 	functions.cc \
 	StringListSelectOneDialog.cpp \
+	StringListSelectOneDialogData.cpp \
 	StringListSelectSetDialog.cpp \
 	StringListSelectAndReorderSet.cpp \
 	StringListSelectAndReorderSetData.cpp \
