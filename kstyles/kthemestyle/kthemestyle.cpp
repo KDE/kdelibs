@@ -1173,7 +1173,7 @@ void KThemeStyle::drawControl( ControlElement element,
             }
             
 #if (QT_VERSION-0 >= 0x030100)
-        case CE_MenuBarBackground:
+        case CE_MenuBarEmptyArea:
             {
                 //Expand to cover entire region
                 drawPrimitive(PE_PanelMenuBar, p, 

@@ -1230,7 +1230,7 @@ void KeramikStyle::drawControl( ControlElement element,
 		}
 
 #if (QT_VERSION-0 >= 0x030100)
-		case CE_MenuBarBackground:
+		case CE_MenuBarEmptyArea:
 		{
 			Keramik::GradientPainter::renderGradient( p, r, cg.button(), true, true);
 			break;
