@@ -206,6 +206,20 @@ bool DCOPClient::attach()
     return attachInternal();
 }
 
+void DCOPClient::bindToApp()
+{
+    // check if we have a qApp instantiated.  If we do,
+    // we can create a QSocketNotifier and use it for receiving data.
+    if (qApp) {
+	if ( d->notifier )
+	    delete d->notifier;
+	d->notifier = new QSocketNotifier(socket(),
+					  QSocketNotifier::Read, 0, 0);
+	connect(d->notifier, SIGNAL(activated(int)),
+		SLOT(processSocketData(int)));
+    }
+}
+
 bool DCOPClient::attachInternal( bool registerAsAnonymous )
 {
     char errBuf[1024];
@@ -281,16 +295,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	return false;
     }
 
-    // check if we have a qApp instantiated.  If we do,
-    // we can create a QSocketNotifier and use it for receiving data.
-    if (qApp) {
-	if ( d->notifier )
-	    delete d->notifier;
-	d->notifier = new QSocketNotifier(socket(),
-					  QSocketNotifier::Read, 0, 0);
-	connect(d->notifier, SIGNAL(activated(int)),
-		SLOT(processSocketData(int)));
-    }
+    bindToApp();
 
     if ( registerAsAnonymous )
 	registerAs( "anonymous" );

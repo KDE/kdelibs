@@ -93,6 +93,13 @@ class DCOPClient : public QObject
   bool attach();
 
   /**
+   * Internal function for KUniqueApplication to register the DCOPClient
+   * with the application in case the application didn't exist at the
+   * time the DCOPClient was created.
+   */
+  void bindToApp();
+
+  /**
    * Detach from the DCOP server.
    */
   bool detach();
