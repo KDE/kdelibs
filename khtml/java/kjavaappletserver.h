@@ -164,7 +164,7 @@ public:
     PermissionDialog( QWidget* );
     ~PermissionDialog();
 
-    QCString exec( const QString & title, const QString & cert, const QString & perm );
+    QCString exec( const QString & cert, const QString & perm );
 
 private slots:
      void clicked();

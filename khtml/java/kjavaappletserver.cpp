@@ -35,11 +35,13 @@
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
 #include <ksslcertificate.h>
+#include <ksslcertchain.h>
 #include <kssl.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
 #include <qvaluelist.h>
+#include <qptrlist.h>
 #include <qdir.h>
 #include <qeventloop.h>
 #include <qapplication.h>
@@ -608,21 +610,24 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             if (KSSL::doesSSLWork() && !d->kssl)
                 d->kssl = new KSSL;
             QStringList sl;
+            QCString answer( "invalid" );
 
             if (!d->kssl) {
-                sl.push_front( QString( "nossl" ) );
-            } else {
-                int certsnr = args.size() > 2 ? args[1].toInt() : 0;
+                answer = "nossl";
+            } else if (args.size() > 2) {
+                int certsnr = args[1].toInt();
                 QString text;
-                QValueList<KSSLCertificate *> certs;
-                for (int i = 0; i < certsnr; i++) {
+                QPtrList<KSSLCertificate> certs;
+                certs.setAutoDelete( true );
+                for (int i = certsnr; i >= 0; i--) {
                     KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].ascii());
                     if (cert) {
-                        certs.push_back(cert);
-                        text += i18n("Validation: ");
+                        certs.prepend(cert);
+                        if (cert->isSigner())
+                            text += QString(i18n("Signed by (validation: "));
+                        else
+                            text += QString(i18n("Certificate (validation: "));
                         switch (cert->validate()) {
-                            case KSSLCertificate::Unknown:
-                                text += i18n("Unknown"); break;
                             case KSSLCertificate::Ok:
                                 text += i18n("Ok"); break;
                             case KSSLCertificate::NoCARoot:
@@ -639,8 +644,6 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                                 text += i18n("SelfSigned"); break;
                             case KSSLCertificate::ErrorReadingRoot:
                                 text += i18n("ErrorReadingRoot"); break;
-                            case KSSLCertificate::NoSSL:
-                                text += i18n("NoSSL"); break;
                             case KSSLCertificate::Revoked:
                                 text += i18n("Revoked"); break;
                             case KSSLCertificate::Untrusted:
@@ -653,10 +656,11 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                                 text += i18n("PrivateKeyFailed"); break;
                             case KSSLCertificate::InvalidHost:
                                 text += i18n("InvalidHost"); break;
+                            case KSSLCertificate::Unknown:
                             default:
-                                text += i18n("Unknown validation"); break;
+                                text += i18n("Unknown"); break;
                         }
-                        text += QChar('\n');
+                        text += QString(")\n");
                         QString subject = cert->getSubject() + QChar('\n');
                         QRegExp reg(QString("/[A-Z]+="));
                         int pos = 0;
@@ -665,14 +669,16 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                         text += subject.mid(1);
                     }
                 }
-                kdDebug(6100) << "Security confirm " << args[0] << certs.size() << endl;
-                if (!certs.size()) {
-                    sl.push_front( QString( "invalid" ) );
-                } else {
-                    sl.push_front( QString( PermissionDialog( qApp->activeWindow() ).exec( i18n("Security Alert"), text, args[0] ) ) );
+                kdDebug(6100) << "Security confirm " << args[0] << certs.count() << endl;
+                if ( certs.count() ) {
+                    KSSLCertChain chain;
+                    chain.setChain( certs );
+                    if ( chain.isValid() )
+                        answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
                 }
             }
-            sl.push_front(QString::number(ID_num));
+            sl.push_front( QString(answer) );
+            sl.push_front( QString::number(ID_num) );
             process->send( KJAS_SECURITY_CONFIRM, sl );
             return;
         }
@@ -763,12 +769,12 @@ PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
-QCString PermissionDialog::exec( const QString & title, const QString & cert, const QString & perm ) {
+QCString PermissionDialog::exec( const QString & cert, const QString & perm ) {
     QGuardedPtr<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
 
     dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
     dialog->setModal( true );
-    dialog->setCaption( title );
+    dialog->setCaption( i18n("Security Alert") );
 
     QVBoxLayout * dialogLayout = new QVBoxLayout( dialog, 11, 6, "dialogLayout");
 
