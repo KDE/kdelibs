@@ -588,21 +588,29 @@ void QXEmbed::embed(WId w)
         return;
 
     XAddToSaveSet( qt_xdisplay(), w );
-    bool has_window =  w == window;
+    if ( w == window )
+	return;
     window = w;
-    if ( !has_window ) {
-        if ( !wstate_withdrawn(window) ) {
-            XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
-            QApplication::flushX();
-            while (!wstate_withdrawn(window))
-                ;
-        }
-        XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
-        QApplication::syncX();
+    bool map = FALSE;
+    if ( !wstate_withdrawn(window) ) {
+	XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
+	map = TRUE;
+	QApplication::flushX();
+	while (!wstate_withdrawn(window))
+	    ;
     }
+    if ( !map ) {
+	XWindowAttributes a;
+	XGetWindowAttributes( qt_xdisplay(), w, &a );
+	map = a.map_state != IsUnmapped;
+    }
+    
+    XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
+    QApplication::syncX();
 
     XResizeWindow(qt_xdisplay(), w, width(), height());
-    XMapRaised(qt_xdisplay(), window);
+    if ( map )
+	XMapRaised(qt_xdisplay(), window);
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
