@@ -8,7 +8,7 @@
 <book lang="&language;">
 
 <bookinfo>
-<title>The KSpell Handbook</title>
+<title>The &kspell; Handbook</title>
 <authorgroup>
 <author>
 <firstname>David</firstname>
@@ -21,20 +21,22 @@
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 
 </authorgroup>
-<date>1999-10-05</date>
+<date>2001-12-30</date>
 <releaseinfo>1.00.00</releaseinfo>
 <abstract>
-<para>KSpell is the spelling checker used by KDE applications such as KEdit,
-KMail, KRN, and KWord. It is a GUI frontend to International ISpell
-and ASpell.</para>
+<para>&kspell; is the spelling checker used by KDE applications such as &kwrite;,
+&kmail;, and &kword;. It is a GUI frontend to <application>International ISpell</application>
+and <application>ASpell</application>.</para>
 </abstract>
 <keywordset>
+<keyword>spell</keyword>
+<keyword>spelling</keyword>
 <keyword>kspell</keyword>
 <keyword>ispell</keyword>
-<keyword>KDE</keyword>
-<keyword>Linux</keyword>
-<keyword>spell</keyword>
+<keyword>aspell</keyword>
 <keyword>check</keyword>
+<keyword>checker</keyword>
+<keyword>KDE</keyword>
 </keywordset>
 </bookinfo>
 
@@ -42,43 +44,39 @@ and ASpell.</para>
 <title>Misspelled Word Dialog</title>
 
 <!-- This one might need a paragraph of its own) -->
-<para>(If you do not have Ispell installed you can obtain it
+<para>(If you do not have <application>Ispell</application> installed you can obtain it
 from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International ISpell home page</ulink>.
-ASpell is available from the <ulink url="http://metalab.unc.edu/kevina/aspell/">ASpell home page</ulink>.)
+ASpell is available from the <ulink url="http://aspell.sourceforge.net/">ASpell home page</ulink>.)
 </para>
 
 <sect1 id="general-use">
-<title>General Use </title>
+<title>General Use</title>
 
 <para><anchor id="spelldlg"/>
-The top line in the dialog displays a misspelled word which was found in your
-document. KSpell attempts to find an appropriate replacement word. One or
-several may be found. The best guess is shown to the right of <emphasis>Replacement:.</emphasis>
-To accept this replacement, click on <emphasis>Replace.</emphasis> You may also choose a word
-from the list of <emphasis>Suggestions</emphasis> then click <emphasis>Replace</emphasis> to replace the
-misspelled word with the chosen word.</para>
+The top line in the dialog displays a possibly misspelled word which was found in your
+document. &kspell; attempts to find an appropriate replacement word. One or
+several may be found. The best guess is shown to the right of <guilabel>Replacement:</guilabel>.
+To accept this replacement, click on <guibutton>Replace</guibutton>. You may also select a word
+from the list of <guilabel>Suggestions</guilabel> and then click <guibutton>Replace</guibutton> to replace the
+misspelled word with the selected word.</para>
 
-<para>To keep your original spelling, click on <emphasis>Ignore.</emphasis></para>
+<para>To keep your original spelling, click on <guilabel>Ignore</guilabel>.</para>
 
 <para>To stop the spell checking -- keeping the changes you've already made -- click
-on <emphasis>Stop.</emphasis></para>
+on <guibutton>Stop</guibutton>.</para>
 
 <para>To stop the spell checking and cancel the changes you've already made, click on
-<emphasis>Cancel.</emphasis></para>
-</sect1>
+<guibutton>Cancel</guibutton>.</para>
 
-<sect1 id="other-functions">
-<title>Other Functions</title>
-
-<para>Clicking on <emphasis>Replace All</emphasis> will initially perform the same function as
-clicking on <emphasis>Replace,</emphasis> but will automatically replace the misspelled word
+<para>Clicking on <guibutton>Replace All</guibutton> will initially perform the same function as
+clicking on <guibutton>Replace</guibutton>, but will automatically replace the misspelled word
 with the chosen replacement word, if it appears again (at a later point) in your
 document.</para>
 
-<para>The <emphasis>Ignore All</emphasis> button ignores this and all future occurrences of the
+<para>The <guibutton>Ignore All</guibutton> button ignores this and all future occurrences of the
 misspelled word.</para>
 
-<para>Clicking on <emphasis>Add</emphasis> will add the misspelled word to your personal dictionary
+<para>Clicking on <guibutton>Add</guibutton> will add the misspelled word to your personal dictionary
 (this is distinct from the original system dictionary, so the additions you make
 will not be seen by other users).</para>
 </sect1>
@@ -98,24 +96,25 @@ installed dictionaries.</para>
 <sect1 id="encodings">
 <title>Encodings</title>
 
-<para>The available character encodings are:
+<para>The most commonly used character encodings are:
 <variablelist>
 <varlistentry>
-<term>7-Bit/ASCII</term>
+<term>US-ASCII</term>
 <listitem>
 <para>This is the character set used for English text.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term>Latin1</term>
+<term>ISO-8859-1</term>
 <listitem>
 <para>This is used for Western European languages.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term>Latin2</term>
+<term>UTF-8</term>
 <listitem>
-<para>This is used for Eastern European languages.</para>
+<para>This is a Unicode encoding that can be used for almost any language, if 
+your system has the necessary fonts.</para>
 </listitem>
 </varlistentry>
 </variablelist>
@@ -123,18 +122,18 @@ installed dictionaries.</para>
 
 <para>You should select the one that matches the character set you are using.
 In some cases, dictionaries will support more than one encoding.  A
-dictionary might, for example, accept accented characters when <emphasis>Latin1</emphasis> is
-selected, but accept email-style character combinations (like <emphasis>'a</emphasis> for an
-accented <emphasis>a</emphasis>) when <emphasis>7-Bit/ASCII</emphasis> is selected.  Please see
+dictionary might, for example, accept accented characters when <guilabel>ISO-8859-1</guilabel> is
+selected, but accept email-style character combinations (like <literal>'a</literal> for an
+accented <literal>a</literal>) when <guilabel>US-ASCII</guilabel> is selected. Please see
 your dictionary's distribution for more information.</para>
 </sect1>
 
 <sect1 id="spell-checking-client">
 <title>Spell-checking client</title>
 
-<para>You may choose to use <emphasis>Ispell</emphasis> or <emphasis>Aspell</emphasis> as the spell-checking
-backend for <emphasis>KSpell</emphasis>.  <emphasis>Ispell</emphasis> is more widely available and may
-have better international support, but <emphasis>Aspell</emphasis> is gaining
+<para>You may choose to use <application>Ispell</application> or <application>Aspell</application> as the spell-checking
+backend for &kspell;. <application>Ispell</application> is more widely available and may
+have better international support, but <application>Aspell</application> is gaining
 popularity as it claims to give better suggestions for word replacements.</para>
 </sect1>
 
@@ -142,18 +141,18 @@ popularity as it claims to give better suggestions for word replacements.</para>
 <title>Other</title>
 
 <para>It is recommend that you do not change the first two options unless you have
-read the International ISpell man page.</para>
+read the International <application>ISpell</application> man page.</para>
 </sect1>
 </chapter>
 
 <chapter id="contact-information">
 <title>Contact Information</title>
 
-<para>For more information about KSpell, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">KSpell Home Page</ulink>. In
-particular, you will find information about programming the KSpell C++ class.</para>
+<para>For more information about &kspell;, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">&kspell; 
+Home Page</ulink>. In particular, you will find information about programming the &kspell; C++ class.</para>
 
 <para>You may email the author/maintainer with questions and/or comments at
-<ulink url="mailto:dsweet@kde.org">dsweet@kde.org</ulink>.</para>
+<email>dsweet@kde.org</email>.</para>
 
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
 
