@@ -1918,7 +1918,13 @@ bool HTTPProtocol::httpOpen()
     }
 
     header += " HTTP/1.1\r\n"; /* start header */
+#if 0
+    // Don't send Keep-Alive it may confuse some proxies and
+    // it shouldn't be necassery for HTTP 1.1 servers.
+    // We also don't support keep-alive connections with 1.0 servers
+    // at the moment.
     header += "Connection: Keep-Alive\r\n";
+#endif
 
     if (!m_request.userAgent.isEmpty())
     {
