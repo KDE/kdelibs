@@ -107,7 +107,12 @@ void KIconCanvas::slotLoadFiles()
 {
     setResizeMode(Fixed);
     emit startLoading(mFiles.count());
+    // evaluate layout events so the scrollbar can show up
+    kapp->processEvents();
     QApplication::setOverrideCursor(waitCursor);
+
+    // disable updates to not trigger paint events when adding child items
+    setUpdatesEnabled( false );
 
     d->m_bLoading = true;
     int i;
@@ -153,6 +158,9 @@ void KIconCanvas::slotLoadFiles()
 	item->setDragEnabled(false);
 	item->setDropEnabled(false);
     }
+
+    // enable updates since we have to draw the whole view now
+    setUpdatesEnabled( true );
 
     QApplication::restoreOverrideCursor();
     d->m_bLoading = false;
@@ -511,7 +519,9 @@ void KIconDialog::slotStartLoading(int steps)
 void KIconDialog::slotProgress(int p)
 {
     mpProgress->setProgress(p);
-    mpProgress->repaint();
+    // commented out the following since setProgress already paints ther
+    // progress bar. ->repaint() only makes it flicker
+    //mpProgress->repaint();
 }
 
 void KIconDialog::slotFinished()
