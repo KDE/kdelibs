@@ -477,15 +477,11 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KButtonBox* b = new KButtonBox( this );
   b->addStretch( 2 );
 
-  d->ok = b->addButton( KStdGuiItem::ok().text() );
+  d->ok = b->addButton( KStdGuiItem::ok() );
   d->ok->setDefault( true );
-  if (KGlobalSettings::showIconsOnPushButtons())
-    d->ok->setIconSet( SmallIconSet("button_ok") );
   connect(  d->ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
-  QPushButton* cancel = b->addButton(  KStdGuiItem::cancel().text() );
-  if (KGlobalSettings::showIconsOnPushButtons())
-    cancel->setIconSet( SmallIconSet("button_cancel") );
+  QPushButton* cancel = b->addButton(  KStdGuiItem::cancel() );
   connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
 
   b->layout();

@@ -24,7 +24,7 @@
 #include <kssl.h>
 
 #include <qlayout.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qframe.h>
 #include <qlabel.h>
 #include <qscrollview.h>
@@ -38,6 +38,7 @@
 #include <kglobalsettings.h>
 #include <ksqueezedtextlabel.h>
 #include <kurllabel.h>
+#include <kstdguiitem.h>
 //#include <kstandarddirs.h>
 //#include <krun.h>
 #include <kcombobox.h>
@@ -102,16 +103,15 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     QHBoxLayout *buttonLayout = new QHBoxLayout(topLayout, KDialog::spacingHint());
     buttonLayout->addStretch( 1 );
 
-    QPushButton *button;
+    KPushButton *button;
 
-    bool buttonicon =  KGlobalSettings::showIconsOnPushButtons();
     if (KSSL::doesSSLWork()) {
-      button = new QPushButton(buttonicon?SmallIcon("configure"):0, i18n("C&ryptography Configuration..."), this);
+      button = new KPushButton(KGuiItem(i18n("C&ryptography Configuration..."),"configure"), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
 
-    button = new QPushButton(buttonicon?SmallIcon("fileclose"):0,i18n("&Close"), this);
+    button = new KPushButton(KStdGuiItem::close(), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
     buttonLayout->addWidget( button );
 

@@ -813,12 +813,11 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
                 Ok, false, KGuiItem()),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
-  setButtonOK( KGuiItem((editType == InsertionMode) ? i18n( "&Add" ) : i18n( "&Update" )) );
+  setButtonOK( (editType == InsertionMode) ? KGuiItem( i18n( "&Add" ), "bookmark_add") : i18n( "&Update" ) );
   if (editType == InsertionMode) {
     setButtonText( User1, i18n( "&New Folder..." ) );
     if (KGlobalSettings::showIconsOnPushButtons()) {
       actionButton( User1 )->setIconSet( SmallIcon( "folder_new" ) );
-      actionButton( Ok )->setIconSet( SmallIcon( "bookmark_add" ) );
     }
   }
 

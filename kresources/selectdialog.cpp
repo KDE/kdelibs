@@ -22,15 +22,12 @@
 */
 
 #include <kbuttonbox.h>
-#include <kglobalsettings.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kiconloader.h>
 
 #include <qgroupbox.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
 
 #include "resource.h"
 
@@ -59,13 +56,9 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
 
   KButtonBox *buttonBox = new KButtonBox( this );
 
-  buttonBox->addStretch();    
-  QPushButton* ok = buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  QPushButton* cancel = buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
-  if (KGlobalSettings::showIconsOnPushButtons()) {
-    ok->setIconSet( SmallIconSet("button_ok") );
-    cancel->setIconSet( SmallIconSet("button_cancel") );
-  }
+  buttonBox->addStretch();
+  QPushButton* ok = buttonBox->addButton( KStdGuiItem::ok(), this, SLOT( accept() ) );
+  QPushButton* cancel = buttonBox->addButton( KStdGuiItem::cancel(), this, SLOT( reject() ) );
   buttonBox->layout();
 
   mainLayout->addWidget( buttonBox );
@@ -82,7 +75,7 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
   }
 
   mResourceId->setCurrentItem( 0 );
-  connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)), 
+  connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)),
            SLOT(accept()) );
   connect( mResourceId, SIGNAL( executed( QListBoxItem* ) ),
            SLOT( accept() ) );
