@@ -264,20 +264,21 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
  *         frequently and should be handled by ignoring the return
  *         value and @param atFirst.
  * @param pos the current QDragMoveEvent position
+ * @param the toolbar
  * @param actions the list of actions plugged into the bar
  * @param atFirst bool reference, when true the position before the 
  *        returned action was dropped on
  */
-static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions, bool &atFirst, KBookmarkManager *mgr)
+static KAction* handleToolbarDragMoveEvent(KToolBar *tb, QPoint pos, QPtrList<KAction> actions, bool &atFirst, KBookmarkManager *mgr)
 {
     static int sepIndex;
-    KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
-    Q_ASSERT(tb);
+    Q_ASSERT( actions.isEmpty() || (tb == dynamic_cast<KToolBar*>(actions.first()->container(0))) );
     s_sepToolBar = tb;
     s_sepToolBar->removeItemDelayed(sepId);
 
     int index;
     KToolBarButton* b;
+
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
     KAction *a = 0;
     atFirst = false;
@@ -296,13 +297,29 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
             b = tb->getButton(tb->idAt(index));
         }
     }
+    else if (actions.isEmpty())
+    {
+        atFirst = true;
+        index = 0;
+        // we skip the action related stuff
+        // and do what it should have...
+        // FIXME - for the moment we can't
+        // do anything special here other
+        // than prevent the crash and
+        // draw the line seperator correctly,
+        // we can't actually insert as its
+        // all based on the returned action,
+        // which, in this case of course
+        // doesn't even exist...
+        goto skipact; 
+    }
     else // (!b)
     {
         index = actions.count() - 1;
         b = tb->getButton(tb->idAt(index));
         // if !b and not past last button, we didn't find button
         if (pos.x() <= b->geometry().left())
-            goto hell;
+            goto skipact; // TODO - rename
     }
 
     a = findPluggedAction(actions, tb, b->id());
@@ -313,7 +330,7 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
 
     QString address = a->property("address").toString();
     KBookmark bk = mgr->findByAddress( address );
-    kdDebug() << "popping up " << bk.text() << endl;
+    kdDebug() << "popping up " << bk.text() << endl; // TODO - fix this ****!!!, manhatten distance should be used!!!
     if (bk.isGroup())
     {
         KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
@@ -324,13 +341,14 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     }
     //
 
-hell:
+skipact:
     tb->insertLineSeparator(sepIndex, sepId);
     return a;
 }
 
+// TODO - document!!!!
 static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
-	                                 KBookmarkManager * /*mgr*/, QPoint & pt)
+	                                     KBookmarkManager * /*mgr*/, QPoint & pt)
 {
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
@@ -390,7 +408,7 @@ void KBookmarkBar::slotRMBActionCopyLocation( int val )
 void KBookmarkBar::slotRMBActionOpen( int val )
 { RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
 
-bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
+bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     static bool atFirst = false;
     static KAction* a = 0;
@@ -398,13 +416,16 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
 
-    if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) )
+    return false; // DO NOTHING FOR THE MOMENT
+
+    if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) ) // FIXME, which one?
     {
         QMouseEvent *mev = (QMouseEvent*)e;
 
         QPoint pt;
         KAction *_a; 
 
+        // FIXME, see how this holds up on an empty toolbar
         _a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
 
         if (_a)
@@ -422,6 +443,10 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
             }
 
             return !!_a;
+        }
+        else 
+        {
+            // FIXME, we should be passing the event through now as the toolbar thing should appear
         }
     }
     else if ( e->type() == QEvent::DragLeave )
@@ -460,11 +485,10 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        if (dptr()->m_actions.count() == 0)
-            return false;
         bool _atFirst;
         KAction *_a; 
-        _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
+        KToolBar *tb = (KToolBar*)o;
+        _a = handleToolbarDragMoveEvent(tb, dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
         if (_a)
         {
             a = _a;
