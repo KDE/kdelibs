@@ -797,11 +797,13 @@ void KFileDialog::accept()
         locationEdit->insertItem( file, 1 );
     }
 
-    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
-                                         false);
-    writeConfig( c, ConfigGroup );
-    saveRecentFiles( KGlobal::config() );
-    delete c;
+    KConfig *config = KGlobal::config();
+    config->setForceGlobal( true );
+    writeConfig( config, ConfigGroup );
+    config->setForceGlobal( false );
+    
+    saveRecentFiles( config );
+    config->sync();
 
     KDialogBase::accept();
 
@@ -1658,7 +1660,6 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
 
     ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
-    kc->sync();
 }
 
 
@@ -1683,7 +1684,6 @@ void KFileDialog::saveRecentFiles( KConfig *kc )
     kc->setGroup( ConfigGroup );
 
     kc->writeEntry( RecentFiles, locationEdit->urls() );
-    kc->sync();
 
     kc->setGroup( oldGroup );
 }
