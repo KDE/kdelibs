@@ -71,6 +71,8 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
     return mgr;
 }
 
+#define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
+
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
     : DCOPObject(QCString("KBookmarkManager-")+bookmarksFile.utf8()), m_doc("xbel"), m_docIsLoaded(false)
 {
@@ -84,9 +86,9 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
 
     if ( !QFile::exists(m_bookmarksFile) )
     {
-        // First time we use this class
         QDomElement topLevel = m_doc.createElement("xbel");
         m_doc.appendChild( topLevel );
+        m_doc.insertBefore( m_doc.createProcessingInstruction( "xbel", PI_DATA), topLevel );
         if ( bImportDesktopFiles )
             importDesktopFiles();
         m_docIsLoaded = true;
@@ -115,6 +117,7 @@ const QDomDocument &KBookmarkManager::internalDocument() const
     }
     return m_doc;
 }
+
 
 void KBookmarkManager::parse() const
 {
@@ -150,6 +153,19 @@ void KBookmarkManager::parse() const
         }
         else if ( mainTag != "xbel" )
             kdWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag << endl;
+
+        QDomNode n = m_doc.documentElement().previousSibling();
+        if ( n.isProcessingInstruction() )
+        {
+            QDomProcessingInstruction pi = n.toProcessingInstruction();
+            pi.setData( PI_DATA );
+        }
+        else
+        {
+            QDomProcessingInstruction pi;
+            pi = m_doc.createProcessingInstruction( "xbel", PI_DATA );
+            m_doc.insertBefore( pi, docElem );
+        }
     }
 
     file.close();
