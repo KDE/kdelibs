@@ -33,6 +33,33 @@
 
 class KBuildServiceGroupFactory;
 
+/**
+ * This class is typically used like this: 
+ *
+ * // Lookup screensaver group
+ * KServiceGroup::Ptr group = KServiceGroup::baseGroup("screensavers");
+ * if (!group || !group->isValid()) return;
+ *     
+ * KServiceGroup::List list = group->entries();
+ *          
+ * // Iterate over all entries in the group
+ * for( KServiceGroup::List::ConstIterator it = list.begin();
+ *      it != list.end(); it++)
+ * {
+ *    KSycocaEntry *p = (*it);
+ *    if (p->isType(KST_KService))
+ *    {
+ *       KService *s = static_cast<KService *>(p);
+ *       printf("Name = %s\n", s->name().latin1());
+ *    }
+ *    else if (p->isType(KST_KServiceGroup))
+ *    {
+ *       KServiceGroup *g = static_cast<KServiceGroup *>(p);
+ *       // Sub group ...
+ *    }
+ * }
+ */
+
 class KServiceGroup : public KSycocaEntry
 {
   friend class KBuildServiceGroupFactory;
