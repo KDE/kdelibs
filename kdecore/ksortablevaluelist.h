@@ -23,35 +23,37 @@
 #include <qpair.h>
 #include <qvaluelist.h>
 
-template<class T> class KSortableItem : public QPair<int,T>
+template<class T, class Key = int> class KSortableItem : public QPair<Key,T>
 {
 public:
-    KSortableItem( int i, const T& t ) : QPair<int,T>( i, t ) {}
-    KSortableItem() : QPair<int,T>( 0, QString::null ) {}
-    virtual ~KSortableItem() {}
+    KSortableItem( Key i, const T& t ) : QPair<Key, T>( i, t ) {}
+    KSortableItem( const KSortableItem<T, Key> &rhs )
+    { (*this) = rhs; }
+    KSortableItem() : QPair<Key, T>( 0, Key() ) {}
 
-    void operator=( const KSortableItem<T>& i ) {
+    KSortableItem<T, Key> &operator=( const KSortableItem<T, Key>& i ) {
         first  = i.first;
         second = i.second;
+        return *this;
     }
 
     // operators for sorting
-    bool operator> ( const KSortableItem<T>& i2 ) {
+    bool operator> ( const KSortableItem<T, Key>& i2 ) const {
         return (first > i2.first);
     }
-    bool operator< ( const KSortableItem<T>& i2 ) {
+    bool operator< ( const KSortableItem<T, Key>& i2 ) const {
         return (first < i2.first);
     }
-    bool operator>= ( const KSortableItem<T>& i2 ) {
+    bool operator>= ( const KSortableItem<T, Key>& i2 ) const {
         return (first >= i2.first);
     }
-    bool operator<= ( const KSortableItem<T>& i2 ) {
+    bool operator<= ( const KSortableItem<T, Key>& i2 ) const {
         return (first <= i2.first);
     }
-    bool operator== ( const KSortableItem<T>& i2 ) {
+    bool operator== ( const KSortableItem<T, Key>& i2 ) const {
         return (first == i2.first);
     }
-    bool operator!= ( const KSortableItem<T>& i2 ) {
+    bool operator!= ( const KSortableItem<T, Key>& i2 ) const {
         return (first != i2.first);
     }
 
@@ -62,26 +64,27 @@ public:
         return second;
     }
 
-    int index() const {
+    Key index() const {
         return first;
     }
 };
 
 
 // convenience
-template <class T>class KSortableValueList : public QValueList<KSortableItem<T> >
+template <class T, class Key = int>
+class KSortableValueList : public QValueList<KSortableItem<T, Key> >
 {
 public:
-    void insert( int i, const T& t ) {
-        QValueList<KSortableItem<T> >::append( KSortableItem<T>( i, t ) );
+    void insert( Key i, const T& t ) {
+        QValueList<KSortableItem<T, Key> >::append( KSortableItem<T, Key>( i, t ) );
     }
     // add more as you please...
 
-    T& operator[]( int i ) {
-        return QValueList<KSortableItem<T> >::operator[]( i ).value();
+    T& operator[]( Key i ) {
+        return QValueList<KSortableItem<T, Key> >::operator[]( i ).value();
     }
-    const T& operator[]( int i ) const {
-        return QValueList<KSortableItem<T> >::operator[]( i ).value();
+    const T& operator[]( Key i ) const {
+        return QValueList<KSortableItem<T, Key> >::operator[]( i ).value();
     }
     
     void sort() {
