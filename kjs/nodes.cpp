@@ -25,8 +25,8 @@
 
 //#include <iostream>
 #include <math.h>
-#ifdef KJS_DEBUG_MEM
 #include <assert.h>
+#ifdef KJS_DEBUG_MEM
 #include <stdio.h>
 #include <typeinfo>
 #endif
