@@ -60,7 +60,7 @@ public:
    * @return whether the result is valid (i.e. mimetype not empty)
    */
   bool isValid() { return !m_strMimeType.isEmpty(); }
-  
+
   /////////////////
   // Internal functions only
   /////////////////
@@ -68,7 +68,7 @@ public:
   void setEncoding( const char* _encoding) { m_strEncoding = _encoding;}
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
   void setInvalid() { m_strMimeType = ""; }
-  
+
 protected:
   QString m_strEncoding;
   QString m_strMimeType;
@@ -84,7 +84,7 @@ protected:
  * The basic usage of KMimeMagic is :
  * - get a pointer to it, using KMimeMagic::self()
  * - use it for any file or buffer you want, using one of the three find...Type methods.
- * 
+ *
  * The result is contained in the class @ref KMimeMagicResult
  */
 class KMimeMagic
@@ -94,7 +94,7 @@ public:
    * Create a parser, initialize it with the give config file.
    */
   KMimeMagic( const char * );
-  
+
   /**
    * Destroys the parser
    */
@@ -162,9 +162,9 @@ public:
 
   /**
    * @return a pointer to the unique KMimeMagic instance in this process
-   */ 
+   */
   static KMimeMagic* self();
-  
+
 protected:
   /**
    * The result type.
@@ -173,7 +173,7 @@ protected:
 
   static void initStatic();
   static KMimeMagic* s_pSelf;
-  
+
 private:
   /**
    * If true, follow symlinks.
@@ -192,9 +192,16 @@ private:
   int fsmagic(const char *, struct stat *);
   int match(unsigned char *, int);
   void mprint(union VALUETYPE *, struct magic *);
+  int parse_line(char *line, int *rule, int lineno);
+  int parse(char *, int);
+  int buff_apprentice(char*buff);
+  int apprentice();
   int ascmagic(unsigned char *, int);
+  int internatmagic(unsigned char *, int);
   int softmagic(unsigned char *, int);
-  KMimeMagicResult * revision_suffix(const char *);
+
+  struct config_rec *conf;
+  int accuracy;
 };
 
 #endif

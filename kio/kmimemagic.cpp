@@ -59,6 +59,7 @@ void KMimeMagic::initStatic()
 #define MIME_BINARY_UNREADABLE "application/x-unreadable"
 #define MIME_BINARY_ZEROSIZE   "application/x-zerosize"
 #define MIME_TEXT_UNKNOWN      "text/plain"
+#define MIME_TEXT_INTERNATIONAL "text/plain" // should we create a new one ? (David)
 #define MIME_INODE_DIR         "inode/directory"
 #define MIME_INODE_CDEV        "inode/chardevice"
 #define MIME_INODE_BDEV        "inode/blockdevice"
@@ -170,7 +171,6 @@ static unsigned long signextend(struct magic *, unsigned long);
 static int getvalue(struct magic *, char **);
 static int hextoint(int);
 static char *getstr(char *, char *, int, int *);
-static int parse(char *, int);
 static int mget(union VALUETYPE *, unsigned char *, struct magic *, int);
 static int mcheck(union VALUETYPE *, struct magic *);
 static int mconvert(union VALUETYPE *, struct magic *);
@@ -399,27 +399,12 @@ static struct names {
 };
 
 /* current config */
-typedef struct {
+typedef struct config_rec {
 	char *magicfile;        /* where magic be found      */
 	struct magic *magic,    /* head of magic config list */
 	*last;
-} config_rec;
+};
 
-static int accuracy;
-
-config_rec *conf;
-
-void  error( const char *msg, ... )
-{
-    va_list ap;
-    va_start( ap, msg );
-    // use variable arg list
-    QString tmp = msg;
-    tmp += "\n";
-    vfprintf( stderr, tmp.data() , ap );
-    va_end( ap );
-    accuracy = 0;
-}
 
 #if (MIME_MAGIC_DEBUG_TABLE > 1)
 static void
@@ -435,7 +420,7 @@ test_table()
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
 		    //debug("test_table: POINTER CLOBBERED! "
-		    //"m=\"%c%c%c%c\" line=%d", 
+		    //"m=\"%c%c%c%c\" line=%d",
 			      (((unsigned long) m) >> 24) & 255,
 			      (((unsigned long) m) >> 16) & 255,
 			      (((unsigned long) m) >> 8) & 255,
@@ -451,8 +436,7 @@ test_table()
 #define    EATAB {while (isascii((unsigned char) *l) && \
 	      isspace((unsigned char) *l))  ++l;}
 
-static int
-parse_line(char *line, int *rule, int lineno)
+int KMimeMagic::parse_line(char *line, int *rule, int lineno)
 {
 	int ws_offset;
 	
@@ -484,8 +468,7 @@ parse_line(char *line, int *rule, int lineno)
 /*
  * apprentice - load configuration from the magic file.
  */
-static int
-apprentice()
+int KMimeMagic::apprentice()
 {
 	FILE *f;
 	char line[BUFSIZ + 1];
@@ -499,8 +482,8 @@ apprentice()
 	fname = conf->magicfile;
 	f = fopen(fname, "r");
 	if (f == NULL) {
-		error("kmimelib: can't read magic file %s: %s",
-		      fname, strerror(errno));
+		kDebugError( 7018, "can't read magic file %s: %s",
+                             fname, strerror(errno) );
 		return -1;
 	}
 
@@ -527,8 +510,7 @@ apprentice()
 	return (errs ? -1 : 0);
 }
 
-static int
-buff_apprentice(char *buff)
+int KMimeMagic::buff_apprentice(char *buff)
 {
 	char line[BUFSIZ + 2];
 	int errs = 0;
@@ -603,8 +585,8 @@ signextend(struct magic *m, unsigned long v)
 			case STRING:
 				break;
 			default:
-				error("%s: can't happen: m->type=%d",
-				      "signextend", m->type);
+				kDebugError( 7018, "%s: can't happen: m->type=%d",
+                                             "signextend", m->type );
 				return ERROR;
 		}
 	return v;
@@ -613,8 +595,7 @@ signextend(struct magic *m, unsigned long v)
 /*
  * parse one line from magic file, put into magic[index++] if valid
  */
-static int
-parse(char *l, int lineno)
+int KMimeMagic::parse(char *l, int lineno)
 {
 	int i = 0;
 	struct magic *m;
@@ -622,7 +603,7 @@ parse(char *l, int lineno)
 	*s;
 	/* allocate magic structure entry */
 	if ((m = (struct magic *) calloc(1, sizeof(struct magic))) == NULL) {
-		error("parse: Out of memory.");
+		kDebugError( 7018, "parse: Out of memory." );
 		return -1;
 	}
 	/* append to linked list */
@@ -651,7 +632,7 @@ parse(char *l, int lineno)
 	/* get offset, then skip over it */
 	m->offset = (int) strtol(l, &t, 0);
 	if (l == t) {
-		error("parse: offset %s invalid", l);
+            kDebugError( 7018, "parse: offset %s invalid", l );
 	}
 	l = t;
 
@@ -673,7 +654,7 @@ parse(char *l, int lineno)
 					m->in.type = BYTE;
 					break;
 				default:
-					error("parse: indirect offset type %c invalid", *l);
+					kDebugError( 7018, "parse: indirect offset type %c invalid", *l);
 					break;
 			}
 			l++;
@@ -688,7 +669,7 @@ parse(char *l, int lineno)
 		} else
 			t = l;
 		if (*t++ != ')') {
-			error("parse: missing ')' in indirect offset");
+			kDebugError( 7018, "parse: missing ')' in indirect offset");
 		}
 		l = t;
 	}
@@ -747,7 +728,7 @@ parse(char *l, int lineno)
 		m->type = LEDATE;
 		l += NLEDATE;
 	} else {
-		error("parse: type %s invalid", l);
+		kDebugError( 7018, "parse: type %s invalid", l);
 		return -1;
 	}
 	/* New-style anding: "0 byte&0x80 =0x80 dynamically linked" */
@@ -849,7 +830,7 @@ getstr(register char *s, register char *p, int plen, int *slen)
 		if (isspace((unsigned char) c))
 			break;
 		if (p >= pmax) {
-			error("String too long: %s", origs);
+			kDebugError( 7018, "String too long: %s", origs);
 			break;
 		}
 		if (c == '\\') {
@@ -1003,7 +984,7 @@ mconvert(union VALUETYPE *p, struct magic *m)
 			    ((p->hl[3] << 24) | (p->hl[2] << 16) | (p->hl[1] << 8) | (p->hl[0]));
 			return 1;
 		default:
-			error("mconvert: invalid type %d", m->type);
+			kDebugError( 7018, "mconvert: invalid type %d", m->type);
 			return 0;
 	}
 }
@@ -1062,7 +1043,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 	int matched;
 
 	if ((m->value.s[0] == 'x') && (m->value.s[1] == '\0')) {
-		error("BOINK");
+		kDebugError( 7018, "BOINK");
 		return 1;
 	}
 	switch (m->type) {
@@ -1104,7 +1085,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 			}
 			break;
 		default:
-			error("mcheck: invalid type %d", m->type);
+			kDebugError( 7018, "mcheck: invalid type %d", m->type);
 			return 0;	/* NOTREACHED */
 	}
 #if 0
@@ -1152,7 +1133,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 
 		default:
 			matched = 0;
-			error("mcheck: can't happen: invalid relation %d.", m->reln);
+			kDebugError( 7018, "mcheck: can't happen: invalid relation %d.", m->reln);
 			break;  /* NOTREACHED */
 	}
 
@@ -1220,7 +1201,7 @@ KMimeMagic::finishResult()
 			} else {
 				/* should not be possible */
 				/* abandon malfunctioning module */
-				error("KMimeMagic::finishResult: bad state %d (ws)", state);
+				kDebugError( 7018, "KMimeMagic::finishResult: bad state %d (ws)", state);
 				return DECLINED;
 			}
 			/* NOTREACHED */
@@ -1255,7 +1236,7 @@ KMimeMagic::finishResult()
 			} else {
 				/* should not be possible */
 				/* abandon malfunctioning module */
-				error(" KMimeMagic::finishResult: bad state %d (ns)", state);
+				kDebugError( 7018, " KMimeMagic::finishResult: bad state %d (ns)", state);
 				return DECLINED;
 			}
 			/* NOTREACHED */
@@ -1311,7 +1292,7 @@ KMimeMagic::process(const char * fn)
 		 * if (sb.st_mode & 0002) addResult("writable, ");
 		 * if (sb.st_mode & 0111) addResult("executable, ");
 		 */
-		error("can't read `%s' (%s).", fn, strerror(errno));
+		kDebugError( 7018, "can't read `%s' (%s).", fn, strerror(errno));
 		resultBuf += MIME_BINARY_UNREADABLE;
 		return;
 	}
@@ -1319,7 +1300,7 @@ KMimeMagic::process(const char * fn)
 	 * try looking at the first HOWMANY bytes
 	 */
 	if ((nbytes = read(fd, (char *) buf, HOWMANY)) == -1) {
-		error("%s read failed (%s).", fn, strerror(errno));
+		kDebugError( 7018, "%s read failed (%s).", fn, strerror(errno));
 		resultBuf += MIME_BINARY_UNREADABLE;
 		return;
 		/* NOTREACHED */
@@ -1339,21 +1320,19 @@ KMimeMagic::process(const char * fn)
 void
 KMimeMagic::tryit(unsigned char *buf, int nb)
 {
-	/*
-	 * try tests in /etc/magic (or surrogate magic file)
-	 */
+	/* try tests in /etc/magic (or surrogate magic file) */
 	if (softmagic(buf, nb) == 1)
 		return;
 
-	/*
-	 * try known keywords, check for ascii-ness too.
-	 */
+	/* try known keywords, check for ascii-ness too. */
 	if (ascmagic(buf, nb) == 1)
 		return;
 
-	/*
-	 * abandon hope, all ye who remain here
-	 */
+        /* see if it's international language text */
+        if (internatmagic(buf, nb))
+                return;
+
+	/* abandon hope, all ye who remain here */
 	resultBuf += MIME_BINARY_UNKNOWN;
 	accuracy = 0;
 }
@@ -1452,7 +1431,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 		case S_IFREG:
 			break;
 		default:
-			error("KMimeMagic::fsmagic: invalid mode 0%o.", sb->st_mode);
+			kDebugError( 7018, "KMimeMagic::fsmagic: invalid mode 0%o.", sb->st_mode);
 			/* NOTREACHED */
 	}
 
@@ -1677,7 +1656,7 @@ KMimeMagic::mprint(union VALUETYPE *p, struct magic *m)
 			resultBufPrintf(m->desc, pp);
 			return;
 		default:
-			error("KMimeMagic::mprint: invalid m->type (%d)", m->type);
+			kDebugError( 7018, "mprint: invalid m->type (%d)", m->type);
 			return;
 	}
 
@@ -1775,7 +1754,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		accuracy = 40;
 	        if (!(typeset & ~(L_C|L_CPP|L_JAVA))) {
 			if (jonly && conly)
-			  error("Oops, jonly && conly?!");
+			  kDebugError( 7018, "Oops, jonly && conly?!");
 			if (jonly) {
 				// A java-only token has matched
 				resultBuf += QString(types[P_JAVA].type);
@@ -1862,6 +1841,47 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	return 1;
 }
 
+/* Maximal length of a line we consider "reasonable". */
+#define INTERNAT_MAXLINELEN 300
+
+// This code is taken from the "file" command, where it is licensed
+// in the "beer-ware license" :-)
+// Original author: <joerg@FreeBSD.ORG>
+// Simplified by David Faure to avoid the static array char[256].
+int KMimeMagic::internatmagic(unsigned char * buf, int nbytes)
+{
+    int i;
+    unsigned char *cp;
+
+    nbytes--;
+
+    /* First, look whether there are "unreasonable" characters. */
+    for (i = 0, cp = buf; i < nbytes; i++, cp++)
+        if ((*cp < 8) || (*cp>13 && *cp<32 && *cp!=27 ) || (*cp==0x7F))
+            return 0;
+
+    /* Now, look whether the file consists of lines of
+     * "reasonable" length. */
+
+    for (i = 0; i < nbytes;) {
+        cp = (unsigned char *) memchr(buf, '\n', nbytes - i);
+        if (cp == NULL) {
+            /* Don't fail if we hit the end of buffer. */
+            if (i + INTERNAT_MAXLINELEN >= nbytes)
+                break;
+            else
+                return 0;
+        }
+        if (cp - buf > INTERNAT_MAXLINELEN)
+            return 0;
+        i += (cp - buf + 1);
+        buf = cp + 1;
+    }
+    resultBuf += MIME_TEXT_INTERNATIONAL;
+    return 1;
+}
+
+
 /*
  * is_tar() -- figure out whether file is a tar archive.
  *
@@ -1946,36 +1966,6 @@ from_oct(int digs, char *where)
 		return -1;      /* Ended on non-space/nul */
 
 	return value;
-}
-
-/*
- * Check for file-revision suffix
- *
- * This is for an obscure document control system used on an intranet.
- * The web representation of each file's revision has an @1, @2, etc
- * appended with the revision number.  This needs to be stripped off to
- * find the file suffix, which can be recognized by sending the name back
- * through a sub-request.  The base file name (without the @num suffix)
- * must exist because its type will be used as the result.
- */
-
-/*
- * Don't know if we really need this within KDE?!
- * ... well i've to look into original file code.
- */
-KMimeMagicResult *
-KMimeMagic::revision_suffix(const char * fn)
-{
-	int suffix_pos;
-	QString newfn = QString(fn);
-
-	kDebugInfo(7018, "revision_suffix: checking %s", fn);
-	/* check for recognized revision suffix */
-	suffix_pos = newfn.findRev(QRegExp("@[0-9]*$"));
-	kDebugInfo(7018, "revision_suffix: suffix_pos=%d", suffix_pos);
-	if (suffix_pos == -1)
-		return NULL;
-	return findFileType(newfn.left(suffix_pos).ascii());
 }
 
 /*
@@ -2145,12 +2135,9 @@ KMimeMagicResult* KMimeMagic::findFileType(const char *fn)
 	magicResult->setInvalid();
 	accuracy = 100;
 
-        /* try excluding file-revision suffixes */
-        if ( !revision_suffix(fn) )
-	{
-	  /* process it based on the file contents */
-	  process(fn);
-        }
+        /* process it based on the file contents */
+        process(fn);
+
         /* if we have any results, put them in the request structure */
         finishResult();
 	magicResult->setAccuracy(accuracy);
