@@ -804,4 +804,6 @@ extern "C" int kdemain(int argc, char **argv)
    KInstance instance(&aboutData);
 
    KonfUpdate konfUpdate;
+
+   return 0;
 }
