@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.2  1999/10/31 19:44:47  bero
+// More template definitions for -frepo
+//
 // Revision 1.1  1999/09/21 11:03:53  waba
 // WABA: Clean up interface
 //
@@ -75,7 +78,11 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   setFocusPolicy( NoFocus );
   id = _id;
   if (!txt.isNull())
+  {
     btext = txt;
+    if (btext.right(3) == "...")
+      btext.truncate(btext.length() - 3);
+  }
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
   else
@@ -124,6 +131,8 @@ void KToolBarButton::toggle()
 void KToolBarButton::setText( const QString& text)
 {
   btext = text;
+  if (btext.right(3) == "...")
+    btext.truncate(btext.length() - 3);
   modeChange();
   repaint (false);
 }
