@@ -520,6 +520,9 @@ void Scheduler::slotDelAuthorization( const QCString& grpkey )
     {
         if( key->isGroupMatch(grpkey) )
         {
+            AuthKeyList list;
+            list.append(key);
+            delCachedAuthKeys( list );
             cachedAuthKeys.remove();
             break;
         }
