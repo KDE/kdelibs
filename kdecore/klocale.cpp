@@ -591,7 +591,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 
     int i = -1;
     while ( (i = rst.findRev('%', i)) != -1 )
-        switch ( rst.at(i + 1).latin1() )
+        switch ( rst.at(i + 1).unicode() )
         {
         case 'Y':
                 rst.replace(i, 2, QString().sprintf("%4d", pDate.year()));
@@ -892,7 +892,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
   int i = -1;
   while ( (i = rst.findRev('%', i)) != -1 )
-    switch ( rst.at(i + 1).latin1() )
+    switch ( rst.at(i + 1).unicode() )
       {
       case 'H':
 	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
