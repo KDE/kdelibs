@@ -40,7 +40,7 @@ KStyleDirs::~KStyleDirs()
 void KStyleDirs::addToSearch( const char* type, QSettings& s ) const
 {
     const QStringList & dirs = resourceDirs(type);
-    for ( int c = 0; c < dirs.size(); c++ )
+    for ( int c = dirs.size()-1; c >= 0 ; c-- )
     {
         s.insertSearchPath( QSettings::Unix, dirs[ c ]);
     }

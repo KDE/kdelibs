@@ -64,7 +64,6 @@ public:
     dirs.addToSearch("config",settings);
 
     The one can do settings.readEntry("kstyle/KDE/WidgetStyle") to access a settings in kstylerc.
-    At this point no guarantees are made about search order of the various rc files.
     */
     void addToSearch( const char* type, QSettings& q) const; //Better name?
 

@@ -131,7 +131,7 @@ public:
 
         if ( QPixmap::defaultDepth() > 8 )
         {
-            keys = cfg.readListEntry( "/kthemestyle/themes", &ok );
+            keys = cfg.readListEntry( "/kthemestyle/themes", &ok);
             if ( !ok )
                 qWarning( "KThemeStyle cache seems corrupt!\n" ); //Too bad one can't i18n this :-(
         }
