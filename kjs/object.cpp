@@ -636,6 +636,11 @@ const char * const * const Error::errorNames = errorNamesArr;
 Object Error::create(ExecState *exec, ErrorType errtype, const char *message,
                      int lineno, int sourceId)
 {
+#ifdef KJS_VERBOSE
+  // message could be 0L. Don't enable this on Solaris ;)
+  fprintf(stderr, "WARNING: KJS %s: %s\n", errorNames[errtype], message);
+#endif
+
   Object cons;
 
   switch (errtype) {
