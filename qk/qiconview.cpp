@@ -3373,8 +3373,6 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	    emit itemRightPressed( item );
 	else
 	    emit viewportRightPressed();
-    } else if ( e->button() == MidButton ) {
-	emit mouseButtonPressed( 1, item, e->globalPos() );
     }
 }
 
