@@ -488,16 +488,10 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
     }
 }
 
-static KURL kurlbar_readURLEntry( KConfig *config, const QString& key )
-{
-    QString urlEntry = config->readPathEntry( key );
-    return KURL( urlEntry );
-}
-
 void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KURL url = kurlbar_readURLEntry( config, QString("URL_") + number );
+    KURL url = KURL::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
     if ( url.isMalformed() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -564,10 +558,7 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
     QString IconGroup = "IconGroup_";
 
     QString number = QString::number( i );
-    if ( item->url().isLocalFile() )
-        config->writePathEntry( URL + number, item->url().path(), true, global );
-    else
-        config->writePathEntry( URL + number, item->url().prettyURL(), true, global );
+    config->writePathEntry( URL + number, item->url().prettyURL(), true, global );
 
     config->writeEntry( Description + number, item->description(),true,global);
     config->writeEntry( Icon + number, item->icon(), true, global );
