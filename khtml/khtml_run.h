@@ -42,6 +42,9 @@ public:
 
   virtual void foundMimeType( const QString &mimetype );
 
+  KHTMLPart *part() const { return m_part; }
+  KParts::URLArgs *urlArgs() const { return m_args; }
+
 protected:
   virtual void scanFile();
 
