@@ -50,7 +50,12 @@ public:
    * This is a conveniece funtion and differs from the above function only by
    * what arguments it accepts.
    */
-  KDESasl(const QString &aUser, const QString &aPass);
+  KDESasl(const QString &aUser, const QString &aPass, const QString &aProtocol);
+  /**
+   * This function leaves next Friday.
+   */
+  KDESasl(const QString &aUser, const QString &aPass)
+  { KDESasl(aUser, aPass, QString::null); }
   /*
    * You need to have a virtual destructor!
    */
@@ -93,14 +98,13 @@ protected:
    * CRAM-MD5 authentication as described in RFC 2195
    */
   virtual QByteArray getCramMd5Response(const QByteArray &aChallenge);
-  /*
-   * DIGEST-MD5 authentication as described in RFC 2831 and RFC 2617
-   * (Not implemented yet)
+  /**
+   * DIGEST-MD5 authentication as described in RFC 2831
    */
-//  virtual QByteArray getDigestMd5Response(const QByteArray &aChallenge);
+  virtual QByteArray getDigestMd5Response(const QByteArray &aChallenge);
 
 private:
-  QString mUser, mPass;
+  QString mProtocol, mUser, mPass;
   QCString mMethod;
   bool mFirst;
 };
