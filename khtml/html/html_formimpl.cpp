@@ -460,23 +460,36 @@ void HTMLFormElementImpl::submit(  )
         QMap<QString, QString> walletMap;
         bool havePassword = false;
         bool haveTextarea = false;
-        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
-            if (it.current()->id() == ID_INPUT)  {
-                HTMLInputElementImpl* c = static_cast<HTMLInputElementImpl*> (it.current());
-                if (c->inputType() == HTMLInputElementImpl::TEXT ||
-                    c->inputType() == HTMLInputElementImpl::PASSWORD)  {
-                    walletMap.insert(c->name().string(), c->value().string());
-                    if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
-                        !c->value().isEmpty())
-                        havePassword = true;
+        KURL formUrl(getDocument()->URL());
+        if (!view->nonPasswordStorableSite(formUrl.host())) {
+            for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
+                if (it.current()->id() == ID_INPUT)  {
+                    HTMLInputElementImpl* c = static_cast<HTMLInputElementImpl*> (it.current());
+                    if (c->inputType() == HTMLInputElementImpl::TEXT ||
+                        c->inputType() == HTMLInputElementImpl::PASSWORD)  {
+                        walletMap.insert(c->name().string(), c->value().string());
+                        if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
+                            !c->value().isEmpty())
+                            havePassword = true;
+                    }
                 }
-            }
-            else if (it.current()->id() == ID_TEXTAREA)
-                haveTextarea = true;
+                else if (it.current()->id() == ID_TEXTAREA)
+                    haveTextarea = true;
+        }
 
-        if (havePassword && !haveTextarea)  {
-            // ### ask the user if he wants to cache the form data, per domain etc
+        int savePassword = KMessageBox::Yes;
 
+        if (havePassword && !haveTextarea &&
+            (savePassword=KMessageBox::questionYesNoCancel(
+                0,
+                i18n("Konqueror has the ability to store the password "
+                     "in an encrypted wallet. When the wallet is unlocked, it "
+                     "can then automatically restore the login information "
+                     "next time you visit this site. Do you want to store "
+                     "the information now?"),
+                i18n("Save passwords"),
+                KStdGuiItem::yes(),
+                KGuiItem(i18n("Never for this site")))) == KMessageBox::Yes)  {
             KWallet::Wallet* w = view->part()->wallet();
             if (w)  {
                 QString key = calculateAutoFillKey(*this);
@@ -487,6 +500,8 @@ void HTMLFormElementImpl::submit(  )
                 w->setFolder(KWallet::Wallet::FormDataFolder());
                 w->writeMap(key, walletMap);
             }
+        } else if (savePassword == KMessageBox::No) {
+            view->addNonPasswordStorableSite(formUrl.host());
         }
 
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));

@@ -1850,6 +1850,32 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     d->formCompletions->writeEntry(name, items);
 }
 
+void KHTMLView::addNonPasswordStorableSite(const QString& host)
+{
+    if (!d->formCompletions) {
+        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+    }
+
+    d->formCompletions->setGroup("NonPasswordStorableSites");
+    QStringList sites = d->formCompletions->readListEntry("Sites");
+    sites.append(host);
+    d->formCompletions->writeEntry("Sites", sites);
+    d->formCompletions->sync();
+    d->formCompletions->setGroup(QString::null);//reset
+}
+
+bool KHTMLView::nonPasswordStorableSite(const QString& host) const
+{
+    if (!d->formCompletions) {
+        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+    }
+    d->formCompletions->setGroup("NonPasswordStorableSites");
+    QStringList sites =  d->formCompletions->readListEntry("Sites");
+    d->formCompletions->setGroup(QString::null);//reset
+
+    return (sites.find(host) != sites.end());
+}
+
 // returns true if event should be swallowed
 bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 				   int detail,QMouseEvent *_mouse, bool setUnder,

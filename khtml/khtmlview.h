@@ -254,6 +254,9 @@ private:
     void clearCompletionHistory(const QString& name);
     void addFormCompletionItem(const QString &name, const QString &value);
 
+    void addNonPasswordStorableSite( const QString& host );
+    bool nonPasswordStorableSite( const QString& host ) const;
+
     bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 			    int detail,QMouseEvent *_mouse, bool setUnder,
 			    int mouseEventType);
