@@ -161,6 +161,8 @@ void HTMLBodyElementImpl::print( QPainter *p, int x, int y, int w, int h,
 {
     if (bgPixmap)
     {
+    	if (bgPixmap->mask() != 0)
+	    p->fillRect(x,y,w,h,style()->bgcolor);
     	int pmX = x % bgPixmap->width();
 	int pmY = y % bgPixmap->height();
 	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);
