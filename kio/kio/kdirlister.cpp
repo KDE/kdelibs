@@ -87,6 +87,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 {
   // like this we don't have to worry about trailing slashes any further
   KURL _url( _u.url(-1) );
+  _url.cleanPath(); // kill consecutive slashes
 
 #ifdef DEBUG_CACHE
   printDebug();
