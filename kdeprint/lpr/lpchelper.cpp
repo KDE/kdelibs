@@ -18,39 +18,41 @@
  **/
 
 #include "lpchelper.h"
-#include "kmtimer.h"
+#include "kpipeprocess.h"
 
-#include <kprocess.h>
 #include <kstandarddirs.h>
+#include <qtextstream.h>
+#include <qregexp.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <stdlib.h>
+
+QString execute(const QString& cmd)
+{
+	KPipeProcess	proc;
+	QString		output;
+	if (proc.open(cmd))
+	{
+		QTextStream	t(&proc);
+		while (!t.atEnd())
+			output.append(t.readLine()).append("\n");
+		proc.close();
+	}
+	return output;
+}
 
 LpcHelper::LpcHelper(QObject *parent, const char *name)
 : QObject(parent, name)
 {
-	m_proc = 0;
-
 	// look for the "lpc" executable. Use the PATH variable and
 	// add some specific dirs.
 	QString	PATH = getenv("PATH");
 	PATH.append(":/usr/sbin:/usr/local/sbin:/sbin:/opt/sbin:/opt/local/sbin");
 	m_exepath = KStandardDirs::findExe("lpc", PATH);
-
-	// found, create the KProcIO and establish connections
-	if (!m_exepath.isEmpty())
-	{
-		m_proc = new KProcess;
-		connect(m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceivedOutput(KProcess*,char*,int)));
-		connect(m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotExited(KProcess*)));
-		connect(KMTimer::self(), SIGNAL(timeout()), SLOT(slotTimeout()));
-		// start it immediately
-		slotTimeout();
-	}
 }
 
 LpcHelper::~LpcHelper()
 {
-	delete m_proc;
 }
 
 KMPrinter::PrinterState LpcHelper::state(const QString& prname) const
@@ -65,63 +67,67 @@ KMPrinter::PrinterState LpcHelper::state(KMPrinter *prt) const
 	return state(prt->printerName());
 }
 
-void LpcHelper::slotReceivedOutput(KProcess*, char *buf, int len)
+void LpcHelper::updateStates()
 {
-	m_buffer.append(QCString(buf, len+1));
-}
-
-void LpcHelper::slotExited(KProcess*)
-{
-	m_state.clear();
-	if (!m_proc->normalExit() || m_proc->exitStatus() != 0)
-		return;
-
-	parseStatusOutput(m_buffer);
-}
-
-void LpcHelper::parseStatusOutput(const QString& buf)
-{
-	QStringList	lines = QStringList::split("\n", buf, false);
-	QString	prname;
-	int	p;
+	KPipeProcess	proc;
 
 	m_state.clear();
-	for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it)
+	if (!m_exepath.isEmpty() && proc.open(m_exepath + " status all"))
 	{
-		if ((*it).isEmpty())
-			continue;
-		else if (!(*it)[0].isSpace() && (p=(*it).find(':')) != -1)
+		QTextStream	t(&proc);
+		QString		printer, line;
+		int		p(-1);
+
+		while (!t.atEnd())
 		{
-			prname = (*it).left(p).stripWhiteSpace();
-			m_state[prname] = KMPrinter::Processing;
-		}
-		else if ((*it).find("disabled") != -1)
-		{
-			if (!prname.isEmpty())
+			line = t.readLine();
+			if (line.isEmpty())
+				continue;
+			else if (!line[0].isSpace() && (p = line.find(':')) != -1)
 			{
-				m_state[prname] = KMPrinter::Stopped;
+				printer = line.left(p);
+				m_state[printer] = KMPrinter::Processing;
+			}
+			else if (line.find("disabled") != -1)
+			{
+				if (!printer.isEmpty())
+					m_state[printer] = KMPrinter::Stopped;
+			}
+			else if (line.find("no entries") != -1)
+			{
+				if (!printer.isEmpty() &&
+				    (!m_state.contains(printer) || m_state[printer] == KMPrinter::Processing))
+					m_state[printer] = KMPrinter::Idle;
 			}
 		}
-		else if ((*it).find("no entries") != -1)
-		{
-			if (!prname.isEmpty() && m_state[prname] != KMPrinter::Stopped)
-			{
-				m_state[prname] = KMPrinter::Idle;
-			}
-		}
+		proc.close();
 	}
+
 }
 
-void LpcHelper::slotTimeout()
+bool LpcHelper::disable(KMPrinter *prt, QString& msg)
 {
-	// if already running, just skip this call
-	if (!m_proc || m_proc->isRunning())
-		return;
-
-	m_proc->clearArguments();
-	m_buffer = QString::null;
-	*m_proc << m_exepath << "status";
-	m_proc->start((m_state.count() == 0 ? KProcess::Block : KProcess::NotifyOnExit), KProcess::Stdout);
+	return changeState(prt->printerName(), false, msg);
 }
 
-#include "lpchelper.moc"
+bool LpcHelper::enable(KMPrinter *prt, QString& msg)
+{
+	return changeState(prt->printerName(), true, msg);
+}
+
+bool LpcHelper::changeState(const QString& printer, bool state, QString& msg)
+{
+	QString	result = execute(m_exepath + (state ? " up " : " down ") + printer);
+	if (result.startsWith(printer + ":"))
+	{
+		m_state[printer] = (state ? KMPrinter::Idle : KMPrinter::Stopped);
+		return true;
+	}
+	else if (result.startsWith("?Privileged"))
+		msg = i18n("Permission denied.");
+	else if (result.startsWith("unknown"))
+		msg = i18n("Printer <b>%1</b> does not exist.").arg(printer);
+	else
+		msg = i18n("Unknown error: %1").arg(result.replace(QRegExp("\\n"), " "));
+	return false;
+}

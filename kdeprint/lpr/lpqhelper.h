@@ -21,42 +21,23 @@
 #define LPQHELPER_H
 
 #include <qobject.h>
-#include <qdict.h>
 #include <qptrlist.h>
-#include <qstringlist.h>
-#include <qvaluelist.h>
 
-class KProcess;
-struct JobInfo;
-struct LpqInfo;
 class KMJob;
 
 class LpqHelper : public QObject
 {
-	Q_OBJECT
 public:
 	LpqHelper(QObject *parent = 0, const char *name = 0);
 	~LpqHelper();
 
 	void listJobs(QPtrList<KMJob>& jobs, const QString& prname);
 
-protected slots:
-	void slotExited(KProcess*);
-	void slotReceivedOutput(KProcess*, char*, int);
-	void processNext();
-	void slotTimeout();
-
 protected:
-	JobInfo* splitLine(const QString&, const QValueList<int>&);
-	void parseOutput(const QString& buf, const QString& prname);
-	void updateNow(const QString&);
+	KMJob* parseLineLpr(const QString&);
 
 private:
-	KProcess	*m_proc;
-	QDict<LpqInfo>	m_lpq;
-	QStringList	m_updatelist;
 	QString		m_exepath;
-	QString		m_buffer;
 };
 
 #endif

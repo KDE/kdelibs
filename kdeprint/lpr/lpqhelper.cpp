@@ -19,204 +19,65 @@
 
 #include "lpqhelper.h"
 #include "kmjob.h"
-#include "kmtimer.h"
+#include "kpipeprocess.h"
 
 #include <kstandarddirs.h>
-#include <kprocess.h>
 #include <kdebug.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-struct JobInfo
-{
-	int	rank;
-	QString	owner;
-	int	ID;
-	QString	name;
-	int	size;
-	
-	KMJob* toJob(const QString& prname);
-};
-
-KMJob* JobInfo::toJob(const QString& prname)
-{
-	KMJob	*job = new KMJob;
-	job->setId(ID);
-	job->setName(name);
-	job->setOwner(owner);
-	job->setState((rank == -1 ? KMJob::Printing : KMJob::Queued));
-	job->setSize(size);
-	job->setPrinter(prname);
-	job->setUri("lpd://"+prname+"/"+QString::number(ID));
-	return job;
-}
-
-struct LpqInfo
-{
-	LpqInfo(const QString& s) : prname(s), update(1)
-	{
-		jobs.setAutoDelete(true);
-	}
-	QString	prname;
-	QPtrList<JobInfo>	jobs;
-	int	update;
-};
 
 LpqHelper::LpqHelper(QObject *parent, const char *name)
 : QObject(parent, name)
 {
-	m_lpq.setAutoDelete(true);
 	m_exepath = KStandardDirs::findExe("lpq");
-
-	if (!m_exepath.isEmpty())
-	{
-		m_proc = new KProcess;
-		connect(m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotExited(KProcess*)));
-		connect(m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceivedOutput(KProcess*,char*,int)));
-		connect(KMTimer::self(), SIGNAL(timeout()), SLOT(slotTimeout()));
-	}
 }
 
 LpqHelper::~LpqHelper()
 {
-	delete m_proc;
 }
 
-JobInfo* LpqHelper::splitLine(const QString& line, const QValueList<int>& fields)
+KMJob* LpqHelper::parseLineLpr(const QString& line)
 {
-	if (line.isEmpty())
+	QString	rank = line.left(7);
+	if (!rank[0].isDigit() && rank != "active")
 		return NULL;
-
-	int	pos(0);
-	QStringList	l;
-	for (QValueList<int>::ConstIterator it=fields.begin(); it!=fields.end(); ++it)
+	KMJob	*job = new KMJob;
+	job->setState((rank[0].isDigit() ? KMJob::Queued : KMJob::Printing));
+	job->setOwner(line.mid(7, 11).stripWhiteSpace());
+	job->setId(line.mid(18, 5).toInt());
+	job->setName(line.mid(23, 38).stripWhiteSpace());
+	int	p = line.find(' ', 61);
+	if (p != -1)
 	{
-		l << line.mid(pos, (*it));
-		pos += (*it);
+		job->setSize(line.mid(61, p-61).toInt() / 1000);
 	}
-	if (pos < line.length())
-		l << line.mid(pos);
-
-	if (l.count() == 5)
-	{
-		JobInfo	*info = new JobInfo;
-		if (l[0].lower() == "active")
-			info->rank = -1;
-		else
-			info->rank = l[0].toInt();
-		info->owner = l[1];
-		info->ID = l[2].toInt();
-		info->name = l[3];
-		info->size = l[4].toInt();
-		return info;
-	}
-	return NULL;
-}
-
-void LpqHelper::parseOutput(const QString& buf, const QString& prname)
-{
-	QStringList	lines = QStringList::split("\n", buf, false);
-	int	l(0);
-
-	LpqInfo	*info = m_lpq.find(prname);
-	if (!info)
-	{
-		info = new LpqInfo(prname);
-		m_lpq.insert(prname, info);
-	}
-	else
-	{
-		info->jobs.clear();
-	}
-
-	while (l < lines.count())
-	{
-		if (lines[l++].left(4).lower() == "rank")
-			break;
-	}
-	QValueList<int>	fields;
-	fields << 8 << 8 << 8 << 32;
-	while (l < lines.count())
-	{
-		info->jobs.append(splitLine(lines[l++], fields));
-	}
-	info->update--;
-}
-
-void LpqHelper::slotExited(KProcess*)
-{
-	QString	prname = m_updatelist.first();
-	m_updatelist.remove(m_updatelist.begin());
-	parseOutput(m_buffer, prname);
-	processNext();
-}
-
-void LpqHelper::slotReceivedOutput(KProcess*, char *buf, int len)
-{
-	m_buffer.append(QCString(buf, len+1));
-}
-
-void LpqHelper::processNext()
-{
-	if (m_updatelist.isEmpty() || m_proc->isRunning())
-		return;
-	m_proc->clearArguments();
-	m_buffer = QString::null;
-	*m_proc << m_exepath << "-P" << m_updatelist.first();
-	m_proc->start(KProcess::NotifyOnExit, KProcess::Stdout);
-}
-
-void LpqHelper::slotTimeout()
-{
-	if (m_proc->isRunning() || !m_updatelist.isEmpty())
-		return;
-
-	QDictIterator<LpqInfo>	it(m_lpq);
-	while (it.current())
-	{
-		if (it.current()->update > 0)
-		{
-			m_updatelist.append(it.current()->prname);
-			++it;
-		}
-		else
-		{
-			m_lpq.remove(it.currentKey());
-		}
-	}
-	processNext();
-}
-
-void LpqHelper::updateNow(const QString& prname)
-{
-	if (m_exepath.isEmpty() || m_lpq.find(prname))
-		return;
-
-	char	buf[256] = {0};
-	QString	cmd = (m_exepath + " -P " + KShellProcess::quote(prname)), sbuf;
-	FILE	*f = popen(cmd.local8Bit(), "r");
-	if (!f)
-	{
-		return;
-	}
-	while (fgets(buf, 255,f) != NULL)
-		sbuf.append(buf);
-	pclose(f);
-	parseOutput(sbuf, prname);
+	return job;
 }
 
 void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname)
 {
-	updateNow(prname);
-
-	LpqInfo	*info = m_lpq.find(prname);
-	if (!info)
-		return;
-	info->update++;
-
-	QPtrListIterator<JobInfo>	it(info->jobs);
-	for (; it.current(); ++it)
-		jobs.append(it.current()->toJob(prname));
+	KPipeProcess	proc;
+	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P" + prname))
+	{
+		QTextStream	t(&proc);
+		QString		line;
+		while (!t.atEnd())
+		{
+			line = t.readLine();
+			if (line.startsWith("Rank"))
+				break;
+		}
+		while (!t.atEnd())
+		{
+			line = t.readLine();
+			KMJob	*job = parseLineLpr(line);
+			if (job)
+			{
+				job->setPrinter(prname);
+				job->setUri("lpd://"+prname+"/"+QString::number(job->id()));
+				jobs.append(job);
+			}
+			else
+				break;
+		}
+		proc.close();
+	}
 }
-
-#include "lpqhelper.moc"

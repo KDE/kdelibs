@@ -24,31 +24,25 @@
 #include <qmap.h>
 #include "kmprinter.h"
 
-class KProcess;
-
 class LpcHelper : public QObject
 {
-	Q_OBJECT
 public:
 	LpcHelper(QObject *parent = 0, const char *name = 0);
 	~LpcHelper();
 
 	KMPrinter::PrinterState state(const QString&) const;
 	KMPrinter::PrinterState state(KMPrinter*) const;
-
-protected slots:
-	void slotReceivedOutput(KProcess*, char*, int);
-	void slotExited(KProcess*);
-	void slotTimeout();
+	void updateStates();
+	
+	bool enable(KMPrinter*, QString&);
+	bool disable(KMPrinter*, QString&);
 
 protected:
-	void parseStatusOutput(const QString&);
+	bool changeState(const QString&, bool, QString&);
 
 private:
-	KProcess	*m_proc;
 	QMap<QString, KMPrinter::PrinterState>	m_state;
 	QString	m_exepath;
-	QString	m_buffer;
 };
 
 #endif

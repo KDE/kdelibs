@@ -38,7 +38,9 @@ public:
 
 	bool completePrinter(KMPrinter*);
 	bool completePrinterShort(KMPrinter*);
-	
+	bool enablePrinter(KMPrinter*);
+	bool disablePrinter(KMPrinter*);
+
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 
 protected:

@@ -47,6 +47,9 @@ void KMLprManager::listPrinters()
 {
 	QFileInfo	fi("/etc/printcap");
 
+	if (m_lpchelper)
+		m_lpchelper->updateStates();
+
 	// update only if needed
 	if (!m_updtime.isValid() || m_updtime < fi.lastModified())
 	{
@@ -84,7 +87,8 @@ void KMLprManager::listPrinters()
 		discardAllPrinters(false);
 		QPtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
-			checkPrinterState(it.current());
+			if (!it.current()->isSpecial())
+				checkPrinterState(it.current());
 	}
 }
 
@@ -164,4 +168,26 @@ DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool)
 		return handler->loadDriver(prt, entry);
 	setErrorMsg(i18n("Internal error."));
 	return NULL;
+}
+
+bool KMLprManager::enablePrinter(KMPrinter *prt)
+{
+	QString	msg;
+	if (!m_lpchelper->enable(prt, msg))
+	{
+		setErrorMsg(msg);
+		return false;
+	}
+	return true;
+}
+
+bool KMLprManager::disablePrinter(KMPrinter *prt)
+{
+	QString	msg;
+	if (!m_lpchelper->disable(prt, msg))
+	{
+		setErrorMsg(msg);
+		return false;
+	}
+	return true;
 }
