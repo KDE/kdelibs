@@ -980,7 +980,7 @@ static QStringList splitLabels(const QString& unicodeDomain)
 	  start = i + 1;
 	}
     }
-  if ((long)i > start)
+  if ((long)i >= start)
     // there is still one left
     lst << unicodeDomain.mid(start, i - start);
 
@@ -995,6 +995,10 @@ static QCString ToASCII(const QString& label)
 
   if (label.length() > 64)
     return (char*)0L;		// invalid label
+
+  if (label.length() == 0)
+    // this is allowed
+    return QCString("");	// empty, not null
 
   QCString retval;
   char buf[65];
