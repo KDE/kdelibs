@@ -622,6 +622,9 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	}
     }
     else if (info.isFile()) {
+
+        alarm( 400 );
+
         khtml::Cache::init();
 
 	QString relativeDir = QFileInfo(relPath).dirPath();
