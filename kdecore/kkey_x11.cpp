@@ -165,7 +165,6 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 bool g_bCrash = false;
 KKeySequences KKeySequence::stringToKeys( QString sKey )
 {
-	kdDebug(125) << "stringToKeys( " << sKey << " )\n";
 	KKeySequences rgKeys;
 	KKeySequence key;
 
@@ -236,6 +235,35 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 		}
 	}
 
+
+	if( rgKeys.size() <= 1 ) {
+		kdDebug(125) << "stringToKeys( " << sKey << " ):"
+			<< " combqt: " << QString::number(key.m_keyCombQt, 16)
+			<< "/" << QString::number(key.m_keyCombQtExplicit, 16)
+			<< " c: " << QString::number(key.m_keyCode, 16)
+			<< ", s: " << QString::number(key.m_keySym, 16)
+			<< "/" << QString::number(key.m_keySymExplicit, 16)
+			<< ", m: " << QString::number(key.m_keyMod, 16)
+			<< "/" << QString::number(key.m_keyModExplicit, 16)
+			<< " str: " << key.toString()
+			<< endl;
+	} else {
+		kdDebug(125) << "stringToKeys( " << sKey << " ):" << endl;
+		for( uint i = 0; i < rgKeys.size(); i++ ) {
+			key = rgKeys[i];
+			kdDebug(125)
+			<< "\tcombqt: " << QString::number(key.m_keyCombQt, 16)
+			<< "/" << QString::number(key.m_keyCombQtExplicit, 16)
+			<< " c: " << QString::number(key.m_keyCode, 16)
+			<< ", s: " << QString::number(key.m_keySym, 16)
+			<< "/" << QString::number(key.m_keySymExplicit, 16)
+			<< ", m: " << QString::number(key.m_keyMod, 16)
+			<< "/" << QString::number(key.m_keyModExplicit, 16)
+			<< " str: " << key.toString()
+			<< endl;
+		}
+	}
+
 	return rgKeys;
 }
 
@@ -302,11 +330,6 @@ static int calcKeyQt( int keySymX, int keyModX )
 		if( keyModX & ControlMask )            keyCombQt |= Qt::CTRL;
 		if( keyModX & ShiftMask )              keyCombQt |= Qt::SHIFT;
 	}
-
-	kdDebug(125) << "calcKeyQt( " << QString::number(keySymX, 16)
-		<< ", " << QString::number(keyModX, 16) << " ) = "
-		<< QString::number(keyCombQt, 16)
-		<< " = " << (QString) QKeySequence( keyCombQt ) << endl;
 
 	return keyCombQt;
 }

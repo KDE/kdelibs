@@ -31,10 +31,12 @@ public:
 
 	virtual bool removeAction( const QString& sAction );
 	// BCI: make virtual when KAccelBase::setActionSlot has been made virtual
-	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+	//bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );
+	
+	void setAutoUpdateTemp( bool b ) { m_bAutoUpdate = b; }
 };
 
 void KAccelPrivate::setEnabled( bool bEnabled )
@@ -55,7 +57,7 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 		return false;
 }
 
-bool KAccelPrivate::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+/*bool KAccelPrivate::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 {
 	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
 	if( pAction ) {
@@ -72,7 +74,7 @@ bool KAccelPrivate::setActionSlot( const QString& sAction, const QObject* pObjSl
 		return true;
 	} else
 		return false;
-}
+}*/
 
 bool KAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 {
@@ -185,27 +187,6 @@ bool KAccel::removeAction( const QString& sAction )
 	{ return d->removeAction( sAction ); }
 bool KAccel::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
-bool KAccel::updateConnections()
-	{ return d->updateConnections(); }
-bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
-	{ return d->setShortcuts( sAction, rgCuts ); }
-
-void KAccel::readSettings( KConfig* pConfig )
-	{ d->readSettings( pConfig ); }
-void KAccel::writeSettings( KConfig* pConfig ) const
-	{ d->writeSettings( pConfig ); }
-
-bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
-		KShortcuts cutsDef3,
-		int nIDMenu, QPopupMenu *pMenu, bool bConfigurable )
-{
-	bool b = d->insertAction( sAction, sDesc,
-		cutsDef3, cutsDef3,
-		0, 0,
-		nIDMenu, pMenu, bConfigurable );
-	updateConnections();
-	return b;
-}
 
 bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 {
@@ -217,6 +198,37 @@ bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 		return true;
 	} else
 		return false;
+}
+
+bool KAccel::updateConnections()
+	{ return d->updateConnections(); }
+bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
+	{ return d->setShortcuts( sAction, rgCuts ); }
+
+void KAccel::readSettings( KConfig* pConfig )
+	{ d->readSettings( pConfig ); }
+void KAccel::writeSettings( KConfig* pConfig ) const
+	{ d->writeSettings( pConfig ); }
+
+bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
+		const char* cutsDef,
+		int nIDMenu, QPopupMenu *pMenu, bool bConfigurable )
+{
+	KShortcuts cuts( cutsDef );
+	bool b = d->insertAction( sAction, sDesc,
+		cuts, cuts,
+		0, 0,
+		nIDMenu, pMenu, bConfigurable );
+	return b;
+}
+
+bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+{
+	bool bAutoUpdate = d->getAutoUpdate();
+	d->setAutoUpdateTemp( true );
+	bool b = setActionSlot( sAction, pObjSlot, psMethodSlot );
+	d->setAutoUpdateTemp( bAutoUpdate );
+	return b;
 }
 
 #include <qpopupmenu.h>

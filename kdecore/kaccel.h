@@ -52,10 +52,9 @@ public:
 
 	// Source compatibility to KDE 2.x
 	virtual bool insertItem( const QString& sDesc, const QString& sAction,
-	                 KShortcuts rgCutDefaults3,
+	                 const char* cutsDef,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
-		{ return setActionSlot( sAction, pObjSlot, psMethodSlot ); }
+	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 	// OBSOLETE!
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insertAction( accel, pObjSlot, psMethodSlot ); }

@@ -867,8 +867,17 @@ bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot,
 {
 	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
 	if( pAction ) {
+		// If there was a previous connection, remove it.
+		if( m_bAutoUpdate && pAction->m_pObjSlot && pAction->m_psMethodSlot )
+			removeConnection( *pAction );
+
 		pAction->m_pObjSlot = pObjSlot;
 		pAction->m_psMethodSlot = psMethodSlot;
+
+		// If we're setting a connection,
+		if( m_bAutoUpdate && pObjSlot && psMethodSlot )
+			insertConnection( *pAction );
+		
 		return true;
 	} else
 		return false;
@@ -1035,7 +1044,7 @@ bool KAccelBase::updateConnections()
 		}
 	}
 
-	// Disconnect key which no longer have bindings:
+	// Disconnect keys which no longer have bindings:
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
 		const KKeySequence& key = it.key();
 		KAccelAction* pAction = *it;
@@ -1073,7 +1082,7 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 	uint iAction = 0;
 	for( KAccelActions::iterator itAction = m_rgActions.begin(); itAction != m_rgActions.end(); ++itAction ) {
 		KAccelAction& action = *itAction;
-		if( action.m_bEnabled ) {
+		if( action.m_bEnabled && action.m_pObjSlot && action.m_psMethodSlot ) {
 			uint iShortcut = 0;
 			for( KAccelShortcuts::iterator itShortcut = action.begin(); itShortcut != action.end(); ++itShortcut ) {
 				KAccelShortcut& shortcut = *itShortcut;
