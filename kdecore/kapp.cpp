@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.97  1998/03/12 21:17:01  wuebben
+// Bernd: updated 'about KDE' text. It is now more in line with KDE goals
+//
 // Revision 1.96  1998/03/11 11:22:24  kulow
 // use readColorEntry instead of the old way. This is more consistent
 //
@@ -1134,6 +1137,34 @@ void KApplication::readSettings()
   if ( !str.isNull() )
 	if ( atoi(str.data()) != 0 )
 	  generalFont.setItalic(True);
+	  
+  fixedFont = QFont("fixed", 12, QFont::Normal);
+
+  config->setGroup( "Fixed Font" );
+	
+  str = config->readEntry( "Charset","default" );
+  if ( !str.isNull() && str!="default" && KCharset(str).ok())
+ 	pCharsets->setDefault(str);
+  else
+        pCharsets->setDefault(klocale->charset());
+  pCharsets->setQFont(fixedFont);
+	
+  str = config->readEntry( "Family" );
+  if ( !str.isNull() )
+	fixedFont.setFamily(str.data());
+	
+  str = config->readEntry( "Point Size" );
+  if ( !str.isNull() )
+	fixedFont.setPointSize(atoi(str.data()));
+	
+  str = config->readEntry( "Weight" );
+  if ( !str.isNull() )
+	fixedFont.setWeight(atoi(str.data()));
+		
+  str = config->readEntry( "Italic" );
+  if ( !str.isNull() )
+	if ( atoi(str.data()) != 0 )
+	  fixedFont.setItalic(True);
 
 	// Finally, read GUI style from config.
 	

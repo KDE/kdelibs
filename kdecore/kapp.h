@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.44  1998/02/24 21:16:24  kulow
+// remove kde_minidir, since this is somehow stupid (I hard coded it in the
+// Makefiles as icondir/mini now) and added kde_sounddir
+// This is even source incompatible, but it hasn't been used, so it should
+// work after some little changes I will make
+//
 // Revision 1.43  1998/02/24 15:24:57  kulow
 // the comment for kde_appsdir was wrong. I corrected it to:
 // Returns the directory where KDE applications store their .kdelnk file
@@ -691,6 +697,7 @@ public:
   QColor windowTextColor;
   int contrast;
   QFont generalFont;
+  QFont fixedFont;
   GUIStyle applicationStyle;
 
   signals:
