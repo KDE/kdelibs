@@ -161,19 +161,19 @@ void RenderListItem::calcListValue()
     if( !m_marker ) return;
 
     if(predefVal != -1)
-        m_marker->val = predefVal;
+        m_marker->m_value = predefVal;
     else if(!previousSibling())
-        m_marker->val = 1;
+        m_marker->m_value = 1;
     else {
 	RenderObject *o = previousSibling();
 	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
 	    o = o->previousSibling();
         if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
             RenderListItem *item = static_cast<RenderListItem *>(o);
-            m_marker->val = item->value() + 1;
+            m_marker->m_value = item->value() + 1;
         }
         else
-            m_marker->val = 1;
+            m_marker->m_value = 1;
     }
 }
 
@@ -248,30 +248,29 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker()
-    : RenderBox()
+    : RenderBox(), m_listImage(0), m_value(-1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
     setReplaced(true); // pretend to be replaced
-
-    val = -1;
-    listImage = 0;
+    // val = -1;
+    // m_listImage = 0;
 }
 
 RenderListMarker::~RenderListMarker()
 {
-    if(listImage)
-        listImage->deref(this);
+    if(m_listImage)
+        m_listImage->deref(this);
 }
 
 void RenderListMarker::setStyle(RenderStyle *s)
 {
     RenderBox::setStyle(s);
 
-    if ( listImage != style()->listStyleImage() ) {
-	if(listImage)  listImage->deref(this);
-	listImage = style()->listStyleImage();
-	if(listImage)  listImage->ref(this);
+    if ( m_listImage != style()->listStyleImage() ) {
+	if(m_listImage)  m_listImage->deref(this);
+	m_listImage = style()->listStyleImage();
+	if(m_listImage)  m_listImage->ref(this);
     }
 }
 
@@ -292,7 +291,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(style()->font());
-    QFontMetrics fm = p->fontMetrics();
+    const QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
 
 
@@ -305,8 +304,8 @@ void RenderListMarker::printObject(QPainter *p, int, int,
             xoff = -xoff + parent()->width();
     }
 
-    if ( listImage && !listImage->isErrorImage()) {
-        p->drawPixmap( QPoint( _tx + xoff, _ty ), listImage->pixmap());
+    if ( m_listImage && !m_listImage->isErrorImage()) {
+        p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
         return;
     }
 
@@ -315,43 +314,38 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     p->drawRect( _tx + xoff, _ty + yoff, offset, offset );
 #endif
 
-    QColor color( style()->color() );
-    p->setPen( QPen( color ) );
+    const QColor color( style()->color() );
+    p->setPen( color );
 
     switch(style()->listStyleType()) {
     case DISC:
-        p->setBrush( QBrush( color ) );
-        p->drawEllipse( _tx + xoff, _ty + yoff, offset/2+1, offset/2+1 );
+        p->setBrush( color );
+        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, offset/2+1, offset/2+1 );
         return;
     case CIRCLE:
-        p->setPen( QPen( color ) );
         p->setBrush( Qt::NoBrush );
         p->drawEllipse( _tx + xoff, _ty + yoff, offset-1, offset-1 );
         return;
     case SQUARE:
-    {
-        int xp = _tx + xoff;
-        int yp = _ty + fm.ascent() - offset + 1;
         p->setBrush( color );
         p->drawRect( _tx + xoff, _ty + yoff, offset, offset );
         return;
-    }
     case LNONE:
-            return;
+        return;
     default:
-        if(item != QString::null) {
-            //_ty += fm.ascent() - fm.height()/2 + 1;
+        if (m_item != QString::null) { 
+       	    //_ty += fm.ascent() - fm.height()/2 + 1;
             if(style()->listStylePosition() == INSIDE) {
-                if(style()->direction() == LTR)
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
-                else
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
+            	if(style()->direction() == LTR)
+        	    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+            	else
+            	    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
             } else {
                 if(style()->direction() == LTR)
-                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-                else
-                    p->drawText(_tx+offset/2 + parent()->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
-            }
+            	    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
+            	else
+            	    p->drawText(_tx+offset/2 + parent()->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+	    }
         }
     }
 }
@@ -367,7 +361,7 @@ void RenderListMarker::layout()
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate)
 {
-    if(o != listImage) {
+    if(o != m_listImage) {
         RenderBox::setPixmap(p, r, o, 0);
         return;
     }
@@ -377,7 +371,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         return;
     }
 
-    if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
+    if(m_width != m_listImage->pixmap_size().width() || m_height != m_listImage->pixmap_size().height())
     {
         setLayouted(false);
         setMinMaxKnown(false);
@@ -398,10 +392,10 @@ void RenderListMarker::calcMinMaxWidth()
 {
     m_width = 0;
 
-    if(listImage) {
+    if(m_listImage) {
         if(style()->listStylePosition() == INSIDE)
-            m_width = listImage->pixmap().width() + 5;
-        m_height = listImage->pixmap().height();
+            m_width = m_listImage->pixmap().width() + 5;
+        m_height = m_listImage->pixmap().height();
         return;
     }
 
@@ -430,49 +424,49 @@ void RenderListMarker::calcMinMaxWidth()
     case DECIMAL_LEADING_ZERO:
         // ### unsupported, we use decimal instead
     case LDECIMAL:
-        item.sprintf( "%2ld", val );
+        m_item.sprintf( "%2ld", m_value );
         break;
     case LOWER_ROMAN:
-        item = toRoman( val, false );
+        m_item = toRoman( m_value, false );
         break;
     case UPPER_ROMAN:
-        item = toRoman( val, true );
+        m_item = toRoman( m_value, true );
         break;
     case LOWER_GREEK:
      {
-    	int number = val - 1;
+    	int number = m_value - 1;
       	int l = (number % 24);
 
 	if (l>16) {l++;} // Skip GREEK SMALL LETTER FINAL SIGMA
 
-   	item = QChar(945 + l);
+   	m_item = QChar(945 + l);
     	for (int i = 0; i < (number / 24); i++) {
-       	    item += QString::fromLatin1("'");
+       	    m_item += QString::fromLatin1("'");
     	}
 	break;
      }
     case HEBREW:
-     	item = toHebrew( val );
+     	m_item = toHebrew( m_value );
 	break;
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        item = toLetter( val, 'a' );
+        m_item = toLetter( m_value, 'a' );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        item = toLetter( val, 'A' );
+        m_item = toLetter( m_value, 'A' );
         break;
     case LNONE:
         break;
     }
-    item += QString::fromLatin1(". ");
+    m_item += QString::fromLatin1(". ");
 
     {
         QFontMetrics fm = fontMetrics(style()->font());
         if(style()->listStylePosition() != INSIDE)
             m_width = 0;
         else
-            m_width = fm.width(item);
+            m_width = fm.width(m_item);
         m_height = fm.ascent();
     }
  end:

@@ -58,9 +58,11 @@ namespace khtml
 
         virtual void calcWidth();
 
-        QString item;
-        long int val;
-        CachedImage *listImage;
+	long m_value;
+
+    protected:
+        QString m_item;
+        CachedImage *m_listImage;
     };
 
 
@@ -77,7 +79,7 @@ public:
     virtual bool isListItem() const { return true; }
     virtual bool containsSpecial() { return (specialObjects != 0 && specialObjects->count() > 1 ); }
 
-    long value() const { return m_marker->val; }
+    long value() const { return m_marker->m_value; }
     void setValue( long v ) { predefVal = v; }
     void calcListValue();
     bool checkChildren() const;
