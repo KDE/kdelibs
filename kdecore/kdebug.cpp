@@ -239,7 +239,7 @@ void kdebug( ushort nLevel, ushort nArea,
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
                 va_end( arguments );
-                QMessageBox::message( aCaption, buf, "OK" );
+                QMessageBox::warning( 0L, aCaption, buf, "OK" );
                 break;
           }
         case 2: // Shell
