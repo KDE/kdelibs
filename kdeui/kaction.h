@@ -128,6 +128,9 @@ public:
 	 */
 	void setAccelId( int id ) { _accelId = id; }
 
+	static uint stringToKey( const QString& keystr );
+	static QString keyToString( uint key, bool i18n = false );
+
 signals:
 
 	void activate();

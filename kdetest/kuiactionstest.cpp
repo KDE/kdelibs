@@ -37,7 +37,8 @@ public:
 public slots:
 	void save();
 	void load();
-	
+	void saveToggle();
+
 private:
 	KActTest& operator=( const KActTest& );
 	KActTest( const KActTest& );
@@ -49,30 +50,28 @@ private:
 KActTest::KActTest( QWidget *parent )
 	: QWidget( parent )
 {
-	// menus
-	QMenuBar *mymenu = new QMenuBar( this );
-
-	debug( "built menus" );
-
 	// actions
 	_act = new KUIActions( this );
 	debug( "created act" );
 
-	_act->newAction( "Save", "Taj", this, SLOT(save()), CTRL + Key_S );
-	_act->newAction( "Load", "Beavis", this, SLOT(load()), CTRL + Key_L );
-	_act->newAction( "Quit", "Arrr", qApp, SLOT(quit()), CTRL + Key_Q );
+	_act->newAction( "Save", "Bachaa", this, SLOT(save()), CTRL + Key_S );
+	_act->newAction( "Load", "Khol", this, SLOT(load()), CTRL + Key_L );
+	_act->newAction( "SaveEn", "Toggle Save", this, SLOT(saveToggle()),
+			CTRL + Key_T );
+	_act->newAction( "Quit", "Band Kar", qApp, 
+			SLOT(quit()), CTRL + Key_Q );
 	debug( "created actions" );
 	
+	// menus
+	QMenuBar *mymenu = new QMenuBar( this );
 	QPopupMenu *file = new QPopupMenu( this );
 	mymenu->insertItem( "File", file );
 	
 	KActionMenuBuilder mb( _act );
 	mb.setMenu( file, KActionMenuBuilder::Text );
 
-	mb.insert( "Save" );
-	mb.insert( "Load" );
-	mb.insert( "Quit" );
-	
+	mb << "Save" << "Load" << "Quit" << "SaveEn";
+
 	debug( "connected actions" );
 
 	_mlined = new QMultiLineEdit( this );
@@ -80,6 +79,10 @@ KActTest::KActTest( QWidget *parent )
 		height() - mymenu->height() );
 }
 
+void KActTest::saveToggle()
+{
+	_act->setEnabled( "Save", !_act->enabled( "Save" ) );
+}
 void KActTest::save()
 {
 	_mlined->append( "Save!" );

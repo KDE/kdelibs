@@ -41,19 +41,22 @@ public:
 	};
 	
 	void setMenu( QPopupMenu *menu, unsigned style = Text | WhatsThis )	
-			{ _menu = menu; _style = style; }
+				{ _menu = menu; _style = style; }
 	QPopupMenu *menu()			{ return _menu; }
 	const QPopupMenu *menu() const		{ return _menu; }
 
 	void setStyle( unsigned style )		{ _style = style;}
 	unsigned style() const			{ return _style; }
 
-	virtual int insert( const QString& action, int id = -1 );
+	virtual int insert( const QString& action, int index = -1 );
 	KActionMenuBuilder& operator<<( const QString& action )
 				{ insert( action ); return *this; }
 
-	int insertSeparator(int id = -1 );
-	int insertPopup( const QString& text, QPopupMenu *menu, int id = -1 );
+	void insertSeparator(int index = -1 );
+	int insertPopup( const QString& text, QPopupMenu *menu, 
+				int index = -1 );
+
+	int insertList( const QStringList& actions, int index = -1 );
 	
 private:
 	// disallowed operations.

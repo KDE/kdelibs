@@ -10,6 +10,7 @@
 #include<qiconset.h>
 #include<qpopupmenu.h>
 
+#include<kckey.h>
 #include<kconfigbase.h>
 
 #include<kaction.h>
@@ -247,10 +248,14 @@ bool KAction::readConfig( const KConfigBase& cfg )
 {
 #ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
-	QString key = pfx + "Accel";
 
+	QString key = pfx + "Key";
 	if( cfg.hasKey( key ) ) {
-		setAccel( cfg.readNumEntry( key ) );
+		QString key = cfg.readEntry( key );
+		int ck = keyToString( key );
+		if( ck != 0 ) {
+			setAccel( ck );
+		}
 	}
 	// TODO: read icon
 	return true;
@@ -261,10 +266,112 @@ void KAction::writeConfig( KConfigBase& cfg )
 {
 #ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
-	QString key = pfx + "Accel";
 
+	QString key = pfx + "Accel";
 	cfg.writeEntry( key, accel() );
+
+	key = pfx + "Key";
+	cfg.writeEntry( key, keyToString( accel() ) );
 #endif
+}
+
+uint KAction::stringToKey( const QString& key )
+{
+	if ( key.isNull() ) {
+		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
+		return 0;
+	} else if ( key.isEmpty() ) {
+		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
+		return 0;
+	}
+
+	// break the string in tokens separated by "+"
+	uint k = 0;
+	QArray<int> tokens;
+	int i = -1;
+
+	do {
+		tokens.resize(k+1);
+		tokens[k] = i+1;
+		i = key.find('+', i+1);
+		k++;
+	} while ( i!=-1 );
+	tokens.resize(k+1);
+	tokens[k] = key.length() + 1;
+	
+	// we have k tokens.
+	// find a keycode (only one)
+	// the other tokens are accelerators (SHIFT, CTRL & ALT)
+	// the order is unimportant
+	bool codeFound = FALSE;
+	QString str;
+	uint keyCode = 0;
+	for (uint i=0; i<k; i++) {
+		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
+		str.stripWhiteSpace();
+		if ( str.isEmpty() ) {
+			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
+			return 0;
+		}
+
+		if ( str=="SHIFT" )     keyCode |= Qt::SHIFT;
+		else if ( str=="CTRL" ) keyCode |= Qt::CTRL;
+		else if ( str=="ALT" )  keyCode |= Qt::ALT;
+		else if (codeFound) {
+			kdebug(KDEBUG_WARN, 125, 
+				"stringToKey::Duplicate keycode");
+			return 0;
+		} else {
+			// search for keycode
+			uint j;
+			for(j=0; j<NB_KEYS; j++) {
+				if ( str==KKEYS[j].name ) {
+				    keyCode |= KKEYS[j].code;
+					break;
+				}
+			}
+			if ( j==NB_KEYS ) {
+				kdebug(KDEBUG_WARN, 125, 
+					"stringToKey::Unknown key name %s", 
+					str.ascii());
+				return 0;
+			}
+		}
+	}
+	return keyCode;
+}
+
+QString KAction::keyToString( uint keyCode, bool i18_n )
+{
+	QString res = "";
+	
+	if ( keyCode == 0 ) return res;
+	if ( keyCode & Qt::SHIFT ){
+		if (i18_n) res += i18n("SHIFT");
+	    else       res += "SHIFT";
+	    res += "+";
+	}
+	if ( keyCode & Qt::CTRL ){
+	   if (i18_n) res += i18n("CTRL");
+	   else       res += "CTRL";
+	    res += "+";
+	}
+	if ( keyCode & Qt::ALT ){
+		if (i18_n) res += i18n("ALT");
+		else       res += "ALT";
+	    res += "+";
+	}
+
+	uint kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
+
+	for (int i=0; i<NB_KEYS; i++) {
+		if ( kCode == (uint)KKEYS[i].code ) {
+			res += KKEYS[i].name;
+			return res;
+		}
+	}
+	
+	return QString::null;
 }
 
 #include"kaction.moc"
