@@ -88,9 +88,10 @@ public:
  * A class that exports all the current bookmarks to Netscape/Mozilla bookmarks
  * Warning, it overwrites the existing bookmarks.html file !
  *
+ * @deprecated
  * only for BC - remove for KDE 4.0
  */
-class KNSBookmarkExporter
+class KDE_DEPRECATED KNSBookmarkExporter
 {
 public:
     KNSBookmarkExporter(KBookmarkManager* mgr, const QString & fileName)

@@ -436,10 +436,10 @@ public:
     QPopupMenu* popupMenu() const;
 
     /**
-     * Deprecated. See setMenuAccelsEnabled .
+     * @deprecated See setMenuAccelsEnabled .
      * @since 3.1
      */
-    void setRemoveAmpersandsInCombo( bool b );
+    void setRemoveAmpersandsInCombo( bool b ) KDE_DEPRECATED;
     /// @since 3.1
     bool removeAmpersandsInCombo() const;
 

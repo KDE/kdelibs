@@ -26,13 +26,16 @@ class QValidator;
 #include <kdialogbase.h>
 
 /**
+ * @deprecated
+ * Please use KInputDialog instead.
+ *
  * Dialog for user to enter a single line of text.
  *
  * @version $Id$
  * @author David Faure <faure@kde.org>, layout management by Preston Brown <pbrown@kde.org>
  */
 
-class KLineEditDlg : public KDialogBase   // KDE4: Rename to KLineEditDialog
+class KDE_DEPRECATED KLineEditDlg : public KDialogBase
 {
   Q_OBJECT
 public:
@@ -51,7 +54,7 @@ public:
    * @param _text      Text of the label
    * @param _value     Initial value of the inputline
    */
-  KLineEditDlg( const QString& _text, const QString& _value, QWidget *parent );
+  KLineEditDlg( const QString& _text, const QString& _value, QWidget *parent ) KDE_DEPRECATED;
   virtual ~KLineEditDlg();
 
   /**
@@ -74,7 +77,7 @@ public:
    * @param parent    The parent widget
    */
   static QString getText(const QString &text, const QString& value,
-		 bool *ok, QWidget *parent, QValidator *validator=0 );
+		 bool *ok, QWidget *parent, QValidator *validator=0 ) KDE_DEPRECATED;
 
   /**
    * Static convenience function to get a textual input from the user.
@@ -90,7 +93,7 @@ public:
   static QString getText(const QString &caption, const QString &text,
                          const QString& value=QString::null,
                          bool *ok=0, QWidget *parent=0,
-			 QValidator *validator=0);
+			 QValidator *validator=0) KDE_DEPRECATED;
 
 public slots:
   /**
