@@ -103,10 +103,8 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 
 KStyle::~KStyle()
 {
-	if (winstyle)
-		delete winstyle;
-	if (menuHandler)
-		delete menuHandler;
+	delete winstyle;
+	delete menuHandler;
 	winstyle    = NULL;
 	menuHandler = NULL;
 }
