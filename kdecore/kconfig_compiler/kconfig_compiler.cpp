@@ -963,6 +963,9 @@ int main( int argc, char **argv )
 
   if ( headerIncludes.count() > 0 ) h << endl;
 
+  if ( !singleton && cfgFileNameArg && parameters.isEmpty() )
+    h << "#include <kglobal.h>" << endl;
+
   h << "#include <kconfigskeleton.h>" << endl << endl;
 
   if ( !nameSpace.isEmpty() )
@@ -1019,7 +1022,7 @@ int main( int argc, char **argv )
   if ( !singleton ) {
     h << "    " << className << "(";
     if (cfgFileNameArg)
-       h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
+       h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " = KGlobal::sharedConfig()" : ", ");
     for (QValueList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
@@ -1263,7 +1266,7 @@ int main( int argc, char **argv )
 
   // Constructor
   cpp << className << "::" << className << "( ";
-  if (cfgFileNameArg ) {
+  if ( cfgFileNameArg ) {
     if ( !singleton )
       cpp << " KSharedConfig::Ptr config";
     else
