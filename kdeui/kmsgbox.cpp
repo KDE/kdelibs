@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.21  1999/06/17 18:48:12  mkoch
+ * make it compilable.
+ *
  * Revision 1.20  1999/06/17 18:44:14  mkoch
  * kde_configdir() -> locate()
  *
@@ -144,6 +147,7 @@
 #include <qlayout.h>
 
 #include <kapp.h>
+#include <kstddirs.h>
 #include <klocale.h>
 #include <kbuttonbox.h>
 

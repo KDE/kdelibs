@@ -3,6 +3,7 @@
 
 #include <kconfig.h>
 #include <kapp.h>
+#include <kstddirs.h>
 
 #include <qtl.h>
 #include <qsmartptr.h>
