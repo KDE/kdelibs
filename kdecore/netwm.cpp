@@ -3498,7 +3498,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	}
 
 	if ( !p->visible_icon_name &&  XGetIconName(p->display, p->window, &text_ret) ) {
-	    p->icon_name = strdup((const char *) text_ret);
+	    p->icon_name = nstrdup(text_ret);
 
 	    if( text_ret )
 		XFree(text_ret);
