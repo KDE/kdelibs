@@ -401,15 +401,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     if(si >= 0)
     {
         // something matching found, find the first one to print
-        int oldsi = si;
-
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h))
             si--;
 
         firstSi = si;
-
-        if(oldsi - si > 2)
-            qDebug("backtracked %d items", oldsi-si);
 
         int endPos, startPos;
         bool breakAtEnd = false;
