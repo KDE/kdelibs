@@ -26,7 +26,7 @@
 
 namespace KJS {
 
-  class JSEventListener : public DOM::EventListener, DOM::DomShared {
+  class JSEventListener : public DOM::EventListener {
   public:
     JSEventListener(KJSO _listener, bool _html = false);
     virtual ~JSEventListener();

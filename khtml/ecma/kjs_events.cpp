@@ -56,9 +56,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     QGuardedPtr<KHTMLPart> part = Window::retrieveActive()->part();
     KJSO thisVal = Null();
     QVariant ret = part->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
-
-//    if (ret.type() == QVariant::Bool && ret.toBool() == false) { // ###
-    if (ret.toBool() == false)
+    if (ret.type() == QVariant::Bool && ret.toBool() == false)
         evt.preventDefault();
   }
 }

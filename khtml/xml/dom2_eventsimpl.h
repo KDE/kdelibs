@@ -266,8 +266,7 @@ public:
 
     EventImpl::EventId id;
     EventListener *listener;
-    bool useCapture : 1;
-    bool isInternalListener : 1;
+    bool useCapture;
 };
 
 }; //namespace
