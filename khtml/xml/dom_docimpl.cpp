@@ -281,9 +281,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSheets->ref();
     m_inDocument = true;
     m_styleSelectorDirty = false;
-
-    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+    m_styleSelector = 0;
     m_windowEventListeners.setAutoDelete(true);
 }
 
@@ -957,6 +955,9 @@ void DocumentImpl::attach()
         setPaintDevice( m_view );
 
     // Create the rendering tree
+    assert(!m_styleSelector);
+    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
+                                            pMode == Strict );
     m_render = new RenderRoot(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
