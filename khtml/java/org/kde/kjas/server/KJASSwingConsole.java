@@ -27,6 +27,17 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
                             System.getProperty("java.version") );
         System.out.println( "Java VM vendor:  " +
                             System.getProperty("java.vendor") );
+        String ph = System.getProperty("http.proxyHost");
+        String pp = System.getProperty("http.proxyPort");
+        if (ph != null) {
+            System.out.println("Proxy: " + ph + ":" + pp);
+        }
+        SecurityManager sec = System.getSecurityManager();
+        Main.info("SecurityManager=" + sec);
+        if (sec == null) {
+            System.out.println( "WARNING: Security Manager disabled!" );
+            textField.setForeground(java.awt.Color.red);
+        }
     }
     
     /** This method is called from within the constructor to
@@ -86,6 +97,12 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
         textField.setColumns(40);
         textField.setEditable(false);
         textField.setRows(10);
+        textField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textFieldKeyPressed(evt);
+            }
+        });
+
         jScrollPane1.setViewportView(textField);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -93,8 +110,41 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
         pack();
     }//GEN-END:initComponents
 
+    private void textFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldKeyPressed
+        // Add your handling code here:
+        char key = evt.getKeyChar();
+        switch (key) {
+            case 'h':
+                append("Konqueror Java Console Help\n");
+                append("  h: show help\n");
+                append("  g: run garbage collection\n");
+                append("  m: show memory info\n");
+                append("  t: list threads\n");
+            case 'g':
+                append("Running Garbage Collection ...\n");
+                System.gc();
+            case 'm': 
+                append("Total Memory: " + Runtime.getRuntime().totalMemory() + " bytes\n"); 
+                append("Free Memory : " + Runtime.getRuntime().freeMemory() + " bytes\n");
+                break;
+            case 't':
+                showThreads();
+                break;
+        }
+    }//GEN-LAST:event_textFieldKeyPressed
+
+    private void showThreads() {
+        Thread t = Thread.currentThread();
+        ThreadGroup g = t.getThreadGroup();
+        ThreadGroup parent;
+        while ((parent = g.getParent()) != null) {
+            g = parent;
+        }
+        g.list();
+    }
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
         // Add your handling code here:
+        textField.selectAll();
         textField.copy();
     }//GEN-LAST:event_copyButtonActionPerformed
 
