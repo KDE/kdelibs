@@ -547,12 +547,14 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
 {
     QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
     hbox->setAutoAdd( true );
-    d->frame = new QFrame( this, "KPluginSelector left frame" );
+    
+    QSplitter* splitter = new QSplitter( QSplitter::Horizontal, this );
+    d->frame = new QFrame( splitter, "KPluginSelector left frame" );
     d->frame->setFrameStyle( QFrame::NoFrame );
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
-    d->widgetstack = new QWidgetStack( this, "KPluginSelector Config Pages" );
+    d->widgetstack = new QWidgetStack( splitter, "KPluginSelector Config Pages" );
     d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
 
