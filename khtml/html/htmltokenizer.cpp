@@ -1038,7 +1038,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 return;
 
             uint tagID = currToken.id;
-#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
             bool beginTag = tagID < ID_CLOSE_TAG;
@@ -1047,12 +1047,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttrImpl* a = 0;
-                if(currToken.attrs) {
-                    a = currToken.attrs->getIdItem(ATTR_SRC);
-                    scriptSrc = a ? a->value().string() : QString("");
-                    a = currToken.attrs->getIdItem( ATTR_CHARSET );
-                    scriptSrcCharset = a ? a->value().string() : QString::null;
-                    a = currToken.attrs->getIdItem(ATTR_LANGUAGE);
+                scriptSrc = scriptSrcCharset = "";
+                if ( currToken.attrs ) {
+                    if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
+                        scriptSrc = a->value().string();
+                    if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
+                        scriptSrcCharset = a->value().string();
+                    a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
                 }
                 javascript = true;
                 if( a ) {
@@ -1604,12 +1605,10 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
         m_executingScript = true;
         view->part()->executeScript(scriptSource.string());
         m_executingScript = false;
-
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
-        if (!script)
-        {
+        if (!script) {
            QString rest = pendingSrc;
            pendingSrc = "";
            write(rest, true);
