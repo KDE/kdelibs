@@ -872,6 +872,19 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_ButtonShiftVertical:		// ### Make configurable
 			return 1;
 
+		case PM_DockWindowHandleExtent:
+		{
+			QWidget* parent = 0;
+			// Check that we are not a normal toolbar or a hidden dockwidget,
+			// in which case we need to adjust the height for font size
+			if (widget && (parent = widget->parentWidget() )
+				&& !parent->inherits("QToolBar")
+				&& !parent->inherits("QMainWindow") )
+					return widget->fontMetrics().lineSpacing();
+			else
+				return QCommonStyle::pixelMetric(m, widget);
+		}
+
 		// TABS
 		// ------------------------------------------------------------------------
 		case PM_TabBarTabHSpace:
