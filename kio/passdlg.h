@@ -121,7 +121,7 @@ public:
     QString username() const;
 
     // ### remove for 3.0
-    QString username();
+    QString user();
     QString password();
     
     /**
