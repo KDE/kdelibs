@@ -130,7 +130,7 @@ void KURLRequester::slotOpenDialog()
 KFileDialog * KURLRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
-	QWidget *p = static_cast<QWidget *>( parent() );
+	QWidget *p = parentWidget();
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
 					"file dialog", myModal );
 	KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
