@@ -30,7 +30,6 @@ KServiceType::KServiceType( KSimpleConfig& _cfg )
 
   m_strComment = _cfg.readEntry( "Comment" );
   m_strIcon = _cfg.readEntry( "Icon" );
-  // TODO: Properties
 
   QStringList tmpList = _cfg.groupList();
   QStringList::Iterator gIt = tmpList.begin();
