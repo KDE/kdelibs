@@ -87,7 +87,7 @@ KHTMLPageCacheEntry::~KHTMLPageCacheEntry()
 void
 KHTMLPageCacheEntry::addData(const QByteArray &data)
 {
-  if (m_file->status() == 0 && m_file->dataStream())
+  if (m_file->status() == 0)
      m_file->dataStream()->writeRawBytes(data.data(), data.size());
 }
 
@@ -95,10 +95,9 @@ void
 KHTMLPageCacheEntry::endData()
 {
   m_valid = true;
-  QDataStream* d;
-  if ( m_file->status() == 0 && ( d = m_file->dataStream() ) ) {
-    d->device()->flush();
-    d->device()->at(0);
+  if ( m_file->status() == 0) {
+    m_file->dataStream()->device()->flush();
+    m_file->dataStream()->device()->at(0);
   }
 }
 
