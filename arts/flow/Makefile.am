@@ -26,7 +26,7 @@ libartsflow_la_SOURCES =  synth_play_impl.cc \
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
   cachedwav.h convert.h pipebuffer.h stdsynthmodule.h \
-  synthschedule.h fft.h artsflow.idl 
+  synthschedule.h fft.h artsflow.idl audioio.h
 
 DISTCLEANFILES = artsflow.cc artsflow.h
 
