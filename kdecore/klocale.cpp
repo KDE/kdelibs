@@ -836,7 +836,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.year() % 100));
 		continue;
 	case 'n':
-                rst.replace(i, 2, QString().sprintf("%2d", pDate.month()));
+                rst.replace(i, 2, QString().sprintf("%d", pDate.month()));
 		continue;
 	case 'm':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.month()));
@@ -851,7 +851,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.day() ));
 		continue;
 	case 'e':
-                rst.replace(i, 2, QString().sprintf("%2d", pDate.day() ));
+                rst.replace(i, 2, QString().sprintf("%d", pDate.day() ));
 		continue;
 	case 'a':
                 rst.replace(i, 2, weekDayName(pDate.dayOfWeek(), true));
@@ -1204,13 +1204,13 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
 	continue;
       case 'k':
-	rst.replace(i, 2, QString().sprintf("%2d", pTime.hour()));
+	rst.replace(i, 2, QString().sprintf("%d", pTime.hour()));
 	continue;
       case 'I':
 	rst.replace(i, 2, QString().sprintf("%02d", (pTime.hour() + 11) % 12 + 1));
 	continue;
       case 'l':
-	rst.replace(i, 2, QString().sprintf("%2d",  (pTime.hour() + 11) % 12 + 1));
+	rst.replace(i, 2, QString().sprintf("%d",  (pTime.hour() + 11) % 12 + 1));
 	continue;
       case 'M':
 	rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
