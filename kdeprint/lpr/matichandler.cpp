@@ -235,7 +235,10 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 {
 	QStringList	comps = QStringList::split('/', path, false);
 	if (comps.count() < 3 || comps[0] != "foomatic")
+	{
+		manager()->setErrorMsg(i18n("Internal error."));
 		return NULL;
+	}
 
 	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
 	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
@@ -249,7 +252,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	if (in.open(exe + " -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	if (in.open(exe + " -t lpd -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -268,13 +271,11 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 			driver->set("temporary", tmpFile);
 			return driver;
 		}
-		else
-			return NULL;
 	}
-	else
-	{
-		return NULL;
-	}
+	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver <b>[%1,%2]</b>. "
+	                            "Either that driver does not exist, or you don't have "
+	                            "the required permissions to perform that operation.").arg(comps[1]).arg(comps[2]));
+	return NULL;
 }
 
 bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver)
