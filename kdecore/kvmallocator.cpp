@@ -199,7 +199,7 @@ KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
    int to_go = length;
    int done = 0;
    char *buf = (char *) dest;
-   while(done < to_go)
+   while(to_go > 0)
    {
       int n = read(d->tempfile->handle(), buf+done, to_go);
       if (n <= 0) 
@@ -235,7 +235,7 @@ KVMAllocator::copyBlock(Block *dest, void *src, int _offset, size_t length)
    int to_go = length;
    int done = 0;
    char *buf = (char *) src;
-   while(done < to_go)
+   while(to_go > 0)
    {
       int n = write(d->tempfile->handle(), buf+done, to_go);
       if (n <= 0) return false; // Error
