@@ -112,25 +112,25 @@ void KJavaAppletContext::processCmd( QString cmd, QStringList args )
 
 void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 {
-//    kdDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
-//    kdDebug(6100) << "arg count = " << arg.count() << endl;
+    kdDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
+    kdDebug(6100) << "arg count = " << arg.count() << endl;
 
     if ( cmd == QString::fromLatin1("showstatus")
          && arg.count() > 0 )
     {
-//        kdDebug(6100) << "status message = " << arg[0] << endl;
+        kdDebug(6100) << "status message = " << arg[0] << endl;
         emit showStatus( arg[0] );
     }
     else if ( cmd == QString::fromLatin1( "showurlinframe" )
               && arg.count() > 1 )
     {
-//        kdDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
+        kdDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
         emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd == QString::fromLatin1( "showdocument" )
               && arg.count() > 0 )
     {
-//        kdDebug(6100) << "url = " << arg[0] << endl;
+        kdDebug(6100) << "url = " << arg[0] << endl;
         emit showDocument( arg[0], "_top" );
     }
     else if ( cmd == QString::fromLatin1( "resizeapplet" )

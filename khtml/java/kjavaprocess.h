@@ -5,8 +5,7 @@
 
 #include <kprocess.h>
 #include <qmap.h>
-
-class KJavaProcessPrivate;
+#include <qcstring.h>
 
 /**
  * @short A class for invoking a Java VM
@@ -18,6 +17,8 @@ class KJavaProcessPrivate;
  *
  * @author Richard J. Moore, rich@kde.org
  */
+
+class KJavaProcessPrivate;
 class KJavaProcess : public QObject
 {
 Q_OBJECT
@@ -47,25 +48,6 @@ public:
      */
     void setJVMPath( const QString& path );
 
-    /**
-     * Used to decide the parameter names for JVM stack size etc.
-     */
-    void setJVMVersion( int major, int minor = 0, int patch = 0 );
-
-    /**
-     * The HTTP proxy.
-     */
-    void setHTTPProxy( const QString& host, int port );
-
-    /**
-     * The FTP proxy.
-     */
-    void setFTPProxy( const QString& host, int port );
-
-    /**
-     * Set system properties by adding -D<I>name</I>=<I>value</I> to
-     * the java command line.
-     */
     void setSystemProperty( const QString& name, const QString& value );
 
     /**
@@ -84,29 +66,25 @@ public:
     void setClassArgs( const QString& classArgs );
 
     /**
-     * Send a string to the standard input (System.in) of the JVM.
-     * Now deprecated- use the send(QStringList&) method to use the
-     * updated protocol
-     */
-    void send( const QString& command );
-
-    /**
      * same as above, but will create a proper message for the new KJAS
      * protocol
      */
     void send( char cmd_code, const QStringList& args );
+    void send( char cmd_code, const QStringList& args, const QByteArray& data );
 
 protected slots:
-    void wroteData();
-    void processExited();
-    void receivedData( int, int& );
-    void javaHasDied();
+    void slotWroteData();
+    void slotReceivedData( int, int& );
+    void slotJavaDied();
 
 protected:
     virtual bool invokeJVM();
     virtual void killJVM();
 
-    void popBuffer();
+    QByteArray* addArgs( char cmd_code, const QStringList& args );
+    void        popBuffer();
+    void        sendBuffer( QByteArray* buff );
+    void        storeSize( QByteArray* buff );
 
     KProcess* javaProcess;
 
@@ -115,8 +93,7 @@ signals:
 
 private:
     KJavaProcessPrivate *d;
-    QStrList inputBuffer;
-    QMap<QString, QString> systemProps;
+
 };
 
 #endif // KJAVAPROCESS_H

@@ -19,6 +19,7 @@ static unsigned int count = 0;
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
    : KJavaEmbed( parent, name )
+//   : QXEmbed( parent, name )
 {
     kdDebug(6100) << "KJavaAppletWidget::KJavaAppletWidget" << endl;
     m_applet = new KJavaApplet( this, context );
@@ -33,7 +34,7 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::init()
 {
-    d   = new KJavaAppletWidgetPrivate;
+    d     = new KJavaAppletWidgetPrivate;
     m_kwm = new KWinModule( this );
 
     d->tmplabel = new QLabel( this );
@@ -77,6 +78,7 @@ void KJavaAppletWidget::setWindow( WId w )
 
         embed( w );
         m_applet->init();
+        setFocus();
     }
 }
 
@@ -84,6 +86,7 @@ QSize KJavaAppletWidget::sizeHint()
 {
     kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
     QSize rval = KJavaEmbed::sizeHint();
+//    QSize rval = QXEmbed::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
     {
@@ -108,7 +111,9 @@ void KJavaAppletWidget::resize( int w, int h )
         m_applet->setSize( QSize( w, h ) );
     }
 
+//    QWidget::resize( w, h );
     KJavaEmbed::resize( w, h );
+//    QXEmbed::resize( w, h );
 }
 
 #include "kjavaappletwidget.moc"

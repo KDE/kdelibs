@@ -6,6 +6,7 @@
 #include "kjavaappletcontext.h"
 #include "kjavaapplet.h"
 #include <javaembed.h>
+//#include <qxembed.h>
 #include <kwinmodule.h>
 
 /**
@@ -50,6 +51,7 @@
 class KJavaAppletWidgetPrivate;
 
 class KJavaAppletWidget : public KJavaEmbed
+//class KJavaAppletWidget : public QXEmbed
 {
     Q_OBJECT
 public:
