@@ -27,10 +27,7 @@
 #define _DOM_EventsImpl_h_
 
 #include "dom/dom2_events.h"
-#include "misc/shared.h"
 #include "xml/dom2_viewsimpl.h"
-#include <qdatetime.h>
-#include <qevent.h>
 
 class KHTMLPart;
 
