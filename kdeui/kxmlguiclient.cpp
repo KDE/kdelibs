@@ -301,7 +301,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
       // this is the first item in a container, then we nuke the
       // current one
       QDomElement prev = e.previousSibling().toElement();
-      if ( prev.isNull() || 
+      if ( prev.isNull() ||
 	 ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) ||
 	 ( prev.tagName() == tagText ) )
       {
@@ -391,7 +391,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
           QDomNode node = attribs.item(i);
           currElement.setAttribute(node.nodeName(), node.nodeValue());
         }
-        
+
         continue;
       }
       else
@@ -714,7 +714,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
 {
   QString xml = _xml;
 
-  QRegExp versionExpr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*" );
+  QRegExp versionExpr( ".*<.*gui.+version=\"([0-9]+)\".*>.*" );
   versionExpr.setCaseSensitive( false );
 
   QTextStream stream( xml, IO_ReadOnly );
@@ -814,7 +814,7 @@ void KXMLGUIClient::addStateActionEnabled(const QString& state,
                                           const QString& action)
 {
   StateChange stateChange = getActionsToChangeForState(state);
-  
+
   stateChange.actionsToEnable.append( action );
 
   m_actionsStateMap.replace( state, stateChange );
@@ -825,7 +825,7 @@ void KXMLGUIClient::addStateActionDisabled(const QString& state,
                                            const QString& action)
 {
   StateChange stateChange = getActionsToChangeForState(state);
-  
+
   stateChange.actionsToDisable.append( action );
 
   m_actionsStateMap.replace( state, stateChange );
@@ -844,7 +844,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 
   bool setTrue = (reverse == StateNoReverse);
   bool setFalse = !setTrue;
-  
+
   // Enable actions which need to be enabled...
   //
   for ( QStringList::Iterator it = stateChange.actionsToEnable.begin();
