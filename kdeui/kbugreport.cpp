@@ -84,6 +84,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   {
     // This is a core KDE application -> redirect to the web form
     d->webFormLabel = new KURLLabel( parent );
+    setButtonCancelText(i18n("&Close"));
   }
 
   QLabel * tmpLabel;
