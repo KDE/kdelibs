@@ -1272,13 +1272,16 @@ QList<StyleSheetImpl> DocumentImpl::htmlAuthorStyleSheets()
     QList<StyleSheetImpl> list;
     NodeImpl *n = this;
     while (n) {
+	StyleSheetImpl *sheet = 0;
 	if (n->id() == ID_LINK)
-	    list.append(static_cast<HTMLLinkElementImpl*>(n)->sheet());
+	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
 	else if (n->id() == ID_STYLE)
-	    list.append(static_cast<HTMLStyleElementImpl*>(n)->sheet());
+	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
 	else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
-	    list.append(static_cast<HTMLBodyElementImpl*>(n)->sheet());
+	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
 
+	if ( sheet )
+	    list.append( sheet );
 	if (n->id() == ID_BODY)
 	    n = 0; // no style info should be beyond here anyway
 	else if (n->firstChild())
