@@ -1,4 +1,5 @@
 usr/include/kde/*
+usr/lib/libkdefakes.so
 usr/lib/libDCOP.so
 usr/lib/libkdecore.so
 usr/lib/libkdeui.so
