@@ -103,7 +103,36 @@ void KListViewSearchLine::updateSearch(const QString &s)
         return;
 
     d->search = s.isNull() ? text() : s;
+
+    // If there's a selected item that is visible, make sure that it's visible
+    // when the search changes too (assuming that it still matches).
+
+    QListViewItem *currentItem = 0;
+
+    switch(d->listView->selectionMode())
+    {
+    case KListView::NoSelection:
+        break;
+    case KListView::Single:
+        currentItem = d->listView->selectedItem();
+        break;
+    default:
+    {
+        int flags = QListViewItemIterator::Selected | QListViewItemIterator::Visible;
+        for(QListViewItemIterator it(d->listView, flags);
+            it.current() && !currentItem;
+            ++it)
+        {
+            if(d->listView->itemRect(it.current()).isValid())
+                currentItem = it.current();
+        }
+    }
+    }
+
     checkItem(d->listView->firstChild());
+
+    if(currentItem)
+        d->listView->ensureItemVisible(currentItem);
 }
 
 void KListViewSearchLine::setCaseSensitive(bool cs)
