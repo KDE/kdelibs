@@ -58,6 +58,8 @@ using namespace DOM;
 #include <assert.h>
 #include <unistd.h>
 
+#include <config.h>
+
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kio/job.h>
@@ -3160,7 +3162,7 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
-  dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
+  dlg->_url->setText("<a href=\"" + url().url() + "\">" + url().prettyURL() + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     dlg->_lastModified->hide();
@@ -5816,7 +5818,8 @@ void KHTMLPart::slotWalletClosed()
   }
 }
 
-void KHTMLPart::slotToggleCaretMode() {
+void KHTMLPart::slotToggleCaretMode() 
+{
   setCaretMode(d->m_paToggleCaretMode->isChecked());
 }
 
