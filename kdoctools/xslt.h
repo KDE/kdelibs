@@ -14,4 +14,9 @@ QString lookForCache( const QString &filename );
 
 extern bool warnings_exist;
 
+/**
+ * Compares two files and returns true if @param newer exists and is newer than
+ * @param older
+ **/
+bool compareTimeStamps( const QString &older, const QString &newer );
 #endif

@@ -178,23 +178,27 @@ void HelpProtocol::get( const KURL& url )
     kdDebug() << "target " << target.url() << endl;
 
     QString file = target.path();
-    if (!KStandardDirs::exists(file) || file.right(4) == "html") {
-        file = file.left(file.findRev('/')) + "/index.docbook";
+    QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
+    if (!KStandardDirs::exists(file)) {
+        file = docbook_file;
     } else {
         QFileInfo fi(file);
         if (fi.isDir()) {
             file = file + "/index.docbook";
         } else {
-            kdDebug() << "emitFile redirection " << url.url().latin1() << endl;
-            redirection(target);
-            finished();
-            return;
+            if ( !compareTimeStamps( file, docbook_file ) ) {
+                kdDebug() << "emitFile redirection " << target.url() << endl;
+                redirection(target);
+                finished();
+                return;
+            } else
+                file = docbook_file;
         }
     }
 
     infoMessage(i18n("Preparing document"));
 
-    kdDebug() << "look for cache " << endl;
+    kdDebug() << "look for cache for " << file << endl;
 
     parsed = lookForCache( file );
 
@@ -205,12 +209,9 @@ void HelpProtocol::get( const KURL& url )
         if ( !parsed.isEmpty() ) {
             infoMessage( i18n( "Saving to cache" ) );
             QString cache = file.left( file.length() - 7 );
-            if ( !saveToCache( parsed, locateLocal( "data",
+            saveToCache( parsed, locateLocal( "data",
                                                     "kio_help/cache" + cache +
-                                                    "cache.bz2" ) ) )
-                saveToCache( parsed, locateLocal( "data",
-                                                  "kio_help/cache" + cache +
-                                                  "cache.gz" ) );
+                                                    "cache.bz2" ) );
         }
     } else infoMessage( i18n( "Using cached version" ) );
 
@@ -228,6 +229,8 @@ void HelpProtocol::get( const KURL& url )
         if (!query.isEmpty())
             if (query.left(8) == "?anchor=")
                 anchor = query.mid(8).lower();
+        if (anchor.isEmpty() && url.hasHTMLRef())
+	    anchor = url.htmlRef();
 
         kdDebug() << "anchor: " << anchor << endl;
 

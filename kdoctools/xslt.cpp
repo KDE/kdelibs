@@ -296,7 +296,6 @@ bool saveToCache( const QString &contents, const QString &filename )
 
     if (!fd->open(IO_WriteOnly))
     {
-       delete f;
        delete fd;
        return false;
     }
@@ -304,7 +303,6 @@ bool saveToCache( const QString &contents, const QString &filename )
     fd->writeBlock( contents.utf8() );
     fd->close();
     delete fd;
-    delete f;
     return true;
 }
 
@@ -322,7 +320,6 @@ static bool readCache( const QString &filename,
 
     if (!fd->open(IO_ReadOnly))
     {
-       delete f;
        delete fd;
        ::unlink( cache.local8Bit() );
        return false;
@@ -341,7 +338,6 @@ static bool readCache( const QString &filename,
 
     output = QString::fromUtf8( text );
     delete fd;
-    delete f;
 
     return true;
 }
@@ -356,18 +352,21 @@ QString lookForCache( const QString &filename )
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
         return output;
-    if ( readCache( filename, cache + "cache.gz", output ) )
-        return output;
     if ( readCache( filename,
                     locateLocal( "data",
                                  "kio_help/cache" + cache +
                                  "cache.bz2" ), output ) )
         return output;
-    if ( readCache( filename,
-                    locateLocal( "data",
-                                 "kio_help/cache" + cache +
-                                 "cache.gz" ), output ) )
-        return output;
 
     return QString::null;
+}
+
+bool compareTimeStamps( const QString &older, const QString &newer )
+{
+    QFileInfo _older( older );
+    QFileInfo _newer( newer );
+    assert( _older.exists() );
+    if ( !_newer.exists() )
+        return false;
+    return ( _newer.lastModified() > _older.lastModified() );
 }
