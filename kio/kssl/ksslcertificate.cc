@@ -1056,6 +1056,35 @@ return d->_extensions.certTypeCA();
 }
 
 
+QStringList KSSLCertificate::subjAltNames() const {
+	QStringList rc;
+#ifdef KSSL_HAVE_SSL
+	STACK_OF(GENERAL_NAME) *names;
+	names = (STACK_OF(GENERAL_NAME)*)d->kossl->X509_get_ext_d2i(d->m_cert, NID_subject_alt_name, 0, 0);
+
+	if (!names) {
+		return rc;
+	}
+
+	int cnt = d->kossl->sk_GENERAL_NAME_num(names);
+
+	for (int i = 0; i < cnt; i++) {
+		const GENERAL_NAME *val = (const GENERAL_NAME *)d->kossl->sk_value(names, i);
+		if (val->type != GEN_DNS) {
+			continue;
+		}
+
+		QString s = (const char *)d->kossl->ASN1_STRING_data(val->d.ia5);
+		if (!s.isEmpty()) {
+			rc += s;
+		}
+	}
+	d->kossl->sk_free(names);
+#endif
+	return rc;
+}
+
+
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
 QStringList qsl;
 QPtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();

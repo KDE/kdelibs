@@ -233,6 +233,12 @@ public:
 	bool isValid(KSSLPurpose p);
 
 	/**
+	 *  The alternate subject name.
+	 *  @return string list with subjectAltName
+	 */
+	QStringList subjAltNames() const;
+
+	/**
 	 *  Check if this is a valid certificate.  Will use cached data.
 	 *  @return the result of the validation
 	 */
