@@ -157,7 +157,9 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     m_view = new KJavaAppletViewerWidget (serverMaintainer->getContext (parent),
                                     wparent);
-    QString classname, classid, codebase, baseurl; 
+    QString classname, classid, codebase, baseurl;
+    int width = -1;
+    int height = -1;
     KJavaApplet * applet = m_view->applet ();
     insertChild (applet->getLiveConnectExtension ()); // hack
     QStringList::const_iterator it = args.begin ();
@@ -191,6 +193,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                     applet->setArchives (value);
                 else if (name.lower()==QString::fromLatin1("name"))
                     applet->setAppletName (value);
+                else if (name.lower()==QString::fromLatin1("width"))
+                    width = value.toInt();
+                else if (name.lower()==QString::fromLatin1("height"))
+                    height = value.toInt();
                 else {
                     applet->setParameter (name, value);
                 }
@@ -209,6 +215,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     applet->setBaseURL (baseurl);
     applet->setCodeBase (codebase);
     applet->setAppletClass (classname);
+    if (width > 0 && height > 0)
+        applet->setSize (QSize(width, height));
     setInstance (KJavaAppletViewerFactory::instance ());
     KParts::Part::setWidget (m_view);
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
@@ -235,8 +243,10 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
             applet->setAppletClass (url.url ());
         AppletParameterDialog (m_view).exec ();
         applet->setSize (m_view->sizeHint());
-        m_view->showApplet ();
     }
+    // delay showApplet if size is unknown or if m_view already shown
+    if (applet->size().width() > 0 || m_view->isVisible())
+        m_view->showApplet ();
     emit started (0L);
     return url.isValid ();
 }
@@ -308,7 +318,8 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
         kdDebug(6100) << "restoreState key:" << key << " val:" << val << endl;
     }
     applet->setSize (viewer->view ()->sizeHint ());
-    viewer->view ()->showApplet ();
+    if (viewer->view ()->isVisible())
+        viewer->view ()->showApplet ();
 }
 
 //-----------------------------------------------------------------------------
@@ -318,8 +329,10 @@ KJavaAppletViewerWidget::KJavaAppletViewerWidget(KJavaAppletContext* context,
         QWidget* parent, const char* name)
   : KJavaAppletWidget(context, parent, name) {}
 
-void KJavaAppletViewerWidget::showEvent (QShowEvent *) {
+void KJavaAppletViewerWidget::showEvent (QShowEvent * e) {
+    KJavaAppletWidget::showEvent(e);
     if (!applet()->isCreated() && !applet()->appletClass().isEmpty())
+        // delayed showApplet
         showApplet();
 }
 

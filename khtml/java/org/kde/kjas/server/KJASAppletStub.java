@@ -194,11 +194,10 @@ public final class KJASAppletStub
                 stateChange(INSTANCIATED);
                 app.setVisible(false);
                 panel.setApplet( app );
-                
-                app.setSize(panel.getSize());
-                                
+                app.setSize(appletSize); 
+
                 context.showStatus("Initializing Applet " + appletName + " ...");
-                
+
                 try {
                     app.init();
                 } catch (Error er) {
@@ -218,7 +217,7 @@ public final class KJASAppletStub
                 stateChange(INITIALIZED);
                 loader.removeStatusListener(panel);
                 app.setVisible(true);
-                panel.validate();
+                //panel.validate();
                
                 context.showStatus("Starting Applet " + appletName + " ...");
                 // stop the loading... animation 
