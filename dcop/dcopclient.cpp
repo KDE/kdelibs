@@ -401,6 +401,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	return false;
     }
 
+    bool bClearServerAddr = false;
     // first, check if serverAddr was ever set.
     if (!d->serverAddr) {
 	// here, we obtain the list of possible DCOP connections,
@@ -419,11 +420,16 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	    dcopSrv = t.readLine();
 	}
 	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
+        bClearServerAddr = true;
     }
 
     if ((d->iceConn = IceOpenConnection(const_cast<char*>(d->serverAddr),
 					static_cast<IcePointer>(this), False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
+        if (bClearServerAddr) {
+           free((char *)d->serverAddr);
+           d->serverAddr = 0;
+        }
 	emit attachFailed(errBuf);
 	d->iceConn = 0;
 	return false;
@@ -442,9 +448,17 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (setupstat == IceProtocolSetupFailure ||
 	setupstat == IceProtocolSetupIOError) {
 	IceCloseConnection(d->iceConn);
+        if (bClearServerAddr) {
+           free((char *)d->serverAddr);
+           d->serverAddr = 0;
+        }
 	emit attachFailed(errBuf);
 	return false;
     } else if (setupstat == IceProtocolAlreadyActive) {
+        if (bClearServerAddr) {
+           free((char *)d->serverAddr);
+           d->serverAddr = 0;
+        }
 	/* should not happen because 3rd arg to IceOpenConnection was 0. */
 	emit attachFailed("internal error in IceOpenConnection");
 	return false;
@@ -452,6 +466,10 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 
 
     if (IceConnectionStatus(d->iceConn) != IceConnectAccepted) {
+        if (bClearServerAddr) {
+           free((char *)d->serverAddr);
+           d->serverAddr = 0;
+        }
 	emit attachFailed("DCOP server did not accept the connection.");
 	return false;
     }
