@@ -27,6 +27,7 @@
 
 #ifdef NDEBUG
 #undef kdDebug
+#undef kdBacktrace
 #endif
 
 #include "kapplication.h"
