@@ -2,18 +2,16 @@
 - KSSLServer class needs to be written (in a separate lib!!) so that an app
   can act as an SSL server.
 
-- KHTML needs a dialog to warn on an insecure post (unencrypted)
-  if the user has selected to do so in kcmcrypto
-
-- The "back" button on konqueror doesn't behave well with kio_https.  Try
-  it, you'll see :)
-
-- Provide an option to not load insecure portions of a secured page
-
 - Friend certificates (for S/MIME) are not implemented
 
 - The certificate factory is not done.  This is needed to generate personal
   certificates (self signed) for users.
+  This should be a separate app I guess, and can include a CA signer even.
 
 - Document libkssl interface
+
+- CRL support (not much left to do?)
+
+- Code checking for OCX.  
+
 
