@@ -1310,7 +1310,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // Support for http last-modified
     d->m_lastModified = d->m_job->queryMetaData("modified");
-    kdDebug() << "KHTMLPart::slotData metadata modified: " << d->m_lastModified << endl;
+    //kdDebug() << "KHTMLPart::slotData metadata modified: " << d->m_lastModified << endl;
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
