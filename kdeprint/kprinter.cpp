@@ -48,8 +48,8 @@ void reportError(KPrinter*);
 // KPrinterWrapper class
 //**************************************************************************************
 
-KPrinterWrapper::KPrinterWrapper(KPrinter *prt)
-: QPrinter(), m_printer(prt)
+KPrinterWrapper::KPrinterWrapper(KPrinter *prt, QPrinter::PrinterMode m)
+: QPrinter(m), m_printer(prt)
 {
 }
 
@@ -88,10 +88,10 @@ public:
 // KPrinter class
 //**************************************************************************************
 
-KPrinter::KPrinter(bool restore)
+KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
 : QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
 {
-	init(restore);
+	init(restore, m);
 }
 
 KPrinter::~KPrinter()
@@ -107,10 +107,10 @@ KPrinter::~KPrinter()
 	delete d;
 }
 
-void KPrinter::init(bool restore)
+void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 {
 	// initialize QPrinter wrapper
-	m_wrapper = new KPrinterWrapper(this);
+	m_wrapper = new KPrinterWrapper(this, m);
 
 	// Private data initialization
 	d = new KPrinterPrivate;

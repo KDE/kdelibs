@@ -47,7 +47,7 @@ class KPrinterWrapper : public QPrinter
 {
 friend class KPrinter;
 public:
-	KPrinterWrapper(KPrinter*);
+	KPrinterWrapper(KPrinter*, PrinterMode m = ScreenResolution);
 	~KPrinterWrapper();
 protected:
 	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
@@ -227,7 +227,7 @@ public:
 	 * be useful if you want an independant/clean KPrinter object.
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
 	 */
-	KPrinter(bool restore = true);
+	KPrinter(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution );
 	/**
 	 * Destructor. This also saves the current KPrinter state for future printing
 	 */
@@ -687,7 +687,7 @@ protected:
 	void preparePrinting();
 	void finishPrinting();
 	void reload();
-	void init(bool restore = true);
+	void init(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution);
 
 protected:
 	KPrinterPrivate		*d;		// BIC: move other options to private class
