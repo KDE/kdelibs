@@ -497,13 +497,23 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(node->id() == ID_TABLE)
             {
                 NodeImpl *parent = node->parentNode();
-                //kdDebug( 6035 ) << "trying to add form to " << parent->id() << endl;
+                //kdDebug( 6035 ) << "trying to add form to " << parent->id() <<", " << parent->nodeName().string() <<  endl;
 		int exceptioncode = 0;
 		parent->insertBefore(n, node, exceptioncode );
 		if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
 #endif
+                    return false;
+                }
+                parent->removeChild(node, exceptioncode);
+                if ( exceptioncode ) {
+                    kdDebug( 6035 ) << "trying to reorder tree failed!!!" << endl;
+                    return false;
+                }
+                n->appendChild(node, exceptioncode);
+                if ( exceptioncode ) {
+                    kdDebug( 6035 ) << "this shouldn't happen!!!" << endl;
                     return false;
                 }
 		if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
