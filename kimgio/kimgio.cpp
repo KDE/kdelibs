@@ -63,7 +63,9 @@ void kimgioRegister(void)
 	    if (libname.isNull())
 		break;
 
-	    libname = dir.path() + "/" + libname;
+	    // it seems that QDir::[] is returning the full path
+	    // name, so we don't want to add the path to it.
+	    //	    libname = dir.path() + "/" + libname;
 	    lt_dlhandle libhandle = lt_dlopen(libname.ascii());
 	    if (libhandle == 0) {
 		warning("couldn't dlopen %s (%s)",
