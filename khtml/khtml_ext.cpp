@@ -452,6 +452,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   } else if (isImage || !url.isEmpty()) {
     actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
     actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
+    new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
+                 actionCollection(), "stopanimations" );
   }
 
   if (isImage)
