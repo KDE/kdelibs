@@ -27,7 +27,6 @@ namespace KABC {
 
 class AddressBook;
 class Addressee;
-class VCardFormatImpl;
 
 /**
   @short Interface of vCard backend for address book.
@@ -49,7 +48,8 @@ class VCardFormatPlugin : public FormatPlugin
     bool checkFormat( QFile *file ) const;
 
   private:
-    VCardFormatImpl *mImpl;
+    struct VCardFormatPrivate;
+    VCardFormatPrivate *d;
 };
 
 }

@@ -33,6 +33,10 @@ class VCardParser
 
     static VCard::List parseVCards( const QString& text );
     static QString createVCards( const VCard::List& list );
+
+  private:
+    class VCardParserPrivate;
+    VCardParserPrivate *d;
 };
 
 }

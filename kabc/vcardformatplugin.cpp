@@ -18,39 +18,95 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qfile.h>
+
+#include "address.h"
+#include "addressee.h"
+#include "vcardtool.h"
+
 #include "vcardformatplugin.h"
-#include "vcardformatimpl.h"
 
 using namespace KABC;
 
 VCardFormatPlugin::VCardFormatPlugin()
 {
-  mImpl = new VCardFormatImpl;
 }
 
 VCardFormatPlugin::~VCardFormatPlugin()
 {
-  delete mImpl;
 }
 
 bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
 {
-  return mImpl->load( addressee, file );
+  QString data;
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
+
+  VCardTool tool;
+  Addressee::List l = tool.parseVCards( data );
+
+  if ( ! l.first().isEmpty() ) {
+    addressee = l.first();
+    return true;
+  }
+
+  return false;
 }
 
 bool VCardFormatPlugin::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-  return mImpl->loadAll( addressBook, resource, file );
+  QString data;
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
+
+  VCardTool tool;
+
+  Addressee::List l = tool.parseVCards( data );
+
+  Addressee::List::iterator itr;
+
+  for ( itr = l.begin(); itr != l.end(); ++itr) {
+    Addressee addressee = *itr;
+    addressee.setResource( resource );
+    addressBook->insertAddressee( addressee );
+  }
+
+  return true;
 }
 
 void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
 {
-  mImpl->save( addressee, file );
+  VCardTool tool;
+  Addressee::List vcardlist;
+
+
+  vcardlist.append( addressee );
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << tool.createVCards( vcardlist );
 }
 
-void VCardFormatPlugin::saveAll( AddressBook *addressBook, Resource *resource, QFile *file )
+void VCardFormatPlugin::saveAll( AddressBook *ab, Resource *resource, QFile *file )
 {
-  mImpl->saveAll( addressBook, resource, file );
+  VCardTool tool;
+  Addressee::List vcardlist;
+
+  AddressBook::Iterator it;
+  for ( it = ab->begin(); it != ab->end(); ++it ) {
+    if ( (*it).resource() == resource ) {
+      (*it).setChanged( false );
+      vcardlist.append( *it );
+    }
+  }
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << tool.createVCards( vcardlist );
 }
 
 bool VCardFormatPlugin::checkFormat( QFile *file ) const

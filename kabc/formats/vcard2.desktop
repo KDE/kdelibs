@@ -1,7 +1,0 @@
-[Misc]
-Encoding=UTF-8
-Name=VCard2
-
-[Plugin]
-Type=vcard2
-X-KDE-Library=kabcformat_vcard2
