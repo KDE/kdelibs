@@ -14,7 +14,7 @@
 using namespace Evolution;
 using namespace KABC;
 
-class EvolutionFactory : public KRES::PluginFactory
+class EvolutionFactory : public KRES::PluginFactoryBase
 {
   public:
     KRES::Resource *resource( const KConfig *config )

@@ -48,7 +48,7 @@ extern "C"
 {
   void *init_kabc_ldap()
   {
-    return ( new LDAPFactory() );
+    return new KRES::PluginFactory<ResourceLDAP,ResourceLDAPConfig>();
   }
 }
 

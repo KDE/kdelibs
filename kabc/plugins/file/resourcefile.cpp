@@ -21,25 +21,11 @@
 
 using namespace KABC;
 
-class FileFactory : public KRES::PluginFactory
-{
-  public:
-    KRES::Resource *resource( const KConfig *config )
-    {
-      return new ResourceFile( config );
-    }
-
-    KRES::ConfigWidget *configWidget( QWidget *parent )
-    {
-      return new ResourceFileConfig( parent, "ResourceFileConfig" );
-    }
-};
-
 extern "C"
 {
   void *init_kabc_file()
   {
-    return ( new FileFactory() );
+    return new KRES::PluginFactory<ResourceFile,ResourceFileConfig>();
   }
 }
 

@@ -33,12 +33,9 @@ using namespace KABC;
 
 extern "C"
 {
-  ResourceConfigWidget *config_widget( QWidget *parent ) {
-    return new ResourceSqlConfig( parent, "ResourceSqlConfig" );
-  }
-
-  Resource *resource( AddressBook *ab, const KConfig *config ) {
-    return new ResourceSql( ab, config );
+  void *init_kabc_sql()
+  {
+    return new KRES::PluginFactory<ResourceSql,ResourceSqlConfig>();
   }
 }
 

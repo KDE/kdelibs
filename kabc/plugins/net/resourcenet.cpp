@@ -35,25 +35,11 @@
 
 using namespace KABC;
 
-class NetFactory : public KRES::PluginFactory
-{
-  public:
-    KRES::Resource *resource( const KConfig *config )
-    {
-      return new ResourceNet( config );
-    }
-
-    KRES::ConfigWidget *configWidget( QWidget *parent )
-    {
-      return new ResourceNetConfig( parent, "ResourceNetConfig" );
-    }
-};
-
 extern "C"
 {
   void *init_kabc_net()
   {
-    return ( new NetFactory() );
+    return new KRES::PluginFactory<ResourceNet,ResourceNetConfig>();
   }
 }
 

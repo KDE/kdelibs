@@ -35,7 +35,7 @@
 #include <kmessagebox.h>
 using namespace KABC;
 
-class IMAPFactory : public KRES::PluginFactory
+class IMAPFactory : public KRES::PluginFactoryBase
 {
   public:
     KRES::Resource *resource( const KConfig *config )
