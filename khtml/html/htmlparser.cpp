@@ -475,12 +475,14 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 // fall through!!
             };
             break;
-        case ID_DL:
-            popBlock( ID_DT );
-            e = new HTMLGenericElementImpl( document, ID_DD );
-            insertNode( e );
-            handled = true;
-            break;
+         case ID_DL:
+             popBlock( ID_DT );
+             if ( current->id() == ID_DL ) {
+                 e = new HTMLGenericElementImpl( document, ID_DD );
+                 insertNode( e );
+                 handled = true;
+             }
+             break;
         case ID_DD:
             popBlock( ID_DD );
             /* nobreak */

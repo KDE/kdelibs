@@ -1,5 +1,7 @@
 2004-01-11  Dirk Mueller  <mueller@kde.org>
 
+	* html/htmlparser.cpp (insertNode): fix <p><dl> handling (#68167).
+
 	* css/css_base.cpp (extractPseudoType): make it case-insensitive (#72159).
 
 2004-01-11  Germain Garand  <germain@ebooksfrance.org>
