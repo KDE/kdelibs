@@ -955,7 +955,7 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
 
       if (servlen && serv != NULL)
 	*serv = '\0';
-      if (host == NULL || hostlen < strlen(s._sun->sun_path))
+      if (host != NULL && hostlen > strlen(s._sun->sun_path))
 	strcpy(host, s._sun->sun_path);
 
       return 0;
@@ -1037,7 +1037,7 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
     {
       sprintf(buf2, "%u.%u.%u.%u", data[0], data[1], data[2], data[3]);
 
-      if (len >= strlen(buf2))
+      if (len > strlen(buf2))
 	{
 	  strcpy(buf, buf2);
 	  return buf;
@@ -1106,7 +1106,7 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
 	    }
 	}
 
-      if (strlen(buf2) <= len)
+      if (strlen(buf2) < len)
 	{
 	  strcpy(buf, buf2);
 	  return buf;
