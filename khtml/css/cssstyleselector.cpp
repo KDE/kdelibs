@@ -299,7 +299,7 @@ void CSSStyleSelector::reparseConfiguration()
     s_defaultSheet = 0;
 }
 
-#define MAXFONTSIZES 9
+#define MAXFONTSIZES 8
 
 void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
 {
@@ -307,7 +307,7 @@ void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,
     computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
 }
 
-void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool isFixed)
+void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueVector<int>& fontSizes, bool isFixed)
 {
 #ifdef APPLE_CHANGES
     // We don't want to scale the settings by the dpi.
@@ -320,10 +320,10 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
     if (toPix  < 96./72.) toPix = 96./72.;
 #endif // ######### fix isFixed code again.
 
-    fontSizes.clear();
+    fontSizes.resize( MAXFONTSIZES );
     float scale = 1.0;
-    static const float fontFactors[] =      {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
-    static const float smallFontFactors[] = {3./4., 5./6., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    static const float fontFactors[] =      {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3.};
+    static const float smallFontFactors[] = {3./4., 5./6., 8./9., 1., 6./5., 3./2., 2., 3.};
     float mediumFontSize, minFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
@@ -343,7 +343,7 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
     const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
         factor = scale*factors[i];
-        fontSizes << int(KMAX( mediumFontSize*factor +.5f, minFontSize));
+        fontSizes[i] = int(KMAX( mediumFontSize*factor +.5f, minFontSize));
         //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
@@ -1837,6 +1837,28 @@ static QColor colorForCSSValue( int css_value )
     return c;
 }
 
+static inline int nextFontSize(QValueVector<int>& a, int v, bool smaller)
+{
+    // return the nearest bigger/smaller value in scale a, when v is in range.
+    // otherwise increase/decrease value using a 1.2 fixed ratio
+    int m, l = 0, r = a.count()-1;
+    while (l <= r) {
+        m = (l+r)/2;
+        if (a[m] == v)
+            return smaller ? ( m ? a[m-1] : (v*5)/6 ) : 
+                             ( m+1<a.count() ? a[m+1] : (v*6)/5 );
+        else if (v < a[m])
+            r = m-1;
+        else
+            l = m+1;
+    }
+    if (!l)
+        return smaller ? (v*5)/6 : kMin((v*6)/5, a[0]);
+    if (l == a.count())
+        return smaller ? kMax((v*5)/6, a[r]) : (v*6)/5;
+        
+    return smaller ? a[r] : a[l];
+}
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
@@ -2896,10 +2918,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
 #ifdef APPLE_CHANGES
-	    QValueList<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
+	    QValueVector<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
 					 m_fixedFontSizes : m_fontSizes;
 #else
-	    QValueList<int>& fontSizes = m_fontSizes;
+	    QValueVector<int>& fontSizes = m_fontSizes;
 #endif
             switch(primitiveValue->getIdent())
             {
@@ -2911,12 +2933,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
             case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
             case CSS_VAL__KHTML_XXX_LARGE: size = int( fontSizes[7] ); break;
-            case CSS_VAL_LARGER:
-                // ### use the next bigger standardSize!!!
-                size = ( oldSize * 5 ) / 4;
+            case CSS_VAL_LARGER: 
+                size = nextFontSize(fontSizes, oldSize, false);
                 break;
             case CSS_VAL_SMALLER:
-                size = ( oldSize * 4 ) / 5;
+                size = nextFontSize(fontSizes, oldSize, true);
                 break;
             default:
                 return;

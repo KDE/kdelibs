@@ -1,3 +1,11 @@
+2004-11-30  Germain Garand  <germain@ebooksfrance.org>
+
+        * css/cssstyleselector.{cpp,h}: fontSizes array now uses a QValueVector;
+        made "font-size: smaller/bigger" follow the standard font scale
+        when possible.
+
+        * css/html4.css: made <big>/<small> use font-size: bigger/smaller (#82657)
+
 2004-11-29  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * css/cssstyleselector.cpp: Handle :lang selector

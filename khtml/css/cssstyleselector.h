@@ -24,6 +24,7 @@
 #define _CSS_cssstyleselector_h_
 
 #include <qptrlist.h>
+#include <qvaluevector.h>
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
@@ -129,8 +130,8 @@ namespace khtml
 
 	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
-        QValueList<int> fontSizes() const { return m_fontSizes; }
-	QValueList<int> fixedFontSizes() const { return m_fixedFontSizes; }
+        QValueVector<int> fontSizes() const { return m_fontSizes; }
+	QValueVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
 
 	bool strictParsing;
 	struct Encodedurl {
@@ -140,7 +141,7 @@ namespace khtml
 	} encodedurl;
 
         void computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
-	void computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool isFixed);
+	void computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueVector<int>& fontSizes, bool isFixed);
 
     protected:
 
@@ -235,8 +236,8 @@ public:
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
 	QPaintDeviceMetrics *paintDeviceMetrics;
-        QValueList<int>     m_fontSizes;
-	QValueList<int>     m_fixedFontSizes;
+        QValueVector<int>     m_fontSizes;
+	QValueVector<int>     m_fixedFontSizes;
 
 	bool fontDirty;
 
