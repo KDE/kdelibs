@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.75  1998/08/09 14:01:17  radej
+// Revision 1.77  1998/08/30 21:04:33  radej
+// sven: Minor improvement for docking in KTM
+//
 // Revision 1.74  1998/08/06 15:39:01  radej
 // sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
 //
@@ -1162,6 +1166,9 @@ void KToolBar::paintEvent(QPaintEvent *)
   
   // This code should be shared with the aequivalent in kmenubar!
   // (Marcin Dalecki).
+
+  toolbarHeight = height ();
+  toolbarWidth = width ();
   
   int stipple_height;
 
