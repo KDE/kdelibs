@@ -30,8 +30,8 @@ void KJavaAppletServer::createContext( int contextId )
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
-				      QString name, QString clazzName,
-				      QString base )
+				      const QString name, const QString clazzName,
+				      const QString base )
 {
     QString s;
     s.sprintf( "createApplet!%d!%d!%s!%s!%s\n",
@@ -43,7 +43,7 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 }
 
 void KJavaAppletServer::setParameter( int contextId, int appletId,
-				      QString name, QString value )
+				      const QString name, const QString value )
 {
     QString s;
     s.sprintf( "setParameter!%d!%d!%s!%s\n",
@@ -53,7 +53,7 @@ void KJavaAppletServer::setParameter( int contextId, int appletId,
 }
 
 void KJavaAppletServer::showApplet( int contextId, int appletId,
-				    QString title )
+				    const QString title )
 {
     QString s;
     s.sprintf( "showApplet!%d!%d!%s\n",
