@@ -219,19 +219,6 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	    return 0;
 	HTMLElementImpl::addChild(child);
 	// ###
-#if 0
-	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
-	if (_oldColElem)
-	    _currentCol = _oldColElem->lastCol();
-	_oldColElem = colel;
-	colel->setStartCol(_currentCol);
-	if (child->id() == ID_COL)
-	    _currentCol++;
-	else
-	    _currentCol+=colel->span();
-	addColInfo(colel);
-	incremental = true;
-#endif
 	}
 	return child;
     case ID_THEAD:
@@ -731,8 +718,6 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
-    _currentCol = 0;
-    _startCol = 0;
     _id = i;
     _span = 1;
 }
@@ -764,10 +749,6 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
     {
 	// these have to come before the table definition!
 	HTMLElementImpl::addChild(child);
-	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
-	colel->setStartCol(_currentCol);
-//	kdDebug( 6030 ) << "_currentCol=" << _currentCol << endl;
-	_currentCol++;
 	return child;
     }
     default:

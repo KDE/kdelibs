@@ -237,9 +237,6 @@ public:
     virtual tagStatus endTag() const { return COLEndTag; }
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
-    void setStartCol( int c ) {_startCol = _currentCol = c; }
-    int col() const { return _startCol; }
-    int lastCol() const { return _currentCol; }
 
     virtual NodeImpl *addChild(NodeImpl *child);
 
@@ -253,9 +250,6 @@ protected:
     ushort _id;
     int _span;
     HTMLTableElementImpl *table;
-
-    int _currentCol;
-    int _startCol;
 };
 
 // -------------------------------------------------------------------------
