@@ -1232,7 +1232,8 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
     if (fn && fn != mev.innerNode.handle() &&
-        fn->renderer() && fn->renderer()->isWidget()) {
+        fn->renderer() && fn->renderer()->isWidget() &&
+        _mouse->button() != MidButton) {
         forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
     }
 
