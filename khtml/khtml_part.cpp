@@ -2731,13 +2731,15 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it).m_params = params;
 
   // Support for <frame src="javascript:string">
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 && !isIFrame )
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
-      // static cast is safe as of isIFrame being false.
-      // but: shouldn't we support this javascript hack for iframes aswell?
-      khtml::RenderFrame* rf = static_cast<khtml::RenderFrame*>(frame);
-      assert(rf);
-      QVariant res = executeScript( DOM::Node(rf->element()), url.right( url.length() - 11) );
+    if ( url.find( QString::fromLatin1( "javascript:c=" ), 0, false ) != 0 ) {
+        KURL myurl;
+        myurl.setProtocol("javascript");
+        myurl.setPath( url.mid( 13 ) );
+        return processObjectRequest(&(*it), myurl, QString("text/html") );
+    } else {
+      QVariant res = executeScript( DOM::Node(frame->element()), url.right( url.length() - 11) );
       if ( res.type() == QVariant::String ) {
         KURL myurl;
         myurl.setProtocol("javascript");
@@ -2747,6 +2749,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
       // Error running the script
       (*it).m_bCompleted = true;
       return false;
+    } 
   }
   return requestObject( &(*it), completeURL( url ));
 }
@@ -2957,12 +2960,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
 
       p->begin();
-      if (!url.url().startsWith("about:")) {
-        p->m_url = url;
-        p->write(url.path());
-      }
       if (d->m_doc && p->d->m_doc)
         p->d->m_doc->setBaseURL(d->m_doc->baseURL());
+      if (!url.url().startsWith("about:")) {
+        p->write(url.path());
+      } else {
+	p->m_url = url;
+      }
       p->end();
       return true;
   }
