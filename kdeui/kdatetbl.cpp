@@ -92,7 +92,7 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setNumCols(7); // 7 days a week
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
-  viewport()->setEraseColor(lightGray);
+  viewport()->setEraseColor(KGlobalSettings::baseColor());
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
 }
 
@@ -105,8 +105,8 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   int w=cellWidth();
   int h=cellHeight();
   int pos;
-  QBrush brushBlue(blue);
-  QBrush brushLightblue(lightGray);
+  QBrush brushBlue(KGlobalSettings::activeTitleColor());
+  QBrush brushLightblue(KGlobalSettings::baseColor());
   QFont font=KGlobalSettings::generalFont();
   // -----
   font.setPointSize(fontsize);
@@ -126,19 +126,19 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 
       if (!normalday)
         {
-          painter->setPen(lightGray);
+          painter->setPen(KGlobalSettings::baseColor());
           painter->setBrush(brushLightblue);
           painter->drawRect(0, 0, w, h);
-          painter->setPen(blue);
+          painter->setPen(KGlobalSettings::activeTitleColor());
         } else {
-          painter->setPen(blue);
+          painter->setPen(KGlobalSettings::activeTitleColor());
           painter->setBrush(brushBlue);
           painter->drawRect(0, 0, w, h);
-          painter->setPen(white);
+          painter->setPen(KGlobalSettings::activeTextColor());
         }
       painter->drawText(0, 0, w, h-1, AlignCenter,
                         daystr, -1, &rect);
-      painter->setPen(black);
+      painter->setPen(KGlobalSettings::textColor());
       painter->moveTo(0, h-1);
       painter->lineTo(w-1, h-1);
       // ----- draw the weekday:
@@ -162,7 +162,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(gray);
         } else { // paint a day of the current month
           text.setNum(pos-firstday+1);
-          painter->setPen(black);
+          painter->setPen(KGlobalSettings::textColor());
         }
 
       pen=painter->pen();
@@ -170,17 +170,17 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         {
           if(hasFocus())
             { // draw the currently selected date
-              painter->setPen(red);
-              painter->setBrush(darkRed);
+              painter->setPen(KGlobalSettings::highlightColor());
+              painter->setBrush(KGlobalSettings::highlightColor());
               pen=white;
             } else {
-              painter->setPen(darkGray);
-              painter->setBrush(darkGray);
+              painter->setPen(KGlobalSettings::calculateAlternateBackgroundColor(KGlobalSettings::highlightColor()));
+              painter->setBrush(KGlobalSettings::calculateAlternateBackgroundColor(KGlobalSettings::highlightColor()));
               pen=white;
             }
         } else {
-          painter->setBrush(lightGray);
-          painter->setPen(lightGray);
+          painter->setBrush(KGlobalSettings::baseColor());
+          painter->setPen(KGlobalSettings::baseColor());
         }
 
       QDate cur_date = QDate::currentDate();
@@ -188,7 +188,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
            (date.month() == cur_date.month()) &&
            (firstday+cur_date.day()-1 == pos) )
       {
-         painter->setPen(black);
+         painter->setPen(KGlobalSettings::textColor());
       }
 
       painter->drawRect(0, 0, w, h);
@@ -470,7 +470,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setNumCols(3);
   // enable to find drawing failures:
   // setTableFlags(Tbl_clipCellPainting);
-  viewport()->setEraseColor(lightGray); // for consistency with the datepicker
+  viewport()->setEraseColor(KGlobalSettings::baseColor()); // for consistency with the datepicker
   // ----- find the preferred size
   //       (this is slow, possibly, but unfortunatly it is needed here):
   QFontMetrics metrics(font);
@@ -499,7 +499,7 @@ KDateInternalMonthPicker::getResult() const
 void
 KDateInternalMonthPicker::setupPainter(QPainter *p)
 {
-  p->setPen(black);
+  p->setPen(KGlobalSettings::textColor());
 }
 
 void
