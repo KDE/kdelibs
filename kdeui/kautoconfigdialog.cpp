@@ -53,9 +53,9 @@ KAutoConfigDialog::KAutoConfigDialog( QWidget *parent, const char *name,
     QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) 
 {		  
   openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name,
-  modal, Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
-
+  kdialogbase = new KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
+		  parent, name, true, i18n("Configure"), dialogButtons );
+  kdialogbase->setModal(modal);
   kautoconfig = 0;
 
   connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
@@ -88,9 +88,9 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
     QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) {
 
   openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name,
-  modal, Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
-
+  kdialogbase = new KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
+		  parent, name, true, i18n("Configure"), dialogButtons );
+  kdialogbase->setModal(modal);
   if(!kconfig)
     kconfig = KGlobal::config();
   kautoconfig = new KAutoConfig(kconfig, kdialogbase, "kautoconfig");

@@ -330,6 +330,7 @@ class KDialogBase : public KDialog
      * Constructor for the predefined layout mode where you specify the
      * kind of layout (face).
      *
+     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
      * @param caption The dialog caption. Do not specify the application name
@@ -339,7 +340,6 @@ class KDialogBase : public KDialog
      * @param modal Controls dialog modality. If @p false, the rest of the
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
-     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
      * @param defaultButton Specifies which button will be marked as
@@ -351,14 +351,14 @@ class KDialogBase : public KDialog
      * @param user3 User button3 text item.
      */
 
-    KDialogBase( int dialogFace, const QString &caption,
-		 QWidget *parent=0, const char *name=0, bool modal=true, WFlags f=WStyle_DialogBorder,
+    KDialogBase( KDialogBase::DialogType dialogFace, WFlags f,
+		 QWidget *parent=0, const char *name=0, bool modal=true,
+		 const QString &caption=QString::null,
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
 		 const KGuiItem &user3=KGuiItem() );
-
 
     /**
      * Constructor for a message box mode where the @p buttonMask can only

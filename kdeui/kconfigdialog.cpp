@@ -53,8 +53,8 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
     QObject(parent, name), d(new KConfigDialogPrivate(dialogType)) 
 {		  
   openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name,
-  modal, Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
+  kdialogbase = new KDialogBase( dialogType, Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
+		  parent, name, true, i18n("Configure"), dialogButtons );
 
   connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
   connect(kdialogbase, SIGNAL(okClicked()), this, SIGNAL(okClicked()));
