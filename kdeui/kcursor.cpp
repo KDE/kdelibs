@@ -280,12 +280,15 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if ( !enabled || !o->isWidgetType() )
         return false;
 
+    // disconnect() and connect() on events for a new widget
+    if ( o != hideWidget ) {
     if ( hideWidget ) {
 	disconnect( hideWidget, SIGNAL( destroyed() ), 
 		    this, SLOT( slotWidgetDestroyed()));
     }
     connect( o, SIGNAL( destroyed() ), 
 	     this, SLOT( slotWidgetDestroyed()));
+    }
 
     int t = e->type();
     QWidget *w = static_cast<QWidget *>( o );
@@ -301,17 +304,16 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
         return false;
     }
 
-    // don't process events not coming from the focus-widget
-// no, this prevents usage with widgets not taking focus (e.g. QCanvasView)
-//     if ( w != qApp->focusWidget() ) {
-// 	hideWidget = 0L;
-// 	return false;
-//     }
+    // don't process events not coming from the focus-window
+    // or from widgets that accept focus, but don't have it.
+    if ( !w->isActiveWindow() || (w->isFocusEnabled() && !w->hasFocus()) ) {
+ 	hideWidget = 0L;
+ 	return false;
+    }
 
     else if ( t == QEvent::Enter ) {
         if ( isCursorHidden )
             unhideCursor( w );
-        isCursorHidden = false;
         autoHideTimer->start( hideCursorDelay, true );
     }
 
@@ -355,6 +357,8 @@ void KCursorPrivate::slotHideCursor()
 
 void KCursorPrivate::slotWidgetDestroyed()
 {
+    if ( isCursorHidden )
+	unhideCursor( hideWidget );
     hideWidget = 0L;
 }
 
