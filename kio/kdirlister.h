@@ -67,8 +67,11 @@ public:
   virtual ~KDirLister();
 
   /**
-   * Run the directory lister on the given url.
-   * @param _url the directory URL
+   * Run the directory lister on the given url. If @p _url is already in the cache
+   * (i.e. openURL() was already called with @p _url) and _keep == true this is
+   * equivalent to @p updateDirectory( _url ).
+   *
+   * @param _url the directory URL.
    * @param _showDotFiles whether to return the "hidden" files
    * @param _keep if true the previous directories aren't forgotten
    * (they are still watched by kdirwatch and their items are kept in

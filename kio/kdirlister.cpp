@@ -133,7 +133,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
     emit clear();
   }
   else if ( m_lstDirs.contains( _url ) )
-    return;
+    updateDirectory( _url );
 
   // TODO: hmm, this means that we could change (!) this setting with _keep == true
   // what about setShowingDotFiles?
