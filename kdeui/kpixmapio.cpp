@@ -137,7 +137,7 @@ KPixmapIO::KPixmapIO()
 	kdWarning(290) << "red = " << d->ximage->red_mask 
 		<< ", green = " << d->ximage->green_mask 
 		<< ", blue = " << d->ximage->blue_mask << endl;
-	kdWarning(290) "Please report to <jansen@kde.org>\n";
+	kdWarning(290) << "Please report to <jansen@kde.org>\n";
     }
 #endif
 }
@@ -324,7 +324,7 @@ void KPixmapIO::createShmSegment(int size)
     d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0777);
     if (d->shminfo->shmid < 0) 
     {
-	kdWarning(290) << ID << "Could not get shared memory segment.\n";
+	kdWarning(290) << "Could not get shared memory segment.\n";
 	m_bShm = false;
 	return;
     }
@@ -332,7 +332,7 @@ void KPixmapIO::createShmSegment(int size)
     d->shminfo->shmaddr = (char *) shmat(d->shminfo->shmid, 0, 0);
     if (d->shminfo->shmaddr < 0) 
     {
-	kdWarning(290) << ID << "Could not attach shared memory segment.\n";
+	kdWarning(290) << "Could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	return;
@@ -341,7 +341,7 @@ void KPixmapIO::createShmSegment(int size)
     d->shminfo->readOnly = false;
     if (!XShmAttach(qt_xdisplay(), d->shminfo)) 
     {
-	kdWarning() << ID << "X-Server could not attach shared memory segment.\n";
+	kdWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmdt(d->shminfo->shmaddr);
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
