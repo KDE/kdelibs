@@ -15,4 +15,18 @@
 */
 void kimgioRegister(void);
 
+/**
+* Interface to the KDE Image IO library.
+* @author Sirtaj Singh Kang <taj@kde.org>
+* @version $Id$
+*/
+class KImageIO
+{
+
+public:
+
+static void registerFormats() { kimgioRegister(); }
+
+};
+
 #endif
