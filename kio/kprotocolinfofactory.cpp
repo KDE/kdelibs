@@ -40,7 +40,7 @@ KProtocolInfoFactory::~KProtocolInfoFactory()
 }
 
 
-KProtocolInfo* 
+KProtocolInfo*
 KProtocolInfoFactory::createEntry(int offset)
 {
    KProtocolInfo *info = 0;
@@ -93,7 +93,6 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
   // If we want to use FTP-Proxy, then it's kio_http we want.
   if (protocol == "ftp")
   {
-     QString prot;
      if (KProtocolManager::useProxy() && !KProtocolManager::ftpProxy().isEmpty())
        prot = "http";
      else
