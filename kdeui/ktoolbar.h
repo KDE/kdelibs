@@ -1087,6 +1087,7 @@ private:
     void insertWidgetInternal( QWidget *w, int &index, int id );
     void removeWidgetInternal( QWidget *w );
     void getAttributes( QString &position, QString &icontext, int &index );
+    int dockWindowIndex();
     KPopupMenu *contextMenu();
 
     QMap<QWidget*, int > widget2id;
