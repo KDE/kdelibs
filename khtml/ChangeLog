@@ -1,9 +1,14 @@
+2004-10-18  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_table.cpp: Merge layout fixes from Webcore
+
 2004-10-17  Stephan Kulow  <coolo@kde.org>
 
         * ecma/kjs_dom.cpp: adding patch by Richard Lärkäng to support IE
         extension insertAdjacentHTML (#33968)
 
 2004-10-16  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * html/html_formimpl.cpp: Escape otherwise unencodable characters.
         Matches the behavior of Gecko.
 

@@ -212,7 +212,6 @@ void RenderTable::calcWidth()
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
-	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
     } else {
         m_width = KMIN(short( availableWidth ),m_maxWidth);
     }
@@ -220,12 +219,13 @@ void RenderTable::calcWidth()
     // restrict width to what we really have in case we flow around floats
     // EXCEPT percent tables, which are still calculated as above
     if ( style()->flowAroundFloats() && widthType!=Percent ) {
-	availableWidth = cb->lineWidth( m_y );
-	m_width = KMIN( short( availableWidth ), m_width );
+        availableWidth = cb->lineWidth( m_y );
+        m_width = KMIN( short( availableWidth ), m_width );
     }
 
     m_width = KMAX (m_width, m_minWidth);
 
+    // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;
     m_marginLeft=0;
 
@@ -285,13 +285,23 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
-    m_height += borderTop();
+    int bpTop = borderTop();
+    int bpBottom = borderBottom();
+
+    m_height += bpTop;
+
+    int oldHeight = m_height;
+    calcHeight();
+    int newHeight = m_height;
+    m_height = oldHeight;
 
     // html tables with percent height are relative to view
     Length h = style()->height();
-    int th=0;
-    if (h.isFixed())
-        th = h.value();
+    int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
+    if (isPositioned())
+        th = newHeight; // FIXME: Leave this alone for now but investigate later.
+    else if (h.isFixed())
+        th += h.value();
     else if (h.isPercent()) {
         RenderObject* c = containingBlock();
         for ( ;
@@ -300,18 +310,24 @@ void RenderTable::layout()
              c = c->containingBlock()) {
             Length ch = c->style()->height();
             if (ch.isFixed()) {
-                th = h.width(ch.value());
+                th += h.width(ch.value());
                 break;
             }
         }
 
-        if (!c->isTableCell()) {
+        if (c->isTableCell()) {
+            RenderTableCell* cell = static_cast<RenderTableCell*>(c);
+            int cellHeight = cell->cellPercentageHeight();
+            if (cellHeight)
+                th += h.width(cellHeight);
+        }
+        else  {
             Length ch = c->style()->height();
 	    if (ch.isFixed())
-		th = h.width(ch.value());
+		th += h.width(ch.value());
 	    else {
 		// we need to substract out the margins of this block. -dwh
-		th = h.width(viewRect().height() - c->marginBottom() - c->marginTop());
+		th += h.width(viewRect().height() - c->marginBottom() - c->marginTop());
 		// not really, but this way the view height change
 		// gets propagated correctly
 		setOverhangingContents();
@@ -350,17 +366,12 @@ void RenderTable::layout()
 	m_height += foot->height();
     }
 
-
-    m_height += borderBottom();
+    m_height += bpBottom;
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM) {
         tCaption->setPos(tCaption->marginLeft(), m_height);
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
-
-    //kdDebug(0) << "table height: " << m_height << endl;
-
-    calcHeight();
 
     //kdDebug(0) << "table height: " << m_height << endl;
 
@@ -387,7 +398,6 @@ void RenderTable::setCellWidths()
 
 void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 {
-
     if(needsLayout()) return;
 
     _tx += xPos();
@@ -1183,9 +1193,9 @@ void RenderTableSection::calcRowHeight()
 	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
 		indx = 0;
 
-	    ch = cell->style()->height().width(0);
-	    if ( cell->height() > ch)
-		ch = cell->height();
+            ch = cell->style()->height().width(0);
+            if ( cell->height() > ch)
+                ch = cell->height();
 
 	    pos = rowPos[ indx ] + ch + vspacing;
 
@@ -1237,7 +1247,7 @@ int RenderTableSection::layoutRows( int toAdd )
 	int totalHeight = rowPos[totalRows] + toAdd;
 // 	qDebug("layoutRows: totalHeight = %d",  totalHeight );
 
-        int dh = totalHeight-rowPos[totalRows];
+        int dh = toAdd;
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
@@ -2204,7 +2214,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     // check if we need to do anything at all...
     int os = kMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
     if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
-                                   || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
+         || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
 
     if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
         int w = width();
