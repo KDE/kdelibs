@@ -29,5 +29,5 @@ kinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KIO) $(LIB_KIMGIO) $(LIB_KDECORE)
 kinit_METASOURCES = AUTO
 
 kinit_wrapper_SOURCES = wrapper.c
-
+kinit_wrapper_LDADD = $(LIBSOCKET)
 
