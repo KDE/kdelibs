@@ -407,7 +407,7 @@ return rc;
 
 
 int Wallet::removeEntry(const QString& key) {
-bool rc = false;
+int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
