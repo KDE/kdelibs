@@ -1,4 +1,7 @@
 #include <qglobal.h>
+
+#if QT_VERSION < 300
+
 #include <qobjectdict.h>
 #include <kapp.h>
 
@@ -26,3 +29,7 @@ public: \
 }; \
  \
 static _KUnloadMetaClass_Helper##p _helper_object_##p;
+
+#else
+#define _UNLOAD(p) 
+#endif
