@@ -179,6 +179,7 @@
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
 <!ENTITY khexedit	"<application>KHexedit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
+<!ENTITY kiconedit "<application>KIconEdit</application>">
 <!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
@@ -209,6 +210,7 @@
 <!ENTITY korganizer	"<application>Korganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY koshell "<application>KOShell</application>">
+<!ENTITY kotalkd "<application>KOTalkd</application>">
 <!ENTITY kpackage	"<application>KPackage</application>">
 <!ENTITY kpager "<application>KPager</application>">
 <!ENTITY kpaint "<application>KPaint</application>">
@@ -242,6 +244,7 @@
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
 <!ENTITY ksysguard	"<application>KSysguard</application>">
 <!ENTITY ksysv	"<application>ksysv</application>">
+<!ENTITY ktalk  "<application>KTalk</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
