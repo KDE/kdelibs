@@ -193,7 +193,7 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMEvent", DOMEventProto)
-IMPLEMENT_PROTOFUNC(DOMEventProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMEventProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMEventProto, DOMEventProtoFunc)
 
 DOMEvent::DOMEvent(ExecState *exec, DOM::Event e)
@@ -352,7 +352,7 @@ const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTabl
 @end
 */
 DEFINE_PROTOTYPE("DOMUIEvent",DOMUIEventProto)
-IMPLEMENT_PROTOFUNC(DOMUIEventProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMUIEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
 
 DOMUIEvent::~DOMUIEvent()
@@ -427,7 +427,7 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 @end
 */
 DEFINE_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto)
-IMPLEMENT_PROTOFUNC(DOMMouseEventProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMMouseEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
 
 DOMMouseEvent::~DOMMouseEvent()
@@ -580,7 +580,7 @@ const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DO
 @end
 */
 DEFINE_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto)
-IMPLEMENT_PROTOFUNC(DOMMutationEventProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMMutationEventProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
 
 DOMMutationEvent::~DOMMutationEvent()

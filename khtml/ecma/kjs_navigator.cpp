@@ -142,7 +142,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
 @end
 */
-IMPLEMENT_PROTOFUNC(NavigatorFunc)
+IMPLEMENT_PROTOFUNC_DOM(NavigatorFunc)
 
 Navigator::Navigator(ExecState *exec, KHTMLPart *p)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype()), m_part(p) { }
@@ -283,7 +283,7 @@ PluginBase::~PluginBase()
 
 
 /*******************************************************************/
-IMPLEMENT_PROTOFUNC(PluginsFunc)
+IMPLEMENT_PROTOFUNC_DOM(PluginsFunc)
 
 Value Plugins::get(ExecState *exec, const UString &propertyName) const
 {

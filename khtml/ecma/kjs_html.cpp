@@ -48,7 +48,7 @@
 
 using namespace KJS;
 
-IMPLEMENT_PROTOFUNC(HTMLDocFunction)
+IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
@@ -2723,7 +2723,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
 @end
 */
 DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
-IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(HTMLCollectionProtoFunc)
 IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };

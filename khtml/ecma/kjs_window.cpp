@@ -253,7 +253,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   onunload	Window::Onunload	DontDelete
 @end
 */
-IMPLEMENT_PROTOFUNC(WindowFunc)
+IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
 
 Window::Window(KHTMLPart *p)
   : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
@@ -1484,7 +1484,7 @@ const ClassInfo Location::info = { "Location", 0, 0, 0 };
   reload	Location::Reload	DontDelete|Function 0
 @end
 */
-IMPLEMENT_PROTOFUNC(LocationFunc)
+IMPLEMENT_PROTOFUNC_DOM(LocationFunc)
 Location::Location(KHTMLPart *p) : m_part(p)
 {
   //kdDebug(6070) << "Location::Location " << this << " m_part=" << (void*)m_part << endl;
@@ -1658,7 +1658,7 @@ const ClassInfo History::info = { "History", 0, 0, 0 };
   go		History::Go		DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(HistoryFunc)
+IMPLEMENT_PROTOFUNC_DOM(HistoryFunc)
 
 Value History::get(ExecState *exec, const UString &p) const
 {

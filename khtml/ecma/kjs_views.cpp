@@ -33,7 +33,7 @@ const ClassInfo DOMAbstractView::info = { "AbstractView", 0, &DOMAbstractViewTab
   getComputedStyle	DOMAbstractView::GetComputedStyle	DontDelete|Function 2
 @end
 */
-IMPLEMENT_PROTOFUNC(DOMAbstractViewFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMAbstractViewFunc)
 
 DOMAbstractView::~DOMAbstractView()
 {

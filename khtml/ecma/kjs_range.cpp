@@ -58,7 +58,7 @@ const ClassInfo DOMRange::info = { "Range", 0, &DOMRangeTable, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMRange",DOMRangeProto)
-IMPLEMENT_PROTOFUNC(DOMRangeProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMRangeProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMRangeProto,DOMRangeProtoFunc)
 
 DOMRange::DOMRange(ExecState *exec, DOM::Range r)

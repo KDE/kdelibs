@@ -61,7 +61,7 @@ using namespace KJS;
 @end
 */
 DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
-IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMNodeProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
@@ -668,7 +668,7 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
 @end
 */
 DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
-IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMDocumentProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
@@ -842,7 +842,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 @end
 */
 DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
-IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMElementProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
@@ -955,7 +955,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 @end
 */
 DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
-IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMDOMImplementationProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
@@ -1054,7 +1054,7 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
 @end
 */
 DEFINE_PROTOTYPE("NamedNodeMap", DOMNamedNodeMapProto)
-IMPLEMENT_PROTOFUNC(DOMNamedNodeMapProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMNamedNodeMapProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
 
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, 0, 0 };
@@ -1482,7 +1482,7 @@ const ClassInfo DOMCharacterData::info = { "CharacterImp",
 @end
 */
 DEFINE_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto)
-IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMCharacterDataProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterData d)
@@ -1563,7 +1563,7 @@ const ClassInfo DOMText::info = { "Text",
 @end
 */
 DEFINE_PROTOTYPE("DOMText",DOMTextProto)
-IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMTextProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
 
 DOMText::DOMText(ExecState *exec, DOM::Text t)

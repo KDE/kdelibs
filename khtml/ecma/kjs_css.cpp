@@ -60,7 +60,7 @@ static QString jsNameToProp( const UString &p )
 @end
 */
 DEFINE_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto)
-IMPLEMENT_PROTOFUNC(DOMCSSStyleDeclarationProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSStyleDeclarationProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
 
 const ClassInfo DOMCSSStyleDeclaration::info = { "CSSStyleDeclaration", 0, &DOMCSSStyleDeclarationTable, 0 };
@@ -305,7 +305,7 @@ const ClassInfo DOMStyleSheetList::info = { "StyleSheetList", 0, &DOMStyleSheetL
   item		DOMStyleSheetList::Item		DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(DOMStyleSheetListFunc) // not really a proto, but doesn't matter
+IMPLEMENT_PROTOFUNC_DOM(DOMStyleSheetListFunc) // not really a proto, but doesn't matter
 
 DOMStyleSheetList::~DOMStyleSheetList()
 {
@@ -407,7 +407,7 @@ const ClassInfo DOMMediaList::info = { "MediaList", 0, &DOMMediaListTable, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMMediaList", DOMMediaListProto)
-IMPLEMENT_PROTOFUNC(DOMMediaListProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMMediaListProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMMediaListProto, DOMMediaListProtoFunc)
 
 DOMMediaList::DOMMediaList(ExecState *exec, DOM::MediaList ml)
@@ -485,7 +485,7 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 @end
 */
 DEFINE_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto)
-IMPLEMENT_PROTOFUNC(DOMCSSStyleSheetProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSStyleSheetProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc) // warning, use _WITH_PARENT if DOMStyleSheet gets a proto
 
 DOMCSSStyleSheet::DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheet ss)
@@ -539,7 +539,7 @@ const ClassInfo DOMCSSRuleList::info = { "CSSRuleList", 0, &DOMCSSRuleListTable,
   item			DOMCSSRuleList::Item		DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(DOMCSSRuleListFunc) // not really a proto, but doesn't matter
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSRuleListFunc) // not really a proto, but doesn't matter
 
 DOMCSSRuleList::~DOMCSSRuleList()
 {
@@ -585,7 +585,7 @@ Value KJS::getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleList rl)
 
 // -------------------------------------------------------------------------
 
-IMPLEMENT_PROTOFUNC(DOMCSSRuleFunc) // Not a proto, but doesn't matter
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSRuleFunc) // Not a proto, but doesn't matter
 
 DOMCSSRule::~DOMCSSRule()
 {
@@ -954,7 +954,7 @@ const ClassInfo DOMCSSPrimitiveValue::info = { "CSSPrimitiveValue", 0, &DOMCSSPr
 @end
 */
 DEFINE_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto)
-IMPLEMENT_PROTOFUNC(DOMCSSPrimitiveValueProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSPrimitiveValueProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
 
 DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveValue v)
@@ -1058,7 +1058,7 @@ const ClassInfo DOMCSSValueList::info = { "CSSValueList", 0, &DOMCSSValueListTab
   item			DOMCSSValueList::Item		DontDelete|Function 1
 @end
 */
-IMPLEMENT_PROTOFUNC(DOMCSSValueListFunc) // not really a proto, but doesn't matter
+IMPLEMENT_PROTOFUNC_DOM(DOMCSSValueListFunc) // not really a proto, but doesn't matter
 
 DOMCSSValueList::DOMCSSValueList(ExecState *exec, DOM::CSSValueList v)
   : DOMCSSValue(exec, v) { }

@@ -46,7 +46,7 @@ const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, &DOMNodeIteratorTab
 @end
 */
 DEFINE_PROTOTYPE("DOMNodeIterator",DOMNodeIteratorProto)
-IMPLEMENT_PROTOFUNC(DOMNodeIteratorProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMNodeIteratorProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNodeIteratorProto,DOMNodeIteratorProtoFunc)
 
 DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni)
@@ -154,7 +154,7 @@ const ClassInfo DOMNodeFilter::info = { "NodeFilter", 0, 0, 0 };
 @end
 */
 DEFINE_PROTOTYPE("DOMNodeFilter",DOMNodeFilterProto)
-IMPLEMENT_PROTOFUNC(DOMNodeFilterProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMNodeFilterProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMNodeFilterProto,DOMNodeFilterProtoFunc)
 
 DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf)
@@ -207,7 +207,7 @@ const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, &DOMTreeWalkerTable, 0 
 @end
 */
 DEFINE_PROTOTYPE("DOMTreeWalker",DOMTreeWalkerProto)
-IMPLEMENT_PROTOFUNC(DOMTreeWalkerProtoFunc)
+IMPLEMENT_PROTOFUNC_DOM(DOMTreeWalkerProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMTreeWalkerProto,DOMTreeWalkerProtoFunc)
 
 DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
