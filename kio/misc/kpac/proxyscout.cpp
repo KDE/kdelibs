@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -100,7 +100,7 @@ namespace KPAC
                 break;
             case KProtocolManager::PACProxy:
                 m_downloader = new Downloader( this );
-                m_downloader->download( KProtocolManager::proxyConfigScript() );
+                m_downloader->download( KURL( KProtocolManager::proxyConfigScript() ) );
                 break;
             default:
                 return false;
@@ -120,7 +120,7 @@ namespace KPAC
             }
             catch ( const Script::Error& e )
             {
-                KNotifyClient::event( "script-error", i18n( 
+                KNotifyClient::event( "script-error", i18n(
                     "The proxy configuration script is invalid:\n%1" )
                     .arg( e.message() ) );
                 success = false;
@@ -180,7 +180,7 @@ namespace KPAC
         catch ( const Script::Error& e )
         {
             KNotifyClient::Instance notifyInstance( m_instance );
-            KNotifyClient::event( "evaluation-error", i18n( 
+            KNotifyClient::event( "evaluation-error", i18n(
                 "The proxy configuration script returned an error:\n%1" )
                     .arg( e.message() ) );
         }
