@@ -33,6 +33,7 @@ Ftp::Ftp()
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
+  m_bEnablePASV = true;
 }
 
 
@@ -517,7 +518,7 @@ bool Ftp::ftpOpenDataConnection()
 
   ////////////// First try PASV mode
   
-  if (ftpOpenPASVDataConnection())
+  if ( m_bEnablePASV && ftpOpenPASVDataConnection())
     return true;
 
   ////////////// Fallback : non-PASV mode

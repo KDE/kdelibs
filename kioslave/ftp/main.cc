@@ -909,6 +909,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   QString url_orig = _url;
   QString url_part = url_orig + ".part";
 
+  ftp.enablePASV( false ); //Simon: disable PASV mode for uploads
+
   KURL udest_orig( url_orig );
   KURL udest_part( url_part );
 
@@ -1070,6 +1072,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   ftp.ftpDisconnect( true );
 
+  ftp.enablePASV( true );
+  
   // We have done our job => finish
   finished();
   m_cmd = CMD_NONE;

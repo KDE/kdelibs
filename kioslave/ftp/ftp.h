@@ -93,6 +93,8 @@ private:
 
   bool m_bPersistent;
   
+  bool m_bEnablePASV;
+  
   size_t m_size;
   size_t m_bytesLeft;
 
@@ -196,6 +198,8 @@ public:
 
   // this will send "rest offset" , use it before ftpOpen()
   bool ftpResume( unsigned long offset );
+
+  void enablePASV( bool enable ) { m_bEnablePASV = enable; }
   
   bool opendir( KURL& _url );
   FtpEntry *readdir();
