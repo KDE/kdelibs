@@ -84,7 +84,14 @@ class KWalletD : public KDEDModule {
 		void slotAppUnregistered(const QCString& app);
 
 	private:
+		// This also validates the handle.  May return NULL.
+		KWallet::Backend* getWallet(int handle);
+		// Generate a new unique handle.
+		int generateHandle();
+		// Invalidate a handle (remove it from the QMap)
+		void invalidateHandle(int handle);
 		QIntDict<KWallet::Backend> _wallets;
+		QMap<QCString,QValueList<int> > _handles;
 };
 
 
