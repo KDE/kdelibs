@@ -313,7 +313,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     initGUI(); // activate GM
 
     readRecentFiles( KGlobal::config() );
-    //    readRecentFiles( kc );
 
 
     adjustSize();
@@ -871,11 +870,14 @@ void KFileDialog::setSelection(const QString& url)
 	int sep = filename.findRev('/');
 	if (sep >= 0) { // there is a / in it
 	    setURL(filename.left(sep), true);
-	    filename = filename.mid(sep+1, filename.length() - sep);
+	    // filename = filename.mid(sep+1, filename.length() - sep);
+	    // filename must be decoded, or "name with space" would become
+	    // "name%20with%20space", so we use KURL::fileName()
+	    filename = u.fileName();
 	    kdDebug(kfile_area) << "filename " << filename << endl;
-        d->selection = filename;
-        locationEdit->setCurrentItem( 0 );
-        locationEdit->setEditText( filename );
+	    d->selection = filename;
+	    locationEdit->setCurrentItem( 0 );
+	    locationEdit->setEditText( filename );
 	}
 	
 	d->url = KURL(ops->url(), filename);
