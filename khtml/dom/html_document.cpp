@@ -21,6 +21,10 @@
  * $Id$
  */
 // --------------------------------------------------------------------------
+#include <dcopclient.h>
+#include <kapp.h>
+#include <kdebug.h>
+
 #include "html_document.h"
 
 #include "dom_node.h"
@@ -34,6 +38,7 @@
 #include "html_elementimpl.h"
 #include "html_miscimpl.h"
 #include "htmlhashes.h"
+#include "khtmlview.h"
 using namespace DOM;
 
 
@@ -173,13 +178,42 @@ HTMLCollection HTMLDocument::all() const
 
 DOMString HTMLDocument::cookie() const
 {
-    // ###
-    return 0;
+    QCString replyType;
+    QByteArray params, reply;
+    QDataStream stream(params, IO_WriteOnly);
+    stream << URL().string();
+    if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
+				  "findCookies(QString)", params, replyType, reply)) {
+	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+	 return 0;
+    }
+    
+    QDataStream stream2(reply, IO_ReadOnly);
+    if(replyType != "QString") {
+	 kdError(6010) << "DCOP function findCookies(...) returns " 
+		       << replyType << ", expected QString" << endl;
+	 return 0;
+    }
+ 
+    QString result;
+    stream2 >> result;
+    return DOMString(result); 
 }
 
-void HTMLDocument::setCookie( const DOMString &/*value*/ )
+void HTMLDocument::setCookie( const DOMString & value )
 {
-    // ###
+    long windowId = view()->winId();
+    QByteArray params;
+    QDataStream stream(params, IO_WriteOnly);
+    QString fake_header("Set-Cookie: ");
+    fake_header.append(value.string());
+    fake_header.append("\n");
+    stream << URL().string() << fake_header.utf8() << windowId;
+    if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
+				  "addCookies(QString, QCString, long)", params))
+    {
+	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+    }
 }
 
 void HTMLDocument::open(  )
