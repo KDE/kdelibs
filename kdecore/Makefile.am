@@ -55,7 +55,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 5:0:1
-libkdefakes_la_LIBADD  = $(LIBSOCKET) ../kdefx/libkdefx.la
+libkdefakes_la_LIBADD  = $(LIBSOCKET)
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
