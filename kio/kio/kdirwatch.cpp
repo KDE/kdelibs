@@ -503,8 +503,6 @@ bool KDirWatchPrivate::useStat(Entry* e)
   else
     useFreq(e, m_PollInterval);
 
-  e->m_nlink = 0;
-
   if (e->m_mode != StatMode) {
     e->m_mode = StatMode;
     statEntries++;
@@ -798,10 +796,12 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
       if (exists) {
 	e->m_ctime = stat_buf.st_ctime;
 	e->m_status = Normal;
+        e->m_nlink = stat_buf.st_nlink;
       }
       else {
 	e->m_ctime = invalid_ctime;
 	e->m_status = NonExistent;
+        e->m_nlink = 0;
       }
     }
     e->msecLeft = 0;
@@ -886,11 +886,13 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     if (e->m_status == NonExistent) {
       e->m_ctime = stat_buf.st_ctime;
       e->m_status = Normal;
+      e->m_nlink = stat_buf.st_nlink;
       return Created;
     }
 
     if ( (e->m_ctime != invalid_ctime) && 
-	 ((stat_buf.st_ctime != e->m_ctime) || (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
+	 ((stat_buf.st_ctime != e->m_ctime) || 
+	  (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
       e->m_ctime = stat_buf.st_ctime;
       e->m_nlink = stat_buf.st_nlink;
       return Changed;
