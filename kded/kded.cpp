@@ -592,6 +592,30 @@ static KCmdLineOptions options[] =
   { 0, 0, 0 }
 };
 
+class KDEDQtDCOPObject : public DCOPObject
+{
+public:
+  KDEDQtDCOPObject() : DCOPObject("qt/kded") { }
+  
+  virtual bool process(const QCString &fun, const QByteArray &data,
+                       QCString& replyType, QByteArray &replyData)
+    {
+      if ( kapp && (fun == "quit()") )
+      {
+        kapp->quit();
+        return true;
+      }
+      return DCOPObject::process(fun, data, replyType, replyData);
+    }                       
+
+  QCStringList functions()
+    {
+       QCStringList res = DCOPObject::functions();
+       res += "void quit()";
+       return res;
+    }
+};
+
 class KDEDApplication : public KUniqueApplication
 {
 public:
@@ -615,6 +639,7 @@ public:
        res += "void registerWindowId(long int)";
        res += "void unregisterWindowId(long int)";
        res += "QCStringList loadedModules()";
+       res += "void quit()";
        return res;
     }
 
@@ -663,10 +688,15 @@ public:
       _replyStream << Kded::self()->loadedModules();
       return true;
     }
+    else if (fun == "quit()") {
+      quit();
+      return true;
+    }
     return KUniqueApplication::process(fun, data, replyType, replyData);
   }
 
   bool startup;
+  KDEDQtDCOPObject kdedQtDcopObject;
 };
 
 extern "C" int kdemain(int argc, char *argv[])
@@ -720,6 +750,8 @@ extern "C" int kdemain(int argc, char *argv[])
         fprintf(stderr, "KDE Daemon (kded) already running.\n");
         exit(0);
      }
+
+     KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
      config->setGroup("General");
      int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
