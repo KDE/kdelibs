@@ -96,9 +96,6 @@ static
 void registerLocalClient( const QCString &_appId, DCOPClient *client )
 {
     cliMap()->replace(_appId.data(), client);
-    int c = _appId.find( '-' );
-    if ( c > 0 )
-       cliMap()->replace(_appId.left(c).data(), client);
 }
 
 static
@@ -106,11 +103,6 @@ void unregisterLocalClient( const QCString &_appId )
 {
     client_map_t *map = cliMap();
     map->remove(_appId.data());
-    int c = _appId.find( '-' );
-    if ( c > 0 )
-    {
-       map->remove(_appId.left(c).data());
-    }
 }
 /////////////////////////////////////////////////////////
 
