@@ -206,7 +206,6 @@ action/editfiletype
 action/properties
 action/openwith
 action/openintab
-action/openintabfront
 action/kdesktop_rmb // RMB menu
 
 Kicker related: 
