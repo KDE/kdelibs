@@ -2,6 +2,8 @@
 Type=TGA
 Header=^\x01\x01[\x02|\x0a]\x01\x01\x01\x01\x01\x01\x01\x01\x01
 Name=Truevision Targa Image
+Name[da]=Truevision Targa billede
+Name[sv]=Truevision Targa-bild
 Read=true
 Write=true
 Suffices=tga,TGA
