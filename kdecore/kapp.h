@@ -457,7 +457,7 @@ private:
   virtual void kdisplaySetStyle();
   virtual void kdisplaySetFont();
   virtual void kdisplaySetStyleAndFont();
-  virtual void readSettings();
+  virtual void readSettings(bool reparse = true);
   void resizeAll();
   virtual void applyGUIStyle(GUIStyle newstyle);
 
@@ -571,6 +571,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.91  1999/06/18 20:27:42  kulow
+// moved getConfig into source to avoid including kglobal.h (this enabal-final
+// thing fools me way too often :(
+//
 // Revision 1.90  1999/06/18 20:23:07  kulow
 // some more cleanups of KApplication. the KConfig instance is controlled
 // by KGlobal to make it independent from KApplication.

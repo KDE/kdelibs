@@ -147,7 +147,7 @@ void KApplication::init()
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
 
-  readSettings();
+  readSettings(false);
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
 
@@ -569,14 +569,14 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	  if ( cme->message_type == KDEChangePalette )
 		{
-		  readSettings();
+		  readSettings(true);
 		  kdisplaySetPalette();
 		
 		  return True;
 		}
 	  if ( cme->message_type == KDEChangeGeneral )
 		{
-		  readSettings();
+		  readSettings(true);
 		  kdisplaySetPalette(); // This has to be first (mosfet)
 		  kdisplaySetStyleAndFont();
 		
@@ -799,15 +799,13 @@ QString KApplication::getCaption() const
 	return name();
 }
 
-void KApplication::readSettings()
+void KApplication::readSettings(bool reparse)
 {
   // use the global config files
   KConfig* config = KGlobal::config();
-  config->reparseConfiguration();
+  if (reparse)
+      config->reparseConfiguration();
 
-  QString str;
-  int     num;
-	
   config->setGroup( "WM");
   // this default is Qt lightGray
   inactiveTitleColor_ = config->readColorEntry( "inactiveBackground", &lightGray );
@@ -829,7 +827,7 @@ void KApplication::readSettings()
 	
   // cursor blink rate
   //
-  num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
+  int num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
   // filter out bogus numbers
   if ( num < 200 ) num = 200;
   if ( num > 2000 ) num = 2000;
