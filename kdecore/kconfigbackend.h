@@ -69,7 +69,7 @@ public:
   /**
    * Destructs the configuration backend.
    */
-  virtual ~KConfigBackEnd() {};
+  virtual ~KConfigBackEnd();
 
   /**
    * Parses all configuration files for a configuration object.  This
@@ -167,7 +167,8 @@ protected:
 
 protected:
   virtual void virtual_hook( int id, void* data );
-private:
+protected:
+  class KConfigBackEndPrivate;
   KConfigBackEndPrivate *d;
 };
 
@@ -279,7 +280,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KConfigINIBackEndPrivate *d;
+  KConfigINIBackEndPrivate *not_d;
 };
 
 #endif

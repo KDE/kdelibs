@@ -161,6 +161,15 @@ static QCString stringToPrintable(const QCString& str){
   return result;
 }
 
+class KConfigBackEnd::KConfigBackEndPrivate
+{
+public:
+   QDateTime localLastModified;
+   uint      localLastSize;
+   QDateTime globalLastModified;
+   uint      globalLastSize;
+};
+
 void KConfigBackEnd::changeFileName(const QString &_fileName,
                                     const char * _resType,
                                     bool _useKDEGlobals)
@@ -180,6 +189,11 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
 	      QString::fromLatin1("kdeglobals");
    else
       mGlobalFileName = QString::null;
+
+   d->localLastModified = QDateTime();
+   d->localLastSize = 0;
+   d->globalLastModified = QDateTime();
+   d->globalLastSize = 0;
 }
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
@@ -188,7 +202,13 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       bool _useKDEGlobals)
   : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess), mFileMode(-1)
 {
+   d = new KConfigBackEndPrivate;
    changeFileName(_fileName, _resType, _useKDEGlobals);
+}
+
+KConfigBackEnd::~KConfigBackEnd()
+{
+   delete d;
 }
 
 void KConfigBackEnd::setFileWriteMode(int mode)
@@ -219,6 +239,9 @@ bool KConfigINIBackEnd::parseConfigFiles()
            mConfigState = KConfigBase::ReadWrite;
         }
      }
+     QFileInfo info(mLocalFileName);
+     d->localLastModified = info.lastModified();
+     d->localLastSize = info.size();
   }
 
   // Parse all desired files from the least to the most specific.
@@ -246,6 +269,13 @@ bool KConfigINIBackEnd::parseConfigFiles()
       aConfigFile.close();
       if (bFileImmutable)
          break;
+    }
+
+    if (!pConfig->isReadOnly())
+    {
+       QFileInfo info(mGlobalFileName);
+       d->globalLastModified = info.lastModified();
+       d->globalLastSize = info.size();
     }
   }
 
@@ -599,8 +629,43 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // check if the user would be allowed to write if
     // it wasn't SUID.
     if (checkAccess(mLocalFileName, W_OK)) {
-      // is it writable?
-      bEntriesLeft = writeConfigFile( mLocalFileName, false, bMerge );
+      // File is writable
+
+      bool mergeLocalFile = bMerge;
+      // Check if the file has been updated since.
+      if (mergeLocalFile)
+      {
+         QFileInfo info(mLocalFileName);
+         if ((d->localLastSize == info.size()) ||
+             (d->localLastModified == info.lastModified()))
+         {
+            // Not changed, don't merge.
+            mergeLocalFile = false;
+         }
+         else
+         {
+            // Changed...
+            d->localLastModified = QDateTime();
+            d->localLastSize = 0;
+         }
+      }
+
+      bEntriesLeft = writeConfigFile( mLocalFileName, false, mergeLocalFile );
+      
+      // Only if we didn't have to merge anything can we use our in-memory state
+      // the next time around. Otherwise the config-file may contain entries
+      // that are different from our in-memory state which means we will have to 
+      // do a merge from then on. 
+      // We do not automatically update the in-memory state with the on-disk 
+      // state when writing the config to disk. We only do so when 
+      // KCOnfig::reparseConfiguration() is called.
+      // For KDE 4.0 we may wish to reconsider that.
+      if (!mergeLocalFile)
+      {
+         QFileInfo info(mLocalFileName);
+         d->localLastModified = info.lastModified();
+         d->localLastSize = info.size();
+      }
     }
   }
 
@@ -609,10 +674,35 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // the useKDEGlobals flag is set.
   if (bEntriesLeft && useKDEGlobals) {
 
-
     // can we allow the write? (see above)
     if (checkAccess ( mGlobalFileName, W_OK )) {
-      writeConfigFile( mGlobalFileName, true, bMerge );
+      bool mergeGlobalFile = bMerge;
+      // Check if the file has been updated since.
+      if (mergeGlobalFile)
+      {
+         QFileInfo info(mGlobalFileName);
+         if ((d->globalLastSize == info.size()) ||
+             (d->globalLastModified == info.lastModified()))
+         {
+            // Not changed, don't merge.
+            mergeGlobalFile = false;
+         }
+         else
+         {
+            // Changed...
+            d->globalLastModified = QDateTime();
+            d->globalLastSize = 0;
+         }
+      }
+
+      writeConfigFile( mGlobalFileName, true, mergeGlobalFile );
+
+      if (!mergeGlobalFile)
+      {
+         QFileInfo info(mGlobalFileName);
+         d->globalLastModified = info.lastModified();
+         d->globalLastSize = info.size();
+      }
     }
   }
 
@@ -712,58 +802,50 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
 {
   bool bEntriesLeft = false;
   bFileImmutable = false;
-  if (mergeFile)
-  {
-    // Read entries from disk
-    if (mergeFile->open(IO_ReadOnly))
-    {
-       // fill the temporary structure with entries from the file
-       parseSingleConfigFile(*mergeFile, &aTempMap, bGlobal, false );
 
-       if (bFileImmutable) // File has become immutable on disk
-          return bEntriesLeft;
+  // Read entries from disk
+  if (mergeFile && mergeFile->open(IO_ReadOnly))
+  {
+     // fill the temporary structure with entries from the file
+     parseSingleConfigFile(*mergeFile, &aTempMap, bGlobal, false );
+
+     if (bFileImmutable) // File has become immutable on disk
+        return bEntriesLeft;
+  }
+
+  KEntryMap aMap = pConfig->internalEntryMap();
+
+  // augment this structure with the dirty entries from the config object
+  for (KEntryMapIterator aIt = aMap.begin();
+       aIt != aMap.end(); ++aIt)
+  {
+    const KEntry &currentEntry = *aIt;
+    if(aIt.key().bDefault)
+    {
+       aTempMap.replace(aIt.key(), currentEntry);
+       continue;
     }
 
-    KEntryMap aMap = pConfig->internalEntryMap();
+    if (mergeFile && !currentEntry.bDirty)
+       continue;
 
-    // augment this structure with the dirty entries from the config object
-    for (KEntryMapIterator aIt = aMap.begin();
-          aIt != aMap.end(); ++aIt)
+    // only write back entries that have the same
+    // "globality" as the file
+    if (currentEntry.bGlobal != bGlobal)
     {
-      const KEntry &currentEntry = *aIt;
-      if(aIt.key().bDefault)
-      {
-         aTempMap.replace(aIt.key(), currentEntry);
-         continue;
-      }
+       // wrong "globality" - might have to be saved later
+       bEntriesLeft = true;
+       continue;
+    }
 
-      if (!currentEntry.bDirty)
-         continue;
+    // put this entry from the config object into the
+    // temporary map, possibly replacing an existing entry
+    KEntryMapIterator aIt2 = aTempMap.find(aIt.key());
+    if (aIt2 != aTempMap.end() && (*aIt2).bImmutable)
+       continue; // Bail out if the on-disk entry is immutable
 
-      // only write back entries that have the same
-      // "globality" as the file
-      if (currentEntry.bGlobal != bGlobal)
-      {
-        // wrong "globality" - might have to be saved later
-        bEntriesLeft = true;
-        continue;
-      }
-
-      // put this entry from the config object into the
-      // temporary map, possibly replacing an existing entry
-      KEntryMapIterator aIt2 = aTempMap.find(aIt.key());
-      if (aIt2 != aTempMap.end() && (*aIt2).bImmutable)
-        continue; // Bail out if the on-disk entry is immutable
-
-      aTempMap.insert(aIt.key(), currentEntry, true);
-    } // loop
-  }
-  else
-  {
-    // don't merge, just get the regular entry map and use that.
-    aTempMap = pConfig->internalEntryMap();
-    bEntriesLeft = true; // maybe not true, but we aren't sure
-  }
+    aTempMap.insert(aIt.key(), currentEntry, true);
+  } // loop
 
   return bEntriesLeft;
 }
@@ -781,7 +863,6 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   bool bEntriesLeft = getEntryMap(aTempMap, bGlobal, mergeFile);
   delete mergeFile;
   if (bFileImmutable) return true; // pretend we wrote it
-
 
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
