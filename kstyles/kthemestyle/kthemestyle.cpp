@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.2
+Port version 0.9.3
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -95,7 +95,6 @@ static const int rightBorder = 12;
 /*
 BUGS:
 Spin widget for system++
-Masking of radio buttons?
 
 Vertical sliders flash a bit -- anything else?
 Possibly some bugs unpolishing menus..
@@ -927,7 +926,10 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 {
                     const QBitmap * mask = uncached( ( flags & Style_On || flags & Style_Down ) ? ExIndicatorOn : ExIndicatorOff ) ->mask();
                     if ( mask )
+                    {
+                        p->setPen( Qt::color1 );
                         p->drawPixmap( x, y, *mask );
+                    }
                     else
                         p->fillRect( x, y, w, h, QBrush( color1, SolidPattern ) );
                     handled = true;
@@ -942,7 +944,10 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                     const QBitmap * mask = uncached( ( flags & Style_On ) ? IndicatorOn :
                                                      IndicatorOff ) ->mask();
                     if ( mask )
+                    {
+                        p->setPen( Qt::color1 );
                         p->drawPixmap( x, y, *mask );
+                    }
                     else
                         p->fillRect( x, y, w, h, QBrush( color1, SolidPattern ) );
                     handled = true;
@@ -1080,6 +1085,8 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 break;
 
             }
+        default:
+            handled = false;
     }
 
     if ( !handled )
@@ -1686,6 +1693,8 @@ void KThemeStyle::drawControl( ControlElement element,
                 handled = true;
                 break;
             }
+        default:
+            handled = false;
     };
 
     if ( !handled )
@@ -1713,6 +1722,8 @@ void KThemeStyle::drawControlMask( ControlElement element,
                 handled = true;
                 break;
             }
+        default:
+            handled = false;
     };
 
     if ( !handled )
@@ -1886,6 +1897,8 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
             	handled = true;
                 break;
             }
+        default:
+            handled = false;
 
     }
 
@@ -2070,6 +2083,8 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
                 }
                 break;
             }
+        default:
+            handled = false;
     }
 
     if ( !handled )
