@@ -20,6 +20,9 @@
 #include "kio/paste.h"
 #include "kio/global.h"
 #include "kio/netaccess.h"
+#include "kio/observer.h"
+#include "kio/renamedlg.h"
+#include "kio/kprotocolmanager.h"
 
 #include <qapplication.h>
 #include <qclipboard.h>
@@ -124,9 +127,31 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
     KURL myurl(u);
     myurl.addPath( l.text() );
 
+    if (KIO::NetAccess::exists(myurl, false))
+    {
+        kdDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
+        RenameDlg_Result res = R_OVERWRITE;
+
+        QString newPath;
+        // Ask confirmation about resuming previous transfer
+        res = Observer::self()->open_RenameDlg(
+                          0L, i18n("File Already Exists"),
+                          u.prettyURL(0, KURL::StripFileProtocol),
+                          myurl.prettyURL(0, KURL::StripFileProtocol),
+                          (RenameDlg_Mode) (M_OVERWRITE | M_SINGLE), newPath);
+
+        if ( res == R_RENAME )
+        {
+            myurl = newPath;
+        }
+        else if ( res == R_CANCEL )
+        {
+            return;
+        }
+    }
+
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAcess, we can do a synchronous call.
-    // NOTE: upload() overwrites the destination if it exists. TODO dialog box.
 
     KTempFile tempFile;
     tempFile.setAutoDelete( true );
