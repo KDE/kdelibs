@@ -29,7 +29,7 @@ class KDateValidator;
 class KDateTable;
 
 /**
- *  Widget for selecting dates. 
+ * The KDatePicker provides a widget for calendar date input.
  * 
  *     Different from the
  *     previous versions, it now emits two types of signals, either
@@ -39,9 +39,13 @@ class KDateTable;
  *     A line edit has been added in the newer versions to allow the user 
  *     to select a date directly by entering numbers like 19990101
  *     or 990101. 
- * 
+ *
+ * @image kdatepicker.png KDatePicker
+ *
  *     @version $Id$
  *     @author Tim Gilman, Mirko Sucker
+ *
+ * @short A date selection widget.
  **/
 class KDatePicker: public QFrame {
   Q_OBJECT

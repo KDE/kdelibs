@@ -289,7 +289,11 @@ private:
 };
 
 /**
- * Displays and signals a single colour selection.
+ * The KColorPatch widget is a (usually small) widget showing
+ * a selected color e. g. in the @ref KColorDialog. It
+ * automatically handles drag and drop from and on the widget.
+ *
+ * @short A color shower.
  */
 class KColorPatch : public QFrame
 {
@@ -304,10 +308,21 @@ signals:
   void colorChanged( const QColor&);
 
 protected:
+  /**
+   * @reimplemented
+   */
   virtual void drawContents( QPainter *painter );
-
+  /**
+   * @reimplemented
+   */
   virtual void mouseMoveEvent( QMouseEvent * );
+  /**
+   * @reimplemented
+   */
   virtual void dragEnterEvent( QDragEnterEvent *);
+  /**
+   * @reimplemented
+   */
   virtual void dropEvent( QDropEvent *);
 
 private:
@@ -330,7 +345,11 @@ private:
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
  * 
- * @sect Simplest use:
+ * In most cases, you will want to use the static method @ref KColorDialog::getColor().
+ * This pops up the dialog (with an initial selection provided by you), lets the
+ * user choose a color, and returns.
+ *
+ * Example:
  * 
  * <pre>
  * 	QColor myColor;
@@ -338,6 +357,18 @@ private:
  *         if ( result == KColorDialog::Accepted )
  *            ...
  * </pre>
+ *
+ * @image kcolordialog.png KColorDialog
+ *
+ * The color dialog is really a collection of several widgets which can
+ * you can also use separately: the quadratic plane in the top left of
+ * the dialog is a @ref KXYSelector. Right next to it is a @ref KHSSelector
+ * for chosing hue/saturation.
+ *
+ * On the right side of the dialog you see a @ref KPaletteTable showing
+ * up to 40 colors with a combo box which offers several predefined
+ * palettes or a palette configured by the user. The small field showing
+ * the currently selected color is a @ref KColorPatch.
  *
  * @short A color selection dialog.
  **/
@@ -358,9 +389,11 @@ class KColorDialog : public KDialogBase
     QColor color();
   
     /**
-     * This is probably the function you are looking for.
-     * Just call this to pop up dialog get the selected color.
-     * returns @ref result().
+     * Creates a modal color dialog, lets the user choose a
+     * color, and returns when the dialog is closed. The
+     * selected color is returned in the argument @p theColor.
+     *
+     * @returns @ref QDialog::result().
      */
     static int getColor( QColor &theColor, QWidget *parent=0L );
 

@@ -197,7 +197,21 @@ protected:
 /**
  * The KFontDialog provides a dialog for interactive font selection.
  * It is basically a thin wrapper around the @ref KFontChooser widget,
- * which can also be used standalone.
+ * which can also be used standalone. In most cases, the simplest
+ * use of this class is the static method @ref KFontDialog::getFont(),
+ * which pops up the dialog, allows the user to select a font, and
+ * returns when the dialog is closed.
+ *
+ * Example:
+ *
+ * <pre>
+ *      QFont myFont;
+ *      int result = KFontDialog::getFont( myFont );
+ *      if ( result == KColorDialog::Accepted )
+ *            ...
+ * </pre>
+ *
+ * @image kfontdialog.png KFontDialog
  *
  * @short A font selection dialog.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
@@ -243,8 +257,8 @@ public:
   QFont font() const { return chooser->font(); }
   
   /**
-   * This is probably the function you are looking for.
-   * Just call this to pop up a dialog to get the selected font.
+   * Creates a modal font dialog, lets the user choose a font,
+   * and returns when the dialog is closed.
    *
    * @param theFont a reference to the font to write the chosen font
    *        into.
@@ -252,9 +266,8 @@ public:
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).
    * @param makeFrame Draws a frame with titles around the contents.
-   * @return The result of the dialog.
-   * 
-   * @see QDialog::result
+   *
+   * @returns @ref QDialog::result().
    */
   static int getFont( QFont &theFont, bool onlyFixed = false, 
 		      QWidget *parent = 0L, bool makeFrame = true );

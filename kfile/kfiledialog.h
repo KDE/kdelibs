@@ -68,6 +68,8 @@ struct KFileDialogPrivate;
  * by subclassing. It uses geometry management to ensure that subclasses
  * can easily add children which will be incorporated into the layout.
  *
+ * @image kfiledialog.png KFileDialog
+ *
  * @short A file selection dialog.
  *
  * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
@@ -158,7 +160,6 @@ public:
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
-     * @see #setFilter()
      * @see #filterChanged()
      */
     void setFilter(const QString& filter);
