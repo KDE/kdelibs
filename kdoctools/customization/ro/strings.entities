@@ -8,16 +8,16 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LISTA TITLURILOR LOR"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "the Invariant Sections being &FDLISTitles;">
+<!ENTITY FDLInvariantSections "cu Secţiunile Invariante &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "fără Secţiuni Invariante">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTĂ"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "Textele Copertei Anterioare fiind &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "cu Textele Copertei Anterioare &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "fără Texte pe Coperta Anterioară">
+<!ENTITY FDLFrontCoverText "fără Textele Copertei Anterioare">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTA TITLURILOR LOR"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "Textele Copertei Posterioare fiind &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "cu Textele Copertei Posterioare &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "fără Texte pe Coperta Posterioară">
+<!ENTITY FDLBackCoverText "fără Textele Copertei Posterioare">
