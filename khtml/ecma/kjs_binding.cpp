@@ -134,6 +134,13 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
   return val;
 }
 
+ScriptInterpreter::~ScriptInterpreter()
+{
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_part << endl;
+#endif
+}
+
 void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 {
   InterpreterImp *first = InterpreterImp::firstInterpreter();
