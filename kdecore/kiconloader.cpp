@@ -20,6 +20,16 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.58  1999/06/23 11:14:08  kulow
+   my first approach with addCustomized was not general enough as it relied
+   on config() and dirs(). Now I abuse the KConfig constructor to add himself
+   to the dirs() object (which will refuse to do that twice).
+   application using just one KSimpleConfig without a KConfig object (as I'm
+   afraid kioslaves could be) would still not find anything besides compiled in
+   defaults. Hmm, I leave this to the application - if they want to use full
+   dirs() power, they need to create a KConfig object somewhen or try
+   KGlobal::config() != 0 :)
+
    Revision 1.57  1999/06/21 06:22:48  tibirna
    CT: let's see some icons.
 
@@ -224,6 +234,10 @@ void KIconLoader::initPath()
   KGlobal::dirs()->addResourceType("toolbar", 
                                    KStandardDirs::kde_default("data") +
                                    appname + "/pics/");
+
+  KGlobal::dirs()->addResourceType("mini",
+                                    KStandardDirs::kde_default("data") +
+				    appname + "/icons/mini/");  
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
