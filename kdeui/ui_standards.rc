@@ -62,21 +62,28 @@
     <Action name="view_zoom"/>
     <Separator/>
     <Action name="view_redisplay"/>
+    <Separator/>
+    <MergeLocal/>
   </Menu>
   <Menu name="go_web"><text>&amp;Go</text>
     <Action name="go_up"/>
     <Action name="go_back"/>
     <Action name="go_forward"/>
     <Action name="go_home"/>
+    <Separator/>
+    <MergeLocal/>
   </Menu>
   <Menu name="go_document"><text>&amp;Go</text>
     <Action name="go_previous"/>
     <Action name="go_next"/>
     <Action name="go_goto_page"/>
     <Action name="go_goto_line"/>
+    <Action name="go_goto"/>
     <Separator/>
     <Action name="go_first"/>
     <Action name="go_last"/>
+    <Separator/>
+    <MergeLocal/>
   </Menu>
   <MergeLocal/>
   <Menu name="bookmarks"><text>&amp;Bookmarks</text>
@@ -108,6 +115,8 @@
     <Action name="help_contents"/>
     <Action name="help_whats_this"/>
     <Separator/>
+    <MergeLocal/>
+    <Separator/>
     <Action name="help_report_bug"/>
     <Separator/>
     <Action name="help_about_app"/>
@@ -128,7 +137,7 @@
   <Action name="edit_copy"/>
   <Action name="edit_paste"/>
   <Separator/>
-  <Action name="view_find"/>
+  <Action name="edit_find"/>
   <Action name="view_zoom"/>
   <Separator/>
   <Action name="go_previous"/>
