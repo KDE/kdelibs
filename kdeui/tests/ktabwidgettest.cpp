@@ -74,6 +74,10 @@ Test::Test( QWidget* parent, const char *name )
   gridlayout->addWidget( tabClose, 4, 0 );
   connect( tabClose, SIGNAL( toggled(bool) ), SLOT( toggleCloseButtons(bool) ) );
   tabClose->setChecked(true);
+
+  QCheckBox * showlabels = new QCheckBox( "Show labels", grid );
+  gridlayout->addWidget( showlabels, 4, 1 );
+  connect( showlabels, SIGNAL( toggled(bool) ), this, SLOT( toggleLabels(bool) ) );
 }
 
 void Test::currentChanged(QWidget* w)
@@ -323,6 +327,16 @@ void Test::mouseMiddleClick(QWidget *w)
 void Test::movedTab(const int from, const int to)
 {
   kdDebug() << "Moved tab from index " << from << " to " << to << endl;
+}
+
+void Test::toggleLabels(bool state)
+{
+  mLeftWidget->setUsesTextLabel(state);
+  mLeftWidget->adjustSize();
+  mRightWidget->setUsesTextLabel(state);
+  mRightWidget->adjustSize();
+  mWidget->hide();   // trigger update
+  mWidget->show();
 }
 
 #include "tab.moc"
