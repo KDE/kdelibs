@@ -28,12 +28,17 @@
 #include <netinet/in.h>
 #include <sys/un.h>
 
+#ifdef HAVE_RES_INIT
+	#include <arpa/nameser.h>
+	#include <resolv.h>
+#endif
+
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
 
 #ifdef HAVE_GETADDRINFO
-#include <netdb.h>
+	#include <netdb.h>
 #endif
 
 #include <stdlib.h>
@@ -56,12 +61,12 @@
  */
 
 #ifndef AI_NUMERICHOST
-/* Some systems have getaddrinfo according to POSIX, but not the RFC */
-#define AI_NUMERICHOST		0
+	/* Some systems have getaddrinfo according to POSIX, but not the RFC */
+	#define AI_NUMERICHOST		0
 #endif
 
 #ifdef offsetof
-#undef offsetof
+	#undef offsetof
 #endif
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
