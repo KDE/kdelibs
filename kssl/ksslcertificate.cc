@@ -94,6 +94,21 @@ KSSLCertificate::KSSLCertificate() {
 }
 
 
+KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
+  d = new KSSLCertificatePrivate;
+  d->m_stateCached = false;
+  KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
+#ifdef HAVE_SSL
+  d->m_cert = NULL;
+  setCert(KOSSL::self()->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
+  KSSLCertChain *c = x.d->_chain.replicate();
+  setChain(c->rawChain());
+  delete c;
+#endif
+}
+
+
+
 KSSLCertificate::~KSSLCertificate() {
 #ifdef HAVE_SSL
   if (d->m_cert)
@@ -764,3 +779,47 @@ return text;
 }
 
 
+bool KSSLCertificate::setCert(QString& cert) {
+#ifdef HAVE_SSL
+    QByteArray qba, qbb = cert.local8Bit().copy();
+    KCodecs::base64Decode(qbb, qba);
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
+    if (x5c) {
+       setCert(x5c);
+       return true;
+    }
+#endif
+return false;
+}
+
+
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
+QStringList qsl;
+QPtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+
+      for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         qsl << c->toString();
+      }
+
+      cl.setAutoDelete(true);
+
+s << const_cast<KSSLCertificate&>(r).toString() << qsl;
+
+return s;
+}
+
+
+QDataStream& operator>>(QDataStream& s, KSSLCertificate& r) {
+QStringList qsl;
+QString cert;
+
+s >> cert >> qsl;
+
+       if (r.setCert(cert) && !qsl.isEmpty())
+          r.chain().setChain(qsl);
+
+return s;
+}

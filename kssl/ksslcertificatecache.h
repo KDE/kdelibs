@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000, 2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,6 +25,8 @@
 
 class QString;
 class KSSLCertificate;
+#include <qcstring.h>
+
 
 class KSSLCertificateCache {
 public:
@@ -65,6 +67,8 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 
   bool isPermanent(KSSLCertificate& cert);
 
+  void reload();
+
   // You shouldn't need to call this but in some weird circumstances
   // it might be necessary.
   void saveToDisk();
@@ -79,6 +83,7 @@ private:
 };
 
 
-
+QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
+QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
 
 #endif

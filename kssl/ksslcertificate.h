@@ -21,6 +21,10 @@
 #ifndef _KSSLCERTIFICATE_H
 #define _KSSLCERTIFICATE_H
 
+
+// Note: this object is VERY HEAVY TO COPY.  Please try to use reference
+//       or ptr whenever possible
+
 // UPDATE: I like the structure of this class less and less every time I look
 //         at it.  I think it needs to change.
 //
@@ -62,6 +66,7 @@ friend class KSSLCertificateCache;
 friend class KSSLCertChain;
 friend class KSSLPeerInfo;
 friend class KSSLPKCS12;
+friend class KSSLD;
 
 public:
   ~KSSLCertificate();
@@ -108,10 +113,13 @@ public:
   static QString verifyText(KSSLValidation x);
 
   KSSLCertificate *replicate();
+  KSSLCertificate(const KSSLCertificate& x); // copy constructor
 
          friend int operator==(KSSLCertificate &x, KSSLCertificate &y);
   inline friend int operator!=(KSSLCertificate &x, KSSLCertificate &y) 
                                                        { return !(x == y); }
+  bool setCert(QString& cert);
+
 private:
   KSSLCertificatePrivate *d;
 
@@ -125,6 +133,9 @@ protected:
   KSSLValidation processError(int ec);
 };
 
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r);
+QDataStream& operator>>(QDataStream& s, KSSLCertificate& r);
 
 #endif
 
