@@ -83,6 +83,7 @@ HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
     widget = _widget;
     last = next = curr = 0;
     buffer = 0;
+    scriptCode = 0;
 }
 
 void HTMLTokenizer::reset()
@@ -99,6 +100,10 @@ void HTMLTokenizer::reset()
     if ( buffer )
 	delete [] buffer;
     buffer = 0;
+
+    if ( scriptCode )
+        delete [] scriptCode;
+    scriptCode = 0;
 }
 
 void HTMLTokenizer::begin()
@@ -279,6 +284,8 @@ void HTMLTokenizer::write( const char *str )
 		    /* Parse scriptCode containing <style> info */
 		    /* Not implemented */
 		}
+		delete [] scriptCode;
+		scriptCode = 0;
 	    }
 	    // Find out wether we see a </script> tag without looking at
 	    // any other then the current character, since further characters
