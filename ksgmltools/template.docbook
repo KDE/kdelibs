@@ -6,6 +6,7 @@
   <!ENTITY % English "INCLUDE" -- change language only here -->
   <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN">
   %ents;
+  <!-- Put here document-specific entities, if any -->
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
      Minor update to "Credits and Licenses" section on August 24, 2000   -->
