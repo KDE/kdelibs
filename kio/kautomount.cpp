@@ -38,7 +38,7 @@ void KAutoMount::slotFinished( int )
     KFileManager::getFileManager()->openFileManagerWindow( mp );
 
   // Update of window which contains the desktop entry which is used for mount/unmount
-  kdebug( KDEBUG_INFO, 7015, " mount finished : updating %s", m_desktopFile.ascii());
+  kDebugInfo( 7015, " mount finished : updating %s", m_desktopFile.ascii());
   KDirWatch::self()->setFileDirty( m_desktopFile );
 
   delete this;
@@ -64,7 +64,7 @@ KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _deskto
 void KAutoUnmount::slotFinished( int )
 {
   // Update of window which contains the desktop entry which is used for mount/unmount
-  kdebug( KDEBUG_INFO, 7015, "unmount finished : updating %s", m_desktopFile.ascii());
+  kDebugInfo( 7015, "unmount finished : updating %s", m_desktopFile.ascii());
   KDirWatch::self()->setFileDirty( m_desktopFile );
 
   delete this;

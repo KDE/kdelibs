@@ -229,7 +229,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // Do some magic for local files
   QString path = _url.path( 0 );
-  kdebug( KDEBUG_INFO, 7009, "%s", QString("Mime Type finding for '%1'").arg(path).ascii() );
+  kDebugInfo( 7009, "%s", QString("Mime Type finding for '%1'").arg(path).ascii() );
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
 
   // If we still did not find it, we must assume the default mime type
@@ -254,7 +254,7 @@ KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath, "mi
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
   if ( !isValid() )
-    kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
+    kDebugWarning( 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
@@ -267,9 +267,9 @@ void KMimeType::load( QDataStream& _str, bool _parentLoaded )
   if ( !_parentLoaded )
     KServiceType::load( _str );
 
-  // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : loading list of patterns");
+  // kDebugInfo( 7009, "KMimeType::load( QDataStream& ) : loading list of patterns");
   _str >> m_lstPatterns;
-  // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : done");
+  // kDebugInfo( 7009, "KMimeType::load( QDataStream& ) : done");
 }
 
 void KMimeType::save( QDataStream& _str )
@@ -478,7 +478,7 @@ QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, Q
     QString type = cfg.readEntry( "Type" );
     if ( type == "FSDevice" )
     {
-      //kdebug(KDEBUG_INFO, 7009, "trying to load devices/%s",_icon.latin1());
+      //kDebugInfo( 7009, "trying to load devices/%s",_icon.latin1());
       // KDE-1.x kdelnks contain "cdrom_mount.xpm" instead of "devices/cdrom_mount"
       return KGlobal::iconLoader()->loadApplicationIcon( QString("devices/"+_icon), _size, _path, false );
     }
@@ -530,7 +530,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
     return false;
   }
 
-  //kdebug( KDEBUG_INFO, 7009, "TYPE = %s", type.data() );
+  //kDebugInfo( 7009, "TYPE = %s", type.data() );
 
   if ( type == "FSDevice" )
     return runFSDevice( _url, cfg );
@@ -684,7 +684,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   QStringList::ConstIterator end = keys.end();
   for ( ; it != end; ++it )
   {
-    kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", (*it).ascii() );
+    kDebugInfo( 7009, "CURRENT KEY = %s", (*it).ascii() );
 
     QString group = *it;
     group.prepend( "Desktop Action " );
@@ -722,7 +722,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
-  kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
+  kDebugInfo( 7009, "EXECUTING Service %s", _service.m_strName.data() );
 
   KURL u( _url );
 
@@ -736,7 +736,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
-    //kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
+    //kDebugInfo( 7009, "MOUNT&UNMOUNT" );
 
     KSimpleConfig cfg( u.path(), true );
     cfg.setDesktopGroup();
@@ -754,7 +754,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       // Already mounted? Strange, but who knows ...
       if ( !mp.isEmpty() )
       {
-	kdebug( KDEBUG_INFO, 7009, "ALREADY Mounted" );
+	kDebugInfo( 7009, "ALREADY Mounted" );
 	return;
       }
 

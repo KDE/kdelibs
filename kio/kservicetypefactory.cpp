@@ -61,7 +61,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    assert (!KSycoca::self()->isBuilding());
-   //kdebug( KDEBUG_INFO, 7011, QString("findServiceTypeByName(%1)").arg(_name) );
+   //kDebugInfo( 7011, QString("findServiceTypeByName(%1)").arg(_name) );
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
    KServiceType * newServiceType = createServiceType(offset);
@@ -78,7 +78,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 
 bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  ) const
 {
-  //kdebug(KDEBUG_INFO, 7011, QString("matchFilename filename='%1' pattern='%2'")
+  //kDebugInfo( 7011, QString("matchFilename filename='%1' pattern='%2'")
   //                          .arg(_filename).arg(_pattern));
   int len = _filename.length();
   const char* s = _pattern.ascii();
@@ -132,16 +132,16 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    {
       QString extension = _filename.right( _filename.length() - _filename.findRev('.') - 1 );
       extension = extension.leftJustify(4);
-      //kdebug(KDEBUG_INFO, 7011, QString("extension is '%1'").arg(extension));
+      //kDebugInfo( 7011, QString("extension is '%1'").arg(extension));
       
       while (left <= right) {
          middle = (left + right) / 2;
-         //kdebug(KDEBUG_INFO, 7011, QString("the situation is left=%1 middle=%2 right=%3")
+         //kDebugInfo( 7011, QString("the situation is left=%1 middle=%2 right=%3")
          //       .arg(left).arg(middle).arg(right));
          // read pattern at position "middle"
          str->device()->at( middle * entrySize + fastOffset );
          (*str) >> pattern;
-         //kdebug(KDEBUG_INFO, 7011, QString("testing extension '%1'").arg(pattern));
+         //kDebugInfo( 7011, QString("testing extension '%1'").arg(pattern));
          int cmp = pattern.compare( extension );
          if (cmp < 0)
             left = middle + 1;
@@ -177,7 +177,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
 KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
-   kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allMimeTypes()");
+   kDebugInfo( 7011, "KServiceTypeFactory::allMimeTypes()");
    KMimeType::List list;
    if (!m_str) return list;
 
@@ -203,7 +203,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
 
 KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
-   kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allServiceTypes()");
+   kDebugInfo( 7011, "KServiceTypeFactory::allServiceTypes()");
    KServiceType::List list;
    if (!m_str) return list;
 
@@ -255,12 +255,12 @@ KServiceType * KServiceTypeFactory::createServiceType(int offset)
         break;
 
      default:
-        kdebug( KDEBUG_ERROR, 7011, QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
+        kDebugError( 7011, QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
         break;
    } 
    if (!newEntry->isValid())
    {
-      kdebug( KDEBUG_ERROR, 7011, "KServiceTypeFactory: corrupt object in KSycoca database!\n");
+      kDebugError( 7011, "KServiceTypeFactory: corrupt object in KSycoca database!\n");
       delete newEntry;
       newEntry = 0;
    }   

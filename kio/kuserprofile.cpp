@@ -191,7 +191,7 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
 
   if ( lst.count() == 0 || !(*lst.begin()).allowAsDefault() )
   {
-    kdebug( KDEBUG_INFO, 7010, "No Offers" );
+    kDebugInfo( 7010, "No Offers" );
     return 0L;
   }
 

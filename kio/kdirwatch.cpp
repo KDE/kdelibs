@@ -176,7 +176,7 @@ void KDirWatch::slotRescan()
   {
     if ( stat( it.key().ascii(), &statbuff ) == -1 )
     {
-      kdebug( KDEBUG_INFO, 7001, "Deleting %s", it.key().ascii() );
+      kDebugInfo( 7001, "Deleting %s", it.key().ascii() );
       emit deleted( it.key() );
       del.append( it.key() );
       continue; // iterator incremented

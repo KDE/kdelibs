@@ -59,7 +59,7 @@ KSycocaEntry * KServiceFactory::createEntry( const QString& file )
   if ( serv->isValid() )
      return serv;
   else {
-     kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", file.ascii() );
+     kDebugWarning( 7012, "Invalid Service : %s", file.ascii() );
      delete serv;
      return 0L;
   }
@@ -107,12 +107,12 @@ KService* KServiceFactory::createService(int offset)
         break;
         
      default:
-        kdebug( KDEBUG_ERROR, 7011, QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
+        kDebugError( 7011, QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
         break;
    }
    if (!newEntry->isValid())
    {
-      kdebug( KDEBUG_ERROR, 7011, "KServiceFactory: corrupt object in KSycoca database!\n");
+      kDebugError( 7011, "KServiceFactory: corrupt object in KSycoca database!\n");
       delete newEntry;
       newEntry = 0;
    }   
@@ -121,7 +121,7 @@ KService* KServiceFactory::createService(int offset)
 
 KService::List KServiceFactory::allServices()
 {
-   kdebug(KDEBUG_INFO, 7011, "KServiceFactory::allServices()");
+   kDebugInfo( 7011, "KServiceFactory::allServices()");
    KService::List list;
    if (!m_str) return list;
 
@@ -141,7 +141,7 @@ KService::List KServiceFactory::allServices()
 
 KService::List KServiceFactory::offers( int serviceTypeOffset )
 {
-   //kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )")
+   //kDebugInfo( 7011, QString("KServiceFactory::offers ( %1 )")
    //                          .arg(serviceTypeOffset,8,16));
    KService::List list;
 
@@ -161,7 +161,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
          (*str) >> aServiceOffset;
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
-            //kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers : Found !"));
+            //kDebugInfo( 7011, QString("KServiceFactory::offers : Found !"));
             // Save stream position !
             int savedPos = str->device()->at();
             // Create Service

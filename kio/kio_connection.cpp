@@ -67,14 +67,14 @@ int KIOConnection::send( int _cmd, const void *_p, int _len )
   int n = fwrite( buffer, 1, 8, m_fout );
 
   if ( n != 8 ) {
-    kdebug( KDEBUG_ERROR, 7017, "Could not send header");
+    kDebugError( 7017, "Could not send header");
     return 0;
   }
 
   n = fwrite( _p, 1, _len, m_fout );
 
   if ( n != _len ) {
-    kdebug( KDEBUG_ERROR, 7017, "Could not write data");
+    kDebugError( 7017, "Could not write data");
     return 0;
   }
 
@@ -93,12 +93,12 @@ again1:
     goto again1;
 
   if ( n == -1) {
-    kdebug( KDEBUG_ERROR, 7017, "Header read failed, errno=%d", errno);
+    kDebugError( 7017, "Header read failed, errno=%d", errno);
   }
   
   if ( n != 8 )
   {
-    //kdebug( KDEBUG_ERROR, 7017, "Header has invalid size (%d)", n);
+    //kDebugError( 7017, "Header has invalid size (%d)", n);
     return 0L;
   }
   
@@ -125,12 +125,12 @@ again1:
           if (errno == EINTR)
              continue;
 
-          kdebug( KDEBUG_ERROR, 7017, "Data read failed, errno=%d", errno);
+          kDebugError( 7017, "Data read failed, errno=%d", errno);
           return 0;
        }
        if (n != bytesToGo)
        {
-          kdebug( KDEBUG_INFO, 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
+          kDebugInfo( 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
        }
 
        bytesRead += n;
@@ -155,7 +155,7 @@ KIOSlave::KIOSlave( const char *_cmd )
 
   if ( !start(NotifyOnExit, (Communication) (Stdin | Stdout | NoRead)) )
   {
-      kdebug( KDEBUG_ERROR, 7016, "Couldn't execute %s.", _cmd);
+      kDebugError( 7016, "Couldn't execute %s.", _cmd);
       return;
   }
 
@@ -166,7 +166,7 @@ KIOSlave::~KIOSlave()
 {
   if (isRunning())
   {
-     kdebug( KDEBUG_ERROR, 7016, "Killing running slave pid = %ld", getPid());
+     kDebugError( 7016, "Killing running slave pid = %ld", getPid());
   }
 }
 

@@ -139,14 +139,14 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    if (!m_sycocaDict) return; // Error!
 
    QString name = newEntry->name();
-   //kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : adding entry %1").arg(name) );
+   //kDebugInfo( 7011, QString("SycocaFactory : adding entry %1").arg(name) );
    KSycocaEntry * oldEntry = (*m_entryDict)[ name ];
    // If there is any previous entry with the same name (e.g. local .desktop file)
    // don't do anything
    // This is because local dirs are parsed BEFORE global dirs.
    if ( oldEntry )
    {
-     //kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
+     //kDebugInfo( 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
      delete newEntry;
    }
    else

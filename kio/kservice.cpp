@@ -84,14 +84,14 @@ KService::KService( const QString & _fullpath )
   m_strType = config.readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
-    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file %1 has no Type=... entry. "
+    kDebugWarning( 7012, QString("The desktop entry file %1 has no Type=... entry. "
             "It should be \"Application\", or \"Service\"").arg( _fullpath ) );
     m_bValid = false;
     return;
   }
   if ( m_strType != "Application" && m_strType != "Service" )
   {
-    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file %1 has Type=%2 "
+    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
             "instead of \"Application\" or \"Service\"").arg( _fullpath ).arg(m_strType) );
     m_bValid = false;
     return;
@@ -195,11 +195,11 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 {
   if (!m_bValid) return false; // safety test
 
-//  kdebug(KDEBUG_INFO, 7012, "Testing %s", m_strName.ascii());
+//  kDebugInfo( 7012, "Testing %s", m_strName.ascii());
 
 //  QStringList::ConstIterator it = m_lstServiceTypes.begin();
 //  for( ; it != m_lstServiceTypes.end(); ++it )
-//    kdebug(KDEBUG_INFO, 7012, "    has %s", (*it).ascii() );
+//    kDebugInfo( 7012, "    has %s", (*it).ascii() );
 
   // TODO : what about "all", "allfiles" and "alldirs" ?
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );

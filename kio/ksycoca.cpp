@@ -144,7 +144,7 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     replyType = "void";
     return true;
   } else {
-    kdebug(KDEBUG_WARN, 7011, QString("unknown function call to KSycoca::process() : %1").arg(fun));
+    kDebugWarning( 7011, QString("unknown function call to KSycoca::process() : %1").arg(fun));
     return false;
   }
 }
@@ -153,12 +153,12 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
    if ( !m_str )
       openDatabase();
-   //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
+   //kDebugInfo( 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
    m_str->device()->at(offset);
    Q_INT32 aType;
    (*m_str) >> aType;
    type = (KSycocaType) aType;
-   //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::found type %1").arg(aType) );
+   //kDebugInfo( 7011, QString("KSycoca::found type %1").arg(aType) );
    return m_str;
 }
 
@@ -172,7 +172,7 @@ void KSycoca::checkVersion()
    if ( aVersion != KSYCOCA_VERSION )
    {
       // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
-      kdebug( KDEBUG_ERROR, 7011, "Outdated database ! Stop kded and restart it !" );
+      kDebugError( 7011, "Outdated database ! Stop kded and restart it !" );
       abort();
    }
 }
@@ -186,16 +186,16 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    {
       (*m_str) >> aId;
       assert( aId >= 0 && aId <= 2 ); // to update in case of new factories
-      //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
+      //kDebugInfo( 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
       {
-         kdebug(KDEBUG_ERROR, 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
+         kDebugError( 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
          break;
       }
       (*m_str) >> aOffset;
       if (aId == id)
       {
-         //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
+         //kDebugInfo( 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
          m_str->device()->at(aOffset);
          return m_str;
       }
@@ -232,10 +232,10 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
       sRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
   }
   if ( sRelativeFilePath.isEmpty() )
-    kdebug( KDEBUG_FATAL, 7011, QString("Couldn't find %1 in any %2 dir !!!").arg( _fullpath ).arg( _resource) );
+    kDebugFatal( 7011, QString("Couldn't find %1 in any %2 dir !!!").arg( _fullpath ).arg( _resource) );
   //else
     // debug code
-    //kdebug( KDEBUG_INFO, 7011, sRelativeFilePath );
+    //kDebugInfo( 7011, sRelativeFilePath );
   return sRelativeFilePath;
 }
 

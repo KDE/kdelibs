@@ -706,7 +706,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes ) {
   m_iTotalSize = _bytes;
 
   emit sigTotalSize( m_id, _bytes );
-  kdebug( KDEBUG_INFO, 7007, "TotalSize %ld", _bytes );
+  kDebugInfo( 7007, "TotalSize %ld", _bytes );
 }
 
 
@@ -714,7 +714,7 @@ void KIOJob::slotTotalFiles( unsigned long _files ) {
   m_iTotalFiles = _files;
 
   emit sigTotalFiles( m_id, _files );
-  kdebug( KDEBUG_INFO, 7007, "TotalFiles %ld", _files );
+  kDebugInfo( 7007, "TotalFiles %ld", _files );
 }
 
 
@@ -722,7 +722,7 @@ void KIOJob::slotTotalDirs( unsigned long _dirs ) {
   m_iTotalDirs = _dirs;
 
   emit sigTotalDirs( m_id, _dirs );
-  kdebug( KDEBUG_INFO, 7007, "TotalDirs %ld", _dirs );
+  kDebugInfo( 7007, "TotalDirs %ld", _dirs );
 }
 
 
@@ -746,7 +746,7 @@ void KIOJob::slotProcessedFiles( unsigned long _files ) {
   m_iProcessedFiles = _files;
 
   emit sigProcessedFiles( m_id, _files );
-  kdebug( KDEBUG_INFO, 7007, "ProcessedFiles %ld", _files );
+  kDebugInfo( 7007, "ProcessedFiles %ld", _files );
 }
 
 
@@ -754,7 +754,7 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs ) {
   m_iProcessedDirs = _dirs;
 
   emit sigProcessedDirs( m_id, _dirs );
-  kdebug( KDEBUG_INFO, 7007, "ProcessedDirs %ld", _dirs );
+  kDebugInfo( 7007, "ProcessedDirs %ld", _dirs );
 }
 
 
@@ -782,7 +782,7 @@ void KIOJob::slotScanningDir( const char *_dir ) {
   m_strFrom = _dir;
 
   emit sigScanningDir( m_id, _dir );
-  kdebug( KDEBUG_INFO, 7007, "ScanningDir %s", _dir );
+  kDebugInfo( 7007, "ScanningDir %s", _dir );
 }
 
 
@@ -790,7 +790,7 @@ void KIOJob::slotMakingDir( const char *_dir ) {
   m_strTo = _dir;
 
   emit sigMakingDir( m_id, _dir );
-  kdebug( KDEBUG_INFO, 7007, "MakingDir %s", _dir );
+  kDebugInfo( 7007, "MakingDir %s", _dir );
 }
 
 
@@ -799,7 +799,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to ) {
   m_strTo = _to;
 
   emit sigCopying( m_id, _from, _to );
-  kdebug( KDEBUG_INFO, 7007, "CopyingFile %s -> %s", _from,  _to );
+  kDebugInfo( 7007, "CopyingFile %s -> %s", _from,  _to );
 }
 
 
@@ -807,7 +807,7 @@ void KIOJob::slotGettingFile( const char *_url ) {
   m_strFrom = _url;
 
   emit sigGettingFile( m_id, _url );
-  kdebug( KDEBUG_INFO, 7007, "GettingFile %s", _url );
+  kDebugInfo( 7007, "GettingFile %s", _url );
 }
 
 
@@ -815,7 +815,7 @@ void KIOJob::slotDeletingFile( const char *_url ) {
   m_strFrom = _url;
 
   emit sigDeletingFile( m_id, _url );
-  kdebug( KDEBUG_INFO, 7007, "DeletingFile %s", _url );
+  kDebugInfo( 7007, "DeletingFile %s", _url );
 }
 
 
@@ -827,7 +827,7 @@ void KIOJob::slotMimeType( const char *_type ) {
   }
 
   emit sigMimeType( m_id, _type );
-  kdebug( KDEBUG_INFO, 7007, "MimeType %s", _type );
+  kDebugInfo( 7007, "MimeType %s", _type );
 }
 
 
@@ -849,7 +849,7 @@ void KIOJob::slotCancel() {
 void KIOJob::slotSlaveDied( KProcess *)
 {
   assert( m_pSlave);
-  kdebug( KDEBUG_INFO, 7007, "Slave died, pid = %ld", m_pSlave->getPid() );
+  kDebugInfo( 7007, "Slave died, pid = %ld", m_pSlave->getPid() );
 }
 
 
@@ -877,7 +877,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, int& _error, QString& _err
   }
 
   QString exec = KProtocolManager::self().executable( _protocol );
-  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", debugString(exec) );
+  kDebugInfo( 7007, "TRYING TO START %s", debugString(exec) );
 
   if ( exec.isEmpty() ) {
     _error = ERR_UNSUPPORTED_PROTOCOL;
@@ -922,7 +922,7 @@ KIOSlave* KIOJob::createSlave( const char *_protocol, const char *_host,
   }
 
   QString exec = KProtocolManager::self().executable( _protocol );
-  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.data() );
+  kDebugInfo( 7007, "TRYING TO START %s", exec.data() );
 
   if ( exec.isEmpty() ) {
     _error = ERR_UNSUPPORTED_PROTOCOL;
@@ -1049,14 +1049,14 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol)
   {
      if (entry->m_protocol == _protocol)
      {
-        kdebug( KDEBUG_INFO, 7007, "Found matching slave - protocol (%s)", _protocol );
+        kDebugInfo( 7007, "Found matching slave - protocol (%s)", _protocol );
         break;
      }
   }
 
   if (!entry)
   {
-     kdebug( KDEBUG_INFO, 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
+     kDebugInfo( 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
      return 0L;
   }
 
@@ -1086,7 +1086,7 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
            (entry->m_user == _user) &&
            (entry->m_pass == _pass) )
         {
-           kdebug( KDEBUG_INFO, 7007, "Found matching slave, total match - protocol (%s)", _protocol );
+           kDebugInfo( 7007, "Found matching slave, total match - protocol (%s)", _protocol );
            break;
         }
      }
@@ -1096,10 +1096,10 @@ KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
   {
      if (!protEntry)
      {
-        kdebug( KDEBUG_INFO, 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
+        kDebugInfo( 7007, "No matching slave, no matching protocol - protocol (%s)", _protocol );
         return 0L;
      }
-     kdebug( KDEBUG_INFO, 7007, "Found matching slave, protocol only - protocol (%s)", _protocol );
+     kDebugInfo( 7007, "Found matching slave, protocol only - protocol (%s)", _protocol );
      entry = protEntry;
   }
 
@@ -1139,7 +1139,7 @@ void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char
      m_allSlaves.removeRef(oldest);
      delete oldest->m_pSlave;
      delete oldest;
-     kdebug( KDEBUG_INFO, 7007, "oldest slave removed - protocol = %s", _protocol );
+     kDebugInfo( 7007, "oldest slave removed - protocol = %s", _protocol );
   }
   m_allSlaves.append(entry);
   connect( _slave, SIGNAL( processExited(KProcess *)), this, SLOT( slotSlaveDied(KProcess *)));
@@ -1147,7 +1147,7 @@ void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char
 
 
 void KIOSlavePool::slotSlaveDied(KProcess *proc) {
-   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool" );
+   kDebugInfo( 7007, "Slave died from KIOSlavePool" );
 
    Entry *entry = m_allSlaves.first();
    for(; entry; entry = m_allSlaves.next())
@@ -1159,11 +1159,11 @@ void KIOSlavePool::slotSlaveDied(KProcess *proc) {
    }
    if (!entry)
    {
-       kdebug( KDEBUG_ERROR, 7007, "Unknown slave died from KIOSlavePool!" );
+       kDebugError( 7007, "Unknown slave died from KIOSlavePool!" );
        return;
    }
    m_allSlaves.removeRef(entry);
-   kdebug( KDEBUG_INFO, 7007, "Slave died from KIOSlavePool - protocol = %s host = %s",
+   kDebugInfo( 7007, "Slave died from KIOSlavePool - protocol = %s host = %s",
 		entry->m_protocol.ascii(), entry->m_host.ascii() );
    delete entry->m_pSlave;
    delete entry;
