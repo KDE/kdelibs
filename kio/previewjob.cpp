@@ -184,6 +184,8 @@ void PreviewJob::startPreview()
                 d->sizeName = "med";
             else if (d->width == 90)
                 d->sizeName = "large";
+            else if (d->width == 112)
+                d->sizeName = "xxl";
             else
                 d->sizeName.setNum(d->width);
         }
