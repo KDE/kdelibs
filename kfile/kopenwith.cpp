@@ -432,8 +432,7 @@ void KOpenWithDlg::slotOK()
   QString serviceName;
   if (!haveApp) {
     if (keepExec.contains('/'))
-      serviceName = keepExec.right(keepExec.length() -
-				   keepExec.findRev('/') + 1);
+      serviceName = keepExec.mid(keepExec.findRev('/') + 1);
     else
       serviceName = keepExec;
   } else
