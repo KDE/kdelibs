@@ -196,6 +196,9 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Comment");
   m_strGenName = config->readEntry( "GenericName" );
   entryMap.remove("GenericName");
+  QString untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
+  entryMap.insert("UntranslatedGenericName", untranslatedGenericName);
+  
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
   d->categories = config->readListEntry("Categories", ';');
@@ -565,6 +568,11 @@ bool KService::noDisplay() const {
      return true;
   else
      return false;
+}
+
+QString KService::untranslatedGenericName() const {
+  QVariant v = property("UntranslatedGenericName", QVariant::String);
+  return v.isValid() ? v.toString() : QString::null;
 }
 
 QString KService::parentApp() const {

@@ -35,6 +35,9 @@ class KServiceGroup::Private
 public:
   Private() { m_bNoDisplay = false; }
   bool m_bNoDisplay;
+  QStringList suppressGenericNames;
+  QString directoryEntryPath;
+  QStringList sortOrder;
 };
 
 KServiceGroup::KServiceGroup( const QString & name )
@@ -53,6 +56,8 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   QString cfg = configFile;
   if (cfg.isEmpty())
      cfg = _relpath+".directory";
+
+  d->directoryEntryPath = cfg;
      
   KConfig config( cfg, true, false, "apps" );
 
@@ -64,6 +69,8 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   m_bDeleted = config.readBoolEntry( "Hidden", false );
   d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
+  d->suppressGenericNames = config.readListEntry( "X-KDE-SuppressGenericNames" );
+  d->sortOrder = config.readListEntry("SortOrder");
 
   // Fill in defaults.
   if (m_strCaption.isEmpty())
@@ -121,7 +128,12 @@ int KServiceGroup::childCount()
 
 bool KServiceGroup::noDisplay() const
 {
-    return d->m_bNoDisplay;
+  return d->m_bNoDisplay || m_strCaption.startsWith(".");
+}
+
+QStringList KServiceGroup::suppressGenericNames() const
+{
+  return d->suppressGenericNames;
 }
 
 void KServiceGroup::load( QDataStream& s )
@@ -130,7 +142,8 @@ void KServiceGroup::load( QDataStream& s )
   Q_INT8 noDisplay;
   s >> m_strCaption >> m_strIcon >>
       m_strComment >> groupList >> m_strBaseGroupName >> m_childCount >>
-      noDisplay;
+      noDisplay >> d->suppressGenericNames >> d->directoryEntryPath >>
+      d->sortOrder;
 
   d->m_bNoDisplay = (noDisplay != 0);
 
@@ -193,7 +206,8 @@ void KServiceGroup::save( QDataStream& s )
   Q_INT8 noDisplay = d->m_bNoDisplay ? 1 : 0;
   s << m_strCaption << m_strIcon <<
       m_strComment << groupList << m_strBaseGroupName << m_childCount <<
-      noDisplay;
+      noDisplay << d->suppressGenericNames << d->directoryEntryPath <<
+      d->sortOrder;
 }
 
 KServiceGroup::List
@@ -289,13 +303,10 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     QString rp = relPath();
     if(rp == "/") rp = QString::null;
 
-    QStringList order =
-        KDesktopFile(rp + QString::fromUtf8(".directory")).sortOrder();
-
-    if (order.isEmpty())
+    if (d->sortOrder.isEmpty())
         return lsort;
 
-    //kdDebug() << "Honouring sort order " << order.join(",") << endl;
+    //kdDebug() << "Honouring sort order " << d->sortOrder.join(",") << endl;
 
     // Iterate through the sort spec list. If we find an entry that matches one
     // in the original list, take it out of the original list and add it to the
@@ -305,7 +316,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     List sorted;
     List orig = lsort;
 
-    for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
+    for (QStringList::ConstIterator it(d->sortOrder.begin()); it != d->sortOrder.end(); ++it)
     {
         //kdDebug() << "order has : " << *it << endl;
         for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
@@ -356,6 +367,11 @@ KServiceGroup::childGroup(const QString &parent)
    return KServiceGroupFactory::self()->findGroupByDesktopPath("#parent#"+parent, true);
 }
 
+QString
+KServiceGroup::directoryEntryPath() const
+{
+   return d->directoryEntryPath;
+}
 
 
 void KServiceGroup::virtual_hook( int id, void* data )

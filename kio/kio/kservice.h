@@ -222,6 +222,16 @@ public:
   QString genericName() const { return m_strGenName; }
 
   /**
+   * Returns the untranslated (US English) generic name 
+   * for the service, if there is one
+   * (e.g. "Mail Client").
+   * @return the generic name, 
+   *         or QString::null if not set
+   * @since 3.2
+   */
+  QString untranslatedGenericName() const;
+
+  /**
    * Returns a list of descriptive keywords the service, if there are any.
    * @return the list of keywords
    */

@@ -369,7 +369,7 @@ bool KBuildSycoca::build()
              
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     g_bsgf->addNew("/", QString::null, 0);
+     g_bsgf->addNew("/", kdeMenu->directoryFile, 0);
      createMenu(QString::null, kdeMenu);
      
      (void) existingResourceDirs();
@@ -412,7 +412,8 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
         if (timeStamp && (timeStamp == oldTimestamp))
         {
             entry = dynamic_cast<KServiceGroup *> (g_serviceGroupEntryDict->find(subName));
-            // TODO: Check that old version uses same directoryFile
+            if (entry->directoryEntryPath() != directoryFile)
+                entry = 0; // Can't reuse this one!
         }
      }
      g_ctimeInfo->addCTime(directoryFile, timeStamp);
@@ -655,8 +656,8 @@ QStringList KBuildSycoca::existingResourceDirs()
 }
 
 static KCmdLineOptions options[] = {
-   { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
-   { "noincremental", I18N_NOOP("Not incremental update, re-read everything."), 0 },
+   { "nosignal", I18N_NOOP("Do not signal applications to update."), 0 },
+   { "noincremental", I18N_NOOP("Disable incremental update, re-read everything."), 0 },
    { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
    { "global", I18N_NOOP("Create global database."), 0 },
    KCmdLineLastOption
@@ -744,7 +745,8 @@ int main(int argc, char **argv)
      Q_UINT32 ksycoca_update_sig = KSycoca::self()->updateSignature();
      
      if ((current_update_sig != ksycoca_update_sig) ||
-         (current_language != ksycoca_language))
+         (current_language != ksycoca_language) ||
+         (KSycoca::self()->timeStamp() == 0))
      {
         incremental = false;
         delete KSycoca::self();
@@ -791,6 +793,7 @@ int main(int argc, char **argv)
       g_ctimeDict = 0;
       if (incremental)
       {
+qWarning("Reusing existing ksycoca");
          KSycoca *oldSycoca = KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;

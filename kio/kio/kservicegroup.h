@@ -150,6 +150,15 @@ public:
   bool noDisplay() const;
 
   /**
+   * Returns a list of untranslated generic names that should be 
+   * be supressed when showing this group.
+   * E.g. The group "Games/Arcade" might want to supress the generic name
+   * "Arcade Game" since it's redundant in this particular context.
+   * @since 3.2
+   */
+  QStringList suppressGenericNames() const;
+   
+  /**
    * @internal
    * Load the service from a stream.
    */
@@ -188,6 +197,13 @@ public:
    * @return the base group name, or null if no base group
    */
   QString baseGroupName() const { return m_strBaseGroupName; }
+
+  /**
+   * Returns a path to the .directory file describing this service group.
+   * The path is either absolute or relative to the "apps" resource.
+   * @since 3.2
+   */
+  QString directoryEntryPath() const;
 
   /**
    * Returns the group for the given baseGroupName.

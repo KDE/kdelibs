@@ -3,6 +3,7 @@
 
 <Menu>
 	<Name>KDE</Name>
+	<Directory>kde-main.directory</Directory>
 	<!-- Search the default locations -->
 	<KDELegacyDirs/>
 	<DefaultAppDirs/>

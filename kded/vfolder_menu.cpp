@@ -584,7 +584,6 @@ static QString locateFile(const QStringList &files)
        it != files.end();
        ++it)
    {
-kdDebug(7021) << "Checking for file " << (*it) << " (#1)" << endl;
       if (KStandardDirs::exists(*it))
          return (*it);
    }
@@ -716,7 +715,6 @@ VFolderMenu::locateMenuFile(const QString &fileName)
 {
    if (fileName.startsWith("/"))
    {
-kdDebug(7021) << "Checking for file " << fileName << " (#2)" << endl;
       if (KStandardDirs::exists(fileName))
          return fileName;
       return QString::null;
@@ -741,10 +739,8 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
    if (fileName.isEmpty())
       return QString::null;
       
-kdDebug(7021) << "locateDirectoryFile(" << fileName << ")" << endl;
    if (fileName.startsWith("/"))
    {
-kdDebug(7021) << "Checking for file " << fileName << " (#3)" << endl;
       if (KStandardDirs::exists(fileName))
          return fileName;
       return QString::null;
@@ -757,7 +753,6 @@ kdDebug(7021) << "Checking for file " << fileName << " (#3)" << endl;
        ++it)
    {
       tmp = (*it)+fileName;
-kdDebug(7021) << "Checking for file " << tmp << " (#4)" << endl;
       if (KStandardDirs::exists(tmp))
          return tmp;
    }
@@ -997,7 +992,6 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
       if (!m_forcedLegacyLoad && (dirs.search(*it) != -1))
       {
          QString name = *it;
-kdDebug(7021) << "KDE Legacy: Found menu " << name << endl;
          if (!name.endsWith("/.directory"))
             continue; // Probably ".directory", skip it.
             
@@ -1005,7 +999,6 @@ kdDebug(7021) << "KDE Legacy: Found menu " << name << endl;
       
          SubMenu *newMenu = new SubMenu;
          newMenu->directoryFile = locate("apps", *it);
-kdDebug(7021) << "KDE Legacy: Directory file = " << newMenu->directoryFile << endl;
 
          insertSubMenu(m_currentMenu, name, newMenu);
          continue;
@@ -1015,7 +1008,6 @@ kdDebug(7021) << "KDE Legacy: Directory file = " << newMenu->directoryFile << en
       {
          QString name = *it;
          KService *service = 0;
-kdDebug(7021) << "KDE Legacy Found " << name << endl;
          emit newService(name, &service);
 
          if (service && !m_forcedLegacyLoad)
@@ -1068,7 +1060,6 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ")" << endl;
       if ( S_ISDIR( buff.st_mode )) {
          SubMenu *parentMenu = m_currentMenu;
 
-kdDebug(7021) << "Legacy: adding menu " << fn << endl;
          m_currentMenu = new SubMenu;
          m_currentMenu->name = fn;
          m_currentMenu->directoryFile = dir + fn + "/.directory";
@@ -1086,7 +1077,6 @@ kdDebug(7021) << "Legacy: adding menu " << fn << endl;
             continue;
             
          KService *service = 0;
-kdDebug(7021) << "Found " << pathfn << " (" << (relDir+fn) << ")" << endl;
          emit newService(pathfn, &service);
          if (service)
          {
@@ -1174,7 +1164,6 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       if (!m_currentMenu) // Not found?
       {
          // Create menu
-kdDebug(7021) << "VFolder: adding menu " << name << endl;
          m_currentMenu = new SubMenu;
          m_currentMenu->name = name;
 
