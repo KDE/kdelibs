@@ -426,53 +426,38 @@ bool Ftp::ftpLogin()
       // but no password.
       if ( failedAuth > 0 || (!user.isEmpty() && pass.isEmpty()) )
       {
+        QString errorMsg;
         kdDebug(7102) << "Prompt the user for password..." << endl;
         // Ask user if we should retry after when login fails!
         if( failedAuth > 0 )
         {
-          info.caption = i18n("Login Failure");
-          info.prompt = i18n("Message sent:\nLogin using username: %1 and "
-                             "password: [hidden]\n\nServer replied:\n%2\n\n"
-                             "What do you want to do?").arg(user).arg(rspbuf);
-          if( messageBox( WarningContinueCancel, info.prompt,info.caption,
-                          i18n("Retry...") ) != 5 )
-          {
-            kdDebug(7102) << "Login aborted by user!" << endl;
-            error( ERR_USER_CANCELED, QString::null);
-            return false;
-          }
+          errorMsg = i18n("Message sent:\nLogin using username: %1 and "
+                          "password: [hidden]\n\nServer replied:\n%2\n\n"
+                          ).arg(user).arg(rspbuf);
         }
-
+        
         if ( user != FTP_LOGIN && pass != FTP_PASSWD )
-            info.username = m_user;
+          info.username = m_user;
 
         kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
         kdDebug(7102) << "Username: " << info.username << endl;
-        if ( failedAuth < 3 && checkCachedAuthentication( info ) )
+        info.prompt = i18n("You need to supply a username and a password "
+                           "to access this site.");
+        info.commentLabel = i18n( "Site:" );
+        info.comment = i18n("<b>%1</b>").arg( m_host );
+        info.keepPassword = true; // Prompt the user for persistence as well.
+        info.readOnly = !info.username.isEmpty();
+
+        bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
+        if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
         {
-          user = info.username;
-          pass = info.password;
+          error( ERR_USER_CANCELED, m_host );
+          return false;
         }
         else
         {
-          info.prompt = i18n("You need to supply a username and a password "
-                             "to access this site.");
-          info.commentLabel = i18n( "Site:" );
-          info.comment = i18n("<b>%1</b>").arg( m_host );
-          info.keepPassword = true; // Prompt the user for persistence as well.
-          info.readOnly = !info.username.isEmpty();
-
-          bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
-          if ( disablePassDlg || !openPassDlg( info ) )
-          {
-            error( ERR_USER_CANCELED, m_host );
-            return false;
-          }
-          else
-          {
-            user = info.username;
-            pass = info.password;
-          }
+          user = info.username;
+          pass = info.password;
         }
       }
 
