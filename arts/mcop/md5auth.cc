@@ -190,7 +190,7 @@ void md5_auth_init(const char *authname, const char *seedname)
 		 */
 		int maxage = 300 + (getpid() & 0xfff)*4;
 		int lstat_result = lstat(seedname,&st);
-		if(lstat_result != 0 || (st.st_mtime - time(0)) > maxage)
+		if(lstat_result != 0 || (time(0) - st.st_mtime) > maxage)
 		{
 			fd = open(seedname,O_TRUNC|O_CREAT|O_WRONLY,S_IRUSR|S_IWUSR);
 			if(fd != -1) {

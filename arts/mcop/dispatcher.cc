@@ -50,8 +50,8 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 	 * installations wipe /tmp on reboot.
 	 */
 	string seedpath = MCOPUtils::createFilePath("random-seed");
-	char *home;
-	if(home = getenv("HOME")) seedpath = string(home) + "/.MCOP-random-seed";
+	char *home = getenv("HOME");
+	if(home != 0) seedpath = string(home) + "/.MCOP-random-seed";
 
 	string cookiepath = MCOPUtils::createFilePath("secret-cookie");
 	md5_auth_init(cookiepath.c_str(),seedpath.c_str());
@@ -556,4 +556,14 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 	 * still refer to that connection don't crash now).
 	 */
 	delete connection;
+
+	list<Connection *>::iterator i;
+	for(i=connections.begin(); i != connections.end();i++)
+	{
+		if(*i == connection)
+		{
+			connections.erase(i);
+			return;
+		}
+	}
 }
