@@ -3,7 +3,6 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KScan/KScanDialog
 Name=KScan
-Name[af]=Kskandeer
 Name[bn]=কে-স্ক্যান
 Name[cy]=KSgan
 Name[eo]=Bildciferecigo

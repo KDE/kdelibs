@@ -2,6 +2,7 @@
 Type=PPM
 Header=
 Name=Portable Pixmap Image
+Name[af]='Portable Pixmap' Beeld
 Name[ar]=صورة Pixmap قابلة للنقل
 Name[az]=Portable Pixmap Rəsmi
 Name[bg]=Изображение Portable Pixmap Image
@@ -35,6 +36,7 @@ Name[lt]=Perkeliamas taškinės grafikos (pixmap) paveiksliukas
 Name[mn]=Шилжүүлж болох Pixmap-Зураг
 Name[ms]=Imej Pixmap Mudah Alih
 Name[nb]=Portable Pixmap-bilde
+Name[nds]=Porteerbor Pixmap-Bild
 Name[nl]=Portable Pixmap-afbeelding
 Name[nn]=Portable Pixmap-bilete
 Name[pa]=ਪੋਰਟਬਲ ਪਿਕਬਲ ਚਿੱਤਰ

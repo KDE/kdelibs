@@ -2,6 +2,7 @@
 Type=PGM
 Header=
 Name=Portable Graymap Image
+Name[af]='Portable Graymap' Beeld
 Name[ar]=صورة ثنائية اللون قابلة للنقل
 Name[az]=Portable Graymap Rəsmi
 Name[bg]=Изображение Portable Graymap Image
@@ -35,7 +36,7 @@ Name[lt]=Perkeliamas pilkų pustonių (greymap) paveiksliukas
 Name[mn]=Шилжүүлж болох Greymap-Зураг
 Name[ms]=Imej Graymap Mudah Alih
 Name[nb]=Portable Graymap-bilde
-Name[nds]=Portable Graymap-Bild
+Name[nds]=Porteerbor Graymap-Bild
 Name[nl]=Portable Graymap-afbeelding
 Name[nn]=Portable Graymap-bilete
 Name[pa]=ਪੋਰਟਬਲ ਗਰੇਮੇਪ ਚਿੱਤਰ

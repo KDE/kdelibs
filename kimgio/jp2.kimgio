@@ -2,6 +2,7 @@
 Type=jp2
 Header=^\x01\x01\x01\x0C\x6A\x50
 Name=JPEG 2000 Image
+Name[af]=JPEG 2000 Beeld
 Name[ar]=صورة من نوع JPEG
 Name[az]=JPEG 2000 Rəsmi
 Name[be]=Выява JPEG 2000
@@ -37,7 +38,7 @@ Name[lt]=JPEG 2000 paveiksliukas
 Name[mn]=JPEG 2000 Зураг
 Name[ms]=Imej JPEG 2000
 Name[nb]=JPEG 2000 bilde
-Name[nds]=JPEG 2000-Bild
+Name[nds]=JPEG2000-Bild
 Name[nl]=JPEG 2000-afbeelding
 Name[nn]=JPEG 2000-bilete
 Name[pa]=JPEG 2000 ਚਿੱਤਰ

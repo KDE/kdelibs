@@ -2,6 +2,7 @@
 Type=EPS
 Header=^(?:%c5%d0%d3%c6|%!PS-Adobe)
 Name=Encapsulated PostScript Image
+Name[af]=Geënkapsuleerde Postscript Beeld
 Name[ar]=Encapsulated PostScript صورة
 Name[az]=Encapsulated PostScript Rəsmi
 Name[be]=Выява Encapsulated PostScript

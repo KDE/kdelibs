@@ -2,6 +2,7 @@
 Type=PBM
 Header=
 Name=Portable Bitmap Image
+Name[af]='Portable Bitmap' Beeld
 Name[ar]=صورة قابلة للنقل PNG
 Name[az]=Portable Bitmap Rəsmi
 Name[bg]=Изображение Portable Bitmap Image
@@ -34,6 +35,7 @@ Name[lt]=Perkeliamas taškinės grafikos (bitmap) bylų formatas
 Name[mn]=Шилжүүлж болох Bitmap-Зураг
 Name[ms]=Imej Bitmap Mudah Alih
 Name[nb]=Portable Bitmap-bilde
+Name[nds]=Porteerbor Bitmap-Bild
 Name[nl]=Portable Bitmap-afbeelding
 Name[nn]=Portable Bitmap-bilete
 Name[pa]=ਪੋਰਟਬਲ ਬਿੱਟਮੈਪ ਚਿੱਤਰ
