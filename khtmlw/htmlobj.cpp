@@ -1473,7 +1473,7 @@ bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
 
 void HTMLImage::fileLoaded( const char *_filename )
 {
-  printf("*********** LOADED %s ******", _filename );
+  printf("*********** LOADED %s ******\n", _filename );
   
     bComplete = true;
 
