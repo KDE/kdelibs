@@ -41,6 +41,14 @@ public:
 
     void init();
 
+public slots:
+    /**
+     * Pre-selects the active window in the popup menu, for faster
+     * keyboard navigation. Needs to be called after popup().
+     * Should not be used when the popup is invoked using the mouse. 
+     */
+    void selectActiveWindow();
+    
 protected slots:
     void slotExec(int id);
     void slotUnclutterWindows();

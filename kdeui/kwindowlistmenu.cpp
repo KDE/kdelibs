@@ -226,6 +226,22 @@ void KWindowListMenu::slotExec(int id)
 #endif
 }
 
+// This popup is much more useful from keyboard if it has the active
+// window active by default - however, QPopupMenu tries hard to resist.
+// QPopupMenu::popup() resets the active item, so this needs to be
+// called after popup().
+void KWindowListMenu::selectActiveWindow()
+{
+    for( unsigned int i = 0;
+         i < count();
+         ++i )
+        if( isItemChecked( idAt( i )))
+            {
+            setActiveItem( i );
+            break;
+            }
+}
+
 void KWindowListMenu::slotUnclutterWindows()
 {
     kapp->dcopClient()->send("kwin", "KWinInterface", "unclutterDesktop()", "");
