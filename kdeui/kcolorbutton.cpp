@@ -90,6 +90,18 @@ void KColorButton::setColor( const QColor &c )
   }
 }
 
+QColor KColorButton::defaultColor() const
+{
+  return d->m_defaultColor;
+}
+
+void KColorButton::setDefaultColor( const QColor &c )
+{
+  d->m_bdefaultColor = c.isValid();
+  d->m_defaultColor = c;
+}
+
+
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
   int x, y, w, h;

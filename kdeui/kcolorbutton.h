@@ -66,6 +66,19 @@ public:
      */
      void setColor( const QColor &c );
 
+    /**
+     * Returns the default color or an invalid color
+     * if no default color is set.
+     * @since 3.4
+     */
+    QColor defaultColor() const;
+
+    /**
+     * Sets the default color to @p c.
+     * @since 3.4
+     */
+    void setDefaultColor( const QColor &c );
+
     QSize sizeHint() const;
 
 signals:
