@@ -10,3 +10,4 @@ writing=false
 makedir=false
 deleting=false
 Icon=realplayer
+Class=:internet
