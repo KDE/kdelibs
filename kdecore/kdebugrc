@@ -72,6 +72,10 @@ InfoOutput=4
 [5006]
 InfoOutput=2
 
+# kabc/vcard
+[5710]
+InfoOutput=4
+
 # kio_http_debug debug info off
 [7113]
 InfoOutput=4
