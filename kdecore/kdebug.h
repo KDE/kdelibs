@@ -234,7 +234,11 @@ class kdbgstream {
      * @param format the printf-style format
      * @return this stream
      */
-    kdbgstream &form(const char *format, ...);
+    kdbgstream &form(const char *format, ...)
+#ifdef __GNUC__
+      __attribute__ ( ( format ( printf, 2, 3 ) ) )
+#endif
+     ;
 
     /** Operator to print out basic information about a QWidget.
      *  Output of class names only works if the class is moc'ified.
