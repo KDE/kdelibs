@@ -1518,11 +1518,11 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
         if(allowedUnits & INTEGER && isInt) // ### DOM CSS doesn't seem to define something for integer
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
-	
+
 	// ### according to the css specs only 0 is allowed without unit.
 	// there are however too many web pages out there using CSS without units
 	// cause ie and ns allow them. Better get a buggy in the CSS test suite than
-	// messing up lots of bages. 
+	// messing up lots of bages.
 	// CHECK_STRICT
         if(allowedUnits & LENGTH ) // && value == 0)
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
@@ -1657,7 +1657,7 @@ class FontParser {
 public:
     QChar yyCh;
     QString yyIn;
-    int yyPos;
+    unsigned int yyPos;
     QString yyStr;
 
     int getChar() {
@@ -1960,10 +1960,10 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     const char *comment = "<!--";
     const QChar *startP;
     int count = 0;
-   
+
     curP = parseSpace( curP, endP );
     startP = curP;
-   
+
     // The code below ignores any occurances of
     // the beginning and/or the end of a html
     // comment tag
@@ -1980,7 +1980,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
        }
        ++startP;
     }
-   
+
     comment = "-->";
     while (startP && (startP < endP))
     {
@@ -1995,7 +1995,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
        }
        ++startP;
     }
-   
+
     CSSRuleImpl *rule = 0;
 
     if(!curP) return 0;
@@ -2062,7 +2062,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
             else if ( *ch == '}' ) {
 		processed += *ch;
 		processed += QChar(' ');
-	    } else 
+	    } else
                 processed += *ch;
         }
         else
