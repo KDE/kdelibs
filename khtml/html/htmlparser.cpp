@@ -360,7 +360,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_HEAD:
             // ### alllow not having <HTML> in at all, as per HTML spec
-            if (!current->isDocumentNode() && !current->id() == ID_HTML )
+            if (!current->isDocumentNode() && current->id() != ID_HTML )
                 return false;
             break;
         case ID_META:
