@@ -127,6 +127,8 @@ public:
 	AnyRef(std::vector<float>& value)		: AnyRefBase(&value,repFloatSeq) { };
 	AnyRef(std::vector<std::string>& value)	: AnyRefBase(&value,repStringSeq){};
 
+	AnyRef(Any& value)						: AnyRefBase(&value,repAny) { };
+
 	AnyRef(const AnyRef& ref) : AnyRefBase(ref) { }
 
 	void read(Buffer *b) const			{ _read(b);  }

@@ -22,10 +22,39 @@
 
 #include "anyref.h"
 #include "core.h"
+#include "startupmanager.h"
+#include "debug.h"
 #include <assert.h>
 
 using namespace Arts;
 using namespace std;
+
+/*
+ * private utility class to deal with any types
+ */
+namespace Arts {
+	static class AnyRefHelper {
+	private:
+		Arts::InterfaceRepoV2 interfaceRepo;
+
+	public:
+		AnyRefHelper() {
+			interfaceRepo = DynamicCast(Dispatcher::the()->interfaceRepo());
+		}
+		void skipType(Buffer& buffer, const string& type);
+	} *anyRefHelper = 0;
+
+	static class AnyRefHelperStartup : public StartupClass {
+		void startup()	{
+			assert(anyRefHelper == 0);
+			anyRefHelper = new AnyRefHelper();
+		}
+		void shutdown()	{
+			delete anyRefHelper;
+			anyRefHelper = 0;
+		}
+	}	The_AnyRefHelperStartup;
+};
 
 string AnyRefBase::type() const
 {
@@ -155,6 +184,110 @@ void AnyRefBase::_read(Buffer *b) const
 		case repStringSeq:	b->readStringSeq(*(vector<string> *)data);
 			break;
 
+		case repAny:	
+			{
+				// find out the size by skipping over it for the first time
+				long startPos = b->size() - b->remaining();
+				anyRefHelper->skipType(*b, ((Any *)data)->type);
+
+				// if everything went well, read the raw value in one step
+				long size = (b->size() - b->remaining()) - startPos;
+				if(!b->readError())
+				{
+					b->rewind();
+					b->skip(startPos);
+					b->read(((Any *)data)->value, size);
+				}
+			}
+			break;
+
 		default:			assert(false);
+	}
+}
+
+/**
+ * correct skipping of an arbitary type not known at compile-time (this is
+ * a problem, since the size of the type will vary, due to the sequence<...>s
+ * contained)
+ */
+void AnyRefHelper::skipType(Buffer& buffer, const string& type)
+{
+	/* sequences */
+	if(type[0] == '*')
+	{
+		long seqlen = buffer.readLong();
+		while(seqlen > 0 && !buffer.readError())
+		{
+			skipType(buffer, type.c_str()+1);
+			seqlen--;
+		}
+	}
+	else
+	{
+		TypeIdentification ti = interfaceRepo.identifyType(type);
+		switch(ti)
+		{
+			case tiString:
+				{
+					string s;
+					buffer.readString(s);
+				}
+				break;
+
+			case tiLong:
+				buffer.readLong();
+				break;
+
+			case tiFloat:
+				buffer.readFloat();
+				break;
+
+			case tiByte:
+				buffer.readByte();
+				break;
+
+			case tiBoolean:
+				buffer.readBool();
+				break;
+
+			case tiVoid:
+				/* nothing to do */
+				break;
+
+			case tiType:
+				{
+					Arts::TypeDef td = interfaceRepo.queryType(type);
+
+					if(td.name == type)
+					{
+						vector<TypeComponent>::iterator tci;
+						for(tci = td.contents.begin(); tci != td.contents.end();
+																		tci++)
+						{
+							skipType(buffer,tci->type);
+						}
+					}
+					else
+					{
+						arts_warning("unknown type %s",type.c_str());
+					}
+				}
+				break;
+
+			case tiEnum:
+				buffer.readLong();
+				break;
+
+			case tiInterface:
+				{
+					ObjectReference or;
+					or.readType(buffer);
+				}
+				break;
+
+			default:
+				arts_warning("AnyRefHelper: can't read %s",type.c_str());
+				break;
+		}
 	}
 }
