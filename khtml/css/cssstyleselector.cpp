@@ -818,11 +818,18 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
             QString str = value.string();
             QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
-            if(pos == -1) return false;
-            if(pos && str[pos-1] != ' ') return false;
-            pos += selStr.length();
-            if(pos < (int)str.length() && str[pos] != ' ') return false;
+            const int selStrlen = selStr.length();
+            int pos = 0;
+            for ( ;; ) {
+                pos = str.find(selStr, pos, strictParsing);
+                if ( pos == -1 ) return false;
+                if ( pos == 0 || str[pos-1] == ' ' ) {
+                    int endpos = pos + selStrlen;
+                    if ( endpos >= str.length() || str[endpos] == ' ' )
+                        break; // We have a match.
+                }
+                ++pos;
+            }
             break;
         }
         case CSSSelector::Contain:

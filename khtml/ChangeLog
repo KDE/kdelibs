@@ -1,5 +1,9 @@
 2003-10-18  Dirk Mueller  <dmuell@gmx.net>
 
+	* css/cssstyleselector.cpp (checkOneSelector): fix selector list matching
+	when substrings match in a word. we have to test if we matched a complete word,
+	otherwise its not a match.
+
 	* html/htmltokenizer.cpp (parseEntity): don't do the magic-unterminated-entities-IE-hack
 	when inside a tag. fixes <a href="/foo.html&section=2">
 
