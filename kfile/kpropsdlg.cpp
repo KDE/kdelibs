@@ -923,15 +923,6 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     else
       path = properties->kurl().path();
 
-    kdDebug(250) << "**" << path << "**" << endl;
-    QFile f( path );
-    if ( !f.open( IO_ReadWrite ) ) {
-        KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
-      return;
-    }
-    f.close();
-
-    KDesktopFile cfg(path);
     // Get the default image
     QString str = KMimeType::findByURL( properties->kurl(),
                                         properties->item()->mode(),
@@ -940,11 +931,26 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     QString sIcon;
     if ( str != iconButton->icon() )
       sIcon = iconButton->icon();
-    kdDebug(250) << "sIcon = " << (sIcon) << endl;
-    kdDebug(250) << "str = " << (str) << endl;
     // (otherwise write empty value)
-    cfg.writeEntry( QString::fromLatin1("Icon"), sIcon );
-    cfg.sync();
+
+    kdDebug(250) << "**" << path << "**" << endl;
+    QFile f( path );
+    
+    // If default icon and no .directory file -> don't create one
+    if ( !sIcon.isEmpty() || f.exists() )
+    {
+        if ( !f.open( IO_ReadWrite ) ) {
+          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
+          return;
+        }
+        f.close();
+
+        KDesktopFile cfg(path);
+        kdDebug(250) << "sIcon = " << (sIcon) << endl;
+        kdDebug(250) << "str = " << (str) << endl;
+        cfg.writeEntry( QString::fromLatin1("Icon"), sIcon );
+        cfg.sync();
+    }
   }
 }
 
