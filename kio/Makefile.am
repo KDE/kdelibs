@@ -35,7 +35,7 @@ libkio_la_SOURCES = \
 	kio_interface.cpp kio_job.cpp kio_listprogress_dlg.cpp \
 	kio_littleprogress_dlg.cpp kio_netaccess.cpp \
 	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp kio_simpleprogress_dlg.cpp \
-	kio_skip_dlg.cpp kpixmapcache.cpp krun.cpp ktar.cpp \
+	kio_skip_dlg.cpp krun.cpp ktar.cpp \
 	kuserpaths.cpp kuserprofile.cpp \
 	ktrader.cpp ktraderparse.cpp \
 	yacc.c lex.c
@@ -49,7 +49,7 @@ include_HEADERS = ksycocaentry.h ksycocatype.h \
         kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
         kio_pass_dlg.h kautomount.h \
         kio_simpleprogress_dlg.h kio_littleprogress_dlg.h kio_listprogress_dlg.h \
-        kio_cache.h kio_netaccess.h kpixmapcache.h kuserprofile.h \
+        kio_cache.h kio_netaccess.h kuserprofile.h \
         kio_error.h kio_job.h \
         kio_paste.h kio_openwith.h kuserpaths.h \
         ktar.h ktrader.h
