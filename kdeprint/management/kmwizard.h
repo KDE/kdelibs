@@ -74,6 +74,7 @@ public:
 protected slots:
 	void slotNext();
 	void slotPrev();
+	void slotHelp();
 
 private:
 	QIntDict<KMWizardPage>	m_pagepool;

@@ -25,7 +25,7 @@
 #include "kmfactory.h"
 #include "kmuimanager.h"
 
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlabel.h>
 #include <qwidgetstack.h>
 #include <kmessagebox.h>
@@ -33,6 +33,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kseparator.h>
+#include <kapplication.h>
+#include <kstdguiitem.h>
 
 #include "kmwinfopage.h"
 #include "kmwpassword.h"
@@ -61,10 +63,10 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	m_pagepool.setAutoDelete(false);
 
 	m_stack = new QWidgetStack(this);
-	m_next = new QPushButton(i18n("&Next >"), this);
+	m_next = new KPushButton(i18n("&Next >"), this);
 	m_next->setDefault(true);
-	m_prev = new QPushButton(i18n("< &Back"), this);
-	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
+	m_prev = new KPushButton(i18n("< &Back"), this);
+	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	m_title = new QLabel(this);
 	QFont	f(m_title->font());
 	f.setBold(true);
@@ -72,10 +74,12 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);
 	KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
+	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));
 	connect(m_prev,SIGNAL(clicked()),SLOT(slotPrev()));
+	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
 
 	m_side = new SidePixmap(this);
 	if (!m_side->isValid())
@@ -99,6 +103,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	main_->addWidget(m_stack,1);
 	main0_->addWidget(sep2);
 	main0_->addLayout(btn_);
+	btn_->addWidget(m_help);
 	btn_->addStretch(1);
 	btn_->addWidget(m_prev);
 	btn_->addWidget(m_next);
@@ -238,4 +243,10 @@ void KMWizard::slotNext()
 		}
 	}
 }
+
+void KMWizard::slotHelp()
+{
+	kapp->invokeHelp(QString::null, "kdeprint");
+}
+
 #include "kmwizard.moc"
