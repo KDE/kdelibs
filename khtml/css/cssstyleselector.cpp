@@ -1401,7 +1401,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         case CSS_VAL_VISIBLE:
             o = OVISIBLE; break;
         case CSS_VAL_HIDDEN:
-            o = OHIDDEN; //kdDebug() << "overflow:hidden" << endl; break;
+            o = OHIDDEN; break;
         case CSS_VAL_SCROLL:
             o = SCROLL; break;
         case CSS_VAL_AUTO:
