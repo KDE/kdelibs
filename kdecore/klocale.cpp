@@ -192,7 +192,7 @@ void KLocale::doBindInit()
 		       << "NoPlural/"
 		       << "TwoForms/"
 		       << "French/"
-		       << "Gaeilge/"
+		       << "OneTwoRest/"
 		       << "Russian/"
 		       << "Polish/"
 		       << "Slovenian/"
@@ -489,11 +489,23 @@ QString KLocale::weekDayName (int i, bool shortName) const
 
 void KLocale::insertCatalogue( const QString & catalogue )
 {
+  qDebug("insertCatalogue %s", catalogue.latin1());
   KCatalogue cat( catalogue );
 
   initCatalogue( cat );
 
   d->catalogues.append( cat );
+}
+
+void KLocale::removeCatalogue(const QString &catalogue)
+{
+  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+	it != d->catalogues.end();
+	 )
+    if ((*it).name() == catalogue)
+      it = d->catalogues.remove(it);
+    else
+      ++it;
 }
 
 KLocale::~KLocale()
@@ -519,6 +531,7 @@ QString KLocale::translate_priv(const char *msgid,
 	it != d->catalogues.end();
 	++it )
     {
+      kdDebug(173) << "translate " << msgid << " " << (*it).name() << " " << (!KGlobal::activeInstance() ? QCString("no instance") : KGlobal::activeInstance()->instanceName()) << endl;
       const char * text = (*it).translate( msgid );
 
       if ( text )
@@ -1754,7 +1767,7 @@ QStringList KLocale::languagesTwoAlpha() const
 {
   if (d->langTwoAlpha.count())
      return d->langTwoAlpha;
-     
+
   const QStringList &origList = languageList();
 
   QStringList result;

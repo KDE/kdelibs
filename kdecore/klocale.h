@@ -768,6 +768,8 @@ public:
    */
   void insertCatalogue(const QString& catalogue);
 
+  void removeCatalogue(const QString &catalogue);
+
   /**
    * Translates a message as a QTranslator is supposed to.
    * The parameters are similar to i18n(), but the result
