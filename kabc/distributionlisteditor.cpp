@@ -210,6 +210,7 @@ void DistributionListEditor::removeList()
   delete mManager->list( mNameCombo->currentText() );
   mNameCombo->removeItem( mNameCombo->currentItem() );
   removeButton->setEnabled(!mManager->listNames().isEmpty());
+  addEntryButton->setEnabled( !mNameCombo->currentText().isEmpty());
   updateEntryView();
 }
 
@@ -231,6 +232,7 @@ void DistributionListEditor::addEntry()
 
   list->insertEntry( addresseeItem->addressee() );
   updateEntryView();
+  slotSelectionAddresseeViewChanged();
 }
 
 void DistributionListEditor::removeEntry()
@@ -303,5 +305,5 @@ void DistributionListEditor::slotSelectionAddresseeViewChanged()
     AddresseeItem *addresseeItem =
         dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
     bool state=addresseeItem;
-    addEntryButton->setEnabled( state);
+    addEntryButton->setEnabled( state && !mNameCombo->currentText().isEmpty());
 }
