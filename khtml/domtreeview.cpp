@@ -25,6 +25,7 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
     setRootIsDecorated(true);
     addColumn("Name");
     addColumn("Value");
+    setSorting(-1);
     part = currentpart;
     connect(((const QObject *)part), SIGNAL(sigNodeSelected(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
 }
@@ -68,11 +69,11 @@ void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
 
     m_itemdict.insert(node.handle(), cur_item);
 
-    DOM::Node cur_child = node.firstChild();
+    DOM::Node cur_child = node.lastChild();
     while (!cur_child.isNull())
     {
 	recursive(node, cur_child);
-	cur_child = cur_child.nextSibling();
+	cur_child = cur_child.previousSibling();
     }
 }
 
