@@ -78,6 +78,7 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
 };
 
 // these can contain wildcard characters. Needed for fontset matching (CJK fonts)
+// sort them by length if they have the same prefix!
 static const char * const xNames[CHARSETS_COUNT] = {
     "iso10646-1",
     "iso8859-1",
@@ -111,6 +112,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "koi8-u",
 #endif
     ""  // this will always return true...
+        // adjust xNameToId if you remove this
 };
 
 static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
@@ -152,10 +154,11 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
 class KCharsetsPrivate
 {
 public:
-    KCharsetsPrivate()
+    KCharsetsPrivate(KCharsets* _kc)
     {
         db = 0;
         availableCharsets = 0;
+        kc = _kc;
     }
     ~KCharsetsPrivate()
     {
@@ -164,23 +167,10 @@ public:
     }
     QFontDatabase *db;
     QMap<QFont::CharSet, QValueList<QCString> > *availableCharsets;
+    KCharsets* kc;
 
     void getAvailableCharsets();
 };
-
-static QFont::CharSet xNameToID(QCString &name)
-{
-    name = name.lower();
-
-    int i = 0;
-    while(i < CHARSETS_COUNT)
-    {
-       if( name == xNames[i] )
-            return charsetsIds[i];
-        i++;
-    }
-    return QFont::AnyCharSet;
-}
 
 void KCharsetsPrivate::getAvailableCharsets()
 {
@@ -202,7 +192,7 @@ void KCharsetsPrivate::getAvailableCharsets()
 	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
 	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
-	    QFont::CharSet qcs = xNameToID( cs );
+	    QFont::CharSet qcs = kc->xNameToID( cs );
             if ( qcs != QFont::AnyCharSet )
 	      if( !availableCharsets->contains( qcs ) ) {
 		  QValueList<QCString> strList;
@@ -227,7 +217,7 @@ void KCharsetsPrivate::getAvailableCharsets()
 
 KCharsets::KCharsets()
 {
-    d = new KCharsetsPrivate;
+    d = new KCharsetsPrivate(this);
 }
 
 KCharsets::~KCharsets()
@@ -608,13 +598,15 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
 {
     name = name.lower();
 
-    int i = 0;
-    while(i < CHARSETS_COUNT)
+    // try longest names first, then shorter ones
+    // to avoid that iso-8859-10 matches iso-8859-1
+    int i = CHARSETS_COUNT-1; // avoid the "" entry
+    while( i-- )
     {
        if( !QRegExp( xNames[i] ).match(name) )
             return charsetsIds[i];
-        i++;
     }
+
     return QFont::AnyCharSet;
 }
 
