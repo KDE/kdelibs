@@ -17,7 +17,8 @@
 #    Boston, MA 02111-1307, USA.
 
 YACC = bison
-INCLUDES = $(PCRECFLAGS) $(all_includes)
+# top_srcdir so that <kjs/global.h> is found here
+INCLUDES = -I$(top_srcdir) $(PCRECFLAGS) $(all_includes)
 
 lib_LTLIBRARIES = libkjs.la
 
