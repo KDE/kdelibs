@@ -548,6 +548,8 @@ void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
     s.prepend("WindowProperties");
     config->setGroup(s);
 
+    // store the className for later restorating (Matthias)
+    config->writeEntry("ClassName", className());
 
     //use KWM for window properties (Matthias)
     config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
@@ -757,6 +759,24 @@ bool KTopLevelWidget::canBeRestored(int number){
   int n = config->readNumEntry("NumberOfWindows", 0);
   return (number >= 1 && number <= n);
 }
+
+//Matthias
+const QString classNameOfToplevel(int number){
+  if (!kapp->isRestored())
+    return "";
+  KConfig *config = kapp->getSessionConfig();
+  if (!config)
+    return False;
+  QString s;
+  s.setNum(number);
+  s.prepend("WindowProperties");
+  config->setGroup(s);
+  if (!config->hasKey("ClassName"))
+    return "";
+  else
+    return config->readEntry("ClassName");
+}
+
 
 
 //Matthias

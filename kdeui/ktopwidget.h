@@ -186,9 +186,21 @@ public:
    * Note that "show()" is called implicit in restore.
    *
    * With this you can easily restore all toplevel windows of your
-   * application.  (Matthias)
+   * application.  
+   *
+   * Note: If your application uses different kinds of toplevel
+   * windows, then you can use KTopLevelWidget::classNameOfToplevel(n)
+   * to determine the exact type before calling the childTLW
+   * constructor in the example from above.  (Matthias) 
    */
   static bool canBeRestored(int number);
+
+
+  /** Returns the className of the numberth toplevel window which
+    * should be restored. This is only usefull if you application uses
+    * different kinds of toplevel windows. (Matthias) 
+    */
+  static const QString classNameOfToplevel(int number);
 
   /** try to restore the specified number. Returns "False" if this
    * fails, otherwise returns "True" and shows the window

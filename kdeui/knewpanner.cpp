@@ -167,7 +167,7 @@ int KNewPanner::seperatorPos()
     int value;
 
     if (currentunits == Percent)
-	value= position * 100 / width();
+	value= position * 100 / (orientation == Vertical?width():height());
     else
 	value= position;
 	    
@@ -177,7 +177,7 @@ int KNewPanner::seperatorPos()
 void KNewPanner::setSeperatorPos(int pos)
 {
     if (currentunits == Percent)
-	setAbsSeperatorPos(pos * width() / 100);
+	setAbsSeperatorPos(pos * (orientation == Vertical?width():height()) / 100);
     else
 	setAbsSeperatorPos(pos);
 }
