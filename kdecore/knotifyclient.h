@@ -73,7 +73,7 @@ public:
 	 * @param client The DCOPClient to use.  Usually it pulls the one from
 	 *               your KApplication.
 	*/
-	KNotifyClient(const QString &message, const QString &text=0,
+	KNotifyClient(QObject *parent, const QString &message, const QString &text=0,
 	             int present=Default,
 	             const QString &sound=0, const QString &file=0,
 	             DCOPClient* client=0);

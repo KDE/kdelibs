@@ -23,9 +23,9 @@
 #include <dcopclient.h>
 
 
-KNotifyClient::KNotifyClient(const QString &message, const QString &text,
+KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QString &text,
                              int present, const QString &sound, const QString &file,
-                             DCOPClient* client)
+                             DCOPClient* client) : QObject(parent)
 {
 	if (!client) client=KApplication::kApplication()->dcopClient();
 	levent=new Event;
@@ -59,14 +59,14 @@ bool KNotifyClient::send()
 
 bool KNotifyClient::event(const QString &message, const QString &text)
 {
-	KNotifyClient c(message, text);
+	KNotifyClient c(0,message, text);
 	return c.send();
 }
 
 bool KNotifyClient::userEvent(const QString &text, int present,
                               const QString &sound, const QString &file)
 {
-	KNotifyClient c(0, text, present, sound, file);
+	KNotifyClient c(0,0, text, present, sound, file);
 	return c.send();
 }
 
