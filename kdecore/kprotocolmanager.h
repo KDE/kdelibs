@@ -77,8 +77,8 @@ public:
   /**
    * @returns the name of the icon, associated with the specified protocol
    */
-  QString icon( const QString& protocol ) const;    
-    
+  QString icon( const QString& protocol ) const;
+
   /**
    * @returns list of all known protocols
    */
@@ -282,6 +282,12 @@ public:
       s_pManager = new KProtocolManager;
     return *s_pManager;
   }
+
+  /**
+   * You don't need to call this. It's public for KIO::Scheduler to call
+   * when the configuration is changed
+   */
+  void scanConfig();
 
 protected:
   KProtocolManager();

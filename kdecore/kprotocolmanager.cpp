@@ -38,7 +38,12 @@ KProtocolManager::KProtocolManager()
   ASSERT( !s_pManager );
 
   s_pManager = this;
+  scanConfig();
+}
 
+void KProtocolManager::scanConfig()
+{
+  m_protocols.clear();
   QStringList list = KGlobal::dirs()->findDirs("config", "protocols");
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
     scanConfig( *it );
@@ -107,6 +112,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
         {
           // Copy all the info about HTTP into the one about FTP
           it.data() = ithttp.data();
+          kdDebug() << "Using HTTP config for FTP" << endl;
         }
       }
   }
