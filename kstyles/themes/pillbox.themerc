@@ -1,5 +1,5 @@
 [Misc]
-Name=Mosfet
+Name=Pillbox
 Comment=Pillbox unthemed style.
 [KDE]
 widgetStyle=pillboxstyle.la
