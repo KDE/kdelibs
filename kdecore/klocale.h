@@ -710,7 +710,7 @@ public:
    * @param str The string to split.
    * @param language This will be set to the language part of the string.
    * @param country This will be set to the country part of the string.
-   * @param charset This will be set to the charset part of the stirng.
+   * @param charset This will be set to the charset part of the string.
    */
   static void splitLocale(const QString & str,
 			  QString & language,
