@@ -1427,7 +1427,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_STRESS:
     case CSS_PROP_WIDOWS:
     case CSS_PROP_Z_INDEX:
-	break;
+    {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    style->setZIndex(e->parentNode()->style()->zIndex());
+	    return;
+	}
+	if(!primitiveValue || 
+	   primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER) 
+	    return;
+	style->setZIndex((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER));
+	return;
+    }
 	
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
