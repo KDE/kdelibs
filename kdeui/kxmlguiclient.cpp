@@ -227,12 +227,13 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, QA
     {
       e.setAttribute( attrWeakSeparator, (uint)1 );
 
-      // okay, hack time. if the last item was a weak separator, then
-      // we nuke the current one
+      // okay, hack time. if the last item was a weak separator OR
+      // this is the first item in a container, then we nuke the
+      // current one
       QDomElement prev = e.previousSibling().toElement();
-      if ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() )
+      if ( prev.isNull() || ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) )
       {
-        // the previous element was a weak separator
+        // the previous element was a weak separator or didn't exist
         QDomElement oldChild = e;
         e = e.nextSibling().toElement();
         base.removeChild( oldChild );
