@@ -358,34 +358,36 @@ template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkBar, RMB>::d_ptr = 0;
 
 static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
 
-#define BEGIN_RMB_ACTION                          \
-  RMB *s = rmbSelf(this);                         \
-  s->recv = this;                                 \
-  s->m_parentAddress = QString::null;             \
-  s->s_highlightedAddress = s_highlightedAddress; \
-  s->m_pManager = m_pManager;                     \
-  s->m_pOwner = m_pOwner;                         \
-  s->m_parentMenu = 0;
-
 static QString s_highlightedAddress;
 
+inline extern void begin_rmb_action(KBookmarkBar *self)
+{
+    RMB *s = rmbSelf(self);
+    s->recv = self;
+    s->m_parentAddress = QString::null;
+    s->s_highlightedAddress = s_highlightedAddress;
+    s->m_pManager = self->m_pManager;
+    s->m_pOwner = self->m_pOwner;
+    s->m_parentMenu = 0;
+}
+
 void KBookmarkBar::slotRMBActionEditAt( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
 
 void KBookmarkBar::slotRMBActionProperties( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionProperties( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
 
 void KBookmarkBar::slotRMBActionInsert( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionInsert( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
 
 void KBookmarkBar::slotRMBActionRemove( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionRemove( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
 
 void KBookmarkBar::slotRMBActionOpen( int val )
-{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionOpen( val ); }
+{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
@@ -411,7 +413,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 		s_highlightedAddress = _a->property("address").toString();
 		KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
 	 
-		BEGIN_RMB_ACTION; 
+		begin_rmb_action(this); 
 		KPopupMenu *pm = new KPopupMenu;
 		rmbSelf(this)->fillContextMenu( pm, s_highlightedAddress, 0 );
 		emit aboutToShowContextMenu( rmbSelf(this)->atAddress( s_highlightedAddress ), pm );
@@ -501,5 +503,4 @@ void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
         m_visible = false;
 }
 
-#undef BEGIN_RMB_ACTION
 #include "kbookmarkbar.moc"
