@@ -179,7 +179,7 @@ void KProgress::rangeChange()
 	emit percentageChanged(recalcValue(100));
 }
 
-void KProgress::styleChange(GUIStyle)
+void KProgress::styleChange(QStyle&)
 {
 	adjustStyle();
 }

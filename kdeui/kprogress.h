@@ -135,7 +135,7 @@ signals:
 protected:
 	void valueChange();
 	void rangeChange();
-	void styleChange( GUIStyle );
+	virtual void styleChange( QStyle& );
 	void paletteChange( const QPalette & );
 	void drawContents( QPainter * );
 	
