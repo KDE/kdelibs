@@ -42,12 +42,7 @@
 #include <volmgt.h>
 #endif
 
-QString KIO::convertSize( unsigned long size )
-{
-    return convertSize64( size );
-}
-
-QString KIO::convertSize64( long long size )
+QString KIO::convertSize( KIO::filesize_t size )
 {
     float fsize;
     QString s;
@@ -110,17 +105,19 @@ QString KIO::convertSizeFromKB( unsigned long size /* in KB */ )
     return s;
 }
 
-QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed )
+QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   QTime remainingTime;
 
   if ( speed != 0 ) {
-    unsigned long secs;
+    KIO::filesize_t secs;
     if ( totalSize == 0 ) {
       secs = 0;
     } else {
       secs = ( totalSize - processedSize ) / speed;
     }
+    if (secs >= (24*60*60)) // Limit to 23:59:59
+       secs = (24*60*60)-1;
     int hr = secs / ( 60 * 60 );
     int mn = ( secs - hr * 60 * 60 ) / 60;
     int sc = ( secs - hr * 60 * 60 - mn * 60 );
@@ -131,12 +128,7 @@ QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedS
   return remainingTime;
 }
 
-QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize)
-{
-    return itemsSummaryString64(items, files, dirs, size, showSize);
-}
-
-QString KIO::itemsSummaryString64(uint items, uint files, uint dirs, long long size, bool showSize)
+QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
     QString text = i18n( "One Item", "%n Items", items );
     text += " - ";
@@ -144,7 +136,7 @@ QString KIO::itemsSummaryString64(uint items, uint files, uint dirs, long long s
     if ( showSize && files > 0 )
     {
         text += " ";
-        text += i18n("(%1 Total)").arg(KIO::convertSize64( size ) );
+        text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
     }
     text += " - ";
     text += i18n("One Directory", "%n Directories", dirs);

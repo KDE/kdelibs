@@ -33,6 +33,8 @@
  */
 namespace KIO
 {
+  typedef signed long long int fileoffset_t;
+  typedef unsigned long long int filesize_t;
 
   /**
    * Convert size from bytes to the string representation.
@@ -40,17 +42,7 @@ namespace KIO
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
-  QString convertSize( unsigned long size );
-
-  /**
-   * Convert size from bytes to the string representation.
-   *
-   * @param  size  size in bytes
-   * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
-   *
-   * ### KDE 3.0: remove 64 suffix (for now it's needed to not break SC)
-   */
-  QString convertSize64( long long size );
+  QString convertSize( KIO::filesize_t size );
 
   /**
    * Convert size from kilo-bytes to the string representation.
@@ -71,7 +63,7 @@ namespace KIO
    * @param  speed          speed in bytes pre second
    * @return calculated remaining time
    */
-  QTime calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed );
+  QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
 
   /**
    * Helper for showing information about a set of files and directories
@@ -79,17 +71,7 @@ namespace KIO
    * @param size the sum of the size of the _files_
    * @param showSize whether to show the size in the result
    */
-  QString itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize);
-
-  /**
-   * Helper for showing information about a set of files and directories
-   * @p items = @p files + @p dirs + number of symlinks :)
-   * @param size the sum of the size of the _files_
-   * @param showSize whether to show the size in the result
-   *
-   * ### KDE 3.0: remove 64 suffix (for now it's needed to not break SC)
-   */
-  QString itemsSummaryString64(uint items, uint files, uint dirs, long long size, bool showSize);
+  QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
 
   /**
    * Encode (from the text displayed to the real filename)
@@ -273,7 +255,7 @@ public:
    * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
    */
   QString m_str;
-  long m_long;
+  long long m_long;
 
   /**
    * Holds one of the UDS_XXX constants

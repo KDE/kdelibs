@@ -249,7 +249,7 @@ QString KFileItem::linkDest() const
   return QString::null;
 }
 
-long KFileItem::size() const
+KIO::filesize_t KFileItem::size() const
 {
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
@@ -469,7 +469,7 @@ QString KFileItem::getStatusBarInfo()
   QString text = m_strText;
   // Extract from the KIO::UDSEntry the additional info we didn't get previously
   QString myLinkDest = linkDest();
-  long mySize = size();
+  KIO::filesize_t mySize = size();
 
   if ( m_bLink )
   {

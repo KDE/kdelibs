@@ -157,8 +157,7 @@ public:
   /**
    * @return the size of the file, if known
    */
-    // ### this should be unsigned long long
-  long size() const;
+  KIO::filesize_t size() const;
 
   /**
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
