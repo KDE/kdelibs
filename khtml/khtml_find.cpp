@@ -24,9 +24,14 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstringhandler.h>
+#include <qhbox.h>
+#include <qcheckbox.h>
+#include <qpushbutton.h>
+#include <qvbuttongroup.h>
+#include <kregexpdialog.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
-: KEdFind( parent, name, false )
+  : KEdFind( parent, name, false ), m_editorDialog(0)
 {
 //  connect( this, SIGNAL( done() ),
 //           this, SLOT( slotDone() ) );
@@ -35,6 +40,16 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   m_first = true;
   m_part = part;
   m_found = false;
+
+  // Add regep search to the dialog
+  QHBox* row = new QHBox( group );
+  m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
+  m_editRegExp = new QPushButton( i18n("Edit"), row, "editRegExp" );
+  
+  connect( m_asRegExp, SIGNAL( toggled(bool) ), m_editRegExp, SLOT( setEnabled(bool) ) );
+  connect( m_editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
+  m_editRegExp->setEnabled( false );
+
 }
 
 KHTMLFind::~KHTMLFind()
@@ -56,7 +71,7 @@ void KHTMLFind::slotSearch()
 
   bool forward = !get_direction();
 
-  if ( m_part->findTextNext( getText(), forward, case_sensitive(), false ) )
+  if ( m_part->findTextNext( getText(), forward, case_sensitive(), m_asRegExp->isChecked() ) )
     m_found = true;
   else if ( m_found )
   {
@@ -93,6 +108,18 @@ void KHTMLFind::setNewSearch()
 {
   m_first = true;
   m_found = false;
+}
+
+void KHTMLFind::slotEditRegExp()
+{
+  if ( m_editorDialog == 0 )
+    m_editorDialog = new KRegExpDialog( this );
+  
+  m_editorDialog->slotSetRegExp( getText() );
+  bool ok = m_editorDialog->exec();
+  if (ok) 
+    setText( m_editorDialog->regexp() );
+  
 }
 
 #include "khtml_find.moc"

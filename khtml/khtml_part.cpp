@@ -1957,6 +1957,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
             int matchLen = 0;
             if ( isRegExp ) {
               QRegExp matcher( str );
+              matcher.setCaseSensitive( caseSensitive );
               d->m_findPos = matcher.search(s.string(), d->m_findPos+1);
               if ( d->m_findPos != -1 )
                 matchLen = matcher.matchedLength();

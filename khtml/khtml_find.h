@@ -23,6 +23,7 @@
 #include <keditcl.h>
 
 class KHTMLPart;
+class KRegExpDialog;
 
 class KHTMLFind : public KEdFind
 {
@@ -38,11 +39,15 @@ public:
 private slots:
   void slotDone();
   void slotSearch();
+  void slotEditRegExp();
 
 private:
   bool m_first;
   bool m_found;
   KHTMLPart *m_part;
+  QCheckBox* m_asRegExp;
+  QPushButton*  m_editRegExp;
+  KRegExpDialog* m_editorDialog;
 };
 
 #endif
