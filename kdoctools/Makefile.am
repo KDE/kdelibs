@@ -1,6 +1,6 @@
 SUBDIRS = libxslt
 
-INCLUDES= $(all_includes) $(LIBXML_CFLAGS)
+INCLUDES= $(all_includes) -I$(top_builddir)/kio $(LIBXML_CFLAGS)
 LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIBXML_RPATH)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
