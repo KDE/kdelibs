@@ -228,7 +228,7 @@ void KTMainWindow::updateRects()
 	CHECK_PTR(layoutMgr);
 
 	/* add a top or flattened menu */
-	if ((kmenubar->menuBarPos() == KMenuBar::Top ||
+	if (kmenubar && (kmenubar->menuBarPos() == KMenuBar::Top ||
 		 kmenubar->menuBarPos() == KMenuBar::Flat) && kmenubar->isVisible())
 	{
 		layoutMgr->addWidget(kmenubar);
@@ -289,7 +289,7 @@ void KTMainWindow::updateRects()
 		layoutMgr->addWidget(kstatusbar);
 
 	/* add a bottom menu bar */
-	if (kmenubar->menuBarPos() == KMenuBar::Bottom && kmenubar->isVisible())
+	if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Bottom && kmenubar->isVisible())
 		layoutMgr->addWidget(kmenubar);
 
 	layoutMgr->activate();
