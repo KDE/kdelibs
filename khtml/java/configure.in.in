@@ -1,4 +1,4 @@
 dnl don't remove
 dnl AC_OUTPUT(khtml/java/kjava.policy)
-KJAVA_POLICYPATH=`echo ${kde_datadir}/kjava/- | sed -e "s,\\${datadir},$datadir," | sed -e "s,\\${prefix},$ac_kde_prefix,"`
+KDE_EXPAND_MAKEVAR(${kde_datadir}/kjava/-, KJAVA_POLICYPATH)
 AC_SUBST(KJAVA_POLICYPATH)
