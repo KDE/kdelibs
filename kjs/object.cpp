@@ -83,6 +83,10 @@ KJSO::KJSO(Imp *d)
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
+#ifdef KJS_REFCOUNT
+  if (rep)
+    rep->ref();
+#endif
 }
 
 KJSO::KJSO(const KJSO &o)
@@ -90,14 +94,22 @@ KJSO::KJSO(const KJSO &o)
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
-  rep = o.rep /*? o.rep->ref() : 0L*/;
+#ifdef KJS_REFCOUNT
+  rep = o.rep ? o.rep->ref() : 0L;
+#else
+  rep = o.rep;
+#endif
 }
 
 KJSO& KJSO::operator=(const KJSO &o)
 {
-  //  if (rep && rep->deref())
-  //    delete rep;
-  rep = o.rep /*? o.rep->ref() : 0L*/;
+#ifdef KJS_REFCOUNT
+  if (o.rep)
+    o.rep->ref();
+  if (rep && rep->deref())
+    delete rep;
+#endif
+  rep = o.rep;
 
   return *this;
 }
@@ -107,9 +119,10 @@ KJSO::~KJSO()
 #ifdef KJS_DEBUG_MEM
   count--;
 #endif
-  // TODO: debug & activate
-//   if (rep && rep->deref())
-//     delete rep;
+#ifdef KJS_REFCOUNT
+  if (rep && rep->deref())
+    delete rep;
+#endif
 }
 
 bool KJSO::isDefined() const
@@ -349,7 +362,7 @@ ErrorType KJSO::putValue(const KJSO& v)
 void KJSO::setPrototype(const KJSO& p)
 {
   assert(rep);
-  rep->proto = p.imp() /*? p.imp()->ref() : 0L*/;
+  rep->setPrototype(p);
 }
 
 void KJSO::setPrototypeProperty(const KJSO& p)
@@ -555,7 +568,7 @@ int List::count = 0;
 #endif
 
 Imp::Imp()
-  : refcount(1), prop(0), proto(0)
+  : refcount(0), prop(0), proto(0)
 {
 #ifdef KJS_DEBUG_MEM
   count++;
@@ -565,7 +578,9 @@ Imp::Imp()
 Imp::~Imp()
 {
 #ifdef KJS_DEBUG_MEM
+#ifndef KJS_REFCOUNT
   assert(Collector::collecting);
+#endif
   count--;
 #endif
 
@@ -841,7 +856,11 @@ void Imp::mark(Imp*)
 
 void Imp::setPrototype(const KJSO& p)
 {
-  proto = p.imp() /*? p.imp()->ref() : 0L*/;
+#ifdef KJS_REFCOUNT
+  proto = p.imp() ? p.imp()->ref() : 0L;
+#else
+  proto = p.imp();
+#endif
 }
 
 void Imp::setPrototypeProperty(const KJSO &p)
@@ -854,6 +873,7 @@ void Imp::setConstructor(const KJSO& c)
   put("constructor", c, DontEnum | DontDelete | ReadOnly);
 }
 
+#ifndef KJS_REFCOUNT
 void* Imp::operator new(size_t s)
 {
   return Collector::allocate(s);
@@ -868,6 +888,7 @@ void Imp::operator delete(void*)
 {
   // Do nothing. So far.
 }
+#endif
 
 ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
 
