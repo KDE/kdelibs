@@ -378,6 +378,7 @@ public:
    * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
   QString prettyURL() const;
+  QString prettyURL( int _trailing ) const; // BCI
 
   /**
    * Test to see if the @ref KURL is empty.

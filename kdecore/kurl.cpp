@@ -949,6 +949,11 @@ QString KURL::url( int _trailing ) const
 
 QString KURL::prettyURL() const
 {
+  return prettyURL( 0 );
+}
+
+QString KURL::prettyURL( int _trailing ) const
+{
   if( m_bIsMalformed )
   {
     // Return the whole url even when the url is
@@ -979,7 +984,7 @@ QString KURL::prettyURL() const
     u += ":";
   }
 
-  u += lazy_encode( m_strPath );
+  u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
 
   u += m_strQuery_encoded;
 
