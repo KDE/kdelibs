@@ -453,7 +453,6 @@ QString whatstr;
 #endif
 
 
-#if 0
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
@@ -466,7 +465,7 @@ QString whatstr;
   defCertBG = new QVButtonGroup(i18n("Default Action..."), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
-  defDont = new QRadioButton(i18n("&Don't Send"), defCertBG);
+  defDont = new QRadioButton(i18n("D&on't Send"), defCertBG);
   grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
   grid->addMultiCellWidget(new QLabel(i18n("Default Certificate:"), tabAuth), 1, 1, 3, 5);
   defCertBox = new QComboBox(false, tabAuth);
@@ -487,7 +486,6 @@ QString whatstr;
 #endif
 
 
-#endif
 
   ///////////////////////////////////////////////////////////////////////////
   // FIFTH TAB
@@ -691,7 +689,7 @@ QString whatstr;
   tabs->addTab(tabOSSL, i18n("OpenSSL"));
 #endif
   tabs->addTab(tabYourSSLCert, i18n("Your Certificates"));
-//  tabs->addTab(tabAuth, i18n("Authentication"));
+  tabs->addTab(tabAuth, i18n("Authentication"));
   tabs->addTab(tabOtherSSLCert, i18n("Peer SSL Certificates"));
 
 #if 0
@@ -804,6 +802,15 @@ void KCryptoConfig::load()
     j->setPassCache("");
   }
 
+  config->setGroup("Auth");
+  QString whichAuth = config->readEntry("AuthMethod", "none");
+  if (whichAuth == "send")
+    defCertBG->setButton(defCertBG->id(defSend));
+  else if (whichAuth == "prompt")
+    defCertBG->setButton(defCertBG->id(defPrompt));
+  else
+    defCertBG->setButton(defCertBG->id(defDont));
+  
   slotOtherCertSelect();
   slotYourCertSelect();
 #endif
@@ -918,6 +925,15 @@ void KCryptoConfig::save()
      pcerts->writeEntry("Password", x->getPass());
   }
 
+  config->setGroup("Auth");
+  QString whichAuth = config->readEntry("AuthMethod", "none");
+  if (defCertBG->selected() == defSend)
+    config->writeEntry("AuthMethod", "send");
+  else if (defCertBG->selected() == defPrompt)
+    config->writeEntry("AuthMethod", "prompt");
+  else
+    config->writeEntry("AuthMethod", "none");
+
 #endif
 
   config->sync();
@@ -969,6 +985,8 @@ void KCryptoConfig::defaults()
   mEGDPath->setEnabled(false);
   mEGDPath->setText("");
   oPath->setText("");
+
+  defCertBG->setButton(defCertBG->id(defDont));
 #endif
 
   emit changed(true);
