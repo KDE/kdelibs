@@ -84,6 +84,9 @@ KCrash::setCrashHandler (HandlerType handler)
 #ifdef SIGILL
   signal (SIGILL, handler);
 #endif
+#ifdef SIGABRT
+  signal (SIGABRT, handler);
+#endif
 
   _crashHandler = handler;
 }
