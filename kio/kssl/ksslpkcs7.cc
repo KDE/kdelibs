@@ -105,6 +105,9 @@ return NULL;
 void KSSLPKCS7::setCert(PKCS7 *c) {
 #ifdef HAVE_SSL
    _pkcs = c;
+   //STACK_OF(PKCS7_SIGNER_INFO) *PKCS7_get_signer_info(PKCS7 *p7);
+   //X509 *PKCS7_cert_from_signer_info(PKCS7 *p7, PKCS7_SIGNER_INFO *si);
+   // set _chain and _cert here.
 #endif
 }
 
