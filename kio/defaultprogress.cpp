@@ -23,6 +23,7 @@
 
 #include <kapp.h>
 #include <kdialog.h>
+#include <kglobal.h>
 #include <klocale.h>
 
 #include "jobclasses.h"
@@ -51,7 +52,8 @@ DefaultProgress::DefaultProgress( bool showNow )
   destLabel = new QLabel(this);
   grid->addWidget(destLabel, 1, 2);
 
-  topLayout->addSpacing( 10 );
+// why include this waste of space?
+//  topLayout->addSpacing( 10 );
 
   progressLabel = new QLabel(this);
   grid->addWidget(progressLabel, 2, 2);
@@ -134,7 +136,7 @@ void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long bytes ) {
   m_iProcessedSize = bytes;
 
   QString tmp;
-  tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(bytes) ).arg( KIO::convertSize(m_iTotalSize));
+  tmp = i18n( "%1 of %2 complete").arg( KIO::convertSize(bytes) ).arg( KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
 
@@ -169,7 +171,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
     speedLabel->setText( i18n( "Stalled") );
   } else {
     QTime remaining = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, bytes_per_second );
-    speedLabel->setText( i18n( "%1/s ( %2 )").arg( KIO::convertSize( bytes_per_second )).arg( remaining.toString()) );
+    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( bytes_per_second )).arg( KGlobal::locale()->formatTime(remaining, true) ) );
   }
 }
 
