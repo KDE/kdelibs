@@ -14,6 +14,7 @@ it is extremely lightweight, enabling it to be linked into all KDE
 applications with low overhead.
 
 Model:
+------
 
 The model is simple.  Each application using DCOP is a client.  They
 communicate to each other through a DCOP server, which functions like
@@ -32,10 +33,11 @@ there's a simple IDL-like compiler available (dcopidl and dcopidl2cpp)
 that generates stubs and skeletons for you. Using the dcopidl compiler
 has the additional benefit of type safety.
 
-This HOWTO describes the manual method first and covers the dcopidl
-compiler later.
+The manual method is covered first, followed by the automatic IDL method.
+
 
 Establishing the Connection:
+----------------------------
 
 KApplication has gained a method called "KApplication::dcopClient()"
 which returns a pointer to a DCOPClient instance.  The first time this
@@ -75,7 +77,9 @@ yourself, this is already done. The appId is by definition
 equal to kapp->name(). You can retrieve the registered DCOP client
 by calling kapp->dcopClient().
 
+
 Sending Data to a Remote Application:
+-------------------------------------
 
 To actually communicate, you have one of two choices.  You may either
 call the "send" or the "call" method.  Both methods require three
@@ -141,7 +145,9 @@ else {
 }
 </pre>
 
+
 Receiving Data via DCOP:
+------------------------
 
 Currently the only real way to receive data from DCOP is to multiply
 inherit from the normal class that you are inheriting (usually some
@@ -178,7 +184,9 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 }
 </pre>
 
+
 Receiving Calls and processing them:
+------------------------------------
 
 If your applications is able to process incoming function calls
 right away the above code is all you need. When your application
@@ -227,19 +235,137 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 }
 </pre>
 
-Using the dcopidl compiler
 
-TODO
+Using the dcopidl compiler:
+---------------------------
 
-Conclusion:
+dcopidl makes setting up a DCOP server easy. Instead of having to implement
+the process() method and unmarshalling (retrieving from QByteArray) parameters
+manually, you can let dcopidl create the necessary code on your behalf.
+ 
+This also allows you to describe the interface for your class in a
+single, separate header file.
+ 
+Writing an IDL file is very similar to writing a normal C++ header. An
+exception is the keyword 'ASYNC'. It indicates that a call to this
+function shall be processed asynchronously. For the C++ compiler, it
+expands to 'void'.
+ 
+Example:
 
-Hopefully this document will get you well on your way into the world
-of inter-process communication with KDE!  Please direct all comments
-and/or suggestions to Preston Brown <pbrown@kde.org> and Matthias
-Ettrich <ettrich@kde.org>.
+<pre>
+#ifndef MY_INTERFACE_H
+#define MY_INTERFACE_H
+ 
+#include <dcopobject.h>
+ 
+class MyInterface : virtual public DCOPObject
+{
+  K_DCOP
+       
+  k_dcop:
+ 
+    virtual ASYNC myAsynchronousMethod(QString someParameter) = 0;
+    virtual QRect mySynchronousMethod() = 0;
+};
+ 
+#endif
+</pre>
+
+As you can see, you're essentially declaring an abstract base class, which
+virtually inherits from DCOPObject.
+ 
+If you're using the standard KDE build scripts, then you can simply
+add this file (which you would call MyInterface.h) to your sources
+directory. Then you edit your Makefile.am, adding 'MyInterface.skel'
+to your SOURCES list and MyInterface.h to include_HEADERS.
+ 
+The build scripts will use dcopidl to parse MyInterface.h, converting
+it to an XML description in MyInterface.kidl. Next, a file called
+MyInterface_skel.cpp will automatically be created, compiled and
+linked with your binary.
+ 
+The next thing you have to do is to choose which of your classes will
+implement the interface described in MyInterface.h. Alter the inheritance
+of this class such that it virtually inherits from MyInterface. Then
+add declarations to your class interface similar to those on MyInterface.h,
+but virtual, not pure virtual.
+ 
+Example:
+
+<pre>
+class MyClass: public QObject, virtual public MyInterface
+{
+  Q_OBJECT
+ 
+  public:
+    MyClass();
+    ~MyClass();
+ 
+    ASYNC myAsynchronousMethod(QString someParameter);
+    QRect mySynchronousMethod();
+};
+</pre>
+Note: (Qt issue) Remember that if you are inheriting from QObject, you must
+place it first in the list of inherited classes.
+ 
+In the implementation of your class' ctor, you must explicitly initialize
+those classes from which you are inheriting from. This is, of course, good
+practise, but it is essential here as you need to tell DCOPObject the name of
+the interface which your are implementing.
+ 
+Example:
+
+<pre>
+MyClass::MyClass()
+  : QObject(),
+    DCOPObject("MyInterface")
+{
+  // whatever...
+}
+</pre>
+
+ 
+Now you can simply implement the methods you have declared in your interface,
+exactly the same as you would normally.
+ 
+Example:
+
+<pre>
+void MyClass::myAsynchronousMethod(QString someParameter)
+{
+  qDebug("myAsyncMethod called with param `" + someParameter + "'");
+}
+</pre>
+ 
+It is not necessary (though very clean) to define an interface as an
+abstract class of its own, like we did in the example above. We could
+just as well have defined a k_dcop section directly within MyClass:
+
+<pre>
+class MyClass: public QObject, virtual public DCOPObject
+{
+  Q_OBJECT
+  K_DCOP
+ 
+  public:
+    MyClass();
+    ~MyClass();
+ 
+  k_dcop:
+    ASYNC myAsynchronousMethod(QString someParameter);
+    QRect mySynchronousMethod();
+};
+</pre>
+
+In addition to skeletons, dcopidl2cpp also generate stubs. Those make
+it easy to call a DCOP interface without doing the marshalling
+manually. To use a stub, add MyInterface.stub to the SOURCES list of
+your Makefile.am. The stub class will then be called MyInterface_stub.
 
 
-Inter-user communication
+Inter-user communication:
+-------------------------
 
 Sometimes it might be interesting to use DCOP between processes
 belonging to different users, e.g. a frontend process running
@@ -273,81 +399,12 @@ NOTE: DCOP communication is not encrypted, so please do not
 pass important information around this way.
 
 
-Performance Tests:
+Conclusion:
+-----------
 
-A few back-of-the-napkin tests folks:
-
-Code:
-
-<pre>
-#include <kapp.h>
-
-int main(int argc, char **argv)
-{
-  KApplication *app;
-
-  app = new KApplication(argc, argv, "testit");
-  return app->exec();
-}
-</pre>
-
-Compiled with:
-
-<pre>
-g++ -O2 -o testit testit.cpp -I$QTDIR/include -L$QTDIR/lib -lkdecore
-</pre>
-
-on Linux yields the following memory use statistics:
-
-<pre>
-VmSize:     8076 kB
-VmLck:         0 kB
-VmRSS:      4532 kB
-VmData:      208 kB
-VmStk:        20 kB
-VmExe:         4 kB
-VmLib:      6588 kB
-</pre>
-
-If I create the KApplication's DCOPClient, and call attach() and
-registerAs(), it changes to this:
-
-<pre>
-VmSize:     8080 kB
-VmLck:         0 kB
-VmRSS:      4624 kB
-VmData:      208 kB
-VmStk:        20 kB
-VmExe:         4 kB
-VmLib:      6588 kB
-</pre>
-
-Basically it appears that using DCOP causes 100k more memory to be
-resident, but no more data or stack.  So this will be shared between all
-processes, right?  100k to enable DCOP in all apps doesn't seem bad at
-all. :)
-
-OK now for some timings.  Just creating a KApplication and then exiting
-(i.e. removing the call to KApplication::exec) takes this much time:
-
-<pre>
-0.28user 0.02system 0:00.32elapsed 92%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+0outputs (1084major+62minor)pagefaults 0swaps
-</pre>
-
-I.e. about 1/3 of a second on my PII-233.  Now, if we create our DCOP
-object and attach to the server, it takes this long:
-
-<pre>
-0.27user 0.03system 0:00.34elapsed 87%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+0outputs (1107major+65minor)pagefaults 0swaps
-</pre>
-
-I.e. about 1/3 of a second.  Basically DCOPClient creation and attaching
-gets lost in the statistical variation ("noise").  I was getting times
-between .32 and .48 over several runs for both of the example programs, so
-obviously system load is more relevant than the extra two calls to
-DCOPClient::attach and DCOPClient::registerAs, as well as the actual
-DCOPClient constructor time.
+Hopefully this document will get you well on your way into the world of
+inter-process communication with KDE!  Please direct all comments and/or
+suggestions to <a href="mailto:pbrown@kde.org>Preston Brown <pbrown@kde.org></a>
+and <a href="mailto:ettrich@kde.org>Matthias Ettrich <ettrich@kde.org></a>.
 
 */
