@@ -1250,7 +1250,8 @@ void KToolBar::childEvent( QChildEvent *e )
     if ( e->child()->isWidgetType() ) {
         QWidget * w = (QWidget*)e->child();
 	if ( e->type() == QEvent::ChildInserted ) {
-	    if ( !e->child()->inherits( "QPopupMenu" ) ) {
+            if ( !e->child()->inherits( "QPopupMenu" ) &&
+                 ::qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
 
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
