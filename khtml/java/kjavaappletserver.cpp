@@ -31,6 +31,7 @@
 #include <kparts/browserextension.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <kmessagebox.h>
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
@@ -40,6 +41,7 @@
 #include <qvaluelist.h>
 #include <qdir.h>
 #include <qeventloop.h>
+#include <qapplication.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -71,6 +73,7 @@
 #define KJAS_DATA_COMMAND      (char)25
 #define KJAS_PUT_URLDATA       (char)26
 #define KJAS_PUT_DATA          (char)27
+#define KJAS_SECURITY_CONFIRM  (char)28
 
 
 class JSStackFrame;
@@ -439,6 +442,8 @@ void KJavaAppletServer::quit()
     QStringList args;
 
     process->send( KJAS_SHUTDOWN_SERVER, args );
+    process->flushBuffers();
+    process->wait( 10 );
 }
 
 void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
@@ -589,6 +594,14 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
             cmd = QString::fromLatin1( "AppletFailed" );
             break;
+        case KJAS_SECURITY_CONFIRM: {
+            kdDebug(6100) << "Security confirm " << args[0] << endl;
+            QStringList sl;
+            sl.push_front( KMessageBox::warningYesNo(qApp->activeWindow(), args[0], i18n("Security alert")) == KMessageBox::Yes ? "1" : "0");
+            sl.push_front(QString::number(ID_num));
+            process->send( KJAS_SECURITY_CONFIRM, sl );
+            return;
+        }
         default:
             return;
             break;

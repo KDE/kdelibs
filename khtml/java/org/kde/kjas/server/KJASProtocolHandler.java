@@ -42,6 +42,7 @@ public class KJASProtocolHandler
     private static final int DataCommand         = 25;
     private static final int PutURLDataCode      = 26;
     private static final int PutDataCode         = 27;
+    private static final int SecurityConfirmCode = 28;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -227,6 +228,7 @@ public class KJASProtocolHandler
         if( cmd_code_value == ShutdownServerCode )
         {
             Main.debug( "shutDownServer received" );
+            KJASAppletStub.waitForDestroyThreads();
             System.exit( 1 );
         }
         else
@@ -332,6 +334,19 @@ public class KJASProtocolHandler
             if ( context != null )
                 context.derefObject(Integer.parseInt(objid));
             Main.debug( "DerefObject " + objid);
+        } else
+        if (cmd_code_value == SecurityConfirmCode)
+        {
+            String id = getArg( command );
+            String confirm = getArg( command );
+            Thread t = (Thread) KJASSecurityManager.confirmRequests.get(id);
+            Main.debug( "SecurityConfirmCode " + id + " confirm:" + confirm );
+            if (t != null) {
+                KJASSecurityManager.confirmRequests.put(id, confirm);
+                try {
+                    t.interrupt();
+                } catch (SecurityException se) {}
+            }
         }
         else
         {
@@ -826,6 +841,32 @@ public class KJASProtocolHandler
 
         System.arraycopy( ret_bytes, 0, bytes, index, ret_bytes.length );
         index += ret_bytes.length;
+        bytes[index++] = sep;
+
+        signals.write( bytes, 0, bytes.length );
+    }
+    public void sendSecurityConfirm( String text, String id )
+    {
+        Main.debug("sendSecurityConfirm, ID = " + id + " text = " + text);
+
+        byte [] id_bytes = id.getBytes();
+        byte [] text_bytes = text.getBytes();
+        int length = text_bytes.length + id_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
+        int index = 0;
+
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) SecurityConfirmCode;
+        bytes[index++] = sep;
+
+        System.arraycopy( id_bytes, 0, bytes, index, id_bytes.length );
+        index += id_bytes.length;
+        bytes[index++] = sep;
+
+        System.arraycopy( text_bytes, 0, bytes, index, text_bytes.length );
+        index += text_bytes.length;
         bytes[index++] = sep;
 
         signals.write( bytes, 0, bytes.length );

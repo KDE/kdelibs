@@ -98,10 +98,6 @@ public:
     void processCmd( QString cmd, QStringList args );
 
     /**
-     * Check if the applets are loaded by the Java Virtual Machine
-     **/
-    bool appletsLoaded() const;
-    /**
      * LiveConnect functions
      */
     bool getMember(QStringList & args, QStringList & ret_args);
@@ -135,6 +131,7 @@ protected:
 
 protected slots:
     void received( const QString& cmd, const QStringList& arg );
+    void javaProcessExited();
 
 private:
     int id;

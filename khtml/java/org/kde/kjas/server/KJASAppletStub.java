@@ -380,6 +380,18 @@ public final class KJASAppletStub
         destroyThread.start();
     }
 
+    static void waitForDestroyThreads()
+    {
+        Thread [] ts = new Thread[Thread.activeCount()];
+        Thread.enumerate(ts);
+        for (int i = 0; i < ts.length; i++)
+            if (ts[i].getName().equals("applet destroy thread")) {
+                try {
+                    ts[i].join(10000);
+                } catch (InterruptedException ie) {}
+            }
+    }
+
     /**
     * get the Applet managed by this stub.
     * @return the Applet or null if the applet could not be loaded

@@ -1,11 +1,18 @@
 package org.kde.kjas.server;
 
 import java.security.*;
+import java.security.cert.*;
 import java.net.*;
+import java.util.*;
 
 
 public class KJASSecurityManager extends SecurityManager
 {
+    static Hashtable confirmRequests = new Hashtable();
+    static int confirmId = 0;
+    Hashtable grantedPermissions = new Hashtable();
+    Hashtable deniedPermissions = new Hashtable();
+
     public KJASSecurityManager()
     {
     }
@@ -15,6 +22,76 @@ public class KJASSecurityManager extends SecurityManager
      * applet cannot connect to any other but the host, where it comes from.
      * Anything else seems to be handled automagically
      */
+    public void checkPermission(Permission perm) throws SecurityException, NullPointerException {
+        // ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            super.checkPermission(perm);
+        } catch (SecurityException se) {
+            // Don't annoy users with these
+            if (perm instanceof java.lang.RuntimePermission ||
+                    perm instanceof java.awt.AWTPermission)
+                throw se;
+
+            // Collect certificates
+            HashSet set = new HashSet();
+            Class [] cls = getClassContext();
+            for (int i = 1; i < cls.length; i++) {
+                Object[] objs = cls[i].getSigners();
+                if (objs != null && objs.length > 0)
+                    for (int j = 0; j < objs.length; j++)
+                        set.add(objs[j]);
+            }
+            Main.debug("Certificates " + set.size() + " for " + perm);
+            if (set.size() == 0)
+                throw se;
+
+            // Check granted/denied permission
+            String text = new String();
+            for (Iterator i = set.iterator(); i.hasNext(); ) {
+                Object cert = i.next();
+                Permissions permissions = (Permissions) grantedPermissions.get(cert);
+                if (permissions != null && permissions.implies(perm))
+                    return;
+                permissions = (Permissions) deniedPermissions.get(cert);
+                if (permissions != null && permissions.implies(perm))
+                    throw se;
+                if (cert instanceof X509Certificate)
+                    text += ((X509Certificate) cert).getIssuerDN().getName();
+                else
+                    text += cert.toString();
+                text += "\n";
+            }
+            String id = "" + confirmId++;
+            confirmRequests.put(id, Thread.currentThread());
+            Main.protocol.sendSecurityConfirm(text + perm, id);
+            boolean ok = false;
+            try {
+                Thread.currentThread().sleep(300000);
+            } catch (InterruptedException ie) {
+                Hashtable permstore = deniedPermissions;
+                if (((String) confirmRequests.get(id)).equals("1")) {
+                    ok = true;
+                    permstore = grantedPermissions;
+                }
+                for (Iterator it = set.iterator(); it.hasNext(); ) {
+                    Object cert = it.next();
+                    Permissions permissions = (Permissions) permstore.get(cert);
+                    if (permissions == null) {
+                        permissions = new Permissions();
+                        permstore.put(cert, permissions);
+                    }
+                    permissions.add(perm);
+                }
+            } finally {
+                confirmRequests.remove(id);
+            }
+            if (!ok) {
+                Main.debug("Permission denied" + perm);
+                throw se;
+            }
+        }
+    }
+
     public void disabled___checkPermission(Permission perm) throws SecurityException, NullPointerException
     {
         // does not seem to work as expected, Problems with proxy - and it seems that the default

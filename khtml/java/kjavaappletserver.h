@@ -128,6 +128,7 @@ public:
      * Shut down the KJAS server.
      */
     void quit();
+    KJavaProcess* javaProcess() { return process; }
 
     QString appletLabel();
 

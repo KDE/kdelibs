@@ -21,6 +21,7 @@
 
 #include "kjavaappletcontext.h"
 #include "kjavaappletserver.h"
+#include "kjavaprocess.h"
 #include "kjavaapplet.h"
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -53,6 +54,7 @@ KJavaAppletContext::KJavaAppletContext()
 {
     d = new KJavaAppletContextPrivate;
     server = KJavaAppletServer::allocateJavaServer();
+    connect(server->javaProcess(), SIGNAL(exited()), this, SLOT(javaProcessExited()));
 
     id = contextCount;
     server->createContext( id, this );
@@ -238,16 +240,14 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     }
 }
 
-bool KJavaAppletContext::appletsLoaded() const {
-    AppletMap::const_iterator it = d->applets.begin();
-    for (; it != d->applets.end(); it++) {
-        if (!(*it).isNull()) {
-            if (!(*it)->isAlive() && !(*it)->failed()) {
-                return false;
-            }
+void KJavaAppletContext::javaProcessExited() {
+    AppletMap::iterator it = d->applets.begin();
+    for (; it != d->applets.end(); it++)
+        if (!(*it).isNull() && (*it)->isCreated() && !(*it)->failed()) {
+            (*it)->setFailed();
+            if ((*it)->state() < KJavaApplet::INITIALIZED)
+                emit appletLoaded();
         }
-    }
-    return true;
 }
 
 bool KJavaAppletContext::getMember(QStringList & args, QStringList & ret_args) {
