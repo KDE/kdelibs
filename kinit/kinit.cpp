@@ -59,6 +59,13 @@
 #include <kapplication.h>
 #include <klocale.h>
 
+#ifdef Q_OS_LINUX
+#include <sys/prctl.h>
+#ifndef PR_SET_NAME
+#define PR_SET_NAME 15
+#endif
+#endif
+
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kstartupinfo.h> // schroder
 #endif
@@ -507,6 +514,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
        /** Give the process a new name **/
        kdeinit_setproctitle( "%s", procTitle.data() );
+#ifdef Q_OS_LINUX
+       /* set the process name, so that killall works like intended */
+       prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
+#endif
      }
 
      d.handle = 0;
