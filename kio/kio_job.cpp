@@ -1006,20 +1006,14 @@ QString KIOJob::convertSize( unsigned long size )
 {
     float fsize;
     QString s;
-#warning GCC 2.95.x apparently cannot handle the terabyte stuff (constant out of range). Looks like a compiler bug. Ifdefing it out for now, but we need a real fix!
-#if !defined(__GNUC__) || __GNUC__ < 2 || __GNUC_MINOR__ < 90
-    // Tera-byte
-    if ( size >= 1099511627776 )
-    {
-        fsize = (float) size / (float) 1099511627776;
-        s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
-    }
-#endif
     // Giga-byte
     if ( size >= 1073741824 )
     {
         fsize = (float) size / (float) 1073741824;
-        s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+	if ( fsize > 1024 ) // Tera-byte
+	    s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024, 1));
+	else
+            s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Mega-byte
     else if ( size >= 1048576 )
