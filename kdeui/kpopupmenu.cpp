@@ -16,12 +16,14 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+#include <qcursor.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qtimer.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
 #include <qregexp.h>
+#include <qstyle.h>
 
 #include "kpopupmenu.h"
 
@@ -38,97 +40,35 @@
 KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     : QWidget(parent, name)
 {
-    KConfig *config = KGlobal::config();
-    QString oldGroup = config->group();
-    QString tmpStr;
-
-    config->setGroup(QString::fromLatin1("PopupTitle"));
-    bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().mid());
-    grHigh = bgColor.light(150);
-    grLow = bgColor.dark(150);
-    fgColor = config->readColorEntry(QString::fromLatin1("TextColor"), &colorGroup().highlightedText());
-
-    tmpStr = config->readEntry(QString::fromLatin1("Pixmap"));
-    if(!tmpStr.isEmpty())
-        fill.load(KGlobal::dirs()->findResource("wallpaper", tmpStr));
-    if(!fill.isNull()){
-        config->setGroup(oldGroup);
-        useGradient = false;
-        return;
-    }
-
-    tmpStr = config->readEntry(QString::fromLatin1("Gradient"));
-    if(tmpStr.isEmpty()) {
-        config->setGroup(oldGroup);
-        useGradient = false;
-        return;
-    }
-
-    if(tmpStr == QString::fromLatin1("Horizontal"))
-        grType = KPixmapEffect::HorizontalGradient;
-    else if(tmpStr == QString::fromLatin1("Vertical"))
-        grType = KPixmapEffect::VerticalGradient;
-    else if(tmpStr == QString::fromLatin1("Diagonal"))
-        grType = KPixmapEffect::DiagonalGradient;
-    else if(tmpStr == QString::fromLatin1("Pyramid"))
-        grType = KPixmapEffect::PyramidGradient;
-    else if(tmpStr == QString::fromLatin1("Rectangle"))
-        grType = KPixmapEffect::RectangleGradient;
-    else if(tmpStr == QString::fromLatin1("Elliptic"))
-        grType = KPixmapEffect::EllipticGradient;
-    else{
-        kdWarning() << "KPopupMenu: Unknown gradient type " << tmpStr << " for title item" << endl;
-        grType = KPixmapEffect::HorizontalGradient;
-    }
-
-    useGradient = true;
     setMinimumSize(16, fontMetrics().height()+8);
-    config->setGroup(oldGroup);
 }
 
-KPopupTitle::KPopupTitle(KPixmapEffect::GradientType gradient,
-                         const QColor &color, const QColor &textColor,
+KPopupTitle::KPopupTitle(KPixmapEffect::GradientType /* gradient */,
+                         const QColor &/* color */, const QColor &/* textColor */,
                          QWidget *parent, const char *name)
    : QWidget(parent, name)
 {
-    grType = gradient;
-    fgColor = textColor;
-    bgColor = color;
-    grHigh = bgColor.light(150);
-    grLow = bgColor.dark(150);
-    useGradient = true;
     setMinimumSize(16, fontMetrics().height()+8);
 }
 
-KPopupTitle::KPopupTitle(const KPixmap &background, const QColor &color,
-                         const QColor &textColor, QWidget *parent,
+KPopupTitle::KPopupTitle(const KPixmap & /* background */, const QColor &/* color */,
+                         const QColor &/* textColor */, QWidget *parent,
                          const char *name)
     : QWidget(parent, name)
 {
-    if(!background.isNull())
-        fill = background;
-    else
-        kdWarning() << "KPopupMenu: Empty pixmap used for title." << endl;
-    useGradient = false;
-
-    fgColor = textColor;
-    bgColor = color;
-    grHigh = bgColor.light(150);
-    grLow = bgColor.dark(150);
     setMinimumSize(16, fontMetrics().height()+8);
 }
 
 void KPopupTitle::setTitle(const QString &text, const QPixmap *icon)
 {
     titleStr = text;
-    if(icon){
+    if (icon)
         miniicon = *icon;
-    }
     else
         miniicon.resize(0, 0);
 
     int w = miniicon.width()+fontMetrics().width(titleStr);
-    int h = QMAX( fontMetrics().height(), miniicon.height() );
+    int h = KMAX( fontMetrics().height(), miniicon.height() );
     setMinimumSize( w+16, h+8 );
 }
 
@@ -136,7 +76,7 @@ void KPopupTitle::setText( const QString &text )
 {
     titleStr = text;
     int w = miniicon.width()+fontMetrics().width(titleStr);
-    int h = QMAX( fontMetrics().height(), miniicon.height() );
+    int h = KMAX( fontMetrics().height(), miniicon.height() );
     setMinimumSize( w+16, h+8 );
 }
 
@@ -152,41 +92,32 @@ void KPopupTitle::paintEvent(QPaintEvent *)
 {
     QRect r(rect());
     QPainter p(this);
+    kapp->style().drawPrimitive(QStyle::PE_HeaderSection, &p, r, palette().active());
 
-    if(useGradient){
-
-        if(fill.width() != r.width()-4 || fill.height() != r.height()-4){
-            fill.resize(r.width()-4, r.height()-4);
-            KPixmapEffect::gradient(fill, grHigh, grLow, grType);
-        }
-        p.drawPixmap(2, 2, fill);
-    }
-    else if(!fill.isNull())
-        p.drawTiledPixmap(2, 2, r.width()-4, r.height()-4, fill);
-    else{
-        p.fillRect(2, 2, r.width()-4, r.height()-4, QBrush(bgColor));
-    }
-
-    if(!miniicon.isNull())
+    if (!miniicon.isNull())
         p.drawPixmap(4, (r.height()-miniicon.height())/2, miniicon);
-    if(!titleStr.isNull()){
-        p.setPen(fgColor);
+
+    if (!titleStr.isNull())
+    {
+        p.setPen(palette().active().text());
+        QFont f = p.font();
+        f.setBold(true);
+        p.setFont(f);
         if(!miniicon.isNull())
+        {
             p.drawText(miniicon.width()+8, 0, width()-(miniicon.width()+8),
                        height(), AlignLeft | AlignVCenter | SingleLine,
                        titleStr);
+        }
         else
+        {
             p.drawText(0, 0, width(), height(),
                        AlignCenter | SingleLine, titleStr);
+        }
     }
-    p.setPen(Qt::black);
-    p.drawRect(r);
-    p.setPen(grLow);
-    p.drawLine(r.x()+1, r.y()+1, r.right()-1, r.y()+1);
-    p.drawLine(r.x()+1, r.y()+1, r.x()+1, r.bottom()-1);
-    p.setPen(grHigh);
-    p.drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
-    p.drawLine(r.right()-1, r.y()+1, r.right()-1, r.bottom()-1);
+
+    p.setPen(palette().active().highlight());
+    p.drawLine(0, 0, r.right(), 0);
 }
 
 QSize KPopupTitle::sizeHint() const
@@ -202,7 +133,13 @@ public:
         , shortcuts(false)
         , autoExec(false)
         , lastHitIndex(-1)
+        , m_ctxMenu(0)
     {}
+    
+    ~KPopupMenuPrivate ()
+    {
+        delete m_ctxMenu;
+    }
 
     QString m_lastTitle;
 
@@ -212,13 +149,22 @@ public:
     bool noMatches : 1;
     bool shortcuts : 1;
     bool autoExec : 1;
-    
+
     QString keySeq;
     QString originalText;
-    
+
     int lastHitIndex;
+
+    // support for RMB menus on menus
+    QPopupMenu* m_ctxMenu;
+    static bool s_continueCtxMenuShow;
+    static int s_highlightedItem;
+    static KPopupMenu* s_contextedMenu;
 };
 
+int KPopupMenu::KPopupMenuPrivate::s_highlightedItem(-1);
+KPopupMenu* KPopupMenu::KPopupMenuPrivate::s_contextedMenu(0);
+bool KPopupMenu::KPopupMenuPrivate::s_continueCtxMenuShow(true);
 
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
@@ -230,6 +176,12 @@ KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
 
 KPopupMenu::~KPopupMenu()
 {
+    if (KPopupMenuPrivate::s_contextedMenu == this)
+    {
+        KPopupMenuPrivate::s_contextedMenu = 0;
+        KPopupMenuPrivate::s_highlightedItem = -1;
+    }
+    
     delete d;
 }
 
@@ -258,11 +210,15 @@ void KPopupMenu::changeTitle(int id, const QString &text)
     if(item){
         if(item->widget())
             ((KPopupTitle *)item->widget())->setTitle(text);
+#ifndef NDEBUG
         else
-            qWarning("KPopupMenu: changeTitle() called with non-title id %d.", id);
+            kdWarning() << "KPopupMenu: changeTitle() called with non-title id "<< id << endl;
+#endif
     }
+#ifndef NDEBUG
     else
-        qWarning("KPopupMenu: changeTitle() called with invalid id %d.", id);
+        kdWarning() << "KPopupMenu: changeTitle() called with invalid id " << id << endl;
+#endif
 }
 
 void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
@@ -271,11 +227,15 @@ void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
     if(item){
         if(item->widget())
             ((KPopupTitle *)item->widget())->setTitle(text, &icon);
+#ifndef NDEBUG
         else
-            qWarning("KPopupMenu: changeTitle() called with non-title id %d.", id);
+            kdWarning() << "KPopupMenu: changeTitle() called with non-title id "<< id << endl;
+#endif
     }
+#ifndef NDEBUG
     else
-        qWarning("KPopupMenu: changeTitle() called with invalid id %d.", id);
+        kdWarning() << "KPopupMenu: changeTitle() called with invalid id " << id << endl;
+#endif
 }
 
 QString KPopupMenu::title(int id) const
@@ -509,6 +469,107 @@ void KPopupMenu::setKeyboardShortcutsExecute(bool enable)
 }
 /**
  * End keyboard navigation.
+ */
+
+/**
+ * RMB menus on menus
+ */
+QPopupMenu* KPopupMenu::contextMenu()
+{
+    if (!d->m_ctxMenu)
+    {
+        d->m_ctxMenu = new QPopupMenu(this);
+        connect(d->m_ctxMenu, SIGNAL(aboutToHide()), this, SLOT(ctxMenuHiding()));
+    }
+
+    return d->m_ctxMenu;
+}
+
+void KPopupMenu::cancelContextMenuShow()
+{
+    KPopupMenuPrivate::s_continueCtxMenuShow = false;
+}
+
+int KPopupMenu::contextMenuFocusItem()
+{
+    return KPopupMenuPrivate::s_highlightedItem;
+}
+
+KPopupMenu* KPopupMenu::contextMenuFocus()
+{
+    return KPopupMenuPrivate::s_contextedMenu;
+}
+
+void KPopupMenu::itemHighlighted(int /* whichItem */)
+{
+    if (!d->m_ctxMenu || !d->m_ctxMenu->isVisible())
+    {
+        return;
+    }
+
+    d->m_ctxMenu->hide();
+    showCtxMenu(mapFromGlobal(QCursor::pos()));
+}
+
+void KPopupMenu::showCtxMenu(QPoint pos)
+{
+    KPopupMenuPrivate::s_highlightedItem = idAt(pos);
+
+    if (KPopupMenuPrivate::s_highlightedItem == -1)
+    {
+        KPopupMenuPrivate::s_contextedMenu = 0;
+        return;
+    }
+
+    emit aboutToShowContextMenu(this, KPopupMenuPrivate::s_highlightedItem, d->m_ctxMenu);
+
+    if (!KPopupMenuPrivate::s_continueCtxMenuShow)
+    {
+        KPopupMenuPrivate::s_continueCtxMenuShow = true;
+        return;
+    }
+
+    KPopupMenuPrivate::s_contextedMenu = this;
+    d->m_ctxMenu->popup(this->mapToGlobal(pos));
+    connect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
+}
+
+void KPopupMenu::ctxMenuHiding()
+{
+    disconnect(this, SIGNAL(highlighted(int)), this, SLOT(itemHighlighted(int)));
+    KPopupMenuPrivate::s_continueCtxMenuShow = true;
+}
+
+bool KPopupMenu::eventFilter(QObject* obj, QEvent* event)
+{
+    if (d->m_ctxMenu && obj == this)
+    {
+        if (event->type() == QEvent::MouseButtonRelease)
+        {
+            if (d->m_ctxMenu->isVisible())
+            {
+                return true;
+            }
+        }
+        else if (event->type() ==  QEvent::ContextMenu)
+        {
+            showCtxMenu(mapFromGlobal(QCursor::pos()));
+            return true;
+        }
+    }
+
+    return QWidget::eventFilter(obj, event);
+}
+
+void KPopupMenu::hideEvent(QHideEvent*)
+{
+    if (d->m_ctxMenu)
+    {
+        d->m_ctxMenu->hide();
+    }
+}
+/**
+ * end of RMB menus on menus support
  */
 
 // Obsolete

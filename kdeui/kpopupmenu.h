@@ -45,12 +45,14 @@ public:
      */
     KPopupTitle(QWidget *parent=0, const char *name=0);
     /**
+     * @deprecated
      * Constructs a title widget with the specified gradient and colors.
      */
     KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
                 const char *name=0);
     /**
+     * @deprecated
      * Constructs a title widget with the specified pixmap and colors.
      */
     KPopupTitle(const KPixmap &background, const QColor &color,
@@ -82,10 +84,12 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *ev);
 
-    KPixmapEffect::GradientType grType;
     QString titleStr;
-    KPixmap fill;
     QPixmap miniicon;
+    
+    // Remove in KDE4
+    KPixmapEffect::GradientType grType;
+    KPixmap fill;
     QColor fgColor, bgColor, grHigh, grLow;
     bool useGradient;
 
@@ -189,9 +193,45 @@ public:
      */
     void setTitle(const QString &title);
 
+    /**
+     * Returns the context menu associated with this menu
+     * @since 3.2
+     */
+    QPopupMenu* contextMenu();
+
+    /**
+     * Hides the context menu if shown
+     * @since 3.2
+     */
+    void cancelContextMenuShow();
+
+    /**
+     * Returns the KPopupMenu associated with the current context menu
+     * @since 3.2
+     */
+    static KPopupMenu* contextMenuFocus();
+
+    /**
+     * returns the ID of the menuitem associated with the current context menu
+     * @since 3.2
+     */
+    static int contextMenuFocusItem();
+
+signals:
+    /**
+     * connect to this signal to be notified when a context menu is about to be shown
+     * @param menu The menu that the context menu is about to be shown for
+     * @param menuItem The menu item that the context menu is currently on
+     * @param ctxMenu The context menu itself
+     * @since 3.2
+     */
+    void aboutToShowContextMenu(KPopupMenu* menu, int menuItem, QPopupMenu* ctxMenu);
+
 protected:
     virtual void closeEvent(QCloseEvent *);
     virtual void keyPressEvent(QKeyEvent* e);
+    virtual bool eventFilter(QObject* obj, QEvent* event);
+    virtual void hideEvent(QHideEvent*);
 
     virtual void virtual_hook( int id, void* data );
 
@@ -200,6 +240,9 @@ protected slots:
     QString underlineText(const QString& text, uint length);
     /// @since 3.1 
     void resetKeyboardVars(bool noMatches = false);
+    void itemHighlighted(int whichItem);
+    void showCtxMenu(QPoint pos);
+    void ctxMenuHiding();
 
 private:
     class KPopupMenuPrivate;
