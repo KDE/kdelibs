@@ -899,9 +899,9 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
       int longest_length = 0, cur_length;
       int i;
 
-      if (IN6_IS_ADDR_V4MAPPED(p) || IN6_IS_ADDR_V4COMPAT(p))
+      if (KDE_IN6_IS_ADDR_V4MAPPED(p) || KDE_IN6_IS_ADDR_V4COMPAT(p))
 	sprintf(buf2, "::%s%u.%u.%u.%u",
-		IN6_IS_ADDR_V4MAPPED(p) ? "ffff:" : "",
+		KDE_IN6_IS_ADDR_V4MAPPED(p) ? "ffff:" : "",
 		buf[12], buf[13], buf[14], buf[15]);
       else
 	{

@@ -24,6 +24,8 @@ AC_TRY_COMPILE(dnl
       ],
       AC_MSG_RESULT(no)
 )
+my_LIBS="$LIBS"
+LIBS="$LIBS $LIBSOCKET"
 AC_CHECK_FUNC(getaddrinfo,
   [
     AC_DEFINE(HAVE_GETADDRINFO, 1, [Define if getaddrinfo is present])
@@ -88,6 +90,7 @@ AC_CHECK_FUNC(getaddrinfo,
     AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
   ]
 )
+LIBS="$my_LIBS"
 
 AC_SUBST(HAVE_SOCKADDR_SA_LEN)
 AC_MSG_CHECKING([if struct sockaddr has member sa_len])
