@@ -882,7 +882,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
   d->bKeyIntercept = false;
   //eKey->hide();
   //eKey->setEnabled(false);
-  d->bChange->setEditing(true);
+  d->bChange->setEditing(false);
   d->bChange->setFocus();
   setKey(kCode);
 }
