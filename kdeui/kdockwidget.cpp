@@ -157,7 +157,7 @@ static const char*dock_close_top[]={
 ".XXXXXXXXXXXXXXX"
 };
 /**
- * A special kind of KTMainWindow that is able to have dockwidget child widgets.
+ * A special kind of KMainWindow that is able to have dockwidget child widgets.
  *
  * The main widget should be a dockwidget where other dockwidgets can be docked to
  * the left, right, top, bottom or to the middle.
@@ -167,7 +167,7 @@ static const char*dock_close_top[]={
  * @version $Id$
 */
 KDockMainWindow::KDockMainWindow( const char *name )
-:KTMainWindow( name )
+:KMainWindow( 0, name )
 {
   DockB.dock = 0L;
   DockB.pos  = KDockWidget::DockBottom;
@@ -224,7 +224,6 @@ void KDockMainWindow::setMainDockWidget( KDockWidget* mdw )
   } else {
     delete toolbar;
     toolbar = 0L;
-    updateRects();
   }
   slotDockChange();
 }
@@ -235,8 +234,7 @@ void KDockMainWindow::setView( QWidget *view )
     if ( view->parent() != this ) ((KDockWidget*)view)->applyToWidget( this );
   }
 
-  KTMainWindow::setView(view);
-  updateRects();
+  KMainWindow::setCentralWidget(view);
 }
 
 KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
@@ -1656,7 +1654,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
     // for KDockMainWindow->setView() in reafConfig()
-    c->writeEntry( "Main:view", dmain->view() ? dmain->view()->name():"" );
+    c->writeEntry( "Main:view", dmain->centralWidget() ? dmain->centralWidget()->name():"" );
     c->writeEntry( "Main:dock", dmain->getMainDockWidget()     ? dmain->getMainDockWidget()->name()    :"" );
   }
 

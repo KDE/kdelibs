@@ -32,7 +32,7 @@
    - KDockTabGroup                 - minor helper class
    - KDockWidget                   - IMPORTANT CLASS: the one and only dockwidget class
    - KDockManager                  - helper class
-   - KDockMainWindow               - IMPORTANT CLASS: a special KTMainWindow that can have dockwidgets
+   - KDockMainWindow               - IMPORTANT CLASS: a special KMainWindow that can have dockwidgets
 */
 
 #ifndef KDOCKWIDGET_H
@@ -41,7 +41,7 @@
 #include <qpoint.h>
 #include <qlist.h>
 #include <qframe.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 #include "kdocktabctl.h"
 
@@ -933,7 +933,7 @@ private:
 };
 
 /**
- * A special kind of @ref KTMainWindow that is able to have dockwidget child widgets (and member of the dockwidget class set).
+ * A special kind of @ref KMainWindow that is able to have dockwidget child widgets (and member of the dockwidget class set).
  *
  * The main widget should be a @ref KDockWidget where other @ref KDockWidget can be docked to
  * the left, right, top, bottom or to the middle.
@@ -974,7 +974,7 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockMainWindow : public KTMainWindow
+class KDockMainWindow : public KMainWindow
 {
   Q_OBJECT
 public:
