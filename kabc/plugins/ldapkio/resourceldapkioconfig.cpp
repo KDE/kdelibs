@@ -264,7 +264,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
       i--;  
       continue;
     }
-    if ( i - 2 == ( mNameDict.count()  >> 1 ) ) {
+    if ( (uint)(i - 2) == ( mNameDict.count()  >> 1 ) ) {
       i = 0;
       j = 2;
     }
