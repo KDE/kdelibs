@@ -266,6 +266,8 @@ public:
      *
      * Note that when passing true for the conserveMemory argument subsequent
      * calls to guiFactory()->addClient/removeClient may not work as expected.
+     * Also retrieving references to containers like popup menus or toolbars using
+     * the container method will not work.
      *
      * @param xmlfile The local xmlfile (relative or absolute)
      * @param _conserveMemory Specify whether createGUI() should call
