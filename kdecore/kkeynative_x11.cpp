@@ -104,8 +104,9 @@ bool KKeyNative::init( const KKey& key )
 	// TODO: create a keysym to keycode function in KKeyServer
 	// FIXME: Accomadate non-standard layouts
 	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
-	if( m_sym == XK_Print && m_mod & Mod1Mask )
-		m_code = 111;
+	// Specifically, it returns the code for SysReq instead of Print
+	if( m_sym == XK_Print && !(m_mod & Mod1Mask) )
+		m_code = 111; // code for Print
 	else if( m_sym == XK_Break || (m_sym == XK_Pause && (m_mod & ControlMask)) )
 		m_code = 114;
 	else
