@@ -333,6 +333,24 @@ when porting:
 - Please note too that it's recommended to use kapp->getCaption as second
   argument 
 
+NEW: you may now also use KMessageBox as a replacement for KMsgBox
+directly.  It is a thin wrapper on top of QMessageBox that provides
+default i18n'ed text and some other convenience features.
+
+////////////////////////////////////////////////////////////////////////
+// * KCombo
+
+KCombo has been removed.  Use QComboBox instead, it is completely
+compatible with the old KCombo API.  The method that you may have problems
+with is the old KCombo::setText.  This has been renamed to
+KCombo::setEditText.
+
+////////////////////////////////////////////////////////////////////////
+// * KQuickHelp
+KQuickHelp, the "super-tooltip" widget, has been replaced by QWhatsThis.
+It provides a compatible API and almost the same look and feel, in addition
+to some new functionality.
+
 ////////////////////////////////////////////////////////////////////////
 // * KPixmap::gradientFill
 
