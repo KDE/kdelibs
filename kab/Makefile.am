@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/kfile -I$(top_srcdir)/kio $(all_includes) 
+INCLUDES= $(all_includes) 
 
 lib_LTLIBRARIES = libkab.la
 KABVERSION=	3.0.0
