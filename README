@@ -11,10 +11,10 @@ About kdelibs
 -------------
 
 This is the version 2.0 (almost) release of the KDE libraries.  Among this
-collection are eleven (11) libraries that are central to the development
+collection are twelve (12) libraries that are central to the development
 and execution of a KDE program, internationalization files for these
-libraries, misc HTML documentation, and regression tests.  These libraries
-are:
+libraries, misc HTML documentation, theme modules, and regression tests.  
+These libraries are:
 
 * kdecore
     This is the core collection of KDE stuff.  Non GUI classes reside here.
@@ -46,7 +46,7 @@ are:
     Classes that fetch and decode URLs are contained here.  Previously
     this functionality was contained in kfmlib, but among other
     improvments and redesigns, kio does not require KFM to operate.
-    This library also contains "Ksycoca", the system configure cache
+    This library also contains "ksycoca", the system configure cache
     containing services, applications, servicetypes and mimetypes.
 
 * kjs
@@ -58,6 +58,10 @@ are:
 * kstyles
     The theme engine lies within.  It handles nearly anything relating to
     customizing the appearance of widgets.
+
+* dcop
+    Something witty and creative about DCOP and it's Davidlyness goes
+    here, David, D, you get it, sure.
 
 Licensing
 ---------
@@ -72,11 +76,16 @@ Various parts are also covered under a BSD style license, detailed in
 COPYING.BSD.  Currently, code covered under such license is copyrighted by
 Theo de Raadt.
 
+When in doubt, check the individual file, they should all have license
+headings and other identifying marks.
+
 Common Mistakes
 ---------------
 
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.1.0 or newer.
+to get a copy of Qt, version 2.2.0 or newer.  If you have peeked there
+already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
+thereof.
 
 Debugging
 ---------
