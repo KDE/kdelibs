@@ -1,3 +1,4 @@
+debian/kdelibs4.overrides  usr/share/lintian/overrides/kdelibs4
 debian/tmp/usr/lib/kde3/kabc_dir.la
 debian/tmp/usr/lib/kde3/kabc_dir.so
 debian/tmp/usr/lib/kde3/kabc_file.la
