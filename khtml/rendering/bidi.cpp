@@ -617,8 +617,8 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	{
 	    while(i < count && d->line.at(i)->level < levelHigh) i++;
 	    int start = i;
-	    while(i < count && d->line.at(i)->level >= levelHigh) i++;
-	    int end = i;
+	    while(i <= count && d->line.at(i)->level >= levelHigh) i++;
+	    int end = i-1;
 
 	    if(start != end)
 	    {

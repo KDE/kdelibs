@@ -502,9 +502,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	{
 	    ch[len-1-i] = str->s[from+i];
 	    ch[i] = str->s[from+len-1-i];
-	    if(ch[i].mirrored())
+	    if(ch[i].mirrored() && !m_style->visuallyOrdered())
 		ch[i] = ch[i].mirroredChar();
-	    if(ch[len-i].mirrored())
+	    if(ch[len-i].mirrored() && !m_style->visuallyOrdered())
 		ch[len-i] = ch[len-i].mirroredChar();
 	}
     }
