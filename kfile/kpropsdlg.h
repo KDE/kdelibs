@@ -2,6 +2,7 @@
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
    Copyright (c) 1999, 2000 Preston Brown <pbrown@kde.org>
    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
+   Copyright (c) 2000 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -50,11 +51,11 @@ namespace KIO { class Job; }
 /**
  * The main properties dialog class.
  * A Properties Dialog is a dialog which displays various information
- * about a particular file or URL.  This main class holds various
- * related classes, which are instantiated in the form of tab entries
- * in the tabbed dialog that this class provides.  The various tabs
- * themselves will let the user view or change information about the file
- * or URL.
+ * about a particular file or URL, or several ones.
+ * This main class holds various related classes, which are instantiated in
+ * the form of tab entries in the tabbed dialog that this class provides.
+ * The various tabs themselves will let the user view or change information
+ * about the file or URL.
  *
  * This class must be created with (void)new PropertiesDialog(...)
  * It will take care of deleting itself.
@@ -90,10 +91,7 @@ public:
    * file-manager-like applications.
    *
    * @param _items list of file items whose properties should be
-   * displayed. NOTE : the current limitations of PropertiesDialog
-   * makes it use only the FIRST item in the list.  This method is
-   * provided for future expansion when the properties dialog may be
-   * able to get/set properties for a group of items all at once.
+   * displayed.
    *
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
@@ -162,7 +160,7 @@ public:
    * Adds a "3rd party" properties plugin to the dialog.  Useful
    * for extending the properties mechanism.
    *
-   * To create a new lugin type, inherit from the base class KPropsPlugin
+   * To create a new plugin type, inherit from the base class KPropsPlugin
    * and implement all the methods.
    *
    * @param plugin is a pointer to the PropsPlugin. The Properties
@@ -180,10 +178,15 @@ public:
 
   /**
    * @return the file item for which the dialog is shown
-   * HACK : returns the first item of the list
+   * Warning, it returns the first item of the list.
+   * This means, use this only if you are sure the dialog is used
+   * for a single item.
    */
   KFileItem *item() { return m_items.first(); }
 
+  /**
+   * @return the items for which the dialog is shown
+   */
   KFileItemList items() const { return m_items; }
 
   /**
@@ -210,12 +213,14 @@ public:
   /**
    * Updates the item url (either called by rename or because
    * a global apps/mimelnk desktop file is being saved)
+   * Can only be called if the dialog applies to a single file/URL.
    * @param _name new URL
    */
   void updateUrl( const KURL& _newUrl );
 
   /**
    * #see FilePropsPlugin::applyChanges
+   * Can only be called if the dialog applies to a single file/URL.
    * @param _name new filename, encoded.
    */
   void rename( const QString& _name );
