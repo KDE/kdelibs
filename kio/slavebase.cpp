@@ -5,7 +5,7 @@
  *  Copyright (c) 2000 David Faure <faure@kde.org>
  *  Copyright (c) 2000 Stephan Kulow <coolo@kde.org>
  *
- * $Id$
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,9 +20,8 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
  **/
-
-#include "slavebase.h"
 
 #include <config.h>
 
@@ -43,6 +42,8 @@
 #include <kcrash.h>
 #include <kdesu/client.h>
 #include <kprotocolmanager.h>
+
+#include "slavebase.h"
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
@@ -640,7 +641,7 @@ int SlaveBase::messageBox( int type, const QString &text, const QString &caption
 
 bool SlaveBase::canResume( unsigned long offset )
 {
-    kdDebug() << "SlaveBase::canResume offset=" << offset << endl;
+    kdDebug(7019) << "SlaveBase::canResume offset=" << offset << endl;
     d->needSendCanResume = false;
     KIO_DATA << offset;
     m_pConnection->send( MSG_RESUME, data );
@@ -649,7 +650,7 @@ bool SlaveBase::canResume( unsigned long offset )
         int cmd;
         if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
         {
-            kdDebug() << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
+            kdDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
             return cmd == CMD_RESUMEANSWER;
         } else
             return false;
