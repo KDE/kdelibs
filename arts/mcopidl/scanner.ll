@@ -3,6 +3,8 @@
     Copyright (C) 1999 Stefan Westerfeld
                        stefan@space.twc.de
 
+    Copyright (C) 1999 Torben Weis <weis@kde.org>
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +22,11 @@
     */
 
 %{
+
+/*
+    This is the lex file for mcopidl. It is based on the dcopidl (kidl)
+    lex file, which was written by Torben Weis.
+*/
 
 #define YY_NO_UNPUT
 #include <stdlib.h>
