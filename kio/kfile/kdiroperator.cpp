@@ -721,7 +721,8 @@ bool KDirOperator::checkPreviewInternal() const
     return false;
 }
 
-KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
+KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
+{
     KFileView* new_view = 0L;
     bool separateDirs = KFile::isSeparateDirs( view );
     bool preview = ( KFile::isPreviewInfo(view) || KFile::isPreviewContents( view ) );
@@ -1133,9 +1134,9 @@ void KDirOperator::setupActions()
     shortAction->setExclusiveGroup( viewGroup );
     detailedAction->setExclusiveGroup( viewGroup );
 
-    connect( shortAction, SIGNAL( toggled( bool ) ),
+    connect( shortAction, SIGNAL( activated() ),
              SLOT( slotSimpleView() ));
-    connect( detailedAction, SIGNAL( toggled( bool ) ),
+    connect( detailedAction, SIGNAL( activated() ),
              SLOT( slotDetailedView() ));
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
