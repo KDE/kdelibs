@@ -715,11 +715,17 @@ void KDoubleNumInput::setReferencePoint( double ref )
 void KDoubleNumInput::setRange(double lower, double upper, double step,
                                                            bool slider)
 {
+    if( m_slider ) {
+	// don't update the slider to avoid an endless recursion
+	QSpinBox * spin = d->spin;
+	disconnect(spin, SIGNAL(valueChanged(int)),
+		m_slider, SLOT(setValue(int)) );
+    }
     d->spin->setRange( lower, upper, step, d->spin->precision() );
 
     if(slider) {
 	// upcast to base type to get the min/maxValue in int form:
-	QSpinBox * spin = static_cast<QSpinBox*>(d->spin);
+	QSpinBox * spin = d->spin;
         int slmax = spin->maxValue();
 	int slmin = spin->minValue();
         int slvalue = spin->value();
@@ -735,9 +741,9 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 	    // feedback line: when one moves, the other moves, too:
             connect(m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );
-	    connect(spin, SIGNAL(valueChanged(int)),
-		    m_slider, SLOT(setValue(int)) );
         }
+	connect(spin, SIGNAL(valueChanged(int)),
+			m_slider, SLOT(setValue(int)) );
 	// calculate ( slmax - slmin ) / 10 without overflowing ints:
 	int major = calcDiffByTen( slmax, slmin );
 	if ( !major ) major = slstep; // ### needed?
