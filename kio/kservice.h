@@ -190,6 +190,11 @@ public:
   QStringList keywords() const { return m_lstKeywords; }
 
   /**
+   * Returns whether map notification should be used with this service.
+   */
+  bool mapNotify() const { return m_mapNotify; }
+
+  /**
    * Returns the service types that this service supports.
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
@@ -318,5 +323,6 @@ private:
   bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
+  bool m_mapNotify;
 };
 #endif

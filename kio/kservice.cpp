@@ -138,6 +138,7 @@ KService::init( KDesktopFile *config )
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
   m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_mapNotify = config->readBoolEntry( "MapNotify", false );
   m_lstKeywords = config->readListEntry("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
   m_strInit = config->readEntry("X-KDE-Init" );
@@ -237,7 +238,7 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2 
-    >> m_lstKeywords >> m_strInit;
+    >> m_lstKeywords >> m_strInit >> (Q_UINT32)m_mapNotify;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -266,7 +267,7 @@ void KService::save( QDataStream& s )
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit;
+    << m_lstKeywords << m_strInit << (Q_UINT32)m_mapNotify;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -318,6 +319,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( entryPath() );
   else if ( _name == "DesktopEntryName")
     return QVariant( m_strDesktopEntryName );
+  else if ( _name == "MapNotify" )
+    return QVariant( m_mapNotify );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -352,6 +355,7 @@ QStringList KService::propertyNames() const
   res.append( "LibraryDependencies" );
   res.append( "DesktopEntryPath" );
   res.append( "DesktopEntryName" );
+  res.append( "MapNotify" );
 
   return res;
 }

@@ -20,12 +20,8 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_inc
 
 SUBDIRS = . klauncher kded file http ftp tests
 
-lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la libkmapnotify.la
+lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice
-
-libkmapnotify_la_LDFLAGS = -version-info 3:0 $(all_libraries) -R$(kde_libraries)
-libkmapnotify_la_LIBADD = ../libltdl/libltdlc.la $(LIB_X11)
-libkmapnotify_la_SOURCES = kmapnotify.c
 
 #libkioslave_la_LDFLAGS = -version-info 3:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la

@@ -40,6 +40,7 @@
 #include <dcopclient.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qdatetime.h>
 #include <kwin.h>
 #include <kdesktopfile.h>
 
@@ -63,7 +64,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
             _mimetype == "application/x-shellscript")
    {
     if ( u.isLocalFile() )
-      return KRun::run(u.path()); // just execute the url as a command
+      return (KRun::run(u.path())); // just execute the url as a command
   }
 
   KURL::List lst;
@@ -111,16 +112,27 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   if ( !b_local_app || b_local_files )
   {
     QString error;
-    if (KApplication::startServiceByDesktopPath( _service.desktopEntryPath(),
-          _urls.toStringList(), &error, 0L, &pid ) == 0 )
+
+    int i = KApplication::startServiceByDesktopPath(
+        _service.desktopEntryPath(), _urls.toStringList(), &error, 0L, &pid
+        );
+
+    if (i == 0)
     {
       kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
+
       // App-starting notification
-      clientStarted( binaryName(exec), miniicon, pid);
+      bool notify = _service.mapNotify();
+
+      kdDebug(7010) << "MapNotify is " << notify ? "true" : "false" << endl;
+
+      if (notify)
+        clientStarted(_service.name(), miniicon, pid);
+
       return pid;
-    }
-    else
-    {
+
+    } else {
+
       kdDebug(7010) << error << endl;
       KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( exec ) );
       return 0;
@@ -294,45 +306,20 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
 pid_t KRun::runCommand( const QString& cmd, const QString & execName, const QString & iconName )
 {
-  pid_t pid = KRun::run( cmd );
-
-  // App starting notification.
-
-  if (pid != 0)
-    clientStarted(execName, iconName, pid);
-  return pid;
+  return KRun::run( cmd );
 }
 
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
 
-  // Figure out current desktop
-  int desktop = KWin::currentDesktop();
+  // FIXME: Replace the KDE_INITIAL_DESKTOP stuff that was here with kapp
+  // argument.
 
-  KShellProcess proc;
+  KShellProcess * proc = new KShellProcess;
+  *proc << _cmd;
 
-  QString lib = libmapnotify();
-
-  // If we have the notify lib somewhere, use it.
-
-  if (!lib.isEmpty()) {
-
-    // Hack to work around csh being non-sh-compatible.
-
-    QString prefix =
-      (QString(getenv("SHELL")).right(3) == "csh") ?
-      "setenv LD_PRELOAD %1 ; setenv KDE_INITIAL_DESKTOP %2 ;" :
-      "LD_PRELOAD=%1 KDE_INITIAL_DESKTOP=%2 ";
-
-    proc << prefix.arg(lib).arg(desktop);
-    kdDebug(7010) << prefix.arg(lib).arg(desktop) << endl;
-  }
-
-  proc << _cmd;
-  proc.start(KShellProcess::DontCare);
-
-  return proc.getPid();
+  return KProcessRunner::run(proc);
 }
 
 pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
@@ -344,20 +331,14 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
   {
     kdDebug(7010) << "Allow Multiple" << endl;
 
-    KProcess proc;
-    proc << kfmexec;
-    proc << app;
+    KProcess * proc = new KProcess;
+    *proc << kfmexec;
+    *proc << app;
     KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
-        proc << (*it).url();
-    proc.start(KProcess::DontCare);
+        *proc << (*it).url();
 
-    pid_t pid = proc.getPid();
-
-    if ( pid != 0 )
-      clientStarted(app, "" /* mini_icon */, pid);
-
-    return pid;
+    return KProcessRunner::run(proc);
   }
   else
   {
@@ -366,15 +347,12 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
     pid_t retval = 0;
     for( ; it != _urls.end(); ++it )
     {
-        KProcess proc;
-        proc << kfmexec;
-        proc << app;
-        proc << (*it).url();
-        proc.start(KProcess::DontCare);
+        KProcess * proc = new KProcess;
+        *proc << kfmexec;
+        *proc << app;
+        *proc << (*it).url();
 
-        retval = proc.getPid();
-        if (retval != 0)
-          clientStarted(app, "" /* mini_icon */, retval);
+        retval = KProcessRunner::run(proc);
     }
 
     return retval;
@@ -419,11 +397,6 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
 
-}
-
-QString KRun::libmapnotify()
-{
-  return KApplication::libmapnotify();
 }
 
 void KRun::init()
@@ -710,15 +683,16 @@ void KRun::killJob()
 }
 
 void KRun::clientStarted(
-  const QString & execName,
+  const QString & name,
   const QString & iconName,
   pid_t pid
 )
 {
   kdDebug(7010) << "clientStarted pid=" << (int)pid << endl;
+
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
-  stream << execName << iconName << (int)pid;
+  stream << name << iconName << (int)pid;
   kapp->dcopClient()->send(
     "kicker",
     "TaskbarApplet",
@@ -733,6 +707,48 @@ bool KOpenWithHandler::displayOpenWithDialog( const KURL::List& )
     kdError(7010) << "displayOpenWithDialog : Application " << kapp->name()
                   << " - should create a KFileOpenWithHandler !" << endl;
     return 0;
+}
+
+  pid_t
+KProcessRunner::run(KProcess * p)
+{
+  return (new KProcessRunner(p))->pid();
+}
+
+KProcessRunner::KProcessRunner(KProcess * p)
+  : QObject(),
+    process_(p)
+{
+  QObject::connect(
+      process_, SIGNAL(processExited(KProcess *)),
+      this,     SLOT(slotProcessExited(KProcess *)));
+
+  process_->start();
+}
+
+KProcessRunner::~KProcessRunner()
+{
+  delete process_;
+}
+
+  pid_t
+KProcessRunner::pid() const
+{
+  return process_->pid();
+}
+
+  void
+KProcessRunner::slotProcessExited(KProcess * p)
+{
+  if (p != process_)
+    return; // Eh ?
+
+  QByteArray params;
+  QDataStream stream(params, IO_WriteOnly);
+  stream << process_->pid();
+  kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
+
+  delete this;
 }
 
 #include "krun.moc"

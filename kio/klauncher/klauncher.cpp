@@ -473,6 +473,17 @@ KLauncher::requestStart(KLaunchRequest *request)
       slotKDEInitData( kdeinitSocket );
    }
    while (lastRequest != 0);
+
+   qDebug("KLauncher doing clientStarted(`%s')", request->name.data());
+   QByteArray params;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << request->name << "" << (int)lastRequest;
+   kapp->dcopClient()->send(
+     "kicker",
+     "TaskbarApplet",
+     "clientStarted(QString,QString,pid_t)",
+     params
+   );
 }
 
 void

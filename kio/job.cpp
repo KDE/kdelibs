@@ -729,7 +729,7 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
 void TransferJob::slotResult( KIO::Job *job)
 {
    // This can only be our suburl.
-   assert(job = m_subJob);
+   assert(job == m_subJob);
    // Did job have an error ?
    if ( job->error() )
    {

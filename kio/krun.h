@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <kurl.h>
 
+class KProcess;
 class KService;
 namespace KIO {
    class Job;
@@ -131,12 +132,6 @@ public:
    */
   static pid_t runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
-  /**
-   * Returns the location of the LD_PRELOAD library that makes app
-   * start notification work.
-   */
-  static QString libmapnotify();
-
 signals:
   void finished();
   void error();
@@ -202,7 +197,8 @@ protected:
    * to it, since the function will do that for you. An example is
    * "<tt>greet 'Hello Torben'</tt>".
    *
-   * @return PID of running command, or -1 if it could not be started.
+   * @return PID of running command, 0 if it could not be started, 0 - (PID
+   * of running command) if command was unsafe for map notification.
    */
   static pid_t run( const QString& _cmd );
 
@@ -270,6 +266,30 @@ public:
 
 private:
   static KOpenWithHandler * pOpenWithHandler;
+};
+
+class KProcessRunner : public QObject
+{
+  Q_OBJECT
+
+  public:
+
+    static pid_t run(KProcess *);
+
+    virtual ~KProcessRunner();
+
+    pid_t pid() const;
+
+  protected slots:
+
+    void slotProcessExited(KProcess *);
+
+  private:
+
+    KProcessRunner(KProcess *);
+    KProcessRunner();
+
+    KProcess * process_;
 };
 
 #endif
