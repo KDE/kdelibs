@@ -29,10 +29,10 @@
     old data from the file itself is not deleted, it is still in the
     zipfile. so when you want to have a small and garbagefree zipfile,
     just read the contents of the appended zipfile and write it to a new one
-    in IO_WriteOnly mode. exspecially take care of this, when you don´t want
+    in IO_WriteOnly mode. especially take care of this, when you don't want
     to leak information of how intermediate versions of files in the zip
     were looking.
-    for more information on the zip fileformat go to
+    For more information on the zip fileformat go to
     http://www.pkware.com/support/appnote.html .
 
 */
