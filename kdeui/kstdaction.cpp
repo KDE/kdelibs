@@ -424,7 +424,7 @@ KAction *KStdAction::openNew(const QObject *recvr, const char *slot,
 KAction *KStdAction::open(const QObject *recvr, const char *slot,
 						  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Open"), "fileopen",
+    return new KAction(i18n("&Open..."), "fileopen",
                        KStdAccel::key(KStdAccel::Open), recvr, slot, parent,
                        name ? name : stdName(Open));
 }
