@@ -48,6 +48,9 @@ KIntegerLine::KIntegerLine( QWidget *parent,
     default:
       break;
     }
+
+  connect( this, SIGNAL( textChanged( const char* ) ),
+		   this, SLOT( internalValueChanged() ) );
 }
 
 KIntegerLine::KIntegerLine()
@@ -184,3 +187,7 @@ void KIntegerLine::decValue(QString &s, int val)
 }
 
 
+void KIntegerLine::internalValueChanged()
+{
+  emit valueChanged( value() );
+}

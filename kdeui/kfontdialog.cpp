@@ -23,6 +23,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.19  1998/05/27 20:38:48  schreter
+
+
+    Fixed font dialog charset display problem - combo wouldn't load charsets
+    for current font on invocation of the dialog.
+
     Revision 1.18  1998/04/12 08:56:13  jacek
 
     Small fix in setting charset combo
@@ -338,17 +344,17 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   ok_button->setGeometry( 3*XOFFSET, OKBUTTONY +40,80, BUTTONHEIGHT );
   connect( ok_button, SIGNAL( clicked() ), SLOT( accept() ) );	
 
-  example_label = new QLabel(this,"examples");
+  example_edit = new QLineEdit(this,"examples");
 
-  example_label->setFont(selFont);
+  example_edit->setFont(selFont);
 
-  example_label->setGeometry(230,190,230, 80);
-  example_label->setAlignment(AlignCenter);
-  //  example_label->setBackgroundColor(white);
-  example_label->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
-  example_label->setLineWidth( 1 );
-  example_label->setText(klocale->translate("Dolor Ipse"));
-  //  example_label->setAutoResize(true);
+  example_edit->setGeometry(230,190,230, 80);
+  //  example_edit->setAlignment(AlignCenter);
+  //  example_edit->setBackgroundColor(white);
+  //  example_edit->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
+  //  example_edit->setLineWidth( 1 );
+  example_edit->setText(klocale->translate("Dolor Ipse"));
+  //  example_edit->setAutoResize(true);
 
   connect(this,SIGNAL(fontSelected( const QFont&  )),
 	  this,SLOT(display_example( const QFont&)));
@@ -456,9 +462,9 @@ void KFontDialog::display_example(const QFont& font){
 
   QString string;
 
-  example_label->setFont(font);
+  example_edit->setFont(font);
 
-  QFontInfo info = example_label->fontInfo();
+  QFontInfo info = example_edit->fontInfo();
   actual_family_label_data->setText(info.family());
   
   string.setNum(info.pointSize());
@@ -681,7 +687,7 @@ void KFontDialog::setColors(){
      primary task of those label is to display the text clearly
      an visibly and not to look pretty ...*/
 
-  QPalette mypalette = (example_label->palette()).copy();
+  QPalette mypalette = (example_edit->palette()).copy();
 
   QColorGroup cgrp = mypalette.normal();
   QColorGroup ncgrp(black,cgrp.background(),
@@ -691,8 +697,89 @@ void KFontDialog::setColors(){
   mypalette.setDisabled(ncgrp);
   mypalette.setActive(ncgrp);
 
-  example_label->setPalette(mypalette);
-  example_label->setBackgroundColor(white);
+  example_edit->setPalette(mypalette);
+  example_edit->setBackgroundColor(white);
  
 }
 
+
+QString KFontDialog::getXLFD( const QFont& font )
+{
+  QFontInfo fi( font );
+
+  QString xlfd = "-*-"; // foundry
+  xlfd += fi.family(); // family
+  xlfd += "-";
+  switch( fi.weight() ) { // weight
+  case QFont::Light:
+	xlfd += "light-";
+	break;
+  case QFont::Normal:
+	xlfd += "normal-";
+	break;
+  case QFont::DemiBold:
+	xlfd += "demi-";
+	break;
+  case QFont::Bold:
+	xlfd += "bold-";
+	break;
+  case QFont::Black:
+	xlfd += "black-";
+	break;
+  default:
+	xlfd += "*-";
+  }
+  if( fi.italic() )
+	xlfd += "i-"; // slant
+  else
+	xlfd += "r-"; // slant
+  xlfd += "*-"; // set width
+  xlfd += "*-"; // pixels (we cannot know portably, because this
+                // depends on the screen resolution 
+  xlfd += fi.pointSize()*10; // points
+  xlfd += "-";
+  xlfd += "*-"; // horz. resolution
+  xlfd += "*-"; // vert. resolution
+  if( fi.fixedPitch() )
+	xlfd += "m-"; // spacing: monospaced
+  else
+	xlfd += "p-"; // spacing: proportional
+  xlfd += "*-"; // average width
+  // charset
+  switch( fi.charSet() ) {
+  case QFont::AnyCharSet:
+	xlfd += "*";
+	break;
+  case QFont::Latin1:
+	xlfd += "iso8859-1";
+	break;
+  case QFont::Latin2:
+	xlfd += "iso8859-2";
+	break;
+  case QFont::Latin3:
+	xlfd += "iso8859-3";
+	break;
+  case QFont::Latin4:
+	xlfd += "iso8859-4";
+	break;
+  case QFont::Latin5:
+	xlfd += "iso8859-5";
+	break;
+  case QFont::Latin6:
+	xlfd += "iso8859-6";
+	break;
+  case QFont::Latin7:
+	xlfd += "iso8859-7";
+	break;
+  case QFont::Latin8:
+	xlfd += "iso8859-8";
+	break;
+  case QFont::Latin9:
+	xlfd += "iso8859-9";
+	break;
+  default:
+	xlfd += "*";
+  }
+
+  return xlfd;
+}

@@ -23,6 +23,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.9  1998/01/21 15:07:00  jacek
+    Added real KCharsets support
+
     Revision 1.7  1997/11/09 22:56:12  wuebben
     Bernd: colorscheme related changes
 
@@ -145,6 +148,12 @@ public:
 
     static int getFont( QFont &theFont );
 
+  /*
+   * This function converts a QFont into the corresponding X Logical Font 
+   * Description.
+   */
+  static QString getXLFD( const QFont &theFont );
+
 signals:
 	/*
 	 * connect to this to monitor the font as it as selected if you are
@@ -200,7 +209,7 @@ private:
     QPushButton	 *ok_button;
     QPushButton	 *cancel_button;
 
-    QLabel       *example_label;
+    QLineEdit       *example_edit;
     QFont         selFont;
 
 };

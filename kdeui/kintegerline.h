@@ -83,6 +83,10 @@ public:
   void setValue( int value );
   //@}
 
+signals:
+  // emitted whenever the value changes
+  void valueChanged( int );
+
 protected:
   /** Key press event handler. 
 	  Handles the following special keys:
@@ -94,6 +98,9 @@ protected:
 	  </UL>
   */
   void	keyPressEvent( QKeyEvent *e );
+
+private slots:
+  void internalValueChanged();
 
 private:
   /// type of this line
