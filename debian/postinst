@@ -25,6 +25,14 @@ case "$1" in
       else
         echo "Looks ok" 
       fi
+      echo -n "Verifying services link is configured properly:  "
+      if [ -e /etc/kde2/services -a ! -L /etc/kde2/services ]; then
+        rm -rf /etc/kde2/services > /dev/null 2>&1
+        ln -s /usr/share/services /etc/kde2/services > /dev/null 2>&1
+        echo "It wasn't, I fixed it"
+      else
+        echo "Looks ok"
+      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
