@@ -1774,6 +1774,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	}
     }
 
+    if ( e->type() == QEvent::Leave && d->cursor_icon_widget )
+        d->cursor_icon_widget->hide();
+
     QWidget *view = viewport();
 
     if (o == view) {
