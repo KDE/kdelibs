@@ -32,7 +32,7 @@
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
 
-#define CHARSETS_COUNT 26
+#define CHARSETS_COUNT 25
 static const char *charsetsStr[CHARSETS_COUNT]={
     "unicode",
     "iso-8859-1",
@@ -56,7 +56,6 @@ static const char *charsetsStr[CHARSETS_COUNT]={
     "set-th-th",
     "set-zh",
     "set-zh-tw",
-    "tscii",
     "utf-8",
     "utf-16",
     "Any"
@@ -84,7 +83,6 @@ static const char *xNames[CHARSETS_COUNT]={
     "unknown",
     "unknown",
     "unknown",
-    "tscii-0",
     "utf8",
     "utf16",
     ""  // this will always return true...
@@ -113,7 +111,6 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT]={
     QFont::Set_Th_TH,
     QFont::Set_Zh,
     QFont::Set_Zh_TW,
-    QFont::TSCII,
     QFont::Unicode,
     QFont::Unicode,
     QFont::AnyCharSet
