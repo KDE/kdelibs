@@ -313,8 +313,26 @@ KJSO RelationalNode::evaluate()
   KJSO v1 = e1.getValue();
   KJSO e2 = expr2->evaluate();
   KJSO v2 = e2.getValue();
-  /* TODO: abstract relational comparison */
-  return Boolean(true);
+
+  bool b;
+  if (oper == OpLess || oper == OpGreaterEq) {
+    int r = relation(v1, v2);
+    if (r < 0)
+      b = false; 
+    else
+      b = (oper == OpLess) ? r : !r;
+  } else if (oper == OpGreater || oper == OpLessEq) {
+    int r = relation(v2, v1);
+    if (r < 0)
+      b = false; 
+    else
+      b = (oper == OpGreater) ? r : !r;
+  } else {
+    /* TODO: instanceof */
+    b = false;
+  }
+
+  return Boolean(b);
 }
 
 // ECMA 11.9

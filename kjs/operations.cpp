@@ -75,6 +75,25 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
   return false;
 }
 
+int KJS::relation(const KJSO& v1, const KJSO& v2)
+{
+  KJSO p1 = v1.toPrimitive(NumberType);
+  KJSO p2 = v2.toPrimitive(NumberType);
+
+  if (p1.isA(StringType) && p2.isA(StringType)) {
+    /* TODO */
+    return -1;
+  }
+
+  Number n1 = p1.toNumber();
+  Number n2 = p2.toNumber();
+  /* TODO: check for NaN */
+  if (n1.value() == n2.value())
+    return 0;
+  /* TODO: +0, -0 and Infinity */
+  return (n1.value() < n2.value());
+}
+
 double KJS::max(double d1, double d2)
 {
   /* TODO: check for NaN */

@@ -258,10 +258,16 @@ namespace KJS {
     // constructor
     void setConstructor(KJSO c);
 
+    /**
+     * @return A Pointer to the internal implementation.
+     */
     Imp *imp() const { return rep; }
 
     //    static int count;
   protected:
+    /**
+     * Pointer to the internal implementation.
+     */
     Imp *rep;
 
   private:

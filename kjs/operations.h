@@ -26,6 +26,15 @@
 namespace KJS {
 
   bool equal(const KJSO& v1, const KJSO& v2);
+  /**
+   * This operator performs an abstract relational comparision of the two
+   * arguments that can be of arbitrary type. If possible, conversions to the
+   * string or number type will take place before the comparison.
+   *
+   * @return 1 if v1 is "less-than" v2, 0 if the relation is "greater-than-or-
+   * equal". -1 if the result is undefined.
+   */
+  int relation(const KJSO& v1, const KJSO& v2);
   double max(double d1, double d2);
   double min(double d1, double d2);
 
