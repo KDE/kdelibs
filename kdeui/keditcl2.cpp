@@ -42,13 +42,13 @@
 //
 // Find Methods
 //
- 
+
 void KEdit::search(){
 
   if( replace_dialog != 0 && replace_dialog->isVisible() == true )
   {
     replace_dialog->hide();
-  } 
+  }
 
   if( srchdialog == 0 )
   {
@@ -67,7 +67,7 @@ void KEdit::search(){
 
   this->deselect();
   last_search = NONE;
-   
+
   srchdialog->show();
   srchdialog->result();
 }
@@ -82,7 +82,7 @@ void KEdit::search_slot(){
 
   QString to_find_string = srchdialog->getText();
   getCursorPosition(&line,&col);
-  
+
   // srchdialog->get_direction() is true if searching backward
 
   if (last_search != NONE && srchdialog->get_direction()){
@@ -92,14 +92,14 @@ void KEdit::search_slot(){
 again:
   int  result = doSearch(to_find_string, srchdialog->case_sensitive(),
 			 FALSE, (!srchdialog->get_direction()),line,col);
-    
+
   if(result == 0){
     if(!srchdialog->get_direction()){ // forward search
-    
+
       int query = KMessageBox::questionYesNo(
 			srchdialog,
                         i18n("End of document reached.\n"\
-                             "Continue from the beginning?"), 
+                             "Continue from the beginning?"),
                         i18n("Find"));
       if (query == KMessageBox::Yes){
 	line = 0;
@@ -108,11 +108,11 @@ again:
       }
     }
     else{ //backward search
-      
+
       int query = KMessageBox::questionYesNo(
 			srchdialog,
                         i18n("Beginning of document reached.\n"\
-                             "Continue from the end?"), 
+                             "Continue from the end?"),
                         i18n("Find"));
       if (query == KMessageBox::Yes){
 	QString string = textLine( numLines() - 1 );
@@ -124,7 +124,7 @@ again:
     }
   }
   else{
-    emit CursorPositionChanged(); 
+    emit CursorPositionChanged();
   }
 }
 
@@ -141,13 +141,13 @@ void KEdit::searchdone_slot(){
 
 }
 
-int KEdit::doSearch(QString s_pattern, bool case_sensitive, 
+int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 		    bool wildcard, bool forward, int line, int col){
 
   (void) wildcard; // reserved for possible extension to regex
 
 
-  int i, length;  
+  int i, length;
   int pos = -1;
 
   if(forward){
@@ -159,17 +159,17 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
       string = textLine(i);
 
       pos = string.find(s_pattern, i == line ? col : 0, case_sensitive);
-      
+
       if( pos != -1){
-      
+
 	length = s_pattern.length();
 
 	setCursorPosition(i,pos,FALSE);
-      
+
 	for(int l = 0 ; l < length; l++){
 	  cursorRight(TRUE);
 	}
-      
+
 	setCursorPosition( i , pos + length, TRUE );
 	pattern = s_pattern;
 	last_search = FORWARD;
@@ -181,7 +181,7 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
   else{ // searching backwards
 
     QString string;
-    
+
     for(i = line; i >= 0; i--) {
 
       string = textLine(i);
@@ -196,11 +196,11 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 	if( ! (line == i && pos > col ) ){
 
 	  setCursorPosition(i ,pos ,FALSE );
-      
+
 	  for(int l = 0 ; l < length; l++){
 	    cursorRight(TRUE);
 	  }	
-      
+
 	  setCursorPosition(i ,pos + length ,TRUE );
 	  pattern = s_pattern;
 	  last_search = BACKWARD;
@@ -211,7 +211,7 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
     }
   }
-  
+
   return 0;
 
 }
@@ -219,7 +219,7 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 
 int KEdit::repeatSearch() {
-  
+
   if(!srchdialog)
       return 0;
 
@@ -246,7 +246,7 @@ void KEdit::replace()
   if( srchdialog != 0 && srchdialog->isVisible() == true)
   {
     srchdialog->hide();
-  } 
+  }
 
   if( replace_dialog == 0 )
   {
@@ -308,13 +308,13 @@ void KEdit::replace_all_slot(){
 
   QString to_find_string = replace_dialog->getText();
   getCursorPosition(&replace_all_line,&replace_all_col);
-  
+
   // replace_dialog->get_direction() is true if searching backward
 
   if (last_replace != NONE && replace_dialog->get_direction()){
     replace_all_col = replace_all_col  - pattern.length() - 1 ;
   }
-  
+
   deselect();
 
 again:
@@ -332,13 +332,13 @@ again:
 
   setAutoUpdate(TRUE);
   update();
-    
+
   if(!replace_dialog->get_direction()){ // forward search
-    
+
     int query = KMessageBox::questionYesNo(
 			srchdialog,
                         i18n("End of document reached.\n"\
-                             "Continue from the beginning?"), 
+                             "Continue from the beginning?"),
                         i18n("Find"));
     if (query == KMessageBox::Yes){
       replace_all_line = 0;
@@ -347,11 +347,11 @@ again:
     }
   }
   else{ //backward search
-    
+
     int query = KMessageBox::questionYesNo(
 			srchdialog,
                         i18n("Beginning of document reached.\n"\
-                             "Continue from the end?"), 
+                             "Continue from the end?"),
                         i18n("Find"));
     if (query == KMessageBox::Yes){
       QString string = textLine( numLines() - 1 );
@@ -362,7 +362,7 @@ again:
     }
   }
 
-  emit CursorPositionChanged(); 
+  emit CursorPositionChanged();
 
 }
 
@@ -376,7 +376,7 @@ void KEdit::replace_search_slot(){
 
   QString to_find_string = replace_dialog->getText();
   getCursorPosition(&line,&col);
-  
+
   // replace_dialog->get_direction() is true if searching backward
 
   //printf("col %d length %d\n",col, pattern.length());
@@ -393,7 +393,7 @@ void KEdit::replace_search_slot(){
         int query = KMessageBox::questionYesNo(
 			replace_dialog,
                         i18n("Beginning of document reached.\n"\
-                             "Continue from the end?"), 
+                             "Continue from the end?"),
                         i18n("Replace"));
         if (query == KMessageBox::Yes){
 	  QString string = textLine( numLines() - 1 );
@@ -411,14 +411,14 @@ again:
 
   int  result = doReplace(to_find_string, replace_dialog->case_sensitive(),
 			 FALSE, (!replace_dialog->get_direction()), line, col, FALSE );
-    
+
   if(result == 0){
     if(!replace_dialog->get_direction()){ // forward search
-    
+
      int query = KMessageBox::questionYesNo(
 			replace_dialog,
                         i18n("End of document reached.\n"\
-                             "Continue from the beginning?"), 
+                             "Continue from the beginning?"),
                         i18n("Replace"));
      if (query == KMessageBox::Yes){
 	line = 0;
@@ -427,11 +427,11 @@ again:
       }
     }
     else{ //backward search
-      
+
      int query = KMessageBox::questionYesNo(
 			replace_dialog,
                         i18n("Beginning of document reached.\n"\
-                             "Continue from the end?"), 
+                             "Continue from the end?"),
                         i18n("Replace"));
       if (query == KMessageBox::Yes){
 	QString string = textLine( numLines() - 1 );
@@ -444,7 +444,7 @@ again:
   }
   else{
 
-    emit CursorPositionChanged(); 
+    emit CursorPositionChanged();
   }
 }
 
@@ -454,7 +454,7 @@ void KEdit::replacedone_slot(){
 
   if (!replace_dialog)
     return;
-  
+
   replace_dialog->hide();
   //  replace_dialog->clearFocus();
 
@@ -467,19 +467,19 @@ void KEdit::replacedone_slot(){
 
 
 
-int KEdit::doReplace(QString s_pattern, bool case_sensitive, 
+int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	   bool wildcard, bool forward, int line, int col, bool replace_all){
 
 
   (void) wildcard; // reserved for possible extension to regex
 
-  int line_counter, length;  
+  int line_counter, length;
   int pos = -1;
 
   QString string;
   QString stringnew;
   QString replacement;
-  
+
   replacement = replace_dialog->getReplaceText();
   line_counter = line;
   replace_all_col = col;
@@ -489,7 +489,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
     int num_lines = numLines();
 
     while (line_counter < num_lines){
-      
+
       string = "";
       string = textLine(line_counter);
 
@@ -556,7 +556,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
       	pos = string.findRev(s_pattern, replace_all_col , case_sensitive);
       }
       else{
-	pos = string.findRev(s_pattern, 
+	pos = string.findRev(s_pattern,
 			   line == line_counter ? col : line_length , case_sensitive);
       }
 
@@ -567,7 +567,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  string = "";
 	  string = textLine(line_counter);
 	  replace_all_col = string.length();
-	  
+	
 	}
 	replace_all_line = line_counter;
       }
@@ -596,7 +596,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  if( ! (line == line_counter && pos > col ) ){
 
 	    setCursorPosition(line_counter ,pos ,FALSE );
-      
+
 	    for(int l = 0 ; l < length; l++){
 	      cursorRight(TRUE);
 	    }	
@@ -613,7 +613,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
       }
     }
   }
-  
+
   return 0;
 
 }
@@ -630,7 +630,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
 		User1|Cancel, User1, false, i18n("&Find") )
 {
-  QWidget *page = new QWidget( this ); 
+  QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
@@ -648,7 +648,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
 
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
-  
+
   text = i18n("Case Sensitive");
   sensitive = new QCheckBox( text, group, "case");
   text = i18n("Find Backwards");
@@ -674,9 +674,9 @@ void KEdFind::slotUser1( void )
 }
 
 
-QString KEdFind::getText() 
-{ 
-  return value->text(); 
+QString KEdFind::getText()
+{
+  return value->text();
 }
 
 
@@ -707,7 +707,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 		User3|User2|User1|Cancel, User3, false,
 		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
 {
-  QWidget *page = new QWidget( this ); 
+  QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
@@ -733,7 +733,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
-  
+
   text = i18n("Case Sensitive");
   sensitive = new QCheckBox( text, group, "case");
   text = i18n("Find Backwards");
@@ -741,7 +741,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
-} 
+}
 
 
 void KEdReplace::slotCancel( void )
@@ -771,21 +771,21 @@ void KEdReplace::slotUser3( void )
 }
 
 
-QString KEdReplace::getText() 
-{ 
-  return value->text(); 
+QString KEdReplace::getText()
+{
+  return value->text();
 }
 
 
-QString KEdReplace::getReplaceText() 
-{ 
-  return replace_value->text(); 
+QString KEdReplace::getReplaceText()
+{
+  return replace_value->text();
 }
 
 
-void KEdReplace::setText(QString string) 
-{ 
-  value->setText(string); 
+void KEdReplace::setText(QString string)
+{
+  value->setText(string);
 }
 
 
@@ -805,13 +805,13 @@ bool KEdReplace::get_direction()
 KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Goto Line"), Ok|Cancel, Ok, false )
 {
-  QWidget *page = new QWidget( this ); 
+  QWidget *page = new QWidget( this );
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
-  
-  lineNum = new KIntNumInput( i18n("Goto Line:"), 1, INT_MAX, 1, 1, 
-			      QString::null, 10, false, page );
-  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
+
+  lineNum = new KIntNumInput( 1, page);
+  lineNum->setLabel(i18n("Goto Line:"), AlignVCenter | AlignLeft);
+//  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
 
   topLayout->addStretch(10);
@@ -850,9 +850,9 @@ void KEdit::misspelling (QString word, QStringList *, unsigned pos)
   for (l=0;l<numLines() && cnt<=pos;l++)
     cnt+= textLine(l).length() + 1;
   l--;
- 
+
   cnt = pos - cnt + textLine(l).length() + 1;
- 
+
 
   setCursorPosition (l, cnt);
 
@@ -882,13 +882,13 @@ void KEdit::corrected (QString originalword, QString newword, unsigned pos)
 
   if( newword != originalword )
     {
-      
+
       for (line=0;line<numLines() && cnt<=pos;line++)
 	cnt+=lineLength(line)+1;
       line--;
-      
+
       cnt=pos-cnt+ lineLength(line)+1;
-      
+
       //remove old word
       setCursorPosition (line, cnt);
       for(l = 0 ; l < (int)originalword.length(); l++)
@@ -896,7 +896,7 @@ void KEdit::corrected (QString originalword, QString newword, unsigned pos)
       ///      setCursorPosition (line,
       //	 cnt+strlen(originalword),TRUE);
       cut();
-      
+
       insertAt (newword, line, cnt);
     }
 
