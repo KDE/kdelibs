@@ -199,7 +199,7 @@ public:
 	                      bool no_hidden,
 	                      bool append_slash_to_dir);
 
-	void setFilter( QString filter );
+	void setFilter( const QString& filter );
 
 	bool isRunning();
 	void stop();
@@ -251,7 +251,7 @@ bool KURLCompletion::DirLister::timeout()
 }
 
 // Change the file filter while DirLister is running
-void KURLCompletion::DirLister::setFilter( QString filter )
+void KURLCompletion::DirLister::setFilter( const QString& filter )
 {
 	m_filter = filter;
 }
@@ -868,7 +868,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	     || ( !man_or_info
 	          && ( url.dir().isEmpty()
 	               || ( isAutoCompletion()
-	                    && !d->url_auto_completion ) ) ) ) 
+	                    && !d->url_auto_completion ) ) ) )
 		return false;
 
 	// 1. remove the file name
@@ -926,8 +926,8 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
  */
 void KURLCompletion::addMatches( QStringList *matches )
 {
-	QStringList::Iterator it = matches->begin();
-	QStringList::Iterator end = matches->end();
+	QStringList::ConstIterator it = matches->begin();
+	QStringList::ConstIterator end = matches->end();
 
 	for ( ; it != end; it++ )
 		addItem( m_prepend + (*it));
@@ -1254,7 +1254,7 @@ QString KURLCompletion::replacedPath( const QString& text )
     MyURL url( text );
     if ( !url.kurl()->isLocalFile() )
         return text;
-    
+
     url.filter();
     return url.dir() + url.file();
 }
