@@ -370,7 +370,7 @@ protected:
     ushort rSpan;
     ushort cSpan;
     int _topExtra;
-    int _bottomExtra : 31;
+    signed int _bottomExtra : 31;
     bool m_widthChanged : 1;
     int m_percentageHeight;
 };
