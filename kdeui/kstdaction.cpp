@@ -455,7 +455,7 @@ KAction *KStdAction::saveAs(const QObject *recvr, const char *slot,
 KAction *KStdAction::revert(const QObject *recvr, const char *slot,
                                                         QObject *parent, const char *name )
 {
-    return new KAction(i18n("Re&vert"), "reload", 0, recvr, slot, parent,
+    return new KAction(i18n("Re&vert"), "revert", 0, recvr, slot, parent,
                        name ? name : stdName(Revert));
 }
 
