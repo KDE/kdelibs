@@ -27,6 +27,7 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
+#include <kdirselectdialog.h>
 #include <kfiledialog.h>
 #include <kglobal.h>
 #include <kiconloader.h>
@@ -254,28 +255,47 @@ QString KURLRequester::url() const
 
 void KURLRequester::slotOpenDialog()
 {
-    emit openFileDialog( this );
-
-    KFileDialog *dlg = fileDialog();
-    if ( !d->url().isEmpty() ) {
-        KURL u( url() );
-        // If we won't be able to list it (e.g. http), then don't try :)
-        if ( KProtocolInfo::supportsListing( u ) )
-	    dlg->setSelection( u.url() );
-    }
-
-    if ( dlg->exec() == QDialog::Accepted )
+    KURL newurl;    
+    if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) || 
+         /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
+         (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) && 
+         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
     {
-        if ( dlg->selectedURL().isLocalFile() )
+        newurl = KDirSelectDialog::selectDirectory(url(), d->fileDialogMode & KFile::LocalOnly);
+        if ( !newurl.isValid() )
         {
-            setURL( dlg->selectedURL().path() );
+            return;
         }
-        else
-        {
-            setURL( dlg->selectedURL().prettyURL() );
-        }
-        emit urlSelected( d->url() );
     }
+    else 
+    {
+      emit openFileDialog( this );
+
+      KFileDialog *dlg = fileDialog();
+      if ( !d->url().isEmpty() ) {
+          KURL u( url() );
+          // If we won't be able to list it (e.g. http), then don't try :)
+          if ( KProtocolInfo::supportsListing( u ) )
+              dlg->setSelection( u.url() );
+      }
+  
+      if ( dlg->exec() != QDialog::Accepted )
+      {
+          return;
+      }
+                
+      newurl = dlg->selectedURL();
+    }   
+    
+    if ( newurl.isLocalFile() )
+    {
+        setURL( newurl.path() );
+    }
+    else
+    {
+        setURL( newurl.prettyURL() );
+    }
+    emit urlSelected( d->url() );
 }
 
 void KURLRequester::setMode(unsigned int mode)
