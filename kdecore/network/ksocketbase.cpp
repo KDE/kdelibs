@@ -263,6 +263,7 @@ bool KSocketBase::isFatalError(int code)
     case WouldBlock:
     case InProgress:
     case NoError:
+    case RemotelyDisconnected:
       return false;
     }
 
