@@ -44,7 +44,10 @@ class KFileMetaInfoGroup;
  *  groups and items together with their type, a prefix, suffix and some other
  *  information about how to use, display or edit the items.
  * @short Represents the capabilities of a KFilePlugin for a given mimetype.
- **/
+ * @author Rolf Magnus
+ * @author Carsten Pfeiffer
+ * $Id$
+ */
 class KFileMimeTypeInfo
 {
     // the plugin needs to be a friend because it puts the data into the object,
@@ -58,62 +61,44 @@ public:
     /**
      * This enum is used to specify some attributes that an item can have,
      * which fit neither in the @ref Hint nor in the @ref Unit enum.
-     *
-     * @li @p Addable     The item or group can be added by a user
-     * @li @p Removable   It can be removed
-     * @li @p Modifiable  Its value can be edited (no meaning for a group)
-     * @li @p Cummulative If an application wants to display information for
-     *                    more than one file, it may add up the values for this
-     *                    item (e.g. play time of an mp3 file)
-     * @li @p Averaged    Similar to Cummulative, but the average should be
-     *                    calculated instead of the sum
-     * @li @p MultiLine   This attribute says that a string item is likely to
-     *                    be more than one line long, so for editing, a widget
-     *                    capable for multline text should be used
-     * @li @p SqueezeText If the text for this item is very long, it should be
-     *                    squeezed to the size of the widget where it's
-     *                    displayed
-     *
-     **/
+     */
     enum Attributes
     {
-        Addable     =  1,
-        Removable   =  2,
-        Modifiable  =  4,
-        Cummulative =  8,
-        Averaged    = 16,
-        MultiLine   = 32, ///< @since 3.1
-        SqueezeText = 64  ///< @since 3.1
+        Addable     =  1, ///< The item or gorup can be added by a user
+        Removable   =  2, ///< It can be removed
+        Modifiable  =  4, ///< The value can be edited (no meaning for a group)
+        Cummulative =  8, /**< If an application wants to display information
+                               for more than one file, it may add up the values
+                               for this item (e.g. play time of an mp3 file) */
+        Averaged    = 16, /**< Similar to Cummulative, but the average should
+                               be calculated instead of the sum */
+        MultiLine   = 32, /**< This attribute says that a string item is likely
+                               to be more than one line long, so for editing, a
+                               widget capable for multline text should be used
+                               @since 3.1 */
+        SqueezeText = 64  /**< If the text for this item is very long, it
+                               should be squeezed to the size of the widget
+                               where it's displayed
+                               @since 3.1 */
     };
 
     /**
      * This enum is mainly for items that have a special meaning for some
      * applications.
-     *
-     * @li @p NoHint      No hint
-     * @li @p Name        The name or title of the document
-     * @li @p Author      The one who created the contents of it
-     * @li @p Description Some information about the document
-     * @li @p Width       A width in pixels
-     * @li @p Height      A height in pixels
-     * @li @p Size        A size in pixels (witdh and height)
-     * @li @p Bitrate     For media files
-     * @li @p Length      The length of the file, also for media files
-     * @li @p Hidden      The item is usually not shown to the user
-     * @li @p Thumbnail   The item is a thumbnail of the file
-     **/
+     */
     enum Hint {
-        NoHint      = 0,
-        Name        = 1,
-        Author      = 2,
-        Description = 3,
-        Width       = 4,
-        Height      = 5,
-        Size        = 6,
-        Bitrate     = 7,
-        Length      = 8,
-        Hidden      = 9,
-        Thumbnail   = 10
+        NoHint      = 0, ///< No hint
+        Name        = 1, ///< The name or title of the document
+        Author      = 2, ///< The one who created the contents of it
+        Description = 3, ///< Description Some information about the document
+        Width       = 4, ///< A width in pixels
+        Height      = 5, ///< A height in pixels
+        Size        = 6, ///< A size in pixels (witdh and height)
+        Bitrate     = 7, ///< For media files
+        Length      = 8, ///< The length of the file, also for media files
+        Hidden      = 9, ///< The item is usually not shown to the user
+        Thumbnail   = 10 ///< The item is a thumbnail picture of the file
+
     };
 
     /**
@@ -122,35 +107,21 @@ public:
      * display it (e.g. a time in seconds in a hh:mm:ss form). You can either
      * use one of those units, or if you don't find one that fits, you can
      * add it yourself using a prefix and/or suffix.
-     *
-     * @li @p NoUnit          None of the listed units
-     * @li @p Seconds         The item represents a time in seconds
-     * @li @p MilliSeconds    The item represents a time in milliseconds
-     * @li @p BitsPerSecond   A bit rate
-     * @li @p Pixels          For resolutions
-     * @li @p Inches          Sizes
-     * @li @p Centimeters     Sizes
-     * @li @p Bytes           Some data/file size in bytes
-     * @li @p KiloBytes       Some data/file size in kilobytes
-     * @li @p FramesPerSecond A frame rate
-     * @li @p DotsPerInch     Resolution in DPI
-     * @li @p BitsPerPixel    A bit depth
-     * @li @p Hertz           Sample rates and similar
-     **/
+     */
     enum Unit {
-        NoUnit          = 0,
-        Seconds         = 1,
-        MilliSeconds    = 2,
-        BitsPerSecond   = 3,
-        Pixels          = 4,
-        Inches          = 5,
-        Centimeters     = 6,
-        Bytes           = 7,
-        FramesPerSecond = 8,  ///< @since 3.1
-        DotsPerInch     = 9,  ///< @since 3.1
-        BitsPerPixel    = 10, ///< @since 3.1
-        Hertz           = 11, ///< @since 3.1
-        KiloBytes       = 12  ///< @since 3.1
+        NoUnit          = 0,  ///< None of the listed units
+        Seconds         = 1,  ///< The item represents a time in seconds
+        MilliSeconds    = 2,  ///< The item represents a time in milliseconds 
+        BitsPerSecond   = 3,  ///< A bit rate
+        Pixels          = 4,  ///< For image dimensions and similar 
+        Inches          = 5,  ///< Sizes
+        Centimeters     = 6,  ///< Sizes
+        Bytes           = 7,  ///< Some data/file size in bytes
+        FramesPerSecond = 8,  ///< A frame rate @since 3.1
+        DotsPerInch     = 9,  ///< Resolution in DPI @since 3.1
+        BitsPerPixel    = 10, ///< A bit depth @since 3.1
+        Hertz           = 11, ///< Sample rates and similar @since 3.1
+        KiloBytes       = 12  ///< Some data/file size in kilobytes @since 3.1
     };
 
 
@@ -160,8 +131,8 @@ public:
      *  This is the class for one group of items of a @ref KFileMimeTypeInfo.
      *  It contains, among other things, the information about the group's name
      *  and a list of supported items.
-     * @short Information about a meta information group.
-     **/
+     *  @short Information about a meta information group.
+     */
     class GroupInfo
     {
 
@@ -316,7 +287,7 @@ public:
 
         /**
          * Returns the name of the item.
-	 * @return the name of the item
+         * @return the name of the item
          */
         const QString& key() const
         {
@@ -328,11 +299,11 @@ public:
          * QString::null is returned. This can be used by programs if they want
          * to display a sum or an average of some item for a list of files.
          *
-	 * @param value the value to convert
+         * @param value the value to convert
          * @param mangle if true, the string will already contain prefix and
          *               suffix
-	 * @return the converted string, or QString::null if not possible
-	 * @since 3.1
+         * @return the converted string, or QString::null if not possible
+         * @since 3.1
          */
         QString string( const QVariant& value, bool mangle = true ) const;
 
@@ -351,7 +322,7 @@ public:
          * Returns a translation of the key for displaying to the user. If the
          * plugin provides translation to the key, it's also in the user's
          * language.
-	 * @return the translated key
+         * @return the translated key
          */
         const QString& translatedKey() const
         {
@@ -361,7 +332,7 @@ public:
         /**
          * Return the attributes of the item. See
          * @ref KFileMimeTypeInfo::Attributes.
-	 * @return the attributes
+         * @return the attributes
          */
         uint attributes() const
         {
@@ -371,7 +342,7 @@ public:
         /**
          * Return the hints for the item. See
          * @ref KFileMimeTypeInfo::Hint
-	 * @return the hint
+         * @return the hint
          */
         uint hint() const
         {
@@ -381,7 +352,7 @@ public:
         /**
          * Return the unit of the item. See
          * @ref KFileMimeTypeInfo::Unit
-	 * @return the unit
+         * @return the unit
          */
         uint unit() const
         {
@@ -598,8 +569,9 @@ public:
 
     /**
      * You can query if the application can edit the item and write it back to
-     * the file with this method. Note that this doesn't ensure that you have
-     * write access to the file and that enough space is available.
+     * the file with this method.
+     * @note This doesn't ensure that you have write access to the file and
+     *       that enough space is available.
      *
      * @return true if the item's value can be changed, false if not
      */
@@ -917,34 +889,25 @@ public:
     /**
      * This is used to specify what a KFileMetaInfo object should read, so
      * you can specify if you want to read "expensive" items or not.
-     *
-     * @li @p Fastest        do the fastest possible read and omit all items
-                             that might need a significantly longer time than
-                             the others
-     * @li @p Everything     read everything, even if it might take a while
-     * @li @p DontCare       let the plugin decide what to read
-     * @li @p TechnicalInfo  extract technical details about the file, like
-     *                       e.g. play time, resolution or a compression type
-     * @li @p ContentInfo    read information about the content of the file,
-     *                       like comments or id3 tags
-     * @li @p ExtendedAttr   read filesystem based extended attributes if they
-     *                       are supported for the filesystem
-     * @li @p Thumbnail      only read the file's thumbnail, if it contains
-     *                       one
-     * @li @p Preferred      get at least the preferred items
-     **/
+     */
     enum What
     {
-      Fastest       = 0x1,
-      DontCare      = 0x2,
-      TechnicalInfo = 0x4,
-      ContentInfo   = 0x8,
-      ExtenedAttr   = 0x10,
-      Thumbnail     = 0x20,
-      Preferred     = 0x40,
-      Everything    = 0xffff // all bits 1 (this also makes sure the enum is
-                             // at least 16bit, so there is more space for
-                             // new values)
+      Fastest       = 0x1,  /**< do the fastest possible read and omit all items
+                                 that might need a significantly longer time
+                                 than the others */
+      DontCare      = 0x2,  ///< let the plugin decide what to read
+      
+      TechnicalInfo = 0x4,  /**< extract technical details about the file, like
+                                 e.g. play time, resolution or a compressioni
+                                 type */
+      ContentInfo   = 0x8,  /**< read information about the content of the file,
+                                 like comments or id3 tags */
+      ExtenedAttr   = 0x10, /**< read filesystem based extended attributes if
+                                 they are supported for the filesystem */
+      Thumbnail     = 0x20, /**< only read the file's thumbnail, if it contains
+                                 one */
+      Preferred     = 0x40,  ///< get at least the preferred items
+      Everything    = 0xffff ///< read everything, even if it might take a while
 
     };
 
@@ -965,7 +928,7 @@ public:
      *              hint to the plugin what information is desired. The plugin
      *              may still return more items.
      *
-     * NOTE: This version will ONLY work for LOCAL (file:/) files.
+     * @note This version will @b only work for @b local (file:/) files.
      *
      **/
     KFileMetaInfo( const QString& path,
@@ -990,7 +953,10 @@ public:
     KFileMetaInfo();
 
     /**
-     * Copy constructor
+     * Copy constructor. This creates a copy of the original object, but
+     * that copy will point to the same data, so if you change the original,
+     * the copy will be changed, too. After all, they are referring to the same
+     * file.
      **/
     KFileMetaInfo( const KFileMetaInfo& original);
 
@@ -1090,9 +1056,9 @@ public:
 
    /**
     * Try to add the specified group. This will only succeed if it is
-    * in the list of @ref editableGroups(). Note that all non-variable
-    * items that belong to this group are automatically added as empty
-    * item.
+    * in the list of @ref editableGroups().
+    * @note that all non-variable items that belong to this group are
+    *  automatically added as empty item.
     * @param name the name of the group to add
     * @return true if successful, false if not
     */
