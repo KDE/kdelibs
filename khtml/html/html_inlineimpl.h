@@ -50,9 +50,9 @@ public:
     virtual bool isSelectable() const { return href!=0; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual bool mouseEvent( int x, int y,
-			     int _tx, int _ty,
-                             MouseEvent *ev);
+    virtual bool prepareMouseEvent( int x, int y,
+				    int _tx, int _ty,
+				    MouseEvent *ev);
 protected:
     DOMStringImpl *href;
     DOMStringImpl *target;

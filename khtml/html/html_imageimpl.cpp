@@ -71,9 +71,9 @@ ushort HTMLImageElementImpl::id() const
     return ID_IMG;
 }
 
-bool HTMLImageElementImpl::mouseEvent( int _x, int _y,
-                                       int _tx, int _ty,
-                                       MouseEvent *ev )
+bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
+					      int _tx, int _ty,
+					      MouseEvent *ev )
 {
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     if ( (usemap.length() > 0) &&
@@ -102,7 +102,7 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y,
                                       renderer()->width(), renderer()->height(), ev);
 	}
     }
-    return HTMLElementImpl::mouseEvent(_x, _y, _tx, _ty, ev);
+    return HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
 }
 
 void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)

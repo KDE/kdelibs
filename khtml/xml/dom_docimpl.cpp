@@ -1192,13 +1192,13 @@ ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
     return 0;
 }
 
-bool DocumentImpl::mouseEvent( int _x, int _y,
-                                   int, int,
-                                   MouseEvent *ev )
+bool DocumentImpl::prepareMouseEvent( int _x, int _y,
+				      int, int,
+				      MouseEvent *ev )
 {
     NodeImpl *n = documentElement();
     if ( n )
-        return n->mouseEvent( _x, _y, 0, 0, ev );
+        return n->prepareMouseEvent( _x, _y, 0, 0, ev );
     else
 	return false;
 }

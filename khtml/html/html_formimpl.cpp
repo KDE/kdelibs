@@ -1156,12 +1156,12 @@ void HTMLInputElementImpl::setValue(DOMString val)
     }
 }
 
-bool HTMLInputElementImpl::mouseEvent( int _x, int _y,
-                                       int _tx, int _ty,
-                                       MouseEvent *ev )
+bool HTMLInputElementImpl::prepareMouseEvent( int _x, int _y,
+					      int _tx, int _ty,
+					      MouseEvent *ev )
 {
     bool wasPressed = pressed();
-    bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,_tx,_ty,ev);
+    bool ret = HTMLGenericFormElementImpl::prepareMouseEvent(_x,_y,_tx,_ty,ev);
     if  ( m_render && m_render->style() && !m_render->style()->visiblity() == khtml::HIDDEN) {
         if (m_type == IMAGE && (ev->type == MouseClick || ((ev->type == MouseRelease) && wasPressed))) {
             xPos = _x - _tx - m_render->xPos();

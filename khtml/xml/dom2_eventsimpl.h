@@ -124,10 +124,10 @@ public:
     AbstractViewImpl *view() const;
     long detail() const;
     void initUIEvent(const DOMString &typeArg,
-                                 bool canBubbleArg,
-                                 bool cancelableArg,
-                                 const AbstractView &viewArg,
-                                 long detailArg);
+		     bool canBubbleArg,
+		     bool cancelableArg,
+		     const AbstractView &viewArg,
+		     long detailArg);
     virtual bool isUIEvent() { return true; }
     virtual DOMString eventModuleName() { return "UIEvents"; }
 protected:
@@ -170,20 +170,20 @@ public:
     unsigned short button() const;
     NodeImpl *relatedTarget() const;
     void initMouseEvent(const DOMString &typeArg,
-                                    bool canBubbleArg,
-                                    bool cancelableArg,
-                                    const AbstractView &viewArg,
-                                    long detailArg,
-                                    long screenXArg,
-                                    long screenYArg,
-                                    long clientXArg,
-                                    long clientYArg,
-                                    bool ctrlKeyArg,
-                                    bool altKeyArg,
-                                    bool shiftKeyArg,
-                                    bool metaKeyArg,
-                                    unsigned short buttonArg,
-                                    const Node &relatedTargetArg);
+			bool canBubbleArg,
+			bool cancelableArg,
+			const AbstractView &viewArg,
+			long detailArg,
+			long screenXArg,
+			long screenYArg,
+			long clientXArg,
+			long clientYArg,
+			bool ctrlKeyArg,
+			bool altKeyArg,
+			bool shiftKeyArg,
+			bool metaKeyArg,
+			unsigned short buttonArg,
+			const Node &relatedTargetArg);
     virtual bool isMouseEvent() { return true; }
     virtual DOMString eventModuleName() { return "MouseEvents"; }
 protected:
@@ -220,13 +220,13 @@ public:
     DOMString attrName() const;
     unsigned short attrChange() const;
     void initMutationEvent(const DOMString &typeArg,
-                                       bool canBubbleArg,
-                                       bool cancelableArg,
-                                       const Node &relatedNodeArg,
-                                       const DOMString &prevValueArg,
-                                       const DOMString &newValueArg,
-                                       const DOMString &attrNameArg,
-                                       unsigned short attrChangeArg);
+			   bool canBubbleArg,
+			   bool cancelableArg,
+			   const Node &relatedNodeArg,
+			   const DOMString &prevValueArg,
+			   const DOMString &newValueArg,
+			   const DOMString &attrNameArg,
+			   unsigned short attrChangeArg);
     virtual bool isMutationEvent() { return true; }
     virtual DOMString eventModuleName() { return "MutationEvents"; }
 protected:
@@ -252,13 +252,15 @@ public:
 
 class HTMLEventListener : public EventListener {
 public:
-    HTMLEventListener(KHTMLPart *_part, QString _scriptCode);
+    HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool _doubleClickOnly = false);
     virtual ~HTMLEventListener();
     virtual void handleEvent(const Event &evt);
     virtual DOMString eventListenerType();
+    bool doubleClickOnly() { return m_doubleClickOnly; }
 protected:
     QString m_scriptCode;
     KHTMLPart *m_part;
+    bool m_doubleClickOnly;
 };
 
 }; //namespace

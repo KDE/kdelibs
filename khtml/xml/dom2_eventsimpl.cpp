@@ -114,9 +114,14 @@ void EventImpl::preventDefault()
 void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg)
 {
     // ### ensure this is not called after we have been dispatched (also for subclasses)
+
+    if (m_type)
+	m_type->deref();
+
     m_type = eventTypeArg.implementation();
     if (m_type)
 	m_type->ref();
+	
     m_canBubble = canBubbleArg;
     m_cancelable = cancelableArg;
 }
@@ -261,6 +266,8 @@ UIEventImpl::UIEventImpl(EventId _id, bool canBubbleArg, bool cancelableArg,
 		: EventImpl(_id,canBubbleArg,cancelableArg)
 {
     m_view = viewArg;
+    if (m_view)
+	m_view->ref();
     m_detail = detailArg;
 }
 
@@ -281,12 +288,15 @@ long UIEventImpl::detail() const
 }
 
 void UIEventImpl::initUIEvent(const DOMString &typeArg,
-                                 bool canBubbleArg,
-                                 bool cancelableArg,
-                                 const AbstractView &viewArg,
-                                 long detailArg)
+			      bool canBubbleArg,
+			      bool cancelableArg,
+			      const AbstractView &viewArg,
+			      long detailArg)
 {
     EventImpl::initEvent(typeArg,canBubbleArg,cancelableArg);
+
+    if (m_view)
+	m_view->deref();
 
     m_view = viewArg.handle();
     if (m_view)
@@ -311,20 +321,20 @@ MouseEventImpl::MouseEventImpl()
 }
 
 MouseEventImpl::MouseEventImpl(EventId _id,
-		   bool canBubbleArg,
-		   bool cancelableArg,
-		   AbstractViewImpl *viewArg,
-		   long detailArg,
-		   long screenXArg,
-		   long screenYArg,
-		   long clientXArg,
-		   long clientYArg,
-		   bool ctrlKeyArg,
-		   bool altKeyArg,
-		   bool shiftKeyArg,
-		   bool metaKeyArg,
-		   unsigned short buttonArg,
-		   NodeImpl *relatedTargetArg)
+			       bool canBubbleArg,
+			       bool cancelableArg,
+			       AbstractViewImpl *viewArg,
+			       long detailArg,
+			       long screenXArg,
+			       long screenYArg,
+			       long clientXArg,
+			       long clientYArg,
+			       bool ctrlKeyArg,
+			       bool altKeyArg,
+			       bool shiftKeyArg,
+			       bool metaKeyArg,
+			       unsigned short buttonArg,
+			       NodeImpl *relatedTargetArg)
 		   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
     m_screenX = screenXArg;
@@ -415,6 +425,9 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
 {
     UIEventImpl::initUIEvent(typeArg,canBubbleArg,cancelableArg,viewArg,detailArg);
 
+    if (m_relatedTarget)
+	m_relatedTarget->deref();
+
     m_screenX = screenXArg;
     m_screenY = screenYArg;
     m_clientX = clientXArg;
@@ -441,13 +454,13 @@ MutationEventImpl::MutationEventImpl()
 }
 
 MutationEventImpl::MutationEventImpl(EventId _id,
-		      bool canBubbleArg,
-		      bool cancelableArg,
-		      const Node &relatedNodeArg,
-		      const DOMString &prevValueArg,
-		      const DOMString &newValueArg,
-		      const DOMString &attrNameArg,
-		      unsigned short attrChangeArg)
+				     bool canBubbleArg,
+				     bool cancelableArg,
+				     const Node &relatedNodeArg,
+				     const DOMString &prevValueArg,
+				     const DOMString &newValueArg,
+				     const DOMString &attrNameArg,
+				     unsigned short attrChangeArg)
 		      : EventImpl(_id,canBubbleArg,cancelableArg)
 {
     m_relatedNode = relatedNodeArg.handle();
@@ -503,15 +516,24 @@ unsigned short MutationEventImpl::attrChange() const
 }
 
 void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
-                                       bool canBubbleArg,
-                                       bool cancelableArg,
-                                       const Node &relatedNodeArg,
-                                       const DOMString &prevValueArg,
-                                       const DOMString &newValueArg,
-                                       const DOMString &attrNameArg,
-                                       unsigned short attrChangeArg)
+					  bool canBubbleArg,
+					  bool cancelableArg,
+					  const Node &relatedNodeArg,
+					  const DOMString &prevValueArg,
+					  const DOMString &newValueArg,
+					  const DOMString &attrNameArg,
+					  unsigned short attrChangeArg)
 {
     EventImpl::initEvent(typeArg,canBubbleArg,cancelableArg);
+
+    if (m_relatedNode)
+	m_relatedNode->deref();
+    if (m_prevValue)
+	m_prevValue->deref();
+    if (m_newValue)
+	m_newValue->deref();
+    if (m_attrName)
+	m_attrName->deref();
 
     m_relatedNode = relatedNodeArg.handle();
     if (m_relatedNode)
@@ -546,20 +568,26 @@ bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 
 // -----------------------------------------------------------------------------
 
-HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode)
+HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool _doubleClickOnly)
 {
     m_part = _part;
     m_scriptCode = _scriptCode;
+    m_doubleClickOnly = _doubleClickOnly;
 }
 
 HTMLEventListener::~HTMLEventListener()
 {
 }
 
-void HTMLEventListener::handleEvent(const Event &/*evt*/)
+void HTMLEventListener::handleEvent(const Event &evt)
 {
     // ### make event information available to script somehow?
     // See DOM2 Events section 1.3.2
+
+    if (m_doubleClickOnly &&
+	evt.handle() && evt.handle()->isUIEvent() && (static_cast<UIEventImpl*>(evt.handle())->detail() % 2 != 0))
+	return; // single or odd-numbered click
+
     m_part->executeScript(m_scriptCode);
 }
 

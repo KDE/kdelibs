@@ -41,6 +41,7 @@
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include <kdebug.h>
 
@@ -55,85 +56,10 @@ HTMLElementImpl::~HTMLElementImpl()
 {
 }
 
-
-void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
-{
-    if(!hasEvents()) return;
-
-    KHTMLView *view = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->view();
-    if(!view) return;
-
-    int id = 0;
-    bool click = false;
-
-    switch(ev->type)
-    {
-    case MousePress:
-	id = ATTR_ONMOUSEDOWN;
-	setPressed();
-	break;
-    case MouseRelease:
-	id = ATTR_ONMOUSEUP;
-	if(pressed()) click = true;
-	setPressed(false);
-	break;
-    case MouseClick:
-	id = ATTR_ONCLICK;
-	click = true;
-	break;
-    case MouseDblClick:
-	id = ATTR_ONDBLCLICK;
-	break;
-    case MouseMove:
-	id = ATTR_ONMOUSEMOVE;
-	break;
-    default:
-	break;
-    }
-
-    if(id != ATTR_ONCLICK) {
-	DOMString script = getAttribute(id);
-	if(script.length())
-	{
-	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    view->part()->executeScript( Node( this ), script.string() );
-	}
-    }
-
-    if(click)
-    {
-	DOMString script = getAttribute(ATTR_ONCLICK);
-	if(script.length())
-	{
-	    //kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
-	    QVariant res = view->part()->executeScript( Node( this ), script.string() );
-            if ( res.type() == QVariant::Bool )
-                ev->urlHandling = res.toBool();
-	}
-    }
-
-    if(inside != mouseInside())
-    {
-	// onmouseover and onmouseout
-	int id = ATTR_ONMOUSEOVER;
-	if(!inside)
-	    id = ATTR_ONMOUSEOUT;
-	DOMString script = getAttribute(id);
-	if(script.length())
-	{
-	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    if( id == ATTR_ONMOUSEOVER )
-		view->part()->scheduleScript( Node( this ), script.string() );
-	    else
-		view->part()->executeScript( Node( this ), script.string() );
-	}
-        setMouseInside(inside);
-    }
-}
-
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
     DOMString indexstring;
+    int exceptioncode;
     switch( attr->attrId )
     {
 // the core attributes...
@@ -171,12 +97,33 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 	break;
 // standard events
     case ATTR_ONCLICK:
+        removeHTMLEventListener(EventImpl::CLICK_EVENT);
+        addEventListener("click",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONDBLCLICK:
+        removeHTMLEventListener(EventImpl::CLICK_EVENT,true);
+        addEventListener("click",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string(),true),false,exceptioncode);
+	break;
     case ATTR_ONMOUSEDOWN:
+        removeHTMLEventListener(EventImpl::MOUSEDOWN_EVENT);
+        addEventListener("mousedown",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONMOUSEMOVE:
+        removeHTMLEventListener(EventImpl::MOUSEMOVE_EVENT);
+        addEventListener("mousemove",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONMOUSEOUT:
+        removeHTMLEventListener(EventImpl::MOUSEOUT_EVENT);
+        addEventListener("mouseout",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONMOUSEOVER:
+        removeHTMLEventListener(EventImpl::MOUSEOVER_EVENT);
+        addEventListener("mouseover",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONMOUSEUP:
+        removeHTMLEventListener(EventImpl::MOUSEUP_EVENT);
+        addEventListener("mouseup",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+	break;
     case ATTR_ONKEYDOWN:
     case ATTR_ONKEYPRESS:
     case ATTR_ONKEYUP:

@@ -299,11 +299,11 @@ khtml::RenderStyle *TextImpl::style() const
     return _parent ? _parent->style() : 0;
 }
 
-bool TextImpl::mouseEvent( int _x, int _y,
-			   int _tx, int _ty,
-                           MouseEvent *ev)
+bool TextImpl::prepareMouseEvent( int _x, int _y,
+				  int _tx, int _ty,
+				  MouseEvent *ev)
 {
-    //kdDebug( 6020 ) << "Text::mouseEvent" << endl;
+    //kdDebug( 6020 ) << "Text::prepareMouseEvent" << endl;
 
     if(!m_render) return false;
 

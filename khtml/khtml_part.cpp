@@ -3487,15 +3487,15 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
         if ( node.isNull() || !node.handle() )
         {
-            kdDebug( 6000 ) << "Hmm, findSelectionNode returned no node" << endl;
+            //kdDebug( 6000 ) << "Hmm, findSelectionNode returned no node" << endl;
             d->m_selectionStart = innerNode;
             d->m_startOffset = 0; //?
         } else {
             d->m_selectionStart = node;
             d->m_startOffset = offset;
         }
-        kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
-                      << " offset=" << d->m_startOffset << endl;
+        //kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
+        //              << " offset=" << d->m_startOffset << endl;
         d->m_selectionEnd = d->m_selectionStart;
         d->m_endOffset = d->m_startOffset;
         d->m_doc->clearSelection();

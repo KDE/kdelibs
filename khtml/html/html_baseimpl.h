@@ -124,9 +124,9 @@ public:
     virtual void parseAttribute(AttrImpl *);
     virtual void attach(KHTMLView *w);
 
-    virtual bool mouseEvent( int _x, int _y,
-                             int _tx, int _ty,
-                             MouseEvent *ev );
+    virtual bool prepareMouseEvent( int _x, int _y,
+				    int _tx, int _ty,
+				    MouseEvent *ev );
 
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );

@@ -232,6 +232,11 @@ private:
     QStringList formCompletionItems(const QString &name) const;
     void addFormCompletionItem(const QString &name, const QString &value);
 
+    void dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool canBubble,
+			    int detail,QMouseEvent *_mouse,
+			    DOM::NodeImpl *relatedTarget,
+			    bool setUnder);
+
     // ------------------------------------- member variables ------------------------------------
  private:
     /**

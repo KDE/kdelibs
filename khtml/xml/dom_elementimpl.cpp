@@ -599,12 +599,12 @@ void ElementImpl::setOwnerDocument(DocumentImpl *_document)
     NodeBaseImpl::setOwnerDocument(_document);
 }
 
-bool ElementImpl::mouseEvent( int _x, int _y,
-                              int _tx, int _ty,
-                              MouseEvent *ev)
+bool ElementImpl::prepareMouseEvent( int _x, int _y,
+				     int _tx, int _ty,
+				     MouseEvent *ev)
 {
 #ifdef EVENT_DEBUG
-    kdDebug( 6030 ) << nodeName().string() << "::mouseEvent" << endl;
+    kdDebug( 6030 ) << nodeName().string() << "::prepareMouseEvent" << endl;
 #endif
     bool inside = false;
 
@@ -630,7 +630,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     if ( positioned )
     {
         ev->currentZIndex = m_render->style()->zIndex();
-        //kdDebug() << "ElementImpl::mouseEvent storing currentZIndex=" << ev->currentZIndex << endl;
+        //kdDebug() << "ElementImpl::prepareMouseEvent storing currentZIndex=" << ev->currentZIndex << endl;
     }
 
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
@@ -659,7 +659,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 
     NodeImpl *child = firstChild();
     while(child != 0) {
-	if(child->mouseEvent(_x, _y, _tx, _ty, ev))
+	if(child->prepareMouseEvent(_x, _y, _tx, _ty, ev))
 	    inside = true;
 	child = child->nextSibling();
     }

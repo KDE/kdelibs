@@ -43,8 +43,6 @@ public:
     // make it pure virtual...
     virtual ushort id() const = 0;
 
-    virtual void mouseEventHandler( MouseEvent *ev, bool inside );
-
     virtual void parseAttribute(AttrImpl *token);
 
     void addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint = true);

@@ -219,9 +219,9 @@ public:
     ElementImpl *findNextLink(bool forward) { return findNextLink(m_focusNode, forward); };
 
     // overrides NodeImpl
-    virtual bool mouseEvent( int x, int y,
-			     int _tx, int _ty,
-                             MouseEvent *ev );
+    virtual bool prepareMouseEvent( int x, int y,
+				    int _tx, int _ty,
+				    MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );

@@ -62,16 +62,16 @@ ushort HTMLAnchorElementImpl::id() const
     return ID_A;
 }
 
-bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y,
-                                        int _tx, int _ty,
-                                        MouseEvent *ev)
+bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
+					       int _tx, int _ty,
+					       MouseEvent *ev)
 {
-    bool inside = HTMLElementImpl::mouseEvent( _x, _y, _tx, _ty, ev);
+    bool inside = HTMLElementImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev);
 
     if ( inside && ev->url==0 && !ev->noHref
          && (!(m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
     {
-	//kdDebug() << "HTMLAnchorElementImpl::mouseEvent" << _tx << "/" << _ty <<endl;
+	//kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
 	// set the url
 	if(target && href)
 	    ev->url = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);

@@ -282,9 +282,9 @@ public:
     typeEnum inputType() const { return m_type; }
     virtual void reset();
 
-    virtual bool mouseEvent( int _x, int _y,
-                             int _tx, int _ty,
-                             MouseEvent *ev );
+    virtual bool prepareMouseEvent( int _x, int _y,
+				    int _tx, int _ty,
+				    MouseEvent *ev );
 
     virtual void setOwnerDocument(DocumentImpl *_document);
     // used in case input type=image was clicked.

@@ -49,9 +49,9 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual bool mouseEvent( int _x, int _y,
-                             int _tx, int _ty,
-                             MouseEvent *ev );
+    virtual bool prepareMouseEvent( int _x, int _y,
+				    int _tx, int _ty,
+				    MouseEvent *ev );
 
     virtual void attach(KHTMLView *w);
     virtual void applyChanges(bool top=true, bool force=true);

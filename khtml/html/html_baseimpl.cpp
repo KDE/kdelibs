@@ -411,9 +411,9 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach( w );
 }
 
-bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
-                                          int _tx, int _ty,
-                                          MouseEvent *ev )
+bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
+						 int _tx, int _ty,
+						 MouseEvent *ev )
 {
     _x-=_tx;
     _y-=_ty;
@@ -422,7 +422,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
     while(child)
     {
 	if(child->id() == ID_FRAMESET)
-	    if(child->mouseEvent( _x, _y, _tx, _ty, ev )) return true;
+	    if(child->prepareMouseEvent( _x, _y, _tx, _ty, ev )) return true;
 	child = child->nextSibling();
     }
 

@@ -147,9 +147,9 @@ public:
     virtual void recalcStyle();
     virtual void setOwnerDocument(DocumentImpl *_document);
 
-    virtual bool mouseEvent( int x, int y,
-			     int _tx, int _ty,
-			     MouseEvent *ev);
+    virtual bool prepareMouseEvent( int x, int y,
+				    int _tx, int _ty,
+				    MouseEvent *ev);
     virtual void setFocus(bool = true);
     virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};

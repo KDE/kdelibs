@@ -161,13 +161,18 @@ public:
     };
 
     /*
-     * generic handler for mouse events. goes through the doucment
-     * tree and triggers the corresponding events for all elements
-     * where the mouse is inside.
+     * Called whenever we are getting ready to handle a mouse event.
+     * Does not actually perform any actions e.g. rollovers - this
+     * is handled in handleLocalEvents()
+     *
+     * This fills in ev with appropriate info such as innerNode, url etc.
+     *
+     * Returns true if the mouse is within this node (or it's children),
+     * false otherwise
      */
-    virtual bool mouseEvent( int /*_x*/, int /*_y*/,
-                             int /*_tx*/, int /*_ty*/,
-                             MouseEvent */*ev*/ ) { return false; }
+    virtual bool prepareMouseEvent( int /*_x*/, int /*_y*/,
+				    int /*_tx*/, int /*_ty*/,
+				    MouseEvent */*ev*/ ) { return false; }
 
     virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
                                                    DOM::Node & /*node*/, int & /*offset*/ )
@@ -250,7 +255,7 @@ public:
 				     bool useCapture, int &exceptioncode);
     virtual void removeEventListener(const DOMString &type, EventListener *listener,
 				     bool useCapture,int &exceptioncode);
-    virtual void removeHTMLEventListener(int id);
+    virtual void removeHTMLEventListener(int id, bool doubleClickOnly = false);
 
     virtual bool dispatchEvent(EventImpl *evt,
 			       int &exceptioncode);

@@ -388,7 +388,7 @@ void NodeImpl::removeEventListener(const DOMString &type, EventListener *listene
     removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
 }
 
-void NodeImpl::removeHTMLEventListener(int id)
+void NodeImpl::removeHTMLEventListener(int id, bool doubleClickOnly)
 {
     if (!m_regdListeners) // nothing to remove
         return;
@@ -396,7 +396,8 @@ void NodeImpl::removeHTMLEventListener(int id)
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "HTMLEventListener") {
+            it.current()->listener->eventListenerType() == "HTMLEventListener" &&
+            static_cast<HTMLEventListener*>(it.current()->listener)->doubleClickOnly() == doubleClickOnly) {
             m_regdListeners->removeRef(it.current());
             return;
         }
