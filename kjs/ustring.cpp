@@ -339,7 +339,7 @@ UCharReference UString::operator[](int pos)
   return UCharReference(this, pos);
 }
 
-double UString::toDouble() const
+double UString::toDouble( bool tolerant ) const
 {
   double d;
 
@@ -394,7 +394,8 @@ double UString::toDouble() const
   // allow trailing white space
   while (isspace(*c))
     c++;
-  if (*c != '\0')
+  // don't allow anything after - unless tolerant=true
+  if ( !tolerant && *c != '\0')
     d = NaN;
 
   return d;

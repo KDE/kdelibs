@@ -418,14 +418,14 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     }
     /* TODO: use radix */
     // Can't use toULong(), we want to accept floating point values too
-    double value = str.value().toDouble();
+    double value = str.value().toDouble( true /*tolerant*/ );
     if ( isNaN(value) )
         res = Number(NaN);
     else
         res = Number(static_cast<long>(value)); // remove floating-point part
   } else if (id == ParseFloat) {
     String str = args[0].toString(exec);
-    res = Number(str.value().toDouble());
+    res = Number(str.value().toDouble( true /*tolerant*/ ));
   } else if (id == IsNaN) {
     res = Boolean(isNaN(args[0].toNumber(exec)));
   } else if (id == IsFinite) {

@@ -349,8 +349,9 @@ namespace KJS {
      * the algorithm will recognize hexadecimal representations (as
      * indicated by a 0x or 0X prefix) and +/- Infinity.
      * Returns NaN if the conversion failed.
+     * @param tolerant if true, toDouble can tolerate garbage after the number.
      */
-    double toDouble() const;
+    double toDouble(bool tolerant=false) const;
     /**
      * Attempts an conversion to an unsigned long integer. ok will be set
      * according to the success.
