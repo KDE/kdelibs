@@ -1,4 +1,21 @@
-// (c) 2000 Peter Putzer
+// kurllabel.cpp
+
+// Copyright (C) 2000 Peter Putzer
+
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+// 02111-1307  USA
 
 #include <qcolor.h>
 #include <qtimer.h>
@@ -80,7 +97,7 @@ KURLLabel::~KURLLabel ()
 void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 {
   QLabel::mouseReleaseEvent (e);
- 
+
   setLinkColor (d->HighlightedLinkColor);
   d->Timer->start (300);
 
@@ -90,7 +107,7 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
       emit leftClickedURL ();
       emit leftClickedURL (d->URL);
       break;
-      
+
     case MidButton:
       emit middleClickedURL ();
       emit middleClickedURL (d->URL);
@@ -100,7 +117,7 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
       emit rightClickedURL ();
       emit rightClickedURL (d->URL);
       break;
-      
+
     default:
       ; // nothing
     }
@@ -130,7 +147,7 @@ void KURLLabel::updateColor ()
 }
 
 void KURLLabel::setLinkColor (const QColor& col)
-{  
+{
   QPalette p = palette();
   p.setColor (QColorGroup::Foreground, col);
   setPalette (p);
@@ -162,7 +179,7 @@ void KURLLabel::setUseCursor (bool on, QCursor* cursor)
     {
       if (cursor)
         setCursor (*cursor);
-      else 
+      else
         setCursor (KCursor::handCursor());
     }
 }
@@ -272,7 +289,7 @@ void KURLLabel::enterEvent (QEvent* e)
       setLinkColor (d->HighlightedLinkColor);
 
       d->RealUnderline = d->Underline;
-      
+
       if (d->Float)
         setUnderline (true);
     }
@@ -290,7 +307,7 @@ void KURLLabel::leaveEvent (QEvent* e)
 
   if ((d->Glow || d->Float) && !d->Timer->isActive())
     setLinkColor (d->LinkColor);
-  
+
   setUnderline (d->RealUnderline);
 
   emit leftURL ();
