@@ -152,6 +152,25 @@ void KJSErrorDialog::slotUser1()
 }
 
 //-------------------------------------------------------------------------
+EvalMultiLineEdit::EvalMultiLineEdit(QWidget *parent) 
+    : QMultiLineEdit(parent) {
+}
+
+void EvalMultiLineEdit::keyPressEvent(QKeyEvent * e)
+{
+    if (e->key() == Qt::Key_Return) {
+        if (hasSelectedText()) {
+            m_code = selectedText();
+        } else {
+            int para, index;
+            getCursorPosition(&para, &index);
+            m_code = text(para);
+        }
+        end();
+    }
+    QMultiLineEdit::keyPressEvent(e);
+}
+//-------------------------------------------------------------------------
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   : KMainWindow(parent, name, WType_TopLevel)
 {
@@ -223,7 +242,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   QWidget *evalContainer = new QWidget(hsplitter);
 
   QLabel *evalLabel = new QLabel(i18n("JavaScript console"),evalContainer);
-  m_evalEdit = new QMultiLineEdit(evalContainer);
+  m_evalEdit = new EvalMultiLineEdit(evalContainer);
   m_evalEdit->setWordWrap(QMultiLineEdit::NoWrap);
   m_evalEdit->setFont(font);
   connect(m_evalEdit,SIGNAL(returnPressed()),SLOT(slotEval()));
@@ -441,9 +460,7 @@ void KJSDebugWin::slotEval()
   }
 
   // Evaluate the js code from m_evalEdit
-  int para, index;
-  m_evalEdit->getCursorPosition(&para, &index);
-  UString code(m_evalEdit->text(para-1));
+  UString code(m_evalEdit->code());
   QString msg;
 
   KJSCPUGuard guard;
@@ -467,9 +484,7 @@ void KJSDebugWin::slotEval()
     msg = retval.toString(interp->globalExec()).qstring();
   }
 
-  int oldLineCount = m_evalEdit->numLines();
-  m_evalEdit->insertParagraph(msg,para);
-  m_evalEdit->setCursorPosition(para+m_evalEdit->numLines()-oldLineCount,0,false);
+  m_evalEdit->insert(msg);
   updateContextList();
 }
 

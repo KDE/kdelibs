@@ -28,6 +28,7 @@
 #ifdef KJS_DEBUGGER
 
 #include <qwidget.h>
+#include <qmultilineedit.h>
 #include <qpixmap.h>
 #include <qptrlist.h>
 #include <qptrstack.h>
@@ -41,7 +42,6 @@
 
 class QListBox;
 class QComboBox;
-class QMultiLineEdit;
 class KActionCollection;
 class KAction;
 
@@ -103,6 +103,17 @@ namespace KJS {
   private:
     QCheckBox *m_dontShowAgainCb;
     bool m_debugSelected;
+  };
+
+  class EvalMultiLineEdit : public QMultiLineEdit {
+    Q_OBJECT
+  public:
+      EvalMultiLineEdit(QWidget *parent);
+      const QString & code() const { return m_code; }
+  protected:
+      void keyPressEvent(QKeyEvent * e);
+  private:
+      QString m_code;
   };
 
   /**
@@ -228,7 +239,7 @@ namespace KJS {
     KAction *m_breakpointAction;
 
     QComboBox *m_sourceSel;
-    QMultiLineEdit *m_evalEdit;
+    EvalMultiLineEdit *m_evalEdit;
 
     static KJSDebugWin *kjs_html_debugger;
   };
