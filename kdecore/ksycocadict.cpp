@@ -342,7 +342,7 @@ KSycocaDict::save(QDataStream &str)
    hashtable_entry *hashTable = new hashtable_entry[ sz ];
 
    //kdDebug(7011) << "Clearing hashtable..." << endl;
-   for(uint i=0; i < sz; i++)
+   for(int i=0; i < sz; i++)
    {
       hashTable[i].entry = 0;
       hashTable[i].duplicates = 0;
