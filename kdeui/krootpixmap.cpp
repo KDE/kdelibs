@@ -27,6 +27,30 @@
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
 
+
+static QString wallpaperForDesktop(int desktop)
+{
+    QString wallpaper;
+
+    QByteArray input;	
+    QByteArray output;
+
+    QDataStream s(input, IO_WriteOnly);
+    s << desktop;
+
+    QCString returnType;
+    
+    if (kapp->dcopClient()->call("kdesktop", "KBackgroundIface",
+				 "currentWallpaper(int)", input, returnType, output,
+				 false, 200) && returnType == "QString")
+    {
+	QDataStream s(output, IO_ReadOnly);
+	s >> wallpaper;
+    }
+
+    return wallpaper;
+}
+
 class KRootPixmapData
 {
 public:
@@ -63,7 +87,7 @@ void KRootPixmap::init()
 
     d->kwin = new KWinModule( this );
     connect(d->kwin, SIGNAL(windowChanged(WId, unsigned int)), SLOT(desktopChanged(WId, unsigned int)));
-    connect(d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged()));
+    connect(d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged(int)));
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
@@ -159,9 +183,14 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     return false; // always continue processing
 }
 
-void KRootPixmap::desktopChanged()
+void KRootPixmap::desktopChanged(int desktop)
 {
-    if (KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop() == NET::OnAllDesktops)
+    if (wallpaperForDesktop(m_Desk) == wallpaperForDesktop(desktop) &&
+	!wallpaperForDesktop(m_Desk).isNull())
+	return;
+    
+    if (KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop() == NET::OnAllDesktops &&
+	pixmapName(m_Desk) != pixmapName(desktop))
 	repaint(true);
 }
 
@@ -171,6 +200,7 @@ void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 	(window != m_pWidget->topLevelWidget()->winId()))
 	return;
 
+    kdDebug() << k_funcinfo << endl;
     repaint(true);
 }
 

@@ -192,7 +192,7 @@ protected:
 private slots:
     void slotBackgroundChanged(int);
     void slotDone(bool);
-    void desktopChanged();
+    void desktopChanged(int desktop);
     void desktopChanged( WId window, unsigned int properties );
 
 private:
