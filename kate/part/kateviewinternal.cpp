@@ -101,7 +101,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   m_lineScroll->setTracking (true);
 
   m_lineLayout = new QVBoxLayout();
-  m_lineLayout->addWidget(m_lineScroll);
 
   if (m_view->dynWordWrap()) {
     m_dummy = 0L;
@@ -111,10 +110,8 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
     m_dummy->setFixedSize( style().scrollBarExtent().width(),
                                   style().scrollBarExtent().width() );
     m_dummy->show();
-    m_lineLayout->addWidget(m_dummy);
   }
 
-  m_view->m_grid->addMultiCellLayout(m_lineLayout, 0, 1, 2, 2);
 
   // Hijack the line scroller's controls, so we can scroll nicely for word-wrap
   connect(m_lineScroll, SIGNAL(prevPage()), SLOT(scrollPrevPage()));
@@ -135,7 +132,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   m_columnScroll = new QScrollBar(QScrollBar::Horizontal,m_view);
   m_columnScroll->hide();
   m_columnScroll->setTracking(true);
-  m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
   m_startX = 0;
   m_oldStartX = 0;
 
@@ -146,7 +142,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   // iconborder ;)
   //
   leftBorder = new KateIconBorder( this, m_view );
-  m_view->m_grid->addWidget(leftBorder, 0, 0);
   leftBorder->show ();
 
   connect( leftBorder, SIGNAL(toggleRegionVisibility(unsigned int)),
@@ -184,6 +179,25 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   // Drag & scroll
   connect( &m_dragScrollTimer, SIGNAL( timeout() ),
              this, SLOT( doDragScroll() ) );
+
+  // this is a work arround for RTL desktops
+  // should be changed in kde 3.2
+  if (QApplication::reverseLayout()){
+	m_view->m_grid->addMultiCellWidget(leftBorder    , 0, 1, 2, 2);
+	m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
+	m_view->m_grid->addMultiCellLayout(m_lineLayout  , 0, 0, 0, 0);
+//	m_view->m_grid->addMultiCellWidget(m_lineLayout  , 0, 0, 0, 0);
+  }
+  else{
+
+	//m_view->m_grid->addMultiCellWidget(m_lineLayout  , 0, 1, 2, 2);
+	m_view->m_grid->addMultiCellLayout(m_lineLayout  , 0, 1, 2, 2);
+	m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
+	m_view->m_grid->addMultiCellWidget(leftBorder    , 0, 0, 0, 0);
+  }
+
+  m_lineLayout->addWidget(m_dummy);
+  m_lineLayout->addWidget(m_lineScroll);
 
   updateView ();
 }
