@@ -46,6 +46,7 @@ public:
   bool warnOnExpired() const;
 
   bool useEGD() const;
+  bool useEFile() const;
   
   void setTLSv1(bool enabled);
   void setSSLv2(bool enabled);

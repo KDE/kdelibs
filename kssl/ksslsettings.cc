@@ -73,6 +73,7 @@ public:
 
   KOSSL *kossl;
   bool m_bUseEGD;
+  bool m_bUseEFile;
   QString m_EGDPath;
   bool m_bSendX509;
   bool m_bPromptX509;
@@ -246,6 +247,7 @@ void KSSLSettings::load() {
 
   m_cfg->setGroup("EGD");
   d->m_bUseEGD = m_cfg->readBoolEntry("UseEGD", false);
+  d->m_bUseEFile = m_cfg->readBoolEntry("UseEFile", false);
   d->m_EGDPath = m_cfg->readEntry("EGDPath");
 
   m_cfg->setGroup("Auth");
@@ -272,6 +274,7 @@ void KSSLSettings::defaults() {
   m_bWarnExpired = true;
   m_bWarnRevoked = true;
   d->m_bUseEGD = false;
+  d->m_bUseEFile = false;
   d->m_EGDPath = "";
 }
 
@@ -299,6 +302,7 @@ void KSSLSettings::save() {
 
   m_cfg->setGroup("EGD");
   m_cfg->writeEntry("UseEGD", d->m_bUseEGD);
+  m_cfg->writeEntry("UseEFile", d->m_bUseEFile);
   m_cfg->writeEntry("EGDPath", d->m_EGDPath);
 
   // FIXME - ciphers
@@ -342,6 +346,7 @@ bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
 bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }
 bool KSSLSettings::warnOnExpired() const     { return m_bWarnExpired; }
 bool KSSLSettings::useEGD() const            { return d->m_bUseEGD;      }
+bool KSSLSettings::useEFile() const          { return d->m_bUseEFile;    }
 bool KSSLSettings::autoSendX509() const      { return d->m_bSendX509; }
 bool KSSLSettings::promptSendX509() const    { return d->m_bPromptX509; }
 
