@@ -1,3 +1,11 @@
+2004-02-22  Harri Porten  <porten@kde.org>
+
+	* number_object.cpp: fixed crash if toString() is called on NaN
+	or Inf with a radix != 10.
+
+	* error_object.cpp: Error constructors are of [[Class]] Function
+	while Error instances are of [[Class]] Error.
+
 2004-02-21  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp: introduced invalidDate constant. Stricter
