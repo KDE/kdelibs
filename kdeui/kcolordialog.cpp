@@ -1432,10 +1432,12 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
   int h, s, v;
   color.hsv( &h, &s, &v );
   d->hsSelector->setValues( h, s );
+  d->valuePal->blockSignals(true);
   d->valuePal->setHue( h );
   d->valuePal->setSaturation( s );
   d->valuePal->setValue( v );
   d->valuePal->updateContents();
+  d->valuePal->blockSignals(false);
   d->valuePal->repaint( false );
   d->bRecursion = false;
 }
