@@ -32,7 +32,7 @@ libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -
 # we should get this to work when libtool 1.3 is released
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
-include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
+include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
 		ktabctl.h kstatusbar.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
@@ -54,7 +54,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 # the order is predictated by the use of X11 header files
 libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
-		klined.cpp kledlamp.cpp kprogress.cpp \
+		klined.cpp kprogress.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
@@ -75,7 +75,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
 	kdbtn.moc keditcl.moc kfontdialog.moc kiconloaderdialog.moc \
-	kkeydialog.moc kled.moc kledlamp.moc klined.moc kmenubar.moc \
+	kkeydialog.moc kled.moc klined.moc kmenubar.moc \
 	kpopmenu.moc kprogress.moc krestrictedline.moc kruler.moc \
 	kselect.moc kstatusbar.moc ktabbar.moc ktabctl.moc ktablistbox.moc \
 	ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
