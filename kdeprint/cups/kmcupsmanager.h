@@ -29,6 +29,7 @@ class KLibrary;
 
 class KMCupsManager : public KMManager
 {
+	Q_OBJECT
 public:
 	KMCupsManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMCupsManager();
@@ -58,6 +59,12 @@ public:
 	bool configureServer(QWidget *parent = 0);
 	QStringList detectLocalPrinters();
 
+	void createPluginActions(KActionCollection*);
+	void validatePluginActions(KActionCollection*, KMPrinter*);
+
+public slots:
+	void exportDriver();
+
 protected:
 	// the real printer listing job is done here
 	void listPrinters();
@@ -73,6 +80,7 @@ protected:
 
 private:
 	KLibrary	*m_cupsdconf;
+	KMPrinter	*m_currentprinter;
 };
 
 #endif

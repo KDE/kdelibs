@@ -30,6 +30,7 @@
 #include "kmcupsconfig.h"
 #include "kmfactory.h"
 #include "kmdbentry.h"
+#include "cupsaddsmb2.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -39,6 +40,8 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
+#include <kmessagebox.h>
+#include <kaction.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
@@ -53,6 +56,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	m_cupsdconf = 0;
+	m_currentprinter = 0;
 
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
@@ -742,6 +746,93 @@ QStringList KMCupsManager::detectLocalPrinters()
 	return list;
 }
 
+void KMCupsManager::createPluginActions(KActionCollection *coll)
+{
+	KAction	*act = new KAction(i18n("Export driver..."), "up", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
+	act->setGroup("plugin");
+}
+
+void KMCupsManager::validatePluginActions(KActionCollection *coll, KMPrinter *pr)
+{
+	// save selected printer for future use in slots
+	m_currentprinter = pr;
+	coll->action("plugin_export_driver")->setEnabled(pr && pr->isLocal() && !pr->isClass(true) && !pr->isSpecial());
+}
+
+void KMCupsManager::exportDriver()
+{
+	if (m_currentprinter && m_currentprinter->isLocal() &&
+	    !m_currentprinter->isClass(true) && !m_currentprinter->isSpecial())
+	{
+		if (KMessageBox::warningContinueCancel(0,
+			i18n("You are about to export the <b>%1</b> driver to Windows client "
+				 "through samba. This operation requires Adobe PostScript driver "
+				 "(http://www.adobe.com), version 2.2 of samba and a running SMB service "
+				 "on server <b>%1</b>. Do you want to continue?")
+				 .arg(m_currentprinter->printerName())
+				 .arg(cupsServer())) == KMessageBox::Continue)
+		{
+			QString	path = cupsInstallDir();
+			if (path.isEmpty())
+				path = "/usr/share/cups";
+			else
+				path += "/share/cups";
+			// check that adobe drivers are present (check is made on 2 files)
+			if (!QFile::exists(path+"/drivers/ADOBEPS5.DLL") ||
+			    !QFile::exists(path+"/drivers/ADOBEPS4.DRV"))
+			{
+				KMessageBox::error(0,
+					i18n("Some driver files are missing. You can get them on Adobe web site "
+					     "(http://www.adobe.com). See <b>cupsaddsmb</b> manual page for more "
+						 " details (needs at least cups-1.1.11)."));
+				return;
+			}
+			QCString	dest(m_currentprinter->printerName().local8Bit()), datadir(QFile::encodeName(path));
+			//int	result = export_dest(dest.data(), datadir.data());
+			int result = CupsAddSmb::exportDest(m_currentprinter->printerName(), path);
+/*			if (result == 0)
+				KMessageBox::information(0, i18n("Driver successfully exported"));
+			else
+			{
+				QString	msg;
+				switch (result)
+				{
+					case 1:
+						msg = i18n("Driver not found for <b>%1</b>. Either the PPD file could not "
+						           "be found, or %1 is a raw printer.").arg(dest).arg(dest);
+						break;
+					case 2:
+						msg = i18n("<p>Unable to create temporary files. Check that you have enough "
+						           "free disk space.</p>");
+						break;
+					case 3:
+						msg = i18n("Unable to %1 the driver files on server <b>%1</b>. Usual "
+						           "reasons are: permission denied, invalid share name, missing "
+								   "driver files. Check that samba is correctly configured. See "
+								   "<b>cupsaddsmb</b> manual page for more details "
+								   "(needs at least cups-1.1.11).")
+								   .arg(i18n("copy"))
+								   .arg(cupsServer());
+						break;
+					case 4:
+						msg = i18n("Unable to %1 the driver files on server <b>%1</b>. Usual "
+						           "reasons are: permission denied, invalid share name, missing "
+								   "driver files. Check that samba is correctly configured. See "
+								   "<b>cupsaddsmb</b> manual page for more details "
+								   "(needs at least cups-1.1.11).")
+								   .arg(i18n("install"))
+								   .arg(cupsServer());
+						break;
+					default:
+						msg = i18n("Export failed. Unknown error (code = %1).").arg(result);
+						break;
+				}
+				KMessageBox::error(0, msg);
+			}*/
+		}
+	}
+}
+
 //*****************************************************************************************************
 
 void extractMaticData(QString& buf, const QString& filename)
@@ -769,3 +860,5 @@ QString printerURI(KMPrinter *p, bool use)
 		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
 	return uri;
 }
+
+#include "kmcupsmanager.moc"

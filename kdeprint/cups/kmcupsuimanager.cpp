@@ -55,6 +55,7 @@
 
 #include <klocale.h>
 #include <kdebug.h>
+#include <kaction.h>
 
 KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name)
 : KMUiManager(parent,name)
