@@ -3,7 +3,6 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/soundserver -I$(top_srcdir)/arts/artsc
 
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
-MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 ####### Files

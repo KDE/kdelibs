@@ -150,3 +150,7 @@ dnl AC_OUTPUT(arts/artsc/artsc-config)
 
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsdsp)
+
+MCOPIDL='$(top_builddir)/arts/mcopidl/mcopidl'
+AC_SUBST(MCOPIDL)
+

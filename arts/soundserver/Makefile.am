@@ -2,7 +2,6 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/flow
 MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow
-MCOPIDL   = $(top_builddir)/arts/mcopidl/mcopidl
 FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
 ####### install idl files

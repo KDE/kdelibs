@@ -2,7 +2,6 @@
 SUBDIRS = mcopclass
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
 LDFLAGS  = $(top_builddir)/arts/mcop/libmcop.la
-MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 CLOSURE = $(libartsflow_la_OBJECTS) $(libartsflow_idl_la_OBJECTS)
 
 ####### Files

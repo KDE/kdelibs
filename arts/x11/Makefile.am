@@ -1,5 +1,4 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
-MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 
 lib_LTLIBRARIES = libx11globalcomm.la
 
