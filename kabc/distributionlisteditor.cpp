@@ -41,7 +41,7 @@
 using namespace KABC;
 
 DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidget *parent)
-    : KDialogBase( parent, "", true, i18n("Configure distribution lists"), Ok, Ok, true)
+    : KDialogBase( parent, "", true, i18n("Configure Distribution Lists"), Ok, Ok, true)
 {
   mEditor = new DistributionListEditorWidget( addressBook, this );
   setMainWidget( mEditor );
@@ -144,15 +144,15 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   nameLayout->addWidget( mNameCombo );
   connect( mNameCombo, SIGNAL( activated( int ) ), SLOT( updateEntryView() ) );
 
-  mNewButton = new QPushButton( i18n("New List"), this );
+  mNewButton = new QPushButton( i18n("New List..."), this );
   nameLayout->addWidget( mNewButton );
   connect( mNewButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
-  mEditButton = new QPushButton( i18n("Edit List"), this );
+  mEditButton = new QPushButton( i18n("Edit List..."), this );
   nameLayout->addWidget( mEditButton );
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editList() ) );
 
-  mRemoveButton = new QPushButton( i18n("Remove List"), this );
+  mRemoveButton = new QPushButton( i18n("Remove List..."), this );
   nameLayout->addWidget( mRemoveButton );
   connect( mRemoveButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
@@ -182,13 +182,13 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   mEntryView = new QListView( this );
   mEntryView->addColumn( i18n("Name") );
   mEntryView->addColumn( i18n("Email") );
-  mEntryView->addColumn( i18n("Use preferred") );
+  mEntryView->addColumn( i18n("Use Preferred") );
   mEntryView->setEnabled(false);
   gridLayout->addMultiCellWidget( mEntryView, 1, 1, 1, 2 );
   connect( mEntryView, SIGNAL( selectionChanged() ),
            SLOT( slotSelectionEntryViewChanged() ) );
 
-  mChangeEmailButton = new QPushButton( i18n("Change Email"), this );
+  mChangeEmailButton = new QPushButton( i18n("Change Email..."), this );
   gridLayout->addWidget( mChangeEmailButton, 2, 1 );
   connect( mChangeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
 
@@ -228,7 +228,7 @@ void DistributionListEditorWidget::newList()
 {
   bool ok = false;
   QString name = QInputDialog::getText( i18n("New Distribution List"),
-                                        i18n("Please enter name."),
+                                        i18n("Please enter name:"),
                                         QLineEdit::Normal, QString::null, &ok,
                                         this );
   if ( !ok || name.isEmpty() ) return;
@@ -249,7 +249,7 @@ void DistributionListEditorWidget::editList()
   QString oldName = mNameCombo->currentText();
 
   QString newName = QInputDialog::getText( i18n("Distribution List"),
-                                           i18n("Please change name."),
+                                           i18n("Please change name:"),
                                            QLineEdit::Normal, oldName, &ok,
                                            this );
   if ( !ok || newName.isEmpty() ) return;
