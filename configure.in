@@ -146,9 +146,6 @@ AC_SUBST(PARTS_INCLUDES)
 LIB_KOM='$(top_builddir)/corba/kom/libkom.la'
 AC_SUBST(LIB_KOM)
 
-LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
-AC_SUBST(LIB_KDEUTIL)
-
 idldir="\$(includedir)/idl"
 AC_SUBST(idldir)
 
@@ -156,9 +153,15 @@ LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la -lXext $(LIB_QT) $(LIBDL)'
 AC_SUBST(LIB_KDECORE)
 LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la $(LIB_KDECORE)'
 AC_SUBST(LIB_KDEUI)
+LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la $(LIB_QT)'
+AC_SUBST(LIB_KFORMULA)
 LIB_KFM='$(top_builddir)/kfm/libkfm.la $(LIB_KDECORE)'
 AC_SUBST(LIB_KFM)
-LIB_KFILE='$(top_builddir)/kfile/libkfile.la $(LIB_KFM) $(LIB_KDEUI)'
+LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
+AC_SUBST(LIB_KDEUTIL)
+LIB_KIO='$(top_builddir)/kio/libkio.la $(LIB_KDEUI) $(LIB_KDEUTIL)'
+AC_SUBST(LIB_KIO)
+LIB_KFILE='$(top_builddir)/kfile/libkfile.la $(LIB_KIO) $(LIB_KDEUI)'
 AC_SUBST(LIB_KFILE)
 LIB_KAB='$(top_builddir)/kab/libkab.la $(LIB_KIMGIO) $(LIB_KDECORE)'
 AC_SUBST(LIB_KAB)
