@@ -18,7 +18,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-AM_CXXFLAGS += -DQT_PLUGIN
+AM_CXXFLAGS = -DQT_PLUGIN
 
 INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
 kde_widget_LTLIBRARIES = kdewidgets.la
