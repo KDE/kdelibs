@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
-#include "kjavaappletserver.moc"
-#include "kjavaprocess.h"
 #include "kjavaappletcontext.h"
+#include "kjavaprocess.h"
+#include "kjavaappletserver.moc"
+
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <kdebug.h>
@@ -25,8 +26,7 @@
 struct KJavaAppletServerPrivate
 {
    int counter;
-
-   QMap<QString, KJavaAppletContext> context_cache;
+   QDict<KJavaAppletContext> contexts;
 };
 
 static KJavaAppletServer *self = 0;
@@ -49,6 +49,7 @@ KJavaAppletServer::KJavaAppletServer()
 KJavaAppletServer::~KJavaAppletServer()
 {
    delete process;
+   delete d;
 }
 
 KJavaAppletServer* KJavaAppletServer::allocateJavaServer()
