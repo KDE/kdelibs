@@ -51,6 +51,25 @@
 using namespace DOM;
 using namespace khtml;
 
+#define RED_LUMINOSITY        30
+#define GREEN_LUMINOSITY      59
+#define BLUE_LUMINOSITY       11
+#define INTENSITY_FACTOR      25
+#define LIGHT_FACTOR          0
+#define LUMINOSITY_FACTOR     75
+
+#define MAX_COLOR             255
+#define COLOR_DARK_THRESHOLD  51
+#define COLOR_LIGHT_THRESHOLD 204
+
+#define COLOR_LITE_BS_FACTOR 45
+#define COLOR_LITE_TS_FACTOR 70
+
+#define COLOR_DARK_BS_FACTOR 30
+#define COLOR_DARK_TS_FACTOR 50
+
+#define LIGHT_GRAY qRgb(192, 192, 192)
+#define DARK_GRAY  qRgb(96, 96, 96)
 
 #ifndef NDEBUG
 static void *baseOfRenderObjectBeingDeleted;
@@ -524,6 +543,64 @@ int RenderObject::containingBlockHeight() const
     return containingBlock()->contentHeight();
 }
 
+// from Mozilla's nsCSSColorUtils.cpp
+static int brightness(int red, int green, int blue)
+{
+
+  int intensity = (red + green + blue) / 3;
+
+  int luminosity =
+    ((RED_LUMINOSITY * red) / 100) +
+    ((GREEN_LUMINOSITY * green) / 100) +
+    ((BLUE_LUMINOSITY * blue) / 100);
+
+  return ((intensity * INTENSITY_FACTOR) +
+          (luminosity * LUMINOSITY_FACTOR)) / 100;
+}
+
+static void calc3DColor(QColor &color, bool darken)
+{
+  int rb = color.red();
+  int gb = color.green();
+  int bb = color.blue();
+
+  int brightness_ = brightness(rb,gb,bb);
+
+  int f0, f1;
+  if (brightness_ < COLOR_DARK_THRESHOLD) {
+    f0 = COLOR_DARK_BS_FACTOR;
+    f1 = COLOR_DARK_TS_FACTOR;
+  } else if (brightness_ > COLOR_LIGHT_THRESHOLD) {
+    f0 = COLOR_LITE_BS_FACTOR;
+    f1 = COLOR_LITE_TS_FACTOR;
+  } else {
+    f0 = COLOR_DARK_BS_FACTOR +
+      (brightness_ *
+       (COLOR_LITE_BS_FACTOR - COLOR_DARK_BS_FACTOR) / MAX_COLOR);
+    f1 = COLOR_DARK_TS_FACTOR +
+      (brightness_ *
+       (COLOR_LITE_TS_FACTOR - COLOR_DARK_TS_FACTOR) / MAX_COLOR);
+  }
+
+  if (darken) {
+    int r = rb - (f0 * rb / 100);
+    int g = gb - (f0 * gb / 100);
+    int b = bb - (f0 * bb / 100);
+    if ((r == rb) && (g == gb) && (b == bb))
+      color = (color == Qt::black) ? DARK_GRAY : Qt::black;
+    else
+      color.setRgb(r, g, b);
+  } else {
+    int r = kMin(rb + (f1 * (MAX_COLOR - rb) / 100), 255);
+    int g = kMin(gb + (f1 * (MAX_COLOR - gb) / 100), 255);
+    int b = kMin(bb + (f1 * (MAX_COLOR - bb) / 100), 255);
+    if ((r == rb) && (g == gb) && (b == bb))
+      color = (color == Qt::white) ? LIGHT_GRAY : Qt::white;
+    else
+      color.setRgb(r, g, b);
+  }
+}
+
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                               BorderSide s, QColor c, const QColor& textcolor, EBorderStyle style,
                               int adjbw1, int adjbw2, bool invalidisInvert)
@@ -542,7 +619,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         else {
             if(style == INSET || style == OUTSET || style == RIDGE || style ==
             GROOVE)
-                c.setRgb(238, 238, 238);
+                c = Qt::white;
             else
                 c = textcolor;
         }
@@ -704,16 +781,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     }
     case INSET:
     case OUTSET:
-        // ### QColor::light/::dark are horribly slow. Cache this somewhere.
-        if ( (style == OUTSET && (s == BSBottom || s == BSRight)) ||
-             (style == INSET && ( s == BSTop || s == BSLeft ) ) )
-            c = c.dark();
-        else {
-             int h, s, v;
-             c.getHsv( h, s, v );
-             c.setHsv( h, s, kMax( 100, v ) );
-             c = c.light();
-        }
+        calc3DColor(c, (style == OUTSET && (s == BSBottom || s == BSRight)) ||
+             (style == INSET && ( s == BSTop || s == BSLeft ) ) );
         /* nobreak; */
     case SOLID:
         p->setPen(Qt::NoPen);
@@ -1707,4 +1776,24 @@ void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);
 }
+
+#undef RED_LUMINOSITY
+#undef GREEN_LUMINOSITY
+#undef BLUE_LUMINOSITY
+#undef INTENSITY_FACTOR
+#undef LIGHT_FACTOR
+#undef LUMINOSITY_FACTOR
+
+#undef MAX_COLOR
+#undef COLOR_DARK_THRESHOLD
+#undef COLOR_LIGHT_THRESHOLD
+
+#undef COLOR_LITE_BS_FACTOR
+#undef COLOR_LITE_TS_FACTOR
+
+#undef COLOR_DARK_BS_FACTOR
+#undef COLOR_DARK_TS_FACTOR
+
+#undef LIGHT_GRAY
+#undef DARK_GRAY
 
