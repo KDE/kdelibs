@@ -175,6 +175,20 @@ void FunctionImp::addParameter(const UString &n)
   *p = new Parameter(n);
 }
 
+UString FunctionImp::parameterString() const
+{
+  UString s;
+  const Parameter * const *p = &param;
+  while (*p) {
+    if (!s.isEmpty())
+        s += ", ";
+    s += (*p)->name;
+    p = &(*p)->next;
+  }
+
+  return s;
+}
+
 
 // ECMA 10.1.3q
 void FunctionImp::processParameters(ExecState *exec, const List &args)

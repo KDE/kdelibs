@@ -83,7 +83,6 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
   switch (id) {
   case ToString: {
     // ### also make this work for internal functions
-    // ### return the text of the function body (see 15.3.4.2)
     if (thisObj.isNull() || !thisObj.inherits(&InternalFunctionImp::info)) {
 #ifndef NDEBUG
       fprintf(stderr,"attempted toString() call on null or non-function object\n");
@@ -95,7 +94,8 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
     if (thisObj.inherits(&DeclaredFunctionImp::info)) {
        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
                                  (thisObj.imp());
-       return String("function " + fi->name() + "() " + fi->body->toString());
+       return String("function " + fi->name() + "(" +
+         fi->parameterString() + ") " + fi->body->toString());
     } else if (thisObj.inherits(&FunctionImp::info) &&
         !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
       result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name() + "()");

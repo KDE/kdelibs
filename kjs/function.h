@@ -46,6 +46,8 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
     void addParameter(const UString &n);
+    // parameters in string representation, e.g. (a, b, c)
+    UString parameterString() const;
     virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
