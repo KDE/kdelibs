@@ -81,7 +81,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~KFileItem() { }
+  virtual ~KFileItem();
 
   /**
    * Re-read information (currently only permissions and mimetype)
@@ -331,6 +331,9 @@ private:
    * Hidden : see @ref #setHidden(), @ref #isHidden()
    */
   // bool m_bHidden;
+
+  class KFileItemPrivate;
+  KFileItemPrivate * d;
 };
 
 /**

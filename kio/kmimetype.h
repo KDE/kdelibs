@@ -223,6 +223,13 @@ public:
    */
   static List allMimeTypes();
 
+  /**
+   * @return name of the default mimetype
+   * Always application/octet-stream, but this method exists
+   * for performance purposes.
+   */
+  static const QString & defaultMimeType();
+
 protected:
   void loadInternal( QDataStream& );
   void init( KDesktopFile * );
@@ -282,7 +289,7 @@ class KDEDesktopMimeType : public KMimeType
 
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
-		
+
   /**
    * Structure representing a service, in the list of services
    * returned by builtinServices and userDefinedServices

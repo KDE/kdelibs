@@ -62,7 +62,7 @@ void KMimeType::buildDefaultType()
   assert ( !s_pDefaultType );
   // Try to find the default type
   KServiceType * mime = KServiceTypeFactory::self()->
-	findServiceTypeByName( "application/octet-stream" );
+	findServiceTypeByName( defaultMimeType() );
 
   if (mime && mime->isType( KST_KMimeType ))
   {
@@ -70,10 +70,10 @@ void KMimeType::buildDefaultType()
   }
   else
   {
-     errorMissingMimeType( "application/octet-stream" );
+     errorMissingMimeType( defaultMimeType() );
      KStandardDirs stdDirs;
-     QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+"application/octet-stream.desktop";
-     s_pDefaultType = new KMimeType( sDefaultMimeType, "application/octet-stream",
+     QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+defaultMimeType()+".desktop";
+     s_pDefaultType = new KMimeType( sDefaultMimeType, defaultMimeType(),
                                      "unknown", "mime", QStringList() );
   }
 }
@@ -95,7 +95,7 @@ void KMimeType::checkEssentialMimeTypes()
     KMessageBoxWrapper::error( 0L, i18n( "No mime types installed!" ) );
     return; // no point in going any further
   }
-	
+
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
   if ( KMimeType::mimeType( "inode/directory-locked" ) == s_pDefaultType )
@@ -227,7 +227,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
-    return mimeType( "application/octet-stream" );
+    return mimeType( defaultMimeType() );
 
   // Do some magic for local files
   QString path = _url.path( 0 );
@@ -236,7 +236,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )
-    return mimeType( "application/octet-stream" );
+    return mimeType( defaultMimeType() );
 
   // The mimemagic stuff was successful
   return mimeType( result->mimeType() );
@@ -377,7 +377,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
 
   QString icon;
   // using KStandardDirs as this one checks for path beeing
-  // a file instead of a directory 
+  // a file instead of a directory
   if ( KStandardDirs::exists( u.path() ) )
   {
     KSimpleConfig cfg( u.path(), true );
@@ -813,3 +813,9 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     assert( 0 );
 }
 
+const QString & KMimeType::defaultMimeType()
+{
+    static const QString & s_strDefaultMimeType =
+        KGlobal::staticQString( "application/octet-stream" );
+    return s_strDefaultMimeType;
+}

@@ -34,6 +34,14 @@
 #include <kmimetype.h>
 #include <krun.h>
 
+class KFileItem::KFileItemPrivate
+{
+public:
+  KFileItemPrivate() {}
+   // For special case like link to dirs over FTP
+  QString m_guessedMimeType; 
+};
+
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
@@ -43,7 +51,8 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_permissions( (mode_t)-1 ),
   m_bLink( false ),
   m_pMimeType( 0 ),
-  m_bMarked( false )
+  m_bMarked( false ),
+  d(new KFileItemPrivate)
 {
   bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
@@ -81,6 +90,10 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
           m_pMimeType = KMimeType::mimeType((*it).m_str);
           break;
 
+        case KIO::UDS_GUESSED_MIME_TYPE:
+          d->m_guessedMimeType = (*it).m_str;
+          break;
+
         case KIO::UDS_LINK_DEST:
           m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
           break;
@@ -102,7 +115,8 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_fileMode ( _mode ),
   m_permissions( _permissions ),
   m_bLink( false ),
-  m_bMarked( false )
+  m_bMarked( false ),
+  d(new KFileItemPrivate)
 {
   init( _determineMimeTypeOnDemand );
 }
@@ -115,10 +129,16 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_fileMode( mode ),
   m_permissions( 0 ),
   m_bLink( false ),
-  m_bMarked( false )
+  m_bMarked( false ),
+  d(new KFileItemPrivate)
 {
   m_pMimeType = KMimeType::mimeType( mimeType );
   init( false );
+}
+
+KFileItem::~KFileItem()
+{
+  delete d;
 }
 
 void KFileItem::init( bool _determineMimeTypeOnDemand )
@@ -161,7 +181,6 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   if (!m_pMimeType && !_determineMimeTypeOnDemand )
       m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
 
-  //  assert (m_pMimeType);
 }
 
 void KFileItem::refresh()
@@ -301,9 +320,17 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
        && access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
        _state |= KIcon::LockOverlay;
 
-  QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size, _state );
+  KMimeType::Ptr mime;
+  // Use guessed mimetype if the main one is clueless
+  if ( m_pMimeType->name() == KMimeType::defaultMimeType()
+      && !d->m_guessedMimeType.isEmpty() )
+      mime = KMimeType::mimeType( d->m_guessedMimeType );
+  else
+      mime = m_pMimeType;
+  QPixmap p = mime->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
-    kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
+      kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
+
   return p;
 }
 

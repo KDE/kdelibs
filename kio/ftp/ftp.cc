@@ -52,6 +52,7 @@
 #include <klocale.h>
 #include <kinstance.h>
 #include <kmimemagic.h>
+#include <kmimetype.h>
 #include <ksock.h>
 
 #define FTP_LOGIN "anonymous"
@@ -907,6 +908,20 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
     atom.m_uds = UDS_LINK_DEST;
     atom.m_str = e->link;
     entry.append( atom );
+
+    KMimeType::Ptr mime = KMimeType::findByURL( KURL(QString("ftp://host/") + filename ) );
+    // Links on ftp sites are often links to dirs, and we have no way to check
+    // that. Let's do like Netscape : assume dirs generally.
+    // But we do this only when the mimetype can't be known from the filename.
+    // --> we do better than Netscape :-)
+    // TODO if ( mime->name() == KMimeType::defaultMimeType() )
+    if ( mime->name() == "application/octet-stream" )
+    {
+      kdDebug() << "Setting guessed mime type to inode/directory for " << filename << endl;
+      atom.m_uds = UDS_GUESSED_MIME_TYPE;
+      atom.m_str = "inode/directory";
+      entry.append( atom );
+    }
   }
 
   /* atom.m_uds = UDS_ACCESS_TIME;
@@ -1123,9 +1138,9 @@ void Ftp::listDir( const KURL &url )
   {
     kdDebug(7102) << e->name << endl;
     //if ( S_ISDIR( (mode_t)e->type ) )
-    //{
     //   kdDebug(7102) << "is a dir" << endl;
-    //}
+    //if ( !e->link.isEmpty() )
+    //   kdDebug(7102) << "is a link to " << e->link << endl;
     entry.clear();
     createUDSEntry( e->name, e, entry, false );
     listEntry( entry, false );
@@ -1256,18 +1271,8 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                             de.type = S_IFCHR;
                             break;
                         case 'l':
-                        {
-                            QCString nam = p_name;
-              // links on ftp sites are often links to dirs, and we have no way to check that
-              // let's do like Netscape : assume dirs generally
-              // But we assume links to files, though, when there is an extension
-              // --> we do better than Netscape :-)
-                            if ( nam.findRev( "." ) != -1 )
-                                de.type = S_IFREG;
-                            else
-                                de.type = S_IFDIR;
+                            de.type = S_IFREG;
                             // we don't set S_IFLNK here.  de.link says it.
-                        }
                             break;
                         default:
                             break;

@@ -166,7 +166,10 @@ namespace KIO
     // An alternative URL (If different from the caption)
     UDS_URL = 8192 | UDS_STRING,
     // A mime type; prevents guessing
-    UDS_MIME_TYPE = 16384 | UDS_STRING
+    UDS_MIME_TYPE = 16384 | UDS_STRING,
+    // A mime type to be used for displaying only.
+    // But when 'running' the file, the mimetype is re-determined
+    UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING
   };
 
   QString findDeviceMountPoint( const QString& device );
