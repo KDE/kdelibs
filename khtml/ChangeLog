@@ -1,5 +1,8 @@
 2004-02-29  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_documentimpl.cpp (determineParseMode): treat xhtml transitional
+	that way (#76449).
+
 	* rendering/bidi.cpp (findNextLineBreak): make sure we move
 	replaced elements, that don't fit on a line below the floats (#74609).
 

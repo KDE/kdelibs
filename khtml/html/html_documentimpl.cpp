@@ -419,7 +419,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         }
 
         if ( hMode == XHtml )
-            pMode = Strict;
+            pMode = publicId;
     }
     // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
