@@ -50,7 +50,7 @@ class KLineEdit;
  * Reimplement dragObject() and (possibly) startDrag(),
  * and setDragEnabled(true).
  */
-class KListView : public QListView
+class KDEUI_EXPORT KListView : public QListView
 {
   friend class KListViewItem;
 
@@ -991,7 +991,7 @@ private:
  *
  * @short listview item with alternate background color support
  */
-class KListViewItem : public QListViewItem
+class KDEUI_EXPORT KListViewItem : public QListViewItem
 {
   friend class KListView;
 public:

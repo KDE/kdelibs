@@ -61,7 +61,7 @@ typedef QValueList<KAction *> KActionPtrList;
 /**
  * A managed set of KAction objects.
  */
-class KActionCollection : public QObject
+class KDEUI_EXPORT KActionCollection : public QObject
 {
   friend class KAction;
   friend class KXMLGUIClient;

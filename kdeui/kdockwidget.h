@@ -57,9 +57,13 @@
 #ifndef NO_KDE2
 #include <kmainwindow.h>
 #include <netwm_def.h>
+#ifndef Q_WS_WIN
 #undef  EXPORT_DOCKCLASS
 #define EXPORT_DOCKCLASS
+#endif
+
 #else
+
 #include <qmainwindow.h>
 #include "exportdockclass.h"
 #include "dummykmainwindow.h"

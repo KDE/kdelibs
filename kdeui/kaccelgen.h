@@ -83,7 +83,7 @@ namespace KAccelGen
  * Static dereference class, for use as a template parameter.
  */
 template <class Iter>
-class KDEUI_EXPORT Deref
+class Deref
 {
 public:
     static QString deref(Iter i) { return *i; }
@@ -94,7 +94,7 @@ public:
  * target; for use as a template parameter.
  */
 template <class Iter>
-class KDEUI_EXPORT Deref_Key
+class Deref_Key
 {
 public:
     static QString deref(Iter i) { return i.key(); }
@@ -160,7 +160,7 @@ loadPredefined(Iter begin, Iter end, QMap<QChar,bool>& keys)
  * @param target collection to store generated strings
  */
 template <class Iter, class Iter_Deref >
-KDEUI_EXPORT void
+void
 generate(Iter begin, Iter end, QStringList& target)
 {
     // Will keep track of used accelerator chars
