@@ -73,8 +73,9 @@
 #define SEQ_KEY_PRESSURE(a,b,c,d) {}
 #define SEQ_DUMPBUF()
 #define SEQ_WAIT_TIME(a)
+#define SEQ_START_TIMER()
 #define SEQ_STOP_TIMER()
-#define CONTINUE_TIMER()
+#define SEQ_CONTINUE_TIMER()
 
 
 #endif
