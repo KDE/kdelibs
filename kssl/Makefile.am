@@ -15,6 +15,7 @@ include_HEADERS = \
 		ksslcertificatecache.h   \
 		ksslpeerinfo.h           \
 		ksslinfodlg.h            \
+		ksslcertdlg.h            \
 		ksslutils.h              \
 		kopenssl.h               \
 		ksslall.h	 	 \
@@ -32,6 +33,7 @@ libkssl_la_SOURCES	= \
 			ksslcertificatecache.cc   \
 			ksslpeerinfo.cc           \
 			ksslinfodlg.cc            \
+			ksslcertdlg.cc            \
 			ksslutils.cc              \
 			kopenssl.cc		  \
 			ksslpkcs12.cc		  \
