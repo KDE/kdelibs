@@ -159,9 +159,9 @@ public:
 		if(points.contains(",,") || points.contains(", ,"))
 			return QPointArray();
 
-		points.replace(",", " ");
-		points.replace(QRegExp("\r"), "");
-		points.replace(QRegExp("\n"), "");
+		points.replace(',', ' ');
+		points.replace('\r', QString::null);
+		points.replace('\n', QString::null);
 
 		points = points.simplifyWhiteSpace();
 
@@ -176,7 +176,7 @@ public:
 			float y = (*(it)).toFloat();
 
 			array.setPoint(i, static_cast<int>(x), static_cast<int>(y));
-	        i++;
+			i++;
 		}
 
 		return array;
