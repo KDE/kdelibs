@@ -3,6 +3,8 @@
 #include <kinstance.h>
 #include <qfile.h>
 
+#include <assert.h>
+
 void recursive_print( const KTarDirectory * dir, const QString & path )
 {
   QStringList l = dir->entries();

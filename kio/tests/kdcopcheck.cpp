@@ -16,6 +16,7 @@
 #include <kapplication.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void debug(QString txt)
 {

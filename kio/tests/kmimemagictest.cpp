@@ -17,7 +17,7 @@ int main( int argc, char** argv )
   KMimeMagicResult * result = KMimeMagic::self()->findFileType( file );
 
   if ( result->isValid() )
-      printf( "Found %s, encoding %s, accuracy %d\n", result->mimeType().latin1(), result->encoding().latin1(), result->accuracy() );
+      printf( "Found %s, accuracy %d\n", result->mimeType().latin1(), result->accuracy() );
   else
       printf( "Invalid result\n");
 
