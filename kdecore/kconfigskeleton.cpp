@@ -56,6 +56,8 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
       config->revertToDefault( mKey );
     else if ( mType == Path )
       config->writePathEntry( mKey, mReference );
+    else if ( mType == PathList )
+      config->writePathEntry( mKey, mReference );
     else if ( mType == Password )
       config->writeEntry( mKey, KStringHandler::obscure( mReference ) );
     else
@@ -810,6 +812,26 @@ void KConfigSkeleton::ItemStringList::setProperty(const QVariant & p)
 QVariant KConfigSkeleton::ItemStringList::property() const
 {
   return QVariant(mReference);
+}
+
+
+KConfigSkeleton::ItemPathList::ItemPathList( const QString &group, const QString &key,
+                                            QStringList &reference,
+                                            const QStringList &defaultValue )
+  : ItemStringList( group, key, reference, defaultValue )
+{
+}
+
+void KConfigSkeleton::ItemPathList::readConfig( KConfig *config )
+{
+  config->setGroup( mGroup );
+  if ( !config->hasKey( mKey ) )
+    mReference = mDefault;
+  else
+    mReference = config->readPathListEntry( mKey );
+  mLoadedValue = mReference;
+
+  readImmutability( config );
 }
 
 

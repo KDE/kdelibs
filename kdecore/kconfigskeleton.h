@@ -372,7 +372,7 @@ public:
   class KDECORE_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
-    enum Type { Normal, Password, Path };
+    enum Type { Normal, Password, Path, PathList };
 
     ItemString(const QString & group, const QString & key,
                QString & reference,
@@ -752,6 +752,20 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
     QVariant property() const;
+  };
+
+
+  /**
+   * Class for handling a path list preferences item.
+   */
+  class KDECORE_EXPORT ItemPathList:public ItemStringList
+  {
+  public:
+    ItemPathList(const QString & group, const QString & key,
+                   QStringList & reference,
+                   const QStringList & defaultValue = QStringList());
+
+    void readConfig(KConfig * config);
   };
 
 
