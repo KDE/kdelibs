@@ -17,7 +17,8 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx -I$(top_builddir)/kio/kio $(all_includes)
+INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx \
+    -I$(top_builddir)/kio/kio -I$(top_builddir)/kio/bookmarks $(all_includes)
 
 noinst_LTLIBRARIES  = libkfile.la
 
@@ -25,7 +26,7 @@ METASOURCES = AUTO
 
 #SUBDIRS = . acl_prop_page
 
-include_HEADERS = kfiledialog.h kfilebookmark.h  \
+include_HEADERS = kfiledialog.h \
 	kdiroperator.h kfileview.h kfilefiltercombo.h \
 	kfiledetailview.h kcombiview.h \
 	kfileiconview.h krecentdocument.h kfileview.h \
@@ -35,9 +36,10 @@ include_HEADERS = kfiledialog.h kfilebookmark.h  \
 	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h
 
-noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h
+noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
+	kfilebookmarkhandler.h
 
-libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
+libkfile_la_SOURCES = kfiledialogconf.cpp \
 	booktoken.cpp kfilefiltercombo.cpp \
 	kfileview.cpp kfileiconview.cpp  \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
@@ -46,7 +48,8 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp \
 	kurlbar.cpp kmetaprops.cpp\
-	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp kdirselectdialog.cpp
+	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
+	kdirselectdialog.cpp kfilebookmarkhandler.cpp
 
 EXTRA_DIST = NOTES
 

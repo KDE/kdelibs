@@ -41,9 +41,8 @@ class QLabel;
 class QPopupMenu;
 class QVBoxLayout;
 
+class KActionCollection;
 class KDirOperator;
-class KFileBookmark;
-class KFileBookmarkManager;
 class KURLComboBox;
 class KFileFilterCombo;
 class KFileView;
@@ -620,6 +619,12 @@ public:
      */
     KPushButton *cancelButton() const;
 
+    /**
+     * @returns a pointer to the action collection, holding all the used
+     * KActions.
+     */
+    KActionCollection *actionCollection() const;
+
 signals:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
@@ -662,12 +667,9 @@ protected:
 
     static KURL *lastDirectory;
 
-    QPopupMenu *bookmarksMenu;
     KURLComboBox *locationEdit;
 
     KFileFilterCombo *filterWidget;
-
-    KFileBookmarkManager *bookmarks;
 
     /**
      * adds a entry of the current directory. If disableUpdating is set
@@ -717,8 +719,8 @@ protected:
 
 protected slots:
     void urlEntered( const KURL& );
-    void pathComboActivated( const KURL& url );
-    void pathComboReturnPressed( const QString& url );
+    void enterURL( const KURL& url );
+    void enterURL( const QString& url );
     void locationActivated( const QString& url );
     void toolbarCallback(int);
     void slotFilterChanged();
@@ -736,18 +738,7 @@ protected slots:
     virtual void accept();
     virtual void slotCancel();
 
-
-    /**
-      * Add the current location to the global bookmarks list
-      */
-    void addToBookmarks();
-    void bookmarksChanged();
-    void fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id );
     void addToRecentDocuments();
-
-private slots:
-    void buildBookmarkPopup();
-    void bookmarkMenuActivated( int choice );
 
 private:
     KFileDialog(const KFileDialog&);
