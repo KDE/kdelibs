@@ -108,9 +108,8 @@ namespace KJS {
       // Look for cached value in dynamic map of properties (in ObjectImp)
       ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
       /*if (cachedVal)
-        fprintf(stderr, "lookupOrCreateFunction: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
-                 cachedVal->type(),  ObjectType);*/
-      if (cachedVal && cachedVal->type() == ObjectType)
+        fprintf(stderr, "lookupOrCreateFunction: Function -> looked up in ObjectImp, found type=%d\n", cachedVal->type());*/
+      if (cachedVal)
         return cachedVal;
 
       Value val = new FuncImp(exec,token, params);
