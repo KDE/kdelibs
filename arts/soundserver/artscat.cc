@@ -25,6 +25,7 @@
 
 #include "soundserver.h"
 #include "stdsynthmodule.h"
+#include "artsversion.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -169,6 +170,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
 	fprintf(stderr,"-b <bits>           set number of bits (8 or 16)\n");
 	fprintf(stderr,"-c <channels>       set number of channels (1 or 2)\n");
+	fprintf(stderr,"-v                  show version\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
 	exit(1);	
 }
@@ -176,7 +178,7 @@ static void exitUsage(const char *progname)
 int main(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:b:c:h")) > 0)
+	while((optch = getopt(argc,argv,"r:b:c:hv")) > 0)
 	{
 		switch(optch)
 		{
@@ -185,6 +187,10 @@ int main(int argc, char **argv)
 			case 'b': cfgBits = atoi(optarg);
 				break;
 			case 'c': cfgChannels = atoi(optarg);
+				break;
+			case 'v': 
+				printf("artscat %s\n",ARTS_VERSION);
+				exit(0);
 				break;
 			case 'h':
 			default: 

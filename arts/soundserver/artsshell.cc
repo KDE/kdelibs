@@ -34,6 +34,7 @@ Options:
 
 -q   - suppress all output.
 -h   - display command usage.
+-v   - show version.
 
 Commands:
 
@@ -85,6 +86,8 @@ execute <module.arts>
 #include <iostream.h>
 #include "soundserver.h"
 #include "dispatcher.h"
+#include "artsversion.h"
+#include <stdio.h>
 
 bool quiet = false;
 
@@ -98,6 +101,7 @@ void usage()
 Options:\n\
   -q   - suppress all output\n\
   -h   - display command usage\n\
+  -v   - show version\n\
 \n\
 Commands:\n\
   suspend             - suspend sound server\n\
@@ -117,11 +121,15 @@ void parseOptions(int argc, char **argv)
 	if (argc == 0)
 		usage();
 
-	while((optch = getopt(argc, argv, "qh")) > 0)
+	while((optch = getopt(argc, argv, "qhv")) > 0)
 	{
 		switch(optch)
 		{
 		  case 'q': quiet = true;
+			  break;
+		  case 'v':
+		  	  printf("artsshell %s\n",ARTS_VERSION);
+			  exit(0);
 			  break;
 		  case 'h':
 			  usage();

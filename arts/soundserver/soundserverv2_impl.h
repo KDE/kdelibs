@@ -45,6 +45,7 @@ namespace Arts {
 		std::string audioDevice();
 		long fragments();
 		long fragmentSize();
+		std::string version();
 	};
 };
 

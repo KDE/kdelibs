@@ -136,6 +136,11 @@ interface SoundServerV2 : SoundServer
 	readonly attribute string audioDevice;
 	readonly attribute long fragments;
 	readonly attribute long fragmentSize;
+
+	/**
+	 * version
+	 */
+	readonly attribute string version;
 };
 
 /**

@@ -23,6 +23,7 @@
     */
 
 #include "soundserver.h"
+#include "artsversion.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,6 +55,11 @@ int main(int argc, char **argv)
 	{
 		cerr << "usage: " << argv[0] << " <filename>" << endl;
 		return 1;
+	}
+	if(strcmp(argv[1],"-v") == 0)
+	{
+		cout << "artsplay " << ARTS_VERSION << endl;
+		return 0;
 	}
 
 	Dispatcher dispatcher;

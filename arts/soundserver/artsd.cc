@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 2000 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 2000-2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include "tcpserver.h"
 #include "cpuusage.h"
 #include "debug.h"
+#include "artsversion.h"
 
 using namespace std;
 using namespace Arts;
@@ -73,6 +74,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-A                  list possible audio i/o methods (for -a)\n");
+	fprintf(stderr,"-v                  show version\n");
 	fprintf(stderr,"-l <level>          information level\n");
 	fprintf(stderr,"  3: quiet, 2: warnings, 1: info, 0: debug\n");
 	exit(1);	
@@ -111,7 +113,7 @@ static bool						cmdListAudioIO  = false;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:v")) > 0)
 	{
 		switch(optch)
 		{
@@ -141,6 +143,9 @@ static void handleArgs(int argc, char **argv)
 			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
 				break;
 			case 'A': cmdListAudioIO = true;
+				break;
+			case 'v': printf("artsd %s\n",ARTS_VERSION);
+					  exit(0);
 				break;
 			case 'h':
 			default:

@@ -1,13 +1,14 @@
 
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
-   -I$(top_builddir)/arts/flow
+INCLUDES = -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
+   -I$(top_builddir)/arts/flow $(all_includes)
 MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow
 FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
 ####### install idl files
 
 artsincludedir = $(includedir)/arts
-artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl
+artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl \
+	artsversion.h
 
 ####### libsoundserver_idl, libkmedia2_idl (idl files as library)
 

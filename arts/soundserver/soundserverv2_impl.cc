@@ -28,10 +28,12 @@
 #include "audiosubsys.h"
 #include "debug.h"
 #include "soundserverv2_impl.h"
-
-using namespace Arts;
+#include "artsversion.h"
 
 #include "config.h"
+
+using namespace Arts;
+using namespace std;
 
 std::string SoundServerV2_impl:: audioMethod() {
 	return AudioSubSystem::the()->audioIO();
@@ -71,6 +73,10 @@ long SoundServerV2_impl::autoSuspendSeconds() {
 
 void SoundServerV2_impl::autoSuspendSeconds(long int newValue) {
 	autoSuspendTime = newValue;
+}
+
+std::string SoundServerV2_impl::version() {
+	return ARTS_VERSION;
 }
 
 #ifndef __SUNPRO_CC

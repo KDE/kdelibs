@@ -9,6 +9,8 @@
 - ensure DynamicCast(<some null object>) == Object::null()
 - implement StdFlowSystem::disconnectObject(...) (in synthschedule.cc)
 - try to fix autoSuspend in conjunction with full duplex
+- obsoleting: use V2 implementations even if user requests a normal
+  implementation, since they have a newer version
 
 ## aRts SoundServer
 
@@ -24,6 +26,7 @@
 - complain nicer when realtime rights not there
 - expand capabilities of shell utils (making them eventually as powerful as
   artscontrol, or better ;)
+- artsdsp should offer version information when invoked with -v
 
 ## KMedia2
 
@@ -42,8 +45,9 @@
 ## GUI Support
 
 - make a generic gui factory, make noatun and artscontrol use           *KDE2.2*
-  it for effect guis
+  it for effect guis (mostly done)
 - make it easier to use them as qt widgets (i.e. no extra window)       *KDE2.2*
+  (mostly done)
 - port visual objects (beginnings are in kdemultimedia/arts/gui)
 - hbox, vbox
 - gui generation
