@@ -20,7 +20,7 @@ class KRegExpEditor  :public QWidget
 Q_OBJECT
 
 public:
-  static KRegExpEditor* createEditor( QWidget* parent, const char* name );
+  static KRegExpEditor* createEditor( QWidget* parent, const char* name = 0);
   virtual QString regexp() = 0;
   virtual bool canUndo() const = 0;
   virtual bool canRedo() const = 0;
