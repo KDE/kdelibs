@@ -1548,7 +1548,7 @@ void HTTPProtocol::stat(const KURL& url)
       UDSEntry entry;
       UDSAtom atom;
       atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = url.filename();
+      atom.m_str = url.fileName();
       entry.append( atom );
 
       atom.m_uds = KIO::UDS_FILE_TYPE;

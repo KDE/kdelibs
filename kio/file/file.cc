@@ -704,7 +704,7 @@ void FileProtocol::stat( const KURL & url )
     }
 
     UDSEntry entry;
-    createUDSEntry( url.filename(), url.path(), entry );
+    createUDSEntry( url.fileName(), url.path(), entry );
 ///////// debug code
 
     KIO::UDSEntry::ConstIterator it = entry.begin();

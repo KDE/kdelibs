@@ -1329,7 +1329,7 @@ void KHTMLPart::slotSaveDocument()
 
   KURL srcURL( m_url );
 
-  if ( srcURL.filename(false).isEmpty() )
+  if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
   KFileDialog *dlg = new KFileDialog( QString::null, i18n("HTML files|* *.html *.htm"),
@@ -2593,7 +2593,7 @@ KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 
 void KHTMLPopupGUIClient::slotSaveLinkAs()
 {
-  if ( d->m_url.filename( false ).isEmpty() )
+  if ( d->m_url.fileName( false ).isEmpty() )
     d->m_url.setFileName( "index.html" );
 
   saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url );
