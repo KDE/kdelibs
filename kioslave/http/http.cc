@@ -801,7 +801,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.040699");
+  QString user_agent("Konqueror/1.9.040899");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
