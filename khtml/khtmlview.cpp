@@ -1064,29 +1064,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	if(d->typeAheadActivated)
 	{
 		// type-ahead find aka find-as-you-type
-		QString status;
 		if(_ke->key() == Key_BackSpace)
 		{
 			d->findString = d->findString.left(d->findString.length() - 1);
 
 			if(!d->findString.isEmpty())
 			{
-				if(d->findLinksOnly)
-				{
-					m_part->findText(d->findString, KHTMLPart::FindNoPopups |
-					                 KHTMLPart::FindLinksOnly, this);
-					status = i18n("Link found: \"%1\".");
-				}
-				else
-				{
-					m_part->findText(d->findString, KHTMLPart::FindNoPopups,
-					                 this);
-					status = i18n("Text found: \"%1\".");
-				}
-
-				m_part->findTextNext();
-				m_part->setStatusBarText(status.arg(d->findString.lower()),
-				                         KHTMLPart::BarDefaultText);
+				findAhead(false);
 			}
 			else
 			{
@@ -1113,38 +1097,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		}
 		else if(_ke->text().isEmpty() == false)
 		{
-			QString newFindString = d->findString + _ke->text();
-			if(d->findLinksOnly)
-			{
-				m_part->findText(newFindString, KHTMLPart::FindNoPopups |
-				                 KHTMLPart::FindLinksOnly, this);
-				if(m_part->findTextNext())
-				{
-					d->findString = newFindString;
-					status = i18n("Link found: \"%1\".");
-				}
-				else
-				{
-					KNotifyClient::beep();
-					status = i18n("Link not found: \"%1\".");
-				}
-			}
-			else
-			{
-				m_part->findText(newFindString, KHTMLPart::FindNoPopups, this);
-				if(m_part->findTextNext())
-				{
-					d->findString = newFindString;
-					status = i18n("Text found: \"%1\".");
-				}
-				else
-				{
-					KNotifyClient::beep();
-					status = i18n("Text not found: \"%1\".");
-				}
-			}
-			m_part->setStatusBarText(status.arg(newFindString.lower()),
-			                         KHTMLPart::BarDefaultText);
+			d->findString += _ke->text();
+
+			findAhead(true);
 
 			d->timer.start(3000, true);
 			_ke->accept();
@@ -1333,6 +1288,42 @@ void KHTMLView::findTimeout()
 	d->findString = "";
 	releaseKeyboard();
 	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
+}
+
+void KHTMLView::findAhead(bool increase)
+{
+	QString status;
+
+	if(d->findLinksOnly)
+	{
+		m_part->findText(d->findString, KHTMLPart::FindNoPopups |
+		                 KHTMLPart::FindLinksOnly, this);
+		if(m_part->findTextNext())
+		{
+			status = i18n("Link found: \"%1\".");
+		}
+		else
+		{
+			if(increase) KNotifyClient::beep();
+			status = i18n("Link not found: \"%1\".");
+		}
+	}
+	else
+	{
+		m_part->findText(d->findString, KHTMLPart::FindNoPopups, this);
+		if(m_part->findTextNext())
+		{
+			status = i18n("Text found: \"%1\".");
+		}
+		else
+		{
+			if(increase) KNotifyClient::beep();
+			status = i18n("Text not found: \"%1\".");
+		}
+	}
+
+	m_part->setStatusBarText(status.arg(d->findString.lower()),
+	                         KHTMLPart::BarDefaultText);
 }
 
 #endif // KHTML_NO_TYPE_AHEAD_FIND
@@ -1679,9 +1670,9 @@ void KHTMLView::focusNextPrevNode(bool next)
     else
         newFocusNode = doc->previousFocusNode(oldFocusNode);
 
-    // If there was previously no focus node and the user has scrolled the document, then instead of picking the first
-    // focusable node in the document, use the first one that lies within the visible area (if possible).
-    if (!oldFocusNode && newFocusNode && d->scrollBarMoved) {
+    // If the user has scrolled the document, then instead of picking the next focusable node in the document, use the
+    // first one that lies within the visible area (if possible).
+    if (newFocusNode && d->scrollBarMoved) {
 
       kdDebug(6000) << " searching for visible link" << endl;
 
