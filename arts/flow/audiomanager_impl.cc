@@ -167,8 +167,10 @@ public:
 		externalClient = true;
 	}
 
-	Synth_AMAN_PLAY_impl() : externalClient(false) { }
-
+	Synth_AMAN_PLAY_impl() : externalClient(false) {
+		_node()->virtualize("left",uplink._node(),"left");
+		_node()->virtualize("right",uplink._node(),"right");
+	}
 	void streamInit() {
 		if(externalClient)
 			assert(client.direction() == amPlay);
@@ -176,8 +178,6 @@ public:
 			client.direction(amPlay);
 
 		AudioManager_impl::the()->addAssignable(this);
-		_node()->virtualize("left",uplink._node(),"left");
-		_node()->virtualize("right",uplink._node(),"right");
 		uplink.start();
 	}
 	void streamEnd() {
@@ -214,7 +214,10 @@ public:
 		externalClient = true;
 	}
 
-	Synth_AMAN_RECORD_impl() : externalClient(false) { }
+	Synth_AMAN_RECORD_impl() : externalClient(false) {
+		_node()->virtualize("left",downlink._node(),"left");
+		_node()->virtualize("right",downlink._node(),"right");
+	}
 
 	void streamInit() {
 		if(externalClient)
@@ -223,8 +226,6 @@ public:
 			client.direction(amRecord);
 
 		AudioManager_impl::the()->addAssignable(this);
-		_node()->virtualize("left",downlink._node(),"left");
-		_node()->virtualize("right",downlink._node(),"right");
 		downlink.start();
 	}
 	void streamEnd() {
