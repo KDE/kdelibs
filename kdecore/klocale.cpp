@@ -134,6 +134,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
       // HPB: Only run splitLocale on the environment variables..
       QStringList langs;
 
+      langs << QFile::decodeName( ::getenv("LC_CTYPE") );
       langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LC_ALL") );
       langs << QFile::decodeName( ::getenv("LANG") );
