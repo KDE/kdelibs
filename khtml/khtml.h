@@ -63,10 +63,12 @@ class KJScript;
 
 
 /**
- * This class is khtml's main class. It features an almost complete
- * web browser, and html renderer.
+ * An HTML rendering and browsing widget.
  *
- * The easiest way to use this class (if you just want to display a HTML
+ * This class is khtml's main class. It features an almost complete
+ * web browser and html renderer.
+ *
+ * The easiest way to use this class (if you just want to display an HTML
  * page at some URL) is the following:
  *
  * <pre>
@@ -77,19 +79,19 @@ class KJScript;
  * w->show();
  * </pre>
  *
- * By default the Widget behaves as a full browser, so clicking on some link
- * on the page you just opened will lead yu to that page. This is inconvenient,
- * if you want to use the widget to display for example formatted emails, but
+ * By default the widget behaves as a full browser, so clicking on some link
+ * on the page you just opened will lead you to that page. This is inconvenient,
+ * if you want to use the widget to display, for example, formatted emails, but
  * don't want the widget to open the site in this window in case someone
  * clicks on an embedded link. In this case just use
- * @ref setFollowsLinks(false). You will then get a Signal @ref urlClicked()
- * instead of KHTMLWidget following the links directly.
+ * @ref setFollowsLinks(false). You will then get a signal @ref urlClicked()
+ * instead of @ref KHTMLWidget following the links directly.
  *
  * By default Java and JavaScript support is disabled. You can enable it by
  * using the @ref enableJava() and @ref enableJScript() methods.
  *
  * Some apps want to write their HTML code directly into the widget instead of
- * it opening an url. You can also do that in the following way:
+ * it opening a URL. You can also do that in the following way:
  *
  * <pre>
  * QString myHTMLCode = ...;
@@ -101,11 +103,12 @@ class KJScript;
  * </pre>
  *
  * You can do as many calls to write as you want. But there are two @ref write()
- * methods, one accepting a @ref QString one accepting a char * argument. These
- * should not get mixed, since the method usnig the char * argument does an
+ * methods, one accepting a @ref QString one accepting a @p char * argument. These
+ * should not get mixed, since the method using the @p char * argument does an
  * additional decoding step to convert the written data to Unicode.
  *
- * If you derive from KHTMLWidget you must overload the method @ref #createFrame
+ * If you derive from @ref KHTMLWidget you must overload the method
+ * @ref createFrame()
  *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
@@ -124,12 +127,12 @@ class KHTMLWidget : public QScrollView
 public:
 
     /**
-     * Constructs a KHTMLWidget
+     * Construct a @ref KHTMLWidget
      */
     KHTMLWidget( QWidget *parent=0, const char *name=0 );
-
+    
     /**
-     * This constructor is used internally to realize Frames
+     * This constructor is used internally to realize frames.
      */
     KHTMLWidget( QWidget *parent, KHTMLWidget *parentWidget, QString name);
     virtual ~KHTMLWidget();
@@ -140,18 +143,19 @@ protected:
 public:
 
     /**
-     * Tell the widget to display the HTML page referred to by _url.
+     * Tell the widget to display the HTML page referred to by @p _url.
      *
      * @param xoffset, yoffset Show the page at the specified offset after
      *        loading it.
-     * @param _post_data used internally for HTML post request
+     * @param _post_data Used internally for HTML post request.
      */
     virtual void openURL( const QString &_url, bool _reload = false,
 		 int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
 
     /**
-     * should the widget follow links automatically, if you click on them?
-     * Default is true.
+     * Should the widget follow links automatically, if you click on them?
+     *
+     * Default is @p true.
      */
     void setFollowsLinks( bool follow );
     /** does the widget follow links automatically?
@@ -159,14 +163,20 @@ public:
     bool followsLinks();
 
     /**
-     * should images be loaded automatically? Default is true.
-     * (not implemented at the moment)
+     * Should images be loaded automatically? Default is @p true.
+     *
+     * Not implemented at the moment.
      */
     void enableImages( bool enable );
+    /**
+     * @return @p true if images will be loaded automatically.
+     **/
     bool imagesEnabled() const;
 
     /**
-     * Enable disable Java. Default is disabled.
+     * Enable/disable Java.
+     *
+     * Default is disabled.
      */
     void enableJava( bool enable );
     /**
@@ -175,7 +185,9 @@ public:
     bool javaEnabled() const;
 
     /**
-     * enable/disable JScript. Default is disabled.
+     * Enable/disable JScript.
+     *
+     * Default is disabled.
      */
     void enableJScript( bool enable );
     /**
@@ -184,103 +196,119 @@ public:
     bool jScriptEnabled() const;
 
     /**
-     * @return the parent KHTMLWidget of this one or 0L is this is the top level
+     * @return The parent @ref KHTMLWidget of this one or 0L is this is the top level
      * browser. Used for frames.
      */
     KHTMLWidget* parentFrame() { return _parent; }
 
     /**
-     * Returns the top level frame. Never returns 0L.
+     * Retrieve the top level frame.
+     *
+     * Never returns 0L.
      */
     KHTMLWidget* topFrame();
 
     /**
-     * Searches for a KHTMLWidget with a specific name as mentioned in the
+     * Searche for a @ref KHTMLWidget with a specific name as mentioned in the
      * constructor.
      *
-     * @see #setName
-     * @see #name
+     * @see setName()
+     * @see name()
      */
     KHTMLWidget* findFrame( const QString &_name );
 
     /**
-     * @return the name of this frame.
+     * @return The name of this frame.
      *
-     * @see #setName
-     * @see #name
-     * @see #findView
+     * @see setName()
+     * @see name()
+     * @see findView()
      */
     virtual QString frameName() { return m_strFrameName; }
 
     /**
-     * This function is used by @ref #newView. Its only purpose is to create
-     * a new instance of this class. If you derived from KHTMLWidget you must
-     * overload this function to make shure that all frames are of the same
+     * Create a new instance.
+     *
+     * This function is used by @ref newView(). Its only purpose is to create
+     * a new instance of this class. If you derived from @ref KHTMLWidget you must
+     * overload this function to make sure that all frames are of the same
      * derived class.
      */
     virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
 
     /**
-     * This function is mainly used internally. It gets the frame with name _name,
+     * This function is mainly used internally.
+     *
+     * It gets the frame with name @p _name,
      *  if it exists and is a child of this widget, otherwise return 0.
      */
     KHTMLWidget *getFrame( QString _name);
 
     /**
-     * Clears the widget and prepares it for new content.
+     * Clear the widget and prepares it for new content.
+     *
      * If you want @ref url() to return
      * for example "file:/tmp/test.html", you can use the following code:
      * <PRE>
      * view->begin( QString("file:/tmp/test.html" ) );
      * </PRE>
      *
-     * @param _url is the url of the document to be displayed.  Even if you
+     * @param _url The URL of the document to be displayed.  Even if you
      * are generating the HTML on the fly, it may be useful to specify
      * a directory so that any pixmaps are found.
-     * @param _dx is the initial horizontal scrollbar value. Usually you don't
+     * @param _dx The initial horizontal scrollbar value. Usually you don't
      * want to use this.
-     * @param _dy is the initial vertical scrollbar value. Usually you don't
+     * @param _dy The initial vertical scrollbar value. Usually you don't
      * want to use this.
      *
-     * All child frames and the old document are removed if you call this method.
+     * All child frames and the old documents are removed if you call this method.
      */	
     virtual void begin( const QString &_url = 0L, int _dx = 0, int _dy = 0 );
 
     /**
-     * Writes another part of the HTML code to the widget. You may call
-     * this function many times in sequence. But remember: The less calls
+     * Write another part of the HTML code to the widget.
+     *
+     * You may call
+     * this function many times in sequence. But remember: The fewer calls
+     * you make,
      * the faster the widget is.
      *
-     * The html code is send through a decoder, which decodes the stream to
-     * unicode.
+     * The HTML code is sent through a decoder, which decodes the stream to
+     * Unicode.
      *
-     * Attention: Don't mix calls to write( const char *) with calls
-     * to write( const QString & ). The result might not be what you want.
+     * Attention: Don't mix calls to @ref write( const char *) with calls
+     * to @ref write( const QString & ). The result might not be what you want.
      */
     void write( const char * );
 
     /**
-     * Writes another part of the HTML code to the widget. You may call
-     * this function many times in sequence. But remember: The less calls
+     * Write another part of the HTML code to the widget.
+     *
+     * You may call
+     * this function many times in sequence. But remember: The fewer calls
+     * you make,
      * the faster the widget is.
      */
     void write( const QString & );
 
     /**
-     * Call this after your last call to @ref #write.
+     * Call this after your last call to @ref write().
      */
     void end();
 
     /**
-     * Print current HTML page layouted for the printer.
-     * (not implemented at the moment)
+     * Print current HTML page laid out for the printer.
+     *
+     * Not implemented at the moment.
      */
     // ### add margins???
     void print(QPainter *, int pageHeight, int pageWidth);
 
     /**
-     * Selects all text between ( _x1, _y1 ) and ( _x2, y2 ).  The selection
-     * area selects text line by line, NOT by bounding rectangle.
+     * Select all text between ( _x1, _y1 ) and ( _x2, y2 ). 
+     *
+     * The selection
+     * area selects text line by line, @em not by bounding rectangle.
      */
     //virtual void selectText( int _x1, int _y1, int _x2, int _y2 );
 
@@ -290,7 +318,9 @@ public:
     virtual QString selectedText();
 
     /**
-     * Has the user selected any text?  Call @ref #selectedText to
+     * Has the user selected any text? 
+     *
+     * Call @ref selectedText() to
      * retrieve the selected text.
      *
      * @return true if there is text selected.
@@ -309,69 +339,78 @@ public:
     void findTextBegin();
 
     /**
-     * Find the next occurrance of the expression.
+     * Find the next occurrence of the expression.
      */
     bool findTextNext( const QRegExp &exp );
 
     /**
-     * Checks out whether there is a URL under the point and returns a pointer
+     * Check out whether there is a URL under the pointer and return a pointer
      * to this URL or 0L if there is none.
      *
-     * @param _point the point to test for the presence of a URL.  The
+     * @param _point The point to test for the presence of a URL.  The
      * point is relative to this widget.
      */
     const QString &url( const QPoint &_point ) const;
 
     /**
-     * @return the width of the parsed HTML code. Remember that
+     * @return The width of the parsed HTML code. Remember that
      * the documents width depends on the width of the widget.
      */
     int docWidth() const;
 
     /**
-     * @return the height of the parsed HTML code. Remember that
-     * the documents height depends on the width of the widget.
+     * @return The height of the parsed HTML code. Remember that
+     * the document's height depends on the width of the widget.
      */
     int docHeight() const;
 
     /**
-     * @return the url of this document
+     * @return The URL of this document.
      */
     const QString &url() { return m_strURL; }
 
     /**
-     * @return the base URL of this document
+     * @return The base URL of this document.
      *
-     * The base url is ususally set by an <base url=...> tag in the document head.
+     * The base URL is usually set by a <BASE URL=...> tag in
+     *  the document head.
      */
     const QString &baseUrl();
 
     /**
-     * Mainly used internally. Sets the document's base URL
+     * Set the document's base URL.
+     *
+     * Mainly used internally. 
      */
     void setBaseUrl(const QString &base);
 
     /**
-     * @return the base target of this document
-     * The base target is ususally set by an <base target=...>
+     * @return The base target of this document.
+     * The base target is usually set by a <BASE TARGET=...>
      * tag in the document head.
      */
     const QString &baseTarget() { return _baseTarget; }
     /**
-     * Mainly used internally. Sets the document's base target.
+     * Set the document's base target.
+     *
+     * Mainly used internally. 
      */
     void setBaseTarget(const QString &target) { _baseTarget = target; }
 
     /**
-     * Find the anchor named '_name'. If the anchor is found, the widget
-     * scrolls to the closest position. Returns TRUE if the anchor has
-     * been found.
+     * Find the anchor named @p _name.
+     *
+     * If the anchor is found, the widget
+     * scrolls to the closest position. 
+     * @return @p true if the anchor has been found.
      */
     virtual bool gotoAnchor( const QString &_name );
 
     /**
-     * Causes the widget contents to scroll automatically.  Call
-     * @ref #stopAutoScrollY to stop.  Stops automatically when the
+     * Causes the widget contents to scroll automatically.
+     *
+     *  Call
+     * @ref stopAutoScrollY() to stop.  Stops automatically when the
      * top or bottom of the document is reached.
      *
      * @param _delay Time in milliseconds to wait before scrolling the
@@ -388,13 +427,13 @@ public:
     //void stopAutoScrollY();
 
     /**
-     * Returns if the widget is currently auto scrolling.
+     * Is the widget currently auto scrolling.
      */
     bool isAutoScrollingY()
     { return autoScrollYTimer.isActive(); }
 
     /**
-     * @return TRUE if the currently displayed document is a frame set.
+     * @return @p true  if the currently displayed document is a frame set.
      */
     bool isFrameSet();
 
@@ -405,49 +444,51 @@ public:
     void setFrameSelected(KHTMLWidget *w = 0);
 
     /**
-     * @return a pointer to the currently selected frame if
-     * we are displaying a frameset, otherwise 0L. If this widget is the
-     * selected one then @ref htmlView is returned. Otherwise all
+     * @return A pointer to the currently selected frame if
+     * we are displaying a frameset, otherwise 0L.
+     *
+     * If this widget is the
+     * selected one then @ref htmlView() is returned. Otherwise all
      * @ref HTMLFrameSet instances are asked.
      */
     KHTMLWidget* selectedFrame();
 
     /**
-     * Sets point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size>
+     * Set point sizes to be associated with the HTML-sizes used in
+     * <FONT SIZE=HTML-Font-Size>
      *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+     * HTML-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
     void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes=0);
 
     /**
-     * Gets point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size>
+     * Retrieve point sizes to be associated with the HTML-sizes used in
+     * <FONT SIZE=HTML-Font-Size>
      *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+     * HTMl-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
     void fontSizes(int *newFontSizes, int *newFixedFontSizes=0);
 
     /**
-     * Resets the point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size> to their default.
+     * Reset the point sizes to be associated with the HTML-sizes used in
+     * <FONT SIZE=HTML-Font-Size> to their default.
      *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+     * HTML-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
     void resetFontSizes();
 
     /**
-     * Sets the standard font style.
+     * Set the standard font style.
      *
-     * @param name is the font name to use for standard text.
+     * @param name The font name to use for standard text.
      */
     void setStandardFont( const QString &name );
 
     /**
-     * Sets the fixed font style.
+     * Set the fixed font style.
      *
-     * @param name is the font name to use for fixed text, e.g.
-     * the <tt>&lt;pre&gt;</tt> tag.
+     * @param name The font name to use for fixed text, e.g.
+     * the < PRE >; tag.
      */
     void setFixedFont( const QString &name );
 
@@ -456,20 +497,20 @@ public:
      *
      * Any <META ...> setting charsets overrides this setting
      * as long as override isn't true.
-     * @return TRUE if successfull
+     * @return @p true if successful.
      *
-     * (not implemented at the moment)
+     * Not implemented at the moment.
      */
     bool setCharset(const QString &name, bool override = false);
 
     /**
-     * Sets the default background color to use when one isn't specified
-     * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
+     * Set the default background color to use when one isn't specified
+     * explicitly by <BODY BGCOLOR=...>
      */
     void setDefaultBGColor( const QColor &col );
 
     /**
-     * Sets the default text colors.
+     * Set the default text colors.
      */
     void setDefaultTextColors( const QColor &normal, const QColor &link,
 			       const QColor &vlink );
@@ -480,83 +521,94 @@ public:
     void setUnderlineLinks( bool ul );
 
     /**
-     * Sets the cursor to use when the cursor is on a link.
+     * Set the cursor to use when the cursor is on a link.
      */
     void setURLCursor( const QCursor &c )
     { linkCursor = c; }
 
     /**
-     * Returns the cursor which is used when the cursor is on a link.
+     * Retrieve the cursor which is used when the cursor is on a link.
      */
     const QCursor& urlCursor() { return linkCursor; }
 
     /*
      * If an Element needs a file from the web, it
      * calls this function.
-     * if update is true, the Element will be continously updated
-     * as the file is loaded (via the data function)
+     *
+     * @param update If @p true, the Element will be continously updated
+     * as the file is loaded (via the data function).
      */
     void requestFile( HTMLURLRequester *_obj, const QString &_url,
 		      bool update = false );
 
-    /*
-     * Cancels a previous @ref requestFile.
-     */
+    /**
+     * Cancel a previous @ref requestFile().
+     **/
     void cancelRequestFile( HTMLURLRequester *_obj );
+    /**
+     * Cancel a previous @ref requestFile().
+     **/
     void cancelRequestFile( const QString &_url );
 
     /**
-     * cancels all file requests. Called from @see #slotCancel()
+     * Cancel all file requests.
+     *
+     * Called from @see slotCancel().
      */
     void cancelAllRequests();
 
     /**
-     * Function used to save the current html-page into the datastream
-     * This does only work, if the page has a valid URL, pages
-     * filled with the write() method are not saveable, and might give
+     * Function used to save the current HTML page into the datastream.
+     *
+     * This only works if the page has a valid URL.  Pages
+     * filled with the @ref write() method are not saveable, and might give
      * unwanted results.
      */
     virtual void saveState( QDataStream &stream );
 
     /**
-     * restore a page previously saved with @ref saveState()
+     * Restore a page previously saved with @ref saveState().
      */
     virtual void restoreState( QDataStream &stream );
 
     /**
-     * hook to get the Document. Used eg by jscript to manipulate the document.
-     * See also the <a href="http://www.w3.org/TR/REC-DOM-Level-1/">
-     * DOM Level 1 recommodation</a> of the <a href=http://www.w3.org>W3C</a>.
+     * Hook to get the Document.
+     *
+     * Used eg by jscript to manipulate the document.
+     * See also the
+     * DOM Level 1 recommodation, @ref http://www.w3.org/TR/REC-DOM-Level-1/
+     * f the W3C, @ref http://www.w3.org
      */
     DOM::HTMLDocument htmlDocument() const { return document; }
 
     /**
-     * @return the JavaScript engine, or 0 if JScript is disabled.
+     * @return The JavaScript engine, or 0 if JScript is disabled.
      */
     KJScript *jScript();
 
     /**
-     * Return the job id of the KIOJob responsible for loading the current
-     * document (or 0 if none)
+     * @return The job id of the @ref KIOJob responsible for loading the current
+     * document (or 0 if none).
+     *
      * @see m_jobId
      */
     int jobId() const { return m_jobId; }
 
     /**
-     * set a margin in x direction
+     * Set a margin in x direction.
      */
     void setMarginWidth(int x) { _marginWidth = x; }
     /**
-     * @return the margin With
+     * @return The margin Width.
      */
     int marginWidth() { return _marginWidth; }
 
     /**
-     * set a margin in y direction
+     * Set a margin in y direction.
      */
     void setMarginHeight(int y) { _marginHeight = y; }
     /**
-     * @return the margin height
+     * @return The margin height.
      */
     int marginHeight() { return _marginHeight; }
 
@@ -566,20 +618,23 @@ public:
 
 public slots:
     /**
-     * stops loading the current document
+     * Stop loading the current document.
      */
     virtual void slotStop();
     /**
-     * reload the current document. Will not reload frames contained in this
+     * Reload the current document.
+     *
+     * Will not reload frames contained in this
      * document in case it is a frameset.
      */
     virtual void slotReload();
     /**
-     * reload the current document including all child frames.
+     * Reload the current document including all child frames.
      */
     virtual void slotReloadFrames();
     /**
-     * used internally to tell the widget, that a form has been submitted.
+     * Used internally to tell the widget that a form has been submitted.
+     * @internal
      */
     void slotFormSubmitted( const QString &_method, const QString &_url,
 			    const char *_data, const QString &_target );
@@ -597,56 +652,60 @@ signals:
     void error( int _err, const char* _text );
     /**
      * Emitted if a link is pressed which has an invalid target,
-     * or the target <tt>_blank</tt>.
+     * or the target @p _blank.
      */
     void newWindow( const QString &_url );
 
     /**
-     * emitted, after @see #begin() has been called.
+     * Emitted after @see begin() has been called.
      */
     void started( const QString &_url );
     /**
-     * emitted, when the page (including all children) has been completely loaded.
+     * Emitted when the page (including all children) has been completely loaded.
      */
     void completed();
     /**
-     * emitted, when the loading o the page has been canceled.
+     * Emitted when the loading of the page has been canceled.
      */
     void canceled();
 
     /**
-     * this signal is only emitted, when @see followLinks() is set to false.
+     * Emitted when a URL has been clicked.
+     *
+     * Only emitted, when @see followLinks() is set to @p false.
      * In this case the app has to handle the request.
      */
     void urlClicked( const QString &url , const QString &target, int button);
 
     /**
-     * Signals that the mouse cursor has moved on or off a URL.
+     * Emitted when the mouse cursor moves on or off a URL.
      *
-     * @param _url is the URL that the mouse cursor has moved onto.
-     * _url is null if the cursor moved off a URL.
+     * @param _url The URL that the mouse cursor has moved onto;
+     * is null if the cursor moved off a URL.
      */
     void onURL( const QString &_url );
 
     /**
-     * If the user pressed the right mouse button over a URL than _url
-     * points to this URL, otherwise _url will be null.
+     * Emitted when the user clicks on a URL with the right mouse button.
+     *
+     * If the user pressed the right mouse button over a URL than @p _url
+     * points to this URL, otherwise @p _url will be null.
      * The position is in global coordinates.
      */
     void popupMenu( const QString &_url, const QPoint & );
 
     /**
-     * This signal is emitted whenever the Widget wants to
+     * This signal is emitted whenever the widget wants to
      * change the window's title. Usually this is the text
-     * enclosed in <tt>&lt;title&gt;....&lt;/title&gt;</tt>.
+     * enclosed in <TITLE>....<TITLE>.
      */
     void setTitle( const QString &);
 
     /**
      * Emitted if the user presses the submit button.
      *
-     * @param _url is the <form action=...> value
-     * @param _method is the <form method=...> value
+     * @param _url The <FORM ACTION=...> value
+     * @param _method The <FORM METHOD=...> value
      */
     void formSubmitted( const QString &_method, const QString &_url,
 			const char *_data, const QString &_target );
@@ -680,7 +739,7 @@ protected slots:
     //void slotAutoScrollY();
 
     /*
-     * INTERNAL
+     * INTERNAL 
      *
      * Used to update the selection when the user has caused autoscrolling
      * by dragging the mouse out of the widget bounds.
@@ -721,7 +780,7 @@ protected:
 
     /**
      * This function emits the 'doubleClick' signal when the user
-     * double clicks a &lt;a href=...&gt; tag.
+     * double clicks a <A HREF=...> tag.
      */
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
 

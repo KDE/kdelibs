@@ -35,7 +35,7 @@
  * point (hopefully before KDE-2.0 provide support for cascading style sheets
  * (CSS) and JavaScript.
  *
- * If you want to add to your application a widget that oly needs simple text
+ * If you want to add to your application a widget that only needs simple text
  * browsing, you can also use the @ref KTextBrowser widget in kdeui.
  *
  * @ref KHTMLWidget :
@@ -58,3 +58,8 @@
 namespace DOM
 {
 };
+
+
+
+
+
