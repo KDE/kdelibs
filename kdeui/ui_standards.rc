@@ -79,6 +79,7 @@
     <Action name="move_redo"/>
     <MergeLocal name="move_undo_merge"/>
     <Separator/>
+    <Action name="move_roll"/>
     <Action name="move_end_turn"/>
     <MergeLocal name="move_turn_merge"/>
     <Separator/>
