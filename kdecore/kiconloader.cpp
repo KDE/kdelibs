@@ -325,7 +325,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
-    static QString png_ext = QString::fromLatin1(".png");
+    static QString &png_ext = KGlobal::staticQString(".png");
 
     icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
     if (icon.isValid())
@@ -334,7 +334,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     if (icon.isValid())
       return icon;
 
-    static QString xpm_ext = QString::fromLatin1(".xpm");
+    static QString &xpm_ext = KGlobal::staticQString(".xpm");
     icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchExact);
     if (icon.isValid())
       return icon;
