@@ -137,6 +137,9 @@ public:
     int minFontSize() const;
     int mediumFontSize() const;
 
+    bool jsErrorsEnabled() const;
+    void setJSErrorsEnabled(bool enabled);
+
     const QString &encoding() const;
 
     // Color settings

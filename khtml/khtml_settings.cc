@@ -72,7 +72,8 @@ public:
     bool enforceCharset : 1;
     bool m_bAutoLoadImages : 1;
     bool m_formCompletionEnabled : 1;
-    bool m_autoDelayedActionsEnabled: 1;
+    bool m_autoDelayedActionsEnabled : 1;
+    bool m_jsErrorsEnabled : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -361,6 +362,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
     d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
     d->m_autoDelayedActionsEnabled = config->readBoolEntry ("AutoDelayedActions", true);
+    d->m_jsErrorsEnabled = config->readBoolEntry("ReportJSErrors", true);
   }
 
   // Colors
@@ -815,3 +817,19 @@ bool KHTMLSettings::isAutoDelayedActionsEnabled() const
 {
   return d->m_autoDelayedActionsEnabled;
 }
+
+bool KHTMLSettings::jsErrorsEnabled() const
+{
+  return d->m_jsErrorsEnabled;
+}
+
+void KHTMLSettings::setJSErrorsEnabled(bool enabled)
+{
+  d->m_jsErrorsEnabled = enabled;
+  // save it
+  KConfig *config = KGlobal::config();
+  config->setGroup("HTML Settings");
+  config->writeEntry("ReportJSErrors", enabled);
+  config->sync();
+}
+

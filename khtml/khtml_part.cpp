@@ -891,6 +891,10 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 #define KJS_VERBOSE
 
 KJSErrorDlg *KHTMLPart::jsErrorExtension() {
+  if (!d->m_settings->jsErrorsEnabled()) {
+    return 0L;
+  }
+
   if (parentPart()) {
     return parentPart()->jsErrorExtension();
   }
@@ -929,14 +933,18 @@ void KHTMLPart::removeJSErrorExtension() {
 
 void KHTMLPart::disableJSErrorExtension() {
   removeJSErrorExtension();
-  // FIXME
+  // These two lines are really kind of hacky, and it sucks to do this inside
+  // KHTML but I don't know of anything that's reasonably easy as an alternative
+  // right now.  It makes me wonder if there should be a more clean way to
+  // contact all running "KHTML" instance as opposed to Konqueror instances too.
+  d->m_settings->setJSErrorsEnabled(false);
+  DCOPClient::mainClient()->send("konqueror*", "KonquerorIface", "reparseConfiguration()", QByteArray());
 }
 
 void KHTMLPart::jsErrorDialogContextMenu() {
   KPopupMenu *m = new KPopupMenu(0L);
   m->insertItem(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
-  int id = m->insertItem(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
-  m->setItemEnabled(id, false);
+  m->insertItem(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
   m->popup(QCursor::pos());
 }
 
