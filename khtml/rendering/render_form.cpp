@@ -385,7 +385,23 @@ void RenderSubmitButton::layout()
     static_cast<QPushButton*>(m_widget)->setText(raw);
     static_cast<QPushButton*>(m_widget)->setFont(style()->font());
 
-    RenderButton::layout();
+    // this is 1:1 sizehint of QLineEdit/RenderLineEdit, to avoid
+    // that the button is a lot larger in height than a lineedit
+    QFontMetrics fm = fontMetrics( m_widget->font() );
+    m_widget->constPolish();
+    int h = fm.height() + 8;
+    int w = fm.width( raw ) + 2*fm.width( ' ' );
+    if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
+        h = 22;
+    QSize s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
+
+    applyLayout(s.width(), s.height());
+    if (isPositioned()) {
+	calcAbsoluteHorizontal();
+	calcAbsoluteVertical();
+    }
+
+    setLayouted();
 }
 
 QString RenderSubmitButton::defaultLabel() {
