@@ -2,7 +2,7 @@
 
 INCLUDES = $(all_includes)
 
-SUBDIRS = . auth_CRAM-MD5 auth_PLAIN
+SUBDIRS = . auth_PLAIN
 
 lib_LTLIBRARIES = libksasl.la
 libksasl_la_LDFLAGS = -module $(KDE_PLUGIN)
