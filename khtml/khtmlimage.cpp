@@ -27,6 +27,7 @@
 #include <kio/job.h>
 #include <kglobal.h>
 #include <kinstance.h>
+#include <kaction.h>
 
 extern "C"
 {
@@ -130,8 +131,11 @@ void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
 }
 
 void KHTMLImage::slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u,
-                                const QString &mime, mode_t mode )
+                                const QString &, mode_t mode )
 {
+    KAction *encodingAction = cl->actionCollection()->action( "setEncoding" );
+    if ( encodingAction )
+        cl->actionCollection()->take( encodingAction );
     emit m_ext->popupMenu( cl, pos, u, m_mimeType, mode );
 }
 
