@@ -29,6 +29,7 @@
 #include <ksock.h>
 #include <kurl.h>
 #include <kio/slavebase.h>
+#include <kmdcodec.h>
 
 class DCOPClient;
 
