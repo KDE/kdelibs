@@ -1430,7 +1430,7 @@ KMimeMagic::process(const QString & fn)
 		resultBuf = MIME_BINARY_UNREADABLE;
 		return;
 	}
-        if (tagbytes = tagmagic(buf, nbytes)) {
+        if ((tagbytes = tagmagic(buf, nbytes))) {
 		// Read buffer at new position
 		lseek(fd, tagbytes, SEEK_SET);
 		nbytes = read(fd, (char*)buf, HOWMANY);
