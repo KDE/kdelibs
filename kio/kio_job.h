@@ -14,8 +14,10 @@
 #include <time.h>
 
 class KIOSimpleProgressDlg;
-class KIOListProgressDlg;
 class KIOLittleProgressDlg;
+
+class KIOListViewItem;
+class KIOListProgressDlg;
 
 class QSocketNotifier;
 class QDialog;
@@ -35,8 +37,8 @@ class QDialog;
 *
 * @short A main class for doing IO operations.
 */ 
-class KIOJob : public QObject, public KIOJobBase
-{
+class KIOJob : public QObject, public KIOJobBase {
+
   Q_OBJECT
 
 public:
@@ -45,6 +47,7 @@ public:
   virtual ~KIOJob();
   
   int id() { return m_id; }
+  QTime getRemainingTime() { return m_RemainingTime; }
   
   enum GUImode { NONE, SIMPLE, LIST, LITTLE };
 
@@ -228,9 +231,7 @@ public:
    */
   static QString convertSize( int size );
 
-  friend KIOSimpleProgressDlg;
-  friend KIOListProgressDlg;
-  friend KIOLittleProgressDlg;
+  friend KIOListViewItem;
 
 signals:
 
@@ -278,6 +279,38 @@ signals:
    * @param  to    a destination name.
    */
   void sigCopying(int id, const char *from, const char *to );
+
+  /**
+   * Directory is being scanned.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dir   a name of scanned directory.
+   */
+  void sigScanningDir( int id, const char *dir );
+
+  /**
+   * Directory is being made.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  dir   a name of created directory.
+   */
+  void sigMakingDir( int id, const char *dir );
+
+  /**
+   * Fetching has been started.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  url   a name of fetched file.
+   */
+  void sigGettingFile( int id, const char *url );
+
+  /**
+   * Deleting has been started.
+   *
+   * @param  id    id number of this KIOJob.
+   * @param  url   a name of deleted file.
+   */
+  void sigDeletingFile( int id, const char *url );
 
   /**
    * KIOJob can / cannot be resumed.
@@ -338,6 +371,16 @@ signals:
    * @param  bytes  processed size in bytes.
    */
   void sigProcessedSize( int id, unsigned long bytes );
+
+  /**
+   * Already processed size in percent.
+   * This is different from sigProcessedSize(), because it is not emited
+   * everytime the processed size changes, but only when percent changes.
+   *
+   * @param  id       id number of this KIOJob.
+   * @param  percent  processed size in percent.
+   */
+  void sigPercent( int id, unsigned long percent );
 
   /**
    * Number of already transfered files.
@@ -438,6 +481,8 @@ protected:
   QTime m_RemainingTime;
   bool m_bStalled;
 
+  unsigned long m_iPercent;
+
   bool m_bCanResume;
   QString m_strFrom;
   QString m_strTo;
@@ -457,25 +502,25 @@ protected:
   static int s_id;
 
   static QMap<int,KIOJob*>* s_mapJobs;
-  static KIOListProgressDlg* m_pListProgressDlg;
+  static KIOListProgressDlg *m_pListProgressDlg;
 };
 
 
 /**
  * Implements a "last recently used" algorithm.
  */
-class KIOSlavePool
-{
+class KIOSlavePool {
 
 public:
 
   KIOSlavePool() { }
   
   KIOSlave* slave( const char *_protocol );
-  KIOSlave* slave( const char *_protocol, const char *_host, const char *_user,
-		const char *_pass);
+  KIOSlave* slave( const char *_protocol, const char *_host,
+		   const char *_user, const char *_pass);
 
-  void addSlave( KIOSlave *_slave, const char *_protocol, const char *_host,
+  void addSlave( KIOSlave *_slave,
+		 const char *_protocol, const char *_host,
 		 const char *_user, const char *_pass );
   
   static KIOSlavePool* self();
