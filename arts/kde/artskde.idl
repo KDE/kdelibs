@@ -1,0 +1,12 @@
+#include <kmedia2.idl>
+
+module Arts {
+
+/*
+ * notification proxy for floats, used internally!
+ */
+interface KFloatWatchProxy {
+	attribute float value;
+};
+
+};
