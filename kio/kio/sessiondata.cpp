@@ -35,13 +35,12 @@
 #include <kio/http_slave_defaults.h>
 
 #include "sessiondata.h"
+#include "sessiondata.moc"
 
+namespace KIO {
 
-
-using namespace KIO;
-
-/***************************** KIO::SessionData::AuthData ************************/
-struct KIO::SessionData::AuthData
+/***************************** SessionData::AuthData ************************/
+struct SessionData::AuthData
 {
 
 public:
@@ -66,26 +65,25 @@ public:
     bool persist;
 };
 
-/************************* KIO::SessionData::AuthDataList ****************************/
-class KIO::SessionData::AuthDataList : public QPtrList<KIO::SessionData::AuthData>
+/************************* SessionData::AuthDataList ****************************/
+class SessionData::AuthDataList : public QPtrList<SessionData::AuthData>
 {
 public:
     AuthDataList() { setAutoDelete(true); }
     ~AuthDataList() { purgeCachedData(); }
 
-    void addData( KIO::SessionData::AuthData* );
+    void addData( SessionData::AuthData* );
     void removeData( const QCString& );
 
-private:
     bool pingCacheDaemon();
-    void registerAuthData( KIO::SessionData::AuthData* );
-    void unregisterAuthData( KIO::SessionData::AuthData* );
+    void registerAuthData( SessionData::AuthData* );
+    void unregisterAuthData( SessionData::AuthData* );
     void purgeCachedData();
 };
 
-void KIO::SessionData::AuthDataList::addData( KIO::SessionData::AuthData* d )
+void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 {
-    QPtrListIterator<KIO::SessionData::AuthData> it ( *this );
+    QPtrListIterator<SessionData::AuthData> it ( *this );
     for ( ; it.current(); ++it )
     {
         if ( it.current()->isKeyMatch( d->key ) )
@@ -95,9 +93,9 @@ void KIO::SessionData::AuthDataList::addData( KIO::SessionData::AuthData* d )
     append( d );
 }
 
-void KIO::SessionData::AuthDataList::removeData( const QCString& gkey )
+void SessionData::AuthDataList::removeData( const QCString& gkey )
 {
-    QPtrListIterator<KIO::SessionData::AuthData> it( *this );
+    QPtrListIterator<SessionData::AuthData> it( *this );
     for( ; it.current(); ++it )
     {
         if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
@@ -108,7 +106,7 @@ void KIO::SessionData::AuthDataList::removeData( const QCString& gkey )
     }
 }
 
-bool KIO::SessionData::AuthDataList::pingCacheDaemon()
+bool SessionData::AuthDataList::pingCacheDaemon()
 {
     KDEsuClient client;
     int sucess = client.ping();
@@ -121,7 +119,7 @@ bool KIO::SessionData::AuthDataList::pingCacheDaemon()
     return true;
 }
 
-void KIO::SessionData::AuthDataList::registerAuthData( KIO::SessionData::AuthData* d )
+void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
 {
     if( !pingCacheDaemon() )
         return;
@@ -140,7 +138,7 @@ void KIO::SessionData::AuthDataList::registerAuthData( KIO::SessionData::AuthDat
         client.setVar( ref_key, "1", 0, d->group );
 }
 
-void KIO::SessionData::AuthDataList::unregisterAuthData( KIO::SessionData::AuthData* d )
+void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
 {
     if ( !d  || d->persist )
         return;
@@ -166,11 +164,11 @@ void KIO::SessionData::AuthDataList::unregisterAuthData( KIO::SessionData::AuthD
     }
 }
 
-void KIO::SessionData::AuthDataList::purgeCachedData()
+void SessionData::AuthDataList::purgeCachedData()
 {
     if ( !isEmpty() && pingCacheDaemon() )
     {
-        QPtrListIterator<KIO::SessionData::AuthData> it( *this );
+        QPtrListIterator<SessionData::AuthData> it( *this );
         for ( ; it.current(); ++it )
             unregisterAuthData( it.current() );
     }
@@ -178,7 +176,7 @@ void KIO::SessionData::AuthDataList::purgeCachedData()
 
 /********************************* SessionData ****************************/
 
-class KIO::SessionData::SessionDataPrivate
+class SessionData::SessionDataPrivate
 {
 public:
     SessionDataPrivate() {
@@ -206,7 +204,7 @@ SessionData::~SessionData()
     authData = 0L;
 }
 
-void KIO::SessionData::configDataFor( KIO::MetaData &configData, const QString &proto,
+void SessionData::configDataFor( MetaData &configData, const QString &proto,
                                       const QString & )
 {
     if ( (proto.find("http", 0, false) == 0 ) ||
@@ -231,7 +229,7 @@ void KIO::SessionData::configDataFor( KIO::MetaData &configData, const QString &
     }
 }
 
-void KIO::SessionData::reset()
+void SessionData::reset()
 {
     d->initDone = true;
     // Get Cookie settings...
@@ -256,10 +254,10 @@ void KIO::SessionData::reset()
     KProtocolManager::reparseConfiguration();
 }
 
-void KIO::SessionData::slotAuthData( const QCString& key, const QCString& gkey,
+void SessionData::slotAuthData( const QCString& key, const QCString& gkey,
                                      bool keep )
 {
-    authData->addData( new KIO::SessionData::AuthData(key, gkey, keep) );
+    authData->addData( new SessionData::AuthData(key, gkey, keep) );
 }
 
 void SessionData::slotDelAuthData( const QCString& gkey )
@@ -270,4 +268,4 @@ void SessionData::slotDelAuthData( const QCString& gkey )
 void SessionData::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "sessiondata.moc"
+}

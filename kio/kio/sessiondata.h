@@ -28,6 +28,7 @@ namespace KIO  {
 
 class SlaveConfig;
 
+
 /**
  *
  */
@@ -43,12 +44,12 @@ public:
                                 const QString &host );
     virtual void reset();
 
+    struct AuthData;
 public slots:
     void slotAuthData( const QCString&, const QCString&, bool );
     void slotDelAuthData( const QCString& );
 
 private:
-    struct AuthData;
     class AuthDataList;
     friend class AuthDataList;
     AuthDataList* authData;
@@ -60,6 +61,6 @@ private:
     SessionDataPrivate* d;
 };
 
-};
+}; // namespace
 
 #endif
