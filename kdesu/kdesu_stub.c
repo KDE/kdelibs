@@ -92,7 +92,7 @@ char *xmalloc(size_t);
 char *xrealloc(char *ptr, int size);
 int xsetenv(const char *name, const char *value);
 char *xstrdup(char *src);
-char **xstrsep(char *str);
+const char **xstrsep(const char *str);
 
 /**
  * Safe malloc functions.
@@ -171,12 +171,11 @@ int main()
 {
     char buf[1024];
     char command[200], xauthority[200], iceauthority[200];
-    char **host, **auth, *fname, *home;
+    char **host, **auth, *fname;
     int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
     struct passwd *pw;
-    struct termios tio;
 
     /* Get startup parameters. */
 
