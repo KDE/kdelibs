@@ -35,45 +35,45 @@
 class ConfigPage : public QWidget
 {
     Q_OBJECT
-public:
+  public:
     ConfigPage( QWidget *parent = 0, const char *name = 0 );
 
     void load();
     void save();
     void defaults();
 
-public slots:
+  public slots:
     void slotAdd();
     void slotRemove();
     void slotEdit();
     void slotConvert();
     void slotSelectionChanged();
 
-signals:
+  signals:
     void changed(bool);
 
-private:
+  private:
     KConfig *config;
 
-    KListView* listView;
-    QPushButton* addButton;
-    QPushButton* removeButton;
-    QPushButton* editButton;
-    QPushButton* convertButton;
+    KListView* mListView;
+    QPushButton* mAddButton;
+    QPushButton* mRemoveButton;
+    QPushButton* mEditButton;
+    QPushButton* mConvertButton;
 };
 
 class KCMkabc : public KCModule
 {
     Q_OBJECT
-public:
+  public:
     KCMkabc( QWidget *parent = 0, const char *name = 0 );
 
     void load();
     void save();
     void defaults();
 
-private:
+  private:
     ConfigPage *mConfigPage;
 };
 
-#endif // KCMKABC_H
+#endif

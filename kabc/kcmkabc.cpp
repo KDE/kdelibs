@@ -68,30 +68,30 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
     groupBox->layout()->setMargin( 11 );
     QHBoxLayout *groupBoxLayout = new QHBoxLayout( groupBox->layout() );
 
-    listView = new KListView( groupBox );
-    listView->setAllColumnsShowFocus( true );
-    listView->addColumn( i18n( "Name" ) );
-    listView->addColumn( i18n( "Type" ) );
-    listView->addColumn( i18n( "Location" ) );
+    mListView = new KListView( groupBox );
+    mListView->setAllColumnsShowFocus( true );
+    mListView->addColumn( i18n( "Name" ) );
+    mListView->addColumn( i18n( "Type" ) );
+    mListView->addColumn( i18n( "Location" ) );
 
-    groupBoxLayout->addWidget( listView );
+    groupBoxLayout->addWidget( mListView );
 
     KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
-    addButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
-    removeButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
-    removeButton->setEnabled( false );
-    editButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
-    editButton->setEnabled( false );
-    convertButton = buttonBox->addButton( i18n( "&Convert..." ), this, SLOT(slotConvert()) );
-    convertButton->setEnabled( false );
+    mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
+    mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
+    mRemoveButton->setEnabled( false );
+    mEditButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
+    mEditButton->setEnabled( false );
+    mConvertButton = buttonBox->addButton( i18n( "&Convert..." ), this, SLOT(slotConvert()) );
+    mConvertButton->setEnabled( false );
     buttonBox->layout();
 
     groupBoxLayout->addWidget( buttonBox );
 
     mainLayout->addWidget( groupBox );
 
-    connect( listView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
-    connect( listView, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotEdit()) );
+    connect( mListView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+    connect( mListView, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotEdit()) );
 
     config = 0;
 
@@ -108,11 +108,11 @@ void ConfigPage::load()
     config->setGroup( "General" );
     keys = config->readListEntry( "ResourceKeys" );
 
-    listView->clear();
+    mListView->clear();
 
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config->setGroup( "Resource_" + (*it) );
-	ConfigViewItem *item = new ConfigViewItem( listView, 
+	ConfigViewItem *item = new ConfigViewItem( mListView, 
 		config->readEntry( "ResourceName" ),
 		config->readEntry( "ResourceType" ) );
 
@@ -120,7 +120,7 @@ void ConfigPage::load()
 	item->type = config->readEntry( "ResourceType" );
     }
 
-    if ( listView->childCount() == 0 ) {
+    if ( mListView->childCount() == 0 ) {
 	defaults();
 	config->sync();
     } else
@@ -131,7 +131,7 @@ void ConfigPage::save()
 {
     QStringList keys;
 
-    QListViewItem *item = listView->firstChild();
+    QListViewItem *item = mListView->firstChild();
     while ( item != 0 ) {
 	ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
 	keys.append( configItem->key );
@@ -170,9 +170,9 @@ void ConfigPage::defaults()
     config->writeEntry( "FileFormat", 0 );
     config->writeEntry( "FileName", locateLocal( "data", "kabc/std.vcf" ) );
 
-    listView->clear();
+    mListView->clear();
 
-    ConfigViewItem *item = new ConfigViewItem( listView, "Default", type );
+    ConfigViewItem *item = new ConfigViewItem( mListView, "Default", type );
     item->key = key;
     item->type = type;
 
@@ -204,7 +204,7 @@ void ConfigPage::slotAdd()
 	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
 	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-	ConfigViewItem *item = new ConfigViewItem( listView,
+	ConfigViewItem *item = new ConfigViewItem( mListView,
 		dlg.resourceName->text(), type );
 	item->key = key;
 	item->type = type;
@@ -216,12 +216,12 @@ void ConfigPage::slotAdd()
 
 void ConfigPage::slotRemove()
 {
-    QListViewItem *item = listView->currentItem();
+    QListViewItem *item = mListView->currentItem();
     QString key = dynamic_cast<ConfigViewItem*>( item )->key;
 
     config->deleteGroup( "Resource_" + key );
 
-    listView->takeItem( item );
+    mListView->takeItem( item );
     delete item;
 
     emit changed( true );
@@ -229,7 +229,7 @@ void ConfigPage::slotRemove()
 
 void ConfigPage::slotEdit()
 {
-    QListViewItem *item = listView->currentItem();
+    QListViewItem *item = mListView->currentItem();
     ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
     if ( !configItem )
 	return;
@@ -259,7 +259,7 @@ void ConfigPage::slotEdit()
 
 void ConfigPage::slotConvert()
 {
-    QListViewItem *item = listView->currentItem();
+    QListViewItem *item = mListView->currentItem();
     ConfigViewItem *oldConfigItem = dynamic_cast<ConfigViewItem*>( item );
     if ( !oldConfigItem )
 	return;
@@ -269,7 +269,7 @@ void ConfigPage::slotConvert()
 
     // ask for target resource
     QStringList resources;
-    item = listView->firstChild();
+    item = mListView->firstChild();
     while ( item != 0 ) {
 	resources.append( item->text( 0 ) );
 	item = item->itemBelow();
@@ -300,7 +300,7 @@ void ConfigPage::slotConvert()
 
     // create new Resource
     QString newKey, newType;
-    item = listView->firstChild();
+    item = mListView->firstChild();
     while ( item != 0 ) {
         if ( item->text( 0 ) == newName ) {
             ConfigViewItem *newConfigItem = dynamic_cast<ConfigViewItem*>( item );
@@ -330,11 +330,11 @@ void ConfigPage::slotConvert()
 
 void ConfigPage::slotSelectionChanged()
 {
-    bool state = ( listView->currentItem() != 0 );
+    bool state = ( mListView->currentItem() != 0 );
 
-    removeButton->setEnabled( state );
-    editButton->setEnabled( state );
-    convertButton->setEnabled( state );
+    mRemoveButton->setEnabled( state );
+    mEditButton->setEnabled( state );
+    mConvertButton->setEnabled( state );
 }
 
 KCMkabc::KCMkabc( QWidget *parent, const char *name )

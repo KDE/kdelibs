@@ -43,12 +43,12 @@ bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, QFile *fi
   s >> magic >> version;
 
   if ( magic != 0x2e93e ) {
-    addressBook->error( QString( i18n("File '%1' has no binary format.") ).arg( file->name() ) );
+    addressBook->error( i18n("File '%1' has no binary format.").arg( file->name() ) );
     return false;
   }
 
   if ( version != BINARY_FORMAT_VERSION ) {
-    addressBook->error( QString( i18n("File '%1' is the wrong version.") ).arg( file->name() ) );
+    addressBook->error( i18n("File '%1' is the wrong version.").arg( file->name() ) );
     return false;
   }
 

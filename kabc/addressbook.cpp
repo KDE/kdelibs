@@ -211,7 +211,7 @@ bool AddressBook::load()
   bool ok = true;
   for( r = d->mResources.first(); r; r = d->mResources.next() )
     if ( !r->load() ) {
-      error( QString( i18n("Unable to load resource '%1'") ).arg( r->name() ) );
+      error( i18n("Unable to load resource '%1'").arg( r->name() ) );
       ok = false;
     }
 
