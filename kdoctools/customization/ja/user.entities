@@ -10,6 +10,6 @@
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY etc    "<abbrev>等</abbrev>">
-<!ENTITY ie     "<abbrev>i.e.</abbrev>">
+<!ENTITY ie     "<abbrev>例</abbrev>">
 <!ENTITY kcontrolcenter "<application>&kde;コントロールセンター</application>">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
