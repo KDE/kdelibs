@@ -314,6 +314,8 @@ void Decoder::setEncoding(const char *_encoding, bool force)
 	haveEncoding = force;
     delete m_decoder;
     m_decoder = m_codec->makeDecoder();
+    if (m_codec->mibEnum() == 1000) // utf 16
+        haveEncoding = false; // force auto detection
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "Decoder::encoding used is" << m_codec->name() << endl;
 #endif
