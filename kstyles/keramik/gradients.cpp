@@ -46,7 +46,7 @@ namespace
 		
 		int key()
 		{
-			return m_menu ^ m_width ^ (m_height << 16) ^ ((m_color)<<8);
+			return (int)m_menu ^ m_width ^ (m_height << 16) ^ ((m_color)<<8);
 		}
 		
 		bool operator == (const GradientCacheEntry& other)
