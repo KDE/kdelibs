@@ -42,6 +42,8 @@ class KShortcutList;
 class KKeyChooserItem;
 
 /**
+ * @short Widget for configuration of KAccel and KGlobalAccel.
+ *
  * Configure dictionaries of key/action associations for KAccel and
  * KGlobalAccel.
  *
@@ -50,9 +52,7 @@ class KKeyChooserItem;
  * slot if you want to set all configurable shortcuts to their
  * default values.
  *
- * @short Widget for configuration of KAccel and KGlobalAccel.
  * @see KKeyDialog
- * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
 class KDEUI_EXPORT KKeyChooser : public QWidget
@@ -256,6 +256,8 @@ private slots:
 typedef KKeyChooser KKeyChooser;
 
 /**
+ * @short Dialog for configuration of KActionCollection, KAccel, and KGlobalAccel.
+ *
  * The KKeyDialog class is used for configuring dictionaries of key/action
  * associations for KActionCollection, KAccel, and KGlobalAccel. It uses the KKeyChooser widget
  * and offers buttons to set all keys to defaults and invoke on-line help.
@@ -267,8 +269,6 @@ typedef KKeyChooser KKeyChooser;
  * KKeyDialog::configure( actionCollection() );
  * \endcode
  *
- * @short Dialog for configuration of KActionCollection, KAccel, and KGlobalAccel.
- * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
 class KDEUI_EXPORT KKeyDialog : public KDialogBase
