@@ -147,22 +147,34 @@ int main(int argc, char *argv[])
    arg2 = "Set-Cookie: set_by_B=\"foobar.com\"";
    addCookies(arg1, arg2);
 
+   // Cookie that should be sent iff the request is secure...
+   arg1 = "https://www.secure-foo.com/acme/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_C=\"www.secure-foo.com\"; Path=\"/\"; Secure";
+   addCookies(arg1, arg2);
+
+   // Cookie that should be sent iff the request is secure...
+   arg1 = "https://foo.secure-store.com/acme/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_D=\"foo.secure-store.com\"; Path=\"/\"; expires=Sat, 30 Sep 2000 00:00:00 GMT; Secure";
+   addCookies(arg1, arg2);
+
 
    /* Anything below here should simply be flat-out rejected by the cookiejar!!
       The user should not even see these at all! */
    arg1 = "http://www.foobar.co.uk/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_C=\"www.foobar.co.uk\"; Path=\"/\"; Domain=\".foorbar.com\"";
+   arg2 = "Set-Cookie: set_by_AA=\"www.foobar.co.uk\"; Path=\"/\"; Domain=\".foorbar.com\"";
    addCookies(arg1, arg2);
 
    arg1 = "http://www.foo-foobar.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_D=\"www.foo-foobar.com\"; Path=\"/\"; Domain=\".com\"";
+   arg2 = "Set-Cookie: set_by_BB=\"www.foo-foobar.com\"; Path=\"/\"; Domain=\".com\"";
    addCookies(arg1, arg2);
 
    arg1 = "http://www.foobar.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_E=\"www.foobar.com\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
+   arg2 = "Set-Cookie: set_by_CC=\"www.foobar.com\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
    addCookies(arg1, arg2);
 
 /* ****************************************************************************************************************** */
@@ -230,18 +242,32 @@ int main(int argc, char *argv[])
    printf("EXPECTED: %s\n", "Cookie: set_by_6=f22.w.x.y.foobar.com; set_by_7=f22.w.x.y.foobar.com; set_by_1=www.foobar.com" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL.
-   arg1 = "http://foobar.co.uk/acme/index.html";
+   // Should PASS
+   arg1 = "https://www.secure-foo.com/acme/index.html";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("EXPECTED: %s\n", "Cookie: set_by_C=www.secure-foo.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   // Should FAIL.  We should not send secure cookies through insecure links...
+   arg1 = "http://www.secure-foo.com/acme/index.html";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("EXPECTED: %s\n", "<NULL>" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL.
+   // Should PASS.
+   arg1 = "http://foobar.co.uk/acme/index.html";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("EXPECTED: %s\n", "set_by_8=x.y.foobar.co.uk" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   // Should PASS.
    arg1 = "http://www.foobar.co.uk/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("EXPECTED: %s\n", "<NULL>" );
+   printf("EXPECTED: %s\n", "set_by_8=x.y.foobar.co.uk" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
    // Should FAIL.
