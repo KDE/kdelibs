@@ -22,13 +22,14 @@ AC_CHECK_FLAGS
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
-test "$CCC" = "" && CCC="xlc DCC"
+test "$CCC" = "" && CCC="c++ xlC DCC"
 AC_PROG_CXX
 AC_PROG_LN_S
 dnl libtool is only for C, so I must force him
 dnl to find the correct flags for C++
 ac_save_cc=$CC
 CC=$CXX
+enable_static=no 
 AM_PROG_LIBTOOL dnl for libraries
 CC=$ac_save_cc
 
