@@ -166,7 +166,17 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
-  if (p == "title")
+  // look in base class (Document)
+  KJSO result;
+  result = DOMDocument::tryGet(p);
+
+  if (result.isA(UndefinedType)) {
+      DOM::HTMLCollection coll = doc.all();
+      DOM::HTMLElement element = coll.namedItem(p.string());
+      if(!element.isNull())
+          return result = getDOMNode(element);
+  }
+  else if (p == "title")
     return getString(doc.title());
   else if (p == "referrer")
     return getString(doc.referrer());
@@ -204,19 +214,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
   else if (p == "getElementsByName")
     return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
-  else {
-    // look in base class (Document)
-    KJSO result;
-    result = DOMDocument::tryGet(p);
 
-    if (result.isA(UndefinedType)) {
-      DOM::HTMLCollection coll = doc.all();
-      DOM::HTMLElement element = coll.namedItem(p.string());
-      result = getDOMNode(element);
-    }
-    return result;
-  }
-
+  return result;
 }
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
@@ -315,9 +314,8 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       DOM::Node n = form.elements().namedItem(p.string());
-      if(!n.isNull())
-          return KJSO(new HTMLElement(n));
-      if      (p == "elements")        return getHTMLCollection(form.elements()); // type HTMLCollection
+      if(!n.isNull())  return getDOMNode(n);
+      else if (p == "elements")        return getHTMLCollection(form.elements());
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
       else if (p == "acceptCharset")   return getString(form.acceptCharset());
