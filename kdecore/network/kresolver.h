@@ -489,7 +489,7 @@ public:
    * Returns the textual representation of the error in this object.
    */
   inline QString errorString() const
-  { return errorString(error()); }
+  { return errorString(error(), systemError()); }
 
   /**
    * Returns true if this object is currently running
