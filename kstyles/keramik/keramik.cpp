@@ -1733,6 +1733,7 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 				default: break;
 			}
+			break;
 		}
 
 		case CC_ScrollBar:
@@ -1791,11 +1792,10 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 				default: break;
 			};
+			break;
 		}
 		case CC_Slider:
 		{
-			if ((subcontrol != SC_SliderGroove) && (subcontrol != SC_SliderHandle))
-			   break;
 			const QSlider* sl = static_cast< const QSlider* >( widget );
 			bool horizontal = sl->orientation() == Horizontal;
 			QSlider::TickSetting ticks = sl->tickmarks();
