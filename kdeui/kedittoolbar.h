@@ -134,6 +134,8 @@ public:
    */
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
+  virtual QSize sizeHint() const;
+
 protected slots:
   /**
    * Overridden in order to save any changes made to the toolbars
@@ -268,16 +270,11 @@ protected slots:
   void slotUpButton();
   void slotDownButton();
 
-  void slotIconClicked(int);
-  void slotTextClicked(int);
-  void slotPosClicked(int);
-
 protected:
   void setupLayout();
 
   void loadToolbarCombo();
   void loadActionList(QDomElement& elem);
-  void loadToolbarStyles(QDomElement& elem);
   void updateLocal(QDomElement& elem);
 
 private:
@@ -289,10 +286,6 @@ private:
   QPushButton *m_removeAction;
   QPushButton *m_insertAction;
   QPushButton *m_downAction;
-
-  QComboBox *m_textCombo;
-  QComboBox *m_iconCombo;
-  QComboBox *m_posCombo;
 
   KEditToolbarWidgetPrivate *d;
 };

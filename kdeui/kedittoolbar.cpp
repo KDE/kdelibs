@@ -95,27 +95,6 @@ private:
   QString m_name;
 };
 
-class ToolbarStyleItem
-{
-public:
-  ToolbarStyleItem(int icon_size = 1, int icontext = 0, int pos = 0)
-    : m_iconSize(icon_size), m_iconText(icontext), m_position(pos)
-  {
-    m_sizeChanged = false;
-    m_textChanged = false;
-    m_posChanged  = false;
-  }
-
-  int m_iconSize;
-  int m_iconText;
-  int m_position;
-
-  bool m_sizeChanged;
-  bool m_textChanged;
-  bool m_posChanged;
-};
-typedef QMap<QString, ToolbarStyleItem> StyleMap;
-
 class KEditToolbarWidgetPrivate
 {
 public:
@@ -187,8 +166,7 @@ public:
   QDomDocument       m_localDoc;
   bool               m_isPart;
 
-  ToolbarList m_barList;
-  StyleMap    m_styleMap;
+  ToolbarList        m_barList;   
 
   XmlDataList m_xmlFiles;
 };
@@ -203,6 +181,7 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
+    resize(sizeHint());
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
@@ -214,7 +193,15 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char*
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
     enableButtonOK(false);
+    resize(sizeHint());
 }
+
+QSize KEditToolbar::sizeHint() const
+{
+  QSize size = KDialogBase::sizeHint();
+  return QSize(size.width()+70,size.height()+60);
+}
+
 void KEditToolbar::slotOk()
 {
   // just the fact that we got here means that we've been modified.
@@ -429,41 +416,6 @@ void KEditToolbarWidget::setupLayout()
   connect(m_downAction, SIGNAL(clicked()),
           this,         SLOT(slotDownButton()));
 
-  // setup the toolbar options
-  QLabel *text_label = new QLabel(i18n("Te&xt position:"), this);
-  m_textCombo = new QComboBox(this);
-  m_textCombo->insertItem(i18n("No text"));
-  m_textCombo->insertItem(i18n("Text aside icon"));
-  m_textCombo->insertItem(i18n("Text only"));
-  m_textCombo->insertItem(i18n("Text under icon"));
-  text_label->setBuddy(m_textCombo);
-  connect(m_textCombo, SIGNAL(highlighted(int)),
-          this,        SLOT(slotTextClicked(int)));
-
-  QLabel *icon_label = new QLabel(i18n("&Icon size:"), this);
-  m_iconCombo = new QComboBox(this);
-  icon_label->setBuddy(m_iconCombo);
-  // the sizes are generated later
-  connect(m_iconCombo, SIGNAL(highlighted(int)),
-          this,        SLOT(slotIconClicked(int)));
-
-  QLabel *pos_label = new QLabel(i18n("Tool&bar position:"), this);
-  m_posCombo = new QComboBox(this);
-  m_posCombo->insertItem(i18n("Top (normal)"));
-  m_posCombo->insertItem(i18n("Left"));
-  m_posCombo->insertItem(i18n("Right"));
-  m_posCombo->insertItem(i18n("Bottom"));
-  m_posCombo->insertItem(i18n("Floating"));
-  m_posCombo->insertItem(i18n("Flat"));
-  pos_label->setBuddy(m_posCombo);
-  connect(m_posCombo, SIGNAL(highlighted(int)),
-          this,       SLOT(slotPosClicked(int)));
-
-  // initially, disable the styles
-  m_textCombo->setEnabled(false);
-  m_iconCombo->setEnabled(false);
-  m_posCombo->setEnabled(false);
-
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 5);
 
@@ -474,8 +426,6 @@ void KEditToolbarWidget::setupLayout()
   QVBoxLayout *active_layout = new QVBoxLayout;
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
-
-  QGridLayout *options_layout = new QGridLayout(4, 3);
 
   name_layout->addWidget(toolbar_label);
   name_layout->addWidget(m_toolbarCombo);
@@ -497,19 +447,9 @@ void KEditToolbarWidget::setupLayout()
   list_layout->addLayout(button_layout);
   list_layout->addLayout(active_layout);
 
-  options_layout->addWidget(text_label, 0, 0);
-  options_layout->addWidget(m_textCombo, 1, 0);
-  options_layout->setColStretch(1, 1);
-  options_layout->addWidget(pos_label, 2, 0);
-  options_layout->addWidget(m_posCombo, 3, 0);
-  options_layout->addWidget(icon_label, 0, 2);
-  options_layout->addWidget(m_iconCombo, 1, 2);
-
   top_layout->addLayout(name_layout);
   top_layout->addWidget(new KSeparator(this));
   top_layout->addLayout(list_layout);
-  top_layout->addWidget(new KSeparator(this));
-  top_layout->addLayout(options_layout);
   top_layout->addWidget(new KSeparator(this));
 }
 
@@ -560,100 +500,6 @@ void KEditToolbarWidget::loadToolbarCombo()
 
   // we want to the first item selected and its actions loaded
   slotToolbarSelected( m_toolbarCombo->currentText() );
-}
-
-void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
-{
-  static const QString &attrName      = KGlobal::staticQString( "name" );
-  static const QString &attrIconText  = KGlobal::staticQString( "iconText" );
-  static const QString &attrIconSize  = KGlobal::staticQString( "iconSize" );
-  static const QString &attrPosition  = KGlobal::staticQString( "position" );
-
-  QString name(elem.attribute(attrName));
-  QString icon_text(elem.attribute(attrIconText).lower());
-  QString position(elem.attribute(attrPosition).lower());
-  QString icon_str(elem.attribute(attrIconSize));
-  int icon_size = (icon_str.isEmpty()) ? -1 : icon_str.toInt();
-
-  m_textCombo->setEnabled(true);
-  m_iconCombo->setEnabled(true);
-  m_posCombo->setEnabled(true);
-
-  if (icon_text == QString::fromLatin1("icononly"))
-    m_textCombo->setCurrentItem(0);
-  else if (icon_text == QString::fromLatin1("icontextright"))
-    m_textCombo->setCurrentItem(1);
-  else if (icon_text == QString::fromLatin1("textonly"))
-    m_textCombo->setCurrentItem(2);
-  else if (icon_text == QString::fromLatin1("icontextbottom"))
-    m_textCombo->setCurrentItem(3);
-  else if ( name == "mainToolBar")
-  {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver(config, QString::fromLatin1("Toolbar style"));
-    int index = config->readNumEntry(QString::fromLatin1("IconText"), 0);
-    m_textCombo->setCurrentItem(index);
-  }
-  else
-    m_textCombo->setCurrentItem(0);
-
-  // load the sizes now
-  m_iconCombo->clear();
-  KIconTheme *theme = instance()->iconLoader()->theme();
-  QValueList<int> sizes = theme->querySizes( name == "mainToolBar" ?
-                                             KIcon::MainToolbar :
-                                             KIcon::Toolbar );
-  QValueList<int>::Iterator it(sizes.begin());
-  for ( ; it != sizes.end(); ++it )
-  {
-      QString text;
-      if ( *it < 20 )
-          text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-      else if (*it < 25)
-          text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-      else
-          text = i18n("Large (%1x%2)").arg(*it).arg(*it);
-      m_iconCombo->insertItem(text);
-  }
-
-  if ( (icon_size == -1) && (name == "mainToolBar") )
-  {
-    // the new icon loader doesn't respect the IconSize field in the
-    // config file... so neither will we
-    icon_size = instance()->iconLoader()->currentSize( name == "mainToolBar" ?
-                                                       KIcon::MainToolbar :
-                                                       KIcon::Toolbar );
-  }
-
-  if ( icon_size == -1 )
-    m_iconCombo->setCurrentItem(1);
-  else if ( icon_size < 20)
-    m_iconCombo->setCurrentItem(0);
-  else if ( icon_size < 25 )
-    m_iconCombo->setCurrentItem(1);
-  else
-    m_iconCombo->setCurrentItem(2);
-
-  if ( position.isEmpty() && name == "mainToolBar" )
-  {
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver(config, QString::fromLatin1("Toolbar style"));
-    position = config->readEntry(QString::fromLatin1("Position")).lower();
-  }
-  if (position == QString::fromLatin1("top"))
-    m_posCombo->setCurrentItem(0);
-  else if (position == QString::fromLatin1("left"))
-    m_posCombo->setCurrentItem(1);
-  else if (position == QString::fromLatin1("right"))
-    m_posCombo->setCurrentItem(2);
-  else if (position == QString::fromLatin1("bottom"))
-    m_posCombo->setCurrentItem(3);
-  else if (position == QString::fromLatin1("floating"))
-    m_posCombo->setCurrentItem(4);
-  else if (position == QString::fromLatin1("flat"))
-    m_posCombo->setCurrentItem(5);
-  else
-    m_posCombo->setCurrentItem(0);
 }
 
 void KEditToolbarWidget::loadActionList(QDomElement& elem)
@@ -786,16 +632,6 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 
         // load in our values
         loadActionList(d->m_currentToolbarElem);
-
-        // we do not want to load in the styles for parts
-        if ( (*xit).m_type != XmlData::Part )
-          loadToolbarStyles(d->m_currentToolbarElem);
-        else
-        {
-          m_textCombo->setEnabled(false);
-          m_iconCombo->setEnabled(false);
-          m_posCombo->setEnabled(false);
-        }
 
         if ((*xit).m_type == XmlData::Part || (*xit).m_type == XmlData::Shell)
           setXML(KXMLGUIFactory::documentToXML((*xit).m_document.toDocument()));
@@ -1016,90 +852,6 @@ void KEditToolbarWidget::slotDownButton()
       break;
     }
   }
-}
-
-void KEditToolbarWidget::slotTextClicked(int index)
-{
-  static const QString &attrIconText = KGlobal::staticQString( "iconText" );
-  static const QString &attrName     = KGlobal::staticQString( "name" );
-  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
-
-  enableOk(true);
-
-  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
-  switch (index)
-  {
-  case 0:
-  default:
-    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconOnly"));
-    break;
-  case 1:
-    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconTextRight"));
-    break;
-  case 2:
-    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("TextOnly"));
-    break;
-  case 3:
-    d->m_currentToolbarElem.setAttribute(attrIconText, QString::fromLatin1("IconTextBottom"));
-  break;
-  }
-  updateLocal(d->m_currentToolbarElem);
-}
-
-void KEditToolbarWidget::slotPosClicked(int index)
-{
-  static const QString &attrPosition = KGlobal::staticQString( "position" );
-  static const QString &attrName     = KGlobal::staticQString( "name" );
-  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
-
-  enableOk(true);
-
-  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
-  switch (index)
-  {
-  case 0:
-  default:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Top"));
-    break;
-  case 1:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Left"));
-    break;
-  case 2:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Right"));
-    break;
-  case 3:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Bottom"));
-    break;
-  case 4:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Floating"));
-    break;
-  case 5:
-    d->m_currentToolbarElem.setAttribute(attrPosition, QString::fromLatin1("Flat"));
-    break;
-  }
-  updateLocal(d->m_currentToolbarElem);
-}
-
-void KEditToolbarWidget::slotIconClicked(int index)
-{
-  static const QString &attrIconSize = KGlobal::staticQString( "iconSize" );
-  static const QString &attrName     = KGlobal::staticQString( "name" );
-  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
-
-  enableOk(true);
-  d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
-
-  KIconTheme *theme = instance()->iconLoader()->theme();
-  QString name(d->m_currentToolbarElem.attribute( attrName ));
-  QValueList<int> sizes = theme->querySizes( name == "mainToolBar" ?
-                                             KIcon::MainToolbar :
-                                             KIcon::Toolbar );
-
-  QString size;
-  size.setNum(sizes[index]);
-  d->m_currentToolbarElem.setAttribute(attrIconSize, size);
-
-  updateLocal(d->m_currentToolbarElem);
 }
 
 void KEditToolbarWidget::updateLocal(QDomElement& elem)
