@@ -86,7 +86,7 @@ protected:
 private:
         QColor col;
         QPoint mPos;
-        bool inMouse, dragged;
+	bool dragFlag;
 };
 
 #endif
