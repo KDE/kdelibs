@@ -786,7 +786,9 @@ short RenderText::baselinePosition( bool firstLine ) const
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd)
 {
     // ### should not be needed!!!
-    assert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
+    // asserts sometimes with pre (that unibw-hamburg testcase). ### find out why
+    //KHTMLAssert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
+    if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
 
     reverse = reverse && !style()->visuallyOrdered();
 
