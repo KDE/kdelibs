@@ -1,3 +1,8 @@
+2004-10-15  Stephan Kulow  <coolo@kde.org>
+
+        * css/html4.css: changing default horizontal margins for H1-H6 from 
+        auto to 0 (#91327)
+
 2004-10-15  Germain Garand  <germain@ebooksfrance.org>
 
         bring z-order to QScrollView
