@@ -139,7 +139,7 @@ void DeviceManager::checkAlsa(void)
 #ifdef HAVE_SYS_STAT_H
   struct stat buf;
   stat("/proc/asound", &buf);
-  if (S_ISDIR(buf.st_mode))
+  if ((stat("/proc/asound", &buf) == 0 ) && (S_ISDIR(buf.st_mode)))
   {
     alsa=true;
     printf("ALSA\n");
@@ -150,6 +150,7 @@ void DeviceManager::checkAlsa(void)
   };
 #else
 #warning "ALSA won't be found at runtime"
+  alsa=false;
 #endif
 }
 
