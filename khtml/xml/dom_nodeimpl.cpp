@@ -1487,7 +1487,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
             }
             o = prev;
         }
-        if(o->isText() || o->isReplaced()) {
+        if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition(xPos, yPos);
             if (o->isText())
                 xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
