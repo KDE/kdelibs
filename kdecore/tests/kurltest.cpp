@@ -608,6 +608,22 @@ int main(int argc, char *argv[])
 
   KURL url_newline_2("http://www.foo.bar/foo?bar\ngnork");
   check("url_newline_2.url()", url_newline_2.url(), QString::fromLatin1("http://www.foo.bar/foo?bar%0Agnork"));
+
+  KURL local_file_1("file://localhost/my/file");
+  check("local_file_1.isLocalFile()", local_file_1.isLocalFile() ? "true" : "false", "true");
+
+  KURL local_file_2("file://www.kde.org/my/file");
+  check("local_file_2.isLocalFile()", local_file_2.isLocalFile() ? "true" : "false", "false");
+
+  KURL local_file_3;
+  local_file_3.setHost(getenv("HOSTNAME"));
+  local_file_3.setPath("/my/file");
+  printf("\nURL=%s\n", local_file_3.url().latin1());
+  check("local_file_3.isLocalFile()", local_file_3.isLocalFile() ? "true" : "false", "true");
+
+  KURL local_file_4("file:///my/file");
+  check("local_file_4.isLocalFile()", local_file_4.isLocalFile() ? "true" : "false", "true");
+
   printf("\nTest OK !\n");
 }
 

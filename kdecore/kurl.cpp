@@ -29,6 +29,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <qurl.h>
 #include <qdir.h>
@@ -1089,7 +1090,21 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-  return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) && !hasSubURL() );
+  if ( (m_strProtocol != fileProt ) || hasSubURL() )
+     return false;
+     
+  if (m_strHost.isEmpty() || (m_strHost == "localhost"))
+     return true;
+     
+  char hostname[ 256 ];
+  hostname[ 0 ] = '\0';
+  if (!gethostname( hostname, 255 ))
+     hostname[sizeof(hostname)-1] = '\0';
+     
+  for(char *p = hostname; *p; p++)
+     *p = tolower(*p);
+     
+  return (m_strHost == hostname);
 }
 
 void KURL::setFileEncoding(const QString &encoding)
