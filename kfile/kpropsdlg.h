@@ -619,8 +619,6 @@ private:
   //KIconButton* mounted;
   KIconButton* unmounted;
 
-  bool IamRoot;
-
   QStringList m_devicelist;
   int indexDevice;
   int indexMountPoint;

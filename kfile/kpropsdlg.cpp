@@ -1890,7 +1890,6 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
 {
   d = new KDevicePropsPagePrivate;
   d->m_frame = properties->dialog()->addPage( i18n("De&vice") );
-  IamRoot = (geteuid() == 0);
 
   QStringList devices;
   QCString fstabFile;
@@ -1955,8 +1954,6 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
   readonly = new QCheckBox( d->m_frame, "CheckBox_readonly" );
   readonly->setText(  i18n("Read Only") );
   layout->addWidget(readonly, 1, 1);
-  if ( !IamRoot )
-    readonly->setEnabled( false );
 
   label = new QLabel( d->m_frame );
   label->setText( devices.count()==0 ?
@@ -1966,8 +1963,6 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
 
   mountpoint = new KLineEdit( d->m_frame, "LineEdit_mountpoint" );
   layout->addWidget(mountpoint, 2, 1);
-  if ( !IamRoot )
-    mountpoint->setEnabled( false );
 
   label = new QLabel( d->m_frame );
   label->setText(  i18n("File System Type:") );
@@ -1975,8 +1970,6 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
 
   fstype = new KLineEdit( d->m_frame, "LineEdit_fstype" );
   layout->addWidget(fstype, 3, 1);
-  if ( !IamRoot )
-    fstype->setEnabled( false );
 
   QFrame *frame = new QFrame( d->m_frame );
   frame->setFrameStyle(QFrame::HLine|QFrame::Sunken);
@@ -2088,11 +2081,8 @@ void KDevicePropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("FSDevice") );
 
   config.writeEntry( QString::fromLatin1("Dev"), device->currentText() );
-  if ( IamRoot )
-  {
-    config.writeEntry( QString::fromLatin1("MountPoint"), mountpoint->text() );
-    config.writeEntry( QString::fromLatin1("FSType"), fstype->text() );
-  }
+  config.writeEntry( QString::fromLatin1("MountPoint"), mountpoint->text() );
+  config.writeEntry( QString::fromLatin1("FSType"), fstype->text() );
 
   config.writeEntry( QString::fromLatin1("UnmountIcon"), unmounted->icon() );
   kdDebug(1203) << "unmounted->icon() = " << unmounted->icon() << endl;
