@@ -354,7 +354,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            isRevMatch = revmatch(host, no_proxy);
            // If the hostname does not contain a dot, check if
            // <local> is part of noProxy.
-           if (!isRevMatch && (strchr(host, '.') == NULL))
+           if (!isRevMatch && host && (strchr(host, '.') == NULL))
               isRevMatch = revmatch("<local>", no_proxy);
         }
         if ( (!useRevProxy && !isRevMatch) ||
