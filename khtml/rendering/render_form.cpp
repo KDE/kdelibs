@@ -934,15 +934,13 @@ void RenderSelect::updateFromElement()
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
                 QString text = optElem->text().string();
-
-                // Prefer label if set
-                DOMString label = optElem->getAttribute(ATTR_LABEL);
-                if (!label.isEmpty())
-                    text = label.string();
-
-                if (optElem->parentNode()->id() == ID_OPTGROUP)
+                if (optElem->parentNode()->id() == ID_OPTGROUP) {
+                    // Prefer label if set
+                    DOMString label = optElem->getAttribute(ATTR_LABEL);
+                    if (!label.isEmpty())
+                        text = label.string();
                     text = QString::fromLatin1("    ")+text;
-
+                }
                 if(m_useListBox) {
                     KListBox *l = static_cast<KListBox*>(m_widget);
                     l->insertItem(text, listIndex);
