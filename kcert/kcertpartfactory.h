@@ -25,22 +25,23 @@
 #endif
 
 #include <kparts/part.h>
-#include <klibloader.h>
+#include <kparts/factory.h>
 
 class QString;
 class KAboutData;
 class KInstance;
 
 
-class KCertPartFactory : public KLibFactory {
+class KCertPartFactory : public KParts::Factory {
 Q_OBJECT
 public:
   KCertPartFactory(QObject *parent = 0, const char *name = 0);
   ~KCertPartFactory();
 
-  virtual QObject *create(QObject *parent = 0, const char *name = 0,
-                          const char *classname = "QObject",
-                          const QStringList &args = QStringList());
+  virtual KParts::Part *createPartObject(QWidget *parentWidget, const char *widgetName,
+                                         QObject *parent, const char *name = 0, 
+                                         const char *classname = "QObject",
+                                         const QStringList &args = QStringList());
 
   static KInstance *instance();
 

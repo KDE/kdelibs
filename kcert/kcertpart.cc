@@ -41,7 +41,8 @@
 
 
 
-KCertPart::KCertPart(QWidget *parent, const char *name) 
+KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
+                     QObject *parent, const char *name) 
           : KParts::ReadWritePart(parent, name) {
  KInstance *instance = new KInstance("KCertPart");
  QGridLayout *grid;
@@ -49,7 +50,7 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
 
  _p12 = NULL;
 
- _frame = new QFrame(parent);
+ _frame = new QFrame(parentWidget, widgetName);
  grid = new QGridLayout(_frame, 15, 6, KDialog::marginHint(),
                                        KDialog::spacingHint() );
  grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _frame), 0, 0, 0, 5);

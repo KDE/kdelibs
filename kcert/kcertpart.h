@@ -42,7 +42,8 @@ class QMultiLineEdit;
 class KCertPart : public KParts::ReadWritePart {
 Q_OBJECT
 public:
-  KCertPart(QWidget *parent = 0L, const char *name = 0L);
+  KCertPart(QWidget *parentWidget, const char *widgetName,
+            QObject *parent = 0L, const char *name = 0L);
   virtual ~KCertPart();
 
   virtual void setReadWrite(bool rw);

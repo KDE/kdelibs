@@ -41,7 +41,7 @@ KAboutData *KCertPartFactory::_about = 0;
 
 
 KCertPartFactory::KCertPartFactory(QObject *parent, const char *name)
-                 : KLibFactory(parent, name) {
+                 : KParts::Factory(parent, name) {
 }
 
 
@@ -52,14 +52,10 @@ KCertPartFactory::~KCertPartFactory() {
 }
 
 
-QObject *KCertPartFactory::create(QObject *parent, const char *name,
-                                  const char *classname, const QStringList &) {
-  if (parent && !parent->inherits("QWidget")) {
-    kdError() << "KCertPartFactory: parent does not inherit QWidget" << endl;
-    return NULL;
-  }
-
-  KCertPart *part = new KCertPart((QWidget *)parent, name);
+KParts::Part *KCertPartFactory::createPartObject(QWidget *parentWidget, const char *widgetName,
+                                                 QObject *parent, const char *name,
+                                                 const char *classname, const QStringList &) {
+  KCertPart *part = new KCertPart(parentWidget, widgetName, parent, name);
 
   if (QCString(classname) == "KParts::ReadOnlyPart") {
     part->setReadWrite(false);
@@ -68,7 +64,6 @@ QObject *KCertPartFactory::create(QObject *parent, const char *name,
     return NULL;
   }
 
-  emit objectCreated(part);
   return part;
 }
 
