@@ -8,6 +8,7 @@
 
 #include <map>
 #include <list>
+#include <string>
 
 #include <time.h>
 
@@ -32,7 +33,7 @@ public:
   void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
   void enableGUI( bool _mode ) { m_bGUI = _mode; }
   
-  virtual bool copy( const char *_source, const char *_dest );
+  virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool get( const char *_url );
   virtual bool listDir( const char *_url );
   virtual bool testDir( const char *_url );

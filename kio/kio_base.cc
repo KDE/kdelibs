@@ -44,7 +44,7 @@ bool IOJob::testDir( const char *_url )
   return ConnectionSignals::testDir( _url );
 }
 
-bool IOJob::copy( const char *_source, const char *_dest )
+bool IOJob::copy( list<string>& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_COPY;

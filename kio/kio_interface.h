@@ -21,6 +21,9 @@
 #define CMD_TESTDIR 11
 #define CMD_MOUNT 12
 #define CMD_UNMOUNT 13
+// Used to transfer the sources of an upcoming CMD_COPY call
+// This hack is needed, since a parameter can not be as big as it wants to.
+#define CMD_SOURCE 14 
 
 #define INF_TOTAL_SIZE 50
 #define INF_TOTAL_COUNT_OF_FILES 51
@@ -123,6 +126,7 @@ class ConnectionSignals
 {
 public:
   ConnectionSignals( Connection *_conn );
+  virtual ~ConnectionSignals() { };
 
   void setConnection( Connection* _conn );
   
@@ -135,8 +139,7 @@ public:
    * @param _mode may be -1. In this case no special permission mode is set.
    */
   virtual bool put( const char *_url, int _mode, bool _overwrite );
-  virtual bool copy( const char *_source, const char *_dest );
-  virtual bool copy( list<string>& _source, const char *_dest );
+  virtual bool copy( list<string>&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
   virtual bool move( list<string>& _source, const char *_dest );
   virtual bool del( const char *_url );
@@ -183,6 +186,8 @@ public:
   virtual bool gettingFile( const char *_url );
   
 protected:
+  virtual bool source( const char *_url );
+
   Connection *m_pConnection;
 };
 
@@ -190,23 +195,23 @@ class ConnectionSlots
 {
 public:
   ConnectionSlots( Connection *_conn );
-
+  virtual ~ConnectionSlots() { };
+  
   void setConnection( Connection *_conn );
 
   ///////////
   // Commands
   ///////////
 
-  virtual void slotGet( const char *_url );
-  virtual void slotPut( const char *_url, int _mode, bool _overwrite );
-  virtual void slotCopy( const char *_source, const char *_dest );
-  virtual void slotCopy( list<string>& _source, const char *_dest );
-  virtual void slotMove( const char *_source, const char *_dest );
-  virtual void slotMove( list<string>& _source, const char *_dest );
-  virtual void slotDel( const char *_url );
-  virtual void slotDel( list<string>& _source );
-  virtual void slotListDir( const char *_url );
-  virtual void slotMkdir( const char *_url, int _mode );
+  virtual void slotGet( const char *_url ) { };
+  virtual void slotPut( const char *_url, int _mode, bool _overwrite ) { };
+  virtual void slotCopy( list<string>& _source, const char *_dest ) { };
+  virtual void slotMove( const char *_source, const char *_dest ) { };
+  virtual void slotMove( list<string>& _source, const char *_dest ) { };
+  virtual void slotDel( const char *_url ) { };
+  virtual void slotDel( list<string>& _source ) { };
+  virtual void slotListDir( const char *_url ) { };
+  virtual void slotMkdir( const char *_url, int _mode ) { };
   virtual void slotTestDir( const char *_url ) { };
 
   virtual void slotUnmount( const char *_point ) { };
@@ -216,11 +221,11 @@ public:
   // Messages
   ///////////
 
-  virtual void slotData( void *, int _len );
-  virtual void slotDataEnd();
-  virtual void slotError( int _errid, const char *_text );
-  virtual void slotReady();
-  virtual void slotFinished();
+  virtual void slotData( void *, int _len ) { };
+  virtual void slotDataEnd() { };
+  virtual void slotError( int _errid, const char *_text ) { };
+  virtual void slotReady() { };
+  virtual void slotFinished() { };
   virtual void slotListEntry( UDSEntry& _entry ) { };
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
@@ -252,16 +257,21 @@ public:
   virtual void dispatchLoop();
   
 protected:
+  virtual void source( const char ) { };
+
   virtual void dispatch( int _cmd, void *_p, int _len );
 
   Connection *m_pConnection;  
+
+  list<string> m_lstSource;
 };
 
 class IOProtocol : public ConnectionSignals, public ConnectionSlots
 {
 public:
   IOProtocol( Connection *_conn );
-
+  virtual ~IOProtocol() { }
+  
   void setConnection( Connection* _conn );
 };
 

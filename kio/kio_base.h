@@ -4,6 +4,7 @@
 #include "kio_interface.h"
 
 #include <string>
+#include <list>
 
 class IOJob : public IOProtocol
 {
@@ -15,7 +16,7 @@ public:
   virtual bool get( const char *_url );
   virtual bool mkdir( const char *_url, int _mode );
   virtual bool listDir( const char *_url );
-  virtual bool copy( const char *_source, const char *_dest );
+  virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool testDir( const char *_url );
   virtual bool unmount( const char *_point );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );

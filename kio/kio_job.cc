@@ -161,20 +161,37 @@ bool KIOJob::unmount( const char *_point )
   return IOJob::unmount( _point );  
 }
 
-bool KIOJob::copy( const char *_source, const char *_dest )
+bool KIOJob::copy( list<string>& _source, const char *_dest )
 {
   assert( !m_pSlave );
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _source, lst ) )
-  {
-    slotError( ERR_MALFORMED_URL, _source );
-    return false;
+  string protocol;
+  string host;
+  list<string>::iterator it = _source.begin();
+  for( ; it != _source.end(); ++it )
+  {    
+    list<K2URL> lst;
+    if ( !K2URL::split( it->c_str(), lst ) )
+    {
+      slotError( ERR_MALFORMED_URL, it->c_str() );
+      return false;
+    }
+    if ( protocol.empty() )
+    {
+      protocol = lst.back().protocol();
+      host = lst.back().host();
+    }
+    // Still the same host and protocol ?
+    else if ( protocol != lst.back().protocol() || host != lst.back().host() )
+    {
+      // URGENTLY TODO: extract these sources and start a second copy command with them
+      assert( 0 );
+    }
   }
-
+  
   string error;
-  int errid;
-  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  int errid = 0;
+  if ( !createSlave( protocol.c_str(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;

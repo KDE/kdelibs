@@ -59,25 +59,32 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite )
   return true;
 }
 
-bool ConnectionSignals::copy( const char *_source, const char *_dest )
-{
-  assert( m_pConnection );
-
-  int l1 = strlen( _source );
-  int l2 = strlen( _dest );
-  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
-    return false;
-  
-  strcpy( static_cast<char*>(m_pConnection->buffer()), _source );
-  strcpy( static_cast<char*>(m_pConnection->buffer()) + l1 + 1, _dest );
-  
-  m_pConnection->send( CMD_COPY, m_pConnection->buffer(), l1 + 1 + l2 + 1 );
-  return true;
-}
-
 bool ConnectionSignals::copy( list<string>& _source, const char *_dest )
 {
   assert( m_pConnection );
+  
+  int l = strlen( _dest );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  list<string>::iterator it = _source.begin();
+  for( ; it != _source.end(); ++it )
+    if ( !source( it->c_str() ) )
+      return false;
+  
+  m_pConnection->send( CMD_COPY, _dest, l + 1 );
+  return true;
+}
+
+bool ConnectionSignals::source( const char *_url )
+{
+  assert( m_pConnection );
+  
+  int l = strlen( _url );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  m_pConnection->send( CMD_SOURCE, _url, l + 1 );
   return true;
 }
 
@@ -428,66 +435,6 @@ void ConnectionSlots::setConnection( Connection *_conn )
   m_pConnection = _conn;
 }
 
-void ConnectionSlots::slotGet( const char *_url )
-{
-}
-
-void ConnectionSlots::slotPut( const char *_url, int _mode, bool _overwrite )
-{
-}
-
-void ConnectionSlots::slotCopy( const char *_source, const char *_dest )
-{
-}
-
-void ConnectionSlots::slotCopy( list<string>& _source, const char *_dest )
-{
-}
-
-void ConnectionSlots::slotMove( const char *_source, const char *_dest )
-{
-}
-
-void ConnectionSlots::slotMove( list<string>& _source, const char *_dest )
-{
-}
-
-void ConnectionSlots::slotDel( const char *_url )
-{
-}
-
-void ConnectionSlots::slotDel( list<string>& _source )
-{
-}
-
-void ConnectionSlots::slotListDir( const char *_url )
-{
-}
-
-void ConnectionSlots::slotMkdir( const char *_url, int _mode )
-{
-}
-
-void ConnectionSlots::slotData( void *, int _len )
-{
-}
-
-void ConnectionSlots::slotDataEnd()
-{
-}
-
-void ConnectionSlots::slotError( int _errid, const char *_text )
-{
-}
-
-void ConnectionSlots::slotReady()
-{
-}
-
-void ConnectionSlots::slotFinished()
-{
-}
-
 void ConnectionSlots::dispatchLoop()
 {
   while( dispatch() );
@@ -510,6 +457,9 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 {
   switch( _cmd )
     {
+    case CMD_SOURCE:
+      m_lstSource.push_back( (const char*)(_p) );
+      break;
     case CMD_UNMOUNT:
       slotUnmount( (const char*)(_p) );
       break;
@@ -527,9 +477,9 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case CMD_COPY:
       {	
-	const char* arg1 = (const char*)_p;
-	const char* arg2 = (const char*)_p + strlen( arg1 ) + 1;
-	slotCopy( arg1, arg2 );
+	const char* arg = (const char*)_p;
+	slotCopy( m_lstSource, arg );
+	m_lstSource.clear();
       }
       break;
     case CMD_PUT:
