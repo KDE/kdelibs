@@ -55,7 +55,13 @@ Name: libkded_<modulename>.la
 LDFLAGS: -module $(KDE_PLUGIN)
 
 
-The last six (not kdeinit modules) should be defined with 
+Kicker Applet
+=============
+Name: lib<appletname>applet.la
+LDFLAGS: -module -no-undefined
+
+
+The last seven (not kdeinit modules) should be defined with 
 kde_module_LTLIBRARIES = <Name>
 so that they are installed under $(kde_moduledir), which is usually $prefix/lib/kde2/
 
