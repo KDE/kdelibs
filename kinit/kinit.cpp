@@ -41,7 +41,10 @@
 
 #include <setproctitle.h>
 
-#define MAX_ARGLENGTH 128*1024
+#include <qstring.h>
+#include <qfile.h>
+#include <kinstance.h>
+#include <kstddirs.h>
 
 int waitForPid;
 
@@ -63,14 +66,11 @@ struct {
   int (*launcher_func)(int);
 } d;
 
-char cmdLine[MAX_ARGLENGTH];
-
-
 /*
  * Close fd's which are only usefull for the parent process.
  * Restore default signal handlers.
  */
-void close_fds()
+static void close_fds()
 {
    close(d.deadpipe[0]);
    close(d.deadpipe[1]);
@@ -88,12 +88,11 @@ void close_fds()
    signal(SIGPIPE, SIG_DFL);
 }
 
-pid_t launch(int argc, const char *_name, const char *args)
+static pid_t launch(int argc, const char *_name, const char *args)
 {
-  int l;
   int launcher = 0;
-  char *cmd;
-  char *name;
+  QCString cmd;
+  QCString name;
 
   if (strcmp(_name, "klauncher") == 0)
   {
@@ -113,37 +112,15 @@ pid_t launch(int argc, const char *_name, const char *args)
   if (_name[0] != '/')
   {
      /* Relative name without 'lib' and '.la' */
-     strcpy(cmdLine, _name);
-     name = cmdLine;
-     cmd = strcpy(name + strlen(name) + 1, "lib");
-     strncat(cmd, name, MAX_ARGLENGTH - 10);
-     strcat(cmd, ".la");
+     name = _name;
+     cmd = "lib" + name + ".la";
   }
   else
   {
-     /* Absolute path including 'lib' and '.la' */
-     const char *start;
-     char *p;
-     const char *cp;
-     cp = _name+strlen(_name)-1;
-     while((cp >= _name) && (*cp != '/'))
-        cp--;
-     if (*cp++ != '/') return -1;
-     if (*cp++ != 'l') return -1;
-     if (*cp++ != 'i') return -1;
-     if (*cp++ != 'b') return -1;
-     start = cp;
-    
-     strcpy(cmdLine, start);
-     p = cmdLine+strlen(cmdLine)-1;
-     if (*p-- != 'a') return -1;
-     if (*p-- != 'l') return -1;
-     if (*p != '.') return -1;
-     *p = 0;
-     cmd = strcpy(cmdLine+strlen(cmdLine)+1, _name);
-     name = cmdLine; 
+     cmd = _name;
+     name = _name;
+     name = name.mid( name.findRev('/') + 1);
   }
-  l = strlen(cmd);
   if (!args)
   {
     argc = 1;
@@ -168,23 +145,23 @@ pid_t launch(int argc, const char *_name, const char *args)
      
      setsid(); 
 
-fprintf(stderr, "arg[0] = %s\n", name);
+fprintf(stderr, "arg[0] = %s\n", name.data());
 
      /** Give the process a new name **/
-     kinit_setproctitle( "%s", name );
+     kinit_setproctitle( "%s", name.data() );
          
      d.argv = (char **) malloc(sizeof(char *) * argc);
-     d.argv[0] = name;
-     for ( l = 1;  l < argc; l++)
+     d.argv[0] = name.data();
+     for (int i = 1;  i < argc; i++)
      {
-        d.argv[l] = (char *) args;
-fprintf(stderr, "arg[%d] = %s (%p)\n", l, args, args);
+        d.argv[i] = (char *) args;
+fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         while(*args != 0) args++;
         args++; 
      }
 
-     printf("Opening \"%s\"\n", cmd);
-     d.handle = lt_dlopen( cmd );
+     printf("Opening \"%s\"\n", cmd.data() );
+     d.handle = lt_dlopen( cmd.data() );
      if (!d.handle )
      {
         fprintf(stderr, "Could not dlopen library: %s\n", lt_dlerror());        
@@ -269,7 +246,7 @@ fprintf(stderr, "Starting klauncher.\n");
   return d.fork;
 }
 
-void sig_child_handler(int) 
+static void sig_child_handler(int) 
 {
    /*
     * Write into the pipe of death.
@@ -283,7 +260,7 @@ void sig_child_handler(int)
    write(d.deadpipe[1], &c, 1);
 }
 
-void init_signals()
+static void init_signals()
 {
   struct sigaction act;
   long options;
@@ -332,12 +309,13 @@ void init_signals()
   sigaction( SIGPIPE, &act, 0L);
 }
 
-void init_kinit_socket()
+static void init_kinit_socket()
 {
   struct sockaddr_un sa;
   ksize_t socklen;
   long options;
-  char *sock_file = cmdLine;
+#define MAX_SOCK_FILE 255
+  char sock_file[MAX_SOCK_FILE];
   char *home_dir = getenv("HOME");
   if (!home_dir || !home_dir[0])
   {
@@ -345,7 +323,7 @@ void init_kinit_socket()
      exit(255);
   }   
   chdir(home_dir);
-  if (strlen(home_dir) > (MAX_ARGLENGTH -100))
+  if (strlen(home_dir) > (MAX_SOCK_FILE-100))
   {
      fprintf(stderr, "Aborting. Home directory path too long!");
      exit(255);
@@ -356,7 +334,7 @@ void init_kinit_socket()
      sock_file[strlen(sock_file)-1] = 0;
   
   strcat(sock_file, "/.kinit-");
-  if (gethostname(sock_file+strlen(sock_file), MAX_ARGLENGTH - strlen(sock_file) - 1) != 0)
+  if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
      exit(255);
@@ -423,7 +401,7 @@ void init_kinit_socket()
  * Read 'len' bytes from 'sock' into buffer.
  * returns 0 on success, -1 on failure.
  */
-int read_socket(int sock, char *buffer, int len)
+static int read_socket(int sock, char *buffer, int len)
 {
   ssize_t result;
   int bytes_left = len;
@@ -443,7 +421,7 @@ int read_socket(int sock, char *buffer, int len)
   return 0;
 }
 
-void WaitPid( pid_t waitForPid)
+static void WaitPid( pid_t waitForPid)
 {
   int result;
   while(1)
@@ -454,7 +432,7 @@ void WaitPid( pid_t waitForPid)
   }
 }
 
-void kill_launcher()
+static void kill_launcher()
 {
 /*   pid_t pid; */
    /* This is bad. Best thing we can do is to kill the launcher. */
@@ -470,7 +448,7 @@ void kill_launcher()
    return;
 }
 
-void handle_launcher_request()
+static void handle_launcher_request()
 {
    klauncher_header request_header;
    char *request_data;
@@ -561,7 +539,7 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
    free(request_data);
 }
 
-void handle_requests()
+static void handle_requests()
 {
    int max_sock = d.wrapper;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
@@ -644,6 +622,32 @@ void handle_requests()
    }
 }
 
+static void kinit_library_path()
+{
+   QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
+   QCString ld_library_path = getenv("LD_LIBRARY_PATH");
+   KInstance instance( "kinit" );
+   QStringList candidates = instance.dirs()->resourceDirs("lib");
+   for (QStringList::ConstIterator it = candidates.begin();
+        it != candidates.end(); 
+        it++)
+   {
+      QCString dir = QFile::encodeName(*it);
+      if (dir[dir.length()-1] == '/') dir.truncate(dir.length()-1);
+      if (ltdl_library_path.find(dir) == -1)
+      {
+         ltdl_library_path += ":";
+         ltdl_library_path += dir;
+      }
+      if (ld_library_path.find(dir) == -1)
+      {
+         ld_library_path += ":";
+         ld_library_path += dir;
+      }
+   }
+   setenv("LTDL_LIBRARY_PATH", ltdl_library_path.data(), 1);
+   setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
+}
 
 int main(int argc, char **argv, char **envp)
 {
@@ -669,7 +673,7 @@ int main(int argc, char **argv, char **envp)
    /** Prepare to change process name **/
    kinit_initsetproctitle(argc, argv, envp);  
    kinit_setproctitle("Starting up...");
-
+   kinit_library_path();
    unsetenv("LD_BIND_NOW");
 
    d.maxname = strlen(argv[0]);
