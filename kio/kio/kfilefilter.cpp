@@ -29,14 +29,22 @@ void KSimpleFileFilter::setFilterSpecials( bool filter )
 
 void KSimpleFileFilter::setNameFilters( const QString& nameFilters )
 {
+    // KDE 3.0 defaults
+    setNameFilters( nameFilters, false, ' ' );
+}
+
+void KSimpleFileFilter::setNameFilters( const QString& nameFilters,
+                                        bool caseSensitive, 
+                                        const QChar& separator )
+{
     m_nameFilters.clear();
 
     // Split on white space
-    QStringList list = QStringList::split(' ', nameFilters);
+    QStringList list = QStringList::split(separator, nameFilters);
 
     QStringList::ConstIterator it = list.begin();
     for ( ; it != list.end(); ++it )
-        m_nameFilters.append(new QRegExp(*it, false, true ));
+        m_nameFilters.append(new QRegExp(*it, caseSensitive, true ));
 }
 
 void KSimpleFileFilter::setMimeFilters( const QStringList& mimeFilters )
@@ -64,7 +72,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 
     if ( m_modeFilter && !(m_modeFilter & item->mode()) )
         return false;
-    
+
     if ( !m_mimeFilters.isEmpty() ) {
         // correct or guessed mimetype -- we don't mind
         const QString& mime = item->mimeTypePtr()->name();
@@ -86,7 +94,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 
         QPtrListIterator<QRegExp> it( m_nameFilters );
         for ( ; it.current(); ++it ) {
-            if ( it.current()->exactMatch( name ) ) { // match! 
+            if ( it.current()->exactMatch( name ) ) { // match!
                 ok = true;
                 break;
             }
@@ -94,7 +102,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
         if ( !ok )
             return false;
     }
-    
+
     return true; // passes the filter!
 }
 
