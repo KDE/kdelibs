@@ -314,7 +314,6 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
   actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
-  actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
 
   // frameset? -> add "Reload Frame" etc.
   if ( khtml->parentPart() )
@@ -323,12 +322,16 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                                       actionCollection(), "reloadframe" );
     d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
-    d->m_paViewFrameInfo = new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
+    d->m_paViewFrameInfo = new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
     // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
     // and because print frame is already in the toolbar and the menu.
     // But leave this here, so that it's easy to readd it.
     d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+
+    actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
+    actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
   } else {
+    actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
     actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
   }
 

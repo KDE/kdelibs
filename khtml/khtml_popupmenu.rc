@@ -1,7 +1,11 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="8">
 <Menu name="popupmenu">
- <Action name="reloadframe" group="reload" />
- <Action name="printFrame" group="print" />
+ <Menu name="frame"><text>Frame</text>
+  <Action name="reloadframe"/>
+  <Action name="printFrame"/>
+  <Action name="viewFrameSource" />
+  <Action name="viewFrameInfo" />
+ </Menu>
  <Separator weakSeparator="1" />
  <Action name="savelinkas" />
  <Action name="saveimageas" />
@@ -15,7 +19,6 @@
  <Action name="viewimage" />
  <Separator weakSeparator="1" />
  <Action name="viewDocumentSource" />
- <Action name="viewFrameSource" />
  <Action name="viewPageInfo" />
  <Action name="security" />
  <Action name="setEncoding" />
