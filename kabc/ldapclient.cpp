@@ -275,7 +275,7 @@ LdapSearch::LdapSearch()
       if ( !bindDN.isEmpty() )
         ldapClient->setBindDN( bindDN );
 
-      QString pwdBindDN = config.readEntry( QString( "SelectedPwdBind%1" ).arg( j ) ).stripWhiteSpace();
+      QString pwdBindDN = config.readEntry( QString( "SelectedPwdBind%1" ).arg( j ) );
       if ( !pwdBindDN.isEmpty() )
         ldapClient->setPwdBindDN( pwdBindDN );
 
