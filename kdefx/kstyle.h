@@ -141,6 +141,13 @@ class KStyle: public QCommonStyle
 		 */
 		void setScrollBarType(KStyleScrollBarType sbtype);
 
+		/**
+		 * Returns the KStyle flags used to initialise the style.
+		 *
+		 * This is used solely for the kcmstyle module, and hence is internal.
+		 */
+		KStyleFlags styleFlags() const;
+
 		// ---------------------------------------------------------------------------
 
 		/**

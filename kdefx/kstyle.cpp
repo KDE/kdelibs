@@ -39,9 +39,9 @@
 #include <qtabbar.h>
 #include <qtoolbar.h>
 
-#include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
+#include <kimageeffect.h>
 #include "kstyle.h"
 
 #ifdef HAVE_XRENDER
@@ -93,6 +93,7 @@ struct KStyle::Private
 	KStyleScrollBarType  scrollbarType;
 	TransparencyHandler* menuHandler;
 	QStyle* winstyle;		// ### REMOVE
+	KStyleFlags flags;
 };
 
 // -----------------------------------------------------------------------------
@@ -101,6 +102,7 @@ struct KStyle::Private
 KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	: QCommonStyle(), d(new Private)
 {
+	d->flags = flags;
 	bool useMenuTransparency    = (flags & AllowMenuTransparency);
 	d->useFilledFrameWorkaround = (flags & FilledFrameWorkaround);
 	d->scrollbarType = sbtype;
@@ -113,7 +115,8 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 	d->menuHandler = NULL;
 
-	if (d->highcolor && useMenuTransparency) {
+//	if (d->highcolor && useMenuTransparency) {
+	if (useMenuTransparency) {
 		QString effectEngine = settings.readEntry("/KStyle/Settings/MenuTransparencyEngine", "Disabled");
 
 #ifdef HAVE_XRENDER
@@ -203,6 +206,10 @@ void KStyle::setScrollBarType(KStyleScrollBarType sbtype)
 	d->scrollbarType = sbtype;
 }
 
+KStyle::KStyleFlags KStyle::styleFlags() const
+{
+	return d->flags;
+}
 
 void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg ) const
 {
@@ -1194,81 +1201,33 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 // Blends a QImage to a predefined color, with a given opacity.
 void TransparencyHandler::blendToColor(const QColor &col)
 {
-	QImage img = pix.convertToImage();
-
-	if (opacity > 1.0 || opacity < 0.0 || img.depth() < 8)
+	if (opacity < 0.0 || opacity > 1.0)
 		return;
 
-	int pixels = img.width()*img.height();
-	int rcol, gcol, bcol;
-	col.rgb(&rcol, &gcol, &bcol);
-
-#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-	register unsigned char *data = (unsigned char *)img.bits() + 1;
-#else                    // BGRA
-	register unsigned char *data = (unsigned char *)img.bits();
-#endif
-
-	for (register int i=0; i<pixels; i++)
-	{
-#ifdef WORDS_BIGENDIAN
-		*(data++) += (unsigned char)((rcol - *data) * opacity);
-		*(data++) += (unsigned char)((gcol - *data) * opacity);
-		*(data++) += (unsigned char)((bcol - *data) * opacity);
-#else
-		*(data++) += (unsigned char)((bcol - *data) * opacity);
-		*(data++) += (unsigned char)((gcol - *data) * opacity);
-		*(data++) += (unsigned char)((rcol - *data) * opacity);
-#endif
-		data++; // skip alpha
-	}
+	QImage img = pix.convertToImage();
+	KImageEffect::blend(col, img, opacity);
 	pix.convertFromImage(img);
 }
 
 
 void TransparencyHandler::blendToPixmap(const QColorGroup &cg)
 {
+	if (opacity < 0.0 || opacity > 1.0)
+		return;
+			
 	KPixmap blendPix;
 	blendPix.resize( pix.width(), pix.height() );
+
+	if (blendPix.width()  != pix.width() ||
+		blendPix.height() != pix.height())
+		return;
 
 	// Allow styles to define the blend pixmap - allows for some interesting effects.
 	kstyle->renderMenuBlendPixmap( blendPix, cg );
 
-	if (opacity > 1.0 ||
-		opacity < 0.0 ||
-		blendPix.width()  != pix.width() ||
-		blendPix.height() != pix.height())
-		return;
-		
-	QImage backImg  = pix.convertToImage();
 	QImage blendImg = blendPix.convertToImage();
-
-	if (backImg.depth() < 8 || blendImg.depth() < 8)
-		return;
-
-	int pixels = backImg.width() * backImg.height();
-#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-	register unsigned char *data1 = (unsigned char *)backImg.bits()  + 1;
-	register unsigned char *data2 = (unsigned char *)blendImg.bits() + 1;
-#else                    // BGRA
-	register unsigned char *data1 = (unsigned char *)backImg.bits();
-	register unsigned char *data2 = (unsigned char *)blendImg.bits();
-#endif
-
-	for (register int i=0; i<pixels; i++)
-	{
-#ifdef WORDS_BIGENDIAN
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-#else
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-		*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-#endif
-		data1++; // skip alpha
-		data2++;
-	}
+	QImage backImg  = pix.convertToImage();
+	KImageEffect::blend(blendImg, backImg, opacity);
 	pix.convertFromImage(backImg);
 }
 

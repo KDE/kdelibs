@@ -854,6 +854,103 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 //
 //======================================================================
 
+
+// Nice and fast direct pixel manipulation
+QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
+{
+    if (dst.width() <= 0 || dst.height() <= 0)
+	return dst;
+
+    if (opacity < 0.0 || opacity > 1.0) {
+#ifndef NDEBUG
+	cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
+#endif
+	return dst;
+    }
+
+    int depth = dst.depth();
+    if (depth != 32) 
+	dst = dst.convertDepth(32);
+
+    int pixels = dst.width() * dst.height();
+    int rcol, gcol, bcol;
+    clr.rgb(&rcol, &gcol, &bcol);
+
+#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+    register unsigned char *data = (unsigned char *)dst.bits() + 1;
+#else                    // BGRA
+    register unsigned char *data = (unsigned char *)dst.bits();
+#endif
+
+    for (register int i=0; i<pixels; i++)
+    {
+#ifdef WORDS_BIGENDIAN
+	*(data++) += (unsigned char)((rcol - *data) * opacity);
+	*(data++) += (unsigned char)((gcol - *data) * opacity);
+	*(data++) += (unsigned char)((bcol - *data) * opacity);
+#else
+	*(data++) += (unsigned char)((bcol - *data) * opacity);
+	*(data++) += (unsigned char)((gcol - *data) * opacity);
+	*(data++) += (unsigned char)((rcol - *data) * opacity);
+#endif
+	data++; // skip alpha
+    }
+    return dst;
+}
+
+// Nice and fast direct pixel manipulation
+QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
+{
+    if (src.width() <= 0 || src.height() <= 0)
+	return dst;
+    if (dst.width() <= 0 || dst.height() <= 0)
+	return dst;
+
+    if (src.width() != dst.width() || src.height() != dst.height()) {
+#ifndef NDEBUG
+	cerr << "WARNING: KImageEffect::blend : src and destination images are not the same size\n";
+#endif
+	return dst;
+    }
+
+    if (opacity < 0.0 || opacity > 1.0) {
+#ifndef NDEBUG
+	cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
+#endif
+	return dst;
+    }
+
+    if (src.depth() != 32) src = src.convertDepth(32);
+    if (dst.depth() != 32) dst = dst.convertDepth(32);
+
+    int pixels = src.width() * src.height();
+#ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
+    register unsigned char *data1 = (unsigned char *)dst.bits() + 1;
+    register unsigned char *data2 = (unsigned char *)src.bits() + 1;
+#else                    // BGRA
+    register unsigned char *data1 = (unsigned char *)dst.bits();
+    register unsigned char *data2 = (unsigned char *)src.bits();
+#endif
+
+    for (register int i=0; i<pixels; i++)
+    {
+#ifdef WORDS_BIGENDIAN
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+#else
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+#endif
+	data1++; // skip alpha
+	data2++;
+    }
+
+    return dst;
+}    
+
+
 QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                             const QColor &bgnd, GradientType eff,
                             bool anti_dir)

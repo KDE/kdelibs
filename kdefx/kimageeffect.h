@@ -95,6 +95,34 @@ public:
 	    const QColor &cb, GradientType type, int xfactor = 100,
 	    int yfactor = 100, int ncols = 3);
 
+    /**
+     * Blends a color into the destination image, using an opacity
+     * value for blending one into another. Very fast direct pixel 
+     * manipulation is used.
+     *
+     * @author Karol Szwed (gallium@kde.org)
+     * @param clr source color to be blended into the destination image.
+     * @param dst destination image in which the source will be blended into.
+     * @param opacity opacity (in percent) which determines how much the source
+     *                color will be blended into the destination image.
+     * @return The destination image (dst) containing the result.
+     */
+    static QImage& blend(const QColor& clr, QImage& dst, float opacity);
+
+    /**
+     * Blend the src image into the destination image, using an opacity
+     * value for blending one into another. Very fast direct pixel 
+     * manipulation is used.
+     *
+     * @author Karol Szwed (gallium@kde.org)
+     * @param src source image to be blended into the destination image.
+     * @param dst destination image in which the source will be blended into.
+     * @param opacity opacity (in percent) which determines how much the source
+     *                image will be blended into the destination image.
+     * @return The destination image (dst) containing the result.
+     */
+    static QImage& blend(QImage& src, QImage& dst, float opacity);
+
      /**
      * Blend the provided image into a background of the indicated color.
      *
