@@ -23,12 +23,12 @@
 #ifndef KFILEDETAILLIST_H
 #define KFILEDETAILLIST_H
 
-#include <ktablistbox.h>
-#include "kfileinfocontents.h"
-#include "kfileinfo.h"
-#include "kdir.h"
 
-class KFileDetailList : protected KTabListBox, public KFileInfoContents {
+#include "kfileinfocontents.h"
+#include "kdir.h"
+#include <qlistview.h>
+
+class KFileDetailList : protected QListView, public KFileInfoContents {
     Q_OBJECT
     
 public:
@@ -49,12 +49,10 @@ public:
 protected:
     virtual void highlightItem(unsigned int item);
     virtual bool insertItem(const KFileInfo *i, int index);
-    virtual void keyPressEvent( QKeyEvent *e);
-    virtual void focusInEvent ( QFocusEvent *e );
 
 protected slots:
     void reorderFiles(int inColumn);
-    void selected(int);
+    void selected(QListViewItem*);
     void highlighted(int);
 };
 

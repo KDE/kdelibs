@@ -27,7 +27,7 @@
 #include <qfiledialog.h> 
 
 #include "kfiledialog.h"
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 #include <kconfig.h>
 #include <kapp.h>
 #include <kurl.h>
@@ -107,6 +107,6 @@ int main(int argc, char **argv)
     }
     
     if (!(name1.isNull()))
-	KMessageBox::information("You selected the file "+ name1, "Your Choice",);
+	KMessageBox::information(0, "You selected the file "+ name1, "Your Choice");
     return 0;
 }

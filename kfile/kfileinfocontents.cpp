@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <kstddirs.h>
 #include <kglobal.h>
+#include <assert.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -331,17 +332,20 @@ QString KFileInfoContents::text(uint index) const
 
 void KFileInfoContents::select( int index )
 {
+  if (index < sorted_length)
     select(sortedArray[index]);
 }
 
 void KFileInfoContents::select( KFileInfo *entry)
 {
-    if ( entry->isDir() ) {
-	debugC("selectDir %s",(const char *)((entry->fileName()).local8Bit()));
-	sig->activateDir(entry);
-    } else {
-	sig->activateFile(entry);
-    }
+  assert(entry);
+ 
+  if ( entry->isDir() ) {
+    debugC("selectDir %s",(const char *)((entry->fileName()).local8Bit()));
+    sig->activateDir(entry);
+  } else {
+    sig->activateFile(entry);
+  }
 }
 
 void KFileInfoContents::highlight( KFileInfo *entry )
