@@ -249,7 +249,7 @@ const QChar
 const QChar * const charset_urls[] = {
 #endif
 
-int main(int /*argc*/,char */*argv*/[]) {
+int main(int /*argc*/,char* /*argv*/[]) {
   DataProtocol kio_data;
 
   kio_data.initTestrun();
