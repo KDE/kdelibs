@@ -244,7 +244,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-
         if ( ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
@@ -321,7 +320,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             // broken HTML workaround "--->" or "--!>"
             if (comment && searchCount == 2 && cmp.latin1() == '-' || cmp.latin1() == '!')
             {
-                scriptCode[ scriptCodeSize++ ] = cmp;
+                // it's "--->"
+                if(searchFor[searchCount].latin1() != '>')
+                    scriptCode[ scriptCodeSize++ ] = cmp;
                 ++src;
             }
             else if ( cmp.lower() == searchFor[ searchCount ] )
