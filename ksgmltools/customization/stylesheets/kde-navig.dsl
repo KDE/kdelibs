@@ -43,31 +43,32 @@
 			   (nextm (empty-node-list)))
   (make element gi: "DIV"
 	attributes: (list (list "CLASS" "logoheader"))
-	(make element gi: "A"
-	      attributes: (list (list "HREF" (kde-gentext-home-url)))
-	      (make empty-element gi: "IMG"
-		    attributes: (list (list "SRC" (string-append %kde-doc-common-path% "logotp3.png"))
-				      (list "BORDER" "0")
-				      (list "ALT" (kde-gentext-logo-alt))
-				      (list "HEIGHT" "62")
-				      (list "WIDTH" "229"))))
-	(if %kde-logo%
-	    (make element gi: "A"
-		  attributes: (list (list "HREF" (kde-gentext-home-url)))
-		  (make empty-element gi: "IMG"
-			attributes: (list (list "SRC" (string-append %kde-doc-common-path% %kde-logo%))
-					  (list "BORDER" "0")
-					  (list "ALT" (kde-gentext-logo-alt))
-					  (list "HEIGHT" "62")
-					  (list "WIDTH" "229"))))
-	    (empty-sosofo))
+	(make sequence
+	  (make element gi: "A"
+		attributes: (list (list "HREF" (kde-gentext-home-url)))
+		(make empty-element gi: "IMG"
+		      attributes: (list (list "SRC" (string-append %kde-doc-common-path% "logotp3.png"))
+					(list "BORDER" "0")
+					(list "ALT" (kde-gentext-logo-alt))
+					(list "HEIGHT" "62")
+					(list "WIDTH" "229"))))
+	  (if %kde-logo%
+	      (make element gi: "A"
+		    attributes: (list (list "HREF" (kde-gentext-home-url)))
+		    (make empty-element gi: "IMG"
+			  attributes: (list (list "SRC" (string-append %kde-doc-common-path% %kde-logo%))
+					    (list "BORDER" "0")
+					    (list "ALT" (kde-gentext-logo-alt))
+					    (list "HEIGHT" "62")
+					    (list "WIDTH" "229"))))
+	      (empty-sosofo))
 ;     (make empty-element gi: "HR"
 ; 	  attributes: '(("WIDTH" "100%")
 ; 			("SIZE" "2")
 ; 			("ALIGN" "CENTER")
 ; 			("NOSHADE" "NOSHADE")))
 ;    (kde-navigation-links prev next prevm nextm)
-))
+)))
 
 ; (define ($user-footer-navigation$ #!optional
 ; 				  (prev (empty-node-list))
