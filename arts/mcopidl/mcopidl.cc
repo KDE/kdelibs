@@ -1574,7 +1574,7 @@ void doInterfacesHeader(FILE *header)
 		for(i=all.begin();i != all.end();i++)
 		{
 			InterfaceDef id = findInterface(*i);
-			string baseclass = NamespaceHelper::nameOf(id.name+"_base");
+			string baseclass = id.name+"_base";
 
 			/* attributes */
 			for(ai = id.attributes.begin();ai != id.attributes.end();ai++)
