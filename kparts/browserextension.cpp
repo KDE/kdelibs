@@ -120,6 +120,7 @@ struct WindowArgsPrivate
 
 WindowArgs::WindowArgs()
 {
+    x = y = width = height = -1;
     fullscreen = false;
     menuBarVisible = true;
     toolBarsVisible = true;
@@ -140,7 +141,10 @@ WindowArgs &WindowArgs::operator=( const WindowArgs &args )
 
     delete d; d = 0;
 
-    geometry = args.geometry;
+    x = args.x;
+    y = args.y;
+    width = args.width;
+    height = args.height;
     fullscreen = args.fullscreen;
     menuBarVisible = args.menuBarVisible;
     toolBarsVisible = args.toolBarsVisible;
@@ -161,7 +165,26 @@ WindowArgs::WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarV
                         bool _toolBarsVisible, bool _statusBarVisible, bool _resizable )
 {
     d = 0;
-    geometry = _geometry;
+    x = _geometry.x();
+    y = _geometry.y();
+    width = _geometry.width();
+    height = _geometry.height();
+    fullscreen = _fullscreen;
+    menuBarVisible = _menuBarVisible;
+    toolBarsVisible = _toolBarsVisible;
+    statusBarVisible = _statusBarVisible;
+    resizable = _resizable;
+}
+
+WindowArgs::WindowArgs( int _x, int _y, int _width, int _height, bool _fullscreen,
+                        bool _menuBarVisible, bool _toolBarsVisible,
+                        bool _statusBarVisible, bool _resizable )
+{
+    d = 0;
+    x = _x;
+    y = _y;
+    width = _width;
+    height = _height;
     fullscreen = _fullscreen;
     menuBarVisible = _menuBarVisible;
     toolBarsVisible = _toolBarsVisible;

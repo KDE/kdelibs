@@ -72,8 +72,14 @@ struct WindowArgs
     WindowArgs &operator=( const WindowArgs &args );
     WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarVisible,
                 bool _toolBarsVisible, bool _statusBarVisible, bool _resizable );
+    WindowArgs( int _x, int _y, int _width, int _height, bool _fullscreen,
+                bool _menuBarVisible, bool _toolBarsVisible,
+                bool _statusBarVisible, bool _resizable );
 
-    QRect geometry;
+    int x;
+    int y;
+    int width;
+    int height;
     bool fullscreen; //defaults to false
     bool menuBarVisible; //defaults to true
     bool toolBarsVisible; //defaults to true
