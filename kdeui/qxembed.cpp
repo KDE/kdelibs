@@ -34,8 +34,6 @@
 #define XK_LATIN1
 #include <X11/keysymdef.h>
 #include <kdebug.h>
-//#include <kxeventutil.h>
-//#include <kqeventutil.h>
 #include <config.h>
 
 #ifdef HAVE_UNISTD_H
@@ -286,10 +284,13 @@ static int qxembed_x11_event_filter( XEvent* e)
             if ( !w )
                 break;
             switch ( message) {
-            case XEMBED_EMBEDDED_NOTIFY:
-                ((QPublicWidget*)w->topLevelWidget())->topData()->embedded = 1;
+            case XEMBED_EMBEDDED_NOTIFY: {
+                QTLWExtra *extra = ((QPublicWidget*)w->topLevelWidget())->topData();
+                extra->embedded = 1;
+                extra->parentWinId = e->xclient.data.l[3];
                 w->topLevelWidget()->show();
                 break;
+            }
             case XEMBED_WINDOW_ACTIVATE: {
                 // fake focus in
                 XEvent ev;
@@ -754,7 +755,10 @@ static int get_parent(WId winid, Window *out_parent)
  */
 void QXEmbed::embed(WId w)
 {
-    kdDebug() << "************************** Embed "<< QString("0x%1").arg(w, 0, 16) << " into " << QString("0x%1").arg(winId(), 0, 16) << " window=" << QString("0x%1").arg(window, 0, 16) << " **********" << endl; 
+    kdDebug() << QString("Embed 0x%1").arg(w,0,16)
+              << QString(" into 0x%1").arg(winId(),0,16)
+              << QString(" window=0x%1").arg(window,0,16)
+              << endl;
     if (!w)
         return;
 
@@ -769,15 +773,21 @@ void QXEmbed::embed(WId w)
         }
         Window parent;
         get_parent(w, &parent);
-        kdDebug() << QString(">>> before reparent: parent=0x%1").arg(parent, 0, 16) << endl;
+        kdDebug() << QString("> before reparent: parent=0x%1").arg(parent,0,16) << endl;
         for (int i = 0; i < 50; i++) {
             Window parent = 0;
             XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
             if (get_parent(w, &parent) && parent == winId()) {
-               kdDebug() << QString(">>> Loop %1: reparent of 0x%2 into 0x%3 successful").arg(i).arg(w, 0, 16).arg(winId(), 0, 16) << endl;
-               break;
+               kdDebug() << QString("> Loop %1: ").arg(i)
+                         << QString("> reparent of 0x%1").arg(w,0,16)
+                         << QString(" into 0x%1").arg(winId(),0,16)
+                         << QString(" successful") << endl;
+                break;
             }
-            kdDebug() << QString(">>> Loop %1: reparent of 0x%2 into 0x%3 failed").arg(i).arg(w, 0, 16).arg(winId(), 0, 16) << endl;
+            kdDebug() << QString("> Loop %1: ").arg(i)
+                      << QString("> reparent of 0x%1").arg(w,0,16)
+                      << QString(" into 0x%1").arg(winId(),0,16)
+                      << QString(" failed") << endl;
             USLEEP(1000);
         }
     }
@@ -850,7 +860,7 @@ bool QXEmbed::x11Event( XEvent* e)
                  else
                      sendXEmbedMessage( window, XEMBED_WINDOW_DEACTIVATE);
                  if ( hasFocus() )
-                     sendXEmbedMessage( window, XEMBED_FOCUS_IN );
+                     sendXEmbedMessage( window, XEMBED_FOCUS_IN, XEMBED_FOCUS_CURRENT);
             }
         }
         break;
@@ -874,7 +884,6 @@ bool QXEmbed::x11Event( XEvent* e)
     case ClientMessage:
         if ( e->xclient.format == 32 && e->xclient.message_type == xembed ) {
             long message = e->xclient.data.l[1];
-//          long detail = e->xclient.data.l[2];
             switch ( message ) {
             case XEMBED_FOCUS_NEXT:
                 QWidget::focusNextPrevChild( true );
@@ -1090,7 +1099,6 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
 {
     QPoint globalPos = mapToGlobal(QPoint(0,0));
     if (window) {
-        // kdDebug(6100) << "*************** sendSyntheticConfigureNotify ******************" << endl;
         XConfigureEvent c;
         memset(&c, 0, sizeof(c));
         c.type = ConfigureNotify;
@@ -1106,7 +1114,6 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.above = None;
         c.override_redirect = 0;
         XSendEvent( qt_xdisplay(), c.event, true, StructureNotifyMask, (XEvent*)&c );
-        //kdDebug(6100) << "SENT " << KXEventUtil::getX11EventInfo((XEvent*)&c) << endl;
     }
 }
 
