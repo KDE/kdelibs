@@ -27,6 +27,7 @@ class KSSLCertificate;
 class DCOPClient;
 
 
+// ### KDE4 - Fix constness
 class KSSLSigners {
 public:
 

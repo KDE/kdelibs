@@ -8,6 +8,8 @@
 
 - Document libkssl interface
 
+- KDE4 - fix constness and reference arguments
+
 - CRL support (not much left to do?)
 
 - Code checking for OCX.  
@@ -18,8 +20,5 @@
 - KSSLD should emit dcop signals to tell people when things change
 
 - <keygen> is not working.
-
-- kio_ftps and kio_nntps could be quite nice to have (ftp is quite a problem to
-  implement though)
 
 

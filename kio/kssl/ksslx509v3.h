@@ -24,6 +24,7 @@
 #include <qstring.h>
 
 
+// ### KDE4: fix constness of methods
 class KSSLX509V3 {
 friend class KSSLCertificate;
 friend class KSSLCertificatePrivate;
