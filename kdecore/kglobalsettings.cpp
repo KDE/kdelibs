@@ -402,6 +402,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
         s_mouseSettings = new KMouseSettings;
         KMouseSettings & s = *s_mouseSettings; // for convenience
 
+        KConfigGroupSaver cgs( KGlobal::config(), "Mouse" );
         QString setting = KGlobal::config()->readEntry("MouseButtonMapping");
         if (setting == "RightHanded")
             s.handed = KMouseSettings::RightHanded;
