@@ -44,9 +44,6 @@ using namespace DOM;
 #include "htmlhashes.h"
 #include "misc/helper.h"
 
-#include "cssproperties.h"
-#include "cssvalues.h"
-
 //
 // The following file defines the function
 //     const struct props *findProp(const char *word, int len)
@@ -746,6 +743,26 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
     return 0;
 }
 
+static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
+{
+  last = false;
+  const QChar *nextP = curP;
+  bool ignoreSpace = false;
+  while(nextP <= endP) {
+    if ( *nextP == '(' )
+      ignoreSpace = true;
+    if ( *nextP == ')' )
+      ignoreSpace = false;
+    if ( *nextP == ' ' && !ignoreSpace )
+      break;
+    if ( *nextP == ';' || nextP == endP ) {
+      last = true;
+      break;
+    }
+    nextP++;
+  }
+  return nextP;
+}
 // ------------------- begin font property ---------------------
 /*
   Parser for the font property of CSS.  See
@@ -1209,49 +1226,83 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
       break;
     case CSS_PROP_BACKGROUND_POSITION:
       {
-        // special handling of "background-position: center;"
-          const struct css_value *cssval = findValue(val, value.length());
-          if ( cssval && cssval->id == CSS_VAL_CENTER ) {
-              parsedValue = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-              CSSProperty *prop = new CSSProperty();
-              prop->m_id = CSS_PROP_KONQ_BGPOS_Y;
-              prop->setValue(parsedValue);
-              prop->m_bImportant = important;
-              propList->append(prop);
-          }
-          int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
-          return parseShortHand(curP, endP, properties, 2, important, propList);
+#ifdef CSS_DEBUG
+        kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_POSITION: " << val << endl;
+#endif
+	/* Problem: center is ambigous
+	 * In case of 'center' center defines X and Y coords
+	 * In case of 'center top', center defines the Y coord
+	 * in case of 'center left', center defines the X coord
+	 *
+	 * -> Some sort of look ahead needs to be done
+	 */
+	bool isLast;
+	const QChar* nextP = getNext(curP, endP, isLast);
+	QConstString property1(const_cast<QChar*>( curP ), nextP - curP);
+	const struct css_value *cssval1 = findValue( property1.string().ascii(),
+                                                     property1.string().length());
+        if ( !cssval1 ) {
+            int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
+            return parseShortHand(curP, endP, properties, 2, important, propList, false);
+        }
+	const struct css_value *cssval2 = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "prop 1: [" << property1.string() << "]" << " isLast: " << isLast <<  endl;
+#endif
+	if ( !isLast) {
+            curP = nextP+1;
+	    nextP = getNext(curP, endP, isLast);
+	    QConstString property2(const_cast<QChar*>( curP ), nextP - curP);
+	    cssval2 = findValue( property2.string().ascii(), property2.string().length());
+#ifdef CSS_DEBUG
+	    kdDebug( 6080 ) << "prop 2: [" << property2.string() << "]" << " isLast: " << isLast <<  endl;
+#endif
+	}
+
+	int valX = 50;
+        int valY = 50;
+        int id1 = cssval1 ? cssval1->id : -1;
+        int id2 = cssval2 ? cssval2->id : CSS_VAL_CENTER;
+        // id1 will influence X and id2 will influence Y
+        if ( id2 == CSS_VAL_LEFT || id2 == CSS_VAL_RIGHT ||
+             id1 == CSS_VAL_TOP  || id1 == CSS_VAL_BOTTOM) {
+            int h = id1; id1 = id2; id2 = h;
+        }
+
+        switch( id1 ) {
+        case CSS_VAL_LEFT:  valX = 0;   break;
+        case CSS_VAL_RIGHT: valX = 100; break;
+        default: break;
+        }
+
+        switch ( id2 ) {
+        case CSS_VAL_TOP:    valY = 0;   break;
+        case CSS_VAL_BOTTOM: valY = 100; break;
+        default: break;
+        }
+
+#ifdef CSS_DEBUG
+        kdDebug( 6080 ) << "valX: " << valX << " valY: " << valY <<  endl;
+#endif
+	/* CSS 14.2
+	 * Keywords cannot be combined with percentage values or length values.
+	 * -> No mix between keywords and other units.
+	 */
+        setParsedValue( CSS_PROP_KONQ_BGPOS_X, important, propList,
+                        new CSSPrimitiveValueImpl(valX, CSSPrimitiveValue::CSS_PERCENTAGE));
+        setParsedValue( CSS_PROP_KONQ_BGPOS_Y, important, propList,
+                        new CSSPrimitiveValueImpl(valY, CSSPrimitiveValue::CSS_PERCENTAGE));
+        return true;
       }
-      break;
     case CSS_PROP_KONQ_BGPOS_X:
     case CSS_PROP_KONQ_BGPOS_Y:
-      {
-        const struct css_value *cssval = findValue(val, value.length());
-        int val = -1;
-        if (cssval)
-        {
-          switch( cssval->id ) {
-          case CSS_VAL_TOP:
-          case CSS_VAL_LEFT:
-            val = 0;
-            break;
-          case CSS_VAL_CENTER:
-            val = 50;
-            break;
-          case CSS_VAL_BOTTOM:
-          case CSS_VAL_RIGHT:
-            val = 100;
-            break;
-          default:
-            break;
-          }
-        }
-        if(val == -1)
-          parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
-        else if(!parsedValue)
-          parsedValue = new CSSPrimitiveValueImpl(val, CSSPrimitiveValue::CSS_PERCENTAGE);
+    {
+#ifdef CSS_DEBUG
+        kdDebug( 6080 ) << "CSS_PROP_KONQ_BGPOS_{X|Y}: " << val << endl;
+#endif
+        parsedValue = parseUnit(curP, endP, PERCENT | NUMBER | LENGTH);
         break;
-      }
+    }
     case CSS_PROP_CURSOR:
         // CSS2Cursor
         // ### should also support URI, but let's ignore that for now.
@@ -1553,7 +1604,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             properties = properties_outline;
         else return false;
 
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3, important, propList, false);
     }
 
     case CSS_PROP_BORDER_COLOR:
@@ -1624,7 +1675,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_LIST_STYLE:
       {
         const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
-        return  parseShortHand(curP, endP, properties, 3, important, propList);
+        return  parseShortHand(curP, endP, properties, 3, important, propList, false);
       }
     case CSS_PROP_PAUSE:
         break;
@@ -1664,26 +1715,6 @@ void StyleBaseImpl::setParsedValue(int propId, bool important, QList<CSSProperty
 #endif
 }
 
-static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
-{
-  last = false;
-  const QChar *nextP = curP;
-  bool ignoreSpace = false;
-  while(nextP <= endP) {
-    if ( *nextP == '(' )
-      ignoreSpace = true;
-    if ( *nextP == ')' )
-      ignoreSpace = false;
-    if ( *nextP == ' ' && !ignoreSpace )
-      break;
-    if ( *nextP == ';' || nextP == endP ) {
-      last = true;
-      break;
-    }
-    nextP++;
-  }
-  return nextP;
-}
 
 bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num, bool important, QList<CSSProperty> *propList, bool multiple)
 {
