@@ -265,13 +265,13 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    if (ds.atEnd())
       return;
-   assert( argsList );
-   if ( !argsList ) return;
 
    KCmdLineArgs *args;
-   for(args = argsList->first(); args; args = argsList->next())
-   {
-      args->clear();
+   if ( argsList ) {
+      for(args = argsList->first(); args; args = argsList->next())
+      {
+         args->clear();
+      }
    }
 
    QCString qCwd;
@@ -288,6 +288,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    {
      QCString id;
      ds >> id;
+     assert( argsList );
      for(args = argsList->first(); args; args = argsList->next())
      {
        if (args->id  == id)
