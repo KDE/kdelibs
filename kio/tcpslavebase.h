@@ -63,10 +63,53 @@ public:
 
 protected:
 
+#ifndef KDE_NO_COMPAT
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    ssize_t Write(const void *data, ssize_t len);
+    ssize_t Write(const void *data, ssize_t len) { return write( data, len ); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    ssize_t Read(void *data, ssize_t len) { return read( data, len ); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    ssize_t ReadLine(char *data, ssize_t len) { return readLine( data, len ); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    unsigned short int GetPort(unsigned short int p) { return port(p); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    bool ConnectToHost( const QString &host, unsigned int port,
+                        bool sendError ) { return connectToHost( host, port, sendError ); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    void CloseDescriptor() { closeDescriptor(); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    bool AtEOF() { return atEnd(); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    bool InitializeSSL() { return initializeSSL(); }
+
+    /**
+     * @deprecated Due to inconsistency with KDE naming convention.
+     */
+    void CleanSSL() { cleanSSL(); }
+#endif
 
     /**
      * This function acts like standard write function call
@@ -81,11 +124,6 @@ protected:
     ssize_t write(const void *data, ssize_t len);
 
     /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    ssize_t Read(void *data, ssize_t len);
-
-    /**
      * This function acts like standard read function call
      * except it is also capable of deciphering SSL data as
      * well as handling data over SOCKSified connections.
@@ -98,19 +136,9 @@ protected:
     ssize_t read(void *data, ssize_t len);
 
     /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    ssize_t ReadLine(char *data, ssize_t len);
-
-    /**
      * Same as above except it reads data one line at a time.
      */
     ssize_t readLine(char *data, ssize_t len);
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    unsigned short int GetPort(unsigned short int);
 
     /**
      * Determines the appropiate port to use.
@@ -120,12 +148,6 @@ protected:
      * @param port
      */
     unsigned short int port(unsigned short int);
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    bool ConnectToHost( const QString &host, unsigned int port,
-                        bool sendError );
 
     /**
      * Performs the initial TCP connection stuff and/or
@@ -146,14 +168,7 @@ protected:
      *         error message is send to the application.
      */
     bool connectToHost( const QString &host, unsigned int port,
-                        bool sendError );
-
-    /**
-     * @deprecated Use the above method instead.
-     *
-     * FIXME: Remove in KDE 3.0
-     */
-    bool connectToHost(const QCString &host, unsigned short int port);
+                        bool sendError = true );
 
     /**
      * Are we using TLS?
@@ -187,12 +202,6 @@ protected:
      */
     void stopTLS();
 
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    void CloseDescriptor();
-
     /**
      * Closes the current file descriptor.
      *
@@ -202,30 +211,18 @@ protected:
      */
     void closeDescriptor();
 
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    bool AtEOF();
 
     /**
      * Returns true when end of data is reached
      */
-    bool atEOF();
+    bool atEnd();
 
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    bool InitializeSSL();
 
     /**
      * Initializs all SSL variables
      */
     bool initializeSSL();
 
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    void CleanSSL();
 
     /**
      * Cleans up all SSL settings.

@@ -210,15 +210,6 @@ unsigned short int TCPSlaveBase::port(unsigned short int _p)
     return p;
 }
 
-bool TCPSlaveBase::connectToHost(const QCString &host,
-                                 unsigned short int _port)
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-    return connectToHost( host, _port, true );
-}
-
 // This function is simply a wrapper to establish the connection
 // to the server.  It's a bit more complicated than ::connect
 // because we first have to check to see if the user specified
@@ -345,7 +336,7 @@ void TCPSlaveBase::cleanSSL()
     d->militantSSL = false;
 }
 
-bool TCPSlaveBase::atEOF()
+bool TCPSlaveBase::atEnd()
 {
     return feof(fp);
 }
@@ -482,7 +473,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
 	for (QStringList::Iterator it = certs.begin();
 				   it != certs.end();
 				   ++it) {
-		KSSLPKCS12 *pkcs = 
+		KSSLPKCS12 *pkcs =
 			KSSLCertificateHome::getCertificateByName(*it);
 		if (pkcs)
 		if (!pkcs->getCertificate() ||
@@ -680,7 +671,7 @@ int TCPSlaveBase::verifyCertificate()
 	 if (d->militantSSL) {
 	       return -1;
 	 }
-         if (cp == KSSLCertificateCache::Unknown || 
+         if (cp == KSSLCertificateCache::Unknown ||
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
          } else {
@@ -1042,78 +1033,5 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     }
     d->needSSLHandShake = false;
     return true;
-}
-
-ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return write(data, len);
-}
-
-ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return read(data, len);
-}
-
-ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return readLine(data, len);
-}
-
-unsigned short int TCPSlaveBase::GetPort(unsigned short int i)
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return port(i);
-}
-
-bool TCPSlaveBase::ConnectToHost( const QString &host, unsigned int port,
-  bool sendError )
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return connectToHost(host, port, sendError);
-}
-
-void TCPSlaveBase::CloseDescriptor()
-{
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return closeDescriptor();
-}
-
-bool TCPSlaveBase::AtEOF()
-{ 
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return atEOF();
-}
-
-bool TCPSlaveBase::InitializeSSL()
-{ 
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return initializeSSL();
-}
-
-void TCPSlaveBase::CleanSSL()
-{ 
-#ifdef __GNUC__
-#warning Deprecated
-#endif
-  return cleanSSL();
 }
 
