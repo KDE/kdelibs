@@ -37,58 +37,49 @@
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
- * This widget inherits from QComboBox and implements
- * the following additional functionalities : a built-in
- * for automatic as well as manual completion and rotation
- * ( the ability to iterate through a given list) features,
- * configurable key-bindings to activate these features and
- * a popup-menu item that can be used to allow the user to
- * change completion modes on the fly based on their preference.
+ * This widget inherits from QLineEdit and implements the following
+ * additional functionalities: a completion object that provides both
+ * automatic and manual text completion as well as text rotation features,
+ * configurable key-bindings to activate these features and a popup-menu
+ * item that can be used to allow the user to set text completion modes on
+ * the fly based on their preference.
  *
- * KLineEdit emits a few more additional signals than
- * QLineEdit: @ref completion, @ref rotateUp and @ref rotateDown
- * and @returnPressed.  The completion signal can be
- * connected to a slot that will assist the user in
- * filling out the remaining text.  The two rotation
- * signals are intended to be used to iterate through a
- * list of predefined text entries while the returnPressed
- * signal is the same as QLineEdit's except it provides the
- * current text in the widget as its argument whenever
- * appropriate ( see @ref completion ).
+ * To support these new features KLineEdit also emits a few more additional
+ * signals.  These are : @ref completion, @ref rotateUp, @ref rotateDown
+ * and @ref returnPressed.  The completion signal can be connected to a
+ * slot that will assist the user in filling out the remaining text.  The
+ * two rotation signals are intended to be used to iterate through a list
+ * of predefined text entries while the returnPressed signal is the same
+ * as QLineEdit's except it provides the current text in the widget as its
+ * argument whenever appropriate.
  *
- * This widget by default creates a completion object whenever
- * you invoke the member function @ref completionObject for the
- * first time.  You can also assign your own completion object
- * through @ref setCompletionObject function whenever you want
- * to control the kind of completion object that needs to be
- * used.  Additionally, when you create a completion object through
- * either @ref completionObject or @ref setCompletionObject this
- * widget will be automatically enabled to handle the signals.  If
- * you do not need this feature, simply use the appropriate accessor
- * methods or the boolean paramters on the above function to shut
- * them off.
+ * This widget by default creates a completion object whenever you invoke
+ * the member function @ref completionObject for the first time.  You can
+ * also assign your own completion object through @ref setCompletionObject
+ * function whenever you want to control the kind of completion object that
+ * needs to be used.  Additionally, when you create a completion object through
+ * either @ref completionObject or @ref setCompletionObject KLineEdit will be
+ * automatically set to handle the rotation and completion signals.  If you do
+ * not need this feature, simply use @ref KCompletionBase::setHandleSignals or
+ * the boolean paramter when calling @p setCompletionObject to turn it off.
  *
- * The default key-bindings for completion and rotation
- * are determined from the global settings in @ref KStdAccel.
- * However, these values can be set locally overriding the
- * global settings.  Afterwards, simply invoking @ref useGlobalSettings
- * allows you to immediately default the bindings back to the
- * global settings again.  Also if you are interested in only
- * defaulting the key-bindings individually for each action,
- * simply call the appropriate setXXXKey methods without any
- * argumet.  For example, after locally customizing the key-binding
- * that invokes a manual completion simply invoking @ref setCompletionKey(),
- * without any argument, will result in the completion key being
- * set to 0. This will then force the key-event filter to use the
- * global value.
+ * The default key-bindings for completion and rotation are determined
+ * from the global settings in @ref KStdAccel.  However, these values can
+ * be set locally overriding the global settings.  Afterwards, simply
+ * invoking @ref useGlobalSettings allows you to immediately default the
+ * bindings back to the global settings again.  Also if you are interested
+ * in only defaulting the key-bindings individually for each action, simply
+ * call the appropriate setXXXKey methods without any argumet.  For example,
+ * after locally customizing the key-binding that invokes a manual completion
+ * simply invoking @ref setCompletionKey(), without any argument, will result
+ * in the completion key being set to 0. This will then force the key-event
+ * filter to use the global value.
  *
- * NOTE: if the EchoMode for this widget is set to something
- * other than @ref QLineEdit::Normal, the completion mode will
- * always be defaulted to KGlobal::CompletionNone.  This is
- * done purposefully to guard against protected entries such
- * as passwords being cached in KCompletion's list.  Hence, if
- * the EchoMode is not QLineEdit::Normal, the completion mode
- * is automatically disabled.
+ * NOTE: if the EchoMode for this widget is set to something other than
+ * @ref QLineEdit::Normal, the completion mode will always be defaulted to
+ * KGlobal::CompletionNone.  This is done purposefully to guard against protected
+ * entries such as passwords being cached in KCompletion's list.  Hence, if the
+ * EchoMode is not QLineEdit::Normal, the completion mode is automatically disabled.
  *
  * @sect Examples:
  *
@@ -257,7 +248,7 @@ public slots:
     * if there is no completion object or the completion object
     * does not contain a next match.
     */
-    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch() ); }
+    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch(), -1 ); }
 
     /*
     * Iterates in the down (next match) direction through the
@@ -269,7 +260,7 @@ public slots:
     * is taken if there is no completion object or the completion
     * object does not contain a next match.
     */
-    virtual void iterateDownInList() { rotateText(  completionObject()->nextMatch() ); }
+    virtual void iterateDownInList() { rotateText(  completionObject()->nextMatch(), 1 ); }
 
 protected slots:
 
@@ -279,6 +270,8 @@ protected slots:
     *
     * This method sets the completion mode to the one
     * requested by the end user.
+    *
+    * @param itemID the completion mode type
     */
     virtual void selectedItem( int itemID ) { setCompletionMode( (KGlobalSettings::Completion)itemID ); }
 
@@ -319,8 +312,9 @@ protected:
     * Rotates the text on rotation events.
     *
     * @param string the text to replace the current one with.
+    * @param dir rotation direction ( rotateUp or rotateDown ).
     */
-    void rotateText( const QString& );
+    void rotateText( const QString&, int /* dir */ );
 
     /**
     * Implementation of @ref KCompletionBase::connectSignals().
