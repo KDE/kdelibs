@@ -286,8 +286,9 @@ bool NodeImpl::increaseStringLength( QChar *&htmlText, long &currentLength, long
     return true;       // should return false if not enough memory
 }
 
-void NodeImpl::applyChanges(bool)
+void NodeImpl::applyChanges(bool, bool)
 {
+    setChanged(false);
 }
 
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
@@ -473,7 +474,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     }
 
     // ### set style in case it's attached
-    applyChanges();
+    setChanged(true);
 
     return newChild;
 }
@@ -532,7 +533,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     }
 
     // ### set style in case it's attached
-    applyChanges();
+    setChanged(true);
 
     return oldChild;
 }
@@ -557,7 +558,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     if (m_render)
 	m_render->removeChild(oldChild->renderer());
 
-    applyChanges();
+    setChanged(true);
 
     return oldChild;
 }
@@ -606,7 +607,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 	child = nextChild;
     }
 
-    applyChanges();
+    setChanged(true);
     // ### set style in case it's attached
     return newChild;
 }

@@ -171,7 +171,8 @@ public:
 	HasTooltip  = 0x0100,
 	Pressed     = 0x0200,
 	MouseInside = 0x0400,
-	Attached    = 0x0800
+	Attached    = 0x0800,
+	Changed     = 0x1000
     };
     bool layouted()    { return (flags & Layouted);    }
     bool parsing()     { return (flags & Parsing);     }
@@ -184,6 +185,7 @@ public:
     bool pressed()     { return (flags & Pressed);     }
     bool mouseInside() { return (flags & MouseInside); }
     bool attached()    { return (flags & Attached);    }
+    bool changed()     { return (flags & Changed);     }
     void setLayouted(bool b=true)
 	{ b ? flags|=Layouted : flags&=~Layouted; }
     void setParsing(bool b=true)
@@ -206,6 +208,8 @@ public:
 	{ b ? flags|=MouseInside : flags&=~MouseInside; }
     void setAttached(bool b=true)
 	{ b ? flags|=Attached : flags&=~Attached; }
+    void setChanged(bool b=true)
+	{ b ? flags|=Changed : flags&=~Changed; }
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -224,7 +228,7 @@ public:
     virtual void recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc );
     virtual bool increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc );
 
-    virtual void applyChanges(bool top = true);
+    virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     virtual QRect getRect();
     

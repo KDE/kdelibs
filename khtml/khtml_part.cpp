@@ -520,7 +520,15 @@ bool KHTMLPart::executeScript( const QString &script )
 {
   KJSProxy *proxy = jScript();
 
-  return proxy ? proxy->evaluate( script.unicode(), script.length() ) : false;
+  if (proxy) {
+    bool ret = proxy->evaluate( script.unicode(), script.length() );
+    // ### update the whole page for now
+    // in future we should look more closely at what has actually changed
+    d->m_doc->applyChanges();
+    return ret;
+  }
+  else
+    return false;
 }
 
 void KHTMLPart::enableJava( bool enable )

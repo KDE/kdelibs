@@ -115,8 +115,11 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 {
     if(bodyElement) return bodyElement;
     if(!_first) return 0;
-    NodeImpl *test = _first->firstChild();
-    if(!test) return 0;
+    NodeImpl *html = _first;
+    while (html && html->id() != ID_HTML)
+	html = html->nextSibling();
+    if(!html) return 0;
+    NodeImpl *test = html->firstChild();
     while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
 	test = test->nextSibling();
     if(!test) return 0;
@@ -172,16 +175,6 @@ void HTMLDocumentImpl::finishParsing (  )
 {
     if(tokenizer)
 	tokenizer->finish();
-
-    // onload script...
-    if(m_view && m_view->part()->jScriptEnabled() && body()) {
-	DOMString script = body()->getAttribute(ATTR_ONLOAD);
-	if(script.length()) {
-	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    m_view->part()->executeScript( script.string() );
-	}
-    }
-
 }
 
 ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
@@ -285,32 +278,6 @@ void HTMLDocumentImpl::clear()
     // #### clear tree
 }
 
-
-NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << "Document::addChild( " << newChild->nodeName().string() << " )" << endl;
-#endif
-
-    // short check for consistency with DTD
-    if(newChild->id() != ID_HTML)
-    {
-	kdDebug( 6030 ) << "AddChild failed! id=#document, child->id=" << newChild->id() << endl;
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-    }
-
-    if(_first)
-    {
-	kdDebug( 6030 ) << "AddChild failed! id=#document, child->id=" << newChild->id() << ". Already have a HTML element!" << endl;
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-    }
-
-    // just add it...
-    newChild->setParent(this);
-    _first = _last = newChild;
-    return newChild;
-}
-
 bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int, int, DOMString &url,
                                    NodeImpl *&innerNode, long &offset)
@@ -349,7 +316,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 void HTMLDocumentImpl::detach()
 {
     // onunload script...
-    if(m_view && m_view->part() && m_view->part()->jScriptEnabled()) {
+    if(m_view && m_view->part() && m_view->part()->jScriptEnabled() && body()) {
 	DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
 	if(script.length()) {
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
@@ -380,25 +347,27 @@ void HTMLDocumentImpl::createSelector()
 
 // ### this function should not be needed in the long run. The one in
 // DocumentImpl should be enough.
-void HTMLDocumentImpl::applyChanges(bool)
+void HTMLDocumentImpl::applyChanges(bool,bool force)
 {
     if(m_styleSelector) delete m_styleSelector;
     m_styleSelector = new CSSStyleSelector(this);
     if(!m_render) return;
 
-    const QString *families = m_view->part()->settings()->families();
-    QValueList<int> fs = m_view->part()->settings()->fontSizes();
-    QFont f = KGlobalSettings::generalFont();
-    f.setFamily(families[0]);
-    f.setPointSize(fs[3]);
-    f.setCharSet(m_view->part()->settings()->charset);
-    m_style->setFont(f);
+    if (force || changed()) {
+	const QString *families = m_view->part()->settings()->families();
+	QValueList<int> fs = m_view->part()->settings()->fontSizes();
+	QFont f = KGlobalSettings::generalFont();
+	f.setFamily(families[0]);
+	f.setPointSize(fs[3]);
+	f.setCharSet(m_view->part()->settings()->charset);
+	m_style->setFont(f);
+    }
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges();
+	n->applyChanges(true,force || changed());
 	n = n->nextSibling();
     }
 
@@ -408,6 +377,7 @@ void HTMLDocumentImpl::applyChanges(bool)
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
     m_render->repaint();
+    setChanged(false);
 }
 
 void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
@@ -480,6 +450,22 @@ int HTMLDocumentImpl::findHighestTabIndex()
 
 void HTMLDocumentImpl::slotFinishedParsing()
 {
-  emit finishedParsing();
+    // onload script...
+    if(m_view && m_view->part()->jScriptEnabled() && body()) {
+	DOMString script = body()->getAttribute(ATTR_ONLOAD);
+	if(script.length()) {
+	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    m_view->part()->executeScript( script.string() );
+	}
+    }
+    emit finishedParsing();
 }
+
+bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
+{
+    return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
+}
+
+
+
 

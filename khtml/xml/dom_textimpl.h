@@ -102,7 +102,7 @@ public:
 
     virtual void attach(KHTMLView *);
     virtual void detach();
-    virtual void applyChanges(bool top=true);
+    virtual void applyChanges(bool top=true, bool force=true);
 
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
 			     int _tx, int _ty, DOMString &,

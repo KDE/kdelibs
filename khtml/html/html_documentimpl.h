@@ -85,8 +85,6 @@ public:
     int findHighestTabIndex();
 
     // oeverrides NodeImpl
-    virtual NodeImpl *addChild(NodeImpl *newChild);
-
     virtual bool mouseEvent( int x, int y, int button,
 			     DOM::NodeImpl::MouseEventType,
 			     int _tx, int _ty, DOMString &url,
@@ -96,7 +94,7 @@ public:
     virtual void detach();
 
     virtual void createSelector();
-    virtual void applyChanges(bool top = true);
+    virtual void applyChanges(bool top = true, bool force = true);
 
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
@@ -111,6 +109,7 @@ public:
 
     khtml::DocLoader *docLoader() { return m_docLoader; }
     void setReloading() { m_docLoader->reloading = true; }
+    virtual bool childAllowed( NodeImpl *newChild );
 
 signals:
     void finishedParsing();

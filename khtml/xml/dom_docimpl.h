@@ -78,7 +78,7 @@ public:
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }
 
-    virtual void applyChanges(bool top=true);
+    virtual void applyChanges(bool top=true, bool force=true);
 
     //DocumentType doctype() const;
 

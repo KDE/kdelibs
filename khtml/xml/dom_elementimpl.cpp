@@ -166,7 +166,7 @@ void AttrImpl::setValue( const DOMString &v )
 
     if (_element) {
 	_element->parseAttribute(this);
-	_element->applyChanges();
+	_element->setChanged(true);
     }
 }
 
@@ -478,30 +478,32 @@ void ElementImpl::detach()
     NodeBaseImpl::detach();
 }
 
-void ElementImpl::applyChanges(bool top)
+void ElementImpl::applyChanges(bool top, bool force)
 {
-
     // ### find a better way to handle non-css attributes
     if(!m_render) return;
-    bool faf = m_style->flowAroundFloats();
-    delete m_style;
-    m_style = document->styleSelector()->styleForElement(this);
 
-    m_style->setFlowAroundFloats(faf);
-    m_render->setStyle(m_style);
+    if (force || changed()) {
+	bool faf = m_style->flowAroundFloats();
+	delete m_style;
+	m_style = document->styleSelector()->styleForElement(this);
 
+	m_style->setFlowAroundFloats(faf);
+	m_render->setStyle(m_style);
+    }
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges(false);
+	n->applyChanges(false,force || changed());
 	n = n->nextSibling();
     }
 
     // calc min and max widths starting from leafs
     // might belong to renderer, but this is simple to do here
-    m_render->calcMinMaxWidth();
+    if (force || changed())
+	m_render->calcMinMaxWidth();
 
     if(top) {
 	// force a relayout of this part of the document
@@ -511,6 +513,7 @@ void ElementImpl::applyChanges(bool top)
 	// repaint, so we might do double work here...
 	m_render->repaint();
     }
+    setChanged(false);
 }
 
 // -------------------------------------------------------------------------
@@ -562,7 +565,7 @@ void NamedAttrMapImpl::fromNamedAttrMapImpl(const NamedAttrMapImpl *other)
 	attrs[i]->_element = element;
 	element->parseAttribute(attrs[i]);
     }
-    element->applyChanges();
+    element->setChanged(true);
 }
 
 unsigned long NamedAttrMapImpl::length() const {
@@ -627,7 +630,7 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg )
 	    attr->_element = element;
 	    oldAttr->_element = 0;
 	    element->parseAttribute(attr);
-	    element->applyChanges();
+	    element->setChanged(true);
 	    return oldAttr; // ### check this gets deleted if ref = 0 and it's not assigned to anything
 	}
     }
@@ -644,7 +647,7 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg )
     len++;
     attr->_element = element;
     element->parseAttribute(attr);
-    element->applyChanges();
+    element->setChanged(true);
     return 0;
 }
 
@@ -666,7 +669,7 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr )
 	    attr->_element = element;
 	    oldAttr->_element = 0;
 	    element->parseAttribute(attr);
-	    element->applyChanges();
+	    element->setChanged(true);
 	    return oldAttr; // ### check this gets deleted if ref = 0 and it's not assigned to anything
 	}
     }
@@ -683,7 +686,7 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr )
     len++;
     attr->_element = element;
     element->parseAttribute(attr);
-    element->applyChanges();
+    element->setChanged(true);
     return 0;
 }
 
@@ -713,7 +716,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 	len = 0;
 	AttrImpl a(name,"",element->ownerDocument());
 	element->parseAttribute(&a);
-	element->applyChanges();
+	element->setChanged(true);
 	return ret;
     }
 
@@ -728,7 +731,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 	
     AttrImpl a(name,"",element->ownerDocument());
     element->parseAttribute(&a);
-    element->applyChanges();
+    element->setChanged(true);
 
     return ret;
 }
@@ -759,7 +762,7 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 	len = 0;
 	AttrImpl a(id,"",element->ownerDocument());
 	element->parseAttribute(&a);
-	element->applyChanges();
+	element->setChanged(true);
 	return ret;
     }
 
@@ -774,7 +777,7 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 	
     AttrImpl a(id,"",element->ownerDocument());
     element->parseAttribute(&a);
-    element->applyChanges();
+    element->setChanged(true);
 
     return ret;
 }
@@ -836,7 +839,7 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
 	    AttrImpl a = oldAttr->attrId ? AttrImpl(oldAttr->attrId,"",element->ownerDocument()) :
 	                               AttrImpl(oldAttr->name(),"",element->ownerDocument());
 	    element->parseAttribute(&a);
-	    element->applyChanges();
+	    element->setChanged(true);
 	    return ret;
 	}
     }

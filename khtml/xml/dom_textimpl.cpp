@@ -33,6 +33,8 @@
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
 
+#include <iostream.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -61,11 +63,14 @@ DOMString CharacterDataImpl::data() const
 
 void CharacterDataImpl::setData( const DOMString &newStr )
 {
+    cerr << "CharacterDataImpl::setData(): newStr = \"" << newStr.string() << "\"\n";
     if(str == newStr.impl) return;
     if(str) str->deref();
     str = newStr.impl;
     if(str) str->ref();
-    applyChanges();
+    if (m_render)
+      (static_cast<RenderText*>(m_render))->setText(str);
+    setChanged(true);
 }
 
 unsigned long CharacterDataImpl::length() const
@@ -85,7 +90,8 @@ void CharacterDataImpl::appendData( const DOMString &arg )
     str->append(arg.impl);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
-    applyChanges();
+    setChanged(true);
+    _parent->setChanged(true);
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
@@ -93,7 +99,7 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
-    applyChanges();
+    setChanged(true);
 }
 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count )
@@ -101,7 +107,7 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
     str->remove(offset,count);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
-    applyChanges();
+    setChanged(true);
 }
 
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
@@ -119,7 +125,7 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
-    applyChanges();
+    setChanged(true);
 }
 
 // ---------------------------------------------------------------------------
@@ -200,6 +206,9 @@ TextImpl *TextImpl::splitText( const unsigned long offset )
 
     TextImpl *newText = new TextImpl(document, str->split(offset));
     _parent->insertBefore(newText,_next);
+    if (m_render)
+	(static_cast<RenderText*>(m_render))->setText(str);
+    setChanged(true);
     return newText;
 }
 
@@ -239,10 +248,13 @@ void TextImpl::detach()
     CharacterDataImpl::detach();
 }
 
-void TextImpl::applyChanges(bool)
+void TextImpl::applyChanges(bool,bool force)
 {
-    m_style = parentNode()->style();
-    if(m_render) m_render->setStyle(m_style);
+    if (force || changed()) {
+	m_style = parentNode()->style();
+	if(m_render) m_render->setStyle(m_style);
+    }
+    setChanged(false);
 }
 
 bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,

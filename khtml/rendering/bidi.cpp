@@ -439,22 +439,22 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     BiDiObject *o = it1.obj;
     int pos = it1.pos;
 
-    if(!o || o->length() <= 0) return;
+    if(!o) return;
     while(o && o != it2.obj)
     {
-	if(!o->isHidden())
+	if(!o->isHidden() && o->length() > 0)
 	{
 	    int aWidth = o->width(pos, o->length() - pos);
 	    assert(o->length() >= pos);
 	    w = new BiDiWord(o, pos, o->length() - pos, level, aWidth);
-	    //kdDebug( 6041 ) << "adding Word1: " << w << ", from=" << pos << " to=" << o->length()-1 << endl;
+	    // kdDebug( 6041 ) << "adding Word1: " << w << ", from=" << pos << " to=" << o->length()-1 << endl;
 	    width -= aWidth;
 	    line.append(w);
 	}
 	pos = 0;
 	o = par->next(o);
     }
-    if(o && !o->isHidden())
+    if(o && !o->isHidden() && o->length() > 0)
     {
 	int pos2 = it2.pos;
 	if(!ignoreLast) pos2++;
@@ -462,7 +462,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	if(pos2 >= pos)
 	{
 	    w = new BiDiWord(o, pos, pos2 - pos, level, width);
-	    //kdDebug( 6041 ) << "adding Word2: " << w << ", from=" << pos << " to=" << pos2-1 << endl;
+	    // kdDebug( 6041 ) << "adding Word2: " << w << ", from=" << pos << " to=" << pos2-1 << endl;
 	    line.append(w);
 	}
     }

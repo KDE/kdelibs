@@ -95,6 +95,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   case Anchors:
     coll = doc.anchors();
     break;
+/*  ### document.open() and document.close() disabled for now because they cause crashes
   case Open:
     doc.open();
     result = Undefined();
@@ -103,7 +104,8 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     doc.close();
     result = Undefined();
     break;
-  case Write:
+*/
+    case Write:
     s = v.toString();
     doc.write(s.value().string());
     result = Undefined();

@@ -433,18 +433,19 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long
     return 0; // ###
 }*/
 
-void DocumentImpl::applyChanges(bool)
+void DocumentImpl::applyChanges(bool,bool force)
 {
     createSelector();
     if(!m_render) return;
 
-    m_render->setStyle(m_style);
+    if (force || changed())
+	m_render->setStyle(m_style);
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges();
+	n->applyChanges(true,force || changed());
 	n = n->nextSibling();
     }
 
@@ -454,6 +455,7 @@ void DocumentImpl::applyChanges(bool)
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
     m_render->repaint();
+    setChanged(false);
 }
 
 // ------------------------------------------------------------------------

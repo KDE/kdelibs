@@ -133,7 +133,8 @@ namespace KJS {
     enum { GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
-           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
+           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
+           Normalize };
   private:
     DOM::Element element;
     int id;

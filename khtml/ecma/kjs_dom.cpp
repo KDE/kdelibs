@@ -74,7 +74,7 @@ KJSO DOMNode::tryGet(const UString &p) const
     result = new DOMNodeFunc(node, DOMNodeFunc::HasChildNodes);
   else if (p == "cloneNode")
     result = new DOMNodeFunc(node, DOMNodeFunc::CloneNode);
-//  else if (p == "normalize") // new for DOM2 - not yet in khtml
+//  else if (p == "normalize") // moved here from Element in DOM2
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Normalize);
 //  else if (p == "supports") // new for DOM2 - not yet in khtml
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
@@ -311,6 +311,8 @@ KJSO DOMElement::tryGet(const UString &p) const
     return new DOMElementFunction(element, DOMElementFunction::RemoveAttributeNode);
   else if (p == "getElementsByTagName")
     return new DOMElementFunction(element, DOMElementFunction::GetElementsByTagName);
+  else if (p == "normalize") // this is moved to Node in DOM2
+    return new DOMElementFunction(element, DOMElementFunction::Normalize);
 /*  else if (p == "getAttributeNS") // new for DOM2 - not yet in khtml
     return new DOMElementFunction(element, DOMElementFunction::GetAttributeNS);
   else if (p == "setAttributeNS") // new for DOM2 - not yet in khtml
@@ -368,6 +370,11 @@ Completion DOMElementFunction::tryExecute(const List &args)
       break;
     case GetElementsByTagName:
       result = new DOMNodeList(element.getElementsByTagName(args[0].toString().value().string()));
+      break;
+    case Normalize: {  // this is moved to Node in DOM2
+        element.normalize();
+        result = Undefined();
+      }
       break;
 /*    case GetAttributeNS: // new for DOM2 - not yet in khtml
     case SetAttributeNS: // new for DOM2 - not yet in khtml

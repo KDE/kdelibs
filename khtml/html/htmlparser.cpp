@@ -275,12 +275,6 @@ void KHTMLParser::reset()
 
 void KHTMLParser::parseToken(Token *t)
 {
-    // ignore stuff after </html>
-    if(end) {
-	delete t;
-	return;
-    }
-
     if (t->id > 2*ID_CLOSE_TAG)
     {
       kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->id << endl;

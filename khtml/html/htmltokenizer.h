@@ -99,6 +99,7 @@ protected:
     void parseTag(khtml::DOMStringIt &str);
     void parseEntity(khtml::DOMStringIt &str, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
+    void addScriptOutput();
 
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -233,6 +234,9 @@ protected:
     QString scriptSrc;
     // the HTML code we will parse after the external script we are waiting for has loaded
     QString pendingSrc;
+    // true if we are executing a script while parsing a document. This causes the parsing of
+    // the output of the script to be postponed until after the script has finished executing
+    bool executingScript;
     khtml::CachedScript *cachedScript;
 
     QString scriptOutput;

@@ -57,6 +57,7 @@ namespace KJS {
   public:
     DOMText(DOM::Text t) : text(t) { }
     virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return text; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;

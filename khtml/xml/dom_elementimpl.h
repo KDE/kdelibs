@@ -125,7 +125,7 @@ public:
 
     void normalize (  );
 
-    virtual void applyChanges(bool = true);
+    virtual void applyChanges(bool = true, bool = true);
 
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }

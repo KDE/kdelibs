@@ -116,6 +116,13 @@ KJSO DOMText::tryGet(const UString &p) const
   }
 }
 
+void DOMText::tryPut(const UString &p, const KJSO& v)
+{
+  DOM::Node n = text;
+  KJSO tmp(new DOMCharacterData(n));
+  tmp.put(p,v);
+}
+
 DOMTextFunction::DOMTextFunction(DOM::Text t, int i)
   : text(t), id(i)
 {

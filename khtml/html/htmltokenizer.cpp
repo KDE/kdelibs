@@ -118,7 +118,9 @@ void HTMLTokenizer::begin()
     loadingExtScript = false;
     scriptSrc = "";
     pendingSrc = "";
+    scriptOutput = "";
     noMoreData = false;
+    executingScript = false;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
@@ -211,6 +213,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
 #endif
 
+    bool doScriptExec = false;
+
     while ( src.length() )
     {
 	// do we need to enlarge the buffer?
@@ -248,8 +252,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
 #endif
 		    // Parse scriptCode containing <script> info
-		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
-		    view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+		    doScriptExec = true;
 		}
 	    }
 	    else if (style)
@@ -264,8 +267,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	        // Add scriptcode to the buffer
 	        addListing(DOMStringIt(scriptCode, scriptCodeSize));
 	    }
-	    delete [] scriptCode;
-	    scriptCode = 0;
 	    processToken();
 	    if(script)
 		currToken->id = ID_SCRIPT + ID_CLOSE_TAG;
@@ -279,15 +280,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             script = style = listing = comment = false;
 	    if (cachedScript)
 		cachedScript->ref(this);
-	    
-	    if ( !scriptOutput.isEmpty() ) {
-		kdDebug( 6036 ) << "adding scriptOutput to parsed string " << endl;
-		QString newStr = scriptOutput;
-		newStr += QString(src.current(), src.length());
-		_src = newStr;
-		src = DOMStringIt(_src);
-		scriptOutput = "";
-	    }	
+            else if (doScriptExec) {
+		executingScript = true;
+		view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+		executingScript = false;
+            }
+	    delete [] scriptCode;
+	    scriptCode = 0;
+	
+	    addScriptOutput();
     
 	    return; // Finished parsing script/style/comment/listing
         }
@@ -1102,11 +1103,13 @@ void HTMLTokenizer::write( const QString &str )
     // we just insert the code at the tokenizers current position. Parsing will continue once
     // we return from the script stuff
     // (this won't happen if we're in the middle of loading an external script)
-    if(script) {
-	kdDebug( 6036 ) << "adding to scriptOutput: " << str << endl;
+    if(executingScript) {
+#ifdef TOKEN_DEBUG
+	kdDebug( 6036 ) << "adding to scriptOutput" << endl;
+#endif
 	scriptOutput += str;
 	return;
-    } 
+    }
 
     if (loadingExtScript) {
 	// don't parse; we will do this later
@@ -1414,11 +1417,27 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #endif
 	cachedScript->deref(this);
 	cachedScript = 0;
+	executingScript = true;
 	view->part()->executeScript(script.string());
-	write(pendingSrc);
-	pendingSrc = "";
-	if (noMoreData)
+	executingScript = false;
+	
+	QString rest = scriptOutput+pendingSrc;
+	scriptOutput = pendingSrc = "";
+	
+	write(rest);
+	if (noMoreData && !cachedScript)
 	    end(); // this actually causes us to be deleted
     }
 }
 
+void HTMLTokenizer::addScriptOutput()
+{
+    if ( !scriptOutput.isEmpty() ) {
+	kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
+	QString newStr = scriptOutput;
+	newStr += QString(src.current(), src.length());
+	_src = newStr;
+	src = DOMStringIt(_src);
+	scriptOutput = "";
+    }	
+}
