@@ -60,15 +60,9 @@ public:
 
     virtual VAlign vAlign() { return valign; }
     virtual int hSpace() {
-    	if (isFloating() && hspace.isUndefined())
-	    return 2;
-	else
 	    return hspace.minWidth(width);
     }
     virtual int vSpace() {
-    	if (isFloating() && vspace.isUndefined())
-	    return 2;
-	else
 	    return vspace.minWidth(getHeight());
     }
 

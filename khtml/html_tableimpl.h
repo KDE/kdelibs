@@ -251,9 +251,10 @@ protected:
     unsigned int row;
     unsigned int totalRows;
     unsigned int allocRows;
-    
-    int maxSpan;
 
+    unsigned int totalPercent ;
+    unsigned int totalRelative ;
+    
     HTMLTableCaptionElementImpl *tCaption;
     HTMLTableColElementImpl *cols;
     HTMLTableSectionElementImpl *head;

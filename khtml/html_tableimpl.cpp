@@ -897,10 +897,11 @@ void HTMLTableElementImpl::calcPercentRelativeMax(int c, ColInfo* col)
     int smax=0;
     if (col->type == Percent)
     {
-    	smax = width * col->value / 100;	
+    	smax = width * col->value / MAX(100,totalPercent);
     }
     else if (col->type == Relative)
     {
+    	smax= width * col->value / totalRelative;
     }
 
     smax = MAX(smax,oldmin);
@@ -967,13 +968,15 @@ void HTMLTableElementImpl::calcColMinMax()
     }
 
     // PHASE 3, calculate table width
+    
+    totalPercent=0;
+    totalRelative=0;
 
     int maxFixed=0;
-    int totalPercent=0;
     int minPercent=0;
     int percentWidest=0;
-    int percentWidestPercent=0;
-    int totalRel=0;
+    int percentWidestPercent=0;    
+    
     int minRel=0;
     int minVar=0;
     bool hasFixed=false;
@@ -1007,7 +1010,7 @@ void HTMLTableElementImpl::calcColMinMax()
 	    break;
 	case Relative:
 	    hasRel=true;
-	    totalRel += colValue[i] ;
+	    totalRelative += colValue[i] ;
 	    minRel += colMinWidth[i] + spacing;
 	    break;
 	case Variable:
@@ -1068,7 +1071,7 @@ void HTMLTableElementImpl::calcColMinMax()
     	{
 
     	    ColInfo* col;
-    	    col = spanCols->at(c);		
+    	    col = spanCols->at(c);
 
 	    if (!col || col->span==0 ||
 	    	col->type==Fixed || col->type==Variable)
@@ -1082,28 +1085,8 @@ void HTMLTableElementImpl::calcColMinMax()
 
     // PHASE 5, finish
 
-    // spread predefined table min and max width among colums
-    // we treat table like cell with colspan=totalCols
-
     if(predefinedWidth.type == Fixed)
-    {
     	minWidth = maxWidth = width;
-
-/*    	minWidth = width;
-
-	int oldmax=0;
-	int oldmin=0;
-
-	for (int o=0; o<totalCols; ++o)
-	    oldmin+=colMinWidth[o];
-	
-	int spreadmin = width-oldmin-(totalCols+1)*spacing-2*border;
-	spreadSpanMinMax(0,totalCols,spreadmin,0,Fixed);
-
-    	// fixed width table is very... fixed
-	for (int c=0; c<totalCols; ++c)
-	    colMaxWidth[c]=colMinWidth[c];*/
-    }
 
 }
 
@@ -1142,8 +1125,10 @@ void HTMLTableElementImpl::calcColWidthII(void)
     maxWidth = border + border + spacing;
     int totalWidthPercent = 0;
     int totalFixed = 0;
-    int totalPercent = 0;
-    int totalRel = 0;
+    
+    totalPercent = 0;
+    totalRelative = 0;
+    
     int totalVar = 0;
     int minFixed = 0;
     int maxFixed = 0;
@@ -1185,7 +1170,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    numPercent++;
 	    break;
 	case Relative:
-	    totalRel += colValue[i];
+	    totalRelative += colValue[i];
 	    minRel += colMinWidth[i];
 	    maxRel += colMaxWidth[i];
 	    numRel++;
@@ -1286,9 +1271,9 @@ void HTMLTableElementImpl::calcColWidthII(void)
     width = columnPos[totalCols] + border;
     if(width != tableWidth) printf("========> table layout error!!! <===============================\n");
 
-//#ifdef TABLE_DEBUG
+#ifdef TABLE_DEBUG
     printf("total width = %d\n", width);
-//#endif
+#endif
 
     setBlocking(false);
 }

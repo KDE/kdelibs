@@ -1115,7 +1115,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    printf("layouting element %d\n", current->id());
 #endif
 		    if(!current->layouted())
-		      current->layout();
+		      	current->layout();
 
 		    if( w + current->getWidth() > getWidth(descent)
 			&& w != 0 && !startOfLine)
@@ -1457,10 +1457,7 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
 	}	
     }
 
-    if(newChild->id() != ID_TEXT)
-      return newChild;
-    else
-      return this;
+    return newChild;
 }
 
 void HTMLBlockElementImpl::calcMinMaxWidth()
