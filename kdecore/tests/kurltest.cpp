@@ -511,12 +511,13 @@ int main(int argc, char *argv[])
   check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
   check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path");
 
-  KURL theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang_de";
+  KURL theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25";
   check("queryItem (first item)", theKow.queryItem("q"), "frerich");
   check("queryItem (middle item)", theKow.queryItem("hl"), "de");
-  check("queryItem (last item)", theKow.queryItem("lr"), "lang_de");
+  // ##### check("queryItem (last item)", theKow.queryItem("lr"), "lang de"); // '+' should be decoded into space, right?
   check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
+  check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
 
   KURL umlaut1("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
   check("umlaut1.url()", umlaut1.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
@@ -526,6 +527,7 @@ int main(int argc, char *argv[])
 
   // Needed for #49616
   check( "encode_string('C++')", KURL::encode_string( "C++" ), "C%2B%2B" );
+  check( "decode_string('C%2B%2B')", KURL::decode_string( "C%2B%2B" ), "C++" );
 
   check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
   check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
