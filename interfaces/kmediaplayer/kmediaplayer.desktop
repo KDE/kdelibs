@@ -2,4 +2,4 @@
 Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KMediaPlayer/Player
-X-KDE-Dervied=KParts/ReadOnlyPart
+X-KDE-Derived=KParts/ReadOnlyPart
