@@ -77,11 +77,11 @@ public:
      */
     void reset();
 
-    bool parsingBody() { return inBody; }
+    bool parsingBody() const { return inBody; }
 
-    bool skipMode() { return (discard_until != 0); }
+    bool skipMode() const { return (discard_until != 0); }
 
-    DOM::HTMLDocumentImpl *doc() { return document; }
+    DOM::HTMLDocumentImpl *doc() const { return document; }
 
 protected:
 
