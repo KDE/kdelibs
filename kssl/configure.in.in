@@ -28,12 +28,12 @@ if test $want_ssl = yes; then
 AC_CACHE_VAL(ac_cv_have_ssl,
 [#try to guess OpenSSL locations
 
-  ssl_incdirs="/usr/include /usr/local/include /usr/ssl/include /usr/local/ssl/include"
+  ssl_incdirs="/usr/include /usr/local/include /usr/ssl/include /usr/local/ssl/include $prefix/incude $kde_extra_includes"
   ssl_incdirs="$ac_ssl_includes $ssl_incdirs"
   AC_FIND_FILE(openssl/ssl.h, $ssl_incdirs, ssl_incdir)
   ac_ssl_includes="$ssl_incdir"
 
-  ssl_libdirs="/usr/lib /usr/local/lib /usr/ssl/lib /usr/local/ssl/lib"
+  ssl_libdirs="/usr/lib /usr/local/lib /usr/ssl/lib /usr/local/ssl/lib $prefix/lib $exec_prefix/lib $kde_extra_libs"
   if test ! "$ac_ssl_libraries" = "NO"; then
     ssl_libdirs="$ac_ssl_libraries $ssl_libdirs"
   fi
