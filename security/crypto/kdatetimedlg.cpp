@@ -37,7 +37,7 @@ KDateTimeDlg::KDateTimeDlg(QWidget *parent, const char *name)
                              : KDialog(parent, name, true) {
 QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
 
-   setCaption(i18n("Date and Time Selector"));
+   setCaption(i18n("Date & Time Selector"));
 
    _date = new KDatePicker(this);
    grid->addMultiCellWidget(_date, 0, 5, 0, 5);

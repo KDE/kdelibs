@@ -464,7 +464,7 @@ QString whatstr;
   connect(yourSSLUnlock, SIGNAL(clicked()), SLOT(slotYourUnlock()));
   grid->addWidget(yourSSLUnlock, 3, 5);
 
-  yourSSLVerify = new QPushButton(i18n("Verif&y..."), tabYourSSLCert);
+  yourSSLVerify = new QPushButton(i18n("Verif&y"), tabYourSSLCert);
   yourSSLVerify->setEnabled(false);
   connect(yourSSLVerify, SIGNAL(clicked()), SLOT(slotYourVerify()));
   grid->addWidget(yourSSLVerify, 4, 5);
@@ -611,7 +611,7 @@ QString whatstr;
                 " from the certificate cache.");
   QWhatsThis::add(otherSSLRemove, whatstr);
 
-  otherSSLVerify = new QPushButton(i18n("&Verify..."), tabOtherSSLCert);
+  otherSSLVerify = new QPushButton(i18n("&Verify"), tabOtherSSLCert);
   connect(otherSSLVerify, SIGNAL(clicked()), SLOT(slotVerifyCert()));
   grid->addWidget(otherSSLVerify, 2, 5);
   whatstr = i18n("This button tests the selected certificate"
@@ -649,7 +649,7 @@ QString whatstr;
 
   cacheGroup = new QVButtonGroup(i18n("Cache"), tabOtherSSLCert);
   cachePerm = new QRadioButton(i18n("Permanentl&y"), cacheGroup);
-  cacheUntil = new QRadioButton(i18n("&Until..."), cacheGroup);
+  cacheUntil = new QRadioButton(i18n("&Until"), cacheGroup);
   untilDate = new KURLLabel(QString::null, QString::null, cacheGroup);
   cacheGroup->setEnabled(false);
   grid->addMultiCellWidget(cacheGroup, 16, 19, 0, 2);
@@ -716,7 +716,7 @@ QString whatstr;
   grid->addWidget(caSSLRemove, 1, 7);
   caSSLRemove->setEnabled(false);
 
-  caSSLRestore = new QPushButton(i18n("R&estore..."), tabSSLCA);
+  caSSLRestore = new QPushButton(i18n("R&estore"), tabSSLCA);
   connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
   grid->addWidget(caSSLRestore, 2, 7);
 
