@@ -67,7 +67,7 @@ public:
     ~KPushButton();
 
     /**
-     * Enables/disables drag-support. Default is enabled.
+     * Enables/disables drag-support. Default is disabled.
      */
     void setDragEnabled( bool enable );
 
