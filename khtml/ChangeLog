@@ -1,3 +1,8 @@
+2003-10-05  Dirk Mueller  <mueller@kde.org>
+
+	* dom/css_value.cpp/h (class CSSStyleDeclaration): make accessors const. Add
+	binary compatibility wrappers. 
+
 2003-10-04  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmlparser.h (class KHTMLParser): keep "current" NodeImpl referenced

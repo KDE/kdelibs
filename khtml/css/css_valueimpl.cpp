@@ -54,6 +54,7 @@ using namespace DOM;
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
 {
+    qDebug( "CSSStyleDeclarationImpl:: 1: %p, %s", this, kdBacktrace().latin1() );
     m_lstValues = 0;
     m_node = 0;
 }
@@ -61,12 +62,16 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<CSSProperty> *lstValues)
     : StyleBaseImpl(parent)
 {
+    qDebug( "CSSStyleDeclarationImpl:: 2: %p, %s", this, kdBacktrace().latin1() );
     m_lstValues = lstValues;
+    assert( !m_lstValues || m_lstValues->autoDelete() );
     m_node = 0;
 }
 
 CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDeclarationImpl& o)
 {
+    qDebug( "%p operator=", this );
+    assert( &o != this );
     // don't attach it to the same node, just leave the current m_node value
     delete m_lstValues;
     m_lstValues = 0;
@@ -84,6 +89,9 @@ CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDecl
 
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
+    qDebug( "%p: CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl", this );
+    assert( !m_lstValues || m_lstValues->autoDelete() );
+    qDebug( "m_lstValues count: %d", m_lstValues->count() );
     delete m_lstValues;
     // we don't use refcounting for m_node, to avoid cyclic references (see ElementImpl)
 }
@@ -91,6 +99,8 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
 {
     if(!m_lstValues) return DOMString();
+
+    qDebug( "%p getPropertyValue: count: %d", this, m_lstValues->count() );
 
     CSSValueImpl* value = getPropertyCSSValue( propertyID );
     if ( value )
@@ -225,6 +235,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
     QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     CSSProperty *current;
     for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )
+#warning oops
         if (current->m_id == propertyID && !current->nonCSSHint)
             return current->value();
     return 0;
@@ -235,16 +246,18 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
     if(!m_lstValues) return DOMString();
     DOMString value;
 
-    QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
-     CSSProperty *current;
-     for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )  {
-         if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
-             value = current->value()->cssText();
-             m_lstValues->removeRef(current);
-             setChanged();
-	     break;
+    QPtrListIterator<CSSProperty> it(*m_lstValues);
+    CSSProperty *current;
+    for ( it.toLast(); (current = it.current()); --it )  {
+        if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
+            value = current->value()->cssText();
+            m_lstValues->remove(it);
+            qDebug( "%p removing ref to %p", this, current );
+            assert( m_lstValues->autoDelete() );
+            setChanged();
+            break;
         }
-     }
+    }
 
     return value;
 }
@@ -382,6 +395,21 @@ bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 
 // --------------------------------------------------------------------------------------
 
+void CSSValueImpl::ref() 
+{
+   StyleBaseImpl::ref();
+
+   qDebug( "%p CSSValueImpl::ref from %s refcount: %d", this, kdBacktrace().latin1(),
+   refCount() );
+}
+
+void CSSValueImpl::deref( )
+{
+   qDebug( "%p CSSValueImpl::deref from %s refcount %d", this, kdBacktrace().latin1(),
+   refCount() );
+   StyleBaseImpl::deref();
+} 
+
 DOM::DOMString CSSValueImpl::cssText() const
 {
     kdDebug() << "WARNING: CSSValueImpl::cssText, unimplemented, was called" << endl;
@@ -402,8 +430,10 @@ DOM::DOMString CSSInheritedValueImpl::cssText() const
 
 CSSValueListImpl::~CSSValueListImpl()
 {
+   qDebug( "%p: CSSValueListImpl::~CSSValueListImpl!!!", this );
     CSSValueImpl *val = m_values.first();
     while( val ) {
+        qDebug( "derefing value: %p", val );
 	val->deref();
 	val = m_values.next();
     }
@@ -416,6 +446,7 @@ unsigned short CSSValueListImpl::cssValueType() const
 
 void CSSValueListImpl::append(CSSValueImpl *val)
 {
+    qDebug( "valuelist.." );
     m_values.append(val);
     val->ref();
 }
