@@ -215,8 +215,10 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
   QDomNode n;
   for ( n = providers.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement p = n.toElement();
-    
-    mProviders.append( new Provider( p ) );
+ 
+    if ( p.tagName() == "provider" ) {
+      mProviders.append( new Provider( p ) );
+    }
   }
   
   emit providersLoaded( &mProviders );
