@@ -379,13 +379,13 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     // End of the button placement code
 
-    if((controls & subPage)){
+    if((controls & SubPage)){
         drawScrollBarGroove(p, sb, horizontal, subPage, g);
     }
-    if((controls & addPage)){
+    if((controls & AddPage)){
         drawScrollBarGroove(p, sb, horizontal, addPage, g);
     }
-    if(controls & addLine){
+    if(controls & AddLine){
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
                        activeControl == AddLine, ScrollButton);
         drawArrow(p, (horizontal) ? RightArrow : DownArrow, false,
