@@ -42,6 +42,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kxmlgui.h>
+#include <qdom.h>
 
 #include "kkeydialog.h"
 
@@ -296,13 +298,81 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
   int retcode = kd->exec();
   delete kd;
 
-  if( retcode == Accepted ) 
+  if( retcode != Accepted ) 
+    return retcode;
+
+  if (!save_settings)
   {
     coll->setKeyDict( *dict );
-    //TODO: Save the settings as action properties in 'file'
-//    if (save_settings)
-//      coll->saveAccel();
+    return retcode;
   }
+
+  // let's start saving this info
+  QString raw_xml(KXMLGUIFactory::readConfigFile(file));
+  QDomDocument doc;
+  doc.setContent(raw_xml);
+
+  QString tagActionProp = QString::fromLatin1( "ActionProperties" );
+  QString tagAction     = QString::fromLatin1( "Action" );
+  QString attrName      = QString::fromLatin1( "name" );
+  QString attrAccel     = QString::fromLatin1( "accel" );
+
+  // first, lets see if we have existing properties
+  QDomElement elem;
+  QDomElement it = doc.firstChild().firstChild().toElement();
+  for ( ; !it.isNull(); it = it.nextSibling().toElement() )
+  {
+    if ( it.tagName() == tagActionProp )
+    {
+      elem = it;
+      break;
+    }
+  }
+
+  // if there was none, create one
+  if ( elem.isNull() )
+  {
+    elem = doc.createElement( tagActionProp );
+    doc.firstChild().appendChild(elem);
+  }
+
+  // now, iterate through our actions
+  for (unsigned int i = 0; i < coll->count(); i++)
+  {
+    KAction *action = coll->action(i);
+
+    // see if we changed
+    KKeyEntry *key = (*dict)[action->name()];
+    if (key->aCurrentKeyCode == key->aConfigKeyCode)
+      continue;
+
+    // now see if this element already exists
+    QDomElement act_elem;
+    for ( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() )
+    {
+      if ( it.attribute( attrName ) == action->name() )
+      {
+        act_elem = it;
+        break;
+      }
+    }
+
+    // nope, create a new one
+    if ( act_elem.isNull() )
+    {
+      act_elem = doc.createElement( tagAction );
+      act_elem.setAttribute( attrName, action->name() );
+    }
+    act_elem.setAttribute( attrAccel,
+                           KAccel::keyToString( key->aConfigKeyCode ) );
+
+    elem.appendChild( act_elem );
+  }
+
+  // finally, write out the result
+  KXMLGUIFactory::saveConfigFile(doc, file);
+
+  coll->setKeyDict( *dict );
 
   return retcode;
 }
