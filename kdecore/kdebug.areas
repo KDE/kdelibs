@@ -16,6 +16,7 @@
 172        kdecore (KStartupInfo)
 173        kdecore (KLocale)
 174        kdecore (KProcIO)
+175        kdecore (KProcess)
 200        kdeui (KMainWindow)
 220        kdeui (KToolBar)
 230        kdeui (KCommand)
