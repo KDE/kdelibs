@@ -215,8 +215,8 @@ int main(int argc, char **argv)
     filter( "127.1", "http://127.1", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.1", "http://127.0.1", KURIFilterData::NET_PROTOCOL );
 
-    // Local domain filter territory - If you uncomment this test, make sure
-    // you adjust this based on the localhost entry in /etc/hosts.
+    // Local domain filter - If you uncomment these test, make sure you
+    // you adjust it based on the localhost entry in your /etc/hosts file.
     // filter( "localhost:3128", "http://localhost.localdomain:3128", KURIFilterData::NET_PROTOCOL );
     // filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
 
@@ -227,6 +227,8 @@ int main(int argc, char **argv)
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
+    // Windows style SMB (UNC) URL. Should be converted into the valid smb format...
+    filter( "\\\\mainserver\\share\\file", "smb://mainserver/share/file" , KURIFilterData::NET_PROTOCOL );
 
     // Should not be filtered at all. All valid protocols of this form will be ignored.
     filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
