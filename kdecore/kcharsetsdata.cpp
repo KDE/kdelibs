@@ -496,8 +496,7 @@ KCharsetsData::KCharsetsData(){
   displayableCharsDict=0;
   tempResult=new KCharsetConversionResult;
 
-  QString fileName=KApplication::kdedir().copy();
-  fileName+="/share/config/charsets";
+  QString fileName=KApplication::kde_configdir() + "/charsets";
   config=new KSimpleConfig(fileName);
   config->setGroup("general");
   const char * i18dir=config->readEntry("i18ndir");

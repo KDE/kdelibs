@@ -130,7 +130,6 @@ void Widget2::function2()
 int main( int argc, char ** argv )
 {
 	KApplication a(argc, argv);
-	QString aRet = KApplication::kdedir();
 	KKeyTestView *v = new KKeyTestView;
 	a.setMainWidget(v);
 	v->show();

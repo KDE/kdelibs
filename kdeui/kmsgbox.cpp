@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1998/01/03 19:47:28  kulow
+ * changed the defaults for yesNo and co. It's no longer "Yes" and co, but
+ * 0 to enable translation in case.
+ * This is source and binary compatible. It's just, that it will behave
+ * differently after recompiling (as far I understood the C++ language ;)
+ *
  * Revision 1.8  1997/11/16 20:46:51  mark
  * MD: Reworked look of KMessageBox dialogs.
  *   Originally I was going to make KMessageBox a wrapper for
@@ -106,7 +112,7 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
     static QPixmap icons[4];
 
     if( !icons_initialized ) {
-    	QString ipath = kapp->kdedir() + "/share/apps/kde/pics/";
+    	QString ipath = kapp->kde_datadir() + "/kde/pics/";
         QString ifile = ipath + "info.xpm";
         icons[0].load( ifile );
         icons[1].load( ipath + "exclamation.xpm" );

@@ -45,11 +45,9 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
   for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
-  QString temp = KApplication::kdedir();
-
-  addPath(temp + "/share/apps/" + kapp->appName() + "/pics" );
-  addPath(temp + "/share/toolbar" );
-  addPath(temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  addPath(KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  addPath(KApplication::kde_toolbardir());
+  addPath(KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
 
   addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
   addPath(QDir::homeDirPath() + "/.kde/share/toolbar" ); 
@@ -71,11 +69,9 @@ Stephan: See above
   for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 
-  QString temp = KApplication::kdedir();
-  
-  addPath(temp + "/share/apps/" + kapp->appName() + "/pics" );
-  addPath(temp + "/share/toolbar" );
-  addPath(temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  addPath( KApplication::kde_toolbardir() );
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
 
   addPath(QDir::homeDirPath() + "/.kde/share/apps/" + kapp->appName() + "/pics" ); 
   addPath(QDir::homeDirPath() + "/.kde/share/toolbar" ); 
@@ -106,7 +102,7 @@ QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
 QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
   QPixmap result;
   if (name.left(1)!='/'){
-    result = loadInternal(QString("mini/")+name, w, h);
+    result = loadInternal( "mini/" + name, w, h);
   }
   if (result.isNull())
     result = loadInternal(name, w, h);
@@ -118,7 +114,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 
 QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
-  addPath(KApplication::kdedir() + "/share/icons" );
+  addPath(KApplication::kde_icondir());
   addPath(QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadIcon(name, w, h);
   pixmap_dirs.remove((unsigned int) 0);
@@ -127,7 +123,7 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
 }
 
 QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h ){
-  addPath(KApplication::kdedir() + "/share/icons" );
+  addPath(KApplication::kde_icondir());
   addPath(QDir::homeDirPath() + "/.kde/share/icons" );
   QPixmap result = loadMiniIcon(name, w, h);
   pixmap_dirs.remove((unsigned int) 0);

@@ -193,8 +193,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
     setBackgroundColor( lightGray );
 
-    QString f = kapp->kdedir().copy();
-    f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
+    QString f = kapp->kde_datadir().copy();
+    f += "/khtmlw/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
     registerFormats();

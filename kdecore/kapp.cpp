@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.90  1998/02/20 06:21:18  kalle
+// Don't connect the Help/About slot when there is no text for an about box
+//
 // Revision 1.89  1998/02/19 05:58:22  rwilliam
 // Modified getHelpMenu()
 //    Now displays Content instead of Help...
@@ -269,7 +272,7 @@ void KApplication::init()
   mkdir (configPath.data(), 0700); // make it private    
 
   // try to read a global application file
-  QString aGlobalAppConfigName = kdedir() + "/share/config/" + aAppName + "rc";
+  QString aGlobalAppConfigName = kde_configdir() + "/" + aAppName + "rc";
   QFile aGlobalAppConfigFile( aGlobalAppConfigName );
   // try to open read-only
   bool bSuccess = aGlobalAppConfigFile.open( IO_ReadOnly );
@@ -1245,8 +1248,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  if( filename.isEmpty() )
 	    filename = aAppName + "/index.html";
 
-	  QString path = KApplication::kdedir().copy();
-         path.append( "/share/doc/HTML/" );
+	  QString path = KApplication::kde_htmldir().copy();
 
          // first try the locale setting
          QString file = path + klocale->language() + '/' + filename;
