@@ -446,6 +446,7 @@ class KateDocument : public Kate::Document,
     bool print ();
 
   //
+  //
   // KParts::ReadWrite stuff
   //
   public:
