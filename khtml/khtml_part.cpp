@@ -294,8 +294,6 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bLoadEventEmitted = false;
   d->m_workingURL = url;
 
-  d->m_restored = true;
-
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
@@ -377,13 +375,21 @@ bool KHTMLPart::openURL( const KURL &url )
     return true;
   }
 
-  kdDebug( 6050 ) << "closing old URL" << endl;
-  closeURL();
+  if (!d->m_restored)
+  {
+    kdDebug( 6050 ) << "closing old URL" << endl;
+    closeURL();
+  }
 
   args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
-  d->m_bReloading = args.reload;
+  if (d->m_restored)
+     d->m_cachePolicy = KIO::CC_Cache;
+  else if (args.reload)
+     d->m_cachePolicy = KIO::CC_Refresh;
+  else
+     d->m_cachePolicy = KIO::CC_Verify;
 
   if ( args.doPost() && (url.protocol().startsWith("http")) )
   {
@@ -391,7 +397,10 @@ bool KHTMLPart::openURL( const KURL &url )
       d->m_job->addMetaData("content-type", args.contentType() );
   }
   else
-      d->m_job = KIO::get( url, args.reload, false );
+  {
+      d->m_job = KIO::get( url, false, false );
+      d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
+  }
 
   d->m_job->addMetaData(args.metaData());
 
@@ -405,7 +414,6 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  d->m_restored = false;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
@@ -466,7 +474,7 @@ bool KHTMLPart::closeURL()
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bLoadEventEmitted = true; // don't want that one either
-  d->m_bReloading = false;
+  d->m_cachePolicy = KIO::CC_Verify; // Why here?
 
   KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_doc && d->m_doc->parsing() )
@@ -965,7 +973,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
-    d->m_doc->docLoader()->setReloading(d->m_bReloading);
+
+    d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
     d->m_workingURL = KURL();
 
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
@@ -1656,7 +1665,9 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
         closeURL();
         KURL url = m_url;
         m_url = 0;
+        d->m_restored = true;
         openURL(url);
+        d->m_restored = false;
     }
 
     return true;
@@ -2142,15 +2153,10 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   args.frameName = target;
 
-  // For http-refresh, force the io-slave to re-get the page
-  // as needed instead of loading from cache. NOTE: I would
-  // have done a "verify" instead, but I am not sure that servers
-  // will include the correct response (specfically "Refresh:") on
-  // a "HEAD" request which is what a "verify" setting results in.(DA)
   if ( d->m_bHTTPRefresh )
   {
     d->m_bHTTPRefresh = false;
-        args.metaData()["cache"]="reload"; //"verify";
+    args.metaData()["cache"] = "refresh";
   }
 
   args.metaData().insert("main_frame_request",
@@ -2481,7 +2487,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = child->m_serviceType;
 
   child->m_args = args;
-  child->m_args.reload = d->m_bReloading;
+  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload) || (d->m_cachePolicy == KIO::CC_Refresh);
   child->m_serviceName = QString::null;
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
@@ -2624,7 +2630,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     return true;
   }
 
-  child->m_args.reload = d->m_bReloading;
+  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload) || (d->m_cachePolicy == KIO::CC_Refresh);
 
   // make sure the part has a way to find out about the mimetype.
   // we actually set it in child->m_args in requestObject already,
@@ -3331,14 +3337,17 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.docState = docState;
     d->m_extension->setURLArgs( args );
-//    kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
     if (!KHTMLPageCache::self()->isValid(d->m_cacheId))
+    {
+       d->m_restored = true;
        openURL( u );
+       d->m_restored = false;
+    }       
     else
+    {
        restoreURL( u );
+    }
   }
-
-  d->m_restored = true;
 
 }
 
