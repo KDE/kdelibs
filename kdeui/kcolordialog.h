@@ -303,9 +303,9 @@ protected:
   int posToCell(const QPoint &pos, bool ignoreBorders=false);
 
   QColor *colors;
-  bool inMouse;
   QPoint mPos;
   int	selected;
+  bool inMouse;
   bool shade;
   bool acceptDrags;
 
