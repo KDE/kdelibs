@@ -26,73 +26,73 @@
 namespace KABC {
 
 /**
- * Standard KDE address book
- *
- * This class provides access to the standard KDE address book shared by all
- * applications.
- *
- * It's implemented as a singleton. Use @ref self() to get the address book
- * object.
- * 
- * Example:
- *
- * <pre>
- * KABC::AddressBook *ab = KABC::StdAddressBook::self();
- *
- * if ( !ab->load() ) {
- *   // error
- * }
- *
- * KABC::AddressBook::Iterator it;
- * for ( it = ab->begin(); it != ab->end(); ++it ) {
- *   kdDebug() << "UID=" << (*it).uid() << endl;
- *
- *   // do some other stuff
- * }
- *
- * KABC::StdAddressBook::save();
- * </pre>
+  Standard KDE address book
+ 
+  This class provides access to the standard KDE address book shared by all
+  applications.
+ 
+  It's implemented as a singleton. Use @ref self() to get the address book
+  object.
+  
+  Example:
+ 
+  <pre>
+  KABC::AddressBook *ab = KABC::StdAddressBook::self();
+ 
+  if ( !ab->load() ) {
+    // error
+  }
+ 
+  KABC::AddressBook::Iterator it;
+  for ( it = ab->begin(); it != ab->end(); ++it ) {
+    kdDebug() << "UID=" << (*it).uid() << endl;
+ 
+    // do some other stuff
+  }
+ 
+  KABC::StdAddressBook::save();
+  </pre>
 */
 class StdAddressBook : public AddressBook
 {
-public:
-  /**
-   * Return the standard addressbook object.
-   */
-  static AddressBook *self();
+  public:
+    /**
+      Return the standard addressbook object.
+    */
+    static AddressBook *self();
 
-  /**
-   * This is the same as above, but with specified
-   * behaviour of resource loading.
-   *
-   * @param onlyFastResource Only resources marked as 'fast' should be loaded
-   */
-  static AddressBook *self( bool onlyFastResources );
+    /**
+      This is the same as above, but with specified
+      behaviour of resource loading.
 
-  /**
-   * Save the standard address book to disk.
-   */
-  static bool save();
+      @param onlyFastResource Only resources marked as 'fast' should be loaded
+    */
+    static AddressBook *self( bool onlyFastResources );
 
-  /**
-   * Returns the default file name for vcard-based addressbook
-   */
-  static QString fileName();
+    /**
+      Save the standard address book to disk.
+    */
+    static bool save();
 
-  /**
-   * Returns the default directory name for vcard-based addressbook
-   */
-  static QString directoryName();
+    /**
+      Returns the default file name for vcard-based addressbook
+    */
+    static QString fileName();
 
-protected:
-  StdAddressBook();
-  StdAddressBook( bool onlyFastResources );
-  ~StdAddressBook();
-   
-  void init( bool onlyFastResources );
+    /**
+      Returns the default directory name for vcard-based addressbook
+    */
+    static QString directoryName();
 
-private:
-  static AddressBook *mSelf;
+  protected:
+    StdAddressBook();
+    StdAddressBook( bool onlyFastResources );
+    ~StdAddressBook();
+
+    void init( bool onlyFastResources );
+
+  private:
+    static AddressBook *mSelf;
 };
 
 }

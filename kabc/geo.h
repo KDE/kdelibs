@@ -26,10 +26,10 @@
 namespace KABC {
 
 /**
- * @short Geographic position
- * 
- * This class represents a geographic position.
- */
+  @short Geographic position
+  
+  This class represents a geographic position.
+*/
 class Geo
 {
     friend QDataStream &operator<<( QDataStream &, const Geo & );
@@ -37,49 +37,49 @@ class Geo
 
   public:
     /**
-     * Construct invalid geographics position object.
-     */
+      Construct invalid geographics position object.
+    */
     Geo();
 
     /**
-     * Construct geographics position object.
-     * 
-     * @param latitude  Geographical latitude
-     * @param longitude Geographical longitude
-     */
+      Construct geographics position object.
+      
+      @param latitude  Geographical latitude
+      @param longitude Geographical longitude
+    */
     Geo( float latitude, float longitude );
     
     /**
-     * Sets the latitude.
-     */
+      Sets the latitude.
+    */
     void setLatitude( float );
 
     /**
-     * Returns the latitude.
-     */
+      Returns the latitude.
+    */
     float latitude() const;
     
     /**
-     * Sets the longitude.
-     */
+      Sets the longitude.
+    */
     void setLongitude( float );
 
     /**
-     * Returns the longitude.
-     */
+      Returns the longitude.
+    */
     float longitude() const;
   
     /**
-     * Returns, if this object contains a valid geographical position.
-     */
+      Returns, if this object contains a valid geographical position.
+    */
     bool isValid() const;
     
     bool operator==( const Geo & ) const;
     bool operator!=( const Geo & ) const;
 
     /**
-     * Returns string representation of geographical position.
-     */
+      Returns string representation of geographical position.
+    */
     QString asString() const;
       
   private:

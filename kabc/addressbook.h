@@ -34,10 +34,10 @@ class Resource;
 class Ticket;
 
 /**
- * @short Address Book
- * 
- * This class provides access to a collection of address book entries.
- */
+  @short Address Book
+  
+  This class provides access to a collection of address book entries.
+*/
 class AddressBook : public QObject
 {
     Q_OBJECT
@@ -47,10 +47,10 @@ class AddressBook : public QObject
 
   public:
     /**
-     * @short Address Book Iterator
-     * 
-     * This class provides an iterator for address book entries.
-     */
+      @short Address Book Iterator
+      
+      This class provides an iterator for address book entries.
+    */
     class Iterator
     {
       public:
@@ -74,10 +74,10 @@ class AddressBook : public QObject
     };
 
     /**
-     * @short Address Book Const Iterator
-     * 
-     * This class provides a const iterator for address book entries.
-     */
+      @short Address Book Const Iterator
+      
+      This class provides a const iterator for address book entries.
+    */
     class ConstIterator
     {
       public:
@@ -99,122 +99,122 @@ class AddressBook : public QObject
     };
     
     /**
-     * Constructs a address book object.
-     * 
-     * @param format File format class.
-     */
+      Constructs a address book object.
+      
+      @param format File format class.
+    */
     AddressBook();
     virtual ~AddressBook();
 
     /**
-     * Requests a ticket for saving the addressbook. Calling this function locks
-     * the addressbook for all other processes. If the address book is already
-     * locked the function returns 0. You need the returned @ref Ticket object
-     * for calling the @ref save() function.
-     * 
-     * @see save()
-     */
+      Requests a ticket for saving the addressbook. Calling this function locks
+      the addressbook for all other processes. If the address book is already
+      locked the function returns 0. You need the returned @ref Ticket object
+      for calling the @ref save() function.
+      
+      @see save()
+    */
     Ticket *requestSaveTicket( Resource *resource=0 );
     
     /**
-     * Load address book from file.
-     */
+      Load address book from file.
+    */
     bool load();
 
     /**
-     * Save address book. The address book is saved to the file, the Ticket
-     * object has been requested for by @ref requestSaveTicket().
-     *
-     * @param ticket a ticket object returned by @ref requestSaveTicket()
-     */
+      Save address book. The address book is saved to the file, the Ticket
+      object has been requested for by @ref requestSaveTicket().
+     
+      @param ticket a ticket object returned by @ref requestSaveTicket()
+    */
     bool save( Ticket *ticket );
 
     /**
-     * Save address book. Query all resources to save their addressees
-     */
+      Save address book. Query all resources to save their addressees
+    */
     bool saveAll();
 
     /**
-     * Returns a iterator for first entry of address book.
-     */
+      Returns a iterator for first entry of address book.
+    */
     Iterator begin();
 
     /**
-     * Returns a const iterator for first entry of address book.
-     */
+      Returns a const iterator for first entry of address book.
+    */
     ConstIterator begin() const;
 
     /**
-     * Returns a iterator for first entry of address book.
-     */
+      Returns a iterator for first entry of address book.
+    */
     Iterator end();
 
     /**
-     * Returns a const iterator for first entry of address book.
-     */
+      Returns a const iterator for first entry of address book.
+    */
     ConstIterator end() const;
 
     /**
-     * Removes all entries from address book.
-     */
+      Removes all entries from address book.
+    */
     void clear();
     
     /**
-     * Insert an Addressee object into address book. If an object with the same
-     * unique id already exists in the address book it it replaced by the new
-     * one. If not the new object is appended to the address book.
-     */
+      Insert an Addressee object into address book. If an object with the same
+      unique id already exists in the address book it it replaced by the new
+      one. If not the new object is appended to the address book.
+    */
     void insertAddressee( const Addressee & );
 
     /**
-     * Removes entry from the address book.
-     */
+      Removes entry from the address book.
+    */
     void removeAddressee( const Addressee & );
 
     /**
-     * This is like @ref removeAddressee() just above, with the difference that
-     * the first element is a iterator, returned by @ref begin().
-     */
+      This is like @ref removeAddressee() just above, with the difference that
+      the first element is a iterator, returned by @ref begin().
+    */
     void removeAddressee( const Iterator & );
 
     /**
-     * Find the specified entry in address book. Returns end(), if the entry
-     * couldn't be found.
-     */
+      Find the specified entry in address book. Returns end(), if the entry
+      couldn't be found.
+    */
     Iterator find( const Addressee & );
 
     /**
-     * Find the entry specified by an unique id. Returns an empty Addressee
-     * object, if the address book does not contain an entry with this id.
-     */
+      Find the entry specified by an unique id. Returns an empty Addressee
+      object, if the address book does not contain an entry with this id.
+    */
     Addressee findByUid( const QString & );
 
     /**
-     * Find all entries with the specified name in the address book. Returns
-     * an empty list, if no entries couldn't be found.
-     */
+      Find all entries with the specified name in the address book. Returns
+      an empty list, if no entries couldn't be found.
+    */
     Addressee::List findByName( const QString & );
 
     /**
-     * Find all entries with the specified email address  in the address book.
-     * Returns an empty list, if no entries couldn't be found.
-     */
+      Find all entries with the specified email address  in the address book.
+      Returns an empty list, if no entries couldn't be found.
+    */
     Addressee::List findByEmail( const QString & );
 
     /**
-     * Find all entries wich have the specified category in the address book.
-     * Returns an empty list, if no entries couldn't be found.
-     */
+      Find all entries wich have the specified category in the address book.
+      Returns an empty list, if no entries couldn't be found.
+    */
     Addressee::List findByCategory( const QString & );
 
     /**
-     * Return a string identifying this addressbook.
-     */
+      Return a string identifying this addressbook.
+    */
     virtual QString identifier();
 
     /**
-     * Used for debug output.
-     */
+      Used for debug output.
+    */
     void dump() const;
 
     void emitAddressBookLocked() { emit addressBookLocked( this ); }
@@ -222,74 +222,74 @@ class AddressBook : public QObject
     void emitAddressBookChanged() { emit addressBookChanged( this ); }
 
     /**
-     * Return list of all Fields known to the address book which are associated
-     * with the given field category.
-     */
+      Return list of all Fields known to the address book which are associated
+      with the given field category.
+    */
     Field::List fields( int category = Field::All );
 
     /**
-     * Add custom field to address book.
-     * 
-     * @param label    User visible label of the field.
-     * @param category Ored list of field categories.
-     * @param key      Identifier used as key for reading and writing the field.
-     * @param app      String used as application key for reading and writing
-     *                 the field.
-     */
+      Add custom field to address book.
+      
+      @param label    User visible label of the field.
+      @param category Ored list of field categories.
+      @param key      Identifier used as key for reading and writing the field.
+      @param app      String used as application key for reading and writing
+                      the field.
+    */
     bool addCustomField( const QString &label, int category = Field::All,
                          const QString &key = QString::null,
                          const QString &app = QString::null );
 
     /**
-     * Add address book resource.
-     */
+      Add address book resource.
+    */
     bool addResource( Resource * );
 
     /**
-     * Remove address book resource.
-     */
+      Remove address book resource.
+    */
     bool removeResource( Resource * );
 
     /**
-     * Move addressee to an other resource.
-     */
+      Move addressee to an other resource.
+    */
     void resourceAddressee( Addressee&, Resource * );
 
     /**
-     * Return pointer list of all resources.
-     */
+      Return pointer list of all resources.
+    */
     QPtrList<Resource> resources();
 
     /**
-     * Return reference to last addressee added to addressbook.
-     */
+      Return reference to last addressee added to addressbook.
+    */
     Addressee &lastAddressee();
 
     /**
-     * Set the @p ErrorHandler, that is used by @ref error() to
-     * provide gui-independend error messages.
-     */
+      Set the @p ErrorHandler, that is used by @ref error() to
+      provide gui-independend error messages.
+    */
     void setErrorHandler( ErrorHandler * );
 
     /**
-     * Shows gui independend error messages.
-     */
+      Shows gui independend error messages.
+    */
     void error( const QString& );
 
   signals:
     /**
-     * Emitted, when the address book has changed on disk.
-     */
+      Emitted, when the address book has changed on disk.
+    */
     void addressBookChanged( AddressBook * );
 
     /**
-     * Emitted, when the address book has been locked for writing.
-     */
+      Emitted, when the address book has been locked for writing.
+    */
     void addressBookLocked( AddressBook * );
 
     /**
-     * Emitted, when the address book has been unlocked.
-     */
+      Emitted, when the address book has been unlocked.
+    */
     void addressBookUnlocked( AddressBook * );
 
   protected:
@@ -298,6 +298,7 @@ class AddressBook : public QObject
     Resource *standardResource();
 
   private:
+    QPtrList<Resource> mDummy; // Remove in KDE 4
     struct AddressBookData;
     AddressBookData *d;
 };

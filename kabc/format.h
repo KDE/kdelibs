@@ -30,57 +30,57 @@ class AddressBook;
 class Addressee;
 
 /**
- * @short Base class for address book formats.
- *
- * This class provides an abstract interface for ResourceFile formats.
- *
- * @internal
- */
+  @short Base class for address book formats.
+ 
+  This class provides an abstract interface for ResourceFile formats.
+ 
+  @internal
+*/
 class Format
 {
-public:
+  public:
 
-  /**
-   * @li @p VCard -  VCard format according to rfc2426
-   * @li @p Binary - Binary format
-   * @li @p Simple - Simple format stored with KConfig
-   */
-  enum Type
-  {
-    VCard,
-    Binary,
-    Simple
-  };
+    /**
+      @li @p VCard -  VCard format according to rfc2426
+      @li @p Binary - Binary format
+      @li @p Simple - Simple format stored with KConfig
+    */
+    enum Type
+    {
+      VCard,
+      Binary,
+      Simple
+    };
 
-  /**
-   * Load addressbook from file.
-   */
-  virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
+    /**
+      Load addressbook from file.
+    */
+    virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
 
-  /**
-   * Load addressbook from file.
-   */
-  bool load( AddressBook *, Resource *, const QString &fileName );
+    /**
+      Load addressbook from file.
+    */
+    bool load( AddressBook *, Resource *, const QString &fileName );
 
-  /**
-   * Save a single Addressee to file.
-   */
-  virtual bool save( const Addressee &, QFile *file ) = 0;
-    
-  /**
-   * Save addressbook to file.
-   */
-  bool save( AddressBook *, Resource *, const QString &fileName );
-    
-  /**
-   * Checks if given file contains the right format
-   */
-  virtual bool checkFormat( QFile *file ) const = 0;
-  bool checkFormat( const QString &fileName ) const;
+    /**
+      Save a single Addressee to file.
+    */
+    virtual bool save( const Addressee &, QFile *file ) = 0;
 
-  QString typeInfo();
-    
-  void removeAddressee( const Addressee & );
+    /**
+      Save addressbook to file.
+    */
+    bool save( AddressBook *, Resource *, const QString &fileName );
+
+    /**
+      Checks if given file contains the right format
+    */
+    virtual bool checkFormat( QFile *file ) const = 0;
+    bool checkFormat( const QString &fileName ) const;
+
+    QString typeInfo();
+
+    void removeAddressee( const Addressee & );
 };
 
 }

@@ -27,12 +27,12 @@
 namespace KABC {
 
 /**
- * @short Phonenumber information.
- * 
- * This class provides phone number information. A phone number is classified by
- * a type. The following types are available, it's possible to use multiple types
- * @ref Types for a number by combining them through a logical or.
- */
+  @short Phonenumber information.
+  
+  This class provides phone number information. A phone number is classified by
+  a type. The following types are available, it's possible to use multiple types
+  @ref Types for a number by combining them through a logical or.
+*/
 class PhoneNumber
 {
     friend QDataStream &operator<<( QDataStream &, const PhoneNumber & );
@@ -43,103 +43,102 @@ class PhoneNumber
     typedef QValueList<int> TypeList;
 
     /**
-     * @li @p Home -  Home number
-     * @li @p Work -  Office number
-     * @li @p Msg -   Messaging
-     * @li @p Pref -  Preferred number
-     * @li @p Voice - Voice
-     * @li @p Fax -   Fax machine
-     * @li @p Cell -  Cell phone
-     * @li @p Video - Video phone
-     * @li @p Bbs -   Mailbox
-     * @li @p Modem - Modem
-     * @li @p Car -   Car phone
-     * @li @p Isdn -  ISDN connection
-     * @li @p Pcs -   Personal Communication Service
-     * @li @p Pager - Pager
-     */
- 
+      @li @p Home -  Home number
+      @li @p Work -  Office number
+      @li @p Msg -   Messaging
+      @li @p Pref -  Preferred number
+      @li @p Voice - Voice
+      @li @p Fax -   Fax machine
+      @li @p Cell -  Cell phone
+      @li @p Video - Video phone
+      @li @p Bbs -   Mailbox
+      @li @p Modem - Modem
+      @li @p Car -   Car phone
+      @li @p Isdn -  ISDN connection
+      @li @p Pcs -   Personal Communication Service
+      @li @p Pager - Pager
+    */
     enum Types { Home = 1, Work = 2, Msg = 4, Pref = 8, Voice = 16, Fax = 32,
            Cell = 64, Video = 128, Bbs = 256, Modem = 512, Car = 1024,
            Isdn = 2048, Pcs = 4096, Pager = 8192 };
 
     /**
-     * Create an empty phone number object.
-     */  
+      Create an empty phone number object.
+    */  
     PhoneNumber();
 
     /**
-     * Create a phonenumber object.
-     * 
-     * @param number Number
-     * @param type   Type as defined in enum. Multiple types can be
-     *               specified bycombining them by a logical or.
-     */
+      Create a phonenumber object.
+     
+      @param number Number
+      @param type   Type as defined in enum. Multiple types can be
+                    specified by combining them by a logical or.
+    */
     PhoneNumber( const QString &number, int type = Home );
 
     /**
-     * Destructor.
-     */
+      Destructor.
+    */
     ~PhoneNumber();
     
     bool operator==( const PhoneNumber & ) const;
     bool operator!=( const PhoneNumber & ) const;
     
     /**
-     * Sets the unique identifier.
-     */
+      Sets the unique identifier.
+    */
     void setId( const QString &id );
 
     /**
-     * Returns the unique identifier.
-     */
+      Returns the unique identifier.
+    */
     QString id() const;
     
     /**
-     * Sets the number.
-     */
+      Sets the number.
+    */
     void setNumber( const QString & );
 
     /**
-     * Returns the number.
-     */
+      Returns the number.
+    */
     QString number() const;
     
     /**
-     * Sets the type. Multiple types can be specified by combining them by
-     * a logical or.
-     */
+      Sets the type. Multiple types can be specified by combining them by
+      a logical or.
+    */
     void setType( int );
 
     /**
-     * Returns the type. Can be a multiple types combined by a logical or.
-     */
+      Returns the type. Can be a multiple types combined by a logical or.
+    */
     int type() const;
 
     /**
-     * Returns a translated string of all types the address has.
-     */
+      Returns a translated string of all types the address has.
+    */
     QString typeLabel() const;
 
     /**
-     * Returns the translated label for phone number depending on its type.
-     */
+      Returns the translated label for phone number depending on its type.
+    */
     QString label() const;
 
     /**
-     * Returns a list of all available types
-     */
+      Returns a list of all available types
+    */
     static TypeList typeList();
 
     /**
-     * Returns the translated label for phone number type.
-     */
+      Returns the translated label for phone number type.
+    */
     static QString typeLabel( int type );
 
     /**
-     * Returns the translated label for phone number type.
-     * @obsolete
-     */
+      Returns the translated label for phone number type.
+      @obsolete
+    */
     static QString label( int type );
 
   private:

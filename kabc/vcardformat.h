@@ -30,26 +30,26 @@ class Addressee;
 class VCardFormatImpl;
 
 /**
- * @short Interface of vCard backend for address book.
- *
- * This class implements the file format interface of address book entries for
- * the vCard format.
- */
+  @short Interface of vCard backend for address book.
+ 
+  This class implements the file format interface of address book entries for
+  the vCard format.
+*/
 class VCardFormat : public Format
 {
-public:
-  VCardFormat();
-  virtual ~VCardFormat();
-  
-  bool load( Addressee &, QFile *file );
-  bool loadAll( AddressBook *, Resource *, QFile *file );
-  void save( const Addressee &, QFile *file );
-  void saveAll( AddressBook *, Resource *, QFile *file );
+  public:
+    VCardFormat();
+    virtual ~VCardFormat();
 
-  bool checkFormat( QFile *file ) const;
+    bool load( Addressee &, QFile *file );
+    bool loadAll( AddressBook *, Resource *, QFile *file );
+    void save( const Addressee &, QFile *file );
+    void saveAll( AddressBook *, Resource *, QFile *file );
 
-private:
-  VCardFormatImpl *mImpl;
+    bool checkFormat( QFile *file ) const;
+
+  private:
+    VCardFormatImpl *mImpl;
 };
 
 }

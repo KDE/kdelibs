@@ -32,125 +32,125 @@
 namespace KABC {
 
 /**
- * @short Special ListViewItem, that is used by the @ref AddresseeDialog.
- */
+  @short Special ListViewItem, that is used by the @ref AddresseeDialog.
+*/
 class AddresseeItem : public QListViewItem
 {
-public:
+  public:
 
-  /**
-   * Type of column
-   * @li @p Name -  Name in Addressee
-   * @li @p Email - Email in Addressee
-   */
-  enum columns { Name = 0, Email = 1 };
+    /**
+      Type of column
+      @li @p Name -  Name in Addressee
+      @li @p Email - Email in Addressee
+    */
+    enum columns { Name = 0, Email = 1 };
 
-  /**
-   * Constructor.
-   *
-   * @param parent    The parent listview.
-   * @param addressee The associated addressee.
-   */
-  AddresseeItem( QListView *parent, const Addressee &addressee );
+    /**
+      Constructor.
 
-  /**
-   * Returns the addressee.
-   */
-  Addressee addressee() const { return mAddressee; }
+      @param parent    The parent listview.
+      @param addressee The associated addressee.
+    */
+    AddresseeItem( QListView *parent, const Addressee &addressee );
 
-  /**
-   * Method used by QListView to sort the items.
-   */
-  virtual QString key( int column, bool ascending ) const;
+    /**
+      Returns the addressee.
+    */
+    Addressee addressee() const { return mAddressee; }
 
-private:
-  Addressee mAddressee;
+    /**
+      Method used by QListView to sort the items.
+    */
+    virtual QString key( int column, bool ascending ) const;
+
+  private:
+    Addressee mAddressee;
 };
 
 /**
- * @short Dialog for selecting address book entries.
- *
- * This class provides a dialog for selecting entries from the standard KDE
- * address book. Use the @ref getAddressee() function to open a modal dialog,
- * returning an address book entry.
- *
- * In the dialog you can select an entry from the list with the mouse or type in
- * the first letters of the name or email address you are searching for. The
- * entry matching best is automatically selected. Use double click, pressing
- * return or pressing the ok button to return the selected addressee to the
- * application.
- */
+  @short Dialog for selecting address book entries.
+ 
+  This class provides a dialog for selecting entries from the standard KDE
+  address book. Use the @ref getAddressee() function to open a modal dialog,
+  returning an address book entry.
+ 
+  In the dialog you can select an entry from the list with the mouse or type in
+  the first letters of the name or email address you are searching for. The
+  entry matching best is automatically selected. Use double click, pressing
+  return or pressing the ok button to return the selected addressee to the
+  application.
+*/
 class AddresseeDialog : public KDialogBase
 {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  /**
-   * Construct addressbook entry select dialog.
-   *
-   * @param parent parent widget
-   */
-  AddresseeDialog( QWidget *parent=0, bool multiple=false );
+  public:
+    /**
+      Construct addressbook entry select dialog.
+     
+      @param parent parent widget
+    */
+    AddresseeDialog( QWidget *parent=0, bool multiple=false );
 
-  /**
-   * Destructor.
-   */
-  virtual ~AddresseeDialog();
+    /**
+      Destructor.
+    */
+    virtual ~AddresseeDialog();
 
-  /**
-   * Return the address chosen.
-   *
-   * If it is a multiple select, this will return only the first address chosen
-   */
-  Addressee addressee();
+    /**
+      Return the address chosen.
+     
+      If it is a multiple select, this will return only the first address chosen
+    */
+    Addressee addressee();
 
-  /**
-   * Return the list of addresses chosen
-   */
-  Addressee::List addressees();
+    /**
+      Return the list of addresses chosen
+    */
+    Addressee::List addressees();
 
-  /**
-   * Select a single address book entry.
-   *
-   * Open addressee select dialog and return the entry selected by the user.
-   * If the user doesn't select an entry or presses cancel, the returned
-   * addressee is empty.
-   */
-  static Addressee getAddressee( QWidget *parent );
+    /**
+      Select a single address book entry.
+     
+      Open addressee select dialog and return the entry selected by the user.
+      If the user doesn't select an entry or presses cancel, the returned
+      addressee is empty.
+    */
+    static Addressee getAddressee( QWidget *parent );
 
-  /**
-   * Select multiple adress book entries.
-   * 
-   * Open addressee select dialog and return the entries selected by the user.
-   * If the user doesn't select an entry or presses cancel, the returned
-   * addressee list is empty.
-   */
-  static Addressee::List getAddressees( QWidget *parent );
+    /**
+      Select multiple adress book entries.
+      
+      Open addressee select dialog and return the entries selected by the user.
+      If the user doesn't select an entry or presses cancel, the returned
+      addressee list is empty.
+    */
+    static Addressee::List getAddressees( QWidget *parent );
 
-private slots:
-  void selectItem( const QString & );
-  void updateEdit( QListViewItem *item );
-  void addSelected( QListViewItem *item );
-  void removeSelected();
+  private slots:
+    void selectItem( const QString & );
+    void updateEdit( QListViewItem *item );
+    void addSelected( QListViewItem *item );
+    void removeSelected();
 
-private:
-  void loadAddressBook();
-  void addCompletionItem( const QString &str, QListViewItem *item );
+  private:
+    void loadAddressBook();
+    void addCompletionItem( const QString &str, QListViewItem *item );
 
-  bool mMultiple;
+    bool mMultiple;
 
-  KListView *mAddresseeList;
-  KLineEdit *mAddresseeEdit;
+    KListView *mAddresseeList;
+    KLineEdit *mAddresseeEdit;
 
-  KListView *mSelectedList;
+    KListView *mSelectedList;
 
-  AddressBook *mAddressBook;
+    AddressBook *mAddressBook;
 
-  QDict<QListViewItem> mItemDict;
-  QDict<QListViewItem> mSelectedDict;
+    QDict<QListViewItem> mItemDict;
+    QDict<QListViewItem> mSelectedDict;
 
-  class AddresseeDialogPrivate;
-  AddresseeDialogPrivate *d;
+    class AddresseeDialogPrivate;
+    AddresseeDialogPrivate *d;
 };
 
 }

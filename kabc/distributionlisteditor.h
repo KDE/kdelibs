@@ -36,97 +36,97 @@ class DistributionListEditorWidget;
 class DistributionListManager;
 
 /**
- * @short Frontend to create distribution lists
- *
- * Creating a new DistributionListEditor does automatically
- * load all addressees and distribution lists from the config
- * files. The changes will be saved when clicking the 'OK'
- * button.
- *
- * Example:
- *
- * <pre>
- * KABC::DistributionListEditor *editor = new
- *         KABC::DistributionListEditor( KABC::StdAddressBook::self(), this );
- *
- * editor->exec();
- * </pre>
- */
+  @short Frontend to create distribution lists
+ 
+  Creating a new DistributionListEditor does automatically
+  load all addressees and distribution lists from the config
+  files. The changes will be saved when clicking the 'OK'
+  button.
+ 
+  Example:
+ 
+  <pre>
+  KABC::DistributionListEditor *editor = new
+          KABC::DistributionListEditor( KABC::StdAddressBook::self(), this );
+ 
+  editor->exec();
+  </pre>
+*/
 class DistributionListEditor : public KDialogBase
 {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  /**
-   * Constructor.
-   *
-   * @param ab     The addressbook, the addressees should be used from
-   * @param parent The parent widget
-   */
-  DistributionListEditor( AddressBook *ab, QWidget *parent );
+  public:
+    /**
+      Constructor.
 
-  /**
-   * Destructor.
-   */
-  virtual ~DistributionListEditor();
+      @param ab     The addressbook, the addressees should be used from
+      @param parent The parent widget
+    */
+    DistributionListEditor( AddressBook *ab, QWidget *parent );
 
-private:
-  DistributionListEditorWidget *mEditor;
+    /**
+      Destructor.
+    */
+    virtual ~DistributionListEditor();
+
+  private:
+    DistributionListEditorWidget *mEditor;
 };
 
 /**
- * @short Helper class
- */
+  @short Helper class
+*/
 class EmailSelectDialog : public KDialogBase
 {
-public:
-  EmailSelectDialog( const QStringList &emails, const QString &current,
-      QWidget *parent );
-    
-  QString selected();
+  public:
+    EmailSelectDialog( const QStringList &emails, const QString &current,
+        QWidget *parent );
 
-  static QString getEmail( const QStringList &emails, const QString &current,
-      QWidget *parent );
+    QString selected();
 
-private:
-  QButtonGroup *mButtonGroup;
+    static QString getEmail( const QStringList &emails, const QString &current,
+        QWidget *parent );
+
+  private:
+    QButtonGroup *mButtonGroup;
 };
 
 /**
- * @short Helper class
- */
+  @short Helper class
+*/
 class DistributionListEditorWidget : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  DistributionListEditorWidget( AddressBook *, QWidget *parent );
-  virtual ~DistributionListEditorWidget();
+  public:
+    DistributionListEditorWidget( AddressBook *, QWidget *parent );
+    virtual ~DistributionListEditorWidget();
 
-private slots:
-  void newList();
-  void editList();
-  void removeList();
-  void addEntry();
-  void removeEntry();
-  void changeEmail();
-  void updateEntryView();
-  void updateAddresseeView();
-  void updateNameCombo();
-  void slotSelectionEntryViewChanged();
-  void slotSelectionAddresseeViewChanged();
-  void save();
+  private slots:
+    void newList();
+    void editList();
+    void removeList();
+    void addEntry();
+    void removeEntry();
+    void changeEmail();
+    void updateEntryView();
+    void updateAddresseeView();
+    void updateNameCombo();
+    void slotSelectionEntryViewChanged();
+    void slotSelectionAddresseeViewChanged();
+    void save();
 
-private:
-  QComboBox *mNameCombo;  
-  QLabel *mListLabel;
-  QListView *mEntryView;
-  QListView *mAddresseeView;
+  private:
+    QComboBox *mNameCombo;  
+    QLabel *mListLabel;
+    QListView *mEntryView;
+    QListView *mAddresseeView;
 
-  AddressBook *mAddressBook;
-  DistributionListManager *mManager;
-  QPushButton *mNewButton, *mEditButton, *mRemoveButton;
-  QPushButton *mChangeEmailButton, *mRemoveEntryButton, *mAddEntryButton;
+    AddressBook *mAddressBook;
+    DistributionListManager *mManager;
+    QPushButton *mNewButton, *mEditButton, *mRemoveButton;
+    QPushButton *mChangeEmailButton, *mRemoveEntryButton, *mAddEntryButton;
 };
 
 }
