@@ -21,6 +21,9 @@
 #ifndef _KJSSTRING_H_
 #define _KJSSTRING_H_
 
+/**
+ * @internal
+ */
 namespace DOM {
   class DOMString;
 };
@@ -28,6 +31,9 @@ class QString;
 
 namespace KJS {
 
+  /**
+   * @short Unicode character.
+   */
   // XChar2b and QChar compatible character representation
   struct UChar {
     UChar() : hi(0), lo(0) { }
@@ -38,6 +44,9 @@ namespace KJS {
     static UChar null;
   };
 
+  /**
+   * @short 8 bit char based string class
+   */
   class CString {
   public:
     CString() : data(0L) { }
@@ -59,6 +68,9 @@ namespace KJS {
 
   class UString;
 
+  /**
+   * @internal
+   */
   class UStringData {
     friend UString;
     friend bool operator==(const UString&, const UString&);
@@ -79,6 +91,9 @@ namespace KJS {
     static UStringData null;
   };
 
+  /**
+   * @short Unicode string class
+   */
   class UString {
     friend bool operator==(const UString&, const UString&);
   public:

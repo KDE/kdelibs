@@ -38,6 +38,9 @@ namespace KJS {
   class Context;
   class ParamList;
 
+  /**
+   * @short Base class for Function objects.
+   */
   class Function : public KJSO {
   public:
     Function() { attr = ImplicitNone; }
@@ -50,25 +53,42 @@ namespace KJS {
     ParamList *param;
   };
 
+  /**
+   * @short Abstract base class for internal functions.
+   */
   class InternalFunction : public Function {
   public:
     InternalFunction() { param = 0L; }
+    /**
+     * @return @ref InternalFunctionType
+     */
     virtual Type type() const { return InternalFunctionType; }
     virtual KJSO* execute(Context *) = 0;
+    /**
+     * @return @ref HostCode
+     */
     CodeType codeType() { return HostCode; }
   };
 
+  /**
+   * @short Constructor object for use with the 'new' operator
+   */
   class Constructor : public InternalFunction {
   public:
     Constructor();
     Constructor(Object *proto, int len);
+    /**
+     * @return @ref ConstructorType
+     */
     virtual Type type() const { return ConstructorType; }
     virtual KJSO* execute(Context *);
     virtual Object* construct(List *args) = 0;
   };
 
   class Activation;
-
+  /**
+   * @short Execution context.
+   */
   class Context {
   public:
     Context(CodeType type = GlobalCode, Context *callingContext = 0L,
@@ -89,6 +109,9 @@ namespace KJS {
     List *scopeChain;
   };
 
+  /**
+   * @short Print to stdout for debugging purposes.
+   */
   class DebugPrint : public InternalFunction {
   public:
     KJSO* execute(KJS::Context *);

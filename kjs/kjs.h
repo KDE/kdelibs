@@ -117,7 +117,9 @@ extern "C" {
   KJSDestroyFunc kjs_destroy;
 }
 
-// hack: a proxy for applications that dlopen our lib.
+/**
+ * @short Proxy class serving as interface when being dlopen'ed.
+ */
 class KJSProxy {
 public:
   KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c, KJSDestroyFunc d)

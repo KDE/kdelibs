@@ -25,8 +25,14 @@
 
 #include "ustring.h"
 
+/**
+ * @short Main namespace
+ */
 namespace KJS {
 
+  /**
+   * Types of classes derived from KJSO
+   */
   enum Type { // main types
               UndefinedType,
 	      NullType,
@@ -48,12 +54,18 @@ namespace KJS {
 	      ErrorType
   };
 
+  /**
+   * Property attributes.
+   */
   enum Attribute { None       = 0,
 		   ReadOnly   = 1 << 1,
 		   DontEnum   = 1 << 2,
 		   DontDelete = 1 << 3,
 		   Internal   = 1 << 4 };
 
+  /**
+   * Types of classes derived from @ref Object.
+   */
   enum Class { UndefClass,
 	       ArrayClass,
 	       StringClass,
@@ -88,14 +100,34 @@ namespace KJS {
   class List;
   class Node;
 
+  /**
+   * @short Main base class for every KJS object.
+   */
   // this is class is a terrible mess. Dynamic casts might
   // allow some simplifications.
   class KJSO {
   public:
+    /**
+     * Constructor.
+     */
     KJSO();
+    /**
+     * Destructor.
+     */
     virtual ~KJSO();
+    /**
+     * @return the type of the object. One of the @ref KJS::Type enums.
+     */
     virtual Type type() const = 0L;
+    /**
+     * Check whether object is of a certain type
+     * @param t type to check for
+     */
     bool isA(Type t) const { return (type() == t); }
+    /**
+     * Use this method when checking for objects. It's safer than checking
+     * for a single object type with @ref isA().
+     */
     bool isObject() const { return (type() >= ObjectType); }
 
 #ifdef KJS_DEBUG_MEM
@@ -167,6 +199,9 @@ namespace KJS {
     friend KJSO *zeroRef(KJSO *obj);
 
   protected:
+    /**
+     * @internal
+     */
     // multi purpose
     union Value {
       bool b;
@@ -192,6 +227,9 @@ namespace KJS {
     Property *prop;
   }; // end of KJSO
 
+  /**
+   * @short Smart pointer holding references to @ref KJS::KJSO.
+   */
   class Ptr {
   public:
     Ptr() : obj(0L) { }
@@ -215,6 +253,9 @@ namespace KJS {
   class List;
   class ListIterator;
 
+  /**
+   * @internal
+   */
   class ListNode {
     friend List;
     friend ListIterator;
@@ -226,6 +267,9 @@ namespace KJS {
     ListNode *prev, *next;
   };
 
+  /**
+   * @short Iterator for @ref KJS::List objects.
+   */
   class ListIterator {
     friend List;
   public:
@@ -243,6 +287,9 @@ namespace KJS {
     ListNode *node;
   };
 
+  /**
+   * @short Native list type.
+   */
   class List : public KJSO {
   public:
     List();
@@ -263,6 +310,9 @@ namespace KJS {
     ListNode *hook;
   };
 
+  /**
+   * @short Object class encapsulating an internal value.
+   */
   class Object : public KJSO {
   public:
     Object(Class c = UndefClass, KJSO *v = 0L, Object *p = 0L);
@@ -278,6 +328,9 @@ namespace KJS {
     KJSO* objValue;
   };
 
+  /**
+   * @short Base class for language extensions.
+   */
   class HostObject : public KJSO {
   public:
     virtual Type type() const { return HostType; }
@@ -285,6 +338,9 @@ namespace KJS {
     virtual void put(const UString &p, KJSO *v);
   };
 
+  /**
+   * @short Unique global object containing initial native properties.
+   */
   class Global : public KJSO {
   public:
     Global();
