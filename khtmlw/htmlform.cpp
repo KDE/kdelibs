@@ -69,7 +69,8 @@ QString HTMLElement::encodeString( const QString &e )
 
 		if ( c == ' ' )
 			encoded += '+';
-		else if ( c > 127 || c == '=' || c == '&' || c == '%' || c == '+' )
+		else if ( c > 127 || c == '=' || c == '&' || c == '%' ||
+		    c == '+' || c == '\n' )
 		{
 			char buffer[5];
 			sprintf( buffer, "%%%02X", (int)c );

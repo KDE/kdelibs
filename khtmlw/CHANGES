@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.09 - 04 February 1998
+---------------
+
+Fix getTextSelection
+encode \n in textarea
+
+
 Version 0.12.08 - 16 January  1998
 ---------------
 

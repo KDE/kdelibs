@@ -220,7 +220,8 @@ HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
 
 void HTMLVSpace::getSelectedText( QString &_str )
 {
-    _str += '\n';
+    if ( isSelected() )
+	_str += '\n';
 }
 
 //-----------------------------------------------------------------------------
