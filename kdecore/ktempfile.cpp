@@ -94,7 +94,10 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    QCString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
    if((mFd = mkstemps(nme.data(), ext.length())) < 0)
    {
-       mError = EACCES;
+       // Recreate it for the warning, mkstemps emptied it
+       QCString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
+       qWarning("KTempFile: Error trying to create %s: %s", nme.data(), strerror(errno));
+       mError = errno;
        mTmpName = QString::null;
        return false;
    }
@@ -147,9 +150,10 @@ KTempFile::fstream()
 
    // Create a stream
    mStream = fdopen(mFd, "r+");
-   if (!mStream)
+   if (!mStream) {
+     qWarning("KTempFile: Error trying to open %s: %s", mTmpName.latin1(), strerror(errno));
      mError = errno;
-
+   }
    return mStream;
 }
 
@@ -210,8 +214,10 @@ KTempFile::close()
       result = fclose(mStream);
       mStream = 0;
       mFd = -1;
-      if (result != 0)
+      if (result != 0) {
+         qWarning("KTempFile: Error trying to closing %s: %s", mTmpName.latin1(), strerror(errno));
          mError = errno;
+      }
    }
 
 
@@ -219,8 +225,10 @@ KTempFile::close()
    {
       result = ::close(mFd);
       mFd = -1;
-      if (result != 0)
+      if (result != 0) {
+         qWarning("KTempFile: Error trying to closing %s: %s", mTmpName.latin1(), strerror(errno));
          mError = errno;
+      }
    }
 
    bOpen = false;
