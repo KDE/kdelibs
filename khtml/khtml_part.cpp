@@ -2059,8 +2059,10 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
     return 0L;
   else {
     KParts::ReadOnlyPart *p = it.data().m_part;
-    assert( p->inherits( "KHTMLPart" ));
-    return (KHTMLPart*)p;
+    if ( p && p->inherits( "KHTMLPart" ))
+      return (KHTMLPart*)p;
+    else
+      return 0L;
   }
 }
 
