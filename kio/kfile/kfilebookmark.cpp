@@ -90,7 +90,7 @@ void KFileBookmarkManager::read( const QString& filename )
 	root.clear();
 
 	QString text;
-        int BUFSIZE = 256;
+        const int BUFSIZE = 256;
 	char buffer[BUFSIZE];
 
 	do
