@@ -657,6 +657,26 @@ return -1;
 }
 
 
+QStringList KWalletD::users(const QString& wallet) const {
+QStringList rc;
+
+	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+						it.current();
+							++it) {
+		if (it.current()->walletName() == wallet) {
+			for (QMap<QCString,QValueList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
+				if (hit.data().contains(it.currentKey())) {
+					rc += hit.key();
+				}
+			}
+			break;
+		}
+	}
+
+return rc;
+}
+
+
 void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	QByteArray data;
 	QDataStream ds(data, IO_WriteOnly);
