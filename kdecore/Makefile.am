@@ -90,12 +90,10 @@ kdebug_DATA = kdebug.areas kdebugrc
 kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 	(cd $(srcdir) && ./generate_keys.sh $(QNAMESPACE_H))
 
-install-data-local: charsets.config
+install-data-local:
 	$(mkinstalldirs) $(includedir)
 	$(mkinstalldirs) $(includedir)/kio
 	$(INSTALL_DATA) $(srcdir)/../libltdl/ltdl.h $(includedir)/ltdl.h
-	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 	$(mkinstalldirs) $(kde_datadir)/knotify
 	$(INSTALL_DATA) $(srcdir)/eventsrc $(kde_datadir)/knotify/eventsrc
 	$(mkinstalldirs) $(kde_confdir)/colors
@@ -105,11 +103,10 @@ install-data-local: charsets.config
 	$(INSTALL_DATA) $(srcdir)/kmdcodec_compat.h $(includedir)/kio/kmdcodec.h
 
 uninstall-local:
-	-rm -f $(kde_confdir)/charsets
 	-rm -f $(includedir)/ltdl.h
 	-rm -f $(includedir)/kio/kmdcodec.h
 
-EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
+EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
 	kentities.c kentities.gperf makeentities kmdcodec_compat.h
 
