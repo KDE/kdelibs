@@ -42,7 +42,7 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView")
 
    /* Connect to see the status bar */
    KStatusBar* sta = statusBar();
-   connect( treeView, SIGNAL( statusBarText( const QString& )),
+   connect( treeView, SIGNAL( onItem( const QString& )),
 	    sta, SLOT( message( const QString& )));
    
    
