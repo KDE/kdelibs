@@ -219,7 +219,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
         // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableJavaScript" ) )
-      m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
+      m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", true );
 
         // The global setting for Plugins (there's no local setting yet)
     if ( reset || config->hasKey( "EnablePlugins" ) )
