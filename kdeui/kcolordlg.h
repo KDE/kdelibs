@@ -124,6 +124,7 @@ class KPaletteTable : public QWidget
   Q_OBJECT
 public:
   KPaletteTable( QWidget *parent, int minWidth=210, int cols = 16);
+  ~KPaletteTable();
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
   QString palette();

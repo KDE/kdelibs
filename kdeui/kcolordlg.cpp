@@ -195,7 +195,7 @@ void KHSSelector::drawPalette()
 //-----------------------------------------------------------------------------
 
 KValueSelector::KValueSelector( QWidget *parent )
-	: KSelector( KSelector::Vertical, parent )
+	: KSelector( KSelector::Vertical, parent ), hue(0), sat(0)
 {
 	setRange( 0, 255 );
 	pixmap.setOptimization( QPixmap::BestOptim );
@@ -487,6 +487,11 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	this, SLOT(slotSetPalette( const QString &)));
 }
 
+KPaletteTable::~KPaletteTable()
+{
+   delete mPalette;
+}
+
 QString
 KPaletteTable::palette()
 {
@@ -760,6 +765,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 		Ok, true )
 {
   bRecursion = true; 
+  bColorPicking = false;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
 
