@@ -22,6 +22,7 @@
 #include <klocale.h>
 
 #include <kjs/types.h>
+#include <kjs/function.h>
 #include <kjs/operations.h>
 #include <kurl.h>
 #include <kio/kprotocolmanager.h>
@@ -44,6 +45,13 @@ namespace KJS {
     Completion tryExecute(const List &);
   };
 
+  class NavigatorFunc : public InternalFunctionImp {
+  public:
+    NavigatorFunc(KHTMLPart *p) : part(p) { }
+    Completion execute(const List &);
+  private:
+  KHTMLPart *part;
+  };
 };
 
 KJSO Navigator::get(const UString &p) const
@@ -51,7 +59,9 @@ KJSO Navigator::get(const UString &p) const
   KURL url = part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
 
-  if (p == "appCodeName")
+  if (p == "javaEnabled")
+     return Function (new NavigatorFunc(part));
+  else if (p == "appCodeName")
     return String("Mozilla");
   else if (p == "appName") {
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
@@ -84,4 +94,10 @@ KJSO Plugins::get(const UString &p) const
 Completion PluginsFunc::tryExecute(const List &)
 {
   return Completion(Normal, Undefined());
+}
+
+Completion NavigatorFunc::execute(const List &)
+{
+  // javaEnabled()
+  return Completion(Normal, Boolean(part->javaEnabled()));
 }
