@@ -984,6 +984,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     fileView->addItemList( newone );
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
+    
     KFileItem *item;
     KFileItemListIterator it( newone );
     while ( (item = it.current()) ) {
@@ -1001,6 +1002,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
     if ( !pendingMimeTypes.isEmpty() )
         QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+
     QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 
