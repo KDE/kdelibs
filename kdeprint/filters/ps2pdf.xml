@@ -1,35 +1,45 @@
 <!DOCTYPE kprintfilter>
 <kprintfilter name="ps2pdf" >
- <filtercommand data="gs -q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=%filteroutput -sPAPERSIZE=%psl %filterargs -c .setpdfwrite -f %filterinput" />
- <filterargs name="ps2pdf" description="" >
+ <filtercommand data="ps2pdf -sPAPERSIZE=%psl %filterargs %filterinput %filteroutput" />
+ <filterargs name="__root__" description="ps2pdf" >
   <filtergroup name="general" description="General" >
-   <filterarg format="-r%value" type="list" name="resol" default="300x300" description="Resolution" >
-    <value name="72x72" description="72 dpi" />
-    <value name="144x144" description="144 dpi" />
-    <value name="300x300" description="300 dpi" />
-    <value name="600x600" description="600 dpi" />
-    <value name="1200x1200" description="1200 dpi" />
-    <value name="2400x2400" description="2400 dpi" />
+   <filterarg format="-dCompatibilityLevel=%value" type="list" name="compatlevel" default="1.2" description="PDF compatibility" >
+    <value name="1.2" description="Acrobat 3+" />
+    <value name="1.3" description="Acrobat 4+" />
+    <value name="1.4" description="Acrobat 5+" />
    </filterarg>
-   <filterarg format="-dCompatibilityLevel=%value" type="list" name="compat" default="gs-def" description="Compatibility Level" >
-    <value name="gs-def" description="GhostScript Default Setting" />
-    <value name="1.2" description="Level 1.2" />
-    <value name="1.3" description="Level 1.3" />
+   <filterarg format="-dPDFSETTINGS=%value" type="list" name="targetDevice" default="/default" description="Target device" >
+    <value name="/default" description="Default" />
+    <value name="/screen" description="Screen" />
+    <value name="/printer" description="Printer" />
+    <value name="/prepress" description="Prepress" />
+   </filterarg>
+   <filterarg format="-dAutoRotatePages=%value" type="bool" name="autorotate" default="/PageByPage" description="Auto rotate pages" >
+    <value name="/PageByPage" description="Page by Page" />
+    <value name="/None" description="None" />
    </filterarg>
   </filtergroup>
   <filtergroup name="image" description="Image Options" >
    <filtergroup name="colorimage" description="Color Images" >
-    <filterarg format="-dDownsampleColorImages=true" type="bool" name="coldownsampl" default="false" description="Downsample color images" >
+    <filterarg format="-dEncodeColorImages=%value" type="bool" name="colorencode" default="true" description="Encode color images" >
      <value name="true" description="Enabled" />
      <value name="false" description="Disabled" />
     </filterarg>
-    <filterarg format="-dColorImageResolution=%value" type="int" min="9" max="2400" name="colimageres" default="72" description="Maximum color image resolution" />
-    <filterarg format="-sColorImageDownsampleType=%value" type="list" name="colsampltype" default="Subsample" description="Color images downsampling method" >
+    <filterarg format="-dColorImageFilter=%value" type="list" name="colorencodetype" default="/DCTEncode" description="Color image encoding method" >
+     <value name="/FlateEncode" description="Flate compression" />
+     <value name="/DCTEncode" description="JPEG compression" />
+    </filterarg>
+    <filterarg format="-dDownsampleColorImages=%value" type="bool" name="coldownsampl" default="false" description="Downsample color images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dColorImageResolution=%value" type="int" min="9" max="2400" name="colimageres" default="300" description="Maximum color image resolution" />
+    <filterarg format="-sColorImageDownsampleType=%value" type="list" name="colsampltype" default="Subsample" description="Color image downsampling method" >
      <value name="Subsample" description="Sub-sampling" />
      <value name="Average" description="Averaging" />
      <value name="Bicubic" description="Bicubic interpolation" />
     </filterarg>
-    <filterarg format="-dColorImageDepth=%value" type="list" name="coldepth" default="-1" description="Color images depth" >
+    <filterarg format="-dColorImageDepth=%value" type="list" name="coldepth" default="-1" description="Color image depth" >
      <value name="-1" description="Use the depth of the original" />
      <value name="1" description="1" />
      <value name="2" description="2" />
@@ -38,17 +48,25 @@
     </filterarg>
    </filtergroup>
    <filtergroup name="grayimage" description="Grayscale Images" >
-    <filterarg format="-dDownsampleGrayImages=true" type="bool" name="graydownsampl" default="false" description="Down sample grayscale images" >
+    <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencode" default="true" description="Encode grayscale images" >
      <value name="true" description="Enabled" />
      <value name="false" description="Disabled" />
     </filterarg>
-    <filterarg format="-dGrayImageResolution=%value" type="int" min="9" max="2400" name="grayimageres" default="72" description="Maximum grayscale image resolution" />
-    <filterarg format="-sGrayImageDownsampleType=%value" type="list" name="graysampltype" default="Subsample" description="Grayscale images downsampling method" >
+    <filterarg format="-dEncodeGrayImages=%value" type="bool" name="grayencodetype" default="/FlateEncode" description="Grayscale image encoding method" >
+     <value name="/FlateEncode" description="Flate compression" />
+     <value name="/DCTEncode" description="JPEG compression" />
+    </filterarg>
+    <filterarg format="-dDownsampleGrayImages=%value" type="bool" name="graydownsampl" default="false" description="Downsample grayscale images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dGrayImageResolution=%value" type="int" min="9" max="2400" name="grayimageres" default="300" description="Maximum grayscale image resolution" />
+    <filterarg format="-sGrayImageDownsampleType=%value" type="list" name="graysampltype" default="Subsample" description="Grayscale image downsampling method" >
      <value name="Subsample" description="Sub-sampling" />
      <value name="Average" description="Averaging" />
      <value name="Bicubic" description="Bicubic interpolation" />
     </filterarg>
-    <filterarg format="-dGrayImageDepth=%value" type="list" name="graydepth" default="-1" description="Grayscale images depth" >
+    <filterarg format="-dGrayImageDepth=%value" type="list" name="graydepth" default="-1" description="Grayscale image depth" >
      <value name="-1" description="Use the depth of the original" />
      <value name="1" description="1" />
      <value name="2" description="2" />
@@ -56,6 +74,47 @@
      <value name="8" description="8" />
     </filterarg>
    </filtergroup>
+   <filtergroup name="monoimage" description="Mono Images" >
+    <filterarg format="-dEncodeMonoImages=%value" type="bool" name="monoencode" default="true" description="Encode mono images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dEncodeMonoImages=%value" type="list" name="monoencodetype" default="/CCITTFaxEncode" description="Mono image encoding method" >
+     <value name="/CCITTFaxEncode" description="CCITT compression" />
+     <value name="/FlateEncode" description="Flate compression" />
+    </filterarg>
+    <filterarg format="-dDownsampleMonoImages=%value" type="bool" name="downsamplmono" default="false" description="Downsample mono images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dMonoImageResolution=%value" type="int" min="0" max="2400" name="monores" default="300" description="Maximum mono image resolution" />
+    <filterarg format="-sMonoImageDownsampleType=%value" type="list" name="monosampltype" default="Subsample" description="Mono image downsampling method" >
+     <value name="Subsample" description="Sub-sampling" />
+     <value name="Average" description="Averaging" />
+     <value name="Bicubic" description="Bicubic interpolation" />
+    </filterarg>
+    <filterarg format="-dMonoImageDepth=%value" type="list" name="monodepth" default="-1" description="Mono image depth" >
+     <value name="-1" description="Use the depth of the original" />
+     <value name="1" description="1" />
+     <value name="2" description="2" />
+     <value name="4" description="4" />
+     <value name="8" description="8" />
+    </filterarg>
+   </filtergroup>
+  </filtergroup>
+  <filtergroup name="fonts" description="Fonts" >
+   <filterarg format="-dEmbedAllFonts=%value" type="bool" name="embedfont" default="true" description="Embed fonts" >
+    <value name="true" description="Enabled" />
+    <value name="false" description="Disabled" />
+   </filterarg>
+   <filterarg format="-r%value" type="list" name="resol" default="300x300" description="Bitmap font resolution" >
+    <value name="72x72" description="72 dpi" />
+    <value name="144x144" description="144 dpi" />
+    <value name="300x300" description="300 dpi" />
+    <value name="600x600" description="600 dpi" />
+    <value name="1200x1200" description="1200 dpi" />
+    <value name="2400x2400" description="2400 dpi" />
+   </filterarg>
   </filtergroup>
  </filterargs>
  <filterinput>
