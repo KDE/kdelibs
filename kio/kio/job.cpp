@@ -3063,7 +3063,7 @@ void CopyJob::slotResult( Job *job )
             }
             if ( err )
             {
-                bool renaming = ( m_currentSrcURL.directory() == m_dest.directory() );
+                bool renaming = ( m_currentSrcURL.directory() == dest.directory() );
                 m_currentSrcURL=*m_currentStatSrc;
                 m_currentDestURL=m_dest;
 
