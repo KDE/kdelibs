@@ -281,10 +281,10 @@ public:
     virtual short marginLeft() const { return 0; }
     virtual short marginRight() const { return 0; }
 
-    int paddingTop() const { return m_style->paddingTop().minWidth(containingBlock()->contentWidth()); }
-    int paddingBottom() const { return m_style->paddingBottom().minWidth(containingBlock()->contentWidth()); }
-    int paddingLeft() const { return m_style->paddingLeft().minWidth(containingBlock()->contentWidth()); }
-    int paddingRight() const { return m_style->paddingRight().minWidth(containingBlock()->contentWidth()); }
+    int paddingTop() const;
+    int paddingBottom() const;
+    int paddingLeft() const;
+    int paddingRight() const;
 
     int borderTop() const { return m_style->borderTopWidth(); }
     int borderBottom() const { return m_style->borderBottomWidth(); }
