@@ -144,7 +144,8 @@ void KHTMLView::begin( const char *_url, int _dx, int _dy )
     scrollToX = _dx;
     scrollToY = _dy;
     
-    view->begin( _url, _dx, _dy );
+//    view->begin( _url, _dx, _dy );
+    view->begin( _url, 0, 0 );
 }
 
 void KHTMLView::write( const char *_text )
@@ -234,7 +235,9 @@ void KHTMLView::resizeEvent( QResizeEvent * )
     // This does not cause object size/pos to be recalculated as
     // the width is not changed.
     if ( displayHScroll )
+    {
 	view->setGeometry( 0, 0, width(), height() - 16 );
+    }
 
     vert->setSteps( 12, view->height() );
     horz->setSteps( 12, view->width() );
@@ -325,7 +328,10 @@ void KHTMLView::calcScrollBars()
   
     int bottom = 0;
     if ( !displayHScroll )
+    {
 	horz->hide();
+	view->slotScrollHorz( 0 );
+    }	
     else
     {
 	bottom = 16;
@@ -378,12 +384,14 @@ void KHTMLView::slotDocumentDone()
   // Scroll to where we want to go
   if ( scrollToX )
   {    
-    slotScrollHorz( scrollToX );
+    if ( displayHScroll )
+	slotScrollHorz( scrollToX );
     scrollToX = 0;
   }
   if ( scrollToY )
   {    
-    slotScrollVert( scrollToY );
+    if ( displayVScroll )
+        slotScrollVert( scrollToY );
     scrollToY = 0;
   }
   
@@ -683,6 +691,11 @@ bool KHTMLView::gotoAnchor(const char* anchor)
 
 bool KHTMLView::gotoXY(int _x, int _y)
 {
+    if ( !displayVScroll )
+    	_y = 0;
+    if ( !displayHScroll )
+    	_x = 0;
+    	
     return view->gotoXY(_x, _y);
 }
 
