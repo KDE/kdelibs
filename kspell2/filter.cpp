@@ -225,7 +225,7 @@ bool Filter::trySkipLinks() const
 {
     QChar currentChar = m_buffer[ m_currentPosition ];
 
-    int length = m_buffer.length();
+    uint length = m_buffer.length();
     //URL - if so skip
     if ( currentChar == ':' &&
          ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= length ) ) {
