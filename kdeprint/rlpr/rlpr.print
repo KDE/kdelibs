@@ -42,5 +42,6 @@ Comment[xh]=imeko-bume ye RLPR (Bekela kude abancedisi be LPD)
 Comment[xx]=xx
 Comment[zh_CN.GB2312]=RLPR 环境(远程 LPD 服务器)
 Comment[zh_TW.Big5]=RLPR 環境(遠端 LPD 伺服器)
+Comment[zu]=indalo ye RLPR (Bekela kude abalekeleli be LPD)
 DetectUris=exec:/rlpr
 DetectPrecedence=0

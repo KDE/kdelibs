@@ -52,6 +52,7 @@ Name[xh]=Imifanekiso-TIFF
 Name[xx]=xx
 Name[zh_CN.GB2312]=TIFF 图片
 Name[zh_TW.Big5]=TIFF 圖片
+Name[zu]=TIFF-Iizthombe
 Read=true
 Write=true
 Suffices=tiff,TIFF,tif,TIF 
