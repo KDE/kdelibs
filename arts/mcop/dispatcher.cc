@@ -74,6 +74,8 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 
 	objectManager = new ObjectManager;
 
+	notificationManager = new NotificationManager;
+
 	unixServer = new UnixServer(this,serverID);
 	if(!unixServer->running())
 	{
@@ -133,6 +135,12 @@ Dispatcher::~Dispatcher()
 	{
 		delete tcpServer;
 		tcpServer = 0;
+	}
+
+	if(notificationManager)
+	{
+		delete notificationManager;
+		notificationManager = 0;
 	}
 
 	if(objectManager)

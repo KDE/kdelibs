@@ -55,10 +55,25 @@ class StdScheduleNode;
 
 class Port {
 protected:
-	AttributeType _flags;
 	std::string _name;
 	void *_ptr;
+	AttributeType _flags;
 	StdScheduleNode *parent;
+
+	bool _dynamicPort;
+
+	// functionality to remove all connections automatically as soon as
+	// the module gets destroyed
+	list<Port *> autoDisconnect;
+
+	/**
+	 * call these from your (dis)connect implementation as soon as a the
+	 * port gets (dis)connected to some other port (only one call per
+	 * connection: destinationport->addAutoDisconnect(sourceport), not
+	 * for the other direction)
+	 */
+	void addAutoDisconnect(Port *source);
+	void removeAutoDisconnect(Port *source);
 
 public:
 	Port(std::string name, void *ptr, long flags, StdScheduleNode* parent);
@@ -68,7 +83,11 @@ public:
 	std::string name();
 	void setPtr(void *ptr);
 
+	inline bool dynamicPort()    { return _dynamicPort; }
+	inline void setDynamicPort() { _dynamicPort = true; }
+
 	virtual class AudioPort *audioPort();
+	virtual class ASyncPort *asyncPort();
 
 	virtual void disconnectAll();
 	virtual void connect(Port *) = 0;
@@ -77,10 +96,7 @@ public:
 
 class AudioPort : public Port {
 protected:
-	std::list<AudioPort *> destinations;
 	AudioPort *source;
-
-	void removeDestination(AudioPort *dest);
 
 public:
 	StdScheduleNode *sourcemodule;
@@ -95,7 +111,6 @@ public:
 	void setFloatValue(float f);
 	void connect(Port *psource);
 	void disconnect(Port *psource);
-	void disconnectAll();
 
 //------------- I/O ---------------------------------------------------------
 
@@ -173,7 +188,7 @@ class StdScheduleNode :public ScheduleNode
 {
 	bool running;
 
-	Object_skel *object;
+	Object_skel *_object;
 	SynthModule *module;
 	FlowSystem *flowSystem;
 	std::list<Port *> ports;
@@ -211,6 +226,8 @@ public:
 	void setFloatValue(std::string port, float value);
 	long request(long amount);
 	unsigned long calc(unsigned long cycles);
+
+	Object_skel *object();
 };
 
 class StdFlowSystem :public FlowSystem

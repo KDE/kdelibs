@@ -37,6 +37,7 @@
 #include "connection.h"
 #include "objectmanager.h"
 #include "idlfilereg.h"
+#include "asyncstream.h"
 
 /* define this to see what mcop transfers around */
 #undef DEBUG_IO
@@ -149,5 +150,10 @@ void readObject(Buffer& stream, T*& result) {
 	else
 		result = T::_fromReference(reference,false);
 };
+
+#ifndef MCOPBYTE_DEFINED
+#define MCOPBYTE_DEFINED
+typedef unsigned char mcopbyte;
+#endif
 
 #endif

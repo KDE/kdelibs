@@ -42,11 +42,22 @@ void Buffer::writeBool(bool b) {
 	contents.push_back(b?1:0);
 }
 
+void Buffer::writeByte(mcopbyte b) {
+	contents.push_back(b);
+}
+
 void Buffer::writeLong(long l) {
 	contents.push_back(l & 0xff);
 	contents.push_back((l >> 8) & 0xff);
 	contents.push_back((l >> 16) & 0xff);
 	contents.push_back((l >> 24) & 0xff);
+}
+
+void Buffer::writeByteSeq(const vector<mcopbyte>& seq) {
+	writeLong(seq.size());
+
+	vector<mcopbyte>::const_iterator i;
+	for(i = seq.begin(); i != seq.end(); i++) writeByte(*i);
 }
 
 void Buffer::writeLongSeq(const vector<long>& seq) {
@@ -126,6 +137,28 @@ bool Buffer::readBool()
 		_readError = true;
 	}
 	return result;
+}
+
+mcopbyte Buffer::readByte()
+{
+	if(remaining() >= 0)
+	{
+		return contents[rpos++];
+	}
+	else
+	{
+		_readError = true;
+		return 0;
+	}
+}
+
+void Buffer::readByteSeq(vector<mcopbyte>& result)
+{
+	// might be optimizable a bit
+	long i,seqlen = readLong();
+
+	result.clear();
+	for(i=0;i<seqlen;i++) result.push_back(readByte());
 }
 
 long Buffer::readLong()

@@ -47,15 +47,17 @@ typedef union
 #define	T_BOOLEAN	274
 #define	T_STRING	275
 #define	T_LONG	276
-#define	T_OBJECT	277
-#define	T_SEQUENCE	278
-#define	T_AUDIO	279
-#define	T_IN	280
-#define	T_OUT	281
-#define	T_STREAM	282
-#define	T_MULTI	283
-#define	T_ATTRIBUTE	284
-#define	T_READONLY	285
+#define	T_BYTE	277
+#define	T_OBJECT	278
+#define	T_SEQUENCE	279
+#define	T_AUDIO	280
+#define	T_IN	281
+#define	T_OUT	282
+#define	T_STREAM	283
+#define	T_MULTI	284
+#define	T_ATTRIBUTE	285
+#define	T_READONLY	286
+#define	T_ASYNC	287
 
 
 extern YYSTYPE yylval;

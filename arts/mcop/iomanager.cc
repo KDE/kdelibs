@@ -24,6 +24,7 @@
     */
 
 #include "iomanager.h"
+#include "notification.h"
 
 using namespace std;
 
@@ -42,6 +43,8 @@ StdIOManager::StdIOManager()
 
 void StdIOManager::processOneEvent(bool blocking)
 {
+	NotificationManager::the()->run();
+
 	if(fdListChanged)
 	{
 		FD_ZERO(&readfds);
@@ -162,6 +165,8 @@ void StdIOManager::processOneEvent(bool blocking)
 				(*ti)->doTick();
 		}
 	}
+
+	NotificationManager::the()->run();
 }
 
 void StdIOManager::run()

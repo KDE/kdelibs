@@ -7,7 +7,7 @@
 
 enum HeaderMagic {MCOP_MAGIC = 1347371853};
 enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5};
-enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16};
+enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32};
 class Header : public Type {
 public:
 	Header();

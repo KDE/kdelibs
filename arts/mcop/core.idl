@@ -89,7 +89,8 @@ enum AttributeType {
   streamOut   = 2,
   streamMulti = 4,
   attributeStream    = 8,
-  attributeAttribute = 16
+  attributeAttribute = 16,
+  streamAsync = 32
 };
 
 struct AttributeDef {

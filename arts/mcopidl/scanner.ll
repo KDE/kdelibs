@@ -143,8 +143,6 @@ Float_Literal3          {Digits}"."{Digits}
 Float_Literal4		"."{Digits}
 Float_Literal5		"."{Digits}(e|E)("+"|"-")?{Digits}
 
-KDCOP			([^k]|k[^_]|k_[^d]|k_d[^c]|k_dc[^o]|k_dco[^p])*
-
 /*--------------------------------------------------------------------------*/
 
 Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
@@ -178,6 +176,7 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 ":"			return T_COLON;
 "="			return T_EQUAL;
 
+byte		return T_BYTE;
 long		return T_LONG;
 string		return T_STRING;
 struct		return T_STRUCT;
@@ -192,6 +191,7 @@ out			return T_OUT;
 audio		return T_AUDIO;
 stream		return T_STREAM;
 multi		return T_MULTI;
+async		return T_ASYNC;
 
 {Kidl_Identifier}	{
 			  yylval._str = strdup(yytext);		// TAKE CARE: free that thing

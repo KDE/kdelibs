@@ -104,8 +104,8 @@ void yyerror( const char *s )
 %token T_INTEGER_LITERAL T_UNKNOWN
 %type<_int> T_INTEGER_LITERAL
 
-%token T_BOOLEAN T_STRING T_LONG T_OBJECT T_SEQUENCE T_AUDIO
-%token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY
+%token T_BOOLEAN T_STRING T_LONG T_BYTE T_OBJECT T_SEQUENCE T_AUDIO
+%token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY T_ASYNC
 
 %%
 
@@ -253,18 +253,15 @@ streamdef: direction type T_STREAM identifierlist T_SEMICOLON
 		delete $4;
 	  };
 
-/*
- * 1 in
- * 2 out
- * 4 multi
- * 8 stream
- */
-
 direction:
-		T_IN { $$ = 1; }
-	  | T_IN T_MULTI { $$ = 5 }
-	  | T_OUT { $$ = 2; }
-	  | T_OUT T_MULTI { $$ = 6 }
+		T_IN { $$ = streamIn; }
+	  | T_IN T_MULTI { $$ = streamIn|streamMulti; }
+	  | T_OUT { $$ = streamOut; }
+	  | T_OUT T_MULTI { $$ = streamOut|streamMulti; }
+	  |	T_ASYNC T_IN { $$ = streamAsync|streamIn; }
+	  | T_ASYNC T_IN T_MULTI { $$ =streamAsync|streamIn|streamMulti  }
+	  | T_ASYNC T_OUT { $$ = streamAsync|streamOut; }
+	  | T_ASYNC T_OUT T_MULTI { $$ = streamAsync|streamOut|streamMulti; }
 	;
 
 // CacheElement getFromCache(string name, bool hit)
@@ -363,6 +360,7 @@ simpletype:
       T_BOOLEAN { $$ = strdup("boolean"); }
 	| T_STRING { $$ = strdup("string"); }
 	| T_LONG { $$ = strdup("long"); }
+	| T_BYTE { $$ = strdup("byte"); }
 	| T_OBJECT { $$ = strdup("object"); }
 	| T_AUDIO { $$ = strdup("float"); }
 	| T_IDENTIFIER {

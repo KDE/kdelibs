@@ -29,6 +29,7 @@
 #include "buffer.h"
 #include "connection.h"
 #include "flowsystem.h"
+#include "notification.h"
 
 #include <cassert>
 #include <map>
@@ -37,7 +38,7 @@
 class ScheduleNode;
 class Object_skel;
 
-class Object {
+class Object : public NotificationClient {
 private:
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
@@ -53,6 +54,7 @@ protected:
 
 	virtual Object_skel *_skel();
 
+	long _nextNotifyID;
 	long _refCnt;				// reference count
 	static long _staticObjectCount;
 
@@ -92,6 +94,7 @@ public:
 	}
 
 	inline static long _objectCount() { return _staticObjectCount; }
+	inline long _mkNotifyID() { return _nextNotifyID++; }
 
 	// static converter (from reference)
 	static Object *_fromString(std::string objectref);

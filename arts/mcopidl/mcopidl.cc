@@ -178,6 +178,9 @@ bool isInterface( string type )
 #define MODEL_INVOKE    9
 #define MODEL_STREAM    10
 #define MODEL_MSTREAM   11
+#define MODEL_ASTREAM   12
+#define MODEL_AMSTREAM  13
+#define MODEL_ASTREAM_PACKETPTR  14
 #define MODEL_SEQ       1024
 
 #define MODEL_MEMBER_SEQ	(MODEL_MEMBER|MODEL_SEQ)
@@ -233,6 +236,10 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RESULT_SEQ)	result = "std::vector<float> *";
 		if(model==MODEL_STREAM)		result = "float *"+name;
 		if(model==MODEL_MSTREAM)	result = "float **"+name;
+		if(model==MODEL_ASTREAM)	result = "FloatAsyncStream "+name;
+		if(model==MODEL_AMSTREAM)	assert(false);
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<float> *";
+		/*result = "float **"+name;*/
 
 		if(model==MODEL_READ)
 			result = name+" = stream.readFloat()";
@@ -275,6 +282,38 @@ string createTypeCode(string type, const string& name, long model,
 			result = "request->writeBool("+name+")";
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeBool("+name+");\n";
+	}
+	else if(type == "byte")
+	{
+		if(model==MODEL_MEMBER)		result = "mcopbyte";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<mcopbyte>";
+		if(model==MODEL_ARG)		result = "mcopbyte";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<mcopbyte>&";
+		if(model==MODEL_RESULT)		result = "mcopbyte";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<mcopbyte> *";
+		if(model==MODEL_READ)
+			result = name+" = stream.readByte()";
+		if(model==MODEL_READ_SEQ)
+			result = "stream.readByteSeq("+name+")";
+		if(model==MODEL_RES_READ)
+		{
+			result = indent + "mcopbyte returnCode = result->readByte();\n";
+			result += indent + "delete result;\n";
+			result += indent + "return returnCode;\n";
+		}
+		if(model==MODEL_REQ_READ)
+			result = indent + "mcopbyte "+name+" = request->readByte();\n";
+		if(model==MODEL_WRITE)
+			result = "stream.writeByte("+name+")";
+		if(model==MODEL_WRITE_SEQ)
+			result = "stream.writeByteSeq("+name+")";
+		if(model==MODEL_REQ_WRITE)
+			result = "request->writeByte("+name+")";
+		if(model==MODEL_INVOKE)
+			result = indent + "result->writeByte("+name+");\n";
+		if(model==MODEL_ASTREAM)
+			result = "ByteAsyncStream "+name;
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<mcopbyte> *";
 	}
 	else if(type == "long")
 	{
@@ -802,6 +841,18 @@ bool haveStreams(InterfaceDef *d)
 	return false;
 }
 
+bool haveAsyncStreams(InterfaceDef *d)
+{
+	vector<AttributeDef *>::iterator ai;
+
+	for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		if(((*ai)->flags & attributeStream) && ((*ai)->flags & streamAsync))
+			return true;
+
+	return false;
+}
+
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -943,9 +994,19 @@ void doInterfacesHeader(FILE *header)
 				string decl;
 
 				if(ad->flags & streamMulti)
-					decl = createTypeCode(ad->type,ad->name,MODEL_MSTREAM);
+				{
+					if(ad->flags & streamAsync)
+						decl = createTypeCode(ad->type,ad->name,MODEL_AMSTREAM);
+					else
+						decl = createTypeCode(ad->type,ad->name,MODEL_MSTREAM);
+				}
 				else
-					decl = createTypeCode(ad->type,ad->name,MODEL_STREAM);
+				{
+					if(ad->flags & streamAsync)
+						decl = createTypeCode(ad->type,ad->name,MODEL_ASTREAM);
+					else
+						decl = createTypeCode(ad->type,ad->name,MODEL_STREAM);
+				}
 
 				decl += ";";
 
@@ -960,6 +1021,37 @@ void doInterfacesHeader(FILE *header)
 		}
 		if(!firstStream) fprintf(header,"\n");
 
+		bool haveAsyncStreams = false;
+
+		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		{
+			AttributeDef *ad = *ai;
+
+			if((ad->flags & attributeStream) && (ad->flags & streamAsync))
+			{
+				if(!haveAsyncStreams)
+				{
+					fprintf(header,"\t// handler for asynchronous streams\n");
+					haveAsyncStreams = true;
+				}
+
+				string ptype =
+					createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+
+				if(ad->flags & streamIn)
+				{
+					fprintf(header,"\tvirtual void process_%s(%s) = 0;\n",
+										ad->name.c_str(),ptype.c_str());
+				}
+				else
+				{
+					fprintf(header,"\tvirtual void request_%s(%s);\n",
+										ad->name.c_str(),ptype.c_str());
+				}
+			}
+		}
+		if(haveAsyncStreams) fprintf(header,"\n");
+
 		fprintf(header,"public:\n");
 		fprintf(header,"\t%s_skel();\n\n",d->name.c_str());
 
@@ -969,6 +1061,10 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tvoid *_cast(std::string interface);\n");
 		fprintf(header,"\tvoid dispatch(Buffer *request, Buffer *result,"
 						"long methodID);\n");
+
+		if(haveAsyncStreams)
+		  fprintf(header,"\tvoid notify(const Notification& notification);\n");
+
 		fprintf(header,"};\n\n");
 
 	}
@@ -1201,27 +1297,52 @@ void doInterfacesSource(FILE *source)
 		}
 		fprintf(source,"}\n\n");
 
-#if 0
-		/** streams **/
-		if(haveStreams(d))
+		/** notification operation **/
+		if(haveAsyncStreams(d))
 		{
-			fprintf(source,
-				"void *%s_skel::_lookupStream(string name)\n", d->name.c_str());
+			fprintf(source,"void %s_skel::notify(const Notification "
+			               "&notification)\n", d->name.c_str());
 			fprintf(source,"{\n");
-
 			for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
 			{
 				AttributeDef *ad = *ai;
-				if((ad->flags & attributeStream) == attributeStream)
+				if((ad->flags & (attributeStream|streamAsync))
+								== (attributeStream|streamAsync))
 				{
-					fprintf(source,"\tif(name == \"%s\") return &%s;\n",
-								ad->name.c_str(),ad->name.c_str());
+					const char *fname=(ad->flags&streamIn)?"process":"request";
+					string packettype =
+						createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+
+					fprintf(source,"\tif(%s.notifyID() == notification.ID)\n",
+							ad->name.c_str());
+					fprintf(source,
+					   "\t\t%s_%s((%s)notification.data);\n",
+						fname,ad->name.c_str(),packettype.c_str());
 				}
 			}
-			fprintf(source,"\treturn 0;\n");
 			fprintf(source,"}\n\n");
+
+			/*
+			 * create empty request_ methods for output streams
+			 * (not everybody uses requesting)
+			 */
+			for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
+			{
+				AttributeDef *ad = *ai;
+				if((ad->flags & (attributeStream|streamAsync|streamOut))
+								== (attributeStream|streamAsync|streamOut))
+				{
+					string packettype =
+						createTypeCode(ad->type,"",MODEL_ASTREAM_PACKETPTR);
+					fprintf(source,"void %s_skel::request_%s(%s)\n",
+						d->name.c_str(),ad->name.c_str(),packettype.c_str());
+					fprintf(source,"{\n");
+					fprintf(source,"	assert(false); // this default is for "
+					               "modules who don't want requesting\n");
+					fprintf(source,"}\n\n");
+				}
+			}
 		}
-#endif
 	}
 }
 

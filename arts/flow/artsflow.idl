@@ -23,7 +23,6 @@
  * arts.idl - MCOP port. What's missing currently in MCOP?
  *
  * -   namespaces (module)
- * -   enums (should really be implemented)
  */
 
 //module Arts {  // analog real time synthesizer

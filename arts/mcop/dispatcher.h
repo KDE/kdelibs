@@ -70,6 +70,7 @@ protected:
 	FlowSystem *_flowSystem;
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
+	NotificationManager *notificationManager;
 
 	mcop_sighandler orig_sigpipe;		// original signal handler for SIG_PIPE
 	Connection *_activeConnection;		// internal use only (for refcounting)

@@ -29,6 +29,11 @@
 #include <string>
 #include <vector>
 
+#ifndef MCOPBYTE_DEFINED
+#define MCOPBYTE_DEFINED
+typedef unsigned char mcopbyte;
+#endif
+
 class Buffer {
 	std::vector<unsigned char> contents;
 	long rpos;
@@ -39,6 +44,8 @@ public:
 	Buffer();
 	bool readError();
 	void writeBool(bool b);
+	void writeByte(mcopbyte b);
+	void writeByteSeq(const vector<mcopbyte>& seq);
 	void writeLong(long l);
 	void writeLongSeq(const std::vector<long>& seq);
 	void writeFloat(float f);
@@ -59,6 +66,8 @@ public:
 	void write(void *data, long l);
 
 	bool readBool();
+	mcopbyte readByte();
+	void readByteSeq(vector<mcopbyte>& result);
 	long readLong();
 	void readLongSeq(std::vector<long>& result);
 	float readFloat();

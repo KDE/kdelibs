@@ -26,6 +26,8 @@
 #include "startupmanager.h"
 #include "synthschedule.h"
 #include "debug.h"
+#include "asyncschedule.h"
+#include <algorithm>
 #include <stdio.h>
 #include <iostream>
 
@@ -62,12 +64,10 @@ SynthBuffer::~SynthBuffer()
 // ----------- Port -----------
 
 Port::Port(string name, void *ptr, long flags, StdScheduleNode* parent)
+	: _name(name), _ptr(ptr), _flags((AttributeType)flags),
+	  parent(parent), _dynamicPort(false)
 {
-	_ptr = ptr;
-	_name = name;
-	_flags = (AttributeType)flags;
-
-	this->parent = parent;
+	//
 }
 
 Port::~Port()
@@ -85,13 +85,49 @@ string Port::name()
 	return _name;
 }
 
+ASyncPort *Port::asyncPort()
+{
+	return 0;
+}
+
 AudioPort *Port::audioPort()
 {
 	return 0;
 }
 
+void Port::addAutoDisconnect(Port *source)
+{
+	autoDisconnect.push_back(source);
+	source->autoDisconnect.push_back(this);
+}
+
+void Port::removeAutoDisconnect(Port *source)
+{
+	list<Port *>::iterator adi;
+
+	// remove our autodisconnection entry for source port
+	adi = find(autoDisconnect.begin(),autoDisconnect.end(),source);
+	assert(adi != autoDisconnect.end());
+	autoDisconnect.erase(adi);
+
+	// remove the source port autodisconnection entry to us
+	adi=find(source->autoDisconnect.begin(),source->autoDisconnect.end(),this);
+	assert(adi != source->autoDisconnect.end());
+	source->autoDisconnect.erase(adi);
+}
+
 void Port::disconnectAll()
 {
+	while(!autoDisconnect.empty())
+	{
+		Port *other = *autoDisconnect.begin();
+
+		// syntax is disconnect(source)
+		if(_flags & streamIn)
+			disconnect(other);		 // if we're incoming, other port is source
+		else
+			other->disconnect(this); // if we're outgoing, we're the source
+	}
 }
 
 void Port::setPtr(void *ptr)
@@ -126,31 +162,15 @@ void AudioPort::setFloatValue(float f)
 	buffer->setValue(f);
 }
 
-void AudioPort::removeDestination(AudioPort *dest)
-{
-	list<AudioPort *>::iterator i;
-
-	for(i=destinations.begin(); i != destinations.end(); i++)
-	{
-		AudioPort *p = *i;
-		if(p == dest)
-		{
-			destinations.erase(i);
-			return;
-		}
-	}
-	assert(false);
-}
-
 void AudioPort::connect(Port *psource)
 {
 	source = psource->audioPort();
 	assert(source);
+	addAutoDisconnect(psource);
 
 	buffer = source->buffer;
 	position = buffer->position;
 	source->destcount++;
-	source->destinations.push_back(this);
 	sourcemodule = source->parent;
 }
 
@@ -158,6 +178,7 @@ void AudioPort::disconnect(Port *psource)
 {
 	assert(source);
 	assert(source == psource->audioPort());
+	removeAutoDisconnect(psource);
 
 	assert(sourcemodule == source->parent);
 	sourcemodule = 0;
@@ -165,21 +186,10 @@ void AudioPort::disconnect(Port *psource)
 	// skip the remaining stuff in the buffer
 	read(buffer->position - position);
 	source->destcount--;
-	source->removeDestination(this);
 	source = 0;
 
 	position = lbuffer->position;
 	buffer = lbuffer;
-}
-
-void AudioPort::disconnectAll()
-{
-	if(source) disconnect(source);
-	while(!destinations.empty())
-	{
-		AudioPort *dest = *destinations.begin();
-		dest->disconnect(this);
-	}
 }
 
 // --------- MultiPort ----------
@@ -224,6 +234,8 @@ void MultiPort::connect(Port *port)
 	char sid[20];
 	sprintf(sid,"%ld",nextID++);
 
+	addAutoDisconnect(port);
+
 	dport = new AudioPort("_"+_name+string(sid),0,streamIn,parent);
 	parts.push_back(dport);
 	initConns();
@@ -235,8 +247,7 @@ void MultiPort::connect(Port *port)
 void MultiPort::disconnect(Port *sport)
 {
 	AudioPort *port = (AudioPort *)sport;
-	char sid[20];
-	sprintf(sid,"%ld",nextID++);
+	removeAutoDisconnect(sport);
 
 	list<AudioPort *>::iterator i;
 	for(i = parts.begin(); i != parts.end(); i++)
@@ -295,11 +306,16 @@ void StdScheduleNode::rebuildConn()
 	}
 }
 
+Object_skel *StdScheduleNode::object()
+{
+	return _object;
+}
+
 void StdScheduleNode::accessModule()
 {
 	if(module) return;
 
-	module = (SynthModule *)object->_cast("SynthModule");
+	module = (SynthModule *)_object->_cast("SynthModule");
 	if(!module)
 	{
 		cerr << "Only SynthModule derived classes should carry streams."
@@ -309,7 +325,7 @@ void StdScheduleNode::accessModule()
 
 StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem *flowSystem)
 {
-	this->object = object;
+	_object = object;
 	this->flowSystem = flowSystem;
 	running = false;
 	module = 0;
@@ -324,9 +340,25 @@ StdScheduleNode::~StdScheduleNode()
 	if(running) stop();
 
 	/* disconnect all ports */
+	stack<Port *> disconnect_stack;
+
+	/*
+	 * we must be a bit careful here, as dynamic ports (which are created
+	 * for connections by MultiPorts) will suddenly start disappearing, so
+	 * we better make a copy of those ports that will stay, and disconnect
+	 * them then
+	 */
 	list<Port *>::iterator i;
 	for(i=ports.begin();i != ports.end();i++)
-		(*i)->disconnectAll();
+	{
+		if(!(*i)->dynamicPort()) disconnect_stack.push(*i);
+	}
+
+	while(!disconnect_stack.empty())
+	{
+		disconnect_stack.top()->disconnectAll();
+		disconnect_stack.pop();
+	}
 
 	/* free them */
 	for(i=ports.begin();i != ports.end();i++)
@@ -338,7 +370,11 @@ StdScheduleNode::~StdScheduleNode()
 
 void StdScheduleNode::initStream(string name, void *ptr, long flags)
 {
-	if(flags & streamMulti)
+	if(flags & streamAsync)
+	{
+		ports.push_back(new ASyncPort(name,ptr,flags,this));
+	}
+	else if(flags & streamMulti)
 	{
 		ports.push_back(new MultiPort(name,ptr,flags,this));
 	}
@@ -353,6 +389,7 @@ void StdScheduleNode::initStream(string name, void *ptr, long flags)
 
 void StdScheduleNode::addDynamicPort(Port *port)
 {
+	port->setDynamicPort();
 	ports.push_back(port);
 	rebuildConn();
 }

@@ -42,7 +42,8 @@ struct Object_skel::MethodTableEntry {
 
 long Object::_staticObjectCount = 0;
 
-Object::Object() :  _deleteOk(false), _scheduleNode(0), _refCnt(1)
+Object::Object() :  _deleteOk(false), _scheduleNode(0), _nextNotifyID(1),
+							_refCnt(1)
 {
 	_staticObjectCount++;
 }
