@@ -20,7 +20,7 @@ public:
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
-    virtual Plugin* plugin( const char* libname );
+    virtual KPlugin* plugin( const char* libname );
 
 protected:
     virtual QString configFile() const = 0;

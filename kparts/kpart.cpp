@@ -52,11 +52,11 @@ QActionCollection* KPart::actionCollection()
     return &m_collection;
 }
 
-Plugin* KPart::plugin( const char* libname )
+KPlugin* KPart::plugin( const char* libname )
 {
     QObject* ch = child( libname, "KPlugin" );
     if ( ch )
-	return (Plugin*)ch;
+	return (KPlugin*)ch;
 
     KLibLoader* loader = KLibLoader::self();
     if ( !loader )
@@ -72,14 +72,14 @@ Plugin* KPart::plugin( const char* libname )
 	return 0;
     }
     QObject* obj = f->create( this, libname, "KPlugin" );
-    if ( !obj->inherits("Plugin" ) )
+    if ( !obj->inherits("KPlugin" ) )
     {
 	qDebug("The library does not feature an object of class Plugin");
 	delete obj;
 	return 0;
     }
 
-    return (Plugin*)obj;
+    return (KPlugin*)obj;
 }
 
 KReadOnlyPart::KReadOnlyPart( QWidget *parent, const char *name )
