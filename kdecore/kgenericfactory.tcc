@@ -38,6 +38,7 @@
 #define KGENERICFACTORY_TCC
 
 #include <qmetaobject.h>
+#include <ktypelist.h>
 
 namespace KParts
 {
