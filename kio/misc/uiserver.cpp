@@ -33,7 +33,6 @@
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kiconloader.h>
 #include <dcopclient.h>
 #include <kstatusbar.h>
 #include <kdebug.h>
@@ -98,7 +97,7 @@ class UIServerSystemTray:public KSystemTray
          KPopupMenu* pop= contextMenu();
          pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
          pop->insertItem(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
-         setPixmap(SmallIcon("filesave"));
+         setPixmap(loadIcon("filesave"));
          //actionCollection()->action("file_quit")->setEnabled(true);
          KStdAction::quit(uis, SLOT(slotQuit()), actionCollection());
       }
