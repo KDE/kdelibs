@@ -325,7 +325,7 @@ QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
   else
   {
      if (day != 6)
-        return QString("day  % 1").arg(day);
+        return QString("day  %1").arg(day);
      else
         return locale()->translate("Sabbath");
   }
