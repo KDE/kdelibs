@@ -64,10 +64,10 @@ void KIconEffect::init()
 		effect = DeSaturate;
 	    else if (tmp == "semitransparent")
 		effect = SemiTransparent;
-	    else if (tmp == "noeffect")
+	    else if (tmp == "none")
 		effect = NoEffect;
 	    else
-		break;
+		continue;
 	    mEffect[i][j] = effect;
 	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
 	}
