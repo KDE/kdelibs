@@ -467,20 +467,19 @@ bool KEdit::isModified(){
     return edited();
 }
 
-bool KEdit::eventFilter(QObject *, QEvent *ev){
+bool KEdit::eventFilter(QObject* o, QEvent* ev){
 
-  if (ev->type() == QEvent::Paint)
-	{
+    if (ev->type() == QEvent::Paint) {
 	if (srchdialog)
-		if (srchdialog->isVisible())
-			srchdialog->raise();
+            if (srchdialog->isVisible())
+                srchdialog->raise();
 
 	if (replace_dialog)
-		if (replace_dialog->isVisible())
-			replace_dialog->raise();
-	}
+            if (replace_dialog->isVisible())
+                replace_dialog->raise();
+    }
 
-  return FALSE;
+  return QMultiLineEdit::eventFilter( o, ev );
 
 }
 
