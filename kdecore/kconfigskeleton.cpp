@@ -30,7 +30,7 @@
 
 #include "kconfigskeleton.h"
 
-void KConfigSkeleton::Item::readImmutability( KConfig *config )
+void KConfigSkeletonItem::readImmutability( KConfig *config )
 {
   mIsImmutable = config->entryIsImmutable( mName );
 }
@@ -40,7 +40,7 @@ KConfigSkeleton::ItemString::ItemString( const QString &group, const QString &na
                                     QString &reference,
                                     const QString &defaultValue,
                                     Type type )
-  : KConfigSkeleton::GenericItem<QString>( group, name, reference, defaultValue ),
+  : KConfigSkeletonGenericItem<QString>( group, name, reference, defaultValue ),
     mType( type )
 {
 }
@@ -110,7 +110,7 @@ KConfigSkeleton::ItemProperty::ItemProperty( const QString &group,
                                         const QString &name,
                                         QVariant &reference,
                                         QVariant defaultValue )
-  : KConfigSkeleton::GenericItem<QVariant>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QVariant>( group, name, reference, defaultValue )
 {
 }
 
@@ -135,7 +135,7 @@ QVariant KConfigSkeleton::ItemProperty::property() const
 
 KConfigSkeleton::ItemBool::ItemBool( const QString &group, const QString &name,
                                 bool &reference, bool defaultValue )
-  : KConfigSkeleton::GenericItem<bool>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<bool>( group, name, reference, defaultValue )
 {
 }
 
@@ -161,7 +161,7 @@ QVariant KConfigSkeleton::ItemBool::property() const
 
 KConfigSkeleton::ItemInt::ItemInt( const QString &group, const QString &name,
                               int &reference, int defaultValue )
-  : KConfigSkeleton::GenericItem<int>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<int>( group, name, reference, defaultValue )
 {
 }
 
@@ -243,7 +243,7 @@ QStringList KConfigSkeleton::ItemEnum::choices() const
 KConfigSkeleton::ItemUInt::ItemUInt( const QString &group, const QString &name,
                                 unsigned int &reference,
                                 unsigned int defaultValue )
-  : KConfigSkeleton::GenericItem<unsigned int>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned int>( group, name, reference, defaultValue )
 {
 }
 
@@ -268,7 +268,7 @@ QVariant KConfigSkeleton::ItemUInt::property() const
 
 KConfigSkeleton::ItemLong::ItemLong( const QString &group, const QString &name,
                                 long &reference, long defaultValue )
-  : KConfigSkeleton::GenericItem<long>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<long>( group, name, reference, defaultValue )
 {
 }
 
@@ -295,7 +295,7 @@ QVariant KConfigSkeleton::ItemLong::property() const
 KConfigSkeleton::ItemULong::ItemULong( const QString &group, const QString &name,
                                   unsigned long &reference,
                                   unsigned long defaultValue )
-  : KConfigSkeleton::GenericItem<unsigned long>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<unsigned long>( group, name, reference, defaultValue )
 {
 }
 
@@ -321,7 +321,7 @@ QVariant KConfigSkeleton::ItemULong::property() const
 
 KConfigSkeleton::ItemDouble::ItemDouble( const QString &group, const QString &name,
                                     double &reference, double defaultValue )
-  : KConfigSkeleton::GenericItem<double>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<double>( group, name, reference, defaultValue )
 {
 }
 
@@ -348,7 +348,7 @@ QVariant KConfigSkeleton::ItemDouble::property() const
 KConfigSkeleton::ItemColor::ItemColor( const QString &group, const QString &name,
                                   QColor &reference,
                                   const QColor &defaultValue )
-  : KConfigSkeleton::GenericItem<QColor>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QColor>( group, name, reference, defaultValue )
 {
 }
 
@@ -375,7 +375,7 @@ QVariant KConfigSkeleton::ItemColor::property() const
 KConfigSkeleton::ItemFont::ItemFont( const QString &group, const QString &name,
                                 QFont &reference,
                                 const QFont &defaultValue )
-  : KConfigSkeleton::GenericItem<QFont>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QFont>( group, name, reference, defaultValue )
 {
 }
 
@@ -402,7 +402,7 @@ QVariant KConfigSkeleton::ItemFont::property() const
 KConfigSkeleton::ItemRect::ItemRect( const QString &group, const QString &name,
                                 QRect &reference,
                                 const QRect &defaultValue )
-  : KConfigSkeleton::GenericItem<QRect>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QRect>( group, name, reference, defaultValue )
 {
 }
 
@@ -429,7 +429,7 @@ QVariant KConfigSkeleton::ItemRect::property() const
 KConfigSkeleton::ItemPoint::ItemPoint( const QString &group, const QString &name,
                                   QPoint &reference,
                                   const QPoint &defaultValue )
-  : KConfigSkeleton::GenericItem<QPoint>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QPoint>( group, name, reference, defaultValue )
 {
 }
 
@@ -456,7 +456,7 @@ QVariant KConfigSkeleton::ItemPoint::property() const
 KConfigSkeleton::ItemSize::ItemSize( const QString &group, const QString &name,
                                 QSize &reference,
                                 const QSize &defaultValue )
-  : KConfigSkeleton::GenericItem<QSize>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QSize>( group, name, reference, defaultValue )
 {
 }
 
@@ -483,7 +483,7 @@ QVariant KConfigSkeleton::ItemSize::property() const
 KConfigSkeleton::ItemDateTime::ItemDateTime( const QString &group, const QString &name,
                                         QDateTime &reference,
                                         const QDateTime &defaultValue )
-  : KConfigSkeleton::GenericItem<QDateTime>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QDateTime>( group, name, reference, defaultValue )
 {
 }
 
@@ -510,7 +510,7 @@ QVariant KConfigSkeleton::ItemDateTime::property() const
 KConfigSkeleton::ItemStringList::ItemStringList( const QString &group, const QString &name,
                                             QStringList &reference,
                                             const QStringList &defaultValue )
-  : KConfigSkeleton::GenericItem<QStringList>( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QStringList>( group, name, reference, defaultValue )
 {
 }
 
@@ -540,7 +540,7 @@ QVariant KConfigSkeleton::ItemStringList::property() const
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &name,
                                       QValueList<int> &reference,
                                       const QValueList<int> &defaultValue )
-  : KConfigSkeleton::GenericItem<QValueList<int> >( group, name, reference, defaultValue )
+  : KConfigSkeletonGenericItem<QValueList<int> >( group, name, reference, defaultValue )
 {
 }
 
@@ -585,7 +585,7 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
 
 KConfigSkeleton::~KConfigSkeleton()
 {
-  Item::List::ConstIterator it;
+  KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
     delete *it;
@@ -608,7 +608,7 @@ bool KConfigSkeleton::useDefaults(bool b)
      return mUseDefaults;
 
   mUseDefaults = b;
-  Item::List::ConstIterator it;
+  KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
     (*it)->swapDefault();
@@ -622,7 +622,7 @@ void KConfigSkeleton::readConfig()
 {
   kdDebug(177) << "KConfigSkeleton::readConfig()" << endl;
 
-  Item::List::ConstIterator it;
+  KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
     (*it)->readConfig( mConfig );
@@ -635,7 +635,7 @@ void KConfigSkeleton::writeConfig()
 {
   kdDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
 
-  Item::List::ConstIterator it;
+  KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
   {
     (*it)->writeConfig( mConfig );
@@ -648,7 +648,7 @@ void KConfigSkeleton::writeConfig()
   readConfig();
 }
 
-void KConfigSkeleton::addItem( const QString &name, Item *item )
+void KConfigSkeleton::addItem( const QString &name, KConfigSkeletonItem *item )
 {
   mItems.append( item );
   mItemDict.insert( name, item );
@@ -763,11 +763,11 @@ void KConfigSkeleton::addItemIntList( const QString &name,
 
 bool KConfigSkeleton::isImmutable(const QString &name)
 {
-  Item *item = findItem(name);
+  KConfigSkeletonItem *item = findItem(name);
   return !item || item->isImmutable();
 }
 
-KConfigSkeleton::Item *KConfigSkeleton::findItem(const QString &name)
+KConfigSkeletonItem *KConfigSkeleton::findItem(const QString &name)
 {
   return mItemDict.find(name);
 }

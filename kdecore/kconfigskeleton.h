@@ -37,75 +37,22 @@
 #include <kglobalsettings.h>
 
   /**
-   * @short Class for handling preferences settings for an application.
-   * @author Cornelius Schumacher
-   * @see Item
-   * 
-   * This class provides an interface to preferences settings. Preferences items
-   * can be registered by the addItem() function corresponding to the data type of
-   * the seetting. KConfigSkeleton then handles reading and writing of config files and
-   * setting of default values.
-   * 
-   * Normally you will subclass KConfigSkeleton, add data members for the preferences
-   * settings and register the members in the constructor of the subclass.
-   * 
-   * Example:
-   * <pre>
-   * class MyPrefs : public KConfigSkeleton {
-   * public:
-   * MyPrefs()
-   * {
-   * setCurrentGroup("MyGroup");
-   * addItemBool("MySetting1", "MyKey1",mMyBool,false);
-   * addItemColor("MySetting2","MyKey2",mMyColor,QColor(1,2,3));
-   * 
-   * setCurrentGroup("MyOtherGroup");
-   * addItemFont("MySetting3", "MyKey1",mMyFont,QFont("helvetica",12));
-   * }
-   * 
-   * bool mMyBool;
-   * QColor mMyColor;
-   * QFont mMyFont;
-   * }
-   * </pre>
-   * 
-   * It might be convenient in many cases to make this subclass of KConfigSkeleton a
-   * singleton for global access from all over the application without passing
-   * references to the KConfigSkeleton object around.
-   * 
-   * You can write the data to the configuration file by calling @ref writeConfig()
-   * and read the data from the configuration file by calling @ref readConfig().
-   * 
-   * If you have items, which are not covered by the existing addItem() functions
-   * you can add customized code for reading, writing and default setting by
-   * implementing the functions @ref usrSwapDefaults(), @ref usrReadConfig() and
-   * @ref usrWriteConfig().
-   * 
-   * Internally preferences settings are stored in instances of subclasses of
-   * @ref Item. You can also add Item subclasses for your own types
-   * and call the generic @ref addItem() to register them.
-   */
-class KConfigSkeleton
-{
-public:
-
-  /**
    * @short Class for storing a preferences setting
    * @author Cornelius Schumacher
    * @see KConfigSkeleton
    * 
    * This class represents one preferences setting as used by @ref KConfigSkeleton.
-   * Subclasses of KConfigSkeleton::Item implement storage functions for a certain type of
+   * Subclasses of KConfigSkeletonItem implement storage functions for a certain type of
    * setting. Normally you don't have to use this class directly. Use the special
    * addItem() functions of KConfigSkeleton instead. If you subclass this class you will
    * have to register instances with the function KConfigSkeleton::addItem().
    */
-  class Item
+  class KConfigSkeletonItem
   {
   public:
-    typedef QValueList < Item * >List;
-    typedef QDict < Item > Dict;
-    typedef QDictIterator < Item > DictIterator;
+    typedef QValueList < KConfigSkeletonItem * >List;
+    typedef QDict < KConfigSkeletonItem > Dict;
+    typedef QDictIterator < KConfigSkeletonItem > DictIterator;
 
     /**
      * Constructor.
@@ -113,7 +60,7 @@ public:
      * @param group Config file group.
      * @param name Config file key.
      */
-    Item(const QString & group, const QString & name)
+    KConfigSkeletonItem(const QString & group, const QString & name)
       :mGroup(group),mName(name), mIsImmutable(true)
     {
     }
@@ -121,7 +68,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~Item()
+    virtual ~KConfigSkeletonItem()
     {
     }
 
@@ -194,18 +141,18 @@ public:
   };
 
 
-template < typename T > class GenericItem:public Item
+template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
-    GenericItem(const QString & group, const QString & name, T & reference,
+    KConfigSkeletonGenericItem(const QString & group, const QString & name, T & reference,
                 T defaultValue)
-      : Item(group, name), mReference(reference),
+      : KConfigSkeletonItem(group, name), mReference(reference),
         mDefault(defaultValue), mLoadedValue(defaultValue)
     {
     }
 
     /**
-     * Set value of this KConfigSkeleton::Item.
+     * Set value of this KConfigSkeletonItem.
      */
     void setValue(const T & v)
     {
@@ -213,7 +160,7 @@ template < typename T > class GenericItem:public Item
     }
 
     /**
-     * Return value of this KConfigSkeleton::Item.
+     * Return value of this KConfigSkeletonItem.
      */
     T & value()
     {
@@ -253,11 +200,67 @@ template < typename T > class GenericItem:public Item
     T mLoadedValue;
   };
 
+  /**
+   * @short Class for handling preferences settings for an application.
+   * @author Cornelius Schumacher
+   * @see KConfigSkeletonItem
+   * 
+   * This class provides an interface to preferences settings. Preferences items
+   * can be registered by the addItem() function corresponding to the data type of
+   * the seetting. KConfigSkeleton then handles reading and writing of config files and
+   * setting of default values.
+   * 
+   * Normally you will subclass KConfigSkeleton, add data members for the preferences
+   * settings and register the members in the constructor of the subclass.
+   * 
+   * Example:
+   * <pre>
+   * class MyPrefs : public KConfigSkeleton {
+   * public:
+   * MyPrefs()
+   * {
+   * setCurrentGroup("MyGroup");
+   * addItemBool("MySetting1", "MyKey1",mMyBool,false);
+   * addItemColor("MySetting2","MyKey2",mMyColor,QColor(1,2,3));
+   * 
+   * setCurrentGroup("MyOtherGroup");
+   * addItemFont("MySetting3", "MyKey1",mMyFont,QFont("helvetica",12));
+   * }
+   * 
+   * bool mMyBool;
+   * QColor mMyColor;
+   * QFont mMyFont;
+   * }
+   * </pre>
+   * 
+   * It might be convenient in many cases to make this subclass of KConfigSkeleton a
+   * singleton for global access from all over the application without passing
+   * references to the KConfigSkeleton object around.
+   * 
+   * You can write the data to the configuration file by calling @ref writeConfig()
+   * and read the data from the configuration file by calling @ref readConfig().
+   * 
+   * If you have items, which are not covered by the existing addItem() functions
+   * you can add customized code for reading, writing and default setting by
+   * implementing the functions @ref usrSwapDefaults(), @ref usrReadConfig() and
+   * @ref usrWriteConfig().
+   * 
+   * Internally preferences settings are stored in instances of subclasses of
+   * @ref KConfigSkeletonItem. You can also add KConfigSkeletonItem subclasses 
+   * for your own types and call the generic @ref addItem() to register them.
+   */
+class KConfigSkeleton
+{
+public:
+
+
+
+
 
   /**
    * Class for handling a string preferences item.
    */
-  class ItemString:public GenericItem < QString >
+  class ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
     enum Type { Normal, Password, Path };
@@ -283,7 +286,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a QVariant preferences item.
    */
-  class ItemProperty:public GenericItem < QVariant >
+  class ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
     ItemProperty(const QString & group, const QString & name,
@@ -298,7 +301,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a bool preferences item.
    */
-  class ItemBool:public GenericItem < bool >
+  class ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
     ItemBool(const QString & group, const QString & name, bool & reference,
@@ -313,7 +316,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling an integer preferences item.
    */
-  class ItemInt:public GenericItem < int >
+  class ItemInt:public KConfigSkeletonGenericItem < int >
   {
   public:
     ItemInt(const QString & group, const QString & name, int &reference,
@@ -346,7 +349,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling an unsingend integer preferences item.
    */
-  class ItemUInt:public GenericItem < unsigned int >
+  class ItemUInt:public KConfigSkeletonGenericItem < unsigned int >
   {
   public:
     ItemUInt(const QString & group, const QString & name,
@@ -361,7 +364,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for hanlding a long integer preferences item.
    */
-  class ItemLong:public GenericItem < long >
+  class ItemLong:public KConfigSkeletonGenericItem < long >
   {
   public:
     ItemLong(const QString & group, const QString & name, long &reference,
@@ -376,7 +379,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling an unsigned long integer preferences item.
    */
-  class ItemULong:public GenericItem < unsigned long >
+  class ItemULong:public KConfigSkeletonGenericItem < unsigned long >
   {
   public:
     ItemULong(const QString & group, const QString & name,
@@ -391,7 +394,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a floating point preference item.
    */
-  class ItemDouble:public GenericItem < double >
+  class ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
     ItemDouble(const QString & group, const QString & name,
@@ -406,7 +409,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a color preferences item.
    */
-  class ItemColor:public GenericItem < QColor >
+  class ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
     ItemColor(const QString & group, const QString & name,
@@ -422,7 +425,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a font preferences item.
    */
-  class ItemFont:public GenericItem < QFont >
+  class ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
     ItemFont(const QString & group, const QString & name, QFont & reference,
@@ -437,7 +440,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a QRect preferences item.
    */
-  class ItemRect:public GenericItem < QRect >
+  class ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
     ItemRect(const QString & group, const QString & name, QRect & reference,
@@ -452,7 +455,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a QPoint preferences item.
    */
-  class ItemPoint:public GenericItem < QPoint >
+  class ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
     ItemPoint(const QString & group, const QString & name, QPoint & reference,
@@ -467,7 +470,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a QSize preferences item.
    */
-  class ItemSize:public GenericItem < QSize >
+  class ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
     ItemSize(const QString & group, const QString & name, QSize & reference,
@@ -482,7 +485,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a QDateTime preferences item.
    */
-  class ItemDateTime:public GenericItem < QDateTime >
+  class ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
     ItemDateTime(const QString & group, const QString & name,
@@ -498,7 +501,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling a string list preferences item.
    */
-  class ItemStringList:public GenericItem < QStringList >
+  class ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
     ItemStringList(const QString & group, const QString & name,
@@ -514,7 +517,7 @@ template < typename T > class GenericItem:public Item
   /**
    * Class for handling an integer list preferences item.
    */
-  class ItemIntList:public GenericItem < QValueList < int > >
+  class ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
   {
   public:
     ItemIntList(const QString & group, const QString & name,
@@ -569,9 +572,9 @@ public:
   }
 
   /**
-   * Register a custom @ref KConfigSkeleton::Item.
+   * Register a custom @ref KConfigSkeletonItem.
    */
-  void addItem(const QString & name, Item *);
+  void addItem(const QString & name, KConfigSkeletonItem *);
 
   /**
    * Register an item of type QString.
@@ -840,7 +843,7 @@ public:
   /**
    * Return dict of items managed by this KConfigSkeleton object.
    */
-  Item::List items() const
+  KConfigSkeletonItem::List items() const
   {
     return mItems;
   }
@@ -853,7 +856,7 @@ public:
   /**
    * Lookup item by name
    */
-  Item * findItem(const QString & name);
+  KConfigSkeletonItem * findItem(const QString & name);
 
   /**
    * Indicate whether this object should reflect the actual
@@ -892,8 +895,8 @@ private:
 
   KSharedConfig::Ptr mConfig; // pointer to KConfig object
 
-  Item::List mItems;
-  Item::Dict mItemDict;
+  KConfigSkeletonItem::List mItems;
+  KConfigSkeletonItem::Dict mItemDict;
   
   bool mUseDefaults;
 

@@ -135,7 +135,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     {
       // This is one of our widgets!
       QString configId = widgetName+5;
-      KConfigSkeleton::Item *item = m_conf->findItem(configId);
+      KConfigSkeletonItem *item = m_conf->findItem(configId);
       if (item)
       {
         qWarning("Found %s !!", configId.latin1());
@@ -200,7 +200,7 @@ void KConfigDialogManager::updateWidgets()
   for( QDictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
-     KConfigSkeleton::Item *item = m_conf->findItem(it.currentKey());
+     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
         qWarning("knownWidget went missing!");
@@ -239,7 +239,7 @@ void KConfigDialogManager::updateSettings()
   for( QDictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
-     KConfigSkeleton::Item *item = m_conf->findItem(it.currentKey());
+     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
         qWarning("knownWidget went missing!");
@@ -268,7 +268,7 @@ bool KConfigDialogManager::hasChanged()
   for( QDictIterator<QWidget> it( d->knownWidget );
        (widget = it.current()); ++it )
   {
-     KConfigSkeleton::Item *item = m_conf->findItem(it.currentKey());
+     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
         qWarning("knownWidget went missing!");
