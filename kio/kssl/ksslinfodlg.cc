@@ -372,7 +372,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         delete _frame;
     }
 
-    //viewport()->setBackgroundMode(QWidget::PaletteButton);
+    viewport()->setBackgroundMode(QWidget::PaletteButton);
     _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
