@@ -3,6 +3,7 @@ Name=Plastik
 ConfigPage=kstyle_plastik_config
 Comment=A simple and clean style
 Comment[cy]=Arddull syml a glan
+Comment[da]=En simpel og ren stil
 Comment[sv]=En enkel och ren stil
 [KDE]
 WidgetStyle=Plastik
