@@ -139,9 +139,9 @@ void KLineEdit::setCompletionMode( KGlobal::Completion mode )
         comp->setCompletionMode( m_iCompletionMode );
         // Enable beep only on Shell completions.
         if( mode == KGlobal::CompletionShell )
-            comp->setEnableBeep( true );
+            comp->setBeepEnabled( true );
         else
-            comp->setEnableBeep( false );
+            comp->setBeepEnabled( false );
     }
     m_iCompletionMode = mode;
 }
