@@ -360,34 +360,34 @@ static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
 
 static QString s_highlightedAddress;
 
-inline extern void begin_rmb_action(KBookmarkBar *self)
+void RMB::begin_rmb_action(KBookmarkBar *self)
 {
     RMB *s = rmbSelf(self);
     s->recv = self;
     s->m_parentAddress = QString::null;
-    s->s_highlightedAddress = s_highlightedAddress;
+    s->s_highlightedAddress = ::s_highlightedAddress;
     s->m_pManager = self->m_pManager;
     s->m_pOwner = self->m_pOwner;
     s->m_parentMenu = 0;
 }
 
 void KBookmarkBar::slotRMBActionEditAt( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
 
 void KBookmarkBar::slotRMBActionProperties( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
 
 void KBookmarkBar::slotRMBActionInsert( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
 
 void KBookmarkBar::slotRMBActionRemove( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
 
 void KBookmarkBar::slotRMBActionOpen( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
@@ -413,7 +413,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 		s_highlightedAddress = _a->property("address").toString();
 		KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
 	 
-		begin_rmb_action(this); 
+      RMB::begin_rmb_action(this); 
 		KPopupMenu *pm = new KPopupMenu;
 		rmbSelf(this)->fillContextMenu( pm, s_highlightedAddress, 0 );
 		emit aboutToShowContextMenu( rmbSelf(this)->atAddress( s_highlightedAddress ), pm );

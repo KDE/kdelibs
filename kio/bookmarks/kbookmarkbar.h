@@ -39,7 +39,7 @@ class QPopupMenu;
 class KBookmarkBar : public QObject
 {
     Q_OBJECT
-    friend void begin_rmb_action(KBookmarkBar *self);
+    friend class RMB;
 public:
     /**
      * Fills a bookmark toolbar

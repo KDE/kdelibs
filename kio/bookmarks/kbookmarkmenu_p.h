@@ -47,6 +47,7 @@ class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
+class KBookmarkBar;
 class KPopupMenu;
 
 class KImportedBookmarksActionMenu : public KActionMenu {
@@ -190,6 +191,7 @@ class RMB
 {
 public:
   static void begin_rmb_action(KBookmarkMenu *);
+  static void begin_rmb_action(KBookmarkBar *);
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
   void fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val );
