@@ -269,6 +269,11 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     nextTip();
 }
 
+KTipDialog::~KTipDialog()
+{
+    if( _instance==this )
+        _instance = 0L;
+}
 
 void KTipDialog::showTip(const QString &tipFile, bool force)
 {
