@@ -63,6 +63,13 @@ namespace KParts
        * Note that you can't use KStatusBar methods (inserting text items by id).
        * But you can create a KStatusBarLabel with a dummy id instead, and use
        * it directly, to get the same look and feel.
+       *
+       * @param widget the widget to add
+       * @param stretch the stretch factor. 0 for a minimum size.
+       * @param permanent passed to QStatusBar::addWidget as the "permanent" bool.
+       * Note that the item isn't really permanent though, it goes away when
+       * the part is unactivated. This simply controls where temporary messages
+       * hide the @p widget, and whether it's added to the left or to the right side.
        */
       void addStatusBarItem( QWidget * widget, int stretch, bool permanent );
 
