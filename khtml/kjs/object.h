@@ -44,6 +44,8 @@ class KJSParamList;
 class Node;
 class StatementNode;
 
+// this is class is a terrible mess. Dynamic casts might
+// allow some simplifications.
 class KJSO {
 public:
   KJSO() { init(); }
@@ -93,7 +95,7 @@ public:
   const UString sVal()  { assert(type()==String); return *(val.s); }
   Compl cVal() { assert(type()==Completion); return val.c; }
   bool isValueCompletion() { assert(type()==Completion); return (complVal); }
-  KJSO *complValue() { assert(type()==Completion); return complVal; }
+  KJSO *complValue() { assert(type()==Completion); return complVal->ref(); }
 
   // function call
   bool implementsCall() const { return (type() == InternalFunction ||

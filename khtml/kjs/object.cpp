@@ -125,7 +125,7 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
   KJSWorld::context = save;
 
   if (compl->isValueCompletion())
-    return compl->complValue()->ref();
+    return compl->complValue();
   else
     return new KJSUndefined();
 }

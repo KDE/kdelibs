@@ -293,6 +293,7 @@ KJSO *AssignNode::evaluate()
       break;
     default:
       assert(!"AssignNode: unhandled switch case");
+      return 0L;
     };
 }
 
@@ -575,7 +576,32 @@ KJSO *EmptyStatementNode::evaluate()
 
 KJSO *ForNode::evaluate()
 {
-  /* TODO */
+  /* TODO: implement the 3 other for() variants */
+  Ptr e, v, b, cval;
+  if (expr1) {
+    e = expr1->evaluate();
+    v = e->getValue();
+  }
+  while (1) {
+    if (expr2) {
+      e = expr2->evaluate();
+      v = e->getValue();
+      b = toBoolean(v);
+      if (b->bVal() == false)
+	return new KJSCompletion(Normal);
+    }
+    e = stat->evaluate();
+    if (e->isValueCompletion())
+      cval = e->complValue();
+    if (e->cVal() == Break)
+      return new KJSCompletion(Normal, cval);
+    if (e->cVal() == ReturnValue)
+      return e->ref();
+    if (expr3) {
+      e = expr3->evaluate();
+      v = e->getValue();
+    }
+  }
 }
 
 // ECMA 12.4
