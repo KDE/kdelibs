@@ -1,15 +1,15 @@
 
 # don't use it yet
-HELP_SLAVE=help
+HELP_SUBDIR=kdoctools
 
 KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [
-  AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.3.7.])
-  HELP_SLAVE=
+  AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.3.9. (we also keep a version of it in kdesupport for convience)])
+  HELP_SUBDIR=
 ])
 
 if test -n "$XML_CONFIG"; then
   vers=`$XML_CONFIG --version 2>/dev/null | sed -e 's/libxml //' | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-  if test -z "$vers" || test "$vers" -ge 2003007
+  if test -z "$vers" || test "$vers" -ge 2003009
   then
      LIBXML_LIBS="`$XML_CONFIG --libs`"
      LIBXML_RPATH=
@@ -23,15 +23,15 @@ if test -n "$XML_CONFIG"; then
      LIBXML_RPATH=`echo $LIBXML_RPATH | sed -e "s/-L/-R/"`
      LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
   else
-     AC_MSG_WARN([You need at least libxml 2.3.7])
-     HELP_SLAVE=
+     AC_MSG_WARN([You need at least libxml 2.3.9])
+     HELP_SUBDIR=
   fi
 fi
  
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_RPATH)
-AC_SUBST(HELP_SLAVE)
+AC_SUBST(HELP_SUBDIR)
 
 WITH_MEM_DEBUG=0
 AC_SUBST(WITH_MEM_DEBUG)

@@ -33,6 +33,18 @@ if test -z "$LIBPCRE"; then
   all_tests=bad
 fi
 
+if test -z "$HELP_SUBDIR"; then
+  echo ""
+  echo "You're missing libxml2 2.3.9 or later."
+  echo "KDE won't be able to provide a help ioslave (help://) without it,"
+  echo "so if you want helpfiles you should consider installing it."
+  echo "Have a look at ftp://xmlsoft.org/ for sources, or find a binary"
+  echo "package for your platform."
+  echo "You can find a copy of libxml2 in the kdesupport module."
+  echo ""
+  all_tests=bad
+fi
+
 if test "$all_tests" = "fine"; then
   echo ""
   echo "Good - your configure finished. Start make now"
