@@ -1710,7 +1710,7 @@ public:
   void revertToDefault(const QString &key);
 
   /**
-   * Returns whether a default is speficied for an in either the
+   * Returns whether a default is speficied for an entry in either the
    * system wide configuration file or the global KDE config file.
    *
    * If an application uses a dynamically determined default value for
@@ -1725,7 +1725,7 @@ public:
    *
    * This ensures that as long as the entry is not modified to differ 
    * from the dynamically determined default, the application will
-   * follow changes the changes of the default.
+   * follow changes of the default.
    */
   bool hasDefault(const QString &key) const;
 
