@@ -156,6 +156,13 @@ public:
     virtual void removeItem(const KFileItem *item);
 
     /**
+     * This hook is called when all items of the currently listed directory
+     * are listed and inserted into the view, i.e. there won't come any new
+     * items anymore.
+     */
+    virtual void listingCompleted();
+    
+    /**
       * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
       */
