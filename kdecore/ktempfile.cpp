@@ -42,8 +42,6 @@
 #include <stdlib.h>
 
 #include <qdatetime.h>
-#include <qfile.h>
-
 #include "kapp.h"
 #include "ktempfile.h"
 
@@ -52,6 +50,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
 {
    bAutoDelete = false;
    mFd = -1;
+   mStream = 0;
    mError = 0;
    bOpen = false;
    int maxTries = 3;
@@ -63,27 +62,16 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
 
 #ifdef __FreeBSD__
    mTmpName = filePrefix+QString("XXXX")+fileExtension;
-
-   // I use a malloc'd buffer because mkstemps will modify it,
-   // something that would otherwise be a bad idea with say, a QString
    char *mktmpName = (char *)malloc(mTmpName.length());
    strcpy(mktmpName, mTmpName.ascii());
    mFd = mkstemps(mktmpName, fileExtension.length());
-
    if (mFd == -1) {
             mError = errno;
             mTmpName = QString::null;
             return;
    }
-
-   // Apply the possibly more restrictive mode
-   fchmod(mFd, mode);
-
-   mTmpName = mktmpName;
-   free(mktmpName);
-
+   mTmpName = mktmpName; free(mktmpName);
 #else
-
    srand( QTime::currentTime().msecsTo(QTime()));
    int tries = 0;
    do {
@@ -116,12 +104,6 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    // Success!
    bOpen = true;
 
-   qIODevice.setName(mTmpName);
-   if (!qIODevice.open(mFd, IO_ReadWrite)) {
-      printf("AHHH\n");
-   }
-   setDevice(&qIODevice);
-
    // Set uid/gid (neccesary for SUID programs)
    chown(mTmpName.ascii(), getuid(), getgid());
    return;
@@ -152,6 +134,20 @@ KTempFile::handle()
    return mFd;
 }
 
+FILE *
+KTempFile::fstream()
+{
+   if (mStream) return mStream;
+   if (mFd < 0) return 0;
+
+   // Create a stream
+   mStream = fdopen(mFd, "r+");
+   if (!mStream)
+     mError = errno;
+
+   return mStream;
+}
+
 void
 KTempFile::unlink()
 {
@@ -163,18 +159,20 @@ bool
 KTempFile::close()
 {
    int result = 0;
-
-   if (qIODevice.isOpen())
-     qIODevice.close();
-
-   if (mFd >= 0) {
+   if (mStream)
+   {
+      result = fclose(mStream);
+      mStream = 0;
+      mFd = -1;
+   }
+   if (mFd >= 0)
+   {
       result = ::close(mFd);
       mFd = -1;
    }
 
    if (result != 0)
       mError = errno;
-
 
    bOpen = false;
    return (mError == 0);
