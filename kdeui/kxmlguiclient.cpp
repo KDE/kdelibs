@@ -472,8 +472,9 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     // in case of a merge tag we have unlimited lives, too ;-)
     else if ( tag == tagMerge )
     {
-      deleteMe = false;
-      break;
+//      deleteMe = false;
+//      break;
+        continue;
     }
 
     // a text tag is NOT enough to spare this container
