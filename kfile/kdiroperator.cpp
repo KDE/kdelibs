@@ -41,6 +41,7 @@
 #include <kpopupmenu.h>
 #include <kprogress.h>
 #include <kstdaction.h>
+#include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 
@@ -190,6 +191,10 @@ void KDirOperator::activatedMenu( const KFileViewItem * )
     // when the view changed the sorting.
     slotViewSortingChanged();
 
+    bool enableDelete = fileView && fileView->selectedItems() && 
+                        !fileView->selectedItems()->isEmpty();
+    myActionCollection->action( "delete" )->setEnabled( enableDelete );
+    
     actionMenu->popup( QCursor::pos() );
 }
 
@@ -352,6 +357,60 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     }
 
     return writeOk;
+}
+
+KIO::DeleteJob * KDirOperator::del( const KFileViewItemList& items,
+                                    bool ask, bool showProgress )
+{
+    if ( items.isEmpty() )
+        return 0L;
+
+    KURL::List urls;
+    QStringList files;
+    KFileViewItemListIterator it( items );
+
+    for ( ; it; ++it ) {
+        KURL url = (*it)->url();
+        urls.append( url );
+        if ( url.isLocalFile() )
+            files.append( url.path() );
+        else
+            files.append( url.prettyURL() );
+    }
+
+    bool doIt = !ask;
+    if ( ask ) {
+        int ret;
+        if ( items.count() == 1 ) {
+            ret = KMessageBox::warningContinueCancel( viewWidget(),
+                i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
+                .arg( files.first() ),
+                                                      i18n("Delete file"),
+                                                      i18n("Delete") );
+        }
+        else
+            ret = KMessageBox::warningContinueCancelList( viewWidget(),
+                i18n("Do you really want to delete these %1 items?"),
+                                                    files,
+                                                    i18n("Delete files"),
+                                                    i18n("Delete") );
+        doIt = (ret == KMessageBox::Continue);
+    }
+
+    if ( doIt )
+        return KIO::del( urls, false, showProgress );
+
+    return 0L;
+}
+
+void KDirOperator::deleteSelected()
+{
+    if ( !fileView )
+        return;
+    
+    const KFileViewItemList *list = fileView->selectedItems();
+    if ( list )
+        del( *list );
 }
 
 void KDirOperator::close()
@@ -777,7 +836,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     KFileItemListIterator it( newone );
     while ( (item = it.current()) ) {
 	// highlight the dir we come from, if possible
-	if ( d->dirHighlighting && item->isDir() && 
+	if ( d->dirHighlighting && item->isDir() &&
 	     item->url().url(-1) == d->lastURL ) {
 	    fileView->setCurrentItem( QString::null, (KFileViewItem*) item );
 	    fileView->ensureItemVisible( (KFileViewItem*) item );
@@ -897,6 +956,10 @@ void KDirOperator::setupActions()
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
                                  this, SLOT( mkdir() ), this, "mkdir");
+    KAction * deleteAction = new KAction( i18n( "Delete" ), "editdelete",
+                                          Key_Delete, this,
+                                          SLOT( deleteSelected() ), 
+                                          this, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
 
@@ -969,6 +1032,7 @@ void KDirOperator::setupActions()
     myActionCollection->insert( reloadAction );
     myActionCollection->insert( actionSeparator );
     myActionCollection->insert( mkdirAction );
+    myActionCollection->insert( deleteAction );
     myActionCollection->insert( sortActionMenu );
     myActionCollection->insert( byNameAction );
     myActionCollection->insert( byDateAction );
@@ -1012,6 +1076,7 @@ void KDirOperator::setupMenu()
     actionMenu->insert( actionSeparator );
 
     actionMenu->insert( mkdirAction );
+    actionMenu->insert( myActionCollection->action( "delete" ) );
     actionMenu->insert( actionSeparator );
 
     actionMenu->insert( sortActionMenu );
@@ -1172,6 +1237,8 @@ void KDirOperator::slotStarted()
     if ( !dir->job() )
 	return;
 
+    dir->job()->disconnect( this );
+    
     progress->setValue( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );

@@ -41,8 +41,9 @@ class KActionMenu;
 class KFileReader;
 class QWidgetStack;
 class KProgress;
+class KIO::DeleteJob;
 
-class KDirOperator : public QWidget 
+class KDirOperator : public QWidget
 {
     Q_OBJECT
 
@@ -176,6 +177,7 @@ class KDirOperator : public QWidget
      * @li reload : reloads the current directory
      * @li separator : a separator
      * @li mkdir : opens a dialog box to create a directory
+     * @li delete : deletes the selected files/directories
      * @li sorting menu : an ActionMenu containing all sort-options
      * @li by name : sorts by name
      * @li by date : sorts by date
@@ -239,7 +241,10 @@ class KDirOperator : public QWidget
      * to the user.
      * @returns true if the directory could be created.
      */
-    bool mkdir( const QString& directory, bool enterDirectory=true );
+    bool mkdir( const QString& directory, bool enterDirectory = true );
+
+    KIO::DeleteJob * del( const KFileViewItemList& items,
+                          bool ask = true, bool showProgress = true );
 
     /**
      * Clears the forward and backward history.
@@ -320,6 +325,7 @@ private:
     const QWidget *myPreview;    // temporary pointer for the preview widget
 
     // actions for the popupmenus
+    // ### clean up all those -- we have them all in the actionMenu!
     KActionMenu *actionMenu;
 
     KAction 	*backAction;
@@ -353,6 +359,11 @@ private:
     void cdUp();
     void rereadDir();
     void mkdir();
+    /**
+     * Deletes the currently selected files/directories.
+     */
+    void deleteSelected();
+
     QString makeCompletion(const QString&);
     QString makeDirCompletion(const QString&);
 
