@@ -71,7 +71,7 @@ bool KTarBase::open( int mode )
     QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
     QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
 
-    m_dir = new KTarDirectory( this, QString::fromLatin1("/"), (int)0666, 0, username, groupname, QString::null );
+    m_dir = new KTarDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -194,6 +194,7 @@ bool KTarBase::open( int mode )
 
 KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
+  kdDebug() << "KTarBase::findOrCreate " << path << endl;
   if ( path == "" || path == "/" ) // root dir => found
     return m_dir;
   // Important note : for tar files containing absolute paths
@@ -223,11 +224,11 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
     parent = findOrCreate( left ); // recursive call... until we find an existing dir.
   }
 
-  //kdDebug() << "found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
+  kdDebug() << "KTar : found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
   // Found -> add the missing piece
   KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(),
                                          m_dir->date(), m_dir->user(),
-                                         m_dir->group(), m_dir->symlink() );
+                                         m_dir->group(), QString::null );
   parent->addEntry( e );
   return e; // now a directory to <path> exists
 }
