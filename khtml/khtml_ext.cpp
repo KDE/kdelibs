@@ -1,3 +1,29 @@
+// -*- c-basic-offset: 2 -*-
+/* This file is part of the KDE project
+ *
+ * Copyright (C) 2000-2003 Simon Hausmann <hausmann@kde.org>
+ *               2001-2003 George Staikos <staikos@kde.org>
+ *               2001-2003 Laurent Montel <montel@kde.org>
+ *               2001-2003 Dirk Mueller <mueller@kde.org>
+ *               2001-2003 Waldo Bastian <bastian@kde.org>
+ *               2001-2003 David Faure <faure@kde.org>
+ *               2001-2003 Daniel Naber <dnaber@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
 #include <assert.h>
 #include "khtml_ext.h"
@@ -290,19 +316,6 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
-  KAction *m_paPrintFrame;
-  KAction *m_paSaveLinkAs;
-  KAction *m_paSaveImageAs;
-  KAction *m_paCopyLinkLocation;
-  KAction *m_paStopAnimations;
-  KAction *m_paCopyImageLocation;
-  KAction *m_paViewImage;
-  KAction *m_paFrameInWindow;
-  KAction *m_paFrameInTab;
-  KAction *m_paReloadFrame;
-  KAction *m_paViewFrameSource;
-  KAction *m_paViewFrameInfo;
-  KAction *m_paSendImage;
 };
 
 
@@ -311,32 +324,54 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   d = new KHTMLPopupGUIClientPrivate;
   d->m_khtml = khtml;
   d->m_url = url;
-
+  bool isImage = false;
   setInstance( khtml->instance() );
 
-  KAction *copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
-  copyAction->setText(i18n("&Copy Text"));
-  copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
-  actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+  DOM::Element e;
+  e = khtml->nodeUnderMouse();
 
-  actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
+  if ( !e.isNull() && (e.elementId() == ID_IMG ||
+                       (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
+  {
+    isImage=true;
+  }
+
+  if ( url.isEmpty() && !isImage )
+  {
+    KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
+    copyAction->setText(i18n("&Copy Text"));
+    copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
+    actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+    actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
+    actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
+    new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
+                 actionCollection(), "stopanimations" );
+  }
+
+  if ( !url.isEmpty() )
+  {
+    new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
+                 actionCollection(), "savelinkas" );
+    new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
+                 actionCollection(), "copylinklocation" );
+  }
 
   // frameset? -> add "Reload Frame" etc.
   if ( khtml->parentPart() )
   {
-    d->m_paFrameInWindow = new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
-                                      actionCollection(), "frameinwindow" );
-    d->m_paFrameInTab = new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
-                                      actionCollection(), "frameintab" );
-    d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
+    new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
+                                        actionCollection(), "frameinwindow" );
+    new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
+                                     actionCollection(), "frameintab" );
+    new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
                                       actionCollection(), "reloadframe" );
-    d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
+    new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
-    d->m_paViewFrameInfo = new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
+    new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
     // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
     // and because print frame is already in the toolbar and the menu.
     // But leave this here, so that it's easy to readd it.
-    d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+    new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
 
     actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
     actionCollection()->insert( khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
@@ -345,40 +380,23 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
   }
 
-  actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
-
-  if ( !url.isEmpty() )
+  if (isImage)
   {
-    d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
-                                     actionCollection(), "savelinkas" );
-    d->m_paCopyLinkLocation = new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
-                                           actionCollection(), "copylinklocation" );
-  }
-
-  d->m_paStopAnimations = new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
-                                       actionCollection(), "stopanimations" );
-
-  DOM::Element e;
-  e = khtml->nodeUnderMouse();
-
-  if ( !e.isNull() && (e.elementId() == ID_IMG ||
-                       (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
-  {
-      if ( e.elementId() == ID_IMG )
-          d->m_imageURL = KURL( static_cast<DOM::HTMLImageElement>( e ).src().string() );
-      else
-          d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
-    d->m_paSaveImageAs = new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
-                                      actionCollection(), "saveimageas" );
-    d->m_paSendImage = new KAction( i18n( "Send Image" ), 0, this, SLOT( slotSendImage() ),
-                                      actionCollection(), "sendimage" );
+    if ( e.elementId() == ID_IMG )
+      d->m_imageURL = KURL( static_cast<DOM::HTMLImageElement>( e ).src().string() );
+    else
+      d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
+    new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
+                 actionCollection(), "saveimageas" );
+    new KAction( i18n( "Send Image" ), 0, this, SLOT( slotSendImage() ),
+                 actionCollection(), "sendimage" );
 
 
-    d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
-                                            actionCollection(), "copyimagelocation" );
+    new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
+                 actionCollection(), "copyimagelocation" );
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    d->m_paViewImage = new KAction( i18n( "View Image (%1)" ).arg(name.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
-                                            actionCollection(), "viewimage" );
+    new KAction( i18n( "View Image (%1)" ).arg(name.replace("&", "&&")), 0, this, SLOT( slotViewImage() ),
+                 actionCollection(), "viewimage" );
   }
 
   setXML( doc );
