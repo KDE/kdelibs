@@ -17,7 +17,6 @@
  */
 
 #include <math.h>
-#include <stdlib.h>
 
 #include "hconv.h"
 
@@ -76,7 +75,8 @@ tmoonphase( long n, int nph)
 			xtra = xtra -0.0028 +0.0004*cos(sa) -0.0003*cos(ma);
 	} else {
 		/*printf("tmoonphase: illegal phase number\n"); */
-	        exit(1); // ### HPB Remove this
+	        //exit(1); // ### HPB Don't exit here, but we should perhaps
+                           //         review this a bit?
 	}
 	/* convert from Ephemeris Time (ET) to (approximate) 
 	   Universal Time (UT) */
