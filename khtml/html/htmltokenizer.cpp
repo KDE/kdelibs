@@ -1475,6 +1475,7 @@ void HTMLTokenizer::finish()
     while(comment && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
+        checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
