@@ -44,9 +44,10 @@ protected:
      * Note that this can be a file, but also a data buffer, a compression filter, etc.
      */
     KArchive( QIODevice * dev );
-    virtual ~KArchive();
 
 public:
+    virtual ~KArchive();
+
     /**
      * Opens the archive for reading or writing.
      * @param mode may be IO_ReadOnly or IO_WriteOnly
