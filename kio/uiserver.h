@@ -271,6 +271,11 @@ k_dcop:
    */
   void showSSLInfoDialog(const QString &url, const KIO::MetaData &data);
 
+  /*
+   * Show an SSL Certificate Selection Dialog
+   */
+  void showSSLCertDialog(const QStringList& certList);
+
 protected slots:
 
   void slotUpdate();

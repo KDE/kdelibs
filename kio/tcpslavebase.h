@@ -135,6 +135,8 @@ protected:
     // For the certificate verification code
     int verifyCertificate();
 
+    // For prompting for the certificate to use
+    void certificatePrompt();
 };
 
 };

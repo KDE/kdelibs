@@ -44,6 +44,7 @@
 #include "kio/skipdlg.h"
 #include "slavebase.h" // for QuestionYesNo etc.
 #include <ksslinfodlg.h>
+#include <ksslcertdlg.h>
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -857,6 +858,17 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
    kdDebug(7024) << "SSL Info dialog closed" << endl;
    // Don't delete kid!!
 }
+
+void UIServer::showSSLCertDialog(const QStringList& certList)
+{
+   KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
+   kcd->setup(certList);
+   kdDebug(7024) << "Showing SSL certificate dialog" << endl;
+   kcd->exec();
+   kdDebug(7024) << "SSL certificate dialog closed" << endl;
+   delete kcd;
+}
+
 
 QByteArray UIServer::open_RenameDlg( int id,
                                      const QString & caption,

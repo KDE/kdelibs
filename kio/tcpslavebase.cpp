@@ -25,6 +25,9 @@
 #include <qcstring.h>
 #include <qdatastream.h>
 
+#include <ksslcertificatehome.h>
+#include <kapp.h>
+
 using namespace KIO;
 
 
@@ -160,6 +163,7 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 
         if (m_bIsSSL) {
            d->kssl->reInitialize();
+           certificatePrompt();
            int rc = d->kssl->connect(m_iSock);
            if (rc < 0) { 
               CloseDescriptor();
@@ -239,6 +243,8 @@ int TCPSlaveBase::startTLS()
            return -1;
         }
 
+        certificatePrompt();
+
         int rc = d->kssl->connect(m_iSock);
         if (rc < 0) {
            delete d->kssl;
@@ -274,6 +280,33 @@ bool TCPSlaveBase::canUseTLS()
 KSSLSettings kss;
         if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
         return kss.tlsv1();
+}
+
+
+void TCPSlaveBase::certificatePrompt()
+{
+  if (!d->kssl) return;
+
+QStringList certs = KSSLCertificateHome::getCertificateList();
+
+  if (certs.isEmpty()) return;
+
+  if (!d->dcc) {
+     d->dcc = new DCOPClient;
+     d->dcc->attach();
+     if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+        KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                QStringList() );
+     }
+  }
+
+  QByteArray data, ignore;
+  QCString ignoretype;
+  QDataStream arg(data, IO_WriteOnly);
+  arg << certs;
+  d->dcc->call("kio_uiserver", "UIServer", 
+               "showSSLCertDialog(QStringList)", data, ignoretype, ignore);
+
 }
 
 
@@ -430,6 +463,7 @@ bool _IPmatchesCN;
       KSSLCertificateCache::KSSLCertificatePolicy cp =  
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
+      // FIXME - finish this!
    }
 
 
