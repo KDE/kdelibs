@@ -11,8 +11,8 @@ install-data-local:
 	$(INSTALL_SCRIPT) $(DESTDIR)$(bindir)
 # Removed "$(srcdir)/patches/db2ps" argument. Will it create problems, Stephan?
 #	-patch $(TEX_MF)/web2c/texmf.cnf $(srcdir)/patches/texmf.cnf
-  /usr/bin/install-catalog --add /etc/sgml/docbook-3.1.cat /usr/share/sgml/docbook/kde-customization-0.1/catalog
+	/usr/bin/install-catalog --add /etc/sgml/docbook-3.1.cat /usr/share/sgml/docbook/kde-customization-0.1/catalog
 
 uninstall-local:
 	-rm -f $(bindir)/db2ps
-  /usr/bin/install-catalog --remove /etc/sgml/docbook-3.1.cat /usr/share/sgml/docbook/kde-customization-0.1/catalog
+	/usr/bin/install-catalog --remove /etc/sgml/docbook-3.1.cat /usr/share/sgml/docbook/kde-customization-0.1/catalog
