@@ -1472,6 +1472,9 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
             break;
 
         case QVariant::Int :
+#if QT_VERSION >= 0x030200
+	case QVariant::ULongLong :
+#endif
             if (unit() == KFileMimeTypeInfo::Seconds)
             {
               int seconds = value.toInt() % 60;
