@@ -482,6 +482,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = new HTMLHeadElementImpl(document);
 	break;
     case ID_BODY:
+	popBlock(ID_HEAD);
 	n = new HTMLBodyElementImpl(document, HTMLWidget);
 	break;
 
