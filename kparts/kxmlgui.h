@@ -26,8 +26,11 @@
 #include <qmap.h>
 #include <qguardedptr.h>
 
-class KPart;
-class KXMLGUIFactoryPrivate;
+namespace KParts
+{
+
+class Part;
+class XMLGUIFactoryPrivate;
 
 /**
  * This file contains all the "kernel" of KParts.
@@ -37,12 +40,12 @@ class KXMLGUIFactoryPrivate;
 /**
  * Abstract interface for a "GUI builder", used by the GUIFactory
  */
-class KXMLGUIBuilder
+class XMLGUIBuilder
 {
  public:
 
-  KXMLGUIBuilder() {}
-  virtual ~KXMLGUIBuilder() {}
+  XMLGUIBuilder() {}
+  virtual ~XMLGUIBuilder() {}
 
   /**
    * Create a container (menubar/menu/toolbar/statusbar/separator/...) from an
@@ -65,16 +68,17 @@ class KXMLGUIBuilder
   virtual QByteArray removeContainer( QObject *container, QWidget *parent ) = 0;
 };
 
-class KXMLGUIServantPrivate;
+class XMLGUIServantPrivate;
+class XMLGUIFactory;
 
 /**
  * Abstract interface for serving actions and xml to the GUI factory
  */
-class KXMLGUIServant
+class XMLGUIServant
 {
  public:
-  KXMLGUIServant();
-  virtual ~KXMLGUIServant();
+  XMLGUIServant();
+  virtual ~XMLGUIServant();
 
   virtual QAction *action( const QDomElement &element ) = 0;
 
@@ -91,17 +95,20 @@ class KXMLGUIServant
    */
   virtual QByteArray takeContainerStateBuffer( const QString &key );
 
+  void setFactory( XMLGUIFactory *factory );
+  XMLGUIFactory *factory() const;
+
  private:
-  KXMLGUIServantPrivate *d;
+  XMLGUIServantPrivate *d;
 };
 
-class KXMLGUIContainerNode;
+class XMLGUIContainerNode;
 
-class KXMLGUIFactory
+class XMLGUIFactory
 {
  public:
-  KXMLGUIFactory( KXMLGUIBuilder *builder );
-  ~KXMLGUIFactory();
+  XMLGUIFactory( XMLGUIBuilder *builder );
+  ~XMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
   static QString readConfigFile( const QString &filename );
@@ -110,24 +117,26 @@ class KXMLGUIFactory
    * Creates the GUI described by the QDomDocument of the servant, using the servant's actions, and
    * merges it with the previously created GUI.
    */
-  void addServant( KXMLGUIServant *servant );
+  void addServant( XMLGUIServant *servant );
 
   /**
    * Removes the GUI described by the servant, by unplugging all provided actions and removing all owned
    * containers (and storing container state information in the given servant)
    */
-  void removeServant( KXMLGUIServant *servant );
+  void removeServant( XMLGUIServant *servant );
 
  private:
-  void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
-  bool removeRecursive( KXMLGUIContainerNode *node );
+  void buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode );
+  bool removeRecursive( XMLGUIContainerNode *node );
 
-  static KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList );
+  static XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList );
 
-  KXMLGUIServant *m_servant;
-  KXMLGUIBuilder *m_builder;
+  XMLGUIServant *m_servant;
+  XMLGUIBuilder *m_builder;
 
-  KXMLGUIFactoryPrivate *d;
+  XMLGUIFactoryPrivate *d;
+};
+
 };
 
 #endif

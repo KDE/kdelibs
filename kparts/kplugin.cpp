@@ -1,20 +1,22 @@
 #include "kplugin.h"
 
-KPlugin::KPlugin( QObject* parent, const char* name )
+using namespace KParts;
+
+Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name ), m_collection( this )
 {
 }
 
-KPlugin::~KPlugin()
+Plugin::~Plugin()
 {
 }
 
-QAction* KPlugin::action( const char* name )
+QAction* Plugin::action( const char* name )
 {
     return m_collection.action( name );
 }
 
-QActionCollection* KPlugin::actionCollection()
+QActionCollection* Plugin::actionCollection()
 {
     return &m_collection;
 }

@@ -8,25 +8,29 @@
 
 #include "kxmlgui.h"
 
-class KPartManager;
-class KPlugin;
 class KInstance;
 class QWidget;
 class QAction;
 class QActionCollection;
-class KPartPrivate;
 
-class KPart : public QObject
+namespace KParts
+{
+
+class PartManager;
+class Plugin;
+class PartPrivate;
+
+class Part : public QObject
 {
   Q_OBJECT
 public:
-    KPart( const char* name = 0 );
-    virtual ~KPart();
+    Part( const char* name = 0 );
+    virtual ~Part();
 
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
-    virtual KPlugin* plugin( const char* libname );
+    virtual Plugin* plugin( const char* libname );
 
     virtual QAction *action( const QDomElement &element );
 
@@ -57,22 +61,22 @@ public:
     virtual QValueList<QDomDocument> pluginDocuments();
 
     /**
-     * @return a (cached) list of @ref KXMLGUIServant s, serving the plugin documents returned by 
+     * @return a (cached) list of @ref KXMLGUIServant s, serving the plugin documents returned by
                @ref pluginDocuments()
      */
-    virtual const QList<KXMLGUIServant> *pluginServants();
+    virtual const QList<XMLGUIServant> *pluginServants();
 
     /**
      * @return a (cached) @ref KXMLGUIServant for the part.
      */
-    virtual KXMLGUIServant *servant();
+    virtual XMLGUIServant *servant();
 
     // Only called by KPartManager - should be protected and using friend ?
-    void setManager( KPartManager * manager ) { m_manager = manager; }
+    void setManager( PartManager * manager ) { m_manager = manager; }
     /**
      * @return the part manager handling this part
      */
-    KPartManager * manager() { return m_manager; }
+    PartManager * manager() { return m_manager; }
 
     /**
      * @return the parsed XML in a QDomDocument, set by @ref setXMLFile or @ref setXML
@@ -105,21 +109,21 @@ private:
      */
     QString m_config;
     QActionCollection m_collection;
-    KPartManager * m_manager;
+    PartManager * m_manager;
 
-    KPartPrivate *d;
+    PartPrivate *d;
 };
 
 /**
  * Base class for any "viewer" part.
  * You need to implement openFile().
  */
-class KReadOnlyPart : public KPart
+class ReadOnlyPart : public Part
 {
   Q_OBJECT
 public:
-  KReadOnlyPart( const char *name = 0 );
-  virtual ~KReadOnlyPart();
+  ReadOnlyPart( const char *name = 0 );
+  virtual ~ReadOnlyPart();
 
   virtual void init();
 
@@ -168,12 +172,12 @@ protected:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one)
  */
-class KReadWritePart : public KReadOnlyPart
+class ReadWritePart : public ReadOnlyPart
 {
   Q_OBJECT
 public:
-  KReadWritePart( const char *name = 0 );
-  virtual ~KReadWritePart();
+  ReadWritePart( const char *name = 0 );
+  virtual ~ReadWritePart();
 
   virtual bool isModified() { return m_bModified; }
 
@@ -215,19 +219,21 @@ private:
 /**
  * @internal
  */
-class KPartGUIServant : public QObject, public KXMLGUIServant
+class PartGUIServant : public QObject, public XMLGUIServant
 {
   Q_OBJECT
  public:
-  KPartGUIServant( KPart *part, const QDomDocument &document );
+  PartGUIServant( Part *part, const QDomDocument &document );
 
   virtual QAction *action( const QDomElement &element );
 
   virtual QDomDocument document();
 
  private:
-  KPart *m_part;
+  Part *m_part;
   QDomDocument m_doc;
+};
+
 };
 
 #endif

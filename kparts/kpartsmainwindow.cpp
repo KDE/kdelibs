@@ -13,81 +13,85 @@
 
 #include <kaction.h>
 
+using namespace KParts;
+
 // Less debug output for now..
 // #define DEBUG_BUILDER
 
-class KPartsMainWindowPrivate
+namespace KParts
+{
+class MainWindowPrivate
 {
 public:
-  KPartsMainWindowPrivate()
+  MainWindowPrivate()
   {
     m_toolBars.setAutoDelete( true );
     m_statusBar = 0;
     m_activePart = 0;
     m_bShellGUIActivated = false;
   }
-  ~KPartsMainWindowPrivate()
+  ~MainWindowPrivate()
   {
   }
 
   QDomDocument m_doc;
   KStatusBar *m_statusBar;
   QList<KToolBar> m_toolBars;
-  QGuardedPtr<KPart> m_activePart;
+  QGuardedPtr<Part> m_activePart;
   bool m_bShellGUIActivated;
 };
+};
 
-KPartsMainWindow::KPartsMainWindow( const char *name, WFlags f )
+MainWindow::MainWindow( const char *name, WFlags f )
   : KTMainWindow( name, f ), m_actionCollection( this )
 {
-  d = new KPartsMainWindowPrivate();
-  m_factory = new KXMLGUIFactory( this );
+  d = new MainWindowPrivate();
+  m_factory = new XMLGUIFactory( this );
 }
 
-KPartsMainWindow::~KPartsMainWindow()
+MainWindow::~MainWindow()
 {
- // The mainwindow (our parent) has just been deleted
- // (this is the only way to destroy this class, right ?)
- // so don't do anything (David)
- // clearGUI();
+  createGUI( 0L );
+  m_factory->removeServant( this );
+
   delete d;
   delete m_factory;
 }
 
-QAction *KPartsMainWindow::action( const QDomElement &element )
+QAction *MainWindow::action( const QDomElement &element )
 {
   return m_actionCollection.action( element.attribute( "name" ) );
 }
 
-KXMLGUIFactory *KPartsMainWindow::guiFactory() const
+XMLGUIFactory *MainWindow::guiFactory() const
 {
   return m_factory;
 }
 
-QDomDocument KPartsMainWindow::document()
+QDomDocument MainWindow::document()
 {
   return d->m_doc;
 }
 
-void KPartsMainWindow::setXMLFile( const QString &file )
+void MainWindow::setXMLFile( const QString &file )
 {
-  QString xml = KXMLGUIFactory::readConfigFile( file );
+  QString xml = XMLGUIFactory::readConfigFile( file );
   setXML( xml );
 }
 
-void KPartsMainWindow::setXML( const QString &document )
+void MainWindow::setXML( const QString &document )
 {
   //XXX: We might eventually call removeServant( this ) and addServant( this ) to update
   // the GUI dynamically! :-) (that'd be cool IMHO ;)
   // It just needs testing, as although KXMLGUIFactory should handle that correctly, there might
   // be bugs left :)
-  // (update) It should really work ;-) (see commented code below) 
+  // (update) It should really work ;-) (see commented code below)
   d->m_doc.setContent( document );
   /*
   if ( d->m_bShellGUIActivated )
   {
     KPart *part = d->m_activePart;
-    if ( part ) 
+    if ( part )
       createGUI( 0L );
     m_factory->removeServant( this );
     d->m_bShellGUIActivated = false;
@@ -96,7 +100,7 @@ void KPartsMainWindow::setXML( const QString &document )
   */
 }
 
-QObject *KPartsMainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer )
+QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer )
 {
 #ifdef DEBUG_BUILDER
   qDebug( "KPartsMainWindow::createContainer()" );
@@ -195,10 +199,10 @@ QObject *KPartsMainWindow::createContainer( QWidget *parent, int index, const QD
   return 0L;
 }
 
-QByteArray KPartsMainWindow::removeContainer( QObject *container, QWidget *parent )
+QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
 {
   QByteArray stateBuff;
-
+  
   if ( !container->isWidgetType() )
   {
     if ( !container->inherits( "QAction" ) )
@@ -206,47 +210,49 @@ QByteArray KPartsMainWindow::removeContainer( QObject *container, QWidget *paren
 
     ((QAction *)container)->unplug( parent );
     delete container;
-    return stateBuff;
   }
-
-  if ( container->inherits( "QPopupMenu" ) )
+  else if ( container->inherits( "QPopupMenu" ) )
   {
     delete container;
-    return stateBuff;
   }
-
-  if ( container->inherits( "KToolBar" ) )
+  else if ( container->inherits( "KToolBar" ) )
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
     stream << (int)((KToolBar *)container)->barPos();
     d->m_toolBars.removeRef( (KToolBar *)container ); //will also delete the tb as autodelete is on
-    return stateBuff;
   }
-
-  if ( container->inherits( "KStatusBar" ) && d->m_statusBar )
+  else if ( container->inherits( "KStatusBar" ) && d->m_statusBar )
   {
     delete d->m_statusBar;
     d->m_statusBar = 0;
     setStatusBar( 0 );
-    return stateBuff;
   }
 
+  if ( !isUpdatesEnabled() )
+  {
+    //workaround / hack for ktmainwindow bug
+    setUpdatesEnabled( true );
+    updateRects();
+    setUpdatesEnabled( false );
+  }
+  else
+    updateRects();
+  
   return stateBuff;
 }
 
-void KPartsMainWindow::createGUI( KPart * part )
+void MainWindow::createGUI( Part * part )
 {
   qDebug(QString("KPartsMainWindow::createGUI for %1").arg(part?part->name():"0L"));
   // start the factory with this as an input (shell servant),
   // the part servant (or none) as the other input, and this as an output (GUI builder)
 
   setUpdatesEnabled( false );
-  //  m_factory->clearGUI();
 
   if ( d->m_activePart )
   {
     qDebug( "deactivating GUI for %s", d->m_activePart->name() );
-    QListIterator<KXMLGUIServant> pIt( *d->m_activePart->pluginServants() );
+    QListIterator<XMLGUIServant> pIt( *d->m_activePart->pluginServants() );
     pIt.toLast();
     for (; pIt.current(); --pIt )
       m_factory->removeServant( pIt.current() );
@@ -264,7 +270,7 @@ void KPartsMainWindow::createGUI( KPart * part )
   {
     m_factory->addServant( part->servant() );
 
-    QListIterator<KXMLGUIServant> pIt( *part->pluginServants() );
+    QListIterator<XMLGUIServant> pIt( *part->pluginServants() );
     for (; pIt.current(); ++pIt )
       m_factory->addServant( pIt.current() );
   }

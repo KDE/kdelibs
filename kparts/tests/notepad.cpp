@@ -18,7 +18,7 @@
 #include <kstddirs.h>
 
 NotepadPart::NotepadPart( QWidget * parentWidget )
- : KReadWritePart( "NotepadPart" )
+ : KParts::ReadWritePart( "NotepadPart" )
 {
   m_instance = new KInstance( "nodepadpart" );
 
@@ -80,15 +80,12 @@ bool NotepadPart::save()
 
 void NotepadPart::slotSearchReplace()
 {
-  QObject *hack = manager()->parent();
-  if ( !hack->inherits( "KPartsMainWindow" ) )
+  KParts::XMLGUIFactory *factory = servant()->factory();
+
+  if ( !factory )
     return;
-
-  KPartsMainWindow *mainWin = (KPartsMainWindow *)hack;
-
-  KXMLGUIFactory *factory = mainWin->guiFactory();
-
-  QListIterator<KXMLGUIServant> it( *pluginServants() );
+  
+  QListIterator<KParts::XMLGUIServant> it( *pluginServants() );
   for (; it.current(); ++it )
     factory->removeServant( it.current() );
 }

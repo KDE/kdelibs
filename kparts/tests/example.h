@@ -10,7 +10,7 @@ class KAction;
 class QSplitter;
 class QMultiLineEdit;
 
-class Shell : public KPartsMainWindow
+class Shell : public KParts::MainWindow
 {
   Q_OBJECT
 public:
@@ -31,14 +31,14 @@ private:
   KAction * m_paEditFile;
   KAction * m_paCloseEditor;
 
-  KReadOnlyPart *m_part1;
-  KPart *m_part2;
-  KReadWritePart *m_editorpart;
-  KPartManager *m_manager;
+  KParts::ReadOnlyPart *m_part1;
+  KParts::Part *m_part2;
+  KParts::ReadWritePart *m_editorpart;
+  KParts::PartManager *m_manager;
   QWidget *m_splitter;
 };
 
-class Part1 : public KReadOnlyPart
+class Part1 : public KParts::ReadOnlyPart
 {
   Q_OBJECT
 public:
@@ -55,7 +55,7 @@ protected:
   KInstance *m_instance;
 };
 
-class Part2 : public KPart
+class Part2 : public KParts::Part
 {
   Q_OBJECT
 public:

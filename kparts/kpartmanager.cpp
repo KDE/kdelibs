@@ -6,7 +6,9 @@
 
 #include <assert.h>
 
-KPartManager::KPartManager( QWidget * parent, const char * name )
+using namespace KParts;
+
+PartManager::PartManager( QWidget * parent, const char * name )
  : QObject( parent, name )
 {
   m_activePart = 0;
@@ -14,12 +16,13 @@ KPartManager::KPartManager( QWidget * parent, const char * name )
   qApp->installEventFilter( this );
 }
 
-KPartManager::~KPartManager()
+PartManager::~PartManager()
 {
+  setActivePart( 0L ); 
   qApp->removeEventFilter( this );
 }
 
-bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
+bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 {
 
   if ( ev->type() != QEvent::MouseButtonPress &&
@@ -36,15 +39,14 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
        w->testWFlags( WType_Popup ) )
     return false;
 
-  KPart * part;
+  Part * part;
   while ( w )
   {
     part = findPartFromWidget( w );
     if ( part && part != m_activePart )
     {
-      m_activePart = part;
       qDebug(QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()));
-      emit activePartChanged( m_activePart );
+      setActivePart( part );
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
@@ -63,9 +65,9 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
   return false;
 }
 
-KPart * KPartManager::findPartFromWidget( QWidget * widget )
+Part * PartManager::findPartFromWidget( QWidget * widget )
 {
-  QListIterator<KPart> it ( m_parts );
+  QListIterator<Part> it ( m_parts );
   for ( ; it.current() ; ++it )
   {
     if ( it.current()->widget() == widget )
@@ -74,17 +76,15 @@ KPart * KPartManager::findPartFromWidget( QWidget * widget )
   return 0L;
 }
 
-void KPartManager::addPart( KPart *part )
+void PartManager::addPart( Part *part )
 {
   connect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
   m_parts.append( part );
 
   part->setManager( this );
-
-  m_activePart = part;
-  //qDebug(QString("Part %1 added. Making active").arg(part->name()));
-  emit activePartChanged( m_activePart );
+  
+  setActivePart( part );
 
   // Prevent focus problems
   if ( part->widget()->focusPolicy() == QWidget::NoFocus ||
@@ -97,7 +97,7 @@ void KPartManager::addPart( KPart *part )
   emit partAdded( part );
 }
 
-void KPartManager::removePart( KPart *part )
+void PartManager::removePart( Part *part )
 {
   if ( m_parts.findRef( part ) == -1 )
   {
@@ -111,18 +111,21 @@ void KPartManager::removePart( KPart *part )
   m_parts.removeRef( part );
 
   if ( part == m_activePart )
-  {
-    m_activePart = 0;
-    emit activePartChanged( 0 );
-  }
-  
+    setActivePart( 0 );
+
   emit partRemoved( part );
 }
 
-void KPartManager::slotObjectDestroyed()
+void PartManager::setActivePart( Part *part )
+{
+  m_activePart = part;
+  emit activePartChanged( m_activePart );
+} 
+
+void PartManager::slotObjectDestroyed()
 {
   qDebug("KPartManager::slotObjectDestroyed()");
-  removePart( (KPart *)sender() );
+  removePart( (Part *)sender() );
 }
 
 #include "kpartmanager.moc"

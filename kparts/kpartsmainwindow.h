@@ -14,7 +14,11 @@
 class QPopupMenu;
 class QString;
 class KStatusBar;
-class KPartsMainWindowPrivate;
+
+namespace KParts
+{
+
+class MainWindowPrivate;
 
 /**
  * @short a KPart-aware main window, whose user interface is described in XML
@@ -24,12 +28,12 @@ class KPartsMainWindowPrivate;
  * It implements all internal interfaces in the case of a KTMainWindow as host:
  * the builder and servant interface (for menu merging)
  */
-class KPartsMainWindow : public KTMainWindow, public KXMLGUIBuilder, public KXMLGUIServant
+class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServant
 {
   Q_OBJECT
  public:
-  KPartsMainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
-  virtual ~KPartsMainWindow();
+  MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
+  virtual ~MainWindow();
 
   //
   virtual void setXMLFile( const QString &file );
@@ -39,8 +43,7 @@ class KPartsMainWindow : public KTMainWindow, public KXMLGUIBuilder, public KXML
   // Add your actions to this collection
   QActionCollection *actionCollection() { return &m_actionCollection; }
 
-  // Hack! ;-) (just needed it for testing the addServant/removeServant stuff :) (Simon)
-  KXMLGUIFactory *guiFactory() const;
+  XMLGUIFactory *guiFactory() const;
 
   // ---
 
@@ -63,7 +66,7 @@ protected slots:
    * KPartManager::activePartChanged signal
    * @param part the active part (set to 0L if no part)
    */
-  virtual void createGUI( KPart * part );
+  virtual void createGUI( Part * part );
 
 protected:
 //should be obsolete (Simon)
@@ -71,9 +74,11 @@ protected:
 
 private:
   QActionCollection m_actionCollection;
-  KXMLGUIFactory *m_factory;
+  XMLGUIFactory *m_factory;
 
-  KPartsMainWindowPrivate *d;
+  MainWindowPrivate *d;
+};
+
 };
 
 #endif

@@ -4,6 +4,9 @@
 #include <qobject.h>
 #include <qaction.h>
 
+namespace KParts
+{
+
 /**
  * (TODO what is a plugin)
  *
@@ -12,18 +15,20 @@
  * "data" (KDEDIR/share/apps usually)+"/instancename/pluginactions/"
  * where instancename is the name of the part's instance.
  */
-class KPlugin : public QObject
+class Plugin : public QObject
 {
     Q_OBJECT
 public:
-    KPlugin( QObject* parent = 0, const char* name = 0 );
-    ~KPlugin();
+    Plugin( QObject* parent = 0, const char* name = 0 );
+    ~Plugin();
 
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
 private:
     QActionCollection m_collection;
+};
+
 };
 
 #endif

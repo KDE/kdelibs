@@ -5,7 +5,10 @@
 #include <qobject.h>
 #include <qwidget.h>
 
-class KPart;
+namespace KParts
+{
+
+class Part;
 
 /**
  * The part manager is an object which knows about all parts
@@ -18,7 +21,7 @@ class KPart;
  * Parts know about the part manager, to add nested parts to it,
  * and to get access to the window caption
  */
-class KPartManager : public QObject
+class PartManager : public QObject
 {
   Q_OBJECT
 public:
@@ -26,8 +29,8 @@ public:
    * Create a part manager
    * @param parent the toplevel widget (window / dialog...)
    */
-  KPartManager( QWidget * parent, const char * name = 0L );
-  virtual ~KPartManager();
+  PartManager( QWidget * parent, const char * name = 0L );
+  virtual ~PartManager();
 
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
@@ -35,33 +38,36 @@ public:
    * Call this to add a Part to the manager.
    * Sets it to the active part automatically.
    */
-  virtual void addPart( KPart *part );
+  virtual void addPart( Part *part );
   /**
    * Call this to remove a part
    *
    * Sets the active part to 0 if @p part is the @ref activePart.
    */
-  virtual void removePart( KPart *part );
+  virtual void removePart( Part *part );
 
-  KPart *activePart() { return m_activePart; }
+  virtual void setActivePart( Part *part );
+  Part *activePart() { return m_activePart; }
 
   virtual void setWindowCaption( const QString & caption )
   { ((QWidget *)parent())->setCaption( caption ); }
 
-  const QList<KPart> *parts() const { return &m_parts; }
+  const QList<Part> *parts() const { return &m_parts; }
 
 signals:
-  void partAdded( KPart *part );
-  void partRemoved( KPart *part );
-  void activePartChanged( KPart *newPart );
+  void partAdded( Part *part );
+  void partRemoved( Part *part );
+  void activePartChanged( Part *newPart );
 
 protected slots:
   void slotObjectDestroyed();
 
 private:
-  KPart * findPartFromWidget( QWidget * widget );
-  KPart * m_activePart;
-  QList<KPart> m_parts;
+  Part * findPartFromWidget( QWidget * widget );
+  Part * m_activePart;
+  QList<Part> m_parts;
+};
+
 };
 
 #endif
