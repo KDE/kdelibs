@@ -42,7 +42,8 @@ int main(int argc, char **argv) {
     filter( "smb:///", "ShortURIFilter" ); // use specific filter.
     filter( "smb:", "ShortURIFilter" ); // use specific filter.
     filter( "smb:/", "ShortURIFilter" ); // use specific filter.
-
+   
+   
     // IKWS test
     filter( "KDE" );
     filter( "GNOME" );
@@ -50,6 +51,9 @@ int main(int argc, char **argv) {
     // ENVIRONMENT variable
     filter( "$KDEDIR/local/src/kde2" );
     filter( "$HOME/.kde/share" );
+    filter( "$QTDIR", "ShortURIFilter" ); //use specific filter. 
+    filter( "$KDEDIR", "ShortURIFilter" ); //use specific filter.
+   
     return 0;
 }
 
