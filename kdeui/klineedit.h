@@ -205,7 +205,7 @@ public:
     *
     * @param @p emit if true emits completion signal.
     */
-    void setEnabledCompletionSignal( bool enable ) { m_bEmitCompletion = enable; }
+    void setEnableCompletionSignal( bool enable ) { m_bEmitCompletion = enable; }
 
     /**
     * Enables/disables this widget's ability to emit rotation signals.
@@ -215,7 +215,7 @@ public:
     * able to handle the rotation signals even if @ref setHandleRotation has
     * been or is called.  See also @see setHandleRotation.
     */
-    void setEnabledRotationSignal( bool enable ) { m_bEmitRotation = enable; }
+    void setEnableRotationSignal( bool enable ) { m_bEmitRotation = enable; }
 
     /**
     * Sets this widget to handle the completion signals internally.
@@ -407,7 +407,7 @@ public:
     *
     * @param @p showMenu if true, shows the context menu.
     */
-    virtual void setEnabledContextMenu( bool showMenu = false );
+    virtual void setEnableContextMenu( bool showMenu = false );
 
     /**
     * Enables/disables the completion mode changer item in the context menu.
@@ -418,7 +418,7 @@ public:
     *
     * @param @p showChanger if set to true, the mode changer item is enabled.
     */
-    virtual void setEnabledModeChanger( bool showChanger = false );
+    virtual void setEnableModeChanger( bool showChanger = false );
 
     /**
     * Returns true when the context menu is enabled.
@@ -620,7 +620,7 @@ private :
     bool m_bAutoDelCompObj;
     // Determines whether this widget handles rotation signals
     // internally or not
-    bool m_bHandleRotationSignals;
+    bool m_bHandleRotationSignal;
     // Determines whether this widget handles completion signals
     // internally or not
     bool m_bHandleCompletionSignal;

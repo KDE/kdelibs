@@ -87,21 +87,21 @@ void KLineEdit::setHandleRotation( bool rotate )
     if( m_pCompObj == 0 && rotate )
         setCompletionObject ( new KCompletion(), true );
 
-    if( rotate && !m_bHandleRotationSignals )
+    if( rotate && !m_bHandleRotationSignal )
     {
         connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignals = true;
+        m_bHandleRotationSignal = true;
     }
-    else if( !rotate && m_bHandleRotationSignals )
+    else if( !rotate && m_bHandleRotationSignal )
     {
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignals = false;
+        m_bHandleRotationSignal = false;
     }
 }
 
-void KLineEdit::setEnabledModeChanger( bool showChanger )
+void KLineEdit::setEnableModeChanger( bool showChanger )
 {
     if ( !showChanger )
     {
@@ -115,7 +115,7 @@ void KLineEdit::setEnabledModeChanger( bool showChanger )
     m_bShowModeChanger = showChanger;
 }
 
-void KLineEdit::setEnabledContextMenu( bool showMenu )
+void KLineEdit::setEnableContextMenu( bool showMenu )
 {
     if( showMenu )
     {
@@ -250,8 +250,7 @@ void KLineEdit::rotateText( const QString& input )
     if( input.length() == 0 )
         return;
 
-    if( m_iCompletionMode != KGlobal::CompletionNone &&
-	    m_pCompObj != 0 && m_pCompObj->hasMultipleMatches() )
+    if( m_pCompObj != 0 && m_pCompObj->hasMultipleMatches() )
     {
         if( m_iCompletionMode == KGlobal::CompletionShell )
         {
@@ -324,17 +323,10 @@ void KLineEdit::initialize()
     // be deleted or not.
     m_bAutoDelCompObj = false;
 
-    // Determines whether the rotation signals are
-    // being handled by this widget automatically
-    m_bHandleRotationSignals = false;
-    // Determines whether the completion signals are
-    // being handled by this widget automatically
-    m_bHandleCompletionSignal = false;
-
     // By default emit completion signal
-    setEnabledCompletionSignal( true );
+    m_bEmitCompletion = true;
     // By default emit rotation signals
-    setEnabledRotationSignal( true );
+    m_bEmitRotation = true;
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
@@ -353,8 +345,8 @@ void KLineEdit::initialize()
     // menu as well as the mode switching entry are enabled.
     m_pContextMenu = 0;
     m_pSubMenu = 0;
-    setEnabledContextMenu( true ); // enable context menu by default
-    setEnabledModeChanger( true ); // enable mode changer by default
+    setEnableContextMenu( true ); // enable context menu by default
+    setEnableModeChanger( true ); // enable mode changer by default
 
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobal::completionMode();
