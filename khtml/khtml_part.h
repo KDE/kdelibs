@@ -734,6 +734,10 @@ signals:
    */
   void nodeActivated(const DOM::Node &);
 
+  /**
+   * @internal */
+  void docCreated();
+
 protected:
 
   /**
@@ -946,6 +950,10 @@ private slots:
    * @internal
    */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
+  /**
+   * @internal
+   */
+  void slotChildDocCreated();
 
   void slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* obj);
   void slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *obj );

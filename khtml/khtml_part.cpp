@@ -1304,6 +1304,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // about to load a new page.
   d->m_doc->setBaseURL( baseurl.url() );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
+  emit docCreated(); // so that the parent can set the domain
 
   d->m_paUseStylesheet->setItems(QStringList());
   d->m_paUseStylesheet->setEnabled( false );
@@ -1580,29 +1581,6 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
-
-  // All frames completed -> set their domain to the frameset's domain
-  // This must only be done when loading the frameset initially (#22039),
-  // not when following a link in a frame (#44162).
-  if ( d->m_doc && d->m_doc->isHTMLDocument() )
-  {
-    DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
-    ConstFrameIt it = d->m_frames.begin();
-    ConstFrameIt end = d->m_frames.end();
-    for (; it != end; ++it )
-    {
-      KParts::ReadOnlyPart *p = (*it).m_part;
-      if ( p && p->inherits( "KHTMLPart" ))
-      {
-        KHTMLPart* htmlFrame = static_cast<KHTMLPart *>(p);
-        if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
-        {
-          kdDebug() << "KHTMLPart::checkCompleted setting frame domain to " << domain.string() << endl;
-          static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain, true );
-        }
-      }
-    }
-  }
 
   d->m_bLoadEventEmitted = true;
   if (d->m_doc)
@@ -2714,6 +2692,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                    part, SLOT( slotParentCompleted() ) );
           connect( this, SIGNAL( completed(bool) ),
                    part, SLOT( slotParentCompleted() ) );
+          // As soon as the child's document is created, we need to set its domain
+          // (but we do so only once, so it can't be simply done in the child)
+          connect( part, SIGNAL( docCreated() ),
+                   this, SLOT( slotChildDocCreated() ) );
       }
     }
 
@@ -3118,6 +3100,28 @@ void KHTMLPart::slotChildCompleted( bool complete )
     d->m_bPendingChildRedirection = (d->m_bPendingChildRedirection || complete);
 
   checkCompleted();
+}
+
+void KHTMLPart::slotChildDocCreated()
+{
+  const KHTMLPart* htmlFrame = static_cast<const KHTMLPart *>(sender());
+  // Set domain to the frameset's domain
+  // This must only be done when loading the frameset initially (#22039),
+  // not when following a link in a frame (#44162).
+  if ( d->m_doc && d->m_doc->isHTMLDocument() )
+  {
+    if ( sender()->inherits("KHTMLPart") )
+    {
+      DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
+      if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
+      {
+        //kdDebug(6050) << "KHTMLPart::slotChildDocCreated setting frame domain to " << domain.string() << endl;
+        static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain, true );
+      }
+    }
+  }
+  // So it only happens once
+  disconnect( htmlFrame, SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
 }
 
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
@@ -4091,7 +4095,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     if( tmp_iface ) {
       tmp_iface->callMethod( "goHistory(int)", -1 );
     }
-  } 
+  }
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
   {
