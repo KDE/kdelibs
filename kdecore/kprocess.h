@@ -223,6 +223,7 @@ public:
    *  @li The process is already running.
    *  @li The command line argument list is empty.
    *  @li The starting of the process failed (could not fork).
+   *  @li The executable was not found.
    *
    *  @param comm  Specifies which communication links should be
    *  established to the child process (stdin/stdout/stderr). By default,
@@ -272,7 +273,10 @@ public:
   /**
    * @return @p true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
-  */
+   *
+   * Note that you should check @ref KProcess::exitStatus() to determine
+   * whether the process completed its task successfull or not. 
+   */
   bool normalExit();
 
   /**

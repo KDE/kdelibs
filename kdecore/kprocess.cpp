@@ -174,6 +174,12 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (!setupCommunication(comm))
       kdDebug() << "Could not setup Communication!\n";
 
+  int fd[2];
+  if (0 > pipe(fd))
+  {
+     fd[0] = 0; fd[1] = 0; // Pipe failed.. continue
+  }
+
   runs = true;
 
   QApplication::flushX();
@@ -183,6 +189,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
   pid = fork();
 
   if (0 == pid) {
+        if (fd[0])
+           close(fd[0]);
         if (!runPrivileged())
         {
            setgid(getgid());
@@ -209,7 +217,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
         act.sa_flags = 0;
         sigaction(SIGPIPE, &act, 0L);
 
+        // We set the close on exec flag.
+        // Closing of fd[1] indicates that the execvp succeeded!
+        if (fd[1])
+          fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 	execvp(arglist[0], arglist);
+        char resultByte = 1;
+        if (fd[1])
+          write(fd[1], &resultByte, 1);
 	_exit(-1);
 
   } else if (-1 == pid) {
@@ -218,14 +233,39 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	runs = false;
 	free(arglist);
 	return false;
-
   } else {
+        if (fd[1])
+          close(fd[1]);
 	// the parent continues here
-	if (!commSetupDoneP())  // finish communication socket setup for the parent
-	  kdDebug() << "Could not finish comm setup in parent!" << endl;
 
 	// Discard any data for stdin that might still be there
 	input_data = 0;
+        
+        // Check whether client could be started.
+        if (fd[0]) for(;;)
+        {
+           char resultByte;
+           int n = ::read(fd[0], &resultByte, 1);
+           if (n == 1)
+           {
+               // Error
+               runs = false;
+               close(fd[0]);
+               free(arglist);
+               return false;
+           }
+           if (n == -1)
+           {
+              if ((errno == ECHILD) || (errno == EINTR))
+                 continue; // Ignore
+           }
+           break; // success
+        }
+        if (fd[0])
+           close(fd[0]);
+
+	if (!commSetupDoneP())  // finish communication socket setup for the parent
+	  kdDebug() << "Could not finish comm setup in parent!" << endl;
 
 	if (run_mode == Block) {
 	  commClose();
