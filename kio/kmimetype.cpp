@@ -214,7 +214,8 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     if ( path.right(1) == "/" || path.isEmpty() )
     {
       // We have no filename at all. Maybe the protocol has a setting for
-      // which mimetype this means (like html for http...)
+      // which mimetype this means. For HTTP we set unknown now, because
+      // of redirections (e.g. freshmeat downloads).
       // Assume inode/directory otherwise.
       QString def = KProtocolManager::self().defaultMimetype( _url.protocol() );
       return mimeType( def.isEmpty() ? QString::fromLatin1("inode/directory") : def );
