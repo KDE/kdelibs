@@ -280,7 +280,7 @@ QString KBugReport::text()
 
 bool KBugReport::sendBugReport()
 {
-  QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") ) + QString::fromLatin1(" -oi -t");
+  QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") );
   bool needHeaders = true;
 
   QString recipient ( m_aboutData ?
@@ -295,7 +295,10 @@ bool KBugReport::sendBugReport()
     command.append(recipient);
     needHeaders = false;
   }
-
+  else
+  {
+    command += QString::fromLatin1(" -oi -t");
+  }
   FILE * fd = popen(command.local8Bit(),"w");
   if (!fd)
   {
