@@ -3,7 +3,7 @@ This is a short document with the progress of patches in the Safari codebase
 being merged into khtml. 
 
 its ordered by directory and by files. Add here the parts that cannot be
-immediately merged and need further negotation. 
+immediately merged and need further negotiation. 
 
 Its recommended to add a //FIXME_SAFARI comment to places which need merging
 in the khtml sourcecode. 
