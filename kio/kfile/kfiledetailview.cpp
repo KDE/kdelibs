@@ -327,18 +327,18 @@ void KFileDetailView::slotSortingChanged( int col )
 {
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
-    bool reversed = col == m_sortingCol && !(sort & QDir::Reversed);
+    bool reversed = col == m_sortingCol && (sort & QDir::Reversed) == 0;
     m_sortingCol = col;
 
     switch( col ) {
         case COL_NAME:
-            sortSpec = sort & ~QDir::SortByMask | QDir::Name;
+            sortSpec = (sort & ~QDir::SortByMask | QDir::Name);
             break;
         case COL_SIZE:
-            sortSpec = sort & ~QDir::SortByMask | QDir::Size;
+            sortSpec = (sort & ~QDir::SortByMask | QDir::Size);
             break;
         case COL_DATE:
-	    sortSpec = sort & ~QDir::SortByMask | QDir::Time;
+            sortSpec = (sort & ~QDir::SortByMask | QDir::Time);
             break;
 
         // the following columns have no equivalent in QDir, so we set it
@@ -347,7 +347,7 @@ void KFileDetailView::slotSortingChanged( int col )
         case COL_GROUP:
         case COL_PERM:
             // grmbl, QDir::Unsorted == SortByMask.
-            sortSpec = sort & ~QDir::SortByMask;// | QDir::Unsorted;
+            sortSpec = (sort & ~QDir::SortByMask);// | QDir::Unsorted;
             break;
         default:
             break;
@@ -369,7 +369,6 @@ void KFileDetailView::slotSortingChanged( int col )
     KFileItem *item;
     KFileItemListIterator it( *items() );
 
-
     if ( sortSpec & QDir::Time ) {
         for ( ; (item = it.current()); ++it )
             viewItem(item)->setKey( sortingKey( item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), sortSpec ));
@@ -389,6 +388,7 @@ void KFileDetailView::slotSortingChanged( int col )
     }
 
     KListView::setSorting( m_sortingCol, !reversed );
+    KListView::sort();
 
     if ( !m_blockSortingSignal )
         sig->changeSorting( static_cast<QDir::SortSpec>( sortSpec ) );
@@ -407,7 +407,7 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
     else
         col = COL_NAME;
 
-    // inversed, because slotSortingChanged will revers it
+    // inversed, because slotSortingChanged will reverse it
     if ( spec & QDir::Reversed )
         spec = (QDir::SortSpec) (spec & ~QDir::Reversed);
     else
