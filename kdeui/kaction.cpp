@@ -32,7 +32,7 @@
 #include <qtl.h>
 #include <qptrdict.h>
 #include <qfontdatabase.h>
-
+#include <qwhatsthis.h>
 #include <kiconloader.h>
 
 static QFontDatabase *fontDataBase = 0;
@@ -417,6 +417,7 @@ int KAction::plug( QWidget *w, int index )
                          index );
     }
 
+    QWhatsThis::add( bar->getButton(id_), whatsThis() );
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
