@@ -1,3 +1,35 @@
+2004-06-09  Zack Rusin  <zack@kde.org>
+        
+        * xml/xml_tokenizer.{h,cpp}: adding bool isWaitingForScripts()
+        const method to tokenizer interface which should return true if
+        the tokenizer is waiting for scripts to finish. Adding the method
+        to XMLTokenizer,
+        * html/htmltokenizer.{h,cpp}: adding the isWaitingForScripts
+        method,
+        * xml/dom_docimpl.cpp (close): On an explicit document.close()
+        don't destroy the  tokenizer if it's still waiting on external
+        scripts  
+        
+2004-06-09  Zack Rusin  <zack@kde.org>
+        
+        * ecma/kjs_events.{h,cpp}: made the listener in jseventlistener an
+        object instead of a value and switch its function accordingly,
+        adding JSLazyEventListener which delays evaluation of event
+        handlers,
+        * ecma/kjs_window.{h,cpp}: adding getJSLazyEventListener which
+        creates lazy listeners,
+        * ecma/kjs_dom.cpp (getListener): switched to use lazy listeners,
+        * ecma/kjs_html.cpp (getValueProperty): adding check of whether
+        listener implementation is in place (listener is valid),
+        * ecma/kjs_proxy.cpp (createHTMLEventHandler): switched to use
+        getJSLazyEventListener,
+        
+2004-06-08  Zack Rusin  <zack@kde.org>
+        
+        * html/htmltokenizer.cpp (parseEntity): Fix to make 8-character
+        hexadecimal entities work in khtml from Darin Adler. Testcase at
+        http://www.alanwood.net/unicode/deseret.html
+
 2004-06-06  Zack Rusin  <zack@kde.org>
 
         * xml/dom_docimpl.cpp (getId): do html lookup if specified even if not
