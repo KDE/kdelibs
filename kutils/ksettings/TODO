@@ -1,5 +1,13 @@
 - KPluginSelct.. listview should only show the name and comment, the rest is
   shown in a tooltip (I don't know how to get the tooltip working in the
   listview.)
+- Handle unsaved changes in KCMs that are hidden if the user deselects some
+  plugin KCMs (in KSettings::Dialog::Configurable mode). Ideas:
+  - don't allow changes to the plugin selection if there are unsaved changes in
+    the main dlg ("You have unsaved changes in the configuration dialog, please
+    save them first before changing the components selection.")
+  - automatically save changes of hidden modules when the dialog is deleted
+  - ask as soon as KCMultiDialog can detect that there are unsaved changes to
+    hidden KCMs (it might even be possible to show the KCMs for that)
 
 # vim: tw=80
