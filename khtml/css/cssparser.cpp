@@ -2755,7 +2755,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
 #endif
 
-    if (*curP == '@' )
+    if (*curP == '@' && curP != endP && ( (curP+1)->isLetter() || (curP+1)->unicode() > 0xa0 )  )
     {
         rule = parseAtRule(curP, endP);
     }
