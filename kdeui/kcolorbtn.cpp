@@ -31,6 +31,9 @@
 KColorButton::KColorButton( QWidget *parent, const char *name )
   : QPushButton( parent, name ), dragFlag(false)
 {
+  // 2000-07-16 (espen). The dragFlag is no longer used. 
+  // I delay the removal from the header to after 2.0
+
   setAcceptDrops( true);
 }
 
@@ -92,33 +95,31 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
-  int delay = KGlobalSettings::dndEventDelay();
-
-  if(e->x() >= mPos.x()+delay || e->x() <= mPos.x()-delay ||
-     e->y() >= mPos.y()+delay || e->y() <= mPos.y()-delay) {
+  if( (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
+  {
     // Drag color object
     KColorDrag *d = KColorDrag::makeDrag( color(), this);
     d->dragCopy();
-    dragFlag = true;
-    // Fake a release event for QPushButton (mosfet)
-    QMouseEvent evTmp(QEvent::MouseButtonRelease,
-		      e->pos(), e->globalPos(),
-    		      QMouseEvent::LeftButton,
-    		      QMouseEvent::LeftButton);
-    mouseReleaseEvent(&evTmp);
-    dragFlag = false;
+    setDown(false);
   }
 }
 
 void KColorButton::mouseReleaseEvent( QMouseEvent *e )
 {
-  QPushButton::mouseReleaseEvent(e);
-  if (!dragFlag) {
-    if (KColorDialog::getColor( col, this ) == QDialog::Rejected )
-      return;
-    repaint( false );
-    emit changed( col );
+  if( !hitButton(e->pos()) )
+  {
+    return;
   }
+
+  QPushButton::mouseReleaseEvent(e);
+  if( KColorDialog::getColor( col, this ) == QDialog::Rejected )
+  {
+    return;
+  }
+  repaint( false );
+  emit changed( col );
 }
 
 #include "kcolorbtn.moc"
+
+
