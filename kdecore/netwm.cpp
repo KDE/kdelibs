@@ -80,6 +80,7 @@ static Atom kde_net_system_tray_windows       = 0;
 static Atom kde_net_wm_system_tray_window_for = 0;
 static Atom kde_net_wm_frame_strut            = 0;
 static Atom kde_net_wm_window_type_override   = 0;
+static Atom kde_net_wm_window_type_topmenu    = 0;
 
 // application protocols
 static Atom net_wm_ping = 0;
@@ -190,7 +191,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 47;
+static const int netAtomCount = 48;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -244,6 +245,7 @@ static void create_atoms(Display *d) {
 	    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
 	    "_KDE_NET_WM_FRAME_STRUT",
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
+	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
 
 	    "WM_STATE"
 	    };
@@ -300,6 +302,7 @@ static void create_atoms(Display *d) {
 	    &kde_net_wm_system_tray_window_for,
 	    &kde_net_wm_frame_strut,
 	    &kde_net_wm_window_type_override,
+	    &kde_net_wm_window_type_topmenu,
 
 	    &xa_wm_state,
 	    };
@@ -896,6 +899,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_wm_window_type_menu;
 	atoms[pnum++] = net_wm_window_type_dialog;
 	atoms[pnum++] = kde_net_wm_window_type_override;
+	atoms[pnum++] = kde_net_wm_window_type_topmenu;
     }
 
     if (p->protocols & WMState) {
@@ -2081,6 +2085,14 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 1;
 	break;
 
+    case TopMenu:
+	// spec extension: override window type.  we must comply with the spec
+	// and provide a fall back (dock seems best)
+	data[0] = kde_net_wm_window_type_topmenu;
+	data[1] = net_wm_window_type_dock;
+	len = 2;
+	break;
+
     case Tool:
 	data[0] = net_wm_window_type_toolbar;
 	data[1] = None;
@@ -2684,6 +2696,8 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->type = Dialog;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
 			p->type = Override;
+		    else if ((Atom) types[count] == kde_net_wm_window_type_topmenu)
+			p->type = TopMenu;
 
 		    count++;
 		}

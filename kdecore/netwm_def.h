@@ -210,6 +210,9 @@ public:
        decorations. This is for windows that would normally use either override_redirect
        or Motif hints to give no decorations.  This is a KDE extension to the
        _NET_WM_WINDOW_TYPE mechanism.
+       
+       @li TopMenu indicates a toplevel menu (AKA macmenu). This is a KDE extension to the
+       _NET_WM_WINDOW_TYPE mechanism.
     **/
 
     enum WindowType {
@@ -217,11 +220,12 @@ public:
 	Normal   = 0,
 	Desktop  = 1,
 	Dock     = 2,
-	Tool     = 3,
+	Toolbar  = 3,
        	Menu     = 4,
 	Dialog   = 5,
 	Override = 6, // NON STANDARD
-	Toolbar = Tool // This will go away soon, COMPAT
+        TopMenu  = 7, // NON STANDARD
+	Tool     = Toolbar // This will go away soon, COMPAT
     };
 
     /**

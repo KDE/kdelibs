@@ -120,7 +120,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false );
 #ifndef Q_WS_QWS //FIXME
-      KWin::setType( winId(), NET::Menu );
+      KWin::setType( winId(), NET::TopMenu );
 #endif
       setFrameStyle( MenuBarPanel );
       installEventFilter( parentWidget()->topLevelWidget() );
