@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kbookmarkimporter.h"
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -30,6 +29,55 @@
 #include <sys/stat.h>
 #include <assert.h>
 
-// todo - put stuff in here :)
+#include "kbookmarkmanager.h"
+
+#include "kbookmarkimporter_ns.h"
+#include "kbookmarkimporter_opera.h"
+#include "kbookmarkimporter_ie.h"
+
+#include "kbookmarkimporter.h"
+
+void KXBELBookmarkImporterImpl::parse() 
+{
+  KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
+  KBookmarkGroup root = manager->root();
+  traverse(root);
+  // FIXME erm. this well, crashes!!!
+  // delete manager;
+}
+
+void KXBELBookmarkImporterImpl::visit(const KBookmark &bk) 
+{
+  if (bk.isSeparator()) 
+    emit newSeparator();
+  else 
+    emit newBookmark(bk.text(), bk.url().url().utf8(), "");
+}
+
+void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
+{
+  emit newFolder(grp.text(), false, "");
+}
+   
+void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
+{
+  emit endFolder();
+}
+
+KBookmarkImporterBase* KBookmarkImporterBase::factory( const QString &type )
+{
+  if (type == "netscape")
+    return new KNSBookmarkImporterImpl;
+  else if (type == "mozilla")
+    return new KMozillaBookmarkImporterImpl;
+  else if (type == "xbel")
+    return new KXBELBookmarkImporterImpl;
+  else if (type == "ie")
+    return new KIEBookmarkImporterImpl;
+  else if (type == "opera")
+    return new KOperaBookmarkImporterImpl;
+  else 
+    return 0;
+}
 
 #include <kbookmarkimporter.moc>

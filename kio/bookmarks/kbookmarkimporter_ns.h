@@ -58,17 +58,29 @@ protected:
 
 /**
  * A class for importing NS bookmarks
+ * utf8 defaults to off
  * @since 3.2
  */
 class KNSBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
-    KNSBookmarkImporterImpl() { }
+    KNSBookmarkImporterImpl() : m_utf8(false) { }
     void setUtf8(bool utf8) { m_utf8 = utf8; }
     virtual void parse();
     virtual QString findDefaultLocation(bool forSaving = false) const;
 private:
     bool m_utf8;
+};
+
+/**
+ * A class for importing Mozilla bookmarks
+ * utf8 defaults to on
+ * @since 3.2
+ */
+class KMozillaBookmarkImporterImpl : public KNSBookmarkImporterImpl
+{
+public:
+    KMozillaBookmarkImporterImpl() { setUtf8(true); }
 };
 
 /**

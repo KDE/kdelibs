@@ -786,59 +786,13 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
   openBookmarks( KNSBookmarkImporter::netscapeBookmarksFile(), "netscape" );
 }
 
-void KXBELBookmarkImporterImpl::parse() 
-{
-  KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
-  KBookmarkGroup root = manager->root();
-  traverse(root);
-  // FIXME erm. this well, crashes!!!
-  // delete manager;
-}
-
-void KXBELBookmarkImporterImpl::visit(const KBookmark &bk) 
-{
-  if (bk.isSeparator()) 
-    emit newSeparator();
-  else 
-    emit newBookmark(bk.text(), bk.url().url().utf8(), "");
-}
-
-void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
-{
-  emit newFolder(grp.text(), false, "");
-}
-   
-void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
-{
-  emit endFolder();
-}
-
-void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QString &type )
+void KBookmarkMenuNSImporter::openBookmarks( const QString &location, const QString &type )
 {
   mstack.push(m_menu);
 
-  KBookmarkImporterBase *importer;
-
-  if (type == "netscape")
-  {
-    KNSBookmarkImporterImpl *myimporter = new KNSBookmarkImporterImpl;
-    myimporter->setUtf8(false);
-    importer = myimporter;
-  } 
-  else if (type == "mozilla")
-  {
-    KNSBookmarkImporterImpl *myimporter = new KNSBookmarkImporterImpl;
-    myimporter->setUtf8(true);
-    importer = myimporter;
-  }
-  else if (type == "xbel")
-    importer = new KXBELBookmarkImporterImpl;
-  else if (type == "ie")
-    importer = new KIEBookmarkImporterImpl;
-  else if (type == "opera")
-    importer = new KOperaBookmarkImporterImpl;
-  else return;
-
+  KBookmarkImporterBase *importer = KBookmarkImporterBase::factory(type);
+  if (!importer)
+     return;
   importer->setFilename(location);
   connectToImporter(*importer);
   importer->parse();

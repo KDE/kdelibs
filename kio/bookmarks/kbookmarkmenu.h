@@ -236,7 +236,7 @@ public:
      m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
 
   void openNSBookmarks();
-  void openBookmarks( const QString location, const QString &type );
+  void openBookmarks( const QString &location, const QString &type );
   void connectToImporter( const QObject &importer );
 
 protected slots:

@@ -157,20 +157,4 @@ public:
   static QString selectedAddress( QListView* );
 };
 
-/**
- * A class with the sole purpose of importing XBEL files for use in the bookmark menu
- */
-class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, private KBookmarkGroupTraverser
-{
-    Q_OBJECT
-public:
-    KXBELBookmarkImporterImpl() {}
-    virtual void parse();
-    virtual QString findDefaultLocation(bool = false) const { return QString::null; }
-private:
-    virtual void visit(const KBookmark &);
-    virtual void visitEnter(const KBookmarkGroup &);
-    virtual void visitLeave(const KBookmarkGroup &);
-};
-
 #endif

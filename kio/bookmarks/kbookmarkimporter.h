@@ -24,6 +24,8 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+#include "kbookmark.h"
+
 /**
  * A class for importing NS bookmarks
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
@@ -40,6 +42,8 @@ public:
 
     virtual void parse() = 0;
     virtual QString findDefaultLocation(bool forSaving = false) const = 0;
+
+    static KBookmarkImporterBase *factory( const QString &type );
 
 signals:
     /**
@@ -68,6 +72,22 @@ signals:
 protected:
     QString m_fileName;
 
+};
+
+/**
+ * A class for importing XBEL files
+ */
+class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, private KBookmarkGroupTraverser
+{
+    Q_OBJECT
+public:
+    KXBELBookmarkImporterImpl() {}
+    virtual void parse();
+    virtual QString findDefaultLocation(bool = false) const { return QString::null; }
+private:
+    virtual void visit(const KBookmark &);
+    virtual void visitEnter(const KBookmarkGroup &);
+    virtual void visitLeave(const KBookmarkGroup &);
 };
 
 // for SC
