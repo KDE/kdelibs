@@ -49,11 +49,11 @@ toolbardir = $(kde_toolbardir)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
 libkfile_la_LDFLAGS = -version-info 2:0 $(LDFLAGS)
-libkfile_la_LIBADD = -lqt -lXext -lX11 $(LIBSOCKET)
+libkfile_la_LIBADD =  -lXext  $(LIB_QT)
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
-kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la -lqt -lXext -lX11 $(LIBSOCKET)
+kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)
 
 bookmark.cpp:bookmark.moc
 bookmark.moc: bookmark.h
