@@ -33,6 +33,6 @@ namespace Keramik
 		static void renderGradient( QPainter* p, const QRect& r, QColor cr, bool horizontal, bool menu = false,
 													int px = 0, int py = 0, int pwidth = -1, int pheight = -1 );
 	};
-};
+}
 
 #endif

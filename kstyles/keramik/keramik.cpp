@@ -1,6 +1,6 @@
 /* Keramik Style for KDE3
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-             (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+             (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
 
    based on the KDE3 HighColor Style
 
@@ -162,7 +162,7 @@ namespace
 		}
 		p->restore();
 	}
-};
+}
 
 // XXX
 /* reimp. */
@@ -243,20 +243,20 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 {
     switch (stylepixmap) {
 		case SP_TitleBarMinButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_iconify, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_iconify,
 				Qt::black, Qt::black, false, false);
 			//return qpixmap_from_bits( iconify_bits, "title-iconify.png" );
 		case SP_TitleBarMaxButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_maximize, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_maximize,
 				Qt::black, Qt::black, false, false);
 		case SP_TitleBarCloseButton:
 			if (widget && widget->inherits("KDockWidgetHeader"))
-				return Keramik::PixmapLoader::the().pixmap(keramik_title_close_tiny, 
+				return Keramik::PixmapLoader::the().pixmap(keramik_title_close_tiny,
 				Qt::black, Qt::black, false, false);
-			else	return Keramik::PixmapLoader::the().pixmap(keramik_title_close, 
+			else	return Keramik::PixmapLoader::the().pixmap(keramik_title_close,
 				Qt::black, Qt::black, false, false);
 		case SP_TitleBarNormalButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_restore, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_restore,
 				Qt::black, Qt::black, false, false);
 		default:
 			break;
@@ -325,9 +325,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 	{
 		if ( widget->inherits( "QComboBox" ) )
 			widget->setBackgroundMode( PaletteButton );
-
 		widget->removeEventFilter(this);
-
 	}
 	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
 		widget->setBackgroundMode( PaletteBackground );
@@ -407,21 +405,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					//### What should we draw at sides?
 					//nr = QRect(r.x(), r.y(),
 					//	QMIN(r.width(), r.height()), r.width() ) );
-					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );;
-						
+					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );
+
 				}
 				else
 				{
 					int offX = (r.width() - 15)/2;
 					int offY = (r.height() - 15)/2;
-				
+
 					if (flags & Style_Down)
 						offY += 1;
-						
+
 					nr = QRect(r.x()+offX, r.y()+offY, 15, 15);
 				}
-				
-				Keramik::ScaledPainter(flags & Style_Down ? keramik_titlebutton_pressed : keramik_titlebutton, 
+
+				Keramik::ScaledPainter(flags & Style_Down ? keramik_titlebutton_pressed : keramik_titlebutton,
 										Keramik::ScaledPainter::Both).draw( p, nr, cg.button(), cg.background());
 				return;
 			}
@@ -653,7 +651,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
 
 				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2, 
+				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
 				            r.x()+r.width()/2 + 2, r.y()+r.height()/2);
 
 
@@ -692,6 +690,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 		case PE_Indicator:
 		case PE_IndicatorMask:
+
 			if (flags & Style_On)
 				Keramik::ScaledPainter( keramik_checkbox_on ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
 			else if (flags & Style_Off)
@@ -1126,7 +1125,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 			if ( btn->isFlat( ) )
 				flatMode = true;
-			
+
 			if ( btn->isDefault( ) && !flatMode )
 			{
 				drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
@@ -1140,7 +1139,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				toolbarBlendWidget = 0;
 			}
-			
+
 			flatMode = false;
 
 			break;
@@ -1167,7 +1166,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( button->isMenuButton() )
 			{
 				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-				if ( button->iconSet() && !button->iconSet()->isNull()  && 
+				if ( button->iconSet() && !button->iconSet()->isNull()  &&
 					(dx + button->iconSet()->pixmap (QIconSet::Small, QIconSet::Normal, QIconSet::Off ).width()) >= w )
 				{
 					cornArrow = true; //To little room. Draw the arrow in the corner, don't adjust the widget
@@ -1192,18 +1191,18 @@ void KeramikStyle::drawControl( ControlElement element,
 					state = QIconSet::On;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
-				
+
 				if (button->text().isEmpty() && !button->pixmap())
-					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2, 
+					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2,
 									pixmap );
 				else
 					p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
-					
+
 				if (cornArrow) //Draw over the icon
 					drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - 6, x + h - 6, 7, 7), r ),
 							   cg, flags, opt );
 
-					
+
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
@@ -1213,7 +1212,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
-						
+
 
 
 			if ( flags & Style_HasFocus )
@@ -1814,7 +1813,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags | Style_Down );
 				}
 			}
-			
+
 			customScrollMode = false;
 
 
@@ -1835,9 +1834,9 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				onControlButtons = true;
 				titleBarMode = Maximized;
 			}
-				
-			
-				
+
+
+
 
 			QRect button, menuarea;
 			button   = querySubControlMetrics(control, widget, SC_ToolButton, opt);
@@ -1903,18 +1902,18 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				fr.addCoords(3, 3, -3, -3);
 				drawPrimitive(PE_FocusRect, p, fr, cg);
 			}
-			
+
 			titleBarMode = None;
 
 			break;
 		}
-		
+
 		case CC_TitleBar:
 			titleBarMode = Regular; //Handle buttons on titlebar different from toolbuttons
 		default:
 			KStyle::drawComplexControl( control, p, widget,
 						r, cg, flags, controls, active, opt );
-						
+
 			titleBarMode = None;
 	}
 }
@@ -2045,7 +2044,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			return QSize( contentSize.width() + arrow + (cb->editable() ? 26 : 22),
 					contentSize.height() + 10 );
 		}
-						  
+
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
 		case CT_PopupMenuItem: {
@@ -2286,6 +2285,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 	if ( !object->isWidgetType() ) return false;
 
+	//Hover highlight on buttons and combos
 	if ( object->inherits("QPushButton") || object->inherits("QComboBox") )
 	{
 		if ( (event->type() == QEvent::Enter) && static_cast<QWidget*>(object)->isEnabled())
@@ -2302,6 +2302,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		}
 		return false;
 	}
+	//Combo line edits get special frames
 	else if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
 	{
 		static bool recursion = false;
@@ -2319,6 +2320,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		return true;
 	}
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
+	//Combo dropdowns are shaped
 	else if ( event->type() == QEvent::Resize && object->inherits("QListBox") )
 	{
 		QListBox* listbox = static_cast<QListBox*>(object);
@@ -2339,6 +2341,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			  rects, 5, ShapeSet, YXSorted);
 	}
 #endif
+	//Combo dropdowns get fancy borders
 	else if ( event->type() == QEvent::Paint && object->inherits("QListBox") )
 	{
 		static bool recursion = false;
