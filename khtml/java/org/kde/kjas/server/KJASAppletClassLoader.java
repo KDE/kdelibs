@@ -4,6 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+import java.security.*;
 
 /**
  * ClassLoader used to download and instantiate Applets.
@@ -15,6 +16,9 @@ import java.util.zip.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.9  2000/09/16 03:09:20  rogozin
+ * Fix #9558 and probably #9061
+ *
  * Revision 1.8  2000/08/31 00:12:52  rogozin
  * Patch for loading applets referenced by full package name applied.
  * Author: Wim van Velthoven (W.vanVelthoven@fi.uu.nl)
@@ -49,218 +53,104 @@ import java.util.zip.*;
  * @author Richard Moore, rich@kde.org
  */
 public class KJASAppletClassLoader
-   extends ClassLoader
+   extends URLClassLoader
 {
-   //* The base URL from which code will be loaded.
-   URL codeBase;
+    protected URL baseURL;
 
-   //* Raw class data parsed from Jars. Contains all other resources as well.
-   Hashtable rawData;
+    public static KJASAppletClassLoader createLoader( URL url )
+    {
+        URL[] urls = new URL[1];
+        urls[0] = url;
 
-   public KJASAppletClassLoader( URL codeBase )
-   {
-      this.codeBase = codeBase;
-      this.rawData = new Hashtable();
-   }
-   /**
-    * Loads Jar and Zip archives from the server
-    */
-   public void loadJars( String jars ) 
-   {
-      StringTokenizer parser = new StringTokenizer(jars, ",", false);
-      while(parser.hasMoreTokens()) {
-	 String jar = parser.nextToken().trim();
-	 if(Main.debug) 
-	    System.out.println("CL: Loading archive: " + jar);
-         ZipInputStream zip = null;
-         try {
-            zip = new ZipInputStream((new URL( codeBase, jar )).openStream());
-            
-            // For every zip entry put it data to the hash table
-	    ZipEntry entry;
-            while((entry = zip.getNextEntry()) != null) {
+        return new KJASAppletClassLoader( urls );
+    }
 
-               // Skip directories
-	       if(entry.isDirectory())
-		  continue; 
+    public KJASAppletClassLoader( URL[] urls )
+    {
+        super( urls );
+    }
 
-	       if(Main.debug) 
-		  System.out.println("CL: Loading entry: " + entry.getName());
+    public void addJar( URL baseURL, String jarname )
+    {
+        try
+        {
+            URL newurl = new URL( baseURL, jarname );
+            addURL( newurl );
+        }
+        catch ( MalformedURLException e )
+        {
+            Main.kjas_err( "bad url creation: " + e, e );
+            throw new IllegalArgumentException( jarname );
+        }
+    }
 
-               // If we know the total length of the entry in advance 
-               // allocate the exact array. Otherwise do it bu chunks
-               // and reallocated if needed
-	       int n, total = 0;
-	       int len = (int)entry.getSize();
-	       byte data[] = new byte[(len == -1) ? 2024 : len];
-	       while((n = zip.read(data, total, data.length - total)) >= 0) {
-		  if((total += n) == data.length) {
-		     if(len < 0) {
-			byte newdata[] = new byte[total + 2024];
-			System.arraycopy(data, 0, newdata, 0, total);
-			data = newdata;
-		     }
-		     else
-			break;
-		  }
-	       }
+    public Class loadClass( String name )
+        throws ClassNotFoundException
+    {
+        //We need to be able to handle foo.class, so strip off the suffix
+        if( name.endsWith( ".class" ) )
+        {
+            name = name.substring( 0, name.length() - 6 );
+        }
 
-	       // Store the raw data
-	       rawData.put(entry.getName(), data);
-	    }
-	 }
-	 catch(Exception e) {
-	    System.out.println("Can not load archive " + e);
-	 }
-         finally {
-            try {
-               if(zip != null) zip.close();
+        //try to load it with the parent first...
+        try
+        {
+            return super.loadClass( name );
+        }
+        catch( ClassNotFoundException e )
+        {
+            Main.kjas_debug( "super couldn't load class: " + name + ", exception = " + e );
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    /**
+     *  Emergency class loading function- the last resort
+     */
+    public Class findClass(String name)
+        throws ClassNotFoundException
+    {
+        //All we need to worry about here are classes
+        //with kde url's other than those handled by
+        //the URLClassLoader
+
+        try
+        {
+            return super.findClass( name );
+        }
+        catch( ClassNotFoundException e )
+        {
+            Main.kjas_debug( "could not find the class: " + name + ", exception = " + e );
+        }
+
+        throw new ClassNotFoundException( name );
+    }
+
+    public URL findResource( String name )
+    {
+        return super.findResource( name );
+    }
+
+    public void addCodeBase( URL url )
+    {
+        URL[] urls = getURLs();
+
+        boolean inthere = false;
+        for( int i = 0; i < urls.length; i++ )
+        {
+            if( urls[i].equals( url ) )
+            {
+                inthere = true;
+                break;
             }
-            catch(Exception e) {}
-         }
-      }
-   }
+        }
 
-   public synchronized Class loadClass(String name, boolean resolve)
-      throws ClassNotFoundException
-   {
-      Class c = findClass(name);
-      if ( c == null ) 
-         throw new ClassNotFoundException(name);
-      
-      if ( resolve )
-         resolveClass( c );
-      
-      return c;
-   }
+        if( !inthere )
+            addURL( url );
+    }
 
-   public InputStream getResourceAsStream(String name) 
-   {
-      InputStream inputstream = ClassLoader.getSystemResourceAsStream(name);
-      if(inputstream != null)
-         return inputstream;
-      
-      byte data[] = (byte[]) rawData.get(name);
-      if(data != null)
-         return new ByteArrayInputStream(data);
-      
-      return null;
-   }
-   
-   /**
-    *  General class load function
-    */
-   public Class findClass(String name)
-   {
-      Class c;
-      
-      // 1. Try loaded classes
-      c = findLoadedClass(name);
-      if(c != null)
-         return c;
-      
-      // 2. Try system (CLASSPATH) classes
-      try {
-         c = findSystemClass( name );
-         if(c != null)
-            return c;
-      }
-      catch (ClassNotFoundException e) {}
-
-      // 3. Try classes from archives
-      c = findJarClass( name );
-      if(c != null)
-         return c;
-
-      // 4. Try classes from Web server
-      c = findURLClass(name);
-      if(c != null)
-         return c;
-      
-      // Opps!
-      return null;
-   }  
-
-   /**
-    *  Load class from jar table
-    */
-   Class findJarClass( String name )
-   {
-      if(rawData.isEmpty())
-         return null;
-      
-      // Convert name and see if we have such a beast
-      if ( name.endsWith( ".class" ) )
-	  name = name.substring( 0, name.indexOf( ".class" ) );
-      String cname = name.replace('.', '/') + ".class";
-	       
-      if(Main.debug) {
-	  System.out.println("CL: findJarClass: name  = " + name);
-	  System.out.println("CL: findJarClass: cname = " + cname);
-      }
-
-      byte data[] = (byte[]) rawData.get(cname);
-      
-      if(data != null) {
-         // If we found one remove it from the table to save some space
-         // and load it into JVM
-         rawData.remove(cname);
-         return defineClass(name, data, 0, data.length);
-      }
-      
-      return null;
-   }
-   
-   /** 
-    *  Load class from Web 
-    */ 
-   Class findURLClass( String name )
-   {
-      // name - class name used for class initialization
-      // cname - converted name used for class retrival vie URL
- 
-      if ( name.endsWith( ".class" ) )
-	  name = name.substring( 0, name.indexOf( ".class" ) );
-      String cname = name.replace('.','/') + ".class";
-
-      if(Main.debug) {
-         System.out.println( "CL: findURLClass: name  = " + name );
-         System.out.println( "CL: findURLClass: cname = " + cname );
-      }
-
-      InputStream in = null;
-      
-      try {
-         URL classURL = new URL( codeBase, cname );
-
-         URLConnection connection = classURL.openConnection();
-         int len = connection.getContentLength();
-         int n, total = 0;
-         byte data[] = new byte[len != -1 ? len : 2048];
-         in = connection.getInputStream();
-
-         while((n = in.read(data, total, data.length - total)) >= 0) {
-            if((total += n) == data.length) {
-               if(len < 0) {
-                  byte new_data[] = new byte[total + 2024];
-                  System.arraycopy(data, 0, new_data, 0, total);
-                  data = new_data;
-               }
-               else
-                  break;
-            }
-         }
-         return defineClass(name, data, 0, total);
-      }
-      catch(Exception e) 
-         { }
-      finally {
-         try {
-            if(in != null) in.close();
-         } 
-         catch(Exception e) {}
-      }
-      
-      return null;
-   }
 }

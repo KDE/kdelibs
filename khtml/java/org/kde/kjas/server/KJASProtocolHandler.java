@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.5  2000/05/21 19:27:28  rogozin
+ *
+ * Fix reload exception
+ *
  * Revision 1.4  2000/03/21 03:44:44  rogozin
  *
  * New Java support has been merged.
@@ -33,240 +37,346 @@ import java.awt.*;
  */
 public class KJASProtocolHandler
 {
-   BufferedReader commands;
-   PrintStream signals;
-   KJASAppletRunner runner;
-   
-public KJASProtocolHandler( InputStream commands,
-                               OutputStream signals,
-                               KJASAppletRunner runner,
-                               String password )
-   {
-      this.commands = new BufferedReader( new InputStreamReader( commands ) );
-      this.runner = runner;
-   }
+    private static final int CreateContextCode  = 1;
+    private static final int DestroyContextCode = 2;
+    private static final int CreateAppletCode   = 3;
+    private static final int DestroyAppletCode  = 4;
+    private static final int StartAppletCode    = 5;
+    private static final int StopAppletCode     = 6;
+    private static final int ShowAppletCode     = 7;
+    private static final int SetParameterCode   = 8;
+    private static final int ShutdownServerCode = 9;
 
-   public void commandLoop()
-      throws IOException
-   {
-      String line = commands.readLine();
-      while ( line != null ) {
-          if(Main.debug)
-              System.out.println("KJAS: Processing command >" + line + "<"); 
-          processCommand( line );
-          if(Main.debug)
-              System.out.println("KJAS: Processing done\n");
-          line = commands.readLine();
-      }
-   }
-    
-   public void processCommand( String command )
-      throws IllegalArgumentException
-   {
-      // Sanity checks
-      if ( command == null )
-         throw new IllegalArgumentException( "processCommand() received null" );
-      if ( command.length() > 1024 )
-         throw new IllegalArgumentException( "processCommand() received suspiciously large command string (ignoring)" );
+    private static final int ShowDocumentCode   = 12;
+    private static final int ShowURLInFrameCode = 13;
+    private static final int ShowStatusCode     = 14;
+    private static final int ResizeAppletCode   = 15;
 
-      int index = command.indexOf( '!' );
-      String commandName;
-      String args;
+    private KJASAppletRunner  runner;
 
-      if ( index != -1) {
-         commandName = command.substring( 0, index );
-         args = command.substring( index + 1, command.length() );
-      }
-      else {
-         commandName = command;
-         args = "";
-      }
-      
-      if ( commandName.equals( "createContext" ) ) {
-         createContext( args );
-      }
-      else if ( commandName.equals( "destroyContext" ) ) {
-         destroyContext( args );
-      }
-      else if ( commandName.equals( "createApplet" ) ) {
-         createApplet( args );
-      }
-      else if ( commandName.equals( "createJARApplet" ) ) {
-         //         createJARApplet( args );
-      }
-      else if ( commandName.equals( "destroyApplet" ) ) {
-         destroyApplet( args );
-      }
-      else if ( commandName.equals( "showApplet" ) ) {
-         showApplet( args );
-      }
-      else if ( commandName.equals( "startApplet" ) ) {
-         startApplet( args );
-      }
-      else if ( commandName.equals( "stopApplet" ) ) {
-         stopApplet( args );
-      }
-      else if ( commandName.equals( "setParameter" ) ) {
-         setParameter( args );
-      }
-      else if ( commandName.equals( "quit" ) ) {
-         System.exit(0);
-      }
-      else {
-         throw new IllegalArgumentException( "Unknown command: " + commandName );
-      }
-   }
+    //Stream for reading in commands
+    private BufferedReader    commands;
+    private InputStreamReader input;
 
-   public void createContext( String args )
-      throws IllegalArgumentException
-   {
-       String idStr = args.trim();
-       runner.createContext( idStr );
-   }
+    //Stream for writing out callbacks
+    private PrintStream       signals;
 
-   public void destroyContext( String args )
-      throws IllegalArgumentException
-   {
-       String idStr = args.trim();
-       runner.destroyContext( idStr );
-   }
+    //used for parsing each command as it comes in
+    private int cmd_index;
 
-   public void createApplet( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+    public KJASProtocolHandler( InputStream  _commands,
+                                OutputStream _signals,
+                                KJASAppletRunner _runner,
+                                String password )
+    {
+        input    = new InputStreamReader( _commands );
+        commands = new BufferedReader( input );
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
-         String name = tok.nextToken();
-         String className = tok.nextToken();
-         String baseURL = tok.nextToken();
-         String codeBase = tok.nextToken();
-         if(codeBase.equals("null"))
-           codeBase = null;
-         String archive = tok.nextToken();
-         if(archive.equals("null"))
-           archive = null;
-         String widthStr = tok.nextToken();
-         String heightStr = tok.nextToken();
+        signals = new PrintStream( _signals );
 
-         int width = Integer.parseInt( widthStr );
-         int height = Integer.parseInt( heightStr );
+        runner = _runner;
+    }
 
-         runner.createApplet( contextIdStr, appletIdStr, name, className, baseURL, 
-                              codeBase, archive, new Dimension(width, height) );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "createApplet(): Wrong number of args" );
-      }
-   }
+    public void commandLoop()
+        throws IOException
+    {
+        /*  The calls to commands.read will block and not return, so we don't need to
+         *  sleep, etc.
+         */
 
-   public void destroyApplet( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+        while( true )
+        {
+            Main.kjas_debug( "Start commandLoop" );
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
+            //read in 8 bytes for command length- length will be sent as a padded string
+            char[] length = new char[8];
+            for( int i = 0; i < 8; i++ )
+            {
+                length[i] = (char) commands.read();
+            }
+            String length_str = new String( length );
 
-         runner.destroyApplet( contextIdStr, appletIdStr );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "destroyApplet(): Wrong number of args" );
-      }
-   }
+            //read the whole command now that we know how long it is
+            int cmd_length = Integer.parseInt( length_str.trim() );
+            char[] cmd = new char[cmd_length];
+            for( int i = 0; i < cmd_length; i++ )
+            {
+                cmd[i] = (char) commands.read();
+            }
 
-   public void showApplet( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+            //parse the rest of the command and execute it
+            processCommand( cmd );
+        }
+    }
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
-         String title = tok.nextToken();
+    public void processCommand( char[] command )
+        throws IllegalArgumentException
+    {
+        // Sanity checks
+        if ( command == null )
+           throw new IllegalArgumentException( "processCommand() received null" );
 
-         runner.showApplet( contextIdStr, appletIdStr, title );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "showApplet(): Wrong number of args" );
-      }
-   }
+        //do all the parsing here and pass arguments as individual variables to the
+        //handler functions
+        cmd_index = 0;
 
-   public void startApplet( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+        int cmd_code_value = (int) command[cmd_index++];
+        if( cmd_code_value == CreateContextCode )
+        {
+            //parse out contextID- 1 argument
+            String contextID = getArg( command );
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
+            Main.kjas_debug( "createContext, id = " + contextID );
 
-         runner.startApplet( contextIdStr, appletIdStr );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "startApplet(): Wrong number of args" );
-      }
-   }
+            runner.createContext( contextID );
+        } else
+        if( cmd_code_value == DestroyContextCode )
+        {
+            //parse out contextID- 1 argument
+            String contextID = getArg( command );
 
-   public void stopApplet( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+            Main.kjas_debug( "destroyContext, id = " + contextID );
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
+            runner.destroyContext( contextID );
+        } else
+        if( cmd_code_value == CreateAppletCode )
+        {
+            //9 arguments- this order is important...
+            String contextID = getArg( command );
+            String appletID = getArg( command );
+            String appletName = getArg( command );
+            String className = getArg( command );
+            String baseURL = getArg( command );
+            String codeBase = getArg( command );
+            String archives = getArg( command );
+            String width = getArg( command );
+            String height = getArg( command );
 
-         runner.stopApplet( contextIdStr, appletIdStr );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "stopApplet(): Wrong number of args" );
-      }
-   }
+            Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
+            Main.kjas_debug( "              name = " + appletName + ", classname = " + className );
+            Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
+            Main.kjas_debug( "              archives = " + archives );
 
-   public void setParameter( String args )
-      throws IllegalArgumentException
-   {
-      try {
-         String buf = args.trim();
-         StringTokenizer tok = new StringTokenizer( buf, "!" );
+            runner.createApplet( contextID, appletID, appletName, className,
+                                 baseURL, codeBase, archives,
+                                 new Dimension( Integer.parseInt(width), Integer.parseInt(height) ) );
+        } else
+        if( cmd_code_value == DestroyAppletCode )
+        {
+            //2 arguments
+            String contextID = getArg( command );
+            String appletID = getArg( command );
 
-         String contextIdStr = tok.nextToken();
-         String appletIdStr = tok.nextToken();
-         String name = tok.nextToken();
-         String value = tok.nextToken();
+            Main.kjas_debug( "destroyApplet, context = " + contextID + ", applet = " + appletID );
 
-         runner.setParameter( contextIdStr, appletIdStr, name, value );
-      }
-      catch ( NoSuchElementException nsee ) {
-         throw new IllegalArgumentException( "stopApplet(): Wrong number of args" );
-      }
-   }
+            runner.destroyApplet( contextID, appletID );
+        } else
+        if( cmd_code_value == StartAppletCode )
+        {
+            //2 arguments
+            String contextID = getArg( command );
+            String appletID = getArg( command );
 
-   public static void main( String[] args )
-   {
-      try {
-         KJASAppletRunner runner = new KJASAppletRunner();
-         KJASProtocolHandler handler = new KJASProtocolHandler( System.in, System.out,
-                                                                runner, "friend" );
-         handler.processCommand( "createContext!0" );
-         handler.processCommand( "createApplet!0!0!fred!Lake.class!http://127.0.0.1/applets/" );
-         handler.processCommand( "setParameter!0!0!image!logo.gif" );
-         handler.processCommand( "showApplet!0!0!unique_title_one" );
-         System.err.println( "Entering commandLoop()" );
-         handler.commandLoop();
-      }
-      catch ( Exception e ) {
-         System.err.println( "Error: " + e );
-         e.printStackTrace();
-      }
-   }
+            Main.kjas_debug( "startApplet, context = " + contextID + ", applet = " + appletID );
+
+            runner.startApplet( contextID, appletID );
+        } else
+        if( cmd_code_value == StopAppletCode )
+        {
+            //2 arguments
+            String contextID = getArg( command );
+            String appletID = getArg( command );
+
+            Main.kjas_debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
+
+            runner.startApplet( contextID, appletID );
+        } else
+        if( cmd_code_value == ShowAppletCode )
+        {
+            //3 arguments
+            String contextID = getArg( command );
+            String appletID = getArg( command );
+            String title = getArg( command );
+
+            Main.kjas_debug( "showApplet, context = " + contextID + ", applet = " + appletID );
+
+            runner.showApplet( contextID, appletID, title );
+        } else
+        if( cmd_code_value == SetParameterCode )
+        {
+            //4 arguments
+            String contextID = getArg( command );
+            String appletID = getArg( command );
+            String name = getArg( command );
+            String value = getArg( command );
+
+            Main.kjas_debug( "setParameter, context = " + contextID + ", applet = " + appletID );
+            Main.kjas_debug( "              name = " + name + ", value = " + value );
+
+            runner.setParameter( contextID, appletID, name, value );
+        } else
+        if( cmd_code_value == ShutdownServerCode )
+        {
+            Main.kjas_debug( "shutDownServer" );
+
+            //0 arguments
+            //shut this down somehow...
+        }
+        else
+        {
+           throw new IllegalArgumentException( "Unknown command code" );
+        }
+    }
+
+    private String getArg( char[] command )
+    {
+        Vector arg_chars = new Vector();
+
+        char curr = command[cmd_index++];
+        while( 0 != (int) curr )
+        {
+            arg_chars.add( new Character(curr) );
+            curr = command[cmd_index++];
+        }
+
+        if( arg_chars.size() > 0 )
+        {
+            char[] char_bytes = new char[arg_chars.size()];
+
+            for( int i = 0; i < arg_chars.size(); i++ )
+            {
+                Character ch = (Character) arg_chars.elementAt( i );
+
+                char_bytes[i] = ch.charValue();
+            }
+            return new String( char_bytes );
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public void sendShowDocumentCmd( String contextID, String url )
+    {
+        //figure out how long this will be, 4 extra for 2 seps, end, and code
+        int length = contextID.length() + url.length() + 4;
+        char[] chars = new char[ length ]; //8 for the length of this message
+        int index = 0;
+        char sep = (char) 0;
+        char[] tmpchar;
+
+        //fill chars array to print it with the PrintStream
+        chars[index++] = (char) ShowDocumentCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = url.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+
+    public void sendShowDocumentCmd( String contextID, String url, String frame)
+    {
+        //length = length of args plus code, 3 seps, end
+        int length = contextID.length() + url.length() + frame.length() + 5;
+        char[] chars = new char[ length ];
+        int index = 0;
+        char sep = (char) 0;
+        char[] tmpchar;
+
+        //fill chars array to print it with the PrintStream
+        chars[index++] = (char) ShowURLInFrameCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = url.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = frame.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+
+    public void sendShowStatusCmd( String contextID, String msg )
+    {
+        int length = contextID.length() + msg.length() + 4;
+        char[] chars = new char[ length ];
+        int index = 0;
+        char sep = (char) 0;
+        char[] tmpchar;
+
+        //fill chars array to print it with the PrintStream
+        chars[index++] = (char) ShowStatusCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = msg.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+
+    public void sendResizeAppletCmd( String contextID, String appletID, int width, int height )
+    {
+        String width_str = String.valueOf( width );
+        String height_str = String.valueOf( height );
+
+        //lenght = length of args plus code, 4 seps, end
+        int length = contextID.length() + appletID.length() + width_str.length() +
+                     height_str.length() + 6;
+        char[] chars = new char[ length ];
+        int index = 0;
+        char sep = (char) 0;
+        char[] tmpchar;
+
+        //fill chars array to print it with the PrintStream
+        chars[index++] = (char) ResizeAppletCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = appletID.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = width_str.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        tmpchar = height_str.toCharArray();
+        for( int i = 0; i < tmpchar.length; i++ )
+            chars[index++] = tmpchar[i];
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+
 }

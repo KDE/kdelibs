@@ -13,6 +13,11 @@ import java.io.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.10  2000/09/27 11:46:32  sschiman
+ * * I've added implementations for the showDocument and showStatus calls to kjas
+ * for java applets that want to change the location of a frame. This should fix
+ * java menus. (okayed by Lars and mhk)
+ *
  * Revision 1.9  2000/09/18 02:33:25  rogozin
  * Fix #10848 and #5668
  *
@@ -54,148 +59,188 @@ import java.io.*;
  */
 public class KJASAppletContext implements AppletContext
 {
-   //* All the applets in this context
-   Hashtable applets;
+    //* All the applets in this context
+    private Hashtable applets;
+    private Hashtable stubList;
 
-   Hashtable stubList;
+    private String contextID;
 
-   /**
-    * Create a KJASAppletContext. This is shared by all applets (though perhaps
-    * there should be one for each web page).
-    */
-    public KJASAppletContext() {
-       applets = new Hashtable();
-       stubList = new Hashtable();
+    private KJASAppletClassLoader loader;
+
+
+    /**
+     * Create a KJASAppletContext. This is shared by all applets (though perhaps
+     * there should be one for each web page).
+     */
+    public KJASAppletContext( String _contextID )
+    {
+        applets = new Hashtable();
+        stubList = new Hashtable();
+
+        contextID = _contextID;
     };
 
-   KJASAppletStub getAppletStub( String appletId )
-   {
-      KJASAppletStub stb = (KJASAppletStub) stubList.get( appletId );
-      if ( stb == null )
-         throw new IllegalArgumentException( "Invalid appletId passed to getAppletStub() "
-                                             + appletId );
+    public String getID()
+    {
+        return contextID;
+    }
 
-      return stb;
+    public KJASAppletStub getAppletStub( String appletId )
+    {
+        KJASAppletStub stb = (KJASAppletStub) stubList.get( appletId );
+        if ( stb == null )
+            throw new IllegalArgumentException( "Invalid appletId passed to getAppletStub() "
+                                                + appletId );
+        return stb;
+    }
+
+    public KJASAppletStub createApplet( String appletID,
+                                        String className, URL codeBase,
+                                        URL docBase, String jars,
+                                        String name, Dimension size )
+    {
+        try
+        {
+            if( loader == null )
+            {
+                loader = KJASAppletClassLoader.createLoader( codeBase );
+            }
+            else
+            {
+                loader.addCodeBase( codeBase );
+            }
+
+            if( jars != null )
+            {
+                StringTokenizer parser = new StringTokenizer( jars, ",", false );
+                while( parser.hasMoreTokens() )
+                {
+                    String jar = parser.nextToken().trim();
+                    loader.addJar( codeBase, jar );
+                }
+            }
+
+            Class appletClass = loader.loadClass( className );
+
+            // Load and instantiate applet
+            Applet app = (Applet) appletClass.newInstance();
+            app.setSize( size );
+
+            KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name );
+
+            applets.put( name, app );
+            stubList.put( appletID, stub );
+
+            return stub;
+        }
+        catch ( ClassNotFoundException e )
+        {
+            Main.kjas_err( "Could not find the needed class" + e, e );
+        }
+        catch ( Exception e )
+        {
+            Main.kjas_err( "Something bad happened: " + e, e );
+        }
+        return null;
    }
 
-   public KJASAppletStub createApplet( String appletId,
-				       String className, URL codeBase,
-                                       URL docBase, String jars, 
-                                       String name, Dimension size ) {
-      Applet app;
+    public void destroy()
+    {
+        Enumeration e = applets.elements();
+        while ( e.hasMoreElements() ) {
+            Applet app = (Applet) e.nextElement();
+            app.stop();
+        }
+        applets.clear();
+        stubList.clear();
+    }
 
-      try {
-         KJASAppletClassLoader loader = new KJASAppletClassLoader( codeBase );
-         if(jars != null)
-             loader.loadJars(jars);
-         Class appletClass = loader.loadClass( className );
+    public void destroyApplet( Applet app )
+    {
+        app.stop();
+    }
 
-         // Load and instantiate applet
-	 app = (Applet) appletClass.newInstance();
-         app.setSize(size);
+    public void show( Applet app, String title )
+    {
+        if ( applets.contains( app ) )
+        {
+            Frame f = new Frame( title );
+            AppletPanel p = new AppletPanel( app.getSize() );
 
-         KJASAppletStub stub = new KJASAppletStub( this, app, codeBase, docBase, name );
+            p.add("Center", app);
+            f.add("Center", p);
+            f.pack();
 
-         applets.put( name, app );
-         stubList.put( appletId, stub );
+            app.init();
+            app.start();
 
-         return stub;
-      }
-      catch ( Exception e ) {
-         System.err.println( "Applet instantiation error: " + e );
-      }
-      return null;
-   }
+            f.setVisible( true );
+        }
+    }
 
-   public void destroy()
-   {
-      Enumeration e = applets.elements();
-      while ( e.hasMoreElements() ) {
-         Applet app = (Applet) e.nextElement();
-         app.stop();
-      }
-      applets.clear();
-      stubList.clear();
-   }
+    //
+    // AppletContext interface
+    //
+    public Applet getApplet( String name )
+    {
+        return (Applet) applets.get( name );
+    }
 
-   public void destroyApplet( Applet app )
-   {
-      app.stop();
-   }
+    public Enumeration getApplets()
+    {
+        Enumeration e = applets.elements();
+        return e;
+    }
 
-   public void show( Applet app, String title )
-   {
-      if ( applets.contains( app ) ) {
-         Frame f = new Frame( title );
-         AppletPanel p = new AppletPanel( app.getSize() );
-         
-         p.add("Center", app);
-         f.add("Center", p);
-         f.pack();
-         
-         app.init();
-         app.start();
+    public AudioClip getAudioClip( URL url )
+    {
+        return null;
+    }
 
-         f.setVisible( true );
-      }
-   }
+    public Image getImage( URL url )
+    {
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        return kit.getImage( url );
+    }
 
-   //
-   // AppletContext interface
-   //
+    public void showDocument( URL url )
+    {
+        if( url != null )
+            Main.protocol.sendShowDocumentCmd( contextID, url.toString()  );
+        else
+            System.err.println( "tried showDocument with null url" );
+    }
 
-   public Applet getApplet( String name ) {
-      return (Applet) applets.get( name );
-   }
+    public void showDocument( URL url, String targetFrame )
+    {
+        if ( ( url != null ) && ( targetFrame != null ) )
+            Main.protocol.sendShowDocumentCmd( contextID, url.toString(), targetFrame );
+        else
+            System.err.println( "tried showDocument (frames) with invalid params" );
+    }
 
-   public Enumeration getApplets() {
-      Enumeration e = applets.elements();
-      return e;
-   }
+    public void showStatus( String message )
+    {
+        if( message != null )
+            Main.protocol.sendShowStatusCmd( contextID, message );
+        else
+            System.err.println( "tried showStatus with null message" );
+    }
 
-   public AudioClip getAudioClip( URL url )
-   {
-      return null;
-   }
+    class AppletPanel
+        extends Panel
+    {
+        Dimension appletSize;
 
-   public Image getImage( URL url )
-   {
-      Toolkit kit = Toolkit.getDefaultToolkit();
-      return kit.getImage( url );
-   }
+        AppletPanel(Dimension size)
+        {
+            super(new BorderLayout());
+            appletSize = size;
+        }
 
-   public void showDocument( URL url )
-   {
-      Main.stdout.println( "showdocument!" + url );
-   }
-
-   public void showDocument( URL url, String targetFrame )
-   {
-       if ( ( url != null ) && ( targetFrame != null ) )
-	   Main.stdout.println( "showurlinframe!" + url + "!" + targetFrame );
-       else
-	   System.err.println( "Warning applet attempted to show " + url + " in frame " + targetFrame );
-   }
-
-   public void showStatus( String message )
-   {
-      Main.stdout.println( "showstatus!" + message );
-   }
-
-   class AppletPanel 
-      extends Panel 
-   {
-      Dimension appletSize;
-
-      AppletPanel(Dimension size) 
-      {
-         super(new BorderLayout());
-         appletSize = size;
-      }
-      
-      public Dimension preferredSize()
-      {
-         return appletSize;
-      }
-   }
+        public Dimension getPreferredSize()
+        {
+            return appletSize;
+        }
+    }
 }
