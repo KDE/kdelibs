@@ -84,6 +84,8 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   // Create new group entry
   if (!entry)
      entry = new KServiceGroup(file, menuName);
+     
+  entry->m_childCount = -1; // Recalculate
 
   addEntry( entry, "apps" ); // "vfolder" ??
 
