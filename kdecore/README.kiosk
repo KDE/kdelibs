@@ -542,6 +542,7 @@ to directories outside of $KDEHOME only.
 
 The following resources are defined:
 
+autostart - share/autostart
 data - share/apps
 html - share/doc/HTML
 icon - share/icon
