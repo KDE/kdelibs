@@ -237,6 +237,12 @@ private:
  * This class handles network transparency for you.
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
+ *
+ * The part acts read-only by default. Use @ref setReadWrite.
+ * Any part inheriting ReadWritePart should check @ref isReadWrite
+ * before allowing any action that modifies the part.
+ * The part probably wants to reimplement @ref setReadWrite, disable those
+ * actions, but don't forget to call the parent @ref setReadWrite.
  */
 class ReadWritePart : public ReadOnlyPart
 {
@@ -246,14 +252,27 @@ public:
   virtual ~ReadWritePart();
 
   /**
-   * @return @p true if the document has been modified.
+   * @return true if the part is in read-write mode
+   */
+  virtual bool isReadWrite() { return m_bReadWrite; }
+
+  /**
+   * Changes the behaviour of this part to readonly or readwrite.
+   * Note that the initial behaviour of a ReadWritePart is _readonly_.
+   * This allows embedding a ReadWritePart as a ReadOnlyPart.
+   * @param readwrite set to true to enable readwrite mode
+   */
+  virtual void setReadWrite ( bool readwrite = true );
+
+  /**
+   * @return true if the document has been modified.
    */
   virtual bool isModified() { return m_bModified; }
 
   /**
    * Call @ref setModified() whenever the contents get modified.
    */
-  virtual void setModified( bool modified = true ) { m_bModified = modified; }
+  virtual void setModified( bool modified = true );
 
   /**
    * Save the file in the location from which it was opened.
@@ -287,6 +306,7 @@ protected slots:
 
 private:
   bool m_bModified;
+  bool m_bReadWrite;
 };
 
 };

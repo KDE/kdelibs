@@ -253,6 +253,7 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 ReadWritePart::ReadWritePart( QObject *parent, const char *name )
  : ReadOnlyPart( parent, name ), m_bModified( false )
 {
+  setReadWrite( false );
 }
 
 ReadWritePart::~ReadWritePart()
@@ -260,16 +261,36 @@ ReadWritePart::~ReadWritePart()
   // parent destructor will delete temp file
 }
 
+void ReadWritePart::setReadWrite( bool readwrite )
+{
+  // Perhaps we should check isModified here and issue a warning if true
+  m_bReadWrite = readwrite;
+}
+
+void ReadWritePart::setModified( bool modified )
+{
+  if ( !m_bReadWrite && modified )
+  {
+      kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
+      return; 
+  }
+  m_bModified = modified;
+}
+
 bool ReadWritePart::saveAs( const KURL & kurl )
 {
   if (kurl.isMalformed())
       return false;
+  if ( !m_bReadWrite )
+      return false; // should we display a warning ?
   m_url = kurl; // Store where to upload in saveToURL
   return save() && saveToURL(); // Save local file and upload local file
 }
 
 bool ReadWritePart::saveToURL()
 {
+  if ( !m_bReadWrite )
+      return false; // should we display a warning ?
   if ( m_url.isLocalFile() )
   {
     m_bModified = false;
