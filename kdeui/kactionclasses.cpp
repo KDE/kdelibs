@@ -1209,6 +1209,16 @@ void KRecentFilesAction::slotClicked()
   KAction::slotActivated();
 }
 
+void KRecentFilesAction::slotActivated(const QString&)
+{
+}
+
+
+void KRecentFilesAction::slotActivated(int)
+{
+}
+
+
 void KRecentFilesAction::slotActivated()
 {
   emit activated( currentItem() );

@@ -811,6 +811,8 @@ protected slots:
   void menuAboutToShow();
   void menuItemActivated( int id );
   void slotClicked();
+  virtual void slotActivated(int);
+  virtual void slotActivated(const QString& );
   virtual void slotActivated();
 
 protected:
