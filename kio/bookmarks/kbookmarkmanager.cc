@@ -508,7 +508,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 #undef DYNMENUCONFIGPREFIX
 #define DYNMENUCONFIGPREFIX "DynamicMenu-"
 
-KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &name ) const 
+KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &id ) const 
 {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");
@@ -517,18 +517,18 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
    info.show = false;
 
    if (!config.hasKey("DynamicMenus")) {
-      // no new version config
-      if (name == "netscape") {
+      // upgrade path
+      if (id == "netscape") {
          info.show = root().internalElement().attribute("hide_nsbk") != "yes";
          info.location = KNSBookmarkImporter::netscapeBookmarksFile();
-         info.type = name;
-         info.name = QString::null;
+         info.type = "netscape";
+         info.name = i18n("Netscape Bookmarks");
       } // else, no show
 
    } else {
       // have new version config
-      if (config.hasGroup(DYNMENUCONFIGPREFIX + name)) {
-         config.setGroup(DYNMENUCONFIGPREFIX + name);
+      if (config.hasGroup(DYNMENUCONFIGPREFIX + id)) {
+         config.setGroup(DYNMENUCONFIGPREFIX + id);
          info.show = config.readBoolEntry("Show");
          info.location = config.readPathEntry("Location");
          info.type = config.readEntry("Type");

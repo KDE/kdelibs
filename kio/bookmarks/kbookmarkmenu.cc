@@ -408,11 +408,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     bool haveSep = false;
 
-    QMap<QString,QString> dynMenui18nMap; // make const
-    dynMenui18nMap["netscape"] = i18n("Netscape Bookmarks");
-    dynMenui18nMap["mozilla"] = i18n("Mozilla Bookmarks");
-
-    QValueList<QString> keys = dynMenui18nMap.keys();
+    QValueList<QString> keys = m_pManager->dynamicBookmarksList();
     QValueList<QString>::const_iterator it;
     for ( it = keys.begin(); it != keys.end(); ++it ) 
     {
@@ -428,14 +424,9 @@ void KBookmarkMenu::fillBookmarkMenu()
           haveSep = true;
        }
 
-       QString visibleName = info.name;
-       if (visibleName.isEmpty()) {
-         visibleName = dynMenui18nMap[info.type];
-       }
-
        KActionMenu * actionMenu;
        actionMenu = new KImportedBookmarksActionMenu( 
-                              visibleName, info.type, 
+                              info.name, info.type, 
                               m_actionCollection, 0L );
 
        actionMenu->setProperty( "type", info.type );
