@@ -27,6 +27,7 @@ kdeprintlprdir = $(includedir)/kdeprint/lpr
 
 bin_PROGRAMS = make_driver_db_lpr
 make_driver_db_lpr_SOURCES = make_driver_db_lpr.c
+make_driver_db_lpr_LDFLAGS = $(all_libraries) 
 make_driver_db_lpr_LDADD = $(top_builddir)/kdecore/libkdefakes.la ../libdriverparse.a $(LIBDL)
 
 entry_DATA = lpr.print
