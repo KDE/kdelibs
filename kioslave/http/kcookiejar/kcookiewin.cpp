@@ -113,7 +113,18 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
     KHttpCookiePtr cookie = cookieList.first();
-    txt = i18n("<b>%1</b>").arg( KIDNA::toUnicode(cookie->host()) );
+
+    QString host (cookie->host());
+    int pos = host.find(':');
+    if ( pos > 0 )
+    {
+      QString portNum = host.left(pos);
+      host.remove(0, pos+1);
+      host += ':';
+      host += portNum;
+    }
+
+    txt = QString("<b>%1</b>").arg( KIDNA::toUnicode(host) );
     if (cookie->isCrossDomain())
        txt += i18n(" <b>[Cross Domain!]</b>");
     lbl = new QLabel( txt, vBox );
