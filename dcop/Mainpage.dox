@@ -445,7 +445,7 @@ QDataStream.
 
 Hopefully this document will get you well on your way into the world of
 inter-process communication with KDE!  Please direct all comments and/or
-suggestions to <a href="mailto:pbrown@kde.org>Preston Brown \<pbrown\@kde.org\></a>
-and <a href="mailto:ettrich@kde.org>Matthias Ettrich \<ettrich\@kde.org\></a>.
+suggestions to Preston Brown \<pbrown\@kde.org\>
+and Matthias Ettrich \<ettrich\@kde.org\>.
 
 */
