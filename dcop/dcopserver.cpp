@@ -1251,7 +1251,7 @@ int main( int argc, char* argv[] )
     signal(SIGTERM, sighandler);
     signal(SIGPIPE, SIG_IGN);
 
-    putenv("SESSION_MANAGER=");
+    putenv(strdup("SESSION_MANAGER="));
 
     QApplication a( argc, argv, false );
 
