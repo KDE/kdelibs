@@ -450,8 +450,6 @@ KListView::KListView( QWidget *parent, const char *name )
   d->alternateBackground = KGlobalSettings::alternateBackgroundColor();
 }
 
-
-
 KListView::~KListView()
 {
   delete d;
@@ -2108,18 +2106,12 @@ bool KListViewItem::isAlternate()
     if (lv->d->painting) {
       if (lv->d->paintCurrent != this)
       {
-        lv->d->paintAbove = lv->d->paintBelow == this ? lv->d->paintCurrent : 0;
+        lv->d->paintAbove = lv->d->paintBelow == this ? lv->d->paintCurrent : itemAbove();
         lv->d->paintCurrent = this;
         lv->d->paintBelow = itemBelow();
       }
 
       above = dynamic_cast<KListViewItem *>(lv->d->paintAbove);
-
-      if (!above && !lv->d->paintAbove)
-      {
-        above = dynamic_cast<KListViewItem *>(itemAbove());
-        lv->d->paintAbove = above;
-      }
     }
     else
     {
