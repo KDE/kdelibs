@@ -1,5 +1,10 @@
 2003-10-27  David Faure  <faure@kde.org>
 
+	* khtmlview.cpp (dispatchKeyEvent): Generate keypress, keydown and keyup
+	events for the document if no node has the focus. Factorized code in
+	a new method, dispatchKeyEvent. Cleaned up old unused variables d->lastKeyNode
+	and d->lastKeyPress. #42918 and #43072, google keys.
+
 	* xml/dom_elementimpl.h (checkQualifiedName): Added bool nameCanBeEmpty,
 	and fixed again: DOM3 now says a null qualifiedName is allowed in createDocument.
 	* xml/dom_docimpl.cpp (createDocument): Pass nameCanBeEmpty=true, to

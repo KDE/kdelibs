@@ -257,6 +257,7 @@ private:
     bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 			    int detail,QMouseEvent *_mouse, bool setUnder,
 			    int mouseEventType);
+    bool dispatchKeyEvent( QKeyEvent *_ke, bool keypress );
 
     void complete();
 

@@ -111,7 +111,7 @@ class KHTMLViewPrivate {
     friend class KHTMLToolTip;
 public:
     KHTMLViewPrivate()
-        : underMouse( 0 ), lastKeyNode(0)
+        : underMouse( 0 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -145,10 +145,6 @@ public:
         if (underMouse)
 	    underMouse->deref();
 	underMouse = 0;
-	if (lastKeyNode)
-	    lastKeyNode->deref();
-	lastKeyNode = 0;
-	lastKeyPress = 0;
         linkPressed = false;
         useSlowRepaints = false;
         originalNode = 0;
@@ -264,9 +260,6 @@ public:
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
     int layoutTimerId;
-
-    NodeImpl *lastKeyNode;
-    int lastKeyPress;
 
     int repaintTimerId;
     int scrollTimerId;
@@ -893,6 +886,35 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     }
 }
 
+bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke, bool keypress )
+{
+    if (!m_part->xmlDocImpl())
+        return false;
+    DOM::NodeImpl* keyNode = m_part->xmlDocImpl()->focusNode();
+    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
+                _ke->text(),
+                keypress /*true for autorepeat means keypress, see TextEventImpl*/,
+                _ke->count());
+    if (keyNode) {
+        if (keyNode->dispatchKeyEvent(&k)) {
+            return true;
+	}
+    }
+    else // no focused node, send to document
+    {
+        if (!_ke->text().isNull()
+            // This needs figuring out the ID like TextEventImpl does. Small optimization anyway.
+            /*&& m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT)*/
+            ) {
+            // If listener returned false, stop here. Otherwise handle standard keys (#60403).
+            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(&k)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
 
@@ -905,42 +927,18 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 #endif // KHTML_NO_CARET
 
-    if (d->lastKeyNode)
-	d->lastKeyNode->deref();
-    d->lastKeyNode = 0;
-    d->lastKeyPress = _ke->key();
+    // Send keydown event
+    bool accepted = dispatchKeyEvent( _ke, false );
 
-    if (m_part->xmlDocImpl()) {
-	d->lastKeyNode = m_part->xmlDocImpl()->focusNode();
-	bool accepted = false; // need a seperate bool, Qt events are accepted by default
-        if (d->lastKeyNode) {
-	    d->lastKeyNode->ref();
-	    // first send a keydown
-	    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
-		      _ke->text(), false, _ke->count());
-            if (d->lastKeyNode->dispatchKeyEvent(&k)) {
-		_ke->accept();
-		accepted = true;
-	    }
-	}
-        if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT)) {
-            // If listener returned false, stop here. Otherwise handle standard keys (#60403).
-            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke)) {
-                _ke->accept();
-		accepted = true;
-	    }
-        }
-	if (d->lastKeyNode && !_ke->isAutoRepeat()) {
-	    // IE sends the keyPress directly after the keyDown.
-	    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
-		      _ke->text(), true, _ke->count());
-	    if (d->lastKeyNode->dispatchKeyEvent(&k)) {
-		_ke->accept();
-		accepted = true;
-	    }
-	}
-	if (accepted)
-	    return;
+    // Send keypress event
+    // (IE sends the keyPress directly after the keyDown).
+    if ( !_ke->isAutoRepeat() && dispatchKeyEvent( _ke, true ) )
+        accepted = true;
+
+    // If either keydown or keypress was accepted by a widget, or canceled by JS, stop here.
+    if ( accepted ) {
+        _ke->accept();
+        return;
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
@@ -1076,14 +1074,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
-    if(m_part->xmlDocImpl()) {
-	NodeImpl *fn =  m_part->xmlDocImpl()->focusNode();
-	if (fn && fn->dispatchKeyEvent(_ke)) {
-	    _ke->accept();
-	}
+    // Send keyup event
+    if ( dispatchKeyEvent( _ke, false ) )
+    {
+        _ke->accept();
+        return;
     }
-    if (!_ke->isAccepted())
-	QScrollView::keyReleaseEvent(_ke);
+    QScrollView::keyReleaseEvent(_ke);
 }
 
 void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent * /*ce*/ )
