@@ -553,7 +553,7 @@ static const char * const attrList[] = {
     "Z-INDEX",
     0
 };
-DOM::DOMString getAttrName(unsigned short id)
+DOM::DOMString KDE_NO_EXPORT getAttrName(unsigned short id)
 {
     return attrList[id-1];
 };

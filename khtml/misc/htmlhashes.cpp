@@ -18,6 +18,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+#include <kglobal.h>
+
 #include "htmlhashes.h"
 #include "htmltags.c"
 #include "htmlattrs.c"
