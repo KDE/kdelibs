@@ -6,6 +6,12 @@
 #include <kmenubar.h>
 #include <qobjectlist.h>
 
+static int get_toolbutton_id()
+{
+    static int toolbutton_no = -2;
+    return toolbutton_no--;
+}
+
 KAction::KAction( const QString& text, int accel, QObject* parent, const char* name )
  : QAction( text, accel, parent, name )
 {
@@ -40,7 +46,7 @@ int KAction::plug( QWidget *w )
   {
     KToolBar *bar = (KToolBar *)w;
 
-    int id_ = containerCount();
+    int id_ = get_toolbutton_id();
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 		       isEnabled(), text() );
 
@@ -152,7 +158,7 @@ int KToggleAction::plug( QWidget* widget )
     if ( widget->inherits( "KToolBar" ) ) {
 	KToolBar *bar = (KToolBar *)widget;
 
-	int id_ = containerCount();
+	int id_ = get_toolbutton_id();
 	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 			   isEnabled(), text() );
 
