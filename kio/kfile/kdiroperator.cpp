@@ -873,7 +873,7 @@ void KDirOperator::setView( KFile::FileView view )
                   && myActionCollection->action("preview")->isEnabled();
 
         if ( preview ) { // instantiates KFileMetaPreview and calls setView()
-            m_viewKind = view;
+            m_viewKind = defaultView;
             slotDefaultPreview();
             return;
         }
@@ -918,8 +918,9 @@ void KDirOperator::connectView(KFileView *view)
     else
         view->setSelectionMode( KFile::Single );
 
-    if (m_fileView) {
-        if ( d->config ) // save and restore coniguration the views' config
+    if (m_fileView) 
+    {
+        if ( d->config ) // save and restore the views' configuration
         {
             m_fileView->writeConfig( d->config, d->configGroup );
             view->readConfig( d->config, d->configGroup );
@@ -1356,10 +1357,8 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     if ( kc->readBoolEntry( QString::fromLatin1("Separate Directories"),
                             DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
-    else {
-        if ( kc->readBoolEntry(QString::fromLatin1("Show Preview"), false))
-            defaultView |= KFile::PreviewContents;
-    }
+    if ( kc->readBoolEntry(QString::fromLatin1("Show Preview"), false))
+        defaultView |= KFile::PreviewContents;
 
     if ( kc->readBoolEntry( QString::fromLatin1("Sort case insensitively"),
                             DefaultCaseInsensitive ) )
