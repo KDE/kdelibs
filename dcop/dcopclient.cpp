@@ -1623,8 +1623,19 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     return replyStruct.status == ReplyStruct::Ok;
 }
 
-void DCOPClient::processSocketData(int)
+void DCOPClient::processSocketData(int fd)
 {
+    // Make sure there is data to read!
+    fd_set fds;
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
+    int result = select(fd+1, &fds, 0, 0, &timeout);
+    if (result == 0)
+        return;
+
     if ( d->non_blocking_call_lock ) {
 	qApp->exit_loop();
 	return;
