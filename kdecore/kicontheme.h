@@ -79,8 +79,26 @@ public:
     /**
      * The group of the icon.
      */
-    enum Group { NoGroup=-1, Desktop=0, FirstGroup=0, Toolbar,
-        MainToolbar, Small, Panel, LastGroup, User };
+    enum Group {
+	/// No group
+	NoGroup=-1,
+	/// Desktop icons
+	Desktop=0,
+	/// First group
+	FirstGroup=0,
+	/// Toolbar icons
+	Toolbar,
+	/// Main toolbar icons
+        MainToolbar,
+	/// Small icons
+	Small,
+	/// Panel (Kicker) icons
+	Panel,
+	/// Last group
+	LastGroup,
+	/// User icons
+	User
+         };
 
     /**
      * These are the standard sizes for icons.
@@ -96,7 +114,7 @@ public:
         SizeLarge=48,
         /// huge sized icons for iconviews
         SizeHuge=64,
-        /// enormous (ugh!) sized icons for iconviews
+        /// enormous sized icons for iconviews
         SizeEnormous=128
          };
 
