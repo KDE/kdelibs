@@ -242,7 +242,7 @@ public:
   virtual void slotCopy( list<string>&, const char * ) { };
   virtual void slotMove( const char *, const char * ) { };
   virtual void slotMove( list<string>& , const char *) { };
-  virtual void slotDel( const char * ) { };
+  virtual void slotDel( const char * );
   virtual void slotDel( list<string>& ) { };
   virtual void slotListDir( const char * ) { };
   virtual void slotMkdir( const char *, int ) { };

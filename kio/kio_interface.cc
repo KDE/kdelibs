@@ -785,6 +785,15 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
     }
 }
 
+void ConnectionSlots::slotDel (const char *_url)
+{
+  list<string> lst;
+  lst.push_back( _url );
+
+  slotDel( lst );
+}
+
+
 /**********************************************************
  *
  * IOProtocol
