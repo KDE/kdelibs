@@ -3,6 +3,7 @@ Type=RGB
 Header=^\x01\xda[\x00|\x01][\x01|\x02]
 Name=SGI Image (RGB)
 Name[da]=SGI-billede (RGB)
+Name[pt_BR]=Imagem SGI (RGB)
 Name[sv]=SGI-bild (RGB)
 Name[th]=แฟ้มภาพ SGI (RGB)
 Read=true
