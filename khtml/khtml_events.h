@@ -78,7 +78,6 @@ public:
 
 private:
   static const char *s_strMousePressEvent;
-  DOM::Node m_innerNode;
 };
 
 class MouseDoubleClickEvent : public MouseEvent
