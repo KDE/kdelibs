@@ -53,6 +53,10 @@
  */
 class KMidSimpleAPI 
 {
+  private:
+    class KMidSimpleAPIPrivate;
+    KMidSimpleAPIPrivate *d;
+
   public:
 
     /**

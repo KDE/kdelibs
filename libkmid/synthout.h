@@ -43,6 +43,10 @@
  */
 class SynthOut : public MidiOut
 {
+  private:
+    class SynthOutPrivate;
+    SynthOutPrivate *di;
+
   public:
     /**
      * Constructor. See @ref MidiOut::MidiOut() for more information.

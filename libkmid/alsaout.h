@@ -252,7 +252,7 @@ class AlsaOut : public MidiOut
 //#endif
 
   class AlsaOutPrivate;
-  AlsaOutPrivate *d;
+  AlsaOutPrivate *di;
 };
 #endif // HAVE_LIBASOUND
 

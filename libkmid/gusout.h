@@ -46,9 +46,7 @@ class GUSOut : public MidiOut
 {
   private:
     class GUSOutPrivate;
-    GUSOutPrivate *d;
-//    friend class DeviceManager; 
-
+    GUSOutPrivate *di;
 
     int patchloaded[256];
     int nvoices;
