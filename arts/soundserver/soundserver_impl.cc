@@ -64,7 +64,7 @@ bool SoundServer_impl::suspend() {
 	   !Dispatcher::the()->flowSystem()->suspended())
 		{
 			Dispatcher::the()->flowSystem()->suspend();
-			arts_info("suspended by client");
+			arts_info("sound server suspended by client");
 			return true;
 		}
 	return false;

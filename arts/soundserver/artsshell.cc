@@ -54,6 +54,14 @@ status
 Display status information about the server, i.e. is it running, is it
 suspended, real-time status, etc.
 
+terminate
+
+Terminate the sound server.
+
+autosuspend <seconds>
+
+Sets the autosuspend time for the specified number of seconds.
+
 midi (future)
 
 When the MIDI manager functionality is all implemented this would be a
@@ -92,9 +100,10 @@ Options:\n\
   -h   - display command usage\n\
 \n\
 Commands:\n\
-  suspend     - suspend sound server\n\
-  status      - display sound server status information\n\
-  terminate   - terminate sound server (might confuse/kill apps using it)\
+  suspend             - suspend sound server\n\
+  status              - display sound server status information\n\
+  terminate           - terminate sound server (might confuse/kill apps using it)\n\
+  autosuspend <secs>  - set autosuspend time\
 " << endl;
 	exit(0);
 }
@@ -165,7 +174,7 @@ int suspend(Arts::SoundServer server)
 
 
 // Display server status information
-void status(Arts::SoundServer server)
+void status(Arts::SoundServerV2 server)
 {
 	Arts::RealtimeStatus rtStatus = server.realtimeStatus();
 	long seconds = server.secondsUntilSuspend();
@@ -205,7 +214,20 @@ void status(Arts::SoundServer server)
 
 	cout << "minimum stream buffer time: " << server.minStreamBufferTime() << " ms" << endl;
 	cout << "server buffer time: " << server.serverBufferTime() << " ms" << endl;
-}           
+	cout << "auto suspend time: " << server.autoSuspendSeconds() << " s" << endl;
+	cout << "audio method: " << server.audioMethod() << endl;
+	cout << "sampling rate: " << server.samplingRate() << endl;
+	cout << "channels: " << server.channels() << endl;
+	cout << "sample size: " << server.bits() << " bits" << endl;
+
+	if (server.fullDuplex())
+		cout << "duplex: full" << endl;
+	else
+		cout << "duplex: half" << endl;
+	cout << "device: " << server.audioDevice() << endl;
+	cout << "fragments: " << server.fragments() << endl;
+	cout << "fragment size: " << server.fragmentSize() << endl;
+}
 
 // terminate the sound server
 void terminate(Arts::SoundServer server)
@@ -222,10 +244,16 @@ void terminate(Arts::SoundServer server)
 	}
 }
 
+// set autosuspend time
+void autosuspend(Arts::SoundServerV2 server, int secs)
+{
+	server.autoSuspendSeconds(secs);
+}
+
 int main(int argc, char *argv[])
 {
 	Arts::Dispatcher dispatcher;
-	Arts::SoundServer server(Arts::Reference("global:Arts_SoundServer"));
+	Arts::SoundServerV2 server(Arts::Reference("global:Arts_SoundServer"));
 
 	parseOptions(argc, argv);
 
@@ -248,6 +276,12 @@ int main(int argc, char *argv[])
 
 	if(!strcmp(argv[optind], "terminate")) {
 		terminate(server);
+		return 0;
+	}
+
+	if(!strcmp(argv[optind], "autosuspend") && ((argc - optind) == 2)) {
+		int secs = atoi(argv[optind+1]);
+		autosuspend(server, secs);
 		return 0;
 	}
 	

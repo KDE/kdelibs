@@ -114,6 +114,31 @@ interface SoundServer : SimpleSoundServer
 };
 
 /**
+ * This is an even more enhanced sound server interface that supports changing
+ * the autosuspend time, and returning more information about the server
+ * settings.
+ */
+interface SoundServerV2 : SoundServer
+{
+	/**
+	 * Time in seconds after which server will suspend if idle.
+	 */
+	attribute long autoSuspendSeconds;
+
+	/**
+	 * AudioSubSystem parameters
+	 */
+	readonly attribute string audioMethod;
+	readonly attribute long samplingRate;
+	readonly attribute long channels;
+	readonly attribute long bits;
+	readonly attribute boolean fullDuplex;
+	readonly attribute string audioDevice;
+	readonly attribute long fragments;
+	readonly attribute long fragmentSize;
+};
+
+/**
  * A KMedia2 Wave PlayObject
  */
 interface WavPlayObject : PlayObject, SynthModule

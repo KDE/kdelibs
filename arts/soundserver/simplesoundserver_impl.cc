@@ -265,7 +265,7 @@ void SimpleSoundServer_impl::notifyTime()
 		if(asCount > 300)
 		{
 			Dispatcher::the()->flowSystem()->suspend();
-			arts_info("suspend");
+			arts_info("sound server suspended");
 		}
 	}
 	else

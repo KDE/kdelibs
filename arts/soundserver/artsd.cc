@@ -67,6 +67,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-D <devicename>     audio device (usually /dev/dsp)\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
+	fprintf(stderr,"-s <seconds>        auto-suspend time in seconds\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
@@ -101,13 +102,14 @@ static int  					cfgDebugLevel	= 1;
 static bool  					cfgFullDuplex	= 0;
 static const char			   *cfgDeviceName   = 0;
 static const char              *cfgAudioIO      = 0;
+static int                      cfgAutoSuspend  = 0;
 
 static bool						cmdListAudioIO  = false;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:")) > 0)
 	{
 		switch(optch)
 		{
@@ -119,6 +121,8 @@ static void handleArgs(int argc, char **argv)
 			case 'r': cfgSamplingRate = atoi(optarg);
 				break;
 			case 'b': cfgBits = atoi(optarg);
+				break;
+			case 's': cfgAutoSuspend = atoi(optarg);
 				break;
 			case 'F': cfgFragmentCount = atoi(optarg);
 				break;
@@ -142,13 +146,14 @@ static void handleArgs(int argc, char **argv)
 	}
 }
 
-static bool publishReferences(SoundServer server,
+static bool publishReferences(SoundServerV2 server,
 							  AudioManager audioManager, bool silent)
 {
 	ObjectManager *om = ObjectManager::the();
 	bool result;
 
-	result=om->addGlobalReference(server,"Arts_SoundServer")
+	result=om->addGlobalReference(server,"Arts_SoundServerV2")
+	    && om->addGlobalReference(server,"Arts_SoundServer")
 	    && om->addGlobalReference(server,"Arts_SimpleSoundServer")
         && om->addGlobalReference(server,"Arts_PlayObjectFactory")
         && om->addGlobalReference(audioManager,"Arts_AudioManager");
@@ -160,6 +165,7 @@ static bool publishReferences(SoundServer server,
               << endl <<
 "       If you are sure it is not already running, remove the relevant files:"
               << endl << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_SoundServerV2") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_SoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl <<
@@ -190,8 +196,9 @@ static void cleanUnusedReferences()
 
 	sleep(1); // maybe an artsd process has just started (give it some time)
 
-	i += cleanReference("Arts_SoundServer");	
-	i += cleanReference("Arts_SimpleSoundServer");	
+	i += cleanReference("Arts_SoundServerV2");
+	i += cleanReference("Arts_SoundServer");
+	i += cleanReference("Arts_SimpleSoundServer");
 	i += cleanReference("Arts_PlayObjectFactory");
 	i += cleanReference("Arts_AudioManager");
 
@@ -233,8 +240,11 @@ int main(int argc, char **argv)
 	}
 
 	/* start sound server implementation */
-	SoundServer server;
+	SoundServerV2 server;
 	AudioManager audioManager;
+
+	if (cfgAutoSuspend)
+		server.autoSuspendSeconds(cfgAutoSuspend);
 
 	/* make global MCOP references available */
 	if(!publishReferences(server,audioManager,true))
@@ -253,4 +263,6 @@ int main(int argc, char **argv)
 REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);
 #include "soundserver_impl.h"
 REGISTER_IMPLEMENTATION(SoundServer_impl);
+#include "soundserverv2_impl.h"
+REGISTER_IMPLEMENTATION(SoundServerV2_impl);
 #endif

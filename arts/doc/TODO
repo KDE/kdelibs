@@ -15,7 +15,6 @@
 - add kmessagebox style output of error messages (often, people         *KDE2.2*
   don't know why artsd is not running, does not start, doesn't like
   their soundcard,...)
-- add -S option (to change the autosuspend timeout)                     *KDE2.2*
 - export configuration interfaces from the soundserver (so that
   you can see and change the autosuspend timeout for instance)
 - add -N option (to add extra network buffers)
