@@ -539,7 +539,7 @@ bool KProtocolManager::sendUserAgent()
 {
   KConfig *cfg = config();
   cfg->setGroup("UserAgent");
-  return cfg->readBoolEntry("SendUserAgent");
+  return cfg->readBoolEntry("SendUserAgent", true);
 }
 
 void KProtocolManager::setEnableSendUserAgent( bool show )
