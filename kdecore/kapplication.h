@@ -343,6 +343,7 @@ public:
    * @param URL - if not empty this URL is passed to the service
    * @param startup_id - for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   * @param noWait - if set, the function does not wait till the service is running.
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -351,11 +352,10 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -364,6 +364,7 @@ public:
    * @param URL - if not empty this URL is passed to the service
    * @param startup_id - for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   * @param noWait - if set, the function does not wait till the service is running.
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -372,11 +373,10 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -385,6 +385,7 @@ public:
    * @param URL - if not empty this URL is passed to the service
    * @param startup_id - for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   * @param noWait - if set, the function does not wait till the service is running.
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -394,11 +395,10 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
+                QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "", bool noWait = false );
 
   /**
    * Starts a program via kdeinit.

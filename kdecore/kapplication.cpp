@@ -1743,7 +1743,7 @@ void KApplication::invokeHelp( const QString& anchor,
 
    QString error;
 
-   if (startServiceByDesktopName("khelpcenter", url, &error))
+   if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
    {
       kdWarning() << "Could not launch help:\n" << error << endl;
       return;
@@ -1769,7 +1769,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 
    QString error;
 
-   if (startServiceByDesktopName("khelpcenter", url, &error))
+   if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", true))
    {
       kdWarning() << "Could not launch help:\n" << error << endl;
       return;
@@ -1862,7 +1862,7 @@ void KApplication::invokeBrowser( const QString &url )
 {
    QString error;
 
-   if (startServiceByDesktopName("kfmclient", url, &error))
+   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, "", true))
    {
       kdWarning() << "Could not launch browser:\n" << error << endl;
       return;
@@ -1878,7 +1878,7 @@ KApplication::launcher()
 static int
 startServiceInternal( const QCString &function,
               const QString& _name, const QStringList &URLs,
-              QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+              QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    struct serviceResult
    {
@@ -1919,7 +1919,7 @@ startServiceInternal( const QCString &function,
 #endif
    stream << envs;
    if( !startup_id.isNull()) // not kdeinit_exec
-       stream << startup_id;
+       stream << startup_id << noWait;
 
    if (!dcopClient->call(_launcher, _launcher,
         function, params, replyType, replyData))
@@ -1947,65 +1947,65 @@ startServiceInternal( const QCString &function,
 
 int
 KApplication::startServiceByName( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id )
+                  QString *error, QCString *dcopService, int *pid, const QCString& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)",
-                      _name, URLs, error, dcopService, pid, startup_id);
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
 int
@@ -2013,7 +2013,7 @@ KApplication::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid )
 {
    return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>)",
-        name, args, error, 0, pid, QCString());
+        name, args, error, 0, pid, QCString(), false);
 }
 
 int
@@ -2021,7 +2021,7 @@ KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid )
 {
    return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)",
-        name, args, error, 0, pid, QCString());
+        name, args, error, 0, pid, QCString(), false);
 }
 
 QString KApplication::tempSaveName( const QString& pFilename ) const
