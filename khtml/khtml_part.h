@@ -574,7 +574,7 @@ private slots:
    */
   virtual void slotSetEncoding();
 
-  void slotFind(); //BCI: make virtual
+  virtual void slotFind(); //BCI: make virtual
 
   void slotIncFontSizes();
   void slotDecFontSizes();

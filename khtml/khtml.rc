@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui>
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="khtmlpart">
 <MenuBar>
  <Menu name="edit">

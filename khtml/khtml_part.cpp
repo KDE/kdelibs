@@ -280,7 +280,7 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
-  
+
   /*
     if ( !autoloadImages() )
       d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
@@ -627,7 +627,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
-  d->m_doc->setRestoreState(args.docState());
+  d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
   // clear widget
   d->m_view->resizeContents( 0, 0 );
@@ -1179,7 +1179,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( url.isEmpty() )
     return;
-  
+
   // Security check on the link.
   // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
   if ( !cURL.protocol().isNull() && !m_url.protocol().isNull() &&
@@ -1869,7 +1869,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     KParts::URLArgs args( d->m_extension->urlArgs() );
     args.xOffset = xOffset;
     args.yOffset = yOffset;
-    args.setDocState(docState);
+    args.docState = docState;
     d->m_extension->setURLArgs( args );
     kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
     openURL( u );
@@ -2270,11 +2270,11 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 void KHTMLPart::slotFind()
 {
   KHTMLFind *findDlg = new KHTMLFind( this, "khtmlfind" );
-  
+
   findDlg->exec();
-  
+
   delete findDlg;
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
