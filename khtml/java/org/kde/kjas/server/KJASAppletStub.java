@@ -10,6 +10,10 @@ import java.net.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  2000/03/22 05:19:38  rogozin
+ *
+ * Window geometry is now handled correctly.
+ *
  * Revision 1.2  1999/10/09 21:55:27  rich
  * More consts
  *
@@ -62,7 +66,9 @@ public class KJASAppletStub implements AppletStub
    }
 
     public void setParameter( String name, String value ) {
-       
+
+      name = name.toLowerCase();
+
       if(Main.debug)
           System.out.println( "setParameter() " + name + "=" + value );
 
@@ -99,7 +105,7 @@ public class KJASAppletStub implements AppletStub
      * Get the value of the named parameter.
      */
     public String getParameter( String name ) {
-	return (String) params.get( name );
+	return (String) params.get( name.toLowerCase() );
     }
 
     public boolean isActive() {
