@@ -680,7 +680,7 @@ int main( int argc, char **argv )
   bool staticAccessors = singleton;
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
-  QStringList includes = codegenConfig.readListEntry("IncludeFiles");
+  QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
   bool itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
   bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
@@ -708,6 +708,7 @@ int main( int argc, char **argv )
 
   QString cfgFileName;
   QStringList parameters;
+  QStringList includes;
 
   QPtrList<CfgEntry> entries;
   entries.setAutoDelete( true );
@@ -794,7 +795,7 @@ int main( int argc, char **argv )
 
   // Includes
   QStringList::ConstIterator it;
-  for( it = includes.begin(); it != includes.end(); ++it ) {
+  for( it = headerIncludes.begin(); it != headerIncludes.end(); ++it ) {
     h << "#include <" << *it << ">" << endl;
   }
 
@@ -1004,6 +1005,11 @@ int main( int argc, char **argv )
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
   if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
+
+  // Includes
+  for( it = includes.begin(); it != includes.end(); ++it ) {
+    cpp << "#include <" << *it << ">" << endl;
+  }
 
   // Header required by singleton implementation
   if ( singleton )
