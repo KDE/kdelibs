@@ -843,7 +843,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
       popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
       popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
       popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
-      
+
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
@@ -1151,7 +1151,14 @@ void KLineEdit::setCompletedItems( const QStringList& items )
 
 void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 {
-    QString txt = text();
+    QString txt;
+    if ( d->completionBox && d->completionBox->isVisible() ) {
+        // The popup is visible already - do the matching on the initial string,
+        // not on the currently selected one.
+        txt = completionBox()->cancelledText();
+    } else {
+        txt = text();
+    }
 
     if ( !items.isEmpty() &&
          !(items.count() == 1 && txt == items.first()) )
@@ -1159,11 +1166,27 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
         if ( !d->completionBox )
             makeCompletionBox();
 
-        if ( !txt.isEmpty() )
-            d->completionBox->setCancelledText( txt );
-
-        d->completionBox->setItems( items );
-        d->completionBox->popup();
+        if ( d->completionBox->isVisible() )
+        {
+            bool wasSelected = d->completionBox->isSelected( d->completionBox->currentItem() );
+            const QString currentSelection = d->completionBox->currentText();
+            d->completionBox->setItems( items );
+            QListBoxItem* item = d->completionBox->findItem( currentSelection, Qt::ExactMatch );
+            if ( item )
+            {
+                d->completionBox->blockSignals( true );
+                d->completionBox->setCurrentItem( item );
+                d->completionBox->setSelected( item, wasSelected );
+                d->completionBox->blockSignals( false );
+            }
+        }
+        else // completion box not visible yet -> show it
+        {
+            if ( !txt.isEmpty() )
+                d->completionBox->setCancelledText( txt );
+            d->completionBox->setItems( items );
+            d->completionBox->popup();
+        }
 
         if ( d->autoSuggest && autoSuggest )
         {
