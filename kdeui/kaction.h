@@ -44,14 +44,34 @@ public:
 
     virtual void setChecked( bool );
     bool isChecked() const;
-    
+
 protected slots:
     void slotActivated();
 
 protected:
     bool locked, locked2;
     bool checked;
-    
+
 };
+
+// class KSelectAction : public QSelectAction
+// {
+//     Q_OBJECT
+// public:
+//     KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+//     KSelectAction( const QString& text, int accel,
+// 	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+//     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
+// 	     QObject* parent = 0, const char* name = 0 );
+//     KSelectAction( const QString& text, const QIconSet& pix, int accel,
+// 	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+//     KSelectAction( QObject* parent = 0, const char* name = 0 );
+
+//     int plug( QWidget* );
+
+// protected slots:
+//     virtual void slotActivated( int );
+
+// };
 
 #endif
