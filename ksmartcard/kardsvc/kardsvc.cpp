@@ -51,7 +51,10 @@ extern "C" {
 
 KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 {
-	_pcsc = new KPCSC;
+  //I don't use the automatic connection mode for kpcsc, this allows to work normally if the users starts pcscd after KDE.
+  //If not done so, the _pcsc object is not properly created at kardsvc initialization and we need to re-start kde.
+	_pcsc = new KPCSC(FALSE);
+	_pcsc->connect();
 	_timer = NULL;
 	_readers = _pcsc->listReaders(NULL);
 	reconfigure();
@@ -65,113 +68,122 @@ KardSvc::~KardSvc()
 
 
 QStringList KardSvc::getSlotList() {
-return _pcsc->listReaders(NULL);
+
+  _pcsc->connect();
+  
+  return _pcsc->listReaders(NULL);
 }
 
 
 bool KardSvc::isCardPresent(QString slot) {
-KCardReader *_card = _pcsc->getReader(slot);
-
-	if (!_card) {
-		return false;
-	}
-
-	bool rc = _card->isCardPresent();
-	delete _card;
-
-return rc;
+  _pcsc->connect();
+  KCardReader *_card = _pcsc->getReader(slot);
+  
+  if (!_card) {
+    return false;
+  }
+  
+  bool rc = _card->isCardPresent();
+  delete _card;
+  
+  return rc;
 }
 
 
 void KardSvc::poll() {
 int err;
-QStringList newReaders = _pcsc->listReaders(&err);
+ _pcsc->connect(); 
+ QStringList newReaders = _pcsc->listReaders(&err);
 
-	// Update the list of readers
-	if (_readers != newReaders) {
-		if (err == 0) {
-			kdDebug() << "kardsvc: reader list changed." << endl;
-			for (QStringList::Iterator s = _readers.begin();
-			     s != _readers.end();
-			     ++s) {
-				
-				if (!newReaders.contains(*s) && 
-					_states.contains(*s) &&
-					_states[*s].isPresent()) {
-					kdDebug() << "kardsvc: card removed from slot " 
-						  << *s << endl;
+ // Update the list of readers
+ if (_readers != newReaders) {
+   if (err == 0) {
+     kdDebug() << "kardsvc: reader list changed." << endl;
+     for (QStringList::Iterator s = _readers.begin();
+	  s != _readers.end();
+	  ++s) {
+       
+       if (!newReaders.contains(*s) && 
+	   _states.contains(*s) &&
+	   _states[*s].isPresent()) {
+	 kdDebug() << "kardsvc: card removed from slot " 
+		   << *s << endl;
 				}
 
-				if (!newReaders.contains(*s))
-					_states.remove(*s);
-			}
-			
-			_readers = newReaders;
-			
-		} else return;
-	}
+       if (!newReaders.contains(*s))
+	 _states.remove(*s);
+     }
+     
+     _readers = newReaders;
+     
+   } else return;
+ }
+ 
+ // Check each slot for a card insertion/removal
+ for (QStringList::Iterator s = _readers.begin();
+      s != _readers.end();
+      ++s) {
+   bool wasPresent;
+   
+   if (!_states.contains(*s)) {
+     wasPresent = false;
+     _states[*s] = KCardStatus(_pcsc->context(), *s);
 
-	// Check each slot for a card insertion/removal
-	for (QStringList::Iterator s = _readers.begin();
-	     s != _readers.end();
-	     ++s) {
-		bool wasPresent;
-		
-		if (!_states.contains(*s)) {
-			wasPresent = false;
-			_states[*s] = KCardStatus(_pcsc->context(), *s);
-		} else {
-			wasPresent = _states[*s].isPresent();
-		}
-		bool changed = _states[*s].update();
-
-		if (changed) {
-			if (!wasPresent && _states[*s].isPresent()) {
-				KCardDB cdb;
-				kdDebug() << "kardsvc: card inserted in slot " 
-					  << *s << endl;
-				if (_beepOnEvent)
-					QApplication::beep();
-
-				QString handler = cdb.getModuleName(getCardATR(*s));
-
-				if (handler.length() <= 0) {
-					KCardDB::launchSelector(*s, getCardATR(*s));
-				} else {
-				}
-			} else if (wasPresent && !_states[*s].isPresent()){
-				kdDebug() << "kardsvc: card removed from slot " 
-					  << *s << endl;
-				if (_beepOnEvent) {
-					QApplication::beep();
-					QApplication::beep();
-				}
-			}
-		}
-	}
+     
+   } else {
+     wasPresent = _states[*s].isPresent();
+     //kdDebug()<<*s << "is present="<< wasPresent << endl;
+   }
+   bool changed = _states[*s].update();
+   //kdDebug()<<*s << "hasChanged():"<< changed << endl;
+   if (changed) {
+     if (!wasPresent && _states[*s].isPresent()) {
+       KCardDB cdb;
+       kdDebug() << "kardsvc: card inserted in slot " 
+		 << *s << endl;
+       if (_beepOnEvent)
+	 QApplication::beep();
+       
+       QString handler = cdb.getModuleName(getCardATR(*s));
+       
+       if (handler.length() <= 0) {
+	 KCardDB::launchSelector(*s, getCardATR(*s));
+       } else {
+       }
+     } else if (wasPresent && !_states[*s].isPresent()){
+       kdDebug() << "kardsvc: card removed from slot " 
+		 << *s << endl;
+       if (_beepOnEvent) {
+	 QApplication::beep();
+	 QApplication::beep();
+       }
+     }
+   }
+ }
 }
 
 
 
 QString KardSvc::getCardATR(QString slot) {
-QString res;
-
-	if (!_states.contains(slot) || !_states[slot].isPresent()) {
-		return QString::null;
-	}
-
-	KCardATR kres = _states[slot].getATR();
-	if (kres.size() <= 0) {
-		kdDebug() << "kardsvc: error getting ATR for " << slot << endl;
-		return QString::null;
-	}
-
-	for (unsigned int i = 0; i < kres.size(); i++) {
-		if (i == 0) {
-			res.sprintf("0x%02x", kres[0]);
-		} else {
-			res.sprintf("%s 0x%02x", (const char *)res.local8Bit(), kres[i]);
-		}
+  QString res;
+  
+  if (!_states.contains(slot) || !_states[slot].isPresent()) {
+    kdDebug() << "kardsvc: No ATR for " << slot << endl;
+    return QString::null;
+  }
+  
+  KCardATR kres = _states[slot].getATR();
+  if (kres.size() <= 0) {
+    kdDebug() << "kardsvc: error getting ATR for " << slot << endl;
+    return QString::null;
+  }
+  
+  for (unsigned int i = 0; i < kres.size(); i++) {
+    if (i == 0) {
+      res.sprintf("0x%02x", kres[0]);
+    } else {
+      res.sprintf("%s 0x%02x", (const char *)res.local8Bit(), kres[i]);
+    }
 	}
 	
 return res;
@@ -179,20 +191,20 @@ return res;
 
 
 void KardSvc::reconfigure() {
-KConfig cfg("ksmartcardrc", false, false);
-
-	_beepOnEvent = cfg.readBoolEntry("Beep on Insert", true);
-	_enablePolling = cfg.readBoolEntry("Enable Polling", true);
-	_launchManager = cfg.readBoolEntry("Launch Manager", true);
-
-	if (_enablePolling && !_timer) {
-		_timer = new QTimer(this);
-		connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
-		_timer->start(1500, false);
-	} else if (!_enablePolling && _timer) {
-		delete _timer;
-		_timer = NULL;
-	}
+  KConfig cfg("ksmartcardrc", false, false);
+  
+  _beepOnEvent = cfg.readBoolEntry("Beep on Insert", true);
+  _enablePolling = cfg.readBoolEntry("Enable Polling", true);
+  _launchManager = cfg.readBoolEntry("Launch Manager", true);
+	
+  if (_enablePolling && !_timer) {
+    _timer = new QTimer(this);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
+    _timer->start(1500, false);
+  } else if (!_enablePolling && _timer) {
+    delete _timer;
+    _timer = NULL;
+  }
 }
 
 
