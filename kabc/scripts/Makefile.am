@@ -4,7 +4,7 @@
 				$(srcdir)/addressee.src.h \
 				$(srcdir)/entrylist \
 				$(srcdir)/field.src.cpp
-	perl $(srcdir)/makeaddressee
+	$(PERL) $(srcdir)/makeaddressee
 
 CLEANFILES = ../addressee.h ../addressee.cpp ../field.cpp
 all-local: $(CLEANFILES)
