@@ -41,6 +41,8 @@ class KFileMetaInfo;
 class KFileItem
 {
 public:
+  enum { Unknown = (mode_t) - 1 };
+
   /**
    * Creates an item representing a file, from a @ref UDSEntry.
    * This is the preferred constructor when using KIO::listDir().
@@ -58,13 +60,12 @@ public:
 
   /**
    * Creates an item representing a file, from all the necessary info for it.
-   * @param _mode the file mode (according to stat())
-   * Set to -1 if unknown. For local files, KFileItem will use stat().
-   * @param _mode the mode (S_IFDIR...)
+   * @param _mode the file mode (according to stat() (e.g. S_IFDIR...)
+   * Set to KFileItem::Unknown if unknown. For local files, KFileItem will use stat().
    * @param _permissions the access permissions
    * If you set both the mode and the permissions, you save a ::stat() for
    * local files.
-   * Set to -1 if you don't know the mode or the permission.
+   * Set to KFileItem::Unknown if you don't know the mode or the permission.
    * @param _url the file url
    *
    * @param _determineMimeTypeOnDemand specify if the mimetype of the given URL
