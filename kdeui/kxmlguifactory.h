@@ -164,8 +164,6 @@ class KXMLGUIFactory : public QObject
 
   int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName,
                         QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
-  void adjustMergingIndices( KXMLGUIContainerNode *node, int offset,
-                             const QValueList<MergingIndex>::Iterator &it );
 
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
