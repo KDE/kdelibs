@@ -128,6 +128,9 @@
 9006    kdevelop (cvs interface)
 9007    kdevelop (cpp support)
 
+# toys and games
+10000   amor
+
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
 30002	koffice (lib store)
