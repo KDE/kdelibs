@@ -589,7 +589,7 @@
  *
  * @section markup Speech Markup
  *
- * Note: %Speech Markup is not yet implemented in %KTTSD.
+ * Note: %Speech Markup is not yet fully implemented in %KTTSD.
  *
  * Each of the five methods for queueing text to be spoken -- @ref sayScreenReaderOutput,
  * @ref setText, @ref appendText, @ref sayMessage, and
@@ -599,13 +599,15 @@
  *
  *   - Sable 2.0: Festival
  *   - Java %Speech Markup Language (JSML): Festival (partial)
- *   - %Speech Synthesis Markup language (SSML): none at this time
+ *   - %Speech Synthesis Markup language (SSML): Festival and Hadifix.
  *
- * TODO: Issue: Do Hadifix and FreeTTS support markup?
+ * TODO: Issue: Does FreeTTS support markup?
  *
  * Before including markup in the text sent to kttsd, the application should
  * query whether the currently-configured plugin 
  * supports the markup language by calling @ref supportsMarkup.
+ *
+ * It it does not support the markup, it will be stripped out the text.
  *
  * @section markers Support for Markers
  *
@@ -828,6 +830,8 @@ class kspeech : virtual public DCOPObject {
         *                       If NULL, defaults to the user's default talker.
         *                       If no plugin has been configured for the specified Talker code,
         *                       defaults to the closest matching talker.
+        * @param encoding       Name of the encoding to use when reading the file.  If
+        *                       NULL or Empty, uses default stream encoding.
         * @return               Job number.  0 if an error occurs.
         *
         * Plain text is parsed into individual sentences using the current sentence delimiter.
@@ -844,8 +848,9 @@ class kspeech : virtual public DCOPObject {
         * @see getTextCount
         * @see startText
         */
-        virtual uint setFile(const QString &filename, const QString &talker=NULL) = 0;
-        
+        virtual uint setFile(const QString &filename, const QString &talker=NULL,
+            const QString& encoding=NULL) = 0;
+
         /**
         * Get the number of sentences in a text job.
         * @param jobNum         Job number of the text job.
