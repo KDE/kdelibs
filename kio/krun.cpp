@@ -646,7 +646,7 @@ void KRun::scanFile()
   }
   kdDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
-  KIO::TransferJob *job = KIO::get( m_strURL, m_bProgressInfo );
+  KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
   connect(job, SIGNAL( result(KIO::Job *)),
           this, SLOT( slotScanFinished(KIO::Job *)));
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
