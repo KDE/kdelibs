@@ -1,9 +1,3 @@
-// $Id$
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <qchkbox.h>
 #include <qpushbt.h>
 #include <qlabel.h>
@@ -19,7 +13,7 @@
 #ifdef KSDEBUG
 #define dsdebug printf
 #else
-inline void dsdebug (const char *, ...)  {}
+inline void dsdebug (...)  {}
 #endif
 
 #define NLS(s) i18n(s)
@@ -39,7 +33,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 }
 
 KSpellConfig::KSpellConfig (QWidget *parent, char *name,
-			    KSpellConfig *_ksc) : QWidget (parent, name)
+			    KSpellConfig *_ksc=0) : QWidget (parent, name)
 {
   kc=kapp->getConfig();
 
@@ -163,13 +157,11 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	encodingcombo = new QComboBox (FALSE, this);
 	encodingcombo->insertItem (NLS("Latin1"));
 	encodingcombo->insertItem (NLS("7-Bit/ASCII"));
-	//encodingcombo->setMinimumSize (encodingcombo->sizeHint());
+	encodingcombo->setMinimumSize (encodingcombo->sizeHint());
 	connect (encodingcombo, SIGNAL (activated(int)), this,
 		 SLOT (sChangeEncoding(int)));
-
-	layout->addWidget (encodingcombo,5,1);
-	//	layout->addMultiCellWidget (encodingcombo, 
-	//		    rencoding, rencoding, 1,4);
+	layout->addMultiCellWidget (encodingcombo, 
+				    rencoding, rencoding, 1,4);
 
 	
 	/* for alternate dict
@@ -224,8 +216,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	layout->addMultiCellWidget (kle2, rpersdict,rpersdict,1,4);
 	///	kle2->setMinimumSize (290,30);
 	*/
-	/*
-	
+
 	tmpQPushButton = new QPushButton( this, "PushButton_3" );
 	tmpQPushButton->setGeometry( 460, 210, 70, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sHelp()) );
@@ -236,7 +227,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	tmpQPushButton->setEnabled (FALSE);
 	layout->addWidget (tmpQPushButton, rhelp, 6);
 	tmpQPushButton->setMinimumSize (tmpQPushButton->sizeHint());
-	*/
+
 	
 	layout->activate();
 	//	resize (sizeHint().width(),sizeHint().height());

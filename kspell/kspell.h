@@ -59,8 +59,8 @@ class KSpell : public QObject
   int dlgresult, trystart, maxtrystart;
   bool dlgon;
   
-  unsigned int lastpos, totalpos, lastline, posinline, lastlastline, offset;
-  unsigned int progres, curprog;
+  unsigned lastpos, totalpos, lastline, posinline, lastlastline, offset;
+  unsigned progres, curprog;
   char *temp;
 
   int parseOneResponse (char *_buffer, char *word, QStrList *sugg);
@@ -199,7 +199,7 @@ public:
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
-  void setProgressResolution (unsigned int res);
+  void setProgressResolution (unsigned res);
 
   /**
    * The destructor instructs ispell to write out the personal
@@ -223,7 +223,7 @@ signals:
    */
 
   void misspelling (char *originalword, QStrList *suggestions, 
-		    unsigned int pos);
+		    unsigned pos);
   /**
    * This is emitted after the dialog is closed, or if the word was 
    * corrected without calling the dialog (i.e., the user previously chose
@@ -231,7 +231,7 @@ signals:
    * Results from the dialog may be checked with dlgResult() and replacement()
    * (see notes for check() for more information).
    */
-  void corrected (char *originalword, char *newword, unsigned int pos);
+  void corrected (char *originalword, char *newword, unsigned pos);
 
 
   /**
@@ -246,7 +246,7 @@ signals:
   /**
    * i is between 1 and 100 -- emitted only during a check ()
    */
-  void progress (unsigned int i);
+  void progress (unsigned i);
   /**
    * emitted when check() is done
    * Copy the results of buffer if you need them.  You can only rely
@@ -290,6 +290,7 @@ signals:
 protected:
   char *replacement (void)
     { return dlgreplacement.data(); }
+  bool dialogwillprocess;
 
   void  emitProgress (void);
   bool cleanFputs (const char *s, bool appendCR=TRUE);
