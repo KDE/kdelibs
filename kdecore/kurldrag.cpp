@@ -23,7 +23,7 @@
 #include <qfont.h>
 
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
-    : QUriDrag(dragSource, name), m_metaData(QMap<QString, QString>())
+    : QUriDrag(dragSource, name), m_metaData()
 {
     init(urls);
 }
@@ -33,6 +33,10 @@ KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString,QString>& metaDat
     : QUriDrag(dragSource, name), m_metaData(metaData)
 {
     init(urls);
+}
+
+KURLDrag::~KURLDrag()
+{
 }
 
 void KURLDrag::init(const KURL::List &urls)
@@ -131,17 +135,20 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     }
     else if ( mimetype == "application/x-kio-metadata" )
     {
-        QString s;
-        QMap<QString,QString>::ConstIterator it;
-        for( it = m_metaData.begin(); it != m_metaData.end(); ++it )
+        if ( !m_metaData.isEmpty() )
         {
-            s += it.key();
-            s += "$@@$";
-            s += it.data();
-            s += "$@@$";
+            QString s;
+            QMap<QString,QString>::ConstIterator it;
+            for( it = m_metaData.begin(); it != m_metaData.end(); ++it )
+            {
+                s += it.key();
+                s += "$@@$";
+                s += it.data();
+                s += "$@@$";
+            }
+	    a.resize( s.length() + 1 );
+	    memcpy( a.data(), s.latin1(), a.size() );
         }
-	a.resize( s.length() + 1 );
-	memcpy( a.data(), s.latin1(), a.size() );
     }
     return a;
 }
