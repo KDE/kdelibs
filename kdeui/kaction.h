@@ -1335,6 +1335,16 @@ private:
     KFontSizeActionPrivate *d;
 };
 
+/**
+ * A KActionMenu is an action that holds a sub-menu of other actions.
+ * insert() and remove() allow to insert and remove actions into this action-menu.
+ * Plugged in a popupmenu, it will create a submenu.
+ * Plugged in a toolbar, it will create a button with a popup menu.
+ *
+ * This is the action used by the XMLGUI since it holds other actions.
+ * If you want a submenu for selecting one tool among many (without icons), see KSelectAction.
+ * See also setDelayed about the main action.
+ */
 class KActionMenu : public KAction
 {
   Q_OBJECT
