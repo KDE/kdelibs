@@ -1297,5 +1297,5 @@ void KColorDialog::setHsvEdit( void )
   d->vedit->setText( num );
 }
 
-#include "kcolordlg.moc"
+#include "kcolordialog.moc"
 
