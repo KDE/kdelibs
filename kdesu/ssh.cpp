@@ -133,7 +133,6 @@ QCString SshProcess::dcopForward()
     QCString result, host;
     QCStringList srv = StubProcess::dcopServer();
     QCStringList::Iterator it;
-    kDebugInfo("%s: count: %d", ID, srv.count());
     for (m_dcopSrv=0,it=srv.begin(); it!=srv.end(); m_dcopSrv++, it++) {
 	i = (*it).find('/');
 	if (i == -1)
