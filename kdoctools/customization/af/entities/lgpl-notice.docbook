@@ -1,0 +1,21 @@
+<para>Hierdie biblioteek is gratis sagteware;jy kan dit herversprei en/of
+verander volgens die terme van die 'GNU General Public License',
+soos gepubliseer deur die 'Free Software Foundation', volgens
+weergawe 2 of enige latere weergawe.</para>
+ 
+<para>Hierdie biblioteek is versprei met die hoop dat dit bruikbaar
+sal wees, maar SONDER ENIGE WAARBORG; selfs sonder die geïmpliseerde
+waarborge van 'MERCHANTABILITY' of GESKIKTHEID VIR 'n SEKERE DOEL.
+Kyk na die 'GNU General Public License' vir meer inligting.</para>
+ 
+<para>Jy moes 'n kopie van die 'GNU Lesser General Public License' saam
+met die biblioteek gekry het;  Indien dit nie die geval is nie, kan
+dit aangevra word vanaf die Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA</para>
+<!--
+Local variables:
+mode: sgml
+sgml-general-insert-case: lower
+End:
+-->

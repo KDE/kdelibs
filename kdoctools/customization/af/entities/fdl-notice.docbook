@@ -1,0 +1,14 @@
+<para>Toestemming is gegun om hierdie dokument te kopieër, te versprei
+en/of te verander on die 'GNU Free Documentation' lisensie, weergawe 1.1
+of enige latere weergawe gepubliseer deur die 'Free Software Foundation';
+&FDLInvariantSections;, met &FDLFrontCoverText;, en met &FDLBackCoverText;.
+'n Kopie van die lisensie is ingesluit in <xref linkend="gnu-fdl"/>.</para>
+
+<!--
+Local variables:
+mode: sgml
+sgml-general-insert-case: lower
+sgml-parent-document: ("index.docbook" "book" "bookinfo" "legalnotice" "para")
+End:
+-->
+
