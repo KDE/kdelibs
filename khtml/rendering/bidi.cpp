@@ -199,7 +199,6 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     BidiIterator sor = start;
     BidiIterator eor = start;
 
-#ifndef QT_NO_UNICODETABLES
     BidiIterator current = start;
     BidiIterator last = current;
     while(current != end) {
@@ -214,6 +213,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         } else
             dirCurrent = current.direction();
 
+#ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
         kdDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << endl;
@@ -593,6 +593,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
             default:
                 status.last = dirCurrent;
             }
+#endif
 
         last = current;
         ++current;
@@ -602,11 +603,6 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     kdDebug(6041) << "reached end of line current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
     eor = last;
-
-
-#else
-    eor = end;
-#endif
 
     appendRun(runs, sor, eor, context, dir);
 
