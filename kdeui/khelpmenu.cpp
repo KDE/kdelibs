@@ -130,7 +130,7 @@ QPopupMenu* KHelpMenu::menu( void )
     mMenu = new QPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( QString::fromLatin1("contents") ), 
+    mMenu->insertItem( BarIcon( "contents", KIconLoader::Small),
 		       i18n( "&Contents" ),menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
@@ -158,11 +158,6 @@ QPopupMenu* KHelpMenu::menu( void )
 
     mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
     mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
-
-    //mMenu->insertSeparator();
-
-    //mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
-    //mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
   }
 
   return( mMenu );
