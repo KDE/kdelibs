@@ -401,7 +401,7 @@ int
 KMessageBox::warningContinueCancel(QWidget *parent,
                                    const QString &text,
                                    const QString &caption,
-                                   const QString &buttonContinue,
+                                   const KGuiItem &buttonContinue,
                                    const QString &dontAskAgainName,
                                    bool notify)
 {
@@ -413,7 +413,7 @@ int
 KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                              const QStringList &strlist,
                              const QString &caption,
-                             const QString &buttonContinue,
+                             const KGuiItem &buttonContinue,
                              const QString &dontAskAgainName,
                              bool /*notify*/)
 {
@@ -437,7 +437,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
-                       buttonContinue, i18n("&Cancel"));
+                       buttonContinue, KStdGuiItem::cancel() );
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
