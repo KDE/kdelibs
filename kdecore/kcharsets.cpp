@@ -423,8 +423,8 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 
     QCString family = f.family().latin1();
 
-    //kdDebug() << "KCharsets::setQFont family=" << family << endl; 
-    
+    //kdDebug() << "KCharsets::setQFont family=" << family << endl;
+
     QValueList<QCString> chFamilies = (*d->availableCharsets)[charset];
     if(chFamilies.contains(family)) {
 	//kdDebug() << "KCharsets::setQFont: charsetAvailable in family" << endl;
@@ -622,8 +622,15 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
 
 QTextCodec *KCharsets::codecForName(const QString &n) const
 {
-    QString name = n.lower();
-    QTextCodec *codec = QTextCodec::codecForName(name.latin1());
+  if (n.isEmpty()) {
+    QString lc = KGlobal::locale()->charset();
+    if (lc.isEmpty())
+      return QTextCodec::codecForName("iso8859-1");
+    return codecForName(lc);
+  }
+
+  QString name = n.lower();
+  QTextCodec *codec = QTextCodec::codecForName(name.latin1());
 
     if(codec)
         return codec;
