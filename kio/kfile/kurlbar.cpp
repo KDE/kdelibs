@@ -16,7 +16,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qapplication.h>
+#include <unistd.h>
+
 #include <qcheckbox.h>
 #include <qdrawutil.h>
 #include <qfontmetrics.h>
@@ -27,6 +28,8 @@
 #include <qvbox.h>
 #include <qwhatsthis.h>
 
+#include <kaboutdata.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kicondialog.h>
@@ -237,6 +240,9 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
                                 isVertical() ?
                                 QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
+    QWhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> bar provides easy access to commonly used file locations.<p>"
+                               "Clicking on one of the shortcut entries will take you to that location.<p>"
+                               "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
 }
 
 KURLBar::~KURLBar()
@@ -742,24 +748,37 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                    i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
 {
     QVBox *box = new QVBox( this );
-    QString text = i18n("<qt><b>Please set url, icon and a description.</b></br></qt>");
+    QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );
-    label->setAlignment( 0 ); // disable word-break
-
+    box->setSpacing( spacingHint() );
+   
     QGrid *grid = new QGrid( 2, box );
-    label = new QLabel( i18n("URL:"), grid );
-    m_urlEdit = new KURLRequester( url.prettyURL(), grid );
-    m_urlEdit->setMode( KFile::Directory );
-
     grid->setSpacing( spacingHint() );
-
+    
+    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access bar.<p>"
+                                 "The description should consist of one or two words "
+                                 "that will help you remember what this entry refers to.</qt>");
     label = new QLabel( i18n("&Description:"), grid );
     m_edit = new KLineEdit( grid, "description edit" );
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
-
+    QWhatsThis::add( label, whatsThisText );
+    QWhatsThis::add( m_edit, whatsThisText );
+    
+    whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
+                         "/home/%1<br>http://kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
+                         "By clicking on the button next to the text edit box you can browse for an "
+                         "appropriate URL.</qt>").arg(getlogin());
+    label = new QLabel( i18n("&URL:"), grid );
+    m_urlEdit = new KURLRequester( url.prettyURL(), grid );
+    m_urlEdit->setMode( KFile::Directory );
+    label->setBuddy( m_urlEdit );
+    QWhatsThis::add( label, whatsThisText );
+    QWhatsThis::add( m_urlEdit, whatsThisText );
+    
+    whatsThisText = i18n("<qt>This is the icon that will apear in the Quick Access bar.<p>"
+                         "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
-
     m_iconButton = new KIconButton( grid, "icon button" );
     m_iconButton->setIconSize( iconSize );
     m_iconButton->setStrictIconSize( true );
@@ -767,15 +786,19 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         icon = KMimeType::iconForURL( url );
     m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
+    QWhatsThis::add( label, whatsThisText );
+    QWhatsThis::add( m_iconButton, whatsThisText );
 
     if ( allowGlobal ) {
-        m_appLocal = new QCheckBox(i18n("&Only for this application"), box);
+        m_appLocal = new QCheckBox(i18n("&Only show when using this application (%1)")
+                                        .arg(kapp->aboutData()->programName()), box);
         m_appLocal->setChecked( appLocal );
         QWhatsThis::add( m_appLocal,
-                         i18n("Select this setting if you want the "
-                              "entry only for the current application.\n"
-                              "Otherwise it will be available in all "
-                              "applications."));
+                         i18n("<qt>Select this setting if you want this "
+                              "entry to show only when using the current application (%1).<p>"
+                              "If this setting is not selected the entry will be available in all "
+                              "applications.</qt>")
+                              .arg(kapp->aboutData()->programName()));
     }
     else
         m_appLocal = 0L;
