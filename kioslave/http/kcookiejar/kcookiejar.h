@@ -62,6 +62,7 @@ protected:
     bool    mSecure;
     bool    mCrossDomain;
     bool    mHttpOnly;
+    bool    mExplicitPath;
     QValueList<long> mWindowIds;
 
     QString cookieStr(bool useDOMFormat);
@@ -75,7 +76,8 @@ public:
                 time_t _expireDate=0,
                 int _protocolVersion=0,
                 bool _secure = false,
-                bool _httpOnly = false);
+                bool _httpOnly = false,
+                bool _explicitPath = false);
 
     QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }
@@ -90,6 +92,7 @@ public:
     bool    isExpired(time_t currentDate);
     bool    isCrossDomain(void) { return mCrossDomain; }
     bool    isHttpOnly(void) { return mHttpOnly; }
+    bool    hasExplicitPath(void) { return mExplicitPath; }
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
 };
 

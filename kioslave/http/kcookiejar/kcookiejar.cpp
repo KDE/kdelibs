@@ -125,7 +125,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  time_t _expireDate,
                  int _protocolVersion,
                  bool _secure,
-                 bool _httpOnly) :
+                 bool _httpOnly,
+                 bool _explicitPath) :
        mHost(_host),
        mDomain(_domain),
        mPath(_path.isEmpty() ? QString::null : _path),
@@ -134,7 +135,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mExpireDate(_expireDate),
        mProtocolVersion(_protocolVersion),
        mSecure(_secure),
-       mHttpOnly(_httpOnly)
+       mHttpOnly(_httpOnly),
+       mExplicitPath(_explicitPath)
 {
 }
 
@@ -161,9 +163,8 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
     }
     else
     {
-        result.sprintf("$Version=%d; ", mProtocolVersion); // Without quotes
-        result += mName + '=' + mValue;
-        if (!mPath.isEmpty())
+        result = mName + '=' + mValue;
+        if (mExplicitPath)
             result += L1("; $Path=\"") + mPath + L1("\"");
         if (!mDomain.isEmpty())
             result += L1("; $Domain=\"") + mDomain + L1("\"");
@@ -255,7 +256,7 @@ KCookieJar::~KCookieJar()
     // Not much to do here
 }
 
-static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr)
+static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr, bool nameMatchOnly=false)
 {
     QString domain1 = cookiePtr->domain();
     if (domain1.isEmpty())
@@ -267,9 +268,13 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
        if (domain2.isEmpty())
           domain2 = cookie->host();
 
-       if ( domain1 == domain2 &&
-            cookiePtr->name() == cookie->name() &&
-            cookiePtr->path() == cookie->path() )
+       if ( 
+            (cookiePtr->name() == cookie->name()) &&
+            (
+              nameMatchOnly ||
+              ( (domain1 == domain2) && (cookiePtr->path() == cookie->path()) )
+            )
+          )
        {
           KHttpCookiePtr old_cookie = cookie;
           cookie = list->next();
@@ -381,36 +386,40 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
     int cookieCount = 0;
 
-    for(int protVersion=0; protVersion <= 1; ++protVersion)
+    int protVersion=0; 
+    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
     {
-       for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
-       {
-          if (cookie->protocolVersion() != protVersion)
-             continue;
+       if (cookie->protocolVersion() > protVersion)
+          protVersion = cookie->protocolVersion();
+    }
 
-          if (useDOMFormat)
+    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
+    {
+       if (useDOMFormat)
+       {
+          if (cookieCount > 0)
+             cookieStr += L1("; ");
+          cookieStr += cookie->cookieStr(true);
+       }
+       else
+       {
+          if (cookieCount == 0)
           {
-             if (cookieCount > 0)
-                cookieStr += L1("; ");
-             cookieStr += cookie->cookieStr(true);
-          }
-          else if (protVersion == 0)
-          {
-             if (cookieCount == 0)
-                cookieStr += L1("Cookie: ");
-             else
-                cookieStr += L1("; ");
-             cookieStr += cookie->cookieStr(false);
+             cookieStr += L1("Cookie: ");
+             if (protVersion > 0)
+             {
+                QString version;
+                version.sprintf("$Version=%d; ", protVersion); // Without quotes
+                cookieStr += version;
+             }
           }
           else
           {
-             if (cookieCount > 0)
-                cookieStr += L1("\r\n");
-             cookieStr += L1("Cookie: ");
-             cookieStr += cookie->cookieStr(false);
+             cookieStr += L1("; ");
           }
-          cookieCount++;
+          cookieStr += cookie->cookieStr(false);
        }
+       cookieCount++;
     }
     
     return cookieStr;
@@ -761,6 +770,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                    lastCookie->mPath = QString::null; // Catch "" <> QString::null
                 else
                    lastCookie->mPath = KURL::decode_string(Value);
+                lastCookie->mExplicitPath = true;
             }
             else if (cName == "version")
             {
@@ -787,7 +797,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
     // RFC2965 cookies come last so that they override netscape cookies.
     while( !cookieList2.isEmpty() && (lastCookie = cookieList2.take(0)) )
+    {
+       removeDuplicateFromList(&cookieList, lastCookie, true);
        cookieList.append(lastCookie);
+    }
 
     return cookieList;
 }
@@ -1232,7 +1245,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                         cookie->host().latin1(), domain.latin1(),
                         path.latin1(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion(), cookie->name().latin1(),
-                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0),
+                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) + (cookie->hasExplicitPath() ? 4 : 0),
                         cookie->value().latin1());
                 cookie = cookieList->next();
             }
@@ -1334,6 +1347,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
             bool keepQuotes = false;
             bool secure = false;
             bool httpOnly = false;
+            bool explicitPath = false;
             const char *value = 0;
             if ((version == 2) || (protVer >= 200))
             {
@@ -1342,6 +1356,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
                 int i = atoi( parseField(line) );
                 secure = i & 1;
                 httpOnly = i & 2;
+                explicitPath = i & 4;
                 line[strlen(line)-1] = '\0'; // Strip LF.
                 value = line;
             }
@@ -1369,7 +1384,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
                                                   QString::fromLatin1(name),
                                                   QString::fromLatin1(value), 
                                                   expDate, protVer,
-                                                  secure, httpOnly);
+                                                  secure, httpOnly, explicitPath);
             addCookie(cookie);
         }
     }
