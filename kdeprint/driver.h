@@ -92,9 +92,13 @@ public:
 	void addOption(DrBase *opt)	{ if (!opt->name().isEmpty()) m_options.insert(opt->name(),opt); }
 	void addGroup(DrGroup *grp)	{ m_subgroups.append(grp); }
 	void clearConflict();
+	void removeOption(const QString& name)	{ m_options.remove(name); }
+	void removeGroup(DrGroup *grp)	{ m_subgroups.removeRef(grp); }
+	bool isEmpty()	{ return (m_options.count()+m_subgroups.count() == 0); }
 
 	virtual DriverItem* createItem(DriverItem *parent);
-	DrBase* findOption(const QString& name);
+	DrBase* findOption(const QString& name, DrGroup **parentGroup = 0);
+	DrGroup* findGroup(DrGroup *grp, DrGroup **parentGroup = 0);
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
@@ -121,6 +125,8 @@ public:
 	int checkConstraints();
 	DrPageSize* findPageSize(const QString& name)	{ return m_pagesizes.find(name); }
 	void addPageSize(DrPageSize *sz);
+	void removeOptionGlobally(const QString& name);
+	void removeGroupGlobally(DrGroup *grp);
 
 protected:
 	QPtrList<DrConstraint>	m_constraints;
@@ -156,6 +162,7 @@ public:
 
 	virtual QString valueText();
 	virtual void setValueText(const QString& s);
+	QString fixedVal();
 
 protected:
 	int	m_value;
@@ -173,6 +180,7 @@ public:
 
 	virtual QString valueText();
 	virtual void setValueText(const QString& s);
+	QString fixedVal();
 
 protected:
 	float	m_value;

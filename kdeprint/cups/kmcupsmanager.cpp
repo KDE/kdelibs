@@ -578,6 +578,24 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 							}
 							opt->setValueText(it.current()->arg("default"));
 							opt->set("default",it.current()->arg("default"));
+							// remove any option (list-type) with the same name (compliant
+							// with the new PPD structure in Foomatic)
+							DrBase	*oldOpt(0);
+							if ((oldOpt=driver->findOption(opt->name())) && oldOpt->type() == DrBase::List)
+							{
+								DrListOption	*oldLOpt = static_cast<DrListOption*>(oldOpt);
+								QString	fixedvals;
+								QPtrListIterator<DrBase>	it(*(oldLOpt->choices()));
+								for (; it.current(); ++it)
+								{
+									fixedvals.append(it.current()->name());
+									if (!it.atLast())
+										fixedvals.append("|");
+								}
+								opt->set("fixedvals", fixedvals);
+							}
+							driver->removeOptionGlobally(opt->name());
+							// finally add the (new) numerical option
 							adjgrp->addOption(opt);
 						}
 					}
@@ -643,9 +661,36 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			{
 				int	p = line.find(':',8);
 				keyword = line.mid(8,p-8);
-				DrListOption	*opt = (DrListOption*)driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
-				if (opt && opt->currentChoice())
-					tout << "*Default" << keyword << ": " << opt->currentChoice()->name() << endl;
+				DrBase	*bopt = driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
+				if (bopt)
+					switch (bopt->type())
+					{
+						case DrBase::List:
+						case DrBase::Boolean:
+							{
+								DrListOption	*opt = static_cast<DrListOption*>(bopt);
+								if (opt && opt->currentChoice())
+									tout << "*Default" << keyword << ": " << opt->currentChoice()->name() << endl;
+								else
+									tout << line << endl;
+							}
+							break;
+						case DrBase::Integer:
+							{
+								DrIntegerOption	*opt = static_cast<DrIntegerOption*>(bopt);
+								tout << "*Default" << keyword << ": " << opt->fixedVal() << endl;
+							}
+							break;
+						case DrBase::Float:
+							{
+								DrFloatOption	*opt = static_cast<DrFloatOption*>(bopt);
+								tout << "*Default" << keyword << ": " << opt->fixedVal() << endl;
+							}
+							break;
+						default:
+							tout << line << endl;
+							break;
+					}
 				else
 					tout << line << endl;
 			}

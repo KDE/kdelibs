@@ -23,6 +23,9 @@
 #include "driveritem.h"
 
 #include <qfile.h>
+#include <qstringlist.h>
+#include <stdlib.h>
+#include <math.h>
 
 /******************
  * DrBase members *
@@ -110,6 +113,30 @@ void DrMain::addPageSize(DrPageSize *ps)
 	m_pagesizes.insert(ps->name(),ps);
 }
 
+void DrMain::removeOptionGlobally(const QString& name)
+{
+	DrGroup	*grp(0);
+	DrBase	*opt = findOption(name, &grp);
+
+	if (opt && grp)
+	{
+		grp->removeOption(name);
+		if (grp->isEmpty())
+			removeGroup(grp);
+	}
+}
+
+void DrMain::removeGroupGlobally(DrGroup *grp)
+{
+	DrGroup	*parent(0);
+	if (findGroup(grp, &parent) && parent)
+	{
+		parent->removeGroup(grp);
+		if (parent->isEmpty() && parent != this)
+			removeGroupGlobally(parent);
+	}
+}
+
 /*******************
  * DrGroup members *
  *******************/
@@ -145,16 +172,32 @@ void DrGroup::createTree(DriverItem *parent)
 		dit.current()->createItem(parent);
 }
 
-DrBase* DrGroup::findOption(const QString& name)
+DrBase* DrGroup::findOption(const QString& name, DrGroup **parentGroup)
 {
 	DrBase	*opt = m_options.find(name);
 	if (!opt)
 	{
 		QPtrListIterator<DrGroup>	it(m_subgroups);
 		for (;it.current() && !opt; ++it)
-			opt = it.current()->findOption(name);
+			opt = it.current()->findOption(name, parentGroup);
 	}
+	else if (parentGroup)
+		*parentGroup = this;
 	return opt;
+}
+
+DrGroup* DrGroup::findGroup(DrGroup *grp, DrGroup ** parentGroup)
+{
+	DrGroup	*group = (m_subgroups.findRef(grp) == -1 ? 0 : grp);
+	if (!group)
+	{
+		QPtrListIterator<DrGroup>	it(m_subgroups);
+		for (;it.current() && !group; ++it)
+			group = it.current()->findGroup(grp, parentGroup);
+	}
+	else if (parentGroup)
+		*parentGroup = this;
+	return group;
 }
 
 void DrGroup::clearConflict()
@@ -242,6 +285,28 @@ void DrIntegerOption::setValueText(const QString& s)
 	m_value = s.toInt();
 }
 
+QString DrIntegerOption::fixedVal()
+{
+	QStringList	vals = QStringList::split("|", get("fixedvals"), false);
+	if (vals.count() == 0)
+		return valueText();
+	int	d(0);
+	QString	val;
+	for (QStringList::Iterator it=vals.begin(); it!=vals.end(); ++it)
+	{
+		int	thisVal = (*it).toInt();
+		if (val.isEmpty() || abs(thisVal - m_value) < d)
+		{
+			d = abs(thisVal - m_value);
+			val = *it;
+		}
+	}
+	if (val.isEmpty())
+		return valueText();
+	else
+		return val;
+}
+
 /*************************
  * DrFloatOption members *
  *************************/
@@ -268,6 +333,28 @@ QString DrFloatOption::valueText()
 void DrFloatOption::setValueText(const QString& s)
 {
 	m_value = s.toFloat();
+}
+
+QString DrFloatOption::fixedVal()
+{
+	QStringList	vals = QStringList::split("|", get("fixedvals"), false);
+	if (vals.count() == 0)
+		return valueText();
+	float	d(0);
+	QString	val;
+	for (QStringList::Iterator it=vals.begin(); it!=vals.end(); ++it)
+	{
+		float	thisVal = (*it).toFloat();
+		if (val.isEmpty() || fabs(thisVal - m_value) < d)
+		{
+			d = fabs(thisVal - m_value);
+			val = *it;
+		}
+	}
+	if (val.isEmpty())
+		return valueText();
+	else
+		return val;
 }
 
 /************************
