@@ -412,7 +412,8 @@ KSpell::cleanFputs (QString s, bool appendCR)
     {
       for (unsigned int i=0; i<l; i++)
 	{
-	  if ( !qs[i].isLetter() && qs[i] != '\'' && qs[i] != '\"' &&
+	  if ( !qs[i].isLetter() && qs[i] != '\'' && qs[i] != '\"' 
+	       && !qs[i].isSpace() &&
 	    // let hyphens pass, but in the beginning, where ispell would
 	    // interpret it as a control char
 	    (firstchar || qs[i] != '-')) {
@@ -786,6 +787,8 @@ bool KSpell::check( const QString &_buffer )
     }
 
   newbuffer=origbuffer;
+
+  kdDebug(750) << "{" << newbuffer << "}" << endl;
 
   // KProcIO calls check2 when read from ispell
   OUTPUT(check2);
