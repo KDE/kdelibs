@@ -274,7 +274,6 @@ bool KProgressDialog::allowCancel() const
     return mAllowCancel;
 }
 
-// ### KDE 4 remove
 KProgress* KProgressDialog::progressBar()
 {
     return mProgressBar;
