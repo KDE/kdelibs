@@ -34,14 +34,14 @@
 class KBuildServiceGroupFactory;
 
 /**
- * This class is typically used like this: 
+ * This class is typically used like this:
  *
  * // Lookup screensaver group
  * KServiceGroup::Ptr group = KServiceGroup::baseGroup("screensavers");
  * if (!group || !group->isValid()) return;
- *     
+ *
  * KServiceGroup::List list = group->entries();
- *          
+ *
  * // Iterate over all entries in the group
  * for( KServiceGroup::List::ConstIterator it = list.begin();
  *      it != list.end(); it++)
@@ -111,13 +111,19 @@ public:
    * @return the descriptive comment for the group, if there is one.
    */
   QString comment() const { return m_strComment; }
-  
+
   /**
    * @return the total number of displayable services in this group and
    * any of its subgroups.
    */
-  int childCount(); 
-  
+  int childCount();
+
+  /**
+   * @return true if the NoDisplay flag was set, i.e. if this
+   * group should be hidden from menus, while still being in ksycoca.
+   */
+  bool noDisplay() const;
+
   /**
    * @internal
    * Load the service from a stream.
@@ -179,6 +185,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KServiceGroupPrivate* d;
+  class Private;
+  Private* d;
 };
 #endif

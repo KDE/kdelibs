@@ -30,10 +30,16 @@
 #include "kservice.h"
 #include "ksycoca.h"
 
+struct KServiceGroup::Private
+{
+  Private() { m_bNoDisplay = false; }
+  bool m_bNoDisplay;
+};
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
  : KSycocaEntry(_relpath), m_childCount(-1)
 {
+  d = new KServiceGroup::Private;
   m_bDeleted = false;
 
   if (!configFile.isEmpty())
@@ -46,6 +52,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
      m_strIcon = config.readEntry( "Icon" );
      m_strComment = config.readEntry( "Comment" );
      m_bDeleted = config.readBoolEntry( "Hidden", false );
+     d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
      m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   }
   // Fill in defaults.
@@ -65,12 +72,14 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
     KSycocaEntry( _str, offset )
 {
+  d = new KServiceGroup::Private;
   m_bDeep = deep;
   load( _str );
 }
 
 KServiceGroup::~KServiceGroup()
 {
+  delete d;
 }
 
 int KServiceGroup::childCount()
@@ -100,12 +109,20 @@ int KServiceGroup::childCount()
 }
 
 
+bool KServiceGroup::noDisplay() const
+{
+    return d->m_bNoDisplay;
+}
+
 void KServiceGroup::load( QDataStream& s )
 {
   QStringList groupList;
-
+  Q_INT8 noDisplay;
   s >> m_strCaption >> m_strIcon >>
-       m_strComment >> groupList >> m_strBaseGroupName >> m_childCount;
+      m_strComment >> groupList >> m_strBaseGroupName >> m_childCount >>
+      noDisplay;
+
+  d->m_bNoDisplay = (noDisplay != 0);
 
   if (m_bDeep)
   {
@@ -161,8 +178,10 @@ void KServiceGroup::save( QDataStream& s )
 
   (void) childCount();
 
+  Q_INT8 noDisplay = d->m_bNoDisplay ? 1 : 0;
   s << m_strCaption << m_strIcon <<
-       m_strComment << groupList << m_strBaseGroupName << m_childCount;
+      m_strComment << groupList << m_strBaseGroupName << m_childCount <<
+      noDisplay;
 }
 
 KServiceGroup::List
@@ -203,7 +222,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
         // Choose the right list
         KSortableValueList<SPtr,QCString> & list = (*it)->isType(KST_KServiceGroup) ? glist : slist;
         QCString key( (*it)->name().length() * 4 + 1 );
-        // strxfrm() crashes on Solaris 
+        // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
         // maybe it'd be better to use wcsxfrm() where available
         size_t ln = strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size());
@@ -229,7 +248,15 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
 
     List lsort;
     for(KSortableValueList<SPtr,QCString>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
+    {
+        if (excludeNoDisplay)
+        {
+           KServiceGroup *serviceGroup = (KServiceGroup *)((KSycocaEntry *)((*it).value()));
+           if (serviceGroup->noDisplay())
+              continue;
+        }
         lsort.append((*it).value());
+    }
     for(KSortableValueList<SPtr,QCString>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
     {
         if (excludeNoDisplay)
@@ -309,4 +336,3 @@ KServiceGroup::group(const QString &relPath)
 
 void KServiceGroup::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
-
