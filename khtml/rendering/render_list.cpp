@@ -136,9 +136,10 @@ void RenderListItem::setStyle(RenderStyle *_style)
         newStyle->setFloating(FRIGHT);
 
     if(!m_marker && style()->listStyleType() != LNONE) {
+
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
-	insertChildNode( m_marker, firstChild() );
+        insertChildNode( m_marker, firstChild() );
     } else if ( m_marker && style()->listStyleType() == LNONE) {
         m_marker->detach();
         m_marker = 0;
@@ -154,7 +155,8 @@ RenderListItem::~RenderListItem()
 
 void RenderListItem::calcListValue()
 {
-    if( !m_marker ) return;
+    // only called from the marker so..
+    KHTMLAssert(m_marker);
 
     if(predefVal != -1)
         m_marker->m_value = predefVal;
@@ -184,10 +186,8 @@ void RenderListItem::layout( )
         //kdDebug(0) << "empty item" << endl;
         return;
     }
-    calcListValue();
-    if ( m_marker && !m_marker->layouted() )
-	m_marker->layout();
     RenderFlow::layout();
+    assert(!m_marker || m_marker->layouted());
 }
 
 // this function checks if there is other rendered contents in the list item than a marker. If not, the whole
@@ -385,6 +385,13 @@ void RenderListMarker::calcMinMaxWidth()
         m_height = m_listImage->pixmap().height();
 	setMinMaxKnown();
         return;
+    }
+
+    if (m_value < 0) { // not yet calculated
+        RenderObject* p = parent();
+        while (p->isAnonymousBox())
+            p = p->parent();
+        static_cast<RenderListItem*>(p)->calcListValue();
     }
 
     QFontMetrics fm = fontMetrics(style()->font());
