@@ -26,10 +26,12 @@
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 90
-#define KDE_IS_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
+#define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
 #define KDE_VERSION \
-  KDE_IS_VERSION(KDE_VERSION_MAJOR,KDE_VERSION_MINOR,KDE_VERSION_RELEASE)
+  KDE_MAKE_VERSION(KDE_VERSION_MAJOR,KDE_VERSION_MINOR,KDE_VERSION_RELEASE)
+
+#define KDE_IS_VERSION(a,b,c) ( KDE_VERSION >= KDE_MAKE_VERSION(a,b,c) )
 
 /**
  * Namespace for general KDE functions.
