@@ -146,12 +146,10 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   if (d->forcedTopLevel)
     top_level = true;
 
+  d->wasTopLevel = top_level;
   if( parentWidget()
       && parentWidget()->topLevelWidget()->isFullScreen())
-  {
-    d->wasTopLevel = top_level;
     top_level = false;
-  }
 
   if ( isTopLevelMenu() == top_level )
     return;
@@ -236,7 +234,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     }
     else
     {
-        if( topLevelWidget() && obj == topLevelWidget())
+        if( parentWidget() && obj == parentWidget()->topLevelWidget())
         {
             if( ev->type() == QEvent::ShowNormal )
                 setTopLevelMenuInternal( d->wasTopLevel );
