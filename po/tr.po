@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: KDE 1.0\n"
-"POT-Creation-Date: 1998-11-18 11:24+0100\n"
+"POT-Creation-Date: 1999-02-06 01:01+0100\n"
 "PO-Revision-Date: 1998-11-19 18:00+0200\n"
 "Last-Translator: Kerem ERZURUMLU & Zerrin ÜNAL <kerem@linux.org.tri & @>\n"
 "Language-Team: Hacettepe Linux Users Group <hacettepe@linux.org.tr>\n"
@@ -43,14 +43,14 @@ msgstr ""
 msgid "Send an email to the application maintainer"
 msgstr ""
 
-#: kab/AssertDialog.cpp:51 kab/datepickerdialog.cc:25 kab/kabapi.cc:35
-#: kdeui/kcolordlg.cpp:463 kdeui/kcontrol.cpp:46 kdeui/kcontrol.cpp:51
+#: kab/AssertDialog.cpp:51 kab/datepickerdialog.cc:25 kab/kabapi.cc:34
+#: kdeui/kcolordlg.cpp:467 kdeui/kcontrol.cpp:46 kdeui/kcontrol.cpp:51
 #: kdeui/keditcl1.cpp:141 kdeui/keditcl1.cpp:155 kdeui/keditcl1.cpp:170
 #: kdeui/keditcl1.cpp:191 kdeui/keditcl1.cpp:204 kdeui/keditcl1.cpp:1561
-#: kdeui/keditcl1.cpp:1718 kdeui/kfontdialog.cpp:370
-#: kdeui/kiconloaderdialog.cpp:254 kdeui/kmsgbox.cpp:277
-#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:505
-#: kfile/kfiledialog.cpp:887 kfile/kfiledialogconf.cpp:60 kfmlib/kfm.cpp:409
+#: kdeui/keditcl1.cpp:1718 kdeui/kfontdialog.cpp:400
+#: kdeui/kiconloaderdialog.cpp:264 kdeui/kmsgbox.cpp:286
+#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:509
+#: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:407
 #: po/texts.cpp:35
 msgid "OK"
 msgstr "PEKÝ"
@@ -251,115 +251,117 @@ msgstr ""
 msgid "Selected values:"
 msgstr ""
 
-#: kdecore/kaccel.cpp:231 kfile/kfiledialog.cpp:555 kfile/kfiledialog.cpp:1199
-#: kfile/kfiledialog.cpp:1358 kfile/kfiledialog.cpp:1392 po/texts.cpp:65
+#: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:558 kfile/kfiledialog.cpp:1217
+#: kfile/kfiledialog.cpp:1377 kfile/kfiledialog.cpp:1411 po/texts.cpp:65
 msgid "Open"
 msgstr "Aç"
 
-#: kdecore/kaccel.cpp:235
+#: kdecore/kaccel.cpp:227
 msgid "New"
 msgstr "Yeni"
 
-#: kab/searchresults.cc:30 kdecore/kaccel.cpp:239 po/texts.cpp:80
+#: kab/searchresults.cc:30 kdecore/kaccel.cpp:231 po/texts.cpp:80
 msgid "Close"
 msgstr "Kapat"
 
-#: kdecore/kaccel.cpp:243 kfile/kfiledialog.cpp:1254
-#: kfile/kfiledialog.cpp:1413 po/texts.cpp:75
+#: kdecore/kaccel.cpp:235 kfile/kfiledialog.cpp:1272
+#: kfile/kfiledialog.cpp:1432 po/texts.cpp:75
 msgid "Save"
 msgstr "Kaydet"
 
-#: kdecore/kaccel.cpp:247 po/texts.cpp:115
+#: kdecore/kaccel.cpp:239 po/texts.cpp:115
 msgid "Print"
 msgstr "Yazdýr"
 
-#: kdecore/kaccel.cpp:251 po/texts.cpp:52
+#: kdecore/kaccel.cpp:243 po/texts.cpp:52
 msgid "Quit"
 msgstr "Çýkýþ"
 
-#: kdecore/kaccel.cpp:255 po/texts.cpp:69
+#: kdecore/kaccel.cpp:247 po/texts.cpp:69
 msgid "Cut"
 msgstr "Kes"
 
-#: kdecore/kaccel.cpp:259 po/texts.cpp:56
+#: kdecore/kaccel.cpp:251 po/texts.cpp:56
 msgid "Copy"
 msgstr "Kopya"
 
-#: kdecore/kaccel.cpp:263 po/texts.cpp:58
+#: kdecore/kaccel.cpp:255 po/texts.cpp:58
 msgid "Paste"
 msgstr "Yapýþtýr"
 
-#: kdecore/kaccel.cpp:267 po/texts.cpp:93
+#: kdecore/kaccel.cpp:259 po/texts.cpp:93
 msgid "Undo"
 msgstr "Geri Al"
 
-#: kdecore/kaccel.cpp:271 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
+#: kdecore/kaccel.cpp:263 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
 #: kdeui/keditcl2.cpp:360 kdeui/keditcl2.cpp:377 kdeui/keditcl2.cpp:676
 #: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:786
 msgid "Find"
 msgstr "Bul"
 
-#: kdecore/kaccel.cpp:275 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
-#: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 po/texts.cpp:133
+#: kdecore/kaccel.cpp:267 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
+#: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 kspell/kspelldlg.cpp:110
+#: po/texts.cpp:133
 msgid "Replace"
 msgstr "Deðiþtir"
 
-#: kdecore/kaccel.cpp:279 po/texts.cpp:134
+#: kdecore/kaccel.cpp:271 po/texts.cpp:134
 #, fuzzy
 msgid "Insert"
 msgstr "&Ekle"
 
-#: kdecore/kaccel.cpp:283 kfile/kfiledialog.cpp:131
+#: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
 msgstr "Ev"
 
-#: kdecore/kaccel.cpp:287
+#: kdecore/kaccel.cpp:279
 msgid "End"
 msgstr ""
 
-#: kdecore/kaccel.cpp:291
+#: kdecore/kaccel.cpp:283
 msgid "Prior"
 msgstr ""
 
-#: kdecore/kaccel.cpp:295
+#: kdecore/kaccel.cpp:287
 #, fuzzy
 msgid "Next"
 msgstr "&Sonraki"
 
-#: kdecore/kaccel.cpp:299 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:471
-#: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 po/texts.cpp:44
+#: kdecore/kaccel.cpp:291 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
+#: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 kspell/ksconfig.cpp:212
+#: kspell/kspelldlg.cpp:131 po/texts.cpp:44
 msgid "Help"
 msgstr "Yardým"
 
-#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:661
+#: kdecore/kaccel.cpp:589 kdecore/kaccel.cpp:653
 msgid "SHIFT"
 msgstr ""
 
-#: kdecore/kaccel.cpp:601 kdecore/kaccel.cpp:663
+#: kdecore/kaccel.cpp:593 kdecore/kaccel.cpp:655
 msgid "CTRL"
 msgstr ""
 
-#: kdecore/kaccel.cpp:605 kdecore/kaccel.cpp:665
+#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:657
 msgid "ALT"
 msgstr ""
 
-#: kdecore/kapp.cpp:586 po/texts.cpp:137
+#: kdecore/kapp.cpp:608 po/texts.cpp:137
 msgid "&Contents"
 msgstr "&Ýçerik"
 
-#: kdecore/kapp.cpp:592
+#: kdecore/kapp.cpp:614
 msgid "&About"
 msgstr "&Hakkýnda"
 
-#: kdecore/kapp.cpp:599
+#: kdecore/kapp.cpp:621
 msgid "About &KDE..."
 msgstr "&KDE Hakkýnda ..."
 
-#: kdecore/kapp.cpp:620
+#: kdecore/kapp.cpp:642
 msgid "About KDE"
 msgstr "KDE Hakkýnda"
 
-#: kdecore/kapp.cpp:622
+#: kdecore/kapp.cpp:644
 msgid ""
 "\n"
 "The KDE Desktop Environment was written by the KDE Team,\n"
@@ -385,7 +387,7 @@ msgstr ""
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
 #: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:363
 #: kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426 kdeui/keditcl2.cpp:456
-#: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:294 kdeui/kmsgbox.cpp:310
+#: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:303 kdeui/kmsgbox.cpp:319
 #: kio/kio_paste.cc:98 po/texts.cpp:27
 msgid "Yes"
 msgstr "Evet"
@@ -394,21 +396,21 @@ msgstr "Evet"
 #: kdeui/keditcl1.cpp:495 kdeui/keditcl1.cpp:515 kdeui/keditcl1.cpp:1662
 #: kdeui/keditcl2.cpp:107 kdeui/keditcl2.cpp:124 kdeui/keditcl2.cpp:364
 #: kdeui/keditcl2.cpp:381 kdeui/keditcl2.cpp:427 kdeui/keditcl2.cpp:457
-#: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:292 kdeui/kmsgbox.cpp:308
+#: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:301 kdeui/kmsgbox.cpp:317
 #: kio/kio_paste.cc:98 po/texts.cpp:28
 msgid "No"
 msgstr "Hayýr"
 
-#: kab/datepickerdialog.cc:26 kab/kabapi.cc:38 kab/widget.cc:1369
-#: kab/widget.cc:1411 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:466
+#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1384
+#: kab/widget.cc:1426 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
 #: kdeui/kcontrol.cpp:48 kdeui/kcontrol.cpp:55 kdeui/keditcl1.cpp:414
-#: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:365
-#: kdeui/kiconloaderdialog.cpp:255 kdeui/kmsgbox.cpp:312
-#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:892
-#: kfile/kfiledialogconf.cpp:58 kfmlib/kfm.cpp:413 kio/kio_job.cc:693
+#: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:403
+#: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:321
+#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:906
+#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:411 kio/kio_job.cc:773
 #: kio/kio_linedit_dlg.cc:50 kio/kio_openwith.cc:272 kio/kio_pass_dlg.cc:78
-#: kio/kio_progress_dlg.cc:53 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
-#: po/texts.cpp:39
+#: kio/kio_progress_dlg.cc:64 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
+#: kspell/kspelldlg.cpp:143 po/texts.cpp:39
 msgid "Cancel"
 msgstr "Vazgeç"
 
@@ -428,7 +430,7 @@ msgstr "Özel Renkler"
 msgid "Add to Custom Colors"
 msgstr "Özel Renklere Ekle"
 
-#: kdeui/kcolordlg.cpp:788 kdeui/kcolordlg.cpp:840
+#: kdeui/kcolordlg.cpp:789 kdeui/kcolordlg.cpp:841
 msgid "Custom..."
 msgstr "Özel..."
 
@@ -436,8 +438,7 @@ msgstr "Özel..."
 msgid "Default"
 msgstr "Öntanýmlý"
 
-#: kdeui/kcontrol.cpp:47 kdeui/kcontrol.cpp:53 kfile/kfiledialogconf.cpp:59
-#: po/texts.cpp:41
+#: kdeui/kcontrol.cpp:47 kdeui/kcontrol.cpp:53 po/texts.cpp:41
 msgid "Apply"
 msgstr "Uygula"
 
@@ -521,7 +522,7 @@ msgstr "Cu"
 msgid "Sat"
 msgstr "Ct"
 
-#: kab/kabapi.cc:134 kab/widget.cc:817 kab/widget.cc:837 kab/widget.cc:1901
+#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1916
 #: kdeui/keditcl1.cpp:139 kdeui/keditcl1.cpp:168 kdeui/keditcl1.cpp:189
 #: kdeui/keditcl1.cpp:202 kdeui/keditcl1.cpp:1559 po/texts.cpp:83
 msgid "Sorry"
@@ -645,7 +646,7 @@ msgstr "Bul:"
 msgid "Replace with:"
 msgstr "Ýle Deðiþtir:"
 
-#: kdeui/keditcl2.cpp:792
+#: kdeui/keditcl2.cpp:792 kspell/kspelldlg.cpp:38
 msgid "Replace All"
 msgstr "Hepsini Deðiþtir"
 
@@ -657,91 +658,95 @@ msgstr "Satýra Git"
 msgid "Go"
 msgstr "Git"
 
-#: kdeui/kfontdialog.cpp:181
+#: kdeui/kfontdialog.cpp:177
 msgid "Select Font"
 msgstr "Yazý Tipi Seç"
 
-#: kdeui/kfontdialog.cpp:185
+#: kdeui/kfontdialog.cpp:181
 msgid "Requested Font"
 msgstr "Ýstenen Yazý Tipi"
 
-#: kdeui/kfontdialog.cpp:190
+#: kdeui/kfontdialog.cpp:182
 msgid "Actual Font"
 msgstr "Geçerli Yazý Tipi"
 
-#: kdeui/kfontdialog.cpp:194 kdeui/kfontdialog.cpp:198
+#: kdeui/kfontdialog.cpp:202 kdeui/kfontdialog.cpp:207
 msgid "Family:"
 msgstr "Aile:"
 
-#: kdeui/kfontdialog.cpp:205 kdeui/kfontdialog.cpp:211 po/texts.cpp:26
+#: kdeui/kfontdialog.cpp:214 kdeui/kfontdialog.cpp:219 po/texts.cpp:26
 msgid "Charset:"
 msgstr "Karakterler:"
 
-#: kdeui/kfontdialog.cpp:218 kdeui/kfontdialog.cpp:223 kfile/kpreview.cpp:196
+#: kdeui/kfontdialog.cpp:227 kdeui/kfontdialog.cpp:232 kfile/kpreview.cpp:196
 msgid "Size:"
 msgstr "Boy:"
 
-#: kdeui/kfontdialog.cpp:230 kdeui/kfontdialog.cpp:235
+#: kdeui/kfontdialog.cpp:239 kdeui/kfontdialog.cpp:244
 msgid "Weight:"
 msgstr "Geniþlik:"
 
-#: kdeui/kfontdialog.cpp:243 kdeui/kfontdialog.cpp:250
+#: kdeui/kfontdialog.cpp:251 kdeui/kfontdialog.cpp:256
 msgid "Style:"
 msgstr "Tür:"
 
-#: kdeui/kfontdialog.cpp:286
-msgid "Charset"
-msgstr "Karakterler"
-
-#: kdeui/kfontdialog.cpp:297 kfile/kfiledetaillist.cpp:38
+#: kdeui/kfontdialog.cpp:284 kfile/kfiledetaillist.cpp:38
 msgid "Size"
 msgstr "Boy"
 
-#: kdeui/kfontdialog.cpp:338
+#: kdeui/kfontdialog.cpp:322
 msgid "Weight"
 msgstr "Geniþlik"
 
-#: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:480
+#: kdeui/kfontdialog.cpp:325 kdeui/kfontdialog.cpp:484
 msgid "normal"
 msgstr "normal"
 
-#: kdeui/kfontdialog.cpp:340 kdeui/kfontdialog.cpp:482
+#: kdeui/kfontdialog.cpp:326 kdeui/kfontdialog.cpp:486
 msgid "bold"
 msgstr "kalýn yazý"
 
-#: kdeui/kfontdialog.cpp:351
+#: kdeui/kfontdialog.cpp:336
 msgid "Style"
 msgstr "Tür"
 
-#: kdeui/kfontdialog.cpp:352 kdeui/kfontdialog.cpp:493
-#: kdeui/kfontdialog.cpp:522
+#: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:497
+#: kdeui/kfontdialog.cpp:526
 msgid "roman"
 msgstr "roman"
 
-#: kdeui/kfontdialog.cpp:353 kdeui/kfontdialog.cpp:495
-#: kdeui/kfontdialog.cpp:520
+#: kdeui/kfontdialog.cpp:340 kdeui/kfontdialog.cpp:499
+#: kdeui/kfontdialog.cpp:524
 msgid "italic"
 msgstr "eðik yazý"
 
-#: kdeui/kfontdialog.cpp:383
+#: kdeui/kfontdialog.cpp:348
+msgid "Charset"
+msgstr "Karakterler"
+
+#: kdeui/kfontdialog.cpp:367
 msgid "Dolor Ipse"
 msgstr "Dolor Ipse"
 
-#: kdeui/kfontdialog.cpp:515
+#: kdeui/kfontdialog.cpp:519
 msgid "Bold"
 msgstr "Kalýn yazý"
 
-#: kdeui/kfontdialog.cpp:517
+#: kdeui/kfontdialog.cpp:521
 msgid "Normal"
 msgstr "Normal"
 
-#: kdeui/kiconloaderdialog.cpp:237
+#: kdeui/kiconloaderdialog.cpp:247
 msgid "Select Icon"
 msgstr "Simge Seç"
 
-#: kdeui/kiconloaderdialog.cpp:242
+#: kdeui/kiconloaderdialog.cpp:252
 msgid "Filter:"
 msgstr "Filtre:"
+
+#: kdeui/kkeydialog.cpp:219
+msgid "Configure key bindings"
+msgstr ""
 
 #: kdeui/kkeydialog.cpp:232 kdeui/knotebook.cpp:224 kdeui/kwizard.cpp:205
 #: po/texts.cpp:45
@@ -757,41 +762,120 @@ msgstr "&Öntanýmlý"
 msgid "Current key"
 msgstr ""
 
-#: kdeui/kkeydialog.cpp:331
+#: kdeui/kkeydialog.cpp:332
 #, fuzzy
 msgid "&Action"
 msgstr "&Konum:"
 
-#: kdeui/kkeydialog.cpp:392
+#: kdeui/kkeydialog.cpp:366
+msgid "Choose a key for the selected action"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:393
 msgid "&No key"
 msgstr ""
 
-#: kdeui/kkeydialog.cpp:400
+#: kdeui/kkeydialog.cpp:401
 #, fuzzy
 msgid "&Default key"
 msgstr "&Öntanýmlý"
 
-#: kdeui/kkeydialog.cpp:408
+#: kdeui/kkeydialog.cpp:409
 msgid "&Custom key"
 msgstr ""
 
-#: kdeui/kmenubar.cpp:206 kdeui/ktoolbar.cpp:831
+#: kdeui/kkeydialog.cpp:472
+msgid "No keys defined"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:474
+msgid "Not configurable"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:530
+msgid "Global Keys"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:562
+msgid "Keys"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:637 kdeui/kkeydialog.cpp:976
+msgid "Attention : key already used"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:926
+msgid "Press the wanted key"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:949
+msgid "Undefined key"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:999
+msgid "Return to end edition"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1009
+msgid "Incorrect key"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1035
+#, c-format
+msgid ""
+"The %s key combination has already been allocated\n"
+"to the global %s action.\n"
+"\n"
+"Please choose a unique key combination."
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1039
+msgid "Global key conflict"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1062
+#, c-format
+msgid ""
+"The %s key combination has already been allocated\n"
+"to the standard %s action.\n"
+"\n"
+"Please choose a unique key combination."
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1066
+msgid "Standard key conflict"
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1086
+#, c-format
+msgid ""
+"The %s key combination has already been allocated\n"
+"to the %s action.\n"
+"\n"
+"Please choose a unique key combination."
+msgstr ""
+
+#: kdeui/kkeydialog.cpp:1090
+msgid "Key conflict"
+msgstr ""
+
+#: kdeui/kmenubar.cpp:281 kdeui/ktoolbar.cpp:856
 msgid "Top"
 msgstr "Üst"
 
-#: kdeui/kmenubar.cpp:207 kdeui/ktoolbar.cpp:833
+#: kdeui/kmenubar.cpp:282 kdeui/ktoolbar.cpp:858
 msgid "Bottom"
 msgstr "Alt"
 
-#: kdeui/kmenubar.cpp:208 kdeui/ktoolbar.cpp:834
+#: kdeui/kmenubar.cpp:283 kdeui/ktoolbar.cpp:859
 msgid "Floating"
 msgstr "Yuvarlanýyor"
 
-#: kdeui/kmenubar.cpp:353 kdeui/kmenubar.cpp:608 kdeui/ktoolbar.cpp:2137
+#: kdeui/kmenubar.cpp:432 kdeui/kmenubar.cpp:774 kdeui/ktoolbar.cpp:2170
 msgid "Float"
 msgstr "Float"
 
-#: kdeui/kmenubar.cpp:577 kdeui/ktoolbar.cpp:2118
+#: kdeui/kmenubar.cpp:726 kdeui/ktoolbar.cpp:2151
 msgid "UnFloat"
 msgstr "UnFloat"
 
@@ -807,15 +891,15 @@ msgstr "&Öntanýmlý"
 msgid "Quickhelp"
 msgstr ""
 
-#: kdeui/ktoolbar.cpp:266 kdeui/ktoolbar.cpp:317
+#: kdeui/ktoolbar.cpp:284 kdeui/ktoolbar.cpp:336
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
 msgstr "KToolBarButton: pixel boþ, dosya kayýp herhalde..."
 
-#: kdeui/ktoolbar.cpp:830
+#: kdeui/ktoolbar.cpp:855
 msgid "Left"
 msgstr "Sol"
 
-#: kdeui/ktoolbar.cpp:832
+#: kdeui/ktoolbar.cpp:857
 msgid "Right"
 msgstr "Sað"
 
@@ -824,19 +908,19 @@ msgstr "Sað"
 msgid "Page %d of %d"
 msgstr "%d'nin %d sayfasý"
 
-#: kfile/bookmark.cpp:246
-msgid "<!-- Do not edit this file -->"
-msgstr "<!-- Bu dosyayý düzenlemeyiniz -->"
-
-#: kfile/kcombiview.cpp:80
+#: kfile/kcombiview.cpp:81
 msgid "Folders:"
 msgstr "Dizinler:"
 
-#: kfile/kcombiview.cpp:81
+#: kfile/kcombiview.cpp:82
 msgid "Contents:"
 msgstr "Ýçerik:"
 
-#: kab/addressbook.cc:1048 kfile/kfiledetaillist.cpp:36
+#: kfile/kfilebookmark.cpp:246
+msgid "<!-- Do not edit this file -->"
+msgstr "<!-- Bu dosyayý düzenlemeyiniz -->"
+
+#: kab/addressbook.cc:1055 kfile/kfiledetaillist.cpp:36
 msgid "Name"
 msgstr "Ýsim:"
 
@@ -904,11 +988,11 @@ msgstr "&Filtre"
 msgid "Show hidden"
 msgstr "Gizliyi göster"
 
-#: kfile/kfiledialog.cpp:500
+#: kfile/kfiledialog.cpp:504
 msgid "Error: Not local file"
 msgstr "Hata: Yerel dosya deðil"
 
-#: kfile/kfiledialog.cpp:501
+#: kfile/kfiledialog.cpp:505
 msgid ""
 "The specified directory is not a local directory\n"
 "But the application accepts just local files."
@@ -916,11 +1000,11 @@ msgstr ""
 "Belirtilen dizin yerel bir dizin deðil.\n"
 "Bu uygulama yalnýzca yerel dizinler ile çalýþýr."
 
-#: kfile/kfiledialog.cpp:515 kfile/kfiledialog.cpp:621
+#: kfile/kfiledialog.cpp:519 kfile/kfiledialog.cpp:624
 msgid "Error: Cannot Open Directory"
 msgstr "Hata: Dizin Açýlamýyor"
 
-#: kfile/kfiledialog.cpp:516
+#: kfile/kfiledialog.cpp:520
 msgid ""
 "The specified directory does not exist\n"
 "or was not readable."
@@ -928,68 +1012,73 @@ msgstr ""
 "Bu belirtilen dizin yok yada\n"
 "okunamaz."
 
-#: kfile/kfiledialog.cpp:518 kfile/kfiledialog.cpp:624
+#: kfile/kfiledialog.cpp:522 kfile/kfiledialog.cpp:627
 msgid "Dismiss"
 msgstr "Vazgeç"
 
-#: kfile/kfiledialog.cpp:570 kfile/kfiledialog.cpp:1373 po/texts.cpp:77
+#: kfile/kfiledialog.cpp:573 kfile/kfiledialog.cpp:1392 po/texts.cpp:77
 msgid "Save As"
 msgstr "Farklý Kaydet"
 
-#: kfile/kfiledialog.cpp:593
+#: kfile/kfiledialog.cpp:596
 msgid "Root Directory"
 msgstr "Kök Dizini"
 
-#: kfile/kfiledialog.cpp:622
+#: kfile/kfiledialog.cpp:625
 msgid "The specified directory does not exist or was not readable."
 msgstr "Belirtilen dizin yok yada okunamýyor."
 
-#: kfile/kfiledialog.cpp:872
+#: kfile/kfiledialog.cpp:886
 msgid "Create new directory in: "
 msgstr "Ýçinde yeni dizin yarat: "
 
-#: kfile/kfiledialog.cpp:875
+#: kfile/kfiledialog.cpp:889
 msgid "New Directory"
 msgstr "Yeni Dizin"
 
-#: kfile/kfiledialog.cpp:947
+#: kfile/kfiledialog.cpp:961
 msgid "Add to bookmarks"
 msgstr "Adreslere ekle"
 
-#: kfile/kfiledialog.cpp:1233
+#: kfile/kfiledialog.cpp:1251
 msgid "Choose Directory"
 msgstr "Dizin Seç"
 
-#: kfile/kfiledialog.cpp:1301
+#: kfile/kfiledialog.cpp:1319
 msgid "directory"
 msgstr "dizin"
 
-#: kfile/kfiledialog.cpp:1303
+#: kfile/kfiledialog.cpp:1321
 msgid "directories"
 msgstr "dizinler"
 
-#: kfile/kfiledialog.cpp:1305 kfile/kpreview.cpp:326
+#: kfile/kfiledialog.cpp:1323 kfile/kpreview.cpp:326
 msgid "file"
 msgstr "dosya"
 
-#: kfile/kfiledialog.cpp:1307
+#: kfile/kfiledialog.cpp:1325
 msgid "files"
 msgstr "dosyalar"
 
-#: kfile/kfiledialog.cpp:1309
+#: kfile/kfiledialog.cpp:1327
 #, c-format
 msgid "%d %s and %d %s"
 msgstr "%d %s ve %d %s"
 
-#: kfile/kfiledialog.cpp:1319
+#: kfile/kfiledialog.cpp:1337
 msgid "one directory"
 msgstr "bir dizin"
 
-#: kfile/kfiledialogconf.cpp:41
+#: kfile/kfiledialog.cpp:1339
+#, fuzzy, c-format
+msgid "%d directories"
+msgstr "dizinler"
+
+#: kfile/kfiledialogconf.cpp:42
 msgid "Look and Feel"
 msgstr "Bak ve Hisset"
 
-#: kfile/kfiledialogconf.cpp:43
+#: kfile/kfiledialogconf.cpp:44
 msgid ""
 "KDE File Selector by:\n"
 "\n"
@@ -1011,53 +1100,58 @@ msgstr ""
 "Stephan Kulow <coolo@kde.org>\n"
 "ve Daniel Grana <grana@ie.iwi.unibe.ch>"
 
-#: kfile/kfiledialogconf.cpp:56 po/texts.cpp:32
+#: kfile/kfiledialogconf.cpp:57 po/texts.cpp:32
 msgid "About"
 msgstr "Hakkýnda"
 
-#: kfile/kfiledialogconf.cpp:70
+#: kfile/kfiledialogconf.cpp:71
 msgid "View style"
 msgstr "Türü Gör"
 
-#: kfile/kfiledialogconf.cpp:74
+#: kfile/kfiledialogconf.cpp:75
 msgid "Show Short View"
 msgstr "Kýsa Görüþ Göster"
 
-#: kfile/kfiledialogconf.cpp:80
+#: kfile/kfiledialogconf.cpp:81
 msgid "Show Detail View"
 msgstr "Detaylý Görüþ Göster"
 
-#: kfile/kfiledialogconf.cpp:89
+#: kfile/kfiledialogconf.cpp:90
 msgid "Misc"
 msgstr "Misc"
 
-#: kfile/kfiledialogconf.cpp:95
+#: kfile/kfiledialogconf.cpp:96
 msgid "Show Filter"
 msgstr "Filtre Göster"
 
-#: kfile/kfiledialogconf.cpp:101
+#: kfile/kfiledialogconf.cpp:102
 msgid "Show List Labels"
 msgstr "Liste Etiketlerini Göster"
 
-#: kfile/kfiledialogconf.cpp:107
+#: kfile/kfiledialogconf.cpp:108
 msgid "Show Hidden"
 msgstr "Gizlileri Göster"
 
-#: kfile/kfiledialogconf.cpp:113
+#: kfile/kfiledialogconf.cpp:114
 msgid "Show Status Line"
 msgstr "Durum Çizelgesini Göster"
 
-#: kfile/kfiledialogconf.cpp:119
+#: kfile/kfiledialogconf.cpp:120
 msgid "Use single Click"
 msgstr "Tek týklama kullan"
 
-#: kfile/kfiledialogconf.cpp:125
+#: kfile/kfiledialogconf.cpp:126
 msgid "Mix dirs and files"
 msgstr "Dizinleri ve dosylarý karýþtýr"
 
-#: kfile/kfiledialogconf.cpp:131
+#: kfile/kfiledialogconf.cpp:132
 msgid "Keep dirs first"
 msgstr "Dizinler önce"
+
+#: kfile/kfilefilter.cpp:35
+#, fuzzy
+msgid "*|All Files"
+msgstr "Dosyalar"
 
 #: kfile/kfileinfo.cpp:97 kfile/kfileinfo.cpp:101
 msgid "unknown"
@@ -1148,8 +1242,8 @@ msgstr ""
 "%s dosyasýna sahip deðiliniz\n"
 "Onaylama yapýlamadý"
 
-#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210 kio/kmimetypes.cc:61
-#: kio/kmimetypes.cc:88 kio/kmimetypes.cc:134 kio/kregfactories.cc:75
+#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210 kio/kmimetypes.cc:62
+#: kio/kmimetypes.cc:89 kio/kmimetypes.cc:135 kio/kregfactories.cc:75
 #: kio/krun.cc:105 kio/kservices.cc:114
 msgid "KFM Error"
 msgstr "KFM Hatasý"
@@ -1163,13 +1257,95 @@ msgstr ""
 "%s dosyasý deðiþtirilmiþ\n"
 "Onaylama yapýlamadý"
 
-#: kab/widget.cc:157 kab/widget.cc:1149 kab/widget.cc:1207 kab/widget.cc:1218
-#: kab/widget.cc:1921 kab/widget.cc:2013 kab/widget.cc:2097 kab/widget.cc:2142
-#: kab/widget.cc:2153 kio/kio_error.cc:118 kio/kio_paste.cc:48
+#: kspell/ksconfig.cpp:66
+msgid "Create Root/Affix combinations not in the dictionary"
+msgstr ""
+
+#: kspell/ksconfig.cpp:75
+msgid "Consider run-together words as spelling errors"
+msgstr ""
+
+#: kspell/ksconfig.cpp:92
+#, fuzzy
+msgid "Dictionary"
+msgstr "dizin"
+
+#: kspell/ksconfig.cpp:140
+msgid "Encoding:"
+msgstr ""
+
+#: kspell/ksconfig.cpp:147
+#, fuzzy
+msgid "Latin1"
+msgstr "&Konum:"
+
+#: kspell/ksconfig.cpp:148
+msgid "7-Bit/ASCII"
+msgstr ""
+
+#: kspell/ksconfig.cpp:292
+msgid "English"
+msgstr ""
+
+#: kspell/ksconfig.cpp:298
+msgid "Spanish"
+msgstr ""
+
+#: kspell/ksconfig.cpp:304
+#, fuzzy
+msgid "German"
+msgstr "roman"
+
+#: kspell/ksconfig.cpp:311
+msgid "Brazilian Portuguese"
+msgstr ""
+
+#: kio/kio_cache.cc:422 kspell/ksconfig.cpp:317
+#, fuzzy
+msgid "Unknown"
+msgstr "Bilinmeyen"
+
+#: kspell/ksconfig.cpp:348
+#, fuzzy
+msgid "ISpell Default"
+msgstr "Öntanýmlý"
+
+#: kspell/kspelldlg.cpp:58
+msgid "Misspelled Word:"
+msgstr ""
+
+#: kspell/kspelldlg.cpp:68
+#, fuzzy
+msgid "Replacement:"
+msgstr "Deðiþtir"
+
+#: kspell/kspelldlg.cpp:77
+msgid "Suggestions:"
+msgstr ""
+
+#: kspell/kspelldlg.cpp:88
+msgid "Ignore"
+msgstr ""
+
+#: kspell/kspelldlg.cpp:99
+msgid "Ignore All"
+msgstr ""
+
+#: kspell/kspelldlg.cpp:120 po/texts.cpp:86
+msgid "Add"
+msgstr "Ekle"
+
+#: kspell/kspelldlg.cpp:166 po/texts.cpp:100
+msgid "Stop"
+msgstr "Dur"
+
+#: kab/widget.cc:162 kab/widget.cc:1164 kab/widget.cc:1222 kab/widget.cc:1233
+#: kab/widget.cc:1936 kab/widget.cc:2028 kab/widget.cc:2112 kab/widget.cc:2157
+#: kab/widget.cc:2168 kio/kio_error.cc:118 kio/kio_paste.cc:48
 #: kio/kio_paste.cc:60 kio/kio_paste.cc:75 kio/kio_paste.cc:87
-#: kio/kio_rename_dlg.cc:217 kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:487
-#: kio/kmimetypes.cc:505 kio/kmimetypes.cc:519 kio/kmimetypes.cc:566
-#: kio/kmimetypes.cc:599 kio/kmimetypes.cc:659 kio/kmimetypes.cc:691
+#: kio/kio_rename_dlg.cc:217 kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:488
+#: kio/kmimetypes.cc:506 kio/kmimetypes.cc:520 kio/kmimetypes.cc:567
+#: kio/kmimetypes.cc:600 kio/kmimetypes.cc:660 kio/kmimetypes.cc:692
 #: kio/krun.cc:40 kio/krun.cc:512 po/texts.cpp:24
 msgid "Error"
 msgstr "Hata"
@@ -1326,10 +1502,6 @@ msgstr "Seçenekler"
 msgid "Remove"
 msgstr "Sil"
 
-#: po/texts.cpp:86
-msgid "Add"
-msgstr "Ekle"
-
 #: po/texts.cpp:87
 msgid "Change"
 msgstr "Deðiþtir"
@@ -1378,10 +1550,6 @@ msgstr "Bilgi"
 msgid "Browse..."
 msgstr "Gözat..."
 
-#: po/texts.cpp:100
-msgid "Stop"
-msgstr "Dur"
-
 #: po/texts.cpp:101
 msgid "&Remove"
 msgstr "&Sil"
@@ -1426,7 +1594,7 @@ msgstr "Yeniden Y&ükle"
 msgid "Files"
 msgstr "Dosyalar"
 
-#: kab/widget.cc:1369 kab/widget.cc:1411 po/texts.cpp:112
+#: kab/widget.cc:1384 kab/widget.cc:1426 po/texts.cpp:112
 msgid "Continue"
 msgstr "Devam et"
 
@@ -1499,7 +1667,7 @@ msgstr "<< &önceki"
 msgid "&About..."
 msgstr "&Hakkýnda..."
 
-#: kab/addressbook.cc:88
+#: kab/addressbook.cc:90
 msgid ""
 "The directory where user specific data for the\n"
 "addressbook application is stored does not exist.\n"
@@ -1507,11 +1675,11 @@ msgid ""
 "         "
 msgstr ""
 
-#: kab/addressbook.cc:92
+#: kab/addressbook.cc:94
 msgid "and store all local files in this directory."
 msgstr ""
 
-#: kab/addressbook.cc:96
+#: kab/addressbook.cc:98
 msgid ""
 "The directory could not be created.\n"
 "Probably you do not have used KDE before, so\n"
@@ -1520,187 +1688,187 @@ msgid ""
 "kfm once to automatically create it."
 msgstr ""
 
-#: kab/addressbook.cc:104
+#: kab/addressbook.cc:106
 msgid "The directory has been created.\n"
 msgstr ""
 
-#: kab/addressbook.cc:138
+#: kab/addressbook.cc:140
 msgid "No addressbook database file, creating new one."
 msgstr ""
 
-#: kab/addressbook.cc:157
+#: kab/addressbook.cc:159
 msgid "Tried to load database for creating backup, but failed"
 msgstr ""
 
-#: kab/addressbook.cc:192
+#: kab/addressbook.cc:194
 msgid "Unable to save to backup file."
 msgstr ""
 
-#: kab/addressbook.cc:198
+#: kab/addressbook.cc:200
 msgid "Unable to reset filename after creating backup."
 msgstr ""
 
-#: kab/addressbook.cc:203
+#: kab/addressbook.cc:205
 msgid "Unable to create backup file"
 msgstr ""
 
-#: kab/addressbook.cc:256
+#: kab/addressbook.cc:263
 msgid "Unable to insert \""
 msgstr ""
 
-#: kab/addressbook.cc:257
+#: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
 msgstr ""
 
-#: kab/addressbook.cc:659
+#: kab/addressbook.cc:666
 msgid "Unable to add a new entry with available key."
 msgstr ""
 
-#: kab/addressbook.cc:665
+#: kab/addressbook.cc:672
 msgid "Cannot find previously created section."
 msgstr ""
 
-#: kab/addressbook.cc:696
+#: kab/addressbook.cc:703
 msgid "Unable to create key-value-map for entry."
 msgstr ""
 
-#: kab/addressbook.cc:925
+#: kab/addressbook.cc:932
 msgid "entry without name"
 msgstr ""
 
-#: kab/addressbook.cc:943
+#: kab/addressbook.cc:950
 msgid ""
 "Unable to create new database file (probably permission denied), exiting."
 msgstr ""
 
-#: kab/addressbook.cc:949
+#: kab/addressbook.cc:956
 msgid "Cannot create configuration section, exiting."
 msgstr ""
 
-#: kab/addressbook.cc:954
+#: kab/addressbook.cc:961
 msgid "Cannot create entries section, exiting."
 msgstr ""
 
-#: kab/addressbook.cc:959
+#: kab/addressbook.cc:966
 msgid "Unable to find previously created section, exiting."
 msgstr ""
 
-#: kab/addressbook.cc:967
+#: kab/addressbook.cc:974
 msgid "Cannot save newly created database."
 msgstr ""
 
-#: kab/addressbook.cc:973
+#: kab/addressbook.cc:980
 msgid "Cannot erase database contents."
 msgstr ""
 
-#: kab/addressbook.cc:1052
+#: kab/addressbook.cc:1059
 msgid "First name"
 msgstr ""
 
-#: kab/addressbook.cc:1056
+#: kab/addressbook.cc:1063
 msgid "Additional name"
 msgstr ""
 
-#: kab/addressbook.cc:1060
+#: kab/addressbook.cc:1067
 msgid "Name prefix"
 msgstr ""
 
-#: kab/addressbook.cc:1064
+#: kab/addressbook.cc:1071
 msgid "Formatted name"
 msgstr ""
 
-#: kab/addressbook.cc:1068
+#: kab/addressbook.cc:1075
 #, fuzzy
 msgid "Comment"
 msgstr "Ýçerik"
 
-#: kab/addressbook.cc:1072
+#: kab/addressbook.cc:1079
 msgid "Organization"
 msgstr ""
 
-#: kab/addressbook.cc:1076
+#: kab/addressbook.cc:1083
 #, fuzzy
 msgid "Unit"
 msgstr "Ýsimsiz"
 
-#: kab/addressbook.cc:1080
+#: kab/addressbook.cc:1087
 msgid "Subunit"
 msgstr ""
 
-#: kab/addressbook.cc:1084
+#: kab/addressbook.cc:1091
 #, fuzzy
 msgid "Title"
 msgstr "dosya"
 
-#: kab/addressbook.cc:1088
+#: kab/addressbook.cc:1095
 msgid "Role"
 msgstr ""
 
-#: kab/addressbook.cc:1092
+#: kab/addressbook.cc:1099
 msgid "Birthday"
 msgstr ""
 
-#: kab/addressbook.cc:1096
+#: kab/addressbook.cc:1103
 msgid "Talk addresses"
 msgstr ""
 
-#: kab/addressbook.cc:1100
+#: kab/addressbook.cc:1107
 msgid "Delivery label"
 msgstr ""
 
-#: kab/addressbook.cc:1104
+#: kab/addressbook.cc:1111
 msgid "Email address"
 msgstr ""
 
-#: kab/addressbook.cc:1108
+#: kab/addressbook.cc:1115
 msgid "Second email address"
 msgstr ""
 
-#: kab/addressbook.cc:1112
+#: kab/addressbook.cc:1119
 msgid "Third email address"
 msgstr ""
 
-#: kab/addressbook.cc:1116
+#: kab/addressbook.cc:1123
 msgid "Email addresses"
 msgstr ""
 
-#: kab/addressbook.cc:1120
+#: kab/addressbook.cc:1127
 msgid "Address"
 msgstr ""
 
-#: kab/addressbook.cc:1124
+#: kab/addressbook.cc:1131
 msgid "City/Town"
 msgstr ""
 
-#: kab/addressbook.cc:1128
+#: kab/addressbook.cc:1135
 msgid "Telephone"
 msgstr ""
 
-#: kab/addressbook.cc:1132
+#: kab/addressbook.cc:1139
 msgid "Fax number"
 msgstr ""
 
-#: kab/addressbook.cc:1136
+#: kab/addressbook.cc:1143
 msgid "Modem number"
 msgstr ""
 
-#: kab/addressbook.cc:1140
+#: kab/addressbook.cc:1147
 msgid "Homepage URL"
 msgstr ""
 
-#: kab/addressbook.cc:1144
+#: kab/addressbook.cc:1151
 msgid "Zip/postal code"
 msgstr ""
 
-#: kab/addressbook.cc:1148
+#: kab/addressbook.cc:1155
 msgid "State/province"
 msgstr ""
 
-#: kab/addressbook.cc:1152
+#: kab/addressbook.cc:1159
 msgid "Country"
 msgstr ""
 
-#: kab/addressbook.cc:1319
+#: kab/addressbook.cc:1326
 msgid "(unnamed entry)"
 msgstr ""
 
@@ -1740,17 +1908,17 @@ msgid "Address:"
 msgstr ""
 
 #: kab/editentry.cc:104
-msgid "Zip/postal code:"
+msgid "Town/City:"
 msgstr ""
 
 #: kab/editentry.cc:105
-msgid "Town:"
-msgstr ""
-
-#: kab/editentry.cc:106
 #, fuzzy
 msgid "State:"
 msgstr "Tarih:"
+
+#: kab/editentry.cc:106
+msgid "Zip/Postal Code:"
+msgstr ""
 
 #: kab/editentry.cc:107
 msgid "Country:"
@@ -1765,16 +1933,17 @@ msgid "Organization:"
 msgstr ""
 
 #: kab/editentry.cc:146
-msgid "Org Unit:"
-msgstr ""
+#, fuzzy
+msgid "Department:"
+msgstr "Deðiþtir"
 
 #: kab/editentry.cc:147
-msgid "Org Subunit:"
+msgid "Sub-Department:"
 msgstr ""
 
 #: kab/editentry.cc:148
 #, fuzzy
-msgid "Role:"
+msgid "Job/Role:"
 msgstr "Dizinler:"
 
 #: kab/editentry.cc:169
@@ -1811,9 +1980,8 @@ msgid "&Contact"
 msgstr "&Ýçerik"
 
 #: kab/editentry.cc:239
-#, fuzzy
-msgid "Comment:"
-msgstr "Ýçerik:"
+msgid "Additional Comment:"
+msgstr ""
 
 #: kab/editentry.cc:246
 msgid "Birthday:"
@@ -1827,7 +1995,7 @@ msgstr ""
 msgid "O&thers"
 msgstr ""
 
-#: kab/kabapi.cc:134
+#: kab/kabapi.cc:138
 msgid "Your new entry could not be added."
 msgstr ""
 
@@ -1835,11 +2003,11 @@ msgstr ""
 msgid "search results"
 msgstr ""
 
-#: kab/widget.cc:139
+#: kab/widget.cc:144
 msgid "Conversion problem"
 msgstr ""
 
-#: kab/widget.cc:140
+#: kab/widget.cc:145
 msgid ""
 "Kab could not convert your database to the\n"
 "current file format.\n"
@@ -1847,17 +2015,17 @@ msgid ""
 "supported."
 msgstr ""
 
-#: kab/widget.cc:158
+#: kab/widget.cc:163
 msgid ""
 "The application saved the last current entry,\n"
 "but this entry does not exist anymore."
 msgstr ""
 
-#: kab/widget.cc:224
+#: kab/widget.cc:229
 msgid "kab: Removed bug warning"
 msgstr ""
 
-#: kab/widget.cc:225
+#: kab/widget.cc:230
 msgid ""
 "The version of kab you used before had an\n"
 "error regarding the upgrading of the database\n"
@@ -1867,30 +2035,30 @@ msgid ""
 "its default settings."
 msgstr ""
 
-#: kab/widget.cc:243 kab/widget.cc:307 kab/widget.cc:315
+#: kab/widget.cc:248 kab/widget.cc:312 kab/widget.cc:320
 msgid "File handling error"
 msgstr ""
 
-#: kab/widget.cc:244
+#: kab/widget.cc:249
 msgid "Unable to open database file r/w."
 msgstr ""
 
-#: kab/widget.cc:252
+#: kab/widget.cc:257
 msgid "Email storage conversion"
 msgstr ""
 
-#: kab/widget.cc:253
+#: kab/widget.cc:258
 msgid ""
 "Kab will move all your email addresses to\n"
 "the new style supporting unlimited numbers\n"
 "of email addresses per entry."
 msgstr ""
 
-#: kab/widget.cc:286
+#: kab/widget.cc:291
 msgid "kab database update"
 msgstr ""
 
-#: kab/widget.cc:287
+#: kab/widget.cc:292
 msgid ""
 "Please note that kab now supports some new\n"
 "fields in its addresses. These new fields\n"
@@ -1902,328 +2070,328 @@ msgid ""
 "entries to make use of it."
 msgstr ""
 
-#: kab/widget.cc:308
+#: kab/widget.cc:313
 #, fuzzy
 msgid "Could not save database after update."
 msgstr "Belge kaydedilemiyor\n"
 
-#: kab/widget.cc:316
+#: kab/widget.cc:321
 msgid "Unable to reopen database file r/o."
 msgstr ""
 
-#: kab/widget.cc:477
+#: kab/widget.cc:482
 msgid "first entry"
 msgstr ""
 
-#: kab/widget.cc:478
+#: kab/widget.cc:483
 #, fuzzy
 msgid "previous entry"
 msgstr "Ö&nceki"
 
-#: kab/widget.cc:479
+#: kab/widget.cc:484
 #, fuzzy
 msgid "next entry"
 msgstr "bir dizin"
 
-#: kab/widget.cc:480
+#: kab/widget.cc:485
 msgid "last entry"
 msgstr ""
 
-#: kab/widget.cc:481
+#: kab/widget.cc:486
 msgid "search entries"
 msgstr ""
 
-#: kab/widget.cc:482
+#: kab/widget.cc:487
 msgid "add a new entry"
 msgstr ""
 
-#: kab/widget.cc:483
+#: kab/widget.cc:488
 msgid "change this entry"
 msgstr ""
 
-#: kab/widget.cc:484
+#: kab/widget.cc:489
 msgid "remove this entry"
 msgstr ""
 
-#: kab/widget.cc:523
+#: kab/widget.cc:528
 msgid "Switched to first entry."
 msgstr ""
 
-#: kab/widget.cc:555
+#: kab/widget.cc:560
 msgid "Switched to last entry."
 msgstr ""
 
-#: kab/widget.cc:616 kab/widget.cc:670 kab/widget.cc:845 kab/widget.cc:907
+#: kab/widget.cc:621 kab/widget.cc:678 kab/widget.cc:860 kab/widget.cc:922
 msgid "Sorry, file changed."
 msgstr ""
 
-#: kab/widget.cc:620 kab/widget.cc:674 kab/widget.cc:911
+#: kab/widget.cc:625 kab/widget.cc:682 kab/widget.cc:926
 #, fuzzy
 msgid "Permission denied."
 msgstr "Ýzinler"
 
-#: kab/widget.cc:631
+#: kab/widget.cc:636
 #, fuzzy
 msgid "Remove entry?"
 msgstr "Sil"
 
-#: kab/widget.cc:632
+#: kab/widget.cc:637
 msgid "Really remove this entry?"
 msgstr ""
 
-#: kab/widget.cc:650
+#: kab/widget.cc:655
 msgid "Entry deleted."
 msgstr ""
 
-#: kab/widget.cc:684
+#: kab/widget.cc:694
 msgid "Added a new entry."
 msgstr ""
 
-#: kab/widget.cc:806
+#: kab/widget.cc:821
 msgid "Opened browser window."
 msgstr ""
 
-#: kab/widget.cc:809
+#: kab/widget.cc:824
 msgid "No URL."
 msgstr ""
 
-#: kab/widget.cc:813 kab/widget.cc:982 kab/widget.cc:1161 kab/widget.cc:1774
-#: kab/widget.cc:1952 kab/widget.cc:2036
+#: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1789
+#: kab/widget.cc:1967 kab/widget.cc:2051
 msgid "No entries."
 msgstr ""
 
-#: kab/widget.cc:818
+#: kab/widget.cc:833
 msgid "The filemanager is busy, please try again."
 msgstr ""
 
-#: kab/widget.cc:838
+#: kab/widget.cc:853
 msgid ""
 "The addressbook file is currently\n"
 "locked by another application.\n"
 "kab cannot save it."
 msgstr ""
 
-#: kab/widget.cc:855
+#: kab/widget.cc:870
 msgid "Database saved successfully."
 msgstr ""
 
-#: kab/widget.cc:860
+#: kab/widget.cc:875
 msgid "kab: File error"
 msgstr ""
 
-#: kab/widget.cc:860
+#: kab/widget.cc:875
 #, fuzzy
 msgid "Could not save database."
 msgstr "Belge kaydedilemiyor\n"
 
-#: kab/widget.cc:861
+#: kab/widget.cc:876
 #, fuzzy
 msgid "&Retry"
 msgstr "Toparla"
 
-#: kab/widget.cc:861
+#: kab/widget.cc:876
 msgid "&Ignore"
 msgstr ""
 
-#: kab/widget.cc:864
+#: kab/widget.cc:879
 msgid "Saving cancelled.\n"
 msgstr ""
 
-#: kab/widget.cc:930
+#: kab/widget.cc:945
 msgid "Entry changed."
 msgstr ""
 
-#: kab/widget.cc:1026
+#: kab/widget.cc:1041
 msgid "Results"
 msgstr ""
 
-#: kab/widget.cc:1026
+#: kab/widget.cc:1041
 msgid "No entry matches this."
 msgstr ""
 
-#: kab/widget.cc:1035 kab/widget.cc:1681 kab/widget.cc:1816 kab/widget.cc:1981
-#: kab/widget.cc:2004 kab/widget.cc:2061
+#: kab/widget.cc:1050 kab/widget.cc:1696 kab/widget.cc:1831 kab/widget.cc:1996
+#: kab/widget.cc:2019 kab/widget.cc:2076
 msgid "Rejected."
 msgstr ""
 
-#: kab/widget.cc:1051
+#: kab/widget.cc:1066
 msgid "Search results window closed."
 msgstr ""
 
-#: kab/widget.cc:1150
+#: kab/widget.cc:1165
 msgid "The talk command must be configured before!"
 msgstr ""
 
-#: kab/widget.cc:1155
+#: kab/widget.cc:1170
 msgid "Talk configuration"
 msgstr ""
 
-#: kab/widget.cc:1156
+#: kab/widget.cc:1171
 msgid "Please configure the parameters for the talk command."
 msgstr ""
 
-#: kab/widget.cc:1169
+#: kab/widget.cc:1184
 msgid "No talk address."
 msgstr ""
 
-#: kab/widget.cc:1177
+#: kab/widget.cc:1192
 msgid "kab: Talk addresses"
 msgstr ""
 
-#: kab/widget.cc:1178
+#: kab/widget.cc:1193
 msgid "Available talk addresses:"
 msgstr ""
 
-#: kab/widget.cc:1184 kab/widget.cc:1912
+#: kab/widget.cc:1199 kab/widget.cc:1927
 #, fuzzy
 msgid "Cancelled."
 msgstr "Vazgeç"
 
-#: kab/widget.cc:1207
+#: kab/widget.cc:1222
 msgid "The talk command parameters are wrong."
 msgstr ""
 
-#: kab/widget.cc:1219
+#: kab/widget.cc:1234
 msgid ""
 "Talk command failed.\n"
 "Make sure you did setup your talk command and parameter!"
 msgstr ""
 
-#: kab/widget.cc:1222
+#: kab/widget.cc:1237
 msgid "Talk program started."
 msgstr ""
 
-#: kab/widget.cc:1270
+#: kab/widget.cc:1285
 msgid "Attention: printing is still experimental!"
 msgstr ""
 
-#: kab/widget.cc:1366 kab/widget.cc:1408
+#: kab/widget.cc:1381 kab/widget.cc:1423
 msgid "Page size problem"
 msgstr ""
 
-#: kab/widget.cc:1367 kab/widget.cc:1409
+#: kab/widget.cc:1382 kab/widget.cc:1424
 msgid ""
 "The fields you requested to print do\n"
 "not fit into the page width."
 msgstr ""
 
-#: kab/widget.cc:1586 kab/widget.cc:2015
+#: kab/widget.cc:1601 kab/widget.cc:2030
 msgid "Printing finished successfully."
 msgstr ""
 
-#: kab/widget.cc:1612
+#: kab/widget.cc:1627
 msgid "kab: Email addresses"
 msgstr ""
 
-#: kab/widget.cc:1613
+#: kab/widget.cc:1628
 msgid "Available email addresses:"
 msgstr ""
 
-#: kab/widget.cc:1678
+#: kab/widget.cc:1693
 msgid "kab: Select fields to copy"
 msgstr ""
 
-#: kab/widget.cc:1688
+#: kab/widget.cc:1703
 msgid "Nothing selected."
 msgstr ""
 
-#: kab/widget.cc:1746 kab/widget.cc:1998
+#: kab/widget.cc:1761 kab/widget.cc:2013
 msgid "KDE addressbook overview"
 msgstr ""
 
-#: kab/widget.cc:1790
+#: kab/widget.cc:1805
 msgid "Name-Email-Link (!!)"
 msgstr ""
 
-#: kab/widget.cc:1792
+#: kab/widget.cc:1807
 #, fuzzy
 msgid "Select table columns"
 msgstr "Simge Seç"
 
-#: kab/widget.cc:1797
+#: kab/widget.cc:1812
 msgid "Nothing to export."
 msgstr ""
 
-#: kab/widget.cc:1826
+#: kab/widget.cc:1841
 msgid "Email link"
 msgstr ""
 
-#: kab/widget.cc:1901
+#: kab/widget.cc:1916
 msgid "Could not find the users home directory."
 msgstr ""
 
-#: kab/widget.cc:1902
+#: kab/widget.cc:1917
 msgid "Intern error!"
 msgstr ""
 
-#: kab/widget.cc:1922
+#: kab/widget.cc:1937
 msgid "Could not open the file to create the HTML table."
 msgstr ""
 
-#: kab/widget.cc:1958
+#: kab/widget.cc:1973
 msgid "Printing cancelled."
 msgstr ""
 
-#: kab/widget.cc:1974
+#: kab/widget.cc:1989
 msgid "kab: Select columns for printing"
 msgstr ""
 
-#: kab/widget.cc:1987
+#: kab/widget.cc:2002
 msgid "Nothing to print."
 msgstr ""
 
-#: kab/widget.cc:1999
+#: kab/widget.cc:2014
 msgid "Page <p>"
 msgstr ""
 
-#: kab/widget.cc:2000
+#: kab/widget.cc:2015
 msgid "KDE - the professionals choice."
 msgstr ""
 
-#: kab/widget.cc:2013
+#: kab/widget.cc:2028
 msgid "Printing failed!"
 msgstr ""
 
-#: kab/widget.cc:2044
+#: kab/widget.cc:2059
 msgid "Empty email address."
 msgstr ""
 
-#: kab/widget.cc:2063
+#: kab/widget.cc:2078
 msgid "No email address."
 msgstr ""
 
-#: kab/widget.cc:2073
+#: kab/widget.cc:2088
 #, fuzzy
 msgid "Error calling mailer."
 msgstr "Hata: Yerel dosya deðil"
 
-#: kab/widget.cc:2075
+#: kab/widget.cc:2090
 msgid "Mailer called."
 msgstr ""
 
-#: kab/widget.cc:2098
+#: kab/widget.cc:2113
 msgid "The mail command must be configured before!"
 msgstr ""
 
-#: kab/widget.cc:2103
+#: kab/widget.cc:2118
 msgid "Mail configuration"
 msgstr ""
 
-#: kab/widget.cc:2104
+#: kab/widget.cc:2119
 msgid "Please configure the parameters for the email command."
 msgstr ""
 
-#: kab/widget.cc:2142
+#: kab/widget.cc:2157
 msgid "The email command parameters are wrong."
 msgstr ""
 
-#: kab/widget.cc:2154
+#: kab/widget.cc:2169
 msgid ""
 "Email command failed.\n"
 "Make sure you did setup your email command and parameter!"
 msgstr ""
 
-#: kab/widget.cc:2158
+#: kab/widget.cc:2173
 msgid "Mail program started."
 msgstr ""
 
@@ -2248,11 +2416,6 @@ msgstr ""
 #: kio/kio_cache.cc:357
 msgid "Expiration Date"
 msgstr ""
-
-#: kio/kio_cache.cc:422
-#, fuzzy
-msgid "Unknown"
-msgstr "Bilinmeyen"
 
 #: kio/kio_cache.cc:428
 #, fuzzy
@@ -2493,20 +2656,20 @@ msgstr ""
 #: kio/kio_error.cc:118 kio/kio_linedit_dlg.cc:42 kio/kio_openwith.cc:260
 #: kio/kio_pass_dlg.cc:75 kio/kio_paste.cc:48 kio/kio_paste.cc:60
 #: kio/kio_paste.cc:76 kio/kio_paste.cc:87 kio/kio_rename_dlg.cc:217
-#: kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:61 kio/kmimetypes.cc:88
-#: kio/kmimetypes.cc:134 kio/kmimetypes.cc:487 kio/kmimetypes.cc:505
-#: kio/kmimetypes.cc:519 kio/kmimetypes.cc:566 kio/kmimetypes.cc:599
-#: kio/kmimetypes.cc:659 kio/kmimetypes.cc:691 kio/kregfactories.cc:75
+#: kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:62 kio/kmimetypes.cc:89
+#: kio/kmimetypes.cc:135 kio/kmimetypes.cc:488 kio/kmimetypes.cc:506
+#: kio/kmimetypes.cc:520 kio/kmimetypes.cc:567 kio/kmimetypes.cc:600
+#: kio/kmimetypes.cc:660 kio/kmimetypes.cc:692 kio/kregfactories.cc:75
 #: kio/krun.cc:40 kio/krun.cc:105 kio/krun.cc:512 kio/kservices.cc:114
 msgid "Ok"
 msgstr "Peki"
 
-#: kio/kio_job.cc:137
+#: kio/kio_job.cc:184
 #, c-format
 msgid "Mounting %s ..."
 msgstr ""
 
-#: kio/kio_job.cc:157
+#: kio/kio_job.cc:204
 #, c-format
 msgid "Unmounting %s ..."
 msgstr ""
@@ -2552,65 +2715,77 @@ msgstr ""
 "Bu isimde bir belge zaten mevcut\n"
 "Üzerine yazýlsýn mý?"
 
-#: kio/kio_progress_dlg.cc:92 kio/kio_progress_dlg.cc:108
-msgid " Bytes"
+#: kio/kio_progress_dlg.cc:108 kio/kio_progress_dlg.cc:124
+msgid "Bytes"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:97 kio/kio_progress_dlg.cc:113
-msgid " Kb"
+#: kio/kio_progress_dlg.cc:113 kio/kio_progress_dlg.cc:129
+msgid "Kb"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:102 kio/kio_progress_dlg.cc:118
-msgid " Mb"
+#: kio/kio_progress_dlg.cc:118 kio/kio_progress_dlg.cc:134
+msgid "Mb"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:151 kio/kio_progress_dlg.cc:177
+#: kio/kio_progress_dlg.cc:139 kio/kio_progress_dlg.cc:146
+msgid "of"
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:171 kio/kio_progress_dlg.cc:197
 #, fuzzy
 msgid "Stalled"
 msgstr "Tür"
 
-#: kio/kio_progress_dlg.cc:159
+#: kio/kio_progress_dlg.cc:179
 msgid " Bytes/s"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:164
+#: kio/kio_progress_dlg.cc:184
 msgid " Kb/s"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:169
+#: kio/kio_progress_dlg.cc:189
 msgid " Mb/s"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:184
+#: kio/kio_progress_dlg.cc:204
 #, c-format
 msgid "%i seconds"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:190
+#: kio/kio_progress_dlg.cc:210
 #, c-format
 msgid "%i:%i"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:197
+#: kio/kio_progress_dlg.cc:217
 #, c-format
 msgid "%i:%i:%i"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:201
+#: kio/kio_progress_dlg.cc:221
 #, c-format
 msgid "%i%s  Remaining time: %s"
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:207
+#: kio/kio_progress_dlg.cc:227
 #, fuzzy
 msgid "Scanning "
 msgstr "Uyarý"
 
-#: kio/kio_progress_dlg.cc:222
+#: kio/kio_progress_dlg.cc:234
+msgid "From : "
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:238
+msgid "To: "
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:245
 msgid "Creating dir "
 msgstr ""
 
-#: kio/kio_progress_dlg.cc:229
+#: kio/kio_progress_dlg.cc:252
 msgid "Fetching file"
 msgstr ""
 
@@ -2683,23 +2858,23 @@ msgstr ""
 msgid "Permission denied!"
 msgstr "Ýzinler"
 
-#: kio/kmimetypes.cc:61
+#: kio/kmimetypes.cc:62
 msgid "No mime types installed!"
 msgstr ""
 
-#: kio/kmimetypes.cc:85
+#: kio/kmimetypes.cc:86
 msgid "Could not find mime type\n"
 msgstr ""
 
-#: kio/kmimetypes.cc:131
+#: kio/kmimetypes.cc:132
 msgid "The mime type config file "
 msgstr ""
 
-#: kio/kmimetypes.cc:133 kio/kregfactories.cc:74
+#: kio/kmimetypes.cc:134 kio/kregfactories.cc:74
 msgid "does not conatain a MimeType=... entry"
 msgstr ""
 
-#: kio/kmimetypes.cc:486
+#: kio/kmimetypes.cc:487
 #, c-format
 msgid ""
 "The kdelnk file\n"
@@ -2707,7 +2882,7 @@ msgid ""
 "has no Type=... entry"
 msgstr ""
 
-#: kio/kmimetypes.cc:504
+#: kio/kmimetypes.cc:505
 #, c-format
 msgid ""
 "The kdelnk type\n"
@@ -2715,7 +2890,7 @@ msgid ""
 "is unknown"
 msgstr ""
 
-#: kio/kmimetypes.cc:518 kio/kmimetypes.cc:598 kio/kmimetypes.cc:690
+#: kio/kmimetypes.cc:519 kio/kmimetypes.cc:599 kio/kmimetypes.cc:691
 #, c-format
 msgid ""
 "The kdelnk file\n"
@@ -2723,7 +2898,7 @@ msgid ""
 "is of type FSDevice but has no Dev=... entry"
 msgstr ""
 
-#: kio/kmimetypes.cc:565
+#: kio/kmimetypes.cc:566
 #, c-format
 msgid ""
 "The kdelnk file\n"
@@ -2731,16 +2906,16 @@ msgid ""
 "is of type Link but has no URL=... entry"
 msgstr ""
 
-#: kio/kmimetypes.cc:608
+#: kio/kmimetypes.cc:609
 #, fuzzy
 msgid "Mount"
 msgstr "Pt"
 
-#: kio/kmimetypes.cc:615
+#: kio/kmimetypes.cc:616
 msgid "Unmount"
 msgstr ""
 
-#: kio/kmimetypes.cc:658
+#: kio/kmimetypes.cc:659
 #, c-format
 msgid ""
 "The kdelnk file\n"
@@ -2770,6 +2945,10 @@ msgid ""
 "\n"
 "does not conatain a Name=... entry"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Comment:"
+#~ msgstr "Ýçerik:"
 
 #~ msgid "&Ok"
 #~ msgstr "&Peki"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs 1.1\n"
-"POT-Creation-Date: 1999-01-22 01:01+0100\n"
+"POT-Creation-Date: 1999-02-06 01:01+0100\n"
 "PO-Revision-Date: 1999-01-29 14:51+0100\n"
 "Last-Translator: Ja?-Mai Drapier <jdrapier@club-internet.fr>\n"
 "Language-Team: Brezhoneg <Suav.Icb@wanadoo.fr>\n"
@@ -50,7 +50,6 @@ msgstr "Kasit ur bostel da ratreer an arload"
 #: kdeui/kiconloaderdialog.cpp:264 kdeui/kmsgbox.cpp:286
 #: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:509
 #: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:407
-#: kfile/kfiledialog.cpp:888 kfile/kfiledialogconf.cpp:60 kfmlib/kfm.cpp:407
 #: po/texts.cpp:35
 msgid "OK"
 msgstr "Mat eo"
@@ -257,113 +256,115 @@ msgstr "Gwerzhio? possubl :"
 msgid "Selected values:"
 msgstr "Gwerzhio? diuzet :"
 
-#: kdecore/kaccel.cpp:231 kfile/kfiledialog.cpp:556 kfile/kfiledialog.cpp:1202
-#: kfile/kfiledialog.cpp:1361 kfile/kfiledialog.cpp:1395 po/texts.cpp:65
+#: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:558 kfile/kfiledialog.cpp:1217
+#: kfile/kfiledialog.cpp:1377 kfile/kfiledialog.cpp:1411 po/texts.cpp:65
 msgid "Open"
 msgstr "Digeri?"
 
-#: kdecore/kaccel.cpp:235
+#: kdecore/kaccel.cpp:227
 msgid "New"
 msgstr "Nevez"
 
-#: kab/searchresults.cc:30 kdecore/kaccel.cpp:239 po/texts.cpp:80
+#: kab/searchresults.cc:30 kdecore/kaccel.cpp:231 po/texts.cpp:80
 msgid "Close"
 msgstr "Serri?"
 
-#: kdecore/kaccel.cpp:243 kfile/kfiledialog.cpp:1257
-#: kfile/kfiledialog.cpp:1416 po/texts.cpp:75
+#: kdecore/kaccel.cpp:235 kfile/kfiledialog.cpp:1272
+#: kfile/kfiledialog.cpp:1432 po/texts.cpp:75
 msgid "Save"
 msgstr "Enrolla?"
 
-#: kdecore/kaccel.cpp:247 po/texts.cpp:115
+#: kdecore/kaccel.cpp:239 po/texts.cpp:115
 msgid "Print"
 msgstr "Moula?"
 
-#: kdecore/kaccel.cpp:251 po/texts.cpp:52
+#: kdecore/kaccel.cpp:243 po/texts.cpp:52
 msgid "Quit"
 msgstr "Kuitaat"
 
-#: kdecore/kaccel.cpp:255 po/texts.cpp:69
+#: kdecore/kaccel.cpp:247 po/texts.cpp:69
 msgid "Cut"
 msgstr "Troc'ha?"
 
-#: kdecore/kaccel.cpp:259 po/texts.cpp:56
+#: kdecore/kaccel.cpp:251 po/texts.cpp:56
 msgid "Copy"
 msgstr "Eila?"
 
-#: kdecore/kaccel.cpp:263 po/texts.cpp:58
+#: kdecore/kaccel.cpp:255 po/texts.cpp:58
 msgid "Paste"
 msgstr "Pega?"
 
-#: kdecore/kaccel.cpp:267 po/texts.cpp:93
+#: kdecore/kaccel.cpp:259 po/texts.cpp:93
 msgid "Undo"
 msgstr "Dizober"
 
-#: kdecore/kaccel.cpp:271 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
+#: kdecore/kaccel.cpp:263 kdeui/keditcl2.cpp:103 kdeui/keditcl2.cpp:120
 #: kdeui/keditcl2.cpp:360 kdeui/keditcl2.cpp:377 kdeui/keditcl2.cpp:676
 #: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:786
 msgid "Find"
 msgstr "Kavout"
 
-#: kdecore/kaccel.cpp:275 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
-#: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 po/texts.cpp:133
+#: kdecore/kaccel.cpp:267 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
+#: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 kspell/kspelldlg.cpp:110
+#: po/texts.cpp:133
 msgid "Replace"
 msgstr "Erlec'hia?"
 
-#: kdecore/kaccel.cpp:279 po/texts.cpp:134
+#: kdecore/kaccel.cpp:271 po/texts.cpp:134
 msgid "Insert"
 msgstr "Enlakaat"
 
-#: kdecore/kaccel.cpp:283 kfile/kfiledialog.cpp:131
+#: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
 msgstr "Du-ma?"
 
-#: kdecore/kaccel.cpp:287
+#: kdecore/kaccel.cpp:279
 msgid "End"
 msgstr "Dibenn"
 
-#: kdecore/kaccel.cpp:291
+#: kdecore/kaccel.cpp:283
 msgid "Prior"
 msgstr "Kent"
 
-#: kdecore/kaccel.cpp:295
+#: kdecore/kaccel.cpp:287
 msgid "Next"
 msgstr "A heul"
 
-#: kdecore/kaccel.cpp:299 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
-#: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 po/texts.cpp:44
+#: kdecore/kaccel.cpp:291 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
+#: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 kspell/ksconfig.cpp:212
+#: kspell/kspelldlg.cpp:131 po/texts.cpp:44
 msgid "Help"
 msgstr "Skoazell"
 
-#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:661
+#: kdecore/kaccel.cpp:589 kdecore/kaccel.cpp:653
 msgid "SHIFT"
 msgstr "PENNLIZH"
 
-#: kdecore/kaccel.cpp:601 kdecore/kaccel.cpp:663
+#: kdecore/kaccel.cpp:593 kdecore/kaccel.cpp:655
 msgid "CTRL"
 msgstr "CTRL"
 
-#: kdecore/kaccel.cpp:605 kdecore/kaccel.cpp:665
+#: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:657
 msgid "ALT"
 msgstr "ALT"
 
-#: kdecore/kapp.cpp:601 po/texts.cpp:137
+#: kdecore/kapp.cpp:608 po/texts.cpp:137
 msgid "&Contents"
 msgstr "&Taolenn"
 
-#: kdecore/kapp.cpp:607
+#: kdecore/kapp.cpp:614
 msgid "&About"
 msgstr "&Diwar-benn"
 
-#: kdecore/kapp.cpp:614
+#: kdecore/kapp.cpp:621
 msgid "About &KDE..."
 msgstr "Diwar-benn &KDE"
 
-#: kdecore/kapp.cpp:635
+#: kdecore/kapp.cpp:642
 msgid "About KDE"
 msgstr "Diwar-benn KDE"
 
-#: kdecore/kapp.cpp:637
+#: kdecore/kapp.cpp:644
 msgid ""
 "\n"
 "The KDE Desktop Environment was written by the KDE Team,\n"
@@ -383,13 +384,13 @@ msgstr ""
 "Gweladennit http://www.kde.org evit muioc'h a ditouro? war ar\n"
 "raktres KDE. Bezit ur preder a-zivout emellout ha skoazell KDE.\n"
 "\n"
-"Mar plij kemennit an drein kavet da http://buglist.kde.org."
+"Mar plij kemennit an drein kavet da http://buglist.kde.org.\n"
 
 #: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:412 kdeui/keditcl1.cpp:433
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
 #: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:363
 #: kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426 kdeui/keditcl2.cpp:456
-#: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:294 kdeui/kmsgbox.cpp:310
+#: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:303 kdeui/kmsgbox.cpp:319
 #: kio/kio_paste.cc:98 po/texts.cpp:27
 msgid "Yes"
 msgstr "Ya"
@@ -398,21 +399,21 @@ msgstr "Ya"
 #: kdeui/keditcl1.cpp:495 kdeui/keditcl1.cpp:515 kdeui/keditcl1.cpp:1662
 #: kdeui/keditcl2.cpp:107 kdeui/keditcl2.cpp:124 kdeui/keditcl2.cpp:364
 #: kdeui/keditcl2.cpp:381 kdeui/keditcl2.cpp:427 kdeui/keditcl2.cpp:457
-#: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:292 kdeui/kmsgbox.cpp:308
+#: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:301 kdeui/kmsgbox.cpp:317
 #: kio/kio_paste.cc:98 po/texts.cpp:28
 msgid "No"
 msgstr "Nann"
 
-#: kab/datepickerdialog.cc:26 kab/kabapi.cc:38 kab/widget.cc:1384
+#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1384
 #: kab/widget.cc:1426 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
 #: kdeui/kcontrol.cpp:48 kdeui/kcontrol.cpp:55 kdeui/keditcl1.cpp:414
-#: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:394
-#: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:312
-#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:893
-#: kfile/kfiledialogconf.cpp:58 kfmlib/kfm.cpp:411 kio/kio_job.cc:697
+#: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:403
+#: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:321
+#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:906
+#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:411 kio/kio_job.cc:773
 #: kio/kio_linedit_dlg.cc:50 kio/kio_openwith.cc:272 kio/kio_pass_dlg.cc:78
-#: kio/kio_progress_dlg.cc:53 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
-#: po/texts.cpp:39
+#: kio/kio_progress_dlg.cc:64 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
+#: kspell/kspelldlg.cpp:143 po/texts.cpp:39
 msgid "Cancel"
 msgstr "Nulla?"
 
@@ -440,8 +441,7 @@ msgstr "Diouzhoc'h..."
 msgid "Default"
 msgstr "Dre ziouer"
 
-#: kdeui/kcontrol.cpp:47 kdeui/kcontrol.cpp:53 kfile/kfiledialogconf.cpp:59
-#: po/texts.cpp:41
+#: kdeui/kcontrol.cpp:47 kdeui/kcontrol.cpp:53 po/texts.cpp:41
 msgid "Apply"
 msgstr "Arloa?"
 
@@ -525,7 +525,7 @@ msgstr "Gwe"
 msgid "Sat"
 msgstr "Sad"
 
-#: kab/kabapi.cc:139 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1916
+#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1916
 #: kdeui/keditcl1.cpp:139 kdeui/keditcl1.cpp:168 kdeui/keditcl1.cpp:189
 #: kdeui/keditcl1.cpp:202 kdeui/keditcl1.cpp:1559 po/texts.cpp:83
 msgid "Sorry"
@@ -649,7 +649,7 @@ msgstr "Kavout :"
 msgid "Replace with:"
 msgstr "Erlec'hia? gant :"
 
-#: kdeui/keditcl2.cpp:792
+#: kdeui/keditcl2.cpp:792 kspell/kspelldlg.cpp:38
 msgid "Replace All"
 msgstr "Erlec'hia? pep tra"
 
@@ -661,81 +661,81 @@ msgstr "Kit da linenn"
 msgid "Go"
 msgstr "Kit"
 
-#: kdeui/kfontdialog.cpp:168
+#: kdeui/kfontdialog.cpp:177
 msgid "Select Font"
 msgstr "Diuzit un nodrezh"
 
-#: kdeui/kfontdialog.cpp:172
+#: kdeui/kfontdialog.cpp:181
 msgid "Requested Font"
 msgstr "Nodrezh goulennet"
 
-#: kdeui/kfontdialog.cpp:173
+#: kdeui/kfontdialog.cpp:182
 msgid "Actual Font"
 msgstr "Nodrezh a-vrema?"
 
-#: kdeui/kfontdialog.cpp:193 kdeui/kfontdialog.cpp:198
+#: kdeui/kfontdialog.cpp:202 kdeui/kfontdialog.cpp:207
 msgid "Family:"
 msgstr "Familh :"
 
-#: kdeui/kfontdialog.cpp:205 kdeui/kfontdialog.cpp:210 po/texts.cpp:26
+#: kdeui/kfontdialog.cpp:214 kdeui/kfontdialog.cpp:219 po/texts.cpp:26
 msgid "Charset:"
 msgstr "Arouezenneg :"
 
-#: kdeui/kfontdialog.cpp:218 kdeui/kfontdialog.cpp:223 kfile/kpreview.cpp:196
+#: kdeui/kfontdialog.cpp:227 kdeui/kfontdialog.cpp:232 kfile/kpreview.cpp:196
 msgid "Size:"
 msgstr "Ment :"
 
-#: kdeui/kfontdialog.cpp:230 kdeui/kfontdialog.cpp:235
+#: kdeui/kfontdialog.cpp:239 kdeui/kfontdialog.cpp:244
 msgid "Weight:"
 msgstr "Pouez :"
 
-#: kdeui/kfontdialog.cpp:242 kdeui/kfontdialog.cpp:247
+#: kdeui/kfontdialog.cpp:251 kdeui/kfontdialog.cpp:256
 msgid "Style:"
 msgstr "Giz :"
 
-#: kdeui/kfontdialog.cpp:275 kfile/kfiledetaillist.cpp:38
+#: kdeui/kfontdialog.cpp:284 kfile/kfiledetaillist.cpp:38
 msgid "Size"
 msgstr "Ment"
 
-#: kdeui/kfontdialog.cpp:313
+#: kdeui/kfontdialog.cpp:322
 msgid "Weight"
 msgstr "Pouez"
 
-#: kdeui/kfontdialog.cpp:316 kdeui/kfontdialog.cpp:475
+#: kdeui/kfontdialog.cpp:325 kdeui/kfontdialog.cpp:484
 msgid "normal"
 msgstr "boas"
 
-#: kdeui/kfontdialog.cpp:317 kdeui/kfontdialog.cpp:477
+#: kdeui/kfontdialog.cpp:326 kdeui/kfontdialog.cpp:486
 msgid "bold"
 msgstr "druz"
 
-#: kdeui/kfontdialog.cpp:327
+#: kdeui/kfontdialog.cpp:336
 msgid "Style"
 msgstr "Giz"
 
-#: kdeui/kfontdialog.cpp:330 kdeui/kfontdialog.cpp:488
-#: kdeui/kfontdialog.cpp:517
+#: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:497
+#: kdeui/kfontdialog.cpp:526
 msgid "roman"
 msgstr "roman"
 
-#: kdeui/kfontdialog.cpp:331 kdeui/kfontdialog.cpp:490
-#: kdeui/kfontdialog.cpp:515
+#: kdeui/kfontdialog.cpp:340 kdeui/kfontdialog.cpp:499
+#: kdeui/kfontdialog.cpp:524
 msgid "italic"
 msgstr "italek"
 
-#: kdeui/kfontdialog.cpp:339
+#: kdeui/kfontdialog.cpp:348
 msgid "Charset"
 msgstr "Arouezenneg"
 
-#: kdeui/kfontdialog.cpp:358
+#: kdeui/kfontdialog.cpp:367
 msgid "Dolor Ipse"
 msgstr "Diouzh e labour, ar micherour"
 
-#: kdeui/kfontdialog.cpp:510
+#: kdeui/kfontdialog.cpp:519
 msgid "Bold"
 msgstr "Druz"
 
-#: kdeui/kfontdialog.cpp:512
+#: kdeui/kfontdialog.cpp:521
 msgid "Normal"
 msgstr "Boas"
 
@@ -864,28 +864,27 @@ msgstr ""
 "d'an obererezh %s.\n"
 "Diuzit mar plij ur blokad stokello? dieil."
 
-
 #: kdeui/kkeydialog.cpp:1090
 msgid "Key conflict"
 msgstr "Enebiez stokello?"
 
-#: kdeui/kmenubar.cpp:269 kdeui/ktoolbar.cpp:847
+#: kdeui/kmenubar.cpp:281 kdeui/ktoolbar.cpp:856
 msgid "Top"
 msgstr "Laez"
 
-#: kdeui/kmenubar.cpp:270 kdeui/ktoolbar.cpp:849
+#: kdeui/kmenubar.cpp:282 kdeui/ktoolbar.cpp:858
 msgid "Bottom"
 msgstr "Trao?"
 
-#: kdeui/kmenubar.cpp:271 kdeui/ktoolbar.cpp:850
+#: kdeui/kmenubar.cpp:283 kdeui/ktoolbar.cpp:859
 msgid "Floating"
 msgstr "War-nij"
 
-#: kdeui/kmenubar.cpp:420 kdeui/kmenubar.cpp:762 kdeui/ktoolbar.cpp:2161
+#: kdeui/kmenubar.cpp:432 kdeui/kmenubar.cpp:774 kdeui/ktoolbar.cpp:2170
 msgid "Float"
 msgstr "Nijal"
 
-#: kdeui/kmenubar.cpp:714 kdeui/ktoolbar.cpp:2142
+#: kdeui/kmenubar.cpp:726 kdeui/ktoolbar.cpp:2151
 msgid "UnFloat"
 msgstr "Staga?"
 
@@ -901,15 +900,15 @@ msgstr "&Dre ziouer"
 msgid "Quickhelp"
 msgstr "SkoazellAdizh"
 
-#: kdeui/ktoolbar.cpp:275 kdeui/ktoolbar.cpp:327
+#: kdeui/ktoolbar.cpp:284 kdeui/ktoolbar.cpp:336
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
 msgstr "KToolBarButton: piksmap goullo, ur restr bennak a vank moarvat"
 
-#: kdeui/ktoolbar.cpp:846
+#: kdeui/ktoolbar.cpp:855
 msgid "Left"
 msgstr "Kleiz"
 
-#: kdeui/ktoolbar.cpp:848
+#: kdeui/ktoolbar.cpp:857
 msgid "Right"
 msgstr "Deho?"
 
@@ -918,11 +917,11 @@ msgstr "Deho?"
 msgid "Page %d of %d"
 msgstr "Pajenn %d diwar %d"
 
-#: kfile/kcombiview.cpp:80
+#: kfile/kcombiview.cpp:81
 msgid "Folders:"
 msgstr "Renkello? :"
 
-#: kfile/kcombiview.cpp:81
+#: kfile/kcombiview.cpp:82
 msgid "Contents:"
 msgstr "Endalc'had :"
 
@@ -930,7 +929,7 @@ msgstr "Endalc'had :"
 msgid "<!-- Do not edit this file -->"
 msgstr "<!-- Na aozit ket ar restr-ma? -->"
 
-#: kab/addressbook.cc:1052 kfile/kfiledetaillist.cpp:36
+#: kab/addressbook.cc:1055 kfile/kfiledetaillist.cpp:36
 msgid "Name"
 msgstr "Anv"
 
@@ -998,11 +997,11 @@ msgstr "&Sil :"
 msgid "Show hidden"
 msgstr "Diskouez ar re guzh"
 
-#: kfile/kfiledialog.cpp:502
+#: kfile/kfiledialog.cpp:504
 msgid "Error: Not local file"
 msgstr "Beiad : ket ur restr lec'hel"
 
-#: kfile/kfiledialog.cpp:503
+#: kfile/kfiledialog.cpp:505
 msgid ""
 "The specified directory is not a local directory\n"
 "But the application accepts just local files."
@@ -1010,11 +1009,11 @@ msgstr ""
 "Ar renkell resisaet n'eo ket ur renkell lec'hel\n"
 "Hogen ne asant an arload nemet da restro? lec'hel."
 
-#: kfile/kfiledialog.cpp:517 kfile/kfiledialog.cpp:622
+#: kfile/kfiledialog.cpp:519 kfile/kfiledialog.cpp:624
 msgid "Error: Cannot Open Directory"
 msgstr "Kammad : n'hell ket digeri? ar renkell"
 
-#: kfile/kfiledialog.cpp:518
+#: kfile/kfiledialog.cpp:520
 msgid ""
 "The specified directory does not exist\n"
 "or was not readable."
@@ -1022,73 +1021,73 @@ msgstr ""
 "Ar renkell resisaet n'eus ket anezhi\n"
 "pe a oa anlennadus."
 
-#: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
+#: kfile/kfiledialog.cpp:522 kfile/kfiledialog.cpp:627
 msgid "Dismiss"
 msgstr "Dilezel"
 
-#: kfile/kfiledialog.cpp:571 kfile/kfiledialog.cpp:1376 po/texts.cpp:77
+#: kfile/kfiledialog.cpp:573 kfile/kfiledialog.cpp:1392 po/texts.cpp:77
 msgid "Save As"
 msgstr "Enrolla? e"
 
-#: kfile/kfiledialog.cpp:594
+#: kfile/kfiledialog.cpp:596
 msgid "Root Directory"
 msgstr "Renkell gwrizienn"
 
-#: kfile/kfiledialog.cpp:623
+#: kfile/kfiledialog.cpp:625
 msgid "The specified directory does not exist or was not readable."
 msgstr "Ar renkell resisaet n'eus ket anezhi pe a oa anlennadus."
 
-#: kfile/kfiledialog.cpp:873
+#: kfile/kfiledialog.cpp:886
 msgid "Create new directory in: "
 msgstr "Kroui? ur renkell nevez e :"
 
-#: kfile/kfiledialog.cpp:876
+#: kfile/kfiledialog.cpp:889
 msgid "New Directory"
 msgstr "Renkell nevez"
 
-#: kfile/kfiledialog.cpp:948
+#: kfile/kfiledialog.cpp:961
 msgid "Add to bookmarks"
 msgstr "Ouzhpenna? d'ar sinedo?"
 
-#: kfile/kfiledialog.cpp:1236
+#: kfile/kfiledialog.cpp:1251
 msgid "Choose Directory"
 msgstr "Diuzit ar renkell"
 
-#: kfile/kfiledialog.cpp:1304
+#: kfile/kfiledialog.cpp:1319
 msgid "directory"
 msgstr "renkell"
 
-#: kfile/kfiledialog.cpp:1306
+#: kfile/kfiledialog.cpp:1321
 msgid "directories"
 msgstr "renkell"
 
-#: kfile/kfiledialog.cpp:1308 kfile/kpreview.cpp:326
+#: kfile/kfiledialog.cpp:1323 kfile/kpreview.cpp:326
 msgid "file"
 msgstr "restr"
 
-#: kfile/kfiledialog.cpp:1310
+#: kfile/kfiledialog.cpp:1325
 msgid "files"
 msgstr "restr"
 
-#: kfile/kfiledialog.cpp:1312
+#: kfile/kfiledialog.cpp:1327
 #, c-format
 msgid "%d %s and %d %s"
 msgstr "%d %s ha %d %s"
 
-#: kfile/kfiledialog.cpp:1322
+#: kfile/kfiledialog.cpp:1337
 msgid "one directory"
 msgstr "ur renkell"
 
-#: kfile/kfiledialog.cpp:1324
+#: kfile/kfiledialog.cpp:1339
 #, c-format
 msgid "%d directories"
 msgstr "%d renkell"
 
-#: kfile/kfiledialogconf.cpp:41
+#: kfile/kfiledialogconf.cpp:42
 msgid "Look and Feel"
 msgstr "Neuz ha Feson"
 
-#: kfile/kfiledialogconf.cpp:43
+#: kfile/kfiledialogconf.cpp:44
 msgid ""
 "KDE File Selector by:\n"
 "\n"
@@ -1112,51 +1111,51 @@ msgstr ""
 "Mario Weilguni <mweilguni@sime.com>\n"
 "ha Martin Jones <mjones@kde.org>"
 
-#: kfile/kfiledialogconf.cpp:56 po/texts.cpp:32
+#: kfile/kfiledialogconf.cpp:57 po/texts.cpp:32
 msgid "About"
 msgstr "Diwar-benn"
 
-#: kfile/kfiledialogconf.cpp:70
+#: kfile/kfiledialogconf.cpp:71
 msgid "View style"
 msgstr "Neuz ar gwel"
 
-#: kfile/kfiledialogconf.cpp:74
+#: kfile/kfiledialogconf.cpp:75
 msgid "Show Short View"
 msgstr "Diskouez mod berr"
 
-#: kfile/kfiledialogconf.cpp:80
+#: kfile/kfiledialogconf.cpp:81
 msgid "Show Detail View"
 msgstr "Diskouez mod hir"
 
-#: kfile/kfiledialogconf.cpp:89
+#: kfile/kfiledialogconf.cpp:90
 msgid "Misc"
 msgstr "Pep seurt"
 
-#: kfile/kfiledialogconf.cpp:95
+#: kfile/kfiledialogconf.cpp:96
 msgid "Show Filter"
 msgstr "Diskouez sil"
 
-#: kfile/kfiledialogconf.cpp:101
+#: kfile/kfiledialogconf.cpp:102
 msgid "Show List Labels"
 msgstr "Diskouez skridennad ar roll"
 
-#: kfile/kfiledialogconf.cpp:107
+#: kfile/kfiledialogconf.cpp:108
 msgid "Show Hidden"
 msgstr "Diskouez ar re guzh"
 
-#: kfile/kfiledialogconf.cpp:113
+#: kfile/kfiledialogconf.cpp:114
 msgid "Show Status Line"
 msgstr "Diskouez linenn a stad"
 
-#: kfile/kfiledialogconf.cpp:119
+#: kfile/kfiledialogconf.cpp:120
 msgid "Use single Click"
 msgstr "Arvera? klik eeun"
 
-#: kfile/kfiledialogconf.cpp:125
+#: kfile/kfiledialogconf.cpp:126
 msgid "Mix dirs and files"
 msgstr "Meska? renkello? ha restro?"
 
-#: kfile/kfiledialogconf.cpp:131
+#: kfile/kfiledialogconf.cpp:132
 msgid "Keep dirs first"
 msgstr "Derc'hel renkello? da genta?"
 
@@ -1671,7 +1670,7 @@ msgstr "<<&Diwezha?"
 msgid "&About..."
 msgstr "&Diwar-benn"
 
-#: kab/addressbook.cc:87
+#: kab/addressbook.cc:90
 msgid ""
 "The directory where user specific data for the\n"
 "addressbook application is stored does not exist.\n"
@@ -1683,11 +1682,11 @@ msgstr ""
 "Ar goulev a glasko kroui?\n"
 "         "
 
-#: kab/addressbook.cc:91
+#: kab/addressbook.cc:94
 msgid "and store all local files in this directory."
 msgstr "ha renka? an holl restro? lec'hell er renkell-se"
 
-#: kab/addressbook.cc:95
+#: kab/addressbook.cc:98
 msgid ""
 "The directory could not be created.\n"
 "Probably you do not have used KDE before, so\n"
@@ -1701,185 +1700,185 @@ msgstr ""
 "renkell du-se. La?sit ur wech kfm, anezha? ar merour\n"
 "restro? KDE evit he kroui? ent-emgefreek."
 
-#: kab/addressbook.cc:103
+#: kab/addressbook.cc:106
 msgid "The directory has been created.\n"
 msgstr "Krouet eo bet ar renkell.\n"
 
-#: kab/addressbook.cc:137
+#: kab/addressbook.cc:140
 msgid "No addressbook database file, creating new one."
 msgstr "Diaz karned chomlec'hio? ebet, o kroui? unan nevez."
 
-#: kab/addressbook.cc:156
+#: kab/addressbook.cc:159
 msgid "Tried to load database for creating backup, but failed"
 msgstr "Klasket karga? an diaz evit kroui? gwarezadur, hogen sac'het"
 
-#: kab/addressbook.cc:191
+#: kab/addressbook.cc:194
 msgid "Unable to save to backup file."
 msgstr "Divarrek da enrolla? ar restr gwarezi?"
 
-#: kab/addressbook.cc:197
+#: kab/addressbook.cc:200
 msgid "Unable to reset filename after creating backup."
 msgstr "Divarrek da adsevel anv ar restr goude kroui? gwarezadur"
 
-#: kab/addressbook.cc:202
+#: kab/addressbook.cc:205
 msgid "Unable to create backup file"
 msgstr "Divarrek da groui? restr gwarezi?"
 
-#: kab/addressbook.cc:260
+#: kab/addressbook.cc:263
 msgid "Unable to insert \""
 msgstr "Divarrek da ensoc'ha? \""
 
-#: kab/addressbook.cc:261
+#: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
 msgstr "\" er rann keflunia? (tremenet e-biou)."
 
-#: kab/addressbook.cc:663
+#: kab/addressbook.cc:666
 msgid "Unable to add a new entry with available key."
 msgstr "Divarrek da ouzhpenna? un enmont gant an alc'hwezio? e kerz."
 
-#: kab/addressbook.cc:669
+#: kab/addressbook.cc:672
 msgid "Cannot find previously created section."
 msgstr "N'hell ket kavout ur rann bet krouet a-raok."
 
-#: kab/addressbook.cc:700
+#: kab/addressbook.cc:703
 msgid "Unable to create key-value-map for entry."
 msgstr "Divarrek da groui? un daolenn-alc'hwez-gwerzh evit an enmont"
 
-#: kab/addressbook.cc:929
+#: kab/addressbook.cc:932
 msgid "entry without name"
 msgstr "enmont dianav"
 
-#: kab/addressbook.cc:947
+#: kab/addressbook.cc:950
 msgid ""
 "Unable to create new database file (probably permission denied), exiting."
 msgstr ""
 "Divarrek da groui? ur rest diaz nevez (aotre nac'het moarvat), o kuitaat."
 
-#: kab/addressbook.cc:953
+#: kab/addressbook.cc:956
 msgid "Cannot create configuration section, exiting."
 msgstr "N'hell ket kroui? rann ar c'hefluniadur, o kuitaat."
 
-#: kab/addressbook.cc:958
+#: kab/addressbook.cc:961
 msgid "Cannot create entries section, exiting."
 msgstr "N'hell ket kroui? rann an enmonto?, o kuitaat"
 
-#: kab/addressbook.cc:963
+#: kab/addressbook.cc:966
 msgid "Unable to find previously created section, exiting."
 msgstr "Divarrek da gavout ur rann bet krouet a-raok, o kuitaat"
 
-#: kab/addressbook.cc:971
+#: kab/addressbook.cc:974
 msgid "Cannot save newly created database."
 msgstr "N'hell ket enrolla? diaz krouet a-nevez."
 
-#: kab/addressbook.cc:977
+#: kab/addressbook.cc:980
 msgid "Cannot erase database contents."
 msgstr "N'hell ket diverka? endalc'had an diaz."
 
-#: kab/addressbook.cc:1056
+#: kab/addressbook.cc:1059
 msgid "First name"
 msgstr "Anv kenta?"
 
-#: kab/addressbook.cc:1060
+#: kab/addressbook.cc:1063
 msgid "Additional name"
 msgstr "Anv ouzhpenn"
 
-#: kab/addressbook.cc:1064
+#: kab/addressbook.cc:1067
 msgid "Name prefix"
 msgstr "Araoger an anv"
 
-#: kab/addressbook.cc:1068
+#: kab/addressbook.cc:1071
 msgid "Formatted name"
 msgstr "Anv furmadet"
 
-#: kab/addressbook.cc:1072
+#: kab/addressbook.cc:1075
 msgid "Comment"
 msgstr "Askelenn"
 
-#: kab/addressbook.cc:1076
+#: kab/addressbook.cc:1079
 msgid "Organization"
 msgstr "Aozadur"
 
-#: kab/addressbook.cc:1080
+#: kab/addressbook.cc:1083
 msgid "Unit"
 msgstr "Unvez"
 
-#: kab/addressbook.cc:1084
+#: kab/addressbook.cc:1087
 msgid "Subunit"
 msgstr "Isunvez"
 
-#: kab/addressbook.cc:1088
+#: kab/addressbook.cc:1091
 msgid "Title"
 msgstr "Titl"
 
-#: kab/addressbook.cc:1092
+#: kab/addressbook.cc:1095
 msgid "Role"
 msgstr "Perzh"
 
-#: kab/addressbook.cc:1096
+#: kab/addressbook.cc:1099
 msgid "Birthday"
 msgstr "Deiz-ha-bloaz"
 
-#: kab/addressbook.cc:1100
+#: kab/addressbook.cc:1103
 msgid "Talk addresses"
 msgstr "Chomlec'h talk"
 
-#: kab/addressbook.cc:1104
+#: kab/addressbook.cc:1107
 msgid "Delivery label"
 msgstr "Liketenn degasadur"
 
-#: kab/addressbook.cc:1108
+#: kab/addressbook.cc:1111
 msgid "Email address"
 msgstr "Chomlec'h postel"
 
-#: kab/addressbook.cc:1112
+#: kab/addressbook.cc:1115
 msgid "Second email address"
 msgstr "Eil chomlec'h postel"
 
-#: kab/addressbook.cc:1116
+#: kab/addressbook.cc:1119
 msgid "Third email address"
 msgstr "Trede chomlec'h postel"
 
-#: kab/addressbook.cc:1120
+#: kab/addressbook.cc:1123
 msgid "Email addresses"
 msgstr "Chomlec'hio? postel"
 
-#: kab/addressbook.cc:1124
+#: kab/addressbook.cc:1127
 msgid "Address"
 msgstr "Chomlec'h"
 
-#: kab/addressbook.cc:1128
+#: kab/addressbook.cc:1131
 msgid "City/Town"
 msgstr "K?r"
 
-#: kab/addressbook.cc:1132
+#: kab/addressbook.cc:1135
 msgid "Telephone"
 msgstr "Pellgomz"
 
-#: kab/addressbook.cc:1136
+#: kab/addressbook.cc:1139
 msgid "Fax number"
 msgstr "Niverenn pelleiler"
 
-#: kab/addressbook.cc:1140
+#: kab/addressbook.cc:1143
 msgid "Modem number"
 msgstr "Niverenn modem"
 
-#: kab/addressbook.cc:1144
+#: kab/addressbook.cc:1147
 msgid "Homepage URL"
 msgstr "URL ar bennbajenn"
 
-#: kab/addressbook.cc:1148
+#: kab/addressbook.cc:1151
 msgid "Zip/postal code"
 msgstr "Kod post"
 
-#: kab/addressbook.cc:1152
+#: kab/addressbook.cc:1155
 msgid "State/province"
 msgstr "Rannvro"
 
-#: kab/addressbook.cc:1156
+#: kab/addressbook.cc:1159
 msgid "Country"
 msgstr "Bro"
 
-#: kab/addressbook.cc:1323
+#: kab/addressbook.cc:1326
 msgid "(unnamed entry)"
 msgstr "(enmont dianav)"
 
@@ -1923,7 +1922,7 @@ msgstr "K?r/Bourc'h"
 msgid "State:"
 msgstr "Rannvro :"
 
-#: kab/editentry.cc:104
+#: kab/editentry.cc:106
 msgid "Zip/Postal Code:"
 msgstr "Kod post :"
 
@@ -1999,7 +1998,7 @@ msgstr "Daouglika? evit termeni? an deiziad"
 msgid "O&thers"
 msgstr "&Trao? all"
 
-#: kab/kabapi.cc:139
+#: kab/kabapi.cc:138
 msgid "Your new entry could not be added."
 msgstr "Ne oa ket tu ouzhpenna? ho enmont nevez."
 
@@ -2022,6 +2021,7 @@ msgstr ""
 "furmad restr a-vrema?.\n"
 "Gallout a rit e implij, hogen ne vo ket sevenet\n"
 "an holl arc'hwelio?."
+
 #: kab/widget.cc:163
 msgid ""
 "The application saved the last current entry,\n"
@@ -2433,9 +2433,9 @@ msgid ""
 "Use the icons for drag and drop actions, since they refer to the cache files "
 "on your hard disk, while you should use the textual links for browsing"
 msgstr ""
-"Implijit an arlunio? evit obererezho? stleja? ha leuskel, dre ma "
-"zaveont da restro? ar grubuilh war ho pladenn galet, tra ma vije "
-"gwell deoc'h ober gant ereo? mod testenn evit ar furchal"
+"Implijit an arlunio? evit obererezho? stleja? ha leuskel, dre ma zaveont da "
+"restro? ar grubuilh war ho pladenn galet, tra ma vije gwell deoc'h ober gant "
+"ereo? mod testenn evit ar furchal"
 
 #: kio/kio_cache.cc:355
 msgid "Creation Date"
@@ -2768,12 +2768,12 @@ msgstr ""
 msgid "Ok"
 msgstr "Mat eo"
 
-#: kio/kio_job.cc:138
+#: kio/kio_job.cc:184
 #, c-format
 msgid "Mounting %s ..."
 msgstr "O vounta? %s ..."
 
-#: kio/kio_job.cc:158
+#: kio/kio_job.cc:204
 #, c-format
 msgid "Unmounting %s ..."
 msgstr "O tivounta? %s ..."
@@ -2802,7 +2802,8 @@ msgstr "Goullo eo ar golver"
 msgid ""
 "Pasting clipboard data is only supported on the local hard disk currently"
 msgstr ""
-"Pega? roado? ar golver a zo gouza?vet war ar pladenn lec'hel hepken evit ar mare"
+"Pega? roado? ar golver a zo gouza?vet war ar pladenn lec'hel hepken evit ar "
+"mare"
 
 #: kio/kio_paste.cc:80
 msgid "Filename for clipboard content:"
@@ -2815,65 +2816,81 @@ msgstr "N'hoc'h eus ket roet a anv restr"
 #: kio/kio_paste.cc:97
 #, c-format
 msgid "The file %s does already exist. Do you really want to overwrite it ?"
-msgstr "Ar restr %s a zo anezha? c'hoazh. Ha fellout a ra deoc'h e raskla? da vat ?"
+msgstr ""
+"Ar restr %s a zo anezha? c'hoazh. Ha fellout a ra deoc'h e raskla? da vat ?"
 
-#: kio/kio_progress_dlg.cc:92 kio/kio_progress_dlg.cc:108
-msgid " Bytes"
+#: kio/kio_progress_dlg.cc:108 kio/kio_progress_dlg.cc:124
+#, fuzzy
+msgid "Bytes"
 msgstr " Okted"
 
-#: kio/kio_progress_dlg.cc:97 kio/kio_progress_dlg.cc:113
-msgid " Kb"
+#: kio/kio_progress_dlg.cc:113 kio/kio_progress_dlg.cc:129
+#, fuzzy
+msgid "Kb"
 msgstr " Ko"
 
-#: kio/kio_progress_dlg.cc:102 kio/kio_progress_dlg.cc:118
-msgid " Mb"
+#: kio/kio_progress_dlg.cc:118 kio/kio_progress_dlg.cc:134
+#, fuzzy
+msgid "Mb"
 msgstr " Mo"
 
-#: kio/kio_progress_dlg.cc:151 kio/kio_progress_dlg.cc:177
+#: kio/kio_progress_dlg.cc:139 kio/kio_progress_dlg.cc:146
+msgid "of"
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:171 kio/kio_progress_dlg.cc:197
 msgid "Stalled"
 msgstr "Stanket"
 
-#: kio/kio_progress_dlg.cc:159
+#: kio/kio_progress_dlg.cc:179
 msgid " Bytes/s"
 msgstr " Okted/e"
 
-#: kio/kio_progress_dlg.cc:164
+#: kio/kio_progress_dlg.cc:184
 msgid " Kb/s"
 msgstr " Ko/e"
 
-#: kio/kio_progress_dlg.cc:169
+#: kio/kio_progress_dlg.cc:189
 msgid " Mb/s"
 msgstr " Mo/e"
 
-#: kio/kio_progress_dlg.cc:184
+#: kio/kio_progress_dlg.cc:204
 #, c-format
 msgid "%i seconds"
 msgstr "%i eilenn"
 
-#: kio/kio_progress_dlg.cc:190
+#: kio/kio_progress_dlg.cc:210
 #, c-format
 msgid "%i:%i"
 msgstr "%i:%i"
 
-#: kio/kio_progress_dlg.cc:197
+#: kio/kio_progress_dlg.cc:217
 #, c-format
 msgid "%i:%i:%i"
 msgstr "%i:%i:%i"
 
-#: kio/kio_progress_dlg.cc:201
+#: kio/kio_progress_dlg.cc:221
 #, c-format
 msgid "%i%s  Remaining time: %s"
 msgstr "%i%s Amzer o chom : %s"
 
-#: kio/kio_progress_dlg.cc:207
+#: kio/kio_progress_dlg.cc:227
 msgid "Scanning "
 msgstr "O dezranna?"
 
-#: kio/kio_progress_dlg.cc:222
+#: kio/kio_progress_dlg.cc:234
+msgid "From : "
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:238
+msgid "To: "
+msgstr ""
+
+#: kio/kio_progress_dlg.cc:245
 msgid "Creating dir "
 msgstr "O kroui? renkell "
 
-#: kio/kio_progress_dlg.cc:229
+#: kio/kio_progress_dlg.cc:252
 msgid "Fetching file"
 msgstr "O tizhout restr"
 
@@ -3048,4 +3065,3 @@ msgid ""
 msgstr ""
 "\n"
 "n'eus ket enna? a enmont Name=..."
-
