@@ -22,6 +22,8 @@
  */
 #include "render_body.h"
 #include "render_root.h"
+#include "html/html_baseimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include <qpainter.h>
 #include <qscrollview.h>
@@ -29,6 +31,7 @@
 #include <kdebug.h>
 
 using namespace khtml;
+using namespace DOM;
 
 RenderBody::RenderBody(HTMLBodyElementImpl* _element)
     : RenderFlow()
