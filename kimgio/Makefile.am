@@ -10,3 +10,6 @@ include_HEADERS = kimgio.h
 noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h pngr.h
 
 INCLUDES = $(all_includes)
+
+EXTRA_DIST = netpbm.cpp netpbm.h
+

@@ -74,3 +74,24 @@ libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
 
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg
+
+dlgfiles = AssertDialog.dlg DialogBase.dlg PrintDialog.dlg \
+	StringListEditWidget.dlg StringListSelectAndReorderSet.dlg \
+	StringListSelectOneDialog.dlg StringListSelectSetDialog.dlg
+
+noinst_HEADERS = AssertDialog.h AssertDialogData.h DialogBase.h \
+	DialogBaseData.h PrintDialog.h PrintDialogData.h SearchDialog.h \
+	SearchDialogMainWidget.h SearchDialogMainWidgetData.h \
+	StringListEditDialog.h StringListEditWidget.h \
+	StringListEditWidgetData.h StringListSelectAndReorderSet.h \
+	StringListSelectAndReorderSetData.h StringListSelectOneDialog.h \
+	StringListSelectOneDialogData.h StringListSelectSetDialog.h \
+	arrow_down.xbm arrow_left.xbm arrow_right.xbm arrow_up.xbm \
+	bug_3d.xpm businesscard.h datepickerdialog.h dbarr_next.xbm \
+	dbarr_previous.xbm debug.h editentry.h functions.h \
+	magnify2.xbm searchresults.h select.xbm text.xbm trash_open.xbm \
+	widgets.h
+
+EXTRA_DIST = $(pics_DATA) $(dlgfiles) COMPILE_PROBLEMS_FAQ README.FORMAT \
+	README.KABAPI kab.prj kabapi.h.kdoc libkab.kdoc msui.prj 
+

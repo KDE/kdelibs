@@ -45,3 +45,5 @@ grammarfiles: t1.y t2.l
 	else :; fi
 	$(LEX) -Pyyjscript t2.l && mv lex.yyjscript.c t2.c
 
+EXTRA_DIST = t1.y t2.l
+

@@ -34,7 +34,7 @@ libkhtmlw_la_LDFLAGS = -version-info 2:0
 data_DATA = khtmlw_dnd.xpm
 datadir = $(kde_datadir)/khtmlw/pics
 
-EXTRA_DIST = khtmlw_dnd.xpm
+EXTRA_DIST = khtmlw_dnd.xpm CHANGES DESIGN README.HTMLWidget test
 
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio $(QT_INCLUDES) $(X_INCLUDES)
 

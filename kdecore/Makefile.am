@@ -18,7 +18,8 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
-EXTRA_DIST = convert_key.c charsets.config
+EXTRA_DIST = convert_key.c charsets.config $(kdebug_DATA) kdebugareas.txt \
+	kstddirs.h kstddirs.cpp
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
@@ -26,7 +27,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurl.h ksock.h drag.h  ckey.h kmisc.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
-	kaccel.h kglobalaccel.h kckey.h kclipboard.h krect.h ksize.h kpoint.h
+	kaccel.h kglobalaccel.h kckey.h kclipboard.h krect.h ksize.h \
+	kpoint.h 
 
 noinst_HEADERS = kdebugdialog.h kcharsetsdata.h 
 

@@ -20,7 +20,7 @@
 
 
 INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kfile $(QT_INCLUDES) $(X_INCLUDES) 
-EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
+EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 2:0  
@@ -65,5 +65,4 @@ data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
 
-EXTRA_DIST = $(data_DATA)
 

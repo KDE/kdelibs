@@ -28,10 +28,11 @@ libmediatool_la_SOURCES = chunk.c eventcounter.c \
 			connect.c filename.c playlist.c kaudio.cpp
 
 include_HEADERS= 	mediatool.h kaudio.h
-noinst_HEADERS = chunk.h
+noinst_HEADERS = chunk.h playlist.h
 
 libmediatool_la_LDFLAGS = -version-info 2:0 
 libmediatool_la_LIBADD = $(LIBCOMPAT)
 
 libmediatool_la_METASOURCES = kaudio.moc
 
+EXTRA_DIST = Documentation Header VERSION mediatool.lsm 

@@ -17,3 +17,78 @@ Tue Dec 22 22:56:58 1998  Mirko Sucker  <mirko@kde.org>
 	* keyvaluemap.h: Removed a default value for a function
 	which should be in a .cpp file. Oy.
 
+1998-10-10 Mirko Sucker  <mirko@kde.org>
+	
+	The files
+		AssertDialog.h
+		AssertDialog.cpp
+		AssertDialogData.h
+		AssertDialogData.cpp
+	are new. The AssertDialog pops up when an assertion is caught. The user
+	may ignore the error, kill the application or mail a note to the app
+	maintainer.
+	The files
+		SearchDialogData.h
+		SearchDialogData.cpp
+	have been removed. The new SearchDialog uses the DialogBase class.
+	The files
+		SearchDialog.h
+		SearchDialog.cpp
+	contain completely different code than before (the new dialog).
+	The files
+		SearchDialogMainWidget.h
+		SearchDialogMainWidget.cpp
+		SearchDialogMainWidgetData.h
+		SearchDialogMainWidgetData.cpp
+	contain the new widget (created with qtarch).
+
+1998-10-16 Mirko Sucker  <mirko@kde.org>
+	The files
+		StringListSelectAndReorderSet.h
+		StringListSelectAndReorderSet.cpp
+		StringListSelectSetDialog.h
+		StringListSelectSetDialog.cpp
+	have been changed to use the new dialog base class.
+	The files
+		StringListSelectAndReorderSetData.h
+		StringListSelectAndReorderSetData.cpp
+		StringListSelectSetDialogData.h
+		StringListSelectSetDialogData.cpp
+	are obsolete and have been removed.		
+	The files
+		dialog_background.jpg
+	has been added. 
+
+1998-10-24 Mirko Sucker  <mirko@kde.org>
+	I debugged the appearance of the EditEntry-dialog. It resizes now
+	automatically and more accurately.
+	The about dialog now contains a KURLLabel that opens an email composer
+	when the user clicks on it.
+
+1998-11-02 Mirko Sucker  <mirko@kde.org>
+	I missed to store the contents of the "country" field, this bug is fixed
+	now.
+	Since I reworked the former StringListDialog, all files regarding the 
+	old one have changed. These are removed:
+		StringListDialog.dlg
+		StringListDialog.h  
+		StringListDialog.cpp
+		StringListDialogData.h 
+		StringListDialogData.cpp,
+	these are added, they contain the new main widget for the DialogBase 
+	deriven dialog class:
+		StringListEditWidget.dlg
+		StringListEditWidget.h 
+		StringListEditWidget.cpp
+		StringListEditWidgetData.h
+		StringListEditWidgetData.cpp,
+	and these contin the dialog itselfes, they are also new:
+		StringListEditDialog.h
+		StringListEditDialog.cpp.
+	Writing dialogs becomes more and more easy using the DialogBase class.
+
+1998-11-22 Mirko Sucker  <mirko@kde.org>
+	The displayed email addresses and URLs are interactive now.
+	
+
+

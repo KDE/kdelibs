@@ -46,5 +46,7 @@ messages:
 	rm -rf po.backup
 	(cd po && $(MAKE) -f Makefile.am merge)
 
-EXTRA_DIST = admin/acinclude.m4.in admin/libtool.m4.in
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
 
+dist-hook:
+	cd $(top_distdir) && perl $(top_srcdir)/admin/automoc -padmin

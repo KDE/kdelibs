@@ -26,6 +26,7 @@ lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 2:0
 
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
+noinst_HEADERS = version.h
 libkspell_la_SOURCES = kspelldlg.cpp kspell.cpp ksconfig.cpp kprocio.cpp
 
 libkspell_la_METASOURCES = kprocio.moc ksconfig.moc kspell.moc kspelldlg.moc

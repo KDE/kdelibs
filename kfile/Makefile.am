@@ -42,7 +42,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 
 toolbar_DATA = configure.xpm 
 
-EXTRA_DIST = configure.xpm
+EXTRA_DIST = configure.xpm KFile.kdoc NOTES configuration.txt
 
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
