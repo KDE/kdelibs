@@ -32,7 +32,7 @@
 #include <kurl.h>
 #include <kdebug.h>
 #include <kmimetype.h>
-
+#include <kdesktopfile.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
@@ -60,7 +60,13 @@ QStringList KRecentDocument::recentDocuments()
     QStringList fullList;
 
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-        fullList.append( d.absFilePath( *it ) );
+       QString pathDesktop = d.absFilePath( *it );
+       KDesktopFile tmpDesktopFile( pathDesktop, false);
+       KURL urlDesktopFile(tmpDesktopFile.readURL());
+       if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())
+           d.remove(pathDesktop);
+       else
+           fullList.append( pathDesktop );
     }
 
     return fullList;
@@ -75,7 +81,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
 {
 	if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
 		return;
-	
+
     QString openStr = url.url();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
