@@ -4667,6 +4667,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     d->m_view->resizeContents( wContents,  hContents);
     d->m_view->setContentsPos( xOffset, yOffset );
+
+    m_url = u;
   }
   else
   {
