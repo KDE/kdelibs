@@ -513,7 +513,11 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    return (gotoLink(next) || QScrollView::focusNextPrevChild( next ));
+    if (!gotoLink(next))
+	m_part->overURL(QString(), 0);
+    else
+	return true;
+    return  QScrollView::focusNextPrevChild( next );
 }
 
 void KHTMLView::doAutoScroll()
@@ -605,6 +609,9 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
         scrollBy(deltax, deltay);
         d->currentNode = n;
 	d->newNode = 0;
+	HTMLAnchorElementImpl *anchor = dynamic_cast<HTMLAnchorElementImpl *>(d->currentNode);
+	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
+	else m_part->overURL(QString(), 0);
         return true;
     }
 
@@ -634,6 +641,9 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     {
         d->currentNode = n;
 	d->newNode = 0;
+	HTMLAnchorElementImpl *anchor = dynamic_cast<HTMLAnchorElementImpl *>(d->currentNode);
+	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
+	else m_part->overURL(QString(), 0);
     }
     return true;
 }
@@ -645,6 +655,7 @@ bool KHTMLView::gotoLink(bool forward)
 
     // ### what if direction changed since last move ?
     // exchange currentNode and newNode ? (try)
+
     if (d->currentNode && d->newNode && (d->newNode != m_part->xmlDocImpl()->findNextLink(d->currentNode, forward)))
     {
 	d->currentNode->blur();
