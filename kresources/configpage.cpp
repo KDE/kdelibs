@@ -258,7 +258,6 @@ void ResourcesConfigPage::slotRemove()
   }
 
   mManager->remove( confItem->resource() );
-  delete confItem->resource();
 
   if ( item == mLastItem )
     mLastItem = 0;
