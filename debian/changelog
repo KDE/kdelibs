@@ -1,11 +1,14 @@
-ikdelibs (4:2.1.1-6) unstable; urgency=low
+kdelibs (4:2.1.1-6) unstable; urgency=low
  
   * Sync with upstream.
     Locale updates
     More http fixes
   * Update build-depends to include real | virtual
- 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Apr 2001 18:00:00 -0700
+  * Adding in a Packaging.txt document to kdelibs-dev the goal of which is to
+    answer any question one might have about packaging a KDE app for Debian.
+  * Fixing docs file for libarts
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
 
 kdelibs (4:2.1.1-5) unstable; urgency=low
  
