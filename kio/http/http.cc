@@ -3445,13 +3445,12 @@ bool HTTPProtocol::getAuthorization()
     if ( m_responseCode == 407 )
     {
       info.url = m_proxyURL;
-      info.url.setPass( QString::null );
-      info.url.setUser( QString::null );
       info.realmValue = m_strProxyRealm;
     }
     else
     {
       info.url = m_request.url;
+      info.username = m_request.user;
       info.realmValue = m_strRealm;
     }
 
