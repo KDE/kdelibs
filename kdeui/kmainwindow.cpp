@@ -619,6 +619,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         // By default we don't hide.
 	if(d->isStatusBarShown ==  sb->isHidden())
 	  config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
+	else config->deleteEntry("StatusBar");
     }
 
     QMenuBar* mb = internalMenuBar();
@@ -631,6 +632,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         // By default we don't hide.
 	if(d->isMenuBarShown ==  mb->isHidden())
 	  config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
+	else config->deleteEntry("MenuBar");
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -784,6 +786,10 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   if(size != d->size){
     config->writeEntry(QString::fromLatin1("Width %1").arg(desk.width()), width() );
     config->writeEntry(QString::fromLatin1("Height %1").arg(desk.height()), height() );
+  }
+  else{
+    config->deleteEntry(QString::fromLatin1("Width %1").arg(desk.width()));
+    config->deleteEntry(QString::fromLatin1("Height %1").arg(desk.height()));
   }
 }
 
