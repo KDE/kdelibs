@@ -20,12 +20,23 @@
 
     */
 
+#include "startupmanager.h"
 #include "cpuinfo.h"
 
-bool Arts::CpuInfo::s_initialized = false;
-int Arts::CpuInfo::s_flags = 0;
+using namespace Arts;
 
-void Arts::CpuInfo::initialize()
+int CpuInfo::s_flags = 0;
+
+namespace Arts
+{
+	class CpuInfoStartup : public StartupClass
+	{
+	public:
+		virtual void startup();
+	};
+};
+
+void CpuInfoStartup::startup()
 {
 #if defined(__GNUC__) && defined(__i386__)
 /*
@@ -166,11 +177,11 @@ void Arts::CpuInfo::initialize()
 		"popl  %%edx                           \n\t"
 		"popl  %%ecx                           \n\t"
 		"popl  %%ebx                           \n\t"
-		: "=a" (s_flags)
+		: "=a" (CpuInfo::s_flags)
 		: /* no input */
 		: "memory"
 	);
 #endif /* GCC and x86 */
-	s_initialized = true;
 }
 
+static CpuInfoStartup cpuInfoStartup;

@@ -24,9 +24,24 @@
 
 namespace Arts {
 
+	/**
+	 * Provides information about the availability of the various
+	 * "Multimedia extensions" the CPU supports. If you implement
+	 * a routine in assembler, use @ref flags() to know which
+	 * SIMD instructions the user's CPU knows about.
+	 *
+	 * @short Information about the CPU's SIMD implementation
+	 */
 	class CpuInfo
 	{
 	public:
+		/**
+		 * Values for the detected features of the CPU:
+		 * @li CpuMMX - CPU supports MMX
+		 * @li CpuEMMX - CPU supports Cyrix Extended MMX
+		 * @li Cpu3DNow - CPU supports AMD 3DNow!
+		 * @li CpuSSE - CPU supports Intel SSE
+		 */
 		enum Flags
 		{
 			CpuMMX   = 0x001, // Pentium MMX
@@ -34,22 +49,16 @@ namespace Arts {
 			Cpu3DNow = 0x004, // AMD 3DNow!
 			CpuSSE   = 0x008  // Pentium III SSE
 		};
-		static Flags flags();
+		/**
+		 * @return the @ref Flags values that correspond to the
+		 * CPU's features. Multiple values are bitwised or'ed
+		 */
+		static int flags() { return s_flags; }
 	
 	private:
-		static void initialize();
-		
-	private:
-		static bool s_initialized;
+		friend class CpuInfoStartup;
 		static int s_flags;
 	};
-
-	CpuInfo::Flags CpuInfo::flags()
-	{
-		if (!s_initialized)
-			initialize();
-		return static_cast<Flags>(s_flags);
-	}
 };
 
 #endif // _arts_cpuinfo_h
