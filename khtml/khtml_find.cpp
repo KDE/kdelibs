@@ -23,6 +23,7 @@
 
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kstringhandler.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
 : KEdFind( parent, name, false )
@@ -83,7 +84,9 @@ void KHTMLFind::slotSearch()
     }
   }
   else
-    KMessageBox::information( this, i18n( "Search string not found." ), i18n( "Find" ) );
+    KMessageBox::information( this, 
+    	i18n( "Search string '%1' not found." ).arg(KStringHandler::csqueeze(getText())),
+	i18n( "Find" ) );
 }
 
 void KHTMLFind::setNewSearch()
