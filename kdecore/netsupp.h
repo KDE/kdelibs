@@ -25,7 +25,6 @@
 
 #include <sys/socket.h>
 #include "ksockaddr.h"
-#include "config.h"
 
 /*
  * Seems some systems don't know about AF_LOCAL
