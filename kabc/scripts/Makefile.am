@@ -6,5 +6,5 @@
 				$(srcdir)/field.src.cpp
 	perl $(srcdir)/makeaddressee
 
-all: ../addressee.h ../addressee.cpp ../field.cpp
+all-am: ../addressee.h ../addressee.cpp ../field.cpp
 
