@@ -144,7 +144,7 @@ class KDialogBase : public KDialog
     {
       int mask;
       int style;
-      QList<QPushButton>list;
+      QList<QPushButton> list;
       
 
       void append( QPushButton *p )
