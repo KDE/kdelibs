@@ -2,7 +2,7 @@
 //  MAIN -- a little demo of the capabilities of the "KProcess" class
 //
 //  version 0.2, Aug 2nd 1997
-//  $Id: $
+//  $Id$
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
 
  printf("Starting konsole with /bin/tcsh as shell (close to continue)\n");
  p2 << "konsole" << "-e" << "/bin/tcsh";
+ p2.setWorkingDirectory("/tmp");
  QObject::connect(&p2, SIGNAL(processExited(KProcess *)),  &dummy, SLOT(printMessage(KProcess *)));
  p2.start(KProcess::Block);
 

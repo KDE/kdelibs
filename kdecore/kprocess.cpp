@@ -78,6 +78,7 @@
 class KProcessPrivate {
 public:
    QMap<QString,QString> env;
+   QString wd;
 };
 
 
@@ -114,6 +115,14 @@ KProcess::setEnvironment(const QString &name, const QString &value)
    d->env.insert(name, value);
 }
 
+void
+KProcess::setWorkingDirectory(const QString &dir)
+{
+   if (!d)
+      d = new KProcessPrivate;
+   d->wd = dir;   
+} 
+
 void 
 KProcess::setupEnvironment()
 {
@@ -123,6 +132,8 @@ KProcess::setupEnvironment()
       for(it = d->env.begin(); it != d->env.end(); ++it)
          setenv(QFile::encodeName(it.key()).data(),
                 QFile::encodeName(it.data()).data(), 1);
+      if (!d->wd.isEmpty())
+         chdir(QFile::encodeName(d->wd).data());
    }
 }
 

@@ -396,6 +396,13 @@ public:
   void setEnvironment(const QString &name, const QString &value);
 
   /**
+   * Changes the current working directory (CWD) of the process 
+   * to be started.
+   * This function must be called before starting the process.
+   */
+  void setWorkingDirectory(const QString &dir);
+
+  /**
    * Detaches KProcess from child process. All communication is closed.
    * No exit notification is emitted any more for the child process.
    * Deleting the KProcess will no longer kill the child process.
