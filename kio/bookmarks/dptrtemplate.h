@@ -1,4 +1,4 @@
-// -*- mode:cperl; cperl-indent-level:4; cperl-continued-statement-offset:4; indent-tabs-mode:nil -*-
+//  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE project
    Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
@@ -30,6 +30,7 @@ public:
     static PrivateData* d( const Instance* instance )
     {
         if ( !d_ptr ) {
+            cleanup_d_ptr();
             d_ptr = new QPtrDict<PrivateData>;
             qAddPostRoutine( cleanup_d_ptr );
         }
