@@ -1125,6 +1125,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     {
         case Key_Escape:
             selectAll(FALSE);
+            emit selectionChanged();
             break;
 
         case Key_Space:
@@ -1182,10 +1183,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 ensureItemVisible(nextItem);
             }
             else item->repaint();
-            if (shiftOrCtrl)
+            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
-            }
+            }*/
             break;
 
         case Key_Up:
@@ -1211,10 +1212,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 ensureItemVisible(nextItem);
             }
             else item->repaint();
-            if (shiftOrCtrl)
+            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
-            }
+            }*/
             break;
 
         case Key_End:
@@ -1239,10 +1240,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 }
                 nextItem=nextItem->itemBelow();
             }
-            if (shiftOrCtrl)
+            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
-            }
+            }*/
             break;
 
         case Key_Home:
@@ -1267,10 +1268,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 }
                 nextItem=nextItem->itemAbove();
             }
-            if (shiftOrCtrl)
+            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
-            }
+            }*/
             break;
 
         case Key_Next:
@@ -1295,7 +1296,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                     nextItem->repaint();
                     ensureItemVisible(nextItem);
                     setCurrentItem(nextItem);
-                    if (shiftOrCtrl)
+                    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
                     {
                         emit selectionChanged();
                     }
@@ -1325,7 +1326,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                     nextItem->repaint();
                     ensureItemVisible(nextItem);
                     setCurrentItem(nextItem);
-                    if (shiftOrCtrl)
+                    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
                     {
                         emit selectionChanged();
                     }
@@ -1352,10 +1353,16 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
             QListView::keyPressEvent (e);
             setSelectionMode (QListView::Extended);
             if (d->selectedBySimpleMove)
+            {
                currentItem()->setSelected(true);
+//               emit selectionChanged();
+            }
             break;
     }
+    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
+       emit selectionChanged();
 }
+
 
 void KListView::setSelectionModeExt (SelectionModeExt mode)
 {
@@ -1403,6 +1410,22 @@ int KListView::itemIndex( const QListViewItem *item ) const
 	return j;
     }
 }
+
+QListViewItem* KListView::itemAtIndex(int index)
+{
+   if (index<0)
+      return 0;
+
+   int j(0);
+   for (QListViewItemIterator it=firstChild(); it.current(); it++)
+   {
+      if (j==index)
+         return it.current();
+      j++;
+   };
+   return 0;
+};
+
 
 void KListView::emitContextMenu (KListView*, QListViewItem* i)
 {

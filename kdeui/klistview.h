@@ -222,6 +222,16 @@ public:
    */
   int itemIndex( const QListViewItem *item ) const;
 
+  /**
+   * Returns the item of @param index within the item tree or 0 if
+   * @param index doesn't exist in this list view. This function takes
+   * all items into account not only the visible ones.
+   */
+
+  QListViewItem* itemAtIndex(int index);
+
+
+
 signals:
 
   /**
