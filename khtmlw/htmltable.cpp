@@ -1010,7 +1010,7 @@ HTMLTable::scaleSelectedColumns(int c_start, int c_end, int tooAdd,
     {
 	if( !selected[c] ) continue;
 	tooAdd -= addSize;
-	for ( c1 = c+1; c1 <= totalCols; c1++ )
+	for ( c1 = c+1; c1 <= (int)totalCols; c1++ )
 	{
 	    columnOpt[c1] += addSize;
 	    if ( left ) columnOpt[c1]++;
