@@ -77,7 +77,22 @@ Comment[zu]=Izaziso Zesistimu ye-KDE
 
 [Trash: emptied]
 Name=Trash: emptied
+Name[br]=Pod-lastez : goullonderet
+Name[ca]=Paperera: buida
+Name[ga]=Bruscar: folmhaithe
+Name[is]=Rusl: tæmt
+Name[pt]=Lixo: esvaziado
+Name[pt_BR]=Lixo: esvaziado
+Name[sv]=Papperskorg: tömd
+Name[uk]=Смітник: спорожнено
 Comment=The trash has been emptied
+Comment[br]=Goullonderet e oa ar pod-lastez
+Comment[ca]=S'ha buidat la paperera
+Comment[is]=Ruslafatan hefur verið tæmd
+Comment[pt]=O lixo foi esvaziado
+Comment[pt_BR]=O lixo foi esvaziado
+Comment[sv]=Papperskorgen har tömts
+Comment[uk]=Смітник було спорожнено
 default_presentation=1
 
 [Textcompletion: rotation]
