@@ -1,18 +1,17 @@
-#include <kstringhandler.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <kdebug.h>
+#include "kstringhandler.h"
+#include <iostream>
+using std::cout;
+using std::endl;
 
-bool check(QString txt, QString a, QString b)
+bool check(const QString &txt, const QString &a, const QString &b)
 {
-    kdDebug() << txt << ": checking '" << endl << a << endl << "' against expected value '"
-              << endl << b << "'... " << endl;
-  if (a == b) 
-    printf("ok\n");
-  else {
-    printf("KO ! \n");
-    exit(1);
-  }
+    if ( a != b ) {
+        cout << "ERROR: Tested " << txt.latin1() << ", expected" << endl;
+        cout << "'" << b.latin1() << "'" << endl;
+        cout << "but got" << endl;
+        cout << "'" << a.latin1() << "'" << endl;
+        exit( 1 );
+    }
   return true; 
 }
 
@@ -87,5 +86,5 @@ int main(int argc, char *argv[])
   check( "tagURLs()", KStringHandler::tagURLs( test ),
 	 "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
 
-  printf("\nTest OK !\n");
+  cout << "All OK!" << endl;
 }
