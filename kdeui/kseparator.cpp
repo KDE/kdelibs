@@ -18,10 +18,7 @@
  */
 
 
-
-#include "iostream.h"
 #include "kseparator.h"
-
 
 
 KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
@@ -54,7 +51,7 @@ void KSeparator::setOrientation(int orientation)
          break;
       
       default:
-         cerr << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine";
+         warning("KSeparator::setOrientation(): invalid orientation, using default orientation HLine");
          
       case HLine:
          setFrameStyle( QFrame::HLine | QFrame::Sunken );
