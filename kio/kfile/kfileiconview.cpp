@@ -173,7 +173,6 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
     d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", false ) );
-    qDebug("*** readConfig!: %i", d->previews->isChecked());
 
     if ( kc->readEntry("ViewMode", small ) == small ) {
 	d->smallColumns->setChecked( true );
@@ -183,7 +182,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 	d->largeRows->setChecked( true );
 	slotLargeRows();
     }
-    
+
     if ( d->previews->isChecked() )
         showPreviews();
 }
