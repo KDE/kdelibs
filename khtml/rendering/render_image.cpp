@@ -127,7 +127,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
     else
     {
-        bool completeRepaint = !resizeCache.isNull(); // HACK
+        bool completeRepaint = !resizeCache.isNull();
         int cHeight = contentHeight();
         int scaledHeight = pixSize.height() ? ((o->valid_rect().height()*cHeight)/pixSize.height()) : 0;
 
@@ -197,9 +197,6 @@ void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int 
             if (resizeCache.isNull() && cWidth && cHeight)
             {
                 QRect scaledrect(image->valid_rect());
-                // ### Qt bug, it doesn't like width/height of 1
-                if(scaledrect.width() == 1) scaledrect.setWidth(2);
-                if(scaledrect.height() == 1) scaledrect.setHeight(2);
 //                 kdDebug(6040) << "time elapsed: " << dt->elapsed() << endl;
 //                  kdDebug( 6040 ) << "have to scale: " << endl;
 //                  qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
@@ -208,7 +205,8 @@ void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int 
                 matrix.scale( (float)(cWidth)/pixSize.width(),
                               (float)(cHeight)/pixSize.height() );
                 resizeCache = pix.xForm( matrix );
-                scaledrect = matrix.map(scaledrect);
+                scaledrect.setWidth( ( cWidth*scaledrect.width() ) / pixSize.width() );
+                scaledrect.setHeight( ( cHeight*scaledrect.height() ) / pixSize.height() );
 //                   qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
 //                   qDebug("valid: %d/%d, scaled: %d/%d",
 //                          image->valid_rect().width(), image->valid_rect().height(),
