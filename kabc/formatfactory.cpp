@@ -120,7 +120,10 @@ Format *FormatFactory::format( const QString& type )
     return format;
   }
 
-  QString libName = mFormatList[ type ]->library;
+  FormatInfo *fi = mFormatList[ type ];
+  if (!fi)
+	  return 0;
+  QString libName = fi->library;
 
   KLibrary *library = openLibrary( libName );
   if ( !library )
@@ -131,8 +134,8 @@ Format *FormatFactory::format( const QString& type )
   if ( format_func ) {
     format = ((Format* (*)())format_func)();
     format->setType( type );
-    format->setNameLabel( mFormatList[ type ]->nameLabel );
-    format->setDescriptionLabel( mFormatList[ type ]->descriptionLabel );
+    format->setNameLabel( fi->nameLabel );
+    format->setDescriptionLabel( fi->descriptionLabel );
   } else {
     kdDebug( 5700 ) << "'" << libName << "' is not a format plugin." << endl;
     return 0;
