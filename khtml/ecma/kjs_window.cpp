@@ -643,6 +643,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
   }
 
+#if 0 /// This is wrong, Mozilla doesn't do this! #16620 confused me
   // give access to functions (and variables ?) from parent frameset
   if (m_part->parentPart())
   {
@@ -658,6 +659,7 @@ Value Window::get(ExecState *exec, const UString &p) const
       }
     }
   }
+#endif
 
   // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
   // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
