@@ -98,10 +98,12 @@ namespace KJS {
     unsigned char singleEscape(unsigned short c) const;
     unsigned short convertOctal(unsigned short c1, unsigned short c2,
                                 unsigned short c3) const;
-    unsigned char convertHex(unsigned short c1) const;
-    unsigned char convertHex(unsigned short c1, unsigned short c2) const;
-    UChar convertUnicode(unsigned short c1, unsigned short c2,
-                               unsigned short c3, unsigned short c4) const;
+  public:
+    static unsigned char convertHex(unsigned short c1);
+    static unsigned char convertHex(unsigned short c1, unsigned short c2);
+    static UChar convertUnicode(unsigned short c1, unsigned short c2,
+				unsigned short c3, unsigned short c4);
+  private:
 
     void record8(unsigned short c);
     void record16(unsigned char c);

@@ -613,7 +613,7 @@ unsigned short Lexer::convertOctal(unsigned short c1, unsigned short c2,
   return ((c1 - '0') * 64 + (c2 - '0') * 8 + c3 - '0');
 }
 
-unsigned char Lexer::convertHex(unsigned short c) const
+unsigned char Lexer::convertHex(unsigned short c)
 {
   if (c >= '0' && c <= '9')
     return (c - '0');
@@ -623,13 +623,13 @@ unsigned char Lexer::convertHex(unsigned short c) const
     return (c - 'A' + 10);
 }
 
-unsigned char Lexer::convertHex(unsigned short c1, unsigned short c2) const
+unsigned char Lexer::convertHex(unsigned short c1, unsigned short c2)
 {
   return ((convertHex(c1) << 4) + convertHex(c2));
 }
 
 UChar Lexer::convertUnicode(unsigned short c1, unsigned short c2,
-                                     unsigned short c3, unsigned short c4) const
+                                     unsigned short c3, unsigned short c4)
 {
   return UChar((convertHex(c1) << 4) + convertHex(c2),
 	       (convertHex(c3) << 4) + convertHex(c4));

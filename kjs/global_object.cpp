@@ -19,6 +19,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "kjs.h"
 #include "object.h"
@@ -27,6 +28,7 @@
 #include "types.h"
 #include "lexer.h"
 #include "nodes.h"
+#include "lexer.h"
 
 #include "object_object.h"
 #include "function_object.h"
@@ -47,7 +49,7 @@ class GlobalFunc : public InternalFunctionImp {
 public:
   GlobalFunc(int i) : id(i) { }
   Completion execute(const List &c);
-  enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite };
+  enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape };
 private:
   int id;
 };
@@ -144,6 +146,8 @@ GlobalImp::GlobalImp()
 
 void GlobalImp::init()
 {
+  /* TODO: hardcode them in a get() method */
+  
   // value properties
   put("NaN", Number(NaN), DontEnum | DontDelete);
   put("Infinity", Number(Inf), DontEnum | DontDelete);
@@ -153,6 +157,8 @@ void GlobalImp::init()
   put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
   put("isNaN", Function(new GlobalFunc(GlobalFunc::IsNaN)));
   put("isFinite", Function(new GlobalFunc(GlobalFunc::IsFinite)));
+  put("escape", Function(new GlobalFunc(GlobalFunc::Escape)));
+  put("unescape", Function(new GlobalFunc(GlobalFunc::UnEscape)));
 
   // other properties
   put("Math", Object(new Math()), DontEnum);
@@ -163,6 +169,10 @@ GlobalImp::~GlobalImp() { }
 Completion GlobalFunc::execute(const List &args)
 {
   KJSO res;
+
+  static const char non_escape[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				   "abcdefghijklmnopqrstuvwxyz"
+				   "0123456789@*_+-";
 
   if (id == Eval) { // eval()
     KJSO x = args[0];
@@ -215,8 +225,46 @@ Completion GlobalFunc::execute(const List &args)
   } else if (id == IsFinite) {
     Number n = args[0].toNumber();
     res = Boolean(!n.isNaN() && !n.isInf());
+  } else if (id == Escape) {
+    UString r, s, str = args[0].toString().value();
+    const UChar *c = str.data();
+    for (int k = 0; k < str.size(); k++, c++) {
+      int u = c->unicode();
+      if (u > 255) {
+	char tmp[7];
+	sprintf(tmp, "%%u%04x", u);
+	s = UString(tmp);
+      } else if (strchr(non_escape, (char)u)) {
+	s = UString(c, 1);
+      } else {
+	char tmp[4];
+	sprintf(tmp, "%%%02x", u);
+	s = UString(tmp);
+      }
+      r += s;
+    }
+    res = String(r);
+  } else if (id == UnEscape) {
+    UString s, str = args[0].toString().value();
+    int k = 0, len = str.size();
+    while (k < len) {
+      const UChar *c = str.data() + k;
+      UChar u;
+      if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
+	u = Lexer::convertUnicode((c+2)->unicode(), (c+3)->unicode(),
+				  (c+4)->unicode(), (c+5)->unicode());
+	c = &u;
+	k += 5;
+      } else if (*c == UChar('%') && k <= len - 3) {
+	u = UChar(Lexer::convertHex((c+1)->unicode(), (c+2)->unicode()));
+	c = &u;
+	k += 2;
+      }
+      k++;
+      s += UString(c, 1);
+    }
+    res = String(s);
   }
 
   return Completion(Normal, res);
 }
-
