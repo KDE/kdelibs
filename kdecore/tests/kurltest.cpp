@@ -327,6 +327,24 @@ int main(int argc, char *argv[])
   check("http: IPV6 host", waba1.url(),
         "http://[::FFFF:129.144.52.38]/cgi/test.cgi");
 
+  // Broken stuff
+  waba1 = "file:a";
+  check("Broken stuff #1 path", waba1.path(), "a");
+  check("Broken stuff #1 fileName(false)", waba1.fileName(false), "a");
+  check("Broken stuff #1 fileName(true)", waba1.fileName(true), "a");
+  check("Broken stuff #1 directory(false, false)", waba1.directory(false, false), "");
+  check("Broken stuff #1 directory(true, false)", waba1.directory(true, false), "");
+  check("Broken stuff #1 directory(false, true)", waba1.directory(true, true), "");
+
+  waba1 = "file:a/";
+  check("Broken stuff #2 path", waba1.path(), "a/");
+  check("Broken stuff #2 fileName(false)", waba1.fileName(false), "");
+  check("Broken stuff #2 fileName(true)", waba1.fileName(true), "a");
+  check("Broken stuff #2 directory(false, false)", waba1.directory(false, false), "a/");
+  check("Broken stuff #2 directory(true, false)", waba1.directory(true, false), "a");
+  check("Broken stuff #2 directory(false, true)", waba1.directory(true, true), "");
+
+
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
   check("UNC, with localhost", unc1.path(), "/home/root");
