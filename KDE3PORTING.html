@@ -144,7 +144,7 @@ setEncoding(int) instead.
 
 <H4>Accelerators Keys</H4>
 <h5>KAccel</h5>
-The following methods of been depricated, and if KDE_NO_COMPAT is defined they will
+The following methods of been deprecated, and if KDE_NO_COMPAT is defined they will
 not be available.
 <ul>
 	<li> KAccel::insertItem() and KAccel::connectItem().
@@ -395,7 +395,11 @@ change the behavior of the selectable property you don't need to re-implement
 both virtual functions, setSelectable and isSelectable, but instead just
 re-implementing setSelectable does the job. The very same applies for
 the <code>KURL url() const</code> and ReadWritePart's <code>bool isReadWrite const</code>
-and <code>bool isModified() const</code> methods.
+and <code>bool isModified() const</code> methods. 
+<p>
+The <code>void showProgressInfo(bool)</code>
+method has been renamed to <code>bool setProgressInfoEnabled(bool)</code>. The old name will 
+still work unless KDE_NO_COMPAT is defined.
 
 <H4>KParts::BrowserExtension</H4>
 The <code>URLArgs urlArgs()</code> method is no more virtual. So when you want to

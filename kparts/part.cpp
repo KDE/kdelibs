@@ -299,10 +299,22 @@ ReadOnlyPart::~ReadOnlyPart()
   delete d;
 }
 
+void ReadOnlyPart::setProgressInfoEnabled( bool show )
+{
+  d->m_showProgressInfo = show;
+}
+
+bool ReadOnlyPart::isProgressInfoEnabled() const
+{
+  return d->m_showProgressInfo;
+}
+
+#ifndef KDE_NO_COMPAT
 void ReadOnlyPart::showProgressInfo( bool show )
 {
   d->m_showProgressInfo = show;
 }
+#endif
 
 bool ReadOnlyPart::openURL( const KURL &url )
 {

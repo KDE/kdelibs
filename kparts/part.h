@@ -295,7 +295,17 @@ public:
    * signals emitted by this class, and/or those emitted by
    * the Job given by @ref started.
    */
-   void showProgressInfo( bool show );
+  void setProgressInfoEnabled( bool show );
+ 
+  /**
+   * Returns whether the part shows the progress info dialog used by internal
+   * KIO job.
+   */
+  bool isProgressInfoEnabled() const;
+  
+#ifndef KDE_NO_COMPAT
+  void showProgressInfo( bool show );
+#endif
 
 public slots:
   /**
