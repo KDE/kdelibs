@@ -32,7 +32,7 @@
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
 
-#define CHARSETS_COUNT 25
+#define CHARSETS_COUNT 26
 static const char *charsetsStr[CHARSETS_COUNT]={
     "unicode",
     "iso-8859-1",
@@ -56,6 +56,7 @@ static const char *charsetsStr[CHARSETS_COUNT]={
     "set-th-th",
     "set-zh",
     "set-zh-tw",
+    "tscii",
     "utf-8",
     "utf-16",
     "Any"
@@ -83,6 +84,7 @@ static const char *xNames[CHARSETS_COUNT]={
     "unknown",
     "unknown",
     "unknown",
+    "tscii-0",
     "utf8",
     "utf16",
     ""  // this will always return true...
@@ -111,6 +113,7 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT]={
     QFont::Set_Th_TH,
     QFont::Set_Zh,
     QFont::Set_Zh_TW,
+    QFont::TSCII,
     QFont::Unicode,
     QFont::Unicode,
     QFont::AnyCharSet
@@ -328,14 +331,17 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     mask.charset = charset;
     getFontList(mask, list);
     if(!list.isEmpty()) {
+	qDebug("do: 1");
         f.setCharSet(charset);
         return;
     }
 
+	qDebug("do: 2");
     // let's try unicode...
     mask.charset = QFont::Unicode;
     getFontList(mask, list);
     if(!list.isEmpty()) {
+	qDebug("do: 3");
         // just setting the charset to unicode should work
         f.setCharSet(QFont::Unicode);
         return;
@@ -344,32 +350,39 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     // ok... we don't have the charset in the specified family, let's
     // try to find a replacement.
 
+	qDebug("do: 4");
     mask.charset = charset;
     getFontList(mask, list);
     if(!list.isEmpty()) {
+	qDebug("do: 5");
         f.setFamily(list.first()->family);
         f.setCharSet(charset);
         return;
     }
 
+	qDebug("do: 6");
     mask.charset = QFont::Unicode;
     mask.family = QString::null;
     getFontList(mask, list);
     if(!list.isEmpty()) {
+	qDebug("do: 7");
         f.setFamily(list.first()->family);
         f.setCharSet(QFont::Unicode);
         return;
     }
 
+	qDebug("do: 8");
     KFontStruct m;
     m.charset = charset;
     getFontList(m, list);
     if(!list.isEmpty()) {
+	qDebug("do: 9");
         f.setFamily(list.first()->family);
         f.setCharSet(charset);
         return;
     }
 
+	qDebug("do: 10");
     f.setCharSet(QFont::AnyCharSet);
     return;
 }
@@ -561,6 +574,8 @@ QFont::CharSet KCharsets::nameToID(QString name) const
 	    return charsetsIds[i];
 	i++;
     }
+
+    i = 0;
     while(i < CHARSETS_COUNT)
     {
 	if( name == xNames[i] )
