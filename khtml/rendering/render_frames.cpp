@@ -544,13 +544,6 @@ void RenderPartObject::close()
       url = o->url.string();
       if( url.isEmpty()) return;
       KHTMLView *v = static_cast<KHTMLView *>(m_view);
-      v->setMarginHeight(o->marginHeight);
-      v->setMarginWidth(o->marginWidth);
-      if(!o->frameBorder)
-	  v->setFrameStyle(QFrame::NoFrame);
-      v->setVScrollBarMode(o->scrolling);
-      v->setHScrollBarMode(o->scrolling);
-
       v->part()->requestFrame( this, url, o->name.string() );
   }
 
@@ -561,11 +554,25 @@ void RenderPartObject::close()
 
 void RenderPartObject::setWidget( QWidget *w )
 {
-  if ( w && m_width == 0 && m_height == 0 )
-  {
-    QSize hint = w->sizeHint();
-    m_width = hint.width();
-    m_height = hint.height();
+  if(w->inherits("QScrollView") && m_obj->id() == ID_IFRAME) {
+      kdDebug(6031) << "iframe is a scrollview!" << endl;
+      QScrollView *view = static_cast<QScrollView *>(w);
+      HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
+      if(!m_frame->frameBorder)
+	  view->setFrameStyle(QFrame::NoFrame);
+      view->setVScrollBarMode(m_frame->scrolling);
+      view->setHScrollBarMode(m_frame->scrolling);
+      if(view->inherits("KHTMLView")) {
+	  kdDebug(6031) << "frame is a KHTMLview!" << endl;
+	  KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+	  if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
+	  if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
+	}
+  }
+  if ( w && m_width == 0 && m_height == 0 ) {
+      QSize hint = w->sizeHint();
+      m_width = hint.width();
+      m_height = hint.height();
   }
 
   RenderPart::setWidget( w );
