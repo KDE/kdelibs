@@ -25,7 +25,7 @@
 #include <qtimer.h>
 #include <qpopupmenu.h>
 
-#define KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID 2004
+#define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
 class KListViewSearchLine::KListViewSearchLinePrivate
 {
@@ -76,7 +76,7 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, const char *name) :
 {
     d = new KListViewSearchLinePrivate;
 
-    d->listView = 0L;
+    d->listView = 0;
 
     connect(this, SIGNAL(textChanged(const QString &)),
             this, SLOT(queueSearch(const QString &)));
@@ -235,7 +235,7 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
     popup->insertSeparator();
     popup->insertItem(i18n("Search Columns"), subMenu);
     
-    subMenu->insertItem(i18n("All Columns"), KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID);
+    subMenu->insertItem(i18n("All Visible Columns"), KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID);
     subMenu->insertSeparator();
     
     bool allColumnsAreSearchColumns = true;
@@ -246,7 +246,7 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
         else
             allColumnsAreSearchColumns = false;
     }
-    subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID, allColumnsAreSearchColumns);
+    subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
     
     // searchColumnsMenuActivated() relies on one possible "all" representation
     if(allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
@@ -291,7 +291,7 @@ void KListViewSearchLine::listViewDeleted()
 
 void KListViewSearchLine::searchColumnsMenuActivated(int id)
 {
-    if(id == KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID) {
+    if(id == KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID) {
         if(d->searchColumns.isEmpty())
             d->searchColumns.append(0);
         else
