@@ -22,11 +22,11 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KIntegerLine, KIntLineEdit
 
-  KIntegerLine has been renamed to KIntLineEdit. The new header file
+  KIntegerLine has been replaced by KIntLineEdit. The new header file
   is called knumlineedit.h, because it contains one additional class
   KFloatLineEdit. If you were using the former KIntLineEdit
-  from keditcl.h, kintegerline.h or kintlineedit.h, no changes should
-  be necessary at all, althouth the (QWidget *parent) paramater is now required.
+  from keditcl.h or kintlineedit.h, no changes should be necessary
+  at all, althouth the (QWidget *parent) paramater is now required.
   It is recommended to switch to the new include file, though.
 
 //////////////////////////////////////////////////////////////////////
@@ -66,8 +66,8 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget
 
-  These classes have been dropped. Use the Qt DND interface instead.
-  A good starting point may be the Qt Drag and Drop Tutorial.
+  These classes have been replaced by the Qt DND interface.
+  A good starting point may be reading the Qt Drag and Drop Tutorial.
 
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
