@@ -3964,7 +3964,7 @@ void DeleteJob::deleteNextFile()
             if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
                 job = 0;
                 m_processedFiles++;
-                if ( m_processedFiles % 300 == 0 ) { // update progress info every 300 files
+                if ( m_processedFiles % 300 == 0 || m_totalFilesDirs < 300) { // update progress info every 300 files
                     m_currentURL = *it;
                     slotReport();
                 }
