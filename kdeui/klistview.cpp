@@ -550,7 +550,7 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
       if ( at )
       {
         // true if the root decoration of the item "at" was clicked (i.e. the +/- sign)
-        bool rootDecoClicked = 
+        bool rootDecoClicked =
                   ( p.x() <= header()->cellPos( header()->mapToActual( 0 ) ) +
                     treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() )
                && ( p.x() >= header()->cellPos( header()->mapToActual( 0 ) ) );
@@ -665,7 +665,7 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 
 void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
-  if (acceptDrops() && acceptDrag(event))
+  if (acceptDrag(event))
   {
     event->accept();
     //Clean up the view
@@ -683,7 +683,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     }
   }
   else
-          event->ignore();
+      event->ignore();
 }
 
 void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
@@ -880,6 +880,8 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
           insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
         }
 
+  // This is not used anymore, at least by KListView itself (see viewportPaintEvent)
+  // Remove for KDE 3.0.
   if (p)
         p->fillRect(insertmarker, Dense4Pattern);
 
@@ -1280,19 +1282,13 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
 {
   QListView::viewportPaintEvent(e);
 
-  QWidget* view = viewport();
-
-  if (d->mOldDropVisualizer.isValid())
+  if (d->mOldDropVisualizer.isValid() && e->rect().intersects(d->mOldDropVisualizer))
     {
-      QPixmap surface(view->size());
-      bitBlt (&surface, QPoint (0,0), view, view->rect(), CopyROP);
-      QPainter painter(&surface, view);
+      QPainter painter(viewport());
 
-      if (e->rect().intersects(drawDropVisualizer(&painter,d->parentItemDrop, d->afterItemDrop)))
-        {
-          bitBlt(view, d->mOldDropVisualizer.topLeft(), &surface,
-                 d->mOldDropVisualizer, CopyROP);
-        }
+      if (e->rect().intersects(d->mOldDropVisualizer))
+          // This is where we actually draw the drop-visualizer
+          painter.fillRect(d->mOldDropVisualizer, Dense4Pattern);
     }
 }
 
