@@ -884,6 +884,41 @@ KURL& KURL::operator=( const KURL& _u )
   return *this;
 }
 
+bool KURL::operator<( const KURL& _u) const
+{
+  if (_u.isMalformed())
+     return false;
+  if (isMalformed())
+     return true;
+  
+  int i;
+  
+  i = m_strProtocol.compare(_u.m_strProtocol);
+  if (i) return (i < 0);
+
+  i = m_strHost.compare(_u.m_strHost);
+  if (i) return (i < 0);
+
+  if (m_iPort != _u.m_iPort) return (m_iPort < _u.m_iPort);
+
+  i = m_strPath.compare(_u.m_strPath);
+  if (i) return (i < 0);
+
+  i = m_strQuery_encoded.compare(_u.m_strQuery_encoded);
+  if (i) return (i < 0);
+
+  i = m_strRef_encoded.compare(_u.m_strRef_encoded);
+  if (i) return (i < 0);
+
+  i = m_strUser.compare(_u.m_strUser);
+  if (i) return (i < 0);
+  
+  i = m_strPass.compare(_u.m_strPass);
+  if (i) return (i < 0);
+
+  return false;    
+}
+
 bool KURL::operator==( const KURL& _u ) const
 {
   if ( isMalformed() || _u.isMalformed() )

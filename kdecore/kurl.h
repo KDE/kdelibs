@@ -654,6 +654,8 @@ public:
    */
   KURL upURL( ) const;
 
+  bool operator<(const KURL& _u) const;
+
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
   KURL& operator=( const char * _url );
