@@ -53,6 +53,7 @@ static const KStdActionInfo g_rgActionInfo[] =
 	{ ZoomIn,        KStdAccel::ZoomIn, "view_zoom_in", I18N_NOOP("Zoom &In"), 0, "viewmag+" },
 	{ ZoomOut,       KStdAccel::ZoomOut, "view_zoom_out", I18N_NOOP("Zoom &Out"), 0, "viewmag-" },
 	{ Zoom,          KStdAccel::AccelNone, "view_zoom", I18N_NOOP("&Zoom..."), 0, "viewmag" },
+        // KDE4: give Redisplay the shortcut KStdAccel::AccelReload
 	{ Redisplay,     KStdAccel::AccelNone, "view_redisplay", I18N_NOOP("&Redisplay"), 0, "reload" },
 
 	{ Up,            KStdAccel::Up, "go_up", I18N_NOOP("&Up"), 0, "up" },
