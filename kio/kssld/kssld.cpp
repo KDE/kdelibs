@@ -388,7 +388,6 @@ bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
 
 
 bool KSSLD::caRegenerate() {
-KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
 QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
 
 QFile out(path);
@@ -396,7 +395,7 @@ QFile out(path);
 	if (!out.open(IO_WriteOnly))
 		return false;
 
-KConfig cfg("ksslcalist", false, false);
+KConfig cfg("ksslcalist", true, false);
 
 QStringList x = cfg.groupList();
 
@@ -412,7 +411,8 @@ QStringList x = cfg.groupList();
 		QString cert = cfg.readEntry("x509", "");
 		if (cert.length() <= 0) continue;
 
-		for (unsigned int j = 0; j < (cert.length()-1)/64; j++) {
+		unsigned int xx = cert.length() - 1;
+		for (unsigned int j = 0; j < xx/64; j++) {
 			cert.insert(64*(j+1)+j, '\n');
 		}
 		out.writeBlock("-----BEGIN CERTIFICATE-----\n", 28);
