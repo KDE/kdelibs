@@ -253,13 +253,6 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
 
 void KHTMLPartBrowserExtension::updateEditActions()
 {
-    if ( !m_editableFormWidget )
-    {
-        enableAction( "cut", false );
-        enableAction( "paste", false );
-        return;
-    }
-
     // ### duplicated from KonqMainWindow::slotClipboardDataChanged
 #ifndef QT_NO_MIMECLIPBOARD // Handle minimalized versions of Qt Embedded
     QMimeSource *data = QApplication::clipboard()->data();
@@ -268,6 +261,12 @@ void KHTMLPartBrowserExtension::updateEditActions()
     QString data=QApplication::clipboard()->text();
     enableAction( "paste", data.contains("://"));
 #endif
+    if ( !m_editableFormWidget )
+    {
+        enableAction( "cut", false );
+        enableAction( "paste", false );
+        return;
+    }
 
     bool hasSelection = false;
 
