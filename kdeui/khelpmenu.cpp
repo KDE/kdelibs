@@ -67,13 +67,11 @@ QPopupMenu* KHelpMenu::menu( void )
     // I use hardcoded menu id's here. Reason is to stay backward
     // compatible.
     //
-
     mMenu = new QPopupMenu();
-    if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( QString::fromLatin1("contents") ), i18n( "&Contents" ),
-		       menuHelpContents );
+    mMenu->insertItem( BarIcon( QString::fromLatin1("contents") ), 
+		       i18n( "&Contents" ),menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::help(), menuHelpContents );
 
@@ -88,17 +86,23 @@ QPopupMenu* KHelpMenu::menu( void )
 
     mMenu->insertSeparator();
 
+    mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
+    mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
+
+    mMenu->insertSeparator();
+
     mMenu->insertItem( kapp->miniIcon(),
-      i18n( "&About" ) + ' ' + QString::fromLatin1(kapp->name()) + QString::fromLatin1("..."), menuAboutApp );
+      i18n( "&About" ) + ' ' + QString::fromLatin1(kapp->name()) + 
+      QString::fromLatin1("..."), menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
     mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
     mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
 
-    mMenu->insertSeparator();
+    //mMenu->insertSeparator();
 
-    mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
-    mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
+    //mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
+    //mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
   }
 
   return( mMenu );
