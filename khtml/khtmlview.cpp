@@ -2400,6 +2400,9 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	default:
 	    break;
     }
+    if (d->accessKeysPreActivate && button!=-1) 
+    	d->accessKeysPreActivate=false;
+	
     bool ctrlKey = (_mouse->state() & ControlButton);
     bool altKey = (_mouse->state() & AltButton);
     bool shiftKey = (_mouse->state() & ShiftButton);
@@ -2486,6 +2489,8 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
+    if (d->accessKeysPreActivate) d->accessKeysPreActivate=false;
+
     if ( ( e->state() & ControlButton) == ControlButton )
     {
         emit zoomView( - e->delta() );
