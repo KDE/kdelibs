@@ -571,10 +571,14 @@ DOM::Document KHTMLPart::document() const
     return d->m_doc;
 }
 
-
 KParts::BrowserExtension *KHTMLPart::browserExtension() const
 {
   return d->m_extension;
+}
+
+KParts::BrowserHostExtension *KHTMLPart::browserHostExtension() const
+{
+  return d->m_hostExtension;
 }
 
 KHTMLView *KHTMLPart::view() const
@@ -797,7 +801,7 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
     }
     else if ( frameName != QString::fromLatin1( "_self" ) )
     {
-      khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
+      khtml::ChildFrame *_frame = recursiveFrameRequest( this, url, args );
 
       if ( !_frame )
       {
@@ -2675,7 +2679,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( hasTarget )
   {
     // unknown frame names should open in a new window.
-    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
+    khtml::ChildFrame *frame = recursiveFrameRequest( this, cURL, args, false );
     if ( frame )
     {
       args.metaData()["referrer"] = d->m_referrer;
@@ -3584,6 +3588,7 @@ void KHTMLPart::slotChildDocCreated()
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
+  KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()));
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   QString urlStr = url.url();
@@ -3616,7 +3621,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
     }
     else if ( frameName != QString::fromLatin1( "_self" ) )
     {
-      khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
+      khtml::ChildFrame *_frame = recursiveFrameRequest( callingHtmlPart, url, args );
 
       if ( !_frame )
       {
@@ -3656,44 +3661,90 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 
 //#define DEBUG_FINDFRAME
 
-KHTMLPart *KHTMLPart::findFrame( const QString &f )
+bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
+{
+  if (callingHtmlPart == this)
+    return true; // trivial
+
+  if (htmlDocument().isNull()) {
+#ifdef DEBUG_FINDFRAME
+    kdDebug(6050) << "KHTMLPart::checkFrameAccess: Empty part " << this << " URL = " << m_url.prettyURL() << endl;
+#endif
+    return false; // we are empty?
+  }
+
+  // now compare the domains
+  if (callingHtmlPart && !callingHtmlPart->htmlDocument().isNull() &&
+      !htmlDocument().isNull())  {
+    DOM::DOMString actDomain = callingHtmlPart->htmlDocument().domain();
+    DOM::DOMString destDomain = htmlDocument().domain();
+
+#ifdef DEBUG_FINDFRAME
+    kdDebug(6050) << "KHTMLPart::checkFrameAccess: actDomain = '" << actDomain.string() << "' destDomain = '" << destDomain.string() << "'" << endl;
+#endif
+
+    if (actDomain == destDomain)
+      return true;
+  }
+#ifdef DEBUG_FINDFRAME
+  else
+  {
+    kdDebug(6050) << "KHTMLPart::checkFrameAccess: Unknown part/domain " << callingHtmlPart << " tries to access part " << this << endl;
+  }
+#endif
+  return false;
+}
+
+KHTMLPart *
+KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame )
 {
 #ifdef DEBUG_FINDFRAME
-  kdDebug(6050) << "KHTMLPart::findFrame '" << f << "'" << endl;
-  FrameIt it2 = d->m_frames.begin();
-  FrameIt end = d->m_frames.end();
-  for (; it2 != end; ++it2 )
-      kdDebug(6050) << "  - having frame '" << (*it2).m_name << "'" << endl;
+  kdDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << m_url.prettyURL() << " findFrameParent( " << f << " )" << endl;
 #endif
-  // ### http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
-  ConstFrameIt it = d->m_frames.find( f );
-  if ( it == d->m_frames.end() )
+  // Check access
+  KHTMLPart *callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
+  
+  if (!checkFrameAccess(callingHtmlPart))
+     return 0;
+
+  FrameIt it = d->m_frames.find( f );
+  FrameIt end = d->m_frames.end();
+  if ( it != end )
   {
 #ifdef DEBUG_FINDFRAME
-    kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " not found" << endl;
+     kdDebug(6050) << "KHTMLPart::findFrameParent: FOUND!" << endl;
 #endif
-    return 0L;
+     if (childFrame)
+        *childFrame = &(*it);
+     return this;
   }
-  else {
+     
+  it = d->m_frames.begin();
+  for (; it != end; ++it )
+  {
     KParts::ReadOnlyPart *p = (*it).m_part;
     if ( p && p->inherits( "KHTMLPart" ))
     {
-#ifdef DEBUG_FINDFRAME
-      kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
-#endif
-      return (KHTMLPart*)p;
-    }
-    else
-    {
-#ifdef DEBUG_FINDFRAME
-      if (p)
-        kdWarning() << "KHTMLPart::findFrame frame " << f << " found but isn't a KHTMLPart ! " << p->className() << endl;
-      else
-        kdWarning() << "KHTMLPart::findFrame frame " << f << " found but m_part=0L" << endl;
-#endif
-      return 0L;
+      KHTMLPart *frameParent = static_cast<KHTMLPart*>(p)->findFrameParent(callingPart, f, childFrame);
+      if (frameParent)
+         return frameParent;
     }
   }
+  return 0;
+}
+
+
+KHTMLPart *KHTMLPart::findFrame( const QString &f )
+{
+  khtml::ChildFrame *childFrame;
+  KHTMLPart *parentFrame = findFrameParent(this, f, &childFrame);
+  if (parentFrame)
+  {
+     KParts::ReadOnlyPart *p = childFrame->m_part;
+     if ( p && p->inherits( "KHTMLPart" ))
+        return static_cast<KHTMLPart *>(p);
+  }
+  return 0;
 }
 
 KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
@@ -3731,37 +3782,29 @@ KHTMLPart *KHTMLPart::parentPart()
   return (KHTMLPart *)parent();
 }
 
-khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args,
-                                                     bool callParent )
+khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url, 
+                                                     const KParts::URLArgs &args, bool callParent )
 {
-  FrameIt it = d->m_frames.find( args.frameName );
-
-  if ( it != d->m_frames.end() )
-    return &(*it);
-
-  it = d->m_frames.begin();
-  FrameIt end = d->m_frames.end();
-  for (; it != end; ++it )
-    if ( (*it).m_part && (*it).m_part->inherits( "KHTMLPart" ) )
-    {
-      KHTMLPart *childPart = (KHTMLPart *)(KParts::ReadOnlyPart *)(*it).m_part;
-
-      khtml::ChildFrame *res = childPart->recursiveFrameRequest( url, args, false );
-      if ( !res )
-        continue;
-
-      childPart->requestObject( res, url, args );
-      return 0L;
-    }
+#ifdef DEBUG_FINDFRAME
+  kdDebug( 6050 ) << "KHTMLPart::recursiveFrameRequest this = " << this << ", frame = " << args.frameName << ", url = " << url.prettyURL() << endl;
+#endif  
+  khtml::ChildFrame *childFrame;
+  KHTMLPart *childPart = findFrameParent(callingHtmlPart, args.frameName, &childFrame);
+  if (childPart)
+  {
+     if (childPart == this)
+        return childFrame;
+     
+     childPart->requestObject( childFrame, url, args );
+     return 0;
+  }
 
   if ( parentPart() && callParent )
   {
-    khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( url, args );
+     khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( callingHtmlPart, url, args, callParent );
 
-    if ( res )
-      parentPart()->requestObject( res, url, args );
-
-    return 0L;
+     if ( res )
+       parentPart()->requestObject( res, url, args );
   }
 
   return 0L;
@@ -3769,7 +3812,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+  kdDebug( 6050 ) << "KHTMLPart::saveState this = " << this << " saving URL " << m_url.url() << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY()
          << (Q_INT32) d->m_view->contentsWidth() << (Q_INT32) d->m_view->contentsHeight() << (Q_INT32) d->m_view->marginWidth() << (Q_INT32) d->m_view->marginHeight();

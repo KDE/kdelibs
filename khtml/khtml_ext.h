@@ -66,6 +66,9 @@ public:
   virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
 
   virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KHTMLPart *m_part;
 };

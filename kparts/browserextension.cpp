@@ -599,6 +599,17 @@ BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 void BrowserExtension::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+BrowserHostExtension *
+BrowserHostExtension::findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame)
+{
+    FindFrameParentParams param;
+    param.parent = 0;
+    param.callingPart = callingPart;
+    param.frame = frame;
+    virtual_hook(VIRTUAL_FIND_FRAME_PARENT, &param);
+    return param.parent;
+}
+
 void BrowserHostExtension::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
