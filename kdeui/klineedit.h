@@ -275,6 +275,11 @@ public:
 signals:
 
     /**
+     * Emitted whenever the completion box is activated.
+     */
+    void completionBoxActivated (const QString &);
+
+    /**
      * Emitted when the user presses the return key.
      *
      *  The argument is the current text.  Note that this

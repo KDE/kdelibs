@@ -191,50 +191,10 @@ void KLineEdit::setReadOnly(bool readOnly)
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    KKey key( e );
-
-    if ( KStdAccel::copy().contains( key ) ) {
-        copy();
-	return;
-    }
-    else if ( KStdAccel::paste().contains( key ) ) {
-        paste();
-	return;
-    }
-    else if ( KStdAccel::cut().contains( key ) ) {
-        cut();
-	return;
-    }
-    else if ( KStdAccel::undo().contains( key ) ) {
-        undo();
-	return;
-    }
-    else if ( KStdAccel::redo().contains( key ) ) {
-        redo();
-	return;
-    }
-    else if ( KStdAccel::deleteWordBack().contains( key ) )
-    {
-        cursorWordBackward(TRUE);
-        if ( hasSelectedText() )
-            del();
-
-        e->accept();
-        return;
-    }
-    else if ( KStdAccel::deleteWordForward().contains( key ) )
-    {
-        // Workaround for QT bug where
-        cursorWordForward(TRUE);
-        if ( hasSelectedText() )
-            del();
-
-        e->accept();
-        return;
-    }
-
     // Filter key-events if EchoMode is normal &
     // completion mode is not set to CompletionNone
+    KKey key( e );
+        
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
@@ -372,6 +332,51 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 return;
             }
         }
+    }    
+
+    if ( KStdAccel::copy().contains( key ) )
+    {
+        copy();
+        return;
+    }
+    else if ( KStdAccel::paste().contains( key ) )
+    {
+        paste();
+        return;
+    }
+    else if ( KStdAccel::cut().contains( key ) )
+    {
+        cut();
+        return;
+    }
+    else if ( KStdAccel::undo().contains( key ) )
+    {
+        undo();
+        return;
+    }
+    else if ( KStdAccel::redo().contains( key ) )
+    {
+        redo();
+        return;
+    }
+    else if ( KStdAccel::deleteWordBack().contains( key ) )
+    {
+        cursorWordBackward(TRUE);
+        if ( hasSelectedText() )
+            del();
+
+        e->accept();
+        return;
+    }
+    else if ( KStdAccel::deleteWordForward().contains( key ) )
+    {
+        // Workaround for QT bug where
+        cursorWordForward(TRUE);
+        if ( hasSelectedText() )
+            del();
+
+        e->accept();
+        return;
     }
 
     // Let QLineEdit handle any other keys events.
@@ -412,8 +417,10 @@ QPopupMenu *KLineEdit::createPopupMenu()
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
 
-    // completion object is present.
-    if ( compObj() )
+    // If a completion object is present and the input
+    // widget is not read-only, show the Text Completion
+    // menu item.
+    if ( compObj() && !isReadOnly() )
     {
         QPopupMenu *subMenu = new QPopupMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),
@@ -448,6 +455,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
             subMenu->insertItem( i18n("Default"), Default );
         }
     }
+    
     // ### do we really need this?  Yes, Please do not remove!  This
     // allows applications to extend the popup menu without having to
     // inherit from this class! (DA)
@@ -586,57 +594,63 @@ void KLineEdit::makeCompletionBox()
                  SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(setText( const QString& )) );
-
-        // Nice lil' hacklet ;) KComboBox doesn't know when the completionbox
-        // is created (childEvent() is even more hacky, IMHO), so we simply
-        // forward the completionbox' activated signal from here.
-        if ( parentWidget() && parentWidget()->inherits("KComboBox") )
-            connect( d->completionBox, SIGNAL( activated( const QString& )),
-                     parentWidget(), SIGNAL( activated( const QString & )));
+        connect( d->completionBox, SIGNAL( activated( const QString& )),
+                 SIGNAL(completionBoxActivated( const QString& )) );
     }
 }
 
 bool KLineEdit::overrideAccel (const QKeyEvent* e)
 {
-  KShortcut scKey;
+    KShortcut scKey;
 
-  KKey key( e );
-  KeyBindingMap keys = getKeyBindings();
+    KKey key( e );
+    KeyBindingMap keys = getKeyBindings();
 
-  if (keys[TextCompletion].isNull())
-    scKey = KStdAccel::shortcut(KStdAccel::TextCompletion);
-  else
-    scKey = keys[TextCompletion];
+    if (keys[TextCompletion].isNull())
+        scKey = KStdAccel::shortcut(KStdAccel::TextCompletion);
+    else
+        scKey = keys[TextCompletion];
 
-  if (scKey.contains( key ))
-    return true;
+    if (scKey.contains( key ))
+        return true;
 
-  if (keys[NextCompletionMatch].isNull())
-    scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
-  else
-    scKey = keys[NextCompletionMatch];
+    if (keys[NextCompletionMatch].isNull())
+        scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
+    else
+        scKey = keys[NextCompletionMatch];
 
-  if (scKey.contains( key ))
-    return true;
+    if (scKey.contains( key ))
+        return true;
 
-  if (keys[PrevCompletionMatch].isNull())
-    scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
-   else
-    scKey = keys[PrevCompletionMatch];
+    if (keys[PrevCompletionMatch].isNull())
+        scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
+    else
+        scKey = keys[PrevCompletionMatch];
 
-  if (scKey.contains( key ))
-    return true;
+    if (scKey.contains( key ))
+        return true;
 
-  if (KStdAccel::deleteWordBack().contains( key ))
-    return true;
-  if (KStdAccel::deleteWordForward().contains( key ))
-    return true;
+    // Override all the text manupilation accelerators...    
+    if ( KStdAccel::copy().contains( key ) ) 
+        return true;
+    else if ( KStdAccel::paste().contains( key ) ) 
+        return true;
+    else if ( KStdAccel::cut().contains( key ) ) 
+        return true;
+    else if ( KStdAccel::undo().contains( key ) ) 
+        return true;
+    else if ( KStdAccel::redo().contains( key ) ) 
+        return true;
+    else if (KStdAccel::deleteWordBack().contains( key ))
+        return true;    
+    else if (KStdAccel::deleteWordForward().contains( key ))
+        return true;
 
-  if (d->completionBox && d->completionBox->isVisible ())
-    if (e->key () == Key_Backtab)
-      return true;
+    if (d->completionBox && d->completionBox->isVisible ())
+      if (e->key () == Key_Backtab)
+        return true;
 
-  return false;
+    return false;
 }
 
 void KLineEdit::setCompletedItems( const QStringList& items )
