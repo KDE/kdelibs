@@ -411,7 +411,7 @@ QCString fromUnicode( const QString &data )
                 buffer_len += test.length();
             }
         }
-        result += QCString( buffer, buffer_len );
+        result += QCString( buffer, buffer_len + 1);
         offset += part_len;
     }
     return result;
