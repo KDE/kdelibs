@@ -39,7 +39,7 @@ class KDateTable;
  *     to select a date directly by entering numbers like 19990101
  *     or 990101.
  *
- * @image kdatepicker.png KDatePicker
+ * \image html kdatepicker.png "KDE Date Widget"
  *
  *     @version $Id$
  *     @author Tim Gilman, Mirko Boehm
@@ -51,7 +51,7 @@ class KDatePicker: public QFrame
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)
   Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
-      
+
 public:
   /** The usual constructor.  The given date will be displayed
    * initially.
@@ -108,9 +108,9 @@ public:
 
   /**
    * By calling this method with @p enable = true, KDatePicker will show
-   * a little close-button in the upper button-row. Clicking the 
-   * close-button will cause the KDatePicker's topLevelWidget()'s close() 
-   * method being called. This is mostly useful for toplevel datepickers 
+   * a little close-button in the upper button-row. Clicking the
+   * close-button will cause the KDatePicker's topLevelWidget()'s close()
+   * method being called. This is mostly useful for toplevel datepickers
    * without a window manager decoration.
    * @see #hasCloseButton
    */

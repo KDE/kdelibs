@@ -172,7 +172,7 @@ class KHelpMenu : public QObject
     /**
      * Destructor
      *
-     * Destroys dialogs and the menu pointer retuned by @ref menu
+     * Destroys dialogs and the menu pointer retuned by @ref #menu
      */
     ~KHelpMenu();
 
@@ -245,7 +245,7 @@ class KHelpMenu : public QObject
      * is emitted.
      */
     void showAboutApplication();
-    
+
   private:
     KPopupMenu   *mMenu;
     KDialogBase  *mAboutApp;

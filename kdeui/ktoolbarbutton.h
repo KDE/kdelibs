@@ -195,8 +195,8 @@ public:
 
   /**
    * Turn this button into a toggle button or disable the toggle
-   * aspects of it.  This does not toggle the button itself.  Use @ref
-   * toggle for that.
+   * aspects of it.  This does not toggle the button itself.
+   * Use @ref toggle() for that.
    *
    * @param toggle true or false
    */

@@ -47,7 +47,7 @@ public:
     /**
      * The main method: executes this command.
      * Implement here what this command is about, and remember to
-     * record any information that will be helpful for @ref unexecute.
+     * record any information that will be helpful for #unexecute.
      */
     virtual void execute() = 0;
     /**
@@ -130,7 +130,7 @@ public:
      */
     virtual void execute();
     /**
-     * Undoes the execution of this command, i.e. unexecute all the sub-commands
+     * Undoes the execution of this command, i.e. #unexecute all the sub-commands
      * in the _reverse_ order to the one in which they were added.
      */
     virtual void unexecute();
@@ -158,7 +158,7 @@ public:
     /**
      * Creates a command history, to store commands.
      * This constructor doesn't create actions, so you need to call
-     * @ref undo and @ref redo yourself.
+     * #undo and #redo yourself.
      */
     KCommandHistory();
 

@@ -388,7 +388,7 @@ private:
  *            ...
  * </pre>
  *
- * @image kcolordialog.png KColorDialog
+ * @image html kcolordialog.png "KDE Color Dialog"
  *
  * The color dialog is really a collection of several widgets which can
  * you can also use separately: the quadratic plane in the top left of

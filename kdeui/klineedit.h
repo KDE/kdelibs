@@ -83,7 +83,7 @@ class KURL;
  * than @p QLineEdit::Normal, the completion mode will always be defaulted
  * to @ref KGlobalSettings::CompletionNone.  This is done purposefully to guard
  * against protected entries such as passwords being cached in @ref KCompletion's
- * list. Hence, if the @p EchoMode is not @ref QLineEdit::Normal, the completion
+ * list. Hence, if the @p EchoMode is not QLineEdit::Normal, the completion
  * mode is automatically disabled.
  *
  * @sect Useage
@@ -284,7 +284,7 @@ signals:
      *
      *  The argument is the current text.  Note that this
      * signal is @em not emitted if the widget's @p EchoMode is set to
-     * @ref QLineEdit::EchoMode.
+     * QLineEdit::EchoMode.
      */
     void returnPressed( const QString& );
 
@@ -370,7 +370,7 @@ public slots:
      * (changing the clipboard to the text we just had in the lineedit)
      */
     virtual void clear();
-    
+
 protected slots:
 
     /**

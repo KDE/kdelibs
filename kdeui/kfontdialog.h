@@ -277,7 +277,7 @@ private:
   KListBox     *sizeListBox;
   QComboBox    *charsetsCombo;
   QCheckBox    *sizeIsRelativeCheckBox;
-  
+
   KIntNumInput *sizeOfFont;
   QFont        selFont;
 
@@ -311,7 +311,7 @@ private:
  *            ...
  * </pre>
  *
- * @image kfontdialog.png KFontDialog
+ * \image html kfontdialog.png "KDE Font Dialog"
  *
  * @short A font selection dialog.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>

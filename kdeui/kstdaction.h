@@ -175,6 +175,8 @@ namespace KStdAction
 	 * This will return the internal name of a given standard action.
 	 */
 	const char* name( StdAction id );
+
+        /// @obsolete. Use #name
 	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
 
 	/**
@@ -462,7 +464,7 @@ namespace KStdAction
 	*/
 	KToggleToolBarAction *showToolbar(const char* toolBarName,
 					KActionCollection* parent, const char *name = 0 );
-	
+
 	/**
 	* Show/Hide the statusbar.
 	*/

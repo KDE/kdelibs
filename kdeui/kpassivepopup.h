@@ -100,7 +100,7 @@ public:
     int timeout() const { return hideDelay; }
 
     /**
-     * Enables / disables auto-deletion of this widget when the @ref timeout
+     * Enables / disables auto-deletion of this widget when the #timeout
      * occurs.
      * The default is false. If you use the class-methods message(),
      * auto-delection is turned on by default.
@@ -108,8 +108,7 @@ public:
     virtual void setAutoDelete( bool autoDelete );
 
     /**
-     * @returns true if the widget auto-deletes itself when the
-     * @ref timeout occurs.
+     * @returns true if the widget auto-deletes itself when the #timeout occurs.
      * @see #setAutoDelete
      */
     bool autoDelete() const { return m_autoDelete; }
@@ -154,7 +153,7 @@ public:
 public slots:
     /**
      * Sets the delay for the popup is removed automatically. Setting the delay to 0
-     * disables the timeout, if you're doing this, you may want to connect the
+     * disables the #timeout, if you're doing this, you may want to connect the
      * @ref clicked() signal to the hide() slot.
 	 * Setting the delay to -1 makes it use the default value.
      */

@@ -99,6 +99,7 @@ class KPanelExtension : public QFrame
 
 public:
 
+    /// The type of the extention (TODO)
     enum Type { Normal = 0, Stretch };
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
@@ -152,7 +153,7 @@ public:
 
     /**
      * @return int indicating the supported RMB menu actions.
-     * @ref Action
+     * #Action
      **/
     int actions() const { return _actions; }
 
@@ -199,7 +200,7 @@ public:
     * @return the custom sizel setting in pixels
     **/
     int customSize() const;
-                                                             
+
 
 signals:
     /**
@@ -216,7 +217,7 @@ protected:
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your extension supports the About action.
-     * See @ref Action.
+     * See #Action.
      **/
     virtual void about() {}
 
@@ -225,7 +226,7 @@ protected:
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your extension supports the Help action.
-     * See @ref Action.
+     * See #Action.
      **/
     virtual void help() {}
 
@@ -234,17 +235,17 @@ protected:
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your extension supports the preferences action.
-     * See @ref Action.
+     * See #Action.
      **/
     virtual void preferences() {}
-	
+
     /**
      * Is called when the user selects "Report bug" from the applet's RMB menu.
      * Reimplement this function to launch a bug reporting dialog.
      *
      * Note that this is called only when your applet supports the ReportBug
      * action.
-     * See @ref Action.
+     * See #Action.
      **/
     virtual void reportBug() {}
 

@@ -203,7 +203,7 @@ typedef KKeyChooser KKeyChooser;
  * KKeyDialog::configure( actionCollection() );
  * </pre>
  *
- * @short Dialog for configuration of @ref KActioncollection, @ref KAccel, and @ref KGlobalAccel.
+ * @short Dialog for configuration of @ref KActionCollection, @ref KAccel, and @ref KGlobalAccel.
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
@@ -211,7 +211,7 @@ class KKeyDialog : public KDialogBase
 {
 	Q_OBJECT
 
- public:
+public:
 	/**
 	 * Constructs a KKeyDialog called @p name as a child of @p parent.
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
@@ -229,28 +229,29 @@ class KKeyDialog : public KDialogBase
 	 * displayed by the dialog.
 	 * This method can be useful in applications following the document/view
 	 * design, with actions in both the document and the view.
-	 * Simply call @ref insert with the action collections of each one in turn.
+	 * Simply call insert with the action collections of each one in turn.
 	 * @return true :)
 	 */
 	bool insert( KActionCollection* ); // #### KDE4: remove me
-    /**
-	 * Insert an action collection, i.e. add all its actions to the ones
+
+        /**
+         * Insert an action collection, i.e. add all its actions to the ones
 	 * displayed by the dialog.
 	 * This method can be useful in applications following the document/view
 	 * design, with actions in both the document and the view.
-	 * Simply call @ref insert with the action collections of each one in turn.
-     *
-     * @param title the title associated with the collection (if null, the
-     *        @ref KAboutData::progName() of the collection's instance is used)
-     * @return true :)
+	 * Simply call insert with the action collections of each one in turn.
+         *
+         * @param title the title associated with the collection (if null, the
+         *        @ref KAboutData::progName() of the collection's instance is used)
+         * @return true :)
 	 */
-    bool insert(KActionCollection *, const QString &title);
+        bool insert(KActionCollection *, const QString &title);
 
 	bool configure( bool bSaveSettings = true );
 
 	/**
 	 * Commit key setting changes so that changed settings actually become active.
-	 * This method is implicitly called from @ref KKeyConfig::configure if
+	 * This method is implicitly called from #configure if
 	 * @p bSaveSettings is true.
 	 */
 	void commitChanges();

@@ -61,7 +61,7 @@ public:
   /**
    * Possible selection modes.
    *
-   * The first four correspond directly to @ref QListView::SelectionMode, while
+   * The first four correspond directly to QListView::SelectionMode, while
    * the FileManager selection mode is defined as follows:
    *   @li home: move to the first
    *   @li end: move to the last
@@ -288,7 +288,7 @@ public:
   void saveLayout(KConfig *config, const QString &group) const;
   /**
    * Reads the list view's layout from a KConfig group as stored with
-   * @ref saveLayout
+   * @ref #saveLayout
    *
    * @param config the @ref KConfig object to read from
    * @param group the config group to use
@@ -578,7 +578,7 @@ public slots:
    * Returns whether tab ordered renaming is enabled
    */
   bool tabOrderedRenaming() const;
-	
+
 protected:
   /**
    * Determine whether a drop on position @p p would count as
@@ -614,7 +614,7 @@ protected:
   virtual bool event( QEvent * );
 
   /**
-   * Emit signal @ref executed.
+   * Emit signal @ref #executed.
    * @internal
    */
   void emitExecute( QListViewItem *item, const QPoint &pos, int c );
@@ -833,7 +833,7 @@ protected slots:
   void emitContextMenu (QListViewItem*, const QPoint&, int);
 
   /**
-   * Emit the @ref contextMenu signal. This slot is for key presses.
+   * Emit the @ref #contextMenu signal. This slot is for key presses.
    */
   void emitContextMenu (KListView*, QListViewItem*);
 

@@ -29,9 +29,8 @@ class KInstance;
 class KXMLGUIClient;
 
 /**
- * @internal
  * Abstract interface for a "GUI builder", used by the GUIFactory
- * This interface is implemented by @ref MainWindow for the case where
+ * This interface is implemented by @ref KMainWindow for the case where
  * the toplevel widget is a KMainWindow. Other implementations may appear
  * in the future (dialogs for instance)
  */

@@ -26,7 +26,7 @@
 #include <qvalidator.h>
 
 /**
-  @ref QValidator for integers.
+ *  @ref QValidator for integers.
 
   This can be used by @ref QLineEdit or subclass to provide validated
   text entry.  Can be provided with a base value (default is 10), to allow
@@ -86,6 +86,8 @@ class KIntValidator : public QValidator {
 
 };
 
+class KFloatValidatorPrivate;
+
 /**
   @ref QValidator for floating point entry.
   Extends the QValidator class to properly validate double numeric data.
@@ -95,8 +97,6 @@ class KIntValidator : public QValidator {
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
 */
-
-class KFloatValidatorPrivate;
 class KFloatValidator : public QValidator {
 
   public:

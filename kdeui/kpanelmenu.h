@@ -39,7 +39,7 @@ class KPanelMenuPrivate;
  * in shared libraries that will be loaded at runtime by Kicker (the KDE panel).
  *
  * To build such a menu, you have to inherit this class and implement the pure virtual
- * functions @ref initialize() and @ref slotExec(). You also have to provide a factory
+ * functions #initialize() and @ref slotExec(). You also have to provide a factory
  * object in your library, see @ref KLibFactory. This factory is only used to construct
  * the menu object.
  *
@@ -108,17 +108,17 @@ public:
      * the clearing of your menu.
      */
     void disableAutoClear();
-    
+
 public slots:
     /**
      * Reinitialize the menu: the menu is first cleared, the initial state is set
-     * to false, and finally @ref initialize() is called. Use this if you want to
+     * to false, and finally #initialize() is called. Use this if you want to
      * refill your menu immediately.
      */
     void reinitialize();
     /**
      * Deinitialize the menu: the menu is cleared and the initialized state is set to
-     * false. @ref initialize() is NOT called. It will be called before the menu is
+     * false. #initialize() is NOT called. It will be called before the menu is
      * next shown, however. Use this slot if you want a delayed reinitialization.
      */
     void deinitialize();
@@ -127,9 +127,9 @@ protected slots:
     /**
      * This slot is called just before the menu is shown. This allows your menu
      * to update itself if needed. However you should instead re-implement
-     * @ref initialize to provide this feature. This function is responsible for
+     * #initialize to provide this feature. This function is responsible for
      * the cache system handling, so if you re-implement it, you should call
-     * the base function also. Calls @ref initialize().
+     * the base function also. Calls #initialize().
      * @see disableAutoClear()
      */
     virtual void slotAboutToShow();

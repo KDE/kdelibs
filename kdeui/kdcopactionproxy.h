@@ -74,7 +74,7 @@ public:
    * You can construct a global DCOP object referenence using DCOPRef. For example like
    * DCOPRef( kapp->dcopClient()->appId, actionProxy->actionObjectId( actionName ) );
    *
-   * The action with the given name has to be available through the @ref action method.
+   * The action with the given name has to be available through the #action method.
    */
   virtual QCString actionObjectId( const QCString &name ) const;
 
@@ -93,7 +93,7 @@ public:
                         QCString &replyType, QByteArray &replyData );
 
   /**
-   * Called by the @ref process method and takes care of processing the object request for an
+   * Called by the #process method and takes care of processing the object request for an
    * action object.
    */
   virtual bool processAction( const QCString &obj, const QCString &fun, const QByteArray &data,

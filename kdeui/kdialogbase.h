@@ -106,7 +106,7 @@ class KDialogBaseTile;
  * the @ref KJanusWidget class internally to accomplish this. If you
  * use TreeList, Tabbed or IconList mode, then add pages with @ref addPage().
  *
- * Pages that have been added can be removed again by simply deleting 
+ * Pages that have been added can be removed again by simply deleting
  * the page.
  *
  * If you want complete control of how the dialog contents should look,
@@ -146,7 +146,7 @@ class KDialogBaseTile;
  * <pre>
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *                 const QString& urltext)
- *   : KDialogBase( parent, "urldialog", true, caption, 
+ *   : KDialogBase( parent, "urldialog", true, caption,
  *		    KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
  * {
  *   QWidget *page = new QWidget( this );
@@ -170,7 +170,7 @@ class KDialogBaseTile;
  * <pre>
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *		const QString& urltext)
- * : KDialogBase( parent, "urldialog", true, caption, 
+ * : KDialogBase( parent, "urldialog", true, caption,
 		  KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
  * {
  *   QVBox *page = makeVBoxMainWidget();
@@ -558,9 +558,9 @@ class KDialogBase : public KDialog
      * toplevel widget for this particular page. The widget contains a
      * @ref QGridLayout layout so the widget children are  positioned in a grid.
      *
-     * @param n Specifies the number of columns if @p dir is @ref Qt::Horizontal
-     *          or the number of rows if @p dir is @ref Qt::Vertical.
-     * @param dir Can be @ref Qt::Horizontal or @ref Qt::Vertical.
+     * @param n Specifies the number of columns if @p dir is Qt::Horizontal
+     *          or the number of rows if @p dir is Qt::Vertical.
+     * @param dir Can be Qt::Horizontal or Qt::Vertical.
      * @param itemName String used in the list or as tab item name.
      * @param header Header text use in the list modes @p Ignored in @p Tabbed
      *        mode. If empty, the item text is used instead.
@@ -830,7 +830,7 @@ class KDialogBase : public KDialog
     *        than to the applications config. Default is false.
     */
    void saveDialogSize( const QString& groupName, bool global=false );
-   
+
     /**
      * Sets the text of the OK button.
      *
@@ -1256,7 +1256,7 @@ class KDialogBase : public KDialog
      * to call setDetailsWidget if you haven't done so yet.
      */
     void aboutToShowDetails();
-    
+
     /**
      * A page is about to be shown.
      */
@@ -1271,7 +1271,7 @@ class KDialogBase : public KDialog
     virtual void keyPressEvent( QKeyEvent *e );
 
     /**
-     * Emits the @ref hidden signal. You can connect to that signal to
+     * Emits the #hidden signal. You can connect to that signal to
      * detect when a dialog has been closed.
      */
     virtual void hideEvent( QHideEvent * );

@@ -43,7 +43,6 @@ class KIntSpinBox;
  * for a different variable type
  *
  */
-
 class KNumInput : public QWidget
 {
     Q_OBJECT
@@ -125,7 +124,7 @@ protected:
      * You need to overwrite this method and implement your layout
      * calculations there.
      *
-     * See @ref KIntNumInput / @ref KDoubleNumInput implementation
+     * See KIntNumInput::doLayout and KDoubleNumInput::doLayout implementation
      * for details.
      *
      */
@@ -378,7 +377,7 @@ class KDoubleLine;
  * parameter set to "true".
  *
  * A special feature of KDoubleNumInput, designed specifically for
- * the situation when there are several KDoubleNumInputs in a column,
+ * the situation when there are several instances in a column,
  * is that you can specify what portion of the control is taken by the
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
@@ -389,7 +388,6 @@ class KDoubleLine;
  * @see KIntNumInput
  * @short An input control for real numbers, consisting of a spinbox and a slider.
  */
-
 class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT

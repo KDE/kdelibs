@@ -271,39 +271,39 @@ KAction *editBookmarks( const QObject *recvr, const char *slot, KActionCollectio
 KAction *spelling( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( Spelling, name, recvr, slot, parent ); }
 
-KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Menubar"), "showmenu", KStdAccel::shortcut(KStdAccel::ShowMenubar), recvr, slot,
-                            parent, name ? name : stdName(ShowMenubar));
+                            parent, _name ? _name : name(ShowMenubar));
     ret->setChecked(true);
     return ret;
 }
 
-KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
-                            name ? name : stdName(ShowToolbar));
+                            _name ? _name : name(ShowToolbar));
     ret->setChecked(true);
     return ret;
 
 }
 
-KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *name )
+KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *_name )
 {
     KToggleToolBarAction *ret;
     ret = new KToggleToolBarAction(toolBarName, i18n("Show &Toolbar"), parent,
-                            name ? name : stdName(ShowToolbar));
+                            _name ? _name : name(ShowToolbar));
     return ret;
 }
 
 KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
-                                         KActionCollection* parent, const char *name )
+                                         KActionCollection* parent, const char *_name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
-                            name ? name : stdName(ShowStatusbar));
+                            _name ? _name : name(ShowStatusbar));
     ret->setChecked(true);
     return ret;
 }

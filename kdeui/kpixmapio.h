@@ -4,8 +4,8 @@
  *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
- * 
- * You can Freely distribute this program under the GNU Library General 
+ *
+ * You can Freely distribute this program under the GNU Library General
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
  */
 
@@ -21,8 +21,8 @@ class KPixmapIOPrivate;
  * @version $Id$
  *
  * KPixmapIO implements a fast path for QPixmap to/from QImage conversions.
- * It uses the MIT-SHM shared memory extension for this. If this extension is 
- * not available, it will fall back to standard Qt methods. 
+ * It uses the MIT-SHM shared memory extension for this. If this extension is
+ * not available, it will fall back to standard Qt methods.
  *
  * @sect Typical usage
  *
@@ -34,28 +34,28 @@ class KPixmapIOPrivate;
  * image = io.convertToImage(pixmap);
  * </pre>
  *
- * It also has functionality for partially updating/saving pixmaps, see 
+ * It also has functionality for partially updating/saving pixmaps, see
  * @ref #putImage and @ref #getImage.
  *
  * @sect KPixmapIO vs. Qt speed comparison
  *
- * Speed measurements were taken. These show that usage of KPixmapIO for 
- * images up to a certain threshold size, offers no speed advantage over 
+ * Speed measurements were taken. These show that usage of KPixmapIO for
+ * images up to a certain threshold size, offers no speed advantage over
  * the Qt routines. Below you can see a plot of these measurements.
  *
- * @image kpixmapio-perf.png Ignored_But_Necessary_Word_For_Kdoc
+ * @image html kpixmapio-perf.png "Performance of KPixmapIO"
  *
- * The threshold size, amongst other causes, is determined by the shared 
- * memory allocation policy. If the policy is @p ShmDontKeep, the 
- * shared memory segment is discarded right after usage, and thus needs to 
- * be allocated before each transfer. This introduces a a setup penalty not 
- * present when the policy is @p ShmKeepAndGrow. In this case the 
- * shared memory segment is kept and resized when necessary, until the 
+ * The threshold size, amongst other causes, is determined by the shared
+ * memory allocation policy. If the policy is @p ShmDontKeep, the
+ * shared memory segment is discarded right after usage, and thus needs to
+ * be allocated before each transfer. This introduces a a setup penalty not
+ * present when the policy is @p ShmKeepAndGrow. In this case the
+ * shared memory segment is kept and resized when necessary, until the
  * KPixmapIO object is destroyed.
  *
  * The default policy is @p ShmDontKeep. This policy makes sense when
- * loading pixmaps once. The corresponding threshold is taken at 5.000 
- * pixels as suggested by experiments. Below this threshold, KPixmapIO 
+ * loading pixmaps once. The corresponding threshold is taken at 5.000
+ * pixels as suggested by experiments. Below this threshold, KPixmapIO
  * will not use shared memory and fall back on the Qt routines.
  *
  * When the policy is @p ShmKeepAndGrow, the threshold is taken at
@@ -64,8 +64,8 @@ class KPixmapIOPrivate;
  * resizes. This allocation policy makes sense in a multimedia type
  * application where you are constantly updating the screen.
  *
- * Above a couple times the threshold size, KPixmapIO's and Qt's speed become 
- * linear in the number of pixels, KPixmapIO being at least 2, and mostly around 
+ * Above a couple times the threshold size, KPixmapIO's and Qt's speed become
+ * linear in the number of pixels, KPixmapIO being at least 2, and mostly around
  * 4 times faster than Qt, depending on the screen and image depth.
  *
  * Speed difference seems to be the most at 16 bpp, followed by 32 and 24
@@ -75,8 +75,8 @@ class KPixmapIOPrivate;
  *
  * @sect Conclusion
  *
- * For large pixmaps, there's a definite speed improvement when using 
- * KPixmapIO. On the other hand, there's no speed improvement for small 
+ * For large pixmaps, there's a definite speed improvement when using
+ * KPixmapIO. On the other hand, there's no speed improvement for small
  * pixmaps. When you know you're only transferring small pixmaps, there's no
  * point in using it.
  */
@@ -93,7 +93,7 @@ public:
      * @return The pixmap containing the image.
      */
     QPixmap convertToPixmap(const QImage &image);
-    
+
     /**
      * Convert a pixmap to an image.
      * @param pixmap The pixmap to convert.
@@ -162,7 +162,7 @@ private:
      */
     enum ByteOrders {
 	bo32_ARGB, bo32_BGRA, bo24_RGB, bo24_BGR,
-	bo16_RGB_565, bo16_BGR_565, bo16_RGB_555, 
+	bo16_RGB_565, bo16_BGR_565, bo16_RGB_555,
 	bo16_BGR_555, bo8
     };
 
