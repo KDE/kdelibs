@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __KIMAGE_EFFECT_H
 #define __KIMAGE_EFFECT_H
 
-#include <config.h>
 class QImage;
 class QSize;
 class QColor;

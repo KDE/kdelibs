@@ -20,8 +20,6 @@
 #ifndef KPIXMAPSPLITTER_H
 #define KPIXMAPSPLITTER_H
 
-#include <config.h>
-
 #include <qpixmap.h>
 #include <qrect.h>
 #include <qsize.h>

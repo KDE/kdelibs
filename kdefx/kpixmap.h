@@ -24,7 +24,6 @@
 #ifndef __KPIXMAP_H__
 #define __KPIXMAP_H__
 
-#include <config.h>
 #include <qpixmap.h>
 
 const int KColorMode_Mask	= 0x00000300;

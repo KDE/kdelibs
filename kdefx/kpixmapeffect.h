@@ -10,7 +10,6 @@
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 
-#include <config.h>
 
 #include <qsize.h>
 class KPixmap;
