@@ -333,9 +333,12 @@ private:
     QList<QAction> m_actions;
 };
 
+/////// This needs to be ported to the new QIconView, to make it compile
+/////// We don't use it currently,anyway.
+/*
 class QActionWidget : public QWidget
 {
-    Q_OBJECT
+  //Q_OBJECT
 public:
     QActionWidget( QWidget* parent = 0, const char* name = 0 );
     QActionWidget( QActionCollection*, QWidget* parent = 0, const char* name = 0 );
@@ -359,7 +362,7 @@ signals:
     void rightButtonPressed( QAction*, const QPoint& );
     void selectionChanged( QAction* );
 
-protected slots:
+    protected slots:
     void slotDropped( QDropEvent* );
     void insertAction( QAction* );
     void removeAction( QAction* );
@@ -380,7 +383,7 @@ private:
 
 class QActionDialog : public QDialog
 {
-    Q_OBJECT
+  //Q_OBJECT
 public:
     QActionDialog( QActionCollection*, QWidget* parent = 0, const char* name = 0, bool modal = FALSE );
     ~QActionDialog();
@@ -390,5 +393,6 @@ public:
 private:
     QActionWidget* m_widget;
 };
+*/
 
 #endif

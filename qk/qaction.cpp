@@ -16,6 +16,7 @@
 
 // NOT REVISED
 
+#if 0
 static const char*folder[]={
 "16 16 9 1",
 "g c #808080",
@@ -70,7 +71,7 @@ static const char*unknown[]={
 ".....##aa#......",
 ".......##......."};
 
-
+#endif
 
 
 /*************************************************************
@@ -312,12 +313,14 @@ void QAction::setGroup( const QString& grp )
     }
 }
 
-void QAction::setGroup( int i, const QString& )
+void QAction::setGroup( int /*i*/, const QString& )
 {
+#if 0
     QWidget* w = container( i );
     if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );
     // ###### Torben: Some stuff missing here
+#endif
 }
 
 QString QAction::group() const
@@ -468,8 +471,10 @@ void QAction::setToolTip( int i, const QString& tt )
     QWidget* r = representative( i );
     if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
 	QToolTip::add( w, tt );
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 QString QAction::toolTip() const
@@ -498,8 +503,10 @@ void QAction::setText( int i, const QString& text )
 	((QPopupMenu*)w)->changeItem( menuId( i ), text );
     else if ( w->inherits( "QMenuBar" ) )
 	((QMenuBar*)w)->changeItem( menuId( i ), text );	
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 QString QAction::text() const
@@ -545,8 +552,10 @@ void QAction::setIconSet( int i, const QIconSet& iconset )
 	((QPopupMenu*)w)->changeItem( menuId( i ), iconset, m_text );
     else if ( w->inherits( "QMenuBar" ) )
 	((QMenuBar*)w)->changeItem( menuId( i ), iconset, m_text );
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );
+#endif
 }
 
 QIconSet QAction::iconSet() const
@@ -825,8 +834,10 @@ int QActionMenu::plug( QWidget* widget, int index )
 	
 	return containerCount() - 1;
     }
+#if 0
     else if ( widget->inherits("QActionWidget" ) )
 	return QAction::plug( widget );
+#endif
 
     qDebug("Can not plug QActionMenu in %s", widget->className() );
     return FALSE;
@@ -1056,6 +1067,10 @@ QDomElement QActionCollection::configuration( QDomDocument& doc, bool properties
     return e;
 }
 */
+
+
+#if 0
+
 /******************************************************
  *
  * QActionWidget
@@ -1399,6 +1414,8 @@ QActionWidget* QActionDialog::actionWidget()
     return m_widget;
 }
 
+#endif
+
 /******************************************************
  *
  * QToggleAction
@@ -1519,8 +1536,10 @@ void QToggleAction::setChecked( int i, bool checked )
 	((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
     else if ( w->inherits( "QMenuBar" ) )
 	((QMenuBar*)w)->setItemChecked( menuId( i ), checked );
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 bool QToggleAction::isChecked()
@@ -1645,8 +1664,10 @@ void QSelectAction::setCurrentItem( int i, int id )
 	QComboBox* b = (QComboBox*)r;
 	b->setCurrentItem( id );
     }
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 QPopupMenu* QSelectAction::popupMenu()
@@ -1706,8 +1727,10 @@ void QSelectAction::changeItem( int i, int index, const QString& text )
 	QComboBox* b = (QComboBox*)r;
 	b->changeItem( text, index );
     }
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 void QSelectAction::setItems( const QStringList& lst )
@@ -1743,8 +1766,10 @@ void QSelectAction::setItems( int i, const QStringList& lst )
 	for( ; it != lst.end(); ++it )
 	    b->insertItem( *it );
     }
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 QStringList QSelectAction::items()
@@ -1858,8 +1883,10 @@ void QSelectAction::clear( int i )
 	QComboBox* b = (QComboBox*)r;
 	b->clear();
     }
+#if 0
     else if ( w->inherits( "QActionWidget" ) )
 	((QActionWidget*)w)->updateAction( this );	
+#endif
 }
 
 void QSelectAction::setEditable( bool edit )
@@ -2058,4 +2085,3 @@ int QFontSizeAction::plug( QWidget* widget, int index )
 }
 
 template class QList<QAction>;
-
