@@ -362,7 +362,7 @@ AC_DEFUN(AC_FIND_GIF,
    [AC_MSG_CHECKING(for giflib)
 AC_CACHE_VAL(ac_cv_lib_gif,
 [ac_save_LIBS="$LIBS"
-LIBS="$all_libraries -lgif -lX11"
+LIBS="$all_libraries -lgif -lX11 $LIBSOCKET"
 AC_TRY_LINK(dnl
 ifelse([main], [main], , dnl Avoid conflicting decl of main.
 [/* Override any gcc2 internal prototype to avoid an error.  */
