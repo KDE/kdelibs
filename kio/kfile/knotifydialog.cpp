@@ -48,6 +48,7 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <qvbox.h>
+#include <qwhatsthis.h>
 
 using namespace KNotify;
 
@@ -108,7 +109,7 @@ namespace KNotify
             return KNotifyClient::None;
         }
     };
-    
+
     // Needed for displaying tooltips in the listview's QHeader
     class KNotifyToolTip : public QToolTip
     {
@@ -138,10 +139,10 @@ namespace KNotify
 
             if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(m_tips) / sizeof(QString)) ) )
                 return;
-            
+
             tip( header->sectionRect( section ), m_tips[section] );
         }
-        
+
     private:
         QString m_tips[6];
     };
@@ -263,7 +264,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
 
     d->toolTip = new KNotifyToolTip( header );
-    
+
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -307,6 +308,16 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_buttonEnable, SIGNAL( clicked() ), SLOT( enableAll() ));
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
 
+    QString whatsThis = i18n("<qt>You may use the following macros<br>"
+        "in the commandline:<br>"
+        "<b>%e</b>: for the event name,<br>"
+        "<b>%a</b>: for the name of the application that sent the event,<br>"
+        "<b>%s</b>: for the notification message,<br>"
+        "<b>%w</b>: for the numeric window ID where the event originated,<br>"
+        "<b>%i</b>: for the numeric event ID.");
+    QWhatsThis::add( m_execute, whatsThis );
+    QWhatsThis::add( m_executePath, whatsThis );
+    
     showAdvanced( false );
 
     slotEventChanged( 0L ); // disable widgets by default
