@@ -286,7 +286,7 @@ KListView::KListView( QWidget *parent, const char *name )
 
   connect (this, SIGNAL (menuShortCutPressed (KListView*, QListViewItem*)),
                    this, SLOT (emitContextMenu (KListView*, QListViewItem*)));
-  d->alternateBackground = kapp->alternateBackground();
+  d->alternateBackground = KGlobalSettings::alternateBackgroundColor();
 }
 
 
