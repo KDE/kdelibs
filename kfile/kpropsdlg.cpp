@@ -623,9 +623,8 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
     QString iconStr = KMimeType::findByURL( properties->kurl(),
-					item->mode(),
-					true )->icon( properties->kurl(),
-                                                      properties->kurl().isLocalFile() );
+					item->mode() )->icon( properties->kurl(),
+                                                              properties->kurl().isLocalFile() );
     if ( bDesktopFile && properties->kurl().isLocalFile() )
     {
       KSimpleConfig config( properties->kurl().path() );
@@ -709,6 +708,8 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
         // auto-launch for local dirs only, and not for '/'
         if ( item->url().isLocalFile() && item->url().path().length() > 1 )
           slotSizeDetermine();
+        else
+          m_sizeStopButton->setEnabled( false );
     }
   }
 
