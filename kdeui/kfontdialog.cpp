@@ -23,6 +23,18 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.15  1997/12/13 15:09:57  jacek
+    KCharsets support added
+
+    Revision 1.1.1.4  1997/12/13 12:57:27  jacek
+    Imported sources from KDE CVS
+
+    Revision 1.1.1.3  1997/12/11 07:19:26  jacek
+    Imported sources from KDE CVS
+
+    Revision 1.1.1.2  1997/12/10 07:08:50  jacek
+    Imported sources from KDE CVS
+
     Revision 1.1.1.1  1997/12/09 22:02:49  jacek
     Imported sorces fromkde
 
