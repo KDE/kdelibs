@@ -66,7 +66,6 @@ public:
   // Java and JavaScript
   bool enableJava() { return m_bEnableJava; }
   bool enableJavaScript() { return m_bEnableJavaScript; }
-  QString javaPath() { return m_strJavaPath; }
 
 private:
   bool m_bChangeCursor;
@@ -84,7 +83,6 @@ private:
   bool m_bAutoLoadImages;
   bool m_bEnableJava;
   bool m_bEnableJavaScript;
-  QString m_strJavaPath;
 
   //  static KonqHTMLSettings * s_HTMLSettings;
 private:

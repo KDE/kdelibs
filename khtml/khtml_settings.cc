@@ -108,8 +108,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
     
-    if ( reset || config->hasKey( "JavaPath" ) )
-      m_strJavaPath = config->readEntry( "JavaPath", "/usr/lib/jdk" );
   }
 
 }
