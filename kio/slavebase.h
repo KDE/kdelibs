@@ -63,38 +63,38 @@ public:
     ///////////
 
     /**
-     * Emit to send data in the slave (i.e. in get).
+     * Call to send data in the slave (i.e. in get).
      * @param data the data read by the slave
      * Send an empty QByteArray() to signal end of data.
      */
     void data( const QByteArray &data );
 
     /**
-     * Emit to ask for data (in put)
+     * Call to ask for data (in put)
      * @see readData
      */
     void dataReq( );
 
     /**
-     * Emit to signal an error.
+     * Call to signal an error.
      * This also finishes the job, no need to call finished.
      */
     void error( int _errid, const QString &_text );
 
     /**
-     * Emit in openConnection, if you reimplement it, when you're done.
+     * Call in openConnection, if you reimplement it, when you're done.
      * Currently unused.
      */
     void connected();
 
     /**
-     * Emit to signal successful completion of any command
+     * Call to signal successful completion of any command
      * (besides openConnection and closeConnection)
      */
     void finished();
 
     /**
-     * Emit to signal that data from the sub-URL is needed
+     * Call to signal that data from the sub-URL is needed
      */
     void needSubURLData();
 
@@ -107,12 +107,12 @@ public:
     void slaveStatus(const QString &host, bool connected);
 
     /**
-     * Emit this once in stat()
+     * Call this once in stat()
      */
     void statEntry( const UDSEntry& _entry );
 
     /**
-     * Emit this in listDir, each time you have a bunch of entries
+     * Call this in listDir, each time you have a bunch of entries
      * to report.
      */
     void listEntries( const UDSEntryList& _entry );
