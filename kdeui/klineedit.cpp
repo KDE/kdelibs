@@ -47,23 +47,23 @@ class KLineEdit::KLineEditPrivate
 public:
     KLineEditPrivate()
     {
-        completionBox = 0L;    
+        completionBox = 0L;
         handleURLDrops = true;
         smartTextUpdate = false;
-        grabReturnKeyEvents = false;        
+        grabReturnKeyEvents = false;
     }
     ~KLineEditPrivate()
     {
         delete completionBox;
     }
-    
-    int squeezedEnd;    
+
+    int squeezedEnd;
     int squeezedStart;
     bool handleURLDrops;
-    bool smartTextUpdate;    
-    bool grabReturnKeyEvents;    
-    
-    QString squeezedText;    
+    bool smartTextUpdate;
+    bool grabReturnKeyEvents;
+
+    QString squeezedText;
     KCompletionBox *completionBox;
 };
 
@@ -89,6 +89,7 @@ void KLineEdit::init()
 {
     d = new KLineEditPrivate;
     possibleTripleClick = false;
+
     // Enable the context menu by default.
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
@@ -235,7 +236,7 @@ void KLineEdit::copy() const
          end = end - 3 - d->squeezedStart + d->squeezedEnd;
       else if (end > d->squeezedStart)
          end = d->squeezedEnd;
-      if (start == end) 
+      if (start == end)
          return;
       QString t = d->squeezedText;
       t = t.mid(start, end - start);
@@ -318,7 +319,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     // Filter key-events if EchoMode is normal &
     // completion mode is not set to CompletionNone
     KKey key( e );
-        
+
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
@@ -347,7 +348,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
 
-        else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
+        else if ( mode == KGlobalSettings::CompletionPopup && noModifier &&
+            (e->text().length() > 0) )
         {
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
@@ -456,7 +458,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 return;
             }
         }
-    }    
+    }
 
     if ( KStdAccel::copy().contains( key ) )
     {
@@ -468,6 +470,26 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         paste();
         return;
     }
+
+    // support for pasting Selection with Shift-Ctrl-Insert
+    else if ( e->key() == Key_Insert &&
+              (e->state() == (ShiftButton | ControlButton)) )
+    {
+#if QT_VERSION >= 0x030100
+        QString text = QApplication::clipboard()->text( QClipboard::Selection);
+#else
+        QClipboard *clip = QApplication::clipboard();
+        bool oldMode = clip->selectionModeEnabled();
+        clip->setSelectionMode( true );
+        QString text = QApplication::clipboard()->text();
+        clip->setSelectionMode( oldMode );
+#endif
+
+        insert( text );
+        deselect();
+        return;
+    }
+
     else if ( KStdAccel::cut().contains( key ) )
     {
         cut();
@@ -579,7 +601,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
             subMenu->insertItem( i18n("Default"), Default );
         }
     }
-    
+
     // ### do we really need this?  Yes, Please do not remove!  This
     // allows applications to extend the popup menu without having to
     // inherit from this class! (DA)
@@ -595,18 +617,25 @@ void KLineEdit::completionMenuActivated( int id )
     switch ( id )
     {
         case Default:
-           setCompletionMode( KGlobalSettings::completionMode() ); break;
+           setCompletionMode( KGlobalSettings::completionMode() ); 
+           break;
         case NoCompletion:
-           setCompletionMode( KGlobalSettings::CompletionNone ); break;
+           setCompletionMode( KGlobalSettings::CompletionNone ); 
+           break;
         case AutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionAuto ); break;
+            setCompletionMode( KGlobalSettings::CompletionAuto ); 
+            break;
         case SemiAutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionMan ); break;
+            setCompletionMode( KGlobalSettings::CompletionMan ); 
+            break;
         case ShellCompletion:
-            setCompletionMode( KGlobalSettings::CompletionShell ); break;
+            setCompletionMode( KGlobalSettings::CompletionShell ); 
+            break;
         case PopupCompletion:
-            setCompletionMode( KGlobalSettings::CompletionPopup ); break;
-        default: return;
+            setCompletionMode( KGlobalSettings::CompletionPopup ); 
+            break;
+        default: 
+            return;
     }
 
     if ( oldMode != completionMode() )
@@ -754,19 +783,19 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (scKey.contains( key ))
         return true;
 
-    // Override all the text manupilation accelerators...    
-    if ( KStdAccel::copy().contains( key ) ) 
+    // Override all the text manupilation accelerators...
+    if ( KStdAccel::copy().contains( key ) )
         return true;
-    else if ( KStdAccel::paste().contains( key ) ) 
+    else if ( KStdAccel::paste().contains( key ) )
         return true;
-    else if ( KStdAccel::cut().contains( key ) ) 
+    else if ( KStdAccel::cut().contains( key ) )
         return true;
-    else if ( KStdAccel::undo().contains( key ) ) 
+    else if ( KStdAccel::undo().contains( key ) )
         return true;
-    else if ( KStdAccel::redo().contains( key ) ) 
+    else if ( KStdAccel::redo().contains( key ) )
         return true;
     else if (KStdAccel::deleteWordBack().contains( key ))
-        return true;    
+        return true;
     else if (KStdAccel::deleteWordForward().contains( key ))
         return true;
 
