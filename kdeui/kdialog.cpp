@@ -30,7 +30,7 @@
 #include <kdialog.h>
 #include <kstaticdeleter.h>
 
-int KDialog::mMarginSize = 6;
+int KDialog::mMarginSize = 11;
 int KDialog::mSpacingSize = 6;
 
 template class QPtrList<QLayoutItem>;
@@ -39,10 +39,6 @@ KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
 {
 }
-
-
-
-
 
 //
 // Grab QDialogs keypresses if non-modal.
@@ -77,7 +73,6 @@ void KDialog::keyPressEvent(QKeyEvent *e)
     e->ignore();
   }
 }
-
 
 
 int KDialog::marginHint()
