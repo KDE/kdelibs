@@ -257,7 +257,7 @@ QFont KGlobalSettings::fixedFont()
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    _fixedFont = new QFont(c->readFontEntry("fixedFont"));
+    _fixedFont = new QFont(c->readFontEntry("fixed"));
 
     if(!QFontInfo(*_fixedFont).fixedPitch() ) {
         *_fixedFont = QFont("fixed",
