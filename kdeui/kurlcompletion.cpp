@@ -207,7 +207,7 @@ bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 	// Get the currently entered full qualified path
 	if ( url.data()[ 0 ] != '/' )
 	{
-		QString dir = directory.data();
+		QString dir = directory;
 		if ( dir.right(1) != "/" )
 			dir += "/";
 		url.prepend (dir);
