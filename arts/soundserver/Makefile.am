@@ -63,7 +63,7 @@ kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 kmedia2.cc: kmedia2.h
 
 mcopclassdir = $(libdir)/Arts
-if HAVE_WAVESUPPORT
+if HAVE_WAVSUPPORT
 mcopclass_DATA = WavPlayObject.mcopclass
 endif
 

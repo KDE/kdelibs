@@ -20,7 +20,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
       arts_audiolib_found=yes
     ])
   ])
-  AM_CONDITIONAL(HAVE_WAVESUPPORT,  test "x$args_audiolib_found" = "xyes")
+  AM_CONDITIONAL(HAVE_WAVSUPPORT,  test "x$args_audiolib_found" = "xyes")
   AC_SUBST(LIBAUDIOFILE)
   CPPFLAGS="$ac_CPPFLAGS_save"
   LDFLAGS="$ac_ldflags_save"
