@@ -216,6 +216,12 @@ public:
     bool isEditable() const { return (m_pEdit!= 0); }
 
 signals:
+    /**
+    * This signal is emitted when the user presses
+    * the return key.  Note that this signal is only
+    * emitted if this widget is editable.
+    */
+    void returnPressed();
 
     /**
     * This signal is emitted when the user presses
@@ -225,10 +231,7 @@ signals:
     * current text as its argument.
     *
     * Note that this signal is only emitted if this
-    * widget is editable.  Also this widget consumes
-    * the RETURN/ENTER key event.  If you need to
-    * process this event, be sure to connect to this
-    * signal or its cousin signal above.
+    * widget is editable.
     */
     void returnPressed( const QString& );
 

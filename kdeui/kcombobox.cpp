@@ -42,6 +42,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     if ( rw )
     {
         m_pEdit = QComboBox::lineEdit();
+        connect( m_pEdit, SIGNAL( returnPressed() ), this, SIGNAL( returnPressed() ) );
         QObjectList *list = queryList( "QPopupMenu" );
         QObjectListIt it ( *list );
         m_pContextMenu = (QPopupMenu*) it.current();
