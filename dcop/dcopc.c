@@ -68,16 +68,16 @@ dcop_call(
   char * replyData,
   int replyDataLength
 );
-  
+
   char *
 dcop_write_int(char * buf, int i);
-  
+
   char *
 dcop_read_int(char * buf, int * i);
-  
+
   char *
 dcop_write_string(char * buf, const char * text);
-  
+
   char *
 dcop_read_string(char * buf, char * output);
 
@@ -167,9 +167,9 @@ dcop_send_signal(
 
   majorOpcode =
     IceRegisterForProtocolSetup(
-      (char *)("DCOP"),
-      DCOPVendorString,
-      DCOPReleaseString,
+      (char*)("DCOP"),
+      (char*)DCOPVendorString,
+      (char*)DCOPReleaseString,
       1,
       DCOPVersions,
       DCOPAuthCount,
@@ -488,7 +488,7 @@ dcop_call(
 /*    waitInfo.reply = (IcePointer)&tmpReplyStruct; */
 
     do {
-      
+
       status = IceProcessMessages(dcop_ice_conn, &waitInfo, &readyRet);
 
       if (status == IceProcessMessagesIOError) {
