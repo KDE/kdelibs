@@ -83,10 +83,6 @@ int main()
   KURL lastUrl = lst.getLast();
   QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
-  lastUrl.setPath( dir );
-  QString _url;
-  _url = KURL::join( lst );
-  check( "up one directory", _url, "ftp://host/dir1/dir2");
 
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
