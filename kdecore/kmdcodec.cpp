@@ -866,6 +866,9 @@ void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
 
 void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 {
+#if defined(__FreeBSD__) && defined(i386)
+    memcpy(output, in, len);
+#else
     Q_UINT32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
     {
@@ -874,16 +877,21 @@ void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
         output[j+2] = static_cast<Q_UINT8>(((in[i] >> 16) & 0xff));
         output[j+3] = static_cast<Q_UINT8>(((in[i] >> 24) & 0xff));
     }
+#endif
 }
 
 // Decodes in (Q_UINT8) into output (Q_UINT32). Assumes len is a
 // multiple of 4.
 void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
 {
+#if defined(__FreeBSD__) && defined(i386)
+    memcpy(output, in, len);
+#else
     Q_UINT32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
         output[i] = static_cast<Q_UINT32>(in[j]) |
                     (static_cast<Q_UINT32>(in[j+1]) << 8)  |
                     (static_cast<Q_UINT32>(in[j+2]) << 16) |
                     (static_cast<Q_UINT32>(in[j+3]) << 24);
+#endif
 }
