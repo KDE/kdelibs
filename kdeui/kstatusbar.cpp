@@ -84,11 +84,13 @@ KStatusBar::~KStatusBar ()
   items.clear();
 }
 
-void KStatusBar::insertItem( const QString& text, int id, bool permanent)
+void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
 {
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   items.insert(id, l);
-  addWidget (l, 0, permanent);
+  addWidget (l, stretch, permanent);
+  if (text.isEmpty())          // is text empty?
+    l->hide();                 // yes, hide item
 }
 
 void KStatusBar::removeItem (int id)
@@ -110,6 +112,10 @@ void KStatusBar::changeItem( const QString& text, int id )
   if (l)
   {
     l->setText(text);
+    if (text.isEmpty())          // is text empty?
+      l->hide();                 // yes, hide item
+    else if (!l->isVisible())    // no. was item hidden (=text was empty)?
+      l->show();                 // then show it again
     reformat();
   }
   else

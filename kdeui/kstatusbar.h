@@ -61,26 +61,32 @@ signals:
  *  Display status messages.
  *
  *  You can insert
- *  text labels or custom widgets. Their geometry is Managed internally.
+ *  text labels or custom widgets. Their geometry is managed internally.
  *  KStatusBar
  *  resizes itself, but positioning is left to @ref KTMainWindow (or to you, if
- *  you don't use @ref KTMainWindow).
+ *  you don't use @ref KTMainWindow ).
  *
  *  A special type of item is a message which is a temporary text-message
  *  which is displayed on top of other items in full-width. Messages
  *  are visible for specified time, or until you call the slot @ref clear().
  *
- *  Since KStatusBar inherits QStatusBar, you can freely use all QStatusBar methods.
+ *  Since KStatusBar inherits @ref QStatusBar, you can freely use all @ref QStatusBar methods.
+ *
+ *  Empty text items are not visible. They will be visible when you change (add) text.
  *
  *  @short KDE statusbar widget
  *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
+ *  @version $Id$
  */
 class KStatusBar : public QStatusBar
 {
   Q_OBJECT
     
 public:
-
+  /**
+   *  WARNING: This enum is only for backward compatibility and it may be removed.
+   *  No method here uses it.
+   */
   enum BarStatus{ Toggle, Show, Hide };
   
   /**
@@ -97,9 +103,17 @@ public:
 
   /**
    *  Insert text label into the status bar.
+   *  Paremeters @p stretch and  @p permanent are passed to
+   *  @ref QStatusBar::addWidget .
+   *
+   *  @param ID id of item
+   *  @param stretch stretch passed to @ref QStatusBar::addWidget
+   *  @param permanent is item permanent or not (passed to @ref QStatusBar::addWidget )
+   *
+   *  @see QStatusbar::addWidget
    * 
    */
-  void insertItem( const QString& text, int ID, bool permanent=false );
+  void insertItem( const QString& text, int ID, int stretch=0, bool permanent=false );
 
   /**
    *  Remove an item.
@@ -109,9 +123,12 @@ public:
   void removeItem( int id );
 
   /**
-   *  Change the text in a status bar field.
+   * Change the text in a status bar field.
    *
-   *  The item will be resized to fit the text.
+   * The item will be resized to fit the text. If you change text to be empty,
+   * item will not be visible (untill you add some text).
+   *
+   * @param id The id of item.
    */
   void changeItem( const QString& text, int id );
 
@@ -128,7 +145,7 @@ signals:
   /**
    *  Emitted when mouse is released over statusbar item @p id.
    *
-   * Connect to this signal if you want to respond to mouse clicks.
+   *  Connect to this signal if you want to respond to mouse release events (clicks).
    */
   void released( int );
 
