@@ -764,6 +764,24 @@ LabelStack::~LabelStack()
   }
 }
 
+// ECMA 15.3.5.3 [[HasInstance]]
+// see comment in header file
+KJSO KJS::hasInstance(const KJSO &F, const KJSO &V)
+{
+  if (V.isObject()) {
+    KJSO prot = F.get("prototype");
+    if (!prot.isObject())
+      return Error::create(TypeError, "Invalid prototype encountered "
+			   "in instanceof operation.");
+    Imp *v = V.imp();
+    while ((v = v->prototype())) {
+      if (v == prot.imp())
+	return Boolean(true);
+    }
+  }
+  return Boolean(false);
+}
+
 #ifndef NDEBUG
 #include <stdio.h>
 void KJS::printInfo( const char *s, const KJSO &o )

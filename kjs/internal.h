@@ -349,6 +349,10 @@ namespace KJS {
     bool contains(const UString &name);
   };
 
+  /* TODO just temporary until functions are objects and this becomes
+     a member function. Called by RelationNode for 'instanceof' operator. */
+  KJSO hasInstance(const KJSO &F, const KJSO &V);
+
 // #define KJS_VERBOSE
 #ifndef NDEBUG
   void printInfo( const char *s, const KJSO &o );

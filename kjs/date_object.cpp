@@ -158,8 +158,13 @@ Object DateObject::construct(const List &args)
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
 #if HAVE_SYS_TIMEB_H
+#  if defined(__BORLANDC__)
+    struct timeb timebuffer;
+    ftime(&timebuffer);
+#  else
     struct _timeb timebuffer;
     _ftime(&timebuffer);
+#  endif
     double utc = floor((double)timebuffer.time * 1000.0 + (double)timebuffer.millitm);
 #else
     struct timeval tv;
@@ -406,7 +411,11 @@ Completion DateProtoFunc::execute(const List &args)
 #if defined BSD && !defined(__APPLE__)
     result = Number(-t->tm_gmtoff);
 #else
+#  if defined(__BORLANDC__)
+    result = Number(_timezone / 3600);
+#  else
     result = Number(timezone / 3600);
+#  endif
 #endif
     break;
   case SetTime:

@@ -413,6 +413,7 @@ namespace KJS {
     virtual const TypeInfo* typeInfo() const { return &info; }
 
     void setPrototype(const KJSO& p);
+    Imp* prototype() const { return proto; }
     void setPrototypeProperty(const KJSO &p);
     void setConstructor(const KJSO& c);
 

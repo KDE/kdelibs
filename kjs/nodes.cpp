@@ -481,8 +481,11 @@ KJSO RelationalNode::evaluate()
                              "Shift expression not an object into IN expression." );
       b = v2.hasProperty(v1.toString().value());
   } else {
-    /* TODO: instanceof */
-    b = false;
+    /* TODO: should apply to Function _objects_ only */
+    if (!v2.derivedFrom("Function"))
+      return throwError(TypeError,
+			"Called instanceof operator on non-function object." );
+    return hasInstance(v2, v1);	/* TODO: make object member function */
   }
 
   return Boolean(b);
