@@ -574,7 +574,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	const char* fstype = (const char*)_p + 1;
 	const char* dev = (const char*)_p + 1 + strlen( fstype ) + 1;
 	const char* point = (const char*)_p + 1 + strlen( fstype ) + 1 + strlen( dev ) + 1;
-	kdebug( KDEBUG_INFO, 7006, "!!!!!!!!! MOUNTING %s %s %s", fstype, dev, point);
+	kdebug( KDEBUG_INFO, 7006 ,"!!!!!!!!! MOUNTING %s %s %s", fstype, dev, point);
 	slotMount( ro, fstype, dev, point );
       }
       break;
