@@ -18,8 +18,11 @@
 */
 
 #include "kurl.h"
+
+#ifndef QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
+#endif
 
 #include <stdio.h>
 #include <assert.h>
@@ -33,7 +36,6 @@
 #include <qstylesheet.h>
 
 #include <qtextcodec.h>
-#include <kcharsets.h>
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
 {
@@ -807,7 +809,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   return;
 
  NodeErr:
-  kdDebug(126) << "KURL couldn't parse URL \"" << _url << "\"" << endl;
+//  kdDebug(126) << "KURL couldn't parse URL \"" << _url << "\"" << endl;
   delete []orig;
   reset();
   m_strProtocol = _url;
@@ -1060,7 +1062,11 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
 
 void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 {
+#ifdef QT_ONLY
+  QString fileProt = "file";
+#else
   static const QString & fileProt = KGlobal::staticQString( "file" );
+#endif
   m_strPath_encoded = _txt;
 
   decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
@@ -1092,7 +1098,11 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
+#ifdef QT_ONLY
+  QString fileProt = "file";
+#else
   static const QString & fileProt = KGlobal::staticQString( "file" );
+#endif
   return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) && !hasSubURL() );
 }
 
