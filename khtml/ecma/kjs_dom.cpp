@@ -243,8 +243,8 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       docimpl->updateRendering();
       if ( v )
         docimpl->view()->layout();
-  
-      // refetch in case the renderer changed    
+
+      // refetch in case the renderer changed
       rend = node.handle() ? node.handle()->renderer() : 0L;
     }
 
@@ -1029,7 +1029,7 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   DOM::DocumentType type = static_cast<DOM::DocumentType>(node);
   switch (token) {
   case Name:
-    return getString(type.name());
+    return String(type.name()); // not getString, otherwise doctype.name.indexOf() fails.
   case Entities:
     return getDOMNamedNodeMap(exec,type.entities());
   case Notations:
