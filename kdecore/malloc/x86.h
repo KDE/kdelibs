@@ -36,7 +36,6 @@ static __inline__ int lock(mutex_t *m) {
 }
 
 static __inline__ int unlock(mutex_t *m) {
-  m->lock = 0;
-  __asm __volatile ("" : "=m" (m->lock) : "0" (m->lock));
+  __asm __volatile ("movl $0,%0" : "=m" (m->lock));
   return 0;
 }
