@@ -27,8 +27,6 @@
 #include <kconfig.h>
 #include <kstringhandler.h>
 
-#include <stdio.h> // WAAB remove me
-
 class KProtocolInfo::KProtocolInfoPrivate
 {
 public:
@@ -399,7 +397,6 @@ QString KProtocolInfo::docPath( const QString& _protocol )
   return prot->d->docPath;
 }
 
-#if 0
 QString KProtocolInfo::protocolClass( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -408,7 +405,6 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
 
   return prot->d->protClass;
 }
-#endif
 
 // KURL based static functions are implemented in ../kio/kio/kprotoconinfo.cpp
 
