@@ -72,6 +72,7 @@ protected slots:
 
 protected:
     void init();
+    static int appletCount;
 
 private:
     KJavaAppletWidgetPrivate* d;

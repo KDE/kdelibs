@@ -14,7 +14,7 @@ public:
     QLabel* tmplabel;
 };
 
-static unsigned int count = 0;
+KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
@@ -43,7 +43,7 @@ void KJavaAppletWidget::init()
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     d->tmplabel->show();
 
-    m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", count++ );
+    m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", appletCount++ );
     m_applet->setWindowName( m_swallowTitle );
 }
 
