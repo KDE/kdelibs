@@ -289,6 +289,8 @@ class MetaData : public QMap<QString, QString>
 {
 public:
    MetaData() : QMap<QString, QString>() { };
+   MetaData(const QMap<QString, QString>&metaData) : 
+     QMap<QString, QString>(metaData) { }; 
 
    MetaData & operator+= ( const QMap<QString,QString> &metaData )
    {
