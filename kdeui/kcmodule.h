@@ -61,9 +61,6 @@ class KInstance;
 
 class KCModule : public QWidget
 {
-  friend class KCMultiDialog;
-  friend class KCDialog;
-  friend class ProxyWidget;
   Q_OBJECT
 
 public:
@@ -200,15 +197,6 @@ public:
    */
   bool useRootOnlyMsg() const;
 
-  /**
-   * Read whether the state of the modules contents has changed.
-   *
-   * This is a convenience function keeping the information around so that you
-   * don't have to connect to the changed(bool) signal but may also ask for
-   * the information when you need it.
-   */
-  bool changed() const;
-
   KInstance *instance() const;
 
 signals:
@@ -274,19 +262,7 @@ protected:
   void setUseRootOnlyMsg(bool on);
 
 protected slots:
-  /**
-   * Inform the program that the state of the modules contents has changed.
-   *
-   * This should be called whenever the state of the configuration
-   * shown in the module changes. It allows the control center to
-   * keep track of unsaved changes.
-   *
-   * If you are creating a new KCModule take care that you call setChanged( true ) when
-   * the settings have changed and setChanged( false ) when the settings in the
-   * dialog equal the settings in the config file.
-   */
-  void setChanged( bool );
-
+  void setChanged(bool);
 private:
 
   int _btn;

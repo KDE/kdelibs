@@ -26,8 +26,10 @@
 #include <qptrdict.h>
 
 #include <kdialogbase.h>
-#include <kcmodule.h>
-#include "kcmoduleinfo.h"
+#include <kservice.h>
+
+class KCModuleProxy;
+class KCModuleInfo;
 
 /**
  * A class that offers a KDialogBase containing arbitrary KControl Modules
@@ -189,26 +191,15 @@ private:
     void init();
     void apply();
 
-    struct LoadInfo {
-      LoadInfo(const KCModuleInfo &_info, bool _withfallback)
-         : info(_info), withfallback(_withfallback)
-         { }
-      KCModuleInfo info;
-      bool withfallback;
-    };
-
-    typedef QMap<QWidget*, LoadInfo*> LoadInfoMap;
-    LoadInfoMap m_loadInfoMap;
-
     struct CreatedModule
     {
-        KCModule * kcm;
+        KCModuleProxy * kcm;
         KService::Ptr service;
     };
     typedef QValueList<CreatedModule> ModuleList;
     ModuleList m_modules;
 
-    typedef QMap<KService::Ptr, KCModule*> OrphanMap;
+    typedef QMap<KService::Ptr, KCModuleProxy*> OrphanMap;
     OrphanMap m_orphanModules;
 
     QPtrDict<QStringList> moduleParentComponents;

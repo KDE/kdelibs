@@ -33,7 +33,6 @@ public:
 	QString _rootOnlyMsg;
 	bool _useRootOnlyMsg;
         bool _hasOwnInstance;
-	bool _changed;
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
@@ -42,7 +41,6 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
     kdDebug( 281 ) << "KCModule " << name << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
-    d->_changed = false;
     d->_instance = new KInstance(name);
 	if (name && strlen(name)) {
 		d->_instance = new KInstance(name);
@@ -51,7 +49,6 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 		d->_instance = new KInstance("kcmunnamed");
     d->_hasOwnInstance = true;
     KGlobal::setActiveInstance(this->instance());
-    connect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
 }
 
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
@@ -60,12 +57,10 @@ KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
     kdDebug( 281 ) << "KCModule instance " << (instance ? instance->instanceName().data() : "none") << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
-    d->_changed = false;
     d->_instance = instance;
     KGlobal::locale()->insertCatalogue(instance->instanceName());
     d->_hasOwnInstance = false;
     KGlobal::setActiveInstance(this->instance());
-    connect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
 }
 
 KCModule::~KCModule()
@@ -95,32 +90,14 @@ bool KCModule::useRootOnlyMsg() const
 	return d->_useRootOnlyMsg;
 }
 
-bool KCModule::changed() const
-{
-	return d->_changed;
-}
-
-void KCModule::setChanged( bool state )
-{
-    //kdDebug( 281 ) << k_funcinfo << state << endl;
-    //kdDebug( 281 ) << "d->_changed = " << d->_changed << endl;
-    if( d->_changed != state )
-    {
-        d->_changed = state;
-        if( sender() != this )
-        {
-            disconnect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
-            emit changed( state );
-            connect( this, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
-        }
-    }
-    if( sender() == this )
-        kdWarning( 281 ) << "Emitting KCModule::changed( bool ) is deprecated. Please use KCModule::setChanged( bool ) instead." << endl;
-}
-
 KInstance *KCModule::instance() const
 {
     return d->_instance;
+}
+
+void KCModule::setChanged(bool c)
+{
+    emit changed(c);
 }
 
 void KCModule::virtual_hook( int, void* )

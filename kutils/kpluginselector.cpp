@@ -56,6 +56,7 @@
 #include <kinstance.h>
 #include <qptrdict.h>
 #include <qstringlist.h>
+#include "kcmoduleproxy.h"
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
@@ -91,7 +92,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     QMap<QString, int> widgetIDs;
     QMap<KPluginInfo*, bool> plugincheckedchanged;
     QString catname;
-    QValueList<KCModule*> modulelist;
+    QValueList<KCModuleProxy*> modulelist;
     QPtrDict<QStringList> moduleParentComponents;
 
     KPluginInfo * currentplugininfo;
@@ -205,16 +206,13 @@ bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
 QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
         const KCModuleInfo & moduleinfo )
 {
-    KCModule * module = KCModuleLoader::loadModule( moduleinfo, false, parent );
-    if( !module )
+    KCModuleProxy * module = new KCModuleProxy( moduleinfo, false,
+            parent );
+    if( !module->realModule() )
     {
         //FIXME: not very verbose
         QLabel * label = new QLabel( i18n( "Error" ), parent );
         label->setAlignment( Qt::AlignCenter );
-
-        QApplication::restoreOverrideCursor();
-        KCModuleLoader::showLastLoaderError( this );
-        QApplication::setOverrideCursor( Qt::WaitCursor );
 
         return label;
     }
@@ -400,7 +398,7 @@ void KPluginSelectionWidget::load()
             d->currentchecked = info->isPluginEnabled();
     }
 
-    for( QValueList<KCModule*>::Iterator it = d->modulelist.begin();
+    for( QValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
             ( *it )->load();
@@ -422,7 +420,7 @@ void KPluginSelectionWidget::save()
         info->save( d->config );
     }
     QStringList updatedModules;
-    for( QValueList<KCModule*>::Iterator it = d->modulelist.begin();
+    for( QValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
         {
@@ -653,7 +651,8 @@ void KPluginSelector::defaults()
     // tabwidget - defaults() will be called for all of them)
 
     QWidget * pluginconfig = d->widgetstack->visibleWidget();
-    KCModule * kcm = ( KCModule* )pluginconfig->qt_cast( "KCModule" );
+    KCModuleProxy * kcm = ( KCModuleProxy* )pluginconfig->qt_cast(
+            "KCModuleProxy" );
     if( kcm )
     {
         kdDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
@@ -662,8 +661,10 @@ void KPluginSelector::defaults()
         return;
     }
 
-    // doesn't work for plugins with more than one KCM
-    QObjectList * kcms = pluginconfig->queryList( "KCModule", 0, false, false );
+    // if we get here the visible Widget must be a tabwidget holding more than
+    // one KCM
+    QObjectList * kcms = pluginconfig->queryList( "KCModuleProxy",
+            0, false, false );
     QObjectListIt it( *kcms );
     QObject * obj;
     while( ( obj = it.current() ) != 0 )
