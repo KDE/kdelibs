@@ -157,6 +157,9 @@ void KHTMLImage::slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL
     KAction *encodingAction = cl->actionCollection()->action( "setEncoding" );
     if ( encodingAction )
         cl->actionCollection()->take( encodingAction );
+    KAction *viewSourceAction= cl->actionCollection()->action( "viewDocumentSource" );
+    if ( viewSourceAction )
+        cl->actionCollection()->take( viewSourceAction );
     emit m_ext->popupMenu( cl, pos, u, m_mimeType, mode );
 }
 
