@@ -108,7 +108,7 @@ namespace KIO {
      * @param resume
      */
     TransferJob *put( const KURL& url, int permissions,
-		      bool overwrite, bool resume );
+                      bool overwrite, bool resume );
 
     /**
      * HTTP POST (for form data)
