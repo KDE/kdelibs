@@ -465,7 +465,7 @@ class KDialogBase : public KDialog
      *
      * \code
      * QFrame *page = addPage( i18n("Layout") );
-     * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
+     * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, KDialog::spacingHint() );
      * QLabel *label = new QLabel( i18n("Layout type"), page );
      * topLayout->addWidget( label );
      * ..
