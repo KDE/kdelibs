@@ -73,7 +73,6 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
 
 KStatusBar::~KStatusBar ()
 {
-  delete d;
 }
 
 void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
