@@ -1614,9 +1614,10 @@ void WindowQObject::mark()
 
 void WindowQObject::timerEvent(QTimerEvent *)
 {
-  assert(!scheduledActions.isEmpty());
-
   killTimers();
+
+  if (scheduledActions.isEmpty())
+    return;
 
   QTime currentActual = QTime::currentTime();
   QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
