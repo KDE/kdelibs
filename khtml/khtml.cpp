@@ -329,6 +329,8 @@ void KHTMLWidget::requestFrame(HTMLFrameRequester *frame)
 
 void KHTMLWidget::slotReceiveFrame( BrowserView *frame, QString name )
 {
+    // ### fix child list!!!
+
     HTMLFrameRequester *f;
     for(f = requestedFrames.first(); f != 0; f = requestedFrames.next())
     {
@@ -341,6 +343,8 @@ void KHTMLWidget::slotReceiveFrame( BrowserView *frame, QString name )
 	return;
     }
     f->setFrame(frame);
+    Child *c = new Child(frame, false);
+    m_lstChildren.append(c);
 }
 
 BrowserView* KHTMLWidget::getFrame( QString _name )
@@ -458,7 +462,8 @@ void KHTMLWidget::slotReloadFrames()
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
     {
       c->m_bReady = false;
-      c->m_pBrowser->slotReloadFrames();
+// ###
+      //c->m_pBrowser->slotReloadFrames();
     }
   }
   else
@@ -865,9 +870,12 @@ void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _lin
     defaultSettings->linkColor = _linkc;
     defaultSettings->vLinkColor = _vlinkc;
 
+//###
+#if 0
     Child *c;
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
 	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
+#endif
 }
 
 void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
@@ -875,9 +883,12 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
   printf("setting default bgColor\n");
     defaultSettings->bgColor = bgcolor;
 
+// ###
+#if 0
     Child *c;
     for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
 	c->m_pBrowser->setDefaultBGColor( bgcolor );
+#endif
 }
 
 QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
@@ -905,6 +916,8 @@ QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 
 KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
 {
+// ###
+#if 0
   QListIterator<Child> it( m_lstChildren );
   for( ; it.current(); ++it )
   {
@@ -920,7 +933,7 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
     if ( b )
       return b;
   }
-
+#endif
   return 0L;
 }
 
@@ -931,12 +944,15 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
   kdebug(0,1202,"--------------- ChildFinished %p ----------------------",this);
   /** End DEBUG **/
 
+// ###
+#if 0
   QListIterator<Child> it( m_lstChildren );
   for( ; it.current(); ++it )
   {
     if ( it.current()->m_pBrowser == _browser )
       it.current()->m_bReady = true;
   }
+#endif
 
   if ( !m_bParsing )
       emit completed();
@@ -988,11 +1004,14 @@ void KHTMLWidget::end()
       setContentsPos( m_iNextXOffset, m_iNextYOffset );
 
 
+// ###
+#if 0
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
     if ( !it2.current()->m_bReady )
       return;
+#endif
 
   emit completed();
   if ( _parent )
@@ -1776,18 +1795,23 @@ void KHTMLWidget::setFrameSelected(KHTMLWidget *w)
     else
 	_isSelected = false;
 
+// ###
+#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
 	c->m_pBrowser->setFrameSelected(w);
 	c = m_lstChildren.next();
     }
+#endif
 }
 
 KHTMLWidget *KHTMLWidget::selectedFrame()
 {
     if(_isSelected) return this;
 
+// ###
+#if 0
     Child *c = m_lstChildren.first();
     while(c)
     {	
@@ -1795,6 +1819,7 @@ KHTMLWidget *KHTMLWidget::selectedFrame()
 	if(w) return w;
 	c = m_lstChildren.next();
     }
+#endif
     return 0;
 }
 

@@ -755,9 +755,9 @@ protected:
 
     struct Child
     {
-	Child( KHTMLWidget *_b, bool _r ) { m_pBrowser = _b; m_bReady = _r; }
+	Child( BrowserView *_b, bool _r ) { m_pBrowser = _b; m_bReady = _r; }
 
-	KHTMLWidget* m_pBrowser;
+	BrowserView* m_pBrowser;
 	bool m_bReady;
     };
 
