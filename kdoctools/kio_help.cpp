@@ -1,5 +1,3 @@
-// $Id$
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -39,12 +37,14 @@
 #include <kinstance.h>
 #include <limits.h>
 #include <qtextcodec.h>
+#include <qregexp.h>
 
 #include "kio_help.h"
+#include <libxslt/libxslt.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <xslt.h>
+#include "xslt.h"
 
 using namespace KIO;
 

@@ -7,7 +7,7 @@
 #include <libxml/HTMLtree.h>
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
-#include <libxslt/xslt.h>
+#include <libxslt/libxslt.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
                 index = index2 + 2;
             }
         }
-        if ( index >= contents.length() )
+        if ( index >= (int)contents.length() )
             break;
     }
 
