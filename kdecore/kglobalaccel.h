@@ -26,17 +26,17 @@
 #include <qobject.h>
 #include "kaccel.h"
 
-/** 
+/**
  * Returns the X key modifier for the key code keyCode.
  */	
 uint keyToXMod( uint keyCode );
 
-/** 
+/**
  * Returns the X key sym for the key code keyCode.
  */	
 uint keyToXSym( uint keyCode );
 
-/** 
+/**
  * The KGlobalAccel class handles global keyboard accelerators, allowing a
  * user to configure key bindings through application configuration files or
  * through the KKeyChooser GUI.
@@ -53,7 +53,7 @@ uint keyToXSym( uint keyCode );
  *
  * When pressed,an accelerator key calls the slot to which it has been
  * connected. Accelerator items can be connected so that a key will activate
- * two different slots. 
+ * two different slots.
  *
  * KApplication::x11EventFilter must be re-implemented to call
  * KAccel::x11EventFilter so that a KAccel object can handle all key events.
@@ -65,10 +65,10 @@ uint keyToXSym( uint keyCode );
  *
  *
  * The translated first argument for insertItem is only used in the
- * configuration dialog. 
+ * configuration dialog.
  *
  * MyApp::x11EventFilter( XEvent *ev ) {
- * if ( myObject->ga->x11EventFilter( ev ) ) 
+ * if ( myObject->ga->x11EventFilter( ev ) )
  *		return true;
  * }
  *
@@ -86,12 +86,21 @@ class KGlobalAccel : public QObject
 	Q_OBJECT
 	
  public:
-	/** 
-	 * Creates a KGlobalAccel object. 
+	/**
+	 * Creates a KGlobalAccel object.
 	 */
 	KGlobalAccel( bool _do_not_grab = false);
 			
-	/** 
+	/**
+	   Creates a KGlobalAccel object with a parent and a name. The
+	   parent has the only effect that the KGlobalAccel object
+	   will be automatically destroyed in the parent's destructor,
+	   thus releaseing the keys.
+	*/
+	KGlobalAccel(QWidget * parent, const char * name, bool _do_not_grab = false);
+
+    
+	/**
 	 * Destroys the accelerator object.and ungrabs any allocated key bindings.
 	 */
 	~KGlobalAccel();
@@ -101,7 +110,7 @@ class KGlobalAccel : public QObject
 	 */
 	void clear();
 	
-	/** 
+	/**
 	 * Connect an accelerator item to a slot/signal in another object.
 	 *
 	 * Arguments:
@@ -117,38 +126,38 @@ class KGlobalAccel : public QObject
 	void connectItem( const char * action,
 						  const QObject* receiver, const char* member,
 						  bool activate = TRUE );
-						  
-	/** 
+						
+	/**
 	* Returns the number of accelerator items.
-	*/					  
+	*/					
 	uint count() const;
 	
-	/** 
+	/**
 	* Returns the key code of the accelerator item with the action name
 	* action, or zero if either the action name cannot be found or the current
 	* key is set to no key.
 	*/
 	uint currentKey( const char * action );
 
-	/** 
+	/**
 	* Returns the default key code of the accelerator item with the action name
 	* action, or zero if the action name cannot be found.
 	*/
 	uint defaultKey( const char * action);
 	
-	/** 
+	/**
 	 * Disconnects an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const char * action,
 							const QObject* receiver, const char* member );
 	
-	/** 
+	/**
 	 * Returns that identifier of the accelerator item with the keycode key,
 	 * or zero if the item cannot be found.
 	 */
 	const char *findKey( int key ) const;
 	
-	/** 
+	/**
 	 * Attempts to make a passive X server grab of the key specified by key symbol
 	 * keysym and modifier mod. Returns false if unsuccessful.
 	 *
@@ -157,8 +166,8 @@ class KGlobalAccel : public QObject
 	 */
 	bool grabKey(uint keysym, uint mod);
 	
-	/** 
-	 * Inserts an accelerator item and returns false if the key code 
+	/**
+	 * Inserts an accelerator item and returns false if the key code
 	 * 	defaultKeyCode is not valid.
 	 *	
 	 * Arguments:
@@ -169,17 +178,17 @@ class KGlobalAccel : public QObject
 	 *  \item configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	 
+	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 	 
+	 * 	
 	 */
 	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
 				 bool configurable = TRUE );
 	
-	 /** 
-	 * Inserts an accelerator item and returns false if the key code 
+	 /**
+	 * Inserts an accelerator item and returns false if the key code
 	 * 	defaultKeyCode is not valid.
 	 *	
 	 * Arguments:
@@ -191,11 +200,11 @@ class KGlobalAccel : public QObject
 	 *  \item configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	 
+	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
-	 * 	 
+	 * 	
 	 */
 	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
 				 bool configurable = TRUE );
@@ -203,28 +212,28 @@ class KGlobalAccel : public QObject
 	bool isEnabled();
 	bool isItemEnabled( const char *action );
 	
-	/** 
+	/**
 	* Returns the dictionary of accelerator action names and KKeyEntry
 	* objects. Note that only a shallow copy is returned so that items will be
 	* lost when the KKeyEntry objects are deleted.
 	*/	
 	QDict<KKeyEntry> keyDict();
-				 
-	/** 
+				
+	/**
 	 * Reads all key associations from the application's configuration files.
 	 */	
 	void readSettings();
 		
- 	/** 
+ 	/**
 	 * Removes the accelerator item with the action name action.
 	 */
-    void removeItem( const char * action );  
+    void removeItem( const char * action );
 	
 	void setConfigGroup( const char *group );
 	
 	const char * configGroup();
 	
-	/** 
+	/**
 	 * Enables the accelerator if activate is TRUE, or disables it if
 	 * activate is FALSE..
 	 *
@@ -232,7 +241,7 @@ class KGlobalAccel : public QObject
 	 */
 	void setEnabled( bool activate );
 	
-	/** 
+	/**
 	 * Enables or disables an accelerator item.
 	 *
 	 * Arguments:
@@ -241,18 +250,18 @@ class KGlobalAccel : public QObject
 	 *  \item action is the accelerator item action name.
 	 *	\item activate specifies whether the item should be enabled or
 	 *	disabled.
-	 * 	\end{itemize} 
+	 * 	\end{itemize}
 	 */
 	void setItemEnabled( const char * action, bool activate );
 	
-	/** 
+	/**
 	* Sets the dictionary of accelerator action names and KKeyEntry
 	* objects to nKeyDict.. Note that only a shallow copy is made so that items will be
 	* lost when the KKeyEntry objects are deleted.
 	*/	
 	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
 	
-	/** 
+	/**
 	 * Ungrabs the key specified by key symbol
 	 * keysym and modifier mod. Returns false if unsuccessful.
 	 *
@@ -261,7 +270,7 @@ class KGlobalAccel : public QObject
 	 */
 	bool ungrabKey(uint keysym, uint mod);
 
-	/** 
+	/**
 	 * Writes the current configurable associations to the application's
 	 * configuration files
 	 */	
@@ -271,7 +280,7 @@ class KGlobalAccel : public QObject
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function
 	 * returns true. Return false if the event is not processed.
-	 */ 
+	 */
 	bool x11EventFilter(const XEvent *);
 	
 signals:

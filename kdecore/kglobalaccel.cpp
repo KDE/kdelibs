@@ -2,7 +2,7 @@
 	Copyright (C) 1998 	Mark Donohoe <donohoe@kde.org>,
 	Jani Jaakkola (jjaakkol@cs.helsinki.fi),
 	Nicolas Hadacek <hadacek@via.ecp.fr>
-	Matthias Ettrich (ettrich@kde.org) 
+	Matthias Ettrich (ettrich@kde.org)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@
 #include <kapp.h>
 
 // NOTE ABOUT CONFIGURATION CHANGES
-// Test if keys enabled because these keys have made X server grabs 
+// Test if keys enabled because these keys have made X server grabs
 
 KGlobalAccel::KGlobalAccel(bool _do_not_grab)
  : QObject(), aKeyDict(100)
@@ -46,6 +46,15 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	bEnabled = true;
 	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
+}
+
+KGlobalAccel::KGlobalAccel(QWidget * parent, const char * name, bool _do_not_grab)
+    : QObject(parent, name), aKeyDict(100) {
+    	aAvailableId = 1;
+	bEnabled = true;
+	aGroup = "Global Keys";
+	do_not_grab =_do_not_grab;
+
 }
 
 KGlobalAccel::~KGlobalAccel()
@@ -111,7 +120,7 @@ void KGlobalAccel::disconnectItem( const char * action,
 				   const QObject* /*receiver*/, const char* /*member*/ )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
-    if ( !pEntry ) 
+    if ( !pEntry )
 		return;
 	
 }
@@ -149,14 +158,14 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 
 	debug("KGlobalAccel::grabKey");
 	
-	if (!keysym || !XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
+	if (!keysym || !XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
 		int i;
 		for (i=0; i<8; i++){
-		   if (xmk->modifiermap[xmk->max_keypermod * i] == 
+		   if (xmk->modifiermap[xmk->max_keypermod * i] ==
 		   		XKeysymToKeycode(qt_xdisplay(), XK_Num_Lock))
-		   			NumLockMask = (1<<i); 
+		   			NumLockMask = (1<<i);
 		}
 	}
 
@@ -221,7 +230,7 @@ bool KGlobalAccel::insertItem(  const char* descr, const char * action, uint key
 	return TRUE;
 }
 
-bool KGlobalAccel::insertItem( const char* descr, const char * action, 
+bool KGlobalAccel::insertItem( const char* descr, const char * action,
 					   const char * keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
@@ -261,7 +270,7 @@ void KGlobalAccel::readSettings()
 	QString s;
 	//KConfig *pConfig = kapp->getConfig();
 	KConfig globalConfig;// this way we are certain to get the global stuff!
-	KConfig *pConfig = &globalConfig; 
+	KConfig *pConfig = &globalConfig;
 
 	pConfig->setGroup( aGroup.data() );
 
@@ -305,7 +314,7 @@ void KGlobalAccel::removeItem( const char * action )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	
-    if ( !pEntry ) 
+    if ( !pEntry )
 		return;
 	
 	if ( pEntry->aAccelId ) {
@@ -344,13 +353,13 @@ void KGlobalAccel::setItemEnabled( const char * action, bool activate )
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
 		QString str;
-		str.sprintf( 
+		str.sprintf(
 			"KGlobalAccel : cannont enable action %s"\
 			"which is not in the object dictionary", action );
 		warning( str );
 		return;
 	}
-       
+
 	bool old = pEntry->bEnabled;
 	pEntry->bEnabled = activate;
 	if ( pEntry->bEnabled == old ) return;
@@ -367,7 +376,7 @@ void KGlobalAccel::setItemEnabled( const char * action, bool activate )
 	} else {
 		ungrabKey( keysym, mod );
 	}
-   
+
 	return;
 }
 
@@ -434,14 +443,14 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 
 	debug("KGlobalAccel::ungrabKey");
 	
-	if (!keysym||!XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
+	if (!keysym||!XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
 		int i;
 		for (i=0; i<8; i++){
-		   if (xmk->modifiermap[xmk->max_keypermod * i] == 
+		   if (xmk->modifiermap[xmk->max_keypermod * i] ==
 		   		XKeysymToKeycode(qt_xdisplay(), XK_Num_Lock))
-		   			NumLockMask = (1<<i); 
+		   			NumLockMask = (1<<i);
 		}
 	}
 
@@ -480,7 +489,7 @@ void KGlobalAccel::writeSettings()
 {
 	// KConfig *pConfig = kapp->getConfig();
 	KConfig globalConfig;// this way we are certain to get the global stuff!
-	KConfig *pConfig = &globalConfig; 
+	KConfig *pConfig = &globalConfig;
 
 	pConfig->setGroup( aGroup.data() );
 
@@ -506,15 +515,15 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
 	
 	//	debug("Key press event :: mod = %d, sym =%d", mod, keysym );
-   
+
 // 	KKeyEntry *pEntry =0;
 // 	const char *action;
-   
+
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
 #define pE aKeyIt->current()
-	while( pE ) { //&& 
-		//( mod != keyToXMod( pE->aCurrentKeyCode ) 
+	while( pE ) { //&&
+		//( mod != keyToXMod( pE->aCurrentKeyCode )
 		//	|| keysym != keyToXSym( pE->aCurrentKeyCode ) ) ) {
 		int kc = pE->aCurrentKeyCode;
 		// 		if( mod == keyToXMod( kc ) ) debug("That's the right modifier");
@@ -531,12 +540,12 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	
 	if ( !pE ) {
 	  //		debug("Null KeyEntry object");
-		return false; 
+		return false;
 	}
 	
 	if ( !pE ) {
 		debug("KeyEntry object not enabled");
-		return false; 
+		return false;
 	}
 
 	debug("KGlobalAccel:: event action %s", aKeyIt->currentKey() );
@@ -566,7 +575,7 @@ uint keyToXMod( uint keyCode )
 		 mod |= ControlMask;
 	if ( keyCode & ALT )
 		 mod |= Mod1Mask;
-		 
+		
 	return mod;
 }
 
@@ -583,7 +592,7 @@ uint keyToXSym( uint keyCode )
 	
 	strncpy(sKey, (const char *)s.data(), 200);
 	
-	//	debug("Find key %s", sKey ); 
+	//	debug("Find key %s", sKey );
 	
 	if ( s.isEmpty() ) return keysym;
 	
