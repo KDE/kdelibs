@@ -62,6 +62,12 @@ int main(int argc, char **argv)
         qDebug("filename=%s",name.latin1());
     }
 
+    else if (argv1 == QString::fromLatin1("existingURL")) {
+        KURL url = KFileDialog::getExistingURL();
+        qDebug("URL=%s",url.url().latin1());
+        name1 = url.url();
+    }
+
     else if (argv1 == QString::fromLatin1("preview")) {
         KURL u =  KFileDialog::getImageOpenURL();
         qDebug("filename=%s", u.url().latin1());

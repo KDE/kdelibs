@@ -565,9 +565,6 @@ public:
      * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
      *
-     * Note that with this
-     * method the user need not select an existing directory.
-     *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li QString::null to start in the current working
@@ -586,6 +583,31 @@ public:
 					QWidget * parent = 0,
 					const QString& caption= QString::null);
 
+    /**
+     * Creates a modal file dialog and returns the selected
+     * directory or an empty string if none was chosen.
+     *
+     * Contrary to @ref getExistingDirectory(), this method allows the
+     * selection of a remote directory.
+     *
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li QString::null to start in the current working
+     *		    directory, or the last directory where a file has been
+     *		    selected.
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
+     *             by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *             by a filedialog in any application that specified the
+     *             same keyword.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param caption The name of the dialog widget.
+     * @since 3.1
+     */
+    static KURL getExistingURL(const QString & startDir = QString::null,
+                                  QWidget * parent = 0,
+                                  const QString& caption= QString::null);
     /**
      * Creates a modal file dialog with an image previewer and returns the
      * selected url or an empty string if none was chosen.

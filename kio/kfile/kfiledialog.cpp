@@ -320,7 +320,7 @@ void KFileDialog::slotOk()
 	}
     }
 
-    bool dirOnly = !(mode() & (KFile::File | KFile::Files));
+    bool dirOnly = ops->dirOnlyMode();
 
     // we can use our kfileitems, no need to parse anything
     if ( items && !locationEdit->lineEdit()->edited() &&
@@ -435,18 +435,41 @@ void KFileDialog::slotOk()
                         done = false;
                 }
             }
-            else { // Directory mode, with file[s]/dir[s] selected
+            else  // Directory mode, with file[s]/dir[s] selected
+            {
+                if ( mode() & KFile::ExistingOnly )
+                {
+                    if ( ops->dirOnlyMode() )
+                    {
+                        KURL fullURL(d->url, locationEdit->currentText());
+                        if ( QFile::exists( fullURL.path() ) )
+                        {
+                            d->url = fullURL;
+                            d->filenames = QString::null;
+                            d->urlList.clear();
+                            accept();
+                            return;
+                        }
+                        else // doesn't exist -> reject
+                            return;
+                    }
+                }
+
                 d->filenames = locationEdit->currentText();
                 accept(); // what can we do?
             }
 
         }
         else { // FIXME: remote directory, should we allow that?
-            qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
+//             qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
             d->filenames = QString::null;
             d->urlList.clear();
             d->urlList.append( d->url );
-            accept();
+            
+            if ( mode() & KFile::ExistingOnly )
+                done = false;
+            else
+                accept();
         }
 
         if ( done )
@@ -494,7 +517,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 
     // errors mean in general, the location is no directory ;/
     // Can we be sure that it is exististant at all? (pfeiffer)
-    if (sJob->error() && count == 0)
+    if (sJob->error() && count == 0 && !ops->dirOnlyMode())
        accept();
 
     KIO::UDSEntry t = sJob->statResult();
@@ -507,18 +530,30 @@ void KFileDialog::slotStatResult(KIO::Job* job)
        }
     }
 
-    // currently, we only stat in File[s] mode, not Directory mode, so a
-    // directory means ERROR
-    if (isDir) {
-        if ( count == 0 ) {
-            locationEdit->clearEdit();
-            locationEdit->lineEdit()->setEdited( false );
-            setURL( sJob->url() );
+    if (isDir)
+    {
+        if ( ops->dirOnlyMode() )
+        {
+            d->filenames = QString::null;
+            d->urlList.clear();
+            accept();
+        }
+        else // in File[s] mode, directory means error -> cd into it
+        {
+            if ( count == 0 ) {
+                locationEdit->clearEdit();
+                locationEdit->lineEdit()->setEdited( false );
+                setURL( sJob->url() );
+            }
         }
         d->statJobs.clear();
         return;
     }
-
+    else if ( ops->dirOnlyMode() && !isDir )
+    {
+        return; // ### error message?
+    }
+    
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
 
     if ( count == 0 )
@@ -528,6 +563,8 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 
 void KFileDialog::accept()
 {
+    qDebug("* accept!");
+    
     setResult( QDialog::Accepted ); // parseSelectedURLs() checks that
 
     *lastDirectory = ops->url();
@@ -1392,12 +1429,27 @@ KURL::List KFileDialog::getOpenURLs(const QString& startDir,
     return dlg.selectedURLs();
 }
 
+KURL KFileDialog::getExistingURL(const QString& startDir,
+                                       QWidget *parent,
+                                       const QString& caption)
+{
+    KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
+    dlg.setMode(KFile::Directory | KFile::ExistingOnly);
+    // to get "All Directories" instead of "All Files" in the combo
+    dlg.setFilter( QString::null );
+    dlg.ops->clearHistory();
+    dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
+    dlg.exec();
+
+    return dlg.selectedURL();
+}
+
 QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
     KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
-    dlg.setMode(KFile::Directory | KFile::LocalOnly); // local for now
+    dlg.setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
     // to get "All Directories" instead of "All Files" in the combo
     dlg.setFilter( QString::null );
     dlg.ops->clearHistory();
