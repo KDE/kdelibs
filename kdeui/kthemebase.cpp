@@ -1210,6 +1210,25 @@ KThemePixmap::KThemePixmap(bool timer)
         b[i] = NULL;
 }
 
+KThemePixmap::KThemePixmap(const KThemePixmap &p)
+    :KPixmap(p)
+{
+    if(p.t){
+        t = new QTime;
+        t->start();
+    }
+    else
+        t = NULL;
+    int i;
+    for(i=0; i < 8; ++i)
+        if(p.b[i])
+            b[i] = new QPixmap(*p.b[i]);
+        else
+            b[i] = NULL;
+}
+
+
+
 KThemePixmap::~KThemePixmap()
 {
     if(t)

@@ -29,6 +29,7 @@ public:
     BottomRight};
     
     KThemePixmap(bool timer = true);
+    KThemePixmap(const KThemePixmap &p);
     ~KThemePixmap();
     QPixmap* border(BorderType type);
     void setBorder(BorderType type, const QPixmap &p);
