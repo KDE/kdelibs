@@ -405,6 +405,11 @@ QCString KConfigBase::readEntryUtf8( const char *pKey) const
   KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
   KEntry aEntryData = lookupData(entryKey);
+  if (aEntryData.bExpand)
+  {
+     // We need to do fancy, take the slow route.
+     return readEntry(pKey, QString::null).utf8();
+  }
   return aEntryData.mValue;
 }
 
