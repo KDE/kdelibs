@@ -50,6 +50,8 @@ namespace khtml {
     void cleanup_thaibreaks()
     {
         delete cache;
+        cache = 0;
+        th_brk = 0;
     }
 
     bool isBreakableThai( const QChar *string, const int pos, const int len)
