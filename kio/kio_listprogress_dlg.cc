@@ -4,7 +4,6 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kwm.h>
-#include <kstddirs.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 
@@ -64,7 +63,7 @@ KIOListBox::~KIOListBox()
 
 void KIOListBox::readConfig(void)
 {
-  KConfig* conf = new KConfig(locate( "config", "kioslaverc"),
+  KConfig* conf = new KConfig(KApplication::kde_configdir() + "/kioslaverc",
 			      KApplication::localconfigdir() + "/kioslaverc" );
 
   int beg, end, i, w;
@@ -102,7 +101,7 @@ void KIOListBox::readConfig(void)
 
 void KIOListBox::writeConfig(void)
 {
-  KConfig* conf = new KConfig(locate( "config", "kioslaverc"),
+  KConfig* conf = new KConfig(KApplication::kde_configdir() + "/kioslaverc",
 			      KApplication::localconfigdir() + "/kioslaverc" );
 
   int t;
@@ -361,7 +360,7 @@ void KIOListProgressDlg::updateToolBar()
 
 void KIOListProgressDlg::readSettings() {
 
-  KConfig config(locate( "config", "kioslaverc" ),
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   config.setGroup( "ListProgress" );
@@ -370,7 +369,7 @@ void KIOListProgressDlg::readSettings() {
 
 void KIOListProgressDlg::writeSettings() {
 
-  KConfig config(locate( "config", "kioslaverc" ),
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   config.setGroup( "ListProgress" );

@@ -244,9 +244,9 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
 {
   char **argv = 0L;
 
-  QString kfmexec = locate( "exe", "" );
-  kfmexec += "/kfmexec";
-
+  // find kfmexec in $PATH
+  QString kfmexec = KStandardDirs::findExe( "kfmexec" );
+  
   if ( _allow_multiple )
   {
     argv = new char*[ _urls.count() + 3 ];

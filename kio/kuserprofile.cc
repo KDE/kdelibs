@@ -3,7 +3,6 @@
 
 #include <kconfig.h>
 #include <kapp.h>
-#include <kstddirs.h>
 
 #include <qtl.h>
 #include <qsmartptr.h>
@@ -23,7 +22,7 @@ void KServiceTypeProfile::initStatic()
 
   s_lstProfiles = new QList<KServiceTypeProfile>;
 
-  KConfig config( locate( "config", "profilerc" ),
+  KConfig config( kapp->kde_configdir() + "/profilerc",
 		  kapp->localconfigdir() + "/profilerc" );
 
   QStringList tmpList = config.groupList();
