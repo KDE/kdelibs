@@ -15,18 +15,17 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#include <iostream.h>
+
 #include <sys/types.h>
-#include "kregexp.h"
-#include "kregpriv.h"
 
 #include <string.h>
 #include <assert.h>
-
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
 #include <stdlib.h>
+
+#include <iostream.h>
+
+#include "kregexp.h"
+#include "kregpriv.h"
 
 KRegExpPrivate::KRegExpPrivate()
 {
