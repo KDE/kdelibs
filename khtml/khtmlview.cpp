@@ -2617,7 +2617,7 @@ protected:
     Q_ASSERT(b);
     RenderObject *r = b->object();
     if (b->isInlineFlowBox()) kdDebug(6200) << "b is inline flow box" << endl;
-    kdDebug(6200) << "isEditable r" << r << ": " << (r ? r->renderName() : QString::null) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, ((RenderText *)r)->str->l) + "\"" : QString::null) << endl;
+    kdDebug(6200) << "isEditable r" << r << ": " << (r ? r->renderName() : QString::null) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, QMIN(((RenderText *)r)->str->l,15)) + "\"" : QString::null) << endl;
     // Must check caret mode or design mode *after* r && r->element(), otherwise
     // lines without a backing DOM node get regarded, leading to a crash.
     // ### check should actually be in InlineBoxIterator
@@ -3405,7 +3405,7 @@ LinearDocument::Iterator LinearDocument::preEnd()
   while (lastLeaf->lastChild()) lastLeaf = lastLeaf->lastChild();
 
   if (!lastLeaf) return preBegin();	// must be empty document (is this possible?)
-  return LineIterator(this, lastLeaf, lastLeaf->minOffset());
+  return LineIterator(this, lastLeaf, lastLeaf->maxOffset());
 }
 
 void LinearDocument::initPreBeginIterator()
@@ -4212,7 +4212,7 @@ void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
     if (!m_part || m_part->d->caretNode().isNull()) return;
     d->caretViewContext();
     NodeImpl *caretNode = m_part->d->caretNode().handle();
-  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, static_cast<RenderText *>(caretNode->renderer())->str->l).string() + "\"" : QString::null) << endl;
+  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, QMIN(static_cast<RenderText *>(caretNode->renderer())->str->l, 15)).string() + "\"" : QString::null) << endl;
     caretNode->getCaret(m_part->d->caretOffset(),
                 caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
