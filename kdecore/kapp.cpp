@@ -974,6 +974,8 @@ static const KCmdLineOptions qt_options[] =
    { "title <title>", I18N_NOOP("sets the application title (caption)."), 0},
    { "visual TrueColor", I18N_NOOP("forces the application to use a TrueColor visual on an 8-bit display."), 0},
    { "inputstyle", I18N_NOOP("sets XIM(X Input Method) input style. Possible values are onthespot, overthespot, offthespot and root"), 0 },
+   { "im <XIM server>", I18N_NOOP("set XIM server."),0},
+   { "noxim", I18N_NOOP("disable XIM."), 0 },
    { 0, 0, 0 }
 };
 
