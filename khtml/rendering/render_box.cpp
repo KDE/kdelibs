@@ -660,15 +660,7 @@ int RenderBox::calcReplacedHeight() const
                 cb = cb->containingBlock();
 
 	    Length h = cb->style()->height();
-	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
             height = h.minWidth(availableHeight());
-
-//             if ( h.isFixed() )
-//                 height = h.minWidth( h.value );
-//             else
-//                 height = intrinsicHeight();
-//            qDebug("availableHeight: %d, height: %d",
-//                   availableHeight(), height);
         }
     }
     break;
