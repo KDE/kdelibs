@@ -292,7 +292,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		    // we are past the font properties, time to update to the
 		    // correct font
 		    //We have to do this for all pseudo styles
-		    RenderStyle *pseudoStyle = CSSStyleSelector::style->pseudoStyle;
+		    RenderStyle *pseudoStyle = style->pseudoStyle;
 		    while ( pseudoStyle ) {
 			pseudoStyle->htmlFont().update( paintDeviceMetrics );
 			pseudoStyle = pseudoStyle->pseudoStyle;
@@ -305,8 +305,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
                 if (!pseudoStyle)
                 {
                     pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
-                    if (pseudoStyle && (ordprop->pseudoId==RenderStyle::BEFORE ||
-                            ordprop->pseudoId==RenderStyle::AFTER))
+                    if (pseudoStyle)
                         pseudoStyle->inheritFrom( style );
                 }
 
@@ -318,7 +317,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
                 ordprop = pseudoProps->next();
             }
 	    if ( fontDirty ) {
-		RenderStyle *pseudoStyle = CSSStyleSelector::style->pseudoStyle;
+		RenderStyle *pseudoStyle = style->pseudoStyle;
 		while ( pseudoStyle ) {
 		    pseudoStyle->htmlFont().update( paintDeviceMetrics );
 		    pseudoStyle = pseudoStyle->pseudoStyle;

@@ -817,7 +817,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 	kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
 #endif
         if(r->obj->isText())
-            r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
+            r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start, firstLine);
         else {
             r->obj->calcWidth();
             r->width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
