@@ -52,7 +52,7 @@ KFileViewItem::IntCache   * KFileViewItem::passwdCache = 0L;
 KFileViewItem::IntCache   * KFileViewItem::groupCache  = 0L;
 KFileViewItem::GroupCache * KFileViewItem::myGroupMemberships = 0L;
 
-KFileViewItem::KFileViewItem(const KUDSEntry &e)
+KFileViewItem::KFileViewItem(const KIO::UDSEntry &e)
 {
     myIsDir = false;
     myIsFile = true;
@@ -64,7 +64,7 @@ KFileViewItem::KFileViewItem(const KUDSEntry &e)
     kDebugInfo(kfile_area, "KFileViewItem::KFileViewItem");
 
     KURL url;
-    KUDSEntry::ConstIterator it = e.begin();
+    KIO::UDSEntry::ConstIterator it = e.begin();
     for( ; it != e.end(); it++ ) {
 	switch (( *it ).m_uds) {
 	case KIO::UDS_NAME:

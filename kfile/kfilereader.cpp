@@ -411,66 +411,51 @@ bool KFileReader::startLoading()
 {
     // If KIOJob is not busy
     if (myJob == 0) {
-	myJob = new KIOJob("kiojob");
+	myJob = KIO::listDir(*this); // listDir(url().ascii()); ?
 	CHECK_PTR(myJob);
-	myJob->setGUImode( KIOJob::SIMPLE );
 
-	// FIXME: still necessary?
-	/* Check connection was made
-	 if ( !myJob->isOK() ) {
-	    myJob = 0;
-	    readable = false;
-	    emit finished(); // what else can I say? ;)
-	}
-	*/
-	//	else { // If all is well
-	    connect(myJob, SIGNAL(sigFinished(int)), SLOT(slotIOFinished()));
-	    connect(myJob, SIGNAL(sigError(int, int, const char * )),
-		    SLOT(slotIOError(int, int, const char * )));
-	    connect(myJob, SIGNAL(sigListEntry(int, const KUDSEntry&)),
-		    SLOT(slotListEntry(int, const KUDSEntry&)));
-#ifdef AFTER_KRASH_API
-	    myJob->listDir(*this);
-#else
-	    myJob->listDir(url().ascii());
-#endif
-	    return true;
-	    //	}
+	connect(myJob, SIGNAL(result(KIO::Job*)),
+                    SLOT(slotIOFinished(KIO::Job*)));
+	connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+	return true;
     }
 
     return false;
 }
 
-void KFileReader::slotListEntry(int, const KUDSEntry& entry) // SLOT
+void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
     kDebugInfo(kfile_area, "slotListEntry");
-    KFileViewItem *i= new KFileViewItem(entry);
-    CHECK_PTR(i);
+    KIO::UDSEntryListIterator it(entries);
+    for (; it.current(); ++it) {
+      KFileViewItem *i= new KFileViewItem(*(it.current()));
+      CHECK_PTR(i);
 
-    myEntries.append(i);
-    myNewEntries.clear();
+      myEntries.append(i);
+      myNewEntries.clear();
 
-    i->setHidden(!filterEntry(i));
-    if (!i->isHidden()) {
-	emit dirEntry(i);
-	myNewEntries.append(i);
+      i->setHidden(!filterEntry(i));
+      if (!i->isHidden()) {
+	  emit dirEntry(i);
+	  myNewEntries.append(i);
+      }
     }
 
-    // TODO when do we know we're done?
+    // TODO: when do we know we're done?
+    // (David): well, in slotIOFinished :)
     if ( myNewEntries.count() > 0 )
       emit contents( &myNewEntries, false);
 }
 
-void KFileReader::slotIOFinished()
+void KFileReader::slotIOFinished( KIO::Job * job )
 {
-    myJob= 0;
+    if (job->error())
+	emit error( job->error(), job->errorText() );
+    //else
     //    emit finished();
-}
 
-void KFileReader::slotIOError(int, int _errid, const char *_txt )
-{
-    myJob = 0;
-    emit error(_errid, QString::fromLatin1(_txt)); // TODO change KIOJob to emit unicode
+    myJob= 0;
 }
 
 void KFileReader::slotDirDirty( const QString& )

@@ -35,12 +35,15 @@
 #include <qlist.h>
 #include <kdirwatch.h>
 #include <kurl.h>
+#include <kio/global.h>
 
 #include "kfileviewitem.h"
 
+namespace KIO {
+class Job;
+}
 class QStrList;
 class KDirWatch;
-class KIOJob;
 class KURL;
 
 class KFileReader : public QObject, public KURL
@@ -189,14 +192,12 @@ protected slots:
     /**
      * Called when a directory entry is received.
      */
-    void slotListEntry(int id, const KUDSEntry&);
+    void slotEntries(KIO::Job*, const KIO::UDSEntryList&);
 
     /**
-     * Called when KIOJob has finished the current network operation.
+     * Called when Job has finished the current network operation.
      */
-    void slotIOFinished();
-
-    void slotIOError(int, int _errid, const char *_txt );
+    void slotIOFinished( KIO::Job * );
 
     void slotDirDirty(const QString& dir);
     void slotDirDeleted(const QString& dir);
@@ -212,11 +213,11 @@ protected:
 
     /**
      * Start listing the directory in the background (returns immeditately).
-     * @return true if KIOJob was started successfully.
+     * @return true if KIO::Job was started successfully.
      */
     virtual bool startLoading();
 
-    KIOJob *myJob;
+    KIO::Job *myJob;
     static KDirWatch *dirWatch;
 
 private:

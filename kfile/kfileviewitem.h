@@ -33,8 +33,8 @@
 #include <qstring.h>
 
 #include <kiconloader.h>
-#include <kio_interface.h>
 #include <kmimetype.h>
+#include <kio/global.h>
 
 class QFileInfo;
 class QPixmap;
@@ -69,7 +69,7 @@ public:
     /**
       * Construct a KFileViewItem object from a KDirEntry.
       */
-    KFileViewItem(const KUDSEntry &);
+    KFileViewItem(const KIO::UDSEntry &);
 
     /**
       * Copy a KFileViewItem.
@@ -119,14 +119,14 @@ public:
     QPixmap pixmap( KIconLoader::Size size ) const;
 
     /**
-     * Returns a pixmap for this file. The only semantic difference to the 
+     * Returns a pixmap for this file. The only semantic difference to the
      * other pixmap() method is that the last used Pixmap-size will be used.
      * E.g. if you call pixmap( KIconLoader::Large ) once, you can refer to
      * this pixmap thru this method without specifying the size.
      * The default size is KIconLoader::Small
      */
     QPixmap pixmap() const { return pixmap( myPixmapSize ); }
-    
+
     /**
       * Returns a string of the date of the file.
       */

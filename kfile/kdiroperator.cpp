@@ -479,7 +479,7 @@ void KDirOperator::pathChanged()
 
     finished = false;
 
-    // when KIOJob emits finished, the slot will restore the cursor
+    // when KIO::Job emits finished, the slot will restore the cursor
     QApplication::setOverrideCursor( waitCursor );
 
     // lastDirectory is used to set the start path next time
