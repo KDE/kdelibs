@@ -591,14 +591,20 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	ch = str->s+from;
 
     // ### margins and RTL
-    if(from == 0 && m_parent->isInline())
+    if(from == 0 && m_parent->isInline() && m_parent->firstChild()==this)
+    {
 	x += paddingLeft() + borderLeft() + marginLeft();
-
+        width -= marginLeft();
+    } 
+    
+    if(from + len == int(str->l) && m_parent->isInline() && m_parent->lastChild()==this)
+        width -= marginRight();
+       
     //#ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
 //    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
     //#endif
-
+    
     TextSlave *s = new TextSlave(x, y, ch, len,
 				 bidiHeight(), baselineOffset(), width, deleteChar);
 
@@ -625,9 +631,9 @@ unsigned int RenderText::width( int from, int len) const
 
     if(m_parent->isInline())
     {
-	if(from == 0)
+	if(from == 0 && m_parent->firstChild()==this)
 	    w += borderLeft() + paddingLeft() + marginLeft();
-	if(from + len == int(str->l))
+	if(from + len == int(str->l) && m_parent->lastChild()==this)
 	    w += borderRight() + paddingRight() +marginRight();;
     }
 
