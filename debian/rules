@@ -63,7 +63,7 @@ binary-arch:  build
 	echo "dir_html=/$(kde_htmldir)" >> $$debianrc ;\
 	echo "dir_apps=/$(kde_confdir)/applnk" >> $$debianrc 
 	cp debian/tmp/$(kde_confdir)/system.kdeglobals debian/tmp/etc/kderc
-	perl -w admin/debianrules kdelibs3-cvs
+	perl -w admin/debianrules kdelibs3
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
 	for i in `find debian/tmp/$(kde_bindir) | sed -e 's#^debian/tmp/$(kde_bindir)/##'  | grep -v "debian/tmp"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
@@ -74,18 +74,18 @@ binary-arch:  build
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
 	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-	  (mkdir -p debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference) ; \
+	  (mkdir -p debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference) ; \
 	  qt2kdoc --url=/usr/share/doc/qt2.1-doc/doc/html \
-	  --outdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
+	  --outdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
 	  --compress \
 	  /usr/share/doc/qt2.1-doc/doc/html ; \
-	  makekdedoc --libdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
-	  --outputdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html ; \
+	  makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
+	  --outputdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html ; \
 	fi
 
 # libraries not starting with lib are modules
-	dh_movefiles -pkdelibs3-dev-cvs $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.a
-	-mv `find debian/kdelibs3-dev-cvs/$(kde_libdir) -type f -name "*.so"` debian/tmp/$(kde_libdir)/
+	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.a
+	-mv `find debian/kdelibs3-dev/$(kde_libdir) -type f -name "*.so"` debian/tmp/$(kde_libdir)/
 	dh_installchangelogs
 	dh_undocumented
 	dh_link
