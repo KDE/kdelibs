@@ -52,7 +52,6 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
 
 void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replacement )
 {
-    kdDebug() << k_funcinfo << pattern << " " << replacement << endl;
     m_mainLabel->setText( i18n("Replace '%1' with '%2'?").arg(pattern).arg(replacement) );
 }
 
@@ -67,6 +66,7 @@ KReplace::KReplace(const QString &pattern, const QString &replacement, long opti
 
 KReplace::~KReplace()
 {
+    // KFind::~KFind will delete m_dialog
 }
 
 KDialogBase* KReplace::replaceNextDialog( bool create )
@@ -100,8 +100,11 @@ void KReplace::displayFinalDialog() const
 KFind::Result KReplace::replace()
 {
     //kdDebug() << k_funcinfo << "m_index=" << m_index << endl;
-    Q_ASSERT( !needData() ); // happens if setData(QString::null) was called -> don't do that
     Q_ASSERT( m_index != -1 );
+    if ( m_text.isEmpty() ) {
+        m_index = -1;
+        return NoMatch;
+    }
     do
     {
         // Find the next match.
@@ -116,17 +119,23 @@ KFind::Result KReplace::replace()
             {
                 if (m_options & KReplaceDialog::PromptOnReplace)
                 {
-                    kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
-                    // Display accurate initial string and replacement string, they can vary
-                    QString matchedText = m_text.mid( m_index, m_matchedLength );
-                    QString rep = matchedText;
-                    KReplace::replace(rep, m_replacement, 0, m_matchedLength);
-                    dialog()->setLabel( matchedText, rep );
+                    //kdDebug() << k_funcinfo << "PromptOnReplace" << endl;
+                    if ( !m_dialogClosed )
+                    {
+                        // Display accurate initial string and replacement string, they can vary
+                        QString matchedText = m_text.mid( m_index, m_matchedLength );
+                        QString rep = matchedText;
+                        KReplace::replace(rep, m_replacement, 0, m_matchedLength);
+                        dialog()->setLabel( matchedText, rep );
+                    }
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
                     emit highlight(m_text, m_index, m_matchedLength);
-                    dialog()->show();
+
+                    if ( !m_dialogClosed )
+                        dialog()->show();
+
                     // Get ready for next match
                     if (m_options & KFindDialog::FindBackwards)
                         m_index--;
@@ -197,6 +206,7 @@ void KReplace::slotReplaceAll()
 {
     doReplace();
     m_options &= ~KReplaceDialog::PromptOnReplace;
+    emit optionsChanged();
     emit findNext();
 }
 
@@ -235,7 +245,7 @@ void KReplace::resetCounts()
     m_replacements = 0;
 }
 
-bool KReplace::shouldRestart( bool forceAsking ) const
+bool KReplace::shouldRestart( bool forceAsking, bool /*showNumMatches*/ ) const
 {
     // Only ask if we did a "find from cursor", otherwise it's pointless.
     // ... Or if the prompt-on-replace option was set.
@@ -248,17 +258,20 @@ bool KReplace::shouldRestart( bool forceAsking ) const
         return false;
     }
     QString message;
-    if ( !m_replacements )
-        message = i18n("No text was replaced.");
+    if ( m_options & KFindDialog::FindBackwards )
+        message = i18n( "Beginning of document reached.\n"\
+                        "Continue from the end?" );
     else
-        message = i18n("1 replacement done.", "%n replacements done.", m_replacements );
-
-    // Hope this word puzzle is ok, it's a different sentence
-    message += "\n";
-    message += i18n("Do you want to restart search at the beginning?");
+        message = i18n( "End of document reached.\n"\
+                        "Continue from the beginning?" );
 
     int ret = KMessageBox::questionYesNo( parentWidget(), message );
     return( ret == KMessageBox::Yes );
+}
+
+void KReplace::closeReplaceNextDialog()
+{
+    closeFindNextDialog();
 }
 
 #include "kreplace.moc"
