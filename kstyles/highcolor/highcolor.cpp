@@ -1106,7 +1106,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
-							   
+
 		// PUSHBUTTON LABEL
 		// -------------------------------------------------------------------
 		case CE_PushButtonLabel: {
@@ -1393,8 +1393,8 @@ void HighColorStyle::drawControl( ControlElement element,
 			// Does the menu item have a submenu?
 			if ( mi->popup() ) {
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-				int dim = (h-2*itemFrame) / 2;
-				QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
+				int dim = pixelMetric(PM_MenuButtonIndicator);
+				QRect vr = visualRect( QRect( x + w - arrowHMargin - 2*itemFrame - dim,
 							y + h / 2 - dim / 2, dim, dim), r );
 
 				// Draw an arrow at the far end of the menu item
