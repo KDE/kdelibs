@@ -158,7 +158,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   //    file = locate( "data", QString(instance()->instanceName())+"/"+file );
     QString doc;
 
-    QString filter  = QString::fromLatin1( instance()->instanceName() + '/' ) + _file;
+    QString filter = QString::fromLatin1( instance()->instanceName() + '/' ) + _file;
 
     QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
 
@@ -587,6 +587,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   QStringList::ConstIterator end = files.end();
   for (; it != end; ++it )
   {
+    //kdDebug() << "KXMLGUIClient::findMostRecentXMLFile " << *it << endl;
     QString data = KXMLGUIFactory::readConfigFile( *it );
     DocStruct d;
     d.file = *it;
@@ -609,10 +610,12 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
     uint version = versionStr.toUInt( &ok );
     if ( !ok )
       continue;
+    //kdDebug() << "FOUND VERSION " << version << endl;
 
     if ( version > bestVersion )
     {
       best = docIt;
+      //kdDebug() << "best version is now " << version << endl;
       bestVersion = version;
     }
   }
@@ -625,12 +628,14 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
       QString backup = f + QString::fromLatin1( ".backup" );
       QDir dir;
       dir.rename( f, backup );
+      //kdDebug() << "backup done" << endl;
     }
     doc = (*best).data;
     return (*best).file;
   }
   else if ( files.count() > 0 )
   {
+    //kdDebug() << "returning first one..." << endl;
     doc = (*allDocuments.begin()).data;
     return (*allDocuments.begin()).file;
   }
