@@ -59,10 +59,16 @@ public:
     virtual ~KCharsets(){}
 
     /**
-     * tries to find a QTextCodec to convert the given encoding from and to 
+     * tries to find a QTextCodec to convert the given encoding from and to
      * Unicode
      */
     QTextCodec *codecForName(const QString &name) const;
+
+    /**
+     * @returns the charset that fits a given encoding best (that can display a
+     * file in the given encoding)
+     */
+    QFont::CharSet charsetForEncoding(const QString &encoding) const;
     
     /**
      * converts an entity to a character. The string must contain only the

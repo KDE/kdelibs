@@ -52,6 +52,7 @@
 
 # libkhtml
 6000	khtml
+6005	khtml (encoding)
 6010	khtml (dom)
 6020	khtml (xml)
 6030	khtml (html)
