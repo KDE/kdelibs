@@ -366,12 +366,9 @@ final class KIOHttpConnection extends KIOConnection
                     headersmap.put(entry[0], entry[1]);
                     Main.debug ("KIO header " + entry[0] + "=" + entry[1]);
                 }
+                responseCode = 0;
                 if (headersmap.size() > 0) {
                     String token = ((String []) headers.get(0))[0];
-                    if (token.startsWith("http-cache")) {
-                        responseCode = 0;
-                        break;
-                    }
                     if (!token.startsWith("http/1.")) break;
                     int spos = token.indexOf(' ');
                     if (spos < 0) break;
