@@ -38,6 +38,10 @@
 1420	kikbd
 1421	ki18b_keys (kcmodule)
 
+1430	nspluginviewer (Qt/Xt)
+1431	nspluginviewer (plugin)
+1432	nspluginviewer (part)
+
 # kdeutils
 1501	khexedit (kdeutils)
 1511	kdessh (kdeutils)
