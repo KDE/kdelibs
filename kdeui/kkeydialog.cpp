@@ -39,6 +39,7 @@
 #include <kckey.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlgui.h>
@@ -159,13 +160,6 @@ KKeyButton::KKeyButton(QWidget *parent, const char *name)
   editing = FALSE;
 }
 
-KKeyButton::KKeyButton( const char* name, QWidget *parent)
-  : QPushButton( parent, name )
-{
-  setFocusPolicy( QWidget::StrongFocus );
-  editing = FALSE;
-}
-
 KKeyButton::~KKeyButton ()
 {
 }
@@ -176,19 +170,21 @@ void KKeyButton::setText( const QString& text )
   setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
-void KKeyButton::setEditing(bool editing)
+
+void KKeyButton::setEditing(bool _editing)
 {
-  editing = editing;
+  editing = _editing;
   repaint();
 }
 
-void KKeyButton::setEdit( bool edit )
+
+bool KKeyButton::isEditing() const
 {
-  editing = edit;
-  repaint();
+  return editing;
 }
 
-void KKeyButton::paint( QPainter *painter )
+
+void KKeyButton::drawButton( QPainter *painter )
 {
   QPointArray a( 4 );
   a.setPoint( 0, 0, 0) ;
@@ -534,7 +530,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   cAlt->setEnabled( FALSE );
   connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
   
-  bChange = new KKeyButton("key", fCArea);
+  bChange = new KKeyButton(fCArea, "key");
   bChange->setEnabled( FALSE );
   connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
 	
@@ -551,7 +547,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 
   lNotConfig = new QLabel(fCArea);
   lNotConfig->resize(0,0);
-  QFont f = KGlobal::generalFont();
+  QFont f = KGlobalSettings::generalFont();
   f.setPointSize(f.pointSize()+2);
   f.setBold(true);
   lNotConfig->setFont( f );
@@ -802,7 +798,8 @@ void KKeyChooser::noKey()
 				
 	sli->setWidth( wList->width() );
 	
-	if ( bChange->editing == TRUE ) bChange->setEdit(FALSE);
+	if ( bChange->isEditing() )
+            bChange->setEditing(false);
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
@@ -828,7 +825,8 @@ void KKeyChooser::defaultKey()
 				
 	sli->setWidth( wList->width() );
 
-	if ( bChange->editing == TRUE ) bChange->setEdit(FALSE);
+	if ( bChange->isEditing() )
+            bChange->setEditing(false);
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
@@ -1003,7 +1001,7 @@ void KKeyChooser::altClicked()
 
 void KKeyChooser::changeKey()
 {
-	bChange->setEdit( TRUE );
+	bChange->setEditing(true);
 	lInfo->setText( i18n("Press the wanted key") );
 	lInfo->setEnabled( TRUE );
 	/* give the focus to the widget */
@@ -1039,7 +1037,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
   bKeyIntercept = FALSE;
   //eKey->hide();
   //eKey->setEnabled(FALSE);
-  bChange->setEdit(FALSE);
+  bChange->setEditing(true);
   bChange->setFocus();
   setKey(kCode);
 }
