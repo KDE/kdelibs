@@ -2,17 +2,13 @@
 #include "notepad.h"
 #include <kpartmanager.h>
 #include <kpartsmainwindow.h>
-#include <kxmlgui.h>
-#include <kplugin.h>
 
 #include <qsplitter.h>
 #include <qfile.h>
-#include <qdir.h>
 #include <qtextstream.h>
 #include <qmultilinedit.h>
 
 #include <kapp.h>
-#include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
 #include <kstatusbar.h>
@@ -81,12 +77,13 @@ bool NotepadPart::save()
 void NotepadPart::slotSearchReplace()
 {
   // What's this ? (David)
+/*
   QValueList<KParts::XMLGUIServant *> plugins = KParts::Plugin::pluginServants( this );
   QValueList<KParts::XMLGUIServant *>::ConstIterator it = plugins.begin();
   QValueList<KParts::XMLGUIServant *>::ConstIterator end = plugins.end();
   for (; it != end; ++it )
     factory()->removeServant( *it );
-
+*/
 }
 
 #include "notepad.moc"
