@@ -1603,6 +1603,7 @@ public:
   KAction *m_paSaveImageAs;
 };
 
+
 KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url )
 {
   d = new KHTMLPopupGUIClientPrivate;
@@ -1625,16 +1626,15 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     }
   }
   */
-  #if 0
-  DOM::Node n = khtml->nodeUnderMouse();
-  DOM::Element e = n;
+  DOM::Element e;
+  e = khtml->nodeUnderMouse();
   if ( !e.isNull() && e.nodeType() == ID_IMG )
   {
       d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
       d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
 				        actionCollection(), "saveimageas" );
   }
-  #endif
+
   setXML( doc );
 }
 
@@ -1647,14 +1647,14 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
 {
   if ( d->m_url.filename( false ).isEmpty() )
     d->m_url.setFileName( "index.html" );
-  
+
   saveURL( i18n( "&Save Link As" ), d->m_url );
 }
 
 void KHTMLPopupGUIClient::slotSaveImageAs()
 {
   saveURL( i18n( "Save Image As" ), d->m_imageURL );
-} 
+}
 
 void KHTMLPopupGUIClient::saveURL( const QString &caption, const KURL &url )
 {
