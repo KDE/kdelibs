@@ -23,10 +23,12 @@
 ***************************************************************************/
 #include "midfile.h"
 #include <string.h>
-#include <sys/soundcard.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "sndcard.h"
 #include "midispec.h"
 
-//#define MIDFILE_DEBUG
+#define MIDFILE_DEBUG
 
 /* This function gives the metronome tempo, from a tempo data as found in
  a midi file */
@@ -35,22 +37,90 @@ double tempoToMetronomeTempo(ulong x)
 return 60/((double)x/1000000);
 };
 
-
-track **readMidiFile(char *name,midifileinfo *info)
+int decompressFile(char *gzname,char *tmpname)
+// Returns 0 if OK, 1 if error (tmpname not set)
 {
+char *cmd=new char[20+strlen(gzname)];
+sprintf(cmd, "gzip -dc %s",gzname);
+FILE *infile = popen( cmd, "r");
+if (infile==NULL)
+	{
+	fprintf(stderr,"ERROR : popen failed : %s\n",cmd);
+	};
+char *tmp=tempnam(NULL,"KMid");
+if (tmp==NULL) 
+	{
+	pclose(infile);
+	return 1;
+	};
+strcpy(tmpname,tmp);
+FILE *outfile= fopen(tmpname,"wb");
+if (outfile==NULL)
+	{
+	pclose(infile);
+	return 1;
+	};
+int n=getc(infile);
+if (n==EOF) 
+	{
+	pclose(infile);
+	fclose(outfile);
+	unlink(tmpname);
+	return 1;
+	};
+fputc(n,outfile);
+int buf[BUFSIZ];
+n = fread(buf, 1, BUFSIZ, infile);
+while (n>0)
+	{
+	fwrite(buf, 1, n, outfile);
+	n = fread(buf, 1, BUFSIZ, infile);
+	};
+
+pclose(infile);
+
+//if (pclose(infile) != 0) fprintf(stderr,"Error : pclose failed\n");
+// Is it a right that pclose always fail ?
+
+fclose(outfile);
+return 0;
+};
+
+
+track **readMidiFile(char *name,midifileinfo *info,int &ok)
+{
+ok=1;
 track **Tracks;
 FILE *fh=fopen(name,"rb");
 if (fh==NULL) 
 	{
-	perror("Can't open file");
-	exit(-1);
+	printf("ERROR: Can't open file\n");
+	ok=-1;
+	return NULL;
 	};
 char text[4];
 fread(text,1,4,fh);
+if ((strncmp(text,"MThd",4)!=0)&&(strcmp(&name[strlen(name)-3],".gz")==0))
+	{	
+	fclose(fh);
+	char tempname[200];
+	printf("Trying to open zipped midi file...\n");
+	if (decompressFile(name,tempname)!=0)
+		{
+		printf("ERROR: %s is not a (zipped) midi file\n",name);
+		ok=-2;
+		return NULL;
+		};
+	fh=fopen(tempname,"rb");
+	fread(text,1,4,fh);
+	unlink(tempname);
+	};
 if (strncmp(text,"MThd",4)!=0)
 	{
-	perror("Not a midi file");
-	exit(-1);
+	fclose(fh);
+	printf("ERROR: %s is not a midi file\n",name);
+	ok=-2;
+	return NULL;
 	};
 long header_size=readLong(fh);
 info->format=readShort(fh);
@@ -58,15 +128,19 @@ info->ntracks=readShort(fh);
 info->ticksPerCuarterNote=readShort(fh);
 if (info->ticksPerCuarterNote<0)
 	{
-	perror("Ticks per cuarter note is negative !");
-	exit(-1);
+	printf("ERROR: Ticks per cuarter note is negative !\n");
+	fclose(fh);
+	ok=-3;
+	return NULL;
 	};
 if (header_size>6) fseek(fh,header_size-6,SEEK_CUR);
 Tracks=new track*[info->ntracks];
 if (Tracks==NULL)
 	{
-	perror("Not enough memory");
-	exit(-1);
+	printf("ERROR: Not enough memory\n");
+	fclose(fh);
+	ok=-4;
+	return NULL;
 	};
 int i=0;
 while (i<info->ntracks)
@@ -74,19 +148,24 @@ while (i<info->ntracks)
 	fread(text,1,4,fh);
 	if (strncmp(text,"MTrk",4)!=0)
 		{
-		perror("Not a well built midi file");
+		printf("ERROR: Not a well built midi file\n");
 		printf("%s",text);
-		exit(-1);
+		fclose(fh);
+		ok=-5;
+		return NULL;
 		};
 	Tracks[i]=new track(fh,info->ticksPerCuarterNote,i);
 	if (Tracks[i]==NULL)
 		{
-		perror("Not enough memory");
-		exit(-1);
+		printf("ERROR: Not enough memory");
+		fclose(fh);
+		ok=-4;
+		return NULL;
 		};
 	i++;
 	};
 
+fclose(fh);
 info->ticksTotal=0;
 info->millisecsTotal=0.0;
 info->ticksPlayed=0;
@@ -95,52 +174,11 @@ int parsing=1;
 int trk,minTrk;
 //ulong minTicks;
 ulong tempo=1000000;
+
 #ifdef MIDFILE_DEBUG
 printf("Parsing 1 ...\n");
 #endif
-/*while (parsing)
-    {
-    trk=0;
-    minTrk=0;
-    minTicks=~0;
-    while (trk<info->ntracks)
-        {
-        if (Tracks[trk]->waitTicks()<minTicks)
-                {
-                minTrk=trk;
-                minTicks=Tracks[minTrk]->waitTicks();
-                };
-        trk++;
-        };
-    if ((minTicks==~(ulong)0) ||
-(((((double)minTicks)*60000L)/(tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote))> 60000L))
-        {
-        parsing=0;
-        printf("END of parsing\n");
-        }
-	else
-	{
-	info->ticksTotal+=minTicks;
-	tempticks+=minTicks;
-	info->ticksPlayed+=(ulong)((double)(minTicks*(tempo/10000))/(double)info->ticksPerCuarterNote);
-        trk=0;
-        while (trk<info->ntracks)
-            {
-            Tracks[trk]->ticksPassed(minTicks);
-            trk++;
-            };
-        trk=minTrk;
-        Tracks[trk]->readEvent(&ev);
-	if ((ev.command==MIDI_SYSTEM_PREFIX)&&(ev.d1==ME_SET_TEMPO))
-		{
-		info->millisecsTotal+=(tempticks*60L)/(ulong)(tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote);
-		tempticks=0;
-		tempo=(ev.data[0]<<16)|(ev.data[1]<<8)|(ev.data[2]);
-		};
-	};
-    
-    };
-info->millisecsTotal+=((double)(tempticks*60L)/(tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote));*/
+
 int j;
 for (i=0;i<info->ntracks;i++)
     {
@@ -149,6 +187,7 @@ for (i=0;i<info->ntracks;i++)
 double prevms=0;
 double minTime=0;
 double maxTime;
+ulong tmp;
 Midi_event *ev=new Midi_event;
 while (parsing)
     {
@@ -188,12 +227,15 @@ while (parsing)
                 {
                 if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
                     {
-                    tempo=(ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]);
-//		    printf("setTempo %ld\n",tempo);
-                    for (j=0;j<info->ntracks;j++)
-                        {
-                        Tracks[j]->changeTempo(tempo);
-                        };
+		    if (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8)
+			{
+                        tempo=tmp;
+	//		    printf("setTempo %ld\n",tempo);
+	                for (j=0;j<info->ntracks;j++)
+                    	    {
+                    	    Tracks[j]->changeTempo(tempo);
+                    	    };
+			};
                     };
                 };
     };
@@ -205,11 +247,14 @@ for (i=0;i<info->ntracks;i++)
     {
     Tracks[i]->init();
     };
+
 #ifdef MIDFILE_DEBUG
 printf("info.ticksTotal = %ld \n",info->ticksTotal);
 printf("info.ticksPlayed= %ld \n",info->ticksPlayed);
 printf("info.millisecsTotal  = %g \n",info->millisecsTotal);
 printf("info.TicksPerCN = %d \n",info->ticksPerCuarterNote);
 #endif
+printf("info.millisecsTotal  = %g \n",info->millisecsTotal);
+
 return Tracks;
 };

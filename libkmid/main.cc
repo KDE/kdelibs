@@ -27,10 +27,10 @@
 #include "player.h"
 #include <string.h>
 #include "midispec.h"
-#include <sys/soundcard.h>
+#include "sndcard.h"
 
 // If you want to use a midi map you have to change the next definition :
-#define MAP_PATH "/home/Antonio/prg/kmid4/kmid/maps/yamaha790.map"
+#define MAP_PATH NULL
 // For example to something like :
 // #define MAP_PATH "/home/Antonio/prg/kmid/kmid/maps/yamaha790.map"
 
@@ -59,7 +59,7 @@ if ((pctl.ev->command==MIDI_SYSTEM_PREFIX)&&((pctl.ev->command|pctl.ev->chn)==ME
 
 int main(int argc, char **argv)
 {
-printf("ConsoleKMid version 0.2, Copyright (C) 1997 Antonio Larrosa Jimenez\n");
+printf("ConsoleKMid version 0.4, Copyright (C) 1997 Antonio Larrosa Jimenez\n");
 printf("ConsoleKMid comes with ABSOLUTELY NO WARRANTY; for details view file COPYING\n");
 printf("This is free software, and you are welcome to redistribute it\n");
 printf("under certain conditions\n");
@@ -68,11 +68,14 @@ if (argc<2)
     printf("Usage:  %s [nameofmidifile]\n",argv[0]);
     exit(0);
     };
-midiOut *midi=new midiOut();
-MidiMapper *map=new MidiMapper(MAP_PATH);
-player *Player=new player(midi,&pctl);
-midi->useMapper(map);
+DeviceManager * devman=new DeviceManager(0);
+//midiOut *midi=new midiOut();
+//MidiMapper *map=new MidiMapper(MAP_PATH);
+devman->initManager();
+player *Player=new player(devman,&pctl);
+//midi->useMapper(map);
 pctl.message=0;
+pctl.gm=1;
 int nmid=1;
 while (nmid<argc)
     {
@@ -81,7 +84,8 @@ while (nmid<argc)
     nmid++;
     };
 //midi->useMapper(NULL);
-delete midi;
+//delete midi;
+delete devman;
 printf("Bye...\n");
 //delete map;
 return 0;

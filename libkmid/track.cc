@@ -23,13 +23,16 @@
 ***************************************************************************/ 
 #include "track.h"
 #include <stdlib.h>
-#include <sys/soundcard.h>
+#include "sndcard.h"
 #include "midispec.h"
 #include "midfile.h"
 
 #define T2MS(ticks) (((double)ticks)*(double)60000L)/((double)tempoToMetronomeTempo(tempo)*(double)tPCN)
 
 #define MS2T(ms) (((ms)*(double)tempoToMetronomeTempo(tempo)*(double)tPCN)/((double)60000L))
+
+
+#define PEDANTIC_TRACK
 
 track::track(FILE *file,int tpcn,int Id)
 {
@@ -77,6 +80,7 @@ ulong dticks=0;
 
 while ((*ptrdata) & 0x80)
 	{
+#ifdef PEDANTIC_TRACK
 	if (currentpos>=size)
 	    {
 	    endoftrack=1;
@@ -86,6 +90,7 @@ while ((*ptrdata) & 0x80)
 	    return 0;
 	    }
 	   else
+#endif
 	    {
 	    dticks=(dticks << 7) | (*ptrdata) & 0x7F;
 	    ptrdata++;currentpos++;
@@ -94,6 +99,9 @@ while ((*ptrdata) & 0x80)
 	};
 dticks=((dticks << 7) | (*ptrdata) & 0x7F);
 ptrdata++;currentpos++;
+
+#ifdef PEDANTIC_TRACK
+
 if (currentpos>=size)
     {
     endoftrack=1;
@@ -103,6 +111,7 @@ if (currentpos>=size)
     time_at_next_event=10000 * 60000L;
     return 0;
     }
+#endif
 #ifdef TRACKDEBUG
 printf("DTICKS : %ld\n",dticks);
 #endif
@@ -165,7 +174,9 @@ if (((*ptrdata)&0x80)!=0)
 	lastcommand=ev->command;
 	}
    else
+	{
 	ev->command=lastcommand;
+	};
 
 ev->chn=ev->command & 0xF;
 ev->command=ev->command & 0xF0;
@@ -196,6 +207,15 @@ switch (ev->command)
     case (MIDI_CTL_CHANGE) :
 	ev->ctl = *ptrdata;ptrdata++; currentpos++;
 	ev->d1  = *ptrdata;ptrdata++;currentpos++;
+	switch (ev->ctl)
+		{
+		case (96) : printf("RPN Increment\n");break;
+		case (97) : printf("RPN Decrement\n");break;
+		case (98) : printf("nRPN 98 %d\n",ev->d1);break;
+		case (99) : printf("nRPN 99 %d\n",ev->d1);break;
+		case (100) : printf("RPN 100 %d\n",ev->d1);break;
+		case (101) : printf("RPN 101 %d\n",ev->d1);break;
+		};
 	break;
     
     case (MIDI_SYSTEM_PREFIX) :
@@ -204,6 +224,7 @@ switch (ev->command)
 	    case (0xF0) : 
 	    case (0xF7) :
 		ev->length=readVariableLengthValue();
+#ifdef PEDANTIC_TRACK
 		if (endoftrack) 
 			{
 			ev->command=MIDI_SYSTEM_PREFIX;
@@ -211,6 +232,7 @@ switch (ev->command)
 			ev->d1=ME_END_OF_TRACK;
 			}
 		    else
+#endif
 			{
 			ev->data=ptrdata;
 			ptrdata+=ev->length;currentpos+=ev->length;
@@ -233,6 +255,7 @@ switch (ev->command)
 			break;
 		    case (ME_SET_TEMPO):
 			ev->length=readVariableLengthValue();
+#ifdef PEDANTIC_TRACK
 		if (endoftrack) 
 			{
 			ev->command=MIDI_SYSTEM_PREFIX;
@@ -240,6 +263,7 @@ switch (ev->command)
 			ev->d1=ME_END_OF_TRACK;
 			}
 		    else
+#endif
 			{
 			ev->data=ptrdata;
 			ptrdata+=ev->length;currentpos+=ev->length;
@@ -274,6 +298,7 @@ switch (ev->command)
 		    case (ME_SMPTE_OFFSET) :
 		    case (ME_KEY_SIGNATURE) :
 			ev->length=readVariableLengthValue();
+#ifdef PEDANTIC_TRACK
 		if (endoftrack) 
 			{
 			ev->command=MIDI_SYSTEM_PREFIX;
@@ -281,6 +306,7 @@ switch (ev->command)
 			ev->d1=ME_END_OF_TRACK;
 			}
 		    else
+#endif
 			{
 			ev->data=ptrdata;
 			ptrdata+=ev->length;currentpos+=ev->length;
@@ -290,6 +316,7 @@ switch (ev->command)
 			printf("Warning : Default handler for meta event 0x%x\n",
 							ev->d1);
 			ev->length=readVariableLengthValue();
+#ifdef PEDANTIC_TRACK
 		if (endoftrack) 
 			{
 			ev->command=MIDI_SYSTEM_PREFIX;
@@ -297,6 +324,7 @@ switch (ev->command)
 			ev->d1=ME_END_OF_TRACK;
 			}
 		    else
+#endif
 			{
 			ev->data=ptrdata;
 			ptrdata+=ev->length;currentpos+=ev->length;
@@ -315,6 +343,7 @@ switch (ev->command)
 							(ev->command|ev->chn));
 	    break;
      };
+#ifdef PEDANTIC_TRACK
 if (currentpos>=size)
     {
     endoftrack=1;
@@ -322,11 +351,12 @@ if (currentpos>=size)
     time_at_next_event=10000 * 60000L;
     printf("EndofTrack %d reached\n",id);
     };
-
+#endif
 if (endoftrack==0)
     {
     current_ticks+=delta_ticks;
     delta_ticks=readVariableLengthValue();
+#ifdef PEDANTIC_TRACK
 		if (endoftrack) 
 			{
 			ev->command=MIDI_SYSTEM_PREFIX;
@@ -334,6 +364,7 @@ if (endoftrack==0)
 			ev->d1=ME_END_OF_TRACK;
 			return;
 			};
+#endif
     ticks_from_previous_tempochange+=delta_ticks;
 
     time_at_next_event=T2MS(ticks_from_previous_tempochange)+time_at_previous_tempochange;
@@ -352,10 +383,10 @@ void track::init(void)
 endoftrack=0;
 ptrdata=data;
 current_ticks=0;
+currentpos=0;
 delta_ticks=readVariableLengthValue();
 		if (endoftrack) return;
 wait_ticks=delta_ticks;
-currentpos=0;
 
 
 time_at_previous_tempochange=0;
@@ -387,3 +418,9 @@ time_at_next_event=T2MS(ticks)+current_time;
 ticks_from_previous_tempochange=ticks;
 
 };
+
+double track::absMsOfNextEvent (void) 
+{
+//printf("%d : %g\n",id,time_at_next_event);
+return time_at_next_event;
+}; 

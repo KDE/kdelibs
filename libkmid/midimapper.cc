@@ -5,12 +5,18 @@
 
 MidiMapper::MidiMapper(const char *name)
 {
+ok=1;
 keymaps=NULL;
+filename=NULL;
 if ((name==NULL)||(name[0]==0))
     {
     DeallocateMaps();    
     int i;
-    for (i=0;i<16;i++) channel[i]=i;
+    for (i=0;i<16;i++) 
+	{
+	channel[i]=i;
+	channelPatchForced[i]=-1;
+	};
     for (i=0;i<128;i++) patchmap[i]=i;
     }
    else
@@ -19,6 +25,7 @@ if ((name==NULL)||(name[0]==0))
 
 MidiMapper::~MidiMapper()
 {
+if (filename!=NULL) delete filename;
 DeallocateMaps();
 };
 
@@ -105,10 +112,14 @@ while ((*s!=0)&&(*s!=' ')&&(*s!=10)&&(*s!=13))
 
 void MidiMapper::LoadFile(const char *name)
 {
+ok=1;
 FILE *fh=fopen(name,"rt");
-if (fh==NULL) return;
+if (fh==NULL) {ok=-1;return;};
 char s[101];
 s[0]=0;
+if (filename!=NULL) delete filename;
+filename=new char[strlen(name)+1];
+strcpy(filename,name);
 printf("Loading mapper ...\n");
 while (!feof(fh))
     {
@@ -123,9 +134,15 @@ while (!feof(fh))
             if (strncmp(&s[7],"CHANNELMAP",10)==0) readChannelmap(fh);
                else
                 {
-                perror("unknown DEFINE line in map file");
-                exit(-1);
+                printf("ERROR: Unknown DEFINE line in map file\n");
+		ok=0;
                 };
+	if (ok==0)
+	    {
+	    printf("The midi map file will be ignored\n");
+	    fclose(fh);
+	    return;
+	    };
         };
     };
 fclose(fh);
@@ -199,8 +216,9 @@ while (i<128)
             j++;
             if (j>=w) 
                 {
-                perror("Invalid option in map file");
-                exit(-1);
+                printf("ERROR: Invalid option in map file\n");
+		ok=0;
+		return;
                 };
             getWord(t,v,j);
 	    sprintf(name,"AllKeysTo%s",t);
@@ -218,8 +236,9 @@ s[0]=0;
 while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
 if (strncmp(s,"END",3)!=0)
     {
-    perror("END of section not found in map file\n");
-    exit(-1);
+    printf("ERROR: End of section not found in map file\n");
+    ok=0;
+    return;
     };
 };
 
@@ -246,8 +265,9 @@ s[0]=0;
 while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
 if (strncmp(s,"END",3)!=0)
     {
-    perror("END of section not found in map file");
-    exit(-1);
+    printf("ERROR: End of section not found in map file\n");
+    ok=0;
+    return;
     };
 AddKeymap(km);
 };
@@ -269,6 +289,7 @@ while (i<16)
     w=countWords(v);
     j=0;
     channelKeymap[i]=NULL;
+    channelPatchForced[i]=-1;
     channel[i]=i;
     while (j<w)
         {
@@ -278,12 +299,25 @@ while (i<16)
             j++;
             if (j>=w) 
                 {
-                perror("Invalid option in map file");
-                exit(-1);
+                printf("ERROR: Invalid option in map file\n");
+		ok=0;
+		return;
                 };
             getWord(t,v,j);
             channelKeymap[i]=GiveMeKeymap(t); 
             }
+        else if (strcmp(t,"ForcePatch")==0)
+	    {
+            j++;
+            if (j>=w) 
+                {
+                printf("ERROR: Invalid option in map file\n");
+		ok=0;
+		return;
+                };
+            getWord(t,v,j);
+	    channelPatchForced[i]=atoi(t); 
+	    }
            else
             {
             channel[i]=atoi(t); 
@@ -296,8 +330,9 @@ s[0]=0;
 while ((s[0]==0)||(s[0]=='#')||(s[0]==10)||(s[0]==13)) fgets(s,100,fh);
 if (strncmp(s,"END",3)!=0)
     {
-    perror("END of section not found in map file");
-    exit(-1);
+    printf("END of section not found in map file\n");
+    ok=0;
+    return;
     };
 
 };
@@ -308,5 +343,17 @@ uchar notemapped=note;
 if (patchKeymap[pgm]!=NULL) notemapped=patchKeymap[pgm]->key[note];
 if (channelKeymap[chn]!=NULL) notemapped=channelKeymap[chn]->key[note];
 return notemapped;
+};
+
+
+char *MidiMapper::getFilename(void)
+{
+return (filename!=NULL)? filename : (char *)"";
+};
+
+uchar MidiMapper::Patch(uchar chn,uchar pgm)
+{
+return (channelPatchForced[chn] == -1) ? 
+		patchmap[pgm] : (uchar)channelPatchForced[chn] ;
 };
 

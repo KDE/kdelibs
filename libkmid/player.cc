@@ -22,15 +22,14 @@
 
 ***************************************************************************/
 #include "player.h"
-#include <sys/soundcard.h>
+#include "sndcard.h"
 #include "midispec.h"
 #include <string.h>
 #include <unistd.h>
-#include <sys/signal.h>
 #include "midistat.h"
 #include "mt32togm.h"
 
-player::player(midiOut *midi_,PlayerController *pctl)
+player::player(DeviceManager *midi_,PlayerController *pctl)
 {
 midi=midi_;
 info=NULL;
@@ -62,14 +61,18 @@ if (songLoaded)
     };
 };
 
-void player::loadSong(char *filename)
+int player::loadSong(char *filename)
 {
 removeSong();
-printf("** Loading Song : %s\n",filename);
+printf("Loading Song : %s\n",filename);
 info=new midifileinfo;
-tracks=readMidiFile(filename,info);
+int ok;
+tracks=readMidiFile(filename,info,ok);
+if (ok<0) return ok;
+if (tracks==NULL) return -4;
 parseSpecialEvents();
 songLoaded=1;
+return 0;
 };
 
 void player::removeSpecialEvents(void)
@@ -101,9 +104,11 @@ for (int i=0;i<info->ntracks;i++)
     tracks[i]->init();
     }; 
 ulong tempo=1000000;
+ulong tmp;
 Midi_event *ev=new Midi_event;
-ulong mspass;
+//ulong mspass;
 double prevms=0;
+int spev_id=1;
 int j;
 int parsing=1;
 while (parsing)
@@ -131,7 +136,7 @@ while (parsing)
 	}
 	else
 	{	
-	mspass=(ulong)(minTime-prevms);
+//	mspass=(ulong)(minTime-prevms);
 	trk=0;
 	while (trk<info->ntracks)
 	    {
@@ -149,16 +154,18 @@ while (parsing)
                     {
                     pspev->absmilliseconds=(ulong)minTime;
                     pspev->type=ev->d1;
+		    pspev->id=spev_id++;
                     strncpy(pspev->text,(char *)ev->data,ev->length);
                     pspev->text[ev->length]=0;
                     pspev->next=new SpecialEvent;
                     pspev=pspev->next;
                     };
-                if (ev->d1==ME_SET_TEMPO)
+                if ((ev->d1==ME_SET_TEMPO)&&(tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8))
                     {
                     pspev->absmilliseconds=(ulong)minTime;
                     pspev->type=3;
-                    tempo=(ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]);
+		    pspev->id=spev_id++;
+                    tempo=tmp;
                     pspev->tempo=tempo;
                     for (j=0;j<info->ntracks;j++)
                         {
@@ -185,7 +192,7 @@ void player::play(int calloutput,void output(void))
 {
 printf("Playing...\n");
 midi->openDev();
-if (!midi->OK()) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
+if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
 midi->initDev();
 int trk;
 int minTrk;
@@ -197,6 +204,7 @@ for (int i=0;i<info->ntracks;i++)
     }; 
 midi->tmrStart();
 ulong tempo=1000000;
+ulong tmp;
 Midi_event *ev=new Midi_event;
 ctl->ev=ev;
 ctl->ticksTotal=info->ticksTotal;
@@ -207,7 +215,7 @@ double absTimeAtChangeTempo=0;
 double absTime=0;
 double diffTime=0;
 midiStat *midistat;
-ulong mspass;
+//ulong mspass;
 double prevms=0;
 int j;
 int halt=0;
@@ -260,7 +268,7 @@ while (playing)
 		midi->tmrStart();
 		diffTime=ctl->gotomsec;
 		ctl->moving=0;
-		midistat->sendData(midi);
+		midistat->sendData(midi,ctl->gm);
 		delete midistat;
 		ctl->OK=1;
 		while (ctl->OK==1) ;
@@ -289,7 +297,7 @@ while (playing)
 	}
 	else
 	{	
-	mspass=(ulong)(minTime-prevms);
+//	mspass=(ulong)(minTime-prevms);
 	trk=0;
 	while (trk<info->ntracks)
 	    {
@@ -323,18 +331,18 @@ while (playing)
 			    {
 			    ctl->SPEVplayed++;
                             };
-			if (ev->d1==ME_SET_TEMPO)
+			if ((ev->d1==ME_SET_TEMPO)&&(tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8))
 			    {
 			    absTimeAtChangeTempo=absTime;
 			    ticksplayed=0;
 			    ctl->SPEVplayed++;
-			    tempo=(ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]);
+			    tempo=tmp;
 			    midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
 			    ctl->tempo=tempo;
 			    for (j=0;j<info->ntracks;j++)
-			        {
-			        tracks[j]->changeTempo(tempo);
-			        }; 
+			       	{
+			       	tracks[j]->changeTempo(tempo);
+			       	}; 
 			    };
 			};
 		break;
@@ -349,7 +357,7 @@ while (playing)
     };
 ctl->ev=NULL;
 delete ev;
-printf("closedev\n");
+printf("Syncronizing ...\n");
 if (halt) 
     midi->sync(1);
    else 
@@ -366,8 +374,9 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
 int trk;
 int minTrk;
 ulong tempo=1000000;
+ulong tmp;
 double minTime,maxTime;
-ulong mspass;
+//ulong mspass;
 double prevms=0;
 minTime=0;
 int likeplaying=1;
@@ -403,14 +412,14 @@ while (likeplaying)
 	{	
 	if (minTime>=gotomsec)
 		{
-		mspass=gotomsec-(ulong)prevms;
+//		mspass=gotomsec-(ulong)prevms;
 		prevms=gotomsec;
 		likeplaying=0;
 		printf("Position reached !! \n");
 		}
 		else
 		{
-		mspass=(ulong)(minTime-prevms);
+//		mspass=(ulong)(minTime-prevms);
 		prevms=minTime;
 		};
         trk=0;
@@ -447,10 +456,10 @@ while (likeplaying)
 			    {
 			    ctl->SPEVplayed++;
                             };
-			if (ev->d1==ME_SET_TEMPO)
+			if ((ev->d1==ME_SET_TEMPO)&&(tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8))
 			    {
 			    ctl->SPEVplayed++;
-			    tempo=(ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]);
+			    tempo=tmp;
 	
 			    midistat->tmrSetTempo((int)tempoToMetronomeTempo(tempo));		
                             for (j=0;j<info->ntracks;j++)

@@ -22,8 +22,12 @@
 
 ***************************************************************************/
 #include "midistat.h"
-#include "midiout.h"
-#include <sys/soundcard.h>
+#include "deviceman.h"
+#include "sndcard.h"
+
+extern int MT32toGM[128];
+
+//#define MIDISTAT_DEBUG
 
 midiStat::midiStat()
 {
@@ -45,13 +49,12 @@ midiStat::~midiStat()
 {
 };
 
-//    void noteOn		( uchar chn, uchar note, uchar vel );
+//    void noteOn	( uchar chn, uchar note, uchar vel );
 //    void noteOff	( uchar chn, uchar note, uchar vel );
 
 void midiStat::chnPatchChange	( uchar chn, uchar patch )
 {
 chn_patch[chn]=patch;
-//printf("Patch : %d %d\n",chn,patch);
 };
 
 void midiStat::chnPressure	( uchar chn, uchar vel )
@@ -74,18 +77,22 @@ void midiStat::tmrSetTempo(int v)
 tempo=v;
 };
 
-void midiStat::sendData(midiOut *midi)
+void midiStat::sendData(DeviceManager *midi,int gm)
 {
 for (int chn=0;chn<N_CHANNELS;chn++)
 	{
-//	printf("Restoring channel %d\n",chn);
-	midi->chnPatchChange(chn,chn_patch[chn]);
-//        printf("Patch : %d %d\n",chn,chn_patch[chn]);
-//	midi->chnPitchBender(chn,chn_bender[chn]&0xFF,chn_bender[chn]>>8);
-//	midi->chnPressure(chn,chn_pressure[chn]);
+#ifdef MIDISTAT_DEBUG
+	printf("Restoring channel %d\n",chn);
+#endif
+	midi->chnPatchChange(chn,
+	 (gm==1)?(chn_patch[chn]):(MT32toGM[chn_patch[chn]]));
+	midi->chnPitchBender(chn,chn_bender[chn]&0xFF,chn_bender[chn]>>8);
+	midi->chnPressure(chn,chn_pressure[chn]);
+	midi->chnController(chn,7,chn_controller[chn][7]);
 /*	for (int i=0;i<N_CTL;i++)
 		midi->chnController(chn,i,chn_controller[chn][i]);
-*/	};
+*/
+	};
 midi->tmrSetTempo(tempo);
 midi->sync();
 };

@@ -31,6 +31,10 @@
 //#define ushort unsigned short
 //#define ulong unsigned long
 
+#ifdef __FreeBSD__
+#define ulong unsigned long
+#endif
+
 ushort readShort(FILE *fh);
 ulong  readLong (FILE *fh);
 

@@ -1,7 +1,9 @@
 /**************************************************************************
 
-    midiout.h	- class midiOut which handles the /dev/sequencer device
+    synthout.h	- class synthOut which handles the /dev/sequencer device
+			for synths (as AWE32)
     Copyright (C) 1997  Antonio Larrosa Jimenez
+			P.J.Leonard
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,20 +23,24 @@
     or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
 
 ***************************************************************************/
-#ifndef _MIDIOUT_H
-#define _MIDIOUT_H
+#ifndef _SYNTHOUT_H
+#define _SYNTHOUT_H
 
+#include "midiout.h"
+/*
 #include <stdio.h>
 #include "dattypes.h"
 #include "midimapper.h"
 
 #define N_CHANNELS 16
 #define N_CTL    256
+*/
 
-class midiOut
+class synthOut : public midiOut
 {
-protected:
+private:
 friend class DeviceManager; 
+/*
     int                 seqfd; // Is the file handler, but MUST NOT be closed
     int			ndevs; // Total number of devices
     int			nmidiports; // Total number of midi ports
@@ -61,28 +67,29 @@ friend class DeviceManager;
 
     void seqbuf_dump (void);
     void seqbuf_clean(void);
+*/
 public:
-    midiOut(int d=0);
-virtual   ~midiOut();
+    synthOut(int d=0);
+    ~synthOut();
 
-virtual    void openDev		(int sqfd);
-virtual    void closeDev	(void);
-virtual    void initDev		(void);
+    void openDev	(int sqfd);
+    void closeDev	(void);
+    void initDev	(void);
 
-    int Rate		(void) { return rate; };
+/*    int Rate		(void) { return rate; };
 
     void useMapper      ( MidiMapper *map);
+*/
+    void noteOn		( uchar chn, uchar note, uchar vel );
+    void noteOff	( uchar chn, uchar note, uchar vel );
+    void keyPressure	( uchar chn, uchar note, uchar vel );
+    void chnPatchChange	( uchar chn, uchar patch );
+    void chnPressure	( uchar chn, uchar vel );
+    void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
+    void chnController	( uchar chn, uchar ctl , uchar v ); 
 
-virtual    void noteOn		( uchar chn, uchar note, uchar vel );
-virtual    void noteOff	( uchar chn, uchar note, uchar vel );
-virtual    void keyPressure	( uchar chn, uchar note, uchar vel );
-virtual    void chnPatchChange	( uchar chn, uchar patch );
-virtual    void chnPressure	( uchar chn, uchar vel );
-virtual    void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
-virtual    void chnController	( uchar chn, uchar ctl , uchar v ); 
-
-virtual    void sysex		( uchar *data,ulong size);
-    void channelSilence	( uchar chn );
+    void sysex		( uchar *data,ulong size);
+/*    void channelSilence	( uchar chn );
     void channelMute    ( uchar chn, int a );
 
     void wait (double ticks);
@@ -101,9 +108,7 @@ virtual    void sysex		( uchar *data,ulong size);
 			// instead of sending it (in fact, this is what
 			// you syncronizing really means :-)
 
-
-    char *getMidiMapFilename(void);
-
+*/
 };
 
 #endif

@@ -31,11 +31,11 @@
 #endif
 
 #ifndef N_CTL
-#define N_CTL    255
+#define N_CTL    256
 #endif
 
 
-class midiOut;
+class DeviceManager;
 class midiStat
 {
 private:
@@ -62,7 +62,7 @@ public:
 
     void tmrSetTempo(int v);
 
-    void sendData(midiOut *midi);
+    void sendData(DeviceManager *midi,int gm=1);
 };
 
 #endif

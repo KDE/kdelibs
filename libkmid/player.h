@@ -26,11 +26,12 @@
 
 #include "dattypes.h"
 #include "midfile.h"
-#include "midiout.h"
+#include "deviceman.h"
 #include "track.h"
 
 struct SpecialEvent
 {
+	int	id;
 	ulong	diffmilliseconds; //delta milliseconds from previous sp ev
 	ulong   absmilliseconds; // milliseconds from beginning of song
         int     ticks; // ticks from begining of song
@@ -70,7 +71,7 @@ struct PlayerController
 	volatile int    error; //An error has ocurred(i.e. couldn't open device)
 	volatile ulong	gotomsec;//milliseconds to go to,if player_setpos is set
 	
-	int		gm; // if 1 then song is GeneralMidi, if 0 then MT32
+	volatile int	gm; // if 1 then song is GeneralMidi, if 0 then MT32
 
 	volatile Midi_event	*ev;
 
@@ -83,7 +84,7 @@ class midiStat;
 class player
 {
 
-midiOut *midi;
+DeviceManager *midi;
 midifileinfo *info;
 track **tracks;
 SpecialEvent *spev;
@@ -101,10 +102,10 @@ void parseSpecialEvents(void);
 public:
 
 
-player(midiOut *midi_,PlayerController *pctl);
+player(DeviceManager *midi_,PlayerController *pctl);
 ~player();
 
-void loadSong(char *filename);
+int loadSong(char *filename);
 
 int isSongLoaded(void) {return songLoaded;};
 SpecialEvent *takeSpecialEvents() {return spev;};

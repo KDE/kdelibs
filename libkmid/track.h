@@ -95,7 +95,7 @@ public:
 	ulong	waitTicks   (void)
 			{return wait_ticks; };
 //	ulong   waitMs (void) {return time_to_next_event;};
-	double   absMsOfNextEvent (void) {return time_at_next_event;};
+	double   absMsOfNextEvent (void);
 	void 	changeTempo(ulong t);
 
 

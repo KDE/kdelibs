@@ -43,6 +43,6 @@ ulong ticksPlayed;
 
 double tempoToMetronomeTempo(ulong x);
 
-track **readMidiFile(char *name,midifileinfo *info);
+track **readMidiFile(char *name,midifileinfo *info,int &ok);
 
 #endif
