@@ -37,15 +37,13 @@
 
 using namespace KIO;
 
-bool NetAccess::download(const KURL& u, QString & target, Job *job)
+bool NetAccess::download(const KURL& u, QString & target)
 {
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
     target = u.path();
     return true;
   }
-
-  if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
 
   if (target.isEmpty())
   {
@@ -61,12 +59,10 @@ bool NetAccess::download(const KURL& u, QString & target, Job *job)
   return kioNet.copyInternal( u, KURL( dest ) );
 }
 
-bool NetAccess::upload(const QString& src, const KURL& target, Job *job)
+bool NetAccess::upload(const QString& src, const KURL& target)
 {
   if (target.isEmpty())
     return false;
-
-  if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
 
   // TODO : What do we do if target.isLocalFile() ? Copy ? Nothing ?
 

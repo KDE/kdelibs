@@ -89,8 +89,7 @@ public:
      *            object if you want to do some special processing
      *            with it before or after the download
      */
-    static bool download(const KURL& src, QString & target,
-                         KIO::Job *job = 0L);
+    static bool download(const KURL& src, QString & target);
 
     /**
      * Remove the specified file if and only if it was created
@@ -109,13 +108,8 @@ public:
      *
      * @param target URL containing the final location of the
      *               file.
-     *
-     * @param job For experts only.  You may supply your own KIO::Job
-     *            object if you want to do some special processing
-     *            with it before or after the download
      */
-    static bool upload(const QString& src, const KURL& target,
-                       KIO::Job *job = 0L);
+    static bool upload(const QString& src, const KURL& target);
 
     /**
      * Alternative method for copying over the network
