@@ -83,6 +83,64 @@ else
   have_ssl=no
 fi
 
+if test "$have_ssl" = yes; then
+  dnl Check for SSL version
+  AC_CACHE_VAL(ac_cv_ssl_version,
+  [
+    AC_LANG_SAVE
+    AC_LANG_C 
+
+    cat >conftest.$ac_ext <<EOF
+#include <openssl/opensslv.h>
+#include <stdio.h>
+    int main() {
+ 
+#ifndef OPENSSL_VERSION_NUMBER
+      printf("ssl_version=\\"error\\"\n");
+#else
+      if (OPENSSL_VERSION_NUMBER < 0x00905000)
+        printf("ssl_version=\\"old\\"\n");
+      else if (OPENSSL_VERSION_NUMBER < 0x00906000)
+        printf("ssl_version=\\"0.9.5\\"\n");
+      else
+        printf("ssl_version=\\"ok\\"\n");
+#endif
+     return (0);
+    }
+EOF
+
+    ac_compile='${CC-gcc} $CFLAGS -I$ac_ssl_includes conftest.$ac_ext -o conftest'
+    if AC_TRY_EVAL(ac_compile); then 
+
+      if eval `./conftest 2>&5`; then
+        if test $ssl_version = error; then
+          AC_MSG_ERROR([$ssl_incdir/openssl/opensslv.h doesn't define OPENSSL_VERSION_NUMBER !])
+        else
+          if test $ssl_version = old; then
+            AC_MSG_WARN([OpenSSL version too old. Upgrade to 0.9.5a at least, see http://www.openssl.org. SSL support disabled.])
+            have_ssl=no
+          fi
+        fi
+        ac_cv_ssl_version="ssl_version=$ssl_version"
+      else
+        AC_MSG_ERROR([Your system couldn't run a small SSL test program.
+        Check config.log, and if you can't figure it out, send a mail to 
+        David Faure <faure@kde.org>, attaching your config.log])
+      fi
+
+    else
+      AC_MSG_ERROR([Your system couldn't link a small SSL test program.
+      Check config.log, and if you can't figure it out, send a mail to 
+      David Faure <faure@kde.org>, attaching your config.log])
+    fi 
+
+    AC_LANG_RESTORE
+
+  ])
+
+  eval "$ac_cv_ssl_version"
+fi
+
 if test "$have_ssl" != yes; then
   LIBSSL="";
   AC_MSG_RESULT([$have_ssl]);
@@ -99,6 +157,12 @@ else
   AC_MSG_RESULT($ac_ssl_rsaref)
   if test "$ac_ssl_rsaref" = yes; then
     LIBSSL="-lssl -lcrypto -lRSAglue -lrsaref" 
+  fi
+
+  AC_MSG_CHECKING([for OpenSSL version])
+  AC_MSG_RESULT($ssl_version)
+  if test $ssl_version = "0.9.5"; then
+    AC_DEFINE(HAVE_OLD_SSL_API, 1, [Define if you have OpenSSL < 0.9.6])
   fi
 fi
 

@@ -20,7 +20,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
+#include "kssldefs.h"
 #include "ksslcertificate.h"
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
@@ -69,7 +70,7 @@ QString rc = "";
   char *t = X509_NAME_oneline(X509_get_subject_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
-  Free(t);    // NOTE - _Free_  *NOT*  _free_
+  OPENSSL_free(t);
 #endif
 return rc;
 }
@@ -82,7 +83,7 @@ QString rc = "";
   char *t = X509_NAME_oneline(X509_get_issuer_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
-  Free(t);    // NOTE - _Free_  *NOT*  _free_
+  OPENSSL_free(t);
 #endif
 
 return rc;
