@@ -276,6 +276,7 @@ void KToolBarButton::setTextLabel( const QString& text)
 void KToolBarButton::setText( const QString& text)
 {
   setTextLabel(text);
+  modeChange();
 }
 
 void KToolBarButton::setIcon( const QString &icon )
