@@ -172,14 +172,14 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 KAccel::KAccel( QWidget* pParent, const char* psName )
 : QAccel( pParent, (psName) ? psName : "KAccel-QAccel" )
 {
-	kdDebug(125) << "KAccel(): this = " << this << endl;
+	kdDebug(125) << "KAccel( pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
 	d = new KAccelPrivate( this );
 }
 
-KAccel::KAccel( QWidget* watch, QObject* parent, const char* psName )
-: QAccel( watch, parent, (psName) ? psName : "KAccel-QAccel" )
+KAccel::KAccel( QWidget* watch, QObject* pParent, const char* psName )
+: QAccel( watch, pParent, (psName) ? psName : "KAccel-QAccel" )
 {
-	kdDebug(125) << "KAccel(): this = " << this << endl;
+	kdDebug(125) << "KAccel( watch = " << watch << ", pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
 	d = new KAccelPrivate( this );
 }
 
