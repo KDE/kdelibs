@@ -315,26 +315,29 @@ void KDirListerCache::stop( KDirLister *lister )
       Q_ASSERT( ret );
       
       KIO::ListJob *job = jobForUrl( url );
-      lister->jobDone( job );
+      if ( job )
+        lister->jobDone( job );
 
       // move lister to urlsCurrentlyHeld
       QPtrList<KDirLister> *holders = urlsCurrentlyHeld[url];
       if ( !holders )
       {
         holders = new QPtrList<KDirLister>;
-        holders->append( lister );
         urlsCurrentlyHeld.insert( url, holders );
       }
-      else
-        holders->append( lister );
+
+      holders->append( lister );
 
       emit lister->canceled( KURL( url ) );
 
-      //kdDebug(7004) << "KDirListerCache::stop(lister) remaining list: " << listers->count() << " listers" << endl;
-      //kill the job if it isn't used any more
+      //kdDebug(7004) << k_funcinfo << "remaining list: " << listers->count() << " listers" << endl;
+
       if ( listers->isEmpty() )
       {
-        killJob( job );
+        // kill the job since it isn't used any more
+        if ( job )
+          killJob( job );
+
         urlsCurrentlyListed.remove( url );
       }
 
@@ -371,19 +374,24 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
   if ( !holders )
   {
     holders = new QPtrList<KDirLister>;
-    holders->append( lister );
     urlsCurrentlyHeld.insert( urlStr, holders );
   }
-  else
-    holders->append( lister );
+
+  holders->append( lister );
+
 
   KIO::ListJob *job = jobForUrl( urlStr );
-  lister->jobDone( job );
+  if ( job )
+    lister->jobDone( job );
+
   emit lister->canceled( _url );
 
-  if ( listers->isEmpty() )   // kill the job
+  if ( listers->isEmpty() )
   {
-    killJob( job );
+    // kill the job since it isn't used any more
+    if ( job )
+      killJob( job );
+
     urlsCurrentlyListed.remove( urlStr );
   }
 
@@ -1157,7 +1165,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
 
   KIO::ListJob *job = jobForUrl( oldUrlStr );
   if ( job )
-     killJob( job );
+    killJob( job );
 
   // Check if we were listing this dir. Need to abort and restart with new name in that case.
   QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( oldUrlStr );
@@ -1166,8 +1174,10 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
     // Tell the world that the job listing the old url is dead.
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
     {
-       kdl->jobDone( job );
-       emit kdl->canceled( oldUrl );
+      if ( job )
+        kdl->jobDone( job );
+
+      emit kdl->canceled( oldUrl );
     }
 
     urlsCurrentlyListed.insert( urlStr, listers );
@@ -1178,8 +1188,9 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld.take( oldUrlStr );
   if ( holders )
   {
-    for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-       kdl->jobDone( job );
+    if ( job )
+      for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
+        kdl->jobDone( job );
 
     urlsCurrentlyHeld.insert( urlStr, holders );
   }
@@ -2215,8 +2226,7 @@ uint KDirLister::numJobs()
 
 void KDirLister::jobDone( KIO::ListJob *job )
 {
-  if ( job )
-     d->jobData.remove( job );
+  d->jobData.remove( job );
 }
 
 void KDirLister::jobStarted( KIO::ListJob *job )
