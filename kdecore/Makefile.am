@@ -36,7 +36,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kallocator.h kcrash.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h
+	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h
 
 noinst_HEADERS = kckey.h kregpriv.h
 
