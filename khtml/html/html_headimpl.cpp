@@ -426,12 +426,10 @@ ushort HTMLTitleElementImpl::id() const
 
 void HTMLTitleElementImpl::setTitle()
 {
-    kdDebug( 6030 ) << "Title:close" << endl;
     if(!_first || _first->id() != ID_TEXT) return;
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();
     s.compose();
-
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
     emit d->view()->part()->setWindowCaption( s.visual() );
