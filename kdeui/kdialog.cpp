@@ -24,6 +24,7 @@
 #include <qlineedit.h>
 #include <qvaluelist.h>
 #include <qtimer.h>
+#include <netwm.h>
 
 #include <kapp.h>
 #include <kdialog.h>
@@ -102,6 +103,8 @@ void KDialog::polish()
 void KDialog::setCaption( const QString &caption )
 {
   QDialog::setCaption( kapp->makeStdCaption( caption ) );
+  NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
+  info.setName( caption.utf8().data() );
 }
 
 
