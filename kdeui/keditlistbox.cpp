@@ -159,7 +159,13 @@ void KEditListBox::typedSomething(const QString& text)
     if(currentItem() >= 0) {
         if(currentText() != m_lineEdit->text()) 
         {
+            // IMHO changeItem() shouldn't do anything with the value
+            // of currentItem() ... like changing it or emitting signals ...
+            // but TT disagree with me on this one (it's been that way since ages ... grrr)
+            bool block = m_listBox->signalsBlocked();
+            m_listBox->blockSignals( true );
             m_listBox->changeItem(text, currentItem());
+            m_listBox->blockSignals( block );
             emit changed();
         }
     }
