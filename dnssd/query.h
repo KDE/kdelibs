@@ -30,7 +30,7 @@ namespace DNSSD
 class QueryPrivate;
 
 /**
-This class is provides way to search for specified service type in one domain. Depending on domain
+This class provides way to search for specified service type in one domain. Depending on domain
 name, either multicast or unicast DNS will be used.
  
 @short Class that represents service query in one domain.

@@ -100,6 +100,13 @@ public:
 	virtual void startBrowse();
 
 	/**
+	Return DomainBrowser containing domains being browsed. Valid object will returned 
+	even if 'domains' parameters in constructor was set to NULL or single domain 
+	constructor was used.
+	 */
+	const DomainBrowser* browsedDomains() const;
+	
+	/**
 	Special service type to search for all available service types. Pass it as "type"
 	parameter to ServiceBrowser constructor.
 	 */

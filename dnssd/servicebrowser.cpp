@@ -86,6 +86,11 @@ ServiceBrowser::~ ServiceBrowser()
 	delete d;
 }
 
+const DomainBrowser* ServiceBrowser::browsedDomains() const
+{
+	return d->m_domains;
+}
+
 void ServiceBrowser::serviceResolved(bool success)
 {
 	QObject* sender_obj = const_cast<QObject*>(sender());
