@@ -32,12 +32,8 @@
 
 #include <kglobal.h>
 #include <kconfig.h>
-#include <kstaticdeleter.h>
 
 #include "kcursor_private.h"
-
-QCursor *KCursor::s_handCursor = 0;
-KStaticDeleter<QCursor> kcursorsd;
 
 KCursor::KCursor()
 {
@@ -45,7 +41,9 @@ KCursor::KCursor()
 
 QCursor KCursor::handCursor()
 {
-        if (!s_handCursor)
+        static QCursor *hand_cursor = 0;
+
+        if (hand_cursor == 0)
         {
                 KConfig *config = KGlobal::config();
                 KConfigGroupSaver saver( config, "General" );
@@ -68,14 +66,14 @@ QCursor KCursor::handCursor()
                                 0xff, 0x03, 0xc0, 0xff, 0x03, 0xc0, 0xff, 0x01, 0xc0, 0xff, 0x01};
                         QBitmap hand_bitmap(22, 22, HAND_BITS, true);
                         QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
-                        kcursorsd.setObject( s_handCursor, new QCursor(hand_bitmap, hand_mask, 7, 0) );
+                        hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
                 }
                 else
-                        kcursorsd.setObject( s_handCursor, new QCursor(PointingHandCursor) );
+                        hand_cursor = new QCursor(PointingHandCursor);
         }
 
-        CHECK_PTR(s_handCursor);
-        return *s_handCursor;
+        CHECK_PTR(hand_cursor);
+        return *hand_cursor;
 }
 
 /**
