@@ -110,13 +110,20 @@ bool KRun::run( const KService& _service, const KURL::List& _urls )
 
   if ( !b_local_app || b_local_files )
   {
+    QString error;
     if (KApplication::startServiceByDesktopPath( _service.desktopEntryPath(),
-          _urls.toStringList(), 0L, 0L, &pid ) == 0 )
+          _urls.toStringList(), &error, 0L, &pid ) == 0 )
     {
-      kdDebug(7010) << "startServiceByDesktopPath worked fine!" << endl;
+      kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
       // App-starting notification
       clientStarted( binaryName(exec), miniicon, pid);
       return true;
+    }
+    else
+    {
+      kdDebug(7010) << error << endl;
+      KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( exec ) );
+      return false;
     }
   }
 
