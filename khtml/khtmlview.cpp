@@ -170,7 +170,6 @@ KHTMLView::~KHTMLView()
 
   //  clear();
 
-  //  if(defaultSettings) delete defaultSettings;
 }
 
 void KHTMLView::init()
@@ -201,8 +200,6 @@ void KHTMLView::init()
   /*
   document = 0;
   decoder = 0;
-  defaultSettings = new khtml::Settings;
-  _settings = 0;
   */
   _marginWidth = 5;
   _marginHeight = 5;
@@ -233,8 +230,6 @@ void KHTMLView::clear()
     decoder = 0;
     delete _jscript;
     _jscript = 0;
-    if ( _settings ) delete _settings;
-    _settings = 0;
 
     m_lstChildren.clear();
 
@@ -252,9 +247,6 @@ void KHTMLView::clear()
     findNode = 0;
 */
     resizeContents(clipper()->width(), clipper()->height());
-
-    //    m_strRedirectUrl = QString::null;
-    //    m_delayRedirect = 0;
 
     pressed = false;
 
@@ -418,9 +410,6 @@ void KHTMLView::begin( const QString &_url, int _x_offset, int _y_offset )
         emit setTitle( "* Unknown *" );
     }
 
-    if(!_settings) _settings = new khtml::Settings( *defaultSettings);
-
-
     document = new HTMLDocumentImpl(this);
     document->ref();
     document->attach(this);
@@ -543,7 +532,6 @@ void KHTMLView::openURL( const QString &_url, bool _reload, int _xoffset, int _y
 
   // ###
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
   connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
    connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
@@ -591,13 +579,6 @@ void KHTMLView::slotFinished( int /*_id */ /* )
   m_jobId = 0;
   m_bParsing = false;
   m_bComplete = true;
-}
-
-void KHTMLView::slotRedirection( int /*_id*/ /*, const char *_url )
-{
-  // We get this only !before! we receive the first data
-  assert( !m_strWorkingURL.isEmpty() );
-  m_strWorkingURL = _url;
 }
 
 void KHTMLView::slotData( int /*_id*/ /*, const char *_p, int _len )
@@ -787,29 +768,6 @@ void KHTMLView::slotFormSubmitted( const QString &_method, const QString &_url,
   }
 }
 
-void KHTMLView::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
-{
-    printf("setting default text colors\n");
-
-    defaultSettings->fontBaseColor = _textc;
-    defaultSettings->linkColor = _linkc;
-    defaultSettings->vLinkColor = _vlinkc;
-
-    Child *c;
-    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
-}
-
-void KHTMLView::setDefaultBGColor( const QColor& bgcolor )
-{
-  printf("setting default bgColor\n");
-    defaultSettings->bgColor = bgcolor;
-
-    Child *c;
-    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-	c->m_pBrowser->setDefaultBGColor( bgcolor );
-}
-
 QString KHTMLView::completeURL( const QString &_url, const QString &target )
 {
     KURL orig;
@@ -916,12 +874,6 @@ void KHTMLView::end()
       gotoAnchor( u.htmlRef() );
   else
       setContentsPos( m_iNextXOffset, m_iNextYOffset );
-
-  if(!m_strRedirectUrl.isEmpty())
-  {
-      QTimer::singleShot(1000*m_delayRedirect, this, SLOT(slotRedirect()));
-      return;
-  }
 
   checkCompleted();
 }
@@ -1365,42 +1317,6 @@ QString KHTMLView::selectedText()
     return QString::null;
 }
 
-void
-KHTMLView::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
-{
-    defaultSettings->setFontSizes(newFontSizes, newFixedFontSizes);
-}
-
-void
-KHTMLView::fontSizes(int *newFontSizes, int *newFixedFontSizes)
-{
-    defaultSettings->getFontSizes(newFontSizes, newFixedFontSizes);
-}
-
-void
-KHTMLView::resetFontSizes(void)
-{
-    defaultSettings->resetFontSizes();
-}
-
-void
-KHTMLView::setStandardFont( const QString &name )
-{	
-    defaultSettings->fontBaseFace = name;
-}
-
-void
-KHTMLView::setFixedFont( const QString &name )
-{	
-    defaultSettings->fixedFontFace = name;
-}
-
-void
-KHTMLView::setUnderlineLinks( bool ul )
-{
-    defaultSettings->underlineLinks = ul;
-}
-
 bool
 KHTMLView::gotoAnchor( const QString &_name )
 {
@@ -1469,13 +1385,6 @@ bool KHTMLView::isFrameSet()
 
     if(document->body()->id() == ID_FRAMESET) return true;
     return false;
-}
-
-khtml::Settings *KHTMLView::settings()
-{
-    // ### check all settings stuff in khtml.cpp for memory leaks...
-    if(!_settings) _settings = new khtml::Settings(*defaultSettings);
-    return _settings;
 }
 
 const QString &KHTMLView::baseUrl()
@@ -1578,22 +1487,10 @@ bool KHTMLView::setCharset(const QString &name, bool /*override*/ /*)
     QFontInfo fi(f);
     printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
 
-    defaultSettings->charset = f.charSet();
+    // ### defaultSettings->charset = f.charSet();
     return true;
 }
 
-void KHTMLView::scheduleRedirection(int delay, const QString & url)
-{
-    m_delayRedirect = delay;
-    m_strRedirectUrl = url;
-}
-
-void KHTMLView::slotRedirect()
-{
-    urlSelected(m_strRedirectUrl, LeftButton, QString::null);
-    m_strRedirectUrl == QString::null;
-    m_delayRedirect = 0;
-}
 */
 
 

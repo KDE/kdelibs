@@ -53,7 +53,6 @@ namespace DOM {
 namespace khtml {
     class RenderObject;
     class RenderRoot;
-    class Settings;
 }
 
 class KHTMLDecoder;
@@ -420,45 +419,6 @@ public:
     //    KHTMLView* selectedFrame();
 
     /**
-     * Sets point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size>
-     *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
-     */
-    //    void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes=0);
-
-    /**
-     * Gets point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size>
-     *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
-     */
-    //    void fontSizes(int *newFontSizes, int *newFixedFontSizes=0);
-
-    /**
-     * Resets the point sizes to be associated with the HTML-sizes used in
-     * <FONT size=Html-Font-Size> to their default.
-     *
-     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
-     */
-    //    void resetFontSizes();
-
-    /**
-     * Sets the standard font style.
-     *
-     * @param name is the font name to use for standard text.
-     */
-    //    void setStandardFont( const QString &name );
-
-    /**
-     * Sets the fixed font style.
-     *
-     * @param name is the font name to use for fixed text, e.g.
-     * the <tt>&lt;pre&gt;</tt> tag.
-     */
-    //    void setFixedFont( const QString &name );
-
-    /**
      * Set document charset.
      *
      * Any <META ...> setting charsets overrides this setting
@@ -468,23 +428,6 @@ public:
      * (not implemented at the moment)
      */
     //    bool setCharset(const QString &name, bool override = false);
-
-    /**
-     * Sets the default background color to use when one isn't specified
-     * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
-     */
-    //    void setDefaultBGColor( const QColor &col );
-
-    /**
-     * Sets the default text colors.
-     */
-    //    void setDefaultTextColors( const QColor &normal, const QColor &link,
-    //			       const QColor &vlink );
-
-    /**
-     * Set whether links are drawn in underlined text.
-     */
-    //    void setUnderlineLinks( bool ul );
 
     /**
      * Sets the cursor to use when the cursor is on a link.
@@ -533,10 +476,6 @@ public:
      * @return the margin height
      */
     //    int marginHeight() { return _marginHeight; }
-
-    //    khtml::Settings *settings();
-
-    //    void scheduleRedirection(int delay, const QString & url);
 
 
 public slots:
@@ -635,12 +574,6 @@ protected slots:
     //    void slotData( int _id, const char* data, int _len );
     //    void slotFinished( int _id );
     //    void slotError( int _id, int _err, const char *_text );
-
-    // gets called for redirection triggered by the http header
-    //    void slotRedirection( int _id, const char *_url );
-
-    // used for <meta> redirection
-    //    void slotRedirect();
 
     //virtual void slotURLRequest( const QString & _url );
     //virtual void slotCancelURLRequest( const QString & _url );
@@ -845,8 +778,6 @@ protected:
 
 private:
 
-    //    khtml::Settings *defaultSettings;
-    //    khtml::Settings *_settings;
     /*
     bool bIsTextSelected;
     bool _isFrame;
@@ -884,9 +815,7 @@ private:
     static QPixmap* paintBuffer;
 
     DOM::Range *selection;
-    
-    //    int m_delayRedirect;
-    //    QString m_strRedirectUrl;
+
 };
 
 #endif
