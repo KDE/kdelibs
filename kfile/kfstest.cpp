@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <qdir.h>
+#include <qfiledlg.h> 
 
 #include "kfiledialog.h"
 #include <qmsgbox.h>
@@ -87,10 +88,14 @@ int main(int argc, char **argv)
 					   "*.o *.a *.lo *.la|Object-Files");
 	break;
     case Preselect:
-	name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
+        name1 = KFileDialog::getOpenFileURL("/etc/inetd/inetd.conf");
 	break;
-    case Normal:
-	name1 = KFileDialog::getOpenFileURL(QDir::homeDirPath() + "/", "*");
+    case Normal: {
+      KFileDialog dlg(QDir::homeDirPath(), 0, 0, 0, true);
+      // dlg.setSelection("../hello");
+      dlg.exec();
+      name1 = dlg.selectedFile();
+    }
         break;
     case Preview:
         // this is how you activate the new preview module

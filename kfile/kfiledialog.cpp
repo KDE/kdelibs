@@ -472,6 +472,9 @@ void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 
 QString KFileBaseDialog::selectedFile()
 {
+    if (filename_.isNull())
+      return 0;
+
     KURL u = filename_.data();
     return u.path();
 }

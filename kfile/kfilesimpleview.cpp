@@ -34,17 +34,21 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     width_max = 100;
     width_length = 0;
     width_array = new uint[width_max];
+
     setLineWidth( 2 );
     setFrameStyle( Panel | Sunken );
-    setNumCols(1);
-    setNumRows(1);
+    cellWidths = new int[1];
+    cellWidths[0] = -1;
     rowsVisible = 1;
-    curCol = curRow = 0;
-    
+
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
     setTableFlags(Tbl_autoHScrollBar |
 		  Tbl_smoothHScrolling);
+    curCol = curRow = 0;
+    QTableView::setNumCols(1);
+    QTableView::setNumRows(1);
+    
     setBackgroundMode( PaletteBase );
     touched = false;
 }
@@ -57,7 +61,7 @@ KFileSimpleView::~KFileSimpleView()
 
 void KFileSimpleView::setNumCols(int count)
 {
-    // debug("setNumCols %d", count);
+    debugC("setNumCols %d", count);
     delete [] cellWidths;
     cellWidths = new int[count];
     for (int i = 0; i < count; i++)
@@ -220,8 +224,8 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 
 bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 {
-  if (numCols() * rowsVisible < count())
-	setNumCols(numCols() + 1);
+    if (numCols() * rowsVisible < count())
+        setNumCols(numCols() + 1);
     
     if (i->isDir()) {
 	if (i->isReadable())
@@ -248,23 +252,24 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 
 int KFileSimpleView::cellWidth ( int col )
 {
-  // debug("cellWidth %d", col);
-    if (cellWidths[col] == -1) {
+  if (cellWidths[col] == -1) {
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
-	for (uint j = 0; j < rowsVisible; j++) {
+	for (uint j = 0; offset + j < width_length && j < rowsVisible; j++) {
 	    int w = width_array[offset + j];
 	    if (width < w)
 		width = w;
 	}
 	cellWidths[col] = width + file_pixmap->width() + 9; 
     }
+    debug("cellWidth %d %d", col, cellWidths[col]);
     return cellWidths[col];
 }
 
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
+  debug("resizeEvent");
     QTableView::resizeEvent(e);
     rowsVisible = lastRowVisible();
     setNumRows(rowsVisible);
