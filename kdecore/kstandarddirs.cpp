@@ -875,6 +875,12 @@ void KStandardDirs::addKDEDefaults()
     }
     kdedirList.append(KDEDIR);
 
+#ifdef __KDE_EXECPREFIX
+    QString execPrefix(__KDE_EXECPREFIX);
+    if (execPrefix!="NONE")
+       kdedirList.append(execPrefix);
+#endif
+
     QString localKdeDir = readEnvPath("KDEHOME");
     if (!localKdeDir.isEmpty())
     {
