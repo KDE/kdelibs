@@ -208,6 +208,9 @@ protected:
      */
     void doAutoScroll();
 
+protected slots:
+    void slotPaletteChanged();
+
 private:
     /**
      * move the view towards the given rectangle be up to one page.

@@ -822,6 +822,11 @@ public:
     {
         visual.access()->palette.setColor(g,r,c); 
     } 
+    void resetPalette() // Called when the desktop color scheme changes.
+    {
+        const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
+    }
+
 
 };
 
