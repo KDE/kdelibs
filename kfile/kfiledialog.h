@@ -339,12 +339,19 @@ protected:
     void initGUI();
 
     /**
-      * Makes a new directory in current directory after prompting for
-      * user name
-      */
+     * Makes a new directory in current directory after asking user
+     * for a name
+     */
     void mkdir();
 
-    void KFileDialog::checkPath(const char *_txt, bool check = false);
+    /**
+     * takes action on the new location. If it's a directory, change
+     * into it, if it's a file, correct the name, etc.
+     * @param takeFiles if set to true, if will close the dialog, if
+     * txt is a file name
+     */
+
+    void KFileDialog::checkPath(const char *txt, bool takeFiles = false);
     
 protected slots:
     void pathChanged();

@@ -248,6 +248,7 @@ int KFileSimpleView::cellWidth ( int col )
 
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
+debug("resizeEvent");
     QTableView::resizeEvent(e);
     rowsVisible = lastRowVisible();
     setNumRows(rowsVisible);

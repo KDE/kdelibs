@@ -82,12 +82,6 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
 
     // Create the KDir
     if (dirName != 0) {
-	/* KDir should handle this
-	   if (dirName[strlen(dirName) - 1] == '/')
-	   dir = new KDir(dirName);
-	   else
-	   dir = new KDir(dirName + QString("/"));
-	*/
 	KFileInfo i(dirName);
 	if (i.isDir())
 	    dir = new KDir(dirName);
@@ -100,6 +94,7 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
 		filename_ = filename;
 	    } else {
 		dir = new KDir(); // take current path
+		debug("path %s", dir->url().data());
 		if (acceptURLs)
 		    filename_ = dir->url() + filename;
 		else
@@ -122,10 +117,10 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
 
     filters = new QStrList( true );
     QString tmp = filter; // deep copy
-    char *g = strtok(tmp.data(), "\t");
+    char *g = strtok(tmp.data(), "\n");
     while (g) {
 	filters->append(g);
-	g = strtok(0, "\t");
+	g = strtok(0, "\n");
     }
     
     connect(dir, SIGNAL(finished()),
@@ -265,7 +260,7 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
 		 item = filters->next()) {
 		name = item;
 		int tab = name.find('|');
-		filterCombo->insertItem((tab < 0) ? name : 
+		filterCombo->insertItem((tab < 0) ? name :
 					name.mid(tab + 1, name.length() - tab));
 	    }
 	    filterCombo->adjustSize();
@@ -426,12 +421,11 @@ void KFileDialog::setHiddenToggle(bool b) // SLOT
 
 void KFileDialog::locationChanged(const char *_txt)
 {
-    debug("highlighted \"%s\" \"%s\"", _txt, locationEdit->text(0));
     bool highlighted = strcmp(_txt, locationEdit->text(0));
     checkPath(_txt, highlighted);
 }
 
-void KFileDialog::checkPath(const char *_txt, bool check) // SLOT
+void KFileDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 {
     QString text = _txt;
     text = text.stripWhiteSpace();
@@ -447,7 +441,7 @@ void KFileDialog::checkPath(const char *_txt, bool check) // SLOT
 	if (i.isDir())
 	    setDir(text, true);
 	else {
-	    if (check)
+	    if (takeFiles)
 		if (acceptOnlyExisting && !i.isFile())
 		    warning("you entered an invalid URL");
 		else
@@ -463,9 +457,7 @@ void KFileDialog::checkPath(const char *_txt, bool check) // SLOT
 	    filename_ = u.path();
 	emit fileSelected(filename_);
 	accept();
-    } else
-	debug("no filename");
-    
+    }
 }
 
 

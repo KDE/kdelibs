@@ -1,3 +1,8 @@
+1998-03-28  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: changed the filter seperator to \n. 
+	This looks nicer in the source code of the call
+
 Sat Mar 28 14:49:00 1998  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: changed the meaning of the dirName argument
