@@ -213,7 +213,7 @@ private:
 	               bool only_exe = false,
 	               bool no_hidden = false );
 
-	void addMatches( QStringList * );
+	void addMatches( const QStringList & );
 	QString finished();
 
 	void init();

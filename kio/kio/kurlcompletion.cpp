@@ -270,7 +270,7 @@ public:
 
 	bool listBatch();
 
-	QStringList *files() { return &m_files; };
+	const QStringList &files() const { return m_files; };
 
 	void setTimeout(int milliseconds) { m_timeout = milliseconds; };
 
@@ -809,7 +809,7 @@ bool KURLCompletion::userCompletion(const MyURL &url, QString *match)
 
 			d->completionThread->wait(200);
 			QStringList l = d->completionThread->matches();
-			addMatches( &l );
+			addMatches( l );
 		}
 	}
 	*match = finished();
@@ -852,7 +852,7 @@ bool KURLCompletion::envCompletion(const MyURL &url, QString *match)
 			env++;
 		}
 
-		addMatches( &l );
+		addMatches( l );
 	}
 
 	setListedURL( CTEnv );
@@ -1099,10 +1099,10 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
  *
  * Called to add matches to KCompletion
  */
-void KURLCompletion::addMatches( QStringList *matches )
+void KURLCompletion::addMatches( const QStringList &matches )
 {
-	QStringList::ConstIterator it = matches->begin();
-	QStringList::ConstIterator end = matches->end();
+	QStringList::ConstIterator it = matches.begin();
+	QStringList::ConstIterator end = matches.end();
 
 	for ( ; it != end; it++ )
 		addItem( d->prepend + (*it));
@@ -1326,7 +1326,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 		}
 	}
 
-	addMatches( &matches );
+	addMatches( matches );
 }
 
 /*
@@ -1450,7 +1450,7 @@ void KURLCompletion::customEvent(QCustomEvent *e)
 			stop();
 			clear();
 			QStringList matches = event->matches();
-			addMatches( &matches );
+			addMatches( matches );
 		}
 
 		setListedURL( CTUser );
