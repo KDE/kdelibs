@@ -237,6 +237,11 @@ int Lexer::lex()
     case InSingleLineComment:
       if (isLineTerminator()) {
 	yylineno++;
+	terminator = true;
+	if (restrKeyword) {
+	  token = ';';
+	  setDone(Other);
+	}
 	state = Start;
       } else if (current == 0) {
 	setDone(Eof);
