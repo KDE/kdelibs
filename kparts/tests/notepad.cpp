@@ -21,7 +21,6 @@ NotepadPart::NotepadPart( QWidget * parent, const char * name )
   setInstance( instance );
 
   m_edit = new QMultiLineEdit( parent, "NotepadPart's multiline edit" );
-  m_edit->setFocus();
   setWidget( m_edit );
 
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
