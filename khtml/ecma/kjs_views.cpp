@@ -46,7 +46,7 @@ Value DOMAbstractView::tryGet(ExecState *exec, const UString &p) const
     return DOMObject::tryGet(exec,p);
 }
 
-Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 

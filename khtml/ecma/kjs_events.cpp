@@ -182,7 +182,7 @@ Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
     return DOMObject::tryGet(exec,p);
 }
 
-Value DOMEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 
@@ -285,7 +285,7 @@ Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
     return DOMEvent::tryGet(exec, p);
 }
 
-Value DOMUIEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMUIEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 
@@ -352,7 +352,7 @@ Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
     return DOMUIEvent::tryGet(exec,p);
 }
 
-Value DOMMouseEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMMouseEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 
@@ -439,7 +439,7 @@ Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
     return DOMEvent::tryGet(exec,p);
 }
 
-Value DOMMutationEventFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMMutationEventFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 

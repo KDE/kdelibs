@@ -102,13 +102,10 @@ namespace KJS {
   /**
    * We need a modified version of lookupOrCreate because
    * we call tryGet instead of get, in DOMObjects.
-   * It also allows to add an extra parameter to the function constructors
-   * (the dom object that the function relates to).
    */
-  template <class FuncImp, class ThisImp, class ParentImp, class Object>
+  template <class FuncImp, class ThisImp, class ParentImp>
   inline Value DOMObjectLookupOrCreate(ExecState *exec, const UString &propertyName,
-                                       const HashTable* table, const ThisImp* thisObj,
-                                       const Object& obj)
+                                       const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
@@ -126,10 +123,28 @@ namespace KJS {
       if (cachedVal && cachedVal->type() == ObjectType)
         return cachedVal;
 
-      Value val = new FuncImp(exec, obj, entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, val, entry->attr);
+      Value val = new FuncImp(exec, entry->value, entry->params);
+      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
       return val;
     }
+    return thisObj->getValue(exec, entry->value);
+  }
+
+  /**
+   * Simplified version of DOMObjectLookupOrCreate in case there are no
+   * functions, only "values".
+   */
+  template <class ThisImp, class ParentImp>
+  inline Value DOMObjectLookupValue(ExecState *exec, const UString &propertyName,
+                           const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::tryGet(exec, propertyName);
+
+    if (entry->attr & Function)
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
     return thisObj->getValue(exec, entry->value);
   }
 

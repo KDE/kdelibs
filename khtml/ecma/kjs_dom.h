@@ -67,13 +67,15 @@ namespace KJS {
     DOM::Node node;
   };
 
+  // ### Idea: instead of defining functions in each DOMNode, it would be much better
+  // to define a DOMNodePrototype, which as the functions... This would save
+  // a lot of memory !
   class DOMNodeFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMNodeFunc(ExecState *exec, DOM::Node n, int i, int l);
+    DOMNodeFunc(ExecState *exec, int id, int len);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
   private:
-    DOM::Node node;
     int id;
   };
 
@@ -86,6 +88,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
     static const ClassInfo info;
+    DOM::NodeList nodeList() const { return list; }
   private:
     DOM::NodeList list;
   };
@@ -93,12 +96,10 @@ namespace KJS {
   class DOMNodeListFunc : public DOMFunction {
     friend class DOMNodeList;
   public:
-    DOMNodeListFunc(DOM::NodeList l, int i)
-        : DOMFunction(), list(l), id(i) { }
-      virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-      enum { Item };
+    DOMNodeListFunc(ExecState *exec, int id, int len);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
+    enum { Item };
   private:
-    DOM::NodeList list;
     int id;
   };
 
@@ -106,23 +107,24 @@ namespace KJS {
   public:
     DOMDocument(DOM::Document d) : DOMNode(d) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { DocType, Implementation, DocumentElement,
+           // Functions
+           CreateElement, CreateDocumentFragment, CreateTextNode, CreateComment,
+           CreateCDATASection, CreateProcessingInstruction, CreateAttribute,
+           CreateEntityReference, GetElementsByTagName, ImportNode, CreateElementNS,
+           CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
+           CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
+           CreateEvent, StyleSheets, GetOverrideStyle };
   };
 
   class DOMDocFunction : public DOMFunction {
   public:
-    DOMDocFunction(DOM::Document d, int i)
-      : DOMFunction(), doc(d), id(i) {}
+    DOMDocFunction(ExecState *, int id, int len);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-    enum { CreateElement, CreateDocumentFragment, CreateTextNode,
-	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
-	   CreateAttribute, CreateEntityReference, GetElementsByTagName,
-	   ImportNode, CreateElementNS, CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
-	   CreateRange, CreateNodeIterator, CreateTreeWalker, CreateEvent, GetOverrideStyle };
   private:
-    DOM::Document doc;
     int id;
   };
 
@@ -131,8 +133,11 @@ namespace KJS {
     DOMAttr(DOM::Attr a) : DOMNode(a) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    Value getValue(ExecState *exec, int token) const;
+    void putValue(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Name, Specified, ValueProperty, OwnerElement };
   };
 
   class DOMElement : public DOMNode {

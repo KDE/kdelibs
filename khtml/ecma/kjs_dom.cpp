@@ -80,20 +80,20 @@ Boolean DOMNode::toBoolean(ExecState *) const
 #localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
 #
-  insertBefore	DOMNode::InsertBefore	DontDelete|ReadOnly|Function
-  replaceChild	DOMNode::ReplaceChild	DontDelete|ReadOnly|Function
-  removeChild	DOMNode::RemoveChild	DontDelete|ReadOnly|Function
-  appendChild	DOMNode::AppendChild	DontDelete|ReadOnly|Function
-  hasAttributes	DOMNode::HasAttributes	DontDelete|ReadOnly|Function
-  hasChildNodes	DOMNode::HasChildNodes	DontDelete|ReadOnly|Function
-  cloneNode	DOMNode::CloneNode	DontDelete|ReadOnly|Function
+  insertBefore	DOMNode::InsertBefore	DontDelete|ReadOnly|Function 2
+  replaceChild	DOMNode::ReplaceChild	DontDelete|ReadOnly|Function 2
+  removeChild	DOMNode::RemoveChild	DontDelete|ReadOnly|Function 1
+  appendChild	DOMNode::AppendChild	DontDelete|ReadOnly|Function 1
+  hasAttributes	DOMNode::HasAttributes	DontDelete|ReadOnly|Function 0
+  hasChildNodes	DOMNode::HasChildNodes	DontDelete|ReadOnly|Function 0
+  cloneNode	DOMNode::CloneNode	DontDelete|ReadOnly|Function 1
 #normalize // moved here from Element in DOM2 DOMNode::Normalize
 #supports // new for DOM2 - not yet in khtml  DOMNode::Supports
 # from the EventTarget interface
-  addEventListener	DOMNode::AddEventListener	DontDelete|ReadOnly|Function
-  removeEventListener	DOMNode::RemoveEventListener	DontDelete|ReadOnly|Function
-  dispatchEvent		DOMNode::DispatchEvent	DontDelete|ReadOnly|Function
-  contains	DOMNode::Contains		DontDelete|ReadOnly|Function
+  addEventListener	DOMNode::AddEventListener	DontDelete|ReadOnly|Function 3
+  removeEventListener	DOMNode::RemoveEventListener	DontDelete|ReadOnly|Function 3
+  dispatchEvent		DOMNode::DispatchEvent	DontDelete|ReadOnly|Function 1
+  contains	DOMNode::Contains		DontDelete|ReadOnly|Function 1
 #
   onabort	DOMNode::OnAbort		DontDelete
   onblur	DOMNode::OnBlur			DontDelete
@@ -135,7 +135,7 @@ Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryGet " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupOrCreate<DOMNodeFunc, DOMNode, DOMObject>( exec, propertyName, &DOMNodeTable, this, node );
+  return DOMObjectLookupOrCreate<DOMNodeFunc, DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
 }
 
 Value DOMNode::getValue(ExecState *, int token) const
@@ -391,15 +391,16 @@ List DOMNode::eventHandlerScope() const
   return List::empty();
 }
 
-DOMNodeFunc::DOMNodeFunc(ExecState *exec, DOM::Node n, int i, int l)
-  : DOMFunction(), node(n), id(i)
+DOMNodeFunc::DOMNodeFunc(ExecState *exec, int i, int l)
+  : DOMFunction(), id(i)
 {
   Value protect(this);
   put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
 }
 
-Value DOMNodeFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   Value result;
   switch (id) {
     case DOMNode::HasAttributes:
@@ -471,7 +472,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
   if (p == "length")
     result = Number(list.length());
   else if (p == "item")
-    result = new DOMNodeListFunc(list, DOMNodeListFunc::Item);
+    result = new DOMNodeListFunc(exec, DOMNodeListFunc::Item, 1);
   else {
     // array index ?
     bool ok;
@@ -498,8 +499,16 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
   return result;
 }
 
-Value DOMNodeListFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)
+  : DOMFunction(), id(i)
 {
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  DOM::NodeList list = static_cast<DOMNodeList *>(thisObj.imp())->nodeList();
   Value result;
 
   if (id == Item)
@@ -509,167 +518,177 @@ Value DOMNodeListFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, 0, 0 };
+const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 
-Value DOMAttr::tryGet(ExecState *exec, const UString &p) const
+/*
+@begin DOMAttrTable 5
+  name		DOMAttr::Name		DontDelete|ReadOnly
+  specified	DOMAttr::Specified	DontDelete|ReadOnly
+  value		DOMAttr::ValueProperty	DontDelete|ReadOnly
+  ownerElement	DOMAttr::OwnerElement	DontDelete|ReadOnly
+@end
+*/
+Value DOMAttr::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  Value result;
-  if (p == "name") {
-    result = getString(static_cast<DOM::Attr>(node).name()); }
-  else if (p == "specified")
-    result = Boolean(static_cast<DOM::Attr>(node).specified());
-  else if (p == "value")
-    result = getString(static_cast<DOM::Attr>(node).value());
-//  else if (p == "ownerElement") // new for DOM2 - not yet in khtml
-//    rseult = getDOMNode(static_cast<DOM::Attr>(node).ownerElement());
-  else
-    result = DOMNode::tryGet(exec, p);
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
+#endif
+  return DOMObjectLookupValue<DOMAttr,DOMNode>(exec, propertyName,
+                                               &DOMAttrTable, this );
+}
 
-  return result;
+Value DOMAttr::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case Name:
+    return getString(static_cast<DOM::Attr>(node).name());
+  case Specified:
+    return Boolean(static_cast<DOM::Attr>(node).specified());
+  case ValueProperty:
+    return getString(static_cast<DOM::Attr>(node).value());
+  case OwnerElement: // DOM2
+    return getDOMNode(static_cast<DOM::Attr>(node).ownerElement());
+  }
+  return Value(); // not reached
 }
 
 void DOMAttr::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-  if (propertyName == "value")
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
+#endif
+  DOMObjectLookupPutValue<DOMAttr,DOMNode>(exec, propertyName, value, attr,
+                                           &DOMAttrTable, this );
+}
+
+void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+{
+  switch (token) {
+  case ValueProperty:
     static_cast<DOM::Attr>(node).setValue(value.toString(exec).value().string());
-  else
-    DOMNode::tryPut(exec,propertyName,value,attr);
+    return;
+  default:
+    kdWarning() << "DOMAttr::putValue unhandled token " << token << endl;
+  }
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, 0, 0 };
+const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
-bool DOMDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
-{
-  if (p == "doctype" || p == "implementation" || p == "documentElement" ||
-      p == "createElement" || p == "createDocumentFragment" ||
-      p == "createTextNode" || p == "createComment" ||
-      p == "createCDATASection" || p == "createProcessingInstruction" ||
-      p == "createAttribute" || p == "createEntityReference" ||
-      p == "getElementsByTagName" ||
-      /* new for DOM2 - not yet in khtml
-      p == "importNode" || p == "createElementNS" ||
-      p == "createAttributeNS" || p == "getElementsByTagNameNS" ||
-      p == "getElementById" ) || */
-      p == "createRange" || p == "createNodeIterator" ||
-      p == "createTreeWalker" || p == "defaultView" || p == "createEvent" ||
-      p == "styleSheets" || p == "getOverrideStyle")
-    return true;
+/*
+@begin DOMDocumentTable 26
+  doctype         DOMDocument::DocType                         DontDelete|ReadOnly
+  implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
+  documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
+  createElement   DOMDocument::CreateElement                   DontDelete|ReadOnly|Function 1
+  createDocumentFragment DOMDocument::CreateDocumentFragment   DontDelete|ReadOnly|Function 1
+  createTextNode  DOMDocument::CreateTextNode                  DontDelete|ReadOnly|Function 1
+  createComment   DOMDocument::CreateComment                   DontDelete|ReadOnly|Function 1
+  createCDATASection DOMDocument::CreateCDATASection           DontDelete|ReadOnly|Function 1
+  createProcessingInstruction DOMDocument::CreateProcessingInstruction DontDelete|ReadOnly|Function 1
+  createAttribute DOMDocument::CreateAttribute                 DontDelete|ReadOnly|Function 1
+  createEntityReference DOMDocument::CreateEntityReference     DontDelete|ReadOnly|Function 1
+  getElementsByTagName  DOMDocument::GetElementsByTagName      DontDelete|ReadOnly|Function 1
+#  importNode           DOMDocument::ImportNode                 DontDelete|ReadOnly|Function ?
+  createElementNS      DOMDocument::CreateElementNS            DontDelete|ReadOnly|Function 2
+  createAttributeNS    DOMDocument::CreateAttributeNS          DontDelete|ReadOnly|Function 2
+  getElementsByTagNameNS  DOMDocument::GetElementsByTagNameNS  DontDelete|ReadOnly|Function 2
+  getElementById     DOMDocument::GetElementById               DontDelete|ReadOnly|Function 1
+  createRange        DOMDocument::CreateRange                  DontDelete|ReadOnly|Function 0
+  createNodeIterator DOMDocument::CreateNodeIterator           DontDelete|ReadOnly|Function 3
+  createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|ReadOnly|Function 4
+#  defaultView        DOMDocument::DefaultView                  DontDelete|ReadOnly|Function ?
+  createEvent        DOMDocument::CreateEvent                  DontDelete|ReadOnly|Function 1
+  styleSheets        DOMDocument::StyleSheets                  DontDelete|ReadOnly|Function 0
+  getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|ReadOnly|Function 2
+@end
+*/
 
-  return recursive && DOMNode::hasProperty(exec, p, true);
-}
-
-Value DOMDocument::tryGet(ExecState *exec, const UString &p) const
+Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMDocument::tryGet " << p.qstring() << endl;
+  kdDebug(6070) << "DOMDocument::tryGet " << propertyName.qstring() << endl;
 #endif
-  DOM::Document doc = static_cast<DOM::Document>(node);
-
-  if (p == "doctype")
-    return getDOMNode(doc.doctype());
-  if (p == "implementation")
-    return getDOMDOMImplementation(doc.implementation());
-  else if (p == "documentElement")
-    return getDOMNode(doc.documentElement());
-  // methods
-  else if (p == "createElement")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateElement);
-  else if (p == "createDocumentFragment")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateDocumentFragment);
-  else if (p == "createTextNode")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateTextNode);
-  else if (p == "createComment")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateComment);
-  else if (p == "createCDATASection")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateCDATASection);
-  else if (p == "createProcessingInstruction")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateProcessingInstruction);
-  else if (p == "createAttribute")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateAttribute);
-  else if (p == "createEntityReference")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateEntityReference);
-  else if (p == "getElementsByTagName")
-    return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagName);
-//  else if (p == "importNode") // new for DOM2 - not yet in khtml
-//    return new DOMDocFunction(doc, DOMDocFunction::ImportNode);
-  else if (p == "createElementNS") // new for DOM2 - not yet in khtml
-    return new DOMDocFunction(doc, DOMDocFunction::CreateElementNS);
-  else if (p == "createAttributeNS") // new for DOM2 - not yet in khtml
-    return new DOMDocFunction(doc, DOMDocFunction::CreateAttributeNS);
-/*  else if (p == "getElementsByTagNameNS") // new for DOM2 - not yet in khtml
-    return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagNameNS);
-  else if (p == "getElementById") // new for DOM2 - not yet in khtml
-    return new DOMDocFunction(doc, DOMDocFunction::GetElementById);*/
-  else if (p == "createRange")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateRange);
-  else if (p == "createNodeIterator")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateNodeIterator);
-  else if (p == "createTreeWalker")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateTreeWalker);
-  else if (p == "defaultView")
-    return getDOMAbstractView(doc.defaultView());
-  else if (p == "createEvent")
-    return new DOMDocFunction(doc, DOMDocFunction::CreateEvent);
-  else if (p == "styleSheets")
-    return getDOMStyleSheetList(doc.styleSheets());
-  else if (p == "getOverrideStyle")
-    return new DOMDocFunction(doc, DOMDocFunction::GetOverrideStyle);
-
-  return DOMNode::tryGet(exec, p);
+  return DOMObjectLookupOrCreate<DOMDocFunction, DOMDocument, DOMNode>(
+           exec, propertyName, &DOMDocumentTable, this);
 }
 
-
-Value DOMDocFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
+Value DOMDocument::getValue(ExecState *, int token) const
 {
+  DOM::Document doc = static_cast<DOM::Document>(node);
+
+  switch(token) {
+  case DocType:
+    return getDOMNode(doc.doctype());
+  case Implementation:
+    return getDOMDOMImplementation(doc.implementation());
+  case DocumentElement:
+    return getDOMNode(doc.documentElement());
+  default:
+    kdWarning() << "DOMDocument::getValue unhandled token " << token << endl;
+    return Value();
+  }
+}
+
+DOMDocFunction::DOMDocFunction(ExecState *exec, int i, int len)
+  : DOMFunction(), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+Value DOMDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
+  DOM::Document doc = static_cast<DOM::Document>(node);
   Value result;
   String str = args[0].toString(exec);
   DOM::DOMString s = str.value().string();
 
   switch(id) {
-  case CreateElement:
+  case DOMDocument::CreateElement:
     result = getDOMNode(doc.createElement(s));
     break;
-  case CreateDocumentFragment:
+  case DOMDocument::CreateDocumentFragment:
     result = getDOMNode(doc.createDocumentFragment());
     break;
-  case CreateTextNode:
+  case DOMDocument::CreateTextNode:
     result = getDOMNode(doc.createTextNode(s));
     break;
-  case CreateComment:
+  case DOMDocument::CreateComment:
     result = getDOMNode(doc.createComment(s));
     break;
-  case CreateCDATASection:
+  case DOMDocument::CreateCDATASection:
     result = getDOMNode(doc.createCDATASection(s));  /* TODO: okay ? */
     break;
-  case CreateProcessingInstruction:
+  case DOMDocument::CreateProcessingInstruction:
     result = getDOMNode(doc.createProcessingInstruction(args[0].toString(exec).value().string(),
                                                                  args[1].toString(exec).value().string()));
     break;
-  case CreateAttribute:
+  case DOMDocument::CreateAttribute:
     result = getDOMNode(doc.createAttribute(s));
     break;
-  case CreateEntityReference:
+  case DOMDocument::CreateEntityReference:
     result = getDOMNode(doc.createEntityReference(args[0].toString(exec).value().string()));
     break;
-  case GetElementsByTagName:
+  case DOMDocument::GetElementsByTagName:
     result = getDOMNodeList(doc.getElementsByTagName(s));
     break;
     /* TODO */
-//  case ImportNode: // new for DOM2 - not yet in khtml
-  case CreateElementNS: // new for DOM2
+//  case DOMDocument::ImportNode: // new for DOM2 - not yet in khtml
+  case DOMDocument::CreateElementNS: // new for DOM2
     result = getDOMNode(doc.createElementNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
     break;
-  case CreateAttributeNS: // new for DOM2
+  case DOMDocument::CreateAttributeNS: // new for DOM2
     result = getDOMNode(doc.createAttributeNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
     break;
-/*  case GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
-  case GetElementById: // new for DOM2 - not yet in khtml*/
-  case CreateRange:
+/*  case DOMDocument::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
+  case DOMDocument::GetElementById: // new for DOM2 - not yet in khtml*/
+  case DOMDocument::CreateRange:
     result = getDOMRange(doc.createRange());
     break;
-  case CreateNodeIterator:
+  case DOMDocument::CreateNodeIterator:
     if (args[2].isA(NullType)) {
         DOM::NodeFilter filter;
 	result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec).value()),
@@ -688,14 +707,14 @@ Value DOMDocFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &
       }// else?
     }
     break;
-  case CreateTreeWalker:
+  case DOMDocument::CreateTreeWalker:
     result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec).value()),
              toNodeFilter(args[2]),args[3].toBoolean(exec).value()));
     break;
-  case CreateEvent:
+  case DOMDocument::CreateEvent:
     result = getDOMEvent(doc.createEvent(s));
     break;
-  case GetOverrideStyle: {
+  case DOMDocument::GetOverrideStyle: {
       DOM::Node arg0 = toNode(args[0]);
       if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
         result = Undefined(); // throw exception?
@@ -703,6 +722,8 @@ Value DOMDocFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &
         result = getDOMCSSStyleDeclaration(doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).value().string()));
     }
     break;
+// case DOMDocument::DefaultView // TODO
+// case DOMDocument::StyleSheets // TODO
   default:
     result = Undefined();
     break;
