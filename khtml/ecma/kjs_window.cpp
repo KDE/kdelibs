@@ -460,7 +460,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current(), m_part->document()));
   else if (p == "Option")
-    return KJSO(new OptionConstructor(m_part->document()));
+    return KJSO(new OptionConstructor(Global::current(), m_part->document()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")

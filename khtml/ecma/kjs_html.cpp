@@ -1783,8 +1783,8 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
 
 ////////////////////// Option Object ////////////////////////
 
-OptionConstructor::OptionConstructor(const DOM::Document &d)
-    : doc(d)
+OptionConstructor::OptionConstructor(const Global &g, const DOM::Document &d)
+    : global(g), doc(d)
 {
   setPrototype(global.functionPrototype());
 }
