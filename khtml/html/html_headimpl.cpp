@@ -137,7 +137,7 @@ void HTMLLinkElementImpl::attach()
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
             // we must have a doc->docLoader() !
             QString chset = getAttribute( ATTR_CHARSET ).string();
-            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL(), chset);
+            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, chset);
             if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }
@@ -256,7 +256,7 @@ void HTMLMetaElementImpl::attach()
 {
     KHTMLView *v = ownerDocument()->view();
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-//    kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
+    //kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
         // get delay and url
@@ -271,8 +271,8 @@ void HTMLMetaElementImpl::attach()
             int delay = 0;
             if(!_content.isNull())
                 delay = _content.implementation()->toInt(&ok);
-//             kdDebug( ) << "delay = " << delay << " ok = " << ok << endl;
-//             kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
+             //kdDebug( ) << "delay = " << delay << " ok = " << ok << endl;
+             //kdDebug( ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
             if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
             int delay = 0;

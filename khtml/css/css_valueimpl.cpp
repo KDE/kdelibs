@@ -112,8 +112,8 @@ bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHin
 	    m_node->setChanged(true);
     }
     return true;
-}    
-    
+}
+
 
 DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
 {
@@ -707,7 +707,7 @@ void RectImpl::setLeft( CSSPrimitiveValueImpl *left )
 
 // -----------------------------------------------------------------
 
-CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &baseurl, StyleBaseImpl *style)
+CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl *style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
     khtml::DocLoader *docLoader = 0;
@@ -718,9 +718,9 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &base
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
     if (docLoader)
-	m_image = docLoader->requestImage(url, baseurl);
+	m_image = docLoader->requestImage(url);
     else
-	m_image = khtml::Cache::requestImage(0, url, baseurl);
+	m_image = khtml::Cache::requestImage(0, url);
 
     if(m_image) m_image->ref(this);
 }

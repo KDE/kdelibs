@@ -96,7 +96,12 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
     //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 
-    KURL u = doc->baseURL().string();
+    KURL u;
+    if ( doc->view() )
+        u = doc->view()->part()->completeURL( doc->URL().string() );
+    else
+        u = doc->URL().string();
+
     u.setQuery( QString::null );
     u.setRef( QString::null );
     encodedurl.file = u.url();
@@ -350,7 +355,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     bool single = false;
     if ( sel->tag == -1 )
 	single = true;
-    
+
     // first selector has to match
     if(!checkOneSelector(sel, e)) return;
 
@@ -2121,7 +2126,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    right = convertToLength( rect->right(), style, paintDeviceMetrics );
 	    bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
 	    left = convertToLength( rect->left(), style, paintDeviceMetrics );
-	    
+
 	} else if ( primitiveValue->getIdent() != CSS_VAL_AUTO ) {
 	    break;
 	}
@@ -2133,11 +2138,11 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	style->setClipRight( right );
 	style->setClipBottom( bottom );
 	style->setClipLeft( left );
-	    
+
         // rect, ident
         break;
     }
-    
+
 // lists
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i

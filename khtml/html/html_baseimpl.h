@@ -64,8 +64,8 @@ public:
     
 protected:
     CSSStyleSheetImpl *m_styleSheet;
-    DOMString bgImage;
-    DOMString bgColor;
+    bool m_bgSet;
+    bool m_fgSet;
 };
 
 // -------------------------------------------------------------------------

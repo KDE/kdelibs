@@ -58,7 +58,7 @@ public:
 
     QPixmap pixmap() const { return pix; }
 
-    void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl, DocLoader *docLoader);
+    void setImageUrl(DOM::DOMString url, DocLoader *docLoader);
     void setAlt(DOM::DOMString text);
 
     virtual short intrinsicWidth() const;

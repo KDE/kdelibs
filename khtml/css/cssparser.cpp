@@ -39,6 +39,9 @@
 #include "xml/dom_nodeimpl.h"
 #include "html/html_documentimpl.h"
 #include "dom_exception.h"
+#include "khtml_part.h"
+#include "khtmlview.h"
+
 using namespace DOM;
 
 #include <kdebug.h>
@@ -80,7 +83,7 @@ void StyleBaseImpl::checkLoaded()
     if(m_parent) m_parent->checkLoaded();
 }
 
-DOMString StyleBaseImpl::baseUrl()
+DOMString StyleBaseImpl::baseURL()
 {
     // try to find the style sheet. If found look for it's url.
     // If it has none, look for the parentsheet, or the parentNode and
@@ -96,13 +99,13 @@ DOMString StyleBaseImpl::baseUrl()
         return sheet->href();
 
     // find parent
-    if(sheet->parent()) return sheet->parent()->baseUrl();
+    if(sheet->parent()) return sheet->parent()->baseURL();
 
     if(!sheet->ownerNode()) return DOMString();
 
     DocumentImpl *doc = static_cast<DocumentImpl*>(sheet->ownerNode()->nodeType() == Node::DOCUMENT_NODE ? sheet->ownerNode() : sheet->ownerNode()->ownerDocument());
 
-    return doc->baseURL();
+    return doc->view()->part()->baseURL().url();
 }
 
 /*
@@ -1135,7 +1138,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_FONT_STRETCH:
         // normal | wider | narrower | ultra-condensed | extra-condensed | condensed |
         // semi-condensed |  semi-expanded | expanded | extra-expanded | ultra-expanded |
-        // inherit          
+        // inherit
       case CSS_PROP_PAGE:                 // <identifier> | auto // ### CHECK
       case CSS_PROP_PAGE_BREAK_AFTER:     // auto | always | avoid | left | right | inherit
       case CSS_PROP_PAGE_BREAK_BEFORE:    // auto | always | avoid | left | right | inherit
@@ -1174,7 +1177,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      str = str.simplifyWhiteSpace();
 	      str += " ";
 	      //qDebug("rect = '%s'", str.latin1() );
-	      
+
 	      pos = 0;
 	      RectImpl *rect = new RectImpl();
 	      for ( i = 0; i < 4; i++ ) {
@@ -1186,7 +1189,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		  if ( start >= end )
 		      goto cleanup;
 		  CSSPrimitiveValueImpl *length = 0;
-		  if ( str.find( "auto", pos, FALSE ) == pos ) 
+		  if ( str.find( "auto", pos, FALSE ) == pos )
 		      length = new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
 		  else
 		      length = parseUnit( start, end, LENGTH );
@@ -1207,11 +1210,11 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 			  break;
 		  }
 		  pos = space + 1;
-	      }    
+	      }
 	      parsedValue = new CSSPrimitiveValueImpl( rect );
 	      //qDebug(" passed rectangle parsing");
 	      break;
-	  
+
 	  cleanup:
 	      qDebug(" rectangle parsing failed, i=%d", i);
 	      delete rect;
@@ -1585,7 +1588,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      if (str.left(4).lower() == "url(") {
 		DOMString value(curP, endP - curP);
 		value = khtml::parseURL(value);
-            	parsedValue = new CSSImageValueImpl(value, baseUrl(), this);
+            	parsedValue = new CSSImageValueImpl(value, this);
 #ifdef CSS_DEBUG
 		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
 #endif
@@ -2635,23 +2638,23 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
   float orgLength = str.length();
   kdDebug(6080) << "Length: " << orgLength << endl;
 #endif
-  
+
   if (!(justOneRule)) {
-    /* Remove start of SGML Comment which hides CSS from 3.0 Browsers */      
+    /* Remove start of SGML Comment which hides CSS from 3.0 Browsers */
     while((ch < last) && (ch->isSpace())) { ++ch; }
-    if ((*ch == '<') && ((ch+4) < last) && 
+    if ((*ch == '<') && ((ch+4) < last) &&
 	(*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
       ch = ch+4; //skip '<!--'
     }
-  
-    /* Remove end of SGML Comment which hides CSS from 3.0 Browsers */      
+
+    /* Remove end of SGML Comment which hides CSS from 3.0 Browsers */
     while ((last > ch) && ((last-1)->isSpace())) { --last; }
-    if ((*(last-1) == '>') && ((last-3) > ch) && 
+    if ((*(last-1) == '>') && ((last-3) > ch) &&
 	(*(last-2) == '-') && (*(last-3) == '-')) {
       last = last-3; //skip '-->'
     }
   }
- 
+
   while(ch < last) {
     if( !comment && !sq && *ch == '"' ) {
       dq = !dq;
@@ -2706,7 +2709,7 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	}
 	firstChar = false;
       } else if ( *ch == '/' ) {
-	firstChar = true; // Slash added only if next is not '*' 
+	firstChar = true; // Slash added only if next is not '*'
       } else if ((*ch == '<') && ((ch+3) < last) /* SGML Comment */
 		 && (*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
 	ch = ch+3; // skip '<!--'

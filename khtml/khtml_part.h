@@ -58,6 +58,7 @@ namespace DOM
 
 namespace khtml
 {
+  class DocLoader;
   class RenderPart;
   class RenderPartObject;
   struct ChildFrame;
@@ -933,9 +934,7 @@ private slots:
   void slotLoadImages();
 
   /**
-   * We try to submit the form again
-   * if someone tries to submit a form
-   * while parsing
+   * @internal  
    */
   void submitFormAgain();
 
@@ -964,7 +963,8 @@ private slots:
    */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
-  void slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj );
+  void slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* obj);
+  void slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *obj );
   void checkCompleted();
 
   /**
@@ -981,9 +981,26 @@ private slots:
 
   void slotSelectAll();
 
+  /**
+   * @internal
+   */
+  void slotProgressUpdate();
+
+  /*
+   * @internal
+   */
+  void slotJobPercent(KIO::Job*, unsigned long);
+
+  /*
+   * @internal
+   */
+  void slotJobSpeed(KIO::Job*, unsigned long);
+
 protected:
-    // @internal
-    void emitSelectionChanged(); // ### KDE 3.0: make private
+  /**
+   * @internal
+   */
+  void emitSelectionChanged(); // ### KDE 3.0: make private
 
 private:
   void urlSelected( const QString &url, int button, int state,

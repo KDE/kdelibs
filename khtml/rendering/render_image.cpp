@@ -281,9 +281,9 @@ void RenderImage::layout()
         setLayouted();
 }
 
-void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
+void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)
 {
-    CachedImage *new_image = docLoader->requestImage(url, baseUrl);
+    CachedImage *new_image = docLoader->requestImage(url);
     if(new_image && new_image != image) {
         if(image) image->deref(this);
         image = new_image;

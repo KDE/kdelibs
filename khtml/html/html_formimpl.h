@@ -370,6 +370,8 @@ public:
 
     long length() const;
 
+    long minWidth() const { return m_minwidth; }
+            
     long size() const { return m_size; }
 
     bool multiple() const { return m_multiple; }
@@ -404,6 +406,7 @@ public:
 
 protected:
     QArray<HTMLGenericFormElementImpl*> m_listItems;
+    short m_minwidth;
     short m_size : 15;
     bool m_multiple : 1;
 };

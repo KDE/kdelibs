@@ -178,8 +178,6 @@ public:
     DOMString URL() const { return url; }
     void setURL(DOMString _url) { url = _url; }
 
-    DOMString baseURL() const;
-
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
 

@@ -397,7 +397,7 @@ void XMLTokenizer::executeScripts()
         DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
         QString charset = m_scriptsIt->current()->getAttribute( "charset" ).string();
         if (scriptSrc != "") {
-            m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, m_doc->document()->baseURL(), charset);
+            m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);
             m_cachedScript->ref(this); // will call executeScripts() again if already cached
             return;

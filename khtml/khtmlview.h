@@ -152,6 +152,16 @@ public:
     virtual void setHScrollBarMode ( ScrollBarMode mode );
 
     /**
+     * override the scrollbar mode
+     */
+    void forceHScrollBarMode( ScrollBarMode mode );
+    
+    /**
+     * override the scrollbar mode
+     */
+    void forceVScrollBarMode( ScrollBarMode mode );
+     
+    /**
      * Print the HTML document.
      **/
     void print();

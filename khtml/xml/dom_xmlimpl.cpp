@@ -347,7 +347,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
 	    // ### FIXME charset
 	    if (m_cachedSheet)
 		m_cachedSheet->deref(this);
-	    m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, ownerDocument()->baseURL(), QString::null);
+	    m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, QString::null);
 	    m_cachedSheet->ref( this );
 //        }
 

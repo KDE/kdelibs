@@ -1067,9 +1067,8 @@ void HTMLInputElementImpl::attach()
 
     if (m_render && m_type == IMAGE) {
         static_cast<RenderImageButton*>
-            (m_render)->setImageUrl(m_src,
-                                    static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL(),
-                                    static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+            (m_render)->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+
     }
 }
 
@@ -1378,6 +1377,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc)
     view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
+    m_minwidth = 0;
 }
 
 HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
@@ -1387,6 +1387,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     view = 0;
     // 0 means invalid (i.e. not set)
     m_size = 0;
+    m_minwidth = 0;
 }
 
 ushort HTMLSelectElementImpl::id() const
@@ -1558,6 +1559,9 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_SIZE:
         m_size = QMAX( attr->val()->toInt(), 1 );
+        break;
+    case ATTR_WIDTH:
+        m_minwidth = QMAX( attr->val()->toInt(), 0 );
         break;
     case ATTR_MULTIPLE:
         m_multiple = (attr->val() != 0);

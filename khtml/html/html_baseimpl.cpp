@@ -50,7 +50,8 @@ using namespace DOM;
 using namespace khtml;
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+    : HTMLElementImpl(doc),
+    m_bgSet( false ), m_fgSet( false )
 {
     m_styleSheet = 0;
 }
@@ -77,9 +78,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 
     case ATTR_BACKGROUND:
     {
-        KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL());
-        bgImage = u.url();
-        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+u.url()+"')" );
+        QString url = khtml::parseURL( attr->value() ).string();
+        if ( ownerDocument() && ownerDocument()->view() )
+            url = ownerDocument()->view()->part()->completeURL( url ).url();
+        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
+        m_bgSet = !attr->value().isNull();
         break;
     }
     case ATTR_MARGINWIDTH:
@@ -95,11 +98,12 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
         break;
     case ATTR_BGCOLOR:
-        bgColor = attr->value();
         addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
+        m_bgSet = !attr->value().isNull();
         break;
     case ATTR_TEXT:
         addCSSProperty(CSS_PROP_COLOR, attr->value());
+        m_fgSet = !attr->value().isNull();
         break;
     case ATTR_BGPROPERTIES:
         if ( strcasecmp( attr->value(), "fixed" ) == 0)
@@ -166,6 +170,9 @@ void HTMLBodyElementImpl::attach()
         addCSSLength(CSS_PROP_MARGIN_TOP, s);
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, s);
     }
+
+//     if ( m_bgSet && !m_fgSet )
+//         addCSSProperty(CSS_PROP_COLOR, "black");
 
     ownerDocument()->createSelector();
 

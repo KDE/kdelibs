@@ -103,7 +103,7 @@ public:
 	virtual bool deleteMe();
 
 	// returns the url of the style sheet this object belongs to
-	DOMString baseUrl();
+	DOMString baseURL();
 
 	StyleBaseImpl *parent() { return m_parent; }
 

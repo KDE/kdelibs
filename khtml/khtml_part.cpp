@@ -157,8 +157,9 @@ public:
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
     m_linkCursor = KCursor::handCursor();
-    m_loadedImages = 0;
-    m_totalImageCount = 0;
+    m_loadedObjects = 0;
+    m_totalObjectCount = 0;
+    m_jobPercent = 0;
     m_haveEncoding = false;
     m_activeFrame = 0L;
     m_findDialog = 0;
@@ -354,8 +355,9 @@ public:
   QCursor m_linkCursor;
   QTimer m_scrollTimer;
 
-  unsigned long m_loadedImages;
-  unsigned long m_totalImageCount;
+  unsigned long m_loadedObjects;
+  unsigned long m_totalObjectCount;
+  unsigned int m_jobPercent;
 
   KHTMLFind *m_findDialog;
 
@@ -384,8 +386,7 @@ namespace khtml {
         {
             m_part = part;
             m_priv = priv;
-            // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
-            m_cachedSheet = Cache::requestStyleSheet(0, url, DOMString("foo") );
+            m_cachedSheet = Cache::requestStyleSheet(0, url );
             if (m_cachedSheet)
 		m_cachedSheet->ref( this );
         }
@@ -524,10 +525,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 
-  connect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
-  connect( khtml::Cache::loader(), SIGNAL( requestFailed( const DOM::DOMString &, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject *) ) );
+  connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
+           this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
+  connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
+           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
+  connect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
+           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
 
   findTextBegin(); //reset find variables
 
@@ -557,12 +560,15 @@ KHTMLPart::~KHTMLPart()
   if ( d->m_job )
     d->m_job->kill();
 
-  khtml::Cache::loader()->cancelRequests( m_url.url() );
+  if ( d->m_doc && d->m_doc->docLoader() )
+    khtml::Cache::loader()->cancelRequests( d->m_doc->docLoader() );
 
-  disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
-              this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
-  disconnect( khtml::Cache::loader(), SIGNAL( requestFailed( const DOM::DOMString &, khtml::CachedObject * ) ),
-              this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
+  disconnect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
+           this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
+  disconnect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
+           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
+  disconnect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
+           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
 
   clear();
 
@@ -704,7 +710,13 @@ bool KHTMLPart::openURL( const KURL &url )
 
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
-  emit started( d->m_job );
+  connect( d->m_job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+           this, SLOT( slotJobSpeed( KIO::Job*, unsigned long ) ) );
+
+  connect( d->m_job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+           this, SLOT( slotJobPercent( KIO::Job*, unsigned long ) ) );
+
+  emit started( 0L );
 
   return true;
 }
@@ -739,7 +751,15 @@ bool KHTMLPart::closeURL()
 
   d->m_workingURL = KURL();
 
-  khtml::Cache::loader()->cancelRequests( m_url.url() );
+  if ( d->m_doc && d->m_doc->docLoader() )
+    khtml::Cache::loader()->cancelRequests( d->m_doc->docLoader() );
+
+  // tell all subframes to stop as well
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it ).m_part.isNull() )
+      ( *it ).m_part->closeURL();
 
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )
@@ -1136,8 +1156,9 @@ void KHTMLPart::clear()
   d->m_startOffset = 0;
   d->m_endOffset = 0;
 
-  d->m_totalImageCount = 0;
-  d->m_loadedImages = 0;
+  d->m_totalObjectCount = 0;
+  d->m_loadedObjects = 0;
+  d->m_jobPercent = 0;
 
   if ( !d->m_haveEncoding )
     d->m_encoding = QString::null;
@@ -1493,53 +1514,62 @@ void KHTMLPart::slotFinishedParsing()
   if ( !m_url.encodedHtmlRef().isEmpty() )
     gotoAnchor( m_url.encodedHtmlRef() );
 
-#if 0
-  HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
+  checkCompleted();
+}
 
-  d->m_totalImageCount = 0;
-  KURL::List imageURLs;
-  unsigned long i = 0;
-  unsigned long len = imgColl.length();
-  for (; i < len; i++ )
-  {
-    NodeImpl *node = imgColl.item( i );
-    if ( node->id() != ID_IMG )
-      continue;
-
-    QString imgURL = static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_SRC ).string();
-    KURL url;
-
-    if ( KURL::isRelativeURL( imgURL ) )
-      url = completeURL( imgURL );
-    else
-      url = KURL( imgURL );
-
-    if ( !imageURLs.contains( url ) )
-    {
-      d->m_totalImageCount++;
-      imageURLs.append( url );
-    }
+void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObject *obj )
+{
+  if ( obj && obj->type() == khtml::CachedObject::Image ) {
+    d->m_totalObjectCount++;
+    KHTMLPart* p = parentPart();
+    if ( p )
+      p->slotLoaderRequestStarted( dl, obj );
+    else if ( d->m_loadedObjects <= d->m_totalObjectCount )
+        QTimer::singleShot( 200, this, SLOT( slotProgressUpdate() ) );
   }
-#endif
+}
+
+void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject *obj )
+{
+  if ( obj && obj->type() == khtml::CachedObject::Image ) {
+    d->m_loadedObjects++;
+    KHTMLPart* p = parentPart();
+    if ( p )
+      p->slotLoaderRequestDone( dl, obj );
+    else if ( d->m_loadedObjects <= d->m_totalObjectCount && d->m_jobPercent >= 100 )
+        QTimer::singleShot( 200, this, SLOT( slotProgressUpdate() ) );
+  }
 
   checkCompleted();
 }
 
-void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &/*baseURL*/, khtml::CachedObject *obj )
+void KHTMLPart::slotProgressUpdate()
 {
+  int percent;
+  if ( d->m_loadedObjects < d->m_totalObjectCount )
+    percent = d->m_jobPercent / 4 + ( d->m_loadedObjects*300 ) / ( 4*d->m_totalObjectCount );
+  else
+    percent = d->m_jobPercent;
 
-  if ( obj && obj->type() == khtml::CachedObject::Image )
-  {
-    d->m_loadedImages++;
+  if ( d->m_loadedObjects <= d->m_totalObjectCount )
+    emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded", "%1 of %n Images loaded", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
 
-    // in case we have more images than we originally found, then they are most likely loaded by some
-    // javascript code. as we can't find out the exact number anyway we skip displaying any further image
-    // loading info message :P
-    if ( d->m_loadedImages <= d->m_totalImageCount && autoloadImages())
-      emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded", "%1 of %n Images loaded", d->m_totalImageCount ).arg( d->m_loadedImages ) );
-  }
+  if ( percent >= 100 && !parentPart())
+      emit setStatusBarText(i18n("Done."));
 
-  checkCompleted();
+  emit d->m_extension->loadingProgress( percent );
+}
+
+void KHTMLPart::slotJobSpeed( KIO::Job* job, unsigned long speed )
+{
+  emit d->m_extension->speedProgress( speed );
+}
+
+void KHTMLPart::slotJobPercent( KIO::Job* job, unsigned long percent )
+{
+  d->m_jobPercent = percent;
+
+  QTimer::singleShot( 0, this, SLOT( slotProgressUpdate() ) );
 }
 
 void KHTMLPart::checkCompleted()
@@ -1569,8 +1599,6 @@ void KHTMLPart::checkCompleted()
       d->m_focusNodeRestored = true;
   }
 
-  int requests = 0;
-
   // Any frame that hasn't completed yet ?
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
@@ -1583,8 +1611,10 @@ void KHTMLPart::checkCompleted()
     return;
 
   // Still waiting for images/scripts from the loader ?
-  requests = khtml::Cache::loader()->numRequests( m_url.url() );
-  //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
+  int requests = 0;
+  if ( d->m_doc && d->m_doc->docLoader() )
+    requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
+
   if ( requests > 0 )
     return;
 
@@ -1593,9 +1623,6 @@ void KHTMLPart::checkCompleted()
   d->m_bComplete = true;
 
   checkEmitLoadEvent(); // if we didn't do it before
-
-  if (!parentPart())
-    emit setStatusBarText(i18n("Done."));
 
   // check for a <link rel="SHORTCUT ICON" href="url to icon">,
   // IE extension to set an icon for this page to use in
@@ -1631,7 +1658,9 @@ void KHTMLPart::checkCompleted()
   else
     emit completed();
 
-  emit setStatusBarText( i18n("Loading complete") );
+  if (!parentPart())
+      emit setStatusBarText(i18n("Done."));
+
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
@@ -3889,7 +3918,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
 void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 {
-  QMouseEvent *_mouse = event->qmouseEvent();
   DOM::Node innerNode = event->innerNode();
   d->m_mousePressNode = DOM::Node();
 
@@ -3901,6 +3929,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   d->m_bMousePressed = false;
 
 #ifndef QT_NO_CLIPBOARD
+  QMouseEvent *_mouse = event->qmouseEvent();
   if ((_mouse->button() == MidButton) && (event->url() == 0))
   {
     QClipboard *cb = QApplication::clipboard();

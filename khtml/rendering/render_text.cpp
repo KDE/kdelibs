@@ -127,7 +127,6 @@ void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, 
 
 void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
-
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
 
@@ -156,14 +155,6 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
     if(style->hasBorder())
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 
-#ifdef BIDI_DEBUG
-    int h = p->lineHeight( false ) + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
-    QColor c2 = QColor("#0000ff");
-    p->drawBorder(pt, _tx, _ty, _tx, _ty + h, 1,
-                  RenderObject::BSLeft, c2, c2, SOLID, false, false, 0, 0);
-    p->drawBorder(pt, _tx + m_width, _ty, _tx + m_width, _ty + h, 1,
-                  RenderObject::BSRight, c2, c2, SOLID, false, false, 0, 0);
-#endif
 }
 
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty, int height)
@@ -290,7 +281,7 @@ RenderText::RenderText(DOMStringImpl *_str)
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
-    kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
+    kdDebug( 6040 ) << "RenderText ctr( "<< cstr.string().length() << " )  '" << cstr.string() << "'" << endl;
 #endif
 }
 
@@ -569,11 +560,11 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if(_style->font() != p->font())
                 p->setFont(_style->font());
-
             if((hasSpecialObjects()  &&
                 (parent()->isInline() || pseudoStyle)) &&
                (!pseudoStyle || s->m_firstLine))
                 s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
+
 
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
@@ -614,6 +605,17 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     maxx = s->m_x+s->m_width;
                 }
             }
+#ifdef BIDI_DEBUG
+            {
+                int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
+                QColor c2 = QColor("#0000ff");
+                drawBorder(p, tx, ty, tx, ty + h, 1,
+                              RenderObject::BSLeft, c2, c2, SOLID, false, false, 0, 0);
+                drawBorder(p, tx + s->m_width, ty, tx + s->m_width, ty + h, 1,
+                              RenderObject::BSRight, c2, c2, SOLID, false, false, 0, 0);
+            }
+#endif
+
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h, m_lineHeight));
 
         if(outlineStyle)
@@ -752,7 +754,7 @@ void RenderText::setText(DOMStringImpl *text)
     }
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
-    kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
+    kdDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;
 #endif
 }
 
@@ -767,7 +769,7 @@ int RenderText::height() const
 
 int RenderText::lineHeight( bool firstLine ) const
 {
-    if ( firstLine ) 
+    if ( firstLine )
 	return RenderObject::lineHeight( firstLine );
     return m_lineHeight;
 }
@@ -821,7 +823,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
-    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << lineHeight() << " fontHeight=" << metrics().height() << " ascent =" << metrics().ascent() << endl;
+    qDebug("setting slave text to *%s*, len=%d, w)=%d" , cstr.string().latin1(), len, width );//" << y << ")" << " height=" << lineHeight(false) << " fontHeight=" << metrics(false).height() << " ascent =" << metrics(false).ascent() << endl;
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,

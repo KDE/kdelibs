@@ -25,6 +25,7 @@
 
 #include "htmlhashes.h"
 #include "khtmlview.h"
+#include "khtml_part.h"
 
 #include <kdebug.h>
 
@@ -148,14 +149,15 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_USEMAP:
         if ( attr->value()[0] == '#' )
-        {
             usemap = attr->value();
-        }
-        else
-        {
-            // ### we remove the part before the anchor and hope the map is on the same html page....
-            KURL u( static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL().string(), attr->value().string() );
-            usemap = khtml::parseURL(u.url());
+        else {
+            QString url = khtml::parseURL( attr->value() ).string();
+            if ( ownerDocument() && ownerDocument()->view() )
+                url = ownerDocument()->view()->part()->completeURL( url ).url();
+
+            // ### we remove the part before the anchor and hope
+            // the map is on the same html page....
+            usemap = url;
         }
     case ATTR_ISMAP:
         ismap = true;
@@ -195,7 +197,7 @@ void HTMLImageElementImpl::attach()
         renderImage->setAlt(alt);
         m_render = renderImage;
         if(m_render) r->addChild(m_render, nextRenderer());
-        renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL(),
+        renderImage->setImageUrl(imageURL,
                                  static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
 
     }
@@ -213,7 +215,7 @@ void HTMLImageElementImpl::applyChanges(bool top, bool force)
     // a script has executed
     if (m_render)
         static_cast<RenderImage *>(m_render)
-            ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL(),
+            ->setImageUrl(imageURL,
                           static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
     setChanged(false);
 }

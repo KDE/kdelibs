@@ -821,12 +821,6 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
     return 0;
 }
 
-DOMString DocumentImpl::baseURL() const
-{
-    if(view() && !view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
-    return url;
-}
-
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
     kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
@@ -841,7 +835,11 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
 CSSStyleSheetImpl* DocumentImpl::elementSheet()
 {
     if (!m_elemSheet) {
-        m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
+        if ( view() && !view()->part()->baseURL().isEmpty() )
+            m_elemSheet = new CSSStyleSheetImpl(this, view()->part()->baseURL().url());
+        else
+            m_elemSheet = new CSSStyleSheetImpl(this, url );
+
         m_elemSheet->ref();
     }
     return m_elemSheet;

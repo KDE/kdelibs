@@ -117,7 +117,7 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
     m_lstMedia = media;
     m_strHref = href;
     m_styleSheet = 0;
-    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << href.string() << " " << baseUrl().string() << endl;
+    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << href.string() << endl;
 
     khtml::DocLoader *docLoader = 0;
     StyleBaseImpl *root = this;
@@ -128,7 +128,7 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
 
     // we must have a docLoader !
     // ### pass correct charset here!!
-    m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl(), QString::null);
+    m_cachedSheet = docLoader->requestStyleSheet(href, QString::null);
 
     m_cachedSheet->ref(this);
     m_loading = true;

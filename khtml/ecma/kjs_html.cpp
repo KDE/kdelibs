@@ -1894,8 +1894,7 @@ void Image::tryPut(const UString &p, const KJSO& v)
     String str = v.toString();
     src = str.value();
     if ( img ) img->deref(this);
-    img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string(),
-                                     doc.view()->part()->baseURL().url());
+    img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
     if ( img ) img->ref(this);
   } else {
     DOMObject::tryPut(p, v);
