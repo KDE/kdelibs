@@ -47,8 +47,6 @@ This TODO happens to cover SSL in all of KDE though.
 
 - kcmcrypto certificate managing code is not implemented yet
 
-- Displaying SSL info from the message boxes doesn't work in konqueror/khtml.
-
 - Personal, other certificates are not implemented
 
 - The certificate cache is not implemented.  This is needed to keep track of
