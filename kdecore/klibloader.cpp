@@ -84,6 +84,9 @@ KLibrary::~KLibrary()
       delete m_factory;
     }
 
+    // If any object is remaining, delete
+    m_objs.setAutoDelete(true);
+
     lt_dlclose( m_handle );
 }
 
