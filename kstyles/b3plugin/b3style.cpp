@@ -213,6 +213,8 @@ void B3Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
     int y2 = y+h-1;
     p->setPen(g.dark());
     p->drawRect(x, y, w, h);
+    if(fill)
+        p->fillRect(x+2, y+2, w-4, h-4, *fill);
 
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
@@ -224,9 +226,6 @@ void B3Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
 
     p->setPen(g.dark());
     p->drawPoint(x+1, y+1);
-
-    if(fill)
-        p->fillRect(x+2, y+2, w-4, h-4, *fill);
     
     int arrow_h = h / 3;
     int arrow_w = arrow_h;
@@ -251,12 +250,12 @@ void B3Style::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
 
 QRect B3Style::comboButtonRect(int x, int y, int w, int h)
 {
-    return(QRect(x+3, y+3, w - (h / 3) - 15, h-6));
+    return(QRect(x+3, y+3, w - (h / 3) - 13, h-6));
 }
 
 QRect B3Style::comboButtonFocusRect(int x, int y, int w, int h)
 {
-    return(QRect(x+3, y+3, w-(h/3)-15, h-6));
+    return(QRect(x+3, y+3, w-(h/3)-13, h-6));
 }
 
 void B3Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
@@ -770,7 +769,7 @@ void B3Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (font)
                 p->setFont(*font);
             if(raised)
-                p->setPen(Qt::blue);
+                p->setPen(KGlobalSettings::toolBarHighlightColor());
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
