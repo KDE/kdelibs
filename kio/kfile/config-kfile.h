@@ -24,5 +24,6 @@ const int kfile_area = 250;
 #define AutoDirectoryFollowing QString::fromLatin1("Automatic directory following")
 #define PathComboCompletionMode QString::fromLatin1("PathCombo Completionmode")
 #define LocationComboCompletionMode QString::fromLatin1("LocationCombo Completionmode")
+#define ShowSpeedbar QString::fromLatin1("Show Speedbar")
 
 #endif

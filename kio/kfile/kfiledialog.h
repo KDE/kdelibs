@@ -733,6 +733,8 @@ protected slots:
     void dirCompletion( const QString& );
     void fileCompletion( const QString& );
 
+    void toggleSpeedbar( bool );
+    
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();
     virtual void accept();

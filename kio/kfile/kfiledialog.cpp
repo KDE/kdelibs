@@ -310,6 +310,11 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                           i18n("Configure this dialog"));
     */
 
+    KToggleAction *showSidebarAction =
+        new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
+    connect( showSidebarAction, SIGNAL( toggled( bool ) ),
+             SLOT( toggleSpeedbar( bool )) );
+    
     KActionMenu *menu = new KActionMenu( i18n("Extras"), "misc", this, "extra menu" );
     menu->insert( coll->action( "mkdir" ));
     menu->insert( coll->action( "delete" ));
@@ -317,6 +322,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
     menu->insert( coll->action( "view menu" ));
+    menu->insert( showSidebarAction );
     menu->insert( coll->action( "separator" ));
     menu->insert( coll->action( "properties" ));
     menu->setDelayed( false );
@@ -1550,12 +1556,16 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 					     KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
 	combo->setCompletionMode( cm );
-
+    
     cm = (KGlobalSettings::Completion)
          kc->readNumEntry( LocationComboCompletionMode,
                            KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
 	locationEdit->setCompletionMode( cm );
+
+    bool showSpeedbar = kc->readBoolEntry(ShowSpeedbar, true);
+    toggleSpeedbar( showSpeedbar );
+    ((KToggleAction *) actionCollection()->action("toggleSpeedbar"))->setChecked( showSpeedbar );
 
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
@@ -1580,7 +1590,8 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     saveDialogSize( group, true );
     kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
     kc->writeEntry(LocationComboCompletionMode,locationEdit->completionMode());
-
+    kc->writeEntry( ShowSpeedbar, !d->urlBar->isHidden() );
+    
     ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
 }
@@ -1675,6 +1686,14 @@ void KFileDialog::addToRecentDocuments()
 KActionCollection * KFileDialog::actionCollection() const
 {
     return ops->actionCollection();
+}
+
+void KFileDialog::toggleSpeedbar( bool show )
+{
+    if ( show )
+        d->urlBar->show();
+    else
+        d->urlBar->hide();
 }
 
 void KFileDialog::virtual_hook( int id, void* data )
