@@ -3,6 +3,7 @@ Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated Postscript Images
 Name[de]=Encapsulated PostScript
+Name[eo]=EPS-bildoj
 Name[nl]=Encapsulated Postscript-afbeeldingen
 Read=true
 Write=true
