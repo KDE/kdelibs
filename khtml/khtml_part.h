@@ -608,6 +608,12 @@ public:
   bool frameExists( const QString &frameName );
 
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+  
+  /**
+   * Returns the offset of the charchter of @innerNode
+   *
+   */
+  int findSelectionNode( DOM::Node innerNode, DOM::Node &newNode, khtml::MousePressEvent *event );
 
 signals:
   /**
