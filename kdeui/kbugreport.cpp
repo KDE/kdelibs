@@ -304,7 +304,7 @@ bool KBugReport::sendBugReport()
   QString command;
   command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") );
   if ( !command.isNull() )
-    command += QString::fromLatin1(" -oi -t");
+    command += QString::fromLatin1(" -oi -t -f\"") + m_from->text() + QString::fromLatin1("\"");
   else
   {
     command = KStandardDirs::findExe( QString::fromLatin1("mail") );
