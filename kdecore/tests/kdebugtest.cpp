@@ -8,7 +8,9 @@ int main()
   KInstance i("kdebugtest");
   kDebugInfo(150,"kDebugInfo with inexisting area number");
   kDebugInfo(1202,"This number has a value of %d",5);
+  kDebugInfo("This number should come out as appname %d %s", 5, "test");
   kDebugWarning("1+1 = %d",1+1+1);
+  kDebugError(1+1 != 2, "there is something really odd!");
   kDebug("Hello world");
   QString s = "mystring";
   kDebugString(s);
