@@ -239,18 +239,13 @@ void RenderFlow::layout()
 
     calcHeight();
 
-    if(hasOverhangingFloats())
-    {
-        if(isFloating() || isTableCell())
-        {
-            m_height = floatBottom();
-            m_height += borderBottom() + paddingBottom();
-        }
+    if ( lastChild() && lastChild()->hasOverhangingFloats() && isTableCell() ) {
+	m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
+	m_height += borderBottom() + paddingBottom();
     }
-    else if (isTableCell() && lastChild() && lastChild()->hasOverhangingFloats())
-    {
-        m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
-        m_height += borderBottom() + paddingBottom();
+    if( hasOverhangingFloats() && (isFloating() || isTableCell()) ) {
+	m_height = floatBottom();
+	m_height += borderBottom() + paddingBottom();
     }
 
     layoutSpecialObjects();
@@ -369,10 +364,11 @@ void RenderFlow::layoutBlockChildren()
 
         int chPos = xPos + child->marginLeft();
 
+	
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-                chPos = leftOffset(m_height) + child->marginLeft();
+              chPos = leftOffset(m_height) + child->marginLeft();
         } else {
             chPos -= child->width() + child->marginLeft() + child->marginRight();
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
@@ -386,6 +382,11 @@ void RenderFlow::layoutBlockChildren()
 
         if (child->isFlow())
             prevFlow = static_cast<RenderFlow*>(child);
+
+	if ( child->hasOverhangingFloats() ) {
+	    // need to add the float to our special objects
+	    addOverHangingFloats( static_cast<RenderFlow *>(child), -child->yPos(), true );
+	}
 
         child = child->nextSibling();
     }
@@ -470,7 +471,7 @@ RenderFlow::insertPositioned(RenderObject *o)
 void
 RenderFlow::insertFloat(RenderObject *o)
 {
-//    kdDebug( 6040 ) << renderName() << " " << this << "::insertFloat(" << o <<")" << endl;
+    //kdDebug( 6040 ) << renderName() << " " << (void *)this << "::insertFloat(" << o <<")" << endl;
 
     // a floating element
     if(!specialObjects) {
@@ -592,6 +593,9 @@ void RenderFlow::positionNewFloats()
         f->endY = f->startY + _height;
 
 
+	// the code below looks wrong. the parent only needs to know about the
+	// float in case it is overhanging. Lars
+#if 0
         // Copy float to the containing block
         // In case of anonymous box, copy to containing block _and_ it's containing block,
         // so the creation of anonymous box does not prevent elements dom parent
@@ -642,7 +646,8 @@ void RenderFlow::positionNewFloats()
                     break;
             }
         }
-
+#endif
+	
 //      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
         f = specialObjects->next();
@@ -700,14 +705,15 @@ int
 RenderFlow::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 {
     int left = fixedOffset;
-    if(!specialObjects) return left;
+    if(!specialObjects)
+	return left;
 
     if ( heightRemaining ) *heightRemaining = 1;
     SpecialObject* r;
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//      kdDebug( 6040 ) << "left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+	//kdDebug( 6040 ) <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatLeft &&
             r->left + r->width > left) {
@@ -715,7 +721,7 @@ RenderFlow::leftRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 	    if ( heightRemaining ) *heightRemaining = r->endY - y;
 	}
     }
-//    kdDebug( 6040 ) << "leftOffset(" << y << ") = " << left << endl;
+    //kdDebug( 6040 ) << "leftOffset(" << y << ") = " << left << endl;
     return left;
 }
 
@@ -917,6 +923,7 @@ RenderFlow::clearFloats()
         prev = parent();
 	if(!prev) return;
     }
+    //kdDebug() << "RenderFlow::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev<< endl; 
 
     // add overhanging special objects from the previous RenderFlow
     if(!prev->isFlow()) return;
@@ -926,43 +933,59 @@ RenderFlow::clearFloats()
         return; //html tables and lists flow as blocks
 
     if(flow->floatBottom() > offset)
-    {
-#ifdef DEBUG_LAYOUT
-        kdDebug( 6040 ) << this << ": adding overhanging floats" << endl;
-#endif
+	addOverHangingFloats( flow, offset );
+}
 
-        // we have overhanging floats
-        if(!specialObjects)
-        {
-            specialObjects = new QSortedList<SpecialObject>;
-            specialObjects->setAutoDelete(true);
-        }
+void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child )
+{
+//#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << (void *)this << ": adding overhanging floats offset=" << offset << " child=" << child << endl;
+//#endif
 
-        QListIterator<SpecialObject> it(*flow->specialObjects);
-        SpecialObject *r;
-        for ( ; (r = it.current()); ++it )
-        {
-            if (r->endY > offset && r->type <= SpecialObject::FloatRight)
-            {
-                // we need to add the float here too
-                SpecialObject *special = new SpecialObject;
-                special->count = specialObjects->count();
-                special->startY = r->startY - offset;
-                special->endY = r->endY - offset;
-                special->left = r->left - marginLeft();
-                if (prev!=parent())
-                    special->left += prev->marginLeft();
-                special->width = r->width;
-                special->node = r->node;
-                special->type = r->type;
-                specialObjects->append(special);
-#ifdef DEBUG_LAYOUT
-                kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
+    // we have overhanging floats
+    if(!specialObjects) {
+	specialObjects = new QSortedList<SpecialObject>;
+	specialObjects->setAutoDelete(true);
+    }
+
+    QListIterator<SpecialObject> it(*flow->specialObjects);
+    SpecialObject *r;
+    for ( ; (r = it.current()); ++it ) {
+	if ( r->type <= SpecialObject::FloatRight && 
+	     ( ( !child && r->endY > offset ) || 
+	       ( child && flow->yPos() + r->endY > height() ) ) ) {
+
+	    SpecialObject* f = 0;
+#if 1
+	    // don't insert it twice!
+	    QListIterator<SpecialObject> it(*specialObjects);
+	    while ( (f = it.current()) ) {
+		if (f->node == r->node) break;
+		++it;
+	    }
 #endif
-            }
-        }
+	    if ( !f ) {
+		SpecialObject *special = new SpecialObject;
+		special->count = specialObjects->count();
+		special->startY = r->startY - offset;
+		special->endY = r->endY - offset;
+		special->left = r->left - marginLeft();
+		if (flow != parent())
+		    special->left += flow->marginLeft();
+		if ( child )
+		    special->left += marginLeft();
+		special->width = r->width;
+		special->node = r->node;
+		special->type = r->type;
+		specialObjects->append(special);
+#ifdef DEBUG_LAYOUT
+		kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
+#endif
+	    }
+	}
     }
 }
+
 
 void RenderFlow::calcMinMaxWidth()
 {

@@ -504,7 +504,12 @@ void RenderBox::calcWidth()
         Length ml = style()->marginLeft();
         Length mr = style()->marginRight();
 
-        int cw = containingBlockWidth();
+        int cw;
+	RenderObject *cb = containingBlock();
+	if ( style()->flowAroundFloats() && cb->isFlow() )
+	    cw = static_cast<RenderFlow *>(cb)->lineWidth( m_y );
+	else
+	    cw = cb->contentWidth();
 
         if (cw<0) cw = 0;
 
