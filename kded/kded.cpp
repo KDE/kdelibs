@@ -185,9 +185,14 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
       factory = s->library();
 
     factory = "create_" + factory;
-    QString libname = "libkded_"+s->library(); 
+    QString libname = "kded_"+s->library(); 
 
     KLibrary *lib = loader->library(QFile::encodeName(libname));
+    if (!lib)
+    {
+      libname.prepend("lib");
+      lib = loader->library(QFile::encodeName(libname));
+    }
     if (lib)
     {
       // get the create_ function
