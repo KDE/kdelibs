@@ -618,12 +618,20 @@ QString KFileItem::getToolTipText(int maxcount)
     KFileMetaInfoItem item;
     
     // if we don't find a title, show the file name instead
-    if (! (item = info.item("Title")).isValid() &&
-        ! (item = info.item("Name")).isValid() &&
-        ! (item.value().toString().isEmpty()))
-      tip += QStyleSheet::escape(m_url.fileName());
-    else
+    if ( (item = info.item("Title")).isValid() && !(item.value().toString().isEmpty()))
+    {
       tip += QStyleSheet::escape(item.value().toString());
+    }
+    else if ( (item = info.item("Name")).isValid() && !(item.value().toString().isEmpty()))
+    {
+      tip += QStyleSheet::escape(item.value().toString());
+    }
+    else
+    {
+      tip += QStyleSheet::escape(m_url.fileName());
+    }
+
+
       
     tip += "</nobr></b></center></th></tr>";
     
