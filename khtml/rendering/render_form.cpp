@@ -139,7 +139,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
         }
 	// special case for HTML click & ondblclick handler
 	m_element->dispatchMouseEvent(&e2,m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,m_clickCount);
-	
+
 	if (!isRenderButton())
 	    m_isDoubleClick = false;
     }
@@ -412,8 +412,22 @@ void RenderLineEdit::slotReturnPressed()
     if ( box && box->isVisible() && box->currentItem() != -1 )
 	return;
 
-    if (m_element->form())
-        m_element->form()->prepareSubmit();
+    bool havesubmit = false;
+    HTMLFormElementImpl* fe = m_element->form();
+
+    if (fe ) {
+        for ( unsigned i = 0; i < fe->formElements.count(); i++ )
+            if ( fe->formElements.at( i )->id() == ID_INPUT ) {
+                if ( static_cast<HTMLInputElementImpl*>( fe->formElements.at( i ) )->inputType() == HTMLInputElementImpl::SUBMIT  ||
+                     static_cast<HTMLInputElementImpl*>( fe->formElements.at( i ) )->inputType() == HTMLInputElementImpl::ISINDEX  ) {
+                    havesubmit = true;
+                    break;
+                }
+            }
+
+        if ( havesubmit )
+            m_element->form()->prepareSubmit();
+    }
 }
 
 void RenderLineEdit::layout()
