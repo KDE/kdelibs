@@ -46,4 +46,10 @@
     </vbox>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>
+<includes>
+    <include location="global" impldecl="in implementation">klistview.h</include>
+</includes>
+<includehints>
+    <includehint>klistview.h</includehint>
+</includehints>
 </UI>

@@ -239,8 +239,10 @@
     </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
+<includes>
+    <include location="global" impldecl="in implementation">klineedit.h</include>
+</includes>
 <includehints>
-    <includehint>klineedit.h</includehint>
     <includehint>klineedit.h</includehint>
 </includehints>
 </UI>
