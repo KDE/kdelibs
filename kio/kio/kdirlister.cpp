@@ -226,8 +226,10 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->d->complete = false;
 
       KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
-      lister->jobStarted( job );
       jobs.insert( job, QValueList<KIO::UDSEntry>() );
+
+      lister->jobStarted( job );
+      lister->connectJob( job );
 
       if ( lister->d->window )
         job->setWindow( lister->d->window );
@@ -238,17 +240,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
                this, SLOT( slotResult( KIO::Job * ) ) );
       connect( job, SIGNAL( redirection( KIO::Job *, const KURL & ) ),
                this, SLOT( slotRedirection( KIO::Job *, const KURL & ) ) );
-
-      connect( job, SIGNAL( infoMessage( KIO::Job *, const QString& ) ),
-               lister, SLOT( slotInfoMessage( KIO::Job *, const QString& ) ) );
-      connect( job, SIGNAL( percent( KIO::Job *, unsigned long ) ),
-               lister, SLOT( slotPercent( KIO::Job *, unsigned long ) ) );
-      connect( job, SIGNAL( totalSize( KIO::Job *, KIO::filesize_t ) ),
-               lister, SLOT( slotTotalSize( KIO::Job *, KIO::filesize_t ) ) );
-      connect( job, SIGNAL( processedSize( KIO::Job *, KIO::filesize_t ) ),
-               lister, SLOT( slotProcessedSize( KIO::Job *, KIO::filesize_t ) ) );
-      connect( job, SIGNAL( speed( KIO::Job *, unsigned long ) ),
-               lister, SLOT( slotSpeed( KIO::Job *, unsigned long ) ) );
 
       emit lister->started( _url );
 
@@ -268,16 +259,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     Q_ASSERT( job );
 
     lister->jobStarted( job );
-    connect( job, SIGNAL( infoMessage( KIO::Job *, const QString& ) ),
-             lister, SLOT( slotInfoMessage( KIO::Job *, const QString& ) ) );
-    connect( job, SIGNAL( percent( KIO::Job *, unsigned long ) ),
-             lister, SLOT( slotPercent( KIO::Job *, unsigned long ) ) );
-    connect( job, SIGNAL( totalSize( KIO::Job *, KIO::filesize_t ) ),
-             lister, SLOT( slotTotalSize( KIO::Job *, KIO::filesize_t ) ) );
-    connect( job, SIGNAL( processedSize( KIO::Job *, KIO::filesize_t ) ),
-             lister, SLOT( slotProcessedSize( KIO::Job *, KIO::filesize_t ) ) );
-    connect( job, SIGNAL( speed( KIO::Job *, unsigned long ) ),
-             lister, SLOT( slotSpeed( KIO::Job *, unsigned long ) ) );
+    lister->connectJob( job );
 
     Q_ASSERT( itemU );
 
@@ -2238,6 +2220,20 @@ void KDirLister::jobStarted( KIO::ListJob *job )
   jobData.totalSize = 0;
 
   d->jobData.insert( job, jobData );
+}
+
+void KDirLister::connectJob( KIO::ListJob *job )
+{
+  connect( job, SIGNAL(infoMessage( KIO::Job *, const QString& )),
+           this, SLOT(slotInfoMessage( KIO::Job *, const QString& )) );
+  connect( job, SIGNAL(percent( KIO::Job *, unsigned long )),
+           this, SLOT(slotPercent( KIO::Job *, unsigned long )) );
+  connect( job, SIGNAL(totalSize( KIO::Job *, KIO::filesize_t )),
+           this, SLOT(slotTotalSize( KIO::Job *, KIO::filesize_t )) );
+  connect( job, SIGNAL(processedSize( KIO::Job *, KIO::filesize_t )),
+           this, SLOT(slotProcessedSize( KIO::Job *, KIO::filesize_t )) );
+  connect( job, SIGNAL(speed( KIO::Job *, unsigned long )),
+           this, SLOT(slotSpeed( KIO::Job *, unsigned long )) );
 }
 
 void KDirLister::setMainWindow( QWidget *window )
