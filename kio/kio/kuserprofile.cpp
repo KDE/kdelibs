@@ -47,6 +47,10 @@ void KServiceTypeProfile::initStatic()
   // Make sure that a KServiceTypeFactory gets created.
   (void) KServiceTypeFactory::self();
 
+  // NOTE: This can't use a static deleter because it somehow is interfered
+  // with by kdeinit.  It causes weird, unpredictable crashes.  I think they
+  // only happen when kdeinit is run, but I'm not entirely sure.  Needs more
+  // investigation I think.
   s_lstProfiles = new QPtrList<KServiceTypeProfile>;
 
   KConfig config( "profilerc", true, false);
