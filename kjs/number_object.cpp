@@ -200,10 +200,105 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     else
       return String(s+m.substr(0,k-f));
   }
-  case ToExponential:
-    // ###
-    result = Undefined();
-    break;
+  case ToExponential: {
+    double x = v.toNumber(exec);
+
+    if (isNaN(x)) {
+      return String("NaN");
+    }
+    else if (isInf(x)) {
+      if (x < 0)
+	return String("-Infinity");
+      else
+	return String("Infinity");
+    }
+
+    Value fractionDigits = args[0];
+    int f = fractionDigits.toInteger(exec);
+    if (f < 0 || f > 20) {
+      Object err = Error::create(exec,RangeError);
+      exec->setException(err);
+      return err;
+    }
+
+    int decimalAdjust = 0;
+    if (!fractionDigits.isA(UndefinedType)) {
+      double logx = floor(log10(x));
+      x /= pow(10,logx);
+      double fx = floor(x*pow(10,f))/pow(10,f);
+      double cx = ceil(x*pow(10,f))/pow(10,f);
+
+      if (fabs(fx-x) < fabs(cx-x))
+	x = fx;
+      else
+	x = cx;
+
+      decimalAdjust = int(logx);
+    }
+
+    char buf[80];
+    int decimalPoint;
+    int sign;
+  
+    if (isNaN(x))
+      return String("NaN");
+
+    char *result = kjs_dtoa(x, 0, 0, &decimalPoint, &sign, NULL);
+    int length = strlen(result);
+    decimalPoint += decimalAdjust;
+
+    int i = 0;
+    if (sign) {
+      buf[i++] = '-';
+    }
+  
+    if (decimalPoint == 999) {
+      strcpy(buf + i, result);
+    } else {
+      buf[i++] = result[0];
+
+      if (fractionDigits.isA(UndefinedType))
+	f = length-1;
+
+      if (length > 1 && f > 0) {
+	buf[i++] = '.';
+	int haveFDigits = length-1;
+	if (f < haveFDigits) {
+	  strncpy(buf+i,result+1, f);
+	  i += f;
+	}
+	else {
+	  strcpy(buf+i,result+1);
+	  i += length-1;
+	  for (int j = 0; j < f-haveFDigits; j++)
+	    buf[i++] = '0';
+	}
+      }
+    
+      buf[i++] = 'e';
+      buf[i++] = (decimalPoint >= 0) ? '+' : '-';
+      // decimalPoint can't be more than 3 digits decimal given the
+      // nature of float representation
+      int exponential = decimalPoint - 1;
+      if (exponential < 0) {
+	exponential = exponential * -1;
+      }
+      if (exponential >= 100) {
+	buf[i++] = '0' + exponential / 100;
+      }
+      if (exponential >= 10) {
+	buf[i++] = '0' + (exponential % 100) / 10;
+      }
+      buf[i++] = '0' + exponential % 10;
+      buf[i++] = '\0';
+    }
+
+    assert(i <= 80);
+  
+    kjs_freedtoa(result);
+
+    return String(UString(buf));
+  }
   case ToPrecision:
     // ###
     result = Undefined();
