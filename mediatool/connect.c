@@ -395,8 +395,8 @@ void GetShmAdrByRef(int shm_talkid, char **shm_adr)
   *shm_adr = shmat ( shm_talkid , NULL, 0 );
   if ( (*shm_adr) == (char*)-1 )
     {
-      LogError("Warning: Could not attach SHM.\n");
-      	*shm_adr=NULL;
+      /* LogError("Warning: Could not attach SHM.\n"); */
+      *shm_adr=NULL;
       return;
     }
   /* Mark SHM for automatic deletion on last detach */
