@@ -99,12 +99,16 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 
 KMdiDockContainer::~KMdiDockContainer()
 {
-  for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it) {
+  QMap<KDockWidget*,int>::iterator it;
+  while (m_map.count()) {
+	it = m_map.begin();
 	KDockWidget *w=it.key();
 	  if (m_overlapButtons.contains(w)) {
 	    (static_cast<KDockWidgetHeader*>(w->getHeader()->qt_cast("KDockWidgetHeader")))->removeButton(m_overlapButtons[w]);
 	    m_overlapButtons.remove(w);
 	  }
+    m_map.remove(w);
+    w->undock();
   }
 	deactivated(this);
 }
@@ -245,6 +249,7 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
   m_tb->setTab(id,false);
   tabClicked(id);
   m_tb->removeTab(id);
+  m_ws->removeWidget(w);
   m_map.remove(w);
   m_revMap.remove(id);
   if (m_overlapButtons.contains(w)) {
@@ -632,7 +637,7 @@ void KMdiDockContainer::nextToolView() {
 	int pos=tabs->findRef(m_tb->tab(oldtab));
 	if (pos==-1) return;
 	pos++;
-	if (pos>=tabs->count()) pos=0;
+	if (pos>=(int)tabs->count()) pos=0;
 	KMultiTabBarTab *tab=tabs->at(pos);
 	if (!tab) return; //can never happen here, but who knows
 	m_tb->setTab(tab->id(),true);
