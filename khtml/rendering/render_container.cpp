@@ -27,6 +27,7 @@
 #include "render_table.h"
 
 #include <kdebug.h>
+#include <assert.h>
 
 using namespace khtml;
 
@@ -127,7 +128,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
-    ASSERT(oldChild->parent() == this);
+    assert(oldChild->parent() == this);
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())
@@ -166,7 +167,7 @@ void RenderContainer::removeChild(RenderObject *oldChild)
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {
-    ASSERT(newChild->parent() == 0);
+    assert(newChild->parent() == 0);
     newChild->setParent(this);
     RenderObject* lChild = lastChild();
 
@@ -197,8 +198,8 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 	return;
     }
 
-    ASSERT(!child->parent());
-    ASSERT(beforeChild->parent() == this);
+    assert(!child->parent());
+    assert(beforeChild->parent() == this);
 
     if(beforeChild == firstChild())
         setFirstChild(child);

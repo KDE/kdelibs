@@ -140,28 +140,28 @@ RenderObject::~RenderObject()
 
 void RenderObject::addChild(RenderObject* , RenderObject *)
 {
-    ASSERT(0);
+    assert(0);
 }
 
 RenderObject* RenderObject::removeChildNode(RenderObject* )
 {
-    ASSERT(0);
+    assert(0);
     return 0;
 }
 
 void RenderObject::removeChild(RenderObject* )
 {
-    ASSERT(0);
+    assert(0);
 }
 
 void RenderObject::appendChildNode(RenderObject*)
 {
-    ASSERT(0);
+    assert(0);
 }
 
 void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 {
-    ASSERT(0);
+    assert(0);
 }
 
 RenderObject *RenderObject::containingBlock() const

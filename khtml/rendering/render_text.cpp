@@ -40,6 +40,7 @@
 #include <qrect.h>
 #include <qtextstream.h>
 #include <kdebug.h>
+#include <assert.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
@@ -218,8 +219,8 @@ TextSlaveArray::TextSlaveArray()
 
 int TextSlaveArray::compareItems( Item d1, Item d2 )
 {
-    ASSERT(d1);
-    ASSERT(d2);
+    assert(d1);
+    assert(d2);
 
     return static_cast<TextSlave*>(d1)->m_y - static_cast<TextSlave*>(d2)->m_y;
 }
@@ -330,7 +331,7 @@ void RenderText::deleteSlaves()
     for(unsigned int i=0; i < len; i++)
         m_lines.remove(i);
 
-    ASSERT(m_lines.count() == 0);
+    assert(m_lines.count() == 0);
 }
 
 TextSlave * RenderText::findTextSlave( int offset, int &pos )
