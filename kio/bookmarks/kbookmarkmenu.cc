@@ -289,7 +289,7 @@ void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, in
   }
   else
   {
-    id = contextMenu->insertItem( i18n( "Copy Link Location" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
+    id = contextMenu->insertItem( i18n( "Copy Link Address" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
     id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
