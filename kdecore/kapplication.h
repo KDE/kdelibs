@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 291
-#define KDE_VERSION_STRING "2.91 (3.0 beta1)"
+#define KDE_VERSION 292
+#define KDE_VERSION_STRING "2.92 (post 3.0 beta1)"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 
 class KConfig;
 class KCharsets;
