@@ -1,0 +1,140 @@
+DlgEdit:v1.2:Dialog:
+Dialog {
+	ClassHeader {StringListSelectAndReorderSet.h}
+	ClassSource {StringListSelectAndReorderSet.cpp}
+	ClassName {StringListSelectAndReorderSet}
+	DataHeader {StringListSelectAndReorderSetData.h}
+	DataSource {StringListSelectAndReorderSetData.cpp}
+	DataName {StringListSelectAndReorderSetData}
+	WindowBaseClass {QFrame}
+	WindowFlags {0}
+}
+WidgetLayout {
+InitialPos {-1 -1}
+Size {430 240}
+MinSize {0 0}
+MaxSize {32767 32767}
+Grid {10}
+
+ListBox {
+		DragSelect {TRUE}
+		AutoScroll {TRUE}
+		ScrollBar {FALSE}
+		AutoScrollBar {TRUE}
+		BottomScrollBar {FALSE}
+		AutoBottomScrollBar {TRUE}
+		SmoothScrolling {TRUE}
+		MultiSelection {FALSE}
+		Style {51}
+		LineWidth {2}
+		Rect {20 50 150 170}
+		Name {ListBox_2}
+		Variable {lbPossible}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {FALSE}
+		Text {}
+		AutoRepeat {FALSE}
+		AutoResize {FALSE}
+		Rect {180 50 30 30}
+		Name {PushButton_5}
+		Variable {buttonSelect}
+		Signal {[Protected]  pressed --> selectPressed  ()}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {FALSE}
+		Text {}
+		AutoRepeat {FALSE}
+		AutoResize {FALSE}
+		Rect {180 80 30 30}
+		Name {PushButton_6}
+		Variable {buttonUnselect}
+		Signal {[Protected]  pressed --> unselectPressed  ()}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+ListBox {
+		DragSelect {TRUE}
+		AutoScroll {TRUE}
+		ScrollBar {FALSE}
+		AutoScrollBar {TRUE}
+		BottomScrollBar {FALSE}
+		AutoBottomScrollBar {TRUE}
+		SmoothScrolling {TRUE}
+		MultiSelection {FALSE}
+		Style {51}
+		LineWidth {2}
+		Rect {220 50 150 170}
+		Name {ListBox_3}
+		Variable {lbSelected}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {FALSE}
+		Text {}
+		AutoRepeat {FALSE}
+		AutoResize {FALSE}
+		Rect {380 50 30 30}
+		Name {PushButton_7}
+		Variable {buttonUp}
+		Signal {[Protected]  pressed --> up  ()}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {FALSE}
+		Text {}
+		AutoRepeat {FALSE}
+		AutoResize {FALSE}
+		Rect {380 80 30 30}
+		Name {PushButton_8}
+		Variable {buttonDown}
+		Signal {[Protected]  pressed --> down  ()}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Label {
+		Text {}
+		Alignment {292}
+		AutoResize {FALSE}
+		Margin {-1}
+		Rect {20 20 150 20}
+		Name {Label_2}
+		Variable {labelPossible}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Label {
+		Text {}
+		Alignment {292}
+		AutoResize {FALSE}
+		Margin {-1}
+		Rect {220 20 150 20}
+		Name {Label_3}
+		Variable {labelSelected}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Layout {None}
+}

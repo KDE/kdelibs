@@ -1,0 +1,43 @@
+/****************************************************************************
+** KabAPI meta object code from reading C++ file 'kabapi.h'
+**
+** Created: Sat Aug 29 21:29:36 1998
+**      by: The Qt Meta Object Compiler ($Revision$)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#define Q_MOC_OUTPUT_REVISION 2
+#elif Q_MOC_OUTPUT_REVISION != 2
+#error "Moc format conflict - please regenerate all moc files"
+#endif
+
+#include "kabapi.h"
+#include <qmetaobject.h>
+
+
+const char *KabAPI::className() const
+{
+    return "KabAPI";
+}
+
+QMetaObject *KabAPI::metaObj = 0;
+
+void KabAPI::initMetaObject()
+{
+    if ( metaObj )
+	return;
+    if ( strcmp(QDialog::className(), "QDialog") != 0 )
+	badSuperclassWarning("KabAPI","QDialog");
+    if ( !QDialog::metaObject() )
+	QDialog::initMetaObject();
+    typedef void(KabAPI::*m1_t0)();
+    m1_t0 v1_0 = &KabAPI::initializeGeometry;
+    QMetaData *slot_tbl = new QMetaData[1];
+    slot_tbl[0].name = "initializeGeometry()";
+    slot_tbl[0].ptr = *((QMember*)&v1_0);
+    metaObj = new QMetaObject( "KabAPI", "QDialog",
+	slot_tbl, 1,
+	0, 0 );
+}

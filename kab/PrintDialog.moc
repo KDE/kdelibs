@@ -1,0 +1,38 @@
+/****************************************************************************
+** PrintDialog meta object code from reading C++ file 'PrintDialog.h'
+**
+** Created: Sat Aug 29 21:29:49 1998
+**      by: The Qt Meta Object Compiler ($Revision$)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#define Q_MOC_OUTPUT_REVISION 2
+#elif Q_MOC_OUTPUT_REVISION != 2
+#error "Moc format conflict - please regenerate all moc files"
+#endif
+
+#include "PrintDialog.h"
+#include <qmetaobject.h>
+
+
+const char *PrintDialog::className() const
+{
+    return "PrintDialog";
+}
+
+QMetaObject *PrintDialog::metaObj = 0;
+
+void PrintDialog::initMetaObject()
+{
+    if ( metaObj )
+	return;
+    if ( strcmp(PrintDialogData::className(), "PrintDialogData") != 0 )
+	badSuperclassWarning("PrintDialog","PrintDialogData");
+    if ( !PrintDialogData::metaObject() )
+	PrintDialogData::initMetaObject();
+    metaObj = new QMetaObject( "PrintDialog", "PrintDialogData",
+	0, 0,
+	0, 0 );
+}

@@ -2052,7 +2052,7 @@ AC_DEFUN(KDE_CHECK_STL_SGI,
 #include <string>
 ],[
   string astring="Hallo Welt.";
-  astring.erase(, 6); // now astring is "Welt"
+  astring.erase(0, 6); // now astring is "Welt"
   return 0;
 ], kde_cv_stl_type_sgi=yes,
    kde_cv_stl_type_sgi=no)

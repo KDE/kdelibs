@@ -1,0 +1,604 @@
+# Makefile.in generated automatically by automake 1.2 from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy, distribute and modify it.
+
+# this 10 paths are KDE specific. Use them:
+# kde_htmldir       Where your docs should go to. (contains lang subdirs)
+# kde_appsdir       Where your application file (.kdelnk) should go to. 
+# kde_icondir       Where your icon should go to.
+# kde_minidir       Where your mini icon should go to.
+# kde_datadir       Where you install application data. (Use a subdir)
+# kde_locale        Where translation files should go to.(contains lang subdirs)
+# kde_cgidir        Where cgi-bin executables should go to.
+# kde_confdir       Where config files should go to.
+# kde_mimedir       Where mimetypes should go to.
+# kde_toolbardir    Where general toolbar icons should go to.
+# kde_wallpaperdir  Where general wallpapers should go to.
+
+# just set the variable
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = true
+PRE_INSTALL = true
+POST_INSTALL = true
+NORMAL_UNINSTALL = true
+PRE_UNINSTALL = true
+POST_UNINSTALL = true
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CC = @CC@
+CPP = @CPP@
+CXX = @CXX@
+GLINC = @GLINC@
+GLLIB = @GLLIB@
+GMSGFMT = @GMSGFMT@
+IDL = @IDL@
+KDE_EXTRA_RPATH = @KDE_EXTRA_RPATH@
+KDE_INCLUDES = @KDE_INCLUDES@
+KDE_LDFLAGS = @KDE_LDFLAGS@
+KDE_RPATH = @KDE_RPATH@
+LD = @LD@
+LIBCOMPAT = @LIBCOMPAT@
+LIBCRYPT = @LIBCRYPT@
+LIBDL = @LIBDL@
+LIBJPEG = @LIBJPEG@
+LIBMICO = @LIBMICO@
+LIBOBJS = @LIBOBJS@
+LIBPTHREAD = @LIBPTHREAD@
+LIBPYTHON = @LIBPYTHON@
+LIBQIMGIO = @LIBQIMGIO@
+LIBSOCKET = @LIBSOCKET@
+LIBTOOL = @LIBTOOL@
+LIBUCB = @LIBUCB@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MICO_INCLUDES = @MICO_INCLUDES@
+MICO_LDFLAGS = @MICO_LDFLAGS@
+MOC = @MOC@
+MSGFMT = @MSGFMT@
+NM = @NM@
+PACKAGE = @PACKAGE@
+PAMINC = @PAMINC@
+PAMLIBPATHS = @PAMLIBPATHS@
+PAMLIBS = @PAMLIBS@
+PYTHONINC = @PYTHONINC@
+PYTHONLIB = @PYTHONLIB@
+QKEYCODE_H = @QKEYCODE_H@
+QT_INCLUDES = @QT_INCLUDES@
+QT_LDFLAGS = @QT_LDFLAGS@
+RANLIB = @RANLIB@
+USE_NLS = @USE_NLS@
+VERSION = @VERSION@
+XGETTEXT = @XGETTEXT@
+XPMINC = @XPMINC@
+XPMLIB = @XPMLIB@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_INCLUDES = @X_INCLUDES@
+X_LDFLAGS = @X_LDFLAGS@
+all_includes = @all_includes@
+all_libraries = @all_libraries@
+install_root = @install_root@
+kde_appsdir = @kde_appsdir@
+kde_bindir = @kde_bindir@
+kde_cgidir = @kde_cgidir@
+kde_confdir = @kde_confdir@
+kde_datadir = @kde_datadir@
+kde_htmldir = @kde_htmldir@
+kde_icondir = @kde_icondir@
+kde_includes = @kde_includes@
+kde_libraries = @kde_libraries@
+kde_locale = @kde_locale@
+kde_mimedir = @kde_mimedir@
+kde_minidir = @kde_minidir@
+kde_partsdir = @kde_partsdir@
+kde_sounddir = @kde_sounddir@
+kde_toolbardir = @kde_toolbardir@
+kde_wallpaperdir = @kde_wallpaperdir@
+qt_includes = @qt_includes@
+qt_libraries = @qt_libraries@
+topdir = @topdir@
+x_includes = @x_includes@
+x_libraries = @x_libraries@
+
+APPSDIR = $(kde_appsdir)/Utilities
+# set the include path for X, qt and KDE
+# set "REMOVE_NANA" to get rid of the NANA assertions:
+# (REMOVE_NANA is now defined by default if the compiler directives
+#  do not define DEBUG), I use MS_NANA_DEFINES for this:
+INCLUDES= -I../kdecore -I../kdeui -I../kfile -I../kfmlib @all_includes@ 
+# $(MS_NANA_DEFINES)
+# -DREMOVE_NANA
+# claim, which subdirectories you want to install
+# SUBDIRS =
+
+####### This part is very khexdit specific
+# you can add here more. This one gets installed 
+lib_LTLIBRARIES = libkab.la
+KABVERSION=	0.0.1
+KABPATCH=	0
+# Which sources should be compiled for khexdit.
+libkab_la_SOURCES	= \
+	kabapi.cc \
+	PrintDialog.cpp \
+	PrintDialogData.cpp \
+	SearchDialog.cpp \
+	SearchDialogData.cpp \
+	StringListDialog.cpp \
+	StringListDialogData.cpp \
+	addressbook.cc \
+	businesscard.cc \
+	datepickerdialog.cc \
+	editentry.cc \
+	jpeg.cpp \
+	searchresults.cc \
+	widget.cc \
+	configDB.cc \
+	sections.cc \
+	keyvaluemap.cc \
+	functions.cc \
+	StringListSelectOneDialog.cpp \
+	StringListSelectOneDialogData.cpp \
+	StringListSelectSetDialog.cpp \
+	StringListSelectSetDialogData.cpp \
+	StringListSelectAndReorderSet.cpp \
+	StringListSelectAndReorderSetData.cpp \
+	widgets.cc 
+
+include_HEADERS = \
+	stl_headers.h \
+	kabapi.h \
+	kab.h \
+	addressbook.h \
+	configDB.h \
+	keyvaluemap.h \
+	sections.h
+#	PrintDialog.h \
+#	PrintDialogData.h \
+#	SearchDialog.h \
+#	SearchDialogData.h \
+#	StringListDialog.h \
+#	StringListDialogData.h \
+#	TalkDialog.h \
+#	TalkDialogData.h \
+#	businesscard.h \
+#	datepickerdialog.h \
+#	debug.h \
+#	editentry.h \
+#	jpeg.h \
+#	jpeginc.h \
+#	searchresults.h \
+#	widgets.h
+
+# the library search path
+libkab_la_LDFLAGS = @all_libraries@ 
+
+# Usually I define MS_NANA_LIBS to "-lnana" if DEBUG is defined as a 
+# compiler directive.
+libkab_la_LIBADD   = -lkfm -lkdeui -lkdecore -lqt \
+	-lX11 -lXext @LIBSOCKET@ 
+# $(MS_NANA_LIBS)
+
+# this option you can leave out. Just, if you use "make dist", you need it
+# noinst_HEADERS = 
+# just to make sure, automake makes them 
+BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
+		SearchDialog.moc searchresults.moc \
+		editentry.moc datepickerdialog.moc businesscard.moc \
+		StringListDialog.moc StringListDialogData.moc \
+		StringListSelectOneDialog.moc \
+		StringListSelectOneDialogData.moc \
+		StringListSelectSetDialog.moc \
+		StringListSelectSetDialogData.moc \
+		StringListSelectAndReorderSet.moc \
+		StringListSelectAndReorderSetData.moc
+
+# if you "make distclean", this files get removed. If you want to remove
+# them while "make clean", use CLEANFILES
+DISTCLEANFILES = $(BUILTSOURCES)
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libkab_la_DEPENDENCIES = 
+libkab_la_OBJECTS =  kabapi.lo PrintDialog.lo PrintDialogData.lo \
+SearchDialog.lo SearchDialogData.lo StringListDialog.lo \
+StringListDialogData.lo addressbook.lo businesscard.lo \
+datepickerdialog.lo editentry.lo jpeg.lo searchresults.lo widget.lo \
+configDB.lo sections.lo keyvaluemap.lo functions.lo \
+StringListSelectOneDialog.lo StringListSelectOneDialogData.lo \
+StringListSelectSetDialog.lo StringListSelectSetDialogData.lo \
+StringListSelectAndReorderSet.lo StringListSelectAndReorderSetData.lo \
+widgets.lo
+CXXFLAGS = @CXXFLAGS@
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+CXXLINK = $(LIBTOOL) --mode=link $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(include_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/PrintDialog.P .deps/PrintDialogData.P \
+.deps/SearchDialog.P .deps/SearchDialogData.P .deps/StringListDialog.P \
+.deps/StringListDialogData.P .deps/StringListSelectAndReorderSet.P \
+.deps/StringListSelectAndReorderSetData.P \
+.deps/StringListSelectOneDialog.P .deps/StringListSelectOneDialogData.P \
+.deps/StringListSelectSetDialog.P .deps/StringListSelectSetDialogData.P \
+.deps/addressbook.P .deps/businesscard.P .deps/configDB.P \
+.deps/datepickerdialog.P .deps/editentry.P .deps/functions.P \
+.deps/jpeg.P .deps/kabapi.P .deps/keyvaluemap.P .deps/searchresults.P \
+.deps/sections.P .deps/widget.P .deps/widgets.P
+CXXMKDEP = $(CXX) -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+SOURCES = $(libkab_la_SOURCES)
+OBJECTS = $(libkab_la_OBJECTS)
+
+default: all
+
+.SUFFIXES:
+.SUFFIXES: .c .cc .cpp .lo .o
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu kab/Makefile
+
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(libdir)/$$p; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	rm -f *.o core
+
+clean-compile:
+
+distclean-compile:
+	rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	rm -f *.lo
+
+clean-libtool:
+	rm -rf .libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libkab.la: $(libkab_la_OBJECTS) $(libkab_la_DEPENDENCIES)
+	$(CXXLINK) -rpath $(libdir) $(libkab_la_LDFLAGS) $(libkab_la_OBJECTS) $(libkab_la_LIBADD) $(LIBS)
+.cpp.o:
+	$(CXXCOMPILE) -c $<
+.cpp.lo:
+	$(LTCXXCOMPILE) -c $<
+.cc.o:
+	$(CXXCOMPILE) -c $<
+.cc.lo:
+	$(LTCXXCOMPILE) -c $<
+
+install-includeHEADERS: $(include_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(includedir)
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  echo " $(INSTALL_DATA) $(srcdir)/$$p $(includedir)/$$p"; \
+	  $(INSTALL_DATA) $(srcdir)/$$p $(includedir)/$$p; \
+	done
+
+uninstall-includeHEADERS:
+	$(NORMAL_UNINSTALL)
+	list='$(include_HEADERS)'; for p in $$list; do \
+	  rm -f $(includedir)/$$p; \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES)
+	here=`pwd` && cd $(srcdir) && mkid -f$$here/ID $(SOURCES) $(HEADERS)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES)
+	tags=; \
+	here=`pwd`; \
+	test -z "$(ETAGS_ARGS)$(SOURCES)$(HEADERS)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $(SOURCES) $(HEADERS) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = kab
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kab/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+MKDEP = gcc -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+-include .deps/.P
+.deps/.P: $(BUILT_SOURCES)
+	echo > $@
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	rm -rf .deps
+
+.deps/%.P: %.c
+	@echo "Computing dependencies for $<..."
+	@o='o'; \
+	test -n "$o" && o='$$o'; \
+	$(MKDEP) $< >$@.tmp \
+	  && sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," < $@.tmp > $@ \
+	  && rm -f $@.tmp
+
+.deps/%.P: %.cc
+	@echo "Computing dependencies for $<..."
+	@o='o'; \
+	$(CXXMKDEP) $< >$@.tmp \
+	  && sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," < $@.tmp > $@ \
+	  && rm -f $@.tmp
+
+.deps/%.P: %.cpp
+	@echo "Computing dependencies for $<..."
+	@o='o'; \
+	$(CXXMKDEP) $< >$@.tmp \
+	  && sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," < $@.tmp > $@ \
+	  && rm -f $@.tmp
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: install-libLTLIBRARIES
+	@$(NORMAL_INSTALL)
+
+install-data: install-includeHEADERS install-data-local
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: uninstall-libLTLIBRARIES uninstall-includeHEADERS uninstall-local
+
+all: Makefile $(LTLIBRARIES) $(HEADERS)
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+	$(mkinstalldirs)  $(libdir) $(includedir)
+
+
+mostlyclean-generic:
+	test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	rm -f Makefile $(DISTCLEANFILES)
+	rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+clean:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean
+
+distclean:  distclean-libLTLIBRARIES distclean-compile distclean-libtool \
+		distclean-tags distclean-depend distclean-generic clean
+	rm -f config.status
+	rm -f libtool
+
+maintainer-clean:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: default mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-includeHEADERS \
+install-includeHEADERS tags mostlyclean-tags distclean-tags clean-tags \
+maintainer-clean-tags distdir mostlyclean-depend distclean-depend \
+clean-depend maintainer-clean-depend info dvi installcheck install-exec \
+install-data install uninstall all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+# make messages.po. Move this one to ../po/ and "make merge" in po
+messages:
+	$(XGETTEXT) -C -ktranslate $(kab_SOURCES)
+
+# just install datas here. Use install-exec-data for scripts and etc.
+# the binary itself is already installed from automake
+# use mkinstalldirs, not "install -d"
+# don't install a list of file. Just one file per install.
+# if you have more of them, create a subdirectory with an extra Makefile 
+install-data-local:
+
+# remove ALL you have installed in install-data-local or install-exec-local
+uninstall-local:
+
+# the MOC files:
+
+%.moc:%.h
+	$(MOC) $< -o $@
+
+# addressbook.cc:addressbook.moc
+# addressbook.moc:addressbook.h
+
+widgets.cc:widgets.moc
+widgets.moc:widgets.h
+
+widget.cc:widget.moc
+widget.moc:kab.h
+	$(MOC) $< -o $@
+
+searchresults.cc:searchresults.moc
+searchresults.moc:searchresults.h
+
+editentry.cc:editentry.moc
+editentry.moc:editentry.h
+
+datepickerdialog.cc:datepickerdialog.moc
+datepickerdialog.moc:datepickerdialog.h
+
+businesscard.cc:businesscard.moc
+businesscard.moc:businesscard.h
+
+SearchDialog.cpp:SearchDialog.moc SearchDialogData.moc
+SearchDialog.moc:SearchDialog.h
+SearchDialogData.moc:SearchDialogData.h
+
+AddressBookAbout.cpp:AddressBookAbout.moc AddressBookAboutData.moc
+AddressBookAbout.moc:AddressBookAbout.h
+AddressBookAboutData.moc:AddressBookAboutData.h
+
+PrintDialog.cpp:PrintDialog.moc PrintDialogData.moc
+PrintDialog.moc:PrintDialog.h
+PrintDialogData.moc:PrintDialogData.h
+
+#TalkDialog.cpp:TalkDialog.moc TalkDialogData.moc
+#TalkDialog.moc:TalkDialog.h
+#TalkDialogData.moc:TalkDialogData.h
+
+StringListDialog.cpp:StringListDialog.moc StringListDialogData.moc
+StringListDialog.moc:StringListDialog.h
+StringListDialogData.moc:StringListDialogData.h
+
+kabapi.cc:kabapi.moc
+kabapi.moc:kabapi.h
+
+StringListSelectOneDialog.cpp:StringListSelectOneDialog.moc \
+				StringListSelectOneDialogData.moc
+StringListSelectOneDialog.moc:StringListSelectOneDialog.h
+StringListSelectOneDialogData.moc:StringListSelectOneDialogData.h
+
+StringListSelectSetDialog.cpp:StringListSelectSetDialog.moc \
+				StringListSelectSetDialogData.moc
+StringListSelectSetDialog.moc:StringListSelectSetDialog.h
+StringListSelectSetDialogData.moc:StringListSelectSetDialogData.h
+
+StringListSelectAndReorderSet.cpp:StringListSelectAndReorderSet.moc \
+				StringListSelectAndReorderSetData.moc
+StringListSelectAndReorderSet.moc:StringListSelectAndReorderSet.h
+StringListSelectAndReorderSetData.moc:StringListSelectAndReorderSetData.h
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

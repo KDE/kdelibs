@@ -1,0 +1,145 @@
+/*  -*- C++ -*-
+ * Qt widget for the addressbook example.
+ * Declaration.
+ *
+ * the Configuration Database library
+ * copyright:  (C) Mirko Sucker, 1998
+ * license:    GNU Public License, Version 2
+ * mail to:    Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
+ *                          <mirko.sucker@unibw-hamburg.de>
+ * requires:   C++-compiler, STL, string class, 
+ *             NANA (only for debugging)
+ * $Revision$
+ */
+
+#ifndef QADDRESSBOOK_WIDGET_H
+#define QADDRESSBOOK_WIDGET_H
+
+class QLineEdit;
+class QFrame;
+class KButton;
+class QLabel;
+class QComboBox;
+class QTimer;
+
+#include <qprinter.h>
+#include "addressbook.h"
+// #include "businesscard.h"
+class BusinessCard;
+class SearchResults;
+// #include "searchresults.h"
+#include <drag.h>
+
+class KFM;
+
+class AddressWidget 
+  : public QWidget,
+    public AddressBook
+{
+  Q_OBJECT
+public:
+  AddressWidget(QWidget* parent=0, 
+		const char* name=0,
+		bool readonly=false);
+  ~AddressWidget();
+  /** This method returns an email address. It is rather the first 
+    * address or a user selection, if select is true.
+    * The method returns false if there is no entry with the given 
+    * key or the entry has no email address. In the latter case, 
+    * "address" is not modified.
+    * If select is true, the method may also return false if the user 
+    * rejected the dialog.
+    */
+  bool emailAddress(const string& key, string& address, 
+		   bool select=true);
+  /** currentChanged() will be called by AddressBook-objects if the 
+    * currently selected entry has been changed.
+    */
+  void currentChanged();
+  /** updateDB() is called at the program startup. It has to do a
+    * difficult task: if the database file the user has used before 
+    * has been created by an earlier version of kab, it might 
+    * possibly use some fields that have changed its meaning or are 
+    * no more supported. updateDB() will update the data in the 
+    * database to the new format. It will use the version tag in the 
+    * configuration section for this.
+    */
+  bool updateDB();
+protected:
+  // the child widgets:
+  QComboBox* comboSelector;
+  QTimer* timer;
+  QFrame* frameSeparator1;
+  QFrame* frameSeparator2;
+  BusinessCard* card;
+  KButton* buttonFirst; KButton* buttonPrevious;
+  KButton* buttonNext; KButton* buttonLast;
+  KButton* buttonAdd; KButton* buttonChange; 
+  KButton* buttonRemove; KButton* buttonSearch;
+  // the additional windows
+  bool showSearchResults;
+  SearchResults *searchResults; // zero if off
+  // data elements
+  KDNDDropZone* dropZone;
+  KFM* kfm;
+  string tmpFile;
+  bool readonlyGUI;
+  // methods
+  void createConnections();
+  void createTooltips();
+  void updateSelector();
+  void enableWidgets();
+  bool edit(Entry&);
+  // helper methods for printing:
+  bool print(QPrinter&, 
+	     const list<string>&,
+	     const string& headline,
+	     const string& footerLeft,
+	     const string& footerRight);
+  // they both return the height in points:
+  int printHeadline(QPainter*, QRect, const string&);
+  // page number, text
+  int printFooter(QPainter*, QRect, int, 
+		  string, string); 
+  // CONSTS
+  static const unsigned int ButtonSize;
+  static const unsigned int Grid;
+public slots:
+  void initializeGeometry();
+  void first();
+  void previous();
+  void next();
+  void last();
+  void select(int);
+  void copy();
+  void add(); // a new entry 
+  void edit();
+  void changed();
+  void remove(); // current entry 
+  void mail();
+  void browse();
+  void talk();
+  void save();
+  void print();
+  void search();
+  // ----- exporting methods, Mirko, May 29 98:
+  void exportHTML();
+  void exportPlain();
+  void exportTeXTable();
+  void exportTeXLabels();
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // called if data is dropped over this widget
+  void dropAction(KDNDDropZone*);
+  void searchResultsClose();
+  void selectEntry(const char*); // the key
+  void setReadonlyGUI(bool state=true);
+  void checkFile();
+signals:
+  void entrySelected(int current, int count);
+  void sizeChanged();
+  void enableMail(bool);
+  void enableBrowse(bool);
+  void setStatus(const char*);
+};
+
+#endif // QADDRESSBOOK_WIDGET_H
