@@ -438,6 +438,8 @@ DOMString HTMLElementImpl::innerHTML() const
 DOMString HTMLElementImpl::innerText() const
 {
     DOMString text;
+    if(!firstChild())
+        return text;
 
     const NodeImpl *n = this;
     // find the next text/image after the anchor, to get a position

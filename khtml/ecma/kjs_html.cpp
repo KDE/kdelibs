@@ -1617,33 +1617,35 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_A: {
     DOM::HTMLAnchorElement anchor = element;
     switch (token) {
-    case AnchorAccessKey:       return getString(anchor.accessKey());
-    case AnchorCharset:         return getString(anchor.charset());
-    case AnchorCoords:          return getString(anchor.coords());
-    case AnchorHref:            return getString(anchor.href());
-    case AnchorHrefLang:        return getString(anchor.hreflang());
+    case AnchorAccessKey:       return String(anchor.accessKey());
+    case AnchorCharset:         return String(anchor.charset());
+    case AnchorCoords:          return String(anchor.coords());
+    case AnchorHref:            return String(anchor.href());
+    case AnchorHrefLang:        return String(anchor.hreflang());
     case AnchorHash:            return String('#'+KURL(anchor.href().string()).ref());
-    case AnchorHost:            return getString(KURL(anchor.href().string()).host());
+    case AnchorHost:            return String(KURL(anchor.href().string()).host());
     case AnchorHostname: {
       KURL url(anchor.href().string());
       kdDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
       if (url.port()==0)
-        return getString(url.host());
+        return String(url.host());
       else
-        return getString(url.host() + ":" + QString::number(url.port()));
+        return String(url.host() + ":" + QString::number(url.port()));
     }
-    case AnchorPathName:        return getString(KURL(anchor.href().string()).path());
-    case AnchorPort:            return getString(QString::number(KURL(anchor.href().string()).port()));
-    case AnchorProtocol:        return getString(KURL(anchor.href().string()).protocol()+":");
-    case AnchorSearch:          return getString(KURL(anchor.href().string()).query());
-    case AnchorName:            return getString(anchor.name());
-    case AnchorRel:             return getString(anchor.rel());
-    case AnchorRev:             return getString(anchor.rev());
-    case AnchorShape:           return getString(anchor.shape());
+    case AnchorPathName:        return String(KURL(anchor.href().string()).path());
+    case AnchorPort:            return String(QString::number(KURL(anchor.href().string()).port()));
+    case AnchorProtocol:        return String(KURL(anchor.href().string()).protocol()+":");
+    case AnchorSearch:          return String(KURL(anchor.href().string()).query());
+    case AnchorName:            return String(anchor.name());
+    case AnchorRel:             return String(anchor.rel());
+    case AnchorRev:             return String(anchor.rev());
+    case AnchorShape:           return String(anchor.shape());
     case AnchorTabIndex:        return Number(anchor.tabIndex());
-    case AnchorTarget:          return getString(anchor.target());
-    case AnchorText:            return getString(anchor.innerHTML());
-    case AnchorType:            return getString(anchor.type());
+    case AnchorTarget:          return String(anchor.target());
+    // Not specified in http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/a.asp
+    // Mozilla returns the inner text.
+    case AnchorText:            return String(anchor.innerText());
+    case AnchorType:            return String(anchor.type());
     }
   }
   break;
