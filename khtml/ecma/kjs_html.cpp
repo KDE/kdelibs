@@ -1070,6 +1070,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
   DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString().value().string();
   DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  //kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << endl;
 
   switch (element.elementId()) {
     case ID_HTML: {
@@ -1157,7 +1158,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       // read-only: type
       if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber().intValue()); return; }
       else if (p == "value")           { select.setValue(str); return; }
-      else if (p == "length")          {
+      else if (p == "length")          { // read-only according to the NS spec, but webpages need it writeable
                                          KJSO coll = getSelectHTMLCollection(select.options(), select);
                                          coll.put( p, v );
                                          return;
@@ -1197,6 +1198,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "label")           { option.setLabel(str); return; }
       else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
       // despide its name, it doesn't seem to modify the value, but the text!
+      // (DF: ??? testcases shows that this indeed modifies the value! - code looks fine)
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;
@@ -1691,15 +1693,32 @@ KJSO KJS::HTMLSelectCollection::tryGet(const UString &p) const
   return  HTMLCollection::tryGet(p);
 }
 
+DOM::Element KJS::HTMLSelectCollection::dummyElement()
+{
+  DOM::Document doc = element.ownerDocument();
+  DOM::Element dummy = doc.createElement("OPTION");
+  // Add an empty textnode inside, so that the text can be set from Javascript.
+  DOM::Text text = doc.createTextNode( "" );
+  dummy.appendChild( text );
+  return dummy;
+}
+
 void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
 {
+  //kdDebug() << "KJS::HTMLSelectCollection::tryPut " << p.qstring() << endl;
   // resize ?
   if (p == "length") {
     long newLen = v.toInt32();
     long diff = element.length() - newLen;
 
-    while (diff-- > 0)
-      element.remove(newLen);
+    if (diff < 0) { // add dummy elements
+      do {
+        element.add(dummyElement(), DOM::HTMLElement());
+      } while (++diff);
+    }
+    else // remove elements
+      while (diff-- > 0)
+        element.remove(newLen);
 
     return;
   }
@@ -1724,10 +1743,8 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
   DOM::HTMLElement before;
   // out of array bounds ? first insert empty dummies
   if (diff > 0) {
-    DOM::Document doc = element.ownerDocument();
     while (diff--) {
-      DOM::Element dummy = doc.createElement("OPTION");
-      element.add(dummy, before);
+      element.add(dummyElement(), before);
     }
     // replace an existing entry ?
   } else if (diff < 0) {

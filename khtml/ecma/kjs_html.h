@@ -101,6 +101,7 @@ namespace KJS {
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
   private:
+      DOM::Element dummyElement();
       DOM::HTMLSelectElement element;
   };
 
