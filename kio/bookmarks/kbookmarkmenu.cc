@@ -319,7 +319,8 @@ void RMB::slotRMBActionProperties( int val )
 
   QString folder = bookmark.isGroup() ? QString::null : bookmark.url().url();
   KBookmarkEditDialog dlg( bookmark.fullText(), folder,
-                           m_pManager, KBookmarkEditDialog::ModifyMode );
+                           m_pManager, KBookmarkEditDialog::ModifyMode,
+                           0, 0, i18n("Bookmark Properties") );
   if ( dlg.exec() != KDialogBase::Accepted )
     return;
 
