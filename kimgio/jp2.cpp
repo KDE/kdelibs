@@ -28,9 +28,11 @@ namespace {
 	jas_image_t*
 	read_image( const QImageIO* io )
 	{
-		jas_stream_t* in;
-		if( !(in = jas_stream_fopen( QFile::encodeName( io->fileName() ),
-				"rb") ) ) return 0;
+		// TODO: is there a way to read the image in chunks? Reading an
+		// unlimited amount of data at once doesn't sound too good...
+		QByteArray ba = io->ioDevice()->readAll();
+		jas_stream_t* in = jas_stream_memopen( ba.data(), ba.size() );
+		if( !in ) return 0;
 
 		jas_image_t* image;
 		if( !(image = jas_image_decode( in, -1, 0 ) ) ) {
@@ -198,7 +200,7 @@ kimgio_jp2_read( QImageIO* io )
 
 
 void
-kimgio_jp2_write( QImageIO* io )
+kimgio_jp2_write( QImageIO* )
 {
 	// TODO
 } // kimgio_jp2_write
