@@ -30,6 +30,7 @@
 #include <qstyle.h>
 #include <qlayout.h>
 #include <qwidgetlist.h>
+#include <qtimer.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -56,13 +57,15 @@ public:
     bool showHelpMenu:1;
 
     bool autoSaveSettings:1;
+    bool settingsDirty:1;
     bool autoSaveWindowSize:1;
     bool care_about_geometry:1;
     QString autoSaveGroup;
     KAccel * kaccel;
     KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
-    
+    QTimer* settingsTimer;
+
     // Default values used in determining to save || !.
     bool isStatusBarShown;
     bool isMenuBarShown;
@@ -221,10 +224,12 @@ void KMainWindow::initKMainWindow(const char *name)
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
+    d->settingsDirty = false;
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
     d->toolBarHandler = 0;
+    d->settingsTimer = 0;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -287,6 +292,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
+    delete d->settingsTimer;
     QMenuBar* mb = internalMenuBar();
     delete mb;
     delete d->m_interface;
@@ -514,7 +520,7 @@ void KMainWindow::slotStateChanged(const QString &newstate,
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
     // Save settings if auto-save is enabled, and settings have changed
-    if (d->autoSaveSettings)
+    if (d->settingsDirty && d->autoSaveSettings)
         saveAutoSaveSettings();
 
     if (queryClose()) {
@@ -616,8 +622,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
-        // By default we don't hide.
-	if(d->isStatusBarShown ==  sb->isHidden())
+        if(d->isStatusBarShown ==  sb->isHidden())
 	  config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
 	else config->deleteEntry("StatusBar");
     }
@@ -630,13 +635,14 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         else
             entryList.append("Enabled");
         // By default we don't hide.
-	if(d->isMenuBarShown ==  mb->isHidden())
+	if(d->isStatusBarShown ==  sb->isHidden())
 	  config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
 	else config->deleteEntry("MenuBar");
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar = 0;
+    QString toolKey;
     QPtrListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
@@ -743,6 +749,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar;
+    QString toolKey;
     QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
 
     for ( ; it.current(); ++it) {
@@ -776,6 +783,8 @@ void KMainWindow::finalizeGUI( bool force )
     QPtrListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++ it )
             it.current()->positionYourself( force );
+
+    d->settingsDirty = false;
 }
 
 void KMainWindow::saveWindowSize( KConfig * config ) const
@@ -828,19 +837,26 @@ void KMainWindow::ignoreInitialGeometry()
     d->care_about_geometry = false;
 }
 
-/**
- * @deprecated.
- */
-void KMainWindow::setSettingsDirty() {
-    return;
+void KMainWindow::setSettingsDirty()
+{
+    //kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
+    d->settingsDirty = true;
+    if ( d->autoSaveSettings )
+    {
+        // Use a timer to save "immediately" user-wise, but not too immediately
+        // (to compress calls and save only once, in case of multiple changes)
+        if ( !d->settingsTimer )
+        {
+           d->settingsTimer = new QTimer( this );
+           connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
+        }
+        d->settingsTimer->start( 500, true );
+    }
 }
 
-/**
- * @deprecated.
- */
 bool KMainWindow::settingsDirty() const
 {
-    return false;
+    return d->settingsDirty;
 }
 
 QString KMainWindow::settingsGroup() const
@@ -848,31 +864,37 @@ QString KMainWindow::settingsGroup() const
     return d->autoSaveGroup;
 }
 
-void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize ) {
-  d->autoSaveSettings = true;
-  d->autoSaveGroup = groupName;
-  d->autoSaveWindowSize = saveWindowSize;
-
-  // Get default values
-  int scnum = QApplication::desktop()->screenNumber(parentWidget());
-  QRect desk = QApplication::desktop()->screenGeometry(scnum);
-  d->size = QRect(desk.width(), width(), desk.height(), height());
-  if( internalStatusBar() && !internalStatusBar()->isHidden())
-    d->isStatusBarShown = true;
-  else
-    d->isStatusBarShown = false;
-  if( internalMenuBar() && !internalMenuBar()->isHidden())
-    d->isMenuBarShown = true;
-  else
-    d->isMenuBarShown = false;
-  // Now read the previously saved settings
-  applyMainWindowSettings( KGlobal::config(), groupName );
+void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
+{
+    d->autoSaveSettings = true;
+    d->settingsDirty = true;
+    d->autoSaveGroup = groupName;
+    d->autoSaveWindowSize = saveWindowSize;
+    // Get notified when the user moves a toolbar around
+    connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
+             this, SLOT( setSettingsDirty() ) );
+    
+    // Get default values
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    d->size = QRect(desk.width(), width(), desk.height(), height());
+    if( internalStatusBar() && !internalStatusBar()->isHidden())
+      d->isStatusBarShown = true;
+    else
+      d->isStatusBarShown = false;
+    if( internalMenuBar() && !internalMenuBar()->isHidden())
+      d->isMenuBarShown = true;
+    else
+      d->isMenuBarShown = false;
+    // Now read the previously saved settings
+    applyMainWindowSettings( KGlobal::config(), groupName );
 }
-
 
 void KMainWindow::resetAutoSaveSettings()
 {
     d->autoSaveSettings = false;
+    if ( d->settingsTimer )
+        d->settingsTimer->stop();
 }
 
 bool KMainWindow::autoSaveSettings() const
@@ -891,17 +913,19 @@ void KMainWindow::saveAutoSaveSettings()
     //kdDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
     saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
     KGlobal::config()->sync();
+    d->settingsDirty = false;
+    if ( d->settingsTimer )
+        d->settingsTimer->stop();
 }
 
-/**
- * @depriciated.  This function now simply calls QMainWindow::resizeEvent(e).  Remove in kde4
- * Subclasses can call resizeEvent, just should not call KMainWindow::resizeEvent.
- */ 
-void KMainWindow::resizeEvent( QResizeEvent *e ) {
-  QMainWindow::resizeEvent(e);
+void KMainWindow::resizeEvent( QResizeEvent * )
+{
+    if ( d->autoSaveWindowSize )
+        setSettingsDirty();
 }
 
-bool KMainWindow::hasMenuBar() {
+bool KMainWindow::hasMenuBar()
+{
 	return (internalMenuBar());
 }
 
