@@ -123,12 +123,14 @@ void KSSLCertDlg::setHost(const QString& host) {
 
 void KSSLCertDlg::slotSend() {
    _dont->setChecked(false);
+   _send->setChecked(true);
    _certs->setEnabled(true);
 }
 
 
 void KSSLCertDlg::slotDont() {
    _send->setChecked(false);
+   _dont->setChecked(true);
    _certs->setEnabled(false);
 }
 
