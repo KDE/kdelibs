@@ -65,6 +65,11 @@ public:
   virtual KServiceType * findServiceTypeByName(const QString &_name);
 
   /**
+   * Find a the property type of a named property.
+   */
+  QVariant::Type findPropertyTypeByName(const QString &_name);
+
+  /**
    * Find a mimetype from a filename (using the pattern list)
    */
   KMimeType * findFromPattern(const QString &_filename);
@@ -100,6 +105,7 @@ private:
 protected:
   int m_fastPatternOffset;
   int m_otherPatternOffset;
+  QDict<int> m_propertyTypeDict; 
 };
 
 #endif

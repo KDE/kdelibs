@@ -34,6 +34,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kconfigbase.h>
 #include <dcopclient.h>
 
 #include "kservicefactory.h"
@@ -71,13 +72,16 @@ KService::init( KDesktopFile *config )
     m_bValid = false;
     return;
   }
+  QMap<QString, QString> entryMap = config->entryMap(config->group());
   m_bDeleted = config->readBoolEntry( "Hidden", false );
+  entryMap.remove("Hidden");
   if (m_bDeleted)
   {
     m_bValid = false;
     return;
   }
   m_strType = config->readEntry( "Type" );
+  entryMap.remove("Type");
   if ( m_strType.isEmpty() )
   {
     /*kdWarning(7012) << "The desktop entry file " << entryPath()
@@ -137,7 +141,9 @@ KService::init( KDesktopFile *config )
      name = name.left(pos);
 
   m_strExec = config->readEntry( "Exec" );
+  entryMap.remove("Exec");
   m_strName = config->readEntry( "Name" );
+  entryMap.remove("Name");
   if ( m_strName.isEmpty() )
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
@@ -146,31 +152,36 @@ KService::init( KDesktopFile *config )
   }
 
   m_strIcon = config->readEntry( "Icon", "unknown" );
+  entryMap.remove("Icon");
   m_bTerminal = (config->readBoolEntry( "Terminal" )); // should be a property IMHO
+  entryMap.remove("Terminal");
   m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
+  entryMap.remove("TerminalOptions");
   m_strPath = config->readEntry( "Path" );
+  entryMap.remove("Path");
   m_strComment = config->readEntry( "Comment" );
+  entryMap.remove("Comment");
   m_mapNotify = config->readBoolEntry( "MapNotify", false );
+  entryMap.remove("MapNotify");
   m_lstKeywords = config->readListEntry("Keywords");
+  entryMap.remove("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
+  entryMap.remove("X-KDE-Library");
   m_strInit = config->readEntry("X-KDE-Init" );
-  m_libraryMajor = config->readNumEntry( "X-KDE-LibraryMajor", 0 );
-  m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
-  m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
+  entryMap.remove("X-KDE-Init");
+
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
+  entryMap.remove("ServiceTypes");
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
-  // Now in application.desktop, i.e. read as properties
-  //m_docPath = config->readEntry("DocPath");
-  //m_bHideFromPanel = config->readBoolEntry("X-KDE-HideFromPanel");
-  //m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
-  //m_strUsername = config->readEntry( "X-KDE-Username" );
+  entryMap.remove("MimeType");
 
   if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
     // Applications implement the service type "Application" ;-)
     m_lstServiceTypes += "Application";
 
   QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").lower();
+  entryMap.remove("X-DCOP-ServiceType");
   if (dcopServiceType == "unique")
      m_DCOPServiceType = DCOP_Unique;
   else if (dcopServiceType == "multi")
@@ -183,54 +194,21 @@ KService::init( KDesktopFile *config )
   m_strDesktopEntryName = name.lower();
 
   m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
+  entryMap.remove("AllowDefault");
 
   m_initialPreference = config->readNumEntry( "InitialPreference", 1 );
+  entryMap.remove("InitialPreference");
 
-  // Load all additional properties
-  QStringList::Iterator it = m_lstServiceTypes.begin();
-  for( ; it != m_lstServiceTypes.end(); ++it )
+  // Store all additional entries in the property map.
+  // A QMap<QString,QString> would be easier for this but we can't
+  // brake BC, so we have to store it in m_mapProps.
+//  qWarning("Path = %s", entryPath().latin1());
+  QMap<QString,QString>::ConstIterator it = entryMap.begin();
+  for( ; it != entryMap.end();++it)
   {
-    QString servicetype = *it;
-    //kdDebug(7012) << m_strName << ":" << servicetype << endl;
-    while ( true )
-    {
-      KServiceType * s = KServiceTypeFactory::self()->findServiceTypeByName( servicetype );
-      if (!s) break;
-
-      const QMap<QString,QVariant::Type>& pd = s->propertyDefs();
-      QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
-      for( ; pit != pd.end(); ++pit )
-      {
-        QVariant v = config->readPropertyEntry( pit.key(), pit.data() );
-        if ( v.isValid() )
-          m_mapProps.insert( pit.key(), v );
-      }
-      // Now look at "parent" service type
-      if (s->isDerived())
-          servicetype = s->parentServiceType();
-      else
-          servicetype = QString::null;
-
-      // We should delete 's' when we are not in build mode.
-      // When we are in build mode, 's' was allocated via
-      // KBuildServiceTypeFactory::findServiceTypeByName() instead of
-      // KServiceTypeFactory::findServiceTypeByName().
-
-      // KBuildServiceTypeFactory::findServiceTypeByName() does not allocate
-      // 's' but returns the version stored in a dictionary.
-      // We should not delete such entries.
-
-      // KServiceTypeFactory::findServiceTypeByName() returns an allocated
-      // entry created from sycoca.
-      // We should delete such an entry here.
-
-      if ( !KSycoca::self()->isBuilding() ) // kbuildservicetypefactory returns them from the dict...
-        delete s;
-
-      if (servicetype.isNull()) break;
-    }
+//     qWarning("   Key = %s Data = %s", it.key().latin1(), it.data().latin1());
+     m_mapProps.insert( it.key(), QVariant( it.data()));
   }
-
 }
 
 KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
@@ -323,6 +301,44 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   return false;
 }
 
+class KServiceReadProperty : public KConfigBase
+{
+public:
+   KServiceReadProperty(const QString &_key, const QCString &_value)
+	: key(_key), value(_value) { }
+   
+   bool hasGroup(const QString &) const { qWarning("hasGroup(const QString &)");
+return false; }
+   bool hasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
+return false; }
+   bool hasGroup(const char *) const { qWarning("hasGroup(const char *)");
+return false; }
+
+   QStringList groupList() const { return QStringList(); }
+
+   bool hasKey(const QString &pKey) const { qWarning("hasKey(const QString &)");
+return (pKey == key);}      
+   bool hasKey(const char *) const { qWarning("hasKey(const char *)");
+return true;}      
+
+   QMap<QString,QString> entryMap(const QString &) const 
+      { return QMap<QString,QString>(); }
+
+   void reparseConfiguration() { }
+
+   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
+
+   KEntryMap internalEntryMap() const { return KEntryMap(); }
+
+   void putData(const KEntryKey &, const KEntry&) { }
+
+   KEntry lookupData(const KEntryKey &) const
+   { KEntry entry; entry.mValue = value; return entry; }
+protected:
+   QString key;
+   QCString value;
+};
+
 QVariant KService::property( const QString& _name ) const
 {
   if ( _name == "Type" )
@@ -362,11 +378,58 @@ QVariant KService::property( const QString& _name ) const
   else if ( _name == "MapNotify" )
     return QVariant( m_mapNotify, 0 ); // use the special bool constructor of QVariant
 
-  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
-  if ( it == m_mapProps.end() )
-    return QVariant(); // Invalid variant
+  // Ok we need to convert the property from a QString to its real type.
+  // First we need to ask KServiceTypeFactory what the type of this property
+  // is supposed to be.
+  // Then we use a homebuild class based on KBaseConfig to convert the QString.
+  // For some often used property types we do the conversion ourselves.
 
-  return it.data();
+  QVariant::Type t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
+  if (t == QVariant::Invalid)
+  {
+    kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
+    return QVariant(); // Unknown property: Invalid variant.
+  }
+
+  QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
+  if ( (it == m_mapProps.end()) || (it.data().isValid()))
+  {
+//     kdDebug(7012) << "Property not found.\n";
+     return QVariant(); // No property set.
+  }  
+
+  switch(t)
+  {
+    case QVariant::String:
+        return it.data();
+    case QVariant::Bool:
+    case QVariant::Int:
+        { 
+           QString aValue = it.data().toString();
+           int val = 0;
+           if (aValue == "true" || aValue == "on" || aValue == "yes")
+              val = 1;
+           else
+           {
+              bool bOK;
+              val = aValue.toInt( &bOK );
+              if( !bOK )
+                 val = 0;
+           }
+           if (t == QVariant::Bool)
+           {
+              if (val)
+                 return QVariant(true);
+              else
+                 return QVariant(false);
+           }
+           return QVariant(val);
+        }
+    default: 
+        // All others
+        KServiceReadProperty ksrp(_name, it.data().toString().utf8());
+        return ksrp.readPropertyEntry(_name, t);
+  }
 }
 
 QStringList KService::propertyNames() const

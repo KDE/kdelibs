@@ -50,6 +50,11 @@ public:
   virtual KServiceType * createEntry( int ) { assert(0); return 0L; }
 
   /**
+   * Add entry 
+   */
+  virtual void addEntry(KSycocaEntry *newEntry, const char *resource);
+
+  /**
    * Write out service type specific index files.
    */
   virtual void save(QDataStream &str);

@@ -97,24 +97,12 @@ public:
   QString init() const { return m_strInit; }
 
   /**
-   * Returns the major number of the library.
-   *
-   * @see library()
-   * @see libraryMinor()
+   * @deprecated Will be removed in KDE 3.0
    */
   int libraryMajor() const { return m_libraryMajor; }
-  /**
-   * Returns the minor number of the library.
-   *
-   * @see library()
-   * @see libraryMajor()
-   */
   int libraryMinor() const { return m_libraryMinor; }
-  /**
-   * Returns the libraries on which this service depends. That is
-   *         only of interest if the service itelf is a library.
-   */
   QStringList libraryDependencies() const { return m_lstLibraryDeps; }
+
   /**
    * Returns the icon associated with the service.
    */

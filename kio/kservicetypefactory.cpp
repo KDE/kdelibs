@@ -38,11 +38,18 @@ KServiceTypeFactory::KServiceTypeFactory()
    if (m_str)
    {
       // Read Header
-      Q_INT32 i;
+      Q_INT32 i,n;
       (*m_str) >> i;
       m_fastPatternOffset = i;
       (*m_str) >> i;
       m_otherPatternOffset = i;
+      (*m_str) >> n;
+      QString str;
+      for(;n;n--)
+      {
+         (*m_str) >> str >> i;
+         m_propertyTypeDict.insert(str, (int*) i);
+      }
    }
 }
 
@@ -75,6 +82,22 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
      newServiceType = 0; // Not found
    }
    return newServiceType;
+}
+
+QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
+{
+   if (!m_sycocaDict) 
+      return QVariant::Invalid; // Error!
+
+   assert (!KSycoca::self()->isBuilding());
+
+   // We store 'value+1' as the pointer value. It's a waste to allocate
+   // seporate memory for each int.
+   int t = (int) m_propertyTypeDict.find(_name);
+   if (t) 
+     return (QVariant::Type) (t-1);
+
+   return QVariant::Invalid;
 }
 
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
