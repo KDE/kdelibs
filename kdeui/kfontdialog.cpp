@@ -23,6 +23,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.18  1998/04/12 08:56:13  jacek
+
+    Small fix in setting charset combo
+
     Revision 1.17  1998/03/08 22:08:49  wuebben
     Bernd: adjusted the size of kfontdialog for localization
 
@@ -523,14 +527,18 @@ void KFontDialog::setCombos(){
  else
    style_combo->setCurrentItem(0);
 
+ // Re-create displayable charsets list
  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
  const char * charset=charsets->name(selFont);
- for(i = 0;i<charset_combo->count();i++)
-   if (charset==charset_combo->text(i)){
-     charset_combo->setCurrentItem(i);
-     break;
-   }
-
+ QStrList lst=charsets->displayable(selFont.family());
+ charset_combo->clear();
+ i = 0;
+ for(const char * chset=lst.first();chset;chset=lst.next(),++i) {
+     charset_combo->insertItem( chset );
+     if (strcmp(chset, charset) == 0) charset_combo->setCurrentItem(i);
+ }
+ charset_combo->insertItem( "any" );
+ 
 }
 
 bool KFontDialog::loadKDEInstalledFonts(){
