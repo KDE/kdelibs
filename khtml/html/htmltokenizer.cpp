@@ -82,10 +82,11 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
                 case 0x92: (x) = '\''; break; \
                 case 0x93: (x) = '"'; break; \
                 case 0x94: (x) = '"'; break; \
-                case 0x95: (x) = 0xb7; break; \
+                case 0x95: (x) = '*'; break; \
                 case 0x96: (x) = '-'; break; \
                 case 0x97: (x) = '-'; break; \
                 case 0x98: (x) = '~'; break; \
+                case 0xb7: (x) = '*'; break; \
                 default: break; \
                 } \
             }
@@ -290,6 +291,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
+            searchCount = 0;
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
             if (script)
