@@ -1169,20 +1169,14 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
       part->gotoAnchor(url.mid(1));
     } else {
       QString dstUrl = active_part->htmlDocument().completeURL(url).string();
-      KURL dst( dstUrl );
-      KURL partURL( part->url() );
-      // Remove refs for the comparison
-      dst.setRef( QString::null );
-      partURL.setRef( QString::null );
-      kdDebug(6070) << "Window::goURL dstUrl=" << dst.prettyURL() << " partURL=" << partURL.prettyURL()
-                   << " identical: " << partURL.equals( dst, true ) << endl;
+      kdDebug(6070) << "Window::goURL dstUrl=" << dstUrl << endl;
 
       // check if we're allowed to inject javascript
       // SYNC check with khtml_part.cpp::slotRedirect!
       if ( isSafeScript(exec) ||
             dstUrl.find(QString::fromLatin1("javascript:"), 0, false) != 0 )
-          part->scheduleRedirection(-1,
-                                dstUrl,
+        part->scheduleRedirection(-1,
+                                  dstUrl,
                                   lockHistory);
     }
   } else if (!part && !m_frame->m_part.isNull()) {
