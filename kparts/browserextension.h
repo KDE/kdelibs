@@ -24,11 +24,7 @@
 #include <sys/types.h>
 
 #include <qpoint.h>
-#if QT_VERSION < 300
-#include <qlist.h>
-#else
 #include <qptrlist.h>
-#endif
 #include <qdatastream.h>
 #include <qstringlist.h>
 
@@ -36,11 +32,7 @@
 #include <kparts/event.h>
 
 class KFileItem;
-#if QT_VERSION < 300
-typedef QList<KFileItem> KFileItemList;
-#else
 typedef QPtrList<KFileItem> KFileItemList;
-#endif
 class QString;
 
 namespace KParts {
@@ -223,11 +215,11 @@ class BrowserExtensionPrivate;
   * The way to associate the BrowserExtension with the part is to simply
   * create the BrowserExtension as a child of the part (in QObject's terms).
   * The hosting application will look for it automatically.
-  * 
+  *
   * Another aspect of the browser integration is that a set of standard
   * actions are provided by the browser, but implemented by the part
   * (for the actions it supports).
-  * 
+  *
   * The following standard actions are defined by the host of the view :
   *
   * [selection-dependent actions]
@@ -583,12 +575,8 @@ public:
    * Note that this method does not query the child objects recursively.
    */
 
-#if QT_VERSION < 300
-  virtual const QList<KParts::ReadOnlyPart> frames() const;
-#else  
   virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
-#endif
-  
+
   /**
    * Opens the given url in a hosted child frame. The frame name is specified in the
    * frameName variable in the urlArgs argument structure (see @ref KParts::URLArgs ) .
