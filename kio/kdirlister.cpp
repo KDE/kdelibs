@@ -48,7 +48,6 @@ public:
     bool urlChanged;
     QString nameFilter;
     QStringList mimeFilter;
-    QString deprecated_mimeFilter;
     QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> > jobs;
     static const uint MAX_JOBS = 5;
 };
@@ -313,7 +312,7 @@ void KDirLister::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
     }
     else
     {
-      //kdDebug(7003)<< "Adding " << url.prettyURL() << endl;
+      //kdDebug(7003)<< "Adding " << name << endl;
       KFileItem* item = createFileItem( *it, url, m_bDelayedMimeTypes);
       assert( item != 0L );
       bool isNamedFilterMatch = ((m_bDirOnlyMode && !item->isDir()) ||
