@@ -93,25 +93,29 @@ public:
   {
     m_kaccel    = 0;
     m_bIconSet  = false;
+    m_bIconSetNotYetLoaded=false;
     m_enabled   = true;
     m_accel     = 0;
   }
   ~KActionPrivate()
   {
   }
-  QString m_iconName;
   KAccel *m_kaccel;
 
+  QString m_iconName;
   QString m_text;
   QString m_plainText;
   QString m_whatsThis;
   QString m_groupText;
-  QPixmap m_pixmap;
-  QIconSet m_iconSet;
-  bool m_bIconSet;
   QString m_group;
-  int m_accel;
   QString m_toolTip;
+
+  QPixmap m_pixmap;
+  QIconSet m_iconSetDemand;
+  bool m_bIconSet:1;
+  bool m_bIconSetNotYetLoaded:1;
+  bool m_enabled:1;
+  int m_accel;
 
   struct Container
   {
@@ -124,7 +128,6 @@ public:
   };
 
   QValueList<Container> m_containers;
-  bool m_enabled;
 };
 
 KAction::KAction( const QString& text, int accel, QObject* parent,
@@ -193,7 +196,10 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 
     setText( text );
     setAccel( accel );
-    setIcon( pix );
+
+    d->m_iconName=pix;
+    d->m_bIconSetNotYetLoaded=true;
+    d->m_bIconSet=true;
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
@@ -232,7 +238,10 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 
     setAccel( accel );
     setText( text );
-    setIcon( pix );
+
+    d->m_iconName=pix;
+    d->m_bIconSetNotYetLoaded=true;
+    d->m_bIconSet=true;
 
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
@@ -425,7 +434,7 @@ int KAction::plug( QWidget *w, int index )
                                    d->m_accel, -1, index );
         } else {
             if ( d->m_bIconSet )
-                id = menu->insertItem( d->m_iconSet, d->m_text, this,//dsweet
+                id = menu->insertItem( iconSet(), d->m_text, this,//dsweet
                                        SLOT( slotActivated() ), d->m_accel,
                                        -1, index );
             else
@@ -464,7 +473,7 @@ int KAction::plug( QWidget *w, int index )
     int id_ = getToolButtonID();
     if ( icon().isEmpty() && d->m_bIconSet )
     {
-      bar->insertButton( d->m_iconSet.pixmap(), id_, SIGNAL( clicked() ), this,
+      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
                          d->m_enabled, d->m_plainText, index );
     }
@@ -674,8 +683,9 @@ QString KAction::icon() const
 
 void KAction::setIconSet( const QIconSet &iconset )
 {
-  d->m_iconSet  = iconset;
+  d->m_iconSetDemand  = iconset;
   d->m_bIconSet = true;
+  d->m_bIconSetNotYetLoaded=false;
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -696,7 +706,9 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
 
 QIconSet KAction::iconSet() const
 {
-  return d->m_iconSet;
+   if (d->m_bIconSetNotYetLoaded)
+      const_cast<KAction *>(this)->setIcon(d->m_iconName);
+   return d->m_iconSetDemand;
 }
 
 bool KAction::hasIconSet() const
