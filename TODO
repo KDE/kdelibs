@@ -74,13 +74,27 @@ that we would like to make for the next binary incompatible release.
   window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
   hacks.
 
-- Change classes that store bool data using strings ("true"/"false") to use bool
-  calls (readBoolEntry()).  Although not technicly a binary incompatiblity...
+- Change classes that store bool data using strings ("true"/"false") to use bool 
+  calls (readBoolEntry()).  Although not technicaly a binary incompatiblity... 
   just something to bring up for possible change (for the better)
+
+  Use KConfigXT instead! /FransE
 
 - Is it really necessary to bother people using the KCM API:s with withFallback? I have
   never heard of it failing and when would you not like to have that fallback? I think
-  a default of 'true' would be fine.
+  a default of 'true' would be fine(and remove the argument in the APIs).
 
-- KCModuleInfo and KService should use d-pointer. Perhaps there is more.
+- Do we need to have factory arguments in the KCM API? (who would use it anyway?)
+
+- KCModuleInfo and KService should use d-pointer. Perhaps there is more classes.
+
+- The config options in kdeglobals needs to be cleaned up a little. Perhaps I'm being picky..
+	* They should be named properly, for example "enableIcons" instead of "EnableIcons". Or atleast
+		settle on one thing.
+	* AFAICT it would be the right thing if KWin had its own rc file instead of having its "WM" 
+		section in kdeglobals.
+	* Shouldn't KSpell have its own rc file instead of kdeglobals?
+	* Should we allow spaces in option names?
+	* Some option names are too short for being understandable. fixed->fixedFont; font->systemWideFont
+	* Perhaps an own font section?
 
