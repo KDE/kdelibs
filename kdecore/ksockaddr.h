@@ -267,7 +267,9 @@ public:
   bool setAddress(const sockaddr_in* sin, ksocklen_t len);
 
   /**
-   * Sets this socket to given raw socket
+   * Sets this socket to given raw socket.
+   *
+   * Note: this function does not clear the scope ID and flow info values
    * @param sin6	the raw socket
    * @param len		the socket address length
    */
