@@ -744,7 +744,10 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 {
     m_ignoreSelectEvents = false;
     m_multiple = element->multiple();
-    m_size = element->size();
+    if (element->size() >= 1)
+	m_size = element->size();
+    else
+	m_size = 1;
     m_useListBox = (m_multiple || m_size > 1);
 
     if(m_useListBox)
@@ -771,7 +774,10 @@ void RenderSelect::layout( )
     bool oldListbox = m_useListBox;
 
     m_multiple = f->multiple();
-    m_size = f->size();
+    if (f->size() >= 1)
+	m_size = f->size();
+    else
+	m_size = 1;
     m_useListBox = (m_multiple || m_size > 1);
 
     if (oldMultiple != m_multiple || oldSize != m_size) {
