@@ -496,9 +496,17 @@ KJSO EqualNode::evaluate()
   KJSO v1 = e1.getValue();
   KJSO v2 = e2.getValue();
 
-  bool eq = equal(v1, v2);
-
-  return Boolean(oper == OpEqEq ? eq : !eq);
+  bool result;
+  if (oper == OpEqEq || oper == OpNotEq) {
+    // == and !=
+    bool eq = equal(v1, v2);
+    result = oper == OpEqEq ? eq : !eq;
+  } else {
+    // === and !==
+    bool eq = strictEqual(v1, v2);
+    result = oper == OpStrEq ? eq : !eq;
+  }
+  return Boolean(result);
 }
 
 // ECMA 11.10

@@ -122,6 +122,36 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
   return false;
 }
 
+bool KJS::strictEqual(const KJSO &v1, const KJSO &v2)
+{
+  Type t1 = v1.type();
+  Type t2 = v2.type();
+
+  if (t1 != t2)
+    return false;
+  if (t1 == UndefinedType || t1 == NullType)
+    return true;
+  if (t1 == NumberType) {
+    double n1 = v1.toNumber().value();
+    double n2 = v2.toNumber().value();
+    if (isNaN(n1) || isNaN(n2))
+      return false;
+    if (n1 == n2)
+      return true;
+    /* TODO: +0 and -0 */
+    return false;
+  } else if (t1 == StringType) {
+    return v1.toString().value() == v2.toString().value();
+  } else if (t2 == BooleanType) {
+    return v1.toBoolean().value() == v2.toBoolean().value();
+  }
+  if (v1.imp() == v2.imp())
+    return true;
+  /* TODO: joined objects */
+
+  return false;
+}
+
 int KJS::relation(const KJSO& v1, const KJSO& v2)
 {
   KJSO p1 = v1.toPrimitive(NumberType);

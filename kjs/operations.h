@@ -34,6 +34,7 @@ namespace KJS {
    */
   bool isInf(double d);
   bool equal(const KJSO& v1, const KJSO& v2);
+  bool strictEqual(const KJSO &v1, const KJSO &v2);
   /**
    * This operator performs an abstract relational comparision of the two
    * arguments that can be of arbitrary type. If possible, conversions to the
