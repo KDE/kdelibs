@@ -1025,15 +1025,6 @@ protected:
     int parseCount;
     int granularity;
 
-    /*
-     * This list holds all <a href= urls in the document.
-     */
-    QStrList parsedURLs;
-    QStrList parsedTargets;
-
-	void addParsedTarget( const char *_target);
-	void addParsedURL( const char *_url);
-
     QPixmap bgPixmap;
 
     /*

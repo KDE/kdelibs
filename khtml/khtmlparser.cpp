@@ -876,7 +876,7 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 
 	stringTok->tokenize( str + 5, " >" );
 
-	QString href;
+	char * href = "";
 	QString coords;
 	const char * atarget = baseTarget;
 	HTMLArea::Shape shape = HTMLArea::Rect;
@@ -901,12 +901,12 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 		{// reference
 		    KURL u( HTMLWidget->getDocumentURL() );
 		    u.setReference( p + 1 );
-		    href = u.url();
+		    href = ht->newString(u.url().data());
 		}
 		else 
 		{
 		    KURL u( HTMLWidget->getBaseURL(), p );
-		    href = u.url();
+		    href = ht->newString(u.url().data());
 		}
 	    }
 	    else if ( strncasecmp( p, "target=", 7 ) == 0 )
@@ -1034,9 +1034,6 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 	if ( !target )
 	    target = baseTarget;
 	
-	if (target)
-            HTMLWidget->addParsedTarget( target);
-
 	if ( !tmpurl.isEmpty() )
 	{
 	    vspace_inserted = false;
@@ -1048,7 +1045,6 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 		underline = true;
 	    selectFont();
 	    url = ht->newString( tmpurl.data(), tmpurl.length() );
-	    HTMLWidget->addParsedURL( url );
 	}
     }
     else if ( strncmp( str, "/a", 2 ) == 0 )
@@ -1782,7 +1778,9 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 		image =  new HTMLImageMap( HTMLWidget, kurl.url(), url, target,
 			                   width, height, percent, border );
 		if ( !usemap.isEmpty() )
-		    ((HTMLImageMap *)image)->setMapURL( usemap );
+		{
+		    ((HTMLImageMap *)image)->setMapURL( ht->newString( usemap.data() ) );
+		}
 		else
 		    ((HTMLImageMap *)image)->setMapType( HTMLImageMap::ServerSide );
 	    }
@@ -1984,7 +1982,7 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 			{
 				QString mapurl = "#";
 				mapurl += token+5;
-				HTMLWidget->addMap( mapurl);
+				HTMLWidget->addMap( ht->newString( mapurl.data() ) );
 			}
 		}
 	}

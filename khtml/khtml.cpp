@@ -132,9 +132,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     formList.setAutoDelete( true );
     mapList.setAutoDelete( true );
 
-    parsedURLs.setAutoDelete( false );
-    parsedTargets.setAutoDelete( false );
-
     defaultSettings = new HTMLSettings;
 
     cache = new KHTMLCache(this);
@@ -1276,8 +1273,6 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     }
 
     // Clear several administration lists
-    parsedTargets.clear();
-    parsedURLs.clear();
     formList.clear();
     mapList.clear();
 
@@ -2503,16 +2498,6 @@ void KHTMLWidget::setBaseURL( const char *_url)
     }
     p += "/";
     baseURL.setPath( p );
-}
-
-void KHTMLWidget::addParsedTarget( const char *_target)
-{
-    parsedTargets.append( _target );
-}
-    
-void KHTMLWidget::addParsedURL( const char *_url)
-{
-    parsedURLs.append( _url );
 }
 
 void KHTMLWidget::addFrameSet( HTMLFrameSet *_frameSet )
