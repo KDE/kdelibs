@@ -24,7 +24,7 @@ libkhtmlxml_la_SOURCES = \
 	dom2_traversalimpl.cpp xml_tokenizer.cpp  dom_xmlimpl.cpp \
 	dom2_eventsimpl.cpp  dom2_viewsimpl.cpp
 
-libkhtmlxml_la_LDFLAGS = -no-undefined 
+#libkhtmlxml_la_LDFLAGS = -no-undefined 
 libkhtmlxml_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
