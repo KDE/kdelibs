@@ -294,7 +294,7 @@ void KWM::setMiniIcon(Window w, const QPixmap &pm){
   *p = pm;
   setDoubleProperty(w, a, (long) p->handle(), 
 		    (long) (p->mask()?p->mask()->handle():None));
-  delete p;
+  // delete p;
 }
 
 void KWM::setIcon(Window w, const QPixmap &pm){
@@ -311,7 +311,7 @@ void KWM::setIcon(Window w, const QPixmap &pm){
     hints->flags &= ~IconMaskHint;
   XSetWMHints( qt_xdisplay(), w, hints );
   XFree(hints);
-  delete p;
+  // delete p;
 }
 
 
