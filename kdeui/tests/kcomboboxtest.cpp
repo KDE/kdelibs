@@ -9,7 +9,6 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kcombobox.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <ksimpleconfig.h>

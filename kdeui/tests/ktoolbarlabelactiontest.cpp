@@ -22,7 +22,7 @@
 #include <kmainwindow.h>
 #include <klineedit.h>
 #include <klistview.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h> 
 #include <kdebug.h>
