@@ -25,6 +25,7 @@
 
 class KXMLGUIBuilderPrivate;
 class QWidget;
+class KInstance;
 
 /**
  * @internal
@@ -39,6 +40,9 @@ class KXMLGUIBuilder
 
   KXMLGUIBuilder( QWidget *widget );
   virtual ~KXMLGUIBuilder();
+
+  KInstance *builderInstance() const;
+  void setBuilderInstance( KInstance *instance );
 
   virtual QStringList containerTags() const;
 

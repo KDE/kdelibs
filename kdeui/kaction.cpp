@@ -565,12 +565,12 @@ void KAction::setIcon( const QString &icon )
 
   // We used to use SmallIcon for this, but that's wrong since the
   // Small group may *not* be 16x16 and we *need* 16x16
-  KIconLoader *loader;
+  KInstance *instance;
   if ( parent() && parent()->inherits( "KActionCollection" ) )
-    loader = static_cast<KActionCollection*>(parent())->instance()->iconLoader();
+    instance = static_cast<KActionCollection*>(parent())->instance();
   else
-    loader = KGlobal::iconLoader();
-  setIconSet( SmallIcon( icon, 16 ) );
+    instance = KGlobal::instance();
+  setIconSet( SmallIcon( icon, 16, KIcon::DefaultState, instance ) );
 
   // now handle any toolbars
   int len = containerCount();

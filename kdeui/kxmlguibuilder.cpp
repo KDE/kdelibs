@@ -45,21 +45,25 @@ public:
 
   QString tagSeparator;
   QString tagTearOffHandle;
+
+  KInstance *m_instance;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 {
   d = new KXMLGUIBuilderPrivate;
   d->m_widget = widget;
-  
+
   d->tagMainWindow = QString::fromLatin1( "mainwindow" );
   d->tagMenuBar = QString::fromLatin1( "menubar" );
   d->tagMenu = QString::fromLatin1( "menu" );
   d->tagToolBar = QString::fromLatin1( "toolbar" );
   d->tagStatusBar = QString::fromLatin1( "statusbar" );
-  
+
   d->tagSeparator = QString::fromLatin1( "separator" );
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
+  
+  d->m_instance = 0;
 }
 
 KXMLGUIBuilder::~KXMLGUIBuilder()
@@ -112,10 +116,32 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (text.isEmpty())  // still no luck
       text = i18n("No text!");
 
+    QString icon = element.attribute( "icon" );
+    QPixmap pix;
+    
+    if ( !icon.isEmpty() )
+    {
+      KInstance *instance = d->m_instance;
+      if ( !instance )
+        instance = KGlobal::instance();
+      
+      pix = SmallIcon( icon, 16, KIcon::DefaultState, instance );
+    }
+    
     if ( parent && parent->inherits( "KMenuBar" ) )
-      id = static_cast<KMenuBar *>(parent)->insertItem( text, popup, -1, index );
+    {
+      if ( !icon.isEmpty() )
+        id = static_cast<KMenuBar *>(parent)->insertItem( pix, text, popup, -1, index );
+      else
+        id = static_cast<KMenuBar *>(parent)->insertItem( text, popup, -1, index );
+    }
     else if ( parent && parent->inherits( "QPopupMenu" ) )
-      id = static_cast<QPopupMenu *>(parent)->insertItem( text, popup, -1, index );
+    {
+      if ( !icon.isEmpty() )
+        id = static_cast<QPopupMenu *>(parent)->insertItem( pix, text, popup, -1, index );
+      else
+        id = static_cast<QPopupMenu *>(parent)->insertItem( text, popup, -1, index );
+    }
 
     return popup;
   }
@@ -268,3 +294,13 @@ void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
   else if ( parent->inherits( "KToolBar" ) )
     static_cast<KToolBar *>(parent)->removeItem( id );
 }
+
+KInstance *KXMLGUIBuilder::builderInstance() const
+{
+  return d->m_instance; 
+}
+
+void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
+{
+  d->m_instance = instance; 
+} 

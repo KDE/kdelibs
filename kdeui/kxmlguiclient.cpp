@@ -19,6 +19,7 @@
 
 #include "kxmlguiclient.h"
 #include "kxmlgui.h"
+#include "kxmlguibuilder.h"
 
 #include <qdom.h>
 
@@ -129,6 +130,8 @@ void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
   d->m_actionCollection.setInstance( instance );
+  if ( d->m_builder )
+    d->m_builder->setBuilderInstance( instance );
 }
 
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
@@ -523,6 +526,8 @@ const QList<KXMLGUIClient> *KXMLGUIClient::childClients()
 void KXMLGUIClient::setClientBuilder( KXMLGUIBuilder *builder )
 {
   d->m_builder = builder;
+  if ( builder )
+    builder->setBuilderInstance( instance() );
 }
 
 KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const

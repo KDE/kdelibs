@@ -359,7 +359,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   QStringList containerTags = m_builder->containerTags();
   if ( parentNode->builder && parentNode->builder != m_builder )
     containerTags += parentNode->builder->containerTags();
-  
+
   /*
    * This list contains references to all the containers we created on the current level.
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
@@ -581,7 +581,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 	else
 	  mergingIt = node->mergingIndices.end();
 	
-	adjustMergingIndices( node, idx, - ( clientIt.current()->m_actions.count() 
+	adjustMergingIndices( node, idx, - ( clientIt.current()->m_actions.count()
 					     + clientIt.current()->m_customElements.count() ), mergingIt );
 	
 	node->clients.removeRef( clientIt.current() );
@@ -756,8 +756,16 @@ QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDom
     }
   }
 
+  KInstance *old = m_builder->builderInstance();
+
+  KInstance *clientInst = m_client->instance();
+  if ( clientInst )
+    m_builder->setBuilderInstance( clientInst );
+  
   res = m_builder->createContainer( parent, index, element, containerStateBuffer, id );
 
+  m_builder->setBuilderInstance( old );
+  
   if ( res )
     *builder = m_builder;
 
