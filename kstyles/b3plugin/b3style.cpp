@@ -313,19 +313,36 @@ void B3Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g);
-        drawArrow( p, horiz ? RightArrow : DownArrow,
-                   activeControl == AddLine, addB.x()+4, addB.y()+4,
-                   addB.width()-8, addB.height()-8, g, !maxed);
+        if (horiz)
+          drawSBArrow( p, RightArrow,
+                       activeControl == AddLine, addB.x()+3, addB.y()+4,
+                       addB.width()-7, addB.height()-10, g, !maxed);
+        else
+          drawSBArrow( p, DownArrow,
+                       activeControl == AddLine, addB.x()+5, addB.y()+3,
+                       addB.width()-10, addB.height()-7, g, !maxed);
     }
     if ( controls & SubLine ) {
         drawSBButton(p, subB, g);
-        drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   activeControl == SubLine, subB.x()+4, subB.y()+4,
-                   subB.width()-8, subB.height()-8, g, !maxed);
+        if (horiz)
+          drawSBArrow( p, LeftArrow,
+                       activeControl == SubLine, subB.x()+3, subB.y()+4,
+                       subB.width()-7, subB.height()-10, g, !maxed);
+        else
+          drawSBArrow( p, UpArrow,
+                       activeControl == SubLine, subB.x()+5, subB.y()+3,
+                       subB.width()-10, subB.height()-7, g, !maxed);
+
         drawSBButton(p, subB3, g);
-        drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   activeControl == SubLine, subB3.x()+4, subB3.y()+4,
-                   subB3.width()-8, subB3.height()-8, g, !maxed);
+        if (horiz)
+          drawSBArrow( p, LeftArrow,
+                       activeControl == SubLine, subB3.x()+3, subB3.y()+4,
+                       subB3.width()-7, subB3.height()-10, g, !maxed);
+        else
+          drawSBArrow( p, UpArrow,
+                       activeControl == SubLine, subB3.x()+5, subB3.y()+3,
+                       subB3.width()-10, subB3.height()-7, g, !maxed);
+
     }
     if(controls & AddPage){
         if(addPageR.width()){
@@ -466,6 +483,120 @@ void B3Style::drawSBDecoButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(g.dark());
     p->drawLine(x+1, y2,  x2-1, y2);
     p->drawLine(x2,  y+1, x2,   y2-1);
+}
+
+void B3Style::drawSBArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
+                          int y, int w, int h, const QColorGroup &g,
+                          bool enabled, const QBrush *fill)
+{
+    int x2 = x+w;
+    int y2 = y+h;
+
+    switch (type)
+    {
+    case UpArrow:
+      p->setPen(enabled ? g.dark() : g.mid());
+      p->drawLine(x+3,  y,  x+3, y+1);
+
+      p->drawLine(x+2,  y+2,  x+2, y+3);
+      p->drawLine(x2-2, y+2, x2-2, y+3);
+
+      p->drawLine(x+1,  y+4, x+1,  y+6);
+      p->drawLine(x2-1, y+4, x2-1, y+6);
+
+      p->drawLine(x,  y+7, x,  y2);
+      p->drawLine(x2, y+7, x2, y2);
+
+      p->drawLine(x, y2, x2, y2);
+
+      p->setPen(enabled ? g.light() : g.mid());
+      p->drawLine(x+3, y+2, x+3, y+3);
+      p->drawLine(x+2, y+4, x+2, y+6);
+      p->drawLine(x+1, y+7, x+1, y2-1);
+
+      p->setPen(g.mid());
+      p->drawLine(x2-2, y+4, x2-2, y+6);
+      p->drawLine(x2-1, y+7, x2-1, y2-1);
+      p->drawLine(x+2, y2-1, x2-1, y2-1);
+      break;
+    case DownArrow:
+    default:
+      p->setPen(enabled ? g.dark() : g.mid());
+      p->drawLine(x+3,  y2,  x+3, y2-1);
+
+      p->drawLine(x+2,  y2-2,  x+2, y2-3);
+      p->drawLine(x2-2, y2-2, x2-2, y2-3);
+
+      p->drawLine(x+1,  y2-4, x+1,  y2-6);
+      p->drawLine(x2-1, y2-4, x2-1, y2-6);
+
+      p->drawLine(x,  y2-7, x,  y);
+      p->drawLine(x2, y2-7, x2, y);
+
+      p->drawLine(x, y, x2, y);
+
+      p->setPen(enabled ? g.light() : g.mid());
+      p->drawLine(x+3, y2-2, x+3, y2-3);
+      p->drawLine(x+2, y2-4, x+2, y2-6);
+      p->drawLine(x+1, y2-7, x+1, y+1);
+
+      p->setPen(g.mid());
+      p->drawLine(x2-2, y2-4, x2-2, y2-6);
+      p->drawLine(x2-1, y2-7, x2-1, y+1);
+      p->drawLine(x+2, y+1, x2-1, y+1);
+      break;
+    case LeftArrow:
+      p->setPen(enabled ? g.dark() : g.mid());
+      p->drawLine(x,  y+3,  x+1, y+3);
+
+      p->drawLine(x+2, y+2, x+3, y+2);
+      p->drawLine(x+2, y+4, x+3, y+4);
+
+      p->drawLine(x+4, y+1, x+6, y+1);
+      p->drawLine(x+4, y+5, x+6, y+5);
+
+      p->drawLine(x+7, y,   x2, y);
+      p->drawLine(x+7, y+6, x2, y+6);
+
+      p->drawLine(x2, y, x2, y+6);
+
+      p->setPen(enabled ? g.light() : g.mid());
+      p->drawLine(x+2, y+3,  x+3, y+3);
+      p->drawLine(x+4, y+2,  x+6, y+2);
+      p->drawLine(x+7, y+1, x2-1, y+1);
+
+      p->setPen(g.mid());
+      p->drawLine(x+4,  y+4, x+6,  y+4);
+      p->drawLine(x+7,  y+5, x2-1, y+5);
+      p->drawLine(x2-1, y+2, x2-1, y+5);
+      break;
+    case RightArrow:
+      p->setPen(enabled ? g.dark() : g.mid());
+      p->drawLine(x2,  y+3,  x2-1, y+3);
+
+      p->drawLine(x2-2, y+2, x2-3, y+2);
+      p->drawLine(x2-2, y+4, x2-3, y+4);
+
+      p->drawLine(x2-4, y+1, x2-6, y+1);
+      p->drawLine(x2-4, y+5, x2-6, y+5);
+
+      p->drawLine(x2-7, y,   x, y);
+      p->drawLine(x2-7, y+6, x, y+6);
+
+      p->drawLine(x, y, x, y+6);
+
+      p->setPen(enabled ? g.light() : g.mid());
+      p->drawLine(x2-7, y+1, x+1, y+1);
+      p->drawLine(x+1,  y+1, x+1, y+5);
+
+      p->setPen(g.mid());
+      p->drawLine(x2-2, y+3, x2-3, y+3);
+      p->drawLine(x2-4, y+2, x2-6, y+2);
+      p->drawLine(x2-4, y+4, x2-6, y+4);
+      p->drawLine(x2-7, y+5, x+2,  y+5);
+      break;
+
+    }
 }
 
 void B3Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,

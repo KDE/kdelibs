@@ -99,6 +99,9 @@ protected:
                       bool down=false);
     void drawSBDecoButton(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g);
+    void drawSBArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
+                     int y, int w, int h, const QColorGroup &g,
+                     bool enabled = true, const QBrush *fill = 0L);
 
 private:
     QColorGroup sliderGrp, sliderGrooveGrp, radioOnGrp;
