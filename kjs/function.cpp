@@ -56,7 +56,7 @@ namespace KJS {
   };
 };
 
-FunctionImp::FunctionImp(ExecState *exec, const UString &n)
+FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
   : InternalFunctionImp(
       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
       ), param(0L), ident(n), line0(-1), line1(-1), sid(-1)
@@ -82,7 +82,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   ContextImp ctx(globalObj, exec->interpreter()->imp(), thisObj, sid, codeType(),
                  exec->context().imp(), this, &args);
   ExecState newExec(exec->interpreter(), &ctx);
-  newExec.rep->exception = exec->exception(); // could be null
+  newExec._exception = exec->exception(); // could be null
 
   // assign user supplied arguments to parameters
   processParameters(&newExec, args);
@@ -115,7 +115,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   // if an exception occured, propogate it back to the previous execution object
   if (newExec.hadException())
-    exec->rep->exception = newExec.exception();
+    exec->_exception = newExec.exception();
 
 #ifdef KJS_VERBOSE
   CString n = ident.isEmpty() ? CString("(internal)") : ident.cstring();
@@ -130,7 +130,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
 
   if (comp.complType() == Throw) {
-    exec->rep->exception = comp.value();
+    exec->_exception = comp.value();
     return comp.value();
   }
   else if (comp.complType() == ReturnValue)
@@ -261,7 +261,7 @@ const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 
 
 DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const Identifier &n,
 					 FunctionBodyNode *b, const ScopeChain &sc)
-  : FunctionImp(exec,n.ustring()), body(b)
+  : FunctionImp(exec,n), body(b)
 {
   Value protect(this);
   body->ref();
@@ -494,7 +494,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 	// debugger requested we stop execution
 	dbg->imp()->abort();
       else if (newExec.hadException()) // propagate back to parent context
-	exec->rep->exception = newExec.exception(); 
+	exec->_exception = newExec.exception(); 
       else if (c.complType() == Throw)
 	exec->setException(c.value());
       else if (c.isValueCompletion())
@@ -617,6 +617,13 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       s += UString(c, 1);
     }
     res = String(s);
+    break;
+  }
+  case KJSPrint: {
+#ifndef NDEBUG
+    UString str = args[0].toString(exec);
+    puts(str.ascii());
+#endif
     break;
   }
   }

@@ -231,6 +231,8 @@ namespace KJS {
     Interpreter* interpreter() const { return m_interpreter; }
 
     void initGlobalObject();
+    static void lock();
+    static void unlock();
 
     void mark();
 
@@ -342,15 +344,6 @@ namespace KJS {
 
     int recursion;
     SourceCode *sources;
-  };
-
-  class ExecStateImp {
-  public:
-    ExecStateImp(Interpreter *interp, ContextImp *con)
-      : interpreter(interp), context(con) {};
-    Interpreter *interpreter;
-    ContextImp *context;
-    Value exception;
   };
 
   class AttachedInterpreter;

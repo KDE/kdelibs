@@ -596,75 +596,6 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     break;
   }
   case Sort:{
-// Old version... replace with new version below once new ArrayInstanceImp class is in place
-#if 0
-    printf("KJS Array::Sort length=%d\n", length);
-    for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(UString::from(i)).toString().value().ascii() );
-#endif
-    Object sortFunction;
-    bool useSortFunction = (args[0].type() != UndefinedType);
-    if (useSortFunction)
-      {
-        sortFunction = args[0].toObject(exec);
-        if (!sortFunction.implementsCall())
-          useSortFunction = false;
-      }
-
-    if (length == 0) {
-      thisObj.put(exec, lengthPropertyName, Number(0), DontEnum | DontDelete);
-      result = Undefined();
-      break;
-    }
-
-    // "Min" sort. Not the fastest, but definitely less code than heapsort
-    // or quicksort, and much less swapping than bubblesort/insertionsort.
-    for ( unsigned int i = 0 ; i<length-1 ; ++i )
-      {
-        Value iObj = thisObj.get(exec,i);
-        unsigned int themin = i;
-        Value minObj = iObj;
-        for ( unsigned int j = i+1 ; j<length ; ++j )
-          {
-            Value jObj = thisObj.get(exec,j);
-            int cmp;
-            if (jObj.type() == UndefinedType) {
-              cmp = 1;
-            } else if (minObj.type() == UndefinedType) {
-              cmp = -1;
-            } else if (useSortFunction) {
-                List l;
-                l.append(jObj);
-                l.append(minObj);
-                Object thisObj = exec->interpreter()->globalObject();
-                cmp = sortFunction.call(exec,thisObj, l ).toInt32(exec);
-            } else {
-              cmp = (jObj.toString(exec) < minObj.toString(exec)) ? -1 : 1;
-            }
-            if ( cmp < 0 )
-              {
-                themin = j;
-                minObj = jObj;
-              }
-          }
-        // Swap themin and i
-        if ( themin > i )
-          {
-            //printf("KJS Array::Sort: swapping %d and %d\n", i, themin );
-            thisObj.put( exec, i, minObj );
-            thisObj.put( exec, themin, iObj );
-          }
-      }
-#if 0
-    printf("KJS Array::Sort -- Resulting array:\n");
-    for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(UString::from(i)).toString().value().ascii() );
-#endif
-    result = thisObj;
-    break;
-  }
-// new version - awaiting merge of ArrayInstanceImp changes
-/*
 #if 0
     printf("KJS Array::Sort length=%d\n", length);
     for ( unsigned int i = 0 ; i<length ; ++i )
@@ -739,7 +670,6 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     result = thisObj;
     break;
   }
-*/
   case Splice: {
     // 15.4.4.12 - oh boy this is huge
     Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));

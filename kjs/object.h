@@ -82,9 +82,6 @@ namespace KJS {
   public:
     Object() { }
     explicit Object(ObjectImp *v);
-    Object(const Object &v);
-
-    Object& operator=(const Object &v);
 
     ObjectImp *imp() const;
 
@@ -573,10 +570,6 @@ namespace KJS {
                       Type preferredType = UnspecifiedType) const;
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
-    int toInteger(ExecState *exec) const;
-    int toInt32(ExecState *exec) const;
-    unsigned int toUInt32(ExecState *exec) const;
-    unsigned short toUInt16(ExecState *exec) const;
     UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
@@ -689,10 +682,6 @@ namespace KJS {
 
   inline bool Object::implementsCall() const
     { return imp()->implementsCall(); }
-
-// fixme
-/*   inline Value Object::call(ExecState *exec, Object &thisObj, const List &args) */
-/*     { return imp()->call(exec,thisObj,args); } */
 
   inline bool Object::implementsHasInstance() const
     { return imp()->implementsHasInstance(); }

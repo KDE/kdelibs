@@ -118,62 +118,6 @@ unsigned short ValueImp::toUInt16(ExecState *exec) const
   return static_cast<unsigned short>(d16);
 }
 
-// TODO: remove
-Value ValueImp::getBase(ExecState *) const
-{
-#ifndef NDEBUG
-  fprintf(stderr, "ValueImp::getBase: deprecated\n");
-#endif
-  return Undefined();
-}
-
-// TODO: remove
-Identifier ValueImp::getPropertyName(ExecState * /*exec*/) const
-{
-  if (type() != ReferenceType)
-    // the spec wants a runtime error here. But getValue() and putValue()
-    // will catch this case on their own earlier. When returning a Null
-    // string we should be on the safe side.
-    return Identifier();
-
-// fixme: remove this method
-  return Identifier();
-//   return Identifier((static_cast<const ReferenceImp*>(this))->getPropertyName());
-}
-
-// TODO: remove
-Value ValueImp::getValue(ExecState *exec) const
-{
-  if (type() != ReferenceType)
-    return Value(const_cast<ValueImp*>(this));
-
-  Value o = getBase(exec);
-
-  if (!o.isValid() || o.type() == NullType) {
-    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec).ustring();
-    Object err = Error::create(exec, ReferenceError, m.ascii());
-    exec->setException(err);
-    return err;
-  }
-
-  if (o.type() != ObjectType) {
-    UString m = I18N_NOOP("Base is not an object");
-    Object err = Error::create(exec, ReferenceError, m.ascii());
-    exec->setException(err);
-    return err;
-  }
-
-  return static_cast<ObjectImp*>(o.imp())->get(exec,getPropertyName(exec));
-}
-
-// TODO: remove
-void ValueImp::putValue(ExecState *, const Value)
-{
-#ifndef NDEBUG
-  fprintf(stderr, "ValueImp::putValue: deprecated\n");
-#endif
-}
-
 bool KJS::operator==(const Value &v1, const Value &v2)
 {
   return (v1.imp() == v2.imp());
@@ -269,29 +213,14 @@ Object Value::toObject(ExecState *exec) const
   return rep->toObject(exec);
 }
 
-// TODO: remove
-Value Value::getBase(ExecState *exec) const
-{
-  return rep->getBase(exec);
-}
-
-// TODO: remove
-Identifier Value::getPropertyName(ExecState *exec) const
-{
-  return rep->getPropertyName(exec);
-}
-
-// TODO: remove
-Value Value::getValue(ExecState *exec) const
-{
-  return rep->getValue(exec);
-}
-
-// TODO: remove
-void Value::putValue(ExecState *exec, const Value w)
-{
-  rep->putValue(exec,w);
-}
+// fixme: replace with proper versions of dispatch wrappers
+Type ValueImp::dispatchType() const { return type(); }
+Value ValueImp::dispatchToPrimitive(ExecState *exec, Type preferredType) const
+    { return toPrimitive(exec,preferredType); }
+bool ValueImp::dispatchToBoolean(ExecState *exec) const { return toBoolean(exec); }
+double ValueImp::dispatchToNumber(ExecState *exec) const { return toNumber(exec); }
+UString ValueImp::dispatchToString(ExecState *exec) const { return toString(exec); }
+Object ValueImp::dispatchToObject(ExecState *exec) const { return toObject(exec); }
 
 // ------------------------------ Undefined ------------------------------------
 

@@ -190,8 +190,8 @@ void StatementNode::setLoc(int line0, int line1, SourceCode *src)
 bool StatementNode::hitStatement(ExecState *exec)
 {
   assert(sourceCode);
-  assert(exec->imp()->context->sourceId == sourceCode->sid);
-  exec->imp()->context->setLines(l0,l1);
+  assert(exec->context().imp()->sourceId == sourceCode->sid);
+  exec->context().imp()->setLines(l0,l1);
   Debugger *dbg = exec->interpreter()->imp()->debugger();
   if (dbg)
     return dbg->atStatement(exec);

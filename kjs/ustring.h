@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2002 Apple Computer, Inc.
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -50,7 +50,7 @@ namespace KJS {
    */
   struct UChar {
     /**
-     * Construct a character with value 0.
+     * Construct a character with uninitialized value.    
      */
     UChar();
     UChar(char u);
@@ -92,17 +92,11 @@ namespace KJS {
      * A static instance of UChar(0).
      */
     static UChar null;
-//   private:
-    friend class UCharReference;
-    friend class UString;
-    friend bool operator==(const UChar &c1, const UChar &c2);
-    friend bool operator==(const UString& s1, const char *s2);
-    friend bool operator<(const UString& s1, const UString& s2);
 
     unsigned short uc;
   } KJS_PACKED;
 
-  inline UChar::UChar() : uc(0) { }
+  inline UChar::UChar() { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
   inline UChar::UChar(char u) : uc((unsigned char)u) { }
   inline UChar::UChar(unsigned char u) : uc(u) { }
@@ -137,7 +131,7 @@ namespace KJS {
     /**
      * @return Unicode value.
      */
-    unsigned short unicode() const { return ref().unicode(); }
+    unsigned short unicode() const { return ref().uc; }
     /**
      * @return Lower byte.
      */
@@ -209,8 +203,7 @@ namespace KJS {
       UChar *data() const { return dat; }
       int size() const { return len; }
 
-      int hash() const { if (_hash == 0) _hash = computeHash(dat, len); return
-_hash; }
+      int hash() const { if (_hash == 0) _hash = computeHash(dat, len); return _hash; }
 
       static unsigned computeHash(const UChar *, int length);
       static unsigned computeHash(const char *);
@@ -238,7 +231,7 @@ _hash; }
     /**
      * Constructs a string from the single character c.
      */
-    UString(char c);
+    explicit UString(char c);
     /**
      * Constructs a string from a classical zero determined char string.
      */
@@ -249,9 +242,9 @@ _hash; }
      */
     UString(const UChar *c, int length);
     /**
-     * If copy is false a shallow copy of the string will be created. That
-     * means that the data will NOT be copied and you'll have to guarantee that
-     * it doesn't get deleted during the lifetime of the UString object.
+     * If copy is false the string data will be adopted.
+     * That means that the data will NOT be copied and the pointer will
+     * be deleted when the UString object is modified or destroyed.
      * Behaviour defaults to a deep copy if copy is true.
      */
     UString(UChar *c, int length, bool copy);
@@ -332,9 +325,6 @@ _hash; }
      * Assignment operator.
      */
     UString &operator=(const char *c);
-    /**
-     * Assignment operator.
-     */
     UString &operator=(const UString &);
     /**
      * Appends the specified string.
@@ -397,13 +387,13 @@ _hash; }
      */
     UString toUpper() const;
     /**
-     * @return Position of first occurence of f starting at position pos.
+     * @return Position of first occurrence of f starting at position pos.
      * -1 if the search was not successful.
      */
     int find(const UString &f, int pos = 0) const;
     int find(UChar, int pos = 0) const;
     /**
-     * @return Position of first occurence of f searching backwards from
+     * @return Position of first occurrence of f searching backwards from
      * position pos.
      * -1 if the search was not successful.
      */

@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,7 +32,6 @@
 namespace KJS {
 
   class ContextImp;
-  class ExecStateImp;
   class InterpreterImp;
 
   /**
@@ -72,12 +72,8 @@ namespace KJS {
    */
   class Context {
   public:
-    Context() : rep(0) { }
     Context(ContextImp *i) : rep(i) { }
-    Context(const Context &c);
-    Context& operator=(const Context &c);
 
-    bool isNull() const;
     ContextImp *imp() const { return rep; }
 
     /**
@@ -154,7 +150,7 @@ namespace KJS {
     /**
      * In the case of FunctionCode, the name of the function being called
      */
-    UString functionName() const;
+    Identifier functionName() const;
 
     /**
      * In the case of FunctionCode, the arguments passed to the function
@@ -207,6 +203,9 @@ namespace KJS {
     Object &globalObject() const;
 
     void initGlobalObject();
+
+    static void lock();
+    static void unlock();
 
     /**
      * Returns the execution state object which can be used to execute
@@ -432,36 +431,35 @@ namespace KJS {
     friend class FunctionImp;
     friend class GlobalFuncImp;
   public:
-    virtual ~ExecState();
-
-    ExecStateImp *imp() const { return rep; }
-
     /**
      * Returns the interpreter associated with this execution state
      *
      * @return The interpreter executing the script
      */
-    Interpreter *interpreter() const;
+    Interpreter *interpreter() const { return _interpreter; }
 
     /**
      * Returns the execution context associated with this execution state
      *
      * @return The current execution state context
      */
-    const Context context() const;
+    Context context() const { return _context; }
 
     void setException(const Value &e);
     void clearException();
-    Value exception() const;
-    bool hadException() const;
+    Value exception() const { return _exception; }
+    bool hadException();
 
     /*
      * request for ending execution with an exception
      */
     static void requestTerminate() { terminate_request = true; }
   private:
-    ExecState(Interpreter *interp, ContextImp *con);
-    ExecStateImp *rep;
+    ExecState(Interpreter *interp, ContextImp *con)
+        : _interpreter(interp), _context(con) { }
+    Interpreter *_interpreter;
+    ContextImp *_context;
+    Value _exception;
     static bool terminate_request;
   };
 

@@ -38,7 +38,7 @@ namespace KJS {
     friend class Function;
     friend class ActivationImp;
   public:
-    FunctionImp(ExecState *exec, const UString &n = UString::null);
+    FunctionImp(ExecState *exec, const Identifier &n = Identifier::null);
     virtual ~FunctionImp();
 
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
@@ -55,18 +55,18 @@ namespace KJS {
     virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
-    UString name() const { return ident; }
+    Identifier name() const { return ident; }
     int firstLine() const { return line0; }
     int lastLine() const { return line1; }
     int sourceId() const { return sid; }
 
-    void setName(UString name) { ident = name; }
+    void setName(const Identifier &name) { ident = name; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   protected:
     Parameter *param;
-    UString ident;
+    Identifier ident;
     int line0;
     int line1;
     int sid;
@@ -130,7 +130,7 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
     virtual CodeType codeType() const;
-    enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape };
+    enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape, KJSPrint };
   private:
     int id;
   };

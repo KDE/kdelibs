@@ -27,6 +27,7 @@
 #include "types.h"
 #include "interpreter.h"
 #include "lookup.h"
+#include "reference_list.h"
 
 #include <assert.h>
 #include <math.h>
@@ -37,21 +38,10 @@
 #include "operations.h"
 #include "error_object.h"
 #include "nodes.h"
-#include "property_map.h"
 
 using namespace KJS;
 
 // ------------------------------ Object ---------------------------------------
-
-Object::Object(const Object &v) : Value(v)
-{
-}
-
-Object& Object::operator=(const Object &v)
-{
-  Value::operator=(v);
-  return *this;
-}
 
 Object Object::dynamicCast(const Value &v)
 {
@@ -108,10 +98,6 @@ ObjectImp::ObjectImp()
 ObjectImp::~ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::~ObjectImp %p\n",(void*)this);
-  if (_proto)
-    _proto->setGcAllowed();
-  if (_internalValue)
-    _internalValue->setGcAllowed();
 }
 
 void ObjectImp::mark()
@@ -409,9 +395,8 @@ Boolean ObjectImp::hasInstance(ExecState */*exec*/, const Value &/*value*/)
 
 ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
 {
-  // TODO: stop using old Reference class
   ReferenceList list;
-  if (_proto && _proto->type() == ObjectType && recursive)
+  if (_proto && _proto->dispatchType() == ObjectType && recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);
 
   _prop.addEnumerablesToReferenceList(list, Object(this));
@@ -443,9 +428,6 @@ void ObjectImp::setInternalValue(const Value &v)
   _internalValue = v.imp();
 }
 
-// The following functions simply call the corresponding functions in ValueImp
-// but are overridden in case of future needs
-
 Value ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
 {
   return defaultValue(exec,preferredType);
@@ -462,26 +444,6 @@ double ObjectImp::toNumber(ExecState *exec) const
   if (exec->hadException()) // should be picked up soon in nodes.cpp
     return 0.0;
   return prim.toNumber(exec);
-}
-
-int ObjectImp::toInteger(ExecState *exec) const
-{
-  return ValueImp::toInteger(exec);
-}
-
-int ObjectImp::toInt32(ExecState *exec) const
-{
-  return ValueImp::toInt32(exec);
-}
-
-unsigned int ObjectImp::toUInt32(ExecState *exec) const
-{
-  return ValueImp::toUInt32(exec);
-}
-
-unsigned short ObjectImp::toUInt16(ExecState *exec) const
-{
-  return ValueImp::toUInt16(exec);
 }
 
 UString ObjectImp::toString(ExecState *exec) const

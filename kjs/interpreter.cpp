@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -41,22 +42,6 @@
 using namespace KJS;
 
 // ------------------------------ Context --------------------------------------
-
-Context::Context(const Context &c)
-{
-  rep = c.rep;
-}
-
-Context& Context::operator=(const Context &c)
-{
-  rep = c.rep;
-  return *this;
-}
-
-bool Context::isNull() const
-{
-  return (rep == 0);
-}
 
 const ScopeChain &Context::scopeChain() const
 {
@@ -103,7 +88,7 @@ Object Context::function() const
   return Object(rep->function());
 }
 
-UString Context::functionName() const
+Identifier Context::functionName() const
 {
   return rep->functionName;
 }
@@ -149,6 +134,16 @@ Object &Interpreter::globalObject() const
 void Interpreter::initGlobalObject()
 {
   rep->initGlobalObject();
+}
+
+void Interpreter::lock()
+{
+  InterpreterImp::lock();
+}
+
+void Interpreter::unlock()
+{
+  InterpreterImp::unlock();
 }
 
 ExecState *Interpreter::globalExec()
@@ -356,54 +351,29 @@ void Interpreter::finalCheck()
 
 // ------------------------------ ExecState --------------------------------------
 
-ExecState::~ExecState()
-{
-  delete rep;
-}
-
-Interpreter *ExecState::interpreter() const
-{
-  return rep->interpreter;
-}
-
-const Context ExecState::context() const
-{
-  return rep->context;
-}
-
 void ExecState::setException(const Value &e)
 {
   if (e.isValid()) {
-    Debugger *dbg = rep->interpreter->imp()->debugger();
+    Debugger *dbg = _interpreter->imp()->debugger();
     if (dbg)
-      dbg->exception(this,e,rep->context->inTryCatch());
+      dbg->exception(this,e,_context->inTryCatch());
   }
-  rep->exception = e;
+  _exception = e;
 }
 
 void ExecState::clearException()
 {
   terminate_request = false;
-  rep->exception = Value();
-}
-
-Value ExecState::exception() const
-{
-  return rep->exception;
+  _exception = Value();
 }
 
 bool ExecState::terminate_request = false;
 
-bool ExecState::hadException() const
+bool ExecState::hadException()
 {
   if (terminate_request)
-      rep->exception = Error::create((ExecState*)this);
-  return rep->exception.isValid();
-}
-
-ExecState::ExecState(Interpreter *interp, ContextImp *con)
-{
-  rep = new ExecStateImp(interp,con);
+    _exception = Error::create((ExecState*)this);
+  return _exception.isValid();
 }
 
 void Interpreter::virtual_hook( int, void* )

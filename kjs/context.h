@@ -80,7 +80,7 @@ namespace KJS  {
     int sourceId;
     int line0;
     int line1;
-    UString functionName;
+    Identifier functionName;
     List args;
   };
 

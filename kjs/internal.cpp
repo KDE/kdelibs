@@ -70,6 +70,36 @@ namespace KJS {
   const double Inf = *(const double*) Inf_Bytes;
 }
 
+#ifdef KJS_THREADSUPPORT
+static pthread_once_t interpreterLockOnce = PTHREAD_ONCE_INIT;
+static pthread_mutex_t interpreterLock;
+
+static void initializeInterpreterLock()
+{
+  pthread_mutexattr_t attr;
+
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);
+
+  pthread_mutex_init(&interpreterLock, &attr);
+}
+#endif
+
+static inline void lockInterpreter()
+{
+#ifdef KJS_THREADSUPPORT
+  pthread_once(&interpreterLockOnce, initializeInterpreterLock);
+  pthread_mutex_lock(&interpreterLock);
+#endif
+}
+
+static inline void unlockInterpreter()
+{
+#ifdef KJS_THREADSUPPORT
+  pthread_mutex_unlock(&interpreterLock);
+#endif
+}
+
 // ------------------------------ UndefinedImp ---------------------------------
 
 UndefinedImp *UndefinedImp::staticUndefined = 0;
@@ -160,7 +190,7 @@ UString BooleanImp::toString(ExecState* /*exec*/) const
 Object BooleanImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(Boolean(const_cast<BooleanImp*>(this)));
+  args.append(const_cast<BooleanImp*>(this));
   return Object::dynamicCast(exec->interpreter()->builtinBoolean().construct(exec,args));
 }
 
@@ -189,7 +219,7 @@ UString StringImp::toString(ExecState* /*exec*/) const
 Object StringImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(String(const_cast<StringImp*>(this)));
+  args.append(const_cast<StringImp*>(this));
   return Object::dynamicCast(exec->interpreter()->builtinString().construct(exec,args));
 }
 
@@ -225,7 +255,7 @@ UString NumberImp::toString(ExecState *) const
 Object NumberImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(Number(const_cast<NumberImp*>(this)));
+  args.append(const_cast<NumberImp*>(this));
   return Object::dynamicCast(exec->interpreter()->builtinNumber().construct(exec,args));
 }
 
@@ -325,7 +355,7 @@ ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV,
   if (func && func->inherits(&DeclaredFunctionImp::info))
     functionName = static_cast<DeclaredFunctionImp*>(func)->name();
   else
-    functionName = UString();
+    functionName = Identifier::null;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode) {
@@ -498,6 +528,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
 {
   // add this interpreter to the global chain
   // as a root set for garbage collection
+  lockInterpreter();
   if (s_hook) {
     prev = s_hook;
     next = s_hook->next;
@@ -508,11 +539,22 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     s_hook = next = prev = this;
     globalInit();
   }
+  unlockInterpreter();
 
   globExec = new ExecState(m_interpreter,0);
 
   // initialize properties of the global object
   initGlobalObject();
+}
+
+void InterpreterImp::lock()
+{
+  lockInterpreter();
+}
+
+void InterpreterImp::unlock()
+{
+  unlockInterpreter();
 }
 
 void InterpreterImp::initGlobalObject()
@@ -629,6 +671,9 @@ void InterpreterImp::initGlobalObject()
   global.put(globExec,"isFinite",   Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsFinite,   1)), DontEnum);
   global.put(globExec,"escape",     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Escape,     1)), DontEnum);
   global.put(globExec,"unescape",   Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,   1)), DontEnum);
+#ifndef NDEBUG
+  global.put(globExec,"kjsprint",   Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::KJSPrint,   1)), DontEnum);
+#endif
 
   // built-in objects
   global.put(globExec,"Math", Object(new MathObjectImp(globExec,objProto)), DontEnum);
@@ -649,6 +694,7 @@ void InterpreterImp::clear()
 {
   //fprintf(stderr,"InterpreterImp::clear\n");
   // remove from global chain (see init())
+  lockInterpreter();
   next->prev = prev;
   prev->next = next;
   s_hook = next;
@@ -658,6 +704,7 @@ void InterpreterImp::clear()
     s_hook = 0L;
     globalClear();
   }
+  unlockInterpreter();
 }
 
 void InterpreterImp::mark()
@@ -694,9 +741,13 @@ bool InterpreterImp::checkSyntax(const UString &code)
 
 Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
 {
+  lockInterpreter();
+
   // prevent against infinite recursion
   if (recursion >= 20) {
-    return Completion(Throw,Error::create(globExec,GeneralError,"Recursion too deep"));
+    Completion result = Completion(Throw,Error::create(globExec,GeneralError,"Recursion too deep"));
+    unlockInterpreter();
+    return result;
   }
 
   // parse the source code
@@ -705,7 +756,6 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   SourceCode *source;
   ProgramNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
 
-
   // notify debugger that source has been parsed
   if (dbg) {
     bool cont = dbg->sourceParsed(globExec,source->sid,code,errLine);
@@ -713,6 +763,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
       source->deref();
       if (progNode)
 	delete progNode;
+      unlockInterpreter();
       return Completion(Break);
     }
   }
@@ -726,6 +777,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     globExec->setException(err); // required to notify the debugger
     globExec->clearException();
     source->deref();
+    unlockInterpreter();
     return Completion(Throw,err);
   }
   source->deref();
@@ -778,6 +830,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
       if (dbg && !dbg->exitContext(&newExec,res)) {
 	// debugger requested we stop execution
 	dbg->imp()->abort();
+	unlockInterpreter();
 	res = Completion(ReturnValue,Undefined());
       }
     }
@@ -792,6 +845,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     globExec->clearException();
   }
 
+  unlockInterpreter();
   return res;
 }
 

@@ -115,7 +115,7 @@ bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
   return (strcmp(c1.c_str(), c2.c_str()) == 0);
 }
 
-UChar UChar::null;
+UChar UChar::null((char)0);
 UString::Rep UString::Rep::null = { 0, 0, 0, 1, 1 };
 UString::Rep UString::Rep::empty = { 0, 0, 0, 1, 1 };
 UString UString::null;
@@ -223,7 +223,7 @@ UString::UString()
 UString::UString(char c)
 {
     UChar *d = allocateChars(1);
-    d[0] = UChar(0, c);
+    d[0] = c;
     rep = Rep::create(d, 1);
 }
 
@@ -641,8 +641,6 @@ int UString::rfind(UChar ch, int pos) const
 
 UString UString::substr(int pos, int len) const
 {
-  if (isNull())
-    return UString();
   if (pos < 0)
     pos = 0;
   else if (pos >= (int) size())
@@ -723,7 +721,7 @@ bool KJS::operator<(const UString& s1, const UString& s2)
     l++;
   }
   if (l < lmin)
-    return (c1->unicode() < c2->unicode());
+    return (c1->uc < c2->uc);
 
   return (l1 < l2);
 }

@@ -117,12 +117,13 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const = 0;
     virtual Object toObject(ExecState *exec) const = 0;
 
-    // Reference operations
-
-    virtual Value getBase(ExecState *exec) const;
-    virtual Identifier getPropertyName(ExecState *exec) const;
-    virtual Value getValue(ExecState *exec) const;
-    virtual void putValue(ExecState *exec, const Value w);
+// fixme: replace with proper versions of dispatch wrappers
+    Type dispatchType() const;
+    Value dispatchToPrimitive(ExecState *exec, Type preferredType = UnspecifiedType) const;
+    bool dispatchToBoolean(ExecState *exec) const;
+    double dispatchToNumber(ExecState *exec) const;
+    UString dispatchToString(ExecState *exec) const;
+    Object dispatchToObject(ExecState *exec) const;
 
   private:
     enum {
@@ -236,32 +237,6 @@ namespace KJS {
      * Performs the ToObject type conversion operation on this value (ECMA 9.9)
      */
     Object toObject(ExecState *exec) const;
-
-    /**
-     * Performs the GetBase type conversion operation on this value (ECMA 8.7)
-     *
-     * Since references are supposed to have an Object or null as their base,
-     * this method is guaranteed to return either Null() or an Object value.
-     */
-    Value getBase(ExecState *exec) const;
-
-    /**
-     * Performs the GetPropertyName type conversion operation on this value
-     * (ECMA 8.7)
-     */
-    Identifier getPropertyName(ExecState *exec) const;
-
-    /**
-     * Performs the GetValue type conversion operation on this value
-     * (ECMA 8.7.1)
-     */
-    Value getValue(ExecState *exec) const;
-
-    /**
-     * Performs the PutValue type conversion operation on this value
-     * (ECMA 8.7.1)
-     */
-    void putValue(ExecState *exec, const Value w);
 
   protected:
     ValueImp *rep;

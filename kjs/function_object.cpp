@@ -97,11 +97,11 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
     if (thisObj.inherits(&DeclaredFunctionImp::info)) {
        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>
                                  (thisObj.imp());
-       return String("function " + fi->name() + "(" +
+       return String("function " + fi->name().ustring() + "(" +
          fi->parameterString() + ") " + fi->body->toCode());
     } else if (thisObj.inherits(&FunctionImp::info) &&
         !static_cast<FunctionImp*>(thisObj.imp())->name().isNull()) {
-      result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name() + "()");
+      result = String("function " + static_cast<FunctionImp*>(thisObj.imp())->name().ustring() + "()");
     }
     else {
       result = String("(Internal function)");
@@ -255,11 +255,11 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   while (i < len) {
       while (*c == ' ' && i < len)
 	  c++, i++;
-      if (Lexer::isIdentLetter(c->unicode())) {  // else error
+      if (Lexer::isIdentLetter(c->uc)) {  // else error
 	  param = UString(c, 1);
 	  c++, i++;
-	  while (i < len && (Lexer::isIdentLetter(c->unicode()) ||
-			     Lexer::isDecimalDigit(c->unicode()))) {
+	  while (i < len && (Lexer::isIdentLetter(c->uc) ||
+			     Lexer::isDecimalDigit(c->uc))) {
 	      param += UString(c, 1);
 	      c++, i++;
 	  }
