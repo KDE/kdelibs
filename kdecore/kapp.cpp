@@ -731,7 +731,16 @@ void KApplication::parseCommandLine( )
 
         // check if arg(0) contains the whole path, if not, get it from findExe
 
-        if (strstr(args->arg(0),"/"))
+//
+// HEY ! args->arg(0) gives 
+// FAILURE (KCmdLineArgs): Argument out of bounds
+// Application requests for arg(0) without checking count() first. 
+//
+// You can't use args to get argv[0]. You need to make KCmdLineArgs store it
+// for you - unless it's still accessible from argv[0] ?
+// David.
+
+        //if (strstr(args->arg(0),"/"))
         {
 #warning can someone fix this?
 //            KCrash::setApplicationPath(QCString().setStr(args->arg(0)));
