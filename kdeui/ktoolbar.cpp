@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.59  1998/04/28 09:17:28  radej
+// Revision 1.62  1998/05/04 16:38:19  radej
+// Bugfixes for moving + opaque moving
 // Revision 1.58  1998/04/27 19:22:41  ettrich
 // Matthias: the nifty feature that you can globally change the size of the
 //   toolbars broke the nifty-as-well feature that a client can pass another
@@ -730,11 +733,22 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
         context->popup( mapToGlobal( m->pos() ), 0 );
       else
       {
-        ox = Parent->x();
-        oy = Parent->y();
-        ow = Parent->width();
-        oh = Parent->height();
-
+        //QRect rr(KWM::geometry(Parent->winId(), false));
+        QRect rr(Parent->geometry());
+        ox = rr.x();
+        oy = rr.y();
+        ow = rr.width();
+        oh = rr.height();
+        if (Parent->inherits("KTopLevelWidget"))
+        {
+          ox += ((KTopLevelWidget *) Parent)->view_left;;
+          oy += ((KTopLevelWidget *) Parent)->view_top;
+          ow = ((KTopLevelWidget *) Parent)->view_right -
+            ((KTopLevelWidget *) Parent)->view_left;
+          oh = ((KTopLevelWidget *) Parent)->view_bottom -
+            ((KTopLevelWidget *) Parent)->view_top;;
+        }
+            
         int  fat = 25; //ness
 
         mgr = new KToolBoxManager(this);
