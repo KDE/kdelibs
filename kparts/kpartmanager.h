@@ -3,14 +3,30 @@
 #define __kpartmanager_h__
 
 #include <qobject.h>
+#include <qwidget.h>
 
 class KPart;
 
+/**
+ * The part manager is an object which knows about all parts
+ * (even nested ones) and handles activation/deactivation.
+ *
+ * Applications that want to embed parts without merging GUIs
+ * only use a KPartManager. Those who want to merge GUIs use a
+ * KPartsMainWindow for example, in addition to a part manager.
+ *
+ * Parts know about the part manager, to add nested parts to it,
+ * and to get access to the window caption
+ */
 class KPartManager : public QObject
 {
   Q_OBJECT
 public:
-  KPartManager( QObject * parent = 0L, const char * name = 0L );
+  /**
+   * Create a part manager
+   * @param parent the toplevel widget (window / dialog...)
+   */
+  KPartManager( QWidget * parent, const char * name = 0L );
   virtual ~KPartManager();
 
   virtual bool eventFilter( QObject *obj, QEvent *ev );
@@ -28,6 +44,9 @@ public:
   virtual void removePart( KPart *part );
 
   KPart *activePart() { return m_activePart; }
+
+  virtual void setWindowCaption( const QString & caption )
+  { ((QWidget *)parent())->setCaption( caption ); }
 
 signals:
   void activePartChanged( KPart *newPart );

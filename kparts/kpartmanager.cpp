@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-KPartManager::KPartManager( QObject * parent, const char * name )
+KPartManager::KPartManager( QWidget * parent, const char * name )
  : QObject( parent, name )
 {
   m_activePart = 0;

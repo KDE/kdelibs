@@ -1,5 +1,6 @@
 
 #include "notepad.h"
+#include <kpartmanager.h>
 
 #include <qsplitter.h>
 #include <qfile.h>
@@ -55,12 +56,9 @@ bool NotepadPart::openFile()
   }
   m_edit->setText(s);
 
-  if ( m_host )
-  {
-    m_host->setWindowCaption( m_url.url() );
-
-    ((KStatusBar *)m_host->topLevelContainer( "StatusBar" ))->message( m_url.url() );
-  }
+  manager()->setWindowCaption( m_url.url() );
+  // see comments
+  //manager()->statusBar()->message( m_url.url() );
 
   return true;
 }

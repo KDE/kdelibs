@@ -20,7 +20,6 @@ KPart::KPart( const char* name )
     : QObject( 0L, name ), m_collection( this )
 {
   m_widget = 0;
-  m_host = 0;
   m_bPluginActionsMerged = false;
 }
 

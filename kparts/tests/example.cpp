@@ -146,12 +146,9 @@ bool Part1::openFile()
     return false;
   m_edit->setText(s);
 
-  if ( m_host )
-  {
-    m_host->setWindowCaption( m_url.url() );
-
-    ((KStatusBar *)m_host->topLevelContainer( "StatusBar" ))->message( m_url.url() );
-  }
+  manager()->setWindowCaption( m_url.url() );
+  //See comments
+  //manager()->statusBar()->message( m_url.url() );
 
   return true;
 }

@@ -8,7 +8,7 @@
 
 #include "kxmlgui.h"
 
-class KPartHost;
+class KPartManager;
 class KPlugin;
 class KInstance;
 class QWidget;
@@ -39,14 +39,18 @@ public:
 
     virtual QWidget *widget() { return m_widget; }
 
-    void setHost( KPartHost *host ) { m_host = host; }
-    KPartHost *host() { return m_host; }
-
     virtual KInstance *instance() = 0;
 
     virtual QStringList pluginActionDocuments();
 
     virtual QDomDocument mergedActionDOM();
+
+    // Only called by KPartManager - should be protected and using friend ?
+    void setManager( KPartManager * manager ) { m_manager = manager; }
+    /**
+     * @return the part manager handling this part
+     */
+    KPartManager * manager() { return m_manager; }
 
 protected:
     /**
@@ -61,8 +65,6 @@ protected:
      */
     virtual void setXMLFile( const QString & file );
 
-    KPartHost * m_host; // Couldn't keep the QGuardedPtr here (because KPartHost isn't a QObject anymore) (David)
-
 private slots:
     void slotWidgetDestroyed();
 
@@ -75,6 +77,7 @@ private:
     QActionCollection m_collection;
     bool m_bPluginActionsMerged;
     QDomDocument m_mergedDOM;
+    KPartManager * m_manager;
 };
 
 /**
@@ -177,23 +180,6 @@ protected slots:
 
 private:
   bool m_bModified;
-};
-
-
-/**
- * This interface allows a Part to access what its "host" has to offer it :
- * containers (menubar, toolbars, ...), getting and setting the window caption...
- */
-class KPartHost
-{
-public:
-  KPartHost() {}
-  virtual ~KPartHost() {}
-
-  virtual QWidget *topLevelContainer( const QString &name ) = 0;
-
-  virtual QString windowCaption() = 0;
-  virtual void setWindowCaption( const QString &caption ) = 0;
 };
 
 /**
