@@ -3,7 +3,7 @@
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
 #include "rendering/render_form.h"
-
+#include "dom/html_form.h"
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qpopupmenu.h>
@@ -200,7 +200,7 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !metaData )
         return;
 
-    KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy ); 
+    KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy );
     (ext->*(metaData->ptr))();
 }
 
@@ -300,7 +300,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   DOM::Element e;
   e = khtml->nodeUnderMouse();
 
-  if ( !e.isNull() && e.elementId() == ID_IMG )
+  if ( !e.isNull() && (e.elementId() == ID_IMG ||
+                       (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
   {
     d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
