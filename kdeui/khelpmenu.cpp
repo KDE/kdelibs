@@ -92,18 +92,17 @@ void KHelpMenu::aboutApp( void )
   if( mAboutApp == 0 )
   {
     QString caption = i18n("About %1").arg(kapp->caption());
-    mAboutApp = new QMessageBox( caption, mAboutAppText, 
+    mAboutApp = new QMessageBox( caption, mAboutAppText,
       QMessageBox::Information,
       QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-      0, 0, mParent, "about", false );
+      0, 0, mParent, "about", false, WStyle_DialogBorder|WDestructiveClose );
 
     mAboutApp->setButtonText(QMessageBox::Ok, i18n("&OK"));
     mAboutApp->setIconPixmap(kapp->icon());
-    mAboutApp->adjustSize();
-    mAboutApp->setMinimumSize(mAboutApp->size());
   }
 
   mAboutApp->show();
+  mAboutApp = 0; // mAboutApp will destruct itself (destructive close!)
 }
 
 
@@ -113,11 +112,11 @@ void KHelpMenu::aboutKDE( void )
   if( mAboutKDE == 0 )
   {
     mAboutKDE = new KAboutDialog( KAboutDialog::AbtKDEStandard, "KDE",
-      KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent, 
+      KDialogBase::Help|KDialogBase::Close, KDialogBase::Close, mParent,
       "aboutkde", false );
 
     const QString text1 = i18n(""
-      "The <b>K Desktop Environment</b> is written and maintained by the " 
+      "The <b>K Desktop Environment</b> is written and maintained by the "
       "KDE Team, a world-wide network of software engineers committed to "
       "free software development.<br><br>"
       "No single group, company or organization controls the KDE source "
