@@ -55,8 +55,7 @@ protected:
   /**
    * called from KDirLister to create a KFileViewItem
    */
-  virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&, bool,
-				      bool );
+  virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&, bool );
 
 private:
     void init();
