@@ -132,3 +132,8 @@ must have created a KApplication object before the methods can be used.
 
 
 		KIconLoader *loader = KGlobal::iconLoader();
+
+////////////////////////////////////////////////////////////////////////
+// * KDialog
+
+KDialog is no longer defined in kwizard.h. Include kdialog.h instead.
