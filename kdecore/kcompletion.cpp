@@ -496,9 +496,7 @@ void KCompletion::doBeep( BeepMode mode )
 	}
 	break;
     case NoMatch:
-	if ( myCompletionMode == KGlobalSettings::CompletionShell ||
-	     myCompletionMode == KGlobalSettings::CompletionPopup ||
-	     myCompletionMode == KGlobalSettings::CompletionMan ) {
+	if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
 	    event = QString::fromLatin1("Textcompletion: no match");
 	    text = i18n("There is no matching item available.\n");
 	}
