@@ -1870,6 +1870,7 @@ void KApplication::installKDEPropertyMap()
     //#if QT_VERSION < 0x030300
       // Temp til fixed in QT then enable ifdef with the correct version num
       kdeMap->insert( "QRadioButton", "checked" );
+      kdeMap->insert( "QTabWidget", "currentPage" );
     //#endif
     QSqlPropertyMap::installDefaultMap( kdeMap );
 #endif

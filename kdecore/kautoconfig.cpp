@@ -65,6 +65,7 @@ public:
     ignoreTheseWidgets.insert("QFrame", new int(2));
     ignoreTheseWidgets.insert("QGroupBox", new int(3));
     ignoreTheseWidgets.insert("QButtonGroup", new int(4));
+    ignoreTheseWidgets.insert("QWidget", new int(5));
     ignoreTheseWidgets.setAutoDelete(true);
 
     static bool defaultKDEPropertyMapInstalled = false;
