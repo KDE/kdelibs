@@ -189,9 +189,10 @@ action/options_show_menubar
 action/options_show_toolbar
 action/options_show_statusbar
 action/options_save_options
-action/options_configure_keybinding
 action/options_configure
+action/options_configure_keybinding
 action/options_configure_toolbars
+action/options_configure_notifications
 action/help
 action/help_contents
 action/help_whats_this
@@ -208,9 +209,68 @@ action/openintab
 action/openintabfront
 
 Konsole related:
-action/settings // Settings menu
-action/send_signal 
 action/konsole_rmb // RMB context menu
+
+action/settings // Entire settings menu
+action/show_menubar
+action/show_toolbar
+action/scrollbar
+action/fullscreen
+action/bell
+action/font
+action/keyboard
+action/schema
+action/size
+action/history
+action/save_default
+action/save_sessions_profile
+action/options_configure_notifications
+action/options_configure_keybinding
+action/options_configure
+
+action/send_signal 
+action/bookmarks
+action/add_bookmark
+action/edit_bookmarks
+action/clear_terminal
+action/reset_clear_terminal
+action/find_history
+action/find_next
+action/find_previous
+action/save_history
+action/clear_history
+action/clear_all_histories
+action/detach_session
+action/rename_session
+action/zmodem_upload
+action/monitor_activity
+action/monitor_silence
+action/send_input_to_all_sessions
+action/close_session
+action/new_session
+action/activate_menu
+action/list_sessions
+action/move_session_left
+action/move_session_right
+action/previous_session
+action/next_session
+action/switch_to_session_1
+action/switch_to_session_2
+action/switch_to_session_3
+action/switch_to_session_4
+action/switch_to_session_5
+action/switch_to_session_6
+action/switch_to_session_7
+action/switch_to_session_8
+action/switch_to_session_9
+action/switch_to_session_10
+action/switch_to_session_11
+action/switch_to_session_12
+action/bigger_font
+action/smaller_font
+action/toggle_bidi
+
+
 
 Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
