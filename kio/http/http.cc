@@ -1123,11 +1123,14 @@ bool HTTPProtocol::readHeader()
 #else
     KURL u(m_request.url, locationStr);
     redirection(u.url());
+    m_bCachedWrite = false; // Turn off caching on re-direction (DA)
 #endif
   }
-
   // FINALLY, let the world know what kind of data we are getting
   // and that we do indeed have a header
+  // Do this only if there is no redirection. Buggy server implementations
+  // incorrectly send Content-Type with a redirection response. (DA)
+  if( locationStr.isEmpty() )
   mimeType(m_strMimeType);
 
   if (m_request.method == HTTP_HEAD)

@@ -104,8 +104,7 @@ public:
   virtual void slave_status();
 
   virtual void get( const QString& path, const QString& query, bool reload );
-  virtual void put( const QString& path, int _mode,
-			bool _overwrite, bool _resume );
+  virtual void put( const QString& path, int _mode, bool _overwrite, bool _resume );
   void post( const QString& path, const QString& query );
 
   /**
