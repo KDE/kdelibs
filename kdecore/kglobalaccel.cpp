@@ -534,10 +534,6 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 		return false;
 	}
 	
-	if ( !pE ) {
-		return false;
-	}
-
 
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
