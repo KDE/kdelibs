@@ -35,10 +35,15 @@ QDataStream & operator >> (QDataStream & str, long & l)
 
 QDataStream & operator << (QDataStream & str, bool b)
 {
-  return operator << (str, (int)l);
+  Q_INT32 l = Q_INT32(b);
+  str << l;
+  return str;
 }
 
 QDataStream & operator >> (QDataStream & str, bool & b)
 {
-  return operator >> (str, (int)l);
+  Q_INT32 l;
+  str >> l;
+  b = bool(l);
+  return str;
 }
