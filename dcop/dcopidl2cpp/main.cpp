@@ -185,11 +185,11 @@ int main( int argc, char** argv )
 		    if ( s.tagName() == "SUPER" )
                         DCOPParent = s.attribute("name");
                 }
-                if (DCOPParent.isEmpty())
-		    DCOPParent = "DCOPObject";
-
-                str << "\tif ( " << DCOPParent << "::process( fun, data, replyType, replyData ) )" << endl;
-                str << "\t\treturn TRUE;" << endl;
+                if (!DCOPParent.isEmpty())
+		{
+                  str << "\tif ( " << DCOPParent << "::process( fun, data, replyType, replyData ) )" << endl;
+                  str << "\t\treturn TRUE;" << endl;
+		}
 
 		str << "\treturn FALSE;" << endl;
 		str << "}" << endl << endl;
