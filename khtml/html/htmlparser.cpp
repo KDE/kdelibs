@@ -1025,10 +1025,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_SPAN:
     case ID_NOBR:
     case ID_WBR:
-        n = new HTMLGenericElementImpl(document, t->id);
-        break;
-
     case ID_BDO:
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
 
         // these are special, and normally not rendered
