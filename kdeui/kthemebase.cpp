@@ -16,7 +16,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */                   
-
 #include <kthemebase.h>
 #include <kpixmapeffect.h>
 #include <kapp.h>
@@ -30,6 +29,7 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <stdlib.h>
+#include <krootprop.h>
 
 static const char *widgetEntries[] = { // unsunken widgets (see header)
 "PushButton", "ComboBox", "HSBarSlider", "VSBarSlider", "Bevel", "ToolButton",
@@ -64,233 +64,6 @@ union kthemeKey{
     kthemeKeyData data;
     unsigned int cacheKey;
 };
-
-// reads a single widget's config
-void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
-                                  QString *brdnames, bool *loadArray)
-{
-    if(loadArray[i] == true){
-        return; // already been preloaded.
-    }
-    
-    config->setGroup(widgetEntries[i]);
-    QString tmpStr;
-
-    if(config->hasKey("CopyWidget")){ // Duplicate another widget's config
-        int sIndex;
-        tmpStr = config->readEntry("CopyWidget", "");
-        if(!tmpStr.isEmpty()){
-            loadArray[i] = true;
-            for(sIndex=0; sIndex < WIDGETS; ++sIndex){
-                if(tmpStr == widgetEntries[sIndex]){
-                    if(!loadArray[sIndex]) // hasn't been loaded yet
-                        readWidgetConfig(sIndex, config, pixnames, brdnames,
-                                         loadArray);
-                    break;
-                }
-            }
-            if(loadArray[sIndex]){
-                copyWidgetConfig(sIndex, i, pixnames, brdnames);
-            }
-            else{
-                warning("KThemeBase: Unable to identify source widget for %s!",
-                        widgetEntries[i]);
-            }
-            return;
-        }
-    }
-
-    // special inheritance for disabled arrows (these are tri-state unlike
-    // the rest of what we handle).
-    int tmp;
-    for(tmp = DisArrowUp; tmp <= DisArrowRight; ++tmp){
-        if(tmp == i){
-            if(config->readEntry("Pixmap", "").isEmpty()){
-                copyWidgetConfig(ArrowUp+(tmp-DisArrowUp), i, pixnames,
-                                 brdnames);
-                return;
-            }
-        }
-    }
-
-    // Scale hint
-    tmpStr = config->readEntry("Scale");
-    if(tmpStr == "Full")
-        scaleHints[i] = FullScale;
-    else if(tmpStr == "Horizontal")
-        scaleHints[i] =HorizontalScale;
-    else if(tmpStr == "Vertical")
-        scaleHints[i] = VerticalScale;
-    else{
-        if(tmpStr != "Tile" && !tmpStr.isEmpty())
-            warning("KThemeBase: Unrecognized scale option %s, using Tile.",
-                    tmpStr.ascii());
-        scaleHints[i] = TileScale;
-    }
-    
-    // Gradient type
-    tmpStr = config->readEntry("Gradient");
-    if(tmpStr == "Diagonal")
-        gradients[i] = GrDiagonal;
-    else if(tmpStr == "Horizontal")
-        gradients[i] = GrHorizontal;
-    else if(tmpStr == "Vertical")
-        gradients[i] = GrVertical;
-    else if(tmpStr == "Pyramid")
-        gradients[i] = GrPyramid;
-    else if(tmpStr == "Rectangle")
-        gradients[i] = GrRectangle;
-    else if(tmpStr == "Elliptic")
-        gradients[i] = GrElliptic;
-    else if(tmpStr == "ReverseBevel")
-        gradients[i] = GrReverseBevel;
-    else{
-        if(tmpStr != "None" && !tmpStr.isEmpty())
-            warning("KThemeBase: Unrecognized gradient option %s, using None.",
-                    tmpStr.ascii());
-        gradients[i] = GrNone;
-    }
-
-    // Blend intensity
-    blends[i] = config->readDoubleNumEntry("BlendIntensity", 0.0);
-
-    // Bevel contrast
-    bContrasts[i] = config->readNumEntry("BevelContrast", 0);
-
-    // Border width
-    borders[i] = config->readNumEntry("Border", 1);
-
-    // Highlight width
-    highlights[i] = config->readNumEntry("Highlight", 1);
-
-    // Gradient low color or blend background
-    if(gradients[i] != GrNone || blends[i] != 0.0)
-        grLowColors[i] =
-            new QColor(config->readColorEntry("GradientLow",
-                                              &kapp->palette().normal().
-                                              background()));
-    else
-        grLowColors[i] = NULL;
-
-    // Gradient high color
-    if(gradients[i] != GrNone)
-        grHighColors[i] =
-            new QColor(config->readColorEntry("GradientHigh",
-                                              &kapp->palette().normal().
-                                              background()));
-    else
-        grHighColors[i] = NULL;
-
-    // Extended color attributes
-    if(config->hasKey("Forground") || config->hasKey("Background")){
-        QColor fg, bg;
-        if(config->hasKey("Background"))
-            bg = config->readColorEntry("Background", &bg);
-        else
-            bg = kapp->palette().normal().background();
-        if(config->hasKey("Foreground"))
-            fg = config->readColorEntry("Foreground", &fg);
-        else
-            fg = kapp->palette().normal().foreground();
-        colors[i] = makeColorGroup(fg, bg, Qt::WindowsStyle);
-    }
-    else
-        colors[i] = NULL;
-
-    // Pixmap
-    int existing;
-    tmpStr = config->readEntry("Pixmap", "");
-    pixnames[i] = tmpStr;
-    duplicate[i] = false;
-    pixmaps[i] = NULL;
-    images[i] = NULL;
-    // Scan for duplicate pixmaps(two identical pixmaps, tile scale, no blend,
-    // no pixmapped border)
-    if(!tmpStr.isEmpty()){
-        for(existing=0; existing < i; ++existing){
-            if(tmpStr == pixnames[existing] && scaleHints[i] == TileScale &&
-               scaleHints[existing] == TileScale && blends[existing] == 0.0 &&
-               blends[i] == 0.0){
-                pixmaps[i] = pixmaps[existing];
-                duplicate[i] = true;
-                warning("KThemeBase: Marking %s as duplicate.",
-                        pixnames[i].latin1());
-                break;
-            }
-        }
-    }
-    // load
-    if(!duplicate[i] && !tmpStr.isEmpty()){
-        pixmaps[i] = loadPixmap(tmpStr);
-        // load and save images for scaled/blended widgets for speed.
-        if(scaleHints[i] == TileScale && blends[i] == 0.0)
-            images[i] = NULL;
-        else
-            images[i] = loadImage(tmpStr);
-    }
-
-    // Pixmap border
-    tmpStr = config->readEntry("PixmapBorder", "");
-    brdnames[i] = tmpStr;
-    pbDuplicate[i] = false;
-    pbPixmaps[i] = NULL;
-    pbWidth[i] = 0;
-    if(!tmpStr.isEmpty()){
-        pbWidth[i] = config->readNumEntry("PixmapBWidth", 0);
-        if(pbWidth[i] == 0){
-            warning("KThemeBase: No border width specified for pixmapped border widget %s",
-                    widgetEntries[i]);
-            warning("KThemeBase: Using default of 2.");
-            pbWidth[i] = 2;
-        }
-        // duplicate check
-        for(existing=0; existing < i; ++existing){
-            if(tmpStr == brdnames[existing]){
-                pbPixmaps[i] = pbPixmaps[existing];
-                pbDuplicate[i] = true;
-                warning("KThemeBase: Marking border pixmap %s as duplicate.",
-                        brdnames[i].latin1());
-                break;
-            }
-        }
-    }
-    // load
-    if(!pbDuplicate[i] && !tmpStr.isEmpty())
-        pbPixmaps[i] = loadPixmap(tmpStr);
-
-    if(pbPixmaps[i] && !pbDuplicate[i])
-        generateBorderPix(i);
-
-    
-    // Various widget specific settings. This was more efficent when bunched
-    // together in the misc group, but this makes an easier to read config.
-    if(i == SliderGroove)
-        roundedSlider = config->readBoolEntry("SmallGroove", false);
-    else if(i == ActiveTab)
-        aTabLine = config->readBoolEntry("BottomLine", true);
-    else if(i == InactiveTab)
-        iTabLine = config->readBoolEntry("BottomLine", true);
-    else if(i == Splitter)
-        splitterWidth = config->readNumEntry("Width", 10);
-    else if(i == ComboBox || i == ComboBoxDown){
-        if(config->hasKey("Round"))
-            roundedCombo = config->readBoolEntry("Round", false);
-    }
-    else if (i == PushButton || i == PushButtonDown){
-        if(config->hasKey("XShift"))
-            btnXShift = config->readNumEntry("XShift", 0);
-        if(config->hasKey("YShift"))
-            btnYShift = config->readNumEntry("YShift", 0);
-        if(config->hasKey("3DFocusRect"))
-            focus3D = config->readBoolEntry("3DFocusRect", false);
-        if(config->hasKey("3DFocusOffset"))
-            focus3DOffset = config->readNumEntry("3DFocusOffset", 0);
-        if(config->hasKey("Round"))
-            roundedButton = config->readBoolEntry("Round", false);
-    }
-
-    loadArray[i] = true;
-}
 
 void KThemeBase::generateBorderPix(int i)
 {
@@ -466,7 +239,33 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     QString pixnames[WIDGETS]; // used for duplicate check
     QString brdnames[WIDGETS];
     bool loaded[WIDGETS]; // used for preloading for CopyWidget
+    KConfig config("kstylerc", true, false);
 
+    // Are we initalized?
+    KRootProp *testProp = new KRootProp("Misc");
+    tmpStr = testProp->readEntry("ShadeStyle", "5000");
+    if(tmpStr == "5000"){
+        warning("KThemeBase: Initalizing style properties");
+        testProp->destroy();
+        for(i=0; i < INHERIT_ITEMS; ++i)
+            applyResourceGroup(&config, i);
+        for(; i < INHERIT_ITEMS*2; ++i){
+            if(config.hasGroup(widgetEntries[i]))
+                applyResourceGroup(&config, i);
+            else{
+                KRootProp copyProp(widgetEntries[i]);
+                copyProp.writeEntry("CopyWidget",
+                                    QString(widgetEntries[i-INHERIT_ITEMS]));
+                copyProp.sync();
+            }
+        }
+        for(; i < WIDGETS; ++i)
+            applyResourceGroup(&config, i);
+
+        applyMiscResourceGroup(&config);
+    }
+    delete testProp;
+    
     // initalize defaults that may not be read
     for(i=0; i < WIDGETS; ++i)
         loaded[i] = false;
@@ -475,52 +274,11 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     roundedButton = roundedCombo = roundedSlider = focus3D = false;
     splitterWidth = 10;
     
-    KConfig config("kstylerc", true, false);
-    for(i=0; i < INHERIT_ITEMS; ++i) 
-        readWidgetConfig(i, &config, pixnames, brdnames, loaded);
-    for(; i < INHERIT_ITEMS*2; ++i){
-        if(config.hasGroup(widgetEntries[i]))
-            readWidgetConfig(i, &config, pixnames, brdnames, loaded);
-        else
-            copyWidgetConfig(i-INHERIT_ITEMS, i, pixnames, brdnames);
-    }
-    for(; i < WIDGETS; ++i) 
-        readWidgetConfig(i, &config, pixnames, brdnames, loaded);
+    for(i=0; i < WIDGETS; ++i)
+        readResourceGroup(i, pixnames, brdnames, loaded);
 
     // misc items
-    config.setGroup("Misc");
-    tmpStr = config.readEntry("SButtonPosition");
-    if(tmpStr == "BottomLeft")
-        sbPlacement = SBBottomLeft;
-    else if(tmpStr == "BottomRight")
-        sbPlacement = SBBottomRight;
-    else{
-        if(tmpStr != "Opposite" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
-                    tmpStr.ascii());
-        sbPlacement = SBOpposite;
-    }
-    tmpStr = config.readEntry("ArrowType");
-    if(tmpStr == "Small")
-        arrowStyle = SmallArrow;
-    else if(tmpStr == "3D")
-        arrowStyle = MotifArrow;
-    else{
-        if(tmpStr != "Normal" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized arrow option %s, using Windows.",
-                    tmpStr.ascii());
-        arrowStyle = LargeArrow;
-    }
-    tmpStr = config.readEntry("ShadeStyle");
-    if(tmpStr == "Motif")
-        shading = Motif;
-    else if(tmpStr == "Next")
-        shading = Next;
-    else
-        shading = Windows;
-    defaultFrame = config.readNumEntry("FrameWidth", 2);
-    cacheSize = config. readNumEntry("Cache", 1024);
-    sbExtent = config.readNumEntry("ScrollBarExtent", 16);
+    readMiscResourceGroup();
 
     // Handle preblend items
     for(i=0; i < PREBLEND_ITEMS; ++i){
@@ -598,7 +356,19 @@ void KThemeBase::applyConfigFile(const QString &file)
     globalConfig->writeEntry("widgetStyle",
                              inConfig.readEntry("widgetStyle", " "), true,
                              true);
-    globalConfig->sync();             
+    inConfig.setGroup("Misc");
+    globalConfig->writeEntry("widgetStyleName",
+                             inConfig.readEntry("Name", " "), true,
+                             true);
+    globalConfig->sync();
+
+    // delete all properties;
+    for(input=0; input < WIDGETS; ++input){
+        KRootProp prop(widgetEntries[input]);
+        prop.destroy();
+    }
+    KRootProp misc("Misc");
+    misc.destroy();
 }
 
 KThemeBase::~KThemeBase()
@@ -914,6 +684,408 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
                                 bg.dark(120), fg,
                                 kapp->palette().normal().base()));
 }
+
+void KThemeBase::applyMiscResourceGroup(KConfig *config)
+{
+    KRootProp *tmpProp = new KRootProp("Misc"); // clear the old property
+    tmpProp->destroy();
+    delete tmpProp;    
+
+    KRootProp prop("Misc");
+    config->setGroup("Misc");
+    QString tmpStr;
+
+    tmpStr = config->readEntry("SButtonPosition");
+    if(tmpStr == "BottomLeft")
+        prop.writeEntry("SButtonPosition", (int)SBBottomLeft);
+    else if(tmpStr == "BottomRight")
+        prop.writeEntry("SButtonPosition", (int)SBBottomRight);
+    else{
+        if(tmpStr != "Opposite" && !tmpStr.isEmpty())
+            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
+                    tmpStr.ascii());
+        prop.writeEntry("SButtonPosition", (int)SBOpposite);
+    }
+    tmpStr = config->readEntry("ArrowType");
+    if(tmpStr == "Small")
+        prop.writeEntry("ArrowType", (int)SmallArrow);
+    else if(tmpStr == "3D")
+        prop.writeEntry("ArrowType", (int)MotifArrow);
+    else{
+        if(tmpStr != "Normal" && !tmpStr.isEmpty())
+            warning("KThemeStyle: Unrecognized arrow option %s, using Normal.",
+                    tmpStr.ascii());
+        prop.writeEntry("ArrowType", (int)LargeArrow);
+    }
+    tmpStr = config->readEntry("ShadeStyle");
+    if(tmpStr == "Motif")
+        prop.writeEntry("ShadeStyle", (int)Motif);
+    else if(tmpStr == "Next")
+        prop.writeEntry("ShadeStyle", (int)Next);
+    else
+        prop.writeEntry("ShadeStyle", (int)Windows);
+    
+    prop.writeEntry("FrameWidth", config->readNumEntry("FrameWidth", 2));
+    prop.writeEntry("Cache", config->readNumEntry("Cache", 1024));
+    prop.writeEntry("ScrollBarExtent",
+                    config->readNumEntry("ScrollBarExtent", 16));
+}
+
+void KThemeBase::readMiscResourceGroup()
+{
+    KRootProp prop("Misc");
+
+    sbPlacement = (SButton)prop.readNumEntry("SButtonPosition",
+                                             (int)SBOpposite);
+    arrowStyle = (ArrowStyle)prop.readNumEntry("ArrowType",
+                                              (int)LargeArrow);
+    shading = (ShadeStyle)prop.readNumEntry("ShadeStyle", (int)Windows);
+    defaultFrame = prop.readNumEntry("FrameWidth", 2);
+    cacheSize = prop.readNumEntry("Cache", 1024);
+    sbExtent = prop.readNumEntry("ScrollBarExtent", 16);
+}
+    
+void KThemeBase::applyResourceGroup(KConfig *config, int i)
+{
+    QString tmpStr;
+    int tmpVal;
+
+    // clear the old property
+    KRootProp *tmpProp = new KRootProp(widgetEntries[i]);
+    tmpProp->destroy();
+    delete tmpProp;
+
+    KRootProp prop(widgetEntries[i]);
+    config->setGroup(widgetEntries[i]);
+
+    tmpStr = config->readEntry("CopyWidget", "");
+    prop.writeEntry("CopyWidget", tmpStr);
+    if(!tmpStr.isEmpty())
+        return;
+
+    tmpStr = config->readEntry("Scale");
+    if(tmpStr == "Full")
+        tmpVal = (int)FullScale;
+    else if(tmpStr == "Horizontal")
+        tmpVal = (int)HorizontalScale;
+    else if(tmpStr == "Vertical")
+        tmpVal = (int)VerticalScale;
+    else{
+        if(tmpStr != "Tile" && !tmpStr.isEmpty())
+            warning("KThemeBase: Unrecognized scale option %s, using Tile.",
+                    tmpStr.ascii());
+        tmpVal = (int)TileScale;
+    }
+    prop.writeEntry("ScaleHint", tmpVal);
+    
+    // Gradient type
+    tmpStr = config->readEntry("Gradient");
+    if(tmpStr == "Diagonal")
+        tmpVal = (int)GrDiagonal;
+    else if(tmpStr == "Horizontal")
+        tmpVal = (int)GrHorizontal;
+    else if(tmpStr == "Vertical")
+        tmpVal = (int)GrVertical;
+    else if(tmpStr == "Pyramid")
+        tmpVal = (int)GrPyramid;
+    else if(tmpStr == "Rectangle")
+        tmpVal = (int)GrRectangle;
+    else if(tmpStr == "Elliptic")
+        tmpVal = (int)GrElliptic;
+    else if(tmpStr == "ReverseBevel")
+        tmpVal = (int)GrReverseBevel;
+    else{
+        if(tmpStr != "None" && !tmpStr.isEmpty())
+            warning("KThemeBase: Unrecognized gradient option %s, using None.",
+                    tmpStr.ascii());
+        tmpVal = (int)GrNone;
+    }
+    prop.writeEntry("Gradient", tmpVal);
+
+    // Blend intensity
+    tmpStr.setNum(config->readDoubleNumEntry("BlendIntensity", 0.0));
+    prop.writeEntry("Blend", tmpStr);
+
+    // Bevel contrast
+    prop.writeEntry("BContrast", config->readNumEntry("BevelContrast", 0));
+
+    // Border width
+    prop.writeEntry("Border", config->readNumEntry("Border", 1));
+
+    // Highlight width
+    prop.writeEntry("Highlight", config->readNumEntry("Highlight", 1));
+
+    // Gradient low color or blend background
+    if(config->hasKey("GradientLow"))
+        prop.writeEntry("GrLow", config->readColorEntry("GradientLow",
+            &kapp->palette().normal().background()));
+
+    // Gradient high color
+    if(config->hasKey("GradientHigh"))
+        prop.writeEntry("GrHigh", config->readColorEntry("GradientHigh",
+            &kapp->palette().normal().foreground()));
+
+    // Extended color attributes
+    if(config->hasKey("Forground") || config->hasKey("Background")){
+        QColor fg, bg;
+        if(config->hasKey("Background"))
+            bg = config->readColorEntry("Background", &bg);
+        if(config->hasKey("Foreground"))
+            fg = config->readColorEntry("Foreground", &fg);
+        prop.writeEntry("Foreground", fg);
+        prop.writeEntry("Background", bg);
+        
+    }
+    else
+        colors[i] = NULL;
+
+    // Pixmap
+    tmpStr = config->readEntry("Pixmap", "");
+    if(!tmpStr.isEmpty())
+        prop.writeEntry("Pixmap", tmpStr);
+    // Pixmap border
+    tmpStr = config->readEntry("PixmapBorder", "");
+    if(!tmpStr.isEmpty()){
+        prop.writeEntry("PixmapBorder", tmpStr);
+        prop.writeEntry("PixmapBWidth", config->
+                        readNumEntry("PixmapBWidth", 0));
+    }
+    
+    // Various widget specific settings. This was more efficent when bunched
+        // together in the misc group, but this makes an easier to read config.
+    if(i == SliderGroove)
+        prop.writeEntry("SmallGroove",
+                        config->readBoolEntry("SmallGroove", false));
+    else if(i == ActiveTab || i == InactiveTab)
+        prop.writeEntry("BottomLine",
+                        config->readBoolEntry("BottomLine", true));
+    else if(i == Splitter)
+        prop.writeEntry("Width", config->readNumEntry("Width", 10));
+    else if(i == ComboBox || i == ComboBoxDown){
+        if(config->hasKey("Round"))
+            prop.writeEntry("Round", config->readBoolEntry("Round", false));
+        else
+            prop.writeEntry("Round", 5000); // invalid, used w/multiple groups
+            
+    }
+    else if (i == PushButton || i == PushButtonDown){
+        if(config->hasKey("XShift"))
+            prop.writeEntry("XShift", config->readNumEntry("XShift", 0));
+        else
+            prop.writeEntry("XShift", 5000);
+        if(config->hasKey("YShift"))
+            prop.writeEntry("YShift", config->readNumEntry("YShift", 0));
+        else
+            prop.writeEntry("YShift", 5000);
+        if(config->hasKey("3DFocusRect"))
+            prop.writeEntry("3DFRect", config->
+                            readBoolEntry("3DFocusRect", false));
+        else
+            prop.writeEntry("3DFRect", 5000);
+      if(config->hasKey("3DFocusOffset"))
+          prop.writeEntry("3DFOffset", config->
+                          readBoolEntry("3DFocusOffset", 0));
+      else
+          prop.writeEntry("3DFOffset", 5000);
+      if(config->hasKey("Round"))
+          prop.writeEntry("Round", config->readBoolEntry("Round", false));
+      else
+          prop.writeEntry("Round", 5000);
+    }
+}
+
+
+void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
+                                   bool *loadArray)
+{
+    if(loadArray[i] == true){
+        return; // already been preloaded.
+    }
+    
+    int tmpVal;
+    KRootProp prop(widgetEntries[i]);
+    QString tmpStr;
+
+    tmpStr = prop.readEntry("CopyWidget", "");
+    if(!tmpStr.isEmpty()){ // Duplicate another widget's config
+        int sIndex;
+        loadArray[i] = true;
+        for(sIndex=0; sIndex < WIDGETS; ++sIndex){
+            if(tmpStr == widgetEntries[sIndex]){
+                if(!loadArray[sIndex]) // hasn't been loaded yet
+                    readResourceGroup(sIndex, pixnames, brdnames,
+                                      loadArray);
+                break;
+            }
+        }
+        if(loadArray[sIndex]){
+            copyWidgetConfig(sIndex, i, pixnames, brdnames);
+        }
+        else
+            warning("KThemeBase: Unable to identify source widget for %s!",                        widgetEntries[i]);
+        return;
+    }
+    // special inheritance for disabled arrows (these are tri-state unlike
+    // the rest of what we handle).        
+    for(tmpVal = DisArrowUp; tmpVal <= DisArrowRight; ++tmpVal){
+        if(tmpVal == i){
+            tmpStr = prop.readEntry("Pixmap", "");
+            if(tmpStr.isEmpty()){
+                copyWidgetConfig(ArrowUp+(tmpVal-DisArrowUp), i, pixnames,
+                                 brdnames);
+                return;
+            }
+        }
+    }
+    
+    // Scale hint
+    scaleHints[i] = (ScaleHint)prop.readNumEntry("Scale", (int)TileScale);
+    gradients[i] = (Gradient)prop.readNumEntry("Gradient", (int)GrNone);
+    
+    // Blend intensity
+    tmpStr = prop.readEntry("Blend", "0.0");
+    blends[i] = tmpStr.toFloat();
+
+    // Bevel contrast
+    bContrasts[i] = prop.readNumEntry("BContrast", 0);
+
+    // Border width
+    borders[i] = prop.readNumEntry("Border", 1);
+
+    // Highlight width
+    highlights[i] = prop.readNumEntry("Highlight", 1);
+
+    // Gradient low color or blend background
+    if(gradients[i] != GrNone || blends[i] != 0.0)
+        grLowColors[i] =
+            new QColor(prop.readColorEntry("GrLow",
+                                           &kapp->palette().normal().
+                                           background()));
+    else
+        grLowColors[i] = NULL;
+
+    // Gradient high color
+    if(gradients[i] != GrNone)
+        grHighColors[i] =
+            new QColor(prop.readColorEntry("GrHigh",
+                                           &kapp->palette().normal().
+                                           background()));
+    else
+        grHighColors[i] = NULL;
+
+    // Extended color attributes
+    QColor fg, bg;
+    fg = prop.readColorEntry("Foreground", &fg);
+    bg = prop.readColorEntry("Background", &bg);
+    if(fg.isValid() || bg.isValid()){
+        if(!fg.isValid())
+            fg = kapp->palette().normal().foreground();
+        if(!bg.isValid())
+            bg = kapp->palette().normal().background();
+        colors[i] = makeColorGroup(fg, bg, Qt::WindowsStyle);
+    }
+    else
+        colors[i] = NULL;
+    
+    // Pixmap
+    int existing;
+    tmpStr = prop.readEntry("Pixmap", "");
+    pixnames[i] = tmpStr;
+    duplicate[i] = false;
+    pixmaps[i] = NULL;
+    images[i] = NULL;
+    // Scan for duplicate pixmaps(two identical pixmaps, tile scale, no blend,
+    // no pixmapped border)
+    if(!tmpStr.isEmpty()){
+        for(existing=0; existing < i; ++existing){
+            if(tmpStr == pixnames[existing] && scaleHints[i] == TileScale &&
+               scaleHints[existing] == TileScale && blends[existing] == 0.0 &&
+               blends[i] == 0.0){
+                pixmaps[i] = pixmaps[existing];
+                duplicate[i] = true;
+                warning("KThemeBase: Marking %s as duplicate.",
+                        pixnames[i].latin1());
+                break;
+            }
+        }
+    }
+    // load
+    if(!duplicate[i] && !tmpStr.isEmpty()){
+        pixmaps[i] = loadPixmap(tmpStr);
+        // load and save images for scaled/blended widgets for speed.
+        if(scaleHints[i] == TileScale && blends[i] == 0.0)
+            images[i] = NULL;
+        else
+            images[i] = loadImage(tmpStr);
+    }
+
+    // Pixmap border
+    tmpStr = prop.readEntry("PixmapBorder", "");
+    brdnames[i] = tmpStr;
+    pbDuplicate[i] = false;
+    pbPixmaps[i] = NULL;
+    pbWidth[i] = 0;
+    if(!tmpStr.isEmpty()){
+        pbWidth[i] = prop.readNumEntry("PixmapBWidth", 0);
+        if(pbWidth[i] == 0){
+            warning("KThemeBase: No border width specified for pixmapped border widget %s",
+                    widgetEntries[i]);
+            warning("KThemeBase: Using default of 2.");
+            pbWidth[i] = 2;
+        }
+        // duplicate check
+        for(existing=0; existing < i; ++existing){
+            if(tmpStr == brdnames[existing]){
+                pbPixmaps[i] = pbPixmaps[existing];
+                pbDuplicate[i] = true;
+                warning("KThemeBase: Marking border pixmap %s as duplicate.",
+                        brdnames[i].latin1());
+                break;
+            }
+        }
+    }
+    // load
+    if(!pbDuplicate[i] && !tmpStr.isEmpty())
+        pbPixmaps[i] = loadPixmap(tmpStr);
+
+    if(pbPixmaps[i] && !pbDuplicate[i])
+        generateBorderPix(i);
+    
+    // Various widget specific settings. This was more efficent when bunched
+    // together in the misc group, but this makes an easier to read config.
+    if(i == SliderGroove)
+        roundedSlider = prop.readNumEntry("SmallGroove", false);
+    else if(i == ActiveTab)
+        aTabLine = prop.readNumEntry("BottomLine", true);
+    else if(i == InactiveTab)
+        iTabLine = prop.readNumEntry("BottomLine", true);
+    else if(i == Splitter)
+        splitterWidth = prop.readNumEntry("Width", 10);
+    else if(i == ComboBox || i == ComboBoxDown){
+        tmpVal = prop.readNumEntry("Round", 5000);
+        if(tmpVal != 5000)
+            roundedCombo = tmpVal;
+    }
+    else if (i == PushButton || i == PushButtonDown){
+        tmpVal = prop.readNumEntry("XShift", 0);
+        if(tmpVal != 5000)
+            btnXShift = tmpVal;
+        tmpVal = prop.readNumEntry("YShift", 0);
+        if(tmpVal != 5000)
+            btnYShift = tmpVal;
+        tmpVal = prop.readNumEntry("3DFRect", false);
+        if(tmpVal != 5000)
+            focus3D = tmpVal;
+        tmpVal = prop.readNumEntry("3DFOffset", 0);
+        if(tmpVal != 5000)
+            focus3DOffset = tmpVal;
+        tmpVal = prop.readNumEntry("Round", false);
+        if(tmpVal != 5000)
+            roundedButton = tmpVal;
+    }
+    loadArray[i] = true;
+}
+            
 
 KThemePixmap::KThemePixmap(bool timer)
     : KPixmap()

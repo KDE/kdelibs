@@ -454,6 +454,11 @@ protected:
     KThemePixmap* gradient(int w, int h, WidgetType widget);
     KThemePixmap* blend(WidgetType widget);
     void generateBorderPix(int i);
+    void applyResourceGroup(KConfig *config, int i);
+    void applyMiscResourceGroup(KConfig *config);
+    void readResourceGroup(int i, QString *pixnames, QString *brdnames,
+                          bool *loadArray);
+    void readMiscResourceGroup();
     /**
      * Attempts to load a pixmap from the default KThemeBase locations.
      */
