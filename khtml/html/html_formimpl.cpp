@@ -726,39 +726,39 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_TYPE: {
-	    typeEnum newType;
+            typeEnum newType;
 
-	    if ( strcasecmp( attr->value(), "text" ) == 0 )
-		newType = TEXT;
-	    else if ( strcasecmp( attr->value(), "password" ) == 0 )
-		newType = PASSWORD;
-	    else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
-		newType = CHECKBOX;
-	    else if ( strcasecmp( attr->value(), "radio" ) == 0 )
-		newType = RADIO;
-	    else if ( strcasecmp( attr->value(), "submit" ) == 0 )
-		newType = SUBMIT;
-	    else if ( strcasecmp( attr->value(), "reset" ) == 0 )
-		newType = RESET;
-	    else if ( strcasecmp( attr->value(), "file" ) == 0 )
-		newType = FILE;
-	    else if ( strcasecmp( attr->value(), "hidden" ) == 0 )
-		newType = HIDDEN;
-	    else if ( strcasecmp( attr->value(), "image" ) == 0 )
-		newType = IMAGE;
-	    else if ( strcasecmp( attr->value(), "button" ) == 0 )
-		newType = BUTTON;
-	    else
-		newType = TEXT;
+            if ( strcasecmp( attr->value(), "text" ) == 0 )
+                newType = TEXT;
+            else if ( strcasecmp( attr->value(), "password" ) == 0 )
+                newType = PASSWORD;
+            else if ( strcasecmp( attr->value(), "checkbox" ) == 0 )
+                newType = CHECKBOX;
+            else if ( strcasecmp( attr->value(), "radio" ) == 0 )
+                newType = RADIO;
+            else if ( strcasecmp( attr->value(), "submit" ) == 0 )
+                newType = SUBMIT;
+            else if ( strcasecmp( attr->value(), "reset" ) == 0 )
+                newType = RESET;
+            else if ( strcasecmp( attr->value(), "file" ) == 0 )
+                newType = FILE;
+            else if ( strcasecmp( attr->value(), "hidden" ) == 0 )
+                newType = HIDDEN;
+            else if ( strcasecmp( attr->value(), "image" ) == 0 )
+                newType = IMAGE;
+            else if ( strcasecmp( attr->value(), "button" ) == 0 )
+                newType = BUTTON;
+            else
+                newType = TEXT;
 
-	    if (!m_haveType) {
-		_type = newType;
-		m_haveType = true;
-	    }
-	    else if (_type != newType) {
-		setAttribute(ATTR_TYPE,type());
-	    }
-	}
+            if (!m_haveType) {
+                _type = newType;
+                m_haveType = true;
+            }
+            else if (_type != newType) {
+                setAttribute(ATTR_TYPE,type());
+            }
+        }
         break;
     case ATTR_VALUE:
         m_value = attr->value();
@@ -803,7 +803,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     m_style = document->styleSelector()->styleForElement(this);
     view = _view;
 
-    khtml::RenderObject *r = _parent->renderer();
+    khtml::RenderObject *r = _parent ? _parent->renderer() : 0;
     if(r)
     {
         switch(_type)
@@ -882,8 +882,8 @@ bool HTMLInputElementImpl::encoding(khtml::encodingList& encoding)
 
         case TEXT:
         case PASSWORD:
-	    encoding += m_value.string().local8Bit();
-	    return true;
+            encoding += m_value.string().local8Bit();
+            return true;
             break;
         case CHECKBOX:
 
@@ -1643,7 +1643,7 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if (m_value.isNull())
-	m_value = defaultValue();
+        m_value = defaultValue();
     return m_value;
 }
 
@@ -1660,8 +1660,8 @@ DOMString HTMLTextAreaElementImpl::defaultValue()
     // there may be comments - just grab the text nodes
     NodeImpl *n;
     for (n = firstChild(); n; n = n->nextSibling())
-	if (n->isTextNode())
-	    val += static_cast<TextImpl*>(n)->data();
+        if (n->isTextNode())
+            val += static_cast<TextImpl*>(n)->data();
     return val;
 }
 
@@ -1671,11 +1671,11 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     QList<NodeImpl> toRemove;
     NodeImpl *n;
     for (n = firstChild(); n; n = n->nextSibling())
-	if (n->isTextNode())
-	    toRemove.append(n);
+        if (n->isTextNode())
+            toRemove.append(n);
     QListIterator<NodeImpl> it(toRemove);
     for (; it.current(); ++it) {
-	removeChild(it.current());
+        removeChild(it.current());
     }
     insertBefore(document->createTextNode(_defaultValue),firstChild());
     setValue(_defaultValue);
