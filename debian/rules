@@ -89,22 +89,14 @@ binary-arch:  build
 	-rm -rf debian/kdelibs3
 	install -d debian/kdelibs3
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
-	dh_installdirs
-	install -d debian/kdelibs3/usr/share/applnk
-	install -d debian/kdelibs3/etc/pam.d
-	install -d debian/kdelibs3/etc/kde2
-	install -d debian/kdelibs3/usr/share/lintian/overrides
-	install -d debian/libkmid-alsa/usr/bin
+	dh_installdirs -a
 	$(MAKE) -C arts/ clean
 	$(MAKE) -C libkmid/ clean
-	-rm config.cache kdeprint/Makefile
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
 		--includedir=/usr/include/kde 
 	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
 	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
-	install -d debian/libkmid-alsa/usr/share/lintian/overrides
-	install -d debian/libarts-alsa/usr/share/lintian/overrides
 	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
 	cp debian/libarts-alsa.override debian/libarts-alsa/usr/share/lintian/overrides/libarts-alsa
 	-rm -f `find debian/libarts-alsa/ -name "knotify.desktop"`
@@ -114,29 +106,26 @@ binary-arch:  build
 	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
 	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
 	# messy cleanup
-	-rm -rf debian/libarts-alsa/usr/include
-	-rm -rf debian/libkmid-alsa/usr/include
+	-rm -rf debian/libarts-alsa/usr/include debian/libkmid-alsa/usr/include
 	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
 	-rm -f `find debian/libkmid-alsa/usr/lib -type l -name "*.so"`
 	cp debian/*.override debian/kdelibs3/usr/share/lintian/overrides/
 	for i in `ls debian/kdelibs3/usr/share/lintian/overrides/`; do \
 	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
 	done
+	-rm -f debian/kdelibs3/usr/share/lintian/overrides/*alsa
 	for i in `find debian/ -type l -name "common"`; do \
 		rm $$i; \
 		ln -s ../common $$i ;\
 	done
 	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
-	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc
 	cp debian/kdelibs3/etc/kde2/system.kdeglobals debian/kdelibs3/etc/kderc
-	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
 	dh_installdocs -a
-	install -d debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	-cp debian/dh-make/* debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
