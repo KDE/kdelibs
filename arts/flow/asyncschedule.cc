@@ -1,16 +1,49 @@
 #include "asyncschedule.h"
 
 ASyncPort::ASyncPort(std::string name, void *ptr, long flags,
-			StdScheduleNode* parent) : Port(name, ptr, flags, parent)
+		StdScheduleNode* parent) : Port(name, ptr, flags, parent), pull(false)
 {
-	GenericAsyncStream *as = (GenericAsyncStream *)ptr;
-	as->channel = this;
-	as->_notifyID = notifyID = parent->object()->_mkNotifyID();
+	stream = (GenericAsyncStream *)ptr;
+	stream->channel = this;
+	stream->_notifyID = notifyID = parent->object()->_mkNotifyID();
 }
 
-void ASyncPort::processedPacket(GenericDataPacket *)
+//-------------------- GenericDataChannel interface -------------------------
+
+void ASyncPort::setPull(int packets, int capacity)
+{
+	pullNotification.receiver = parent->object();
+	pullNotification.ID = notifyID;
+	pull = true;
+
+	for(int i=0;i<packets;i++)
+	{
+		GenericDataPacket *packet = stream->createPacket(capacity);
+		packet->useCount = 0;
+		pullNotification.data = packet;
+		NotificationManager::the()->send(pullNotification);
+	}
+}
+
+void ASyncPort::endPull()
+{
+	pull = false;
+	// TODO: maybe remove all pending pull packets here
+}
+
+void ASyncPort::processedPacket(GenericDataPacket *packet)
 {
 	cout << "port::processedPacket" << endl;
+	assert(packet->useCount == 0);
+	if(pull)
+	{
+		pullNotification.data = packet;
+		NotificationManager::the()->send(pullNotification);
+	}
+	else
+	{
+		stream->freePacket(packet);
+	}
 }
 
 void ASyncPort::sendPacket(GenericDataPacket *packet)
@@ -31,10 +64,11 @@ void ASyncPort::sendPacket(GenericDataPacket *packet)
 	}
 	else
 	{
-		// should probably not use delete in here
-		delete packet;
+		stream->freePacket(packet);
 	}
 }
+
+//----------------------- Port interface ------------------------------------
 
 void ASyncPort::connect(Port *xsource)
 {
@@ -53,7 +87,24 @@ void ASyncPort::connect(Port *xsource)
 void ASyncPort::disconnect(Port *xsource)
 {
 	cout << "port::disconnect" << endl;
+
+	ASyncPort *source = xsource->asyncPort();
+	assert(source);
 	removeAutoDisconnect(xsource);
+
+	// remove our subscription from the source object
+	vector<Notification>::iterator si;
+	for(si = source->subscribers.begin(); si != source->subscribers.end(); si++)
+	{
+		if(si->receiver == parent->object())
+		{
+			source->subscribers.erase(si);
+			return;
+		}
+	}
+
+	// there should have been exactly one, so this shouldn't be reached
+	assert(false);
 }
 
 ASyncPort *ASyncPort::asyncPort()

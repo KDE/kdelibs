@@ -19,6 +19,13 @@ protected:
 	 * used internally by DataPacket
 	 */
 	virtual void sendPacket(GenericDataPacket *packet) = 0;
+
+public:
+	/*
+	 * used to set pull delivery mode
+	 */
+	virtual void setPull(int packets, int capacity) = 0;
+	virtual void endPull() = 0;
 };
 
 /*
@@ -57,10 +64,6 @@ protected:
 	virtual void read(Buffer& stream) = 0;
 	virtual void write(Buffer& stream) = 0;
 
-	GenericDataPacket(GenericDataChannel *channel) : channel(channel)
-	{
-	}
-
 public:
 	/** 
 	 * having size here (and not in the derived concrete DataPackets) is so
@@ -82,6 +85,12 @@ public:
 	{
 		useCount--;
 		if(useCount == 0) channel->processedPacket(this);
+	}
+
+protected:
+	GenericDataPacket(GenericDataChannel *channel) :channel(channel),useCount(0)
+	{
+		//
 	}
 };
 

@@ -5,14 +5,13 @@
 #include "datapacket.h"
 
 class GenericAsyncStream {
-protected:
+public:
 	/**
 	 * interface to create packets and to get rid of them
 	 */
 	virtual GenericDataPacket *createPacket(int capacity) = 0;
 	virtual void freePacket(GenericDataPacket *packet) = 0;
 
-public:
 	GenericDataChannel *channel;
 	int _notifyID;
 
@@ -33,7 +32,15 @@ protected:
 public:
 	// for outgoing streams
 	virtual DataPacket<T> *allocPacket(int capacity) = 0;
-	//virtual void setPull(int packets, int capacity) = 0;
+
+	inline void setPull(int packets, int capacity)
+	{
+		channel->setPull(packets,capacity);
+	}
+	inline void endPull()
+	{
+		channel->endPull();
+	}
 };
 
 class FloatAsyncStream : public AsyncStream<float>
