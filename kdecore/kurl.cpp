@@ -834,7 +834,7 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
           (buf[pos] != '#'))
         goto NodeErr;
 
-      start = pos++;
+      start = pos;
       goto Node9;
     }
   m_strPass = decode(QString( buf + start, pos - start), encoding_hint);
@@ -856,7 +856,7 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
        badHostName = true;
        goto NodeErr;
     }
-    // Node 8b: Read everything until ] or terminate
+    // Node 8a: Read everything until ] or terminate
     badHostName = false;
     x = buf[pos];
     while( (x != ']') )
@@ -879,7 +879,7 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
   }
   else
   {
-    // Non IPv6 address
+    // Non IPv6 address, with a user
     start = pos;
 
     // Node 8b: Read everything until / : or terminate
@@ -903,36 +903,36 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
     setHost(decode(QString( buf + start, pos - start ), encoding_hint));
   }
   x = buf[pos];
-  if ( x == '/' )
+  if ( x == '/' || x == '#' || x == '?' )
     {
-      start = pos++;
+      start = pos;
       goto Node9;
     }
   else if ( x != ':' )
     goto NodeErr;
   pos++;
 
-  // Node 8a: Accept at least one digit
+  // Node 8c: Accept at least one digit
   if ( pos == len )
     goto NodeErr;
   start = pos;
   if ( !isdigit( buf[pos++] ) )
     goto NodeErr;
 
-  // Node 8b: Accept any amount of digits
+  // Node 8d: Accept any amount of digits
   while( pos < len && isdigit( buf[pos] ) ) pos++;
   port = QString( buf + start, pos - start );
   m_iPort = port.toUShort();
   if ( pos == len )
     goto NodeOk;
-  start = pos++;
+  start = pos;
 
  Node9: // parse path until query or reference reached
 
   while( pos < len && buf[pos] != '#' && buf[pos]!='?' ) pos++;
 
   tmp = QString( buf + start, pos - start );
-  //kdDebug(126)<<" setting encoded path&query to:"<<tmp<<endl;
+  //kdDebug(126)<<" setting encoded path to:"<<tmp<<endl;
   setEncodedPath( tmp, encoding_hint );
 
   if ( pos == len )
