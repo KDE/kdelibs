@@ -30,10 +30,13 @@
 #include <qdatetime.h>
 #include <cups/cups.h>
 
-void dumpRequest(ipp_t *req, bool answer = false)
+void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
 {
 	kdDebug() << "==========" << endl;
-	kdDebug() << (answer ? "Answer" : "Request") << endl;
+	if (s.isEmpty())
+		kdDebug() << (answer ? "Answer" : "Request") << endl;
+	else
+		kdDebug() << s << endl;
 	kdDebug() << "==========" << endl;
 	if (!req)
 	{
@@ -269,18 +272,20 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 
 	if (dump_ > 0)
 	{
-		dumpRequest(request_, false);
+		dumpRequest(request_, false, "Request to "+myHost+":"+QString::number(myPort));
 	}
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 	httpClose(HTTP);
-	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
-		return false;
-
+	
 	if (dump_ > 1)
 	{
 		dumpRequest(request_, true);
 	}
+	
+	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
+		return false;
+
 
 	return true;
 }

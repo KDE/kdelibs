@@ -27,6 +27,7 @@
 #include "pluginaction.h"
 
 #include <klocale.h>
+#include <kurl.h>
 
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
 : KMJobManager(parent,name)
@@ -232,6 +233,12 @@ bool KMCupsJobManager::jobIppReport(KMJob *j)
 	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
 	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
 	bool	result(true);
+	if (!j->uri().isEmpty())
+	{
+		KURL	url(j->uri());
+		req.setHost(url.host());
+		req.setPort(url.port());
+	}
 	if ((result=req.doRequest("/")))
 		static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
 	else
