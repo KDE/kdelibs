@@ -825,6 +825,30 @@ QFrame *KDialogBase::addPage( const QString &itemName, const QString &header )
 }
 
 
+QVBox *KDialogBase::addVBoxPage( const QString &itemName, 
+				 const QString &header )
+{
+  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header ) );
+}
+
+
+QHBox *KDialogBase::addHBoxPage( const QString &itemName, 
+				 const QString &header )
+{
+  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header ) );
+}
+
+
+QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir, 
+				 const QString &itemName, 
+				 const QString &header )
+{
+  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header ) );
+}
+
+
+
+
 void KDialogBase::setMainWidget( QWidget *widget )
 {
   if( mJanus != 0 )

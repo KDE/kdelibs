@@ -1,7 +1,7 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999 Mirko Sucker (mirko@kde.org) and 
- *  Espen Sand (espensa@online.no)
+ *  Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
+ *  Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -120,8 +120,9 @@ class KDialogBaseTile : public QObject
  * to connect a signal instead of overriding the slot.
  * The default implementation of @ref slotHelp() will automatically enable the 
  * help system if you have provided a path to the help text. @ref slotCancel() 
- * and @ref slotClose() will run @ref QDialog::reject() while @ref slotOk() will run 
- * @ref QDialog::accept(). You define a default button in the constructor.
+ * and @ref slotClose() will run @ref QDialog::reject() while @ref slotOk() 
+ * will run @ref QDialog::accept(). You define a default button in the 
+ * constructor.
  *
  * @sect Dialog shapes:
  * You can either use one of the prebuilt, easy to use, faces or define 
@@ -143,10 +144,36 @@ class KDialogBaseTile : public QObject
  * @sect Standard compliance:
  * The class is derived form @ref KDialog(), so you get automatic access to
  * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the 
- * extended @ref KDialog::setCaption() method.
+ * extended @ref KDialog::setCaption() method. NOTE: The main widget you 
+ * use will be positioned inside the dialog using a margin (or border) 
+ * equal to @ref KDialog::marginHint(). You shall not add a margin yourself.
+ * The example below (from kedit) shows how you use the top level widget
+ * and its layout. The second argument (the border) to <tt>QVBoxLayout</tt> 
+ * is 0. This situation is valid for @ref addPage , @ref addVBoxPage ,
+ * @ref addHBoxPage , and @ref addGridPage as well.
+ * 
+ * <pre>
+ * UrlDlg::UrlDlg( QWidget *parent, const QString& caption, 
+ *		const QString& urltext)
+ * : KDialogBase( parent, "urldialog", true, caption, Ok|Cancel, Ok, true )
+ * {
+ *   QWidget *page = new QWidget( this ); 
+ *   setMainWidget(page);
+ *   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+ * 
+ *   QLabel *label = new QLabel( caption, page, "caption" );
+ *   topLayout->addWidget( label );
+ * 
+ *   lineedit = new QLineEdit( urltext, page, "lineedit" );
+ *   lineedit->setMinimumWidth(fontMetrics().maxWidth()*20);
+ *   topLayout->addWidget( lineedit );
+ *
+ *   topLayout->addStretch(10); 
+ * }
+ * </pre>
  *
  * @short A dialog base class which standard buttons and predefined layouts.
- * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espensa@online.no)
+ * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
 class KDialogBase : public KDialog
 {
@@ -257,8 +284,8 @@ class KDialogBase : public KDialog
      *        here. The class will take care of that.
      * @param buttonMask Specifies which buttons will be visible.
      * @param defaultButton Specifies which button we be marked as the default.
-     * @param separator If @p true, a separator line is drawn between the action
-     *        buttons and the main widget.
+     * @param separator If @p true, a separator line is drawn between the 
+     *        action buttons and the main widget.
      * @param user1 User button1 text.
      * @param user2 User button2 text.
      * @param user3 User button3 text.
@@ -285,8 +312,8 @@ class KDialogBase : public KDialog
      * @param modal Controls dialog modality. If @p false, the rest of the 
      *        program interface (example: other dialogs) is accessible while 
      *        the dialog is open.
-     * @param separator If @p true, a separator line is drawn between the action
-     *        buttons and the main widget.
+     * @param separator If @p true, a separator line is drawn between the 
+     *        action buttons and the main widget.
      * @param user1 User button1 text.
      * @param user2 User button2 text.
      * @param user3 User button3 text.
@@ -306,9 +333,9 @@ class KDialogBase : public KDialog
      *
      * If you need other names you can rename
      * the buttons with @ref setButtonText(). The dialog box is not resizeable 
-     * by default but this can be changed by @ref setInitialSize(). If you select 
-     * 'modal' to be true, the dialog will return Yes, No, or Cancel when 
-     * closed otherwise you can use the signals @ref yesClicked(), 
+     * by default but this can be changed by @ref setInitialSize(). If you 
+     * select 'modal' to be true, the dialog will return Yes, No, or Cancel 
+     * when closed otherwise you can use the signals @ref yesClicked(), 
      * @ref noClicked(), or @ref cancelClicked() to determine the state.
      * 
      * @param caption The dialog caption. Do not specify the application name
@@ -322,8 +349,8 @@ class KDialogBase : public KDialog
      * @param modal Controls dialog modality. If @p false, the rest of the 
      *        program interface (example: other dialogs) is accessible 
      *        while the dialog is open.
-     * @param separator If @p true, a separator line is drawn between the action
-     *        buttons and the main widget.
+     * @param separator If @p true, a separator line is drawn between the 
+     *        action buttons and the main widget.
      * @param user1 User button1 text.
      * @param user2 User button2 text.
      * @param user3 User button3 text.
@@ -807,9 +834,19 @@ class KDialogBase : public KDialog
     QFrame *plainPage( void );
 
     /**
-     * Add a page to the predefined layout when used in TreeList or Tabbed
-     * mode. The returned widget must used as the toplevel widget for 
-     * this particular page.
+     * Adds a page to the dialog when the class is used in TreeList or Tabbed
+     * mode. The returned widget must be used as the toplevel widget for 
+     * this particular page. Note: The returned frame widget has no
+     * layout manager associated with it. In order to use it you must 
+     * create a layout yourself as the example below illustrates:
+     * <pre>
+     *
+     * QFrame *page = addPage( i18n("Layout") );
+     * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
+     * QLabel *label = new QLabel( i18n("Layout type"), page );
+     * topLayout->addWidget( label );
+     * ..
+     * </pre>
      *
      * @param item Name used in the list (TreeList mode) or Tab name 
      *        (Tabbed mode).
@@ -821,6 +858,68 @@ class KDialogBase : public KDialog
      */
     QFrame  *addPage( const QString &item, 
                       const QString &header=QString::null );
+
+    /**
+     * Adds a page to the dialog when the class is used in TreeList or Tabbed
+     * mode. The returned widget must be used as the toplevel widget for 
+     * this particular page. The widget contains a QVBoxLayout layout so
+     * the child widgets are lined up vertically. You can use it as follows:
+     * <pre>
+     *
+     * QVBox *page = addVBoxPage( i18n("Layout") );
+     * QLabel *label = new QLabel( i18n("Layout type"), page );
+     * ..
+     * </pre>
+     *
+     * @param item Name used in the list (TreeList mode) or Tab name 
+     *        (Tabbed mode).
+     * @param header Header text use in TreeList mode. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QVBox *addVBoxPage( const QString &itemName, 
+			const QString &header=QString::null );
+
+    /**
+     * Adds a page to the dialog when the class is used in TreeList or Tabbed
+     * mode. The returned widget must be used as the toplevel widget for 
+     * this particular page. The widget contains a QHBoxLayout layout so
+     * the child widgets are lined up horizontally.
+     *
+     * @param item Name used in the list (TreeList mode) or Tab name 
+     *        (Tabbed mode).
+     * @param header Header text use in TreeList mode. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QHBox *addHBoxPage( const QString &itemName, 
+			const QString &header=QString::null );
+
+   
+    /**
+     * Adds a page to the dialog when the class is used in TreeList or Tabbed
+     * mode. The returned widget must be used as the toplevel widget for 
+     * this particular page. The widget contains a QGridLayout layout so
+     * the child widgets are positioned in a grid.
+     *
+     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
+     *          or the number of rows if 'dir' is QGrid::Vertical.
+     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     * @param item Name used in the list (TreeList mode) or Tab name 
+     *        (Tabbed mode).
+     * @param header Header text use in TreeList mode. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QGrid *addGridPage( int n, QGrid::Direction dir, 
+			const QString &itemName, 
+			const QString &header=QString::null );
 
     /**
      * Maps some keys to the actions buttons. F1 is mapped to the Help
