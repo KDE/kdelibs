@@ -1,0 +1,8 @@
+[Misc]
+Encoding=UTF-8
+Name=Network
+Name[de]=Netzwerk
+
+[Plugin]
+Type=net
+X-KDE-Library=kabc_net
