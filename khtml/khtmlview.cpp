@@ -782,7 +782,7 @@ bool KHTMLView::gotoLink(bool forward)
         return false;
 
     ElementImpl *currentNode = m_part->xmlDocImpl()->focusNode();
-    ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(forward);
+    ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(currentNode, forward);
 
     if (!currentNode && !d->borderTouched)
     {
