@@ -165,7 +165,7 @@ else
   EXTRA_SUBDIRS=""
 fi
 
-all_includes='-I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)'
+all_includes='-I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
 AC_SUBST(all_includes)
 
 AC_SUBST(EXTRA_SUBDIRS)
