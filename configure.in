@@ -162,7 +162,6 @@ AC_OUTPUT(Makefile \
 	mediatool/Makefile \
 	kspell/Makefile \
 	kab/Makefile \
-	po/Makefile \
 	toolbar/Makefile \
 	doc/Makefile \
 	doc/kfile/Makefile \
