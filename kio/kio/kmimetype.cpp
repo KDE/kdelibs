@@ -630,6 +630,14 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   if ( icon.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
+  if ( icon.startsWith( "./" ) ) {
+    // path is relative with respect to the location
+    // of the .directory file (#73463)
+    KURL v( _url );
+    v.addPath( icon.mid( 2 ) );
+    icon = v.path();
+  }
+
   return icon;
 }
 
