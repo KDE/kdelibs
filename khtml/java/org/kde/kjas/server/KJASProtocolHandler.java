@@ -228,7 +228,7 @@ public class KJASProtocolHandler
         if( cmd_code_value == ShutdownServerCode )
         {
             Main.debug( "shutDownServer received" );
-            KJASAppletStub.waitForDestroyThreads();
+            KJASAppletStub.waitForAppletThreads();
             System.exit( 1 );
         }
         else
