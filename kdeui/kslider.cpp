@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997-1998 Christian Esken (esken@kde.org)
+    Copyright (C) 1997-1999 Christian Esken (esken@kde.org)
               (C) 1997      Martin Jones    (mjones@kde.org)
 
     This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 //-----------------------------------------------------------------------------
-// KSlider control V2.0
+// KSlider control V2.2
 // KSlider now maintained by Christian Esken (esken@kde.org)
 // Revision information.
 // 1.0 KSlider by Martin R. Jones
@@ -29,6 +29,8 @@
 // 2.0 Now KSlider is a derivation of QSlider
 // 2.1 Cleanups. Replacing eraseRect() by fillRect(). I would have thought,
 //     eraseRect() would use BackgroundColor, but it doesn't.
+// 2.2 Cleaning up and inline documentantiaon. Correcting drawing of
+//     vertical slider.
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -64,8 +66,9 @@ KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
              parent, name )
 {
   // We always have TickMarks
-  if ( orientation() == QSlider::Vertical)
+  if ( orientation() == QSlider::Vertical) {
     QSlider::setTickmarks(Right);
+  }
   else
     QSlider::setTickmarks(Below);
   isFocussed = false;
@@ -183,15 +186,43 @@ QPoint KSlider::calcArrowPos( int val )
 {
   QPoint p;
   int diffMaxMin = checkWidth();	// sanity check, Christian Esken
+  int noOffsetValue = val - minValue();
 
+  /**
+    Calculate the arrow position. More precisely, calculate the
+    position of the arrow "tip". Calculation works like this
+    (in vertical case):
+    x position is simply the arrow length.
+    y position is more complicated:
+     1. There is always a 5 pixel border left and right
+        This leaves "height()-10" point as working area
+     2. The slider range must be mapped linear onto the
+        working area.
+        a) So I calculate a relative Position in the slider
+           range: (val - minValue() ) / (maxValue() - minValue()
+           Actually I call it "noOffsetValue / diffmaxMin".
+        b) I don't set the braces around "noOffsetValue / diffmaxMin"
+           because this would loose precision.
+        c) This will lead to a arrow position inside [ 0,height()-10 ]
+           I do currect this, by "adding" 5. Actually I do reverse
+           the slider, so that low values are at the bottom. This
+           means, do not add "5", but "height()-5".
+   */
   if ( orientation() == QSlider::Vertical ) {
-    p.setY( height() - ( ((height()-10) * ( val - minValue() ))
-				  / diffMaxMin ) + 5 );
+    p.setY(   height() - 5 -
+              (  ((height()-10) * noOffsetValue )
+                 / diffMaxMin
+              )
+          );
     p.setX( ARROW_LENGTH );
   }
   else {
-    p.setX( ( ((width()-10) * ( val - minValue() ))
-	      / diffMaxMin) + 5  );
+    p.setX(   5 +
+              (
+                ((width()-10) * noOffsetValue )
+                / diffMaxMin
+              )
+          );
     p.setY( ARROW_LENGTH );
   }
   return p;
