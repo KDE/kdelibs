@@ -8,6 +8,7 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <qtextcodec.h>
+#include <qdatastream.h>
 
 static bool check(QString txt, QString a, QString b)
 {
@@ -201,7 +202,7 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
-  KURL u2("/home/dfaure/");
+  KURL u2( QCString("/home/dfaure/") );
   printf("\n* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
@@ -335,6 +336,20 @@ int main(int argc, char *argv[])
      KURL waba2( waba1, "#");
      check("http: Relative URL, with empty reference", waba2.url(), "http://www.website.com/directory/?hello#");
   }
+  {
+     KURL waba2( waba1, "");
+     check("http: Empty relative URL", waba2.url(), "http://www.website.com/directory/?hello#ref");
+  }
+  {
+     KURL base( "http://faure@www.kde.org" ); // no path
+     KURL waba2( base, "filename.html");
+     check("http: Relative URL, orig URL had no path", waba2.url(), "http://faure@www.kde.org/filename.html");
+  }
+  {
+     KURL base( "http://faure@www.kde.org:81?query" );
+     KURL waba2( base, "http://www.yahoo.org");
+     check("http: Relative URL, orig URL had username", waba2.url(), "http://www.yahoo.org");
+  }
 
   waba1 = "http://www.website.com/directory/filename?bla#blub";
   {
@@ -364,6 +379,10 @@ int main(int argc, char *argv[])
   {
      KURL waba2( waba1, "relative.html#with_reference");
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
+  }
+  {
+      KURL waba2( waba1, "http:/relative.html"); // "rfc 1606 loophole"
+      check("http: Strange relative URL", waba2.url(), "http://www.website.com/relative.html");
   }
   waba1.setUser("waldo");
   check("http: Set user", waba1.url(), "http://waldo@www.website.com/directory/filename?bla#blub");
@@ -482,6 +501,28 @@ int main(int argc, char *argv[])
   check("http: IPV6 without path; port", QString::number( waba1.port() ), "81" );
   check("http: IPV6 without path; ref", waba1.ref(), "ref");
 
+  // Streaming operators
+  KURL origURL( "http://www.website.com/directory/?#ref" );
+  waba1 = "http://[::ffff:129.144.52.38]:81?query";
+  QByteArray buffer;
+  {
+      QDataStream stream( buffer, IO_WriteOnly );
+      stream << origURL
+             << KURL( "file:" ) // an invalid one
+             << waba1; // the IPv6 one
+  }
+  {
+      QDataStream stream( buffer, IO_ReadOnly );
+      KURL restoredURL;
+      stream >> restoredURL;
+      check( "Streaming valid URL", origURL.url(), restoredURL.url() );
+      stream >> restoredURL;
+      check( "Streaming invalid URL", restoredURL.isValid()?"valid":"malformed", "malformed" );
+      check( "Streaming invalid URL", restoredURL.url(), "file:" );
+      stream >> restoredURL;
+      check( "Streaming ipv6 URL with query", restoredURL.url(), waba1.url() );
+  }
+
   // Broken stuff
   waba1 = "file:a";
   check("Broken stuff #1 path", waba1.path(), "a");
@@ -518,6 +559,8 @@ int main(int argc, char *argv[])
   check("Broken stuff #5 empty", broken.isEmpty()?"EMPTY":"NOT", "NOT");
   check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
   check("Broken stuff #5 path", broken.path(), "");
+  broken = "file";
+  check("Broken stuff #5 valid", broken.isValid()?"VALID":"MALFORMED", "MALFORMED");
 
 #if 0 // BROKEN?
   // UNC like names
@@ -641,6 +684,7 @@ int main(int argc, char *argv[])
   // Needed for #49616
   check( "encode_string('C++')", KURL::encode_string( "C++" ), "C%2B%2B" );
   check( "decode_string('C%2B%2B')", KURL::decode_string( "C%2B%2B" ), "C++" );
+  check( "decode_string('C%00A')", KURL::decode_string( "C%00%A" ), "C" ); // we stop at %00
 
   check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
   check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
@@ -781,6 +825,12 @@ int main(int argc, char *argv[])
   ldap.setQuery("??sub?(cn=Karl%20Marx)");
   check("query()?", ldap.query(), "??sub?(cn=Karl%20Marx)");
   check("url()?", ldap.url(), "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Karl%20Marx)");
+
+  KURL leo = "data:text/html,http://www.invalid/";
+  check("data URL: isValid", leo.isValid()?"valid":"malformed", "valid" );
+  check("data URL: protocol", leo.protocol(), "data" );
+  check("data URL: url", leo.url(), "data:text/html,http://www.invalid/" );
+  check("data URL: path", leo.path(), "text/html,http://www.invalid/" );
 
   // URI Mode tests
   url1 = "http://www.foobar.com/";
