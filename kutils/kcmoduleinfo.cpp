@@ -35,7 +35,7 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   _allLoaded = false;
 
   //kdDebug(1208) << "desktopFile = " << desktopFile << endl;
-  init( KService::serviceByDesktopPath(desktopFile) );
+  init( KService::serviceByStorageId(desktopFile) );
 }
 
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )

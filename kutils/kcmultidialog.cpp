@@ -161,7 +161,7 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 {
     kdDebug(710) << "KCMultiDialog::addModule " << path << endl;
 
-    KService::Ptr s = KService::serviceByDesktopPath(path);
+    KService::Ptr s = KService::serviceByStorageId(path);
     if (!s) {
       kdError() << "Desktop file '" << path << "' not found!" << endl;
       return;
