@@ -70,18 +70,22 @@ private:
 	Q_UINT16		m_zsize;
 	Q_UINT32		m_pixmin;
 	Q_UINT32		m_pixmax;
+	char			m_imagename[80];
 	Q_UINT32		m_colormap;
 	Q_UINT32		*m_starttab;
 	Q_UINT32		*m_lengthtab;
 	QByteArray		m_data;
 	QByteArray::Iterator	m_pos;
 	RLEMap			m_rlemap;
+	QPtrVector<RLEData>	m_rlevector;
 	uint			m_numrows;
 
 	bool readData(QImage&);
 	bool getRow(uchar *dest);
 
 	void writeHeader();
+	void writeRle();
+	void writeVerbatim();
 	bool scanData(QImage&);
 	uint compact(uchar *, uchar *);
 	uchar intensity(uchar);

@@ -183,7 +183,7 @@ bool SGIImage::readImage(QImage& img)
 	Q_INT16 u16;
 	Q_INT32 u32;
 
-	kdDebug(399) << "read " << m_io->fileName() << endl;
+	kdDebug(399) << "reading '" << m_io->fileName() << '\'' << endl;
 
 	// magic
 	m_stream >> u16;
@@ -198,7 +198,7 @@ bool SGIImage::readImage(QImage& img)
 
 	// bytes per channel
 	m_stream >> m_bpc;
-	kdDebug(399) << "bytes per channel: " << m_bpc << endl;
+	kdDebug(399) << "bytes per channel: " << int(m_bpc) << endl;
 	if (m_bpc == 1)
 		;
 	else if (m_bpc == 2)
@@ -218,8 +218,9 @@ bool SGIImage::readImage(QImage& img)
 	kdDebug(399) << "z: " << m_zsize << endl;
 
 	// name
-	for (int i = 0; i < 80; i++)
-		m_stream >> u8;
+	m_stream.readRawBytes(m_imagename, 80);
+	m_imagename[79] = '\0';
+	m_io->setDescription(m_imagename);
 
 	m_stream >> m_colormap;
 	kdDebug(399) << "colormap: " << m_colormap << endl;
@@ -231,7 +232,7 @@ bool SGIImage::readImage(QImage& img)
 		m_stream >> u8;
 
 	if (m_dim == 1) {
-		kdDebug(399) << "1-dimensional images aren't supported" << endl;
+		kdDebug(399) << "1-dimensional images aren't supported yet" << endl;
 		return false;
 	}
 
@@ -266,12 +267,12 @@ bool SGIImage::readImage(QImage& img)
 	if (m_rle)
 		for (uint o = 0; o < m_numrows; o++)
 			if (m_starttab[o] + m_lengthtab[o] > m_data.size()) {
-				kdDebug(399) << "sanity check failed: image corrupt" << endl;
+				kdDebug(399) << "image corrupt (sanity check failed)" << endl;
 				return false;
 			}
 
 	if (!readData(img)) {
-		kdDebug(399) << "image corrupt" << endl;
+		kdDebug(399) << "image corrupt (incomplete scanline)" << endl;
 		return false;
 	}
 
@@ -428,30 +429,67 @@ bool SGIImage::scanData(QImage& img)
 
 void SGIImage::writeHeader()
 {
-	m_stream << Q_UINT16(0x01da);		// magic
-	m_stream << m_rle << m_bpc << m_dim << m_xsize << m_ysize << m_zsize << m_pixmin << m_pixmax;
-	m_stream << Q_UINT32(0);		// dummy
+	m_stream << Q_UINT16(0x01da);
+	m_stream << m_rle << m_bpc << m_dim;
+	m_stream << m_xsize << m_ysize << m_zsize;
+	m_stream << m_pixmin << m_pixmax;
+	m_stream << Q_UINT32(0);
 
 	uint i;
-	// write an invisible identifier (useful for verifying bug reports)
-	char name[] = "\0KDE kimgio";
-	for (i = 0; i < 11; i++)
-		m_stream << Q_UINT8(name[i]);
-	for (; i < 80; i++)
-		m_stream << Q_UINT8(0);
+	QString desc = m_io->description();
+	kdDebug(399) << "Description: " << desc << endl;
+	desc.truncate(79);
 
+	char *id = "KDE kimgio";
+	for (i = 0; i < desc.length(); i++)
+		m_imagename[i] = desc.latin1()[i];
+	for (; i < 80; i++)
+		m_imagename[i] = '\0';
+	if (desc.length() < 68)
+		for (i = 69; *id; i++)
+			m_imagename[i] = *id++;
+
+	m_stream.writeRawBytes(m_imagename, 80);
 	m_stream << m_colormap;
 	for (i = 0; i < 404; i++)
-		m_stream << Q_UINT8(0);		// wasting space ...
+		m_stream << Q_UINT8(0);
+}
+
+
+void SGIImage::writeRle()
+{
+	uint i;
+	m_rle = 1;
+	writeHeader();
+
+	// write start table
+	for (i = 0; i < m_numrows; i++)
+		m_stream << m_rlevector[m_starttab[i]]->offset();
+
+	// write length table
+	for (i = 0; i < m_numrows; i++)
+		m_stream << Q_UINT32(m_rlevector[m_starttab[i]]->size());
+
+	// write data
+	for (i = 0; i < m_rlevector.size(); i++)
+		m_rlevector[i]->write(m_stream);
+}
+
+
+void SGIImage::writeVerbatim()
+{
+	m_rle = 0;
+	writeHeader();
+
+	for (uint i = 0; i < m_numrows; i++)
+		;//
 }
 
 
 bool SGIImage::writeImage(QImage& img)
 {
-	kdDebug(399) << "write " << m_io->fileName() << endl;
+	kdDebug(399) << "writing '" << m_io->fileName() << '\'' << endl;
 
-	m_rle = 1;
-	m_bpc = 1;
 	if (img.allGray())
 		m_dim = 2, m_zsize = 1;
 	else
@@ -460,43 +498,43 @@ bool SGIImage::writeImage(QImage& img)
 	if (img.hasAlphaBuffer())
 		m_dim = 3, m_zsize++;
 
+	if (img.depth() != 32)
+		img.convertDepth(32);
+
+	m_bpc = 1;
 	m_xsize = img.width();
 	m_ysize = img.height();
 	m_pixmin = ~0;
 	m_pixmax = 0;
 	m_colormap = NORMAL;
 
+	uint i;
 	m_numrows = m_ysize * m_zsize;
 	m_starttab = new Q_UINT32[m_numrows];
 	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
-
-	if (img.depth() != 32)
-		img.convertDepth(32);
 
 	if (!scanData(img)) {
 		kdDebug(399) << "this can't happen" << endl;
 		return false;
 	}
 
-	kdDebug(399) << "number of generated scanlines: " << m_rlemap.size() << endl;
+	m_rlevector = m_rlemap.vector();
+
+	long verbatim_size = m_numrows * m_xsize;
+	long rle_size = m_numrows * 2 * sizeof(Q_UINT32);
+	for (i = 0; i < m_rlevector.size(); i++)
+		rle_size += m_rlevector[i]->size();
+
 	kdDebug(399) << "minimum intensity: " << m_pixmin << endl;
 	kdDebug(399) << "maximum intensity: " << m_pixmax << endl;
+	kdDebug(399) << "saved scanlines: " << m_numrows - m_rlemap.size() << endl;
+	kdDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes" << endl;
+	kdDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%' << endl;
 
-	writeHeader();
-	QPtrVector<RLEData> v = m_rlemap.vector();
-
-	// write start table
-	uint i;
-	for (i = 0; i < m_numrows; i++)
-		m_stream << v[m_starttab[i]]->offset();
-	// write length table
-	for (i = 0; i < m_numrows; i++)
-		m_stream << Q_UINT32(v[m_starttab[i]]->size());
-
-	// write data
-	for (i = 0; i < v.size(); i++)
-		v[i]->write(m_stream);
-
+//	if (verbatim_size <= rle_size)
+//		writeVerbatim();
+//	else
+		writeRle();
 	return true;
 }
 
