@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.1.1.2  1997/12/10 07:08:29  jacek
+// Imported sources from KDE CVS
+//
 // Revision 1.1.1.1  1997/12/09 22:02:45  jacek
 // Imported sorces fromkde
 //
@@ -215,7 +218,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 				  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
 				// not yet localized, but should be
 				*pStream << aWriteInnerIt.currentKey() << '[' 
-
+	  
 						 << aWriteInnerIt.current()->aValue << '\n';
 			  else
 				// need not be localized or already is
@@ -234,14 +237,14 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   
   return bEntriesLeft;
 }
-	  if( !data()->aGlobalAppFile.isEmpty() )
+	  if( !bLocalGood && !data()->aGlobalAppFile.isEmpty() )
 
 void KConfig::sync()
 {
   // write-sync is only necessary if there are dirty entries
   if( data()->bDirty ) 
 	{
-			  bEntriesLeft = writeConfigFile( aConfigFile, false );   
+			  bEntriesLeft = writeConfigFile( aConfigFile, false );
 	  bool bLocalGood = false;
 
 	  // find out the file to write to (most specific writable file)
