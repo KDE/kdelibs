@@ -150,10 +150,8 @@ PlayObject SoundServerV2_impl::createPlayObjectForURL(const std::string& url, co
     return PlayObject::null();
 }
 
-PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, bool createBUS)
+PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, const std::string& mimetype, bool createBUS)
 {
-    // Hardcoding audio/x-mp3 ?
-    std::string mimetype = "audio/x-mp3";
     arts_debug("search playobject, mimetype = %s", mimetype.c_str());
 
     TraderQuery query;

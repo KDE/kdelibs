@@ -57,7 +57,7 @@ namespace Arts {
 		SampleStorage sampleStorage();
 
 		Arts::PlayObject createPlayObjectForURL(const std::string& url, const std::string& mimetype, bool createBUS);
-		Arts::PlayObject createPlayObjectForStream(Arts::InputStream instream, bool createBUS);
+		Arts::PlayObject createPlayObjectForStream(Arts::InputStream instream, const std::string& mimetype, bool createBUS);
 	};
 };
 
