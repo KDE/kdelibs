@@ -119,6 +119,7 @@ bool KStreamSocket::connect(const QString& node, const QString& service)
   if (state() == Connecting && !blocking())
     {
       setError(IO_ConnectError, InProgress);
+      emit gotError(InProgress);
       return true;		// we're already connecting
     }
 
@@ -302,6 +303,7 @@ void KStreamSocket::timeoutSlot()
   setError(IO_TimeOutError, Timeout);
   setState(HostFound);
   emit stateChanged(HostFound);
+  emit gotError(Timeout);
   emit timedOut();
 }
 
@@ -326,8 +328,11 @@ bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
       }
   
   if (!foundone)
-    // found nothing
-    setError(IO_BindError, NotSupported);
+    {
+      // found nothing
+      setError(IO_BindError, NotSupported);
+      emit gotError(NotSupported);
+    }
   else
     copyError();
   return false;

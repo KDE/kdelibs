@@ -121,6 +121,7 @@ Q_LONG KBufferedSocket::readBlock(char *data, Q_ULONG maxlen)
       if (d->input->isEmpty())
 	{
 	  setError(IO_ReadError, WouldBlock);
+	  emit gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
@@ -142,6 +143,7 @@ Q_LONG KBufferedSocket::peekBlock(char *data, Q_ULONG maxlen)
       if (d->input->isEmpty())
 	{
 	  setError(IO_ReadError, WouldBlock);
+	  emit gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
@@ -163,6 +165,7 @@ Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
       if (d->output->isFull())
 	{
 	  setError(IO_WriteError, WouldBlock);
+	  emit gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
