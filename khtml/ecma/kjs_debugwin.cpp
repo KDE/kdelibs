@@ -794,7 +794,7 @@ void KJSDebugWin::clearInterpreter(Interpreter *interpreter)
   QMap<int,SourceFragment*>::Iterator it;
 
   for (it = m_sourceFragments.begin(); it != m_sourceFragments.end(); ++it)
-    if (it.data()->sourceFile->interpreter == interpreter)
+    if (it.data() && it.data()->sourceFile->interpreter == interpreter)
       it.data()->sourceFile->interpreter = 0;
 }
 
