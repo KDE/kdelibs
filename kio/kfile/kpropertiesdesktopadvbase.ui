@@ -177,7 +177,7 @@
                         <cstring>systrayCheck</cstring>
                     </property>
                     <property name="text">
-                        <string>&amp;Place in System Tray</string>
+                        <string>&amp;Place in system tray</string>
                     </property>
                     <property name="whatsThis" stdset="0">
                         <string>Check this option if you want to have a system tray handle for your application.</string>
