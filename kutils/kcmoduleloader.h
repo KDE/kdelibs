@@ -141,11 +141,12 @@ class KUTILS_EXPORT KCModuleLoader
      * Checks whether an KCModule should be shown by running its 
      * test function. If it is unsure whether a module should be shown, it should 
      * be made available, leaving the decision to the user.
-     * If false is returned, the module should not be loaded in any interface. \n
-     * \n
+     * If false is returned, the module should not be loaded in any interface.
+     * 
      * A module declares it needs to be tested by having "X-KDE-Test-Module=true" in 
-     * its desktop file. When this line exists the following code must be available 
+     * its desktop file. When that line exists, the following code must be available 
      * in the module's library:
+     *
      * \code
      * extern "C"
      * {
@@ -157,10 +158,11 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * }
      * \endcode
-     * Where moduleName is the library name for the module.
+     *
+     * where moduleName is the library name for the module.
      *
      * @param module the module to check
-     * @return true if the module should be loaded
+     * @returns true if the module should be loaded
      * @since 3.4
      */
     static bool testModule( const QString& module );
@@ -169,7 +171,7 @@ class KUTILS_EXPORT KCModuleLoader
      * Convenience function, essentially the same as above.
      *
      * @param module the module to check
-     * @return true if the module should be loaded
+     * @returns true if the module should be loaded
      * @since 3.4
      */
     static bool testModule( const KCModuleInfo& module );

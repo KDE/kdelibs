@@ -205,10 +205,11 @@ KCModule * KCModuleProxy::realModule() const
 		d->viewBoxLayout->addWidget( d->kcm );
 
 		d->view->addChild( d->kcm );
+
+		/* KDE 4. These two lines which disables d->view needs 
+		 * either to be removed or d->view to be removed. */
 		d->kcm->resize(d->kcm->minimumSizeHint());
-		// FIXME: WTF?  Bug# 96117.
-		// d->view->resize(d->kcm->size());
-		const_cast<KCModuleProxy*>(this)->setMinimumSize(d->view->size());
+		that->setMinimumSize(d->view->size());
 
 		if ( !d->rootInfo && /* If it's already done */
 				moduleInfo().needsRootPrivileges() /* root, anyone? */ && 
