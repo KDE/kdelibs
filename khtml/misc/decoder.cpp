@@ -26,6 +26,8 @@
 #undef DECODE_DEBUG
 //#define DECODE_DEBUG
 
+#include <assert.h>
+
 #include "decoder.h"
 using namespace khtml;
 
@@ -344,12 +346,13 @@ QString Decoder::decode(const char *data, int len)
 
             if(m_codec->mibEnum() != 1000) // utf16
             {
+                // lets see if QTextCodec is still buggy
                 // ### hack for a bug in QTextCodec. It cut's the input stream
                 // in case there are \0 in it. ZDNET has them inside... :-(
                 char *d = const_cast<char *>(data);
                 int i = len - 1;
                 while(i >= 0) {
-                    if(*(d+i) == 0) *(d+i) = ' ';
+                    if(*(d+i) == 0) assert(0);
                     i--;
                 }
             }
