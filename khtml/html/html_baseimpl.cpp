@@ -178,7 +178,7 @@ void HTMLBodyElementImpl::init()
 
 RenderObject *HTMLBodyElementImpl::createRenderer()
 {
-    // ### ignore display: none for this element?
+    // ignore display: none for this element!
     return new RenderBody(this);
 }
 
@@ -278,8 +278,7 @@ void HTMLFrameElementImpl::init()
 
 RenderObject *HTMLFrameElementImpl::createRenderer()
 {
-    // ### ignore display: none for this element?
-
+    // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
     // limit to how deep we can nest frames
     KHTMLPart *part = w->part();
@@ -452,7 +451,7 @@ void HTMLFrameSetElementImpl::init()
 
 RenderObject *HTMLFrameSetElementImpl::createRenderer()
 {
-    // ### ignore display: none for this element?
+    // ignore display: none for this element!
     return new khtml::RenderFrameSet( this, getDocument()->view() );
 }
 
