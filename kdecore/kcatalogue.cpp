@@ -1,10 +1,31 @@
-#include "kcatalogue.h"
+/* This file is part of the KDE libraries
+   Copyright (c) 2001 Hans Petter Bieker <bieker@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
+#include <config.h>
+
+#include <qfile.h>
 
 #include <kdebug.h>
 
 #include <stdlib.h>
 
-#include <qfile.h>
+#include "kcatalogue.h"
 
 char *find_msg(struct loaded_l10nfile *domain_file,
 	       const char *msgid);
@@ -68,7 +89,7 @@ QString KCatalogue::name() const
 void KCatalogue::setFileName( const QString & fileName )
 {
   // nothing to do if the file name is already the same
-  //  if ( this->fileName() == fileName ) return;
+  if ( this->fileName() == fileName ) return;
 
   doUnload();
 
@@ -78,7 +99,7 @@ void KCatalogue::setFileName( const QString & fileName )
     {
       // set file name
       char *filename = new char[ newFileName.length() + 1 ];
-      ::strcpy( filename, newFileName );
+      ::qstrcpy( filename, newFileName );
       d->domain.filename = filename;
     }
 }
@@ -95,10 +116,13 @@ const char * KCatalogue::translate(const char * msgid) const
 
 void KCatalogue::doUnload()
 {
+  // #### HPB: Memory leak...
+  //           We have to dig into the gettext source, because gettext
+  //           uses mmap and malloc.
   // allocated by gettext using malloc!!!
   //  if ( d->domain.data )
   //  free( const_cast<void *>(d->domain.data) );
-  d->domain.data = 0;
+  //d->domain.data = 0;
 
   // free name
   delete [] const_cast<char *>(d->domain.filename);
