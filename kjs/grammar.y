@@ -332,7 +332,7 @@ LogicalANDExpr:
 
 LogicalORExpr:
     LogicalANDExpr
-  | LogicalORExpr OR BitwiseANDExpr
+  | LogicalORExpr OR LogicalANDExpr
                            { $$ = new BinaryLogicalNode($1, OpOr, $3); }
 ;
 
