@@ -472,7 +472,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool noti
 
       if ( notify )
       {
-        lister->d->lstDirs.remove( url.url() );
+        lister->d->lstDirs.remove( urlStr );
         emit lister->clear( url );
       }
 
@@ -562,7 +562,7 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     }
     //else
     //  kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
-      
+
     return false;
   }
   else
@@ -596,7 +596,8 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
 
 KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
 {
-  QString _url = _u.url(-1);
+  KURL _url = _u;
+  _url.adjustPath(-1);
 
   KURL parentDir( _url );
   parentDir.setPath( parentDir.directory() );
@@ -759,7 +760,7 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     if ( checkUpdate( dir.url(-1) ) )
       updateDirectory( dir );
 
-    // the parent directory of _file    
+    // the parent directory of _file
     dir.setPath( dir.directory() );
     if ( checkUpdate( dir.url() ) )
     {
@@ -779,7 +780,7 @@ void KDirListerCache::slotFileDirtyDelayed()
 
   kdDebug(7004) << k_funcinfo << file << endl;
 
-  // TODO: do it better: don't always create/delete the QTimer but reuse it. 
+  // TODO: do it better: don't always create/delete the QTimer but reuse it.
   // Delete the timer after the parent directory is removed from the cache.
   pendingUpdates.remove( file );
 
@@ -1884,7 +1885,7 @@ void KDirLister::addNewItem( const KFileItem *item )
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
   if (isNameFilterMatch)
      return; // No reason to continue... bailing out here prevents a mimetype scan.
-     
+
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
   if ( !isNameFilterMatch && !isMimeFilterMatch )
@@ -2082,7 +2083,7 @@ KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
 
     if ( which == AllItems )
         result = *allItems; // shallow copy
-        
+
     else // only items passing the filters
     {
         for ( KFileItemListIterator kit( *allItems ); kit.current(); ++kit )
