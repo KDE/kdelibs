@@ -594,7 +594,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ExclusiveIndicatorMask: {
 			if (maskBmp.isNull())
 				maskBmp = QBitmap(13, 13, radiomask_bits, true);
-			p->setPen(Qt::color0);
+			p->setPen(Qt::color1);
 			p->drawPixmap(r.x(), r.y(), maskBmp);
 			break;
 		}
