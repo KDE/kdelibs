@@ -136,6 +136,6 @@ QString KMPrinter::stateString() const
 		case KMPrinter::Idle: return i18n("Idle");
 		case KMPrinter::Processing: return i18n("Processing...");
 		case KMPrinter::Stopped: return i18n("Stopped");
-		default: return i18n("Unknown");
+		default: return i18n("Unknown State", "Unknown");
 	}
 }

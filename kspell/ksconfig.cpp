@@ -275,7 +275,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     lname="fr"; hname=i18n("French");
   }
   else {
-    lname=""; hname=i18n("Unknown");
+    lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");
   }
 
   //We have explicitly chosen English as the default here.
