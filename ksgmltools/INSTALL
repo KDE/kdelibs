@@ -200,18 +200,15 @@ C - Running
 1 - How do I process DocBook files?
 -----------------------------------
 
-At the present time, the only thing you can do with DocBook files is to
-convert them to some other format. That is not too bad: DocBook is a very
-good format for documentation, and it allows you to focus on the contents of
-your documents instead of their presentation.
+At the present time, one of the few things you can do with DocBook files
+is to convert them to some other format. This limited usage is not too
+bad: DocBook is a very good format for documentation, and it allows you
+to focus on the contents of your documents instead of their presentation.
 
 Maybe someday it will be possible to browse directly the DocBook files
-contents, for example with a new KDE help center, but we will have to
-change first the dialect we use: we will need to change from SGML-DocBook
-to XML-DocBook (it is no big change, though).
-
-But let's stop speaking about the future, and let's see how to convert
-DocBook files to some other format.
+contents, for example with a new KDE help center. But let's stop speaking
+about the future, and let's see how to convert DocBook files to some
+other format.
 
 If you have installed RPMs, type:
 
@@ -224,16 +221,22 @@ If you have installed RPMs, type:
 	jw -b 2rtf -c <catalog> -d <stylesheet>#print <filename>.docbook
 		to convert to RTF
 
-For example, you can try to convert the KDE template file for docbook
+For example, you can try to convert the KDE template file for DocBook
 documents:
 
 	jw	-o HTML \
-		-d /usr/share/sgml/docbook/kde-customization-0.1/stylesheets/kde.dsl#html \
+		-c /usr/share/apps/ksgmltools/catalog
+		-d /usr/share/sgml/ksgmltools/stylesheets/kde.dsl#html \
 		template.docbook
 
 This should produce a new directory named HTML/ that contains the
-resulting HTML files. KFm will encounter some difficulties to follow
-the links that are in those pages. This will be fixed soon.
+resulting HTML files. If you want to type less and to avoid the -c
+argument, you must add a pointer
+
+	CATALOG /usr/share/apps/ksgmltools/catalog
+
+to the file /etc/sgml/sgml-docbook-3.1.cat. This is not done automatically
+because it would require root privileges.
 
 Another tool is used for translations: sgmldiff.pl. It verifies if the
 DocBook markup has not been altered by the translation process. For
@@ -252,10 +255,10 @@ syntax.
 You might find two other documents (also in the kdelibs package) very
 useful for that purpose:
 
-- the template file: if you have to write a new docbook file, just fill in
+- the template file: if you have to write a new DocBook file, just fill in
   the blanks
 
-- the crash-course: it will explain you the docbook syntax
+- the crash-course: it will explain you the DocBook syntax
 
 The DocBook Reference Manual is NOT included in the basic distribution.
 It can be found at:
