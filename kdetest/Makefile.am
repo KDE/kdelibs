@@ -44,7 +44,8 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kcharsetstest kledtest kcontainertest klocaletest krulertest \
-		knotebooktest kwizardtest kquickhelptest kurltest kformulatest
+		knotebooktest kwizardtest kquickhelptest kurltest kformulatest \
+		kcharselecttest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -58,36 +59,36 @@ METASOURCES = kcharsetstest.moc kconfigtest.moc \
 	klinetest.moc klocaletest.moc kmsgboxtest.moc \
 	kpannertest.moc kprocesstest.moc krulertest.moc \
 	kspinboxtest.moc kstatusbartest.moc ktabctltest.moc \
-	ktreelisttest.moc kwindowtest.moc 
+	ktreelisttest.moc kwindowtest.moc
 
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
-kcharsetstest_SOURCES = kcharsetstest.cpp 
+kcharsetstest_SOURCES = kcharsetstest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
-kconfigtest_SOURCES = kconfigtest.cpp 
-kcontainertest_SOURCES = kcontainertest.cpp 
-kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp 
+kconfigtest_SOURCES = kconfigtest.cpp
+kcontainertest_SOURCES = kcontainertest.cpp
+kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kformulatest_SOURCES = kformulatest.cpp
-kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp 
-kledlamptest_SOURCES = kledlamptest.cpp 
-kledtest_SOURCES = kledtest.cpp 
-klinetest_SOURCES = klinetest.cpp 
-klocaletest_SOURCES = klocaletest.cpp 
-kmsgboxtest_SOURCES = kmsgboxtest.cpp 
+kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
+kledlamptest_SOURCES = kledlamptest.cpp
+kledtest_SOURCES = kledtest.cpp
+klinetest_SOURCES = klinetest.cpp
+klocaletest_SOURCES = klocaletest.cpp
+kmsgboxtest_SOURCES = kmsgboxtest.cpp
 knotebooktest_SOURCES = knotebooktest.cpp
-kpannertest_SOURCES = kpannertest.cpp 
+kpannertest_SOURCES = kpannertest.cpp
 kpopuptest_SOURCES = kpopuptest.cpp
-kprocesstest_SOURCES = kprocesstest.cpp 
+kprocesstest_SOURCES = kprocesstest.cpp
 kprogresstest_SOURCES = kprogresstest.cpp
 kquickhelptest_SOURCES = kquickhelptest.cpp
-krulertest_SOURCES = krulertest.cpp 
+krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
-kspinboxtest_SOURCES = kspinboxtest.cpp 
-kstatusbartest_SOURCES = kstatusbartest.cpp 
-ktabctltest_SOURCES = ktabctltest.cpp 
-ktreelisttest_SOURCES = ktreelisttest.cpp 
+kspinboxtest_SOURCES = kspinboxtest.cpp
+kstatusbartest_SOURCES = kstatusbartest.cpp
+ktabctltest_SOURCES = ktabctltest.cpp
+ktreelisttest_SOURCES = ktreelisttest.cpp
 kurltest_SOURCES = kurltest.cpp
-kwindowtest_SOURCES = kwindowtest.cpp 
+kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
-
+kcharselecttest_SOURCES = kcharselecttest.cpp
