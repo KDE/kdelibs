@@ -45,7 +45,7 @@ namespace KIO {
      * optionally in a recursive manner.
      * @see KIO::chmod()
      */
-    class ChmodJob : public KIO::Job
+    class KIO_EXPORT ChmodJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -105,7 +105,7 @@ namespace KIO {
      * @param showProgressInfo true to show progess information
      * @return The job handling the operation.
      */
-    ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
+    KIO_EXPORT ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
                       QString newOwner, QString newGroup,
                       bool recursive, bool showProgressInfo = true );
 

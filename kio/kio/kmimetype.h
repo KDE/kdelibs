@@ -46,7 +46,7 @@ class KSimpleConfig;
  *
  * @see KServiceType
  */
-class KMimeType : public KServiceType
+class KIO_EXPORT KMimeType : public KServiceType
 {
   K_SYCOCATYPE( KST_KMimeType, KServiceType )
 
@@ -476,7 +476,7 @@ protected:
  * Folder mime type. Handles locked folders, for instance.
  * @short Mimetype for a folder (inode/directory)
  */
-class KFolderType : public KMimeType
+class KIO_EXPORT KFolderType : public KMimeType
 {
   K_SYCOCATYPE( KST_KFolderType, KMimeType )
 
@@ -505,7 +505,7 @@ protected:
  * Handles mount/umount icon, and user-defined properties.
  * @short Mimetype for a .desktop file
  */
-class KDEDesktopMimeType : public KMimeType
+class KIO_EXPORT KDEDesktopMimeType : public KMimeType
 {
   K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
 
@@ -611,7 +611,7 @@ protected:
  * The mime type for executable files.
  * @short MimeType for any executable, like /bin/ls
  */
-class KExecMimeType : public KMimeType
+class KIO_EXPORT KExecMimeType : public KMimeType
 {
   K_SYCOCATYPE( KST_KExecMimeType, KMimeType )
 

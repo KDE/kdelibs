@@ -108,7 +108,7 @@ namespace KIO {
      * @see KIO::Job
      **/
 
-    class Scheduler : public QObject, virtual public DCOPObject {
+    class KIO_EXPORT Scheduler : public QObject, virtual public DCOPObject {
         Q_OBJECT
 
     public:
@@ -353,7 +353,7 @@ namespace KIO {
         SlaveConfig *slaveConfig;
         SessionData *sessionData;
         bool checkOnHold;
-        QMap<QObject *,long> m_windowList;
+        QMap<QObject *,WId> m_windowList;
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:

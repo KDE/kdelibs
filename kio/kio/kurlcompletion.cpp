@@ -366,7 +366,7 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 		if ( cwd.isEmpty() )
 		{
 			m_kurl = new KURL();
-			if ( url_copy[0] == '/' || url_copy[0] == '$' || url_copy[0] == '~' )
+			if ( !QDir::isRelativePath(url_copy) || url_copy[0] == '$' || url_copy[0] == '~' )
 				m_kurl->setPath( url_copy );
 			else
 				*m_kurl = url_copy;
@@ -376,7 +376,7 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 			KURL base = KURL::fromPathOrURL( cwd );
 			base.adjustPath(+1);
 
-			if ( url_copy[0] == '/' || url_copy[0] == '~' || url_copy[0] == '$' )
+			if ( !QDir::isRelativePath(url_copy) || url_copy[0] == '~' || url_copy[0] == '$' )
 			{
 				m_kurl = new KURL();
 				m_kurl->setPath( url_copy );
@@ -802,7 +802,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 
 	QStringList dirList;
 
-	if ( dir[0] == '/' ) {
+	if ( !QDir::isRelativePath(dir) ) {
 		// complete path in url
 		dirList.append( dir );
 	}
@@ -812,7 +812,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 	}
 	else if ( !url.file().isEmpty() ) {
 		// $PATH
-		dirList = QStringList::split(':',
+		dirList = QStringList::split(KPATH_SEPARATOR,
 					QString::fromLocal8Bit(::getenv("PATH")));
 
 		QStringList::Iterator it = dirList.begin();
@@ -886,7 +886,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 
 	QStringList dirList;
 
-	if ( dir[0] == '/' ) {
+	if ( !QDir::isRelativePath(dir) ) {
 		// complete path in url
 		dirList.append( dir );
 	}
@@ -1268,7 +1268,7 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 
 			expandTilde( copy );
 			expandEnv( copy );
-			if ( copy[0] != '/' )
+			if ( QDir::isRelativePath(copy) )
 				copy.prepend( d->cwd + '/' );
 
 //			kdDebug() << "postProcess: stating " << copy << endl;

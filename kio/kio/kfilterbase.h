@@ -21,6 +21,9 @@
 
 #include <qobject.h>
 #include <qstring.h>
+
+#include <kdelibs.h>
+
 class QIODevice;
 
 /**
@@ -28,7 +31,7 @@ class QIODevice;
  * such as gzip and bzip2. It's pretty much internal.
  * Don't use directly, use KFilterDev instead.
  */
-class KFilterBase : public QObject // needs to inherit QObject for KLibFactory::create
+class KIO_EXPORT KFilterBase : public QObject // needs to inherit QObject for KLibFactory::create
 {
     Q_OBJECT
 public:

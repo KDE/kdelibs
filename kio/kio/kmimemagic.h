@@ -43,7 +43,7 @@ class KMimeMagic; // see below (read this one first)
  * It contains the mimetype and the encoding of
  * the file or buffer read.
  */
-class KDE_DEPRECATED KMimeMagicResult
+class KIO_EXPORT_DEPRECATED KMimeMagicResult
 {
 public:
   KMimeMagicResult() { m_iAccuracy = 100; }
@@ -98,7 +98,7 @@ protected:
  *
  * The result is contained in the class KMimeMagicResult.
  */
-class KDE_DEPRECATED KMimeMagic
+class KIO_EXPORT_DEPRECATED KMimeMagic
 {
 public:
   /**

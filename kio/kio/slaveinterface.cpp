@@ -95,7 +95,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     }
     else
     {
-       long long msb = 0;
+       Q_LLONG msb = 0;
        for(Q_UINT32 i = 0; i < size; i++)
        {
           KIO::UDSAtom a;
@@ -109,7 +109,7 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
              if (a.m_uds == KIO::UDS_SIZE)
              {
                 if (a.m_long < 0)
-                   a.m_long += (long long) 1 << 32;
+                   a.m_long += (Q_LLONG) 1 << 32;
                 a.m_long += msb << 32;
              }
              e.append(a);

@@ -42,7 +42,7 @@ class KExecMimeType;
  * It loads the service types from parsing directories (e.g. mimelnk/)
  * but can also create service types from data streams or single config files
  */
-class KServiceTypeFactory : public KSycocaFactory
+class KIO_EXPORT KServiceTypeFactory : public KSycocaFactory
 {
   K_SYCOCAFACTORY( KST_KServiceTypeFactory )
 public:

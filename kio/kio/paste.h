@@ -20,8 +20,8 @@
 #define __kio_paste_h__
 
 #include <qstring.h>
-#include <kurl.h>
 #include <qmemarray.h>
+#include <kurl.h>
 
 namespace KIO {
   class Job;
@@ -35,7 +35,7 @@ namespace KIO {
    * @return the job that handles the operation
    * @see pasteData()
    */
-  Job *pasteClipboard( const KURL& _dest_url, bool move = false );
+  KIO_EXPORT Job *pasteClipboard( const KURL& _dest_url, bool move = false );
 
   /**
    * Pastes the given @p _data to the
@@ -44,7 +44,7 @@ namespace KIO {
    * @param _data the data to copy
    * @see pasteClipboard()
    */
-  void pasteData( const KURL& _dest_url, const QByteArray& _data );
+  KIO_EXPORT void pasteData( const KURL& _dest_url, const QByteArray& _data );
 
   /**
    * Pastes the given @p _data to the
@@ -53,7 +53,7 @@ namespace KIO {
    * @param _data the data to copy
    * @see pasteClipboard()
    */
-  CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data );
+  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data );
 
   /**
    * Pastes the given @p _data to the
@@ -63,13 +63,13 @@ namespace KIO {
    * @param text the text to show in the dialog
    * @see pasteClipboard()
    */
-  CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data, const QString& text ); // KDE4: merge with above
+  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data, const QString& text ); // KDE4: merge with above
 
   /**
    * Checks whether the clipboard is empty.
    * @return true if empty
    */
-  bool isClipboardEmpty();
+  KIO_EXPORT bool isClipboardEmpty();
 }
 
 #endif

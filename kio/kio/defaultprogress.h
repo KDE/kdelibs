@@ -34,7 +34,7 @@ namespace KIO {
  * A default implementation of the progress dialog ProgressBase.
  * ProgressBase
  */
-class DefaultProgress : public ProgressBase {
+class KIO_EXPORT DefaultProgress : public ProgressBase {
 
   Q_OBJECT
 

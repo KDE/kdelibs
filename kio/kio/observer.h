@@ -55,7 +55,7 @@ namespace KIO {
  * @short Observer for KIO::Job progress information
  * @author David Faure <faure@kde.org>
  */
-class Observer : public QObject, public DCOPObject {
+class KIO_EXPORT Observer : public QObject, public DCOPObject {
 
   K_DCOP
   Q_OBJECT

@@ -65,7 +65,7 @@ namespace KIO {
      * @see KIO::Scheduler
      * @see KIO::Slave
      */
-    class Job : public QObject {
+    class KIO_EXPORT Job : public QObject {
         Q_OBJECT
 
     protected:
@@ -458,7 +458,7 @@ namespace KIO {
      * Other jobs are high-level jobs (CopyJob, DeleteJob, FileCopyJob...)
      * that manage subjobs but aren't scheduled directly.
      */
-    class SimpleJob : public KIO::Job {
+    class KIO_EXPORT SimpleJob : public KIO::Job {
     Q_OBJECT
 
     public:
@@ -618,7 +618,7 @@ namespace KIO {
      * A KIO job that retrieves information about a file or directory.
      * @see KIO::stat()
      */
-    class StatJob : public SimpleJob {
+    class KIO_EXPORT StatJob : public SimpleJob {
 
     Q_OBJECT
 
@@ -710,7 +710,7 @@ namespace KIO {
      * @see KIO::mkdir()
      * @since 3.3
      */
-    class MkdirJob : public SimpleJob {
+    class KIO_EXPORT MkdirJob : public SimpleJob {
 
     Q_OBJECT
 
@@ -769,7 +769,7 @@ namespace KIO {
      * @internal
      * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
      */
-    class DirectCopyJob : public SimpleJob {
+    class KIO_EXPORT DirectCopyJob : public SimpleJob {
     Q_OBJECT
 
     public:
@@ -805,7 +805,7 @@ namespace KIO {
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
      */
-    class TransferJob : public SimpleJob {
+    class KIO_EXPORT TransferJob : public SimpleJob {
     Q_OBJECT
 
     public:
@@ -1005,7 +1005,7 @@ namespace KIO {
      *
      * @since 3.3
      */
-    class StoredTransferJob : public KIO::TransferJob {
+    class KIO_EXPORT StoredTransferJob : public KIO::TransferJob {
         Q_OBJECT
 
     public:
@@ -1050,7 +1050,7 @@ namespace KIO {
      * but use KIO::multi_get() instead.
      * @see KIO::multi_get()
      */
-    class MultiGetJob : public TransferJob {
+    class KIO_EXPORT MultiGetJob : public TransferJob {
     Q_OBJECT
 
     public:
@@ -1138,7 +1138,7 @@ namespace KIO {
      * but use KIO::mimetype() instead.
      * @see KIO::mimetype()
      */
-    class MimetypeJob : public TransferJob {
+    class KIO_EXPORT MimetypeJob : public TransferJob {
     Q_OBJECT
 
     public:
@@ -1180,7 +1180,7 @@ namespace KIO {
      * @see KIO::file_copy()
      * @see KIO::file_move()
      */
-    class FileCopyJob : public Job {
+    class KIO_EXPORT FileCopyJob : public Job {
     Q_OBJECT
 
     public:
@@ -1300,7 +1300,7 @@ namespace KIO {
      * @see KIO::listRecursive()
      * @see KIO::listDir()
      */
-    class ListJob : public SimpleJob {
+    class KIO_EXPORT ListJob : public SimpleJob {
     Q_OBJECT
 
     public:
@@ -1384,7 +1384,7 @@ namespace KIO {
     };
 
     /// @internal
-    struct CopyInfo
+    struct KIO_EXPORT CopyInfo
     {
         KURL uSource;
         KURL uDest;
@@ -1408,7 +1408,7 @@ namespace KIO {
      * @see KIO::link()
      * @see KIO::linkAs()
      */
-    class CopyJob : public Job {
+    class KIO_EXPORT CopyJob : public Job {
     Q_OBJECT
 
     public:
@@ -1644,7 +1644,7 @@ namespace KIO {
      *
      * @see KIO::del()
      */
-    class DeleteJob : public Job {
+    class KIO_EXPORT DeleteJob : public Job {
     Q_OBJECT
 
     public:

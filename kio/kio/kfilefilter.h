@@ -28,6 +28,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <kdelibs.h>
+
 class QRegExp;
 class KFileItem;
 
@@ -36,7 +38,7 @@ class KFileItem;
  * reimplement passesFilter().
  * @short Base class for file filters.
  */
-class KFileFilter
+class KIO_EXPORT KFileFilter
 {
 public:
     /**
@@ -54,7 +56,7 @@ protected:
  * by mime type and by mode.
  * @short A simple file filter.
  */
-class KSimpleFileFilter : public KFileFilter
+class KIO_EXPORT KSimpleFileFilter : public KFileFilter
 {
 public:
     /**

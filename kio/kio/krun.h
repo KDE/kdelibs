@@ -55,7 +55,7 @@ namespace KIO {
  *
  * @short Opens files with their associated applications in KDE
  */
-class KRun : public QObject
+class KIO_EXPORT KRun : public QObject
 {
   Q_OBJECT
 public:
@@ -383,7 +383,7 @@ private:
  * KRun can open the openwith dialog directly now.
  * Use KRun::displayOpenWithDialog() if you were using KOpenWithHandler directly.
  */
-class KDE_DEPRECATED KOpenWithHandler
+class KIO_EXPORT_DEPRECATED KOpenWithHandler
 {
 public:
   KOpenWithHandler() {}
@@ -397,7 +397,7 @@ public:
  * It sends a notification when the process exits (for the taskbar)
  * and it will show an error message if necessary (e.g. "program not found").
  */
-class KProcessRunner : public QObject
+class KIO_EXPORT KProcessRunner : public QObject
 {
   Q_OBJECT
 

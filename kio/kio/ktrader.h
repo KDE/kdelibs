@@ -96,7 +96,7 @@
  *        applications or components.
  * @author Torben Weis <weis@kde.org>
  */
-class KTrader : public QObject
+class KIO_EXPORT KTrader : public QObject
 {
     Q_OBJECT
 public:

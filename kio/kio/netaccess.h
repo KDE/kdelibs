@@ -57,7 +57,7 @@ namespace KIO {
    *
    * @short Provides an easy, synchronous interface to KIO file operations.
    */
-class NetAccess : public QObject
+class KIO_EXPORT NetAccess : public QObject
 {
   Q_OBJECT
 

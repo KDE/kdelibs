@@ -21,6 +21,8 @@
 #define kfileshare_h
 #include <qobject.h>
 
+#include <kdelibs.h>
+
 class KDirWatch;
 
 /**
@@ -46,7 +48,7 @@ protected slots: // this is why this class needs to be in the .h
  * (communication with the backend)
  * @since 3.1
  */
-class KFileShare
+class KIO_EXPORT KFileShare
 {
 
   

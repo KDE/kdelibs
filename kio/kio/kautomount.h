@@ -15,11 +15,14 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
 #ifndef __auto_mount_h__
 #define __auto_mount_h__
 
 #include <qobject.h>
 #include <qstring.h>
+
+#ifdef Q_OS_UNIX
 
 namespace KIO {
 class Job;
@@ -107,5 +110,7 @@ private:
   ~KAutoUnmount() {}
   class KAutoUnmountPrivate* d;
 };
+
+#endif //Q_OS_UNIX
 
 #endif

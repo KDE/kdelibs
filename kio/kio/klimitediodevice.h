@@ -28,7 +28,7 @@
  * @author David Faure <david@mandrakesoft.com>
  * @since 3.1
  */
-class KLimitedIODevice : public QIODevice
+class KIO_EXPORT KLimitedIODevice : public QIODevice
 {
 public:
     /**

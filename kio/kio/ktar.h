@@ -35,7 +35,7 @@
  * @short A class for reading/writing (optionnally compressed) tar archives.
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
-class KTar : public KArchive
+class KIO_EXPORT KTar : public KArchive
 {
 public:
     /**

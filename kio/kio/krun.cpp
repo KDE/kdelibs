@@ -47,7 +47,6 @@
 #include <qtextstream.h>
 #include <qdatetime.h>
 #include <qregexp.h>
-#include <kwin.h>
 #include <kdesktopfile.h>
 #include <kstartupinfo.h>
 #include <kmacroexpander.h>
@@ -55,6 +54,10 @@
 #include <typeinfo>
 #include <qwidget.h>
 #include <qguardedptr.h>
+
+#ifdef Q_WS_X11
+#include <kwin.h>
+#endif
 
 class KRun::KRunPrivate
 {

@@ -42,12 +42,15 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kmimetype.h>
-#include <kwin.h>
 #include <kseparator.h>
 #include <kstringhandler.h>
 #include <kstdguiitem.h>
 #include <kguiitem.h>
 #include <ksqueezedtextlabel.h>
+
+#ifdef Q_WS_X11
+#include <kwin.h>
+#endif
 
 using namespace KIO;
 
@@ -96,7 +99,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
     // i.e. in a separate process.
     // ####### This isn't the case anymore - remove?
-#ifndef Q_WS_QWS //FIXME(E): Implement for QT Embedded
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN) //FIXME(E): Implement for QT Embedded & win32
     if (d->modal)
         KWin::setState( winId(), NET::StaysOnTop );
 #endif

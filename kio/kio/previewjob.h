@@ -34,7 +34,7 @@ namespace KIO {
      * This class catches a preview (thumbnail) for files.
      * @short KIO Job to get a thumbnail picture
      */
-    class PreviewJob : public KIO::Job
+    class KIO_EXPORT PreviewJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -141,7 +141,7 @@ namespace KIO {
      * @return the new PreviewJob
      * @see PreviewJob::availablePlugins()
      */
-    PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image 
@@ -163,7 +163,7 @@ namespace KIO {
      * @return the new PreviewJob
      * @see PreviewJob::availablePlugins()
      */
-    PreviewJob *filePreview( const KURL::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_EXPORT PreviewJob *filePreview( const KURL::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 }
 
 #endif

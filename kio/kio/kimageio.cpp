@@ -109,7 +109,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
          iio->setStatus(1); // Error
          return;
       }
-      lt_dlhandle libhandle = lt_dlopen( libpath.ascii() );
+      lt_dlhandle libhandle = lt_dlopen( QFile::encodeName(libpath) );
       if (libhandle == 0) {
          iio->setStatus(1); // error
          kdWarning() << "KImageIOFormat::callLibFunc: couldn't dlopen " << mLib << "(" << lt_dlerror() << ")" << endl;
@@ -175,7 +175,7 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
         // Add rPaths.
         for(QStringList::Iterator it = rPath.begin();
             it != rPath.end(); ++it)
-           lt_dladdsearchdir( (*it).ascii());
+           lt_dladdsearchdir( QFile::encodeName(*it) );
      }
      load();
   }

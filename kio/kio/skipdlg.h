@@ -19,6 +19,7 @@
 #ifndef __kio_skip_dlg__
 #define __kio_skip_dlg__
 
+#include <kdelibs.h>
 #include <kdialog.h>
 
 class QPushButton;
@@ -28,12 +29,12 @@ namespace KIO {
 
   enum SkipDlg_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
 
-  SkipDlg_Result open_SkipDlg( bool _multi, const QString& _error_text = QString::null );
+  KIO_EXPORT SkipDlg_Result open_SkipDlg( bool _multi, const QString& _error_text = QString::null );
 
 /**
  * @internal
  */
-class SkipDlg : public KDialog
+class KIO_EXPORT SkipDlg : public KDialog
 {
   Q_OBJECT
 public:

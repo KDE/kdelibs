@@ -51,7 +51,7 @@ namespace KIO { class Job; class ListJob; }
  *
  * @short Helper class for the kiojob used to list and update a directory.
  */
-class KDirLister : public QObject
+class KIO_EXPORT KDirLister : public QObject
 {
   class KDirListerPrivate;
   friend class KDirListerPrivate;

@@ -240,7 +240,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
     uint dataReceived = 0;
     if ( !d->ungetchBuffer.isEmpty() )
     {
-        Q_ULONG len = d->ungetchBuffer.length();
+        uint len = d->ungetchBuffer.length();
         if ( !d->bIgnoreData )
         {
             while ( ( dataReceived < len ) && ( dataReceived < maxlen ) )

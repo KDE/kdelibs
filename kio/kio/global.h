@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __global_h__
-#define __global_h__
+#ifndef __kio_global_h__
+#define __kio_global_h__
 
 #include <qstring.h>
 #include <qvaluelist.h>
@@ -34,9 +34,9 @@
 namespace KIO
 {
   /// 64-bit file offset
-  typedef signed long long int fileoffset_t;
+  typedef Q_LLONG fileoffset_t;
   /// 64-bit file size
-  typedef unsigned long long int filesize_t;
+  typedef Q_ULLONG filesize_t;
 
   /**
    * Converts @p size from bytes to the string representation.
@@ -44,7 +44,7 @@ namespace KIO
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
-  QString convertSize( KIO::filesize_t size );
+  KIO_EXPORT QString convertSize( KIO::filesize_t size );
 
   /**
    * Converts a size to a string representation
@@ -53,7 +53,7 @@ namespace KIO
    * @param size size in bytes
    * @return  converted size as a string - e.g. 123456789
    */
-  QString number( KIO::filesize_t size );
+  KIO_EXPORT QString number( KIO::filesize_t size );
 
   /**
    * Converts size from kilo-bytes to the string representation.
@@ -61,7 +61,7 @@ namespace KIO
    * @param  kbSize  size in kilo-bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
-   QString convertSizeFromKB( KIO::filesize_t kbSize );
+   KIO_EXPORT QString convertSizeFromKB( KIO::filesize_t kbSize );
 
   /**
    * Calculates remaining time from total size, processed size and speed.
@@ -71,7 +71,7 @@ namespace KIO
    * @param  speed          speed in bytes per second
    * @return calculated remaining time
    */
-  QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
+  KIO_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
 
   /**
    * Helper for showing information about a set of files and directories
@@ -82,7 +82,7 @@ namespace KIO
    * @param showSize whether to show the size in the result
    * @return the summary string
    */
-  QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
+  KIO_EXPORT QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
 
   /**
    * Encodes (from the text displayed to the real filename)
@@ -91,14 +91,14 @@ namespace KIO
    * @param str the file name to encode
    * @return the encoded file name
    */
-  QString encodeFileName( const QString & str );
+  KIO_EXPORT QString encodeFileName( const QString & str );
   /**
    * Decodes (from the filename to the text displayed)
    * This translates %2[fF] into / and %% into %
    * @param str the file name to decode
    * @return the decoded file name
    */
-  QString decodeFileName( const QString & str );
+  KIO_EXPORT QString decodeFileName( const QString & str );
 
   /**
    * Commands that can be invoked by a job.
@@ -223,7 +223,7 @@ namespace KIO
    * @param errorText the additional error text
    * @return the created error string
    */
-  QString buildErrorString(int errorCode, const QString &errorText);
+  KIO_EXPORT QString buildErrorString(int errorCode, const QString &errorText);
 
   /**
    * Returns a translated html error message for @p errorCode using the
@@ -235,7 +235,7 @@ namespace KIO
    * @param method the ioslave method
    * @return the created error string
    */
-  QString buildHTMLErrorString(int errorCode, const QString &errorText,
+  KIO_EXPORT QString buildHTMLErrorString(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
 
   /**
@@ -254,7 +254,7 @@ namespace KIO
    * @li QStringList causes - a list of possible causes of the error
    * @li QStringList solutions - a liso of solutions for the error
    */
-  QByteArray rawErrorDetail(int errorCode, const QString &errorText,
+  KIO_EXPORT QByteArray rawErrorDetail(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
 
   /**
@@ -265,7 +265,7 @@ namespace KIO
    * @see enum Command
    * @since 3.2
    */
-  QString unsupportedActionErrorString(const QString &protocol, int cmd);
+  KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
 
   /**
    * Constants used to specify the type of a KUDSAtom.
@@ -342,7 +342,7 @@ namespace KIO
    * @return the cache control value
    * @see getCacheControlString()
    */
-  KIO::CacheControl parseCacheControl(const QString &cacheControl);
+  KIO_EXPORT KIO::CacheControl parseCacheControl(const QString &cacheControl);
 
   /**
    * Returns a string representation of the given cache control method.
@@ -351,14 +351,14 @@ namespace KIO
    * @return the string representation
    * @see parseCacheControl()
    */
-  QString getCacheControlString(KIO::CacheControl cacheControl);
+  KIO_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
    * Returns the mount point where @p device is mounted
    * right now. This means, it has to be mounted, not just
    * defined in fstab.
    */
-  QString findDeviceMountPoint( const QString& device );
+  KIO_EXPORT QString findDeviceMountPoint( const QString& device );
 
   /**
    * Returns the mount point on which resides @p filename.
@@ -367,7 +367,7 @@ namespace KIO
    * @param filename the file name to check
    * @return the mount point of the given @p filename
    */
-  QString findPathMountPoint( const QString & filename );
+  KIO_EXPORT QString findPathMountPoint( const QString & filename );
 
   /**
    * Checks if the path belongs to a filesystem that is probably
@@ -376,7 +376,7 @@ namespace KIO
    * @param filename the file name to check
    * @return true if the filesystem is probably slow
    */
-  bool probably_slow_mounted(const QString& filename);
+  KIO_EXPORT bool probably_slow_mounted(const QString& filename);
 
   /**
    * Checks if the path belongs to a filesystem that is manually
@@ -384,7 +384,7 @@ namespace KIO
    * @param filename the file name to check
    * @return true if the filesystem is manually mounted
    */
-  bool manually_mounted(const QString& filename);
+  KIO_EXPORT bool manually_mounted(const QString& filename);
 
   enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime,
                         SupportsSymlinks, CaseInsensitive };
@@ -407,7 +407,7 @@ namespace KIO
    * "foo" and "FOO" as being the same file (true for msdos systems)
    *
    */
-  bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
+  KIO_EXPORT bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
 
 
 /************
@@ -423,7 +423,7 @@ namespace KIO
  *
  * Each atom contains a specific bit of information for the file
  */
-class UDSAtom
+class KIO_EXPORT UDSAtom
 {
 public:
   /**
@@ -452,7 +452,7 @@ typedef QValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
 /**
  * MetaData is a simple map of key/value strings.
  */
-class MetaData : public QMap<QString, QString>
+class KIO_EXPORT MetaData : public QMap<QString, QString>
 {
 public:
   /**

@@ -31,7 +31,7 @@
  * A baseclass for KMimeTypeResolver, with the interface,
  * KMimeTypeResolverHelper uses.
  */
-class KMimeTypeResolverBase
+class KIO_EXPORT KMimeTypeResolverBase
 {
 public:
     virtual void slotViewportAdjusted() = 0;
@@ -46,7 +46,7 @@ protected:
  * itself. So an object of this class is used to handle signals, slots etc.
  * and forwards them to the KMimeTypeResolver instance.
  */
-class KMimeTypeResolverHelper : public QObject
+class KIO_EXPORT KMimeTypeResolverHelper : public QObject
 {
     Q_OBJECT
 
@@ -115,7 +115,7 @@ private:
  * @li KFileItem::determineMimeType on the fileItem, and update the icon, etc.
 */
 template<class IconItem, class Parent>
-class KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be a QObject....
+class KIO_EXPORT KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be a QObject....
 {
 public:
   /**

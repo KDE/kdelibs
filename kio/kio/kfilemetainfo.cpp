@@ -75,7 +75,7 @@ public:
 };
 
 //this is our null data
-KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::null;
+KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::null = 0L;
 static KStaticDeleter<KFileMetaInfoItem::Data> sd_KFileMetaInfoItemData;
 
 KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
@@ -1591,7 +1591,7 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
    first a bool that says if the items is valid, and if yes,
    all the elements of the Data
 */
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& item )
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& item )
 {
 
      KFileMetaInfoItem::Data* d = item.d;
@@ -1611,7 +1611,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& item )
 }
 
 
-QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& item )
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& item )
 {
      bool isValid;
      s >> isValid;
@@ -1644,7 +1644,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& item )
 // serialization of a KFileMetaInfoGroup
 // we serialize the name of the mimetype here instead of the mimetype info
 // on the other side, we can simply use this to ask the provider for the info
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& group )
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& group )
 {
     KFileMetaInfoGroup::Data* d = group.d;
 
@@ -1661,7 +1661,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& group )
     return s;
 }
 
-QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 {
     QString mimeType;
     bool isValid;
@@ -1699,7 +1699,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 // serialization of a KFileMetaInfo object
 // we serialize the name of the mimetype here instead of the mimetype info
 // on the other side, we can simply use this to ask the provider for the info
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
 {
     KFileMetaInfo::Data* d = info.d;
 
@@ -1717,7 +1717,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
     return s;
 }
 
-QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
 {
     QString mimeType;
     bool isValid;

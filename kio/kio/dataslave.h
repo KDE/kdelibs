@@ -38,7 +38,7 @@ namespace KIO {
      * detail of KIO and subject to change without notice.
      * @author Leo Savernik
      */
-    class DataSlave : public KIO::Slave {
+    class KIO_EXPORT DataSlave : public KIO::Slave {
 	Q_OBJECT
     public:
 	DataSlave();

@@ -21,6 +21,8 @@
 
 #include <qobject.h>
 
+#include <kdelibs.h>
+
 class KSambaSharePrivate;
 
 /**
@@ -29,7 +31,7 @@ class KSambaSharePrivate;
  * any suid script.
  * Singleton class, call instance() to get an instance.
  */
-class KSambaShare : public QObject 
+class KIO_EXPORT KSambaShare : public QObject 
 {
 Q_OBJECT
 public:

@@ -41,7 +41,7 @@
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KProtocolInfo : public KSycocaEntry
+class KIO_EXPORT KProtocolInfo : public KSycocaEntry
 {
   friend class KProtocolInfoFactory;
   K_SYCOCATYPE( KST_KProtocolInfo, KSycocaEntry )
@@ -638,7 +638,7 @@ private:
   KProtocolInfoPrivate* d;
 };
 
-QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
-QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
+KIO_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
+KIO_EXPORT QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
 
 #endif

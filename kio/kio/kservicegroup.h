@@ -64,7 +64,7 @@ class KBuildServiceGroupFactory;
  * \endcode
  * @short Represents a group of services
  */
-class KServiceGroup : public KSycocaEntry
+class KIO_EXPORT KServiceGroup : public KSycocaEntry
 {
   friend class KBuildServiceGroupFactory;
   K_SYCOCATYPE( KST_KServiceGroup, KSycocaEntry )
@@ -272,7 +272,7 @@ private:
   Private* d;
 };
 
-class KServiceSeparator : public KSycocaEntry
+class KIO_EXPORT KServiceSeparator : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntry )
 

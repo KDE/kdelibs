@@ -533,7 +533,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 		    }
 		} else {
 
-	            if ( compr_size > dev->size() )
+	            if ( compr_size > (Q_LONG)dev->size() )
 		    {
 		    	// here we cannot trust the compressed size, so scan through the compressed
 			// data to find the next header

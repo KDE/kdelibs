@@ -45,7 +45,7 @@ class KFileMetaInfoGroup;
  * @author Rolf Magnus
  * @author Carsten Pfeiffer
  */
-class KFileMimeTypeInfo
+class KIO_EXPORT KFileMimeTypeInfo
 {
     // the plugin needs to be a friend because it puts the data into the object,
     // and it should be the only one allowed to do this.
@@ -132,7 +132,7 @@ public:
      *  and a list of supported items.
      *  @short Information about a meta information group.
      */
-    class GroupInfo
+    class KIO_EXPORT GroupInfo
     {
 
     friend class KFilePlugin;
@@ -242,7 +242,7 @@ public:
      *  It contains every information about a KFileMetaInfoItem that this
      *  item has in common for each file of a specific mimetype.
      **/
-    class ItemInfo
+    class KIO_EXPORT ItemInfo
     {
     friend class KFilePlugin;
     friend class GroupInfo;
@@ -485,7 +485,7 @@ protected:
  * KFileMetaInfo).
  * @short A meta information item about a file.
  */
-class KFileMetaInfoItem
+class KIO_EXPORT KFileMetaInfoItem
 {
 public:
     class Data;
@@ -641,9 +641,9 @@ public:
      */
     bool isValid() const;
 
-    friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
-    friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
-    friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
+    KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
+    KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
+    KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
     friend class KFileMetaInfoGroup;
 
 protected:
@@ -661,12 +661,12 @@ protected:
  * KFileMetaInfo).
  * @short A group of meta information items about a file.
  */
-class KFileMetaInfoGroup
+class KIO_EXPORT KFileMetaInfoGroup
 {
   friend class KFilePlugin;
   friend class KFileMetaInfo;
-  friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
-  friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& );
+  KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
+  KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& );
 
 public:
     class Data;
@@ -884,7 +884,7 @@ protected:
  * the interface so that adding support doesn't break compatibility.
  * @short Meta Information about a file.
  */
-class KFileMetaInfo
+class KIO_EXPORT KFileMetaInfo
 {
 public:
     typedef KFileMimeTypeInfo::Hint Hint;
@@ -1151,8 +1151,8 @@ public:
      */
     KURL url() const;
 
-    friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
-    friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
+    KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
+    KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
     friend class KFilePlugin;
 
 protected:
@@ -1199,7 +1199,7 @@ private:
  * If you also want to support changing data and writing it back into the
  * file, you usually need all methods.
  **/
-class KFilePlugin : public QObject
+class KIO_EXPORT KFilePlugin : public QObject
 {
     Q_OBJECT
 
@@ -1308,7 +1308,7 @@ private:
  * Synchronous access to metadata of a local file. Ususally, you don't want
  * to use this class. Use KFileMetaInfo directly.
  **/
-class KFileMetaInfoProvider: private QObject
+class KIO_EXPORT KFileMetaInfoProvider: private QObject
 {
     friend class KFilePlugin;
 
@@ -1348,14 +1348,14 @@ private:
 
 };
 
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
-QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfoItem& );
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoItem& );
 
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& );
-QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& );
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& );
 
-QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
-QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
+KIO_EXPORT QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
+KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
 
 
 #endif // KILEMETAINFO_H

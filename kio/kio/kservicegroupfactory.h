@@ -33,7 +33,7 @@ class KSycocaDict;
  * A sycoca factory for service groups (e.g. list of applications)
  * It loads the services from parsing directories (e.g. applnk/)
  */
-class KServiceGroupFactory : public KSycocaFactory
+class KIO_EXPORT KServiceGroupFactory : public KSycocaFactory
 {
   K_SYCOCAFACTORY( KST_KServiceGroupFactory )
 public:

@@ -23,6 +23,8 @@
  *
  **/
 
+#include "slavebase.h"
+
 #include <config.h>
 
 #include <sys/time.h>
@@ -48,9 +50,10 @@
 #include <kdesu/client.h>
 #include <klocale.h>
 
+#ifdef Q_OS_UNIX
 #include <ksocks.h>
+#endif
 
-#include "slavebase.h"
 #include "kremoteencoding.h"
 
 #include "kio/slavebase.h"
@@ -188,11 +191,13 @@ SlaveBase::SlaveBase( const QCString &protocol,
 #endif
     }
 
+#ifdef Q_OS_UNIX
     struct sigaction act;
     act.sa_handler = sigpipe_handler;
     sigemptyset( &act.sa_mask );
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );
+#endif
 
     signal(SIGINT,&genericsig_handler);
     signal(SIGQUIT,&genericsig_handler);
@@ -247,6 +252,7 @@ DCOPClient *SlaveBase::dcopClient()
 
 void SlaveBase::dispatchLoop()
 {
+#ifdef Q_OS_UNIX //TODO: WIN32
     fd_set rfds;
     int retval;
 
@@ -313,10 +319,12 @@ void SlaveBase::dispatchLoop()
           return;
        }
     }
+#endif
 }
 
 void SlaveBase::connectSlave(const QString& path)
 {
+#ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
     appconn->init(new KSocket(QFile::encodeName(path)));
     if (!appconn->inited())
     {
@@ -325,6 +333,7 @@ void SlaveBase::connectSlave(const QString& path)
     }
 
     setConnection(appconn);
+#endif
 }
 
 void SlaveBase::disconnectSlave()
@@ -988,7 +997,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_CONFIG:
         stream >> d->configData;
+#ifdef Q_OS_UNIX //TODO: not yet available on WIN32
         KSocks::setConfig(d->config);
+#endif
 	delete d->remotefile;
 	d->remotefile = 0;
         break;

@@ -51,7 +51,7 @@ class KConfig;
  * @author Dawit Alemayehu <adawit@kde.org>
  * @see KPAC
  */
-class KProtocolManager
+class KIO_EXPORT KProtocolManager
 {
 public:
 

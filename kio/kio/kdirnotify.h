@@ -29,7 +29,7 @@
  * The information comes from the konqueror/kdesktop instance where the
  * operation was done, and can interest KDirListers, bookmark handlers, etc.
  */
-class KDirNotify : public DCOPObject
+class KIO_EXPORT KDirNotify : public DCOPObject
 {
    K_DCOP
 protected:

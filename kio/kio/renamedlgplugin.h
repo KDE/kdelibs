@@ -31,7 +31,7 @@
  * @short Base class for RenameDlg plugins. 
  * @since 3.1
  */
-class RenameDlgPlugin : public QWidget
+class KIO_EXPORT RenameDlgPlugin : public QWidget
 {
 public:
   /**

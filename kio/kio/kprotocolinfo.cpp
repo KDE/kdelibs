@@ -17,6 +17,11 @@
    Boston, MA 02111-1307, USA.
 */
 
+#ifdef MAKE_KDECORE_LIB //needed for proper linkage (win32)
+#undef KIO_EXPORT
+#define KIO_EXPORT KDE_EXPORT
+#endif
+
 #include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 #include "kprotocolmanager.h"
@@ -27,6 +32,9 @@
 
 KProtocolInfo* KProtocolInfo::findProtocol(const KURL &url)
 {
+#ifdef MAKE_KDECORE_LIB
+   return 0;
+#else
    QString protocol = url.protocol();
 
    if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
@@ -36,6 +44,7 @@ KProtocolInfo* KProtocolInfo::findProtocol(const KURL &url)
    }
 
    return KProtocolInfoFactory::self()->findProtocol(protocol);
+#endif
 }
 
 

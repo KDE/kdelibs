@@ -32,7 +32,7 @@ namespace KIO {
      * @short KIO Job to retrieve meta information from files.
      * @since 3.1
      */
-    class MetaInfoJob : public KIO::Job
+    class KIO_EXPORT MetaInfoJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -105,7 +105,7 @@ namespace KIO {
      * @param items files to get metainfo for
      * @return the MetaInfoJob to retrieve the items
      */
-    MetaInfoJob* fileMetaInfo(const KFileItemList& items);
+    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 
     /**
      * Retrieves meta information for the given items.
@@ -113,7 +113,7 @@ namespace KIO {
      * @param items files to get metainfo for
      * @return the MetaInfoJob to retrieve the items
      */
-    MetaInfoJob* fileMetaInfo(const KURL::List& items);
+    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KURL::List& items);
 }
 
 #endif

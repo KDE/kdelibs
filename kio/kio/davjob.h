@@ -54,7 +54,7 @@ namespace KIO {
      * @see KIO::davSearch()
      * @since 3.1
      */
-    class DavJob : public TransferJob {
+    class KIO_EXPORT DavJob : public TransferJob {
     Q_OBJECT
 
     public:
@@ -95,7 +95,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   DavJob* davPropFind( const KURL& url, const QDomDocument& properties, QString depth, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropFind( const KURL& url, const QDomDocument& properties, QString depth, bool showProgressInfo=true );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets
@@ -107,7 +107,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   DavJob* davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo=true );
 
    /**
     * Creates a new DavJob that issues a SEARCH command.
@@ -119,7 +119,7 @@ namespace KIO {
     * @param showProgressInfo true to show progress information
     * @return the new DavJob
     */
-   DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
+   KIO_EXPORT DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
 
 }
 

@@ -369,6 +369,7 @@ QString KFileItem::user() const
 
 QString KFileItem::group() const
 {
+#ifdef Q_OS_UNIX
   if (m_group.isEmpty() && m_bIsLocalURL )
   {
     KDE_struct_stat buff;
@@ -383,6 +384,7 @@ QString KFileItem::group() const
         m_group.sprintf("%d",buff.st_gid);
     }
   }
+#endif
   return m_group;
 }
 

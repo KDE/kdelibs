@@ -870,7 +870,7 @@ Scheduler::_registerWindow(QWidget *wid)
       // We must store the window Id because by the time
       // the destroyed signal is emitted we can no longer
       // access QWidget::winId() (already destructed)
-      long windowId = wid->winId();
+      WId windowId = wid->winId();
       m_windowList.insert(obj, windowId);
       connect(wid, SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
@@ -889,10 +889,10 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    if (!obj)
       return;
 
-   QMap<QObject *, long>::Iterator it = m_windowList.find(obj);
+   QMap<QObject *, WId>::Iterator it = m_windowList.find(obj);
    if (it == m_windowList.end())
       return;
-   long windowId = it.data();
+   WId windowId = it.data();
    disconnect( it.key(), SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.remove( it );

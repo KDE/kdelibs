@@ -22,6 +22,8 @@
 #ifndef __connection_h__
 #define __connection_h__
 
+#include <kdelibs.h>
+
 #include <sys/types.h>
 
 #include <stdio.h>
@@ -33,7 +35,7 @@ class QSocketNotifier;
 
 namespace KIO {
 
-    struct Task {
+    struct KIO_EXPORT Task {
 	int cmd;
 	QByteArray data;
     };
@@ -44,7 +46,7 @@ namespace KIO {
      * It handles a queue of commands to be sent which makes it possible to
      * queue data before an actual connection has been established.
      */
-    class Connection : public QObject
+    class KIO_EXPORT Connection : public QObject
     {
 	Q_OBJECT
     public:

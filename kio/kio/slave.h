@@ -40,7 +40,7 @@ namespace KIO {
     // Attention developers: If you change the implementation of KIO::Slave,
     // do *not* use connection() or slaveconn but the respective KIO::Slave
     // accessor methods. Otherwise classes derived from Slave might break. (LS)
-    class Slave : public KIO::SlaveInterface
+    class KIO_EXPORT Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
 

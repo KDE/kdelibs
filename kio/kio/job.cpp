@@ -467,7 +467,7 @@ void SimpleJob::start(Slave *slave)
     if (m_window)
     {
        QString id;
-       addMetaData("window-id", id.setNum(m_window->winId()));
+       addMetaData("window-id", id.setNum((ulong)m_window->winId()));
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
@@ -3975,8 +3975,8 @@ void DeleteJob::slotResult( Job *job )
                 //kdDebug(7007) << " Target is a file" << endl;
                 files.append( url );
             }
-            if ( url.isLocalFile() && !m_parentDirs.contains( url.directory(-1) ) )
-                m_parentDirs.append( url.directory(-1) );
+            if ( url.isLocalFile() && !m_parentDirs.contains( url.directory(false) ) )
+                m_parentDirs.append( url.directory(false) );
             ++m_currentStat;
             statNextSrc();
          }
@@ -4272,9 +4272,13 @@ QString CacheInfo::cachedFileName()
 
 QFile *CacheInfo::cachedFile()
 {
+#ifdef Q_WS_WIN
+   const char *mode = (readWrite ? "rb+" : "rb");
+#else
    const char *mode = (readWrite ? "r+" : "r");
+#endif
 
-   FILE *fs = fopen( CEF.latin1(), mode); // Open for reading and writing
+   FILE *fs = fopen(QFile::encodeName(CEF), mode); // Open for reading and writing
    if (!fs)
       return 0;
 
@@ -4354,7 +4358,7 @@ QFile *CacheInfo::cachedFile()
    if (ok)
       return fs;
 
-   unlink( CEF.latin1());
+   unlink( QFile::encodeName(CEF) );
    return 0;
 
 }

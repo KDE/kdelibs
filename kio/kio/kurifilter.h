@@ -72,7 +72,7 @@ class KCModule;
 * @author Dawit Alemayehu <adawit at kde.org>
 */
 
-class KURIFilterData
+class KIO_EXPORT KURIFilterData
 {
 friend class KURIFilterPlugin;
 
@@ -338,7 +338,7 @@ private:
  *
  * @short Abstract class for URI filter plugins.
  */
-class KURIFilterPlugin : public QObject
+class KIO_EXPORT KURIFilterPlugin : public QObject
 {
     Q_OBJECT
 
@@ -437,7 +437,7 @@ private:
 /**
  * A list of filter plugins.
  */
-class KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
+class KIO_EXPORT KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
 {
 public:
     virtual int compareItems(Item a, Item b)
@@ -522,7 +522,7 @@ private:
  * @short Filters a given URL into its proper format whenever possible.
  */
 
-class KURIFilter
+class KIO_EXPORT KURIFilter
 {
 public:
     /**

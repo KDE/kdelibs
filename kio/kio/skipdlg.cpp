@@ -29,9 +29,12 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kurl.h>
-#include <kwin.h>
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
+
+#ifdef Q_WS_X11 
+#include <kwin.h>
+#endif
 
 using namespace KIO;
 
@@ -43,7 +46,7 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
 
   // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
   // i.e. in a separate process.
-#ifndef Q_WS_QWS //FIXME(E): Implement for QT Embedded
+#if !defined Q_WS_WIN && !defined Q_WS_QWS //FIXME(E): Implement for QT Embedded & win32
   if (modal)
     KWin::setState( winId(), NET::StaysOnTop );
 #endif

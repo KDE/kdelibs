@@ -75,7 +75,7 @@ static KURL getNewFileName( const KURL &u, const QString& text )
   return myurl;
 }
 
-bool KIO::isClipboardEmpty()
+KIO_EXPORT bool KIO::isClipboardEmpty()
 {
 #ifndef QT_NO_MIMECLIPBOARD
   QMimeSource *data = QApplication::clipboard()->data();
@@ -91,7 +91,7 @@ bool KIO::isClipboardEmpty()
   return true;
 }
 
-KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
+KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 {
   if ( !dest_url.isValid() ) {
     KMessageBox::error( 0L, i18n( "Malformed URL\n%1" ).arg( dest_url.url() ) );
@@ -152,7 +152,7 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 }
 
 
-void KIO::pasteData( const KURL& u, const QByteArray& _data )
+KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data )
 {
     KURL new_url = getNewFileName( u, QString::null );
     // We could use KIO::put here, but that would require a class
@@ -169,12 +169,12 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
     (void) KIO::NetAccess::upload( tempFile.name(), new_url, 0 );
 }
 
-KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
+KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
 {
     return pasteDataAsync( u, _data, QString::null );
 }
 
-KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data, const QString& text )
+KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data, const QString& text )
 {
     KURL new_url = getNewFileName( u, text );
 

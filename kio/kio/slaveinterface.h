@@ -91,7 +91,7 @@ class SlaveInterfacePrivate;
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
-class SlaveInterface : public QObject
+class KIO_EXPORT SlaveInterface : public QObject
 {
     Q_OBJECT
 
@@ -283,7 +283,7 @@ inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
     return s;
 }
 
-QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
-QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
+KIO_EXPORT QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
+KIO_EXPORT QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
 
 #endif

@@ -37,7 +37,7 @@
  * (UDSEntry isn't very friendly to use).
  * It includes many file attributes such as mimetype, icon, text, mode, link...
  */
-class KFileItem
+class KIO_EXPORT KFileItem
 {
 public:
   enum { Unknown = (mode_t) - 1 };
@@ -545,8 +545,8 @@ protected:
 private:
   class KFileItemPrivate;
   KFileItemPrivate * d;
-  friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
-  friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+  KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+  KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 };
 
 /**
@@ -559,8 +559,8 @@ typedef QPtrList<KFileItem> KFileItemList;
  */
 typedef QPtrListIterator<KFileItem> KFileItemListIterator;
 
-QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
-QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 
 
 #endif

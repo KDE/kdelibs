@@ -31,6 +31,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 class KEMailSettingsPrivate;
 
 
@@ -41,7 +43,7 @@ class KEMailSettingsPrivate;
   *
   * @author Alex Zepeda zipzippy@sonic.net
   **/
-class KEMailSettings {
+class KIO_EXPORT KEMailSettings {
 public:
 	/**
 	  * The list of settings that I thought of when I wrote this 

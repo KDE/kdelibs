@@ -45,7 +45,7 @@ class KInstance;
  * described by the service.
  * @see KDataTool
  */
-class KDataToolInfo
+class KIO_EXPORT KDataToolInfo
 {
 public:
     /**

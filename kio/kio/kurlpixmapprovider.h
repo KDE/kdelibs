@@ -39,7 +39,7 @@
  * @short Resolves pixmaps for URLs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KURLPixmapProvider : public KPixmapProvider
+class KIO_EXPORT KURLPixmapProvider : public KPixmapProvider
 {
 public:
     /**

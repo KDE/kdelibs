@@ -15,7 +15,7 @@ class KImageIOFormat;
 class KImageIOFormatList;
 
 /** \internal */
-class KImageIOFormat : public KSycocaEntry
+class KIO_EXPORT KImageIOFormat : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KImageIOFormat, KSycocaEntry )
 
@@ -76,7 +76,7 @@ protected:
 };
 
 /** \internal */
-class KImageIOFormatList : public KImageIOFormat::List
+class KIO_EXPORT KImageIOFormatList : public KImageIOFormat::List
 {
 public:
    KImageIOFormatList() { }
@@ -84,7 +84,7 @@ public:
 
 
 /** \internal */
-class KImageIOFactory : public KSycocaFactory
+class KIO_EXPORT KImageIOFactory : public KSycocaFactory
 {
   friend class KImageIO;
   K_SYCOCAFACTORY( KST_KImageIO )

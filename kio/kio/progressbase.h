@@ -67,7 +67,7 @@ namespace KIO
 * @short Base class for IO progress dialogs.
 * @author Matej Koss <koss@miesto.sk>
 */
-class ProgressBase : public QWidget {
+class KIO_EXPORT ProgressBase : public QWidget {
 
   Q_OBJECT
 

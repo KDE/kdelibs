@@ -48,10 +48,10 @@ namespace KIO {
  * @short A two way messaging class for passing authentication information.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class AuthInfo
+class KIO_EXPORT AuthInfo
 {
-    friend QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
-    friend QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+    KIO_EXPORT friend QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
+    KIO_EXPORT friend QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
 public:
    /**
@@ -225,8 +225,8 @@ private:
     class AuthInfoPrivate* d;
 };
 
-QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
-QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+KIO_EXPORT QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
+KIO_EXPORT QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
 /**
  * A Singleton class that provides access to passwords
@@ -237,7 +237,7 @@ QDataStream& operator>> (QDataStream& s, AuthInfo& a);
  * @short An interface to the ftp .netrc files
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class NetRC
+class KIO_EXPORT NetRC
 {
 public:
 

@@ -57,7 +57,7 @@ class Job;
 * @short IO progress widget for embedding in a statusbar.
 * @author Matej Koss <koss@miesto.sk>
 */
-class StatusbarProgress : public ProgressBase {
+class KIO_EXPORT StatusbarProgress : public ProgressBase {
 
   Q_OBJECT
 

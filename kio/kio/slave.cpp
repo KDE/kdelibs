@@ -89,7 +89,9 @@ namespace KIO {
 
 void Slave::accept(KSocket *socket)
 {
+#ifndef Q_WS_WIN
     slaveconn.init(socket);
+#endif
     delete serv;
     serv = 0;
     slaveconn.connect(this, SLOT(gotInput()));
@@ -149,8 +151,10 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     idle_since = contact_started;
     m_pid = 0;
     m_port = 0;
+#ifndef Q_WS_WIN
     connect(serv, SIGNAL(accepted( KSocket* )),
 	    SLOT(accept(KSocket*) ) );
+#endif
 }
 
 Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
@@ -169,8 +173,10 @@ Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
     m_pid = 0;
     m_port = 0;
     if (serv != 0) {
+#ifndef Q_WS_WIN
       connect(serv, SIGNAL(accepted( KSocket* )),
-	    SLOT(accept(KSocket*) ) );
+        SLOT(accept(KSocket*) ) );
+#endif
     }
 }
 
@@ -365,9 +371,13 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
+#ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
     Slave *slave = new Slave(kss, protocol, socketfile.name());
+#else
+    Slave *slave = 0;
+#endif
 
     // WABA: if the dcopserver is running under another uid we don't ask
     // klauncher for a slave, because the slave might have that other uid
@@ -386,14 +396,14 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
           error_text = i18n("Unknown protocol '%1'.").arg(protocol);
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
           delete slave;
-	  return 0;
+          return 0;
        }
        QString lib_path = KLibLoader::findLibrary(_name.latin1());
        if (lib_path.isEmpty())
        {
           error_text = i18n("Can not find io-slave for protocol '%1'.").arg(protocol);
-	  error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
-	  return 0;
+          error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+          return 0;
        }
 
        KProcess proc;
@@ -403,8 +413,10 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
        proc.start(KProcess::DontCare);
 
+#ifndef Q_WS_WIN
        slave->setPID(proc.pid());
        QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
+#endif
        return slave;
     }
 
@@ -420,7 +432,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error_text = i18n("Cannot talk to klauncher");
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
-	return 0;
+        return 0;
     }
     QDataStream stream2(reply, IO_ReadOnly);
     QString errorStr;
@@ -428,14 +440,15 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     stream2 >> pid >> errorStr;
     if (!pid)
     {
-	error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
-	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+        error_text = i18n("Unable to create io-slave:\nklauncher said: %1").arg(errorStr);
+        error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
-	return 0;
+        return 0;
     }
+#ifndef Q_WS_WIN
     slave->setPID(pid);
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
-
+#endif
     return slave;
 }
 
@@ -455,9 +468,13 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     if ( socketfile.status() != 0 )
 	return 0;
 
+#ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
     Slave *slave = new Slave(kss, protocol, socketfile.name());
+#else
+    Slave *slave = 0;
+#endif
 
     QByteArray params, reply;
     QCString replyType;
@@ -466,9 +483,9 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 
     QCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestHoldSlave(KURL,QString)",
-	    params, replyType, reply)) {
+        params, replyType, reply)) {
         delete slave;
-	return 0;
+        return 0;
     }
     QDataStream stream2(reply, IO_ReadOnly);
     pid_t pid;
@@ -476,11 +493,12 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     if (!pid)
     {
         delete slave;
-	return 0;
+        return 0;
     }
+#ifndef Q_WS_WIN
     slave->setPID(pid);
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
-
+#endif
     return slave;
 }
 

@@ -352,7 +352,7 @@ int KDirWatchPrivate::Entry::clients()
 KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
 {
 // we only support absolute paths
-  if (_path.left(1) != "/") {
+  if (!QDir::isRelativePath(_path)) {
     return 0;
   }
 
@@ -943,10 +943,15 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 {
   QString path = e->path;
   if (!fileName.isEmpty()) {
-    if (fileName[0] == '/')
+    if (!QDir::isRelativePath(fileName))
       path = fileName;
     else
+#ifdef Q_OS_UNIX
       path += "/" + fileName;
+#elif defined(Q_WS_WIN)
+      //current drive is passed instead of /
+      path += QDir::currentDirPath().left(2) + "/" + fileName;
+#endif
   }
 
   Client* c = e->m_clients.first();
@@ -1192,7 +1197,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     {
       case FAMDeleted:
        // file absolute: watched dir
-        if (fe->filename[0] == '/')
+        if (!QDir::isRelativePath(fe->filename))
         {
           // a watched directory was deleted
 

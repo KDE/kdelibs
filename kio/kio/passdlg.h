@@ -33,7 +33,7 @@ namespace KIO {
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
-class PasswordDialog : public KDialogBase
+class KIO_EXPORT PasswordDialog : public KDialogBase
 {
     Q_OBJECT
 

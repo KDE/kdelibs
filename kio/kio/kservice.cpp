@@ -33,6 +33,7 @@
 
 #include <qstring.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <qtl.h>
 
 #include <ksimpleconfig.h>
@@ -95,7 +96,7 @@ KService::init( KDesktopFile *config )
   d = new KServicePrivate;
   m_bValid = true;
 
-  bool absPath = (entryPath()[0] == '/');
+  bool absPath = !QDir::isRelativePath(entryPath());
 
   config->setDesktopGroup();
 
@@ -640,7 +641,7 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
   if (service)
      return service;
 
-  if (_storageId.startsWith("/") && QFile::exists(_storageId))
+  if (!QDir::isRelativePath(_storageId) && QFile::exists(_storageId))
      return new KService(_storageId);
 
   QString tmp = _storageId;
@@ -757,7 +758,7 @@ QString KService::storageId() const
 QString KService::locateLocal()
 {
   if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") ||
-      (!desktopEntryPath().startsWith("/") && d->categories.isEmpty()))
+      (QDir::isRelativePath(desktopEntryPath()) && d->categories.isEmpty()))
      return KDesktopFile::locateLocal(desktopEntryPath());
 
   return ::locateLocal("xdgdata-apps", d->menuId);

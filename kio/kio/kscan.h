@@ -60,7 +60,7 @@ class QImage;
  * @short A baseclass and accessor for Scanning Dialogs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KScanDialog : public KDialogBase
+class KIO_EXPORT KScanDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -179,7 +179,7 @@ private:
  * createDialog().
  * @short Factory for creating KScanDialogs
  */
-class KScanDialogFactory : public KLibFactory
+class KIO_EXPORT KScanDialogFactory : public KLibFactory
 {
 public:
     virtual ~KScanDialogFactory();
@@ -233,7 +233,7 @@ private:
 /**
  * Base class for OCR Dialogs.
  */
-class KOCRDialog : public KDialogBase
+class KIO_EXPORT KOCRDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -315,7 +315,7 @@ private:
  * createDialog().
  * @short Factory for creating KScanDialogs
  */
-class KOCRDialogFactory : public KLibFactory
+class KIO_EXPORT KOCRDialogFactory : public KLibFactory
 {
 public:
     virtual ~KOCRDialogFactory();

@@ -38,7 +38,7 @@ namespace KIO {
      *                    directory (unix-style), -1 for default permissions.
      * @return A pointer to the job handling the operation.
      */
-    SimpleJob * mkdir( const KURL& url, int permissions = -1 );
+    KIO_EXPORT SimpleJob * mkdir( const KURL& url, int permissions = -1 );
 
     /**
      * Removes a single directory.
@@ -50,7 +50,7 @@ namespace KIO {
      * @param url The URL of the directory to remove.
      * @return A pointer to the job handling the operation.
      */
-    SimpleJob * rmdir( const KURL& url );
+    KIO_EXPORT SimpleJob * rmdir( const KURL& url );
 
     /**
      * Changes permissions on a file or directory.
@@ -61,7 +61,7 @@ namespace KIO {
      * @param permissions The permissions to set.
      * @return the job handling the operation.
      */
-    SimpleJob * chmod( const KURL& url, int permissions );
+    KIO_EXPORT SimpleJob * chmod( const KURL& url, int permissions );
 
     /**
      * Rename a file or directory.
@@ -74,7 +74,7 @@ namespace KIO {
      * @param overwrite whether to automatically overwrite if the dest exists
      * @return the job handling the operation.
      */
-    SimpleJob * rename( const KURL& src, const KURL & dest, bool overwrite );
+    KIO_EXPORT SimpleJob * rename( const KURL& src, const KURL & dest, bool overwrite );
 
     /**
      * Create or move a symlink.
@@ -87,7 +87,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    SimpleJob * symlink( const QString & target, const KURL& dest, bool overwrite, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob * symlink( const QString & target, const KURL& dest, bool overwrite, bool showProgressInfo = true );
 
     /**
      * Execute any command that is specific to one slave (protocol).
@@ -101,7 +101,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    SimpleJob * special( const KURL& url, const QByteArray & data, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob * special( const KURL& url, const QByteArray & data, bool showProgressInfo = true );
 
     /**
      * Mount filesystem.
@@ -115,7 +115,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
 
     /**
      * Unmount filesystem.
@@ -126,7 +126,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    SimpleJob *unmount( const QString & point, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob *unmount( const QString & point, bool showProgressInfo = true );
 
     /**
      * HTTP cache update
@@ -137,7 +137,7 @@ namespace KIO {
      * supposed to expire.
      * @return the job handling the operation.
      */
-    SimpleJob *http_update_cache( const KURL& url, bool no_cache, time_t expireDate);
+    KIO_EXPORT SimpleJob *http_update_cache( const KURL& url, bool no_cache, time_t expireDate);
 
     /**
      * Find all details for one file or directory.
@@ -146,7 +146,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    StatJob * stat( const KURL& url, bool showProgressInfo = true );
+    KIO_EXPORT StatJob * stat( const KURL& url, bool showProgressInfo = true );
     /**
      * Find all details for one file or directory.
      * This version of the call includes two additional booleans, @p sideIsSource and @p details.
@@ -174,7 +174,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    StatJob * stat( const KURL& url, bool sideIsSource, short int details, bool showProgressInfo = true );
+    KIO_EXPORT StatJob * stat( const KURL& url, bool sideIsSource, short int details, bool showProgressInfo = true );
 
     /**
      * Get (a.k.a. read).
@@ -185,7 +185,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    TransferJob *get( const KURL& url, bool reload=false, bool showProgressInfo = true );
+    KIO_EXPORT TransferJob *get( const KURL& url, bool reload=false, bool showProgressInfo = true );
 
     /**
      * Put (a.k.a. write)
@@ -199,7 +199,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @see multi_get()
      */
-    TransferJob *put( const KURL& url, int permissions,
+    KIO_EXPORT TransferJob *put( const KURL& url, int permissions,
                       bool overwrite, bool resume, bool showProgressInfo = true );
 
     /**
@@ -230,7 +230,7 @@ namespace KIO {
      * @param showProgressInfo true to display
      * @return the job handling the operation.
      */
-    TransferJob *http_post( const KURL& url, const QByteArray &postData,
+    KIO_EXPORT TransferJob *http_post( const KURL& url, const QByteArray &postData,
                             bool showProgressInfo = true );
 
     /**
@@ -243,7 +243,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @since 3.3
      */
-    StoredTransferJob *storedGet( const KURL& url, bool reload=false, bool showProgressInfo = true );
+    KIO_EXPORT StoredTransferJob *storedGet( const KURL& url, bool reload=false, bool showProgressInfo = true );
 
     /**
      * Put (a.k.a. write) data from a single QByteArray.
@@ -259,7 +259,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @since 3.3
      */
-    StoredTransferJob *storedPut( const QByteArray& arr, const KURL& url, int permissions,
+    KIO_EXPORT StoredTransferJob *storedPut( const QByteArray& arr, const KURL& url, int permissions,
                                   bool overwrite, bool resume, bool showProgressInfo = true );
 
     /**
@@ -272,7 +272,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @see get()
      */
-    MultiGetJob *multi_get( long id, const KURL &url, const MetaData &metaData);
+    KIO_EXPORT MultiGetJob *multi_get( long id, const KURL &url, const MetaData &metaData);
 
     /**
      * Find mimetype for one file or directory.
@@ -281,7 +281,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    MimetypeJob * mimetype( const KURL& url,
+    KIO_EXPORT MimetypeJob * mimetype( const KURL& url,
                             bool showProgressInfo = true );
 
     /**
@@ -300,7 +300,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
+    KIO_EXPORT FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
                             bool overwrite=false, bool resume=false,
                             bool showProgressInfo = true);
 
@@ -319,7 +319,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
+    KIO_EXPORT FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
                             bool overwrite=false, bool resume=false,
                             bool showProgressInfo = true);
 
@@ -330,7 +330,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
+    KIO_EXPORT SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
     /**
      * List the contents of @p url, which is assumed to be a directory.
@@ -344,7 +344,7 @@ namespace KIO {
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    ListJob *listDir( const KURL& url, bool showProgressInfo = true,
+    KIO_EXPORT ListJob *listDir( const KURL& url, bool showProgressInfo = true,
                       bool includeHidden = true );
 
     /**
@@ -359,7 +359,7 @@ namespace KIO {
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    ListJob *listRecursive( const KURL& url, bool showProgressInfo = true,
+    KIO_EXPORT ListJob *listRecursive( const KURL& url, bool showProgressInfo = true,
                             bool includeHidden = true );
 
     /**
@@ -375,7 +375,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Copy a file or directory @p src into the destination @p dest,
@@ -390,7 +390,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
-    CopyJob *copyAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copyAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Copy a list of file/dirs @p src into a destination directory @p dest.
@@ -400,7 +400,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
-    CopyJob *copy( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copy( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Moves a file or directory @p src to the given destination @p dest.
@@ -412,7 +412,7 @@ namespace KIO {
      * @see copy()
      * @see moveAs()
      */
-    CopyJob *move( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *move( const KURL& src, const KURL& dest, bool showProgressInfo = true );
     /**
      * Moves a file or directory @p src to the given destination @p dest. Unlike move()
      * this operation will fail when the directory already exists.
@@ -423,7 +423,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    CopyJob *moveAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *moveAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
     /**
      * Moves a list of files or directories @p src to the given destination @p dest.
      *
@@ -433,7 +433,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copy()
      */
-    CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Create a link.
@@ -445,7 +445,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
-    CopyJob *link( const KURL& src, const KURL& destDir, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *link( const KURL& src, const KURL& destDir, bool showProgressInfo = true );
 
     /**
      * Create several links
@@ -458,7 +458,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see link()
      */
-    CopyJob *link( const KURL::List& src, const KURL& destDir, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *link( const KURL::List& src, const KURL& destDir, bool showProgressInfo = true );
 
     /**
      * Create a link. Unlike link() this operation will fail when the directory already
@@ -473,7 +473,7 @@ namespace KIO {
      * @see link ()
      * @see copyAs()
      */
-    CopyJob *linkAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *linkAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Trash a file or directory.
@@ -485,7 +485,7 @@ namespace KIO {
      * @return the job handling the operation
      * @since 3.4
      */
-    CopyJob *trash( const KURL& src, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *trash( const KURL& src, bool showProgressInfo = true );
 
     /**
      * Trash a list of files or directories.
@@ -496,7 +496,7 @@ namespace KIO {
      * @return the job handling the operation
      * @since 3.4
      */
-    CopyJob *trash( const KURL::List& src, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *trash( const KURL::List& src, bool showProgressInfo = true );
 
     /**
      * Delete a file or directory.
@@ -507,7 +507,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
-    DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );
+    KIO_EXPORT DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );
 
     /**
      * Deletes a list of files or directories.
@@ -518,7 +518,7 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation
      */
-    DeleteJob *del( const KURL::List& src, bool shred = false, bool showProgressInfo = true );
+    KIO_EXPORT DeleteJob *del( const KURL::List& src, bool shred = false, bool showProgressInfo = true );
 }
 
 #endif

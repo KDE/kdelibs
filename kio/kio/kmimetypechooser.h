@@ -31,7 +31,7 @@
  *
  * @author Anders Lund (anders at alweb dk), jan 23, 2002
  */
-class KMimeTypeChooser : public QVBox
+class KIO_EXPORT KMimeTypeChooser : public QVBox
 {
   Q_OBJECT
 
@@ -126,7 +126,7 @@ class KMimeTypeChooser : public QVBox
   *
   * @author Anders Lund (anders at alweb dk) dec 19, 2001
   */
-class KMimeTypeChooserDialog : public KDialogBase
+class KIO_EXPORT KMimeTypeChooserDialog : public KDialogBase
 {
   public:
     /**

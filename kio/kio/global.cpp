@@ -41,7 +41,7 @@
 #include <volmgt.h>
 #endif
 
-QString KIO::convertSize( KIO::filesize_t size )
+KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
     double fsize = size;
     QString s;
@@ -74,19 +74,19 @@ QString KIO::convertSize( KIO::filesize_t size )
     return s;
 }
 
-QString KIO::convertSizeFromKB( KIO::filesize_t kbSize )
+KIO_EXPORT QString KIO::convertSizeFromKB( KIO::filesize_t kbSize )
 {
     return convertSize(kbSize * 1024);
 }
 
-QString KIO::number( KIO::filesize_t size )
+KIO_EXPORT QString KIO::number( KIO::filesize_t size )
 {
     char charbuf[256];
     sprintf(charbuf, "%lld", size);
     return QString::fromLatin1(charbuf);
 }
 
-QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
+KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   QTime remainingTime;
 
@@ -109,7 +109,7 @@ QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t proces
   return remainingTime;
 }
 
-QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
+KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
     QString text = items == 0 ? i18n( "No Items" ) : i18n( "One Item", "%n Items", items );
     text += " - ";
@@ -124,7 +124,7 @@ QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize
     return text;
 }
 
-QString KIO::encodeFileName( const QString & _str )
+KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
 {
   QString str( _str );
 
@@ -139,7 +139,7 @@ QString KIO::encodeFileName( const QString & _str )
   return str;
 }
 
-QString KIO::decodeFileName( const QString & _str )
+KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
 {
   QString str;
 
@@ -167,12 +167,12 @@ QString KIO::decodeFileName( const QString & _str )
   return str;
 }
 
-QString KIO::Job::errorString() const
+KIO_EXPORT QString KIO::Job::errorString() const
 {
   return KIO::buildErrorString(m_error, m_errorText);
 }
 
-QString KIO::buildErrorString(int errorCode, const QString &errorText)
+KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText)
 {
   QString result;
 
@@ -377,7 +377,7 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
   return result;
 }
 
-QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
+KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
   switch (cmd) {
     case CMD_CONNECT:
       return i18n("Opening connections is not supported with the protocol %1." ).arg(protocol);
@@ -416,7 +416,7 @@ QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
   }/*end switch*/
 }
 
-QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
+KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
                                             int method /*= -1*/ ) const
 {
   QString errorName, techName, description, ret2;
@@ -466,7 +466,7 @@ QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L*/,
   return ret;
 }
 
-QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
+KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
                                const KURL *reqUrl /*= 0L*/, int /*method = -1*/ )
 {
   QString url, host, protocol, datetime, domain, path, dir, filename;
@@ -1208,6 +1208,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
   return ret;
 }
 
+#ifdef Q_OS_UNIX
+
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -1850,31 +1852,46 @@ static QString get_mount_info(const QString& filename,
     return mountPoint;
 }
 
+#endif //Q_OS_UNIX
+
 QString KIO::findPathMountPoint(const QString& filename)
 {
+#ifdef Q_OS_UNIX
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   return get_mount_info(filename, isautofs, isslow, ismanual, fstype);
+#else //!Q_OS_UNIX
+  return QString::null;
+#endif 
 }
 
 bool KIO::manually_mounted(const QString& filename)
 {
+#ifdef Q_OS_UNIX
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
   return !mountPoint.isNull() && (ismanual == Right);
+#else //!Q_OS_UNIX
+  return false;
+#endif 
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
+#ifdef Q_OS_UNIX
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
   return !mountPoint.isNull() && (isslow == Right);
+#else //!Q_OS_UNIX
+  return false;
+#endif 
 }
 
 bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
 {
+#ifdef Q_OS_UNIX
   MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
   QString fstype;
   QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
@@ -1891,6 +1908,7 @@ bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
   case CaseInsensitive:
       return isMsDos;
   }
+#endif 
   return false;
 }
 

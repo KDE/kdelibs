@@ -21,6 +21,8 @@
 
 #include <qobject.h>
 
+#include <kdelibs.h>
+
 class KNFSSharePrivate;
 
 /**
@@ -30,7 +32,7 @@ class KNFSSharePrivate;
  * It parses the /etc/exports file to get its information.
  * Singleton class, call instance() to get an instance.
  */
-class KNFSShare : public QObject 
+class KIO_EXPORT KNFSShare : public QObject 
 {
 Q_OBJECT
 public:

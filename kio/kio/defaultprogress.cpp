@@ -34,7 +34,10 @@
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
 #include <klineedit.h>
+
+#ifdef Q_WS_X11
 #include <kwin.h>
+#endif
 
 #include "jobclasses.h"
 #include "defaultprogress.h"

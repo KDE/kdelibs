@@ -831,7 +831,9 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
     if ( fstype == "Default" ) // KDE-1 thing
       fstype = QString::null;
     QString point = cfg.readEntry( "MountPoint" );
+#ifndef Q_WS_WIN
     (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
+#endif
     retval = -1; // we don't want to return 0, but we don't want to return a pid
   }
 
@@ -1080,7 +1082,9 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
       if ( fstype == "Default" ) // KDE-1 thing
           fstype = QString::null;
       QString point = cfg.readEntry( "MountPoint" );
+#ifndef Q_WS_WIN
       (void)new KAutoMount( ro, fstype, dev, point, path, false );
+#endif
     }
     else if ( _service.m_type == ST_UNMOUNT )
     {
@@ -1088,7 +1092,9 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
       if ( mp.isEmpty() )
 	return;
 
+#ifndef Q_WS_WIN
       (void)new KAutoUnmount( mp, path );
+#endif
     }
   }
   else

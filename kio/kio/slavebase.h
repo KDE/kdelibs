@@ -42,7 +42,7 @@ class SlaveBasePrivate;
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
-class SlaveBase
+class KIO_EXPORT SlaveBase
 {
 public:
     SlaveBase( const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);

@@ -50,7 +50,7 @@ class KZipFileEntry;
  * @author Holger Schroeder <holger-kde@holgis.net>
  * @since 3.1
  */
-class KZip : public KArchive
+class KIO_EXPORT KZip : public KArchive
 {
 public:
     /**
@@ -223,7 +223,7 @@ private:
 /**
  * @internal
  */
-class KZipFileEntry : public KArchiveFile
+class KIO_EXPORT KZipFileEntry : public KArchiveFile
 {
 public:
     /*KZipFileEntry() : st(-1)

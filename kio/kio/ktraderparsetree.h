@@ -36,7 +36,7 @@ namespace KIO {
 class ParseTreeBase;
 
 /** \internal */
-struct PreferencesReturn
+struct KIO_EXPORT PreferencesReturn
 {
   enum Type { PRT_DOUBLE, PRT_ERROR };
 
@@ -59,20 +59,20 @@ struct PreferencesReturn
  *         1  => Does match
  *         <0 => Error
  */
-int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
+KIO_EXPORT int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
 		     const KServiceTypeProfile::OfferList& );
 
 /**
  * @internal
  * @return 1 on success or <0 on Error
  */
-PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,
+KIO_EXPORT PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,
 				    const KServiceTypeProfile::OfferList& );
 
 /**
  * @internal
  */
-struct PreferencesMaxima
+struct KIO_EXPORT PreferencesMaxima
 {
   enum Type { PM_ERROR, PM_INVALID_INT, PM_INVALID_DOUBLE, PM_DOUBLE, PM_INT };
 
@@ -86,7 +86,7 @@ struct PreferencesMaxima
 /**
  * @internal
  */
-class ParseContext
+class KIO_EXPORT ParseContext
 {
 public:
   /**
@@ -120,7 +120,7 @@ public:
 /**
  * @internal
  */
-class ParseTreeBase : public KShared
+class KIO_EXPORT ParseTreeBase : public KShared
 {
 public:
   typedef KSharedPtr<ParseTreeBase> Ptr;
@@ -131,13 +131,13 @@ protected:
   virtual ~ParseTreeBase() { };
 };
 
-ParseTreeBase::Ptr parseConstraints( const QString& _constr );
-ParseTreeBase::Ptr parsePreferences( const QString& _prefs );
+KIO_EXPORT ParseTreeBase::Ptr parseConstraints( const QString& _constr );
+KIO_EXPORT ParseTreeBase::Ptr parsePreferences( const QString& _prefs );
 
 /**
  * @internal
  */
-class ParseTreeOR : public ParseTreeBase
+class KIO_EXPORT ParseTreeOR : public ParseTreeBase
 {
 public:
   ParseTreeOR( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
@@ -152,7 +152,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeAND : public ParseTreeBase
+class KIO_EXPORT ParseTreeAND : public ParseTreeBase
 {
 public:
   ParseTreeAND( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
@@ -167,7 +167,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeCMP : public ParseTreeBase
+class KIO_EXPORT ParseTreeCMP : public ParseTreeBase
 {
 public:
   ParseTreeCMP( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2, int _i ) { m_pLeft = _ptr1; m_pRight = _ptr2; m_cmd = _i; }
@@ -183,7 +183,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeIN : public ParseTreeBase
+class KIO_EXPORT ParseTreeIN : public ParseTreeBase
 {
 public:
   ParseTreeIN( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
@@ -198,7 +198,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeMATCH : public ParseTreeBase
+class KIO_EXPORT ParseTreeMATCH : public ParseTreeBase
 {
 public:
   ParseTreeMATCH( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
@@ -213,7 +213,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeCALC : public ParseTreeBase
+class KIO_EXPORT ParseTreeCALC : public ParseTreeBase
 {
 public:
   ParseTreeCALC( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2, int _i ) { m_pLeft = _ptr1; m_pRight = _ptr2; m_cmd = _i; }
@@ -229,7 +229,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeBRACKETS : public ParseTreeBase
+class KIO_EXPORT ParseTreeBRACKETS : public ParseTreeBase
 {
 public:
   ParseTreeBRACKETS( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
@@ -243,7 +243,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeNOT : public ParseTreeBase
+class KIO_EXPORT ParseTreeNOT : public ParseTreeBase
 {
 public:
   ParseTreeNOT( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
@@ -257,7 +257,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeEXIST : public ParseTreeBase
+class KIO_EXPORT ParseTreeEXIST : public ParseTreeBase
 {
 public:
   ParseTreeEXIST( const char *_id ) { m_id = _id; }
@@ -271,7 +271,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeID : public ParseTreeBase
+class KIO_EXPORT ParseTreeID : public ParseTreeBase
 {
 public:
   ParseTreeID( const char *arg ) { m_str = arg; }
@@ -285,7 +285,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeSTRING : public ParseTreeBase
+class KIO_EXPORT ParseTreeSTRING : public ParseTreeBase
 {
 public:
   ParseTreeSTRING( const char *arg ) { m_str = arg; }
@@ -299,7 +299,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeNUM : public ParseTreeBase
+class KIO_EXPORT ParseTreeNUM : public ParseTreeBase
 {
 public:
   ParseTreeNUM( int arg ) { m_int = arg; }
@@ -313,7 +313,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeDOUBLE : public ParseTreeBase
+class KIO_EXPORT ParseTreeDOUBLE : public ParseTreeBase
 {
 public:
   ParseTreeDOUBLE( double arg ) { m_double = arg; }
@@ -327,7 +327,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeBOOL : public ParseTreeBase
+class KIO_EXPORT ParseTreeBOOL : public ParseTreeBase
 {
 public:
   ParseTreeBOOL( bool arg ) { m_bool = arg; }
@@ -341,7 +341,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeMAX2 : public ParseTreeBase
+class KIO_EXPORT ParseTreeMAX2 : public ParseTreeBase
 {
 public:
   ParseTreeMAX2( const char *_id ) { m_strId = _id; }
@@ -355,7 +355,7 @@ protected:
 /**
  * @internal
  */
-class ParseTreeMIN2 : public ParseTreeBase
+class KIO_EXPORT ParseTreeMIN2 : public ParseTreeBase
 {
 public:
   ParseTreeMIN2( const char *_id ) { m_strId = _id; }

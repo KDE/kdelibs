@@ -22,6 +22,8 @@
 #include <qdatetime.h>
 #include <qmap.h>
 
+#include <kdelibs.h>
+
 #define kdirwatch KDirWatch::self()
 
 class KDirWatchPrivate;
@@ -58,7 +60,7 @@ class KDirWatchPrivate;
   * @short Class for watching directory and file changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
   */
-class KDirWatch : public QObject
+class KIO_EXPORT KDirWatch : public QObject
 {
   Q_OBJECT
     

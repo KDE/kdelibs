@@ -29,6 +29,8 @@
 #include <qstringlist.h>
 #include <qdict.h>
 
+#include <kdelibs.h>
+
 class KArchiveDirectory;
 class KArchiveFile;
 
@@ -37,7 +39,7 @@ class KArchiveFile;
  * @short generic class for reading/writing archives
  * @author David Faure <faure@kde.org>
  */
-class KArchive
+class KIO_EXPORT KArchive
 {
 protected:
     /**
@@ -379,7 +381,7 @@ private:
  * @see KArchiveFile
  * @see KArchiveDirectory
  */
-class KArchiveEntry
+class KIO_EXPORT KArchiveEntry
 {
 public:
     /**
@@ -474,7 +476,7 @@ private:
  * @see KArchive
  * @see KArchiveDirectory
  */
-class KArchiveFile : public KArchiveEntry
+class KIO_EXPORT KArchiveFile : public KArchiveEntry
 {
 public:
     /**
@@ -557,7 +559,7 @@ private:
  * @see KArchive
  * @see KArchiveFile
  */
-class KArchiveDirectory : public KArchiveEntry
+class KIO_EXPORT KArchiveDirectory : public KArchiveEntry
 {
 public:
     /**

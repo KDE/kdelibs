@@ -31,7 +31,7 @@ class QCString;
  * also be reimplemented by specific applications to provide dlopened in-process DCOP objects.
  * @author David Faure <faure@kde.org>
  */
-class KDCOPServiceStarter {
+class KIO_EXPORT KDCOPServiceStarter {
     friend class KStaticDeleter<KDCOPServiceStarter>;
 public:
 

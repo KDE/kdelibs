@@ -21,13 +21,18 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "previewjob.h"
+
 #include <sys/stat.h>
 #ifdef __FreeBSD__
     #include <machine/param.h>
 #endif
 #include <sys/types.h>
+
+#ifdef Q_OS_UNIX
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#endif
 
 #include <qdir.h>
 #include <qfile.h>
@@ -138,10 +143,12 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
 
 PreviewJob::~PreviewJob()
 {
+#ifdef Q_OS_UNIX
     if (d->shmaddr) {
         shmdt((char*)d->shmaddr);
         shmctl(d->shmid, IPC_RMID, 0);
     }
+#endif
     delete d;
 }
 
@@ -394,6 +401,7 @@ void PreviewJob::createThumbnail( QString pixPath )
     job->addMetaData("iconSize", QString().setNum(save ? 64 : d->iconSize));
     job->addMetaData("iconAlpha", QString().setNum(d->iconAlpha));
     job->addMetaData("plugin", d->currentItem.plugin->library());
+#ifdef Q_OS_UNIX
     if (d->shmid == -1)
     {
         if (d->shmaddr) {
@@ -416,6 +424,7 @@ void PreviewJob::createThumbnail( QString pixPath )
     }
     if (d->shmid != -1)
         job->addMetaData("shmid", QString().setNum(d->shmid));
+#endif
 }
 
 void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
@@ -425,6 +434,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
                 (d->currentItem.item->url().protocol() != "file" ||
                  !d->currentItem.item->url().directory( false ).startsWith(d->thumbRoot));
     QImage thumb;
+#ifdef Q_OS_UNIX
     if (d->shmaddr)
     {
         QDataStream str(data, IO_ReadOnly);
@@ -434,7 +444,10 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         thumb = QImage(d->shmaddr, width, height, depth, 0, 0, QImage::IgnoreEndian);
         thumb.setAlphaBuffer(alpha);
     }
-    else thumb.loadFromData(data);
+    else
+#else
+        thumb.loadFromData(data);
+#endif
     if (save)
     {
         thumb.setText("Thumb::URI", 0, d->origName);

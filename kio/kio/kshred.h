@@ -23,7 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef kshred_h
 #define kshred_h
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,6 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kio/global.h>
 
 /**
+ * @deprecated
  * Erase a file in a way that makes recovery impossible -- well, no guarentee
  * of that, but at least as difficult as reasonably possible.
  * For this, KShred write several times over the
@@ -42,7 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Andreas F. Pour <bugs@mieterra.com>
  * @author David Faure <faure@kde.org> (integration into KDE and progress signal)
  */
-class KShred : public QObject { // KDE4: remove
+class KIO_EXPORT_DEPRECATED KShred : public QObject { // KDE4: remove
 
   Q_OBJECT
 

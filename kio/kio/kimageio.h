@@ -10,6 +10,8 @@
 
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 /**
  * Interface to the KDE Image IO plugin architecture.
  *
@@ -64,7 +66,7 @@
  * @see KImageIO, QPixmap, QImage, QImageIO
  * @author Sirtaj Singh Kang
  */
-class KImageIO
+class KIO_EXPORT KImageIO
 {
 public:
   /**

@@ -35,7 +35,7 @@
  * @author Laurence Anderson <l.d.anderson@warwick.ac.uk>
  * @since 3.1
  */
-class KAr : public KArchive
+class KIO_EXPORT KAr : public KArchive
 {
 public:
     /**

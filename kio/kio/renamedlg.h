@@ -45,7 +45,7 @@ enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERW
  * @short A dialog for renaming files.
  * @since 3.1
  */
-class RenameDlg : public QDialog
+class KIO_EXPORT RenameDlg : public QDialog
 {
   Q_OBJECT
 public:
@@ -135,7 +135,7 @@ private:
    * @param mtimeDest modification time of destination file
    * @return the result
    */
-RenameDlg_Result open_RenameDlg( const QString & caption,
+KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
                                  // KDE4: make those KURLs, and use prettyURL(0, KURL::StripFileProtocol) internally.
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
