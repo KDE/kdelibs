@@ -17,6 +17,10 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+    Permission is also granted to link this program with the Qt
+    library, treating Qt like a library that normally accompanies the
+    operating system kernel, whether or not that is in fact the case.
+
     */
 
 #ifdef __cplusplus
