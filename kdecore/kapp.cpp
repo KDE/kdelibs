@@ -1470,6 +1470,14 @@ KApplication::startServiceByDesktopName( const QString& _name, const QStringList
                       _name, URLs, error, dcopService, pid);
 }
 
+int 
+KApplication::kdeinitExec( const QString& name, const QStringList &args,
+                           QString *error, int *pid )
+{
+   return startServiceInternal("kdeinit_exec(QString,QStringList)",
+	name, args, error, 0, pid);
+}
+
 
 bool KApplication::kdeFonts(QStringList &fontlist) const
 {

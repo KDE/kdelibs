@@ -382,6 +382,23 @@ public:
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
+   * Start a program via kdeinit.
+   *
+   * program name and arguments are converted to according to the 
+   * local encoding and passed as is to kdeinit.
+   *
+   * @param prog Name of the program to start
+   * @param args Arguments to pass to the program
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'pid' contains the pid of the started process.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.
+   */
+  static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
+                QString *error=0, int *pid = 0 );
+
+  /**
    * Retrieve the current KDE style object if a plugin is in use,
    *  or else NULL if a Qt internal style is being used.
    *
@@ -761,6 +778,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.179  2000/08/03 19:05:41  waba
+// WABA: Removed duplicated command line parsing from KApp.
+//
 // Revision 1.178  2000/08/01 12:12:56  hausmann
 // - install an Ice IO error handler in the constructor, deinstall it in the
 //   destructor and make the handler emit the shutdown() signal right before
