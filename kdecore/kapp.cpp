@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.104  1998/06/21 15:03:37  konold
+//
+// Martin K.: Fixed typo            Coolo does this affect the translations?? Please check.
+//
 // Revision 1.103  1998/06/15 12:49:29  kulow
 // applied patch to replace .kde with localkdedir()
 //
@@ -275,6 +279,11 @@ KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
 extern bool bAreaCalculated;
 
+static int kde_xio_errhandler( Display * )
+{
+  return kapp->xioErrhandler();
+}
+
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
 {
@@ -303,10 +312,19 @@ KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
 
 }
 
+int KApplication::xioErrhandler()
+{
+  emit shutDown();
+  exit( 1 );
+  return 0;
+}
+
 void KApplication::init()
 {
   // this is important since we fork() to launch the help (Matthias)
   fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
+  // set up the fance KDE xio error handler (Matthias)
+  XSetIOErrorHandler( kde_xio_errhandler );
 
   rootDropZone = 0L;
 

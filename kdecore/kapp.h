@@ -19,6 +19,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.51  1998/06/30 20:09:35  kalle
+// version macros:
+//
+// KDE_VERSION_STRING - don't use this for comparisons, it's only for output
+// KDE_VERSION_MAJOR (currently 0 until we ship 1.0)
+// KDE_VERSION_MINOR (currently 99, versions with same major and minor are binary and source compatible
+// KDE_VERSION_RELEASE (for different versions within the same major and minor number)
+//
 // Revision 1.50  1998/06/16 06:03:15  kalle
 // Implemented copy constructors and assignment operators or disabled them
 //
@@ -751,6 +759,10 @@ public:
   QFont generalFont;
   QFont fixedFont;
   GUIStyle applicationStyle;
+  
+  /** for internal purposes only
+    */
+  int xioErrhandler();
 
   signals:
   /** 
@@ -794,13 +806,23 @@ public:
 	* Use the @ref ::getSessionConfig KConfig object to store all
 	* your instance specific datas.
 	*
+	* Do not do any closing at this point! The user may still
+	* select "cancel" and then he wants to continue working with
+	* your application. Cleanups could be done after shutDown()
+	* (see below)
+	*
 	* Note: You should not use this if you are using the KTopLevelWidget.
 	*       Overload @ref KTopLevelWidget::saveProperties and 
 	*	@ref KTopLevelWidget::readProperties in that case.
 	*	This allows you to simply handle applications with multiple
-	*	toplevel windows.
-	*/
+	* toplevel windows.  */
   void saveYourself();
+
+  /** Your application is killed. Either by kwm's killwindow function,
+	* xkill or (the usual case) by KDE's logout.  
+	*/
+  void shutDown();
+
 
 private:
   // Disallow assignment and copy-construction is already done in base class
