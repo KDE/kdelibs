@@ -237,18 +237,25 @@ KTempFile::close()
 
    if (mStream)
    {
+      result = ferror(mStream);
+      if (result)
+         mError = ENOSPC; // Assume disk full.
+
       result = fclose(mStream);
       mStream = 0;
       mFd = -1;
+      if (result != 0)
+         mError = errno;
    }
+
+
    if (mFd >= 0)
    {
       result = ::close(mFd);
       mFd = -1;
+      if (result != 0)
+         mError = errno;
    }
-
-   if (result != 0)
-      mError = errno;
 
    bOpen = false;
    return (mError == 0);
