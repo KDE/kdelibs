@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -38,9 +38,27 @@ namespace KPAC
         *m_helper << "kpac_dhcp_helper";
 
         char buf[ 256 ];
-        gethostname( buf, sizeof( buf ) );
-        buf[ 255 ] = 0;
-        m_hostname = QString::fromLocal8Bit( buf );
+
+        if (gethostname( buf, sizeof( buf ) ) == 0)
+        {
+            buf[ 255 ] = 0;
+            m_hostname = QString::fromLocal8Bit( buf );
+
+            // Need to ensure that the hostname is fully qualified
+            if (getdomainname (buf, sizeof( buf ) ) == 0)
+            {
+                buf[255] = 0;
+                QString domainname = QString::fromLocal8Bit( buf );
+
+                if (!m_hostname.endsWith(domainname))
+                {
+                  if (domainname[0] != '.' || m_hostname[m_hostname.length()-1] != '.')
+                      m_hostname += ".";
+
+                  m_hostname += domainname;
+                }
+            }
+        }
 
         if ( !m_helper->start() )
             QTimer::singleShot( 0, this, SLOT( failed() ) );
