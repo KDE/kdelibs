@@ -168,11 +168,6 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
 
     /**
-     * Reimplemented to make the wheel sroll horizontally
-     */
-    virtual void contentsWheelEvent( QWheelEvent * );
-
-    /**
      * Reimplemented to remove an eventual tooltip
      */
     virtual void hideEvent( QHideEvent * );
