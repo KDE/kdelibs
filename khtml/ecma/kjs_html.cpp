@@ -47,6 +47,7 @@
 #include "kjs_window.h"
 
 #include <htmltags.h>
+#include <kdebug.h>
 
 using namespace KJS;
 
@@ -175,7 +176,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   if (p == "title")
     return getString(doc.title());
   else if (p == "referrer")
-    return getString(doc.referrer());
+    return String(doc.referrer());
   else if (p == "domain")
     return getString(doc.domain());
   else if (p == "URL")
