@@ -494,7 +494,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
   }
   else
   {
-    kdDebug() << "illlegal shape" << endl;
+    kdDebug() << "KJanusWidget::addPageWidget: can only add a page in Tabbed, TreeList or IconList modes" << endl;
   }
 
 }
