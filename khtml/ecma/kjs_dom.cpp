@@ -135,25 +135,6 @@ KJSO DOMNode::tryGet(const UString &p) const
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Normalize);
 //  else if (p == "supports") // new for DOM2 - not yet in khtml
 //    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
-  // no DOM standard, found in IE only
-  else if (p == "offsetLeft")
-    result = rend ? static_cast<KJSO>(Number(rend->xPos())) : KJSO(Undefined());
-  else if (p == "offsetTop")
-    result = rend ? static_cast<KJSO>(Number(rend->yPos())) : KJSO(Undefined());
-  else if (p == "offsetWidth")
-    result = rend ? static_cast<KJSO>(Number(rend->width()) ) : KJSO(Undefined());
-  else if (p == "offsetHeight")
-    result = rend ? static_cast<KJSO>(Number(rend->height() ) ) : KJSO(Undefined());
-  else if (p == "offsetParent")
-    result = getDOMNode(node.parentNode()); // not necessarily correct
-  else if (p == "clientWidth")
-    result = rend ? static_cast<KJSO>(Number(rend->contentWidth())) : KJSO(Undefined());
-  else if (p == "clientHeight")
-    result = rend ? static_cast<KJSO>(Number(rend->contentHeight())) : KJSO(Undefined());
-  else if (p == "scrollLeft")
-    result = rend ? static_cast<KJSO>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
-  else if (p == "scrollTop")
-    result = rend ? static_cast<KJSO>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
   else if (p == "addEventListener") // from the EventTarget interface
     result = new DOMNodeFunc(node, DOMNodeFunc::AddEventListener);
   else if (p == "removeEventListener") // from the EventTarget interface
@@ -206,8 +187,36 @@ KJSO DOMNode::tryGet(const UString &p) const
     result = getListener(DOM::EventImpl::SUBMIT_EVENT);
   else if (p == "onUnload" || p == "onunload")
     result = getListener(DOM::EventImpl::UNLOAD_EVENT);
-  else
-    result = Imp::get(p);
+  else {
+    // no DOM standard, found in IE only
+
+    // make sure our rendering is up to date before
+    // we allow a query on these attributes.
+    // ### how often does it fall into the final else case ?
+    if ( node.handle() && node.handle()->ownerDocument() )
+      node.handle()->ownerDocument()->updateRendering();
+
+    if (p == "offsetLeft")
+      result = rend ? static_cast<KJSO>(Number(rend->xPos())) : KJSO(Undefined());
+    else if (p == "offsetTop")
+      result = rend ? static_cast<KJSO>(Number(rend->yPos())) : KJSO(Undefined());
+    else if (p == "offsetWidth")
+      result = rend ? static_cast<KJSO>(Number(rend->width()) ) : KJSO(Undefined());
+    else if (p == "offsetHeight")
+      result = rend ? static_cast<KJSO>(Number(rend->height() ) ) : KJSO(Undefined());
+    else if (p == "offsetParent")
+      result = getDOMNode(node.parentNode()); // not necessarily correct
+    else if (p == "clientWidth")
+      result = rend ? static_cast<KJSO>(Number(rend->contentWidth())) : KJSO(Undefined());
+    else if (p == "clientHeight")
+      result = rend ? static_cast<KJSO>(Number(rend->contentHeight())) : KJSO(Undefined());
+    else if (p == "scrollLeft")
+      result = rend ? static_cast<KJSO>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : KJSO(Undefined());
+    else if (p == "scrollTop")
+      result = rend ? static_cast<KJSO>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : KJSO(Undefined());
+    else
+      result = Imp::get(p);
+  }
 
   return result;
 }
