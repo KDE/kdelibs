@@ -74,7 +74,7 @@ KUniqueApplication::addCmdLineOptions()
   KCmdLineArgs::addCmdLineOptions(kunique_options, 0, "kuniqueapp", "kde" );
 }
 
-static int my_system (const char *command) {
+static int kunique_app_my_system (const char *command) {
    int pid, status;
 
    QApplication::flushX();
@@ -151,7 +151,7 @@ KUniqueApplication::start()
            QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
            if (!srv.isEmpty())
            {
-              my_system(QFile::encodeName(srv));
+              kunique_app_my_system(QFile::encodeName(srv));
               regName = dc->registerAs(appName, false);
            }
            if (regName.isEmpty())
