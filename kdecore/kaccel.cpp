@@ -332,6 +332,10 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 			name=i18n("Help") ;
 			key = "F1";
 			break;
+        case TextCompletion:
+            name=i18n("Text Completion");
+            key = "End";
+            break;
 		default:
 			return false;
 			break;
@@ -565,6 +569,9 @@ QString KAccel::stdAction( StdAccel id ) {
 		case Help:
 			action = "Help";
 			break;
+        case TextCompletion:
+            action = "TextCompletion";
+            break;
 		default:
 			return QString::null;
 			break;
