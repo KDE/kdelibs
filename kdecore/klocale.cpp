@@ -1056,7 +1056,7 @@ QString KLocale::formatNumber(double num, int precision) const
   return res;
 }
 
-QString KLocale::formatNumber(long num) const
+QString KLocale::formatLong(long num) const
 {
   return formatNumber((double)num, 0);
 }

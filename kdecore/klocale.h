@@ -381,7 +381,7 @@ public:
    * @return The number as a localized string
    * @since 3.2
    */
-  QString formatNumber(long num) const;
+  QString formatLong(long num) const;
 
   /**
    * Use this to determine whether nouns are declined in
