@@ -200,6 +200,15 @@ public:
      */
     virtual void displayFinalDialog() const;
 
+    /**
+     * Return (or create) the dialog that shows the "find next?" prompt.
+     * Usually you don't need to call this.
+     * One case where it can be useful, is when the user selects the "Find"
+     * menu item while a find operation is under way. In that case, the
+     * program may want to call setActiveWindow() on that dialog.
+     */
+    KDialogBase* findNextDialog( bool create = false );
+
 signals:
 
     /**
@@ -228,7 +237,6 @@ protected slots:
 
 private:
     void init( const QString& pattern );
-    KDialogBase* dialog();
 
     static bool isInWord( QChar ch );
     static bool isWholeWords( const QString &text, int starts, int matchedLength );

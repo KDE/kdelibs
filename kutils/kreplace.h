@@ -127,6 +127,15 @@ public:
     Result replace();
 
     /**
+     * Return (or create) the dialog that shows the "find next?" prompt.
+     * Usually you don't need to call this.
+     * One case where it can be useful, is when the user selects the "Find"
+     * menu item while a find operation is under way. In that case, the
+     * program may want to call setActiveWindow() on that dialog.
+     */
+    KDialogBase* replaceNextDialog( bool create = false );
+
+    /**
      * Search the given string, replaces with the given replacement string,
      * and returns whether a match was found. If one is,
      * the replacement string length is also returned.
