@@ -2062,3 +2062,6 @@ int QFontSizeAction::plug( QWidget* widget )
 
     return QSelectAction::plug( widget );
 }
+
+template class QList<QAction>;
+
