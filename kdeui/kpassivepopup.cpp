@@ -153,7 +153,6 @@ QRect KPassivePopup::defaultArea() const
                       -1, false );
     info.activate();
     NETRect workArea = info.workArea( info.currentDesktop() );
-    qDebug("x: %i, y: %i", workArea.pos.x, workArea.pos.y);
     QRect r;
     r.setRect( workArea.pos.x, workArea.pos.y, 0, 0 ); // top left
     return r;
