@@ -671,6 +671,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     	distmax=0;	
 
     bool hasUsableCols=false;
+    bool hasRelPer=false;
     int tmax=distmax;
     int tmin=distmin;
     int c;
@@ -679,13 +680,15 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     {
     	if (colType[c]<=type)
 	    hasUsableCols=true;
+	if (colType[c]==Relative || colType[c]==Percent)
+	    hasRelPer=true;
     }
 
     if (hasUsableCols)
     {
     	// spread span maxWidth evenly
 	c=col;
-	while(tmax)
+	while(tmax && !hasRelPer)
 	{
 	    if (colType[c]<=type)
 	    {
@@ -703,7 +706,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	}
 	
 
-    	// spread span minWidth to columns where maxWidth allows
+    	// spread span minWidth 
 
     	LengthType tt = Variable;
 	bool out=false;
