@@ -38,7 +38,7 @@ KCardFactory::KCardFactory() {
 
   loadModules();
   
-   _modulesMap::Iterator i;
+//   _modulesMap::Iterator i;
   
   
 //   for ( i=_modules.begin();i!=_modules.end();++i){
@@ -72,7 +72,7 @@ KCardFactory *KCardFactory::self() {
 } 
  
  
-KCardImplementation * KCardFactory::getCard (KCardReader * selReader,  
+KCardImplementation * KCardFactory::getCard (KCardReader * /*selReader*/,  
 					     KCardType selcardType,  
 					     KCardATR atr){ 
  

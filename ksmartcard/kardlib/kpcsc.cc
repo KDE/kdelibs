@@ -111,7 +111,7 @@ long rc;
 
 	
 	
-	for (int i=0;i<readers-1;i++){
+	for (unsigned int i=0; i < readers - 1; i++){
 
 		if (rstr[i]=='\0')
 		 { 
