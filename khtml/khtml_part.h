@@ -853,7 +853,7 @@ private:
   /**
    * @internal
    */
-  bool checkLinkSecurity(KURL linkURL);
+  bool checkLinkSecurity(const KURL &linkURL);
 
   /**
    * @internal

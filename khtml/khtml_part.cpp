@@ -3692,13 +3692,16 @@ void KHTMLPart::selectAll()
   emitSelectionChanged();
 }
 
-bool KHTMLPart::checkLinkSecurity(KURL linkURL)
+bool KHTMLPart::checkLinkSecurity(const KURL &linkURL)
 {
   // Security check on the link.
   // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
-  if ( !linkURL.protocol().isNull() && !m_url.protocol().isNull() &&
-       ( linkURL.protocol().lower() == "cgi" || linkURL.protocol().lower() == "file" ) &&
-       m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
+  QString linkProto = linkURL.protocol().lower();
+  QString proto = m_url.protocol().lower();
+
+  if ( !linkProto.isEmpty() && !proto.isEmpty() &&
+       ( linkProto == "cgi" || linkProto == "file" ) &&
+       proto != "file" && proto != "cgi" )
   {
     KMessageBox::error( 0,
                         i18n( "This page is untrusted\nbut it contains a link to your local file system."),
