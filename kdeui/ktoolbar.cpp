@@ -1982,8 +1982,8 @@ void KToolBar::removeWidgetInternal( QWidget * w )
     QMap< QWidget*, int >::Iterator it = widget2id.find( w );
     if ( it == widget2id.end() )
         return;
-    widget2id.remove( it );
     id2widget.remove( *it );
+    widget2id.remove( it );
 }
 
 void KToolBar::virtual_hook( int, void* )
