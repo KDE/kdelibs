@@ -339,11 +339,11 @@ public:
      * Executes a remote process via the fish ioslave in a synchrounous way.
      *
      * @param url The remote machine where the command should be executed.
-     *            e.g. fish://someuser@somehost:sshport/
+     *            e.g. fish://someuser\@somehost:sshport/
      *            some special cases exist.
-     *            fish://someuser@localhost/
+     *            fish://someuser\@localhost/
      *            will use su instead of ssh to connect and execute the command.
-     *            fish://someuser@localhost:port/
+     *            fish://someuser\@localhost:port/
      *            will use ssh to connect and execute the command.
      * @param command The command to be executed.
      * @param window main window associated with this job. This is used to

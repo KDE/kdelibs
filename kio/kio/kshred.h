@@ -116,9 +116,9 @@ class KShred : public QObject {
 
         /**
          * Shows a message in the progress dialog
-	 * @param the message to display
+	 * @param message the message to display
          */
-        void infoMessage(const QString &);
+        void infoMessage(const QString & message);
 
     private:
 	/**

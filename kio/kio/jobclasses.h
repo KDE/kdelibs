@@ -1072,7 +1072,7 @@ namespace KIO {
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
-	 * @param data_size the processed size in bytes
+	 * @param size the processed size in bytes
          */
         void slotProcessedSize( KIO::Job *job, KIO::filesize_t size );
         /**
@@ -1279,7 +1279,7 @@ namespace KIO {
         /**
 	 * Emitted when the toal number of direcotries is known.
 	 * @param job the job that emitted this signal
-	 * @param files the total number of directories
+	 * @param dirs the total number of directories
 	 */ 
         void totalDirs( KIO::Job *job, unsigned long dirs );
 
@@ -1301,7 +1301,7 @@ namespace KIO {
         /**
 	 * Sends the number of processed directories.
 	 * @param job the job that emitted this signal
-	 * @param files the number of processed dirs
+	 * @param dirs the number of processed dirs
 	 */ 
         void processedDirs( KIO::Job *job, unsigned long dirs );
 
@@ -1476,7 +1476,7 @@ namespace KIO {
         /**
 	 * Emitted when the toal number of direcotries is known.
 	 * @param job the job that emitted this signal
-	 * @param files the total number of directories
+	 * @param dirs the total number of directories
 	 */ 
         void totalDirs( KIO::Job *job, unsigned long dirs );
 
@@ -1489,7 +1489,7 @@ namespace KIO {
         /**
 	 * Sends the number of processed directories.
 	 * @param job the job that emitted this signal
-	 * @param files the number of processed dirs
+	 * @param dirs the number of processed dirs
 	 */ 
         void processedDirs( KIO::Job *job, unsigned long dirs );
 
@@ -1536,7 +1536,7 @@ namespace KIO {
         bool m_shred;
         QTimer *m_reportTimer;
     protected:
-        /// \internal
+        /** \internal */
 	virtual void virtual_hook( int id, void* data );
     private:
 	class DeleteJobPrivate* d;

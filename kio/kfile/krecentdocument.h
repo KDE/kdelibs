@@ -81,8 +81,7 @@ public:
      * Add a new item to the Recent Document menu. Calls add( url ).
      *
      * @param documentStr The full path to the document or URL to add.
-     *
-     * @param Set to @p true if @p documentStr is an URL and not a local file path.
+     * @param isURL Set to @p true if @p documentStr is an URL and not a local file path.
      */
     static void add(const QString &documentStr, bool isURL = false);
 

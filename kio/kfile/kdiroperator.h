@@ -194,8 +194,8 @@ class KDirOperator : public QWidget
 
     /**
      * Sets a new url to list.
-     * @param clearforward specifies whether the "forward" history should be
-     * cleared.
+     * @param clearforward specifies whether the "forward" history should be cleared.
+     * @param url the URL to set
      */
 	// ### KDE4: make virtual
     void setURL(const KURL& url, bool clearforward);
@@ -483,6 +483,7 @@ class KDirOperator : public QWidget
     /**
      * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
      *
+     * @param items the list of items to be deleted
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */

@@ -150,9 +150,10 @@ protected:
      *
      * This functions attempts to discover the appropriate port.
      *
-     * @param port
+     * @param _port the port to try, if it works, it is returned
+     * @return the default port if the given port doesn't work
      */
-    unsigned short int port(unsigned short int);
+    unsigned short int port(unsigned short int _port);
 
     /**
      * Performs the initial TCP connection stuff and/or

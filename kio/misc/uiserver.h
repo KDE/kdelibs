@@ -226,7 +226,7 @@ k_dcop:
 
   /**
    * Signal a new job
-   * @param the DCOP application id of the job's parent application
+   * @param appId the DCOP application id of the job's parent application
    * @see KIO::Observer::newJob
    * @param showProgress whether to popup the progress for the job.
    *   Usually true, but may be false when we use kio_uiserver for

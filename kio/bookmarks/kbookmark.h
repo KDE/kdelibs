@@ -205,7 +205,7 @@ public:
     /**
      * Create a new bookmark folder, as the last child of this group
      * @param text for the folder. If empty, the user will be queried for it.
-     * @emitSignal iff true emit KBookmarkNotifier signal
+     * @param emitSignal if true emit KBookmarkNotifier signal
      */
     KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString::null, bool emitSignal = true );
     /**
@@ -216,7 +216,7 @@ public:
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      * if this bookmark was added interactively.
-     * @emitSignal iff true emit KBookmarkNotifier signal
+     * @param emitSignal iff true emit KBookmarkNotifier signal
      */
     KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString::null, bool emitSignal = true );
 

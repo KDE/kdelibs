@@ -192,6 +192,7 @@ public slots:
    */
   virtual void slotSpeed( KIO::Job* job, unsigned long speed ) {
     Q_UNUSED(job);Q_UNUSED(speed);}
+
   /**
    * Called to set the percentage.
    * @param job the KIO::Job

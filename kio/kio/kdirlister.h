@@ -255,7 +255,7 @@ public:
    * "*.cpp *.h".
    * Note: the direcory is not automatically reloaded.
    *
-   * @param filer the new filter, QString::null to disable filtering
+   * @param filter the new filter, QString::null to disable filtering
    * @see #matchesFilter
    */
   virtual void setNameFilter( const QString &filter );
@@ -437,7 +437,7 @@ signals:
   /**
    * Signal a redirection.
    * Only emitted if there's just one directory to list, i.e. most
-   * probably @ref openURL() has been called with @p_keep == false.
+   * probably openURL() has been called with @p _keep == @p false.
    * @param _url the new URL
    */
   void redirection( const KURL& _url );
@@ -558,11 +558,11 @@ protected:
   virtual bool matchesMimeFilter( const KFileItem * ) const;
 
   /**
-   * Called by the public @ref matchesFilter() to do the
+   * Called by the public matchesFilter() to do the
    * actual filtering. Those methods may be reimplemented to customize
    * filtering.
    * @param name the name to filter
-   * @param filers a list of regular expressions for filtering
+   * @param filters a list of regular expressions for filtering
    */
   virtual bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
 

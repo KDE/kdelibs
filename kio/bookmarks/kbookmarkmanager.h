@@ -32,6 +32,7 @@
  * (http://pyxml.sourceforge.net/topics/xbel/)
  *
  * A sample file looks like this :
+ * \code
  * <xbel>
  *   <bookmark href="http://developer.kde.org"><title>Developer Web Site</title></bookmark>
  *   <folder folded="no">
@@ -45,6 +46,7 @@
  *     </folder>
  *   </folder>
  * </xbel>
+ * \endcode
  */
 class KBookmarkManager : public QObject, public DCOPObject
 {

@@ -146,7 +146,7 @@ public:
    * is not known yet), based on a template. Special constructor for
    * "File / New" in file-manager applications.
    *
-   * @param _templUrl template used for reading only
+   * @param _tempUrl template used for reading only
    * @param _currentDir directory where the file will be written to
    * @param _defaultName something to put in the name field,
    * like mimetype.desktop
@@ -239,7 +239,7 @@ public:
    * Updates the item url (either called by rename or because
    * a global apps/mimelnk desktop file is being saved)
    * Can only be called if the dialog applies to a single file/URL.
-   * @param _name new URL
+   * @param _newUrl the new URL
    */
   void updateUrl( const KURL& _newUrl );
 

@@ -274,8 +274,9 @@ public:
      * of items available.
      */
     virtual QSize sizeHint() const;
+
     /**
-     * @reimpl
+     * @returns a proper minimum size (reimplemented)
      */
     virtual QSize minimumSizeHint() const;
 
