@@ -37,6 +37,7 @@
 #include "xml/dom_nodeimpl.h"
 
 #include "misc/loader.h"
+#include "misc/helper.h"
 
 #include <qbitmap.h>
 #include <qimage.h>
@@ -88,75 +89,6 @@ void InlineTextBox::operator delete(void* ptr, size_t sz)
     *(size_t *)ptr = sz;
 }
 
-/** checks whether the given colors have enough contrast
- * @returns @p true if contrast is ok.
- */
-inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
-{
-// New version from Germain Garand, better suited for contrast measurement
-#if 1
-
-#define HUE_DISTANCE 40
-#define CONTRAST_DISTANCE 10
-
-  int h1, s1, v1, h2, s2, v2;
-  int hdist = -CONTRAST_DISTANCE;
-  c1.hsv(&h1,&s1,&v1);
-  c2.hsv(&h2,&s2,&v2);
-  if(h1!=-1 && h2!=-1) { // grey values have no hue
-      hdist = kAbs(h1-h2);
-      if (hdist > 180) hdist = 360-hdist;
-      if (hdist < HUE_DISTANCE) {
-          hdist -= HUE_DISTANCE;
-          // see if they are high key or low key colours
-          bool hk1 = h1>=45 && h1<=225;
-          bool hk2 = h2>=45 && h2<=225;
-          if (hk1 && hk2)
-              hdist = (5*hdist)/3;
-          else if (!hk1 && !hk2)
-              hdist = (7*hdist)/4;
-      }
-      hdist = kMin(hdist, HUE_DISTANCE*2);
-  }
-  return hdist + (kAbs(s1-s2)*128)/(160+kMin(s1,s2)) + kAbs(v1-v2) > CONTRAST_DISTANCE;
-
-#undef CONTRAST_DISTANCE
-#undef HUE_DISTANCE
-
-#else	// orginal fast but primitive version by me (LS)
-
-// ### arbitrary value, to be adapted if necessary (LS)
-#define CONTRAST_DISTANCE 32
-
-  if (kAbs(c1.red() - c2.red()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.green() - c2.green()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.blue() - c2.blue()) > CONTRAST_DISTANCE) return true;
-
-  return false;
-
-#undef CONTRAST_DISTANCE
-
-#endif
-}
-
-/** finds out the background color of an element
- * @param obj render object
- * @return the background color. It is guaranteed that a valid color is returned.
- */
-inline QColor retrieveBackgroundColor(const RenderObject *obj)
-{
-  QColor result;
-  while (!obj->isCanvas()) {
-    result = obj->style()->backgroundColor();
-    if (result.isValid()) return result;
-
-    obj = obj->containingBlock();
-  }/*wend*/
-
-  // everything transparent? Use base then.
-  return obj->style()->palette().active().base();
-}
-
 /** returns the proper ::selection pseudo style for the given element
  * @return the style or 0 if no ::selection pseudo applies.
  */
@@ -193,10 +125,10 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
         hc = grp.highlightedText();
         hbg = grp.highlight();
 	// ### should be at most retrieved once per render text
-	QColor bg = retrieveBackgroundColor(text);
+	QColor bg = khtml::retrieveBackgroundColor(text);
 	// It may happen that the contrast is -- well -- virtually non existent.
 	// In this case, simply invert the colors
-	if (!hasSufficientContrast(hbg, bg)) {
+	if (!khtml::hasSufficientContrast(hbg, bg)) {
 	    hc = QColor(0xff-hc.red(),0xff-hc.green(),0xff-hc.blue());
 	    hbg = QColor(0xff-hbg.red(),0xff-hbg.green(),0xff-hbg.blue());
 	}/*end if*/

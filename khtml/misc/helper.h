@@ -27,13 +27,19 @@ class QPainter;
 #include <qfontmetrics.h>
 #include <qfont.h>
 
+
+
 namespace khtml
 {
+    class RenderObject;
      const QRgb transparentColor = 0x00000000;
      const QRgb invertedColor    = 0x00000002;
 
     extern QPainter *printpainter;
     void setPrintPainter( QPainter *printer );
+    
+    bool hasSufficientContrast(const QColor &c1, const QColor &c2);
+    QColor retrieveBackgroundColor(const RenderObject *obj);
 
     //enumerator for findSelectionNode
     enum FindSelectionResult { SelectionPointBefore,

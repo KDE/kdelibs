@@ -241,7 +241,10 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     // paint frame around image as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
         static QPixmap *loadingIcon;
-	paintInfo.p->setPen(QPen(Qt::gray, 1));
+        QColor bg = khtml::retrieveBackgroundColor(this);
+        QColor fg = khtml::hasSufficientContrast(Qt::gray, bg) ? Qt::gray :
+                    (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);    
+	paintInfo.p->setPen(QPen(fg, 1));
 	paintInfo.p->setBrush( Qt::NoBrush );
 	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
         if (!(m_width <= 5 || m_height <= 5)) {
