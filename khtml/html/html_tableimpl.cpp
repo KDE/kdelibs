@@ -454,19 +454,14 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             removeCSSProperty(CSS_PROP_BORDER_SPACING);
         break;
     case ATTR_CELLPADDING:
-        if (!attr->value().isEmpty()) {
-            addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
-            addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
+        if (!attr->value().isEmpty())
 	    padding = kMax( 0, attr->value().toInt() );
-        }
-        else {
-            removeCSSProperty(CSS_PROP_PADDING_TOP);
-            removeCSSProperty(CSS_PROP_PADDING_LEFT);
-            removeCSSProperty(CSS_PROP_PADDING_BOTTOM);
-            removeCSSProperty(CSS_PROP_PADDING_RIGHT);
+        else
 	    padding = 1;
+        if (m_render && m_render->isTable()) {
+            static_cast<RenderTable *>(m_render)->setCellPadding(padding);
+	    if (!m_render->needsLayout())
+	        m_render->setNeedsLayout(true);
         }
         break;
     case ATTR_COLS:

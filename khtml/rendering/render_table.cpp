@@ -295,8 +295,8 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
-    int bpTop = borderTop();
-    int bpBottom = borderBottom();
+    int bpTop = borderTop() + (collapseBorders() ? 0 : paddingTop());
+    int bpBottom = borderBottom() + (collapseBorders() ? 0 : paddingBottom());
 
     m_height += bpTop;
 
@@ -326,6 +326,8 @@ void RenderTable::layout()
         }
     }
     int bl = borderLeft();
+    if (!collapseBorders())
+        bl += paddingLeft();
 
     // position the table sections
     if ( head ) {
@@ -1238,7 +1240,7 @@ int RenderTableSection::layoutRows( int toAdd )
     if (markedForRepaint()) {
         repaintDuringLayout();
         setMarkedForRepaint(false);
-    }                         
+    }
 
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
@@ -1372,7 +1374,7 @@ int RenderTableSection::layoutRows( int toAdd )
                                                    cell->borderBottom() - cell->paddingBottom()));
                 cell->layoutIfNeeded();
 
-            } 
+            }
             {
 #ifdef DEBUG_LAYOUT
 		kdDebug( 6040 ) << "setting position " << r << "/" << c << ": "
@@ -1446,7 +1448,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 
     tx += m_x;
     ty += m_y;
-    
+
     if (pI.phase == PaintActionOutline)
         paintOutline(pI.p, tx, ty, width(), height(), style());
 
@@ -1455,7 +1457,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     int cbsw21 = cbs ? (cbs->width()+1)/2 : 0;
 
     RenderTableRow *trow = firstTableRow(firstChild());
-    
+
     int x = pI.r.x(), y = pI.r.y(), w = pI.r.width(), h = pI.r.height();
     // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
@@ -1490,7 +1492,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 	        int height = rowPos[r+1] - rowPos[r] - table()->borderVSpacing();
 	        trow->paintRow(pI, tx, ty + rowPos[r], width(), height);
 	    }
-	
+
 	    unsigned int c = startcol;
 	    // since a cell can be -1 (indicating a colspan) we might have to search backwards to include it
 	    while ( c && cellAt( r, c ) == (RenderTableCell *)-1 )
@@ -1788,7 +1790,7 @@ void RenderTableRow::layout()
     KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
-	
+
     while( child ) {
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
@@ -2297,7 +2299,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     if (pI.phase == PaintActionOutline) {
         paintOutline( pI.p, _tx, _ty, width(), height() + borderTopExtra() + borderBottomExtra(), style());
     }
-    
+
     if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
         int w = width();
         int h = height() + borderTopExtra() + borderBottomExtra();

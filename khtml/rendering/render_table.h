@@ -160,9 +160,10 @@ public:
 	return c;
     }
 
-    int bordersAndSpacing() const {
-	return borderLeft() + borderRight() + (numEffCols()+1) * borderHSpacing();
-    }
+    int bordersPaddingAndSpacing() const {
+	return borderLeft() + borderRight() +
+               (collapseBorders() ? 0 : (paddingLeft() + paddingRight() + (numEffCols()+1) * borderHSpacing()));
+     }
 
     RenderTableCol *colElement( int col );
 
@@ -227,7 +228,7 @@ public:
 
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
-	
+
 	virtual short width() const;
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
@@ -280,7 +281,7 @@ public:
     signed short cRow : 16;
     ushort cCol : 15;
     bool needCellRecalc : 1;
-	
+
     void recalcCells();
 protected:
     void ensureRows( int numRows );

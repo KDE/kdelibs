@@ -1,3 +1,11 @@
+2005-03-04  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge table padding from WebCore
+
+        * html/html_tableimpl.cpp: CELLPADDING should not set normal padding
+        * rendering/render_table.cpp: Respect padding
+        * rendering/render_table.h: bordersAndSpacing() -> bordersPaddingAndSpacing()
+
 2005-03-04  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren): percent width
@@ -14,7 +22,7 @@
 
         * ecma/kjs_dom.cpp (getValueProperty/putValueProperty):
         Mozilla/IE strict compatibility: document.documentElement.scroll{Top,Left}
-        concern the canvas, not the root block. 
+        concern the canvas, not the root block.
         Cf. http://www.quirksmode.org/viewport/compatibility.html
 
 2005-03-01  Allan Sandfeld Jensen <kde@carewolf.com>
