@@ -155,7 +155,7 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        kdDebug() << "ERR_DIR_ALREADY_EXIST" << endl;
+        kdDebug(7101) << "ERR_DIR_ALREADY_EXIST" << endl;
         error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
         return;
     }
@@ -898,7 +898,7 @@ void FileProtocol::stat( const KURL & url )
 
     QString sDetails = metaData(QString::fromLatin1("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-    kdDebug() << "FileProtocol::stat details=" << details << endl;
+    kdDebug(7101) << "FileProtocol::stat details=" << details << endl;
 
     UDSEntry entry;
     if ( !createUDSEntry( url.fileName(), _path, entry, details ) )
