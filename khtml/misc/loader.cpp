@@ -342,8 +342,8 @@ public:
 
     int readyToSend()
     {
-        if(eof && pos == buffer.size())
-            return -1;
+       if(eof && pos == buffer.size())
+           return -1;
 
         return  buffer.size() - pos;
     }
@@ -576,7 +576,7 @@ const QPixmap &CachedImage::pixmap( ) const
 
     if(m)
     {
-        if(m->framePixmap().size() != m->getValidRect().size() && m->getValidRect().size().isValid())
+        if(m->framePixmap().size() != m->getValidRect().size())
         {
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
@@ -679,7 +679,7 @@ void CachedImage::movieStatus(int status)
 
             // monochrome alphamasked images are usually about 10000 times
             // faster to draw, so this is worth the hack
-            if (p && monochrome && p->depth() > 1 )
+            if (p && monochrome && p->depth() > 1)
             {
                 QPixmap* pix = new QPixmap;
                 pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
@@ -702,14 +702,14 @@ void CachedImage::movieStatus(int status)
         qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
                pixmap().size().width(), pixmap().size().height());
 #endif
-            do_notify(pixmap(), valid_rect());
+        do_notify(pixmap(), valid_rect());
     }
 #endif
 }
 
 void CachedImage::movieResize(const QSize& /*s*/)
 {
-//    do_notify(m->framePixmap(), QRect());
+    do_notify(m->framePixmap(), QRect());
 }
 
 void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
@@ -757,6 +757,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
     {
         // don't attempt incremental loading if we have all the data already
         assert(!eof);
+
         formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
 
         typeChecked = true;
@@ -1085,10 +1086,13 @@ void Loader::slotFinished( KIO::Job* job )
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
 #ifdef LOADER_DEBUG
-      kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << " expires " << ctime(&expireDate) << endl;
+      kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << endl;
 #endif
       r->object->setExpireDate( expireDate );
   }
+
+  if ( r->object->type() == CachedObject::Image )
+      static_cast<CachedImage*>( r->object )->setSuggestedFilename( j->queryMetaData( "content-disposition" ) );
 
   r->object->finish();
 
