@@ -86,11 +86,11 @@ public:
 	{ return pInfoCombo->currentItem(); }
   void setInfoFile( const QString& pFileName )
 	{ pInfoFile->setText( pFileName ); }
-  const QString infoFile() const
+  QString infoFile() const
 	{ return pInfoFile->text(); }
   void setInfoShow( const QString& pShowString )
 	{ pInfoShow->setText( pShowString ); }
-  const QString infoShow() const
+  QString infoShow() const
 	{ return pInfoShow->text(); }
   void setWarnOutput( int n )
 	{ pWarnCombo->setCurrentItem( n ); }
@@ -98,11 +98,11 @@ public:
 	{ return pWarnCombo->currentItem(); }
   void setWarnFile( const QString& pFileName )
 	{ pWarnFile->setText( pFileName ); }
-  const QString warnFile() const
+  QString warnFile() const
 	{ return pWarnFile->text(); }
   void setWarnShow( const QString& pShowString )
 	{ pWarnShow->setText( pShowString ); }
-  const QString warnShow() const
+  QString warnShow() const
 	{ return pWarnShow->text(); }
   void setErrorOutput( int n )
 	{ pErrorCombo->setCurrentItem( n ); }
@@ -110,11 +110,11 @@ public:
 	{ return pErrorCombo->currentItem(); }
   void setErrorFile( const QString& pFileName )
 	{ pErrorFile->setText( pFileName ); }
-  const QString errorFile() const
+  QString errorFile() const
 	{ return pErrorFile->text(); }
   void setErrorShow( const QString& pShowString )
 	{ pErrorShow->setText( pShowString ); }
-  const QString errorShow() const
+  QString errorShow() const
 	{ return pErrorShow->text(); }
   void setFatalOutput( int n )
 	{ pFatalCombo->setCurrentItem( n ); }
@@ -122,11 +122,11 @@ public:
 	{ return pFatalCombo->currentItem(); }
   void setFatalFile( const QString& pFileName )
 	{ pFatalFile->setText( pFileName ); }
-  const QString fatalFile() const
+  QString fatalFile() const
 	{ return pFatalFile->text(); }
   void setFatalShow( const QString& pShowString )
 	{ pFatalShow->setText( pShowString ); }
-  const QString fatalShow() const
+  QString fatalShow() const
 	{ return pFatalShow->text(); }
   void setAbortFatal( bool bAbort )
 	{ pAbortFatal->setChecked( bAbort ); }

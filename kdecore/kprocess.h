@@ -105,7 +105,7 @@
   
   bool closeStdin();
   -- Closes the child process's stdin (which causes it to see a "feof(stdin)")
-  Returns FALSE if you try to close stdin for a process that has been started
+  Returns false if you try to close stdin for a process that has been started
   without a communication channel to stdin.
   
   QT signals:
@@ -162,7 +162,7 @@ public:
 	 "operator<<" instead of "setExecutable".
 
 	 Sets the executable to be started with this KProcess object.
-	 Returns FALSE if the process is currently running (in that
+	 Returns false if the process is currently running (in that
 	 case the executable remains unchanged.) 
 
 	 @see operator<<
@@ -194,7 +194,7 @@ public:
       various run modes and communication semantics, have a look at the 
       general description of the KProcess class.
 
-      The following problems could cause KProcess:start" to return FALSE:
+      The following problems could cause KProcess:start" to return false:
 
 	  @li the process is already running
 	  @li the command line argument list is empty 
@@ -219,7 +219,7 @@ public:
   virtual bool kill(int signo = SIGTERM);
 
   /**
-     @return TRUE if the process is (still) considered to be running
+     @return true if the process is (still) considered to be running
   */
   bool isRunning();
 
@@ -234,7 +234,7 @@ public:
 
 
   /** 
-	@return TRUE if the process has already finished and has exited
+	@return true if the process has already finished and has exited
 	"voluntarily", ie: it has not been killed by a signal.
   */
   bool normalExit();
@@ -242,7 +242,7 @@ public:
   /** 
 	The exit status of the process. Please use
 	@ref KProcess::normalExit to check whether the process has exited
-	cleanly (KProcess::normalExit returning TRUE) before calling
+	cleanly (KProcess::normalExit returning true) before calling
 	this function because if the process did not exit normally,
 	it does not have a valid exit status.
   */
@@ -251,7 +251,7 @@ public:
    
   /**
 	 Transmit data to the child process's stdin. KProcess::writeStdin
-         may return FALSE in the following cases:
+         may return false in the following cases:
 
          +) The process is not currently running
 
@@ -277,7 +277,7 @@ public:
   /**
      This causes the stdin file descriptor of the child process to be
 	 closed indicating an "EOF" to the child. This function will
-	 return FALSE if:
+	 return false if:
 
 	 +) No communication to the process's stdin has been specified
 	 in the "start" call.
@@ -369,7 +369,7 @@ protected:
   */
   RunMode run_mode;
   /** 
-     TRUE if the process is currently running. You should not 
+     true if the process is currently running. You should not 
      modify this data member directly from derived classes. For
      reading the value of this data member, please use "isRunning()"
      since "runs" will probably be made private in later versions

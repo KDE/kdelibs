@@ -95,7 +95,7 @@ uint KGlobalAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KGlobalAccel::currentKey( const QString& action )
+uint KGlobalAccel::currentKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -105,7 +105,7 @@ uint KGlobalAccel::currentKey( const QString& action )
 		return pEntry->aCurrentKeyCode;
 }
 
-uint KGlobalAccel::defaultKey( const QString& action )
+uint KGlobalAccel::defaultKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -124,7 +124,7 @@ void KGlobalAccel::disconnectItem( const QString& action,
     
 }
 
-const QString KGlobalAccel::findKey( int key ) const
+QString KGlobalAccel::findKey( int key ) const
 {
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
@@ -220,7 +220,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uin
 	pEntry->member = 0;
 	pEntry->descr = descr;
 
-	return TRUE;
+	return true;
 }
 
 bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
@@ -230,12 +230,12 @@ bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
 	return insertItem(descr, action, iKeyCode, configurable);
 }
 
-bool KGlobalAccel::isEnabled()
+bool KGlobalAccel::isEnabled() const
 {
 	return bEnabled;
 }
 
-bool KGlobalAccel::isItemEnabled( const QString& action )
+bool KGlobalAccel::isItemEnabled( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -313,7 +313,7 @@ void KGlobalAccel::setConfigGroup( const QString& group )
 	aGroup = group;
 }
 
-const QString KGlobalAccel::configGroup()
+QString KGlobalAccel::configGroup() const
 {
 	return aGroup;
 }
@@ -568,13 +568,13 @@ uint keyToXSym( uint keyCode )
 
 	// Test for exactly one key (other tokens are accelerators)
 	// Fill the keycode with infos
-	bool  keyFound = FALSE;
+	bool  keyFound = false;
 	for ( int i=0; i<nb_toks; i++ ) {
 		if ( strcmp( toks[i], "SHIFT" ) != 0 &&
 			 strcmp( toks[i], "CTRL" ) != 0 &&
 			 strcmp( toks[i], "ALT" ) != 0 ) {
 		   if ( keyFound ) return 0;
-		   keyFound = TRUE;
+		   keyFound = true;
 		   QString l = toks[i];
 		   l = l.lower();
 		   keysym = XStringToKeysym(l.ascii());

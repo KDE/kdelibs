@@ -118,9 +118,9 @@ public:
    * which indicates that the user might have some data loss. If you
    * do not want that (because your application does not contain any
    * data to be lost, for example a clock), you may simply call
-   * setUnsavedDataHint with FALSE as value. Note that this hint is
+   * setUnsavedDataHint with false as value. Note that this hint is
    * read only when the user logs out, so the last value will be
-   * used. You can also set it to TRUE to indicate that the user will
+   * used. You can also set it to true to indicate that the user will
    * certainly have some data loss. All these things may of course
    * have no effect with other window- or session managers.
    *
@@ -467,7 +467,7 @@ public:
     * managers. Anyway, since this is a bit weird in X the result
     * cannot be guaranteed to be correct then.
     */
-  static QRect geometry(Window w, bool including_frame = FALSE);
+  static QRect geometry(Window w, bool including_frame = false);
 
   /**
    * geometry restore is only defined for maximized window. It is the

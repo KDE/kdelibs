@@ -45,7 +45,7 @@ public:
     
   void clear();
 
-  const QString format();
+  QString format();
 
   /////////////////////////
   // Convenience functions
@@ -53,7 +53,7 @@ public:
   void setURLList( QStringList& _urls );
   bool urlList( QStringList& _urls );
   void setText( const QString& _text );
-  const QString text();
+  QString text();
   QByteArray octetStream();
   void setOctetStream( QByteArray& _arr );
 
@@ -67,8 +67,8 @@ protected:
 
   void fetchData();
   void setOwner();
-  bool isOwner();
-  bool isEmpty();
+  bool isOwner() const;
+  bool isEmpty() const;
   QWidget* makeOwner();
     
 private:

@@ -37,7 +37,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     if ( *e == "." || *e == ".." )
       continue;
 
-    KSimpleConfig config( _dir + "/" + *e, TRUE );
+    KSimpleConfig config( _dir + "/" + *e, true );
     config.setGroup( "Protocol" );
   
     Protocol p;
@@ -46,13 +46,13 @@ void KProtocolManager::scanConfig( const QString& _dir )
 	p.executable = locate("exe", exec);
     else 
 	p.executable = "";
-    p.isSourceProtocol = config.readBoolEntry( "source", TRUE );
-    p.supportsReading = config.readBoolEntry( "reading", FALSE );
-    p.supportsWriting = config.readBoolEntry( "writing", FALSE );
-    p.supportsMakeDir = config.readBoolEntry( "makedir", FALSE );
-    p.supportsDeleting = config.readBoolEntry( "deleting", FALSE );
-    p.supportsLinking = config.readBoolEntry( "linking", FALSE );
-    p.supportsMoving = config.readBoolEntry( "moving", FALSE );
+    p.isSourceProtocol = config.readBoolEntry( "source", true );
+    p.supportsReading = config.readBoolEntry( "reading", false );
+    p.supportsWriting = config.readBoolEntry( "writing", false );
+    p.supportsMakeDir = config.readBoolEntry( "makedir", false );
+    p.supportsDeleting = config.readBoolEntry( "deleting", false );
+    p.supportsLinking = config.readBoolEntry( "linking", false );
+    p.supportsMoving = config.readBoolEntry( "moving", false );
     QStrList lst;
     config.readListEntry( "listing", lst );
     p.supportsListing = ( lst.count() > 0 );
@@ -86,7 +86,7 @@ bool KProtocolManager::isSourceProtocol( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().isSourceProtocol;
@@ -98,7 +98,7 @@ bool KProtocolManager::isFilterProtocol( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return !it.data().isSourceProtocol;
@@ -115,7 +115,7 @@ bool KProtocolManager::supportsListing( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsListing;
@@ -139,7 +139,7 @@ bool KProtocolManager::supportsReading( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsReading;
@@ -151,7 +151,7 @@ bool KProtocolManager::supportsWriting( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsWriting;
@@ -163,7 +163,7 @@ bool KProtocolManager::supportsMakeDir( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsMakeDir;
@@ -175,7 +175,7 @@ bool KProtocolManager::supportsDeleting( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsDeleting;
@@ -187,7 +187,7 @@ bool KProtocolManager::supportsLinking( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsLinking;
@@ -199,7 +199,7 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return FALSE;
+    return false;
   }
   
   return it.data().supportsMoving;
@@ -250,7 +250,7 @@ int KProtocolManager::readTimeout() const
 bool KProtocolManager::markPartial() const
 {
   KConfig config("kioslaverc", true, false);
-  return config.readBoolEntry( "MarkPartial", TRUE );
+  return config.readBoolEntry( "MarkPartial", true );
 }
 
 int KProtocolManager::minimumKeepSize() const
@@ -262,13 +262,13 @@ int KProtocolManager::minimumKeepSize() const
 bool KProtocolManager::autoResume() const
 {
   KConfig config("kioslaverc", true, false);
-  return config.readBoolEntry( "AutoResume", FALSE );
+  return config.readBoolEntry( "AutoResume", false );
 }
 
 bool KProtocolManager::persistentConnections() const
 {
   KConfig config("kioslaverc", true, false);
-  return config.readBoolEntry( "PersistentConnections", TRUE );
+  return config.readBoolEntry( "PersistentConnections", true );
 }
 
 bool KProtocolManager::useProxy() const

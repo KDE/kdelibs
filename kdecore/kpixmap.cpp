@@ -44,7 +44,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 	
     if ( !dst->create(src->width(), src->height(), 8, 256) ) {
 		warning("KPixmap: destination image not valid\n");
-		return FALSE;
+		return false;
 	}
 
     int ncols = 256;
@@ -184,7 +184,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 #undef MAX_B
 #undef INDEXOF
 
-    return TRUE;
+    return true;
 }
 
 void KPixmap::gradientFill( QColor ca, QColor cb, bool upDown, int ncols )
@@ -379,7 +379,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 #if defined(CHECK_NULL)
 	warning( "KPixmap::convertFromImage: Cannot convert a null image" );
 #endif
-	return FALSE;
+	return false;
     }
     detach();					// detach other references
 	
@@ -535,9 +535,9 @@ bool KPixmap::checkColorTable( const QImage &image )
     }
 
     if( failures > 1 )
-	return FALSE;
+	return false;
     else
-	return TRUE;
+	return true;
 }
 
 KPixmap::KPixmap(const QPixmap& p)

@@ -60,14 +60,14 @@ static bool getSimpleProperty(Window w, Atom a, long &result){
   long *p = 0;
 
   if (_getprop(w, a, a, 1L, (unsigned char**)&p) <= 0){
-    kwm_error = TRUE;
-    return FALSE;
+    kwm_error = true;
+    return false;
   }
 
   result = p[0];
   XFree((char *) p);
-  kwm_error = FALSE;
-  return TRUE;
+  kwm_error = false;
+  return true;
 }
 
 static void setSimpleProperty(Window w, Atom a, long data){
@@ -79,15 +79,15 @@ static bool getDoubleProperty(Window w, Atom a, long &result1, long &result2){
   long *p = 0;
 
   if (_getprop(w, a, a, 2L, (unsigned char**)&p) <= 0){
-    kwm_error = TRUE;
-    return FALSE;
+    kwm_error = true;
+    return false;
   }
 
   result1 = p[0];
   result2 = p[1];
   XFree((char *) p);
-  kwm_error = FALSE;
-  return TRUE;
+  kwm_error = false;
+  return true;
 }
 
 static void setDoubleProperty(Window w, Atom a, long data1, long data2){
@@ -102,13 +102,13 @@ static bool getQRectProperty(Window w, Atom a, QRect &rect){
   long *p = 0;
 
   if (_getprop(w, a, a, 4L, (unsigned char**)&p) <= 0){
-    kwm_error = TRUE;
-    return FALSE;
+    kwm_error = true;
+    return false;
   }
   rect.setRect(p[0], p[1], p[2], p[3]);
   XFree((char *) p);
-  kwm_error = FALSE;
-  return TRUE;
+  kwm_error = false;
+  return true;
 }
 static void setQRectProperty(Window w, Atom a, const QRect &rect){
   long data[4];
@@ -127,13 +127,13 @@ static bool getQStringProperty(Window w, Atom a, QString &str){
   unsigned char *p = 0;
 
   if (_getprop(w, a, XA_STRING, 100L, (unsigned char**)&p) <= 0){
-    kwm_error = TRUE;
-    return FALSE;
+    kwm_error = true;
+    return false;
   }
   str = (char*) p;
   XFree((char *) p);
-  kwm_error = FALSE;
-  return TRUE;
+  kwm_error = false;
+  return true;
 }
 
 
@@ -147,8 +147,8 @@ static bool getQStringProperty (Window w, Atom a, QString& str)
     int count;
 
     if (XGetTextProperty (qt_xdisplay(), w, &tp, a) == 0 || tp.value == NULL) {
-	kwm_error = TRUE;
-	return FALSE;
+	kwm_error = true;
+	return false;
     }
     if (tp.encoding == XA_STRING) {
 	str = QString::fromLocal8Bit( (const char*) tp.value );
@@ -164,7 +164,7 @@ static bool getQStringProperty (Window w, Atom a, QString& str)
     }
     /* Free the data returned by XGetTextProperty */
     XFree (tp.value);	
-    return TRUE;
+    return true;
 }
 
 
@@ -537,7 +537,7 @@ void KWM::setWindowRegion(int desk, const QRect &region){
 		       0,0,0,0,0,0,0,0};
   static Atom ac = 0;
   if (desk < 1 || desk > 32){
-    kwm_error = TRUE;
+    kwm_error = true;
     return;
   }
   if (!a[desk-1]){
@@ -558,7 +558,7 @@ QRect KWM::getWindowRegion(int desk){
 		       0,0,0,0,0,0,0,0,
 		       0,0,0,0,0,0,0,0};
   if (desk < 1 || desk > 32){
-    kwm_error = TRUE;
+    kwm_error = true;
     return QApplication::desktop()->geometry();;
   }
   if (!a[desk-1]){
@@ -594,7 +594,7 @@ void KWM::setDesktopName(int desk, const QString &name){
 		       0,0,0,0,0,0,0,0,
 		       0,0,0,0,0,0,0,0};
   if (desk < 1 || desk > 32){
-    kwm_error = TRUE;
+    kwm_error = true;
     return;
   }
   if (!a[desk-1]){
@@ -613,7 +613,7 @@ QString KWM::getDesktopName(int desk){
 		       0,0,0,0,0,0,0,0};
   QString result;
   if (desk < 1 || desk > 32){
-    kwm_error = TRUE;
+    kwm_error = true;
     return result;
   }
   if (!a[desk-1]){
@@ -720,7 +720,7 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
       if (p_mask != None){
 	QBitmap bm(w, h);
 	XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
-		  qt_xget_temp_gc(TRUE),
+		  qt_xget_temp_gc(true),
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
@@ -787,7 +787,7 @@ QPixmap KWM::icon(Window w, int width, int height){
       if (p_mask != None){
 	QBitmap bm(w, h);
 	XCopyArea(qt_xdisplay(), p_mask, bm.handle(),
-		  qt_xget_temp_gc(TRUE),
+		  qt_xget_temp_gc(true),
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
@@ -832,7 +832,7 @@ int KWM::desktop(Window w){
   if (!getSimpleProperty(w, a, result) || result <= 0){
     result = currentDesktop();
     moveToDesktop(w, (int) result);
-    kwm_error = TRUE; // restore error
+    kwm_error = true; // restore error
   }
   return (int) result;
 }
@@ -966,7 +966,7 @@ bool KWM::fixedSize(Window w){
     return (size.flags & PMaxSize ) && (size.flags & PMinSize)
       && (size.max_width <= size.min_width)
       && (size.max_height <= size.min_height);
-  return FALSE;
+  return false;
 }
 
 bool KWM::containsUnsavedData(Window w){
@@ -1085,7 +1085,7 @@ void KWM::activate(Window w){
   if (desktop(w) != currentDesktop())
     switchToDesktop(desktop(w));
   if (isIconified(w))
-    setIconify(w, FALSE);
+    setIconify(w, false);
   raise(w);
   activateInternal(w);
 }

@@ -111,7 +111,7 @@ int KApplication::xioErrhandler()
 
 void KApplication::init()
 {
-  QApplication::setDesktopSettingsAware( FALSE );
+  QApplication::setDesktopSettingsAware( false );
   // this is important since we fork() to launch the help (Matthias)
   fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
   // set up the fance KDE xio error handler (Matthias)
@@ -139,7 +139,7 @@ void KApplication::init()
   DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );
   DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );
   lastEnteredDropZone = 0L;
-  dropZones.setAutoDelete( FALSE );
+  dropZones.setAutoDelete( false );
 
   WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
   WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
@@ -199,7 +199,7 @@ KConfig* KApplication::getSessionConfig() {
   if( bSuccess ){
     chown(aConfigFile.name().ascii(), getuid(), getgid());
     aConfigFile.close();
-    pSessionConfig = new KConfig(QString::null, aSessionConfigName);
+    pSessionConfig = new KConfig(aSessionConfigName);
     aSessionName = name();
     aSessionName += "rc.";
     aSessionName += num;
@@ -346,10 +346,10 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		  /* restore old group */
 		  pConfig->setGroup( aOldGroup );
 
-		  return TRUE; // do not process event further
+		  return true; // do not process event further
 		}
 	}
-  return FALSE; // process event further
+  return false; // process event further
 }
 
 
@@ -564,7 +564,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		    else
 		      if(str == "Windows 95")
 			applyGUIStyle(WindowsStyle);
-		  return TRUE;
+		  return true;
 		}
 
 	  if ( cme->message_type == KDEChangePalette )
@@ -590,11 +590,11 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	
 		  lastEnteredDropZone = 0L;
 
-		  return TRUE;
+		  return true;
 		}
 	  else if ( cme->message_type != DndProtocol && cme->message_type != DndEnterProtocol &&
 				cme->message_type != DndRootProtocol )
-	    return FALSE;
+	    return false;
 	
 	  Window root = DefaultRootWindow(display);
 	
@@ -606,7 +606,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	  XGetWindowProperty(display,root,DndSelection,
 						 0L,1000000L,
-						 FALSE,AnyPropertyType,
+						 false,AnyPropertyType,
 						 &ActualType,&ActualFormat,
 						 &Size,&RemainingBytes,
 						 &Data);
@@ -616,13 +616,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  if ( cme->message_type == DndRootProtocol )
 		{
 		  if ( rootDropEventID == (int)cme->data.l[1] )
-			return FALSE;
+			return false;
 	
 		  rootDropEventID = (int)cme->data.l[1];
 
 		  if ( rootDropZone != 0L )
 			rootDropZone->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
-		  return TRUE;
+		  return true;
 		}
 	
 	  KDNDDropZone *dz;
@@ -637,7 +637,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		}
 	  */
 
-	  QWidget *w = widgetAt( p.x(), p.y(), TRUE );
+	  QWidget *w = widgetAt( p.x(), p.y(), true );
 
 	  while ( result == 0L && w != 0L )
 		{
@@ -685,10 +685,10 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		  lastEnteredDropZone = 0L;
 		}
 
-	  return TRUE;
+	  return true;
     }
 
-  return FALSE;
+  return false;
 }
 
 void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
@@ -854,7 +854,7 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-//     QApplication::setFont( generalFont_, TRUE );
+//     QApplication::setFont( generalFont_, true );
   // setFont() works every time for me !
 
   emit kdisplayFontChanged();
@@ -881,7 +881,7 @@ void KApplication::kdisplaySetStyleAndFont()
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
     if ( font() != KGlobal::generalFont())
-	QApplication::setFont( KGlobal::generalFont(), TRUE );
+	QApplication::setFont( KGlobal::generalFont(), true );
   applyGUIStyle(applicationStyle_);
 
   emit kdisplayStyleChanged();
@@ -1017,18 +1017,6 @@ QString KApplication::kde_bindir()
     return dir;
 }
 
-QString KApplication::kde_configdir()
-{
-    warning("kde_configdir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_CONFIGDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
-    return dir;
-}
-
 QString KApplication::kde_mimedir()
 {
     warning("kde_mimedir() is obsolete. Try to use KStandardDirs instead");
@@ -1047,7 +1035,7 @@ QString KApplication::localkdedir()
   return ( QDir::homeDirPath() + "/.kde" );
 }
 
-bool KApplication::getKDEFonts(QStringList &fontlist)
+bool KApplication::getKDEFonts(QStringList &fontlist) const
 {
   QString fontfilename = KGlobal::dirs()->getSaveLocation("config") + "kdefonts";
   QFile fontfile(fontfilename);
@@ -1074,7 +1062,7 @@ bool KApplication::getKDEFonts(QStringList &fontlist)
 }
 
 
-QString KApplication::tempSaveName( const QString& pFilename )
+QString KApplication::tempSaveName( const QString& pFilename ) const
 {
   QString aFilename;
   
@@ -1103,7 +1091,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
 
 QString KApplication::checkRecoverFile( const QString& pFilename,
-        bool& bRecover )
+        bool& bRecover ) const
 {
   QString aFilename;
   
@@ -1192,45 +1180,36 @@ void KApplication::setTopWidget( QWidget *topWidget )
   }
 }
 
-void KApplication::registerTopWidget()
-{
-}
-
-void KApplication::unregisterTopWidget()
-{
-}
-
-
-QColor KApplication::inactiveTitleColor()
+QColor KApplication::inactiveTitleColor() const
 {
     return inactiveTitleColor_;
 }
 
 
-QColor KApplication::inactiveTextColor()
+QColor KApplication::inactiveTextColor() const
 {
     return inactiveTextColor_;
 }
 
 
-QColor KApplication::activeTitleColor()
+QColor KApplication::activeTitleColor() const
 {
     return activeTitleColor_;
 }
 
 
-QColor KApplication::activeTextColor()
+QColor KApplication::activeTextColor() const
 {
     return activeTextColor_;
 }
 
-int KApplication::contrast()
+int KApplication::contrast() const
 {
     return contrast_;
 }
 
 
-Qt::GUIStyle KApplication::applicationStyle()
+Qt::GUIStyle KApplication::applicationStyle() const
 {
     return applicationStyle_;
 }
@@ -1243,14 +1222,14 @@ KCharsets* KApplication::getCharsets()const
 	   "Use KGlobal::charsets() instead.\n");
   return KGlobal::charsets();
 }
-QFont KApplication::generalFont()
+QFont KApplication::generalFont() const
 {
     warning("Kapplication::generalFont() is obsolete.\n"
 	  "Use KGlobal::generalFont() instead.\n");
     return KGlobal::generalFont();
 }
 
-QFont KApplication::fixedFont()
+QFont KApplication::fixedFont() const
 {
     printf("Kapplication::fixedFont() is obsolete.\n" 
 	   "Use KGlobal::fixedFont() instead.\n");

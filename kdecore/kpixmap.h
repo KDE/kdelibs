@@ -74,8 +74,8 @@ public:
 	 * Fills the pixmap with a color blend running from color ca to
 	 * color cb.
 
-	 * If upDown is TRUE the blend will run from the top to the
-	 * bottom of the pixmap. If upDown is FALSE the blend will run
+	 * If upDown is true the blend will run from the top to the
+	 * bottom of the pixmap. If upDown is false the blend will run
 	 * from the right to the left of the pixmap.
 
 	 * By default, the blend will use 3 colors on 8 bpp displays,
@@ -85,7 +85,7 @@ public:
 	 * allocated the better the appearance of the gradient but the
 	 * longer it takes to make.
 	 */
-	void gradientFill( QColor ca, QColor cb, bool upDown = TRUE, 
+	void gradientFill( QColor ca, QColor cb, bool upDown = true, 
 			int ncols = 3 );
 
 	/**
@@ -96,7 +96,7 @@ public:
 	void patternFill( QColor ca, QColor cb, uint pattern[8] );
 
 	/** 
-	 * Converts an image and sets this pixmap. Returns TRUE if
+	 * Converts an image and sets this pixmap. Returns true if
 	 * successful. 
 	 *
 	 * The conversion_flags argument is a bitwise-OR from the
@@ -158,8 +158,8 @@ public:
 	bool convertFromImage( const QImage &img, ColorMode mode = WebColor );
 
 	/**
-	 * Loads a pixmap from the file fileName. Returns TRUE if
-	 * successful, or FALSE if the pixmap could not be loaded. 
+	 * Loads a pixmap from the file fileName. Returns true if
+	 * successful, or false if the pixmap could not be loaded. 
 	 * 
 	 * If format is specified, the loader attempts to read the
 	 * pixmap using the specified format. If format is not
@@ -185,8 +185,8 @@ public:
 		ColorMode mode = WebColor );
 
 	/*
-	 * Returns TRUE of the image is posessed of a color table that
-	 * matches the Icon palette or FALSE otherwise.
+	 * Returns true of the image is posessed of a color table that
+	 * matches the Icon palette or false otherwise.
 
 	 * An image with one color not found in the Icon palette is
 	 * considered to make a match, since this extra color may be a

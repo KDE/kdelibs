@@ -110,7 +110,7 @@ bool KClipboard::open( int _mode, const QString& _format )
     assert( 0 );
 }
 
-const QString KClipboard::format()
+QString KClipboard::format()
 {
   if ( !isOwner() )
     fetchData();
@@ -140,12 +140,12 @@ void KClipboard::clear()
     setOwner();
 }
 
-bool KClipboard::isEmpty()
+bool KClipboard::isEmpty() const
 {
   return m_bEmpty;
 }
 
-bool KClipboard::isOwner()
+bool KClipboard::isOwner() const
 {
   return m_bOwner;
 }
@@ -189,7 +189,7 @@ void KClipboard::fetchData()
   if ( XGetSelectionOwner(display,XA_PRIMARY) == None )
     return;
 
-  Atom prop = XInternAtom( display, "QT_SELECTION", FALSE );
+  Atom prop = XInternAtom( display, "QT_SELECTION", false );
   XConvertSelection( display, XA_PRIMARY, XA_STRING, prop, win, CurrentTime );
 
   /** DEBUG code */
@@ -200,7 +200,7 @@ void KClipboard::fetchData()
 
   /** DEBUG code */
   QTime started = QTime::currentTime();
-  while ( TRUE )
+  while ( true )
   {
     if ( XCheckTypedWindowEvent(display,win,SelectionNotify,&xevent) )
       break;
@@ -229,7 +229,7 @@ void KClipboard::fetchData()
 
   do
   {
-    int n = XGetWindowProperty( display, win, prop, nread/4, 1024, TRUE,
+    int n = XGetWindowProperty( display, win, prop, nread/4, 1024, true,
 				AnyPropertyType, &type, &format, &nitems,
 				&bytes_after, &result );
     if ( n != Success || type != XA_STRING )
@@ -417,7 +417,7 @@ void KClipboard::setText( const QString& _text )
   close();
 }
 
-const QString KClipboard::text()
+QString KClipboard::text()
 {
   if ( !isOwner() )
     fetchData();

@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.30  1999/05/30 16:38:54  kulow
+ * trying to get rid of QString::data to find wrong uses. But there are soo many
+ * calls to it ;(
+ *
  * Revision 1.29  1999/05/22 22:58:53  dmuell
  * well, making warnings less offensive
  *
@@ -440,7 +444,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 // 	      printf("1\n");
 	      XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );
 // 	      printf("2\n");
-	      XSync( kapp->getDisplay(), FALSE );
+	      XSync( kapp->getDisplay(), false );
 // 	      printf("3\n");
 	      (void) XSetErrorHandler(oldErrorHandler);
               oldErrorHandler = 0L;
@@ -530,7 +534,7 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
 	  Event.xclient.data.l[3]         = _x;
 	  Event.xclient.data.l[4]         = _y;
 	  XSendEvent( kapp->getDisplay(), children[ i ], True, NoEventMask, &Event);
-	  XSync( kapp->getDisplay(), FALSE );
+	  XSync( kapp->getDisplay(), false );
       }
   }
 

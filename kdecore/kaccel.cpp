@@ -81,7 +81,7 @@ void KAccel::connectItem( const QString& action,
 	pAccel->connectItem( pEntry->aAccelId, receiver, member );
 	
 	if ( !activate )
-	    setItemEnabled( action, FALSE );
+	    setItemEnabled( action, false );
 }
 
 void KAccel::connectItem( StdAccel accel,
@@ -98,7 +98,7 @@ uint KAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KAccel::currentKey( const QString& action )
+uint KAccel::currentKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -108,7 +108,7 @@ uint KAccel::currentKey( const QString& action )
 		return pEntry->aCurrentKeyCode;
 }
 
-const QString  KAccel::description( const QString& action ){
+QString  KAccel::description( const QString& action ) const {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
 	if ( !pEntry )
@@ -117,7 +117,7 @@ const QString  KAccel::description( const QString& action ){
 		return pEntry->descr;
 }
 
-uint KAccel::defaultKey( const QString& action )
+uint KAccel::defaultKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -178,7 +178,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCo
 	pEntry->menuId = id;
 	pEntry->menu = qmenu;
 
-	return TRUE;
+	return true;
 }
 
 	
@@ -330,12 +330,12 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 	return insertItem( descr.isNull()?name:descr, stdAction(id), key, false );
 }
 
-bool KAccel::isEnabled()
+bool KAccel::isEnabled() const
 {
 	return bEnabled;
 }
 
-bool KAccel::isItemEnabled( const QString& action )
+bool KAccel::isItemEnabled( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -493,7 +493,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	return true;
 }
 
-const QString KAccel::stdAction( StdAccel id ) {
+QString KAccel::stdAction( StdAccel id ) {
 	QString action;
 	switch( id ) {
 		case Open:
@@ -570,12 +570,12 @@ void KAccel::setConfigGlobal( bool global )
 	bGlobal = global;
 }
 
-const QString KAccel::configGroup()
+QString KAccel::configGroup() const
 {
 	return aGroup;
 }
 
-bool KAccel::configGlobal()
+bool KAccel::configGlobal() const
 {
 	return bGlobal;
 }
@@ -603,12 +603,12 @@ void KAccel::writeSettings(KConfig* config)
 	pConfig->sync();
 }
 
- bool KAccel::configurable( const char * action )
+bool KAccel::configurable( const char * action ) const
 {
   KKeyEntry *pEntry = aKeyDict[ action ];
 
   if ( !pEntry )
-    return FALSE;
+    return false;
   else
     return pEntry->bConfigurable;
 }
@@ -650,9 +650,9 @@ void KAccel::writeSettings(KConfig* config)
     pEntry->aCurrentKeyCode = keyCode;
     pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
     pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
-    return TRUE;
+    return true;
   } else
-    return FALSE;
+    return false;
 }
 
 void KAccel::removeDeletedMenu(QPopupMenu *menu)
@@ -733,7 +733,7 @@ uint stringToKey(const QString& key)
 	// find a keycode (only one)
 	// the other tokens are accelerators (SHIFT, CTRL & ALT)
 	// the order is unimportant
-	bool codeFound = FALSE;
+	bool codeFound = false;
 	QString str;
 	uint keyCode = 0;
 	for (uint i=0; i<k; i++) {

@@ -48,7 +48,7 @@ isRelativeURL(const QString &_url)
 KURL::KURL()
 {
   reset();
-  m_bIsMalformed = TRUE;
+  m_bIsMalformed = true;
 }
 
 KURL::KURL( const QString &_url )
@@ -107,7 +107,7 @@ void KURL::reset()
   m_strPath = "";
   m_strQuery_encoded = "";
   m_strRef_encoded = "";
-  m_bIsMalformed = FALSE;
+  m_bIsMalformed = false;
   m_iPort = -1;
 }
 
@@ -115,11 +115,11 @@ void KURL::parse( const QString& _url )
 {
   if ( _url.isEmpty() )
     {
-      m_bIsMalformed = TRUE;
+      m_bIsMalformed = true;
       return;
     }
 
-  m_bIsMalformed = FALSE;
+  m_bIsMalformed = false;
 
   QString port;
   int start = 0;
@@ -335,14 +335,14 @@ void KURL::parse( const QString& _url )
   else if (!KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
   {
     debug("Unknown protocol %s", m_strProtocol.data() );
-    m_bIsMalformed = TRUE;
+    m_bIsMalformed = true;
   }
   return;
 
  NodeErr:
   debug("Error in parsing\n");
   delete []orig;
-  m_bIsMalformed = TRUE;
+  m_bIsMalformed = true;
 }
 
 KURL& KURL::operator=( const QString& _url )
@@ -371,7 +371,7 @@ KURL& KURL::operator=( const KURL& _u )
 bool KURL::operator==( const KURL& _u ) const
 {
   if ( isMalformed() || _u.isMalformed() )
-    return FALSE;
+    return false;
 
   if ( m_strProtocol == _u.m_strProtocol &&
        m_strUser == _u.m_strUser &&
@@ -382,9 +382,9 @@ bool KURL::operator==( const KURL& _u ) const
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_bIsMalformed == _u.m_bIsMalformed &&
        m_iPort == _u.m_iPort )
-    return TRUE;
+    return true;
 
-  return FALSE;
+  return false;
 }
 
 bool KURL::operator==( const QString& _u ) const
@@ -400,7 +400,7 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
     QString path1 = path(1);
     QString path2 = _u.path(1);
     if ( path1 != path2 )
-      return FALSE;
+      return false;
 
     if ( m_strProtocol == _u.m_strProtocol &&
 	 m_strUser == _u.m_strUser &&
@@ -410,9 +410,9 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
 	 m_strRef_encoded == _u.m_strRef_encoded &&
 	 m_bIsMalformed == _u.m_bIsMalformed &&
 	 m_iPort == _u.m_iPort )
-      return TRUE;
+      return true;
 
-    return FALSE;
+    return false;
   }
 
   return ( *this == _u );
@@ -845,7 +845,7 @@ void KURL::decode( QString& _url )
 bool KURL::cd( const QString& _dir, bool zapRef )
 {
   if ( _dir.isEmpty() )
-    return FALSE;
+    return false;
 
   // absolute path ?
   if ( _dir[0] == '/' )
@@ -853,7 +853,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
     m_strPath = _dir;
     if ( zapRef )
       setHTMLRef( QString::null );
-    return TRUE;
+    return true;
   }
 
   // Users home directory on the local disk ?
@@ -864,7 +864,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
     m_strPath += _dir.right(m_strPath.length() - 1);
     if ( zapRef )
       setHTMLRef( QString::null );
-    return TRUE;
+    return true;
   }
 
   // relative path
@@ -881,7 +881,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
   if ( zapRef )
     setHTMLRef( QString::null );
 
-  return TRUE;
+  return true;
 }
 
 KURL KURL::upURL( bool _zapRef ) const
@@ -928,7 +928,7 @@ KURL KURL::upURL( bool _zapRef ) const
   // and end with file:/home/x.tgz until now. Yet we
   // just strip the filename at the end of the leftmost
   // url.
-  (*lst.begin()).setPath( (*lst.begin()).directory( FALSE ) );
+  (*lst.begin()).setPath( (*lst.begin()).directory( false ) );
 
   if ( !_zapRef )
     (*lst.begin()).setRef( ref );
@@ -984,17 +984,17 @@ bool urlcmp( const QString& _url1, const QString& _url2 )
 {
   // Both empty ?
   if ( _url1.isEmpty() && _url2.isEmpty() )
-    return TRUE;
+    return true;
   // Only one empty ?
   if ( _url1.isEmpty() || _url2.isEmpty() )
-    return FALSE;
+    return false;
 
   KURL::List list1 = KURL::split( _url1 );
   KURL::List list2 = KURL::split( _url2 );
 
   // Malformed ?
   if ( list1.isEmpty() || list2.isEmpty() )
-    return FALSE;
+    return false;
 
   return ( list1 == list2 );
 }
@@ -1003,21 +1003,21 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 {
   // Both empty ?
   if ( _url1.isEmpty() && _url2.isEmpty() )
-    return TRUE;
+    return true;
   // Only one empty ?
   if ( _url1.isEmpty() || _url2.isEmpty() )
-    return FALSE;
+    return false;
 
   KURL::List list1 = KURL::split( _url1 );
   KURL::List list2 = KURL::split( _url2 );
 
   // Malformed ?
   if ( list1.isEmpty() || list2.isEmpty() )
-    return FALSE;
+    return false;
 
   unsigned int size = list1.count();
   if ( list2.count() != size )
-    return FALSE;
+    return false;
 
   if ( _ignore_ref )
   {
@@ -1029,7 +1029,7 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
   KURL::List::Iterator it2 = list2.begin();
   for( ; it1 != list1.end() ; ++it1, ++it2 )
     if ( !(*it1).cmp( *it2, _ignore_trailing ) )
-      return FALSE;
+      return false;
 
-  return TRUE;
+  return true;
 }

@@ -413,13 +413,13 @@ KFontStructList KCharsets::getFontList(KFontStruct mask)
 
 	// FIXME: don't use QString. At least QCstring
 	qfontname = fontNames[i];
-	int dash = qfontname.find ('-', 1, TRUE); // find next dash
+	int dash = qfontname.find ('-', 1, true); // find next dash
 	if (dash == -1) continue;
 	
 	// the font name is between the second and third dash so:
 	// let's find the third dash:
 	
-	int dash_two = qfontname.find ('-', dash + 1 , TRUE);
+	int dash_two = qfontname.find ('-', dash + 1 , true);
 	if (dash == -1) continue;
 	// fish the name of the font info string
 	f->family = qfontname.mid(dash +1, dash_two - dash -1);

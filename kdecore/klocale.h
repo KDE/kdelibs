@@ -82,7 +82,7 @@ public:
       * some phrases for your needs.
       * @param index the lookup text and default text, if not found
       */
-    const QString translate( const char *index );
+    QString translate( const char *index ) const;
     
     /**
      * various positions for where to place the positive or negative
@@ -229,21 +229,21 @@ public:
       * Returns an alias, that you have set before or 0, if not
       * set. This method uses @ref QIntDict.
       */
-    const QString getAlias( long key ) const;
+    QString getAlias( long key ) const;
 
     /**
       * Returns the language used by this object. The domain AND the
       * library translation must be available in this language. 
       * 'C' is default, if no other available.
       */
-    const QString language() const { return lang; }
+    QString language() const { return lang; }
 
     /**
       * Returns the languages selected by user.
       *
       * @return String containing locale codes separated by colons
       */
-    const QString languages() const { return langs; }
+    QString languages() const { return langs; }
 
     /**
       * Returns the languages selected by user.
@@ -257,7 +257,7 @@ public:
       * Special file with charset name must be available
       * "us-ascii" is default 
       */
-    const QString charset() const { return chset; }
+    QString charset() const { return chset; }
     
     /**
      * adds anther catalogue to search for translation lookup.
@@ -282,7 +282,7 @@ public:
        LC_TIME         Changes the behavior of the strftime() function.
        LC_ALL          Changes all of the above.
     **/
-    const QString getLocale(const QString& CATEGORY);
+    QString getLocale(const QString& CATEGORY);
 
     /** 
      * returns the parts of the parameter str understood as language setting
@@ -294,7 +294,7 @@ public:
     /** 
      * does the same as the above, just reverse
      */
-    static const QString mergeLocale(const QString& lang, const QString& country,
+    static QString mergeLocale(const QString& lang, const QString& country,
 			      const QString& charset);
 
     /**

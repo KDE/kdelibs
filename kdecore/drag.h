@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.30  1999/05/21 19:24:17  dmuell
+ * Adding obsolete warnings to KDND* classes (both at compile & run time)
+ *
  * Revision 1.29  1999/05/07 15:42:26  kulow
  * making some changes to the code and partly to the API to make it
  * -DQT_NO_ASCII_CAST compatible.
@@ -91,67 +94,6 @@
  * undef Color and GrayScale after including X11/X.h. This stupid header breaks
  * everything!
  * How about typedef Window unsigned long instead of X11/X.h?
- *
- * Revision 1.13  1998/01/18 14:38:29  kulow
- * reverted the changes, Jacek commited.
- * Only the RCS comments were affected, but to keep them consistent, I
- * thought, it's better to revert them.
- * I checked twice, that only comments are affected ;)
- *
- * Revision 1.11  1997/12/12 14:40:12  denis
- * Reverting to false :-)
- *
- * Revision 1.10  1997/12/12 14:36:22  denis
- * false to FALSE
- *
- * Revision 1.9  1997/10/16 11:14:26  torben
- * Kalle: Copyright headers
- * kdoctoolbar removed
- *
- * Revision 1.8  1997/09/18 12:16:04  kulow
- * corrected some header dependencies. Removed most of them in drag.h and put
- * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
- *
- * Revision 1.7  1997/07/25 19:46:40  kalle
- * SGI changes
- *
- * Revision 1.6  1997/07/18 05:49:15  ssk
- * Taj: All kdecore doc now in javadoc format (hopefully).
- *
- * Revision 1.5  1997/05/08 22:53:15  kalle
- * Kalle:
- * KPixmap gone for good
- * Eliminated static objects from KApplication and HTML-Widget
- *
- * Revision 1.4  1997/05/06 08:50:53  ssk
- * taj: added X.h to files included. please test.
- *
- * Revision 1.3  1997/05/05 09:25:38  ssk
- * Taj: Attempt to fix the include-order problem. Please test this. My
- *      configure program is still not working, so i can't test this myself.
- *
- * Revision 1.2  1997/04/23 21:21:53  kulow
- * added some Q_OBJECTs
- *
- * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
- * Source imported
- *
- * Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
- * Sources imported
- *
- * Revision 1.5  1997/03/10 20:01:31  kalle
- * Merged changes from 0.6.3
- *
- * Revision 1.4  1997/01/15 20:08:26  kalle
- * merged changes from 0.52
- *
- * Revision 1.3  1996/12/07 22:34:54  kalle
- * DOC++ tags corrected
- *
- * Revision 1.2  1996/12/07 22:22:06  kalle
- * autoconf, KApplication merged with my KApplication (and moved to kapp.h)
- * formatting
- *
  *
  * Drag and Drop for KDE
  * Torben Weis <weis@stud.uni-frankfurt.de>
@@ -335,7 +277,7 @@ public:
 *
 * @return A pointer to the dropped data.
 */
-  virtual const QString getData() { return dndData; }
+  virtual QString getData() { return dndData; }
 
 /**
 * Get dropped data length.
@@ -377,7 +319,7 @@ public:
 * Tests whether this data type will be accepted.
 *
 * @param _type	the data type to be tested.
-* @return TRUE if this type will be accepted, FALSE otherwise.
+* @return true if this type will be accepted, false otherwise.
 */
   virtual bool accepts( int _type )
   { return (( acceptType & _type ) == _type); }
@@ -593,7 +535,7 @@ protected:
 /**
 * Your mouse release event function.
 *
-* Usually you will only set 'pressed' ( see dndMouseMoveEvent) to FALSE here.
+* Usually you will only set 'pressed' ( see dndMouseMoveEvent) to false here.
 * The function is only called if the release event had nothing to do with
 * DND.
 */

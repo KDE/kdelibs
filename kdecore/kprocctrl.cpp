@@ -55,7 +55,7 @@ KProcessController::KProcessController()
 	printf(strerror(errno));
 
   notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
-  notifier->setEnabled(TRUE);
+  notifier->setEnabled(true);
   QObject::connect(notifier, SIGNAL(activated(int)),
 				   this, SLOT(slotDoHousekeeping(int)));
  		 
@@ -138,7 +138,7 @@ KProcessController::~KProcessController()
 {
   struct sigaction act;
 
-  notifier->setEnabled(FALSE);
+  notifier->setEnabled(false);
 
   // Turn off notification for processes that have exited
   act.sa_handler=SIG_IGN;

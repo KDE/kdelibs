@@ -128,7 +128,7 @@ signals:
     /** 
      * Data has arrived for reading.
      *
-     * This signal will only be raised if enableRead( TRUE ) was called
+     * This signal will only be raised if enableRead( true ) was called
      * first.
      */
     void readEvent( KSocket * );
@@ -136,7 +136,7 @@ signals:
     /** 
      * Socket is ready for writing.
      *
-     * This signal will only be raised if enableWrite( TRUE ) was called
+     * This signal will only be raised if enableWrite( true ) was called
      * first.
      */
     void writeEvent( KSocket * );

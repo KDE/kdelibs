@@ -115,7 +115,7 @@ public:
    *
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
    */
-  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = FALSE );
+  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false );
 
   /**
    * @param _txt is considered to be encoded. This has a good reason:
@@ -137,8 +137,8 @@ public:
    */
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
   /**
-   * @return TRUE of the reference part of the URL is not empty. In an URL like
-   *         tar:/kde/README#http://www.kde.org/kdebase.tgz it would return TRUE, too.
+   * @return true of the reference part of the URL is not empty. In an URL like
+   *         tar:/kde/README#http://www.kde.org/kdebase.tgz it would return true, too.
    */
   bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
   
@@ -219,7 +219,7 @@ public:
    *                                     If the flag is set to false, then everything behind the last '/'
    *                                     is considered to be the filename.
    */
-  QString filename( bool _ignore_trailing_slash_in_path = TRUE ) const;
+  QString filename( bool _ignore_trailing_slash_in_path = true ) const;
   /**
    * @return the directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
@@ -231,8 +231,8 @@ public:
    *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/</tt>
    *                                       or <tt>/hallo</tt> depending on the other flag
    */
-  QString directory( bool _strip_trailing_slash_from_result = TRUE,
-		     bool _ignore_trailing_slash_in_path = TRUE ) const;
+  QString directory( bool _strip_trailing_slash_from_result = true,
+		     bool _ignore_trailing_slash_in_path = true ) const;
 
   /**
    * Changes directory by descending into the given directory.
@@ -246,7 +246,7 @@ public:
    *
    * @param zapRef if true, delete the HTML style reference.
    */
-  bool cd( const QString& _dir, bool zapRef = TRUE );
+  bool cd( const QString& _dir, bool zapRef = true );
   
   /**
    * @return the complete encoded URL.
@@ -280,7 +280,7 @@ public:
    *
    * @param _zapRef tells whether the HTML style reference should be stripped
    */
-  KURL upURL( bool _zapRef = TRUE ) const;
+  KURL upURL( bool _zapRef = true ) const;
   
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
@@ -295,7 +295,7 @@ public:
    *
    * @see path
    */
-  bool cmp( KURL &_u, bool _ignore_trailing = FALSE );
+  bool cmp( KURL &_u, bool _ignore_trailing = false );
   
   /**
    * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.

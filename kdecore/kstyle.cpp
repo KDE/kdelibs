@@ -53,7 +53,7 @@ void KStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
 void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
                                 QColorGroup &g, bool sunken, bool raised,
                                 bool enabled, bool popup,
-                                KToolButtonType icontext, const QString btext,
+                                KToolButtonType icontext, const QString& btext,
                                 const QPixmap *pixmap,
                                 QFont *font)
 {

@@ -22,7 +22,7 @@ public:
                                     bool raised = true, bool enabled = true,
                                     bool popup = false,
                                     KToolButtonType icontext = Icon,
-                                    const QString btext=QString::null,
+                                    const QString& btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);
 };

@@ -71,7 +71,7 @@
 
 KProcess::KProcess()
 {
-  arguments.setAutoDelete(TRUE);
+  arguments.setAutoDelete(true);
 
   if (0 == theKProcessController) {
 	theKProcessController= new KProcessController();
@@ -79,7 +79,7 @@ KProcess::KProcess()
   }
 
   run_mode = NotifyOnExit;
-  runs = FALSE;
+  runs = false;
   pid = 0;
   status = 0;
   innot = outnot = errnot = 0;
@@ -117,7 +117,7 @@ bool KProcess::setExecutable(const QString& proc)
   char *hlp;
 
 
-  if (runs) return FALSE;
+  if (runs) return false;
 
   arguments.removeFirst();
   if (0 != proc) {
@@ -126,7 +126,7 @@ bool KProcess::setExecutable(const QString& proc)
     arguments.insert(0,hlp);
   }
 
-  return TRUE;
+  return true;
 }
 
 
@@ -162,7 +162,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   char **arglist;
 
   if (runs || (0 == n)) {
-	return FALSE;  // cannot start a process that is already running
+	return false;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
   run_mode = runmode;
@@ -177,7 +177,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
 
-  runs = TRUE;
+  runs = true;
   pid = vfork();
 
   if (0 == pid) {
@@ -204,9 +204,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
   } else if (-1 == pid) {
 	// forking failed
 
-	runs = FALSE;
+	runs = false;
 	free(arglist);
-	return FALSE;
+	return false;
 
   } else {
 	// the parent continues here
@@ -223,14 +223,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	}
   }
   free(arglist);
-  return TRUE;
+  return true;
 }
 
 
 
 bool KProcess::kill(int signo)
 {
-  bool rv=FALSE;
+  bool rv=false;
 
   if (0 != pid)
     rv= (-1 != ::kill(pid, signo));
@@ -278,17 +278,17 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   // to stdout is not allowed (since it could also confuse
   // kprocess...
   if (0 != input_data)
-    return FALSE;
+    return false;
 
   if ( runs && communication) {
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
     slotSendData(0);
-    innot->setEnabled(TRUE);
-    rv = TRUE;
+    innot->setEnabled(true);
+    rv = true;
   } else
-    rv = FALSE;
+    rv = false;
   return rv;
 }
 
@@ -299,11 +299,11 @@ bool KProcess::closeStdin()
   bool rv;
 
   if (communication & Stdin) {
-    innot->setEnabled(FALSE);
+    innot->setEnabled(false);
     close(in[1]);
-    rv = TRUE;
+    rv = true;
   } else
-    rv = FALSE;
+    rv = false;
   return rv;
 }
 
@@ -317,7 +317,7 @@ bool KProcess::closeStdin()
 void KProcess::slotChildOutput(int fdno)
 {
   if (!childOutput(fdno)) {
-	outnot->setEnabled(FALSE);	
+	outnot->setEnabled(false);	
   }
 }
 
@@ -327,7 +327,7 @@ void KProcess::slotChildError(int fdno)
 {
 
   if (!childError(fdno)) {
-    errnot->setEnabled(FALSE);
+    errnot->setEnabled(false);
   }
 }
 
@@ -336,7 +336,7 @@ void KProcess::slotChildError(int fdno)
 void KProcess::slotSendData(int)
 {
   if (input_sent == input_total) {
-    innot->setEnabled(FALSE);
+    innot->setEnabled(false);
     input_data = 0;
     emit wroteStdin(this);
   } else
@@ -353,7 +353,7 @@ void KProcess::slotSendData(int)
 
 void KProcess::processHasExited(int state)
 {
-  runs = FALSE;
+  runs = false;
   status = state;
 
   commClose(); // cleanup communication sockets
@@ -434,7 +434,7 @@ int KProcess::commSetupDoneP()
 	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
 	  innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
 	  CHECK_PTR(innot);
-	  innot->setEnabled(FALSE); // will be enabled when data has to be sent
+	  innot->setEnabled(false); // will be enabled when data has to be sent
 	  QObject::connect(innot, SIGNAL(activated(int)),
 					   this, SLOT(slotSendData(int)));
 	}
@@ -547,7 +547,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   QString cmd;
 
   if (runs || (0 == n)) {
-	return FALSE;  // cannot start a process that is already running
+	return false;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
 
@@ -558,7 +558,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     shell = searchShell();
   if (0 == shell) {
     debug("Could not find a valid shell\n");
-    return FALSE;
+    return false;
   }
 
   // CC: Changed the way the parameter was built up
@@ -583,7 +583,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
 
-  runs = TRUE;
+  runs = true;
   pid = vfork();
 
   if (0 == pid) {
@@ -610,9 +610,9 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   } else if (-1 == pid) {
 	// forking failed
 
-	runs = FALSE;
+	runs = false;
 	//	free(arglist);
-	return FALSE;
+	return false;
 
   } else {
 	// the parent continues here
@@ -629,7 +629,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	}
   }
   //  free(arglist);
-  return TRUE;
+  return true;
 }
 
 
@@ -666,12 +666,12 @@ bool KShellProcess::isExecutable(const char *fname)
 {
   struct stat fileinfo;
 
-  if ((0 == fname) || (strlen(fname) == 0)) return FALSE;
+  if ((0 == fname) || (strlen(fname) == 0)) return false;
   // CC: filename is invalid
 
   // CC: we've got a valid filename, now let's see whether we can execute that file
 
-  if (-1 == stat(fname, &fileinfo)) return FALSE;
+  if (-1 == stat(fname, &fileinfo)) return false;
   // CC: return false if the file does not exist
 
   // CC: anyway, we cannot execute directories, block/character devices, fifos or sockets
@@ -684,14 +684,14 @@ bool KShellProcess::isExecutable(const char *fname)
 #endif
        (S_ISFIFO(fileinfo.st_mode)) ||
        (S_ISDIR(fileinfo.st_mode)) ) {
-    return FALSE;
+    return false;
   }
 
   // CC: now check for permission to execute the file
-  if (access(fname, X_OK) != 0) return FALSE;
+  if (access(fname, X_OK) != 0) return false;
 
   // CC: we've passed all the tests...
-  return TRUE;
+  return true;
 }
 #include "kprocess.moc"
 

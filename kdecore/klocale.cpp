@@ -83,7 +83,7 @@ static const char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
 #endif
 
-const QString KLocale::mergeLocale(const QString& lang,const QString& country,
+QString KLocale::mergeLocale(const QString& lang,const QString& country,
 				   const QString& charset)
 {
     if (lang.isEmpty()) 
@@ -325,7 +325,7 @@ KLocale::~KLocale()
     delete catalogues;
 }
 
-const QString KLocale::translate(const char* msgid)
+QString KLocale::translate(const char* msgid) const
 {
     const char *text = msgid;
 
@@ -513,7 +513,7 @@ void KLocale::aliasLocale( const char* text, long int index)
 }
 
 // Using strings seems to be more portable (for systems without locale.h
-const QString KLocale::getLocale(const QString& cat){
+QString KLocale::getLocale(const QString& cat){
 
     cat.upper();
     if (cat=="LC_NUMERIC") return lc_numeric;
@@ -578,7 +578,7 @@ KLocale::~KLocale()
 {
 }
 
-const QString KLocale::translate(const char* msgid)
+QString KLocale::translate(const char* msgid) const
 {
     return msgid;
 }
@@ -673,7 +673,7 @@ void KLocale::aliasLocale(const char *text, long int index)
     aliases.insert(index, new QString(text));
 }
 
-const QString KLocale::getLocale(const QString& ){
+QString KLocale::getLocale(const QString& ) const {
     return "C";
 }
 
@@ -690,7 +690,7 @@ void KLocale::insertCatalogue( const QString& ) {
 #endif /* ENABLE_NLS */
 
 
-const QString KLocale::getAlias(long key) const
+QString KLocale::getAlias(long key) const
 {
     return *aliases[key];
 }

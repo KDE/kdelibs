@@ -169,7 +169,7 @@ class KAccel
 	 */
 	void connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
-			  bool activate = TRUE );
+			  bool activate = true );
 
 
 	/**
@@ -179,7 +179,7 @@ class KAccel
 	 */
 	void connectItem( StdAccel accel,
 			  const QObject* receiver, const char *member,
-			  bool activate = TRUE );
+			  bool activate = true );
 
 	/**
 	* Returns the number of accelerator items.
@@ -191,19 +191,19 @@ class KAccel
 	* action, or zero if either the action name cannot be found or the current
 	* key is set to no key.
 	*/
-	uint currentKey( const QString& action );
+	uint currentKey( const QString& action ) const;
 
 	/**
 	* Returns the description  of the accelerator item with the action name
 	* action, or zero if the action name cannot be found. Useful for menus.
 	*/
-	const QString  description( const QString& action );
+	QString  description( const QString& action ) const;
 
 	/**
 	* Returns the default key code of the accelerator item with the action name
 	* action, or zero if the action name cannot be found.
 	*/
-	uint defaultKey( const QString& action);
+	uint defaultKey( const QString& action) const;
 	
 	/**
 	 * Disconnects an accelerator item from a function in another object.
@@ -236,10 +236,10 @@ class KAccel
 
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
-			uint defaultKeyCode, bool configurable = TRUE );
+			uint defaultKeyCode, bool configurable = true );
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, int id, QPopupMenu *qmenu, 
-			bool configurable = TRUE );
+			bool configurable = true );
 	
 	 /**
 	 * Inserts an accelerator item and returns -1 if the key code
@@ -265,10 +265,10 @@ class KAccel
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 			 const QString& defaultKeyCode,
-			 bool configurable = TRUE );
+			 bool configurable = true );
 	bool insertItem( const QString& descr, const QString& action,
 			 const QString& defaultKeyCode,
-			 int id, QPopupMenu *qmenu, bool configurable = TRUE );
+			 int id, QPopupMenu *qmenu, bool configurable = true );
 				
 	/**
 	 *	Inserts a standard accelerator item if id equal to Open,
@@ -291,10 +291,10 @@ class KAccel
 	 * keybinding editor.
 	 */
 	bool insertItem( const QString& action, uint defaultKeyCode,
-				 bool configurable = TRUE );
+				 bool configurable = true );
 	bool insertItem( const QString& action, uint defaultKeyCode,
 				 int id, QPopupMenu *qmenu, 
-				 bool configurable = TRUE );
+				 bool configurable = true );
 
 
 	/**
@@ -313,8 +313,8 @@ class KAccel
 				 StdAccel accel );
 
 
-	bool isEnabled();
-	bool isItemEnabled( const QString& action );
+	bool isEnabled() const;
+	bool isItemEnabled( const QString& action ) const;
 				
 	/**
 	 * Returns the dictionary of accelerator action names and KKeyEntry
@@ -337,12 +337,12 @@ class KAccel
 	void setConfigGroup( const QString& group );
 	void setConfigGlobal( bool global );
 	
-	const QString configGroup();
-	bool configGlobal();
+	QString configGroup() const;
+	bool configGlobal() const;
 	
 	/**
-	 * Enables the accelerator if activate is TRUE, or disables it if
-	 * activate is FALSE..
+	 * Enables the accelerator if activate is true, or disables it if
+	 * activate is false...
 	 *
 	 * Individual keys can also be enabled or disabled.
 	 */
@@ -372,7 +372,7 @@ class KAccel
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help
 	 *	and zero otherwise.
 	 */
-	static const QString stdAction( StdAccel id );
+	static QString stdAction( StdAccel id );
 
 	/**
 	 * Writes the current configurable associations to the application's
@@ -380,26 +380,26 @@ class KAccel
 	 */	
 	void writeSettings(KConfig* config = 0);
 	
-       /**
-        * Returns TRUE if keyentry can be modified
-        */
-       bool configurable( const char * action );
+	/**
+	 * Returns true if keyentry can be modified
+	 */
+	bool configurable( const char * action ) const;
 
-       /**
-        *  Change the keycode for an accelerator
-        */
-         bool updateItem( const char * action, uint keyCode);
+	/**
+	 *  Change the keycode for an accelerator
+	 */
+	bool updateItem( const char * action, uint keyCode);
 
-       /**
-        *  remove the keycode for an accelerator
-	**/
-         void clearItem(const char *action);
+	/**
+	 *  remove the keycode for an accelerator
+	 **/
+	void clearItem(const char *action);
 
-       /**
-        *  clear any pointers to a menu
-        **/
+	/**
+	 *  clear any pointers to a menu
+	 **/
         void removeDeletedMenu(QPopupMenu *menu);
-
+	
 protected:
  	QAccel *pAccel;
 	int aAvailableId;

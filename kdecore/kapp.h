@@ -97,20 +97,19 @@ public:
   static KApplication* getKApplication() { return KApp; }
 
   /**
-	* Retrieve the application config object.
-	*
-	* @return a pointer to the application's global KConfig object.
-	* @see KConfig
-	*/
+   * this function is obsolete. Use KGlobal::config() instead.
+   * getConfig will just call this function
+   * @see KConfig
+   */
   KConfig* getConfig() const;
 
   /**
-	* Retrieve the application session config object.
-	*
-	* @return A pointer to the application's instance specific
-	* 	KConfig object.
-	* @see KConfig
-	*/
+   * Retrieve the application session config object.
+   *
+   * @return A pointer to the application's instance specific
+   * 	KConfig object.
+   * @see KConfig
+   */
   KConfig* getSessionConfig();
 
   /**
@@ -132,7 +131,7 @@ public:
 	* instance specific config object with @ref #getSessionConfig
 	* in this case!
 	*/
-  void enableSessionManagement(bool userdefined = FALSE);
+  void enableSessionManagement(bool userdefined = false);
 
   /**
 	* Set the WmCommand for the session manager.
@@ -146,19 +145,20 @@ public:
 
 
   /**
-	* Get the standard help menu.
-	*
-	* @param bAboutQtMenu If true, there is a menu entry for About Qt
-	* @return a standard help menu
-	*/
-  QPopupMenu* getHelpMenu( bool bAboutQtMenu, const QString& appAboutText );
+   * Get the standard help menu.
+   *
+   * @param bAboutQtMenu If true, there is a menu entry for About Qt
+   * @return a standard help menu
+   */
+  QPopupMenu* getHelpMenu( bool bAboutQtMenu, 
+			   const QString& appAboutText );
 							
   /**
     * Get character set information.
     * @return a pointer to the KCharsets object of the application
     * @see KCharsets
     */
-  KCharsets* getCharsets()const;
+  KCharsets* getCharsets() const;
 
   /**
 	* Get the application icon.
@@ -186,29 +186,18 @@ public:
       return pTopWidget;
     }
 
-
   /**
-  * @deprecated
-  */
-  void registerTopWidget();
-
-  /**
-  * @deprecated
-  */
-  void unregisterTopWidget();
-
-  /**
-	* Invoke the kdehelp HTML help viewer.
-	*
-	* @param aFilename	The filename that is to be loaded. Its
-	*			location is computed automatically
-	*			according to the KFSSTND.  If aFilename
-	*			is empty, the logical appname with .html
-	*			appended to it is used.
-	* @param aTopic		This allows context-sensitive help. Its
-	*			value will be appended to the filename,
-	*			prefixed with a "#" (hash) character.
-	*/
+   * Invoke the kdehelp HTML help viewer.
+   *
+   * @param aFilename	The filename that is to be loaded. Its
+   *			location is computed automatically
+   *			according to the KFSSTND.  If aFilename
+   *			is empty, the logical appname with .html
+   *			appended to it is used.
+   * @param aTopic		This allows context-sensitive help. Its
+   *			value will be appended to the filename,
+   *			prefixed with a "#" (hash) character.
+   */
   void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
 
   /**
@@ -216,7 +205,7 @@ public:
    * if a Qt internal style is being used.
    *
    */
-  KStyle* kstyle() const {return(pKStyle);}
+  KStyle* kstyle() const {return pKStyle;}
   
   /**
    * Returns the directory where KDE stores its HTML documentation
@@ -250,14 +239,6 @@ public:
    */
   static QString kde_bindir();
 
-  /**
-   * Returns the directory where config files are stored
-   *
-   * The default for this directory is $KDEDIR/share/config
-   * @return the name of the directory
-   */
-  static QString kde_configdir();
-
  /**
   * Returns the directory where mimetypes are stored
   *
@@ -285,7 +266,7 @@ public:
    * @param fontlist a reference to a list to fill with fonts.
    * @return true on success.
    */
-  bool getKDEFonts(QStringList &fontlist);
+  bool getKDEFonts(QStringList &fontlist) const;
 
   // QString appName () const { return name(); }
 
@@ -298,51 +279,52 @@ public:
    */
   QString getCaption() const;
 
-  /** Get a file name in order to make a temporary copy of your
-   * document.
+  /** 
+   * Get a file name in order to make a temporary copy of your document.
    *
    * @param pFilename The full path to the current file of your
    * document.
    * @return A new filename for auto-saving. You have to free() this
    * yourself, otherwise you have a memory leak!
    */
-  QString tempSaveName( const QString& pFilename );
+  QString tempSaveName( const QString& pFilename ) const;
 
-  /** Check if there is an auto-save file for the document you want to
-	* open.
-	*
-	* @param pFilename The full path to the document you want to open.
-	* @param bRecover  This gets set to true if there was a recover
-	* file.
-	* @return The full path of the file to open. You must free() this
-	* pointer yourself, otherwise you have a memory leak.
-	*/
-  QString checkRecoverFile( const QString& pFilename, bool& bRecover );
+  /** 
+   * Check if there is an auto-save file for the document you want to
+   * open.
+   *
+   * @param pFilename The full path to the document you want to open.
+   * @param bRecover  This gets set to true if there was a recover
+   * file.
+   * @return The full path of the file to open. You must free() this
+   * pointer yourself, otherwise you have a memory leak.
+   */
+  QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
 
   /**
-	* An X11 atom used for IPC
-	*/
+   * An X11 atom used for IPC
+   */
   Atom getDndSelectionAtom() { return DndSelection; }
   /**
-	* An X11 atom used for IPC
-	*/
+   * An X11 atom used for IPC
+   */
   Atom getDndProtocolAtom() { return DndProtocol; }
   /**
-	* An X11 atom used for IPC
-	*/
+   * An X11 atom used for IPC
+   */
   Atom getDndEnterProtocolAtom() { return DndEnterProtocol; }
   /**
-	* An X11 atom used for IPC
-	*/
+   * An X11 atom used for IPC
+   */
   Atom getDndLeaveProtocolAtom() { return DndLeaveProtocol; }
   /**
-	* An X11 atom used for IPC
-	*/
+   * An X11 atom used for IPC
+   */
   Atom getDndRootProtocolAtom() { return DndRootProtocol; }
-
+  
   /**
-	* Get the X11 display
-	*/
+   * Get the X11 display
+   */
   Display *getDisplay() { return display; }
   /**
 	* Used by KDNDDropZone to register
@@ -397,8 +379,8 @@ protected:
   Atom DndRootProtocol;
 
   /**
-	* The X11 display
-	*/
+   * The X11 display
+   */
   Display *display;
 
   Atom KDEChangePalette;
@@ -470,18 +452,18 @@ private:
 
 public:
 
-    QColor inactiveTitleColor();
-    QColor inactiveTextColor();
-    QColor activeTitleColor();
-    QColor activeTextColor();
-    int contrast();
-    QFont generalFont();
-    QFont fixedFont();
-    GUIStyle applicationStyle();
+  QColor inactiveTitleColor() const;
+  QColor inactiveTextColor() const;
+  QColor activeTitleColor() const;
+  QColor activeTextColor() const;
+  int contrast() const;
+  QFont generalFont() const;
+  QFont fixedFont() const;
+  GUIStyle applicationStyle() const;
 
 
   /** 
-  	@internal
+      @internal
     */
   int xioErrhandler();
 
@@ -571,6 +553,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.92  1999/06/19 21:16:26  kulow
+// found the reason why KConfig parses all files twice at startup.
+// KApplication does reparseConfig right after creating the config
+// object (through KGlobal). Fixed in adding a bool reparse parameter
+// to readSettings
+//
 // Revision 1.91  1999/06/18 20:27:42  kulow
 // moved getConfig into source to avoid including kglobal.h (this enabal-final
 // thing fools me way too often :(
