@@ -518,6 +518,9 @@ void KJScriptImp::clear()
 
     delete con; con = 0L;
     glob.clear();
+
+    Collector::collect();
+
     // remove from global chain (see init())
     next->prev = prev;
     prev->next = next;
@@ -525,7 +528,6 @@ void KJScriptImp::clear()
     if (hook == this)
       hook = 0L;
 
-    Collector::collect();
 #ifdef KJS_DEBUGGER
     sid = -1;
 #endif
