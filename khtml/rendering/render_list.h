@@ -1,8 +1,9 @@
 /*
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the HTML rendering engine for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,6 +39,24 @@ namespace khtml
 class RenderListItem;
 class RenderListMarker;
 
+/*
+class RenderList : public RenderBox
+{
+public:
+    RenderList(DOM::NodeImpl*);
+
+    virtual const char *renderName() const { return "RenderList"; }
+
+    virtual short marginLeft() const;
+    virtual short marginRight() const;
+    virtual int countChildren() const;
+
+protected:
+    mutable int m_total;
+}*/
+
+// -----------------------------------------------------------------------------
+
 class RenderListItem : public RenderBlock
 {
     friend class RenderListMarker;
@@ -59,6 +78,8 @@ public:
     virtual void layout( );
     virtual void detach( );
     virtual void calcMinMaxWidth();
+    //virtual short marginLeft() const;
+    //virtual short marginRight() const;
 
     void setInsideList(bool b ) { m_insideList = b; }
 
@@ -99,19 +120,22 @@ public:
 
     virtual bool isListMarker() const { return true; }
 
+    virtual short markerWidth() const { return m_markerWidth; }
+
     RenderListItem* listItem() const { return m_listItem; }
     void setListItem(RenderListItem* listItem) { m_listItem = listItem; }
 
-protected:
-    friend class RenderListItem;
-
     bool listPositionInside() const
     { return !m_listItem->m_insideList || style()->listStylePosition() == INSIDE; }
+
+protected:
+    friend class RenderListItem;
 
     QString m_item;
     CachedImage *m_listImage;
     int m_value;
     int m_total;
+    short m_markerWidth;
     RenderListItem* m_listItem;
 };
 

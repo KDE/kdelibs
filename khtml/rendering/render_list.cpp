@@ -1,5 +1,5 @@
 /**
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the HTML rendering engine for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
@@ -26,6 +26,7 @@
 
 #include "rendering/render_list.h"
 #include "rendering/render_canvas.h"
+#include "rendering/enumerate.h"
 #include "html/html_listimpl.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
@@ -39,254 +40,7 @@
 //#define BOX_DEBUG
 
 using namespace khtml;
-
-static QString toRoman( int number, bool upper )
-{
-    QString roman;
-    QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
-    QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-    QChar *digits = upper ? udigits : ldigits;
-    int i, d = 0;
-
-    do
-    {
-        int num = number % 10;
-
-        if ( num % 5 < 4 )
-            for ( i = num % 5; i > 0; i-- )
-                roman.insert( 0, digits[ d ] );
-
-        if ( num >= 4 && num <= 8)
-            roman.insert( 0, digits[ d+1 ] );
-
-        if ( num == 9 )
-            roman.insert( 0, digits[ d+2 ] );
-
-        if ( num % 5 == 4 )
-            roman.insert( 0, digits[ d ] );
-
-        number /= 10;
-        d += 2;
-    }
-    while ( number );
-
-    return roman;
-}
-
-static QString toGeorgian( int number )
-{
-    QString georgian;
-    QChar tenthousand = 0x10ef;
-    QChar thousands[9] = {0x10e8, 0x10e9, 0x10ea, 0x10eb, 0x10ec,
-                          0x10ed, 0x10ee, 0x10f4, 0x10f5 };
-    QChar hundreds[9] = {0x10e0, 0x10e1, 0x10e2, 0x10e3, 0x10f3,
-                         0x10e4, 0x10e5, 0x10e6, 0x10e7 };
-    QChar tens[9] = {0x10d8, 0x10d9, 0x10da, 0x10db, 0x10dc,
-                     0x10f2, 0x10dd, 0x10de, 0x10df };
-    QChar units[9] = {0x10d0, 0x10d1, 0x10d2, 0x10d3, 0x10d4,
-                      0x10d5, 0x10d6, 0x10f1, 0x10d7 };
-
-    if (number > 19999) return QString::number(number);
-    if (number >= 10000) {
-        georgian.append(tenthousand);
-        number = number - 10000;
-    }
-    if (number >= 1000) {
-        georgian.append(thousands[number/1000-1]);
-        number = number % 1000;
-    }
-    if (number >= 100) {
-        georgian.append(hundreds[number/100-1]);
-        number = number % 100;
-    }
-    if (number >= 10) {
-        georgian.append(tens[number/10-1]);
-        number = number % 10;
-    }
-    if (number >= 1)  {
-        georgian.append(units[number-1]);
-    }
-
-    return georgian;
-}
-
-static QString toArmenian( int number )
-{
-    QString armenian;
-    int onethousand = 0x57c;
-    int hundreds = 0x572;
-    int tens = 0x569;
-    int units = 0x560;
-
-    // The standard defines values over 1999, but 7000 is very hard to render
-    if (number > 1999) return QString::number(number);
-    if (number >= 1000) {
-        armenian.append(QChar(onethousand));
-        number = number - 1000;
-    }
-    if (number >= 100) {
-        armenian.append(QChar(hundreds+number/100));
-        number = number % 100;
-    }
-    if (number >= 10) {
-        armenian.append(QChar(tens+number/10));
-        number = number % 10;
-    }
-    if (number >= 1)  {
-        armenian.append(QChar(units+number));
-    }
-
-    return armenian;
-}
-static QString toLetter( int number, int base ) {
-    QValueList<QChar> letters;
-    while(number > 0) {
-        number--; // number 0 is letter a
-        QChar letter = (QChar) (base + (number % 26));
-        letters.prepend(letter);
-        number /= 26;
-    }
-    QString str;
-    str.setLength(letters.size());
-    int i=0;
-    while(!letters.isEmpty()) {
-        str[i++] = letters.front();
-        letters.pop_front();
-    }
-    return str;
-}
-
-static QString toHebrew( int number ) {
-    const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
-
-    QString letter;
-    if (number>999) {
-  	letter = toHebrew(number/1000) + QString::fromLatin1("'");
-   	number = number%1000;
-    }
-
-    int hunderts = (number/400);
-    if (hunderts > 0) {
-	for(int i=0; i<hunderts; i++) {
-	    letter += QChar(1511 + 3);
-	}
-    }
-    number = number % 400;
-    if ((number / 100) != 0) {
-        letter += QChar (1511 + (number / 100) -1);
-    }
-    number = number % 100;
-    int tens = number/10;
-    if (tens > 0 && !(number == 15 || number == 16)) {
-	letter += tenDigit[tens-1];
-    }
-    if (number == 15 || number == 16) { // special because of religious
-	letter += QChar(1487 + 9);       // reasons
-    	letter += QChar(1487 + number - 9);
-    } else {
-        number = number % 10;
-        if (number != 0) {
-            letter += QChar (1487 + number);
-        }
-    }
-    return letter;
-}
-
-static QString toAlphabetic( int number, int base, QChar* alphabet ) {
-    QValueList<QChar> letters;
-    while(number > 0) {
-        number--; // number 0 is letter 1
-        QChar letter = alphabet[number % base];
-        letters.prepend(letter);
-        number /= base;
-    }
-    QString str;
-    str.setLength(letters.size());
-    int i=0;
-    while(!letters.isEmpty()) {
-        str[i++] = letters.front();
-        letters.pop_front();
-    }
-    return str;
-}
-
-static QString toHiragana( int number ) {
-    static QChar hiragana[48] = {0x3042, 0x3044, 0x3046, 0x3048, 0x304A, 0x304B, 0x304D,
-                                 0x304F, 0x3051, 0x3053, 0x3055, 0x3057, 0x3059, 0x305B, 0x305D,
-                                 0x305F, 0x3061, 0x3064, 0x3066, 0x3068, 0x306A, 0x306B,
-                                 0x306C, 0x306D, 0x306E, 0x306F, 0x3072, 0x3075, 0x3078,
-                                 0x307B, 0x307E, 0x307F, 0x3080, 0x3081, 0x3082, 0x3084, 0x3086,
-                                 0x3088, 0x3089, 0x308A, 0x308B, 0x308C, 0x308D, 0x308F,
-                                 0x3090, 0x3091, 0x9092, 0x3093};
-    return toAlphabetic( number, 48, hiragana );
-}
-
-static QString toHiraganaIroha( int number ) {
-    static QChar hiragana[47] = {0x3044, 0x308D, 0x306F, 0x306B, 0x307B, 0x3078, 0x3068,
-                                 0x3061, 0x308A, 0x306C, 0x308B, 0x3092, 0x308F, 0x304B,
-                                 0x3088, 0x305F, 0x308C, 0x305D, 0x3064, 0x306D, 0x306A,
-                                 0x3089, 0x3080, 0x3046, 0x3090, 0x306E, 0x304A, 0x304F, 0x3084,
-                                 0x307E, 0x3051, 0x3075, 0x3053, 0x3048, 0x3066, 0x3042, 0x3055,
-                                 0x304D, 0x3086, 0x3081, 0x307F, 0x3057, 0x3091, 0x3072, 0x3082,
-                                 0x305B, 0x3059 };
-    return toAlphabetic( number, 47, hiragana );
-}
-
-static QString toKatakana( int number ) {
-    static QChar katakana[48] = {0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD,
-                                 0x30AF, 0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB,
-                                 0x30BD, 0x30BF, 0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA,
-                                 0x30CB, 0x30CC, 0x30CD, 0x30CE, 0x30CF, 0x30D2, 0x30D5,
-                                 0x30D8, 0x30DB, 0x30DE, 0x30DF, 0x30E0, 0x30E1, 0x30E2,
-                                 0x30E4, 0x30E6, 0x30E8, 0x30E9, 0x30EA, 0x30EB, 0x30EC,
-                                 0x30ED, 0x30EF, 0x30F0, 0x30F1, 0x90F2, 0x30F3};
-    return toAlphabetic( number, 48, katakana );
-}
-
-static QString toKatakanaIroha( int number ) {
-    static QChar katakana[47] = {0x30A4, 0x30ED, 0x30CF, 0x30CB, 0x30DB, 0x30D8, 0x30C8,
-                                 0x30C1, 0x30EA, 0x30CC, 0x30EB, 0x30F2, 0x30EF, 0x30AB,
-                                 0x30E8, 0x30BF, 0x30EC, 0x30ED, 0x30C4, 0x30CD, 0x30CA,
-                                 0x30E9, 0x30E0, 0x30A6, 0x30F0, 0x30CE, 0x30AA, 0x30AF,
-                                 0x30E4, 0x30DE, 0x30B1, 0x30D5, 0x30B3, 0x30A8, 0x30C6,
-                                 0x30A2, 0x30B5, 0x30AD, 0x30E6, 0x30E1, 0x30DF, 0x30B7,
-                                 0x30F1, 0x30D2, 0x30E2, 0x30BB, 0x90B9};
-    return toAlphabetic( number, 47, katakana );
-}
-
-static QString toLowerGreek( int number ) {
-    static QChar greek[24] = { 0x3B1, 0x3B2, 0x3B3, 0x3B4, 0x3B5, 0x3B6, 0x3B7,
-                               0x3B8, 0x3B9, 0x3BA, 0x3BB, 0x3BC, 0x3BD, 0x3BE,
-                               0x3BF, 0x3C0, 0x3C1, 0x3C3, 0x3C4, 0x3C5, 0x3C6,
-                               0x3C7, 0x3C8, 0x3C0};
-
-    return toAlphabetic( number, 24, greek );
-}
-
-static QString toUpperGreek( int number ) {
-    // The standard claims to be base 24, but only lists 19 letters.
-    static QChar greek[19] = { 0x391, 0x392, 0x393, 0x394, 0x395, 0x396, 0x397, 0x398,
-                               0x399, 0x39A, 0x39B, 0x39C, 0x39D, 0x39E, 0x39F,
-                               0x3A0, 0x3A1, 0x3A3, 0x3A9};
-
-    return toAlphabetic( number, 19, greek );
-}
-
-static QString toNumeric( int number, int base ) {
-    QString letter = QString::number(number);
-    for(unsigned int i = 0; i < letter.length(); i++) {
-        letter[i] = QChar(letter[i].digitValue()+base);
-    }
-    return letter;
-}
-
-inline static QString toArabicIndic( int number ) {
-    return toNumeric(number, 0x660);
-}
-
-inline static QString toPersianUrdu( int number ) {
-    return toNumeric(number, 0x6F0);
-}
+using namespace Enumerate;
 
 // -------------------------------------------------------------------------
 
@@ -405,6 +159,19 @@ void RenderListItem::calcMinMaxWidth()
     if (!minMaxKnown())
         RenderBlock::calcMinMaxWidth();
 }
+/*
+short RenderListItem::marginLeft() const
+{
+    if (m_insideList)
+        return RenderBlock::marginLeft();
+    else
+        return kMax(m_marker->markerWidth(), RenderBlock::marginLeft());
+}
+
+short RenderListItem::marginRight() const
+{
+    return RenderBlock::marginRight();
+}*/
 
 void RenderListItem::layout( )
 {
@@ -480,7 +247,7 @@ void RenderListItem::calcListTotal()
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker(DOM::DocumentImpl* node)
-    : RenderBox(node), m_listImage(0), m_value(-1), m_total(-1)
+    : RenderBox(node), m_listImage(0), m_value(-1), m_total(-1), m_markerWidth(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -687,11 +454,12 @@ void RenderListMarker::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    m_width = 0;
+    m_markerWidth = m_width = 0;
 
     if(m_listImage) {
+        m_markerWidth = m_listImage->pixmap().width() + 5;
         if (listPositionInside())
-            m_width = m_listImage->pixmap().width() + 5;
+            m_width = m_markerWidth;
         m_height = m_listImage->pixmap().height();
         m_minWidth = m_maxWidth = m_width;
         setMinMaxKnown();
@@ -712,8 +480,7 @@ void RenderListMarker::calcMinMaxWidth()
     case LSQUARE:
     case LBOX:
     case LDIAMOND:
-        if(listPositionInside())
-            m_width = fm.ascent();
+        m_markerWidth = fm.ascent();
     	goto end;
 // Unsupported:
     case CJK_IDEOGRAPHIC:
@@ -763,11 +530,11 @@ void RenderListMarker::calcMinMaxWidth()
 // Alphabetic:
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        m_item = toLetter( m_value, 'a' );
+        m_item = toLatin( m_value, 'a' );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        m_item = toLetter( m_value, 'A' );
+        m_item = toLatin( m_value, 'A' );
         break;
     case LOWER_GREEK:
         m_item = toLowerGreek( m_value );
@@ -791,11 +558,12 @@ void RenderListMarker::calcMinMaxWidth()
         break;
     }
     m_item += QString::fromLatin1(". ");
+    m_markerWidth = fm.width(m_item);
 
-    if(listPositionInside())
-	m_width = fm.width(m_item);
 
 end:
+    if(listPositionInside())
+        m_width = m_markerWidth;
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
