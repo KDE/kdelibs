@@ -214,12 +214,17 @@ void HTMLAppletElementImpl::attach()
 	if(!archive.isNull())
 	    args.insert( "archive", archive.string() );
 
-	args.insert( "baseURL", getDocument()->baseURL() );
-        m_render = new (getDocument()->renderArena()) RenderApplet(this, args);
-        setLiveConnect(applet()->getLiveConnectExtension());
+        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+        _style->ref();
+        if ( _style->display() != NONE ) {
+  	    args.insert( "baseURL", getDocument()->baseURL() );
+            m_render = new (getDocument()->renderArena()) RenderApplet(this, args);
+            setLiveConnect(applet()->getLiveConnectExtension());
 
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
+            m_render->setStyle(_style);
+            parentNode()->renderer()->addChild(m_render, nextRenderer());
+        }
+        _style->deref();
         NodeBaseImpl::attach();
     }
     else
@@ -422,8 +427,11 @@ void HTMLObjectElementImpl::attach()
     if (parentNode()->renderer() && _style->display() != NONE) {
         needWidgetUpdate=false;
         bool imagelike = serviceType.startsWith("image/");
-        if (imagelike)
+        if (imagelike) {
             m_render = new (getDocument()->renderArena()) RenderImage(this);
+            // make sure we don't attach the inner contents
+            addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
+        }
         else
             m_render = new (getDocument()->renderArena()) RenderPartObject(this);
 
