@@ -981,6 +981,8 @@ bool KHTMLPart::findTextNext( const QString &str )
 		int x = 0, y = 0;
 		d->m_findNode->renderer()->absolutePosition(x, y);
 		d->m_view->setContentsPos(x-50, y-50);
+		d->m_doc->setSelection( d->m_findNode, d->m_findPos,
+					d->m_findNode, d->m_findPos+str.length() );
 		return true;
 	    }
 	}
