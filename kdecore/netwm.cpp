@@ -101,6 +101,12 @@ static Atom net_wm_state_max_horiz    = 0;
 static Atom net_wm_state_shaded       = 0;
 static Atom net_wm_state_skip_taskbar = 0;
 static Atom net_wm_state_skip_pager   = 0;
+static Atom net_wm_state_hidden       = 0;
+static Atom net_wm_state_fullscreen   = 0;
+static Atom net_wm_state_above        = 0;
+static Atom net_wm_state_below        = 0;
+
+// KDE extension that's not in the specs - Replaced by state_above now?
 static Atom net_wm_state_stays_on_top = 0;
 
 // used to determine whether application window is managed or not
@@ -191,7 +197,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 48;
+static const int netAtomCount = 52;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -239,6 +245,11 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_SHADED",
 	    "_NET_WM_STATE_SKIP_TASKBAR",
 	    "_NET_WM_STATE_SKIP_PAGER",
+	    "_NET_WM_STATE_HIDDEN",
+	    "_NET_WM_STATE_FULLSCREEN",
+	    "_NET_WM_STATE_ABOVE",
+	    "_NET_WM_STATE_BELOW",
+
 	    "_NET_WM_STATE_STAYS_ON_TOP",
 
 	    "_KDE_NET_SYSTEM_TRAY_WINDOWS",
@@ -296,6 +307,11 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_shaded,
 	    &net_wm_state_skip_taskbar,
 	    &net_wm_state_skip_pager,
+	    &net_wm_state_hidden,
+	    &net_wm_state_fullscreen,
+	    &net_wm_state_above,
+	    &net_wm_state_below,
+	    
 	    &net_wm_state_stays_on_top,
 
 	    &kde_net_system_tray_windows,
@@ -913,6 +929,11 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_wm_state_shaded;
 	atoms[pnum++] = net_wm_state_skip_taskbar;
 	atoms[pnum++] = net_wm_state_skip_pager;
+/*	atoms[pnum++] = net_wm_state_hidden;   ##### UNCOMMENT WHEN IMPLEMENTED IN KWIN!!!
+	atoms[pnum++] = net_wm_state_fullscreen;
+	atoms[pnum++] = net_wm_state_above;
+	atoms[pnum++] = net_wm_state_below; */
+
 	atoms[pnum++] = net_wm_state_stays_on_top;
     }
 
@@ -2019,6 +2040,42 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
 
+        if ((mask & Hidden) &&
+	    ((p->state & Hidden) != (state & Hidden))) {
+            e.xclient.data.l[0] = (state & Hidden) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_hidden;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+
+        if ((mask & FullScreen) &&
+	    ((p->state & FullScreen) != (state & FullScreen))) {
+            e.xclient.data.l[0] = (state & FullScreen) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_fullscreen;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+	
+        if ((mask & Above) &&
+	    ((p->state & Above) != (state & Above))) {
+            e.xclient.data.l[0] = (state & Above) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_above;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+	
+        if ((mask & Below) &&
+	    ((p->state & Below) != (state & Below))) {
+            e.xclient.data.l[0] = (state & Below) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_below;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+
 	if ((mask & StaysOnTop) && ((p->state & StaysOnTop) != (state & StaysOnTop))) {
 	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
@@ -2038,8 +2095,12 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	if (p->state & MaxVert) data[count++] = net_wm_state_max_vert;
 	if (p->state & MaxHoriz) data[count++] = net_wm_state_max_horiz;
 	if (p->state & Shaded) data[count++] = net_wm_state_shaded;
+	if (p->state & Hidden) data[count++] = net_wm_state_hidden;
+	if (p->state & FullScreen) data[count++] = net_wm_state_fullscreen;
 
 	// policy
+	if (p->state & Above) data[count++] = net_wm_state_above;
+	if (p->state & Below) data[count++] = net_wm_state_below;
 	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
 	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
 	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
@@ -2356,6 +2417,14 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		    mask |= SkipTaskbar;
                 else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_pager)
 		    mask |= SkipPager;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_hidden)
+		    mask |= Hidden;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_fullscreen)
+		    mask |= FullScreen;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_above)
+		    mask |= Above;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_below)
+		    mask |= Below;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
 		    mask |= StaysOnTop;
 	    }
@@ -2544,6 +2613,14 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->state |= SkipTaskbar;
 		    else if ((Atom) states[count] == net_wm_state_skip_pager)
 			p->state |= SkipPager;
+		    else if ((Atom) states[count] == net_wm_state_hidden)
+			p->state |= Hidden;
+		    else if ((Atom) states[count] == net_wm_state_fullscreen)
+			p->state |= FullScreen;
+		    else if ((Atom) states[count] == net_wm_state_above)
+			p->state |= Above;
+		    else if ((Atom) states[count] == net_wm_state_below)
+			p->state |= Below;
 		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
 			p->state |= StaysOnTop;
 		}

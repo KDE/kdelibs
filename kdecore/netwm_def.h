@@ -25,6 +25,10 @@
 #ifndef   __netwm_def_h
 #define   __netwm_def_h
 
+// @#$@%! Xlib
+#undef Above
+#undef Below
+
 
 /**
   Simple point class for @ref NET classes.
@@ -269,6 +273,14 @@ public:
        @li StaysOnTop indicate that a window should be kept on top of other windows.
 
        @li SkipPager indicates that a window should not be included on a pager.
+
+       @li Hidden indicates that a window should not be visible on the screen (e.g. when minimised).
+
+       @li FullScreen indicates that a window should fill the entire screen and have no window decorations.
+
+       @li Above indicates that a window should on top of most windows (but below fullscreen windows).
+
+       @li Below indicates that a window should be below most windows (but above any desktop windows).
     **/
 
     enum State {
@@ -279,8 +291,12 @@ public:
 	Max = MaxVert | MaxHoriz,
 	Shaded       = 1<<4,
 	SkipTaskbar  = 1<<5,
-	StaysOnTop   = 1<<6,
-	SkipPager    = 1<<7
+	StaysOnTop   = 1<<6,	// NOT STANDARD
+	SkipPager    = 1<<7,
+	Hidden       = 1<<8,
+	FullScreen   = 1<<9,
+	Above        = 1<<10,
+	Below        = 1<<11
     };
 
     /**
