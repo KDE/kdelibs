@@ -1,3 +1,8 @@
+2004-03-03  Dirk Mueller  <mueller@kde.org>
+
+	* html/htmlparser.cpp (getElement): try to avoid nesting <nobr> and <wbr>,
+	but don't forbit it.
+
 2004-03-01  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_text.cpp (calcMinMaxWidth): some more hacks for white-space !=
