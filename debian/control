@@ -12,7 +12,7 @@ Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g
 Depends: ${shlibs:Depends}, libarts (>= ${Source-Version})
 Suggests: kdelibs3-crypto
-Conflicts: kdelibs3-nossl, task-kdemultimedia, task-kdeadmin, task-kdenetwork, task-kdepim, task-koffice, task-kdegames, task-kdegraphics, task-kdeutils, task-kdetoys
+Conflicts: kdelibs3-nossl
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
