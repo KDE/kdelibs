@@ -1296,8 +1296,8 @@ void KToolBar::paintEvent(QPaintEvent *)
 
 void KToolBar::rebuildLayout()
 {
-#if QT_VERSION < 300
     layoutTimer->stop();
+#if QT_VERSION < 300
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
     delete layout();
     QBoxLayout *bl = new QBoxLayout( this, orientation() == Vertical
