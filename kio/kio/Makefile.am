@@ -49,6 +49,7 @@ $(srcdir)/kmimetype.cpp: kdirnotify_stub.h
 $(srcdir)/kautomount.cpp: kdirnotify_stub.h
 $(srcdir)/chmodjob.cpp: kdirnotify_stub.h
 $(srcdir)/kfileshare.cpp: kdirnotify_stub.h
+$(srcdir)/job.cpp: kdirnotify_stub.h
 
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
