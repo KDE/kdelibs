@@ -68,20 +68,20 @@ public:
   // Properties
   void setPrototype(KJSPrototype *p);
   KJSPrototype *prototype() const { return proto; }
-  virtual KJSO *get(const CString &p) const;
-  bool hasProperty(const CString &p, bool recursive = true) const;
-  virtual void put(const CString &p, KJSO *v, int attr = None);
-  void put(const CString &p, double d, int attr = None);
-  void put(const CString &p, int i, int attr = None);
-  void put(const CString &p, unsigned int u, int attr = None);
-  bool canPut(const CString &p) const;
-  void deleteProperty(const CString &p);
+  virtual KJSO *get(const UString &p) const;
+  bool hasProperty(const UString &p, bool recursive = true) const;
+  virtual void put(const UString &p, KJSO *v, int attr = None);
+  void put(const UString &p, double d, int attr = None);
+  void put(const UString &p, int i, int attr = None);
+  void put(const UString &p, unsigned int u, int attr = None);
+  bool canPut(const UString &p) const;
+  void deleteProperty(const UString &p);
   KJSO *defaultValue(Hint hint = NoneHint);
   void dump(int level = 0);
   virtual KJSObject *construct() { return 0L; }
 
 private:
-  void putArrayElement(const CString &p, KJSO *v);
+  void putArrayElement(const UString &p, KJSO *v);
 
 public:
   int refCount;
@@ -91,7 +91,7 @@ public:
 
   // Reference
   KJSO *getBase();
-  CString getPropertyName();
+  UString getPropertyName();
   KJSO *getValue();
   ErrorCode putValue(KJSO *v);
 
@@ -128,12 +128,12 @@ protected:
   // references:
 protected:
   KJSO *base;
-  CString propname;
+  UString propname;
 
   // completion:
 protected:
   KJSO *complVal;
-  CString target;
+  UString target;
 };
 
 class Ptr {
@@ -208,10 +208,10 @@ private:
 
 class KJSProperty {
 public:
-  KJSProperty(const CString &n, KJSO *o, int attr = None);
+  KJSProperty(const UString &n, KJSO *o, int attr = None);
   Type type() const { return Property; }
 public:
-  CString name;
+  UString name;
   int attribute;
   Ptr object;
   KJSProperty *next;
@@ -220,7 +220,7 @@ public:
 
 class KJSReference : public KJSO {
 public:
-  KJSReference(KJSO *b, const CString &s);
+  KJSReference(KJSO *b, const UString &s);
   ~KJSReference();
   Type type() const { return Reference; }
 };
@@ -308,7 +308,7 @@ class KJSCompletion : public KJSO {
 public:
   KJSCompletion(Compl c, KJSO *v = 0L)
     { val.c = c; complVal = v ? v->ref() : 0L; }
-  KJSCompletion(Compl c, KJSO *v, const CString &t)
+  KJSCompletion(Compl c, KJSO *v, const UString &t)
     { val.c = c; complVal = v ? v->ref() : 0L; target = t; }
   virtual ~KJSCompletion() { if (complVal) complVal->deref(); }
   Type type() const { return Completion; }
@@ -377,17 +377,17 @@ public:
 
 class KJSParamList {
 public:
-  KJSParamList(int s) : size(s){ param = new CString[s]; }
+  KJSParamList(int s) : size(s){ param = new UString[s]; }
   ~KJSParamList() { delete [] param; }
   int count() const { return size; }
-  void insert(int i, const CString &s) { if (i<size) param[i] = s; }
-  const char *at(int i) { if (i<size)
-                            return param[i].c_str();
-                          else
-			    return 0L; }
+  void insert(int i, const UString &s) { if (i<size) param[i] = s; }
+  UString at(int i) { if (i<size)
+                        return param[i];
+                      else
+		        return UString::null; }
 private:
   int size;
-  CString *param;
+  UString *param;
 };
 
 class KJSError : public KJSO {
@@ -404,8 +404,8 @@ private:
   class HostObject : public KJSO {
   public:
     Type type() const { return Host; }
-    virtual KJSO *get(const CString &p) const;
-    virtual void put(const CString &p, KJSO *v, int attr = None);
+    virtual KJSO *get(const UString &p) const;
+    virtual void put(const UString &p, KJSO *v, int attr = None);
   };
 
 };

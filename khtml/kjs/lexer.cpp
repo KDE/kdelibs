@@ -50,7 +50,7 @@ KJSLexer::KJSLexer(const UString &c)
 {
   // allocate space for read buffers
   buffer8 = new char[size8];
-  buffer16 = new UnicodeChar[size16];
+  buffer16 = new UChar[size16];
 
   // read first characters
   shift(0);
@@ -112,7 +112,6 @@ int KJSLexer::lex()
 	yylineno++;
 	terminator = true;
 	if (restrKeyword) {
-	  fprintf(stderr, "restricted keyword\n");
 	  token = ';';
 	  setDone(Other);
 	}
@@ -120,7 +119,7 @@ int KJSLexer::lex()
 	state = InString;
 	stringType = current;
       } else if (isIdentLetter()) {
-	record8(current);
+	record16(current);
 	state = InIdentifier;
       } else if (current == '0') {
 	record8(current);
@@ -219,7 +218,7 @@ int KJSLexer::lex()
       break;
     case InIdentifier:
       if (isIdentLetter() || isDecimalDigit(current)) {
-	record8(current);
+	record16(current);
 	break;
       }
       setDone(Identifier);
@@ -333,9 +332,6 @@ int KJSLexer::lex()
   case Eof:
     printf("(EOF)\n");
     break;
-  case Eol:
-    printf("(EOL)\n");
-    break;
   case Other:
     printf("(Other)\n");
     break;
@@ -364,8 +360,8 @@ int KJSLexer::lex()
   case Other:
     return token;
   case Identifier:
-    if (!(token = lookupKeyword(buffer8))) {
-      kjsyylval.cstr = new CString(buffer8);
+    if (!(token = lookupKeyword(UString(buffer16, pos16).cstring().c_str()))) {
+      kjsyylval.ustr = new UString(buffer16, pos16);
       return IDENT;
     }
     if (token == CONTINUE || token == BREAK ||
@@ -594,10 +590,10 @@ unsigned char KJSLexer::convertHex(unsigned short c1, unsigned short c2) const
   return (convertHex(c1) << 4 + convertHex(c2));
 }
 
-UnicodeChar KJSLexer::convertUnicode(unsigned short c1, unsigned short c2,
+UChar KJSLexer::convertUnicode(unsigned short c1, unsigned short c2,
                                      unsigned short c3, unsigned short c4) const
 {
-  return UnicodeChar(convertHex(c1) << 4 + convertHex(c2),
+  return UChar(convertHex(c1) << 4 + convertHex(c2),
                      convertHex(c3) << 4 + convertHex(c4));
 }
 
@@ -619,15 +615,15 @@ void KJSLexer::record8(unsigned short c)
 
 void KJSLexer::record16(unsigned char c)
 {
-  record16(UnicodeChar(0, c));
+  record16(UChar(0, c));
 }
 
-void KJSLexer::record16(UnicodeChar c)
+void KJSLexer::record16(UChar c)
 {
   // enlarge buffer if full
   if (pos16 >= size16 - 1) {
-    UnicodeChar *tmp = new UnicodeChar[2 * size16];
-    memcpy(tmp, buffer16, size16 * sizeof(UnicodeChar));
+    UChar *tmp = new UChar[2 * size16];
+    memcpy(tmp, buffer16, size16 * sizeof(UChar));
     delete [] buffer16;
     buffer16 = tmp;
     size16 *= 2;
@@ -646,6 +642,7 @@ int KJSLexer::lookupKeyword(const char *text)
     else
       p++;
   }
+
   return 0;
 }
 

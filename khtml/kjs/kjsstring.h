@@ -33,12 +33,8 @@ namespace KJS {
   class CString {
   public:
     CString();
-    CString(char c);
     CString(const char *c);
     CString(const CString &);
-    CString(const CString *);
-    // conversions
-    CString(int i);
 
     ~CString();
 
@@ -48,21 +44,38 @@ namespace KJS {
     CString &operator+=(const CString &);
 
     int size() const;
-    void resize(unsigned int l);
-
-    const char *c_str() const;
+    const char *c_str() const { return data; }
   private:
     char *data;
   };
 
-  CString int2String(int i);
+  class UString;
+
+  class UStringData {
+    friend UString;
+  private:
+    UStringData() : dat(0L), len(0), rc(1) { }
+    UStringData(UChar *d, unsigned int l) : dat(d), len(l), rc(1) { }
+    ~UStringData() { delete dat; }
+
+    UChar *data() const { return dat; }
+    unsigned int size() const { return len; }
+
+    void ref() { rc++; }
+    unsigned int deref() { return --rc; }
+
+    UChar *dat;
+    unsigned int len;
+    unsigned int rc;
+    static UStringData null;
+  };
 
   class UString {
   public:
     UString();
     UString(char c);
     UString(const char *c);
-    UString(const UnicodeChar *c, int length);
+    UString(const UChar *c, int length);
     UString(const UString &);
     UString(const UString *);
     UString(const DOM::DOMString &);
@@ -79,23 +92,28 @@ namespace KJS {
     UString &operator=(const char *c);
     UString &operator=(const UString &);
 
-    const UnicodeChar* data() const { return s; }
+    const UChar* data() const { return rep->data(); }
     bool is8Bit() const;
-    unsigned int size() const { return l; }
-    UnicodeChar operator[](unsigned int pos) const;
+    unsigned int size() const { return rep->size(); }
+    UChar &operator[](unsigned int pos) const;
 
     double toDouble() const;
     int find(const UString &f, int pos = 0) const;
     int rfind(const UString &f, int pos) const;
     UString substr(int pos = 0, int len = -1) const;
+    static UString null;
   private:
-    UnicodeChar *s;
-    unsigned int l;
+    void attach(UStringData *r);
+    void release();
+    UStringData *rep;
   };
 
+  bool operator==(const UChar &c1, const UChar &c2);
   bool operator==(const UString& s1, const UString& s2);
   bool operator==(const CString& s1, const CString& s2);
   UString operator+(const UString& s1, const UString& s2);
+
+  UString int2String(int i);
 
 }; // namespace
 

@@ -29,7 +29,7 @@
 
 using namespace KJS;
 
-KJSProperty::KJSProperty(const CString &n, KJSO *o, int attr)
+KJSProperty::KJSProperty(const UString &n, KJSO *o, int attr)
 {
   name = n;
   object = o->ref();
@@ -37,7 +37,7 @@ KJSProperty::KJSProperty(const CString &n, KJSO *o, int attr)
 }
 
 // ECMA 8.6.2.1
-KJSO *KJSO::get(const CString &p) const
+KJSO *KJSO::get(const UString &p) const
 {
   // hack to allow code like "abc".charAt(0). ECMA compliant ????
   if (isA(String)) {
@@ -62,7 +62,7 @@ KJSO *KJSO::get(const CString &p) const
 }
 
 // ECMA 8.6.2.2
-void KJSO::put(const CString &p, KJSO *v, int attr)
+void KJSO::put(const UString &p, KJSO *v, int attr)
 {
   if (!canPut(p))
     return;
@@ -89,25 +89,25 @@ void KJSO::put(const CString &p, KJSO *v, int attr)
 }
 
 // provided for convenience.
-void KJSO::put(const CString &p, double d, int attr)
+void KJSO::put(const UString &p, double d, int attr)
 {
   put(p, zeroRef(new KJSNumber(d)), attr);
 }
 
 // provided for convenience.
-void KJSO::put(const CString &p, int i, int attr)
+void KJSO::put(const UString &p, int i, int attr)
 {
   put(p, zeroRef(new KJSNumber(i)), attr);
 }
 
 // provided for convenience.
-void KJSO::put(const CString &p, unsigned int u, int attr)
+void KJSO::put(const UString &p, unsigned int u, int attr)
 {
   put(p, zeroRef(new KJSNumber(u)), attr);
 }
 
 // ECMA 15.4.5.1
-void KJSO::putArrayElement(const CString &p, KJSO *v)
+void KJSO::putArrayElement(const UString &p, KJSO *v)
 {
   if (!canPut(p))
     return;
@@ -119,7 +119,7 @@ void KJSO::putArrayElement(const CString &p, KJSO *v)
       unsigned int newLen = toUInt32(v);
       // shrink array
       for (unsigned int u = newLen; u < oldLen; u++) {
-	CString p = int2String(u);
+	UString p = int2String(u);
 	if (hasProperty(p, false))
 	  deleteProperty(p);
       }
@@ -132,7 +132,7 @@ void KJSO::putArrayElement(const CString &p, KJSO *v)
 
   // array index ?
   unsigned int idx;
-  if (!sscanf(p.c_str(), "%u", &idx))
+  if (!sscanf(p.cstring().c_str(), "%u", &idx)) /* TODO */
     return;
   
   // do we need to update/create the length property ?
@@ -146,7 +146,7 @@ void KJSO::putArrayElement(const CString &p, KJSO *v)
 }
 
 // ECMA 8.6.2.3
-bool KJSO::canPut(const CString &p) const
+bool KJSO::canPut(const UString &p) const
 {
   if (prop) {
     KJSProperty *pr = prop;
@@ -163,7 +163,7 @@ bool KJSO::canPut(const CString &p) const
 }
 
 // ECMA 8.6.2.4
-bool KJSO::hasProperty(const CString &p, bool recursive) const
+bool KJSO::hasProperty(const UString &p, bool recursive) const
 {
   if (!prop)
     return false;
@@ -182,7 +182,7 @@ bool KJSO::hasProperty(const CString &p, bool recursive) const
 }
 
 // ECMA 8.6.2.5
-void KJSO::deleteProperty(const CString &p)
+void KJSO::deleteProperty(const UString &p)
 {
   if (prop) {
     KJSProperty *pr = prop;

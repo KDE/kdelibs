@@ -69,7 +69,7 @@ namespace KJS {
   private:
     bool done;
     char *buffer8;
-    UnicodeChar *buffer16;
+    UChar *buffer16;
     unsigned int size8, size16;
     unsigned int pos8, pos16;
     bool terminator;
@@ -96,12 +96,12 @@ namespace KJS {
                                 unsigned short c3) const;
     unsigned char convertHex(unsigned short c1) const;
     unsigned char convertHex(unsigned short c1, unsigned short c2) const;
-    UnicodeChar convertUnicode(unsigned short c1, unsigned short c2,
+    UChar convertUnicode(unsigned short c1, unsigned short c2,
                                unsigned short c3, unsigned short c4) const;
 
     void record8(unsigned short c);
     void record16(unsigned char c);
-    void record16(UnicodeChar c);
+    void record16(UChar c);
 
     UString code;
     int yycolumn;

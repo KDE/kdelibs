@@ -1,7 +1,7 @@
 typedef union {
   int                 ival;
   double              dval;
-  CString             *cstr;
+
   UString             *ustr;
   void                *rxp; /* TODO */
   Node                *node;

@@ -136,7 +136,7 @@ KJSO *AccessorNode1::evaluate()
   Ptr v2 = e2->getValue();
   Ptr o = toObject(v1);
   Ptr s = toString(v2);
-  KJSReference *ref = new KJSReference(o, s->sVal().cstring());
+  KJSReference *ref = new KJSReference(o, s->sVal());
 
   return ref;
 }
@@ -354,7 +354,7 @@ KJSO *DeleteNode::evaluate()
 {
   Ptr e = expr->evaluate();
   Ptr b = e->getBase();
-  CString n = e->getPropertyName(); /* TODO: runtime err if no ref */
+  UString n = e->getPropertyName(); /* TODO: runtime err if no ref */
   if (!b->isA(Object))
     return new KJSBoolean(true);
   /* TODO [delete] */
@@ -1054,7 +1054,7 @@ KJSO *DebugNode::evaluate()
 
 ArgumentListNode::ArgumentListNode(Node *e) : list(0L), expr(e) {}
 
-VarDeclNode::VarDeclNode(const CString *id, AssignExprNode *in)
+VarDeclNode::VarDeclNode(const UString *id, AssignExprNode *in)
     : ident(*id), init(in) { }
 
 ArgumentListNode::ArgumentListNode(ArgumentListNode *l, Node *e) :  

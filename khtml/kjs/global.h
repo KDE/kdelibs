@@ -112,12 +112,13 @@ namespace KJS {
   };
 
   // XChar2b and QChar compatible character representation
-  struct UnicodeChar {
-    UnicodeChar() : hi(0), lo(0) { }
-    UnicodeChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+  struct UChar {
+    UChar() : hi(0), lo(0) { }
+    UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
     unsigned short unicode() const { return hi << 8 | lo; }
     unsigned char hi;
     unsigned char lo;
+    static UChar null;
   };
 
   extern const double NaN;

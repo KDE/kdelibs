@@ -162,7 +162,7 @@ KJSO *StringProtoFunc::execute(KJSContext *context)
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
-      UnicodeChar c = s->sVal()[pos];
+      UChar c = s->sVal()[pos];
       d = (c.hi >> 8) + c.lo;
     }
     result = new KJSNumber(d);

@@ -190,13 +190,13 @@ KJSO *KJSO::getBase()
 }
 
 // ECMA 8.7.2
-CString KJSO::getPropertyName()
+UString KJSO::getPropertyName()
 {
   if (!isA(Reference))
     // the spec wants a runtime error here. But getValue() and putValue()
     // will catch this case on their own earlier. When returning a Null
     // string we should be on the safe side.
-    return CString();
+    return UString();
 
   return propname;
 }
@@ -250,7 +250,7 @@ void KJSO::setPrototype(KJSPrototype *p)
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
-KJSReference::KJSReference(KJSO *b, const CString &s)
+KJSReference::KJSReference(KJSO *b, const UString &s)
 {
   base = b->ref();
   propname = s;
@@ -426,7 +426,7 @@ void KJSO::dump(int level)
     while (pr) {
       for (int i = 0; i < level; i++)
 	cout << "  ";
-      cout << pr->name.c_str() << endl;
+      cout << pr->name.cstring().c_str() << endl;
       if (pr->object->prop && !(pr->name == "callee")) {
 	pr->object->dump(level+1);
       }
@@ -577,12 +577,12 @@ int KJSList::size() const
   return s;
 }
 
-KJSO *HostObject::get(const CString &) const
+KJSO *HostObject::get(const UString &) const
 {
   return new KJSUndefined();
 }
 
-void HostObject::put(const CString &, KJSO *, int)
+void HostObject::put(const UString &, KJSO *, int)
 {
   cout << "Ignoring put() in HostObject" << endl;
 }

@@ -112,7 +112,7 @@ using namespace KJS;
 typedef union {
   int                 ival;
   double              dval;
-  CString             *cstr;
+
   UString             *ustr;
   void                *rxp; /* TODO */
   Node                *node;
@@ -1183,8 +1183,8 @@ case 8:
     break;}
 case 9:
 #line 160 "grammar.y"
-{ yyval.node = new ResolveNode(yyvsp[0].cstr);
-                                     delete yyvsp[0].cstr; ;
+{ yyval.node = new ResolveNode(yyvsp[0].ustr);
+                                     delete yyvsp[0].ustr; ;
     break;}
 case 12:
 #line 164 "grammar.y"
@@ -1228,8 +1228,8 @@ case 23:
     break;}
 case 24:
 #line 192 "grammar.y"
-{ yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].cstr);
-                                     delete yyvsp[0].cstr; ;
+{ yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].ustr);
+                                     delete yyvsp[0].ustr; ;
     break;}
 case 25:
 #line 194 "grammar.y"
@@ -1253,7 +1253,7 @@ case 30:
     break;}
 case 31:
 #line 206 "grammar.y"
-{ yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].cstr); ;
+{ yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].ustr); ;
     break;}
 case 32:
 #line 210 "grammar.y"
@@ -1512,11 +1512,11 @@ case 125:
     break;}
 case 126:
 #line 389 "grammar.y"
-{ yyval.decl = new VarDeclNode(yyvsp[0].cstr, 0); delete yyvsp[0].cstr; ;
+{ yyval.decl = new VarDeclNode(yyvsp[0].ustr, 0); delete yyvsp[0].ustr; ;
     break;}
 case 127:
 #line 390 "grammar.y"
-{ yyval.decl = new VarDeclNode(yyvsp[-1].cstr, yyvsp[0].init); delete yyvsp[-1].cstr; ;
+{ yyval.decl = new VarDeclNode(yyvsp[-1].ustr, yyvsp[0].init); delete yyvsp[-1].ustr; ;
     break;}
 case 128:
 #line 394 "grammar.y"
@@ -1567,13 +1567,13 @@ case 138:
     break;}
 case 139:
 #line 425 "grammar.y"
-{ yyval.stat = new ForInNode(yyvsp[-4].cstr, 0L, yyvsp[-2].node, yyvsp[0].stat);
-                                     delete yyvsp[-4].cstr; ;
+{ yyval.stat = new ForInNode(yyvsp[-4].ustr, 0L, yyvsp[-2].node, yyvsp[0].stat);
+                                     delete yyvsp[-4].ustr; ;
     break;}
 case 140:
 #line 428 "grammar.y"
-{ yyval.stat = new ForInNode(yyvsp[-5].cstr, yyvsp[-4].init, yyvsp[-2].node, yyvsp[0].stat);
-                                     delete yyvsp[-5].cstr; ;
+{ yyval.stat = new ForInNode(yyvsp[-5].ustr, yyvsp[-4].init, yyvsp[-2].node, yyvsp[0].stat);
+                                     delete yyvsp[-5].ustr; ;
     break;}
 case 141:
 #line 433 "grammar.y"
@@ -1585,7 +1585,7 @@ case 143:
     break;}
 case 144:
 #line 439 "grammar.y"
-{ yyval.stat = new ContinueNode(yyvsp[-1].cstr); delete yyvsp[-1].cstr; ;
+{ yyval.stat = new ContinueNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr; ;
     break;}
 case 145:
 #line 443 "grammar.y"
@@ -1593,7 +1593,7 @@ case 145:
     break;}
 case 146:
 #line 444 "grammar.y"
-{ yyval.stat = new BreakNode(yyvsp[-1].cstr); delete yyvsp[-1].cstr; ;
+{ yyval.stat = new BreakNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr; ;
     break;}
 case 147:
 #line 448 "grammar.y"
@@ -1649,7 +1649,7 @@ case 160:
     break;}
 case 161:
 #line 487 "grammar.y"
-{ yyval.stat = new LabelNode(yyvsp[-2].cstr, yyvsp[0].stat); delete yyvsp[-2].cstr; ;
+{ yyval.stat = new LabelNode(yyvsp[-2].ustr, yyvsp[0].stat); delete yyvsp[-2].ustr; ;
     break;}
 case 162:
 #line 491 "grammar.y"
@@ -1681,22 +1681,22 @@ case 168:
     break;}
 case 169:
 #line 510 "grammar.y"
-{ yyval.func = new FuncDeclNode(yyvsp[-3].cstr, 0L, yyvsp[0].stat);
-                                     delete yyvsp[-3].cstr; ;
+{ yyval.func = new FuncDeclNode(yyvsp[-3].ustr, 0L, yyvsp[0].stat);
+                                     delete yyvsp[-3].ustr; ;
     break;}
 case 170:
 #line 513 "grammar.y"
-{ yyval.func = new FuncDeclNode(yyvsp[-4].cstr, yyvsp[-2].param, yyvsp[0].stat);
-                                     delete yyvsp[-4].cstr; ;
+{ yyval.func = new FuncDeclNode(yyvsp[-4].ustr, yyvsp[-2].param, yyvsp[0].stat);
+                                     delete yyvsp[-4].ustr; ;
     break;}
 case 171:
 #line 518 "grammar.y"
-{ yyval.param = new ParameterNode(yyvsp[0].cstr); delete yyvsp[0].cstr; ;
+{ yyval.param = new ParameterNode(yyvsp[0].ustr); delete yyvsp[0].ustr; ;
     break;}
 case 172:
 #line 519 "grammar.y"
-{ yyval.param = new ParameterNode(yyvsp[-2].param, yyvsp[0].cstr);
-	                             delete yyvsp[0].cstr; ;
+{ yyval.param = new ParameterNode(yyvsp[-2].param, yyvsp[0].ustr);
+	                             delete yyvsp[0].ustr; ;
     break;}
 case 173:
 #line 524 "grammar.y"

@@ -24,7 +24,7 @@
 class KJScriptLock;
 
 namespace KJS {
-  class UnicodeChar;
+  class UChar;
   class KJSLexer;
   class KJSContext;
   class KJSGlobal;
@@ -61,11 +61,11 @@ public:
   bool evaluate(const char *code);
   /**
    * Same as above. Only differing in the arguments accepted.
-   * KJS::UnicodeChar is a data type compatible to XChar2b and QChar.
+   * KJS::UChar is a data type compatible to XChar2b and QChar.
    * @param code is an Unicode string containing the code to be executed.
    * @param length of the string.
    */
-  bool evaluate(const KJS::UnicodeChar *code, unsigned int length);
+  bool evaluate(const KJS::UChar *code, unsigned int length);
 public:
   static KJScript *current() { return curr; }
   void setCurrent(KJScript *c) { curr = c; }

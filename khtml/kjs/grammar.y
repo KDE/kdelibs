@@ -35,7 +35,7 @@ using namespace KJS;
 %union {
   int                 ival;
   double              dval;
-  CString             *cstr;
+
   UString             *ustr;
   void                *rxp; /* TODO */
   Node                *node;
@@ -99,7 +99,7 @@ using namespace KJS;
 %token <ival> INTEGER
 %token <dval> DOUBLE
 %token <ustr> STRING
-%token <cstr> IDENT
+%token <ustr> IDENT
 %token <rxp>  REGEXP
 
 /* automatically inserted semicolon */
