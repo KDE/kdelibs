@@ -309,4 +309,5 @@ void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
     }
 }
 
+#include "xml_tokenizer.moc"
 

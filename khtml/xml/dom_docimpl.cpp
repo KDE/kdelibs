@@ -734,7 +734,7 @@ NodeImpl *NamedEntityMapImpl::item ( unsigned long index ) const
 
 
 
-
+#include "dom_docimpl.moc"
 
 
 
