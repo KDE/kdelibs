@@ -30,25 +30,18 @@ public:
     
     KThemePixmap(bool timer = true);
     ~KThemePixmap();
-    QPixmap* secondary();
     QPixmap* border(BorderType type);
-    void setSecondary(const QPixmap &p);
     void setBorder(BorderType type, const QPixmap &p);
     void updateAccessed();
     bool isOld();
 protected:
     QTime *t;
-    QPixmap *s, *b[8];
+    QPixmap *b[8];
 };
 
 inline QPixmap* KThemePixmap::border(BorderType type)
 {
     return(b[type]);
-}
-
-inline QPixmap* KThemePixmap::secondary()
-{
-    return(s);
 }
 
 inline void KThemePixmap::setBorder(BorderType type, const QPixmap &p)
@@ -58,15 +51,6 @@ inline void KThemePixmap::setBorder(BorderType type, const QPixmap &p)
         delete(b[type]);
     }
     b[type] = new QPixmap(p);
-}
-
-inline void KThemePixmap::setSecondary(const QPixmap &p)
-{
-    if(s){
-        warning("KThemePixmap: Overwriting existing secondary pixmap!");
-        delete s;
-    }
-    s = new QPixmap(p);
 }
 
 inline void KThemePixmap::updateAccessed()

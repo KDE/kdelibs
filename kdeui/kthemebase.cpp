@@ -705,19 +705,26 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                   widget);
                 pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->resize(w, h);
+
                 KPixmap s;
-                s.resize(w, h);
+                int offset = decoWidth(widget);
+                s.resize(w-offset*2, h-offset*2);
+                QColor lc(*grLowColors[widget]);
+                QColor hc(*grHighColors[widget]);
+                if(bevelContrast(widget)){
+                    int bc = bevelContrast(widget);
+                    // want single increments, not factors like light()/dark()
+                    lc.setRgb(lc.red()-bc, lc.green()-bc, lc.blue()-bc);
+                    hc.setRgb(hc.red()+bc, hc.green()+bc, hc.blue()+bc);
+                }
                 KPixmapEffect::gradient(*pixmaps[widget],
-                                        *grHighColors[widget],
+                                        lc, hc,
+                                        KPixmapEffect::DiagonalGradient);
+                KPixmapEffect::gradient(s, *grHighColors[widget],
                                         *grLowColors[widget],
                                         KPixmapEffect::DiagonalGradient);
-                KPixmapEffect::gradient(s,
-                                        grLowColors[widget]->
-                                        dark(bevelContrast(widget)),
-                                        grHighColors[widget]->
-                                        light(bevelContrast(widget)),
-                                        KPixmapEffect::DiagonalGradient);
-                pixmaps[widget]->setSecondary(s);
+                bitBlt(pixmaps[widget], offset, offset, &s, 0, 0, w-offset*2,
+                       h-offset*2, Qt::CopyROP);
             }
         }
     }
@@ -1192,7 +1199,6 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
 KThemePixmap::KThemePixmap(bool timer)
     : KPixmap()
 {
-    s = NULL;
     if(timer){
         t = new QTime;
         t->start();
@@ -1206,8 +1212,6 @@ KThemePixmap::KThemePixmap(bool timer)
 
 KThemePixmap::~KThemePixmap()
 {
-    if(s)
-        delete s;
     if(t)
         delete t;
     int i;
