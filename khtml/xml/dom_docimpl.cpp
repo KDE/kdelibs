@@ -878,11 +878,10 @@ void DocumentImpl::updateDocumentsRendering()
         return;
 
     while ( !changedDocuments->isEmpty() ) {
-        DocumentImpl* it = changedDocuments->first();
+        changedDocuments->first();
+        DocumentImpl* it = changedDocuments->take();
         if (it->isDocumentChanged())
-            it->updateRendering(); // always removes 'it' from changedDocuments
-        else
-            changedDocuments->remove(it);
+            it->updateRendering();
     }
 }
 
@@ -1638,7 +1637,7 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 void DocumentImpl::updateStyleSelector()
 {
     recalcStyleSelector();
-    recalcStyle();
+    recalcStyle(Force);
 #if 0    
     
     m_styleSelectorDirty = true;
