@@ -930,7 +930,7 @@ QString Addressee::realName() const
 
   if ( n.isEmpty() )
     n = name();
-  
+
   return n;
 }
 
@@ -951,7 +951,7 @@ QString Addressee::fullEmail( const QString &email ) const
     e = email;
   }
   if ( e.isEmpty() ) return QString::null;
-  
+
   QString text;
   if ( realName().isEmpty() )
     text = e;
@@ -963,6 +963,9 @@ QString Addressee::fullEmail( const QString &email ) const
 
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
+  if ( email.isEmpty() )
+    return;
+
   detach();
 
   QStringList::Iterator it = mData->emails.find( email );
@@ -1195,7 +1198,7 @@ void Addressee::dump() const
   kdDebug(5700) << "  Photo: '" << photo().asString() << "'" << endl;
   kdDebug(5700) << "  Sound: '" << sound().asString() << "'" << endl;
   kdDebug(5700) << "  Agent: '" << agent().asString() << "'" << endl;
-  
+
   kdDebug(5700) << "  Emails {" << endl;
   QStringList e = emails();
   QStringList::ConstIterator it;
@@ -1351,9 +1354,9 @@ void Addressee::insertCustom( const QString &app, const QString &name,
 
   detach();
   mData->empty = false;
-  
+
   QString qualifiedName = app + "-" + name + ":";
-  
+
   QStringList::Iterator it;
   for( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
@@ -1361,16 +1364,16 @@ void Addressee::insertCustom( const QString &app, const QString &name,
       return;
     }
   }
-  
+
   mData->custom.append( qualifiedName + value );
 }
 
 void Addressee::removeCustom( const QString &app, const QString &name)
 {
   detach();
-  
+
   QString qualifiedName = app + "-" + name + ":";
-  
+
   QStringList::Iterator it;
   for( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
@@ -1384,7 +1387,7 @@ QString Addressee::custom( const QString &app, const QString &name ) const
 {
   QString qualifiedName = app + "-" + name + ":";
   QString value;
-  
+
   QStringList::ConstIterator it;
   for( it = mData->custom.begin(); it != mData->custom.end(); ++it ) {
     if ( (*it).startsWith( qualifiedName ) ) {
@@ -1392,7 +1395,7 @@ QString Addressee::custom( const QString &app, const QString &name ) const
       break;
     }
   }
-  
+
   return value;
 }
 
@@ -1400,7 +1403,7 @@ void Addressee::setCustoms( const QStringList &l )
 {
   detach();
   mData->empty = false;
-  
+
   mData->custom = l;
 }
 
@@ -1409,13 +1412,13 @@ QStringList Addressee::customs() const
   return mData->custom;
 }
 
-void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName, 
+void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
                                    QString &email)
 {
   int startPos, endPos, len;
   QString partA, partB, result;
   char endCh = '>';
-  
+
   startPos = rawEmail.find('<');
   if (startPos < 0)
   {
@@ -1429,12 +1432,12 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     email = rawEmail;
     fullName = "";
   }
-  else 
+  else
   {
     // We have a start position, try to find an end
     endPos = rawEmail.find(endCh, startPos+1);
-    
-    if (endPos < 0) 
+
+    if (endPos < 0)
     {
       // We couldn't find the end of the email address. We can only
       // assume the entire string is the email address.
@@ -1444,10 +1447,10 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     else
     {
       // We have a start and end to the email address
-      
+
       // Grab the name part
       fullName = rawEmail.left(startPos).stripWhiteSpace();
-      
+
       // grab the email part
       email = rawEmail.mid(startPos+1, endPos-startPos-1).stripWhiteSpace();
 
@@ -1468,7 +1471,7 @@ void Addressee::setResource( Resource *resource )
 {
     detach();
     mData->resource = resource;
-} 
+}
 
 Resource *Addressee::resource() const
 {
