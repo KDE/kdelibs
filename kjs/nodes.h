@@ -133,9 +133,7 @@ namespace KJS {
     bool hitStatement(ExecState *exec);
     bool abortStatement(ExecState *exec);
     virtual Completion execute(ExecState *exec) = 0;
-    void pushLabel(const UString *id) {
-      if (id) ls.push(*id);
-    }
+    void pushLabel(const UString &id) { ls.push(id); }
   protected:
     LabelStack ls;
   private:
@@ -214,7 +212,7 @@ namespace KJS {
 
   class ResolveNode : public Node {
   public:
-    ResolveNode(const UString *s) : ident(*s) { }
+    ResolveNode(const UString &s) : ident(s) { }
     Reference2 evaluate(ExecState *exec) const;
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -303,7 +301,7 @@ namespace KJS {
   class PropertyNode : public Node {
   public:
     PropertyNode(double d) : numeric(d) { }
-    PropertyNode(const UString *s) : str(*s) { }
+    PropertyNode(const UString &s) : str(s) { }
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -325,7 +323,7 @@ namespace KJS {
 
   class AccessorNode2 : public Node {
   public:
-    AccessorNode2(Node *e, const UString *s) : expr(e), ident(*s) { }
+    AccessorNode2(Node *e, const UString &s) : expr(e), ident(s) { }
     virtual void ref();
     virtual bool deref();
     Reference2 evaluate(ExecState *exec) const;
@@ -663,7 +661,7 @@ namespace KJS {
 
   class VarDeclNode : public Node {
   public:
-    VarDeclNode(const UString *id, AssignExprNode *in);
+    VarDeclNode(const UString &id, AssignExprNode *in);
     virtual void ref();
     virtual bool deref();
     Value value(ExecState *exec) const;
@@ -787,7 +785,7 @@ namespace KJS {
   class ForInNode : public StatementNode {
   public:
     ForInNode(Node *l, Node *e, StatementNode *s);
-    ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s);
+    ForInNode(const UString &i, AssignExprNode *in, Node *e, StatementNode *s);
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -804,7 +802,7 @@ namespace KJS {
   class ContinueNode : public StatementNode {
   public:
     ContinueNode() { }
-    ContinueNode(const UString *i) : ident(*i) { }
+    ContinueNode(const UString &i) : ident(i) { }
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -814,7 +812,7 @@ namespace KJS {
   class BreakNode : public StatementNode {
   public:
     BreakNode() { }
-    BreakNode(const UString *i) : ident(*i) { }
+    BreakNode(const UString &i) : ident(i) { }
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -906,7 +904,7 @@ namespace KJS {
 
   class LabelNode : public StatementNode {
   public:
-    LabelNode(const UString *l, StatementNode *s) : label(*l), statement(s) { }
+    LabelNode(const UString &l, StatementNode *s) : label(l), statement(s) { }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -930,7 +928,7 @@ namespace KJS {
 
   class CatchNode : public StatementNode {
   public:
-    CatchNode(const UString *i, StatementNode *b) : ident(*i), block(b) {}
+    CatchNode(const UString &i, StatementNode *b) : ident(i), block(b) {}
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
@@ -971,8 +969,8 @@ namespace KJS {
 
   class ParameterNode : public Node {
   public:
-    ParameterNode(const UString *i) : id(*i), next(0L) { }
-    ParameterNode *append(const UString *i);
+    ParameterNode(const UString &i) : id(i), next(0L) { }
+    ParameterNode *append(const UString &i);
     virtual void ref();
     virtual bool deref();
     Value value(ExecState *exec) const;
@@ -1000,8 +998,8 @@ namespace KJS {
 
   class FuncDeclNode : public StatementNode {
   public:
-    FuncDeclNode(const UString *i, ParameterNode *p, FunctionBodyNode *b)
-      : ident(*i), param(p), body(b) { }
+    FuncDeclNode(const UString &i, ParameterNode *p, FunctionBodyNode *b)
+      : ident(i), param(p), body(b) { }
     virtual void ref();
     virtual bool deref();
     Completion execute(ExecState */*exec*/)
