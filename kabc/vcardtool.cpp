@@ -136,7 +136,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     bool pref = true;
     for ( strIt = emails.begin(); strIt != emails.end(); ++strIt ) {
       VCardLine line( "EMAIL", *strIt );
-      if ( pref == true ) {
+      if ( pref == true && emails.count() > 1 ) {
         line.addParameter( "TYPE", "PREF" );
         pref = false;
       }
