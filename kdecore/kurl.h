@@ -566,6 +566,11 @@ public:
 		     bool _ignore_trailing_slash_in_path = true ) const;
 
   /**
+   * Set the directory to @p dir, leaving the filename empty.
+   */
+  void setDirectory(const QString &dir);
+
+  /**
    * Changes the directory by descending into the given directory.
    * It is assumed the current URL represents a directory.
    * If @p dir starts with a "/" the

@@ -1654,6 +1654,14 @@ void KURL::setPath( const QString & path )
   m_strPath_encoded = QString::null;
 }
 
+void KURL::setDirectory( const QString &dir)
+{
+  if ( dir.endsWith("/"))
+     setPath(dir);
+  else
+     setPath(dir+"/");
+}
+
 void KURL::setQuery( const QString &_txt, int encoding_hint)
 {
    if (!_txt.length())
