@@ -202,5 +202,19 @@ kimgio_jp2_write( QImageIO* )
 	// TODO
 } // kimgio_jp2_write
 
+
+void
+kimgio_j2k_read( QImageIO* io )
+{
+	kimgio_jp2_read( io );
+} // kimgio_j2k_read
+
+
+void
+kimgio_j2k_write( QImageIO* io )
+{
+	kimgio_jp2_write( io );
+} // kimgio_j2k_write
+
 #endif // HAVE_JASPER
 

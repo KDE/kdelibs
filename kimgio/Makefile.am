@@ -6,7 +6,7 @@ endif
 
 if include_JP2_MODULES
 KIMGIO_JP2_MODULES=kimg_jp2.la
-KIMGIO_JP2_DATAFILES=jp2.kimgio
+KIMGIO_JP2_DATAFILES=jp2.kimgio j2k.kimgio
 endif
 
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=image/j2k
+Icon=image
+Patterns=*.j2k;*.J2K
+Comment=JPEG 2000 Stream
