@@ -22,7 +22,6 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 #include "kmprinter.h"
-#include "kprintprocess.h"
 
 #include <qfile.h>
 #include <kstddirs.h>
