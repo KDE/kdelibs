@@ -45,8 +45,8 @@
 #include <kpushbutton.h>
 #include <kprocio.h>
 
-#define LINESEPARATORSTRING i18n("--- line separator ---")
-#define SEPARATORSTRING i18n("--- separator ---")
+#define LINESEPARATORSTRING I18N_NOOP("--- line separator ---")
+#define SEPARATORSTRING I18N_NOOP("--- separator ---")
 
 static void dump_xml(const QDomDocument& doc)
 {
