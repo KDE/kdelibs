@@ -603,6 +603,7 @@ public:
       if ( kapp && (fun == "quit()") )
       {
         kapp->quit();
+        replyType = "void";
         return true;
       }
       return DCOPObject::process(fun, data, replyType, replyData);
@@ -672,6 +673,7 @@ public:
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->registerWindowId(windowId);
+      replyType = "void";
       return true;
     }
      else if (fun == "unregisterWindowId(long int)") {
@@ -680,6 +682,7 @@ public:
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->unregisterWindowId(windowId);
+      replyType = "void";
       return true;
     }
     else if (fun == "loadedModules()") {
@@ -690,6 +693,7 @@ public:
     }
     else if (fun == "quit()") {
       quit();
+      replyType = "void";
       return true;
     }
     return KUniqueApplication::process(fun, data, replyType, replyData);
