@@ -231,6 +231,13 @@ public:
     const char *password() const { return m_pEdit->password(); }
 
     /**
+     * Clears the password input field. You might want to use this after the
+     * user failed to enter the correct password.
+     * @since 3.3
+     */
+    void clearPassword();
+
+    /**
      * Returns true if the user wants to keep the password.
      */
     bool keep() const { return m_Keep; }

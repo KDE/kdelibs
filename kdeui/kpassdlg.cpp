@@ -366,6 +366,11 @@ KPasswordDialog::~KPasswordDialog()
 }
 
 
+void KPasswordDialog::clearPassword()
+{
+    m_pEdit->erase();
+}
+
 /* KDE 4: Make it const QString & */
 void KPasswordDialog::setPrompt(QString prompt)
 {
