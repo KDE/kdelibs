@@ -925,6 +925,10 @@ void KDockWidget::toDesktop()
 void KDockWidget::undock()
 {
 //  kdDebug()<<"KDockWidget::undock()"<<endl;
+  
+  manager->d->dragRect = QRect ();
+  manager->drawDragRectangle ();
+  
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
@@ -1352,7 +1356,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           }
           if (d->readyToDrag) {
               d->readyToDrag = false;
-              d->oldDragRect = QRect();
+              //d->oldDragRect = QRect(); should fix rectangle not erased problem
               d->dragRect = QRect(curdw->geometry());
               QPoint p = curdw->mapToGlobal(QPoint(0,0));
               d->dragRect.moveTopLeft(p);
