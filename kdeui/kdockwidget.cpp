@@ -261,7 +261,7 @@ void KDockWidgetHeader::slotStayClicked()
 
 bool KDockWidgetHeader::dragEnabled()
 {
-  return drag->isEnabled();    
+  return drag->isEnabled();
 }
 
 void KDockWidgetHeader::setDragEnabled(bool b)
@@ -289,6 +289,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
+  ,pix(0L)      // dead attribute
   ,prevSideDockPosBeforeDrag(DockNone)
 {
   d = new KDockWidgetPrivate();  // create private data
@@ -318,7 +319,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   isGroup = false;
   isTabGroup = false;
 
-  pix = new QPixmap(pixmap);
+  setIcon( pixmap);
   widget = 0L;
 
   applyToWidget( parent, QPoint(0,0) );
@@ -329,7 +330,6 @@ KDockWidget::~KDockWidget()
   if ( !manager->undockProcess ){
     undock();
   }
-  delete pix;
   emit iMBeingClosed();
   manager->childDock->remove( this );
   delete d; // destroy private data
@@ -508,7 +508,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     // add to existing TabGroup
     applyToWidget( parentTab );
     parentTab->insertPage( this, tabPageLabel(), -1, tabIndex );
-    parentTab->setPixmap( this, *pix );
+    parentTab->setPixmap( this, icon() ? *icon() : QPixmap());
     setDockTabName( parentTab );
     if( !toolTipStr.isEmpty())
       parentTab->setToolTip( this, toolTipStr);
@@ -559,12 +559,12 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 
 
     tab->insertPage( target, target->tabPageLabel() );
-    tab->setPixmap( target, *(target->pix) );
+    tab->setPixmap( target, target->icon() ? *(target->icon()) : QPixmap());
     if( !target->toolTipString().isEmpty())
       tab->setToolTip( target, target->toolTipString());
 
     tab->insertPage( this, tabPageLabel(), -1, tabIndex );
-    tab->setPixmap( this, *pix );
+    tab->setPixmap( this, icon() ? *icon() : QPixmap());
     if( !toolTipString().isEmpty())
       tab->setToolTip( this, toolTipString());
 
@@ -1888,13 +1888,13 @@ void KDockManager::slotMenuPopup()
 	  ++it;
     if ( obj->mayBeHide() )
     {
-      menu->insertItem( *obj->pix, QString("Hide ") + obj->caption(), numerator++ );
+      menu->insertItem( *obj->icon(), QString("Hide ") + obj->caption(), numerator++ );
       menuData->append( new MenuDockData( obj, true ) );
     }
 
     if ( obj->mayBeShow() )
     {
-      menu->insertItem( *obj->pix, QString("Show ") + obj->caption(), numerator++ );
+      menu->insertItem( *obj->icon(), QString("Show ") + obj->caption(), numerator++ );
       menuData->append( new MenuDockData( obj, false ) );
     }
   }

@@ -241,7 +241,7 @@ void KDockTabBarPainter::drawBuffer()
     }
 
     int ty = ( H + fontMetrics().height() ) / 2 - 2;
-    int tx = ( mainData->at(k)->pix != 0L && iconShow ) ? 32:12;
+    int tx = ( mainData->at(k)->pix != 0L && iconShow ) ? 30:10;
 
     paint.setFont( tabBar->font() );
 
@@ -270,19 +270,19 @@ void KDockTabBarPainter::drawBuffer()
     paint.lineTo( x1 + width - 1, H+1-y1 );
 
 /***************************************************************/
-    paint.setPen( c1 );
-    paint.moveTo( x1 + 4, y1 + H - 5 );
-    paint.lineTo( x1 + 4, 3+y1 );
-
-    paint.moveTo( x1 + 7, y1 + H - 5 );
-    paint.lineTo( x1 + 7, 3+y1 );
-
-    paint.setPen( c2 );
-    paint.moveTo( x1 + 5, y1 + H - 5 );
-    paint.lineTo( x1 + 5, 3+y1 );
-
-    paint.moveTo( x1 + 8, y1 + H - 5 );
-    paint.lineTo( x1 + 8, 3+y1 );
+//    paint.setPen( c1 );
+//    paint.moveTo( x1 + 4, y1 + H - 5 );
+//    paint.lineTo( x1 + 4, 3+y1 );
+//
+//    paint.moveTo( x1 + 7, y1 + H - 5 );
+//    paint.lineTo( x1 + 7, 3+y1 );
+//
+//    paint.setPen( c2 );
+//    paint.moveTo( x1 + 5, y1 + H - 5 );
+//    paint.lineTo( x1 + 5, 3+y1 );
+//
+//    paint.moveTo( x1 + 8, y1 + H - 5 );
+//    paint.lineTo( x1 + 8, 3+y1 );
 /***************************************************************/
 
     // fixed picture for leftTab
@@ -1050,6 +1050,8 @@ void KDockTabBar::setPixmap( int id, const QPixmap &pix )
   if ( data != 0L ){
     if ( data->pix != 0L ) delete data->pix;
     data->pix = new QPixmap( pix );
+    if (pix.isNull()) // haven't got a pixmap, actually?
+        iconShow = false;
     if ( iconShow ) data->width += 16 + 4;
     tabsRecreate();
   }
