@@ -50,9 +50,6 @@
 
 template class QIntDict<KToolBarButton>;
 
-// Delay in ms before delayed popup pops up
-#define POPUP_DELAY 500
-
 class KToolBarButtonPrivate
 {
 public:
@@ -705,7 +702,7 @@ void KToolBarButton::slotPressed()
     if (d->m_isPopup)
     {
       d->m_delayTimer->stop(); // just in case?
-      d->m_delayTimer->start(POPUP_DELAY, true);
+      d->m_delayTimer->start( QApplication::startDragTime() , true);
       return;
     }
     else
