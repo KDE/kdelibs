@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// why this is necessary.
+//
+// Revision 1.74  1997/11/20 22:41:32  kalle
+// Small bug fix in kapp.cpp (I hope this does not break anything...)
+// First element of search was $HOME./kde and is now $HOME/.kde
 // New version looks way more correct to me...
 //
 // Revision 1.73  1997/11/20 22:24:30  kalle
@@ -744,14 +749,18 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
   theKProcessController = 0L;
 
     if ( parameter != unknown ) { // remove arguments
-			      QString aCommand;
+			      QString aCommand = aAppName;
       for( int j = i;  j < argc-2; j++ )
-				char* s = new char[1024];
-				aCommand+=(getcwd(s, 1024));
-				aCommand+="/";
-				delete [] s;
+        argv[j] = argv[j+2];
+      
+      argc -=2 ;
+    }
+				  aCommand+=(getcwd(s, 1024));
   }
-			      aCommand+=aAppName;
+
+			                     // save their data 
+    aIconPixmap = getIconLoader()->loadApplicationIcon( aAppName + ".xpm");
+  }
   if (aMiniIconPixmap.isNull()){
     aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
 
