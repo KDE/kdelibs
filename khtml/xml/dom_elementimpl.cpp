@@ -284,7 +284,7 @@ ElementImpl::~ElementImpl()
     namedAttrMap->deref();
 }
 
-bool ElementImpl::isInline()
+bool ElementImpl::isInline() const
 {
     if(!m_style) return false;
     return (m_style->display() == khtml::INLINE);
@@ -766,7 +766,7 @@ khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _
     return SelectionPointAfter;
 }
 
-bool ElementImpl::isSelectable()
+bool ElementImpl::isSelectable() const
 {
     return false;
 }

@@ -105,7 +105,7 @@ public:
 
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
-    virtual bool hasChildNodes (  );
+    virtual bool hasChildNodes (  ) const;
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode ) = 0;
 
@@ -170,12 +170,12 @@ public:
                                                    { return khtml::SelectionPointBefore; }
 
     virtual void setStyle(khtml::RenderStyle *) {}
-    virtual khtml::RenderStyle *style() { return 0; }
+    virtual khtml::RenderStyle *style() const { return 0; }
 
     virtual void setRenderer(khtml::RenderObject *object) { m_render = object; }
-    virtual khtml::RenderObject *renderer() { return m_render; }
+    virtual khtml::RenderObject *renderer() const { return m_render; }
 
-    virtual DOM::CSSStyleDeclarationImpl *styleRules() { return 0; }
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return 0; }
 
     // for LINK and STYLE
     virtual void sheetLoaded() {}
@@ -207,7 +207,7 @@ public:
     /**
      * whether this node can receive the keyboard focus.
      */
-    virtual bool isSelectable() { return false; };
+    virtual bool isSelectable() const { return false; };
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -220,14 +220,14 @@ public:
     virtual void detach() { setAttached(false); }
 
     // ### check if this function is still needed at all...
-    virtual bool isInline() { return true; }
+    virtual bool isInline() const { return true; }
     virtual void printTree(int indent=0) const;
     virtual QString toHTML() const;
     QString recursive_toHTML() const;
 
     virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
-    virtual QRect getRect();
+    virtual QRect getRect() const;
 
     virtual void recalcStyle() {}
 
@@ -282,7 +282,7 @@ protected:
     NodeImpl *_next;
 
     // helper function; throws exception if modifying a readonly node
-    bool checkReadOnly();
+    bool checkReadOnly() const;
 };
 
 // this is the full Node Implementation with parents and children.
@@ -305,7 +305,7 @@ public:
 
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
-    virtual bool hasChildNodes (  );
+    virtual bool hasChildNodes (  ) const;
 
     // not part of the DOM
     void removeChildren();
@@ -318,11 +318,11 @@ public:
     virtual void cloneChildNodes(NodeImpl *clone, int &exceptioncode);
 
     virtual void setStyle(khtml::RenderStyle *style);
-    virtual khtml::RenderStyle *style() { return m_style; }
+    virtual khtml::RenderStyle *style() const { return m_style; }
 
-    virtual QRect getRect();
-    bool getUpperLeftCorner(int &xPos, int &yPos);
-    bool getLowerRightCorner(int &xPos, int &yPos);
+    virtual QRect getRect() const;
+    bool getUpperLeftCorner(int &xPos, int &yPos) const;
+    bool getLowerRightCorner(int &xPos, int &yPos) const;
 
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);

@@ -50,8 +50,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return BASEStartTag; }
-    virtual tagStatus endTag() { return BASEEndTag; }
+    virtual tagStatus startTag() const { return BASEStartTag; }
+    virtual tagStatus endTag() const { return BASEEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *);
@@ -75,10 +75,10 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return LINKStartTag; }
-    virtual tagStatus endTag() { return LINKEndTag; }
+    virtual tagStatus startTag() const { return LINKStartTag; }
+    virtual tagStatus endTag() const { return LINKEndTag; }
 
-    StyleSheetImpl *sheet() { return m_sheet; }
+    StyleSheetImpl *sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
     virtual void attach(KHTMLView *w);
@@ -86,7 +86,7 @@ public:
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
-    bool isLoading();
+    bool isLoading() const;
     virtual void sheetLoaded();
 
 protected:
@@ -112,8 +112,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return METAStartTag; }
-    virtual tagStatus endTag() { return METAEndTag; }
+    virtual tagStatus startTag() const { return METAStartTag; }
+    virtual tagStatus endTag() const { return METAEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *);
@@ -135,8 +135,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return SCRIPTStartTag; }
-    virtual tagStatus endTag() { return SCRIPTEndTag; }
+    virtual tagStatus startTag() const { return SCRIPTStartTag; }
+    virtual tagStatus endTag() const { return SCRIPTEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -151,17 +151,17 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return STYLEStartTag; }
-    virtual tagStatus endTag() { return STYLEEndTag; }
+    virtual tagStatus startTag() const { return STYLEStartTag; }
+    virtual tagStatus endTag() const { return STYLEEndTag; }
 
-    StyleSheetImpl *sheet() { return m_sheet; }
+    StyleSheetImpl *sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttrImpl *attr);
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void setChanged(bool b=true);
 
-    bool isLoading();
+    bool isLoading() const;
     virtual void sheetLoaded();
     void reparseSheet();
 
@@ -183,8 +183,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return TITLEStartTag; }
-    virtual tagStatus endTag() { return TITLEEndTag; }
+    virtual tagStatus startTag() const { return TITLEStartTag; }
+    virtual tagStatus endTag() const { return TITLEEndTag; }
     virtual void setTitle();
 };
 

@@ -42,8 +42,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return BASEFONTStartTag; }
-    virtual tagStatus endTag() { return BASEFONTEndTag; }
+    virtual tagStatus startTag() const { return BASEFONTStartTag; }
+    virtual tagStatus endTag() const { return BASEFONTEndTag; }
 };
 
 // -------------------------------------------------------------------------

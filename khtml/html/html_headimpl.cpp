@@ -180,7 +180,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     if(!isLoading()) sheetLoaded();
 }
 
-bool HTMLLinkElementImpl::isLoading()
+bool HTMLLinkElementImpl::isLoading() const
 {
 //    kdDebug( 6030 ) << "link: checking if loading!" << endl;
     if(m_loading) return true;
@@ -357,7 +357,7 @@ void HTMLStyleElementImpl::setChanged(bool b)
     HTMLElementImpl::setChanged(b);
 }
 
-bool HTMLStyleElementImpl::isLoading()
+bool HTMLStyleElementImpl::isLoading() const
 {
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;

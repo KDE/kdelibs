@@ -47,7 +47,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
+    virtual DOM::CSSStyleDeclarationImpl *styleRules() const { return m_styleDecls; }
 
     void addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint = true);
     void addCSSLength(int id, const DOMString &value);
@@ -59,7 +59,7 @@ public:
 
     virtual void setFocus(bool);
 
-    virtual bool isSelectable();
+    virtual bool isSelectable() const;
 
     /**
      * triggered by setFocus(false)

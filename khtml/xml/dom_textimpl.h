@@ -99,7 +99,7 @@ public:
 
     virtual ushort id() const;
 
-    virtual khtml::RenderStyle *style();
+    virtual khtml::RenderStyle *style() const;
 
     virtual void attach(KHTMLView *);
     virtual void detach();

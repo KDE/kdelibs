@@ -41,8 +41,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return AStartTag; }
-    virtual tagStatus endTag() { return AEndTag; }
+    virtual tagStatus startTag() const { return AStartTag; }
+    virtual tagStatus endTag() const { return AEndTag; }
 
     void blur (  );
     void focus (  );
@@ -76,8 +76,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual tagStatus startTag() { return BRStartTag; }
-    virtual tagStatus endTag() { return BREndTag; }
+    virtual tagStatus startTag() const { return BRStartTag; }
+    virtual tagStatus endTag() const { return BREndTag; }
 
     virtual void attach(KHTMLView *w);
 };
@@ -94,8 +94,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return FONTStartTag; }
-    virtual tagStatus endTag() { return FONTEndTag; }
+    virtual tagStatus startTag() const { return FONTStartTag; }
+    virtual tagStatus endTag() const { return FONTEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     void attach(KHTMLView *w);
@@ -113,8 +113,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return INSStartTag; }
-    virtual tagStatus endTag() { return INSEndTag; }
+    virtual tagStatus startTag() const { return INSStartTag; }
+    virtual tagStatus endTag() const { return INSEndTag; }
 
 protected:
     ushort _id;
@@ -134,8 +134,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return BLOCKQUOTEStartTag; }
-    virtual tagStatus endTag() { return BLOCKQUOTEEndTag; }
+    virtual tagStatus startTag() const { return BLOCKQUOTEStartTag; }
+    virtual tagStatus endTag() const { return BLOCKQUOTEEndTag; }
 };
 
 }; //namespace

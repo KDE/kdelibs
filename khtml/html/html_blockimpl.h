@@ -46,8 +46,8 @@ public:
 
     void attach(KHTMLView *w);
 
-    virtual tagStatus startTag() { return BLOCKQUOTEStartTag; }
-    virtual tagStatus endTag() { return BLOCKQUOTEEndTag; }
+    virtual tagStatus startTag() const { return BLOCKQUOTEStartTag; }
+    virtual tagStatus endTag() const { return BLOCKQUOTEEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -64,8 +64,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return DIVStartTag; }
-    virtual tagStatus endTag() { return DIVEndTag; }
+    virtual tagStatus startTag() const { return DIVStartTag; }
+    virtual tagStatus endTag() const { return DIVEndTag; }
 
     void parseAttribute(AttrImpl *token);
 };
@@ -84,8 +84,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual tagStatus startTag() { return HRStartTag; }
-    virtual tagStatus endTag() { return HREndTag; }
+    virtual tagStatus startTag() const { return HRStartTag; }
+    virtual tagStatus endTag() const { return HREndTag; }
 
     virtual void attach(KHTMLView *);
 };
@@ -104,8 +104,8 @@ public:
 
     void parseAttribute(AttrImpl *token);
 
-    virtual tagStatus startTag() { return H1StartTag; }
-    virtual tagStatus endTag() { return H1EndTag; }
+    virtual tagStatus startTag() const { return H1StartTag; }
+    virtual tagStatus endTag() const { return H1EndTag; }
 
 protected:
     ushort _id;
@@ -129,8 +129,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return PStartTag; }
-    virtual tagStatus endTag() { return PEndTag; }
+    virtual tagStatus startTag() const { return PStartTag; }
+    virtual tagStatus endTag() const { return PEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     void attach(KHTMLView *w);
@@ -151,8 +151,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return PREStartTag; }
-    virtual tagStatus endTag() { return PREEndTag; }
+    virtual tagStatus startTag() const { return PREStartTag; }
+    virtual tagStatus endTag() const { return PREEndTag; }
 
 };
 

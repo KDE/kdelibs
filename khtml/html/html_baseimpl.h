@@ -51,8 +51,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return BODYStartTag; }
-    virtual tagStatus endTag() { return BODYEndTag; }
+    virtual tagStatus startTag() const { return BODYStartTag; }
+    virtual tagStatus endTag() const { return BODYEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     void attach(KHTMLView *w);
@@ -79,8 +79,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return FRAMEStartTag; }
-    virtual tagStatus endTag() { return FRAMEEndTag; }
+    virtual tagStatus startTag() const { return FRAMEStartTag; }
+    virtual tagStatus endTag() const { return FRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach(KHTMLView *w);
@@ -114,8 +114,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return FRAMESETStartTag; }
-    virtual tagStatus endTag() { return FRAMESETEndTag; }
+    virtual tagStatus startTag() const { return FRAMESETStartTag; }
+    virtual tagStatus endTag() const { return FRAMESETEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach(KHTMLView *w);
@@ -163,8 +163,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return HEADStartTag; }
-    virtual tagStatus endTag() { return HEADEndTag; }
+    virtual tagStatus startTag() const { return HEADStartTag; }
+    virtual tagStatus endTag() const { return HEADEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -179,8 +179,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return HTMLStartTag; }
-    virtual tagStatus endTag() { return HTMLEndTag; }
+    virtual tagStatus startTag() const { return HTMLStartTag; }
+    virtual tagStatus endTag() const { return HTMLEndTag; }
 
     virtual void attach(KHTMLView *w);
 
@@ -199,8 +199,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return IFRAMEStartTag; }
-    virtual tagStatus endTag() { return IFRAMEEndTag; }
+    virtual tagStatus startTag() const { return IFRAMEStartTag; }
+    virtual tagStatus endTag() const { return IFRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);

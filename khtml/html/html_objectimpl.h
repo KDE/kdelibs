@@ -47,15 +47,15 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return APPLETStartTag; }
-    virtual tagStatus endTag() { return APPLETEndTag; }
+    virtual tagStatus startTag() const { return APPLETStartTag; }
+    virtual tagStatus endTag() const { return APPLETEndTag; }
 
     virtual void parseAttribute(AttrImpl *token);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
 
-    virtual khtml::VAlign vAlign() { return valign; }
+//    virtual khtml::VAlign vAlign() const { return valign; }
 
 protected:
     DOMStringImpl *codeBase;
@@ -79,8 +79,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return OBJECTStartTag; }
-    virtual tagStatus endTag() { return OBJECTEndTag; }
+    virtual tagStatus startTag() const { return OBJECTStartTag; }
+    virtual tagStatus endTag() const { return OBJECTEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -106,8 +106,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return OBJECTStartTag; }
-    virtual tagStatus endTag() { return OBJECTEndTag; }
+    virtual tagStatus startTag() const { return OBJECTStartTag; }
+    virtual tagStatus endTag() const { return OBJECTEndTag; }
 
     HTMLFormElementImpl *form() const;
 
@@ -133,13 +133,13 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return PARAMStartTag; }
-    virtual tagStatus endTag() { return PARAMEndTag; }
+    virtual tagStatus startTag() const { return PARAMStartTag; }
+    virtual tagStatus endTag() const { return PARAMEndTag; }
 
     virtual void parseAttribute(AttrImpl *token);
 
-    QString name() { if(!m_name) return QString::null; return QConstString(m_name->s, m_name->l).string(); }
-    QString value() { if(!m_value) return QString::null; return QConstString(m_value->s, m_value->l).string(); }
+    QString name() const { if(!m_name) return QString::null; return QConstString(m_name->s, m_name->l).string(); }
+    QString value() const { if(!m_value) return QString::null; return QConstString(m_value->s, m_value->l).string(); }
 
  protected:
     DOMStringImpl *m_name;

@@ -35,9 +35,6 @@
 #include "rendering/render_text.h"
 #include <qrect.h>
 
-#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
-#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
-
 using namespace DOM;
 using namespace khtml;
 
@@ -161,7 +158,7 @@ NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
   return 0;
 }
 
-bool NodeImpl::hasChildNodes(  )
+bool NodeImpl::hasChildNodes(  ) const
 {
   return false;
 }
@@ -251,7 +248,7 @@ void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
     else _x = _y = height = -1;
 }
 
-QRect NodeImpl::getRect()
+QRect NodeImpl::getRect() const
 {
     int _x, _y;
     if(m_render && m_render->absolutePosition(_x, _y))
@@ -369,7 +366,7 @@ void NodeWParentImpl::setNextSibling(NodeImpl *n)
     _next = n;
 }
 
-bool NodeWParentImpl::checkReadOnly()
+bool NodeWParentImpl::checkReadOnly() const
 {
     // ####
     return false;
@@ -676,7 +673,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
     return newChild;
 }
 
-bool NodeBaseImpl::hasChildNodes (  )
+bool NodeBaseImpl::hasChildNodes (  ) const
 {
     return _first != 0;
 }
@@ -805,7 +802,7 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
 
 // I don't like this way of implementing the method, but I didn't find any
 // other way. Lars
-bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
+bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
 {
     if (!m_render)
 	return false;
@@ -841,7 +838,7 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
     return true;
 }
 
-bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
+bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
 {
     if (!m_render)
 	return false;
@@ -881,7 +878,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
     return true;
 }
 
-QRect NodeBaseImpl::getRect()
+QRect NodeBaseImpl::getRect() const
 {
     int xPos, yPos;
     if (!getUpperLeftCorner(xPos,yPos))

@@ -294,7 +294,7 @@ void TextImpl::applyChanges(bool,bool force)
     setChanged(false);
 }
 
-khtml::RenderStyle *TextImpl::style()
+khtml::RenderStyle *TextImpl::style() const
 {
     return _parent ? _parent->style() : 0;
 }

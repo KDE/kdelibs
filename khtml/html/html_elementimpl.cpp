@@ -263,7 +263,7 @@ DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )
     return m_styleDecls->getPropertyValue( prop );
 }
 
-bool HTMLElementImpl::isSelectable()
+bool HTMLElementImpl::isSelectable() const
 {
   switch(id())
     {

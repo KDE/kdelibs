@@ -75,8 +75,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return TABLEStartTag; }
-    virtual tagStatus endTag() { return TABLEEndTag; }
+    virtual tagStatus startTag() const { return TABLEStartTag; }
+    virtual tagStatus endTag() const { return TABLEEndTag; }
 
     HTMLTableCaptionElementImpl *caption() const { return tCaption; }
     NodeImpl *setCaption( HTMLTableCaptionElementImpl * );
@@ -143,13 +143,13 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return THEADStartTag; }
-    virtual tagStatus endTag() { return THEADEndTag; }
+    virtual tagStatus startTag() const { return THEADStartTag; }
+    virtual tagStatus endTag() const { return THEADEndTag; }
 
     HTMLElementImpl *insertRow ( long index );
     void deleteRow ( long index );
 
-    int numRows() { return nrows; }
+    int numRows() const { return nrows; }
 
 protected:
     ushort _id;
@@ -168,8 +168,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return TRStartTag; }
-    virtual tagStatus endTag() { return TREndTag; }
+    virtual tagStatus startTag() const { return TRStartTag; }
+    virtual tagStatus endTag() const { return TREndTag; }
 
     long rowIndex() const;
     long sectionRowIndex() const;
@@ -196,15 +196,15 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const { return _id; }
 
-    virtual tagStatus startTag() { return TDStartTag; }
-    virtual tagStatus endTag() { return TDEndTag; }
+    virtual tagStatus startTag() const { return TDStartTag; }
+    virtual tagStatus endTag() const { return TDEndTag; }
 
     // ### FIX these two...
     long cellIndex() const { return 0; }
 
-    int col() { return _col; }
+    int col() const { return _col; }
     void setCol(int col) { _col = col; }
-    int row() { return _row; }
+    int row() const { return _row; }
     void setRow(int r) { _row = r; }
 
     // overrides
@@ -233,13 +233,13 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return COLStartTag; }
-    virtual tagStatus endTag() { return COLEndTag; }
+    virtual tagStatus startTag() const { return COLStartTag; }
+    virtual tagStatus endTag() const { return COLEndTag; }
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
     void setStartCol( int c ) {_startCol = _currentCol = c; }
-    int col() { return _startCol; }
-    int lastCol() { return _currentCol; }
+    int col() const { return _startCol; }
+    int lastCol() const { return _currentCol; }
 
     virtual NodeImpl *addChild(NodeImpl *child);
 
@@ -270,8 +270,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return CAPTIONStartTag; }
-    virtual tagStatus endTag() { return CAPTIONEndTag; }
+    virtual tagStatus startTag() const { return CAPTIONStartTag; }
+    virtual tagStatus endTag() const { return CAPTIONEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
 };

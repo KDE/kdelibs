@@ -45,8 +45,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return IMGStartTag; }
-    virtual tagStatus endTag() { return IMGEndTag; }
+    virtual tagStatus startTag() const { return IMGStartTag; }
+    virtual tagStatus endTag() const { return IMGEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
 
@@ -91,8 +91,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return AREAStartTag; }
-    virtual tagStatus endTag() { return AREAEndTag; }
+    virtual tagStatus startTag() const { return AREAStartTag; }
+    virtual tagStatus endTag() const { return AREAEndTag; }
 
     void parseAttribute(AttrImpl *attr);
 
@@ -124,14 +124,12 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual DOMString getName() const {
-    	return name;
-    }
+    virtual DOMString getName() const { return name; }
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual tagStatus startTag() { return MAPStartTag; }
-    virtual tagStatus endTag() { return MAPEndTag; }
+    virtual tagStatus startTag() const { return MAPStartTag; }
+    virtual tagStatus endTag() const { return MAPEndTag; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );

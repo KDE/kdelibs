@@ -100,7 +100,7 @@ public:
     ElementImpl(DocumentImpl *doc);
     ~ElementImpl();
 
-    virtual bool isInline();
+    virtual bool isInline() const;
 
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() const { return true; }
@@ -134,8 +134,8 @@ public:
       */
     virtual void parseAttribute(AttrImpl *) {}
 
-    virtual tagStatus startTag() { return DOM::REQUIRED; }
-    virtual tagStatus endTag() { return DOM::REQUIRED; }
+    virtual tagStatus startTag() const { return DOM::REQUIRED; }
+    virtual tagStatus endTag() const { return DOM::REQUIRED; }
 
     // not part of the DOM
 
@@ -161,7 +161,7 @@ public:
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
-    virtual bool isSelectable();
+    virtual bool isSelectable() const;
     virtual bool childAllowed( NodeImpl *newChild );
 
     virtual short tabIndex() const;

@@ -61,8 +61,8 @@ public:
     virtual const DOMString nodeName() const { return "FORM"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return FORMStartTag; }
-    virtual tagStatus endTag() { return FORMEndTag; }
+    virtual tagStatus startTag() const { return FORMStartTag; }
+    virtual tagStatus endTag() const { return FORMEndTag; }
 
     long length() const;
     void prepareSubmit();
@@ -139,7 +139,6 @@ public:
     void onSelect();
     void onChange();
 
-
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled) { m_disabled = _disabled; }
 
@@ -155,6 +154,7 @@ public:
      * return true for a successful control (see 17.13.2)
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
+
 
     virtual void blur();
     virtual void focus();
@@ -187,8 +187,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return BUTTONStartTag; }
-    virtual tagStatus endTag() { return BUTTONEndTag; }
+    virtual tagStatus startTag() const { return BUTTONStartTag; }
+    virtual tagStatus endTag() const { return BUTTONEndTag; }
 
     DOMString type() const;
 
@@ -219,8 +219,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return FIELDSETStartTag; }
-    virtual tagStatus endTag() { return FIELDSETEndTag; }
+    virtual tagStatus startTag() const { return FIELDSETStartTag; }
+    virtual tagStatus endTag() const { return FIELDSETEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -249,10 +249,10 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return INPUTStartTag; }
-    virtual tagStatus endTag() { return INPUTEndTag; }
+    virtual tagStatus startTag() const { return INPUTStartTag; }
+    virtual tagStatus endTag() const { return INPUTEndTag; }
 
-    bool checked() { return m_checked; }
+    bool checked() const { return m_checked; }
     void setChecked(bool);
     long maxLength() const { return m_maxLen; }
     int size() const { return m_size; }
@@ -277,7 +277,8 @@ public:
     virtual void attach(KHTMLView *w);
 
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
-    typeEnum inputType() { return m_type; }
+
+    typeEnum inputType() const { return m_type; }
     virtual void reset();
 
     virtual bool mouseEvent( int _x, int _y,
@@ -319,8 +320,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return LABELStartTag; }
-    virtual tagStatus endTag() { return LABELEndTag; }
+    virtual tagStatus startTag() const { return LABELStartTag; }
+    virtual tagStatus endTag() const { return LABELEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -335,8 +336,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return LEGENDStartTag; }
-    virtual tagStatus endTag() { return LEGENDEndTag; }
+    virtual tagStatus startTag() const { return LEGENDStartTag; }
+    virtual tagStatus endTag() const { return LEGENDEndTag; }
 };
 
 
@@ -351,8 +352,8 @@ public:
     virtual const DOMString nodeName() const { return "SELECT"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return SELECTStartTag; }
-    virtual tagStatus endTag() { return SELECTEndTag; }
+    virtual tagStatus startTag() const { return SELECTStartTag; }
+    virtual tagStatus endTag() const { return SELECTEndTag; }
 
     DOMString type() const;
 
@@ -363,7 +364,7 @@ public:
 
     long size() const { return m_size; }
 
-    bool multiple() { return m_multiple; }
+    bool multiple() const { return m_multiple; }
 
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
@@ -386,7 +387,7 @@ public:
     // reverse of optionToListIndex - get optionIndex from listboxIndex
     int listToOptionIndex(int listIndex) const;
     void recalcListItems();
-    QArray<HTMLGenericFormElementImpl*> listItems() { return m_listItems; }
+    QArray<HTMLGenericFormElementImpl*> listItems() const { return m_listItems; }
     virtual void reset();
     void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
 
@@ -409,8 +410,8 @@ public:
     virtual const DOMString nodeName() const { return "OPTGROUP"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return OPTGROUPStartTag; }
-    virtual tagStatus endTag() { return OPTGROUPEndTag; }
+    virtual tagStatus startTag() const { return OPTGROUPStartTag; }
+    virtual tagStatus endTag() const { return OPTGROUPEndTag; }
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
@@ -432,15 +433,15 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return OPTIONStartTag; }
-    virtual tagStatus endTag() { return OPTIONEndTag; }
+    virtual tagStatus startTag() const { return OPTIONStartTag; }
+    virtual tagStatus endTag() const { return OPTIONEndTag; }
 
     DOMString text();
 
     long index() const;
     void setIndex( long );
     virtual void parseAttribute(AttrImpl *attr);
-    DOMString value() { return m_value; }
+    DOMString value() const { return m_value; }
 
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);
@@ -471,14 +472,14 @@ public:
     virtual const DOMString nodeName() const { return "TEXTAREA"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return TEXTAREAStartTag; }
-    virtual tagStatus endTag() { return TEXTAREAEndTag; }
+    virtual tagStatus startTag() const { return TEXTAREAStartTag; }
+    virtual tagStatus endTag() const { return TEXTAREAEndTag; }
 
     long cols() const { return m_cols; }
 
     long rows() const { return m_rows; }
 
-    WrapMethod wrap() { return m_wrap; }
+    WrapMethod wrap() const { return m_wrap; }
 
     DOMString type() const;
 
@@ -519,8 +520,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() { return ISINDEXStartTag; }
-    virtual tagStatus endTag() { return ISINDEXEndTag; }
+    virtual tagStatus startTag() const { return ISINDEXStartTag; }
+    virtual tagStatus endTag() const { return ISINDEXEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
