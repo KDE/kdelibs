@@ -6,7 +6,9 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY Alt    "<keycap>Alt</keycap>">
 <!ENTITY cdrom  "<abbrev>CD-ROM</abbrev>">
+<!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY dh     "<abbrev>d.h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
@@ -20,6 +22,7 @@
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
 <!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
+<!ENTITY Shift  "<keycap>Umschalt</keycap>">
 <!ENTITY Strg "<keycap>Strg</keycap>" ><!-- ctrl -->
 <!ENTITY Umschalt "<keycap>Umschalt</keycap>" > <!-- Shift -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
