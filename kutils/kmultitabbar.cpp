@@ -292,7 +292,8 @@ QSize KMultiTabBarButton::sizeHint() const
 KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
 		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,
 		KMultiTabBar::KMultiTabBarStyle style)
-	:KMultiTabBarButton(text,0,id,parent,pos,style)
+	:KMultiTabBarButton(text,0,id,parent,pos,style),
+ 	m_showActiveTabText(false)
 {
 	d=new KMultiTabBarTabPrivate();
 	setIcon(pic);
