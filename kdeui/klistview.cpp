@@ -78,6 +78,7 @@ public:
     : pCurrentItem (0L),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
+      cursorInExecuteArea(false),
       itemsMovable (true),
       selectedBySimpleMove(false),
       selectedUsingMouse(false),
