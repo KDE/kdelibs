@@ -57,35 +57,30 @@ public:
   {
     m_noStyle     = false;
     m_isSeparator = false;
-    m_isPopup     = false;
-    m_isToggle    = false;
     m_isRadio     = false;
     m_highlight   = false;
     m_isRaised    = false;
     m_isActive    = false;
+    m_isDelayedPopup = false;
 
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
     m_iconSize    = 0;
-    m_delayTimer  = 0L;
-    m_popup       = 0L;
 
     m_instance = KGlobal::instance();
   }
   ~KToolBarButtonPrivate()
   {
-    delete m_delayTimer; m_delayTimer = 0;
   }
 
   int     m_id;
   bool    m_noStyle: 1;
   bool    m_isSeparator: 1;
-  bool    m_isPopup: 1;
-  bool    m_isToggle: 1;
   bool    m_isRadio: 1;
   bool    m_highlight: 1;
   bool    m_isRaised: 1;
   bool    m_isActive: 1;
+  bool    m_isDelayedPopup: 1;
 
   QString m_iconName;
 
@@ -93,10 +88,7 @@ public:
   KToolBar::IconText m_iconText;
   int m_iconSize;
   QSize size;
-
-  QTimer     *m_delayTimer;
-  QPopupMenu *m_popup;
-
+  
   QPoint m_mousePressPos;
 
   KInstance  *m_instance;
@@ -349,30 +341,26 @@ void KToolBarButton::setDisabledIcon( const QString& icon )
   QToolButton::setIconSet( set );
 }
 
-void KToolBarButton::setPopup(QPopupMenu *p, bool toggle)
-{
-  d->m_popup = p;
-  d->m_isToggle  = toggle;
-  p->installEventFilter(this);
-}
-
 QPopupMenu *KToolBarButton::popup()
 {
-  return d->m_popup;
+  // obsolete
+  // KDE4: remove me
+  return QToolButton::popup();
 }
 
-void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool toggle )
+void KToolBarButton::setPopup(QPopupMenu *p, bool)
 {
-  d->m_isPopup   = true;
+  QToolButton::setPopup(p);
+  QToolButton::setPopupDelay(QApplication::startDragTime());
+  d->m_isDelayedPopup = false;
+}
 
-  if (!d->m_delayTimer)
-  {
-    d->m_delayTimer = new QTimer(this);
-    connect(d->m_delayTimer, SIGNAL(timeout()),
-           this,             SLOT(slotDelayTimeout()));
-  }
 
-  setPopup(p, toggle);
+void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool)
+{
+  QToolButton::setPopup(p);
+  QToolButton::setPopupDelay(QApplication::startDragTime());
+  d->m_isDelayedPopup = true;
 }
 
 void KToolBarButton::leaveEvent(QEvent *)
@@ -383,9 +371,6 @@ void KToolBarButton::leaveEvent(QEvent *)
     d->m_isActive = false;
     repaint(false);
   }
-
-  if (d->m_isPopup)
-    d->m_delayTimer->stop();
 
   emit highlighted(d->m_id, false);
 }
@@ -411,6 +396,22 @@ void KToolBarButton::enterEvent(QEvent *)
   emit highlighted(d->m_id, true);
 }
 
+
+void KToolBarButton::mousePressEvent( QMouseEvent *e )
+{
+  QToolButton::mousePressEvent( e );
+  if (QToolButton::popup())
+  {
+     d->m_mousePressPos = e->pos();
+     if (!d->m_isDelayedPopup)
+     {
+       openPopup();
+     }
+  }  
+}
+
+
+
 bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 {
   if ((KToolBarButton *)o == this)
@@ -429,70 +430,22 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 
     // Popup the menu when the left mousebutton is pressed and the mouse
     // is moved by a small distance.
-    if (d->m_isPopup)
+    if (QToolButton::popup())
     {
-      if (ev->type() == QEvent::MouseButtonPress)
-      {
-        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
-        d->m_mousePressPos = mev->pos();
-      }
-
       if (ev->type() == QEvent::MouseMove)
       {
         QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
-        if (d->m_delayTimer && d->m_delayTimer->isActive()
-         && (mev->pos() - d->m_mousePressPos).manhattanLength()
+        if ((mev->pos() - d->m_mousePressPos).manhattanLength()
               > KGlobalSettings::dndEventDelay())
-          slotDelayTimeout();
-      }
-    }
-  }
-
-  if ((QPopupMenu *) o != d->m_popup)
-    return false; // just in case
-
-  switch (ev->type())
-  {
-    case QEvent::MouseButtonDblClick:
-    case QEvent::MouseButtonPress:
-    {
-      // If I get this, it means that popup is visible
-      QRect r(geometry());
-      r.moveTopLeft(d->m_parent->mapToGlobal(pos()));
-      if (r.contains(QCursor::pos()))   // on button
-        return true; // ignore
-      break;
-    }
-
-    case QEvent::MouseButtonRelease:
-      if (!d->m_popup->geometry().contains(QCursor::pos())) // not in menu...
-      {
-        QRect r(geometry());
-        r.moveTopLeft(d->m_parent->mapToGlobal(pos()));
-
-        if (r.contains(QCursor::pos()))   // but on button
         {
-          if( !isToggleButton() )
-            d->m_popup->hide();        //Sven: proposed by Carsten Pfeiffer
-          // Make the button normal again :) Dawit A.
-          if( d->m_isToggle )
-            setToggle( false );
-          emit clicked( d->m_id );
-          return true;  // ignore release
+          openPopup();
+          return true;
         }
       }
-      if ( d->m_isToggle )
-        setToggle( false );  //Change the button to normal mode (DA)
-      break;
-
-    case QEvent::Hide:
-      on(false);
-      setDown(false);
-      return false;
-  default:
-      break;
+    }
   }
-  return false;
+
+  return QToolButton::eventFilter(o, ev);
 }
 
 void KToolBarButton::drawButton( QPainter *_painter )
@@ -632,7 +585,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawText(textRect, textFlags, textLabel());
   }
 
-  if (d->m_popup)
+  if (QToolButton::popup())
   {
     QStyle::SFlags arrowFlags = QStyle::Style_Default;
 
@@ -656,67 +609,28 @@ void KToolBarButton::paletteChange(const QPalette &)
 
 void KToolBarButton::showMenu()
 {
-  // calculate that position carefully!!
-  d->m_isRaised = true;
-  repaint (false);
-
-  QPoint p;
-  // Calculate position from the toolbar button, only if the button is in the toolbar !
-  // If we are in the overflow menu, use the mouse position (as Qt does)
-  bool bInToolbar = QRect( 0, 0, d->m_parent->width(), d->m_parent->height() ).intersects( QRect( pos(), size() ) );
-  if (bInToolbar)
-  {
-    p = mapToGlobal( QPoint( 0, 0 ) );
-    if ( p.y() + height() + d->m_popup->sizeHint().height() > KApplication::desktop()->height() )
-        p.setY( p.y() - d->m_popup->sizeHint().height() );
-    else
-        p.setY( p.y() + height( ));
-    if (QApplication::reverseLayout()) p.setX(p.x() -d->m_popup->sizeHint().width() + width() );	
-  }
-  else
-    p = QCursor::pos();
-
-  if ( d->m_isToggle )
-      setToggle( true ); // Turns the button into a ToggleButton ...
-  d->m_popup->popup(p);
+  // obsolete
+  // KDE4: remove me
 }
 
 void KToolBarButton::slotDelayTimeout()
 {
-  d->m_delayTimer->stop();
-  showMenu();
+  // obsolete
+  // KDE4: remove me
 }
 
 void KToolBarButton::slotClicked()
 {
-  if (d->m_popup && !d->m_isPopup)
-    showMenu();
-  else
-    emit clicked( d->m_id );
+  emit clicked( d->m_id );
 }
 
 void KToolBarButton::slotPressed()
 {
-  if (d->m_popup)
-  {
-    if (d->m_isPopup)
-    {
-      d->m_delayTimer->stop(); // just in case?
-      d->m_delayTimer->start( QApplication::startDragTime() , true);
-      return;
-    }
-    else
-      showMenu();
-  }
-  else
-    emit pressed( d->m_id );
+  emit pressed( d->m_id );
 }
 
 void KToolBarButton::slotReleased()
 {
-  if (d->m_popup && d->m_isPopup)
-    d->m_delayTimer->stop();
-
   emit released( d->m_id );
 }
 
