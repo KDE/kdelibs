@@ -1832,7 +1832,7 @@ char* putString( char *_str )
   char *p = (char*)malloc( l );
   char *s = _str + 1;
   char *d = p;
-  while ( s != _str + l - 1 )
+  while ( s < _str + l - 1 )
   {
      if ( *s != '\\' )
         *d++ = *s++;
