@@ -294,7 +294,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
   return false;
 }
 
-unsigned long KSocket::getAddr()
+unsigned long KSocket::addr()
 {
   if ( domain != PF_INET )
     return 0;
@@ -469,7 +469,7 @@ bool KServerSocket::init( unsigned short int _port )
   return true;
 }
 
-unsigned short int KServerSocket::getPort()
+unsigned short int KServerSocket::port()
 {
   if ( domain != PF_INET )
     return false;
@@ -479,7 +479,7 @@ unsigned short int KServerSocket::getPort()
   return ntohs(name.sin_port);
 }
 
-unsigned long KServerSocket::getAddr()
+unsigned long KServerSocket::addr()
 {
   if ( domain != PF_INET )
     return false;

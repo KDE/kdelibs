@@ -129,7 +129,7 @@ public:
     /**
      * Return address.
      */
-    unsigned long getAddr();
+    unsigned long addr();
     
 signals:
     /** 
@@ -235,12 +235,12 @@ public:
     /** 
      * Returns the port number which is being monitored.
      */
-    unsigned short int getPort();
+    unsigned short int port();
 
     /** 
      * The address.
      */
-    unsigned long getAddr();
+    unsigned long addr();
 
 public slots: 
     /** 
