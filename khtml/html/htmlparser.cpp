@@ -684,6 +684,11 @@ void KHTMLParser::insertNode(NodeImpl *n)
             insertNode(e);
             handled = true;
             break;
+	    case ID_DL:
+		e = new HTMLGenericElementImpl(document, ID_DD);
+		insertNode(e);
+		handled = true;
+		break;
         case ID_SELECT:
 	    if( n->isInline() )
 		throw exception;
