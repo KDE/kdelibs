@@ -109,7 +109,9 @@ void KMJobViewer::updateCaption()
 			pixname = prt->pixmap();
 	}
 	else
+	{
 		setCaption(i18n("No Printer"));
+	}
 	KWin::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
 }
 
@@ -154,10 +156,13 @@ void KMJobViewer::refresh(bool reload)
 			m_jobs.append(it.current());
 	updateJobs();
 	slotSelectionChanged();
-	emit jobsShown(this, (m_jobs.count() != 0));
 
 	// update the caption and icon (doesn't do anything if it has a parent widget)
 	updateCaption();
+
+	// do it last as this signal can cause this view to be destroyed. No
+	// code can be executed safely after that
+	emit jobsShown(this, (m_jobs.count() != 0));
 }
 
 void KMJobViewer::init()
