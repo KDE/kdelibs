@@ -414,12 +414,12 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         // drawing two small rectangles?
         // disadvantage is that current edges doesn't look right because of reverse
         // drawing order
-        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, sb1, sb2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, true, true);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, true, true);
         break;
     case RIDGE:
-        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, sb1, sb2);
-        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, true, true);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, true, true);
         break;
     case INSET:
         if(s == BSTop || s == BSLeft)
