@@ -1067,11 +1067,11 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
             curPos = KDockWidget::DockDesktop;
           }
         } else {
+          if (d->readyToDrag) {
+            d->readyToDrag = false;
+          }
           if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel ){
-            if (d->readyToDrag) {
-              d->readyToDrag = false;
-              startDrag( curdw);
-            }
+            startDrag( curdw);
           }
         }
         break;
@@ -1243,6 +1243,8 @@ void KDockManager::drop()
   childDockWidgetList = 0L;
   if ( dropCancel ) return;
   if ( !currentMoveWidget && ((currentDragWidget->eDocking & (int)KDockWidget::DockDesktop) == 0) ) {
+    d->dragRect = QRect();  // cancel drawing
+    drawDragRectangle();    // only the old rect will be deleted
     return;
   }
   if ( !currentMoveWidget && !currentDragWidget->parent() ) {
