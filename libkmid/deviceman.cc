@@ -502,4 +502,3 @@ if ((device[getDefaultDevice()]->devType())==KMID_GUS)
 return 0;
 };
 
-
