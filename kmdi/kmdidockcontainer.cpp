@@ -18,6 +18,9 @@
 */
 
 #include "kmdidockcontainer.h"
+
+#include "kdockwidget_private.h"
+
 #include <qwidgetstack.h>
 #include <qlayout.h>
 #include <qtimer.h>
@@ -26,7 +29,7 @@
 
 #ifndef NO_KDE
 #include <kdebug.h>
-#include <kiconloader.h>                       
+#include <kiconloader.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -43,14 +46,14 @@ static const char* const not_close_xpm[]={
 "#####"};
 
 KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KMdiDockContainerBase()
-{         
+{
 	m_block=false;
 	m_inserted=-1;
 	m_mainWin = win;
 	oldtab=-1;
 	mTabCnt=0;
 	m_position = position;
-	
+
 	QBoxLayout *l;
 	m_vertical=!((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom));
 
@@ -58,7 +61,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 	l=new QVBoxLayout(this);
 	else
 	l=new QHBoxLayout(this);
-	
+
 	l->setAutoAdd(false);
 
 	m_tb=new KMultiTabBar(((position==KDockWidget::DockTop) || (position==KDockWidget::DockBottom))?
@@ -71,7 +74,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 	m_ws=new QWidgetStack(this);
 
 	m_ws->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
- 
+
 	if ( (position==KDockWidget::DockLeft) || (position==KDockWidget::DockTop))
 	{
 		l->add(m_tb);
@@ -96,7 +99,7 @@ KMdiDockContainer::~KMdiDockContainer()
 void KMdiDockContainer::init()
 {
 	if (m_vertical) {
-		parentDockWidget()->setForcedFixedWidth(m_tb->width());	
+		parentDockWidget()->setForcedFixedWidth(m_tb->width());
 		activateOverlapMode(m_tb->width());
 	}
 	else
@@ -109,7 +112,7 @@ void KMdiDockContainer::init()
 
 
 KMdiDockWidget *KMdiDockContainer::parentDockWidget(){return ((KMdiDockWidget*)parent());}
-    
+
 void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QString &text, int &)
 {
     KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
@@ -160,7 +163,7 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
 		itemNames.append(w->name());
 	}
         m_ws->raiseWidget(tab);
-		
+
 }
 
 void KMdiDockContainer::changeOverlapMode() {
@@ -180,7 +183,7 @@ void KMdiDockContainer::changeOverlapMode() {
 		kdDebug()<<"KMdiDockContainer::changeOverlapMode: deactivateOverlapMode"<<endl;
 		deactivateOverlapMode();
 	}
-	
+
 	for (QMap<KMdiDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
 		it!=m_overlapButtons.end();++it)
 		it.data()->setOn(!isOverlapMode());
@@ -228,9 +231,9 @@ void KMdiDockContainer::tabClicked(int t)
 	kdDebug()<<"KMdiDockContainer::tabClicked()"<<endl;
 
 	if (m_tb->isTabRaised(t))
-	{         
+	{
     if (m_ws->isHidden())
-    {                        
+    {
        m_ws->show ();
 	parentDockWidget()->restoreFromForcedFixedSize();
     }
@@ -249,14 +252,14 @@ void KMdiDockContainer::tabClicked(int t)
 			kdDebug()<<"KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
 
 		if (oldtab!=t) m_tb->setTab(oldtab,false);
-		oldtab=t;	
+		oldtab=t;
 	}
 	else
 	{
 //		oldtab=-1;
     if (m_block) return;
     m_block=true;
-    if (m_ws->widget(t)) 
+    if (m_ws->widget(t))
     {
 //		((KDockWidget*)m_ws->widget(t))->undock();
     }
@@ -291,7 +294,7 @@ void KMdiDockContainer::save(KConfig*)
 	QString grp=cfg->group();
 	cfg->deleteGroup(QString("KMdiDock::%1").arg(parent()->name()));
 	cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
-	
+
 	if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
 		else cfg->writeEntry("overlapMode","false");
 
@@ -301,24 +304,24 @@ void KMdiDockContainer::save(KConfig*)
 	int i=0;
 	for (;it.current()!=0;++it,++it2)
 	{
-//		cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());	
+//		cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());
 		cfg->writeEntry(QString("widget%1").arg(i),(*it2));
 //		kdDebug()<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
 		if (m_tb->isTabRaised(it.current()->id()))
 			cfg->writeEntry(m_ws->widget(it.current()->id())->name(),true);
 	++i;
-	}	
+	}
 	cfg->sync();
 	cfg->setGroup(grp);
 
 }
-  
+
 void KMdiDockContainer::load(KConfig*)
 {
 	KConfig *cfg=kapp->config();
-	QString grp=cfg->group();	
+	QString grp=cfg->group();
 	cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
-	
+
 	if (cfg->readEntry("overlapMode")!="false")
 		activateOverlapMode(m_tb->width());
 	else
@@ -339,9 +342,9 @@ void KMdiDockContainer::load(KConfig*)
 		}
 		if (cfg->readBoolEntry(dwn,false)) raise=dwn;
 		i++;
-		
+
 	}
-	
+
 	QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
 	QPtrListIterator<KMultiTabBarTab> it1(*tl);
 	m_ws->hide();
@@ -362,9 +365,9 @@ void KMdiDockContainer::load(KConfig*)
 
 			if (it.key()->name()==raise)
 			{
-/*				tabClicked(it.data());	
+/*				tabClicked(it.data());
 				m_tb->setTab(it.data(),true);
-				tabClicked(it.data());	
+				tabClicked(it.data());
 				m_ws->raiseWidget(it.key());
 				kapp->sendPostedEvents();
 				kapp->syncX();*/
@@ -374,11 +377,11 @@ void KMdiDockContainer::load(KConfig*)
 				break;
 			}
 		}
-		
+
 	}
 	if (m_delayedRaise==-1) 	QTimer::singleShot(0,this,SLOT(init()));
 	cfg->setGroup(grp);
-	
+
 }
 #endif
 

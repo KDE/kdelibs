@@ -43,7 +43,7 @@ public:
         virtual void setToolTip (KDockWidget *, QString &);
 	virtual void setPixmap(KDockWidget*,const QPixmap&);
 	virtual void undockWidget(KDockWidget*);
-	virtual void removeWidget(KDockWidget*);	
+	virtual void removeWidget(KDockWidget*);
         void hideIfNeeded();
 #ifndef NO_KDE2
 	virtual void save(KConfig *);
@@ -53,13 +53,13 @@ public:
 public slots:
 	void init();
         void collapseOverlapped();
-private:                    
+private:
   	QWidget *m_mainWin;
 	QWidgetStack *m_ws;
 	KMultiTabBar *m_tb;
 	int mTabCnt;
 	int oldtab;
-  	int m_position; 
+  	int m_position;
 	QMap<KMdiDockWidget*,int> m_map;
 	QMap<int,KMdiDockWidget*> m_revMap;
 	QMap<KMdiDockWidget*,KDockButton_Private*> m_overlapButtons;
@@ -72,25 +72,6 @@ protected slots:
 	void tabClicked(int);
 	void delayedRaise();
 	void changeOverlapMode();
-};
-
-
-/* THIS IS GOING TO BE REMOVED ONCE THAT CONTAINER IS IN KDELIBS. It's a copy of a private header
-*/
-class KDockButton_Private : public QPushButton
-{
-  Q_OBJECT
-public:
-  KDockButton_Private( QWidget *parent=0, const char *name=0 );
-  ~KDockButton_Private();
-
-protected:
-  virtual void drawButton( QPainter * );
-  virtual void enterEvent( QEvent * );
-  virtual void leaveEvent( QEvent * );
-
-private:
-  bool moveMouse;
 };
 
 #endif
