@@ -54,7 +54,7 @@ class Engine;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class DownloadDialog : public KDialogBase
+class KDE_EXPORT DownloadDialog : public KDialogBase
 {
     Q_OBJECT
   public:

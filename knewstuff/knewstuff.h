@@ -55,7 +55,7 @@ class Entry;
  *
  * @since 3.3
  */
-class KNewStuff
+class KDE_EXPORT KNewStuff
 {
   public:
     /**

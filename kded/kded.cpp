@@ -781,7 +781,7 @@ public:
   KDEDQtDCOPObject kdedQtDcopObject;
 };
 
-extern "C" int kdemain(int argc, char *argv[])
+extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
         "$Id$",

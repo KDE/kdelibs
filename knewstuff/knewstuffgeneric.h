@@ -39,7 +39,7 @@ class KConfig;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KNewStuffGeneric : public KNewStuff
+class KDE_EXPORT KNewStuffGeneric : public KNewStuff
 {
   public:
     /**
