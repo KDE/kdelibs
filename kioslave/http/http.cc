@@ -1562,7 +1562,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     if (ret == 0)
       m_bEOF = true;
 
-  } while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
+  } while ((ret == -1) && (m_bIsSSL || errno == EAGAIN || errno == EINTR));
 
   return ret;
 }
@@ -3329,7 +3329,7 @@ void HTTPProtocol::httpClose()
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (m_bKeepAlive && m_request.method == HTTP_GET)
+  if (m_bKeepAlive && !m_bIsSSL && m_request.method == HTTP_GET)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
@@ -3837,14 +3837,16 @@ void HTTPProtocol::error( int _err, const QString &_text )
 
 void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
 {
-   kdDebug(7113) << "(" << m_pid << ") (" << m_pid << ") " << cookieHeader << endl;
-
    long windowId = m_request.window.toLong();
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
    stream << url << cookieHeader << windowId;
+   
+   kdDebug(7113) << "(" << m_pid << ") " << cookieHeader << endl;
+   kdDebug(7113) << "(" << m_pid << ") " << "Window ID: " 
+                 << windowId << ", for host = " << url << endl;
 
-  bool attemptedRestart = false;
+   bool attemptedRestart = false;
    while ( 1 )
    {
       if ( !m_dcopClient->send( "kcookiejar", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
