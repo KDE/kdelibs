@@ -36,6 +36,7 @@
 #include <openssl/pem.h>
 #include <openssl/stack.h>
 #include <openssl/safestack.h>
+DECLARE_STACK_OF(X509)
 #undef crypt
 #endif
 
@@ -51,6 +52,7 @@
 #define sk_free d->kossl->sk_free
 #define sk_value d->kossl->sk_value
 #define sk_num d->kossl->sk_num
+#define sk_dup d->kossl->sk_dup
 #endif
 
 class KSSLCertChainPrivate {
@@ -89,6 +91,7 @@ KSSLCertChain *x = new KSSLCertChain;
 QList<KSSLCertificate> ch = getChain();
 
   x->setChain(ch);   // this will do a deep copy for us
+  ch.setAutoDelete(true);
 return x;
 }
 
@@ -109,10 +112,12 @@ STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
    for (int i = 0; i < sk_X509_num(x); i++) {
      X509* x5 = sk_X509_value(x, i);
+     if (!x5) continue;
      KSSLCertificate *nc = new KSSLCertificate;
      nc->setCert(d->kossl->X509_dup(x5));
      cl.append(nc);
    }
+
 #endif
 return cl;
 }
@@ -121,7 +126,9 @@ return cl;
 void KSSLCertChain::setChain(QList<KSSLCertificate>& chain) {
 #ifdef HAVE_SSL
   if (_chain) sk_X509_free((STACK_OF(X509) *) _chain);
+  _chain = NULL;
 
+  if (chain.count() == 0) return;
   _chain = (void *)sk_new(NULL);
   for (KSSLCertificate *x = chain.first(); x != 0; x = chain.next()) {
     sk_X509_push((STACK_OF(X509)*)_chain, d->kossl->X509_dup(x->getCert()));
@@ -136,8 +143,10 @@ void KSSLCertChain::setChain(void *stack_of_x509) {
 if (_chain) {
       sk_X509_free((STACK_OF(X509)*)_chain);
 }
+_chain = sk_X509_dup((STACK_OF(X509)*)stack_of_x509);
+#else
+_chain = NULL;
 #endif
-_chain = stack_of_x509;
 }
 
 

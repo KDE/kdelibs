@@ -355,7 +355,9 @@ void KSSL::setPeerInfo(int sock) {
     m_pi.setPeerAddress(x);
   }
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
-  m_pi.m_cert.setChain((void *)sk_X509_dup(d->kossl->SSL_get_peer_cert_chain(d->m_ssl)));
+  STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
+  if (xs) xs = sk_X509_dup(xs);
+  m_pi.m_cert.setChain((void *)xs);
 #endif
 }
 

@@ -35,6 +35,7 @@ class QStringList;
 #include <config.h>
 #endif
 
+
 class KSSLCertChain {
 friend class KSSL;
 friend class KSSLPeerInfo;
