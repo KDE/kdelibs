@@ -1021,6 +1021,7 @@ void KApplication::resizeAll()
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 {
+	QApplication::flushX();
   if ( fork() == 0 )	
     {		
 	  if( filename.isEmpty() )
@@ -1059,6 +1060,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 
 void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
+	QApplication::flushX();
   if( fork() == 0 )
   {	
     QString mailClient( "kmail");
@@ -1081,6 +1083,8 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
 
 void KApplication::invokeBrowser( const QString &url )
 {
+
+	QApplication::flushX();
   if( fork() == 0 )
   {
     setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore

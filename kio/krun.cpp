@@ -278,7 +278,8 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
     for( ; it != _urls.end(); ++it )
       argv[ i++ ] = (char*)(*it).ascii();
     argv[ i ] = 0;
-
+	
+    QApplication::flushX();
     int pid;
     if ( ( pid = fork() ) == 0 )
     {
@@ -296,6 +297,7 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
       argv[ 1 ] = (char*)(*it).ascii();
       argv[ 2 ] = 0;
 
+      QApplication::flushX();
       int pid;
       if ( ( pid = fork() ) == 0 )
       {

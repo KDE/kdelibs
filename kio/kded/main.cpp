@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
      sycoca->recreate();
 
 #ifndef NOFORK     // define NOFORK to debug kded in gdb
+     QApplication::flushX();	
      switch(fork()) {
      case -1:
 	  fprintf(stderr, "kded: fork() failed!\n");

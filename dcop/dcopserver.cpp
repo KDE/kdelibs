@@ -786,11 +786,13 @@ int main( int argc, char* argv[] )
   InstallIOErrorHandler();
   DCOPServer server;
 
+	QApplication::flushX();
   if (fork() > 0)
     exit(0); // I am the parent
 
   setsid();
 
+	QApplication::flushX();
   if (fork() > 0)
     exit(0); // get rid of controlling terminal
 

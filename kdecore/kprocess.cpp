@@ -178,6 +178,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
     debug("Could not setup Communication!");
 
   runs = true;
+
+  QApplication::flushX();
   pid = vfork();
 
   if (0 == pid) {
@@ -630,6 +632,8 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     debug("Could not setup Communication!");
 
   runs = true;
+
+  QApplication::flushX();	
   pid = vfork();
 
   if (0 == pid) {

@@ -37,6 +37,7 @@ KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
   if( !buildPipe( &recv_in, &send_in ) ) return;
   if( !buildPipe( &recv_out, &send_out ) ) return;
 
+  QApplication::flushX();
   m_pid = vfork();
   if( m_pid == 0 )
   {
