@@ -227,8 +227,8 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     if ( readConfig )
         slotReadConfig();
 
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
-        connect( (QMainWindow*)parentWidget(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
+    if ( mainWindow() )
+        connect( mainWindow(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
                  this, SLOT( toolBarPosChanged( QToolBar * ) ) );
 }
 
@@ -804,15 +804,15 @@ bool KToolBar::fullSize() const
 
 void KToolBar::enableMoving(bool flag )
 {
-    if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    if ( !mainWindow() )
         return;
-    ( (QMainWindow*)parentWidget() )->setToolBarsMovable( flag );
+    mainWindow()->setToolBarsMovable( flag );
 }
 
 
 void KToolBar::setBarPos (BarPosition bpos)
 {
-    if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    if ( !mainWindow() )
         return;
 
     if ( d->hasRealPos ) {
@@ -823,19 +823,23 @@ void KToolBar::setBarPos (BarPosition bpos)
             d->realNl = FALSE;
         }
     } else {
-        ( (QMainWindow*)parentWidget() )->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
+        mainWindow()->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
     }
 }
 
 
 KToolBar::BarPosition KToolBar::barPos() const
 {
-    if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+#if defined(Q_CC_GNU)
+#warning FIXME: remove this const cast when we upgrade to the next qt version
+#endif
+    KToolBar *that = const_cast<KToolBar *>( this );
+    if ( !that->mainWindow() )
         return KToolBar::Top;
     QMainWindow::ToolBarDock dock;
     int dm1, dm2;
     bool dm3;
-    ( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
+    that->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
     if ( dock == QMainWindow::Unmanaged ) {
         if ( d->hasRealPos )
             return (KToolBar::BarPosition)d->realPos;
@@ -914,8 +918,8 @@ void KToolBar::setIconText(IconText icontext, bool update)
         emit modechange(); // tell buttons what happened
 
     // ugly hack to force a QMainWindow::triggerLayout( TRUE )
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
-        QMainWindow *mw = (QMainWindow*)parentWidget();
+    if ( mainWindow() ) {
+        QMainWindow *mw = mainWindow();
         mw->setUpdatesEnabled( FALSE );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
@@ -951,8 +955,8 @@ void KToolBar::setIconSize(int size, bool update)
         emit modechange(); // tell buttons what happened
 
     // ugly hack to force a QMainWindow::triggerLayout( TRUE )
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
-        QMainWindow *mw = (QMainWindow*)parentWidget();
+    if ( mainWindow() ) {
+        QMainWindow *mw = mainWindow();
         mw->setUpdatesEnabled( FALSE );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
@@ -992,15 +996,15 @@ void KToolBar::setItemNoStyle(int id, bool no_style )
 
 void KToolBar::setFlat (bool flag)
 {
-    if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    if ( !mainWindow() )
         return;
     if ( flag )
-        ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Minimized );
+        mainWindow()->moveToolBar( this, QMainWindow::Minimized );
     else
-        ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Top );
+        mainWindow()->moveToolBar( this, QMainWindow::Top );
     // And remember to save the new look later
-    if ( parentWidget()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
+    if ( mainWindow()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
 }
 
 
@@ -1085,10 +1089,14 @@ QString KToolBar::settingsGroup() const
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";
-    if (parentWidget())
+#if defined(Q_CC_GNU)
+#warning FIXME: remove this const cast in next qt version
+#endif
+    KToolBar *that = const_cast<KToolBar *>( this );
+    if ( that->mainWindow() )
     {
         configGroup.prepend(" ");
-        configGroup.prepend(parentWidget()->name());
+        configGroup.prepend( that->mainWindow()->name() );
     }
     return configGroup;
 }
@@ -1150,9 +1158,9 @@ void KToolBar::doConnections( KToolBarButton *button )
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-    if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    if ( !mainWindow() )
         return;
-    QMainWindow *mw = (QMainWindow*)parentWidget();
+    QMainWindow *mw = mainWindow();
     if ( mw->toolBarsMovable() && d->m_enableContext ) {
         if ( m->button() == RightButton ) {
             int i = contextMenu()->exec( m->globalPos(), 0 );
@@ -1214,8 +1222,8 @@ void KToolBar::paintEvent(QPaintEvent *)
         return;
     }
     bool moving = FALSE;
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
-        moving = ( (QMainWindow*)parentWidget() )->toolBarsMovable();
+    if ( mainWindow() )
+        moving = mainWindow()->toolBarsMovable();
     // Moved around a little to make variables available for KStyle (mosfet).
 
     int stipple_height;
@@ -1228,11 +1236,11 @@ void KToolBar::paintEvent(QPaintEvent *)
         b = QWidget::backgroundColor();
 
     KStyle::KToolBarPos pos = KStyle::Top;
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+    if ( mainWindow() ) {
         QMainWindow::ToolBarDock dock;
         int dm1, dm2;
         bool dm3;
-        ( (QMainWindow*)parentWidget() )->getLocation( this, dock, dm1, dm3, dm2 );
+        mainWindow()->getLocation( this, dock, dm1, dm3, dm2 );
         pos = (KStyle::KToolBarPos)dock;
     }
 
@@ -1456,11 +1464,11 @@ void KToolBar::hide()
 {
     //kdDebug(220) << "KToolBar::hide " << name() << endl;
     // Reggie: Ugly hack, I hate it
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+    if ( mainWindow() ) {
         QMainWindow::ToolBarDock dock;
-        ( (QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
+        mainWindow()->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
         //kdDebug(220) << "KToolBar::hide " << name() << " realNl set to " << d->realNl << endl;
-        ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Unmanaged );
+        mainWindow()->moveToolBar( this, QMainWindow::Unmanaged );
         if ( dock != QMainWindow::Unmanaged ) {
             d->hasRealPos = TRUE;
             d->realPos = dock;
@@ -1473,10 +1481,10 @@ void KToolBar::show()
 {
     //kdDebug(220) << "KToolBar::show " << name() << endl;
     // Reggie: Ugly hack, I hate it
-    if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+    if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && mainWindow() ) {
         d->hasRealPos = FALSE;
         //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realNl=" << d->realNl << endl;
-        ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
+        mainWindow()->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
     }
     d->hasRealPos = FALSE;
 #if QT_VERSION < 300
@@ -1540,8 +1548,8 @@ void KToolBar::slotAppearanceChanged()
     // Read appearance settings from global file.
     applyAppearanceSettings(KGlobal::config(), QString::null, true /* lose local settings */ );
     // And remember to save the new look later
-    if ( parentWidget()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
+    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
 }
 
 //static
@@ -1663,9 +1671,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         doUpdate = true;
     }
 
-    QMainWindow *mw = 0;
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
-        mw = (QMainWindow*)parentWidget();
+    QMainWindow *mw = mainWindow();
 
     // ...and if we should highlight
     if ( highlight != d->m_highlight ) {
@@ -1743,9 +1749,9 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         else
             show();
 
-        if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
+        if ( mainWindow() )
         {
-            QMainWindow *mw = (QMainWindow*)parentWidget();
+            QMainWindow *mw = mainWindow();
 
             //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
             d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, index, newLine, offset );
@@ -1782,16 +1788,16 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
     if ( d->oldPos == QMainWindow::Minimized )
         rebuildLayout();
     d->oldPos = (QMainWindow::ToolBarDock)barPos();
-    if ( parentWidget()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
+    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
 }
 
 void KToolBar::loadState( const QDomElement &element )
 {
     //kdDebug(220) << "KToolBar::loadState " << this << endl;
-    if ( !parentWidget() || !parentWidget()->inherits( "KMainWindow") )
+    if ( !mainWindow() || !mainWindow()->inherits( "KMainWindow") )
         return;
-    KMainWindow *mw = static_cast<KMainWindow *>( parentWidget() );
+    KMainWindow *mw = static_cast<KMainWindow *>( mainWindow() );
 
     QCString text = element.namedItem( "text" ).toElement().text().utf8();
     if ( text.isEmpty() )
@@ -1911,12 +1917,12 @@ void KToolBar::getAttributes( QString &position, QString &icontext, QString &ind
         position = "Top";
         break;
     }
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+    if ( mainWindow() ) {
         QMainWindow::ToolBarDock dock;
         int index_;
         bool nl;
         int offset_;
-        ( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
+        mainWindow()->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
         index = QString::number( index_ );
         offset = QString::number( offset_ );
         newLine = nl ? "true" : "false";
@@ -1967,16 +1973,16 @@ void KToolBar::positionYourself( bool force )
 
 void KToolBar::positionYourself()
 {
-    if ( d->positioned || !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    if ( d->positioned || !mainWindow() )
     {
         //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
     }
     //kdDebug(220) << "positionYourself " << name() << " dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
-    ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->toolBarInfo.dock,
-                                                   d->toolBarInfo.newline,
-                                                   d->toolBarInfo.index,
-                                                   d->toolBarInfo.offset );
+    mainWindow()->moveToolBar( this, d->toolBarInfo.dock,
+                               d->toolBarInfo.newline,
+                               d->toolBarInfo.index,
+                               d->toolBarInfo.offset );
     if ( testWState( Qt::WState_ForceHide ) )
     {
         //kdDebug(220) << "Hiding" << endl;
@@ -2051,8 +2057,8 @@ void KToolBar::slotContextAboutToShow()
   {
     // try to find "configure toolbars" action
     KXMLGUIClient *xmlGuiClient = d->m_xmlguiClient;
-    if ( !xmlGuiClient && parentWidget() && parentWidget()->inherits( "KMainWindow" ) )
-      xmlGuiClient = (KMainWindow *)parentWidget();
+    if ( !xmlGuiClient && mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
+      xmlGuiClient = (KMainWindow *)mainWindow();
     if ( xmlGuiClient )
     {
         KAction *configureAction = xmlGuiClient->actionCollection()->action(KStdAction::stdName(KStdAction::ConfigureToolbars));
