@@ -48,7 +48,13 @@ class Plugin : public QObject, virtual public KXMLGUIClient
 {
     Q_OBJECT
 public:
-    struct PluginInfo;
+    struct PluginInfo
+    {
+        QString m_relXMLFileName; // relative filename, i.e. instanceName/kpartplugins/name
+        QString m_absXMLFileName; // full path of most recent filename matching the relative
+                                  // filename
+        QDomDocument m_document;
+    };
 
     /**
      * Construct a new KParts plugin.
@@ -94,14 +100,6 @@ protected:
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
 private:
-    struct PluginInfo
-    {
-        QString m_relXMLFileName; // relative filename, i.e. instanceName/kpartplugins/name
-        QString m_absXMLFileName; // full path of most recent filename matching the relative
-                                  // filename
-        QDomDocument m_document;
-    };
-
     class PluginPrivate;
     PluginPrivate *d;
 };
