@@ -167,7 +167,7 @@ public:
     DOM::DOMString selectorText() const;
     void setSelectorText(DOM::DOMString str);
 
-    virtual bool parseString( const DOMString &string );
+    virtual bool parseString( const DOMString &string, bool = false );
 
     void setSelector( QList<CSSSelector> *selector);
     void setDeclaration( CSSStyleDeclarationImpl *style);

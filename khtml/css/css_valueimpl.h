@@ -72,7 +72,7 @@ public:
 
     virtual bool isStyleDeclaration() { return true; }
 
-    virtual bool parseString( const DOMString &string );
+    virtual bool parseString( const DOMString &string, bool = false );
 
     CSSValueImpl *getPropertyCSSValue( int propertyID );
     bool getPropertyPriority( int propertyID );
@@ -167,7 +167,7 @@ public:
 
     int getIdent();
 
-    virtual bool parseString( const DOMString &string );
+    virtual bool parseString( const DOMString &string, bool = false);
     virtual DOM::DOMString cssText() const;
 
 protected:

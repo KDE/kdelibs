@@ -264,7 +264,7 @@ void CSSStyleRuleImpl::setSelectorText(DOM::DOMString /*str*/)
     // ###
 }
 
-bool CSSStyleRuleImpl::parseString( const DOMString &/*string*/ )
+bool CSSStyleRuleImpl::parseString( const DOMString &/*string*/, bool )
 {
     // ###
     return false;

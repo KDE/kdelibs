@@ -264,7 +264,7 @@ void CSSStyleDeclarationImpl::setCssText(DOM::DOMString /*str*/)
     // ###
 }
 
-bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/ )
+bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 {
     return false;
     // ###
@@ -479,7 +479,7 @@ unsigned short CSSPrimitiveValueImpl::valueType() const
     return CSSValue::CSS_PRIMITIVE_VALUE;
 }
 
-bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/ )
+bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/, bool )
 {
     // ###
     return false;
