@@ -870,6 +870,10 @@ void HTMLInputElementImpl::restoreState(const QString &state)
     case RADIO:
         setChecked((state == QString::fromLatin1("on")));
         break;
+    case FILE:
+        m_value = DOMString(state.left(state.length()-1));
+        setChanged();
+        break;
     default:
         setValue(DOMString(state.left(state.length()-1)));
         break;
