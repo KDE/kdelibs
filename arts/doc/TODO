@@ -1,6 +1,11 @@
 - VERSION-INFO for modules?
 - md5auth isn't initialized properly in conjunction with ARTS_SERVER
 
+## BIC changes
+
+- constness issues in object.cc
+- add a virtual _typeName() function to Arts::Type
+
 ## MCOP Core Infrastructure
 
 - offer sampleprecise timing
