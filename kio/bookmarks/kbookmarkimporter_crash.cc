@@ -84,10 +84,6 @@ void KCrashBookmarkImporter::parseCrashLog( QString filename, bool del )
 
 QStringList KCrashBookmarkImporter::getCrashLogs() {
 
-   QDir d( crashBookmarksDir() );
-   d.setFilter( QDir::Files );
-   d.setNameFilter( "konqueror-crash-*.log" );
-
    QMap<QString, bool> activeLogs;
 
    DCOPClient* dcop = kapp->dcopClient();
@@ -119,16 +115,24 @@ QStringList KCrashBookmarkImporter::getCrashLogs() {
       }
    }
 
+   QDir d( crashBookmarksDir() );
+   d.setSorting( QDir::Time );
+   d.setFilter( QDir::Files );
+   d.setNameFilter( "konqueror-crash-*.log" );
+
    const QFileInfoList *list = d.entryInfoList();
    QFileInfoListIterator it( *list );
 
    QFileInfo *fi;
    QStringList crashFiles;
 
+   int count = 0;
    for ( ; ( fi = it.current() ) != 0; ++it ) {
       bool dead = !activeLogs.contains( fi->absFilePath() );
       if ( dead )
          crashFiles << fi->absFilePath();
+      if (count++ > 20)
+         break;
    }
 
    return crashFiles;
