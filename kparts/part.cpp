@@ -357,7 +357,7 @@ void ReadWritePart::setModified()
 bool ReadWritePart::closeURL()
 {
   abortLoad(); //just in case
-  if ( m_bModified && m_bReadWrite )
+  if ( m_bModified && m_bReadWrite && !m_url.isEmpty() )
   {
     int res = KMessageBox::warningYesNoCancel( 0L,
             i18n( "The document has been modified\nDo you want to save it ?" ));
