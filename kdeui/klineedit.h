@@ -389,9 +389,9 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::mousePressEvent().
+    * See @ref QLineEdit::createPopupMenu().
     */
-    virtual void mousePressEvent( QMouseEvent * );
+    virtual QPopupMenu *createPopupMenu();
 
     /**
     * Re-implemented to handle URI drops.
@@ -416,18 +416,15 @@ protected:
     virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
+private slots:
+    void completionMenuActivated( int id );
+
 private:
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
     // in the future though it's working lovely.
     enum MenuID {
-        Default=0,
-        Cut,
-        Copy,
-        Paste,
-        Clear,
-        Unselect,
-        SelectAll,
+        Default = 42,
         NoCompletion,
         AutoCompletion,
         ShellCompletion,
@@ -439,10 +436,6 @@ private:
     void init();
     /** Creates the completion box */
     void makeCompletionBox();
-    /** Returns the context menu, creates a new one if did not exist. */
-    QPopupMenu* contextMenuInternal();
-    /** initializes the context menu */
-    void initPopup();
 
     /**
      * Temporary functions to delete words back and foward until
