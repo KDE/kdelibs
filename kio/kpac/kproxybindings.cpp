@@ -54,7 +54,9 @@ bool KProxyBindings::hasProperty(const UString &p, bool) const
 
 KJSO KProxyBindings::get(const UString &p) const
 {
-    if (p == "isPlainHostName")
+    if (p == "ProxyConfig")
+        return Global::current();
+    else if (p == "isPlainHostName")
         return Function(new KProxyFunc(KProxyFunc::IsPlainHostName));
     else if (p == "dnsDomainIs")
         return Function(new KProxyFunc(KProxyFunc::DNSDomainIs));
@@ -66,7 +68,7 @@ KJSO KProxyBindings::get(const UString &p) const
         return Function(new KProxyFunc(KProxyFunc::IsInNet));
     else if (p == "dnsResolve")
         return Function(new KProxyFunc(KProxyFunc::DNSResolve));
-    else if (p == "myIPAddress")
+    else if (p == "myIpAddress")
         return Function(new KProxyFunc(KProxyFunc::MyIPAddress));
     else if (p == "dnsDomainLevels")
         return Function(new KProxyFunc(KProxyFunc::DNSDomainLevels));
@@ -78,7 +80,7 @@ KJSO KProxyBindings::get(const UString &p) const
         return Function(new KProxyFunc(KProxyFunc::DateRange));
     else if (p == "timeRange")
         return Function(new KProxyFunc(KProxyFunc::TimeRange));
-    return Undefined();
+    return Imp::get(p);
 }
 
 KProxyFunc::KProxyFunc(int id)
@@ -147,7 +149,7 @@ Completion KProxyFunc::execute(const List &args)
                     result = Boolean(false);
                 else
                 {
-                    unsigned long ip, pattern, mask;
+                    unsigned long ip, pattern = 0, mask = 0;
                     // unfortunately inet_aton is not available on Solaris (malte)
                     if ((ip = inet_addr(host.ascii())) == INADDR_NONE
                         || (pattern = inet_addr(args[1].toString().value().ascii())) == INADDR_NONE
@@ -364,3 +366,4 @@ bool KProxyFunc::checkRange(int value, int min, int max) const
         || (min > max && (value >= min || value <= max));
 }
 
+// vim: ts=4 sw=4 et

@@ -124,10 +124,7 @@ bool KPACImpl::init(const KURL &url)
         if (!m_kjs)
         {
             m_kjs = new KJScript();
-            Global global(Global::current());
-            KJSO bindings(new KProxyBindings);
-            global.put("ProxyConfig", bindings);
-            global.setPrototype(bindings);
+            m_kjs->globalObject()->setPrototype(new KProxyBindings);
         }
         if (!(m_configRead = m_kjs->evaluate(m_downloader->data())))
         {
@@ -180,3 +177,4 @@ extern "C"
     }
 };
 
+// vim: ts=4 sw=4 et
