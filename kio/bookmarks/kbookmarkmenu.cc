@@ -103,7 +103,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
   m_lstSubMenus.setAutoDelete( true );
   m_actions.setAutoDelete( true );
 
-  m_actionCollection->setHighlightingEnabled(true);
+  if (m_actionCollection)
+    m_actionCollection->setHighlightingEnabled(true);
 
   m_bNSBookmark = m_parentAddress.isNull();
   if ( !m_bNSBookmark ) // not for the netscape bookmark
