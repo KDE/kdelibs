@@ -93,6 +93,7 @@ namespace KJS {
     class WindowFunc;
     class ExternalFunc;
     class JSEventListener;
+    class JSLazyEventListener;
     class JSNodeFilter;
     class DOMDocument;
     class SourceFile;
@@ -201,6 +202,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::WindowFunc;
   friend class KJS::ExternalFunc;
   friend class KJS::JSEventListener;
+  friend class KJS::JSLazyEventListener;
   friend class KJS::DOMDocument;
   friend class KJS::SourceFile;
   friend class KJSProxy;

@@ -1038,6 +1038,11 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   return new JSEventListener(Object(listenerObject), Object(this), html);
 }
 
+JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& name, bool html)
+{
+  return new JSLazyEventListener(code, name, Object(this), html);
+}
+
 void Window::clear( ExecState *exec )
 {
   delete winq;

@@ -3428,7 +3428,7 @@ Value Image::getValueProperty(ExecState *, int token) const
       return Undefined();
     return Number(img->pixmap_size().height());
   case OnLoad:
-    if ( m_onLoadListener )
+    if ( m_onLoadListener && m_onLoadListener->listenerObjImp())
       return m_onLoadListener->listenerObj();
     return Undefined();
   default:

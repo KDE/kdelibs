@@ -42,13 +42,17 @@ JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _htm
   : listener( _listener ), html( _html ), win( _win )
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
-    static_cast<Window*>(win.imp())->jsEventListeners.insert(this, this);
+  if (_listener.imp()) {
+    static_cast<Window*>(win.imp())->jsEventListeners.insert(_listener.imp(), this);
+  }
 }
 
 JSEventListener::~JSEventListener()
 {
-    static_cast<Window*>(win.imp())->jsEventListeners.remove(this);
-    //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
+  if (listener.imp()) {
+    static_cast<Window*>(win.imp())->jsEventListeners.remove(listener.imp());
+  }
+  //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
 
 void JSEventListener::handleEvent(DOM::Event &evt)
@@ -62,8 +66,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (part)
     proxy = part->jScript();
 
-  Object listenerObj = Object::dynamicCast( listener );
-  if (proxy && listenerObj.implementsCall()) {
+  if (proxy && listener.implementsCall()) {
     ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
@@ -74,13 +77,13 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    ScopeChain oldScope = listenerObj.scope();
+    ScopeChain oldScope = listener.scope();
     if ( thisObj.isValid() ) {
       ScopeChain scope = oldScope;
       // Add the event's target element to the scope
       // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
       static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
-      listenerObj.setScope( scope );
+      listener.setScope( scope );
     }
     else {
       if ( m_hackThisObj.isValid() ) { // special hack for Image
@@ -102,16 +105,16 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     KJSCPUGuard guard;
     guard.start();
-    Value retval = listenerObj.call(exec, thisObj, args);
+    Value retval = listener.call(exec, thisObj, args);
     guard.stop();
 
-    listenerObj.setScope( oldScope );
+    listener.setScope( oldScope );
 
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );
     if ( exec->hadException() )
       exec->clearException();
-    else
+    else if (html)
     {
       QVariant ret = ValueToVariant(exec, retval);
       if (ret.type() == QVariant::Bool && ret.toBool() == false)
@@ -128,6 +131,82 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_HTMLEventListener";
     else
 	return "_khtml_JSEventListener";
+}
+
+Object JSEventListener::listenerObj() const
+{
+  return listener;
+}
+
+JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, const Object &_win, bool _html)
+  : JSEventListener(Object(), _win, _html),
+    code(_code), name(_name),
+    parsed(false)
+{
+}
+
+void JSLazyEventListener::handleEvent(DOM::Event &evt)
+{
+  parseCode();
+  if (!listener.isNull()) {
+    JSEventListener::handleEvent(evt);
+  }
+}
+
+
+Object JSLazyEventListener::listenerObj() const
+{
+  parseCode();
+  return listener;
+}
+
+void JSLazyEventListener::parseCode() const
+{
+  if (!parsed) {
+    KHTMLPart *part = static_cast<Window*>(win.imp())->part();
+    KJSProxy *proxy = 0L;
+    if (part)
+      proxy = part->jScript();
+
+    if (proxy) {
+      KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
+      ExecState *exec = interpreter->globalExec();
+
+      //KJS::Constructor constr(KJS::Global::current().get("Function").imp());
+      KJS::Object constr = interpreter->builtinFunction();
+      KJS::List args;
+
+      static KJS::String eventString("event");
+
+      args.append(eventString);
+      args.append(KJS::String(code));
+      listener = constr.construct(exec, args); // ### is globalExec ok ?
+
+      if ( exec->hadException() ) {
+        exec->clearException();
+
+        // failed to parse, so let's just make this listener a no-op
+        listener = Object();
+      }
+
+      if (!listener.inherits(&DeclaredFunctionImp::info)) {
+        listener = Object();// Error creating function
+      }
+
+      DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
+      declFunc->setName(Identifier(name));
+    }
+
+    // no more need to keep the unparsed code around
+    code = QString();
+
+    if (!listener.isNull()) {
+      static_cast<Window*>(win.imp())->jsEventListeners.insert(listener.imp(),
+                                                               (KJS::JSEventListener *)(this));
+    }
+
+    parsed = true;
+  }
 }
 
 // -------------------------------------------------------------------------

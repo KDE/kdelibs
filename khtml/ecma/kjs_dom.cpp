@@ -437,11 +437,12 @@ void DOMNode::setListener(ExecState *exec, int eventId, const Value& func) const
 
 Value DOMNode::getListener(int eventId) const
 {
-    DOM::EventListener *listener = node.handle()->getHTMLEventListener(eventId);
-    if (listener)
-	return static_cast<JSEventListener*>(listener)->listenerObj();
-    else
-	return Null();
+  DOM::EventListener *listener = node.handle()->getHTMLEventListener(eventId);
+  JSEventListener *jsListener = static_cast<JSEventListener*>(listener);
+  if ( jsListener && jsListener->listenerObjImp() )
+    return jsListener->listenerObj();
+  else
+    return Null();
 }
 
 void DOMNode::pushEventHandlerScope(ExecState *, ScopeChain &) const

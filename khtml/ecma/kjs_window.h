@@ -43,6 +43,7 @@ namespace KJS {
   class External;
   class FrameArray;
   class JSEventListener;
+  class JSLazyEventListener;
 
   class Screen : public ObjectImp {
   public:
@@ -106,6 +107,7 @@ namespace KJS {
     Location *location() const;
     ObjectImp* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
+    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString &name, bool html = false);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
 
