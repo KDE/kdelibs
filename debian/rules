@@ -77,7 +77,7 @@ binary-arch:  build
 	dh_compress
 	dh_fixperms
 	dh_suidregister
-	dh_makeshlibs -V "(>= 2:980312)" -m0
+	dh_makeshlibs -V "kdelibs0g (>= 2:980312)" -m0
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
