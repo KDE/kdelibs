@@ -449,8 +449,10 @@ QSize KIntNumInput::minimumSizeHint() const
 void KIntNumInput::doLayout()
 {
     m_sizeSpin = m_spin->sizeHint();
-
     m_colw2 = m_sizeSpin.width();
+
+    if (m_label)
+        m_label->setBuddy(m_spin);
 }
 
 
@@ -761,6 +763,9 @@ void KDoubleNumInput::doLayout()
     }
 
     m_colw2 = m_sizeEdit.width();
+
+    if (m_label)
+        m_label->setBuddy(edit);
 }
 
 
