@@ -39,7 +39,7 @@ class KURLDragPrivate;
  * require it for downloading e.g. an image).
  *
  * To create a drag object, use the KURLDrag constructor.
- * To decode a drop, use KURLDrag::decode() or QUriDrag::decodeLocalFiles().
+ * To handle drops, use QUriDrag::canDecode() and KURLDrag::decode()
  */
 class KURLDrag : public QUriDrag
 {
