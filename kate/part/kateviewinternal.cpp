@@ -2550,20 +2550,17 @@ void KateViewInternal::resizeEvent(QResizeEvent* e)
 {
   bool expandedHorizontally = width() > e->oldSize().width();
   bool expandedVertically = height() > e->oldSize().height();
+  bool heightChanged = height() != e->oldSize().height();
 
   m_madeVisible = false;
 
-  if (height() != e->oldSize().height()) {
+  if (heightChanged) {
     setAutoCenterLines(m_autoCenterLines, false);
-  }
-
-  if (height() != e->oldSize().height())
     m_cachedMaxStartPos.setPos(-1, -1);
+  }
 
   if (m_view->dynWordWrap()) {
     bool dirtied = false;
-
-    int currentViewLine = displayViewLine(displayCursor, true);
 
     for (uint i = 0; i < lineRanges.count(); i++) {
       // find the first dirty line
@@ -2575,13 +2572,9 @@ void KateViewInternal::resizeEvent(QResizeEvent* e)
       }
     }
 
-    if (dirtied || expandedVertically) {
+    if (dirtied || heightChanged) {
       updateView(true);
       leftBorder->update();
-
-      // keep the cursor on-screen if it was previously
-      if (currentViewLine >= 0)
-        makeVisible(displayCursor, displayCursor.col());
     }
 
     if (width() < e->oldSize().width()) {
