@@ -45,6 +45,7 @@
 #include <kprocio.h>
 
 #define MAXLINELENGTH 10000
+#undef IGNORE //fix possible conflict
 
 enum {
   GOOD=     0,
