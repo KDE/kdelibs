@@ -2,7 +2,7 @@ AC_DEFUN(AC_CHECK_CUPS_VERSION,
 [
 kde_save_cflags="$CFLAGS"
 kde_save_libs="$LIBS"
-LIBS="$all_libraries $USER_LDFLAGS -lcups $LIBDL $LIBSOCKET"
+LIBS="$all_libraries $USER_LDFLAGS $kde_cups_libs"
 CFLAGS="$CFLAGS $all_includes $USER_INCLUDES"
 AC_MSG_CHECKING(CUPS version >= $1)
 kde_save_link=$ac_link
@@ -49,7 +49,15 @@ if test "$ac_use_cups" = "yes"; then
   CPPFLAGS="$CPPFLAGS $all_includes"
   ac_LDFLAGS_save="$LDFLAGS"
   LDFLAGS="$LDFLAGS $all_libraries"
-  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$LIBDL $LIBSOCKET)
+  kde_cups_config=
+  kde_cups_libs="-lcups $LIBDL $LIBSOCKET"
+  AC_PATH_PROG(kde_cups_config,cups-config)
+  if test -n "$kde_cups_config"; then
+    kde_cups_libs=`$kde_cups_config --libs`
+  else
+    AC_MSG_RESULT(cups-config not found, using default libraries: $kde_cups_libs. You should consider upgrading CUPS)
+  fi
+  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$kde_cups_libs)
   if test "$ac_cups_libs" = "0"; then
     AC_MSG_WARN(CUPS library not found. CUPS support disabled)
     ac_use_cups="no"
@@ -75,7 +83,7 @@ if test "$ac_use_cups" = "yes"; then
 fi
 if test "$ac_use_cups" = "yes"; then
   CUPSSUBDIR="cups"
-  LIB_CUPS="-lcups $LIBDL $LIBSOCKET"
+  LIB_CUPS="$kde_cups_libs"
   AC_DEFINE(HAVE_CUPS, 1, [Defines if you have CUPS (Common UNIX Printing System)])
 fi
 AM_CONDITIONAL(include_cups_SUBDIR, test -n "$CUPSSUBDIR")
