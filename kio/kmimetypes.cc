@@ -224,10 +224,10 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
-KMimeType::KMimeType( QDataStream& _str ) : KServiceType( _str )
+KMimeType::KMimeType( QDataStream& _str ) : KServiceType() // don't pass _str !
 {
   initStatic();
-  load( _str );
+  load( _str ); // will do the complete loading
 }
 
 KMimeType::KMimeType() : KServiceType()
@@ -241,10 +241,12 @@ void KMimeType::load( QDataStream& _str )
     s_mapMimeTypes->remove( m_strName );
 
   KServiceType::load( _str );
+  // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : loading list of patterns");
   _str >> m_lstPatterns;
 
   if ( !m_strName.isEmpty() )
     s_mapMimeTypes->insert( m_strName, this );
+  // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : done");
 }
 
 void KMimeType::save( QDataStream& _str ) const
