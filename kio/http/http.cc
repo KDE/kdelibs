@@ -1503,9 +1503,9 @@ bool HTTPProtocol::readHeader()
           if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
             disposition = disposition.mid(pos+1).stripWhiteSpace();
         }
-        if ( disposition.find( QString::fromLatin1("filename"), 0, false) == 0 )
+        pos = disposition.find( QString::fromLatin1("filename"), 0, false);
+        if ( pos >= 0 )
         {
-          pos = 8;
           int len = disposition.length();
           while( disposition[pos] == ' ' || disposition[pos] == '=' ||
                  disposition[pos] == '"' )
@@ -1514,7 +1514,7 @@ bool HTTPProtocol::readHeader()
           {
             int start = pos;
             while ( pos < len &&
-                   (disposition[pos] != '"' || disposition[pos] != ';') )
+                   (disposition[pos] != '"' && disposition[pos] != ';') )
                 pos++;
             disposition = disposition.mid(start, pos);
           }
