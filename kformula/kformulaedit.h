@@ -24,8 +24,8 @@ class KFormulaEdit : public QWidget
 public:
   KFormulaEdit(QWidget * parent=0, const char *name=0, WFlags f=0);
   virtual ~KFormulaEdit();
-  void setText(QCString text);
-  QCString text() { return formText.copy(); }
+  void setText(QString text);
+  QString text() { return formText; }
   void redraw(int all = 1);
   KFormula *getFormula() { return form; }
 
@@ -34,12 +34,12 @@ protected:
   int cacheState;
   QPixmap pm;       //double buffering
   KFormula *form;
-  QCString formText; //the text that gets converted into the formula
-  QCString clipText; //clipboard
+  QString formText; //the text that gets converted into the formula
+  QString clipText; //clipboard
   int cursorPos;
   QArray<charinfo> info; //where each character of formText
                          //ends up in the formula
-  QStack<QCString> undo, redo;  //if there was a "diff" for strings it would
+  QStack<QString> undo, redo;  //if there was a "diff" for strings it would
                                //save space
   QTimer t, fast; //t is for the cursor, fast for the cache
 

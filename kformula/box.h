@@ -2,7 +2,8 @@
 #define BOX_H_INCLUDED
 
 #include <qpainter.h>
-#include <qcstring.h>
+#include <qstring.h>
+#include <qfont.h>
 
 #define MIN_FONT_SIZE  10
 //pixels for spacing:
@@ -39,7 +40,7 @@ friend class KFormula;
 
 private:
   int type; //the box type
-  QCString text; //if a TEXT box, the text
+  QString text; //if a TEXT box, the text
   QFont lastFont; //the last font used
   QRect rect; //its bounding rectangle
   int relx, rely; //used internally for storing calculated locations
@@ -56,16 +57,16 @@ private:
 
 public:
   box(int setNum);
-  box(QCString setText);
+  box(QString setText);
   box(BoxType setType, box * setB1 = NULL, box * setB2 = NULL);
 
   virtual ~box();
 
-  void setText(QCString newText);
+  void setText(QString newText);
   void calculate(QPainter &p, int setFontsize = -1);
   QRect getRect() { return rect; }
   char getType() { return type; }
-  QCString getText() { return text; }
+  QString getText() { return text; }
   void draw(QPainter &p, int x, int y);
 
   QRect getCursorPos(charinfo i, int x, int y);

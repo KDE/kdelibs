@@ -17,7 +17,10 @@
 //  unwittingly edits.  This string is re-parsed into a formula
 //  object whenever it is changed.  The cursorCache is for computing
 //  cursor positions in idle time because it is slow for larger formulas.
- 
+//  For some reason, strchr(anything, '\0') returns 1 (perhaps it counts
+//  the terminating character of anything) so before every strchr,
+//  I check that the input is not '\0' (as may happen if a QChar is cast
+//  into char). 
 
 
 //-----------------------CONSTRUCTOR--------------------
@@ -42,7 +45,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name, WFlags f) :
 
   formText.sprintf("");
 
-  form->parse(formText.data(), &info); // initialize info
+  form->parse(formText, &info); // initialize info
 
   QPainter p;
 
@@ -83,10 +86,10 @@ KFormulaEdit::~KFormulaEdit()
 
 //-------------------------SET TEXT (slot)----------------------
 //reset the text for the formula--clear all undo and redo as well
-void KFormulaEdit::setText(QCString text)
+void KFormulaEdit::setText(QString text)
 {
-  formText = text.copy();
-  form->parse(formText.data(), &info);
+  formText = text;
+  form->parse(formText, &info);
   cacheState = ALL_DIRTY;
   while(undo.remove());
   while(redo.remove());
@@ -121,11 +124,11 @@ void KFormulaEdit::redraw(int all)
   p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
 
   //temp is just for debugging.
-  /* QCString temp = formText.copy();
+  /* QString temp = formText;
 
   temp.insert(cursorPos, '$');
 
-  fprintf(stderr, "\r%s       ", temp.data()); */
+  fprintf(stderr, "\r%s       ", temp.ascii()); */
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -221,15 +224,16 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
 
 int KFormulaEdit::isValidCursorPos(int pos)
 {
-  if(pos == 0 || pos == (int)formText.size() - 1) return 1;
+  if(pos == 0 || pos == (int)formText.length()) return 1;
 
-  if((strchr("{", formText[pos]) &&
+  if((char)formText[pos] && ((strchr("{", formText[pos]) &&
        strchr("/^_@(|", formText[pos - 1])) ||
       (strchr("}", formText[pos - 1]) &&
-       strchr("/@(|", formText[pos]))) return 0;
+       strchr("/@(|", formText[pos]) ))) return 0;
 
-  if(pos < (int)formText.size() - 2 && formText[pos] == '}' &&
-     strchr("(|", formText[pos + 1])) return 0;
+  if((char)formText[pos] && (pos < (int)formText.length() - 1 &&
+			     formText[pos] == '}' &&
+     strchr("(|", formText[pos + 1]) )) return 0;
 
   return 1;
 }
@@ -241,14 +245,14 @@ int KFormulaEdit::isValidCursorPos(int pos)
 
 int KFormulaEdit::deleteAtCursor()
 {
-  int maxpos = formText.size() - 1; //easier to type "maxpos"
+  int maxpos = formText.length(); //easier to type "maxpos"
   int ncpos = cursorPos; //this stores the position at which
                         //the actual deletion will be made
                         //so if we alter it, we don't have to change
                         //cursorPos.
 
   //If we are just deleting part of a literal (or +-*), do it and go away.
-  if(!strchr("{}^_(/@|", formText[cursorPos])) {
+  if(!formText[cursorPos] || !strchr("{}^_(/@|", formText[cursorPos])) {
     formText.remove(cursorPos, 1);
     return 1;
   }
@@ -266,10 +270,11 @@ int KFormulaEdit::deleteAtCursor()
   //"{}/{$}" to "{}$/{}" with $ representing ncpos.  Notice that
   //this may be an invalid cursor position but that doesn't matter.
   if(cursorPos > 1 && formText[cursorPos] == '}' &&
+     (char)formText[cursorPos - 2] &&
      strchr("^_(@/|", formText[cursorPos - 2])) 
     ncpos -= 2;
   else if(cursorPos > 0 && cursorPos < maxpos &&
-	  formText[cursorPos] == '{' &&
+	  formText[cursorPos] == '{' && (char)formText[cursorPos - 1] &&
 	  strchr("^_(@/|", formText[cursorPos - 1]))
     ncpos--;
   //the else shifts from "{}/${}" to "{}$/{}".  Even though the
@@ -280,7 +285,8 @@ int KFormulaEdit::deleteAtCursor()
   //The following handles the case where the operator has only
   //the right operand grouped (exponents and subscripts).
   //It also checks whether the group is empty before deleting.
-  if(strchr("^_", formText[ncpos]) && ncpos < maxpos - 2 &&
+  if(formText[ncpos] && strchr("^_", formText[ncpos]) &&
+     ncpos < maxpos - 2 &&
      formText[ncpos + 1] == '{' && formText[ncpos + 2] == '}') {
     formText.remove(ncpos, 3);
     cursorPos = ncpos;
@@ -289,12 +295,12 @@ int KFormulaEdit::deleteAtCursor()
 
   //Shifts position from "{$}/{}" and "${}/{}" to "{}$/{}".
   if(formText[ncpos] == '{' && ncpos < maxpos - 1 &&
-     strchr("@/(|", formText[ncpos + 2])) {
+     formText[ncpos + 2] && strchr("@/(|", formText[ncpos + 2])) {
     ncpos += 2;
   }
   else if(ncpos > 0 && ncpos < maxpos &&
 	  formText[ncpos] == '}' &&
-	  strchr("@/", formText[ncpos + 1]))
+	  formText[ncpos + 1] && strchr("@/", formText[ncpos + 1]))
     ncpos++;
 
   //The following removes the division operator and leaves the
@@ -323,7 +329,7 @@ int KFormulaEdit::deleteAtCursor()
 
     //If we are have "{3}$@{}", we delete the 3 even though the group
     //is not empty.  I thought this was best.
-    if(strchr("@(|", formText[ncpos])) {
+    if(formText[ncpos] && strchr("@(|", formText[ncpos])) {
       int i, level = 0;
       ncpos--;
       formText.remove(ncpos, 4);
@@ -442,7 +448,6 @@ void KFormulaEdit::expandSelection()
   if(cursorPos == selectStart) return;
   int dir; //which way the user is selecting
   int i;
-  QCString tmp;
 
   //1 if selecting to the right, -1 if to the left
   if(cursorPos < selectStart) dir = -1;
@@ -456,7 +461,7 @@ void KFormulaEdit::expandSelection()
   if(dir == 1) {
     //expand to the right until level is 0.  If level is negative,
     //expand selection to the left.
-    while(i < (int)formText.size() &&
+    while(i <= (int)formText.length() &&
 	  (i < cursorPos || level != 0 || !isValidCursorPos(i))) {
       if(formText[i] == '{') level++;
       if(formText[i] == '}') level--;
@@ -479,7 +484,7 @@ void KFormulaEdit::expandSelection()
       if(formText[i] == '{') level--;
       if(formText[i] == '}') level++;
       if(level == -1) {
-	while(selectStart < (int)formText.size() &&
+	while(selectStart <= (int)formText.length() &&
 	      (level < 0 || !isValidCursorPos(selectStart))) {
 	  if(formText[selectStart] == '{') level--;
 	  if(formText[selectStart] == '}') level++;
@@ -537,13 +542,14 @@ void KFormulaEdit::toggleCursor()
 
 //MODIFIED reparses the string, resets the cursor, invalidates the
 //cache, adds an undo step, and removes all redo.
-#define MODIFIED {form->parse(formText.data(), &info); CURSOR_RESET \
-  cacheState = ALL_DIRTY; undo.push(new QCString(oldText.copy())); while(redo.remove());}
+#define MODIFIED { form->parse(formText, &info); CURSOR_RESET \
+  cacheState = ALL_DIRTY; undo.push(new QString(oldText)); \
+  while(redo.remove()); }
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 {
   int shift = (e->state() & ShiftButton); //easier to type "shift"
-  QCString oldText = formText.copy(); // for undo
+  QString oldText = formText; // for undo
 
   //LEFT ARROW:
 
@@ -723,9 +729,9 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     if(e->key() == Key_C) {
       if(textSelected) {
 	clipText =
-	  QCString(formText.data() + QMIN(selectStart, cursorPos),
+	  QString(formText.mid(QMIN(selectStart, cursorPos),
 		  QMAX(selectStart - cursorPos + 1, \
-		      cursorPos - selectStart + 1));
+		      cursorPos - selectStart + 1) - 1));
       }
       return;
     }
@@ -734,9 +740,9 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     if(e->key() == Key_X) {
       if(textSelected) {
 	clipText =
-	  QCString(formText.data() + QMIN(selectStart, cursorPos),
+	  QString(formText.mid(QMIN(selectStart, cursorPos),
 		  QMAX(selectStart - cursorPos + 1, \
-		      cursorPos - selectStart + 1));
+		      cursorPos - selectStart + 1) - 1));
 	formText.remove(QMIN(selectStart, cursorPos),
 			QMAX(selectStart - cursorPos, \
 			    cursorPos - selectStart));
@@ -759,7 +765,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	  textSelected = 0;
 	}
 	formText.insert(cursorPos, clipText);
-	cursorPos += clipText.size() - 1;
+	cursorPos += clipText.length();
 	MODIFIED
         redraw();
 	return;
@@ -770,15 +776,15 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       //pop the undo stack and push the current string onto redo.
       if(!undo.isEmpty()) {
 	if(textSelected) textSelected = 0;
-	redo.push(new QCString(oldText.copy()));
+	redo.push(new QString(oldText));
 	formText = *undo.top(); //we don't want it deleted
 	                        //until a shallow copy is made--
 	                        //so we don't pop right away.
 	undo.pop();
 	form->parse(formText, &info); //can't use MODIFIED
 	cacheState = ALL_DIRTY;
-	if(cursorPos == (int)oldText.size() - 1 ||
-	   cursorPos >= (int)formText.size()) cursorPos = formText.size() - 1;
+	if(cursorPos == (int)oldText.length() ||
+	   cursorPos > (int)formText.length()) cursorPos = formText.length();
 	else while(!isValidCursorPos(cursorPos)) cursorPos++;
 	redraw();
       }
@@ -789,13 +795,13 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       //same thing as undo but backwards
       if(!redo.isEmpty()) {
 	if(textSelected) textSelected = 0;
-	undo.push(new QCString(oldText.copy()));
+	undo.push(new QString(oldText));
 	formText = *redo.top();
 	redo.pop();
 	form->parse(formText, &info);
 	cacheState = ALL_DIRTY;
-	if(cursorPos == (int)oldText.size() - 1 ||
-	   cursorPos >= (int)formText.size()) cursorPos = formText.size() - 1;
+	if(cursorPos == (int)oldText.length() ||
+	   cursorPos > (int)formText.length()) cursorPos = formText.length();
 	else while(!isValidCursorPos(cursorPos)) cursorPos++;
 	redraw();
       }
@@ -850,7 +856,8 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	    if(formText[i] == '}') level++;
 	    if(formText[i] == '{') level--;
 	    if(level < 0) break;
-	    if(level == 0 && strchr("+-#=<>", formText[i])) break;
+	    if(level == 0 && (char)formText[i] &&
+	       strchr("+-#=<>", formText[i])) break;
 	    //the "+-#=<>" are all operators with lower precedence than
 	    //the divide.  if they are encoundered, they don't end up in
 	    //the numerator (unless they are selected but then we wouldn't

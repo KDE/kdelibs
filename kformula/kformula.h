@@ -33,8 +33,8 @@ public:
   void setBoxes(QArray<box *> newBoxes);
   QArray<box *> getBoxes(void);
   void setPos(int x, int y); //sets the position for the center of the formula
-  void parse(QCString text, QArray<charinfo> *info = NULL);
-  QCString unparse(box *b = NULL);
+  void parse(QString text, QArray<charinfo> *info = NULL);
+  QString unparse(box *b = NULL);
   QRect getCursorPos(charinfo i);
 
 protected:
@@ -42,8 +42,8 @@ protected:
   int posx, posy;
 
 private:
-  void parenthesize(QCString &temp, int i, QArray<charinfo> *info);
-  box * makeBoxes(char *str, int offset, int maxlen, QArray<charinfo> *info);
+  void parenthesize(QString &temp, int i, QArray<charinfo> *info);
+  box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
 };
 
 

@@ -76,27 +76,31 @@ void KFormula::setPos(int x, int y)
 //formula.  Pretty self-explanatory.
 //it's not used anywhere now, but it might be useful.
 
-QCString KFormula::unparse(box *b)
+QString KFormula::unparse(box *b)
 {
   if(b == NULL) b = boxes[boxes.size() - 1];
 
-  if(b->type == TEXT) return b->text.copy();
+  if(b->type == TEXT) return b->text;
 
-  QCString x;
+  QString x;
   
   if(b->b1 != NULL && b->b2 != NULL) {
-    x.sprintf("{%s}%c{%s}", unparse(b->b1).data(),
-	      b->type, unparse(b->b2).data());
+    x.sprintf("{}%c{}", b->type);
+
+    x.insert(1, unparse(b->b1));
+    x.insert(x.length() - 1, unparse(b->b2));
     return x;
   }
 
   if(b->b1 != NULL) {
-    x.sprintf("{%s}%c{}", unparse(b->b1).data(), b->type);
+    x.sprintf("{}%c{}", b->type);
+    x.insert(1, unparse(b->b1));
     return x;
   }
 
   if(b->b2 != NULL) {
-    x.sprintf("{}%c{%s}", b->type, unparse(b->b2).data());
+    x.sprintf("{}%c{}", b->type);
+    x.insert(x.length() - 1, unparse(b->b2));
     return x;
   }
   //if both are NULL
@@ -117,15 +121,14 @@ QCString KFormula::unparse(box *b)
 // adding a box each time.  Not especially efficient or versatile
 // but speed is not critical and this was easy to write.
 
-void KFormula::parse(QCString text, QArray<charinfo> *info)
+void KFormula::parse(QString text, QArray<charinfo> *info)
 {
   int i, j;
-  QCString temp = text.copy();
 
-  info->resize(temp.size());
+  info->resize(text.length() + 1);
 
   if(info) { //initialize info
-    for(i = 0; i < (int)temp.size(); i++) {
+    for(i = 0; i <= (int)text.length(); i++) {
       charinfo inf;
       
       inf.where = NULL;
@@ -146,17 +149,18 @@ void KFormula::parse(QCString text, QArray<charinfo> *info)
   //insert a CAT (#) symbol at every concatenation:
   //"a{b}/{c}d" -> "a#{b}/{c}#d".
 
-  for(i = 0; i < ((int)temp.size() - 2); i++)
+  for(i = 0; i < ((int)text.length() - 1); i++)
     {
       j = i + 1;
-      if(j >= (int)temp.size()) continue;
-      if(temp[j] != '{' && temp[i] != '}') continue;
-      if(temp[i] == '}' && temp[j] == '{') {
-	temp.insert(j, CAT);
+      if(j > (int)text.length()) continue;
+      if(text[j] != '{' && text[i] != '}') continue;
+      if(text[i] == '}' && text[j] == '{') {
+	text.insert(j, CAT);
 	INSERTED(j);
       }
-      if(strchr(SPECIAL, temp[i]) && strchr(SPECIAL, temp[j])) continue;
-      temp.insert(j, CAT);
+      if((char)text[i] && (char)text[j] &&
+          strchr(SPECIAL, text[i]) && strchr(SPECIAL, text[j])) continue;
+      text.insert(j, CAT);
       INSERTED(j);
     }
 
@@ -164,37 +168,37 @@ void KFormula::parse(QCString text, QArray<charinfo> *info)
   //After this, "x+y*z^{2}" becomes "{x}+{{y}*{{z}^{{2}}}}"
 
   //equal and gt lt signs have lowest priority
-  for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(!strchr("=<>", temp[i])) continue;
-    parenthesize(temp, i, info);
+  for(i = (int)text.length() - 1; i >= 0; i--) {
+    if(!(char)text[i] || !strchr("=<>", text[i])) continue;
+    parenthesize(text, i, info);
     i++;
   }
   
   //addition and subtraction
-  for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(temp[i] != PLUS && temp[i] != MINUS) continue;
-    parenthesize(temp, i, info);
+  for(i = (int)text.length() - 1; i >= 0; i--) {
+    if(text[i] != PLUS && text[i] != MINUS) continue;
+    parenthesize(text, i, info);
     i++;
   }
 
   //concatenation
-  for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(temp[i] != CAT) continue;
-    parenthesize(temp, i, info);
+  for(i = (int)text.length() - 1; i >= 0; i--) {
+    if(text[i] != CAT) continue;
+    parenthesize(text, i, info);
     i++;
   }
 
   //multiplication and slash
-  for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(temp[i] != TIMES && temp[i] != SLASH) continue;
-    parenthesize(temp, i, info);
+  for(i = (int)text.length() - 1; i >= 0; i--) {
+    if(text[i] != TIMES && text[i] != SLASH) continue;
+    parenthesize(text, i, info);
     i++;
   }
 
   //exponents and subscripts: should not be reversed despite order of ops.
-  for(i = (int)temp.size() - 2; i >= 0; i--) {
-    if(temp[i] != POWER && temp[i] != SUB) continue;
-    parenthesize(temp, i, info);
+  for(i = (int)text.length() - 1; i >= 0; i--) {
+    if(text[i] != POWER && text[i] != SUB) continue;
+    parenthesize(text, i, info);
     i++;
   }
 
@@ -203,14 +207,14 @@ void KFormula::parse(QCString text, QArray<charinfo> *info)
   //like that
 
   //roots and division and parentheses:
-  for(i = 0; i < (int)temp.size() - 1; i++) {
-    if(!strchr("@/(|", temp[i])) continue;
-    parenthesize(temp, i, info);
+  for(i = 0; i < (int)text.length(); i++) {
+    if(!(char)text[i] || !strchr("@/(|", text[i])) continue;
+    parenthesize(text, i, info);
     i += 3;
   }
 
   //Now just make the boxes.
-  makeBoxes(temp.data(), 0, (int)temp.size() - 1, info);
+  makeBoxes(text, 0, (int)text.length(), info);
 
 }
 
@@ -219,7 +223,7 @@ void KFormula::parse(QCString text, QArray<charinfo> *info)
 //curly braces around the two groups near the operator.  e.g.:
 // Before: "{x}+{y*3}".  Then parenthesize is called with
 // i = 6.  After: "{x}+{{y}*{3}}"
-void KFormula::parenthesize(QCString &temp, int i, QArray<charinfo> *info)
+void KFormula::parenthesize(QString &temp, int i, QArray<charinfo> *info)
 {
   int j;
   int level = 0;
@@ -250,18 +254,18 @@ void KFormula::parenthesize(QCString &temp, int i, QArray<charinfo> *info)
   level = 0;
 
   //now search for the right end of the right group
-  for(j = i + 1; j < (int)temp.size(); j++) {
-    if(temp[j] == '{') level++;
-    if(temp[j] == '}') level--;
-    
+  for(j = i + 1; j <= (int)temp.length(); j++) {
+    if(j < (int)temp.length() && temp[j] == '{') level++;
+    if(j < (int)temp.length() && temp[j] == '}') level--;
+
     if(level < 0) {
       temp.insert(j, '}');
       INSERTED(j);
       i++;
       break;
     }
-    
-    if(j == (int)temp.size() - 1) {
+
+    if(j == (int)temp.length()) {
       temp.insert(j, '}');
       INSERTED(j);
       i++;
@@ -273,7 +277,7 @@ void KFormula::parenthesize(QCString &temp, int i, QArray<charinfo> *info)
 //-----------------------------MAKE BOXES-----------------------------
 //creates the boxes from a fully parenthesized str.
 //calls itself recursively.
-box * KFormula::makeBoxes(char * str, int offset,
+box * KFormula::makeBoxes(QString str, int offset,
 			  int maxlen, QArray<charinfo> *info)
 {
   int toplevel = -1; //the location of the toplevel operator
@@ -301,7 +305,7 @@ box * KFormula::makeBoxes(char * str, int offset,
 
   if(str[0] != '{') { //we have a literal--make a TEXT box:
     boxes.resize(boxes.size() + 1);
-    boxes[boxes.size() - 1] = new box(QCString(str, maxlen + 1));
+    boxes[boxes.size() - 1] = new box(str.left(maxlen));
 
     if(info) {
       for(i = 0; i < (int)info->size(); i++) {
@@ -330,15 +334,16 @@ box * KFormula::makeBoxes(char * str, int offset,
   //if there is no toplevel operand, strip the outside curly braces.  e.g.:
   //"{{x}+{y}}" -> "{x}+{y}".  Done by recursively calling makeBoxes
   //on the appropriate substring.
-  if(toplevel == -1) return makeBoxes(str + 1, offset + 1, maxlen - 2, info);
+  if(toplevel == -1) return makeBoxes(str.mid(1), offset + 1,
+				      maxlen - 2, info);
 
   //this stores the returned pointer so we don't add it to the
   //boxes array until all the children have been added.
   box *tmpbox;
 
-  tmpbox = new box((BoxType)str[toplevel], //that's the operator.
+  tmpbox = new box((BoxType)(char)str[toplevel], //that's the operator.
 	    makeBoxes(str, offset, toplevel, info),
-	    makeBoxes(str + toplevel + 1, offset + toplevel + 1,
+	    makeBoxes(str.mid(toplevel + 1), offset + toplevel + 1,
 		       maxlen - toplevel - 1, info));
 
   boxes.resize(boxes.size() + 1);

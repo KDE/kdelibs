@@ -18,7 +18,7 @@ box::box(int setNum)
   parent = NULL;
 }
 
-box::box(QCString setText)
+box::box(QString setText)
 {
   type = TEXT;
   b1 = b2 = NULL;
@@ -65,9 +65,9 @@ void box::makeDirty()
 }
 
 //--------------------------------SET TEXT-----------------------
-void box::setText(QCString newText)
+void box::setText(QString newText)
 {
-  text = newText.copy();
+  text = newText;
   makeDirty();
 }
 
@@ -115,7 +115,7 @@ void box::calculate(QPainter &p, int setFontsize)
   switch(type)
     {
     case TEXT:
-      if(text.size() == 1) { //empty box will have a little square drawn
+      if(text.length() == 0) { //empty box will have a little square drawn
 	// the size of + is the size of the square.
 	rect = fm.boundingRect("+");
 	rect.setRect(-SPACE, rect.y(), SPACE * 2, rect.height());
@@ -348,7 +348,7 @@ void box::draw(QPainter &p, int x, int y)
 
   switch(type) {
   case TEXT:
-    if(text.size() == 1) { //empty
+    if(text.length() == 0) { //empty
       //left operands of "@(-|" are optional so the square isn't drawn.
       if(parent && (strchr("@(-|", parent->type) &&
 		    parent->b1 == this)) break;
@@ -497,9 +497,9 @@ QRect box::getCursorPos(charinfo i, int x, int y)
   switch(type) {
   case TEXT: //just the position in the text.
     //The assert should be returned when the posinstr bug is fixed.
-    //ASSERT(i.posinbox < (int)text.size());
-    if(i.posinbox >= (int)text.size()) i.posinbox = (int)text.size() - 1;
-    if(text.size() <= 1) {
+    //ASSERT(i.posinbox <= (int)text.length());
+    if(i.posinbox > (int)text.length()) i.posinbox = (int)text.length();
+    if(text.length() < 1) {
       tmp.setX(rect.center().x() + x - 1);
       break;
     }
