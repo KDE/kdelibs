@@ -342,7 +342,7 @@ public:
    *
    * @see KMainWindow::queryClose
    * @see KMainWindow::queryExit
-   * @since 3.2
+   * @since 3.1.1
    */
   bool sessionSaving() const;
 
