@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="3">
+<kpartgui name="khtmlpart" version="4">
 <MenuBar>
  <Menu name="edit"><text>&amp;Edit</text>
   <Action name="selectAll" />
@@ -8,4 +8,8 @@
   <Action name="findNext" />
  </Menu>
 </MenuBar>
+<ActionProperties>
+ <Action shortcut="Ctrl+KP_Add" name="incZoomFast" />
+ <Action shortcut="Ctrl+KP_Subtract" name="decZoomFast" />
+</ActionProperties>
 </kpartgui>
