@@ -56,6 +56,7 @@ public:
     bool care_about_geometry:1;
     QString autoSaveGroup;
     KAccel * kaccel;
+    KMainWindowInterface *m_interface;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -190,6 +191,8 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     }
 
     setCaption( kapp->caption() );
+	// attach dcop interface
+	d->m_interface = new KMainWindowInterface(this);
 }
 
 void KMainWindow::parseGeometry(bool parsewidth)

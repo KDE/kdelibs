@@ -25,6 +25,7 @@
 #include "kxmlgui.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
+#include "kmainwindowiface.h"
 #include <qmap.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
@@ -615,13 +616,10 @@ private slots:
 private:
     QMenuBar *internalMenuBar();
     QStatusBar *internalStatusBar();
-
-private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
     QPtrList<KToolBar> toolbarList;
     KMainWindowPrivate *d;
-
 };
 
 #define RESTORE(type) { int n = 1;\

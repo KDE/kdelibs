@@ -46,7 +46,7 @@ public:
 	Destructor
 	Cleans up the dcop action proxy object.
 	**/
-	virtual ~KMainWindowInterface();
+	~KMainWindowInterface();
 k_dcop:
 	/**
 	Return a list of actions available to the application's window.
