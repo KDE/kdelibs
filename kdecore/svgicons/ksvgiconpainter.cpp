@@ -103,6 +103,15 @@ public:
 
 		delete m_image;
 		delete m_worldMatrix;
+
+		for(QMap<QString, ArtGradientLinear *>::Iterator it = m_linearGradientMap.begin(); it != m_linearGradientMap.end(); ++it)
+		{
+			delete it.data();
+		}
+		for(QMap<QString, ArtGradientRadial *>::Iterator it = m_radialGradientMap.begin(); it != m_radialGradientMap.end(); ++it)
+		{
+			delete it.data();
+		}
 	}
 
 	ArtVpath *allocVPath(int number)
