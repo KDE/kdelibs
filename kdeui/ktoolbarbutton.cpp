@@ -658,10 +658,10 @@ void KToolBarButton::makeDefaultPixmap()
 
   KIconEffect effect;
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    defaultPixmap = effect.apply(activePixmap, KIcon::MainToolbar, 
+    defaultPixmap = effect.apply(activePixmap, KIcon::MainToolbar,
 	    KIcon::DefaultState);
   else
-    defaultPixmap = effect.apply(activePixmap, KIcon::Toolbar, 
+    defaultPixmap = effect.apply(activePixmap, KIcon::Toolbar,
 	    KIcon::DefaultState);
 }
 
@@ -672,10 +672,10 @@ void KToolBarButton::makeDisabledPixmap()
 
   KIconEffect effect;
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    disabledPixmap = effect.apply(activePixmap, KIcon::MainToolbar, 
+    disabledPixmap = effect.apply(activePixmap, KIcon::MainToolbar,
 	    KIcon::DisabledState);
   else
-    disabledPixmap = effect.apply(activePixmap, KIcon::Toolbar, 
+    disabledPixmap = effect.apply(activePixmap, KIcon::Toolbar,
 	    KIcon::DisabledState);
 }
 
@@ -740,7 +740,7 @@ void KToolBarButton::slotToggled()
 
 void KToolBarButton::setNoStyle(bool no_style)
 {
-    d->m_noStyle = true;
+    d->m_noStyle = no_style;
 
     makeDefaultPixmap();
     d->m_iconText = KToolBar::IconTextRight;
