@@ -5,7 +5,9 @@
 
 #include "jp2.h"
 
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include <ktempfile.h>
 #include <qcolor.h>
 #include <qcstring.h>
