@@ -272,9 +272,10 @@ namespace KJS {
      * The internal [[Delete]] method. Removes the specified property from
      * the object.
      * @param p Property name.
+     * @return True if the property was deleted successfully or didn't exist
+     * in the first place. False if the DontDelete attribute was set.
      */
-    void deleteProperty(const UString &p);
-
+    bool deleteProperty(const UString &p);
     /**
      * Same as above put() method except the additional attribute. Right now,
      * this only works with native types as Host Objects don't reimplement
@@ -382,7 +383,7 @@ namespace KJS {
     virtual void put(const UString &p, const KJSO& v);
     void put(const UString &p, const KJSO& v, int attr);
     virtual bool canPut(const UString &p) const;
-    virtual void deleteProperty(const UString &p);
+    virtual bool deleteProperty(const UString &p);
     virtual KJSO defaultValue(Type hint) const;
 
     bool implementsCall() const;

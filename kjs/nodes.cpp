@@ -513,12 +513,13 @@ KJSO PostfixNode::evaluate()
 KJSO DeleteNode::evaluate()
 {
   KJSO e = expr->evaluate();
-  KJSO b = e.getBase();
-  UString n = e.getPropertyName(); /* TODO: runtime err if no ref */
-  if (!b.isA(ObjectType))
+  if (!e.isA(ReferenceType))
     return Boolean(true);
-  /* TODO [delete] */
-  return Boolean(!b.hasProperty(n));
+  KJSO b = e.getBase();
+  UString n = e.getPropertyName();
+  bool ret = b.deleteProperty(n);
+
+  return Boolean(ret);
 }
 
 // ECMA 11.4.2

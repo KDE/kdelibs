@@ -394,10 +394,10 @@ bool KJSO::hasProperty(const UString &p, bool recursive) const
 }
 
 // ECMA 8.6.2.5
-void KJSO::deleteProperty(const UString &p)
+bool KJSO::deleteProperty(const UString &p)
 {
   assert(rep);
-  rep->deleteProperty(p);
+  return rep->deleteProperty(p);
 }
 
 Object::Object(Imp *d) : KJSO(d) { }
@@ -656,21 +656,22 @@ bool Imp::hasProperty(const UString &p, bool recursive) const
 }
 
 // ECMA 8.6.2.5
-void Imp::deleteProperty(const UString &p)
+bool Imp::deleteProperty(const UString &p)
 {
-  if (prop) {
-    Property *pr = prop;
-    Property **prev = &prop;
-    while (pr) {
-      if (pr->name == p) {
-	*prev = pr->next;
-	delete pr;
-	return;
-      }
-      prev = &(pr->next);
-      pr = pr->next;
+  Property *pr = prop;
+  Property **prev = &prop;
+  while (pr) {
+    if (pr->name == p) {
+      if ((pr->attribute & DontDelete))
+	return false;
+      *prev = pr->next;
+      delete pr;
+      return true;
     }
+    prev = &(pr->next);
+    pr = pr->next;
   }
+  return true;
 }
 
 // ECMA 15.4.5.1
