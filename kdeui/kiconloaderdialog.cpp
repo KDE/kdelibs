@@ -228,6 +228,16 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
   repaint(TRUE);
 }
 
+void KIconLoaderCanvas::cancelLoad()
+{
+  if ( timer->isActive() )
+    {
+      timer->stop();
+      QApplication::restoreOverrideCursor();
+      emit interrupted();
+    }
+}
+
 //----------------------------------------------------------------------
 //---------------  KICONLOADERDIALOG   ---------------------------------
 //----------------------------------------------------------------------
@@ -259,10 +269,11 @@ void KIconLoaderDialog::init()
   connect( cancel, SIGNAL(clicked()), this, SLOT(reject()) );
   connect( canvas, SIGNAL(nameChanged(const char *)), l_name, SLOT(setText(const char *)) );
   connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
+  connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const char *)), this, SLOT(dirChanged(const char*)) );
   setDir(icon_loader->getDirList());
-  resize( 470, 250 );
+  resize( 470, 350 );
   setMinimumSize( 470, 250 );
 }
 
@@ -285,6 +296,17 @@ KIconLoaderDialog::~KIconLoaderDialog()
   disconnect( ok );
   disconnect( cancel );
   disconnect( canvas );
+}
+
+void KIconLoaderDialog::reject()
+{
+  canvas->cancelLoad(); 
+  QDialog::reject();
+}
+
+void KIconLoaderDialog::needReload()
+{
+  i_filter->setText("");
 }
 
 int KIconLoaderDialog::exec(QString filter)

@@ -58,10 +58,12 @@ public:
 
   void loadDir(QString dirname, QString filter);
   QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list.at(sel_id); }
+  void cancelLoad();
 
 signals:
   void nameChanged( const char * );
   void doubleClicked();
+  void interrupted();
 
 protected slots:
   void process();
@@ -141,6 +143,8 @@ public:
 protected slots:
   void filterChanged();
   void dirChanged(const char *);
+  void reject();
+  void needReload();
   
 protected:
   void init();
