@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#define QT_ONLY
+#define KDE_QT_ONLY
 #include "../../kdecore/kurl.cpp"
 
 bool mkBool( const QString& s )
