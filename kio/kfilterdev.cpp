@@ -154,7 +154,7 @@ int KFilterDev::at() const
 bool KFilterDev::at( int pos )
 {
     ASSERT ( filter->mode() == IO_ReadOnly );
-    kdDebug() << "KFilterDev::at " << pos << endl;
+    //kdDebug() << "KFilterDev::at " << pos << "  currently at " << ioIndex << endl;
 
     if ( ioIndex == pos )
         return true;
@@ -197,7 +197,7 @@ bool KFilterDev::atEnd() const
 int KFilterDev::readBlock( char *data, uint maxlen )
 {
     ASSERT ( filter->mode() == IO_ReadOnly );
-    //kdDebug() << "KFilterDev::readBlock maxlen=" << maxlen << "  ok=" << (d->result == KFilterBase::OK) << endl;
+    //kdDebug() << "KFilterDev::readBlock maxlen=" << maxlen << endl;
     // If we had an error, or came to the end of the stream, return 0.
     if ( d->result != KFilterBase::OK )
         return 0;
@@ -243,7 +243,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
             // We got that much data since the last time we went here
             uint outReceived = availOut - filter->outBufferAvailable();
             //kdDebug() << "avail_out = " << filter->outBufferAvailable() << " result=" << result << " outReceived=" << outReceived << endl;
-            if( availOut < filter->outBufferAvailable() )
+            if( availOut < (uint)filter->outBufferAvailable() )
                 kdWarning() << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
             // Move on in the output buffer
