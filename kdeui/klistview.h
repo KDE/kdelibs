@@ -26,8 +26,8 @@
 class QDragObject;
 /**
  * This Widget extends the functionality of QListView to honor the system
- * wide settings for Single Click/Double Click mode, Auto Selection and
- * Change Cursor Over Link (tm).
+ * wide settings for Single Click/Double Click mode, AutoSelection and
+ * ChangeCursorOverLink (TM).
  *
  * There is a new signal executed(). It gets connected to either
  * QListView::clicked() or QListView::doubleClicked() depending on the KDE
@@ -147,6 +147,18 @@ public:
    */
   bool dropHighlighter() const;
 
+  /**
+   * The dropVisualizerWidth defaults to 4.
+   *
+   * @return the current width of the drop-visualizer.
+   */
+  inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
+
+  /**
+   * Set the width of the (default) drop-visualizer.
+   */
+  void setDropVisualizerWidth (int w);
+
 signals:
 
   /**
@@ -253,10 +265,31 @@ public slots:
    * @see setRenameable
    */
   virtual void setItemsRenameable(bool b);
+
+  /**
+   * Enable/Disable the dragging of items.
+   */
   virtual void setDragEnabled(bool b);
+
+  /**
+   * Enable/Disable AutoOpen.
+   */
   virtual void setAutoOpen(bool b);
+
+  /**
+   * Enable/Disable the drawing of a drop-visualizer
+   * (a bar that shows where a dropped item would be inserted).
+   */
   virtual void setDropVisualizer(bool b);
+
+  /**
+   * Set which column should be used for automatic tooltips.
+   *
+   * @param column is the column for which tooltips will be shown.
+   * Set -1 to disable this feature.
+   */
   virtual void setTooltipColumn(int column);
+
   /**
    * For future expansion.
    * 
@@ -275,13 +308,27 @@ public slots:
   virtual void setCreateChildren(bool b);
 
 protected slots:
+  /**
+   * Accessory slot for AutoSelect
+   * @internal
+   */
   void slotOnItem( QListViewItem *item );
+
+  /**
+   * Accessory slot for AutoSelect/ChangeCursorOverItem
+   * @internal
+   */
   void slotOnViewport();
 
+  /**
+   * Update internal settings whenever the global ones change.
+   * @internal
+   */
   void slotSettingsChanged(int);
 
   /**
-   * Auto selection happend.
+   * Process AutoSelection.
+   * @internal
    */
   void slotAutoSelect();
 
@@ -292,10 +339,12 @@ protected slots:
 
 protected:
   /**
-   * Determine whether a drop on this position (@p p) would count as
-   * being above or below the QRect (@p rect).
+   * Determine whether a drop on position @p p would count as
+   * being above or below the QRect @p rect.
    *
-   * Note: @p p is assumed to be in viewport coordinates.
+   * @param rect is the rectangle we examine.
+   * @param p is the point located in the rectangle, p is assumed to be in
+   * viewport coordinates.
    */
   inline bool below (const QRect& rect, const QPoint& p)
   {
@@ -307,16 +356,37 @@ protected:
    *
    * It differs from the above only in what arguments it takes.
    *
-   * Note: @p p is assumed to be in contents coordinates.
+   * @param i the item whose rect() is passed to the above function.
+   * @param p is translated from contents coordinates to viewport coordinates
+   * before being passed to the above function.
    */
   inline bool below (QListViewItem* i, const QPoint& p)
   {
 	return below (itemRect(i), contentsToViewport(p));
   }
 
+  /**
+   * Emit signal @ref execute.
+   * @internal
+   */
   void emitExecute( QListViewItem *item, const QPoint &pos, int c );
 
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void focusOutEvent( QFocusEvent *fe );
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void leaveEvent( QEvent *e );
 
   /**
@@ -330,15 +400,75 @@ protected:
   virtual bool showTooltip(QListViewItem *item, const QPoint &pos, int column) const;
 
   /**
-   * Draw a line when you drag it somewhere nice.
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
    */
   virtual void contentsDragMoveEvent (QDragMoveEvent *event);
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsMousePressEvent( QMouseEvent *e );
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsDragLeaveEvent (QDragLeaveEvent *event);
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsMouseReleaseEvent (QMouseEvent*);
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsDropEvent (QDropEvent*);
+
+  /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void contentsDragEnterEvent (QDragEnterEvent *);
 
   /**
@@ -373,12 +503,22 @@ protected:
    * @deprecated
    */
   virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
+
+  /**
+   * For future expansion. 
+   *
+   * Do not use.
+   * @deprecated
+   */
   void cleanItemHighlighter ();
 
+  /**
+   * This method calls @ref dragObject () and starts the drag.
+   *
+   * Reimplement it to do fancy stuff like setting a pixmap or
+   * using a non-default DragMode
+   */
   virtual void startDrag();
-
-  inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
-  void setDropVisualizerWidth (int w);
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
