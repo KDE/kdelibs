@@ -48,13 +48,23 @@ namespace KABC {
     /**
      * Assembles fieldname and value into a valid LDIF line, BASE64 encodes the 
      * value if neccessary and optionally splits into more lines.
+     * @param fieldname The name of the entry.
+     * @param value The value of the entry.
+     * @param linelen Maximum length of the lines in the result.
+     * @param url If true, encode value as url ( use :< ).
      */
     static QCString assembleLine( const QString &fieldname, 
       const QByteArray &value, uint linelen=0, bool url=false );
-    
+    /**
+     * This is the same as the above function, the only difference that 
+     * this accepts QCString as the value.
+     */
     static QCString assembleLine( const QString &fieldname, 
       const QCString &value, uint linelen=0, bool url=false );
-    
+    /**
+     * This is the same as the above function, the only difference that 
+     * this accepts QString as the value.
+     */
     static QCString assembleLine( const QString &fieldname, 
       const QString &value, uint linelen=0, bool url=false );
       
@@ -79,7 +89,7 @@ namespace KABC {
      * EndEntry if the parser reached the end of the current entry
      * and MoreData if the parser encountered the end of the current chunk of 
      * the LDIF. If you want to finish the parsing after receiving 
-     * MoreData, then supply a buffer with '\\n\\n\\n' with setLDIF, so  the 
+     * MoreData, then supply a buffer with '\\n\\n\\n' with setLDIF, so the 
      * parser can safely flush the current entry.
      */
     ParseVal nextItem();
@@ -91,47 +101,47 @@ namespace KABC {
     /**
      * Returns the requested LDAP operation extracted from the current entry.
      */
-    EntryType entryType() { return mEntryType; };
+    EntryType entryType() const { return mEntryType; }
     /**
      * Returns the LDAP modify request type if entryType() returned Entry_Mod.
      */
-    int modType() { return mModType; };
+    int modType() const { return mModType; }
     /**
      * Returns the Distinguished Name of the current entry.
      */
-    QString dn() { return mDn; };
+    QString dn() const { return mDn; }
     /**
      * Returns the new Relative Distinguished Name if modType() returned Entry_Modrdn.
      */
-    QString newRdn() { return mNewRdn; };
+    QString newRdn() const { return mNewRdn; }
     /**
      * Returns the new parent of the entry if modType() returned Entry_Modrdn.
      */
-    QString newSuperior() { return mNewSuperior; };
+    QString newSuperior() const { return mNewSuperior; }
     /**
      * Returns if the delete of the old RDN is required.
      */
-    bool delOldRdn() { return mDelOldRdn; };
+    bool delOldRdn() const { return mDelOldRdn; }
     /**
      * Returns the attribute name.
      */
-    QString attr() { return mAttr; };
+    QString attr() const { return mAttr; }
     /**
      * Returns the attribute value.
      */
-    QByteArray val() { return mVal; };
+    QByteArray val() const { return mVal; }
     /**
      * Returns the criticality level when modType() returned Control.
      */
-    bool critical() { return mCritical; };
+    bool critical() const { return mCritical; }
     /**
      * Returns the OID when modType() returned Control.
      */
-    QString oid() { return mOid; };
+    QString oid() const { return mOid; }
     /**
      * Returns the line number which the parser processes.
      */
-    uint lineNo() { return mLineNo; };
+    uint lineNo() const { return mLineNo; }
   private:
     int mModType;
     bool mDelOldRdn;

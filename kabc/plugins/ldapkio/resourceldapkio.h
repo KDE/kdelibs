@@ -84,6 +84,12 @@ class ResourceLDAPKIO : public Resource
 
     void setVer( int ver );
     int ver() const;
+    
+    void setSizeLimit( int sizelimit );
+    int sizeLimit();
+    
+    void setTimeLimit( int timelimit );
+    int timeLimit();
 
     void setFilter( const QString &filter );
     QString filter() const;

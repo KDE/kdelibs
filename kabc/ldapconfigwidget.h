@@ -23,20 +23,19 @@
 
 #include <qwidget.h>
 #include <qmap.h>
-#include <qspinbox.h>
-#include <qpushbutton.h>
-#include <qcheckbox.h>
-#include <qradiobutton.h>
 #include <qstring.h>
-
-#include <klineedit.h>
-#include <kcombobox.h>
-#include <kprogress.h>
 
 #include <kabc/ldapurl.h>
 #include <kabc/ldif.h>
 #include <kio/job.h>
 
+class QSpinBox;
+class QPushButton;
+class QCheckBox;
+class QRadioButton;
+class KComboBox;
+class KLineEdit;
+class KProgressDialog;
 
 namespace KABC {
 
@@ -65,6 +64,8 @@ namespace KABC {
         W_FILTER = 0x100,
         W_SECBOX = 0x400,
         W_AUTHBOX = 0x800,
+        W_TIMELIMIT = 0x1000,
+        W_SIZELIMIT = 0x2000,
         W_ALL = 0xFFFFFFF
       } LCW_Flags;
       
@@ -75,123 +76,145 @@ namespace KABC {
       virtual ~LdapConfigWidget();
 
       /** Sets the user name. Kconfig widget name: kcfg_ldapuser */
-      void setUser( const QString &user ) { mUser->setText( user ); }
+      void setUser( const QString &user );
       /** Gets the user name. Kconfig widget name: kcfg_ldapuser */
-      QString user() const { return mUser->text(); }
+      QString user() const;
     
       /** Sets the password. Kconfig widget name: kcfg_ldappassword */
-      void setPassword( const QString &password ) { mPassword->setText( password ); }
+      void setPassword( const QString &password );
       /** Gets the password. Kconfig widget name: kcfg_ldappassword */
-      QString password() const { return mPassword->text(); }
+      QString password() const;
     
       /** 
        * Sets the bind dn. Useful for SASL proxy auth. 
        * Kconfig widget name: kcfg_ldapbinddn 
        */
-      void setBindDN( const QString &binddn ) { mBindDN->setText( binddn ); }
+      void setBindDN( const QString &binddn );
       /** Gets the bind dn. Kconfig widget name: kcfg_ldapbinddn*/
-      QString bindDN() const { return mBindDN->text(); }
+      QString bindDN() const;
       
       /** Sets the SASL realm. Kconfig widget name: kcfg_ldaprealm */
-      void setRealm( const QString &realm ) { mRealm->setText( realm ); }
+      void setRealm( const QString &realm );
       /** Gets the SASL realm. Kconfig widget name: kcfg_ldaprealm */
-      QString realm() const { return mRealm->text(); }
+      QString realm() const;
       
       /** Sets the host name. Kconfig widget name: kcfg_ldaphost */
-      void setHost( const QString &host ) { mHost->setText( host ); }
+      void setHost( const QString &host );
       /** Gets the host name. Kconfig widget name: kcfg_ldaphost */
-      QString host() const { return mHost->text(); }
+      QString host() const;
     
       /** Sets the LDAP port. Kconfig widget name: kcfg_ldapport */
-      void setPort( int port ) { mPort->setValue( port ); }
+      void setPort( int port );
       /** Gets the LDAP port. Kconfig widget name: kcfg_ldapport */
-      int port() const { return mPort->value(); }
+      int port() const;
     
       /** Sets the LDAP protocol version. Kconfig widget name: kcfg_ldapver */
-      void setVer( int ver ) { mVer->setValue( ver ); }
+      void setVer( int ver );
       /** Gets the LDAP protocol version. Kconfig widget name: kcfg_ldapver */
-      int ver() const { return mVer->value(); }
+      int ver() const;
 
       /** Sets the LDAP Base DN. Kconfig widget name: kcfg_ldapdn */
-      void setDn( const QString &dn ) { mDn->setText( dn ); }
+      void setDn( const QString &dn );
       /** Gets the LDAP Base DN. Kconfig widget name: kcfg_ldapdn */
-      QString dn() const { return mDn->text(); }
+      QString dn() const;
     
       /** Sets the LDAP Filter. Kconfig widget name: kcfg_ldapfilter */
-      void setFilter( const QString &filter ) { mFilter->setText( filter ); }
+      void setFilter( const QString &filter );
       /** Gets the LDAP Filter. Kconfig widget name: kcfg_ldapfilter */
-      QString filter() const { return mFilter->text(); }
+      QString filter() const;
       
       /** Sets the SASL Mechanism. Kconfig widget name: kcfg_ldapsaslmech */
       void setMech( const QString &mech );
       /** Gets the SASL Mechanism. Kconfig widget name: kcfg_ldapsaslmech */
-      QString mech() const { return mMech->currentText(); }
+      QString mech() const;
       
       /** 
        * Sets the configuration to no transport security.
        * Kconfig widget name: kcfg_ldapnosec 
        */
-      void setSecNO() { mSecNO->setChecked( true ); }
+      void setSecNO();
       /**
        * Returns true if no transport security selected.
        * Kconfig widget name: kcfg_ldapnosec 
        */
-      bool isSecNO() const { return mSecNO->isChecked(); }
+      bool isSecNO() const;
       
       /**
        * Sets the configuration to TLS.
        * Kconfig widget name: kcfg_ldaptls 
        */
-      void setSecTLS() { mSecTLS->setChecked( true ); }
+      void setSecTLS();
       /**
        * Returns true if TLS selected.
        * Kconfig widget name: kcfg_ldaptls
        */
-      bool isSecTLS() const { return mSecTLS->isChecked(); }
+      bool isSecTLS() const;
       
       /**
        * Sets the configuration to SSL.
        * Kconfig widget name: kcfg_ldapssl
        */
-      void setSecSSL() { mSecSSL->setChecked( true ); }
+      void setSecSSL();
       /**
        * Returns true if SSL selected.
        * Kconfig widget name: kcfg_ldapssl
        */
-      bool isSecSSL() const { return mSecSSL->isChecked(); }
+      bool isSecSSL() const;
       
       /**
        * Sets the authentication to anonymous.
        * Kconfig widget name: kcfg_ldapanon
        */
-      void setAuthAnon() { mAnonymous->setChecked( true ); }
+      void setAuthAnon();
       /**
        * Returns true if Anonymous authentication selected.
        * Kconfig widget name: kcfg_ldapanon
        */
-      bool isAuthAnon() const { return mAnonymous->isChecked(); }
+      bool isAuthAnon() const;
       
       /**
        * Sets the authentication to simple.
        * Kconfig widget name: kcfg_ldapsimple
        */
-      void setAuthSimple() { mSimple->setChecked( true ); }
+      void setAuthSimple();
       /**
        * Returns true if Simple authentication selected.
        * Kconfig widget name: kcfg_ldapsimple
        */
-      bool isAuthSimple() const { return mSimple->isChecked(); }
+      bool isAuthSimple() const;
       
       /**
        * Sets the authentication to SASL.
        * Kconfig widget name: kcfg_ldapsasl
        */
-      void setAuthSASL() { mSASL->setChecked( true ); }
+      void setAuthSASL();
       /**
        * Returns true if SASL authentication selected.
        * Kconfig widget name: kcfg_ldapsasl
        */
-      bool isAuthSASL() const { return mSASL->isChecked(); }
+      bool isAuthSASL() const;
+      
+      /**
+       * Sets the size limit.
+       * KConfig widget name: kcfg_ldapsizelimit
+       */
+      void setSizeLimit( int sizelimit );
+      /**
+       * Returns the size limit.
+       * KConfig widget name: kcfg_ldapsizelimit
+       */
+      int sizeLimit() const;
+      
+      /**
+       * Sets the time limit.
+       * KConfig widget name: kcfg_ldaptimelimit
+       */
+      void setTimeLimit( int timelimit );
+      /**
+       * Returns the time limit.
+       * KConfig widget name: kcfg_ldaptimelimit
+       */
+      int timeLimit() const;
       
       /**
        * Returns a LDAP Url constructed from the settings given.
@@ -218,7 +241,7 @@ namespace KABC {
       KLineEdit *mUser;
       KLineEdit *mPassword;
       KLineEdit *mHost;
-      QSpinBox  *mPort, *mVer;
+      QSpinBox  *mPort, *mVer, *mSizeLimit, *mTimeLimit;
       KLineEdit *mDn, *mBindDN, *mRealm;
       KLineEdit *mFilter;
       QRadioButton *mAnonymous,*mSimple,*mSASL;

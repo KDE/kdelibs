@@ -54,6 +54,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name
 
   mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
   QHBox *box = new QHBox( this );
+  box->setSpacing( KDialog::spacingHint() );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), box );
   mCacheButton = new QPushButton( i18n( "Offline use..." ), box );
 
@@ -77,6 +78,8 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
   cfg->setHost( resource->host() );
   cfg->setPort(  resource->port() );
   cfg->setVer(  resource->ver() );
+  cfg->setTimeLimit( resource->timeLimit() );
+  cfg->setSizeLimit( resource->sizeLimit() );
   cfg->setDn( resource->dn() );
   cfg->setFilter( resource->filter() );
   cfg->setMech( resource->mech() );
@@ -110,6 +113,8 @@ void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
   resource->setHost( cfg->host() );
   resource->setPort( cfg->port() );
   resource->setVer( cfg->ver() );
+  resource->setTimeLimit( cfg->timeLimit() );
+  resource->setSizeLimit( cfg->sizeLimit() );
   resource->setDn( cfg->dn() );
   resource->setFilter( cfg->filter() );
   resource->setIsAnonymous( cfg->isAuthAnon() );

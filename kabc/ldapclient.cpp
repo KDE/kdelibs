@@ -217,7 +217,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
     ret = d->ldif.nextItem();
     switch ( ret ) {
       case LDIF::Item:
-        name = d->ldif.attr().lower();
+        name = d->ldif.attr();
         value = d->ldif.val();
         mCurrentObject.attrs[ name ].append( value );
         break;

@@ -41,7 +41,7 @@
 
 using namespace KABC;
 
-// Hack from Netaccess - maybe a KProgressDialog would be better
+// Hack from Netaccess
 void qt_enter_modal( QWidget *widget );
 void qt_leave_modal( QWidget *widget );
 
@@ -57,7 +57,7 @@ class ResourceLDAPKIO::ResourceLDAPKIOPrivate
     QString mMech;
     QString mRealm, mBindDN;
     LDAPUrl mLDAPUrl;
-    int mVer, mRDNPrefix;
+    int mVer, mSizeLimit, mTimeLimit, mRDNPrefix;
     int mError;
     int mCachePolicy;
     QString mCacheDst;
@@ -88,6 +88,8 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     d->mRealm = config->readEntry( "LdapRealm" );
     d->mBindDN = config->readEntry( "LdapBindDN" );
     d->mVer = config->readNumEntry( "LdapVer", 3 );
+    d->mTimeLimit = config->readNumEntry( "LdapTimeLimit", 0 );
+    d->mSizeLimit = config->readNumEntry( "LdapSizeLimit", 0 );
     d->mRDNPrefix = config->readNumEntry( "LdapRDNPrefix", 0 );
     d->mCachePolicy = config->readNumEntry( "LdapCachePolicy", 0 );
   } else {
@@ -97,6 +99,7 @@ ResourceLDAPKIO::ResourceLDAPKIO( const KConfig *config )
     d->mMech = d->mRealm = d->mBindDN = "";
     d->mTLS = d->mSSL = d->mSubTree = d->mSASL = false;
     d->mVer = 3; d->mRDNPrefix = 0;
+    d->mTimeLimit = d->mSizeLimit = 0;
     d->mCachePolicy = Cache_No;
   }
   d->mCacheDst = KGlobal::dirs()->saveLocation("cache", "ldapkio") + "/" +
@@ -128,7 +131,7 @@ void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
       if ( (*it2).m_uds == KIO::UDS_URL ) {
         KURL tmpurl( (*it2).m_str );
         d->mResultDn = tmpurl.path();
-        kdDebug() << "findUid(): " << d->mResultDn << endl;
+        kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
         if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
         return;
       }
@@ -188,8 +191,10 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   QCString tmp;
   QString dn;
   QByteArray data;
+  bool mod = false;
   
   if ( olddn.isEmpty() ) {
+    //insert new entry
     switch ( d->mRDNPrefix ) {
       case 1:
         dn = mAttributes[ "uid" ] + "=" + addr.uid() + "," +mDn;
@@ -200,26 +205,27 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
         break;
     }
   } else {
+    //modify existing entry
+    mod = true;
     if ( olddn.startsWith( mAttributes[ "uid" ] ) ) {
-      dn = mAttributes[ "uid" ] + "=" + addr.uid() + "," +mDn;
+      dn = mAttributes[ "uid" ] + "=" + addr.uid() + "," + olddn.section( ',', 1 );
     } else if ( olddn.startsWith( mAttributes[ "commonName" ] ) ) {
-      dn = mAttributes[ "commonName" ] + "=" + addr.assembledName() + "," +mDn;
+      dn = mAttributes[ "commonName" ] + "=" + addr.assembledName() + "," + 
+        olddn.section( ',', 1 );
     } else {
       dn = olddn;
     }
+    
+    if ( olddn.lower() != dn.lower() ) {
+      tmp = LDIF::assembleLine( "dn", olddn ) + "\n";
+      tmp += "changetype: modrdn\n";
+      tmp += LDIF::assembleLine( "newrdn", dn.section( ',', 0, 0 ) ) + "\n";
+      tmp += "deleteoldrdn: 1\n\n";
+    }
   }
   
-  kdDebug() << "AddresseeToLDIF: dn: '" << dn << "' olddn: '" << olddn << "'" << endl;
-  if ( !olddn.isEmpty() && olddn.lower() != dn.lower() ) {
-    tmp = LDIF::assembleLine( "dn", olddn ) + "\n";
-    tmp += "changetype: modrdn\n";
-    tmp += LDIF::assembleLine( "newrdn", dn.section( ',', 0, 0 ) ) + "\n";
-    tmp += "deleteoldrdn: 1\n";
-    dn = dn.section( ',', 0, 0 ) + "," + olddn.section( ',' , 1 );
-  }
   
-  bool mod = !olddn.isEmpty();
-  tmp += "\n" + LDIF::assembleLine( "dn", dn ) + "\n";
+  tmp += LDIF::assembleLine( "dn", dn ) + "\n";
   if ( mod ) tmp += "changetype: modify\n";
   if ( !mod ) {
     tmp += "objectClass: top\n";
@@ -270,7 +276,8 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
     tmp += LDIF::assembleLine( mAttributes[ "jpegPhoto" ], pic, 76 ) + "\n";
     if ( mod ) tmp += "-\n";
   }
-    
+  
+  tmp += "\n";  
   kdDebug(7125) << "ldif: " << QString::fromUtf8(tmp) << endl;
   ldif = tmp;
   return true;
@@ -332,6 +339,10 @@ void ResourceLDAPKIO::init()
   d->mLDAPUrl.setExtension( "x-dir", "base" );
   if ( d->mTLS ) d->mLDAPUrl.setExtension( "x-tls", "" );
   d->mLDAPUrl.setExtension( "x-ver", QString::number( d->mVer ) );
+  if ( d->mSizeLimit ) 
+    d->mLDAPUrl.setExtension( "x-sizelimit", QString::number( d->mSizeLimit ) );
+  if ( d->mTimeLimit ) 
+    d->mLDAPUrl.setExtension( "x-timelimit", QString::number( d->mTimeLimit ) );
   if ( d->mSASL ) {
     d->mLDAPUrl.setExtension( "x-sasl", "" );
     if ( !d->mBindDN.isEmpty() ) d->mLDAPUrl.setExtension( "basename", d->mBindDN );
@@ -340,7 +351,6 @@ void ResourceLDAPKIO::init()
   }
 
   kdDebug(7125) << "resource_ldapkio url: " << d->mLDAPUrl.prettyURL() << endl;
-
 }
 
 void ResourceLDAPKIO::writeConfig( KConfig *config )
@@ -360,6 +370,8 @@ void ResourceLDAPKIO::writeConfig( KConfig *config )
   config->writeEntry( "LdapSASL", d->mSASL );
   config->writeEntry( "LdapMech", d->mMech );
   config->writeEntry( "LdapVer", d->mVer );
+  config->writeEntry( "LdapTimeLimit", d->mTimeLimit );
+  config->writeEntry( "LdapSizeLimit", d->mSizeLimit );
   config->writeEntry( "LdapRDNPrefix", d->mRDNPrefix );
   config->writeEntry( "LdapRealm", d->mRealm );
   config->writeEntry( "LdapBindDN", d->mBindDN );
@@ -376,7 +388,7 @@ void ResourceLDAPKIO::writeConfig( KConfig *config )
 Ticket *ResourceLDAPKIO::requestSaveTicket()
 {
   if ( !addressBook() ) {
-    kdDebug(5700) << "no addressbook" << endl;
+    kdDebug(7125) << "no addressbook" << endl;
     return 0;
   }
 
@@ -652,6 +664,9 @@ void ResourceLDAPKIO::removeAddressee( const Addressee& addr )
     url.setExtension( "x-dir", "base" );
     url.setScope( LDAPUrl::Base );
     if ( KIO::NetAccess::del( url, NULL ) ) mAddrMap.erase( addr.uid() );
+  } else {
+    //maybe it's not saved yet
+    mAddrMap.erase( addr.uid() );
   }
 }
 
@@ -714,6 +729,26 @@ void ResourceLDAPKIO::setVer( int ver )
 int ResourceLDAPKIO::ver() const
 {
   return d->mVer;
+}
+    
+void ResourceLDAPKIO::setSizeLimit( int sizelimit )
+{
+  d->mSizeLimit = sizelimit;
+}
+
+int ResourceLDAPKIO::sizeLimit()
+{
+  return d->mSizeLimit;
+}
+    
+void ResourceLDAPKIO::setTimeLimit( int timelimit )
+{
+  d->mTimeLimit = timelimit;
+}
+
+int ResourceLDAPKIO::timeLimit()
+{
+  return d->mTimeLimit;
 }
 
 void ResourceLDAPKIO::setFilter( const QString &filter )

@@ -87,9 +87,10 @@ QCString LDIF::assembleLine( const QString &fieldname, const QCString &value,
 {
   QCString ret;
   QByteArray tmp;
-  tmp.setRawData( value, value.length() );
+  uint valuelen = value.length();
+  tmp.setRawData( value, valuelen );
   ret = assembleLine( fieldname, tmp, linelen, url );
-  tmp.resetRawData( value, value.length() );
+  tmp.resetRawData( value, valuelen );
   return ret;
   
 }
@@ -104,6 +105,7 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
 {
   int position;
   QByteArray tmp;
+  uint linelen;
 
 //  kdDebug(7125) << "splitLine line: " << QString::fromUtf8(line) << endl;
   
@@ -113,49 +115,53 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     fieldname = "";
     QCString str;
     str = line.stripWhiteSpace();
-    tmp.setRawData( str.data(), str.length() );
+    linelen = str.length();
+    tmp.setRawData( str.data(), linelen );
     value = tmp.copy();
-    tmp.resetRawData( str.data(), str.length() );
+    tmp.resetRawData( str.data(), linelen );
 //    kdDebug(7125) << "value : " << value[0] << endl;
     return false;
   }
   
-  if ( line.length() > ( position + 1 ) && line[ position + 1 ] == ':' ) {
+  linelen = line.length();
+  
+  if ( linelen > ( position + 1 ) && line[ position + 1 ] == ':' ) {
     // String is BASE64 encoded -> decode it now.
-    fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
-    if ( line.length() <= ( position + 3 ) ) {
+    fieldname = QString::fromUtf8( 
+      line.left( position ).stripWhiteSpace() );
+    if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
     }
-    tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    tmp.setRawData( &line.data()[ position + 3 ], linelen - position - 3 );
     KCodecs::base64Decode( tmp, value );
-    tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    tmp.resetRawData( &line.data()[ position + 3 ], linelen - position - 3 );
     return false;
   }
   
-  if ( line.length() > ( position + 1 ) && line[ position + 1 ] == '<' ) {
+  if ( linelen > ( position + 1 ) && line[ position + 1 ] == '<' ) {
     // String is an URL.
-    fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
-    if ( line.length() <= ( position + 3 ) ) {
+    fieldname = QString::fromUtf8(
+      line.left( position ).stripWhiteSpace() );
+    if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
     }
-    tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    tmp.setRawData( &line.data()[ position + 3 ], linelen - position - 3 );
     value = tmp.copy();
-    tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    tmp.resetRawData( &line.data()[ position + 3 ], linelen - position - 3 );
     return true;
   }
 
-  fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
-  if ( line.length() <= ( position + 2 ) ) {
+  fieldname = QString::fromUtf8(line.left( position ).stripWhiteSpace());
+  if ( linelen <= ( position + 2 ) ) {
     value.resize( 0 );
     return false;
   }
-  tmp.setRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
+  tmp.setRawData( &line.data()[ position + 2 ], linelen - position - 2 );
   value = tmp.copy();
-  tmp.resetRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
+  tmp.resetRawData( &line.data()[ position + 2 ], linelen - position - 2 );
   return false;
-
 }
 
 LDIF::ParseVal LDIF::processLine() 
@@ -170,14 +176,14 @@ LDIF::ParseVal LDIF::processLine()
   
   switch ( mEntryType ) {
     case Entry_None:
-      if ( mAttr == "version" ) {
+      if ( mAttr.lower() == "version" ) {
         if ( !mDn.isEmpty() ) retval = Err;
-      } else if ( mAttr == "dn" ) {
+      } else if ( mAttr.lower() == "dn" ) {
         kdDebug(7125) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
         mDn = QString::fromUtf8( mVal, mVal.size() ); 
         mModType = Mod_None;
         retval = NewEntry;
-      } else if ( mAttr == "changetype" ) {
+      } else if ( mAttr.lower() == "changetype" ) {
         if ( mDn.isEmpty() )
           retval = Err;
         else {
@@ -194,7 +200,7 @@ LDIF::ParseVal LDIF::processLine()
           else if ( tmpval == "modify" ) mEntryType = Entry_Mod;
           else retval = Err;
         }
-      } else if ( mAttr == "control" ) {
+      } else if ( mAttr.lower() == "control" ) {
       //TODO
       } else if ( !mAttr.isEmpty() && mVal.size() > 0 ) {
         mEntryType = Entry_Add;
@@ -218,14 +224,14 @@ LDIF::ParseVal LDIF::processLine()
         kdDebug(7125) << "kio_ldap: new modtype " << mAttr << endl;
         if ( mAttr.isEmpty() && mVal.size() == 0 ) {
           retval = EndEntry;
-        } else if ( mAttr == "add" ) {
+        } else if ( mAttr.lower() == "add" ) {
           mModType = Mod_Add; 
-        } else if ( mAttr == "replace" ) {
+        } else if ( mAttr.lower() == "replace" ) {
           mModType = Mod_Replace;
           mAttr = QString::fromUtf8( mVal, mVal.size() );
           mVal.resize( 0 );
           retval = Item;
-        } else if ( mAttr == "delete" ) {
+        } else if ( mAttr.lower() == "delete" ) {
           mModType = Mod_Del;
           mAttr = QString::fromUtf8( mVal, mVal.size() );
           mVal.resize( 0 );
@@ -248,11 +254,11 @@ LDIF::ParseVal LDIF::processLine()
     case Entry_Modrdn:
       if ( mAttr.isEmpty() && mVal.size() == 0 ) 
         retval = EndEntry;
-      else if ( mAttr == "newrdn" ) 
+      else if ( mAttr.lower() == "newrdn" ) 
         mNewRdn = QString::fromUtf8( mVal, mVal.size() ); 
-      else if ( mAttr == "newsuperior" ) 
+      else if ( mAttr.lower() == "newsuperior" ) 
         mNewSuperior = QString::fromUtf8( mVal, mVal.size() ); 
-      else if ( mAttr == "deleteoldrdn" ) {
+      else if ( mAttr.lower() == "deleteoldrdn" ) {
         if ( mVal.size() > 0 && mVal[0] == '0' ) 
           mDelOldRdn = false; 
         else if ( mVal.size() > 0 && mVal[0] == '1' ) 

@@ -167,7 +167,7 @@ void LDAPUrl::parseQuery()
         if ( (*it) == "one") m_scope = One;
         break;
       case 2:
-        m_filter = *it;
+        m_filter = decode_string( *it );
         break;
       case 3:    
         extensions = QStringList::split(",", (*it), false);

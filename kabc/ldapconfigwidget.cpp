@@ -30,9 +30,13 @@
 
 #include <kmessagebox.h>
 #include <kaccelmanager.h>
-#include <kdebug.h>
 #include <kdialogbase.h>
 #include <klocale.h>
+#include <klineedit.h>
+#include <kcombobox.h>
+#include <kprogress.h>
+
+#include <kdebug.h>
 
 #include "ldapconfigwidget.h"
 #include "ldapconfigwidget.moc"
@@ -43,11 +47,11 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
   const char* name, WFlags fl ) : QWidget( parent, name, fl )
 {
   QLabel *label;
-  QGridLayout *mainLayout = new QGridLayout( this, 11, 4, 0,
+  QGridLayout *mainLayout = new QGridLayout( this, 12, 4, 0,
       KDialog::spacingHint() );
 
   mUser = mPassword = mHost =  mDn = mBindDN = mRealm = mFilter = 0;
-  mPort = mVer = 0;
+  mPort = mVer = mTimeLimit = mSizeLimit = 0;
   mAnonymous = mSimple = mSASL = mSecNO = mSecTLS = mSecSSL = 0;
   mEditButton =  mQueryMech = 0;
   mMech = 0;      
@@ -114,17 +118,38 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     mainLayout->addWidget( mVer, 5, 3 );
   }
   
+  if ( flags & W_SIZELIMIT ) {
+    label = new QLabel( i18n( "Size limit:" ), this );
+    mSizeLimit = new QSpinBox( 0, 9999999, 1, this, "kcfg_ldapsizelimit" );
+    mSizeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
+    mSizeLimit->setValue( 0 );
+    mSizeLimit->setSpecialValueText( i18n("Default") );
+    mainLayout->addWidget( label, 6, 0 );
+    mainLayout->addWidget( mSizeLimit, 6, 1 );
+  }
+  
+  if ( flags & W_TIMELIMIT ) {
+    label = new QLabel( i18n( "Time limit:" ), this );
+    mTimeLimit = new QSpinBox( 0, 9999999, 1, this, "kcfg_ldaptimelimit" );
+    mTimeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
+    mTimeLimit->setValue( 0 );
+    mTimeLimit->setSuffix( i18n(" sec") );
+    mTimeLimit->setSpecialValueText( i18n("Default") );
+    mainLayout->addWidget( label, 6, 2 );
+    mainLayout->addWidget( mTimeLimit, 6, 3 );
+  }
+  
   if ( flags & W_DN ) {
     label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
     mDn = new KLineEdit( this, "kcfg_ldapdn" );
     
-    mainLayout->addWidget( label, 6, 0 );
-    mainLayout->addMultiCellWidget( mDn, 6, 6, 1, 1 );
+    mainLayout->addWidget( label, 7, 0 );
+    mainLayout->addMultiCellWidget( mDn, 7, 7, 1, 1 );
     //without host query doesn't make sense
     if ( mHost ) {
       QPushButton *dnquery = new QPushButton( i18n( "Query server" ), this );
       connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
-      mainLayout->addMultiCellWidget( dnquery, 6, 6, 2, 3 );
+      mainLayout->addMultiCellWidget( dnquery, 7, 7, 2, 3 );
     }  
   }
 
@@ -132,8 +157,8 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     label = new QLabel( i18n( "Filter:" ), this );
     mFilter = new KLineEdit( this, "kcfg_ldapfilter" );
 
-    mainLayout->addWidget( label, 7, 0 );
-    mainLayout->addMultiCellWidget( mFilter, 7, 7, 1, 3 );
+    mainLayout->addWidget( label, 8, 0 );
+    mainLayout->addMultiCellWidget( mFilter, 8, 8, 1, 3 );
   }
   
   if ( flags & W_SECBOX ) {
@@ -141,7 +166,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     mSecNO = new QRadioButton( i18n( "No" ), btgroup, "kcfg_ldapnosec" );
     mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup, "kcfg_ldaptls" );
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup, "kcfg_ldapssl" );
-    mainLayout->addMultiCellWidget( btgroup, 8, 8, 0, 3 );
+    mainLayout->addMultiCellWidget( btgroup, 9, 9, 0, 3 );
   
     connect( mSecNO, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
     connect( mSecTLS, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
@@ -172,7 +197,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
       connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     }
       
-    mainLayout->addMultiCellWidget( authbox, 9, 10, 0, 3 );
+    mainLayout->addMultiCellWidget( authbox, 10, 11, 0, 3 );
       
     connect( mAnonymous, SIGNAL( stateChanged(int) ), SLOT( setAnonymous(int) ) );
     connect( mSimple, SIGNAL( stateChanged(int) ), SLOT( setSimple(int) ) );
@@ -321,18 +346,6 @@ void LdapConfigWidget::setLDAPSPort()
   mPort->setValue( 636 );
 }
 
-void LdapConfigWidget::setMech( const QString &mech )
-{
-  if ( !mech.isEmpty() ) {
-    int i = 0;
-    while ( i < mMech->count() ) {
-      if ( mMech->text( i ) == mech ) break;
-      i++;
-    }
-    if ( i == mMech->count() ) mMech->insertItem( mech );
-    mMech->setCurrentItem( i );
-  }
-}
 
 LDAPUrl LdapConfigWidget::url() const
 {
@@ -348,6 +361,10 @@ LDAPUrl LdapConfigWidget::url() const
   if ( mPort ) _url.setPort( mPort->value() );
   if ( mDn ) _url.setDn( mDn->text() );
   if ( mVer ) _url.setExtension( "x-ver", QString::number( mVer->value() ) );
+  if ( mSizeLimit && mSizeLimit->value() != 0 ) 
+    _url.setExtension( "x-sizelimit", QString::number( mSizeLimit->value() ) );
+  if ( mTimeLimit && mTimeLimit->value() != 0 ) 
+    _url.setExtension( "x-timelimit", QString::number( mTimeLimit->value() ) );
   if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls","" );
   if ( mFilter && !mFilter->text().isEmpty() )
     _url.setFilter( mFilter->text() );
@@ -360,4 +377,192 @@ LDAPUrl LdapConfigWidget::url() const
       _url.setExtension( "x-realm", mRealm->text() );
   }
   return ( _url );
+}
+
+void LdapConfigWidget::setUser( const QString &user ) 
+{ 
+  mUser->setText( user ); 
+}
+
+QString LdapConfigWidget::user() const 
+{ 
+  return mUser->text(); 
+}
+
+void LdapConfigWidget::setPassword( const QString &password ) 
+{ 
+  mPassword->setText( password ); 
+}
+
+QString LdapConfigWidget::password() const 
+{ 
+  return mPassword->text(); 
+}
+    
+void LdapConfigWidget::setBindDN( const QString &binddn ) 
+{ 
+  mBindDN->setText( binddn ); 
+}
+
+QString LdapConfigWidget::bindDN() const 
+{ 
+  return mBindDN->text(); 
+}
+      
+void LdapConfigWidget::setRealm( const QString &realm ) 
+{ 
+  mRealm->setText( realm ); 
+}
+
+QString LdapConfigWidget::realm() const 
+{ 
+  return mRealm->text(); 
+}
+      
+void LdapConfigWidget::setHost( const QString &host ) 
+{
+  mHost->setText( host ); 
+}
+
+QString LdapConfigWidget::host() const 
+{ 
+  return mHost->text(); 
+}
+    
+void LdapConfigWidget::setPort( int port ) 
+{ 
+  mPort->setValue( port ); 
+}
+
+int LdapConfigWidget::port() const 
+{ 
+  return mPort->value(); 
+}
+    
+void LdapConfigWidget::setVer( int ver ) 
+{ 
+  mVer->setValue( ver ); 
+}
+
+int LdapConfigWidget::ver() const 
+{ 
+  return mVer->value(); 
+}
+
+void LdapConfigWidget::setDn( const QString &dn ) 
+{
+  mDn->setText( dn ); 
+}
+
+QString LdapConfigWidget::dn() const 
+{ 
+  return mDn->text(); 
+}
+    
+void LdapConfigWidget::setFilter( const QString &filter ) 
+{ 
+  mFilter->setText( filter ); 
+}
+
+QString LdapConfigWidget::filter() const 
+{ 
+  return mFilter->text(); 
+}
+      
+void LdapConfigWidget::setMech( const QString &mech )
+{
+  if ( !mech.isEmpty() ) {
+    int i = 0;
+    while ( i < mMech->count() ) {
+      if ( mMech->text( i ) == mech ) break;
+      i++;
+    }
+    if ( i == mMech->count() ) mMech->insertItem( mech );
+    mMech->setCurrentItem( i );
+  }
+}
+
+QString LdapConfigWidget::mech() const 
+{ 
+  return mMech->currentText(); 
+}
+      
+void LdapConfigWidget::setSecNO() 
+{ 
+  mSecNO->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isSecNO() const 
+{
+  return mSecNO->isChecked(); 
+}
+      
+void LdapConfigWidget::setSecTLS() 
+{ 
+  mSecTLS->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isSecTLS() const 
+{ 
+  return mSecTLS->isChecked(); 
+}
+      
+void LdapConfigWidget::setSecSSL() 
+{ 
+  mSecSSL->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isSecSSL() const 
+{ 
+  return mSecSSL->isChecked(); 
+}
+      
+void LdapConfigWidget::setAuthAnon() 
+{ 
+  mAnonymous->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isAuthAnon() const 
+{
+  return mAnonymous->isChecked(); 
+}
+      
+void LdapConfigWidget::setAuthSimple() 
+{
+  mSimple->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isAuthSimple() const 
+{
+  return mSimple->isChecked(); 
+}
+      
+void LdapConfigWidget::setAuthSASL() 
+{
+  mSASL->setChecked( true ); 
+}
+
+bool LdapConfigWidget::isAuthSASL() const 
+{
+  return mSASL->isChecked(); 
+}
+
+void LdapConfigWidget::setSizeLimit( int sizelimit )
+{
+  mSizeLimit->setValue( sizelimit );
+}
+      
+int LdapConfigWidget::sizeLimit() const
+{
+  return mSizeLimit->value();
+}
+      
+void LdapConfigWidget::setTimeLimit( int timelimit )
+{
+  mTimeLimit->setValue( timelimit );
+}
+
+int LdapConfigWidget::timeLimit() const
+{
+  return mTimeLimit->value();
 }
