@@ -1,11 +1,43 @@
-//----------------------------------------------------------------------------
-//
-//    This program is free software; you can redistribute it and/or modify
-//    it under the terms of the GNU Library General Public License as
-//    published by the Free Software Foundation; either version 2 of the
-//    License, or (at your option) any later version.
-//
-//----------------------------------------------------------------------------
+/* This file is part of the KDE libraries
+   Copyright (C) 2004 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+
+   Based on:
+
+   //----------------------------------------------------------------------------
+   //    Project              : KDE MDI extension
+   //
+   //    begin                : 07/1999       by Szymon Stefanek as part of kvirc
+   //                                         (an IRC application)
+   //    changes              : 09/1999       by Falk Brettschneider to create an
+   //                           - 06/2000     stand-alone Qt extension set of
+   //                                         classes and a Qt-based library
+   //                         : 02/2000       by Massimo Morin (mmorin@schedsys.com)
+   //                           2000-2003     maintained by the KDevelop project
+   //    patches              : -/2000        by Lars Beikirch (Lars.Beikirch@gmx.net)
+   //                         : 01/2003       by Jens Zurheide (jens.zurheide@gmx.de)
+   //
+   //    copyright            : (C) 1999-2003 by Falk Brettschneider
+   //                                         and
+   //                                         Szymon Stefanek (stefanek@tin.it)
+   //    email                :  falkbr@kdevelop.org (Falk Brettschneider)
+   //----------------------------------------------------------------------------
+*/
 
 #ifndef _KMDI_TABWIDGET_H_
 #define _KMDI_TABWIDGET_H_
