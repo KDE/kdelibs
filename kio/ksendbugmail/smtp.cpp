@@ -95,6 +95,25 @@ void SMTP::setTimeOut(int timeout)
 void SMTP::setSenderAddress(const QString& sender)
 {
     senderAddress = sender;
+    int index = senderAddress.find('<');
+    if (index == -1)
+        return;
+    senderAddress = senderAddress.mid(index + 1);
+    index =  senderAddress.find('>');
+    if (index != -1)
+        senderAddress = senderAddress.left(index);
+    senderAddress = senderAddress.simplifyWhiteSpace();
+    while (1) {
+        index =  senderAddress.find(' ');
+        if (index != -1)
+            senderAddress = senderAddress.mid(index + 1); // take one side
+        else
+            break;
+    }
+    index = senderAddress.find('@');
+    if (index == -1)
+        senderAddress.append("@localhost"); // won't go through without a local mail system
+
 }
 
 void SMTP::setRecipientAddress(const QString& recipient)
