@@ -561,15 +561,15 @@ BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkMana
 
   QBoxLayout *vert = new QVBoxLayout( m_main );
 
-  vert->addWidget( new QLabel( "Location", m_main ) );
-  m_url = new KLineEdit( m_main );
-  m_url->setText( title );
-  vert->addWidget( m_url );
-
   vert->addWidget( new QLabel( "Name", m_main ) );
   m_title = new KLineEdit( m_main );
   m_title->setText( url );
   vert->addWidget( m_title );
+
+  vert->addWidget( new QLabel( "Location", m_main ) );
+  m_url = new KLineEdit( m_main );
+  m_url->setText( title );
+  vert->addWidget( m_url );
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
   m_folderTree->setMinimumSize( 60, 100 );
@@ -604,7 +604,7 @@ void BookmarkEditDialog::slotInsertFolder()
     KBookmarkGroup parentGroup = group.parentGroup();
     m_mgr->emitChanged( parentGroup );
   }
-  // KBookmarkFolderTree::recreateTree(m_folderTree, m_mgr, m_main, name);
+  KBookmarkFolderTree::recreateTree( m_folderTree, m_mgr );
 }
 
 #include "kbookmarkmenu.moc"

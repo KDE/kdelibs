@@ -60,6 +60,7 @@ class KBookmarkFolderTree
 {
 public:
   static QListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0 );
+  static void recreateTree( QListView*, KBookmarkManager * );
   static QString selectedAddress( QListView* );
 };
 
