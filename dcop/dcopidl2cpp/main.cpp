@@ -35,7 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 void usage()
 {
-    fprintf( stderr, "dcopidl2cpp [ --no-skel | --no-stub ] [--c++-suffix <suffix>] file\n" );
+    fprintf( stderr, "Usage: dcopidl2cpp [ --no-skel | --no-stub ] [--c++-suffix <suffix>] file\n" );
 }
 
 int main( int argc, char** argv )
@@ -84,7 +84,7 @@ int main( int argc, char** argv )
     QFile in( argv[argpos] );
     if ( !in.open( IO_ReadOnly ) )
 	qFatal("Could not read %s", argv[argpos] );
-    
+
     QDomDocument doc;
     doc.setContent( &in );
 
@@ -93,7 +93,7 @@ int main( int argc, char** argv )
 
     QString base( argv[argpos] );
     QString idl = base;
-    
+
     int pos = base.findRev( '.' );
     if ( pos != -1 )
 	base = base.left( pos );
@@ -101,7 +101,7 @@ int main( int argc, char** argv )
     pos = idl.findRev('/');
     if ( pos != -1 )
 	idl = idl.mid( pos+1 );
-    
+
     if ( generate_skel )
 	generateSkel( idl, base + "_skel." + suffix, de );
 

@@ -35,7 +35,7 @@ void queryApplications()
     QCStringList apps = dcop->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
 	if ( (*it) != dcop->appId() && (*it).left(9) != "anonymous" )
-	    fprintf( stdout, "%s\n", (*it).data() );
+	    printf( "%s\n", (*it).data() );
 
     if ( !dcop->isAttached() )
 	qFatal( "server not accessible" );
@@ -47,9 +47,9 @@ void queryObjects( const char* app )
     QCStringList objs = dcop->remoteObjects( app, &ok );
     for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it ) {
 	if ( (*it) == "default" && ++it != objs.end() )
-	    fprintf( stdout, "%s (default)\n", (*it).data() );
+	    printf( "%s (default)\n", (*it).data() );
 	else
-	    fprintf( stdout, "%s\n", (*it).data() );
+	    printf( "%s\n", (*it).data() );
     }
     if ( !ok )
 	qFatal( "application '%s' not accessible", app );
@@ -60,7 +60,7 @@ void queryFunctions( const char* app, const char* obj )
     bool ok = false;
     QCStringList funcs = dcop->remoteFunctions( app, obj, &ok );
     for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
-	fprintf( stdout, "%s\n", (*it).data() );
+	printf( "%s\n", (*it).data() );
     }
     if ( !ok )
 	qFatal( "object '%s' in application '%s' not accessible", obj, app );
@@ -214,71 +214,71 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	if ( replyType == "int" ) {
 	    int i;
 	    reply >> i;
-	    fprintf( stdout, "%d\n", i );
+	    printf( "%d\n", i );
 	} else if ( replyType == "long" ) {
 	    long l;
 	    reply >> l;
-	    fprintf( stdout, "%ld\n", l );
+	    printf( "%ld\n", l );
 	} else if ( replyType == "long" ) {
 	    long l;
 	    reply >> l;
-	    fprintf( stdout, "%ld\n", l );
+	    printf( "%ld\n", l );
 	} else if ( replyType == "float" ) {
 	    float f;
 	    reply >> f;
-	    fprintf( stdout, "%f\n", (double) f );
+	    printf( "%f\n", (double) f );
 	} else if ( replyType == "double" ) {
 	    double d;
 	    reply >> d;
-	    fprintf( stdout, "%f\n", d );
+	    printf( "%f\n", d );
 	} else if (replyType == "bool") {
 	    bool b;
 	    reply >> b;
-	    fprintf( stdout, "%s\n", b ? "true" : "false" );
+	    printf( "%s\n", b ? "true" : "false" );
 	} else if (replyType == "QString") {
 	    QString r;
 	    reply >> r;
-	    fprintf( stdout, "%s\n", r.latin1() );
+	    printf( "%s\n", r.latin1() );
 	} else if (replyType == "QCString") {
 	    QCString r;
 	    reply >> r;
-	    fprintf( stdout, "%s\n", r.data() );
+	    printf( "%s\n", r.data() );
 	} else if (replyType == "QCStringList") {
 	    QCStringList l;
 	    reply >> l;
 	    for ( QCStringList::Iterator it = l.begin(); it != l.end(); ++it )
-		fprintf( stdout, "%s\n", (*it).data() );
+		printf( "%s\n", (*it).data() );
 	} else if (replyType == "QStringList") {
 	    QStringList l;
 	    reply >> l;
 	    for ( QStringList::Iterator it = l.begin(); it != l.end(); ++it )
-		fprintf( stdout, "%s\n", (*it).latin1() );
+		printf( "%s\n", (*it).latin1() );
 	} else if (replyType == "QVariant") {
 	    QVariant v;
 	    reply >> v;
 	    if ( v.type() == QVariant::Bool )
-		fprintf( stdout, "%s\n", v.toBool() ? "true" : "false" );
+		printf( "%s\n", v.toBool() ? "true" : "false" );
 	    else if ( v.type() == QVariant::Rect ) {
 		QRect r = v.toRect();
-		fprintf( stdout, "QRect(%d,%d,%d,%d)\n", r.x(), r.y(), r.width(), r.height() );
+		printf( "QRect(%d,%d,%d,%d)\n", r.x(), r.y(), r.width(), r.height() );
 	    } else if ( v.type() == QVariant::Point ) {
 		QPoint p = v.toPoint();
-		fprintf( stdout, "QPoint(%d,%d)\n", p.x(), p.y() );
+		printf( "QPoint(%d,%d)\n", p.x(), p.y() );
 	    } else if ( v.type() == QVariant::Size ) {
 		QSize s = v.toSize();
-		fprintf( stdout, "QSize(%d,%d)\n", s.width(), s.height() );
+		printf( "QSize(%d,%d)\n", s.width(), s.height() );
 	    } else if ( v.canCast( QVariant::Int ) )
-		fprintf( stdout, "%d\n", v.toInt() );
+		printf( "%d\n", v.toInt() );
 	    else if ( !v.toString().isNull() )
-		fprintf( stdout, "%s\n", v.toString().latin1() );
+		printf( "%s\n", v.toString().latin1() );
 	    else
-		fprintf( stdout, "<%s>\n", QVariant::typeToName( v.type() ) );
+		printf( "<%s>\n", QVariant::typeToName( v.type() ) );
 	} else if ( replyType == "DCOPRef" ) {
 	    DCOPRef r;
 	    reply >> r;
-	    fprintf( stdout, "DCOPRef(%s,%s)\n", r.app().data(), r.object().data() );
+	    printf( "DCOPRef(%s,%s)\n", r.app().data(), r.object().data() );
 	} else if ( !replyType.isEmpty() && replyType != "void" && replyType != "ASYNC" ) {
-	    fprintf( stdout, "<%s>\n",  replyType.data() );
+	    printf( "<%s>\n",  replyType.data() );
 	}
     }
 }
@@ -287,10 +287,16 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 
 int main( int argc, char** argv )
 {
+    
+    if ( argc > 1 && argv[1][0] == '-' ) {
+	fprintf( stderr, "Usage: dcop [ application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
+	exit(0);
+    }
+    
     DCOPClient client;
     client.attach();
     dcop = &client;
-
+    
     switch ( argc ) {
     case 0:
     case 1:
