@@ -244,9 +244,6 @@ void KApplicationTree::slotSelectionChanged(QListViewItem* i)
 
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
-#ifdef __GNUC__
-    #warning Hackish since scrollBarExtent is no longer available
-#endif
     setColumnWidth(0, width()-QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent));
     KListView::resizeEvent(e);
 }
