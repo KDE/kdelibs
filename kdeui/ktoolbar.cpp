@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.60  1998/05/02 18:31:01  radej
+// Improved docking
+//
 // Revision 1.59  1998/04/28 09:17:28  radej
 // Revision 1.62  1998/05/04 16:38:19  radej
 // Bugfixes for moving + opaque moving
@@ -1591,7 +1594,14 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
 }
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent * ){
-  releaseMouse();
+  debug ("KToolBar: mouseRelease event");
+  if (mgr)
+  {
+    mgr->stop();
+    debug ("KToolBar: mover stooped");
+  }
+
+  //releaseMouse();
 }
 
 // sven
