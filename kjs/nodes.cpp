@@ -1185,47 +1185,46 @@ Completion CaseBlockNode::evalBlock(const KJSO& input)
       clause = a->clause();
       a = a->next();
       v = clause->evaluate();
-      if (equal(input, v)) {
+      if (strictEqual(input, v)) {
 	res = clause->evalStatements();
 	if (res.complType() != Normal)
 	  return res;
-	if (a) {
+	while (a) {
 	  res = a->clause()->evalStatements();
 	  if (res.complType() != Normal)
 	    return res;
+	  a = a->next();
 	}
 	break;
       }
     }
-  } else {
-    while (b) {
-      clause = b->clause();
-      v = clause->evaluate();
-      if (equal(input, v)) {
-	res = clause->evalStatements();
-	if (res.complType() != Normal)
-	  return res;
-	break;
-      }
-      b = b->next();
+  }
+
+  while (b) {
+    clause = b->clause();
+    b = b->next();
+    v = clause->evaluate();
+    if (strictEqual(input, v)) {
+      res = clause->evalStatements();
+      if (res.complType() != Normal)
+	return res;
+      goto step18;
     }
   }
+
   // default clause
   if (def) {
     res = def->evalStatements();
     if (res.complType() != Normal)
       return res;
   }
-
+  b = list2;
+ step18:
   while (b) {
     clause = b->clause();
-    v = clause->evaluate();
-    if (equal(input, v)) {
-      res = clause->evalStatements();
-      if (res.complType() != Normal)
-	return res;
-      break;
-    }
+    res = clause->evalStatements();
+    if (res.complType() != Normal)
+      return res;
     b = b->next();
   }
 
