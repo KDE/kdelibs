@@ -91,7 +91,9 @@ void RenderReplaced::calcMinMaxWidth()
 
     bool isPercent = false;
     int width = calcReplacedWidth(&isPercent);
-    width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+
+    if (!isWidget())
+        width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
     if ( isPercent ) {
         m_minWidth = 0;
@@ -378,20 +380,10 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     //kdDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
     switch(e->type()) {
     case QEvent::FocusOut:
-       //static const char* const r[] = {"Mouse", "Tab", "Backtab", "ActiveWindow", "Popup", "Shortcut", "Other" };
-        //kdDebug() << "RenderFormElement::eventFilter FocusOut widget=" << m_widget << " reason:" << r[QFocusEvent::reason()] << endl;
         // Don't count popup as a valid reason for losing the focus
         // (example: opening the options of a select combobox shouldn't emit onblur)
         if ( QFocusEvent::reason() != QFocusEvent::Popup )
-       {
-           //kdDebug(6000) << "RenderWidget::eventFilter captures FocusOut" << endl;
-            element()->getDocument()->setFocusNode(0L);
-//             if (  element()->isEditable() ) {
-//                 KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
-//                 if ( ext )  ext->editableWidgetBlurred( m_widget );
-//             }
             handleFocusOut();
-        }
         break;
     case QEvent::FocusIn:
         //kdDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
@@ -402,43 +394,9 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //         }
         break;
     case QEvent::MouseButtonPress:
-//       handleMousePressed(static_cast<QMouseEvent*>(e));
-        break;
     case QEvent::MouseButtonRelease:
-//    {
-//         int absX, absY;
-//         absolutePosition(absX,absY);
-//         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
-//         m_button = _e->button();
-//         m_state  = _e->state();
-//         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
-
-//         element()->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
-
-//         if((m_mousePos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
-//             // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
-//             // and released in the "same screen location"
-//             // As people usually can't click on the same pixel, we're a bit tolerant here
-//             element()->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
-//         }
-
-//         if(!isRenderButton()) {
-//             // ### DOMActivate is also dispatched for thigs like selects & textareas -
-//             // not sure if this is correct
-//             element()->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
-//             element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-//             m_isDoubleClick = false;
-//         }
-//         else
-//             // save position for slotClicked - see below -
-//             m_mousePos = e2.pos();
-//     }
     break;
     case QEvent::MouseButtonDblClick:
-//     {
-//         m_isDoubleClick = true;
-//         handleMousePressed(static_cast<QMouseEvent*>(e));
-//     }
     break;
     case QEvent::MouseMove:
 //     {
@@ -463,11 +421,9 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
-    {
         if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e)))
             filtered = true;
         break;
-    }
     default: break;
     };
 
