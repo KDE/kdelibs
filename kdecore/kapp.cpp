@@ -20,6 +20,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.83  1998/01/17 07:35:16  kalle
+// Uh-oh...
+//
 // Revision 1.82  1998/01/16 21:29:30  kalle
 // mention the new bug site in the about dialog
 //
@@ -353,7 +356,7 @@ KConfig* KApplication::getSessionConfig() {
   aConfigName += "rc";
 
   QString aSessionConfigName;
-  invokeHTMLHelp( aAppName, "" );
+  QString num;
   int i = 0;
   do {
   if( bAboutQtMenu )
