@@ -601,8 +601,6 @@ int main(int argc, char *argv[])
      }
 
      config->setGroup("General");
-     int PollInterval = config->readNumEntry("PollInterval", 500);
-     int NFSPollInterval = config->readNumEntry("NFSPollInterval", 5000);
      int HostnamePollInterval = config->readNumEntry("HostnamePollInterval", 5000);
      bool bCheckSycoca = config->readBoolEntry("CheckSycoca", true);
      bool bCheckUpdates = config->readBoolEntry("CheckUpdates", true);
@@ -661,8 +659,8 @@ int main(int argc, char *argv[])
 
      int result = k.exec(); // keep running
        
-     delete instance; // Deletes config as well
      delete kded;
+     delete instance; // Deletes config as well
        
      return result;
 }
