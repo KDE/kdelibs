@@ -477,8 +477,8 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 		uint nVariations = (m_bNativeKeys) ? key.variationNativeCount() : key.variationCount();
 		for( uint iVari = 0; iVari < nVariations; iVari++ ) {
 			KKey spec = (m_bNativeKeys)
-				? key.variationNative( iVari )
-				: key.variation( iVari );
+				? KKey( key.variationNative( iVari ) )
+				: KKey( key.variation( iVari ) );
 
 			if( !spec.isNull() ) {
 				if( !m_mapKeyToAction.contains( spec ) ) {
@@ -536,8 +536,8 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 		uint nVariations = (m_bNativeKeys) ? key.variationNativeCount() : key.variationCount();
 		for( uint iVari = 0; iVari < nVariations; iVari++ ) {
 			KKey spec = (m_bNativeKeys)
-				? key.variationNative( iVari )
-				: key.variation( iVari );
+				? KKey( key.variationNative( iVari ) )
+				: KKey( key.variation( iVari ) );
 
 			if( m_mapKeyToAction.contains( spec ) ) {
 				if( m_mapKeyToAction[spec].pAction == &action ) {
