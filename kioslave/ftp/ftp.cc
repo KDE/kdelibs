@@ -743,10 +743,10 @@ bool Ftp::ftpChdir( const char *path)
 {
   assert( m_bLoggedOn );
 
-  QString buf = "cwd ";
+  QCString buf = "cwd ";
   buf += path;
 
-  return ftpSendCmd( buf.data(), '2' );
+  return ftpSendCmd( buf, '2' );
 }
 
 
@@ -873,7 +873,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url, bool bFullDetails )
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)
   QString tmp = "cwd " + path;
-  if ( !ftpSendCmd( tmp.data(), '2' ) )
+  if ( !ftpSendCmd( tmp.latin1(), '2' ) )
     {
       if ( !m_error && rspbuf[0] == '5' )
       {
@@ -966,7 +966,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   QString tmp = "cwd ";
   tmp += ( !path.isEmpty() ) ? path : QString("/");
 
-  if ( !ftpSendCmd( tmp.data(), '2' ) )
+  if ( !ftpSendCmd( tmp.latin1(), '2' ) )
   {
     if ( !m_error && rspbuf[0] == '5' )
     {

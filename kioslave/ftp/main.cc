@@ -356,7 +356,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     (*fit).m_strRelDest += tmp2;
   }
 
-  kDebugInfo( 7102, "Destinations ok %s", dest.data() );
+  kDebugInfo( 7102, "Destinations ok %s", debugString(dest) );
 
   /*****
    * Make directories
@@ -401,11 +401,11 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 	continue;
 
       // Tell what we are doing
-      makingDir( d.data() );
+      makingDir( d.latin1() );
 
       // kDebugInfo( 7102, "Making remote dir %s", d );
       // Create the directory
-      job.mkdir( d.data(), (*dit).m_access );
+      job.mkdir( d.latin1(), (*dit).m_access );
       while( !job.hasFinished() )
 	job.dispatch();
 
@@ -501,7 +501,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     processedDirs( ++processed_dirs );
   }
 
-  kDebugInfo( 7102, "Created directories %s", dest.data() );
+  kDebugInfo( 7102, "Created directories %s", debugString(dest) );
 
 
   /*****
@@ -790,7 +790,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     processedFiles( ++processed_files );
   }
 
-  kDebugInfo( 7102, "Copied files %s", dest.data() );
+  kDebugInfo( 7102, "Copied files %s", debugString(dest) );
 
   // slotDel() handles disconnecting by itself
   if ( _move ) {

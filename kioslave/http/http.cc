@@ -211,7 +211,7 @@ const char *create_digest_auth (const char *header, const char *user, const char
 
   t1 += "\r\n";
 
-  return strdup(t1.data());
+  return strdup(t1.latin1());
 }
 #else
 const char *create_digest_auth (const char *, const char *, const char *, const char *)
@@ -2070,7 +2070,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
     }
 
     if (m_sContentMD5.left(f) != enc_digest) {
-      kdebug( KDEBUG_INFO, 7103, "MD5 checksum mismatch : got %s , calculated %s",m_sContentMD5.left(f).data(),enc_digest);
+      kdebug( KDEBUG_INFO, 7103, "MD5 checksum mismatch : got %s , calculated %s", debugString(m_sContentMD5.left(f)),enc_digest);
       error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
     } else {
       kdebug( KDEBUG_INFO, 7103, "MD5 checksum present, and hey it matched what I calculated.");
