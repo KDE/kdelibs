@@ -131,7 +131,8 @@ UChar::UChar(const UCharReference &c)
 
 UChar UChar::toLower() const
 {
-  if (islower(uc))
+  // ### properly supprot unicode tolower
+  if (uc >= 256 || islower(uc))
     return *this;
 
   return UChar(tolower(uc));
@@ -139,7 +140,7 @@ UChar UChar::toLower() const
 
 UChar UChar::toUpper() const
 {
-  if (isupper(uc))
+  if (uc >= 256 || isupper(uc))
     return *this;
 
   return UChar(toupper(uc));

@@ -357,6 +357,10 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       start = 0;
     if (KJS::isNaN(end))
       end = 0;
+    if (start < 0)
+      start = 0;
+    if (end < 0)
+      end = 0;
     if (start > len)
       start = len;
     if (end > len)
