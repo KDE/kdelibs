@@ -27,12 +27,8 @@
 #include <qtimer.h>
 #include <qstring.h>
 #include <kurl.h>
+#include <kstartupinfo.h>
 #include <kdemacros.h>
-
-#include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> // schroder
-#endif
 
 class KProcess;
 class KService;
@@ -393,8 +389,7 @@ class KProcessRunner : public QObject
   public:
 
     static pid_t run(KProcess *, const QString & binName);
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
+#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     static pid_t run(KProcess *, const QString & binName, const KStartupInfoId& id );
 #endif
 
@@ -409,16 +404,14 @@ class KProcessRunner : public QObject
   private:
 
     KProcessRunner(KProcess *, const QString & binName);
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
+#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id );
 #endif
     KProcessRunner();
 
     KProcess * process_;
     QString binName;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
+#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KStartupInfoId id_;
 #endif
 };
