@@ -78,6 +78,27 @@ QString KIO::convertSize( unsigned long size )
     return s;
 }
 
+QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed )
+{
+  QTime remainingTime;
+
+  if ( speed != 0 ) {
+    unsigned long secs;
+    if ( totalSize == 0 ) {
+      secs = 0;
+    } else {
+      secs = ( totalSize - processedSize ) / speed;
+    }
+    int hr = secs / ( 60 * 60 );
+    int mn = ( secs - hr * 60 * 60 ) / 60;
+    int sc = ( secs - hr * 60 * 60 - mn * 60 );
+    
+    remainingTime.setHMS( hr, mn, sc );
+  }
+
+  return remainingTime;
+}
+
 QString KIO::encodeFileName( const QString & _str )
 {
   QString str( _str );

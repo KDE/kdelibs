@@ -22,6 +22,7 @@
 #include <qvaluelist.h>
 #include <qlist.h>
 #include <qdatastream.h>
+#include <qdatetime.h>
 
 /**
  * @short A namespace for KIO globals
@@ -37,6 +38,16 @@ namespace KIO
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
   QString convertSize( unsigned long size );
+
+  /**
+   * Calculate remaining time from total size, processed size and speed.
+   *
+   * @param  totalSize      total size in bytes
+   * @param  processedSize  processed size in bytes
+   * @param  speed          speed in bytes pre second
+   * @return calculated remaining time
+   */
+  QTime calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed );
 
   /**
    * Encode (from the text displayed to the real filename)
