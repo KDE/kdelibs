@@ -348,7 +348,7 @@ void PartManager::removePart( Part *part )
   int nb = d->m_parts.count();
   bool ok = d->m_parts.removeRef( part );
   Q_ASSERT( ok );
-  Q_ASSERT( d->m_parts.count() == nb-1 );
+  Q_ASSERT( (int)d->m_parts.count() == nb-1 );
   part->setManager(0);
 
   emit partRemoved( part );
