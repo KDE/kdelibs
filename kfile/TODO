@@ -1,23 +1,19 @@
 TODO-List for the KFileDialog and associated classes (in order of importance)
 
-- fix infinite loop in mergeLists
-- compare check for ".." -> always first!
-- signal KFileView::selectionCleared()
-- check ExistingFiles and OnlyLocal flags
-- use KComboBox
+- are more messageboxes necessary?
+- drag&drop support for the views (somehow into baseclass KFileView?
+- test, fix, implement KURLEdit (and give it a better name (KFileRequester?))
+- fix multiselection (parsing of the selected files in the locationCombo)
+- add private d struct everywhere
 - KFileView::setCurrentItem() / highlight() ?!?!
 - KFileView::setSelected( const QRegExp& )
-- implement KFile::PreviewInfo
-- remember directory when entering it, when coming back, set it as current
 - what about KRemoteFile?
-- add private d struct everywhere
 - separate KDirOperator, location-combo, filter-combo etc. from KFileDialog
   to another widget (everything besides OK/Cancel buttons).
 - implement in-place editing (rename) + make it configurable in all views
 - make a simple fileview based on QListBox
-- drag&drop support for the views (somehow into baseclass KFileView?)
-
-- test, fix, implement KURLEdit (and give it a better name (KFileRequester?))
+- implement KFile::PreviewInfo
+- signal KFileView::selectionCleared()
 
 If anyone wants to implement some of those, please do. In case of questions,
 don't hesitate to ask me.

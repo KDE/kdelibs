@@ -199,9 +199,9 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
     // already there.
     ASSERT( list1 != list2 );
 
-    KFileViewItem *newlist;
+    KFileViewItem *newlist = 0L;
 
-    if (compareItems(list1, list2) < 0) {
+    if ( compareItems( list1, list2 ) < 0 ) {
 	newlist = list1;
 	list1 = list1->next();
     } else {
@@ -241,17 +241,13 @@ void KFileView::setSorting(QDir::SortSpec new_sort)
 	return;
 
     mySorting = new_sort;
-
-    if ( count() > 1 )
-	insertSorted(myFirstItem, count());
+    resort();
 }
 
 void KFileView::sortReversed()
 {
     reversed = !reversed;
-
-    if ( count() > 1 )
-	insertSorted(myFirstItem, count());
+    resort();
 }
 
 void KFileView::clear()
@@ -323,44 +319,57 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 
 int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) const
 {
+    static QString dirup = QString::fromLatin1("..");
     bool bigger = true;
     bool keepFirst = false;
+    bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst);
 
     if (fi1 == fi2)
 	return 0;
 
-    bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst);
-    if ( fi1->isDir() != fi2->isDir() && dirsFirst ) {
-	bigger = fi2->isDir();
-	keepFirst = true;
+    // .. is always bigger, independent from the sort criteria
+    if ( fi1->name() == dirup ) {
+	bigger = false;
+	keepFirst = dirsFirst;
     }
+    else if ( fi2->name() == dirup ) {
+	bigger = true;
+	keepFirst = dirsFirst;
+    }
+	
     else {
+	if ( fi1->isDir() != fi2->isDir() && dirsFirst ) {
+	    bigger = fi2->isDir();
+	    keepFirst = true;
+	}
+	else {
 
-      QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
+	    QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
 
-      if (fi1->isDir() || fi2->isDir())
-	  sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
+	    if (fi1->isDir() || fi2->isDir())
+		sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
-      switch (sort) {
-      case QDir::Unsorted:
-	bigger = true;  // nothing
-	break;
-      case QDir::Size:
-	bigger = (fi1->size() > fi2->size());
-	break;
-      case QDir::Time:
-	bigger = (fi1->mTime() > fi2->mTime());
-	break;
-      case QDir::Name:
-      default:
-	if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
-	  bigger = (fi1->name( true ) > fi2->name( true ));
-	else
-	  bigger = (fi1->name() > fi2->name());
-	break;
-      }
+	    switch (sort) {
+	    case QDir::Unsorted:
+		bigger = true;  // nothing
+		break;
+	    case QDir::Size:
+		bigger = (fi1->size() > fi2->size());
+		break;
+	    case QDir::Time:
+		bigger = (fi1->mTime() > fi2->mTime());
+		break;
+	    case QDir::Name:
+	    default:
+		if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
+		    bigger = (fi1->name( true ) > fi2->name( true ));
+		else
+		    bigger = (fi1->name() > fi2->name());
+		break;
+	    }
+	}
     }
-
+    
     if (reversed && !keepFirst ) // don't reverse dirs to the end!
       bigger = !bigger;
 

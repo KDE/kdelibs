@@ -194,6 +194,12 @@ void KCombiView::activatedMenu(const KFileViewItem *item)
     sig->activateMenu(item);
 }
 
+void KCombiView::ensureItemVisible(const KFileViewItem *item)
+{
+    left->ensureItemVisible( item );
+    right->ensureItemVisible( item );
+}
+
 // *****************************************************************************
 
 #include "kcombiview.moc"

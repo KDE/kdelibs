@@ -15,7 +15,9 @@ const int kfile_area = 250;
 #define DefaultDirectoryFollowing true
 #define ConfigGroup QString::fromLatin1("KFileDialog Settings")
 #define RecentURLs QString::fromLatin1("Recent URLs")
+#define RecentFiles QString::fromLatin1("Recent Files")
 #define RecentURLsNumber QString::fromLatin1("Maximum of recent URLs")
+#define RecentFilesNumber QString::fromLatin1("Maximum of recent files")
 #define DialogWidth QString::fromLatin1("Width (%1)")
 #define DialogHeight QString::fromLatin1("Height (%1)")
 #define ConfigShowStatusLine QString::fromLatin1("ShowStatusLine")

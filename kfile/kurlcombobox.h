@@ -20,12 +20,13 @@
 #ifndef KDIRCOMBOBOX_H
 #define KDIRCOMBOBOX_H
 
-#include <qcombobox.h>
+#include <qevent.h>
 #include <qlist.h>
 #include <qmap.h>
 #include <qpixmap.h>
 #include <qstringlist.h>
 
+#include <kcombobox.h>
 #include <kurl.h>
 
 /**
@@ -38,13 +39,29 @@
  * @short A ComboBox showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDirComboBox : public QComboBox
+class KURLComboBox : public KComboBox
 {
     Q_OBJECT
 
 public:
-    KDirComboBox( QWidget *parent=0, const char *name=0 );
-    ~KDirComboBox();
+    enum Mode { Files = -1, Directories = 1, Both = 0 };
+
+    /**
+     * Constructs a KURLComboBox.
+     * @param @p mode is either Files, Directories or Both and controls the
+     * following behavior:
+     * @li Files  all inserted URLs will be treated as files, therefore the
+     *            url shown in the combo will never show a trailing /
+     *            the icon will be the one associated with the file's mimetype.
+     * @li Directories  all inserted URLs will be treated as directories, will
+     *                  have a trailing slash in the combobox. The current
+     *                  directory will show the "open folder" icon, other
+     *                  directories the "folder" icon.
+     * @li Both  Don't mess with anything, just show the url as given.
+     */
+    KURLComboBox( Mode mode, QWidget *parent=0, const char *name=0 );
+    KURLComboBox( Mode mode, bool rw, QWidget *parent=0, const char *name=0 );
+    ~KURLComboBox();
 
     /**
      * Sets the current url. This combo handles exactly one url additionally
@@ -54,18 +71,21 @@ public:
      * If @param @p url is already in the combo, the last item will stay there
      * and the existing item becomes the current item.
      * The current item will always have the open-directory-pixmap as icon.
+     *
+     * Note that you won't receive any signals, e.g. textChanged(),
+     * returnPressed() or activated() upon calling this method.
      */
     void setURL( const KURL& url );
 
 
-    void setURLs( const QStringList& urls );
+    void setURLs( QStringList urls );
 
     /**
      * @returns a list of all urls currently handled. The list contains at most
      * @ref maxItems() items.
      * Use this to save the list of urls in a config-file and reinsert them
      * via @ref setURLs() next time.
-     * Note that the default directories (root, home, desktop) are not
+     * Note that all default urls set via @ref addDefaultURL() are not
      * returned, they will automatically be set via setURLs() or setURL().
      * You will always get fully qualified urls, i.e. with protocol like
      * file:/
@@ -85,10 +105,30 @@ public:
     int maxItems() const { return myMaximum; }
 
     /**
-     * Inserts the default directories into the combo. Will be implicitly
-     * called upon the first call to @ref setURLs() or @ref setURL().
+     * Adds a url that will always be shown in the combobox, it can't be
+     * "rotated away". Default urls won't be returned in @ref urls() and don't
+     * have to be set via @ref setURLs().
+     * If you want to specify a special pixmap, use the overloaded method with
+     * the pixmap parameter.
      */
-    virtual void setDefaults();
+    void addDefaultURL( const KURL& url, const QString& text = QString::null );
+
+    /**
+     * Adds a url that will always be shown in the combobox, it can't be
+     * "rotated away". Default urls won't be returned in @ref urls() and don't
+     * have to be set via @ref setURLs().
+     * If you don't need to specify a pixmap, use the overloaded method without
+     * the pixmap parameter.
+     */
+    void addDefaultURL( const KURL& url, const QPixmap& pix,
+			const QString& text = QString::null );
+
+    /**
+     * Clears all items and unserts the default urls into the combo. Will be
+     * called implicitly upon the first call to @ref setURLs() or @ref setURL()
+     */
+    void setDefaults();
+
 
 signals:
     /**
@@ -96,37 +136,37 @@ signals:
      * @param url is the url of the now current item. If it is a local url,
      * it won't have a protocol (file:/), otherwise it will.
      */
-    void urlActivated( const QString& url );
+    void urlActivated( const KURL& url );
+
 
 protected slots:
     void slotActivated( int );
 
+
 protected:
-    struct _KDirComboItem {
+    struct _KURLComboItem {
 	QString text;
-	QString url;
+	KURL url;
+	QPixmap pixmap;
     };
-    typedef _KDirComboItem KDirComboItem;
-    QList<KDirComboItem> itemList;
-    QMap<int,const KDirComboItem*> itemMapper;
+    typedef _KURLComboItem KURLComboItem;
+    QList<KURLComboItem> itemList;
+    QList<KURLComboItem> defaultList;
+    QMap<int,const KURLComboItem*> itemMapper;
 
-    void insertItem( const KDirComboItem * );
-
-    KDirComboItem *rootItem;
-    KDirComboItem *homeItem;
-    KDirComboItem *desktopItem;
+    void init( Mode mode );
+    void insertURLItem( const KURLComboItem * );
+    QPixmap getPixmap( const KURL& url ) const;
 
     QPixmap opendirPix;
-    QPixmap dirPix;
-    QPixmap rootPix;
-    QPixmap homePix;
-    QPixmap desktopPix;
+    int firstItemIndex;
 
-    static const int FIRSTITEM = 3;
 
 private:
     bool urlAdded;
     int myMaximum;
+    Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
+                 // to specify if we want a trailing slash or not
 
 };
 

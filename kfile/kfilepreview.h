@@ -67,6 +67,8 @@ public:
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
+    void ensureItemVisible(const KFileViewItem *);
+    
 signals:
     void showPreview(const KURL &);
 

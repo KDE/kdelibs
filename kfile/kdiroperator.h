@@ -61,6 +61,12 @@ class KDirOperator : public QWidget {
 
     void setURL(const KURL& url, bool clearforward);
 
+    /**
+     * Clears the current selection and attempts to set @param @p filename
+     * the current file. filename is just the name, no path or url.
+     */
+    void setCurrentItem( const QString& filename );
+
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
     const KFileView * view() const { return fileView; }
@@ -88,6 +94,15 @@ class KDirOperator : public QWidget {
 
     int numDirs() const;
     int numFiles() const;
+
+    /**
+     * @returns a KCompletion object, containing all filenames of the current
+     * directory/URL.
+     * You can use it to insert it into a @ref KLineEdit or @ref KComboBox
+     */
+    KCompletion * completionObject() const {
+	return const_cast<KCompletion *>( &myCompletion );
+    }
 
     /**
      * an accessor to a collection of all available Actions. The actions
@@ -271,6 +286,7 @@ signals:
     void urlEntered(const KURL& );
     void updateInformation(int files, int dirs);
     void completion(const QString&);
+    void finishedLoading();
 
     void fileHighlighted(const KFileViewItem*);
     void dirActivated(const KFileViewItem*);

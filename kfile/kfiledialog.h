@@ -32,6 +32,8 @@
 
 #include <kfile.h>
 #include <kfilereader.h>
+#include <kurl.h>
+#include <kurlcombobox.h>
 
 class QCheckBox;
 class QHBoxLayout;
@@ -321,6 +323,17 @@ public:
      * the location is used for.
      */
     void setLocationLabel(const QString& text);
+    
+    /**
+     * @returns a pointer to the toolbar. You can use this to insert custom
+     * items into it, e.g.:
+     * <pre>yourAction = new KAction( i18n("Your Action"), 0, 
+     *                                this, SLOT( yourSlot() ),
+     *                                this, "action name" );
+     *      yourAction->plug( kfileDialog->toolBar() );
+     */
+    KToolBar *toolBar() const { return toolbar; }
+    
 
 signals:
     /**
@@ -341,7 +354,6 @@ signals:
 protected:
     KToolBar *toolbar;
 
-    QStringList *visitedDirs;  // to fill the combo box
     static KURL *lastDirectory;
 
     QPopupMenu *bookmarksMenu;
@@ -388,20 +400,35 @@ protected:
      */
     virtual void saveConfig( KConfig *, const QString& group = QString::null );
 
+    /**
+     * Reads the recent used files and inserts them into the location combobox
+     */
+    virtual void readRecentFiles( KConfig * );
+
+    /**
+     * Saves the entries from the location combobox.
+     */
+    virtual void saveRecentFiles( KConfig * );
+
+
 protected slots:
-    void urlEntered(const KURL&);
-    void comboActivated(const QString& url);
+    void urlEntered( const KURL& );
+    void pathComboActivated( const KURL& url );
+    void pathComboReturnPressed( const QString& url );
+    void locationActivated( const QString& url );
     void toolbarCallback(int);
     void toolbarPressedCallback(int);
     void filterChanged();
-    void locationChanged(const QString&);
+    void locationChanged(const QString&, KComboBox *);
+    void locationComboChanged( const QString& );
+    void pathComboChanged( const QString& );
     void fileHighlighted(const KFileViewItem *i);
     void fileSelected(const KFileViewItem *i);
     void slotStatResult(KIO::Job* job);
+    void slotLoadingFinished();
 
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();
-    virtual void returnPressed();
     virtual void accept();
 
     void completion();
@@ -426,37 +453,20 @@ protected:
     KDirOperator *ops;
     bool autoDirectoryFollowing;
 
+    KURL::List& parseSelectedURLs() const;
+
 };
 
 
-class KFileComboBox : public QComboBox
+class KFileComboBox : public KURLComboBox
 {
   Q_OBJECT
 
 public:
   KFileComboBox( bool rw, QWidget *parent=0, const char *name=0 )
-    : QComboBox ( rw, parent, name ) {
-    QObjectList *list = queryList( "QLineEdit" );
-    QObjectListIt it( *list );
-    edit = (QLineEdit*) it.current();
-    edit->installEventFilter( this );
-    delete list;
-  }
+      : KURLComboBox ( KURLComboBox::Files, rw, parent, name ) {}
 
-  int cursorPosition() const { return edit->cursorPosition(); }
   void setCompletion( const QString& );
-
-signals:
-  void returnPressed();
-  void completion();
-  void next();
-  void previous();
-
-
-private:
-  virtual bool eventFilter( QObject *o, QEvent *e );
-
-  QLineEdit *edit;
 
 };
 

@@ -245,4 +245,16 @@ void KFileIconView::setIconSize( KIconLoader::Size size )
     updateView( true );
 }
 
+
+void KFileIconView::ensureItemVisible( const KFileViewItem *i )
+{
+    if ( !i )
+	return;
+    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    if ( item )
+	KIconView::ensureItemVisible( item );
+}
+
+
+
 #include "kfileiconview.moc"

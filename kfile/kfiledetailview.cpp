@@ -225,7 +225,7 @@ void KFileDetailView::updateView( const KFileViewItem *i )
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
     if ( !item )
 	return;
-    
+
     item->setPixmap( 0, i->pixmap() );
     item->setText( 2, i->access() );
 
@@ -303,6 +303,16 @@ void KFileDetailView::setSortIndicator()
 	col = COL_NAME;
 
     header()->setSortIndicator( col, !isReversed() );
+}
+
+
+void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
+{
+    if ( !i )
+	return false;
+    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    if ( item )
+	KListView::ensureItemVisible( item );
 }
 
 #include "kfiledetailview.moc"

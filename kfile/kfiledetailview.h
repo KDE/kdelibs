@@ -82,6 +82,8 @@ public:
     void setSorting( QDir::SortSpec );
     void sortReversed();
 
+    void ensureItemVisible( const KFileViewItem * );
+
 protected:
     void setSortIndicator();
 

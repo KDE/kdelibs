@@ -75,6 +75,7 @@ public:
     void setIconSize( KIconLoader::Size size );
     KIconLoader::Size iconSize() const { return myIconSize; }
 
+    void ensureItemVisible( const KFileViewItem * );
 
 private slots:
     void selected( QIconViewItem *item );

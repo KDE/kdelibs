@@ -744,6 +744,8 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
 	QApplication::flushX();
     }
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
+    if ( ready )
+	emit finishedLoading();
 }
 
 void KDirOperator::selectDir(const KFileViewItem *item)
@@ -784,6 +786,19 @@ void KDirOperator::filterChanged()
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
+void KDirOperator::setCurrentItem( const QString& filename )
+{
+    const KFileViewItem *item = 0L;
+
+    if ( !filename.isNull() )
+        item = dir->currentContents().findByName( filename );
+
+    fileView->clearSelection();
+
+    if ( item )
+        fileView->setCurrentItem( QString::null, item );
+}
+
 QString KDirOperator::makeCompletion(const QString& string)
 {
     if ( string.isEmpty() ) {
@@ -807,16 +822,7 @@ QString KDirOperator::makeCompletion(const QString& string)
 
 void KDirOperator::slotCompletionMatch(const QString& match)
 {
-    const KFileViewItem *item = 0L;
-
-    if ( !match.isNull() )
-        item = dir->currentContents().findByName( match );
-
-    fileView->clearSelection();
-
-    if ( item )
-        fileView->setCurrentItem( QString::null, item );
-
+    setCurrentItem( match );
     emit completion( match );
 }
 

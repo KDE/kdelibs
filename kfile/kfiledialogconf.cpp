@@ -76,7 +76,8 @@ void KFileDialogConfigureDlg::setupConfigPage( const QString &title )
 
 void KFileDialogConfigureDlg::setupAboutPage( const QString &title )
 {
-  QFrame *page = addPage( title );
+  QFrame *page = 0L; // prevent stupid warning from egcs
+  page = addPage( title );
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   const QString text = i18n(""
@@ -97,7 +98,7 @@ void KFileDialogConfigureDlg::setupAboutPage( const QString &title )
     "mjones@kde.org</A> and<br>"
     "Espen Sand <A HREF=\"mailto:espen@kde.org\">"
     "espen@kde.org</A> and<br>"
-    "Olaf Kirch <A HRED=\"mailto:okir@caldera.de\">"
+    "Olaf Kirch <A HREF=\"mailto:okir@caldera.de\">"
     "okir@caldera.de</A>");
 
   KTextBrowser *browser = new KTextBrowser( page, "browser" );
@@ -166,7 +167,7 @@ void KFileDialogConfigure::saveConfiguration()
   c= KGlobal::config();
   KConfigGroupSaver sa(c, ConfigGroup);
 
-  c->writeEntry(ConfigShowStatusLine, myShowStatusLine->isChecked(), 
+  c->writeEntry(ConfigShowStatusLine, myShowStatusLine->isChecked(),
 		true, true);
   c->sync();
 }

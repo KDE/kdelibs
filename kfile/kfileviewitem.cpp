@@ -467,8 +467,21 @@ QString KFileViewItem::defaultIcon() const
     static QString lockedfolder = QString::fromLatin1("lockedfolder");
     static QString unknown = QString::fromLatin1("mimetypes/unknown");
     static QString locked  = QString::fromLatin1("locked");
+    static QString symlink = QString::fromLatin1("link");
 
-    if ( myIsDir ) {
+    if ( myIsSymLink ) {
+	if ( myIsReadable )
+	    if ( myIsDir )
+		return folder;
+	    else
+		return symlink;
+	else
+	    if ( myIsDir )
+		return lockedfolder;
+	    else
+		return locked;
+    }
+    else if ( myIsDir ) {
 	if ( myIsReadable )
 	    return folder;
 	else
@@ -599,5 +612,6 @@ const KFileViewItem * KFileViewItemList::findByName( const QString& url ) const
 	    that->myDict.insert( it.current()->name(), it.current() );
 	that->dictdirty = false;
     }
+
     return myDict.find( url );
 }

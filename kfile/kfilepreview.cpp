@@ -124,8 +124,13 @@ void KFilePreview::selectDir(const KFileViewItem* item) {
 
 void KFilePreview::highlightFile(const KFileViewItem* item) {
     emit showPreview(item->url());
+
     kDebugInfo(kfile_area, "emitted KFilePreview::showPreview() :)");
     sig->highlightFile(item);
+    // the preview widget appears and takes some space of the left view,
+    // so we may have to scroll to make the current item visible
+    qApp->processEvents(); // the resizing and showing might be delayed
+    left->ensureItemVisible(item);
 }
 
 void KFilePreview::selectFile(const KFileViewItem* item) {
@@ -134,4 +139,8 @@ void KFilePreview::selectFile(const KFileViewItem* item) {
 
 void KFilePreview::activatedMenu(const KFileViewItem *item) {
     sig->activateMenu(item);
+}
+
+void KFilePreview::ensureItemVisible(const KFileViewItem *item) {
+    left->ensureItemVisible(item);
 }

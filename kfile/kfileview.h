@@ -218,6 +218,12 @@ public:
     virtual void clearView() = 0;
 
     /**
+     * pure virtual function, that should be implemented to make item i
+     * visible, i.e. by scrolling the view appropriately.
+     */ 
+    virtual void ensureItemVisible( const KFileViewItem *i ) = 0;
+    
+    /**
      * Clear any selection, unhighlight everything. Must be implemented by the
      * view.
      */
@@ -321,6 +327,18 @@ protected:
      * insertSorted().
      */
     void setFirstItem( KFileViewItem * item ) { myFirstItem = item; }
+
+    /**
+     * Call this if you changed the sort order and want to perform the actual
+     * sorting and show the new items.
+     */
+    void resort() {
+	if ( count() > 1 ) {
+	    KFileViewItem *item = myFirstItem;
+	    myFirstItem = 0L;
+	    insertSorted( item, count() );
+	}
+    }
 
 private:
 
