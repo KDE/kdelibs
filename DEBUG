@@ -165,3 +165,20 @@ A backtrace will typically look something like this:
     rtld_fini=0x4000aa20 <_dl_fini>, stack_end=0xbffff84c)
     at ../sysdeps/generic/libc-start.c:92
 (gdb)
+
+
+Getting core dumps
+==================
+
+If you want to have a core dump after your application crashes you need to 
+do two things:
+
+1) Disable the KDE crash handler. This can be done either by using the 
+--nocrashhandler command line option or by setting the KDE_DEBUG environment
+variable to some value e.g. KDEDEBUG=true.
+
+2) Enable core dump generation by changing the so called 'ulimits' with the
+following command: 
+	ulimit -c unlimited
+
+
