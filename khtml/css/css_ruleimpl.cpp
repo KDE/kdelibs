@@ -319,3 +319,19 @@ CSSUnknownRuleImpl::~CSSUnknownRuleImpl()
 {
 }
 
+// --------------------------------------------------------------------------
+
+CSSRuleListImpl::CSSRuleListImpl()
+{
+}
+
+unsigned long CSSRuleListImpl::length() const
+{
+    return m_lstCSSRules.count();
+}
+
+CSSRuleImpl *CSSRuleListImpl::item ( unsigned long index )
+{
+    return m_lstCSSRules.at( index );
+}
+

@@ -26,6 +26,7 @@
 #include <dom_string.h>
 //#include <css_stylesheetimpl.h>
 #include <css_rule.h>
+
 #include "cssparser.h"
 #include "misc/loader_client.h"
 
@@ -205,12 +206,14 @@ public:
 
 class CSSRuleListImpl : public DomShared
 {
-    // ### implement this!
 public:
-    CSSRuleListImpl() {}
+    CSSRuleListImpl();
 
-    unsigned long length() const { return 0; }
-    CSSRuleImpl *item ( unsigned long /*index*/ ) { return 0; }
+    unsigned long length() const;
+    CSSRuleImpl *item ( unsigned long index );
+    
+protected:
+    QList<CSSRuleImpl> m_lstCSSRules;
 };
 
 }; // namespace
