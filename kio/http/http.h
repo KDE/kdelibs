@@ -126,6 +126,8 @@ public:
   /**
    * Special commands supported by this slave :
    * 1 - HTTP POST
+   * 2 - Cache has been updated
+   * 3 - SSL Certificate Cache has been updated
    */
   virtual void special( const QByteArray &data);
 
