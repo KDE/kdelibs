@@ -105,12 +105,12 @@ class RenderFrame : public RenderPart
 {
     Q_OBJECT
 public:
-  RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
-  virtual ~RenderFrame();
+    RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
+    virtual ~RenderFrame();
 
-  virtual const char *renderName() const { return "RenderFrame"; }
+    virtual const char *renderName() const { return "RenderFrame"; }
 
-  DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
+    DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
 
     virtual void setWidget( QWidget *widget );
 
@@ -119,7 +119,7 @@ public slots:
     void slotWidgetDestructed();
 
 private:
-  DOM::HTMLFrameElementImpl *m_frame;
+    DOM::HTMLFrameElementImpl *m_frame;
 };
 
 // I can hardly call the class RenderObject ;-)
@@ -127,19 +127,21 @@ class RenderPartObject : public RenderPart
 {
     Q_OBJECT
 public:
-  RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
-  virtual ~RenderPartObject();
+    RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
+    virtual ~RenderPartObject();
 
-  virtual const char *renderName() const { return "RenderPartObject"; }
+    virtual const char *renderName() const { return "RenderPartObject"; }
 
-  virtual void close();
+    virtual void close();
 
-  virtual void setWidget( QWidget *widget );
-  virtual void setSize( int w, int h );
+    virtual void setWidget( QWidget *widget );
+    virtual void setSize( int w, int h );
 
-  virtual void layout( );
+    virtual void layout( );
 
-  DOM::HTMLElementImpl *m_obj;
+    DOM::HTMLElementImpl *m_obj;
+
+    virtual void partLoadingErrorNotify();
 
 public slots:
     void slotViewCleared();

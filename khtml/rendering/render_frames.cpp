@@ -629,14 +629,10 @@ void RenderPartObject::close()
         embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
         embed->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
-        bool ok = part->requestObject( this, url, serviceType, embed->param );
-        kdDebug() << "RenderPartObject::close - ok=" << ok << " url=" << url << " serviceType=" << serviceType << endl;
-        if ( !ok && !embed->pluginPage.isEmpty() ) {
-            KParts::BrowserExtension *ext = part->browserExtension();
-            if ( ext ) ext->createNewWindow( KURL(embed->pluginPage) );
-        }
+        part->requestObject( this, url, serviceType, embed->param );
      }
   } else if ( m_obj->id() == ID_EMBED ) {
+
      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
      url = o->url;
      serviceType = o->serviceType;
@@ -651,11 +647,8 @@ void RenderPartObject::close()
      o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
      o->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
-     bool ok = part->requestObject( this, url, serviceType, o->param );
-     if ( !ok && !o->pluginPage.isEmpty() ) {
-         KParts::BrowserExtension *ext = part->browserExtension();
-         if ( ext ) ext->createNewWindow( KURL(o->pluginPage) );
-     }
+     part->requestObject( this, url, serviceType, o->param );
+
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);
@@ -669,6 +662,35 @@ void RenderPartObject::close()
 
   RenderPart::close();
 }
+
+
+void RenderPartObject::partLoadingErrorNotify()
+{
+    HTMLEmbedElementImpl *embed = 0;
+
+    if( m_obj->id()==ID_OBJECT ) {
+
+        // check for embed child object
+        HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
+        NodeImpl *child = o->firstChild();
+        while ( child ) {
+            if ( child->id() == ID_EMBED )
+                embed = static_cast<HTMLEmbedElementImpl *>( child );
+
+            child = child->nextSibling();
+        }
+
+    } else if( m_obj->id()==ID_EMBED )
+        embed = static_cast<HTMLEmbedElementImpl *>(m_obj);
+
+    // Display vender download page
+    if( embed && !embed->pluginPage.isEmpty() ) {
+        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+        KParts::BrowserExtension *ext = part->browserExtension();
+        if ( ext ) ext->createNewWindow( KURL(embed->pluginPage) );
+    }
+}
+
 
 void RenderPartObject::setWidget( QWidget *w )
 {
