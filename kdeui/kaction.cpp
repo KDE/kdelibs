@@ -849,11 +849,9 @@ class KToggleAction::KToggleActionPrivate
 public:
   KToggleActionPrivate()
   {
-    m_locked  = false;
     m_checked = false;
   }
 
-  bool m_locked;
   bool m_checked;
   QString m_exclusiveGroup;
 };
@@ -967,11 +965,6 @@ void KToggleAction::setChecked( bool c )
   }
 
   d->m_checked = c;
-
-  d->m_locked = false;
-  //  emit activated();
-  d->m_locked = false;
-  //  emit toggled( isChecked() );
 }
 
 void KToggleAction::setChecked( int id, bool checked )
@@ -992,12 +985,7 @@ void KToggleAction::setChecked( int id, bool checked )
 
 void KToggleAction::slotActivated()
 {
-  if ( d->m_locked )
-    return;
-
-  d->m_locked = true;
   setChecked( !isChecked() );
-  d->m_locked = false;
   emit activated();
   emit toggled( isChecked() );
 }
