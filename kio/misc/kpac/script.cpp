@@ -21,6 +21,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 
 #include <netdb.h>
 #include <arpa/inet.h>
