@@ -128,6 +128,8 @@ public:
     int prevMouseX, prevMouseY;
 };
 
+#ifndef QT_NO_TOOLTIP
+
 class KHTMLToolTip : public QToolTip
 {
 public:
@@ -160,7 +162,7 @@ void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
         node = node->parentNode();
     }
 }
-
+#endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
@@ -179,7 +181,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     KImageIO::registerFormats();
 
     viewport()->setCursor(arrowCursor);
+#ifndef QT_NO_TOOLTIP
     ( void ) new KHTMLToolTip( this, d );
+#endif
 
     init();
 
