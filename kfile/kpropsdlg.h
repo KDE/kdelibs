@@ -38,6 +38,7 @@ class QLineEdit;
 class QCheckBox;
 class QPushButton;
 class KLineEdit;
+class KURLRequester;
 
 class KIconButton;
 class KPropsDlgPlugin;
@@ -522,7 +523,7 @@ public:
   static bool supports( KFileItemList _items );
 
 private:
-  QLineEdit *URLEdit;
+  KURLRequester *URLEdit;
   KIconButton *iconBox;
 
   QString URLStr;

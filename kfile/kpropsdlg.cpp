@@ -67,6 +67,7 @@ extern "C" {
 #include <kdesktopfile.h>
 #include <kicondialog.h>
 #include <kurl.h>
+#include <kurlrequester.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -111,7 +112,7 @@ public:
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(item->url().fileName()),
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(item->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
@@ -140,7 +141,7 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
 KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_items.first()->url().fileName()),
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
@@ -162,7 +163,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_url.fileName()),
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
   m_singleUrl( _url )
@@ -180,7 +181,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
                                       const QString& _defaultName,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_tempUrl.fileName()),
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(KIO::decodeFileName(_tempUrl.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
 
@@ -1607,7 +1608,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   l->setText( i18n("URL:") );
   layout->addWidget(l);
 
-  URLEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
+  URLEdit = new KURLRequester( d->m_frame, "URL Requester" );
   layout->addWidget(URLEdit);
 
   QString path = properties->kurl().path();
@@ -1622,7 +1623,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   URLStr = config.readEntry( QString::fromLatin1("URL") );
 
   if ( !URLStr.isNull() )
-    URLEdit->setText( URLStr );
+    URLEdit->setURL( URLStr );
 
   connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
@@ -1666,7 +1667,7 @@ void KURLPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link"));
-  config.writeEntry( QString::fromLatin1("URL"), URLEdit->text() );
+  config.writeEntry( QString::fromLatin1("URL"), URLEdit->url() );
 }
 
 /* ----------------------------------------------------
