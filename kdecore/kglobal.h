@@ -112,6 +112,22 @@ public:
 };
 
 /**
+ * A typesafe function to find the minimum of the two arguments.
+ */
+#define KMIN(a,b)	kMin(a,b)
+
+/** 
+ * A typesafe function to find the maximum of the two arguments.
+ */
+#define KMAX(a,b)	kMax(a,b)
+
+template<class T>
+inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
+
+template<class T>
+inline const T& kMax (const T& a, const T& b) { return a > b ? a : b; }
+
+/**
  * @libdoc The KDE Core Functionality Library
  *
  * All KDE programs use this library to provide basic functionality such
