@@ -43,6 +43,7 @@ namespace KABC {
 
 class Resource;
 class Field;
+class SortMode;
 
 /**
   @short address book entry
@@ -360,16 +361,16 @@ class KABC_EXPORT Addressee
     Resource *resource() const;
 
     /**
-	    Mark addressee as changed.
-	   */
+      Mark addressee as changed.
+     */
     void setChanged( bool value );
 
-  	/**
-	    Return whether the addressee is changed.
-	   */
+    /**
+      Return whether the addressee is changed.
+     */
     bool changed() const;
 
-    static void setSortKey( KABC::Field *field );
+    static void setSortMode( KABC::SortMode *mode );
 
     bool operator< ( const Addressee &addr );
 
@@ -382,7 +383,7 @@ class KABC_EXPORT Addressee
   private:
     static AddresseeData* shared_null;
     static AddresseeData* makeSharedNull();
-    static KABC::Field *mSortField;
+    static KABC::SortMode *mSortMode;
 };
 
 KABC_EXPORT QDataStream &operator<<( QDataStream &, const Addressee & );

@@ -29,6 +29,7 @@
 namespace KABC {
 
 class Field;
+class SortField;
 
 /**
  * Each trait must implement one static function for equality, one for "less
@@ -145,6 +146,12 @@ class KABC_EXPORT AddresseeList : public QValueList<Addressee>
      * @param field    pointer to the Field object to be sorted by
      */
     void sortByField( Field *field = 0 );
+
+    /**
+     * Sorts this list by a specific sorting mode.
+     * @param mode    pointer to the sorting mode object to be sorted by
+     */
+    void sortByMode( SortMode *mode = 0 );
 
     /**
      * Sorts this list by its active sorting criterion. This normally is the

@@ -22,7 +22,9 @@
 #include <kdebug.h>
 
 #include "addresseelist.h"
+
 #include "field.h"
+#include "sortmode.h"
 
 using namespace KABC;
 
@@ -228,9 +230,23 @@ void AddresseeList::sortByField( Field *field )
   if ( count() == 0 )
     return;
 
-  KABC::Addressee::setSortKey( sActiveField );
+  KABC::FieldSortMode *mode = new KABC::FieldSortMode( sActiveField );
+
+  KABC::Addressee::setSortMode( mode );
   qHeapSort( *this );
-  KABC::Addressee::setSortKey( 0 );
+  KABC::Addressee::setSortMode( 0 );
+
+  delete mode;
+}
+
+void AddresseeList::sortByMode( SortMode *mode )
+{
+  if ( count() == 0 )
+    return;
+
+  KABC::Addressee::setSortMode( mode );
+  qHeapSort( *this );
+  KABC::Addressee::setSortMode( 0 );
 }
 
 Field*

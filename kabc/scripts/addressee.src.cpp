@@ -29,6 +29,7 @@
 #include "addresseehelper.h"
 #include "field.h"
 #include "resource.h"
+#include "sortmode.h"
 
 #include "addressee.h"
 
@@ -39,7 +40,7 @@ static bool matchBinaryPattern( int value, int pattern );
 template <class L>
 static bool listEquals( const QValueList<L>&, const QValueList<L>& );
 
-KABC::Field *Addressee::mSortField = 0;
+KABC::SortMode *Addressee::mSortMode = 0;
 
 struct Addressee::AddresseeData : public KShared
 {
@@ -894,18 +895,17 @@ bool Addressee::changed() const
   return mData->changed;
 }
 
-void Addressee::setSortKey( KABC::Field *field )
+void Addressee::setSortMode( KABC::SortMode *mode )
 {
-  mSortField = field;
+  mSortMode = mode;
 }
 
 bool Addressee::operator< ( const Addressee &addr )
 {
-  if ( !mSortField )
+  if ( !mSortMode )
     return false;
   else
-    return ( QString::localeAwareCompare( mSortField->value( *this ).lower(),
-                                          mSortField->value( addr ).lower() ) < 0 );
+    return mSortMode->lesser( *this, addr );
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
