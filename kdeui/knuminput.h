@@ -158,7 +158,17 @@ protected:
 class KIntNumInput : public KNumInput
 {
     Q_OBJECT
+    Q_PROPERTY( int value READ value WRITE setValue )
+    Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
+    Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
+    Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
+        
 public:
+    /**
+     * Constructs an input control for integer values
+     * with base 10 and initial value 0.
+     */
+    KIntNumInput(QWidget *parent=0, const char *name=0);
     /**
      * Constructor
      * It constructs a QSpinBox that allows the input of integer numbers
@@ -200,19 +210,11 @@ public:
     virtual ~KIntNumInput();
 
     /**
-     * This method returns the minimum size necessary to display the
-     * control. The minimum size is enough to show all the labels
-     * in the current font (font change may invalidate the return value).
-     *
-     * @return the minimum size necessary to show the control
-     */
-    virtual QSize minimumSizeHint() const;
-
-    /**
      * @return the current value
      */
     int value() const;
-
+    QString suffix() const;
+    QString prefix() const;
     /**
      * @param lower  lower bound on range
      * @param upper  upper bound on range
@@ -227,6 +229,7 @@ public:
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
+    QString specialValueText() const;
 
     /**
      * reimplemented for internal reasons.
@@ -265,6 +268,15 @@ protected slots:
     void spinValueChanged(int);
 
 protected:
+    /**
+     * This method returns the minimum size necessary to display the
+     * control. The minimum size is enough to show all the labels
+     * in the current font (font change may invalidate the return value).
+     *
+     * @return the minimum size necessary to show the control
+     */
+    virtual QSize minimumSizeHint() const;
+
     void init(int value, int _base);
     virtual void doLayout();
 
@@ -302,7 +314,17 @@ class KDoubleLine;
 class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
+    Q_PROPERTY( int value READ value WRITE setValue )
+    Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
+    Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
+    Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
+
 public:
+    /**
+     * Constructs an input control for double values
+     * with initial value 0.0.
+     */
+    KDoubleNumInput(QWidget *parent=0, const char *name=0);
     /**
      * Constructor
      *
@@ -330,18 +352,12 @@ public:
     KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0);
 
     /**
-     * This method returns the minimum size necessary to display the
-     * control. The minimum size is enough to show all the labels
-     * in the current font (font change may invalidate the return value).
-     *
-     * @return the minimum size necessary to show the control
-     */
-    virtual QSize minimumSizeHint() const;
-
-    /**
      * @return the current value
      */
     double value() const;
+    QString suffix() const;
+    QString prefix() const;
+    const char *format() const;
 
      /**
      * @param lower  lower bound on range
@@ -396,6 +412,15 @@ protected slots:
     void sliderMoved(int);
 
 protected:
+    /**
+     * This method returns the minimum size necessary to display the
+     * control. The minimum size is enough to show all the labels
+     * in the current font (font change may invalidate the return value).
+     *
+     * @return the minimum size necessary to show the control
+     */
+    virtual QSize minimumSizeHint() const;
+
     void init(double value);
     virtual void doLayout();
     virtual bool eventFilter(QObject*, QEvent*);
@@ -433,9 +458,19 @@ protected:
 class KIntSpinBox : public QSpinBox
 {
     Q_OBJECT
+    Q_PROPERTY( int base READ base WRITE setBase )
 
 public:
 
+    /**
+     *  Constructor.
+     *
+     *  Constructs a widget with an integer inputline with a little scrollbar
+     *  and a slider, with minimal value 0, maximal value 99, step 1, base 10
+     *  and initial value 0.
+     */
+    KIntSpinBox( QWidget *parent=0, const char *name=0);
+     
     /**
      *  Constructor.
      *
@@ -459,6 +494,14 @@ public:
     virtual ~KIntSpinBox() {};
 
     /**
+     * Sets the base in which the numbers in the spin box are represented.
+     */
+    void setBase(int base);
+    /**
+     * @return the base in which numbers in the spin box are represented.
+     */
+    int base() const;
+    /**
      * sets focus and optionally marks all text
      *
      */
@@ -481,8 +524,8 @@ protected:
      */
     virtual void focusInEvent(QFocusEvent*);
 
+private:
     int val_base;
-
     class KIntSpinBoxPrivate;
     KIntSpinBoxPrivate *d;
 };

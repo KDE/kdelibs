@@ -202,6 +202,15 @@ void KNumInput::setSteps(int minor, int major)
 
 // -----------------------------------------------------------------------------
 
+KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
+    : QSpinBox(0, 99, 1, parent, name)
+{
+    editor()->setAlignment(AlignRight);
+    val_base = 10;
+    setValue(0);
+}
+
+
 KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
                          QWidget* parent, const char* name)
     : QSpinBox(lower, upper, step, parent, name)
@@ -209,6 +218,18 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
     editor()->setAlignment(AlignRight);
     val_base = base;
     setValue(value);
+}
+
+
+void KIntSpinBox::setBase(int base)
+{
+    val_base = base;
+}
+
+
+int KIntSpinBox::base() const
+{
+    return val_base;
 }
 
 
@@ -229,6 +250,13 @@ int KIntSpinBox::mapTextToValue(bool* ok)
 
 
 // -----------------------------------------------------------------------------
+
+KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
+    : KNumInput(parent, name)
+{
+    init(0, 10);
+}
+
 
 KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
     : KNumInput(parent, name)
@@ -333,6 +361,12 @@ void KIntNumInput::setSuffix(QString suffix)
 }
 
 
+QString KIntNumInput::suffix() const
+{
+    return m_spin->suffix();
+}
+
+
 // -----------------------------------------------------------------------------
 
 void KIntNumInput::setPrefix(QString prefix)
@@ -340,6 +374,12 @@ void KIntNumInput::setPrefix(QString prefix)
     m_spin->setPrefix(prefix);
 
     layout(true);
+}
+
+
+QString KIntNumInput::prefix() const
+{
+    return m_spin->prefix();
 }
 
 
@@ -452,6 +492,12 @@ void KIntNumInput::setSpecialValueText(const QString& text)
 };
 
 
+QString KIntNumInput::specialValueText() const
+{
+    return m_spin->specialValueText();
+}
+
+
 // -----------------------------------------------------------------------------
 
 void KIntNumInput::setLabel(QString label, int a)
@@ -532,6 +578,13 @@ void KDoubleLine::interpretText()
 
 
 // -----------------------------------------------------------------------------
+
+KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
+    : KNumInput(parent, name)
+{
+    init(0.0);
+}
+
 
 KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
     : KNumInput(parent, name)
@@ -750,6 +803,24 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 double  KDoubleNumInput::value() const
 {
     return m_value;
+}
+
+
+QString KDoubleNumInput::suffix() const
+{
+    return m_suffix;
+}
+
+
+QString KDoubleNumInput::prefix() const
+{
+    return m_prefix;
+}
+
+
+const char *KDoubleNumInput::format() const
+{
+    return m_format;
 }
 
 // -----------------------------------------------------------------------------
