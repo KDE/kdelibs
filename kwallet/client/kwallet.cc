@@ -27,6 +27,9 @@
 
 #include <assert.h>
 
+#if !KDE_IS_VERSION(3,1,90)
+inline const char* dcopTypeName(const QByteArray&) { return "QByteArray"; }
+#endif
 
 using namespace KWallet;
 
