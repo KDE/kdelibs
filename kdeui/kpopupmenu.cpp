@@ -47,12 +47,14 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     if(!tmpStr.isEmpty())
         fill.load(KGlobal::dirs()->findResource("wallpaper", tmpStr));
     if(!fill.isNull()){
+        config->setGroup(oldGroup);
         useGradient = false;
         return;
     }
 
     tmpStr = config->readEntry(QString::fromLatin1("Gradient"));
     if(tmpStr.isEmpty()) {
+        config->setGroup(oldGroup);
         useGradient = false;
         return;
     }
