@@ -1193,6 +1193,12 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       solutions << i18n( "Choose a different filename for the destination file." );
       break;
 
+    // We assume that the slave has all the details
+    case KIO::ERR_SLAVE_DEFINED:
+      errorName = QString::null;
+      description = errorText;
+      break;
+
     default:
       // fall back to the plain error...
       errorName = i18n( "Undocumented Error" );
