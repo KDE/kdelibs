@@ -2,7 +2,7 @@ dnl CUPS stuffs (to be changed)
 ac_use_cups="yes"
 CUPSSUBDIR=
 LIB_CUPS=
-AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=enabled]],[ac_use_cups="no"])
+AC_ARG_ENABLE(cups,[  --disable-cups          disable CUPS support [default=enabled]],[ac_use_cups=$withval])
 if test "$ac_use_cups" = "yes"; then
   ac_CPPFLAGS_save="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $all_includes"
