@@ -69,22 +69,27 @@ CREATE_HASH_TABLE = $(srcdir)/create_hash_table
 
 lexer.lut.h: $(srcdir)/keywords.table $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+lexer.lo: lexer.lut.h
 
 # Can't use %.lut.h: %.cpp, it's not portable.
 
 array_object.lut.h : $(srcdir)/array_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+array_object.lo: array_object.lut.h
 math_object.lut.h : $(srcdir)/math_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+math_object.lo: math_object.lut.h
 date_object.lut.h : $(srcdir)/date_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+date_object.lo: date_object.lut.h
 number_object.lut.h : $(srcdir)/number_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+number_object.lo: number_object.lut.h
 string_object.lut.h : $(srcdir)/string_object.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+string_object.lo: string_object.lut.h
 
 CLEANFILES = $(LUT_FILES)
-libkjs_la_COMPILE_FIRST = $(LUT_FILES)
 
 ## test program (in one program for easier profiling/memory debugging)
 EXTRA_PROGRAMS = testkjs_static testavl
