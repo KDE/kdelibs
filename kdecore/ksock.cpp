@@ -269,7 +269,6 @@ public:
    QCString path;
    unsigned short int port;
    KExtendedSocket *ks;
-   QSocketNotifier *notifier;
 };
 
 
@@ -278,7 +277,6 @@ KServerSocket::KServerSocket( const char *_path, bool _bind ) :
 {
   d = new KServerSocketPrivate();
   d->bind = _bind;
-  d->notifier = 0;
 
   init ( _path );
 }
@@ -288,7 +286,6 @@ KServerSocket::KServerSocket( unsigned short int _port, bool _bind ) :
 {
   d = new KServerSocketPrivate();
   d->bind = _bind;
-  d->notifier = 0;
 
   init ( _port );
 }
@@ -326,6 +323,7 @@ bool KServerSocket::bindAndListen()
   if (d == NULL || d->ks == NULL)
     return false;
 
+  
   int ret = d->ks->listen( SOMAXCONN );
   if (ret < 0)
     {
@@ -339,8 +337,7 @@ bool KServerSocket::bindAndListen()
 
   sock = d->ks->fd();
 
-  d->notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
-  connect( d->notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+  connect( d->ks->readNotifier(), SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
   return true;
 }
 
@@ -413,7 +410,6 @@ void KServerSocket::slotAccept( int )
 
 KServerSocket::~KServerSocket()
 {
-  delete d->notifier;
   if (d != NULL)
     {
       if (d->ks != NULL)

@@ -2280,6 +2280,10 @@ QString KExtendedSocket::strError(int code, int syserr)
   return QString::fromLocal8Bit(msg);
 }
 
+
+QSocketNotifier *KExtendedSocket::readNotifier() { return d->qsnIn; }
+QSocketNotifier *KExtendedSocket::writeNotifier() { return d->qsnOut; }
+
 /*
  * class KAddressInfo
  */

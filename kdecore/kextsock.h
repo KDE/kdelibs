@@ -22,11 +22,9 @@
 
 #include <sys/time.h>
 
-#include <qobject.h>
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qiodevice.h>
-#include <qsocketnotifier.h>
 
 #include "kbufferedio.h"
 #include "ksockaddr.h"
@@ -35,6 +33,7 @@
 struct addrinfo;
 struct kde_addrinfo;
 class KAddressInfo;		/* our abstraction of it */
+class QSocketNotifier;
 
 /*
  * This is extending QIODevice's error codes
@@ -721,6 +720,9 @@ public:
    * @param enable	if true, the signal will be emitted
    */
   virtual void enableWrite(bool enable);
+
+  QSocketNotifier *readNotifier();
+  QSocketNotifier *writeNotifier();
 
 signals:
   /**
