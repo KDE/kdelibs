@@ -54,30 +54,30 @@ public:
     * Where this filesystem gets mounted from.
     * This can refer to a device, a remote server or something else.
     */
-   QString mountedFrom() { return m_mountedFrom; }
+   QString mountedFrom() const { return m_mountedFrom; }
 
    /**
     * Canonical name of the device where the filesystem got mounted from.
     * (Or empty, if not a device)
     * Only available when the @ref NeedRealDeviceName flag was set.
     */
-   QString realDeviceName() { return m_device; }
+   QString realDeviceName() const { return m_device; }
 
    /**
     * Path where the filesystem is mounted or can be mounted.
     */
-   QString mountPoint() { return m_mountPoint; }
+   QString mountPoint() const { return m_mountPoint; }
    
    /**
     * Type of filesystem
     */
-   QString mountType() { return m_mountType; }
+   QString mountType() const { return m_mountType; }
    
    /**
     * Options used to mount the filesystem.
     * Only available when the @ref NeedMountOptions flag was set.
     */
-   QStringList mountOptions() { return m_mountOptions; }
+   QStringList mountOptions() const { return m_mountOptions; }
 
    /**
     * Destructor
