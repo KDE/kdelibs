@@ -1,15 +1,47 @@
-kdelibs (4:3.0.8-1) unstable; urgency=low
+kdelibs (4:3.0.9) unstable; urgency=low
 
   * New Upstream.
+  * Rebuilt debian dir.
 
- -- Christopher L Cheney <ccheney@debian.org>  Mon, 07 Oct 2002 22:00:00 -0500
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 28 Oct 2002 14:00:00 -0600
 
-kdelibs (4:3.0.2-1) unstable; urgency=low
+kdelibs (4:2.2.2-14) unstable; urgency=low
 
-  * New upstream.
-  * rebuilt debian dir.
+  * And a quick update to send it to unstable; no changes from -13.woody.3.
 
- -- Christopher L Cheney <ccheney@debian.org>  Mon, 17 Jun 2002 23:00:00 -0500
+ -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:29:31 +1000
+
+kdelibs (4:2.2.2-13.woody.3) stable-security; urgency=high
+
+  * Sigh. Another DSA.
+  * Fixes cross-site scripting vulnerability in KHTML.
+
+ -- Daniel Stone <dstone@trinity.unimelb.edu.au>  Wed, 11 Sep 2002 22:24:35 +1000
+
+kdelibs (4:2.2.2-13.woody.2) stable-security; urgency=high
+
+  * Non-maintainer upload by security team
+  * Security upload to fix SSL problems with Konqueror.
+  * Fix local denial of service attack with aRts. This is NOT a local root
+    vulnerability, just a stupid, over-excited skript kiddie wanting propz
+    off SecurityFocus. *sigh*. (closes: #152211)
+  * Adjusted Build-Depends (i.e. added libstdc++2.10-dev/libstdc++3-dev and g++)
+  * Removed setuid bits for artswrapper from lintian overrides
+  * Added sanity checks to artswrapper so open(), fopen() etc. never
+    return file descriptors 1 or 2 (reserved for stdout and stderr)
+  * Applied upstream patch to avoid a local denial of service (hence not
+    raising the nice level)
+  * Don't install artswrap setuid root anymore because of the above
+
+ -- Martin Schulze <joey@infodrom.org>  Fri, 16 Aug 2002 18:46:10 +0200
+
+kdelibs (4:2.2.2-13.woody.1) testing-security; urgency=high
+
+  * Non-maintainer upload by security team
+  * Don't install artswrapper suid, it is a security problem waiting to
+    happen
+
+ -- Wichert Akkerman <wakkerma@debian.org>  Fri, 12 Jul 2002 22:47:26 +0200
 
 kdelibs (4:2.2.2-13) unstable; urgency=high
 

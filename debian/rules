@@ -16,8 +16,6 @@ export DH_OPTIONS
 DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-objdir = $(CURDIR)/obj-$(DEB_BUILD_GNU_TYPE)
-
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -g
 endif
@@ -25,10 +23,10 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-ifeq ($(DEB_BUILD_GNU_TYPE),alpha-linux)
-  export CFLAGS +=-O0 -mieee
-  export CXXFLAGS +=-O0 -mieee
-endif
+# GCC 3.2 defines
+export CC  = gcc-3.2
+export CXX = g++-3.2
+export CPP = cpp-3.2
 
 ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
   # Uncomment the following 2 lines to enable i686 optimziation
@@ -38,6 +36,8 @@ ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
   XINERAMA=--with-xinerama
   FAST_MALLOC=--enable-fast-malloc=full
 endif
+
+objdir = $(CURDIR)/obj-$(DEB_BUILD_GNU_TYPE)
 
 version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;
 
