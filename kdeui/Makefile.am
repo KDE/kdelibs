@@ -23,9 +23,9 @@ INCLUDES= $(all_includes)
 EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0  
+libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
 # we should get this to work when libtool 1.3 is released
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la 
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \
@@ -39,7 +39,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdbtn.h knotebook.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
-		kthemestyle.h
+		kthemestyle.h kcharselect.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
@@ -54,7 +54,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
-		kthemebase.cpp kthemestyle.cpp
+		kthemebase.cpp kthemestyle.cpp kcharselect.cpp
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
@@ -68,7 +68,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
-	kthemestyle.moc
+	kthemestyle.moc kcharselect.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
