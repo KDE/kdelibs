@@ -1496,8 +1496,8 @@ void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::Cac
 
 void KHTMLPart::checkCompleted()
 {
-    kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
-    kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+//     kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
+//     kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
   if (d->m_doc && !d->m_bParsing && !d->m_focusNodeRestored)
@@ -2222,7 +2222,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( url.isEmpty() )
     return;
 
-  if (!checkLinkSecurity(cURL))
+  if (!checkLinkSecurity(cURL,
+			 i18n( "<qt>The link <B>%1</B><BR>leads from this untrusted page to your local filesystem.<BR>Do you want to follow the link?" ),
+			 i18n( "Follow" )))
     return;
 
   KParts::URLArgs args;
@@ -2735,7 +2737,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       return;
   }
 
-  if (!checkLinkSecurity(u))
+  if (!checkLinkSecurity(u,
+			 i18n( "<qt>The form will be submitted to <BR><B>%1</B><BR>on your local filesystem.<BR>Do you want to submit the form?" ),
+			 i18n( "Submit" )))
     return;
 
   KParts::URLArgs args;
@@ -3948,7 +3952,7 @@ void KHTMLPart::selectAll()
   emitSelectionChanged();
 }
 
-bool KHTMLPart::checkLinkSecurity(const KURL &linkURL)
+bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, const QString &button)
 {
   // Security check on the link.
   // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
@@ -3962,12 +3966,25 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL)
     Tokenizer *tokenizer = d->m_doc->tokenizer();
     if (tokenizer)
       tokenizer->setOnHold(true);
-    KMessageBox::error( 0,
-                        i18n( "This page is untrusted\nbut it contains a link to your local file system."),
-                        i18n( "Security Alert" ));
+
+    int response = KMessageBox::Cancel;
+    if (!message.isEmpty())
+    {
+	    response = KMessageBox::warningContinueCancel( 0,
+							   message.arg(linkURL.url()),
+							   i18n( "Security Warning" ),
+							   button);
+    }
+    else
+    {
+	    KMessageBox::error( 0,
+				i18n( "<qt>This untrusted page contains a link<BR><B>%1</B><BR>to your local file system.").arg(linkURL.url()),
+				i18n( "Security Alert" ));
+    }
+
     if (tokenizer)
       tokenizer->setOnHold(false);
-    return false;
+    return (response==KMessageBox::Continue);
   }
   return true;
 }
