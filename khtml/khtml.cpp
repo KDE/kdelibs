@@ -1558,8 +1558,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	}
 
 	// same url? If no, we need to restore the frameset
-	if( urlcmp(u, m_strURL) ) 
-	    openURL(u, false, 0, 0);
+	openURL(u, false, 0, 0);
     }
 
     layout();
