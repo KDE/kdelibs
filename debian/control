@@ -1,7 +1,7 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.1-11), uic (>= 2.3.1-11), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
+Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.1-11), uic (>= 2.3.1-11), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
 Build-Depends-Indep: kdoc, qt-doc
-Build-Conflicts: nas-lib, qt3-tools
+Build-Conflicts: nas-lib, qt3-tools, libglib1.3-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>

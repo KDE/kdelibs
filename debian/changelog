@@ -1,3 +1,14 @@
+kdelibs (4:2.2.1-12) unstable; urgency=low
+
+  * more js fixes
+  * more ssl fixes
+  * gernal sync with upstream
+  * Added missing build-conflict
+  * Get rid of automake hacks...hard code build-dep version for new automake
+    thank god kde3 builds with automake1.5...
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 19 Oct 2001 12:43:00 -0700
+
 kdelibs (4:2.2.1-11) unstable; urgency=low
 
   * Several crash fixes
@@ -190,7 +201,7 @@ kdelibs (4:2.2.0-0beta1-1) unstable; urgency=low
   * 2.2 beta 1
   * Remove old .shlibs files
   * Moving to -cvs{date] format for entering into experimental
-  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
+  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  
     date listed in the version number states when the initial pull was made
     however updates may and most likely will have taken place since that
     date.  Look at it as a >= cvs{date}

@@ -68,12 +68,12 @@ debian-clean:
 
 clean: debian-clean
 	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
-	#if test -d CVS; then \
-	#  $(MAKE) -f admin/Makefile.common cvs-clean ;\
-	#fi
+	if test -d CVS; then \
+	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
+	fi
 	-$(MAKE) distclean
-	-rm -f `find arts -name "*.mcoptype"`
-	-rm -f kdoctools/kgzipfilter.cpp kdoctools/kbzip2filter.cpp
+	#-rm -f `find arts -name "*.mcoptype"`
+	#-rm -f kdoctools/kgzipfilter.cpp kdoctools/kbzip2filter.cpp
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
