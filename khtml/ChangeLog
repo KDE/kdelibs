@@ -1,3 +1,8 @@
+2004-01-23  Lubos Lunak  <l.lunak@kde.org>
+
+        * html_inlineimpl.cpp (defaultEventHandler): make HTMLAnchorElementImpl
+        react also on DOMActivate event
+
 2004-01-23  David Faure  <faure@kde.org>
 
 	* html/html_tableimpl.cpp (insertRow): Fix for DOMTS-L2-HTML test

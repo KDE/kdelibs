@@ -52,12 +52,13 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     bool keydown = evt->id() == EventImpl::KHTML_KEYDOWN_EVENT;
+    bool act = evt->id() == EventImpl::DOMACTIVATE_EVENT;
 
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
     // it shouldn't, when pressing Enter in the combo.
     if ( ( (evt->id() == EventImpl::CLICK_EVENT && !static_cast<MouseEventImpl*>(evt)->isDoubleClick()) ||
-         ( keydown && m_focused)) && m_hasAnchor) {
+         ( keydown && m_focused) || act ) && m_hasAnchor) {
 
         MouseEventImpl *e = 0;
         if ( evt->id() == EventImpl::CLICK_EVENT )
