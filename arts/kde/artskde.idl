@@ -21,6 +21,15 @@ interface KIOInputStream : InputStream {
 };
 
 /*
+ * used for piping raw data to KAudioConverter from the POs
+ */
+interface KDataRequest : SynthModule {
+	void goOn();
+
+	default in audio stream left, right;
+};
+
+/*
  * TESTING ONLY
  */
 
