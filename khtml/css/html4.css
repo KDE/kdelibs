@@ -430,12 +430,12 @@ SUP {
 SUB { 
 	position: relative; 
 	top: 0.5em; 
-	font-size: small; 
+	font-size: smaller; 
 }
 SUP { 
 	position: relative; 
 	top: -0.5em; 
-	font-size: small;
+	font-size: smaller;
 }
 
 /* ### not supported at the moment
