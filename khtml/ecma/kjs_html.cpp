@@ -387,10 +387,11 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
   DOM::HTMLBodyElement body = doc.body();
+  DOM::DOMString val = value.toString(exec).string();
 
   switch (token) {
   case Title:
-    doc.setTitle(value.toString(exec).string());
+    if (doc.title() != val) doc.setTitle(val);
     break;
   case Body:
     doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
@@ -398,11 +399,11 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Domain: { // not part of the DOM
     DOM::HTMLDocumentImpl* docimpl = static_cast<DOM::HTMLDocumentImpl*>(doc.handle());
     if (docimpl)
-      docimpl->setDomain(value.toString(exec).string());
+      docimpl->setDomain(val);
     break;
   }
   case Cookie:
-    doc.setCookie(value.toString(exec).string());
+    doc.setCookie(val);
     break;
   case Location:
   {
@@ -412,22 +413,22 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
     break;
   }
   case BgColor:
-    body.setBgColor(value.toString(exec).string());
+    if (body.bgColor() != val) body.setBgColor(val);
     break;
   case FgColor:
-    body.setText(value.toString(exec).string());
+    if (body.text() != val) body.setText(val);
     break;
   case AlinkColor:
-    body.setALink(value.toString(exec).string());
+    if (body.aLink() != val) body.setALink(val);
     break;
   case LinkColor:
-    body.setLink(value.toString(exec).string());
+    if (body.link() != val) body.setLink(val);
     break;
   case VlinkColor:
-    body.setVLink(value.toString(exec).string());
+    if (body.vLink() != val) body.setVLink(val);
     break;
   case Dir:
-    body.setDir(value.toString(exec).string());
+    body.setDir(val);
     break;
   default:
     kdWarning() << "HTMLDocument::putValueProperty unhandled token " << token << endl;
