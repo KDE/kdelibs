@@ -6,9 +6,6 @@ BUGS
 - Toolbar of instance tab seems to be messed up. Only 1 button
   shown.
 
-- make slave's code case insensitive such that it accepts
-  also "print:/Classes" instead of "print:/classes"
-
 
 
 WISHES
@@ -39,4 +36,3 @@ WISHES
 - possibility to print whole screen or highlighted window
   directly to printer?
                                                          (-kp-)                                 
-- add a "Print" button to the IPP report dialog
