@@ -140,20 +140,11 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     KMenuBar *bar;
 
     if ( d->m_widget->inherits( "KMainWindow" ) )
-    {
-      QObjectList *l = d->m_widget->queryList( "QMenuBar" );
-      bool hasMenuBar = l && l->first();
-      delete l;
       bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
-      if (!hasMenuBar) // We just created it.
-        bar->show();
-    }
     else
-    {
       bar = new KMenuBar( d->m_widget );
-      bar->show();
-    }
 
+    bar->show();
     return bar;
   }
 
@@ -272,7 +263,11 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
   else if ( container->inherits( "KMenuBar" ) )
   {
     KMenuBar *mb = static_cast<KMenuBar *>( container );
-    delete mb;
+    mb->hide();
+    // Don't delete menubar - it can be reused by createContainer.
+    // If you decide that you do need to delete the menubar, make
+    // sure that QMainWindow::d->mb does not point to a deleted
+    // menubar object.
   }
   else if ( container->inherits( "KStatusBar" ) )
   {
