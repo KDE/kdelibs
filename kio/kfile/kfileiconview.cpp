@@ -299,8 +299,10 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this, i );
-    initItem( item, i );
+    KFileIconViewItem *item =
+        new KFileIconViewItem( (QIconView*)this, i->text(),
+                               i->pixmap( iconSizeFor( i ) ), i);
+    initItem( item, i, false );
 
     if ( !i->isMimeTypeKnown() )
         m_resolver->m_lstPendingMimeIconItems.append( item );
@@ -419,7 +421,7 @@ void KFileIconView::updateView( const KFileItem *i )
 {
     KFileIconViewItem *item = viewItem( i );
     if ( item )
-        initItem( item, i );
+        initItem( item, i, true );
 }
 
 void KFileIconView::removeItem( const KFileItem *i )
@@ -693,15 +695,18 @@ void KFileIconView::showEvent( QShowEvent *e )
 }
 
 
-void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i )
+void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
+                              bool updateTextAndPixmap )
 {
-    int size = myIconSize;
-    if ( d->previews->isChecked() && canPreview( i ) )
-        size = d->previewIconSize;
-    
-    item->setText( i->text() , false, false );
-    item->setPixmap( i->pixmap( size ) );    
-    
+    if ( updateTextAndPixmap )
+    {
+        // this causes a repaint of the item, which we want to avoid during
+        // directory listing, when all items are created. We want to paint all
+        // items at once, not every single item in that case.
+        item->setText( i->text() , false, false );
+        item->setPixmap( i->pixmap( iconSizeFor( i ) ) );
+    }
+
     // see also setSorting()
     QDir::SortSpec spec = KFileView::sorting();
 
@@ -726,6 +731,13 @@ void KFileIconView::arrangeItemsInGrid( bool update )
         return;
 
     KIconView::arrangeItemsInGrid( update );
+}
+
+int KFileIconView::iconSizeFor( const KFileItem *item ) const
+{
+    if ( d->previews->isChecked() && canPreview( item ) )
+        return d->previewIconSize;
+    return myIconSize;
 }
 
 void KFileIconView::virtual_hook( int id, void* data )

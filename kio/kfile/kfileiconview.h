@@ -145,7 +145,7 @@ public slots:
      * into 'large rows' mode, if that isn't the current mode yet.
      */
     void showPreviews();
-    
+
     /**
      * Reimplemented for performance reasons.
      * @since 3.1
@@ -196,6 +196,7 @@ private:
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
     bool canPreview( const KFileItem * ) const;
+    int iconSizeFor( const KFileItem * ) const;
     void stopPreview();
 
     void updateIcons();
@@ -206,7 +207,8 @@ private:
         return 0L;
     }
 
-    void initItem(KFileIconViewItem *item, const KFileItem *i );
+    void initItem(KFileIconViewItem *item, const KFileItem *i,
+                  bool updateTextAndPixmap );
 
 protected:
     virtual void virtual_hook( int id, void* data );
