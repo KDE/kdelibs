@@ -25,6 +25,10 @@
 *
  * HISTORY
  *
+ * 01/17/98  Mario Weilguni <mweilguni@sime.com>
+ * Fixed a bug in sizeHint()
+ * Improved the handling of Motif default buttons
+ *
  * 01/09/98  Mario Weilguni <mweilguni@sime.com>
  * The last button was to far right away from the right/bottom border.
  * Fixed this. Removed old code. Buttons get now a minimum width.
@@ -206,6 +210,7 @@ QSize KButtonBox::bestButtonSize() const {
 
 QSize KButtonBox::sizeHint() const {
   unsigned i, dw;
+  bool hasMotifDefault = FALSE;
 
   if(buttons.count() == 0)
     return QSize(0, 0);
@@ -218,21 +223,26 @@ QSize KButtonBox::sizeHint() const {
       KButtonBoxItem *item = that->buttons.at(i);
       QPushButton *b = item->button;
       if(b != 0) {
+	hasMotifDefault |= (style() == MotifStyle) && (b->isDefault());
+
 	QSize s;
 	if(item->noexpand)
 	  s = that->buttonSizeHint(b);
 	else
 	  s = bs;
 	
-	if(orientation == HORIZONTAL && i != buttons.count() - 1)
-	  dw += s.width() + _autoborder;
+	if(orientation == HORIZONTAL)
+	  dw += s.width();
 	else
-	  dw += s.height() + _autoborder;
+	  dw += s.height();
+
+	if( i != buttons.count() - 1 )
+	  dw += _autoborder;
       }
     }
 
     if(orientation == HORIZONTAL) {
-      if(style() == MotifStyle) 	
+      if(style() == MotifStyle && hasMotifDefault) 	
 	return QSize(dw + extraMotifWidth, 
 		     bs.height() + 2 * _border + extraMotifHeight);
       else
