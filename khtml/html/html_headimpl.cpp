@@ -301,13 +301,8 @@ void HTMLMetaElementImpl::attach()
         QString str = _content.string().stripWhiteSpace();
         time_t expire_date = str.toLong();
         KURL url = v->part()->url();
-        if (url.protocol().startsWith("http"))
-        {
-            // KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expire_date);
-            // moved to khtml_part.cpp::slotFinished(KIO::Job *) (Tobias)
-            if (ownerDocument()->docLoader())
-                ownerDocument()->docLoader()->setExpireDate(expire_date);
-        }
+        if (ownerDocument()->docLoader())
+            ownerDocument()->docLoader()->setExpireDate(expire_date);
     }
     else if( (strcasecmp(_equiv, "pragma") == 0 || strcasecmp(_equiv, "cache-control") == 0) && !_content.isNull())
     {

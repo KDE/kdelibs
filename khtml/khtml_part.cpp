@@ -1346,7 +1346,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate())
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && m_url.protocol().lower().startsWith("http"))
       KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KURL();
@@ -2485,7 +2485,11 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_used_bits.toInt(),
                d->m_ssl_cipher_bits.toInt(),
                (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
-               d->m_ssl_good_from, d->m_ssl_good_until, d->m_ssl_serial_num);
+               d->m_ssl_good_from, d->m_ssl_good_until
+#if KDE_VERSION > 221
+               , d->m_ssl_serial_num
+#endif
+               );
   }
   kid->exec();
 }
@@ -3797,16 +3801,26 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
           KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
+#if KDE_VERSION > 221
           drag = KURLDrag::newDrag( u, d->m_view->viewport() );
+#else
+	  KURL::List uris;
+	  uris.append(u);
+	  drag = KURLDrag::newDrag( uris, d->m_view->viewport() );
+#endif
           p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
+#if KDE_VERSION > 221
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
             KURL u( d->m_doc->completeURL( splitUrlTarget( i->imageURL().string() ) ) );
             mdrag->addDragObject( KURLDrag::newDrag( u, 0L ) );
             drag = mdrag;
+#else
+	    drag = new QImageDrag( i->currentImage(), d->m_view->viewport() );
+#endif
             p = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
           }
       }
