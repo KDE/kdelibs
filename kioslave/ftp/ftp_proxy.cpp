@@ -147,7 +147,7 @@ int KProtocolProxyFTP::OpenProxy(KURL *_url, int mode, bool _reload)
 	else
 	{
 		struct sockaddr_in server_name;
-		int port = _url->port();
+		unsigned short int port = _url->port();
 		if ( port == 0 )
 			port = 80;
 
@@ -180,7 +180,7 @@ int KProtocolProxyFTP::OpenProxy(KURL *_url, int mode, bool _reload)
 	if(do_proxy)
 	{
 		/** add hostname when using proxy **/
-		int port = _url->port();
+		unsigned short int port = _url->port();
 		if (! port &&  strcmp(_url->protocol(),"ftp") == 0)  // use default one
 			port = 21;
 

@@ -539,7 +539,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 	memset(c_buffer, 0, 64);
 	if(do_proxy)
 	{
-		sprintf(c_buffer, ":%i", port);
+		sprintf(c_buffer, ":%u", port);
 		header += "http://";
 		header += _url.host();
 		header += c_buffer;
@@ -585,7 +585,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 	if (_url.port() != 0)
 	{
 		memset(c_buffer, 0, 64);
-		sprintf(c_buffer, ":%i", port);
+		sprintf(c_buffer, ":%u", port);
 		header += c_buffer;
 	}
 	header += "\r\n";

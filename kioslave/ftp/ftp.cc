@@ -182,7 +182,7 @@ bool Ftp::ftpConnect( KURL& _url )
 /**
  * login on remote host
  */
-bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, QString& _path )
+bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_user, const char *_pass, QString& _path )
 {
   m_bPersistent = KProtocolManager::self().persistentConnections();
 
@@ -259,7 +259,7 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
  *
  * return 1 if connected, 0 if not
  */
-bool Ftp::ftpConnect2( const char *host, int _port )
+bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
 {
   struct sockaddr_in sin;
   struct servent *pse;
@@ -269,9 +269,9 @@ bool Ftp::ftpConnect2( const char *host, int _port )
   
   memset( &sin, 0, sizeof( sin ) );
 
-  if ( _port == -1 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
+  if ( _port == 0 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
     _port = 21;
-  else if ( _port == -1 )
+  else if ( _port == 0 )
     _port = ntohs(pse->s_port);
 
   if (!KSocket::initSockaddr(&sin, host, _port)) {

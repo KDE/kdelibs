@@ -108,13 +108,13 @@ private:
    *
    * @return true on success.
    */
-  bool ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, QString& _path );
+  bool ftpConnect( const char *_host, unsigned short int _port, const char *_user, const char *_pass, QString& _path );
   /**
    * Called by @ref #ftpConnect. It opens the control connection to the ftp server.
    *
    * @return true on success.
    */
-  bool ftpConnect2( const char *host, int _port = -1 );
+  bool ftpConnect2( const char *host, unsigned short int _port = 0 );
   /**
    * Called by @ref #ftpConnect. It logs us in.
    *
