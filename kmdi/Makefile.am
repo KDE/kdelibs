@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/kmdi/res $(all_includes) -I$(top_srcdir)/kutils
+INCLUDES = -I$(top_srcdir)/kmdi/res -I$(top_srcdir)/kutils $(all_includes)
 
 lib_LTLIBRARIES = libkmdi.la
 libkmdi_la_LDFLAGS = $(all_libraries) -version-info 1:0
