@@ -61,6 +61,9 @@ class Addressee
     Addressee( const Addressee & );
     Addressee &operator=( const Addressee & );
 
+    bool operator==( const Addressee & ) const;
+    bool operator!=( const Addressee & ) const;
+
     /**
       Return, if the address book entry is empty.
     */

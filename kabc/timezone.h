@@ -61,6 +61,7 @@ class TimeZone
     bool isValid() const;
     
     bool operator==( const TimeZone & ) const;
+    bool operator!=( const TimeZone & ) const;
     
     /*
       Return string representation of time zone offset.

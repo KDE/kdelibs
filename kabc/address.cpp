@@ -38,6 +38,25 @@ Address::Address( int type ) :
   mId = KApplication::randomString( 10 );
 }
 
+bool Address::operator==( const Address &a ) const
+{
+  if ( mPostOfficeBox != a.mPostOfficeBox ) return false;
+  if ( mExtended != a.mExtended ) return false;
+  if ( mStreet != a.mStreet ) return false;
+  if ( mLocality != a.mLocality ) return false;
+  if ( mRegion != a.mRegion ) return false;
+  if ( mPostalCode != a.mPostalCode ) return false;
+  if ( mCountry != a.mCountry ) return false;
+  if ( mLabel != a.mLabel ) return false;
+  
+  return true;
+}
+
+bool Address::operator!=( const Address &a ) const
+{
+  return !( a == *this );
+}
+
 bool Address::isEmpty() const
 {
   if ( mPostOfficeBox.isEmpty() &&

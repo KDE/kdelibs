@@ -50,8 +50,17 @@ bool TimeZone::isValid() const
 
 bool TimeZone::operator==( const TimeZone &t ) const
 {
+  if ( !t.isValid() && !isValid() ) return true;
   if ( !t.isValid() || !isValid() ) return false;
   if ( t.mOffset == mOffset ) return true;
+  return false;
+}
+
+bool TimeZone::operator!=( const TimeZone &t ) const
+{
+  if ( !t.isValid() && !isValid() ) return false;
+  if ( !t.isValid() || !isValid() ) return true;
+  if ( t.mOffset != mOffset ) return true;
   return false;
 }
 

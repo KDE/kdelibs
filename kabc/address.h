@@ -62,6 +62,9 @@ class Address
       n unique id (@see id()).
     */
     Address( int );
+
+    bool operator==( const Address & ) const;
+    bool operator!=( const Address & ) const;
   
     /**
       Return, if the address is empty.

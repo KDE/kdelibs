@@ -69,6 +69,9 @@ class PhoneNumber
     PhoneNumber( const QString &number, int type = Home );
     ~PhoneNumber();
     
+    bool operator==( const PhoneNumber & ) const;
+    bool operator!=( const PhoneNumber & ) const;
+    
     /**
       Set unique identifier.
     */

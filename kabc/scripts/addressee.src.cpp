@@ -76,6 +76,25 @@ void Addressee::detach()
   *this = copy();
 }
 
+bool Addressee::operator==( const Addressee &a ) const
+{
+  --EQUALSTEST--
+  if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
+       ( mData->url != a.mData->url ) ) return false;
+  if ( mData->phoneNumbers != a.mData->phoneNumbers ) return false;
+  if ( mData->addresses != a.mData->addresses ) return false;
+  if ( mData->emails != a.mData->emails ) return false;
+  if ( mData->categories != a.mData->categories ) return false;
+  if ( mData->custom != a.mData->custom ) return false;
+
+  return true;
+}
+
+bool Addressee::operator!=( const Addressee &a ) const
+{
+  return !( a == *this );
+}
+
 bool Addressee::isEmpty() const
 {
   return mData->empty;

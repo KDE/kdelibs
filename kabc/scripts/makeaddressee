@@ -99,6 +99,12 @@ if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
         print CPP_OUT "  return i18n(\"$label\");\n";
         print CPP_OUT "}\n\n\n";
       }
+    } elsif (/--EQUALSTEST--/) {
+      for( $i=0; $i<@entryNames; ++$i ) {
+        if ( $entryCtrl[$i] =~ /E/ ) {
+          print CPP_OUT "  if ( mData->$entryNames[$i] != a.mData->$entryNames[$i] ) return false;\n";
+        }
+      }        
     } elsif (/--DEBUG--/) {
       for( $i=0; $i<@entryNames; ++$i ) {
         if ( $entryCtrl[$i] !~ /A/ ) { next; }

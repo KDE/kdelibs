@@ -5,27 +5,28 @@
 #          Control: A generates accessor functions.
 #                   L generates a static function fpr returning a tranlsated label
 #                   F generates a Field id and object for generic field handling
+#                   E generate an equality test in Addressee::operator==().
 #      Field Name : A descriptive name which is shown to the user.
 #            Type : C++ type of field.
 #      Identifier : A string used in code as variable name etc.
 #  Field Category : Categories the field belongs to (see Field::FieldCategory).
 #  Output function: Function used to convert type to string for debug output (optional)
 
-AL,unique identifier,QString,uid
-AL,name,QString,name
+ALE,unique identifier,QString,uid
+ALE,name,QString,name
 
-ALF,formatted name,QString,formattedName,Frequent
+ALFE,formatted name,QString,formattedName,Frequent
 
-ALF,family name,QString,familyName,Frequent
-ALF,given name,QString,givenName,Frequent
-ALF,additional names,QString,additionalName
-ALF,honorific prefixes,QString,prefix
-ALF,honorific suffixes,QString,suffix
+ALFE,family name,QString,familyName,Frequent
+ALFE,given name,QString,givenName,Frequent
+ALFE,additional names,QString,additionalName
+ALFE,honorific prefixes,QString,prefix
+ALFE,honorific suffixes,QString,suffix
 
-ALF,nick name,QString,nickName,Personal
+ALFE,nick name,QString,nickName,Personal
 ,photo,QPixmap,photo
 
-ALF,birthday,QDateTime,birthday,Personal,.toString()
+ALFE,birthday,QDateTime,birthday,Personal,.toString()
 
 #Address address
 LF,home address street,QString,homeAddressStreet,Address|Personal
@@ -52,23 +53,23 @@ LF,business fax,QString,businessFax
 #emails
 LF,email address,QString,email,Email|Frequent
 
-ALF,mail client,QString,mailer,Email
+ALFE,mail client,QString,mailer,Email
 
-AL,time zone,TimeZone,timeZone,,.asString()
-AL,geographic position,Geo,geo,,.asString()
+ALE,time zone,TimeZone,timeZone,,.asString()
+ALE,geographic position,Geo,geo,,.asString()
 
-ALF,title,QString,title,Organization
-ALF,role,QString,role,Organization
+ALFE,title,QString,title,Organization
+ALFE,role,QString,role,Organization
 #QPixmap logo
 #Agent agent
-ALF,organization,QString,organization,Organization
+ALFE,organization,QString,organization,Organization
 
-AL,note,QString,note
+ALE,note,QString,note
 
-AL,product identifier,QString,productId
-AL,revision date,QDateTime,revision,,.toString()
+ALE,product identifier,QString,productId
+ALE,revision date,QDateTime,revision,,.toString()
 
-AL,sort string,QString,sortString
+ALE,sort string,QString,sortString
 
 #sound
 #class (PUBLIC, PRIVATE, CONFIDENTIAL)

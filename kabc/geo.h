@@ -69,6 +69,7 @@ class Geo
     bool isValid() const;
     
     bool operator==( const Geo & ) const;
+    bool operator!=( const Geo & ) const;
 
     /**
       Return string representation of geographical position.

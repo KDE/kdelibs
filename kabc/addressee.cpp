@@ -97,6 +97,44 @@ void Addressee::detach()
   *this = copy();
 }
 
+bool Addressee::operator==( const Addressee &a ) const
+{
+  if ( mData->uid != a.mData->uid ) return false;
+  if ( mData->name != a.mData->name ) return false;
+  if ( mData->formattedName != a.mData->formattedName ) return false;
+  if ( mData->familyName != a.mData->familyName ) return false;
+  if ( mData->givenName != a.mData->givenName ) return false;
+  if ( mData->additionalName != a.mData->additionalName ) return false;
+  if ( mData->prefix != a.mData->prefix ) return false;
+  if ( mData->suffix != a.mData->suffix ) return false;
+  if ( mData->nickName != a.mData->nickName ) return false;
+  if ( mData->birthday != a.mData->birthday ) return false;
+  if ( mData->mailer != a.mData->mailer ) return false;
+  if ( mData->timeZone != a.mData->timeZone ) return false;
+  if ( mData->geo != a.mData->geo ) return false;
+  if ( mData->title != a.mData->title ) return false;
+  if ( mData->role != a.mData->role ) return false;
+  if ( mData->organization != a.mData->organization ) return false;
+  if ( mData->note != a.mData->note ) return false;
+  if ( mData->productId != a.mData->productId ) return false;
+  if ( mData->revision != a.mData->revision ) return false;
+  if ( mData->sortString != a.mData->sortString ) return false;
+  if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
+       ( mData->url != a.mData->url ) ) return false;
+  if ( mData->phoneNumbers != a.mData->phoneNumbers ) return false;
+  if ( mData->addresses != a.mData->addresses ) return false;
+  if ( mData->emails != a.mData->emails ) return false;
+  if ( mData->categories != a.mData->categories ) return false;
+  if ( mData->custom != a.mData->custom ) return false;
+
+  return true;
+}
+
+bool Addressee::operator!=( const Addressee &a ) const
+{
+  return !( a == *this );
+}
+
 bool Addressee::isEmpty() const
 {
   return mData->empty;

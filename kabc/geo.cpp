@@ -62,9 +62,18 @@ bool Geo::isValid() const
 
 bool Geo::operator==( const Geo &g ) const
 {
+  if ( !g.isValid() && !isValid() ) return true;
   if ( !g.isValid() || !isValid() ) return false;
   if ( g.mLatitude == mLatitude && g.mLongitude == mLongitude ) return true;
   return false;
+}
+
+bool Geo::operator!=( const Geo &g ) const
+{
+  if ( !g.isValid() && !isValid() ) return false;
+  if ( !g.isValid() || !isValid() ) return true;
+  if ( g.mLatitude == mLatitude && g.mLongitude == mLongitude ) return false;
+  return true;
 }
 
 QString Geo::asString() const
