@@ -1464,7 +1464,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	break;
 
     default:
-	QWidget::keyPressEvent( _ke );
+	QScrollView::keyPressEvent( _ke );
     }
 }
 
