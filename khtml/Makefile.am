@@ -61,6 +61,7 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kssl -I$(top_srcdir)/kdeprint \
 	-I$(top_srcdir)/interfaces \
+	-I$(top_srcdir)/interfaces/kregexpeditor \
 	-I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
