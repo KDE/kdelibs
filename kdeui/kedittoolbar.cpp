@@ -208,6 +208,7 @@ public:
 
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
+  bool m_hasKDialog;
 };
 
 class KEditToolbarPrivate {
@@ -541,8 +542,8 @@ void KEditToolbarWidget::setupLayout()
   // "change icon" button
   d->m_changeIcon = new KPushButton( i18n( "Change &Icon..." ), this );
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
-  if ( kdialogExe.isEmpty() )
-      d->m_changeIcon->setEnabled( false );
+  d->m_hasKDialog = !kdialogExe.isEmpty();
+  d->m_changeIcon->setEnabled( d->m_hasKDialog );
 
   connect( d->m_changeIcon, SIGNAL( clicked() ),
            this, SLOT( slotChangeIcon() ) );
@@ -857,7 +858,7 @@ void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
 {
   m_removeAction->setEnabled( item != 0 );
-  d->m_changeIcon->setEnabled( item != 0 );
+  d->m_changeIcon->setEnabled( item != 0 && d->m_hasKDialog );
 
   if (item)
   {
