@@ -115,6 +115,6 @@ class MarkInterface
 
 MarkInterface *markInterface (class Document *doc);
 
-};
+}
 
 #endif

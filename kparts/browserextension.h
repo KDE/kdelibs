@@ -675,7 +675,7 @@ signals:
   virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
 };
 
-};
+}
 
 #endif
 

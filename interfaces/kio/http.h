@@ -30,6 +30,6 @@ namespace KIO {
                     HTTP_UNKNOWN = -1};
 
 
-};
+}
 
 #endif

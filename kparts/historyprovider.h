@@ -97,6 +97,6 @@ private:
     HistoryProviderPrivate *d;
 };
 
-};
+}
 
 #endif // KHISTORYPROVIDER_H

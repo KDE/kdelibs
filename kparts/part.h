@@ -597,6 +597,6 @@ private:
   bool m_bClosing;
 };
 
-};
+}
 
 #endif
