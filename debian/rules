@@ -74,6 +74,7 @@ binary-arch:  build
 	dh_movefiles -pkdelibs3-dev-cvs $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
 	dh_installchangelogs
 	dh_undocumented
+	dh_link
 	dh_strip 
 	dh_compress 
 	dh_fixperms 

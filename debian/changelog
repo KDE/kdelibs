@@ -1,3 +1,17 @@
+kdelibs-cvs (4:2.0-19990822-1.0) experimental; urgency=low
+
+  * Adding a link from /etc/kde2 to /usr/share/config until the proper
+    solution is made.
+  * More CVS updates
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Aug 1999 05:00:28 -0400
+
+kdelibs-cvs (4:2.0-19990820-1.1) experimental; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 21 Aug 1999 00:30:28 -0400
+
 kdelibs-cvs (4:2.0-19990820-1) experimental; urgency=low
 
   * New upstream CVS version
