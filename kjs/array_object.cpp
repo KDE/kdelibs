@@ -94,18 +94,18 @@ const ClassInfo ArrayPrototypeImp::info = {"ArrayPrototype" /* correct? */, 0, &
 
 /* Source for array_object.lut.h
 @begin arrayTable 13
-  toString       ArrayProtoFuncImp::ToString       DontEnum|DontDelete|ReadOnly|Function 0
-  toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|DontDelete|ReadOnly|Function 0
-  concat         ArrayProtoFuncImp::Concat         DontEnum|DontDelete|ReadOnly|Function 0
-  join           ArrayProtoFuncImp::Join           DontEnum|DontDelete|ReadOnly|Function 1
-  pop            ArrayProtoFuncImp::Pop            DontEnum|DontDelete|ReadOnly|Function 0
-  push           ArrayProtoFuncImp::Push           DontEnum|DontDelete|ReadOnly|Function 1
-  reverse        ArrayProtoFuncImp::Reverse        DontEnum|DontDelete|ReadOnly|Function 0
-  shift          ArrayProtoFuncImp::Shift          DontEnum|DontDelete|ReadOnly|Function 0
-  slice          ArrayProtoFuncImp::Slice          DontEnum|DontDelete|ReadOnly|Function 0
-  sort           ArrayProtoFuncImp::Sort           DontEnum|DontDelete|ReadOnly|Function 1
-  splice         ArrayProtoFuncImp::Splice         DontEnum|DontDelete|ReadOnly|Function 1
-  unshift        ArrayProtoFuncImp::UnShift        DontEnum|DontDelete|ReadOnly|Function 1
+  toString       ArrayProtoFuncImp::ToString       DontEnum|Function 0
+  toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|Function 0
+  concat         ArrayProtoFuncImp::Concat         DontEnum|Function 0
+  join           ArrayProtoFuncImp::Join           DontEnum|Function 1
+  pop            ArrayProtoFuncImp::Pop            DontEnum|Function 0
+  push           ArrayProtoFuncImp::Push           DontEnum|Function 1
+  reverse        ArrayProtoFuncImp::Reverse        DontEnum|Function 0
+  shift          ArrayProtoFuncImp::Shift          DontEnum|Function 0
+  slice          ArrayProtoFuncImp::Slice          DontEnum|Function 0
+  sort           ArrayProtoFuncImp::Sort           DontEnum|Function 1
+  splice         ArrayProtoFuncImp::Splice         DontEnum|Function 1
+  unshift        ArrayProtoFuncImp::UnShift        DontEnum|Function 1
 @end
 */
 

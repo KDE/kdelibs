@@ -48,38 +48,38 @@ StringInstanceImp::StringInstanceImp(const Object &proto)
 const ClassInfo StringPrototypeImp::info = {"StringPrototype", 0, &stringTable, 0};
 /* Source for string_object.lut.h
 @begin stringTable 26
-  toString		StringProtoFuncImp::ToString	DontEnum|DontDelete|ReadOnly|Function	0
-  valueOf		StringProtoFuncImp::ValueOf	DontEnum|DontDelete|ReadOnly|Function	0
-  charAt		StringProtoFuncImp::CharAt	DontEnum|DontDelete|ReadOnly|Function	1
-  charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|DontDelete|ReadOnly|Function	1
-  indexOf		StringProtoFuncImp::IndexOf	DontEnum|DontDelete|ReadOnly|Function	2
-  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|DontDelete|ReadOnly|Function	2
-  match			StringProtoFuncImp::Match	DontEnum|DontDelete|ReadOnly|Function	1
-  replace		StringProtoFuncImp::Replace	DontEnum|DontDelete|ReadOnly|Function	2
-  search		StringProtoFuncImp::Search	DontEnum|DontDelete|ReadOnly|Function	1
-  slice			StringProtoFuncImp::Slice	DontEnum|DontDelete|ReadOnly|Function	0
-  split			StringProtoFuncImp::Split	DontEnum|DontDelete|ReadOnly|Function	1
-  substr		StringProtoFuncImp::Substr	DontEnum|DontDelete|ReadOnly|Function	2
-  substring		StringProtoFuncImp::Substring	DontEnum|DontDelete|ReadOnly|Function	2
-  toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|DontDelete|ReadOnly|Function	0
-  toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|DontDelete|ReadOnly|Function	0
+  toString		StringProtoFuncImp::ToString	DontEnum|Function	0
+  valueOf		StringProtoFuncImp::ValueOf	DontEnum|Function	0
+  charAt		StringProtoFuncImp::CharAt	DontEnum|Function	1
+  charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|Function	1
+  indexOf		StringProtoFuncImp::IndexOf	DontEnum|Function	2
+  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|Function	2
+  match			StringProtoFuncImp::Match	DontEnum|Function	1
+  replace		StringProtoFuncImp::Replace	DontEnum|Function	2
+  search		StringProtoFuncImp::Search	DontEnum|Function	1
+  slice			StringProtoFuncImp::Slice	DontEnum|Function	0
+  split			StringProtoFuncImp::Split	DontEnum|Function	1
+  substr		StringProtoFuncImp::Substr	DontEnum|Function	2
+  substring		StringProtoFuncImp::Substring	DontEnum|Function	2
+  toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|Function	0
+  toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|Function	0
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
 # to select the right one... TODO. #####
-  big			StringProtoFuncImp::Big		DontEnum|DontDelete|ReadOnly|Function	0
-  small			StringProtoFuncImp::Small	DontEnum|DontDelete|ReadOnly|Function	0
-  blink			StringProtoFuncImp::Blink	DontEnum|DontDelete|ReadOnly|Function	0
-  bold			StringProtoFuncImp::Bold	DontEnum|DontDelete|ReadOnly|Function	0
-  fixed			StringProtoFuncImp::Fixed	DontEnum|DontDelete|ReadOnly|Function	0
-  italics		StringProtoFuncImp::Italics	DontEnum|DontDelete|ReadOnly|Function	0
-  strike		StringProtoFuncImp::Strike	DontEnum|DontDelete|ReadOnly|Function	0
-  sub			StringProtoFuncImp::Sub		DontEnum|DontDelete|ReadOnly|Function	0
-  sup			StringProtoFuncImp::Sup		DontEnum|DontDelete|ReadOnly|Function	0
-  fontcolor		StringProtoFuncImp::Fontcolor	DontEnum|DontDelete|ReadOnly|Function	1
-  fontsize		StringProtoFuncImp::Fontsize	DontEnum|DontDelete|ReadOnly|Function	1
-  anchor		StringProtoFuncImp::Anchor	DontEnum|DontDelete|ReadOnly|Function	1
-  link			StringProtoFuncImp::Link	DontEnum|DontDelete|ReadOnly|Function	1
+  big			StringProtoFuncImp::Big		DontEnum|Function	0
+  small			StringProtoFuncImp::Small	DontEnum|Function	0
+  blink			StringProtoFuncImp::Blink	DontEnum|Function	0
+  bold			StringProtoFuncImp::Bold	DontEnum|Function	0
+  fixed			StringProtoFuncImp::Fixed	DontEnum|Function	0
+  italics		StringProtoFuncImp::Italics	DontEnum|Function	0
+  strike		StringProtoFuncImp::Strike	DontEnum|Function	0
+  sub			StringProtoFuncImp::Sub		DontEnum|Function	0
+  sup			StringProtoFuncImp::Sup		DontEnum|Function	0
+  fontcolor		StringProtoFuncImp::Fontcolor	DontEnum|Function	1
+  fontsize		StringProtoFuncImp::Fontsize	DontEnum|Function	1
+  anchor		StringProtoFuncImp::Anchor	DontEnum|Function	1
+  link			StringProtoFuncImp::Link	DontEnum|Function	1
 @end
 */
 // ECMA 15.5.4

@@ -42,32 +42,32 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 
 /* Source for math_object.lut.h
 @begin mathTable 21
-  E		MathObjectImp::Euler	DontEnum|DontDelete|ReadOnly
-  LN2		MathObjectImp::Ln2	DontEnum|DontDelete|ReadOnly
-  LN10		MathObjectImp::Ln10	DontEnum|DontDelete|ReadOnly
-  LOG2E		MathObjectImp::Log2E	DontEnum|DontDelete|ReadOnly
-  LOG10E	MathObjectImp::Log10E	DontEnum|DontDelete|ReadOnly
-  PI		MathObjectImp::Pi	DontEnum|DontDelete|ReadOnly
-  SQRT1_2	MathObjectImp::Sqrt1_2	DontEnum|DontDelete|ReadOnly
-  SQRT2		MathObjectImp::Sqrt2	DontEnum|DontDelete|ReadOnly
-  abs		MathObjectImp::Abs	DontEnum|DontDelete|ReadOnly|Function 1
-  acos		MathObjectImp::ACos	DontEnum|DontDelete|ReadOnly|Function 1
-  asin		MathObjectImp::ASin	DontEnum|DontDelete|ReadOnly|Function 1
-  atan		MathObjectImp::ATan	DontEnum|DontDelete|ReadOnly|Function 1
-  atan2		MathObjectImp::ATan2	DontEnum|DontDelete|ReadOnly|Function 2
-  ceil		MathObjectImp::Ceil	DontEnum|DontDelete|ReadOnly|Function 1
-  cos		MathObjectImp::Cos	DontEnum|DontDelete|ReadOnly|Function 1
-  exp		MathObjectImp::Exp	DontEnum|DontDelete|ReadOnly|Function 1
-  floor		MathObjectImp::Floor	DontEnum|DontDelete|ReadOnly|Function 1
-  log		MathObjectImp::Log	DontEnum|DontDelete|ReadOnly|Function 1
-  max		MathObjectImp::Max	DontEnum|DontDelete|ReadOnly|Function 2
-  min		MathObjectImp::Min	DontEnum|DontDelete|ReadOnly|Function 2
-  pow		MathObjectImp::Pow	DontEnum|DontDelete|ReadOnly|Function 2
-  random	MathObjectImp::Random	DontEnum|DontDelete|ReadOnly|Function 0
-  round		MathObjectImp::Round	DontEnum|DontDelete|ReadOnly|Function 1
-  sin		MathObjectImp::Sin	DontEnum|DontDelete|ReadOnly|Function 1
-  sqrt		MathObjectImp::Sqrt	DontEnum|DontDelete|ReadOnly|Function 1
-  tan		MathObjectImp::Tan	DontEnum|DontDelete|ReadOnly|Function 1
+  E		MathObjectImp::Euler	DontEnum
+  LN2		MathObjectImp::Ln2	DontEnum
+  LN10		MathObjectImp::Ln10	DontEnum
+  LOG2E		MathObjectImp::Log2E	DontEnum
+  LOG10E	MathObjectImp::Log10E	DontEnum
+  PI		MathObjectImp::Pi	DontEnum
+  SQRT1_2	MathObjectImp::Sqrt1_2	DontEnum
+  SQRT2		MathObjectImp::Sqrt2	DontEnum
+  abs		MathObjectImp::Abs	DontEnum|Function 1
+  acos		MathObjectImp::ACos	DontEnum|Function 1
+  asin		MathObjectImp::ASin	DontEnum|Function 1
+  atan		MathObjectImp::ATan	DontEnum|Function 1
+  atan2		MathObjectImp::ATan2	DontEnum|Function 2
+  ceil		MathObjectImp::Ceil	DontEnum|Function 1
+  cos		MathObjectImp::Cos	DontEnum|Function 1
+  exp		MathObjectImp::Exp	DontEnum|Function 1
+  floor		MathObjectImp::Floor	DontEnum|Function 1
+  log		MathObjectImp::Log	DontEnum|Function 1
+  max		MathObjectImp::Max	DontEnum|Function 2
+  min		MathObjectImp::Min	DontEnum|Function 2
+  pow		MathObjectImp::Pow	DontEnum|Function 2
+  random	MathObjectImp::Random	DontEnum|Function 0
+  round		MathObjectImp::Round	DontEnum|Function 1
+  sin		MathObjectImp::Sin	DontEnum|Function 1
+  sqrt		MathObjectImp::Sqrt	DontEnum|Function 1
+  tan		MathObjectImp::Tan	DontEnum|Function 1
 @end
 */
 
