@@ -67,6 +67,8 @@ public:
         formCompletions=0;
         prevScrollbarVisible = true;
 	timerId = 0;
+        repaintTimerId = 0;
+        complete = false;
     }
     ~KHTMLViewPrivate()
     {
@@ -105,6 +107,11 @@ public:
 	isDoubleClick = false;
 	scrollingSelf = false;
 	timerId = 0;
+        repaintTimerId = 0;
+        complete = false;    
+        firstRelayout = true;
+        layoutSchedulingEnabled = true;
+        updateRect = QRect();    
     }
 
     QPainter *tp;
@@ -135,6 +142,13 @@ public:
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
     int timerId;
+    
+    int repaintTimerId;
+    bool complete;     
+    bool firstRelayout;
+    bool layoutSchedulingEnabled;
+    QRect updateRect;   
+    
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -188,7 +202,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
-    viewport()->setBackgroundMode(NoBackground);
+    viewport()->setBackgroundMode(NoBackground);    
 
     KImageIO::registerFormats();
 
@@ -234,11 +248,12 @@ void KHTMLView::init()
 
 void KHTMLView::clear()
 {
-    viewport()->erase();
 
-    if(d->useSlowRepaints)
-        setStaticBackground(false);
-
+    
+//    viewport()->erase();
+    
+    setStaticBackground(true);
+    
     d->reset();
     killTimers();
     emit cleared();
@@ -248,6 +263,7 @@ void KHTMLView::clear()
         QScrollView::setVScrollBarMode(d->prevScrollbarVisible?AlwaysOn:Auto);
     else
         QScrollView::setVScrollBarMode(d->vmode);
+        
     resizeContents(visibleWidth(), visibleHeight());
 }
 
@@ -289,12 +305,16 @@ void KHTMLView::drawContents( QPainter* p)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
+    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+
+    if (d->updateRect.isNull())
+        return;
+        
     if(!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
 
-    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
 
     if ( d->paintBuffer->width() < visibleWidth() )
         d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
@@ -321,6 +341,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
+
 }
 
 void KHTMLView::setMarginWidth(int w)
@@ -359,11 +380,10 @@ void KHTMLView::layout()
         //qt.start();
         root->setMinMaxKnown(false);
         root->setLayouted(false);
-        // avoid recursing into relayouts because of scrollbar-flicker
-        int oldtimer = d->timerId;
-        d->timerId = true;
+        // avoid recursing into relayouts because of scrollbar-flicker        
+     
         root->layout();
-        d->timerId = oldtimer;
+                
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
@@ -843,6 +863,8 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 	scrollY = contentsHeight() - visibleHeight() - contentsY();
 
     scrollBy(scrollX, scrollY);
+    
+    
 
     // generate abs(scroll.)
     if (scrollX<0)
@@ -1125,7 +1147,7 @@ void KHTMLView::restoreScrollBar ( )
     if (visibleWidth() != ow)
     {
         layout();
-        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+//        scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
 }
@@ -1335,16 +1357,137 @@ void KHTMLView::slotScrollBarMoved()
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
 {
-    killTimers();
-    layout();
-    repaintContents( contentsX(), contentsY(), visibleWidth(), visibleHeight(), FALSE );
-    d->timerId = 0;
+//    kdDebug() << "timer event " << e->timerId() << endl;
+    if (e->timerId()==d->timerId)
+    {
+
+//        kdDebug() << "scheduled layout " << d->timerId  << endl;        
+
+        d->firstRelayout = false;        
+        killTimer(d->timerId);        
+        
+        d->layoutSchedulingEnabled=false;                                        
+        layout();      
+        d->layoutSchedulingEnabled=true;        
+                
+        d->timerId = 0;        
+        
+        scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+    }
+    else if (e->timerId()==d->repaintTimerId)
+    {
+       
+        if( m_part->xmlDocImpl() ) {
+            DOM::DocumentImpl *document = m_part->xmlDocImpl();
+            khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
+            resizeContents(root->docWidth(), root->docHeight());
+        }
+        setStaticBackground(d->useSlowRepaints);
+
+                
+//        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
+        killTimer(d->repaintTimerId);
+        updateContents( d->updateRect );
+        
+        d->repaintTimerId = 0;
+    }    
 }
 
 void KHTMLView::scheduleRelayout()
 {
-    if ( d->timerId ) return;
-    // yeah, timeout == 0 is stupid. we will change that later, but
-    // for now we want to see everything
-    d->timerId = startTimer( 0 );
+    if (!d->layoutSchedulingEnabled)
+        return;
+               
+    // lets relayout once after beginning to get something quickly,
+    // after that, we'll just keep extending the timer.
+    /*if (d->firstRelayout)
+    {
+        if ( !d->timerId ) 
+            d->timerId = startTimer( 300 );
+        return;
+    }*/
+         
+                
+    if ( d->timerId ) 
+    {
+        killTimer(d->timerId);        
+    }   
+    
+    
+    bool parsing = false;
+    if( m_part->xmlDocImpl() ) {
+        parsing = m_part->xmlDocImpl()->parsing();
+    }        
+            
+    d->timerId = startTimer( parsing?400:0 );
+}
+
+void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
+{
+//    kdDebug() << "scheduleRepaint(" << x << "," << y << "," << w << "," << h << ")" << endl;
+
+    bool parsing = false;
+    if( m_part->xmlDocImpl() ) {
+        parsing = m_part->xmlDocImpl()->parsing();
+    }
+    
+//    kdDebug() << "parsing " << parsing << endl;
+//    kdDebug() << "complete " << d->complete << endl;
+    
+    int time;
+
+    // if complete...
+    if (d->complete)
+        // ...repaint immediatly
+        time = 0;
+    else
+    {
+        if (parsing)
+            // not complete and still parsing
+            time = 300;   
+        else
+            // not complete, not parsing, extend the timer if it exists
+            // otherwise, repaint immediatly
+            time = d->repaintTimerId?400:0;
+                 
+    }
+    
+    if (d->repaintTimerId)
+    {
+        killTimer(d->repaintTimerId);
+        d->updateRect = d->updateRect.unite(QRect(x,y,w,h)); 
+//        kdDebug() << "expanding rect" << endl;                 
+    }
+    else
+        d->updateRect = QRect(x,y,w,h);    
+              
+    d->repaintTimerId = startTimer( time );
+    
+//    kdDebug() << "starting timer " << time << endl;       
+}
+
+
+void KHTMLView::complete()
+{
+//    kdDebug() << "KHTMLView::complete()" << endl;
+ 
+    d->complete = true;
+       
+    // is there a relayout pending?
+    if (d->timerId)
+    {
+//        kdDebug() << "requesting relayout now" << endl;
+        // do it now
+        killTimer(d->timerId);
+        d->timerId = startTimer( 0 );           
+    }
+        
+    // is there a repaint pending?
+    if (d->repaintTimerId)
+    {
+//        kdDebug() << "requesting repaint now" << endl;
+        // do it now
+        killTimer(d->repaintTimerId);
+        d->repaintTimerId = startTimer( 0 );           
+    }
 }

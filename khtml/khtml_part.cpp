@@ -1830,6 +1830,8 @@ void KHTMLPart::checkCompleted()
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
                                  d->m_extension->urlArgs().yOffset );
 
+  d->m_view->complete();
+  
   if ( !d->m_redirectURL.isEmpty() )
   {
     // Do not start redirection for frames here! That action is

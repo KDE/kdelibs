@@ -188,6 +188,8 @@ private:
     void resetCursor();
 
     void scheduleRelayout();
+    
+    void scheduleRepaint(int x, int y, int w, int h);
 
     /**
      * Paints the HTML document to a QPainter.
@@ -235,6 +237,8 @@ private:
 
     void setIgnoreEvents(bool ignore);
     bool ignoreEvents();
+    
+    void complete();
 
     // ------------------------------------- member variables ------------------------------------
  private:
