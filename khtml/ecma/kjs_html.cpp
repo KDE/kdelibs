@@ -621,12 +621,27 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "coords")          return getString(anchor.coords());
       else if (p == "href")            return getString(anchor.href());
       else if (p == "hreflang")        return getString(anchor.hreflang());
+      else if (p == "hash")            return getString('#'+KURL(anchor.href().string()).ref());
+      else if (p == "host")            return getString(KURL(anchor.href().string()).host());
+      else if (p == "hostname") {
+        KURL url(anchor.href().string());
+        kdDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
+        if (url.port()==0)
+          return getString(url.host());
+        else
+          return getString(url.host() + ":" + QString::number(url.port()));
+      }
+      else if (p == "pathname")        return getString(KURL(anchor.href().string()).path());
+      else if (p == "port")            return getString(QString::number(KURL(anchor.href().string()).port()));
+      else if (p == "protocol")        return getString(KURL(anchor.href().string()).protocol()+":");
+      else if (p == "search")          return getString(KURL(anchor.href().string()).query());
       else if (p == "name")            return getString(anchor.name());
       else if (p == "rel")             return getString(anchor.rel());
       else if (p == "rev")             return getString(anchor.rev());
       else if (p == "shape")           return getString(anchor.shape());
       else if (p == "tabIndex")        return Number(anchor.tabIndex());
       else if (p == "target")          return getString(anchor.target());
+      else if (p == "text")            return getString(anchor.innerHTML());
       else if (p == "type")            return getString(anchor.type());
       // methods
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
@@ -709,6 +724,21 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "alt")             return getString(area.alt());
       else if (p == "coords")          return getString(area.coords());
       else if (p == "href")            return getString(area.href());
+      else if (p == "hash")            return getString('#'+KURL(area.href().string()).ref());
+      else if (p == "host")            return getString(KURL(area.href().string()).host());
+      else if (p == "hostname") {
+        KURL url(area.href().string());
+        kdDebug(6070) << "link::hostname uses:" <<url.url()<<endl;
+        if (url.port()==0)
+          return getString(url.host());
+        else
+          return getString(url.host() + ":" + QString::number(url.port()));
+      }
+      else if (p == "pathname")        return getString(KURL(area.href().string()).path());
+      else if (p == "port")            return getString(QString::number(KURL(area.href().string()).port()));
+      else if (p == "protocol")        return getString(KURL(area.href().string()).protocol()+":");
+      else if (p == "search")          return getString(KURL(area.href().string()).query());
+
       else if (p == "noHref")          return Boolean(area.noHref());
       else if (p == "shape")           return getString(area.shape());
       else if (p == "tabIndex")        return Number(area.tabIndex());
