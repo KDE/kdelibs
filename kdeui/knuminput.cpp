@@ -327,18 +327,18 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     m_spin->setLineStep(step);
 
     if(slider) {
-		if (m_slider)
-			m_slider->setRange(lower, upper);
-		else {
-			m_slider = new QSlider(lower, upper, step, m_spin->value(),
-								   QSlider::Horizontal, this);
-			m_slider->setTickmarks(QSlider::Below);
-			connect(m_slider, SIGNAL(valueChanged(int)),
-					m_spin, SLOT(setValue(int)));
-		}
+                if (m_slider)
+                        m_slider->setRange(lower, upper);
+                else {
+                        m_slider = new QSlider(lower, upper, step, m_spin->value(),
+                                                                   QSlider::Horizontal, this);
+                        m_slider->setTickmarks(QSlider::Below);
+                        connect(m_slider, SIGNAL(valueChanged(int)),
+                                        m_spin, SLOT(setValue(int)));
+                }
 
         int major = (upper-lower)/10;
-		if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
+                if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
         m_slider->setSteps(step, major);
         m_slider->setTickInterval(major);
     }
@@ -621,7 +621,7 @@ void KDoubleNumInput::init(double value)
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
     edit->setAlignment(AlignRight);
     edit->setValidator(new KFloatValidator(this,
-										   "KDoubleNumInput::KFloatValidator"));
+                                                                                   "KDoubleNumInput::KFloatValidator"));
     edit->installEventFilter( this );
     //setFocusProxy(edit);
 
@@ -687,7 +687,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
     edit->setGeometry(w, h, m_slider ? m_colw2
-					  : e->size().width() - w, m_sizeEdit.height());
+                                          : e->size().width() - w, m_sizeEdit.height());
     w += m_colw2 + 8;
 
     if(m_slider)
@@ -748,7 +748,7 @@ void KDoubleNumInput::setValue(double val)
 
     if(m_slider) {
         int slvalue = (int)(m_slider->maxValue()
-							* (m_value - m_lower)/(m_upper - m_lower));
+                                                        * (m_value - m_lower)/(m_upper - m_lower));
         m_slider->setValue(slvalue);
     }
 
@@ -759,7 +759,7 @@ void KDoubleNumInput::setValue(double val)
 // -----------------------------------------------------------------------------
 
 void KDoubleNumInput::setRange(double lower, double upper, double step,
-							   bool slider)
+                                                           bool slider)
 {
     m_lower = lower;
     m_upper = upper;
@@ -775,19 +775,19 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     m_value = floor(m_value / m_step) * m_step;
 
     if(slider) {
-		int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));
+                int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));
         int slvalue = (int)(slmax * (m_value - m_lower) / (m_upper - m_lower));
-		if (m_slider) {
-			m_slider->setRange(0, slmax);
-			m_slider->setValue(slvalue);
-		} else {
-			m_slider = new QSlider(0, slmax, 1, slvalue,
-								   QSlider::Horizontal, this);
-			m_slider->setTickmarks(QSlider::Below);
-			connect(m_slider, SIGNAL(valueChanged(int)),
-					SLOT(sliderMoved(int)));
-		}
-		m_slider->setTickInterval(slmax / 10);
+                if (m_slider) {
+                        m_slider->setRange(0, slmax);
+                        m_slider->setValue(slvalue);
+                } else {
+                        m_slider = new QSlider(0, slmax, 1, slvalue,
+                                                                   QSlider::Horizontal, this);
+                        m_slider->setTickmarks(QSlider::Below);
+                        connect(m_slider, SIGNAL(valueChanged(int)),
+                                        SLOT(sliderMoved(int)));
+                }
+                m_slider->setTickInterval(slmax / 10);
     } else {
         delete m_slider;
         m_slider = 0;
@@ -802,6 +802,9 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 
 double  KDoubleNumInput::value() const
 {
+    if(edit->edited())
+        edit->interpretText();
+
     return m_value;
 }
 
@@ -894,7 +897,7 @@ void KDoubleNumInput::setLabel(QString label, int a)
 bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
 {
     if ( obj != edit )
-	return false;
+        return false;
 
     bool revalue = false;
     double old_value = m_value;
@@ -903,19 +906,19 @@ bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
         edit->interpretText();
         revalue = false;
     } else if ( ev->type() == QEvent::KeyPress ) {
-	QKeyEvent* k = (QKeyEvent*)ev;
-	if ( k->key() == Key_Up || k->text() == "+" ) {
+        QKeyEvent* k = (QKeyEvent*)ev;
+        if ( k->key() == Key_Up || k->text() == "+" ) {
             if(m_range)
                 m_value += m_step;
             revalue = true;
-	} else if ( k->key() == Key_Down || k->text() == "-" ) {
+        } else if ( k->key() == Key_Down || k->text() == "-" ) {
             if(m_range)
                 m_value -= m_step;
             revalue = true;
-	} else if ( k->key() == Key_Return ) {
+        } else if ( k->key() == Key_Return ) {
             edit->interpretText();
             revalue = false;
-	}
+        }
     }
 
     if(m_value != old_value) {
