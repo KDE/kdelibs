@@ -311,3 +311,7 @@ bool KSSLSettings::warnOnEnter() const       { return false; }
 bool KSSLSettings::warnOnUnencrypted() const { return false; }
 bool KSSLSettings::warnOnLeave() const       { return false; }
 
+#include <kparts/plugin.h>
+
+KParts::Plugin* KParts::Plugin::loadPlugin( QObject * parent, const char* libname ) { return 0; }
+
