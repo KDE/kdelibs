@@ -1356,7 +1356,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 {
     Length l;
     if ( !primitiveValue ) {
-	if ( *ok )
+	if ( ok )
             *ok = false;
     } else {
 	int type = primitiveValue->primitiveType();
