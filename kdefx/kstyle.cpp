@@ -313,12 +313,13 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			bool horizontal = flags & Style_Horizontal;
 			int x,y,w,h,x2,y2;
 
-			if ((wid->width() <= 2) || (wid->height() <= 2)) {
+			r.rect( &x, &y, &w, &h );
+			if ((w <= 2) || (h <= 2)) {
 				p->fillRect(r, cg.highlight());
 				return;
 			}
 
-			r.rect( &x, &y, &w, &h );
+			
 			x2 = x + w - 1;
 			y2 = y + h - 1;
 
