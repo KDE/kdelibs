@@ -70,6 +70,8 @@ class KInstance;
  * <li>catastrophe
  *</ul>
  *
+ * The events can be configured in an application using KNotifyDialog, which is part of KIO.
+ * 
  * @author Charles Samuels <charles@kde.org>
  */
 
