@@ -88,12 +88,13 @@ namespace KNotifyClient
     public:
         /**
          * Constructs a @ref KNotifyClient::Instance to make @ref KNotifyClient use
-         * the specified @ref KInstance for the event configuration
+         * the specified @ref KInstance for the event configuration.
+	 * @param instance the instance for the event configuration
          */
-        Instance(KInstance *);
+        Instance(KInstance *instance);
         /**
          * Destructs the KNotifyClient::Instance and resets @ref KNotifyClient
-         * to the previously used @ref KInstance
+         * to the previously used @ref KInstance.
          */
         ~Instance();
 	/**
@@ -173,6 +174,7 @@ namespace KNotifyClient
 	 * @param message The name of the event
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only. Can be QString::null.
+	 * @return true if successful, false otherwise
 	 */
 	bool event(const QString &message, const QString &text=QString::null);
 
@@ -180,6 +182,7 @@ namespace KNotifyClient
 	 * Allows to easily emit standard events.
 	 * @param event The event you want to raise.
 	 * @param text The text explaining the event you raise. Can be QString::null.
+	 * @return true if successful, false otherwise
 	 */
 	bool event( StandardEvent event, const QString& text=QString::null );
 
@@ -208,7 +211,9 @@ namespace KNotifyClient
 	/**
 	 * Gets the presentation associated with a certain event name
 	 * Remeber that they may be ORed:
+	 * <pre>
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
+	 * </pre>
 	 * @param eventname the event name to check
 	 * @return the presentation methods
 	 */
@@ -227,7 +232,9 @@ namespace KNotifyClient
 	/**
 	 * Gets the default presentation for the event of this program.
 	 * Remember that the Presentation may be ORed.  Try this:
+	 * <pre>
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
+	 * </pre>
 	 * @return the presentation methods
 	 */
 	int getDefaultPresentation(const QString &eventname);
