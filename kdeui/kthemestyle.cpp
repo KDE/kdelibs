@@ -32,7 +32,7 @@
 
 void KThemeStyle::polish(QApplication */*app*/)
 {
-    setScrollBarExtent(getSBExtent());
+    setScrollBarExtent(getSBExtent(), getSBExtent());
 }
 
 void KThemeStyle::polish(QPalette &p)
@@ -257,29 +257,12 @@ void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
     drawBaseButton(p, x, y, w, h, *colorGroup(g, type), sunken, false, type);
 }
 
-// for the new OP stuff, you shouldn't have to play with this (mosfet)
-void KThemeStyle::drawToolButton(QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool sunken,
-                                 const QBrush *fill)
-{
-    WidgetType type = sunken ? ToolButtonDown : ToolButton;
-    drawBaseButton(p, x, y , w, h, *colorGroup(g, type), sunken, false, type,
-                  fill);
-}
-
-// or this either ;-)
-void KThemeStyle::drawOPToolBar(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, QBrush *fill)
-{
-    drawBaseButton(p, x, y , w, h, *colorGroup(g, ToolBar), false, false,
-                  ToolBar, fill);
-}
-
 void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      const QColorGroup &g, bool sunken,
                                      bool raised, bool enabled, bool popup,
                                      KToolButtonType type, const QString &btext,
-                                     const QPixmap *pixmap, QFont *font)
+                                     const QPixmap *pixmap, QFont *font,
+                                     QWidget *)
 {
     QFont tmp_font(QString::fromLatin1("Helvetica"), 10);
     if (font)
@@ -572,7 +555,7 @@ void KThemeStyle::drawScrollBarGroove(QPainter *p, const QScrollBar *sb,
 {
     WidgetType widget = (horizontal) ? HScrollGroove : VScrollGroove;
     if(!isPixmap(widget)){
-        p->fillRect(r, colorGroup(g, widget)->brush(QColorGroup::Mid));
+        p->fillRect(r, colorGroup(g, widget)->brush(QColorGroup::Background));
     }
     else{
         // If the groove is pixmapped we make a full-sized image (it gets

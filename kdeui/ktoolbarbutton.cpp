@@ -504,7 +504,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
       isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
       d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, d->m_text,
-      pixmap(), &ref_font);
+      pixmap(), &ref_font, this);
     return;
   }
 

@@ -111,7 +111,7 @@ public:
                                     bool popup = false, KToolButtonType type = Icon,
                                     const QString &btext=QString::null,
                                     const QPixmap *icon=NULL,
-                                    QFont *font=NULL);             
+                                    QFont *font=NULL, QWidget *btn=NULL);
     /**
      * Draws the handle used in menu and toolbars.
      */
@@ -325,21 +325,6 @@ public:
     virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);
     virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);    
     virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
-    /**
-     * Provided for compatibility with with QToolBar for use with the new
-     * KDE Parts mechanism. This should not be reimplemented,
-     * drawKToolBarButton should be used instead.
-     */
-    virtual void drawToolButton(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool sunken=false,
-								const QBrush *fill=0);
-    /**
-     * Provided for compatibility with with QToolBar for use with the new
-     * KDE Parts mechanism. This should not be reimplemented,
-     * drawKToolBar should be used instead.
-     */
-    virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *fill=NULL);
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
 
