@@ -169,6 +169,11 @@
  *	the result overflows to +-Infinity or underflows to 0.
  */
 
+// Put this before anything else that may import a definition of CONST. CONST from grammar.cpp conflicts with this.
+#ifdef KDE_USE_FINAL
+#undef CONST
+#endif
+
 #include <config.h>
 
 #include "stdlib.h"
