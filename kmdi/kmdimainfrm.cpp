@@ -265,7 +265,9 @@ KMdiMainFrm::~KMdiMainFrm()
    // safely close the windows so properties are saved...
    KMdiChildView *pWnd = 0L;
    while((pWnd = m_pDocumentViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
+#ifdef __GNUC__
 #warning fixme    while((pWnd = m_pToolViews->first()))closeWindow(pWnd, false); // without re-layout taskbar!
+#endif
    emit lastChildViewClosed();
    delete m_pDocumentViews;
    delete m_pToolViews;
@@ -289,7 +291,9 @@ KMdiMainFrm::~KMdiMainFrm()
 }
 
 //============ applyOptions ============//
+#ifdef __GNUC__
 #warning fixme
+#endif
 void KMdiMainFrm::applyOptions()
 {
    for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
@@ -672,7 +676,9 @@ void KMdiMainFrm::detachWindow(KMdiChildView *pWnd, bool bShow)
 void KMdiMainFrm::removeWindowFromMdi(KMdiChildView *pWnd)
 {
    //Closes a child window. sends no close event : simply deletes it
+#ifdef __GNUC__
 #warning FIXME FIXME FIXME
+#endif
 #if 0
    if (!(m_pWinList->removeRef(pWnd)))
       return;
@@ -1066,7 +1072,9 @@ bool KMdiMainFrm::eventFilter(QObject * /*obj*/, QEvent *e )
 /**
  * close all views
  */
+#ifdef __GNUC__
 #warning fixme ?
+#endif
 void KMdiMainFrm::closeAllViews()
 {
    for(KMdiChildView *w = m_pDocumentViews->first();w;w= m_pDocumentViews->next()){
@@ -1231,7 +1239,9 @@ void KMdiMainFrm::switchToToplevelMode()
       }
    }
 
+#ifdef __GNUC__
 #warning fixme
+#endif
    // 5. show the child views again
    QPtrListIterator<KMdiChildView> it( *m_pDocumentViews);
    for( it.toFirst(); it.current(); ++it) {
@@ -1356,7 +1366,9 @@ void KMdiMainFrm::switchToChildframeMode()
    KMdi::MdiMode oldMdiMode = m_mdiMode;
    m_mdiMode = KMdi::ChildframeMode;
 
+#ifdef __GNUC__
 #warning fixme
+#endif
    QPtrListIterator<KMdiChildView> it( *m_pDocumentViews);
    for( ; it.current(); ++it) {
       KMdiChildView* pView = it.current();
