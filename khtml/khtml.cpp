@@ -1370,6 +1370,8 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 
 bool KHTMLWidget::isFrameSet()
 {
+    if(!document || !document->body()) return false;
+    
     if(document->body()->id() == ID_FRAMESET) return true;
     return false;
 }
