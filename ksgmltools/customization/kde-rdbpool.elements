@@ -72,9 +72,9 @@
 		|AuthorBlurb|Contrib %local.person.ident.mix;">
 
 <!ENTITY % local.bibliocomponent.mix "">
-<!-- Copy of bibliocomponent.mix without ReleaseInfo or Date -->
+<!-- Copy of bibliocomponent.mix without ReleaseInfo, Date or Abstract -->
 <!ENTITY % kde.bibliocomponent.mix
-		"Abbrev|Abstract|Address|ArtPageNums|Author
+		"Abbrev|Address|ArtPageNums|Author
 		|AuthorGroup|AuthorInitials|BiblioMisc|BiblioSet
 		|Collab|ConfGroup|ContractNum|ContractSponsor
 		|Copyright|CorpAuthor|CorpName|Edition
