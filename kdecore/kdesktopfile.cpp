@@ -107,5 +107,5 @@ bool KDesktopFile::hasMimeTypeType()
 
 bool KDesktopFile::hasDeviceType()
 {
-  return readEntry("Type") == "FSDev";
+  return readEntry("Type") == "FSDev" || readEntry("Type") == "FSDevice";
 }
