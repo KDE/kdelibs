@@ -112,6 +112,8 @@ class KHTMLPart;
  * @version $Id$
  *
  */
+#include <stdio.h>
+ 
 class KHTMLView : public QScrollView
 {
     Q_OBJECT
@@ -142,7 +144,8 @@ protected:
     void clear();
 public:
 
-    int frameWidth() { return _width; }
+    int frameWidth() { return _width; }   
+
 
     /**
      * Tell the widget to display the HTML page referred to by _url.
@@ -533,6 +536,7 @@ public:
     //    khtml::Settings *settings();
 
     //    void scheduleRedirection(int delay, const QString & url);
+    
 
 public slots:
     /**
@@ -660,6 +664,7 @@ protected:
     void paintElement( khtml::RenderObject *o, int x, int y );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
+    virtual bool focusNextPrevChild( bool next );
 
 public:
     void layout();

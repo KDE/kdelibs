@@ -96,6 +96,7 @@ using namespace DOM;
 
 QPixmap* KHTMLView::paintBuffer = 0L;
 
+
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     : QScrollView( parent, name)
 {
@@ -1551,3 +1552,15 @@ void KHTMLView::slotRedirect()
     m_delayRedirect = 0;
 }
 */
+
+
+bool KHTMLView::focusNextPrevChild( bool next )
+{
+    printf("focusNextPrev %d\n",next);
+    return true;    // ### temporary fix for qscrollview focus bug
+    	    	    // as a side effect, disables tabbing between form elements
+		    // -antti
+    
+    //return QScrollView::focusNextPrevChild( next );
+}
+
