@@ -209,6 +209,7 @@ protected:
 	bool terminated;
 
 	bool fdListChanged;	// causes the fd_sets to be rebuilt before using them
+	bool timeListChanged;
 	fd_set readfds, writefds, exceptfds;
 	fd_set reentrant_readfds, reentrant_writefds, reentrant_exceptfds;
 	int maxfd;

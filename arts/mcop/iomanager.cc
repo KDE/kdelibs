@@ -96,6 +96,7 @@ StdIOManager::StdIOManager()
 {
 	// force initialization of the fd_set's
 	fdListChanged = true;
+	timeListChanged = false;
 	level = 0;
 }
 
@@ -179,6 +180,7 @@ void StdIOManager::processOneEvent(bool blocking)
 
 		list<TimeWatcher *>::iterator ti;
 
+		timeListChanged = false;
 		ti = timeList.begin();
 		while(ti != timeList.end())
 		{
@@ -192,6 +194,12 @@ void StdIOManager::processOneEvent(bool blocking)
 				timerabs += (timertime.tv_usec - currenttime.tv_usec);
 
 				if(timerabs < selectabs) selectabs = timerabs;
+			}
+
+			if(timeListChanged) 
+			{
+		        ti = timeList.begin();
+				timeListChanged = false;
 			}
 		}
 	}
@@ -274,11 +282,17 @@ void StdIOManager::processOneEvent(bool blocking)
 
 		list<TimeWatcher *>::iterator ti;
 
+		timeListChanged = false;
 		ti = timeList.begin();
 		while(ti != timeList.end())
 		{
 			TimeWatcher *w = *ti++;
 			w->advance(currenttime);
+			if (timeListChanged) 
+			{
+		        ti = timeList.begin();
+				timeListChanged = false;
+			}
 		}
 	}
 
@@ -358,6 +372,7 @@ void StdIOManager::remove(IONotify *notify, int types)
 void StdIOManager::addTimer(int milliseconds, TimeNotify *notify)
 {
 	timeList.push_back(new TimeWatcher(milliseconds,notify));
+	timeListChanged = true;
 	Dispatcher::wakeUp();
 }
 
@@ -374,6 +389,7 @@ void StdIOManager::removeTimer(TimeNotify *notify)
 		if(w->notify() == notify)
 		{
 			i = timeList.erase(i);
+			timeListChanged = true;
 			w->destroy();
 		}
 		else i++;
