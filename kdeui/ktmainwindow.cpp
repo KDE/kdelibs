@@ -863,7 +863,7 @@ QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomEl
 
   if ( element.tagName().lower() == "menu" && parent )
   {
-    QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ) );
+    QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ).utf8());
 
     QString text = i18n(element.namedItem( "text" ).toElement().text().latin1());
     if (text.isEmpty())  // try with capital T
@@ -882,7 +882,7 @@ QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomEl
   if ( element.tagName().lower() == "toolbar" )
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
-    KToolBar *bar = new KToolBar(this, element.attribute( "name" ), -1, honor);
+    KToolBar *bar = new KToolBar(this, element.attribute( "name" ).utf8(), -1, honor);
 
     addToolBar( bar );
 
