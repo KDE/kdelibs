@@ -110,9 +110,13 @@ protected:
    */
   virtual void mouseMoveEvent( QMouseEvent *e );
   /**
-   * KDE4 : add mousewheel support
-  virtual void wheelEvent( QWheelEvent * );
+   * @reimplemented
    */
+  virtual void wheelEvent( QWheelEvent * );
+  /**
+   * Converts a pixel position to its corresponding values.
+   */
+  void valuesFromPosition( int x, int y, int& xVal, int& yVal ); 
 
 private:
   void setPosition( int xp, int yp );
@@ -265,9 +269,9 @@ protected:
    */
   virtual void mouseMoveEvent( QMouseEvent *e );
   /**
-   * KDE4 : add mousewheel support
-  virtual void wheelEvent( QWheelEvent * );
+   * @reimplemented
    */
+  virtual void wheelEvent( QWheelEvent * );
 
 private:
   QPoint calcArrowPos( int val );

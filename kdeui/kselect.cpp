@@ -23,6 +23,8 @@
 #include <kimageeffect.h>
 #include "kselect.h"
 
+#include <kdebug.h>
+
 #define STORE_W 8
 #define STORE_W2 STORE_W * 2
 
@@ -115,16 +117,46 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 
 void KXYSelector::mousePressEvent( QMouseEvent *e )
 {
-	setPosition( e->pos().x() - 2, e->pos().y() - 2 );
+	int xVal, yVal;
+	valuesFromPosition( e->pos().x() - 2, e->pos().y() - 2, xVal, yVal );
+	setValues( xVal, yVal );
 
 	emit valueChanged( xPos, yPos );
 }
 
 void KXYSelector::mouseMoveEvent( QMouseEvent *e )
 {
-	setPosition( e->pos().x() - 2, e->pos().y() - 2 );
-
+	int xVal, yVal;
+	valuesFromPosition( e->pos().x() - 2, e->pos().y() - 2, xVal, yVal );
+	setValues( xVal, yVal );
+	
 	emit valueChanged( xPos, yPos );
+}
+
+void KXYSelector::wheelEvent( QWheelEvent *e )
+{
+	if ( e->orientation() == Qt::Horizontal )
+		setValues( xValue() + e->delta()/120, yValue() );
+	else	
+		setValues( xValue(), yValue() + e->delta()/120 );
+	
+	emit valueChanged( xPos, yPos );
+}
+
+void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal )
+{
+	xVal = ( (maxX-minX) * (x-2) ) / ( width()-4 );
+	yVal = maxY - ( ( (maxY-minY) * (y-2) ) / ( height()-4 ) );
+	
+	if ( xVal > maxX )
+		xVal = maxX;
+	else if ( xVal < minX )
+		xVal = minX;
+	
+	if ( yVal > maxY )
+		yVal = maxY;
+	else if ( yVal < minY )
+		yVal = minY;
 }
 
 void KXYSelector::setPosition( int xp, int yp )
@@ -151,19 +183,6 @@ void KXYSelector::setPosition( int xp, int yp )
 	py = yp;
 
 	painter.end();
-
-	xPos = ( (maxX-minX) * (xp-2) ) / ( width()-4 );
-	yPos = maxY - ( ( (maxY-minY) * (yp-2) ) / ( height()-4 ) );
-	
-	if ( xPos > maxX )
-		xPos = maxX;
-	else if ( xPos < minX )
-		xPos = minX;
-	
-	if ( yPos > maxY )
-		yPos = maxY;
-	else if ( yPos < minY )
-		yPos = minY;
 }
 
 void KXYSelector::drawContents( QPainter * )
@@ -248,6 +267,13 @@ void KSelector::mousePressEvent( QMouseEvent *e )
 void KSelector::mouseMoveEvent( QMouseEvent *e )
 {
 	moveArrow( e->pos() );
+}
+
+void KSelector::wheelEvent( QWheelEvent *e )
+{
+	int val = value() + e->delta()/120;
+	emit valueChanged( val );
+	setValue( val );
 }
 
 void KSelector::valueChange()
