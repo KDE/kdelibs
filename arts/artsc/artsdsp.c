@@ -181,7 +181,7 @@ static void mmapemu_flush()
 static int is_sound_device(const char *pathname)
 {
   if(strcmp(pathname,"/dev/dsp") == 0) return 1;
-  if(strcmp(pathname,"/dev/sound/dsp0") == 0) return 1;
+  if(strcmp(pathname,"/dev/sound/dsp") == 0) return 1;
   return 0;
 }
 

@@ -94,7 +94,7 @@ string AudioIOOSS::findDefaultDevice()
 {
 	static const char *device[] = {
 		"/dev/dsp",						/* Linux (and lots of others) */
-		"/dev/sound/dsp0",				/* Linux with devfs-only installation */
+		"/dev/sound/dsp",				/* Linux with devfs-only installation */
 		"/dev/audio",					/* OpenBSD */
 		0
 	};
