@@ -128,7 +128,7 @@ void HTMLElement::removeCSSProperty( const DOMString &property )
 	e->removeCSSProperty( property );
 	e->setChanged( true );
     }
-}    
+}
 
 void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &value )
 {
@@ -137,12 +137,6 @@ void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &va
 	e->addCSSProperty( property, value );
 	e->setChanged( true );
     }
-}    
-    
-DOMString HTMLElement::getCSSProperty( const DOM::DOMString &prop )
-{
-    if(!impl) return 0;
-    return ((HTMLElementImpl *)impl)->getCSSProperty( prop );
 }
 
 DOMString HTMLElement::innerHTML() const
@@ -159,7 +153,7 @@ void HTMLElement::setInnerHTML( const DOMString &html )
     if ( !ok )
 	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
-    
+
 DOMString HTMLElement::innerText() const
 {
     if ( !impl ) return 0;
