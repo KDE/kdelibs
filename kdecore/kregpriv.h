@@ -46,8 +46,8 @@ public:
     
 protected:
   regex_t m_pattern;
-  regmatch_t (m_matches[ 10 ]);
-  char* (m_strMatches[10]);
+  regmatch_t m_matches[ 10 ];
+  char* m_strMatches[10];
   bool m_bInit;
 
 private:
