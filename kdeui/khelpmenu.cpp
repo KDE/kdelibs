@@ -158,7 +158,7 @@ QPopupMenu* KHelpMenu::menu()
       QString::fromLatin1("..."), menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
-    mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
+    mMenu->insertItem( SmallIcon("go"), i18n( "About &KDE..." ), menuAboutKDE );
     mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
   }
 
