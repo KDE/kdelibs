@@ -20,9 +20,13 @@
 
 #include <qabstractlayout.h> 
 #include <qobjectlist.h>
+#include <qguardedptr.h>
+#include <qvaluelist.h>
+#include <qtimer.h>
 
 #include <kapp.h>
 #include <kdialog.h>
+#include <kstaticdeleter.h>
 
 int KDialog::mMarginSize = 6;
 int KDialog::mSpacingSize = 6;
@@ -134,6 +138,67 @@ void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
     lay->layout()->setMargin( margin );
     lay->layout()->setSpacing( spacing );
   }
+}
+
+class KDialogQueuePrivate
+{
+public:
+  QValueList< QGuardedPtr<QDialog> > queue;
+  bool busy;
+};
+
+static KStaticDeleter<KDialogQueue> ksdkdq;
+
+KDialogQueue *KDialogQueue::_self=0;
+
+KDialogQueue* KDialogQueue::self()
+{
+   if (!_self)
+      _self = ksdkdq.setObject(new KDialogQueue);
+   return _self;
+}
+
+KDialogQueue::KDialogQueue()
+{
+   d = new KDialogQueuePrivate;
+   d->busy = false;
+}
+
+KDialogQueue::~KDialogQueue()
+{
+   delete d; d = 0;
+}
+
+// static 
+void KDialogQueue::queueDialog(QDialog *dialog)
+{
+   KDialogQueue *_this = self();
+   _this->d->queue.append(dialog);
+   QTimer::singleShot(0, _this, SLOT(slotShowQueuedDialog()));
+}
+
+void KDialogQueue::slotShowQueuedDialog()
+{
+   if (d->busy)
+      return;
+   QDialog *dialog;
+   do {
+      if(!d->queue.count())
+         return;
+      dialog = d->queue.first();
+      d->queue.remove(d->queue.begin());
+   }
+   while(!dialog);
+
+   d->busy = true;
+   dialog->exec();
+   d->busy = false;
+   delete dialog;
+
+   if (d->queue.count())
+      QTimer::singleShot(20, this, SLOT(slotShowQueuedDialog()));
+   else
+      ksdkdq.destructObject(); // Suicide.
 }
 
 

@@ -355,6 +355,56 @@ public:
   static void about(QWidget *parent,
 		    const QString& text,
 		    const QString& caption = QString::null, bool notify=true);
+
+  enum { QuestionYesNo = 1, 
+         WarningYesNo = 2, 
+         WarningContinueCancel = 3, 
+         WarningYesNoCancel = 4, 
+         Information = 5,
+         // Reserved for: SSLMessageBox = 6 
+         Sorry = 7,
+         Error = 8
+         };
+
+    /**
+     * Alternate method to show a messagebox:
+     *
+     * @param parent  If @p parent is 0, then the message box becomes an
+     *                application-global modal dialog box. If @p parent is a
+     *                widget, the message box becomes modal relative to parent.     * @param type type of message box: QuestionYesNo, WarningYesNo, WarningContinueCancel...
+     * @param text Message string. May contain newlines.
+     * @param caption Message box title.
+     * @param buttonYes The text for the first button.
+     *                  The default is i18n("&Yes").
+     * @param buttonNo  The text for the second button.
+     *                  The default is i18n("&No").
+     * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
+     *       and for Information, none is used.
+     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     */
+    static int messageBox( QWidget *parent, int type, const QString &text,
+                    const QString &caption = QString::null,
+                    const QString &buttonYes = QString::null,
+                    const QString &buttonNo = QString::null );
+
+    /*
+     * Like @ref messageBox 
+     *
+     * Only for message boxes of type Information, Sorry or Error.
+     *
+     * This function will return immediately, the messagebox will be shown
+     * once the application enters an event loop and no other messagebox
+     * is being shown.
+     *
+     * Note that if the parent gets deleted, the messagebox will not be
+     * shown.
+     */
+    static void queuedMessageBox( QWidget *parent,
+                    int type, const QString &text,
+                    const QString &caption = QString::null,
+                    const QString &buttonYes = QString::null,
+                    const QString &buttonNo = QString::null );
+
 };
 
 #endif

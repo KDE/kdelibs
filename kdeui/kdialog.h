@@ -131,4 +131,43 @@ class KDialog : public QDialog
 
 };
 
+
+ /**
+  * Queue for showing modal dialog one after the other from the main event loop.
+  *
+  * This is usefull if you want to show a modal dialog but are not in the
+  * position to start a new event loop at that point in your code.
+  *
+  * The disadvantage is that you will not be able to get any information from
+  * the dialog, so it can currently only be used for simple dialogs.
+  *
+  * You probably want to use @ref KMessageBox::queueMessageBox() instead
+  * of this class directly.
+  *
+  * @author Waldo Bastian <bastian@kde.org>
+  * @version 0.1
+  */
+class KDialogQueuePrivate;
+class KDialogQueue : public QObject
+{
+      Q_OBJECT
+   
+public:
+   
+      static void queueDialog(QDialog *);
+      
+      ~KDialogQueue();
+
+protected:
+      KDialogQueue();
+      static KDialogQueue *self();
+
+private slots:
+      void slotShowQueuedDialog(); 
+
+protected:
+      KDialogQueuePrivate *d;
+      static KDialogQueue *_self;
+};
+
 #endif // __KDIALOG_H

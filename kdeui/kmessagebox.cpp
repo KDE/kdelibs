@@ -51,6 +51,8 @@
 #warning FIXME - Implement Notification
 #endif
 
+static bool KMessageBox_queue = false;
+
 static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn)
 {
     QVBox *topcontents = new QVBox (dialog);
@@ -88,9 +90,16 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     dialog->enableButtonSeparator(false);
     dialog->incInitialSize( extraSize );
 
+    if (KMessageBox_queue)
+    {
+       KDialogQueue::queueDialog(dialog);
+       return KMessageBox::Cancel; // We have to return something.
+    }
+
     int result = dialog->exec();
     if (checkbox && checkboxReturn)
        *checkboxReturn = checkbox->isChecked();
+    delete dialog;
     return result;
 }
 
@@ -111,13 +120,14 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QString &buttonYes,
                                const QString &buttonNo, bool /*notify*/)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
 
-    int result = createKMessageBox(&dialog, QMessageBox::Information, text, strlist, QString::null, 0);
+    int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist, QString::null, 0);
 
     switch( result )
     {
@@ -140,13 +150,14 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &buttonYes,
                           const QString &buttonNo, bool /*notify*/)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::No, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonYes, buttonNo);
 
-    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 
     switch( result )
     {
@@ -209,14 +220,15 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
        }
     }
 
-    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonContinue, i18n("&Cancel"));
 
     bool checkboxResult;
-    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, strlist, 
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist, 
                        dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
                        &checkboxResult);
 
@@ -254,13 +266,14 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &buttonYes,
                                 const QString &buttonNo, bool /*notify*/)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
                        KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "warningYesNoCancel", true, true,
                        buttonYes, buttonNo);
 
-    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 
     switch( result )
     {
@@ -284,26 +297,28 @@ void
 KMessageBox::error(QWidget *parent,  const QString &text,
                    const QString &caption, bool /*notify*/)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Error") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Error") : caption,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "error", true, true,
                        i18n("&OK"));
 
-    createKMessageBox(&dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0);
+    createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0);
 }
 
 void
 KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption, bool /*notify*/)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Sorry") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Sorry") : caption,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "sorry", true, true,
                        i18n("&OK"));
 
-    createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
+    createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 }
 
 void
@@ -325,7 +340,8 @@ KMessageBox::information(QWidget *parent,const QString &text,
        }
     }
 
-    KDialogBase dialog(caption.isEmpty() ? i18n("Information") : caption,
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Information") : caption,
                        KDialogBase::Yes,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "information", true, true,
@@ -333,7 +349,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     bool checkboxResult;
 
-    createKMessageBox(&dialog, QMessageBox::Information, text, QStringList(), 
+    createKMessageBox(dialog, QMessageBox::Information, text, QStringList(), 
 		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"), 
                 &checkboxResult);
 
@@ -395,3 +411,40 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
+int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+    switch (type) {
+        case QuestionYesNo:
+            return KMessageBox::questionYesNo( parent,
+                                               text, caption, buttonYes, buttonNo );
+        case WarningYesNo:
+            return KMessageBox::warningYesNo( parent,
+                                              text, caption, buttonYes, buttonNo );
+        case WarningContinueCancel:
+            return KMessageBox::warningContinueCancel( parent,
+                                              text, caption, buttonYes );
+        case WarningYesNoCancel:
+            return KMessageBox::warningYesNoCancel( parent,
+                                              text, caption, buttonYes, buttonNo );
+        case Information:
+            KMessageBox::information( parent,
+                                      text, caption );
+            return KMessageBox::Ok; // whatever
+
+        case Error:
+            KMessageBox::error( parent, text, caption );
+            return KMessageBox::Ok; // whatever
+
+        case Sorry:
+            KMessageBox::sorry( parent, text, caption );
+            return KMessageBox::Ok; // whatever
+    }
+    return KMessageBox::Cancel;
+}
+
+void KMessageBox::queuedMessageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+{
+   KMessageBox_queue = true;
+   (void) messageBox(parent, type, text, caption, buttonYes, buttonNo);
+   KMessageBox_queue = false;
+}
