@@ -526,7 +526,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
   m_url = url;
-  
+
   d->m_restoreScrollPosition = true;
   disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
@@ -637,20 +637,20 @@ bool KHTMLPart::openURL( const KURL &url )
         return true;
     }
   }
-  
+
   // Save offset of viewport when page is reloaded to be compliant
   // to every other capable browser out there.
   if (args.reload) {
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
     d->m_extension->setURLArgs(args);
-  } 
+  }
 
   if (!d->m_restored)
     closeURL();
 
   d->m_restoreScrollPosition = d->m_restored;
-  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));      
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
@@ -1373,7 +1373,7 @@ void KHTMLPart::clear()
       delete *it;
     }
   }
-  
+
   if (d->m_objects.count())
   {
     KHTMLFrameList objects = d->m_objects;
@@ -3476,7 +3476,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
-      jscode += i18n(" (In new window)");    
+      jscode += i18n(" (In new window)");
     setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
     return;
   }
@@ -3653,7 +3653,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     // ### ERROR HANDLING
     return;
 
-  kdDebug(6050) << this << "urlSelected: complete URL:" << cURL.url() << " target=" << target << endl;
+  kdDebug(6050) << this << " urlSelected: complete URL:" << cURL.url() << " target=" << target << endl;
 
   if ( state & ControlButton )
   {
@@ -4664,10 +4664,10 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;
     referrer = this->referrer();
-    
+
     if (!(d->m_strSelectedURLTarget).isEmpty() &&
            (d->m_strSelectedURLTarget.lower() != "_top") &&
-           (d->m_strSelectedURLTarget.lower() != "_self") && 
+           (d->m_strSelectedURLTarget.lower() != "_self") &&
 	   (d->m_strSelectedURLTarget.lower() != "_parent")) {
       if (d->m_strSelectedURLTarget.lower() == "_blank")
         args.setForcesNewWindow(true);
@@ -6751,7 +6751,7 @@ void KHTMLPart::restoreScrollPosition()
       gotoAnchor(m_url.htmlRef());
     return;
   }
-  
+
   // Check whether the viewport has become large enough to encompass the stored
   // offsets. If the document has been fully loaded, force the new coordinates,
   // even if the canvas is too short (can happen when user resizes the window
@@ -6760,7 +6760,7 @@ void KHTMLPart::restoreScrollPosition()
       || d->m_bComplete) {
     d->m_view->setContentsPos(args.xOffset, args.yOffset);
     disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-  }  
+  }
 }
 
 
