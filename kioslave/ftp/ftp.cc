@@ -1075,9 +1075,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // Parsing the date is somewhat tricky
                     // Examples : "Oct  6 22:49", "May 13  1999"
 
-                    // First get current time - we need the current year
+                    // First get current time - we need the current month and year
                     time_t currentTime = time( 0L );
                     struct tm * tmptr = gmtime( &currentTime );
+                    int currentMonth = tmptr->tm_mon;
                     //kdebug( KDEBUG_INFO, 7102, "Current time :%s", asctime( tmptr ) );
                     // Reset time fields
                     tmptr->tm_sec = 0;
@@ -1102,7 +1103,15 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                       tmptr->tm_year = atoi( p_date_3 ) - 1900;
                     else
                     {
-                      // otherwise, it's the current year,
+                      // otherwise, the year is implicit
+                      // according to man ls, this happens when it is between than 6 months
+                      // old and 1 hour in the future.
+                      // So the year is : current year if tm_mon <= currentMonth+1
+                      // otherwise current year minus one
+                      // (The +1 is a security for the "+1 hour" at the end of the month issue)
+                      if ( tmptr->tm_mon > currentMonth + 1 )
+                        tmptr->tm_year--;
+
                       // and p_date_3 contains probably a time
                       char * semicolon;
                       if ( ( semicolon = strchr( p_date_3, ':' ) ) )
