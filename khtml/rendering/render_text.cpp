@@ -733,11 +733,11 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-    return m_contentHeight
+    return m_contentHeight * m_lines.count()
         + style()->borderTopWidth() + style()->borderBottomWidth();
    // ### padding is relative to the _width_ of the containing block
     //+ style()->paddingTop() + style()->paddingBottom()
- }
+}
 
 int RenderText::bidiHeight() const
 {
