@@ -316,6 +316,14 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
 #ifdef HAVE_LIBART
+    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
+    icon = d->mpThemeRoot->findIcon(name + svgz_ext, size, KIcon::MatchExact);
+    if (icon.isValid())
+      return icon;
+    icon = d->mpThemeRoot->findIcon(name + svgz_ext, size, KIcon::MatchBest);
+    if (icon.isValid())
+      return icon;
+
     static const QString &svg_ext = KGlobal::staticQString(".svg");
     icon = d->mpThemeRoot->findIcon(name + svg_ext, size, KIcon::MatchExact);
     if (icon.isValid())
@@ -362,8 +370,9 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     static const QString &png_ext = KGlobal::staticQString(".png");
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
 #ifdef HAVE_LIBART
+    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     static const QString &svg_ext = KGlobal::staticQString(".svg");
-    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
+    if (ext == svgz_ext || ext == svg_ext || ext == png_ext || ext == xpm_ext)
 #else
     if (ext == png_ext || ext == xpm_ext)
 #endif
@@ -379,8 +388,10 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if (group_or_size == KIcon::User)
     {
 #ifdef HAVE_LIBART
-	path = d->mpDirs->findResource("appicon", name + svg_ext);
+	path = d->mpDirs->findResource("appicon", name + svgz_ext);
 	if (path.isEmpty())
+	   path = d->mpDirs->findResource("appicon", name + svg_ext);
+    	if (path.isEmpty())
 #endif
 	    path = d->mpDirs->findResource("appicon", name + png_ext);
 	if (path.isEmpty())
@@ -497,6 +508,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     }
 
 #ifdef HAVE_LIBART
+    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     static const QString &svg_ext = KGlobal::staticQString(".svg");
 #endif
     static const QString &png_ext = KGlobal::staticQString(".png");
@@ -510,7 +522,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         {
 	QString ext = name.right(4);
 #ifdef HAVE_LIBART
-	    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
+	    if (ext == svgz_ext || ext == svg_ext || ext == png_ext || ext == xpm_ext)
 #else
 	    if (ext == png_ext || ext == xpm_ext)
 #endif
@@ -600,7 +612,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString ext = icon.path.right(3).upper();
-	if(ext != "SVG")
+	if(ext != "SVG" || ext != "VGZ")
 	{
 	    img = new QImage(icon.path, ext.latin1());
 	    if (img->isNull())

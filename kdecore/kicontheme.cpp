@@ -492,7 +492,7 @@ QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
 #ifdef HAVE_LIBART
-    QStringList lst = dir.entryList("*.png;*.svg;*.xpm", QDir::Files);
+    QStringList lst = dir.entryList("*.png;*.svg;*.svgz;*.xpm", QDir::Files);
 #else
     QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
 #endif

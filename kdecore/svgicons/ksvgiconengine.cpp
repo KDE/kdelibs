@@ -25,8 +25,10 @@
 #include <qregexp.h>
 #include <qwmatrix.h>
 
+#include <kdebug.h>
 #include <kmdcodec.h>
 
+#include <zlib.h>
 #include <math.h>
 
 #include "ksvgiconpainter.h"
@@ -583,11 +585,42 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	QDomDocument svgDocument("svg");
 	QFile file(path);
 
-	// Open SVG Icon
-	if(!file.open(IO_ReadOnly))
-		return false;
-	
-	svgDocument.setContent(&file);
+	if(path.right(3).upper() == "SVG")
+	{
+		// Open SVG Icon
+		if(!file.open(IO_ReadOnly))
+			return false;
+
+		svgDocument.setContent(&file);
+	}
+	else // SVGZ
+	{
+		gzFile svgz = gzopen(path.latin1(), "ro");
+		if(!svgz)
+			return false;
+
+		QString data;
+		bool done = false;
+		
+		char *buffer = new char[1024];
+
+		while(!done)
+		{
+			memset(buffer, 0, 1024);
+			
+			int ret = gzread(svgz, buffer, 1024);
+			if(ret == 0)
+				done = true;
+			else if(ret == -1)
+				return false;
+			
+			data += QString::fromUtf8(buffer);
+		}
+		
+		gzclose(svgz);
+
+		svgDocument.setContent(data);
+	}
 
 	if(svgDocument.isNull())
 		return false;
