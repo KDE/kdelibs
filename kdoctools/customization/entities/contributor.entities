@@ -77,8 +77,6 @@
 <!ENTITY Robert.Cimrman.mail '<email>cimrman3@students.zcu.cz</email>'>
 <!ENTITY John.Cirillo '<personname><firstname>John</firstname><surname>Cirillo</surname></personname>'>
 <!ENTITY John.Cirillo.mail '<email><!-- FIXME --></email>'>
-<!ENTITY Michael.Coch '<personname><firstname>Michael</firstname><surname>Koch</surname></personname>'>
-<!ENTITY Michael.Coch.mail '<email>koch@kde.org</email>'>
 <!ENTITY Claudiu.Costin '<personname><firstname>Claudiu</firstname><surname>Costin</surname></personname>'>
 <!ENTITY Claudiu.Costin.mail '<email>claudiuc@geocities.com</email>'>
 <!ENTITY Neal.Crook '<personname><firstname>Neal</firstname><surname>Crook</surname></personname>'>
@@ -96,6 +94,8 @@
 <!ENTITY Pablo.de.Vicente.mail '<email>pvicentea@wanadoo.es</email>'>
 <!ENTITY Thomas.Diehl '<personname><firstname>Thomas</firstname><surname>Diehl</surname></personname>'>
 <!ENTITY Thomas.Diehl.mail '<email>thd@kde.org</email>'>
+<!ENTITY Lars.Doelle '<personname><firstname>Lars</firstname><surname>Doelle</surname></personname>'>
+<!ENTITY Lars.Doelle.mail '<email>lars.doelle@on-line.de</email>'>
 <!ENTITY Dirk.Doerflinger '<personname><firstname>Dirk</firstname><surname>Doerflinger</surname></personname>'>
 <!ENTITY Dirk.Doerflinger.mail '<email>ddoerflinger@web.de</email>'>
 <!ENTITY Mark.Donohoe '<personname><firstname>Mark</firstname><surname>Donohoe</surname></personname>'>
@@ -104,6 +104,8 @@
 <!ENTITY Patrick.Dowler.mail '<email>dowler@morgul.fsh.uvic.ca</email>'>
 <!ENTITY Jonathan.Drews '<personname><firstname>Jonathan</firstname><surname>Drews</surname></personname>'>
 <!ENTITY Jonathan.Drews.mail '<email>j.e.drews@att.net</email>'>
+<!ENTITY Daniel.M.Duley '<personname><firstname>Daniel</firstname><othername>M.</othername><surname>Duley</surname></personname>'>
+<!ENTITY Daniel.M.Duley.mail '<email>dan.duley@verizon.net</email>'>
 <!ENTITY Alexander.Dymo '<personname><firstname>Alexander</firstname><surname>Dymo</surname></personname>'>
 <!ENTITY Alexander.Dymo.mail '<email>cloudtemple@mksat.net</email>'>
 
@@ -135,6 +137,8 @@
 <!ENTITY Robert.Gogolok.mail '<email>mail@robert-gogolok.de</email>'>
 <!ENTITY Kurt.Granroth '<personname><firstname>Kurt</firstname><surname>Granroth</surname></personname>'>
 <!ENTITY Kurt.Granroth.mail '<email>granroth@kde.org</email>'>
+<!ENTITY Wilco.Greven '<personname><firstname>Wilco</firstname><surname>Greven</surname></personname>'>
+<!ENTITY Wilco.Greven.mail '<email>greven@kde.org</email>'>
 <!ENTITY Andreas.Gungl '<personname><firstname>Andreas</firstname><surname>Gungl</surname></personname>'>
 <!ENTITY Andreas.Gungl.mail '<email>a.gungl@gmx.de</email>'>
 
@@ -192,6 +196,8 @@
 <!ENTITY Matthias.Kiefer.mail '<email>matthias.kiefer@gmx.de</email>'>
 <!ENTITY Ingo.Kloecker '<personname><firstname>Ingo</firstname><surname>Klöcker</surname></personname>'>
 <!ENTITY Ingo.Kloecker.mail '<email>kloecker@kde.de</email>'>
+<!ENTITY Michael.Koch '<personname><firstname>Michael</firstname><surname>Koch</surname></personname>'>
+<!ENTITY Michael.Koch.mail '<email>koch@kde.org</email>'>
 <!ENTITY Tobias.Koenig '<personname><firstname>Tobias</firstname><surname>Koenig</surname></personname>'>
 <!ENTITY Tobias.Koenig.mail '<email>tokoe82@yahoo.de</email>'>
 <!ENTITY Michael.Korman '<personname><firstname>Michael</firstname><surname>Korman</surname></personname>'>
@@ -295,6 +301,7 @@
 <!ENTITY Don.Sanders.mail '<email>dsanders@kde.org</email>'>
 <!ENTITY Morgan.N.Sandquist '<personname><firstname>Morgan</firstname><othername>N.</othername><surname>Sandquist</surname></personname>'>
 <!ENTITY Morgan.N.Sandquist.mail '<email>morgan@pipeline.com</email>'>
+<!ENTITY Raffaele.Sandrini '<personname><firstname>Raffaele</firstname><surname>Sandrini</surname></personname>'>
 <!ENTITY Olivier.Saraja '<personname><firstname>Olivier</firstname><surname>Saraja</surname></personname>'>
 <!ENTITY Olivier.Saraja.mail '<email>olivier@linuxgraphic.org</email>'>
 <!ENTITY Thomas.Schuetz '<personname><firstname>Thomas</firstname><surname>Schütz</surname></personname>'>
@@ -340,8 +347,8 @@
 <!ENTITY Bo.Thorsen.mail '<email>gobo@imada.sdu.dk</email>'>
 <!ENTITY Christian.Thurner '<personname><firstname>Christian</firstname><surname>Thurner</surname></personname>'>
 <!ENTITY Christian.Thurner.mail '<email>cthurner@web.de</email>'>
-<!ENTITY Christian.Tibirna '<personname><firstname>Christian</firstname><surname>Tibirna</surname></personname>'>
-<!ENTITY Christian.Tibirna.mail '<email>tibirna@kde.org</email>'>
+<!ENTITY Cristian.Tibirna '<personname><firstname>Christian</firstname><surname>Tibirna</surname></personname>'>
+<!ENTITY Cristian.Tibirna.mail '<email>tibirna@kde.org</email>'>
 <!ENTITY Jochen.Tuchbreiter '<personname><firstname>Jochen</firstname><surname>Tuchbreiter</surname></personname>'>
 <!ENTITY Jochen.Tuchbreiter.mail '<email>whynot@mabi.de</email>'>
 <!ENTITY Paul-Olav.Tvete '<personname><firstname>Paul Olav</firstname><surname>Tvete</surname></personname>'>
