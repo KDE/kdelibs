@@ -37,6 +37,16 @@
 #include <kstaticdeleter.h>
 #include <qptrstack.h>
 
+#include "dptrtemplate.h"
+
+class KBookmarkManagerPrivate : public dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate> {
+public:
+    QString m_caption;
+};
+QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
+
+#define dptr() KBookmarkManagerPrivate::d(this)
+
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
 static KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
 
@@ -516,5 +526,7 @@ KBookmarkManager* KBookmarkManager::userBookmarksManager()
    static QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
    return KBookmarkManager::managerForFile( bookmarksFile );
 }
+
+#undef dptr
 
 #include "kbookmarkmanager.moc"
