@@ -480,7 +480,7 @@ QByteArray KSSLCertificate::toPem() {
 QByteArray qba;
 QString thecert = toString();
 const char *header = "-----BEGIN CERTIFICATE-----\n";
-const char *footer = "\n-----END CERTIFICATE-----\n";
+const char *footer = "-----END CERTIFICATE-----\n";
 
    // We just do base64 on the ASN1
    //  64 character lines  (unpadded)
