@@ -22,6 +22,8 @@
 #include <config.h>
 #endif
 
+#include <qregexp.h>
+
 #include "ksslpeerinfo.h"
 #include <kdebug.h>
 
@@ -61,35 +63,50 @@ bool KSSLPeerInfo::certMatchesAddress() {
   KSSLX509Map certinfo(m_cert.getSubject());
   QString cn = certinfo.getValue("CN");
 
-    QStringList domains;
-
-    kdDebug(7029) << "Matching CN=" << cn << " to " << d->peerHost << endl;
-
-    extractDomains(d->peerHost, domains);
-    QStringList::Iterator it = domains.begin();
-    for (; it != domains.end(); it++)
-    {
-      int match = cn.findRev(*it, -1, false);
-      kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
-                    << ", host.length= " << (*it).length() << endl;
-
-      if (match > -1 && ((match + (*it).length()) == cn.length()))
-      {
-        kdDebug(7029) << "Found a match ==> " << (*it) << endl;
-        return true;
-      }
-    }
-#endif
+  // Do not let empty CN's get by!!
+  if (cn.stripWhiteSpace().isEmpty ())
     return false;
+
+  QStringList domains;
+
+  kdDebug(7029) << "Matching CN=" << cn << " to " << d->peerHost << endl;
+
+  extractDomains(d->peerHost, domains);
+  QStringList::Iterator it = domains.begin();
+  for (; it != domains.end(); it++)
+  {
+    int match = cn.findRev(*it, -1, false);
+    kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
+                  << ", host.length= " << (*it).length() << endl;
+
+    if (match > -1 && ((match + (*it).length()) == cn.length()))
+    {
+      kdDebug(7029) << "Found a match ==> " << (*it) << endl;
+      return true;
+    }
+  }
+#endif
+  return false;
 }
 
 void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)
 {
+    QRegExp rx;
+    bool isIPAddress;
+
+
     domains.clear();
 
-    // If fqdn is an IP address, then only use
-    // the entire IP address to find a match! (DA)
-    if (fqdn[0] >= '0' && fqdn[0] <= '9') {
+    // Check for IPv4 address
+    rx.setPattern ("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    isIPAddress = rx.exactMatch (fqdn);
+
+    // Check for IPv6 address here...
+    rx.setPattern ("^\\[.*\\]$");
+    isIPAddress |= rx.exactMatch (fqdn);
+
+    if (isIPAddress)
+    {
        domains.append(fqdn);
        return;
     }
