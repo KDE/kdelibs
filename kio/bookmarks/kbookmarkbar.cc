@@ -145,7 +145,7 @@ KBookmarkGroup KBookmarkBar::getToolbar()
 
 KBookmarkBar::~KBookmarkBar()
 {
-    clear();
+    //clear();
     KBookmarkBarPrivate::delete_d(this);
 }
 
