@@ -94,6 +94,10 @@ COOKIE ASK http://novell.com/ Set-Cookie: some_value=value1; Domain=".novell.com
 CHECK http://novell.com/ Cookie: some_value=value1
 CHECK http://www.novell.com/ Cookie: some_value=value1
 CLEAR COOKIES
+COOKIE ASK http://novell.com/ Set-Cookie: some_value=value1; Domain="novell.com"; expires=%NEXTYEAR%
+CHECK http://novell.com/ Cookie: some_value=value1
+CHECK http://www.novell.com/ Cookie: some_value=value1
+CLEAR COOKIES
 ## Check domain restrictions #3
 COOKIE ASK http://novell.com/ Set-Cookie: some_value=value1; expires=%NEXTYEAR%
 CHECK http://novell.com/ Cookie: some_value=value1
