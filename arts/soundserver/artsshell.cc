@@ -25,9 +25,8 @@
 
     artsshell - command line access to aRts functions
 
-This is the start of a utility (similar to what was in aRts 0.3)
-to provide command line access to aRts functions. Currently the
-only function provided is to suspend the sound server.
+This is a utility (similar to what was in aRts 0.3) to provide command
+line access to aRts functions.
 
 usage:
 
@@ -40,6 +39,14 @@ Options:
 -v   - show version.
 
 Commands:
+
+help, ?
+
+Show brief summary of commands.
+
+version
+
+Display aRts version.
 
 suspend
 
@@ -157,7 +164,7 @@ void parseOptions(int argc, char **argv)
 		  case 'q': quiet = true;
 			  break;
 		  case 'v':
-		  	  printf("artsshell %s\n",ARTS_VERSION);
+		  	  printf("artsshell %s\n", ARTS_VERSION);
 			  exit(0);
 			  break;
 		  case 'h':
@@ -182,13 +189,13 @@ int suspend(Arts::SoundServer server)
 	  case 0:
 		  if (!quiet)
 			  cerr << "sound server was already suspended"  << endl;
-		  exit(0);
+		  return 0;
 		  break;
 		  
 	  case -1:
 		  if (!quiet)
 			  cerr << "sound server is busy"  << endl;
-		  exit(2);
+		  return 2;
 		  break;
 
 	  default:
@@ -196,11 +203,11 @@ int suspend(Arts::SoundServer server)
 		  {
 			  if (!quiet)
 				  cerr << "sound server suspended"  << endl;
-			  exit(0);
+			  return 0;
 		  } else {
 			  if (!quiet)
 				  cerr << "unable to suspend sound server" << endl;
-			  exit (2);
+			  return 2;
 		  }
 	}
 	return 0;
@@ -270,12 +277,12 @@ void terminate(Arts::SoundServer server)
 	if(server.terminate())
 	{
 		cout << "sound server terminated" << endl;
-		exit(0);
+		return;
 	}
 	else
 	{
 		cout << "there were problems terminating the sound server" << endl;
-		exit(1);
+		return;
 	}
 }
 
@@ -292,6 +299,7 @@ void networkBuffers(Arts::SoundServerV2 server, int n)
 	if (n > 0)
 		server.bufferSizeMultiplier(n);
 }
+
 // set the output volume
 void setVolume(Arts::SoundServerV2 server, float volume)
 {
@@ -401,8 +409,39 @@ void stereoEffect(Arts::SoundServerV2 server, int argc, char **argv)
 	cerr << "invalid arguments" << endl;
 }
 
+void help()
+{
+	cout << "Commands:\n\
+  suspend                  - suspend sound server\n\
+  status                   - display sound server status information\n\
+  terminate                - terminate sound server\n\
+  autosuspend <secs>       - set autosuspend time\n\
+  networkbuffers <n>       - increase network buffers by a factor of <n>\n\
+  volume [<volume>]        - display/set the volume of the soundserver\n\
+  stereoeffect insert [top|bottom] <name>  - insert stereo effect\n\
+  stereoefect remove <id>  - remove stereo effect\n\
+  stereoeffect list        - list available effects\n\
+  version                  - show sound server version\n\
+  help, ?                  - show commands\n";
+}
+
+void version()
+{
+	cout << "aRts version " << ARTS_VERSION << endl;
+}
+
 int executeCommand(Arts::SoundServerV2 server, int argc, char **argv)
 {
+	if (!strcmp(argv[0], "help") || !strcmp(argv[0], "?")) {
+		help();
+		return 0;
+	}
+
+	if (!strcmp(argv[0], "version")) {
+		version();
+		return 0;
+	}
+
 	if (!strcmp(argv[0], "suspend")) {
 		suspend(server);
 		return 0;
@@ -443,10 +482,11 @@ int executeCommand(Arts::SoundServerV2 server, int argc, char **argv)
 		stereoEffect(server, argc-1, &argv[1]);
 		return 0;
 	}
-	return 1;
+
+	return -1;
 }
 
-int execute (Arts::SoundServerV2 server, const char *filename)
+int execute(Arts::SoundServerV2 server, const char *filename)
 {
 	char command[1024];
 	FILE *input = stdin;
@@ -479,8 +519,12 @@ int execute (Arts::SoundServerV2 server, const char *filename)
 			argv = (char **)realloc(argv, sizeof(char *)*(argc+1));
 			argv[argc++] = arg;
 		}
-		executeCommand(server, argc, argv);
-		free(argv);
+		if (argv != 0)
+		{
+			if (executeCommand(server, argc, argv) == -1)
+				cerr << "Invalid command, type 'help' for a list of commands." << endl;
+			free(argv);
+		}
 
 		if(prompt)
 		{
@@ -515,7 +559,7 @@ int main(int argc, char *argv[])
 	if (argc == optind)
 		return execute (server, filename);
 
-	if (executeCommand (server, argc, &argv[optind]) != 0)
+	if (executeCommand (server, argc-optind, &argv[optind]) == -1)
 		usage();
 
 	return 0;
