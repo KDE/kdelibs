@@ -47,7 +47,7 @@ namespace KIO { class Job; class ListJob; }
  * Reuse the instance when opening a new url (openURL)
  * Destroy the instance when not needed anymore (usually destructor)
  *
- * Advanced usage : call openURL with _bKeep = true to list directories
+ * Advanced usage : call openURL with _keep = true to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
  */
 class KDirLister : public QObject
@@ -117,16 +117,23 @@ public:
 
   KIO::ListJob * job() { return m_job; }
 
+  /**
+   * Call this with @p dirsOnly = true to list only directories
+   */
   void setDirOnlyMode( bool dirsOnly ) { m_bDirOnlyMode = dirsOnly; }
+
+  /**
+   * @return true if setDirOnlyMode(true) was called
+   */
   bool dirOnlyMode() { return m_bDirOnlyMode; }
 
   /**
    * Set a name filter to only list items matching this name, e.g. "*.cpp".
-   * 
+   *
    * You can set more than one filter by separating them with whitespace, e.g
    * "*.cpp *.h".
    * Call setNameFilter( QString::null ) to disable filtering.
-   *  
+   *
    * @see #matchesFilter
    */
   void setNameFilter(const QString&);
@@ -199,17 +206,30 @@ protected:
    */
   virtual bool filterItem( const KFileItem * );
 
-  /** Unregister dirs from kdirwatch and clear list of dirs */
+  /**
+   * Unregister dirs from kdirwatch and clear list of dirs
+   */
   void forgetDirs();
 
-  /** The url that we used to list (can be different in case of redirect) */
+  /**
+   * Delete unmarked items, as it says on the tin
+   */
+  void deleteUnmarkedItems();
+
+  /**
+   * The url that we used to list (can be different in case of redirect)
+   */
   KURL m_url;
 
   KIO::ListJob * m_job;
 
-  /** The internal storage of file items */
+  /**
+   * The internal storage of file items
+   */
   QList<KFileItem> m_lstFileItems;
-  /** File Item for m_url itself (".") */
+  /**
+   * File Item for m_url itself (".")
+   */
   KFileItem * m_rootFileItem;
 
   /**
@@ -218,6 +238,8 @@ protected:
    * (Used to unregister from kdirwatch)
    */
   QStringList m_lstDirs; // To be removed (BCI)
+
+  KURL::List lstDirs() const; // To be removed (BCI)
 
   bool m_isShowingDotFiles;
   bool m_bComplete;

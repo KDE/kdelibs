@@ -37,7 +37,7 @@ class KDirLister::KDirListerPrivate
 {
 public:
     KDirListerPrivate() { }
-    KURL::List lstDirs;
+    KURL::List lstDirs; // TODO: BCI: move this to main class, KonqDirLister needs it
     KURL::List lstPendingUpdates;
 };
 
@@ -353,26 +353,9 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
     }
   }
 
-  // Find all unmarked items and delete them
-  QList<KFileItem> lst;
-  kit.toFirst();
-  for( ; kit.current(); ++kit )
-  {
-    if ( !(*kit)->isMarked() )
-    {
-      //kdDebug(1203) << "Removing " << (*kit)->text() << endl;
-      lst.append( *kit );
-    }
-  }
-
   emit newItems( lstNewItems );
 
-  KFileItem* kci;
-  for( kci = lst.first(); kci != 0L; kci = lst.next() )
-  {
-    emit deleteItem( kci );
-    m_lstFileItems.remove( kci );
-  }
+  deleteUnmarkedItems();
 
   m_buffer.clear();
 
@@ -384,6 +367,28 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   pendingIt = d->lstPendingUpdates.begin();
   if ( pendingIt != d->lstPendingUpdates.end() )
     updateDirectory( *pendingIt );
+}
+
+void KDirLister::deleteUnmarkedItems()
+{
+  // Find all unmarked items and delete them
+  QList<KFileItem> lst;
+  QListIterator<KFileItem> kit ( m_lstFileItems );
+  for( ; kit.current(); ++kit )
+  {
+    if ( !(*kit)->isMarked() )
+    {
+      //kdDebug(1203) << "Removing " << (*kit)->text() << endl;
+      lst.append( *kit );
+    }
+  }
+
+  KFileItem* kci;
+  for( kci = lst.first(); kci != 0L; kci = lst.next() )
+  {
+    emit deleteItem( kci );
+    m_lstFileItems.remove( kci );
+  }
 }
 
 void KDirLister::slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& list )
@@ -485,5 +490,9 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 	updateDirectory( *it ); // update all directories
 }
 
+KURL::List KDirLister::lstDirs() const
+{
+  return d->lstDirs;
+}
 
 #include "kdirlister.moc"
