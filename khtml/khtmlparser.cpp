@@ -808,7 +808,7 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 
 	    tagID = *((unsigned char *) str++);
 
-            for(int j; _end[j]; j++)
+            for(int j=0; _end[j]; j++)
             {
 	      if (_end[j] == tagID)
 	      {
