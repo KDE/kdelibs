@@ -26,6 +26,7 @@
 #include <qvaluelist.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
+#include <qobject.h>
 
 class KMManager;
 class KMJobManager;
@@ -47,7 +48,7 @@ struct PluginInfo
 	QString		primaryMimeType;
 };
 
-class KMFactory
+class KMFactory : public QObject
 {
 public:
 	static KMFactory* self();
@@ -87,7 +88,7 @@ private:
 	void createUiManager();
 	void createPrinterImpl();
 	void loadFactory(const QString& syst = QString::null);
-	void unload(bool pluginOnly = false);
+	void unload();
 	QString autoDetect();
 
 private:

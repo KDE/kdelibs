@@ -39,17 +39,19 @@
 #include <klocale.h>
 #include <kstddirs.h>
 #include <ksimpleconfig.h>
+#include <kstaticdeleter.h>
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 
 void qt_generate_epsf( bool b );
 
 KMFactory* KMFactory::m_self = 0;
+KStaticDeleter<KMFactory> s_kmfactorysd;
 
 KMFactory* KMFactory::self()
 {
 	if (!m_self)
-		m_self = new KMFactory();
+		m_self = s_kmfactorysd.setObject(m_self, new KMFactory());
 	return m_self;
 }
 
@@ -63,6 +65,7 @@ void KMFactory::release()
 }
 
 KMFactory::KMFactory()
+	: QObject(NULL, "Factory")
 {
 	m_settings = new Settings;
 	m_settings->application = KPrinter::Dialog;
@@ -93,8 +96,10 @@ KMFactory::KMFactory()
 
 KMFactory::~KMFactory()
 {
-	unload();
 	delete m_settings;
+	// The only object to be destroyed is m_printconfig. All other objects have been
+	// created with "this" as parent, so we don't need to care about their destruction
+	UNLOAD_OBJECT(m_printconfig);
 }
 
 KMManager* KMFactory::manager()
@@ -137,7 +142,7 @@ KMVirtualManager* KMFactory::virtualManager()
 KMFilterManager* KMFactory::filterManager()
 {
 	if (!m_filtermanager)
-		m_filtermanager = new KMFilterManager(0, "FilterManager");
+		m_filtermanager = new KMFilterManager(this, "FilterManager");
 	Q_CHECK_PTR(m_filtermanager);
 	return m_filtermanager;
 }
@@ -145,29 +150,29 @@ KMFilterManager* KMFactory::filterManager()
 void KMFactory::createManager()
 {
 	loadFactory();
-	if (m_factory) m_manager = (KMManager*)m_factory->create(NULL,"Manager","KMManager");
-	if (!m_manager) m_manager = new KMManager(NULL,"Manager");
+	if (m_factory) m_manager = (KMManager*)m_factory->create(this,"Manager","KMManager");
+	if (!m_manager) m_manager = new KMManager(this,"Manager");
 }
 
 void KMFactory::createJobManager()
 {
 	loadFactory();
-	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(NULL,"JobManager","KMJobManager");
-	if (!m_jobmanager) m_jobmanager = new KMJobManager(NULL,"JobManager");
+	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(this,"JobManager","KMJobManager");
+	if (!m_jobmanager) m_jobmanager = new KMJobManager(this,"JobManager");
 }
 
 void KMFactory::createUiManager()
 {
 	loadFactory();
-	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(NULL,"UiManager","KMUiManager");
-	if (!m_uimanager) m_uimanager = new KMUiManager(NULL,"UiManager");
+	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(this,"UiManager","KMUiManager");
+	if (!m_uimanager) m_uimanager = new KMUiManager(this,"UiManager");
 }
 
 void KMFactory::createPrinterImpl()
 {
 	loadFactory();
-	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(NULL,"PrinterImpl","KPrinterImpl");
-	if (!m_implementation) m_implementation = new KPrinterImpl(NULL,"PrinterImpl");
+	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(this,"PrinterImpl","KPrinterImpl");
+	if (!m_implementation) m_implementation = new KPrinterImpl(this,"PrinterImpl");
 }
 
 void KMFactory::loadFactory(const QString& syst)
@@ -217,17 +222,12 @@ QString KMFactory::printSystem()
 	return sys;
 }
 
-void KMFactory::unload(bool pluginOnly)
+void KMFactory::unload()
 {
 	UNLOAD_OBJECT(m_manager);
 	UNLOAD_OBJECT(m_jobmanager);
 	UNLOAD_OBJECT(m_uimanager);
 	UNLOAD_OBJECT(m_implementation);
-	if (!pluginOnly)
-	{
-		UNLOAD_OBJECT(m_printconfig);
-		UNLOAD_OBJECT(m_filtermanager);
-	}
 	// factory will be automatically unloaded by KLibLoader as all object have been deleted.
 	// But to have loadFactory() to work, we need to set m_factory to NULL.
 	m_factory = 0;
@@ -236,7 +236,7 @@ void KMFactory::unload(bool pluginOnly)
 void KMFactory::reload(const QString& syst, bool saveSyst)
 {
 	// unload all objects from the plugin
-	unload(true);
+	unload();
 	if (saveSyst)
 	{
 		KConfig	*conf = printConfig();
