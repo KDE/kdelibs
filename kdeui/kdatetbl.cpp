@@ -141,7 +141,7 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
   Days[0]=i18n("Sun"); Days[1]=i18n("Mon"); Days[2]=i18n("Tue"); 
   Days[3]=i18n("Wed"); Days[4]=i18n("Thu"); Days[5]=i18n("Fri"); 
-  Days[6]=i18n("Sat");
+  Days[6]=i18n("Sat"); 
 }
 
 void
@@ -229,8 +229,10 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 }
 
 void
-KDateTable::resizeEvent(QResizeEvent *)
+KDateTable::resizeEvent(QResizeEvent * e)
 {
+  QTableView::resizeEvent(e);
+
   setCellWidth(width()/7);
   setCellHeight(height()/7);
 }
