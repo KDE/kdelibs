@@ -127,7 +127,6 @@ void Dialog::slotCancel()
 {
     kdDebug()<<"void Dialog::slotCancel() \n";
     emit cancel();
-    KDialogBase::reject();
 }
 
 QString Dialog::originalBuffer() const
