@@ -764,60 +764,24 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
     QStringList domains;
     extractDomains(cookiePtr->host(), domains);
-    bool isEmptyDomain = cookiePtr->domain().isEmpty();
 
-    if (!isEmptyDomain )
+    KCookieAdvice advice = KCookieDunno;
+
+    QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.
+    while( (advice == KCookieDunno) && (it != domains.end()))
     {
-       // Cookie specifies a domain. Check whether it is valid.
-       bool valid = false;
-
-       // This checks whether the cookie is valid based on
-       // what ::extractDomains returns
-       if (!valid)
-       {
-          if (domains.contains(cookiePtr->domain()))
-             valid = true;
-       }
-
-       if (!valid)
-       {
-          // Maybe the domain doesn't start with a "."
-          QString domain = "."+cookiePtr->domain();
-          if (domains.contains(domain))
-             valid = true;
-       }
-
-       if (!valid)
-       {
-          qWarning("WARNING: Host %s tries to set cookie for domain %s",
-                    cookiePtr->host().latin1(), cookiePtr->domain().latin1());
-          cookiePtr->fixDomain(QString::null);
-          isEmptyDomain = true;
-       }
+       QString domain = *it;
+       // Check if a policy for the FQDN/domain is set.
+       KHttpCookieList *cookieList = cookieDomains[domain];
+       if (cookieList)
+          advice = cookieList->getAdvice();
+       domains.remove(it);
+       it = domains.begin(); // Continue from begin of remaining list
     }
 
-    // For empty domain use the FQDN to find a
-    // matching advice for the pending cookie.
-    QString domain;
-    if ( isEmptyDomain )
-       domain = domains[0];
-    else
-       domain = cookiePtr->domain();
-
-    KHttpCookieList *cookieList = cookieDomains[domain];
-    KCookieAdvice advice;
-    if (cookieList)
-    {
-        advice = cookieList->getAdvice();
-        if (advice == KCookieDunno)
-        {
-           advice = globalAdvice;
-        }
-    }
-    else
-    {
+    if (advice == KCookieDunno)
         advice = globalAdvice;
-    }
+
     return advice;
 }
 
@@ -1182,8 +1146,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
             KHttpCookie *cookie = new KHttpCookie(host, domain, path, name,
                                                   value, expDate, protVer,
                                                   secure);
-            if ( cookieAdvice( cookie ) )
-                addCookie(cookie);
+            addCookie(cookie);
         }
     }
     delete [] buffer;
