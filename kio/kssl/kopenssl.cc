@@ -229,7 +229,7 @@ KConfig *cfg;
    cfg = new KConfig("cryptodefaults", false, false);
    cfg->setGroup("OpenSSL");
    QString upath = cfg->readEntry("Path", "");
-   if (upath.length() > 0)
+   if (!upath.isEmpty())
       libpaths << upath;
 
    delete cfg;
