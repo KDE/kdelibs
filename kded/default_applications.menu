@@ -47,8 +47,8 @@
 			</Include>
 		</Menu>
 		<Menu>
-			<Name>Miscellanous</Name>
-			<Directory>kde-edu-miscellanous.directory</Directory>
+			<Name>Miscellaneous</Name>
+			<Directory>kde-edu-miscellaneous.directory</Directory>
 			<Include>
 				<And>
 				<Category>Education</Category>
