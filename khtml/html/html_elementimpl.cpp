@@ -197,7 +197,8 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
 
         for ( ;l < v->l; l++ ) {
             char cc = v->s[l].latin1();
-            if ( cc > '9' || ( cc < '0' && (numOnly || (cc != '*' && cc != '%' && cc != '.') ) ) )
+            if ( cc > '9' || ( cc < '0' && ( numOnly || (cc != '%' && cc != '.' &&
+							 !( multiLength && cc == '*') ) ) ) )
                 break;
         }
         if ( l != v->l ) {
