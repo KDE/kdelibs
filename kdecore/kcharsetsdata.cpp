@@ -906,7 +906,7 @@ unsigned chr;
      kchdebug("Setting text to code %2X...\n",code);
      convResult.cText+=(unsigned char)code;
    }   
-   kchdebug("%s\n",convResult);
+   // kchdebug("%s\n",convResult);
 }
 
 unsigned KCharsetsData::decodeAmp(const char *seq,int &len){
