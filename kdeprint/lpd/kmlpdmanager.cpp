@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -78,7 +78,7 @@ QString getPrintcapLine(QTextStream& t)
 		if (buffer.isEmpty() || buffer[0] == '#')
 			continue;
 		line.append(buffer);
-		if (line.right(1) == "\"")
+		if (line.right(1) == "\\")
 		{
 			line.truncate(line.length()-1);
 			line = line.stripWhiteSpace();
@@ -94,6 +94,7 @@ KMLpdManager::KMLpdManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	m_entries.setAutoDelete(true);
+	setHasManagement(true);
 }
 
 KMLpdManager::~KMLpdManager()

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -37,12 +37,30 @@ class KMManager : public QObject
 friend class KMVirtualManager;
 
 public:
+	enum PrinterOperations {
+		PrinterEnabling  = 0x01,
+		PrinterCreation  = 0x02,
+		PrinterDefault   = 0x04,
+		PrinterTesting   = 0x08,
+		PrinterConfigure = 0x10,
+		PrinterRemoval   = 0x20,
+		PrinterAll       = 0xFF
+	};
+	enum ServerOperations {
+		ServerRestarting = 0x1,
+		ServerConfigure  = 0x2,
+		ServerAll        = 0xF
+	};
+
 	KMManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMManager();
 
 	// error management functions
 	QString errorMsg() const		{ return m_errormsg; }
 	void setErrorMsg(const QString& s)	{ m_errormsg = s; }
+
+	// support management ?
+	bool hasManagement() const 		{ return m_hasmanagement; }
 
 	// printer management functions
 	virtual bool createPrinter(KMPrinter *p);
@@ -59,6 +77,7 @@ public:
 	bool disablePrinter(const QString& name);
 	bool completePrinter(const QString& name);
 	bool setDefaultPrinter(const QString& name);
+	int printerOperationMask() const 	{ return m_printeroperationmask; }
 
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
@@ -77,6 +96,11 @@ public:
 	// configuration functions
 	virtual bool configure(QWidget *parent = 0);
 
+	// server functions
+	int serverOperationMask() const 	{ return m_serveroperationmask; }
+	virtual bool restartServer();
+	virtual bool configureServer(QWidget *parent = 0);
+
 protected:
 	// the real printer listing job is done here
 	virtual void listPrinters();
@@ -91,10 +115,16 @@ protected:
 	// compressed or not.
 	bool uncompressFile(const QString& srcname, QString& destname);
 	bool notImplemented();
+	void setHasManagement(bool on)		{ m_hasmanagement = on; }
+	void setPrinterOperationMask(int m)	{ m_printeroperationmask = m; }
+	void setServerOperationMask(int m)	{ m_serveroperationmask = m; }
 
 protected:
 	QString			m_errormsg;
 	KMPrinterList		m_printers;
+	bool 			m_hasmanagement;
+	int			m_printeroperationmask;
+	int 			m_serveroperationmask;
 };
 
 #endif

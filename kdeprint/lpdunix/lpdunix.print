@@ -1,0 +1,4 @@
+[KDE Print Entry]
+PrintSystem=lpdunix
+Comment=Generic UNIX LPD print system (default)
+Comment[fr]=Système d'impression générique pour UNIX (défaut)

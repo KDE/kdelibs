@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -49,7 +49,7 @@ bool KMCupsJobManager::sendCommand(const QList<KMJob>& jobs, int action, const Q
 	for (;it.current() && value;++it)
 	{
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
-		req.addName(IPP_TAG_OPERATION,"requesting-user-name", CupsInfos::self()->login());
+		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
 
 		switch (action)
 		{

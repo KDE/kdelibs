@@ -20,6 +20,6 @@
   <Action name="continue_print"/>
   <Action name="stop_print"/>
 </ToolBar>
-<ToolBar name="KGV-ToolBar" position="left">
+<ToolBar name="mainToolBar" position="left">
 </ToolBar>
 </kpartgui>

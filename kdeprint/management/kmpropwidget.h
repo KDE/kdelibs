@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -36,9 +36,10 @@ public:
 
 	virtual void setPrinter(KMPrinter*);
 	void setPrinterBase(KMPrinter*);
-	QString pixmap() const	{ return m_pixmap; }
-	QString title() const	{ return m_title; }
-	QString header() const	{ return m_header; }
+	QString pixmap() const 	{ return m_pixmap; }
+	QString title() const 	{ return m_title; }
+	QString header() const 	{ return m_header; }
+	bool canChange() const 	{ return m_canchange; }
 
 signals:
 	void enable(bool);
@@ -56,6 +57,7 @@ protected:
 	QString		m_title;
 	QString		m_header;
 	KMPrinter	*m_printer;
+	bool 		m_canchange;
 };
 
 #endif

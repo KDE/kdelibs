@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -30,11 +30,15 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <unistd.h>
 
 KMManager::KMManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
 	m_printers.setAutoDelete(true);
+	m_hasmanagement = false;
+	m_printeroperationmask = 0;
+	m_serveroperationmask = 0;
 }
 
 KMManager::~KMManager()
@@ -151,7 +155,7 @@ QList<KMPrinter>* KMManager::printerList(bool reload)
 			it.current()->setDiscarded(true);
 
 		// make sure virtual printers will be reloaded if we don't have
-		// any printer (for example is settings are wrong)
+		// any printer (for example if settings are wrong)
 		if (m_printers.count() == 0)
 			KMFactory::self()->virtualManager()->reset();
 
@@ -181,16 +185,22 @@ void KMManager::addPrinter(KMPrinter *p)
 {
 	if (p)
 	{
-		KMPrinter	*other = findPrinter(p->name());
-		if (other)
-		{
-			other->copy(*p);
+		if (p->name().isEmpty())
+			// discard printer with empty name
 			delete p;
-		}
 		else
 		{
-			p->setDiscarded(false);
-			m_printers.inSort(p);
+			KMPrinter	*other = findPrinter(p->name());
+			if (other)
+			{
+				other->copy(*p);
+				delete p;
+			}
+			else
+			{
+				p->setDiscarded(false);
+				m_printers.inSort(p);
+			}
 		}
 	}
 }
@@ -282,6 +292,16 @@ void KMManager::setSoftDefault(KMPrinter *p)
 }
 
 bool KMManager::configure(QWidget*)
+{
+	return notImplemented();
+}
+
+bool KMManager::restartServer()
+{
+	return notImplemented();
+}
+
+bool KMManager::configureServer(QWidget*)
 {
 	return notImplemented();
 }

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -40,8 +40,8 @@ KMPropContainer::KMPropContainer(QWidget *parent, const char *name)
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 0);
-	main_->addWidget(line);
-	main_->addLayout(btn_);
+	main_->addWidget(line,0);
+	main_->addLayout(btn_,0);
 	btn_->addStretch(1);
 	btn_->addWidget(m_button);
 }
@@ -58,9 +58,12 @@ void KMPropContainer::setWidget(KMPropWidget *w)
 		m_widget->reparent(this,QPoint(0,0));
 		connect(m_button,SIGNAL(clicked()),m_widget,SLOT(slotChange()));
 		connect(m_widget,SIGNAL(enable(bool)),SIGNAL(enable(bool)));
-		connect(m_widget,SIGNAL(enableChange(bool)),m_button,SLOT(setEnabled(bool)));
+		connect(m_widget,SIGNAL(enableChange(bool)),SLOT(slotEnableChange(bool)));
 		QVBoxLayout	*lay = dynamic_cast<QVBoxLayout*>(layout());
-		if (lay) lay->insertWidget(0,m_widget);
+		if (lay)
+		{
+			lay->insertWidget(0,m_widget,1);
+		}
 	}
 }
 
@@ -68,5 +71,10 @@ void KMPropContainer::setPrinter(KMPrinter *p)
 {
 	if (m_widget)
 		m_widget->setPrinterBase(p);
+}
+
+void KMPropContainer::slotEnableChange(bool on)
+{
+	m_button->setEnabled(on && (m_widget ? m_widget->canChange() : true));
 }
 #include "kmpropcontainer.moc"

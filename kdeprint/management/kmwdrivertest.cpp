@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
+#include <kapp.h>
+#include <kmessagebox.h>
 
 KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -39,6 +41,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 	m_title = i18n("Printer test");
 	m_nextpage = KMWizard::Name;
 	m_driver = 0;
+	m_printer = 0;
 
 	m_manufacturer = new QLabel(this);
 	m_model = new QLabel(this);
@@ -90,6 +93,7 @@ void KMWDriverTest::initPrinter(KMPrinter *p)
 	m_manufacturer->setText(p->manufacturer());
 	m_model->setText(p->model());
 	m_driverinfo->setText(p->driverInfo());
+	m_printer = p;
 
 	delete m_driver;
 	m_driver = 0;
@@ -114,6 +118,26 @@ void KMWDriverTest::updatePrinter(KMPrinter *p)
 
 void KMWDriverTest::slotTest()
 {
+	if (!m_printer) return;
+
+	QString	name = "tmpprinter_"+KApplication::randomString(8);
+	m_printer->setName(name);
+	m_printer->setPrinterName(name);
+	m_printer->setDriver(m_driver);
+	if (KMFactory::self()->manager()->createPrinter(m_printer))
+	{
+		if (KMFactory::self()->manager()->testPrinter(m_printer))
+			KMessageBox::information(this,i18n("<p>Test page successfully sent to printer. Wait until printing is complete, then click the <b>OK</b> button.</p>"));
+		else
+			KMessageBox::error(this,i18n("Unable to test printer."));
+		if (!KMFactory::self()->manager()->removePrinter(m_printer))
+			KMessageBox::error(this,i18n("Unable to remove temporary printer."));
+	}
+	else
+		KMessageBox::error(this,i18n("Unable to create temporary printer."));
+	m_printer->setName(QString::null);
+	m_printer->setPrinterName(QString::null);
+	m_driver = m_printer->takeDriver();
 }
 
 void KMWDriverTest::slotSettings()

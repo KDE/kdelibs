@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -46,6 +46,7 @@
 #include "kmwclass.h"
 #include "kmwlpd.h"
 #include "kmwfile.h"
+#include "kmwsmb.h"
 
 KMWizard::KMWizard(QWidget *parent, const char *name)
 : QDialog(parent,name,true)
@@ -108,12 +109,14 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	addPage(new KMWClass(this));
 	addPage(new KMWLpd(this));
 	addPage(new KMWFile(this));
+	addPage(new KMWSmb(this));
 
 	// add other pages
 	KMFactory::self()->uiManager()->setupWizard(this);
 
 	setCurrentPage(m_start,false);
 	setCaption(i18n("Add printer wizard"));
+	resize(400,350);
 }
 
 KMWizard::~KMWizard()

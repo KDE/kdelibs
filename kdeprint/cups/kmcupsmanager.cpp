@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -36,13 +36,16 @@
 #include <cups/ppd.h>
 
 void extractMaticData(QString& buf, const QString& filename);
-QString printerURI(KMPrinter *p);
+QString printerURI(KMPrinter *p, bool useExistingURI = true);
 
 //*****************************************************************************************************
 
 KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
+	setHasManagement(true);
+	setPrinterOperationMask(KMManager::PrinterAll);
+	setServerOperationMask(KMManager::ServerAll);
 }
 
 KMCupsManager::~KMCupsManager()
@@ -74,8 +77,10 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	IppRequest	req;
 	QString		uri;
 
-	uri = printerURI(p);
+	uri = printerURI(p,false);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	// needed to avoid problems when changing printer name
+	p->setUri(KURL(uri));
 
 	if (isclass)
 	{
@@ -89,7 +94,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	else
 	{
 		req.setOperation(CUPS_ADD_PRINTER);
-		req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().prettyURL());
+		req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
 		if (!p->option("kde-banners").isEmpty())
 		{
 			QStringList	bans = QStringList::split(',',p->option("kde-banners"),false);
@@ -158,7 +163,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 	if (completePrinterShort(p))
 	{
 		// driver informations
-		QString	ppdname = cupsGetPPD(p->printerName().local8Bit());
+		QString	ppdname = cupsGetPPD(p->printerName().local8Bit().data());
 		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.latin1()));
 		if (ppd)
 		{
@@ -594,10 +599,10 @@ void extractMaticData(QString& buf, const QString& filename)
 	}
 }
 
-QString printerURI(KMPrinter *p)
+QString printerURI(KMPrinter *p, bool use)
 {
 	QString	uri;
-	if (!p->uri().isEmpty())
+	if (use && !p->uri().isEmpty())
 		uri = p->uri().prettyURL();
 	else
 		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));

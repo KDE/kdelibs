@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -145,7 +145,7 @@ void KMFactory::loadFactory()
 	{
 		KConfig	conf("kdeprintrc");
 		conf.setGroup("General");
-		QString	sys = conf.readEntry("PrintSystem","cups");
+		QString	sys = conf.readEntry("PrintSystem","lpdunix");
 		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
 		if (!m_factory)

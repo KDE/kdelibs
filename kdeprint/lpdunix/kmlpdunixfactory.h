@@ -19,43 +19,19 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMPRINTERVIEW_H
-#define KMPRINTERVIEW_H
+#ifndef KMLPDUNIXFACTORY_H
+#define KMLPDUNIXFACTORY_H
 
-#include <qwidgetstack.h>
-#include <qlist.h>
+#include <klibloader.h>
 
-class KMIconView;
-class KMListView;
-class KMPrinter;
-class QIconViewItem;
-
-class KMPrinterView : public QWidgetStack
+class KLpdUnixFactory : public KLibFactory
 {
-	Q_OBJECT
 public:
-	enum ViewType { Icons = 0, List, Tree };
+	KLpdUnixFactory(QObject *parent = 0, const char *name = 0);
+	virtual ~KLpdUnixFactory();
 
-	KMPrinterView(QWidget *parent = 0, const char *name = 0);
-	~KMPrinterView();
-
-	void setPrinterList(QList<KMPrinter> *list);
-	void setViewType(ViewType t);
-	ViewType viewType() const 	{ return m_type; }
-
-signals:
-	void printerSelected(KMPrinter*);
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-
-protected slots:
-	void slotPrinterSelected(KMPrinter*);
-
-private:
-	KMIconView		*m_iconview;
-	KMListView		*m_listview;
-	ViewType		m_type;
-	QList<KMPrinter>	*m_printers;
-	KMPrinter		*m_current;
+protected:
+	QObject* createObject(QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList& args = QStringList());
 };
 
 #endif

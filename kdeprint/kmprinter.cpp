@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -72,6 +72,13 @@ void KMPrinter::setDriver(DrMain *driver)
 {
 	delete m_driver;
 	m_driver = driver;
+}
+
+DrMain* KMPrinter::takeDriver()
+{
+	DrMain	*dr = m_driver;
+	m_driver = 0;
+	return dr;
 }
 
 QString KMPrinter::pixmap()

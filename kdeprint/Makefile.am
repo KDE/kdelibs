@@ -1,6 +1,6 @@
 CUPSSUBDIR = @CUPSSUBDIR@
 
-SUBDIRS = . management $(CUPSSUBDIR) lpd
+SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd pics tests
 
 INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes) 
 

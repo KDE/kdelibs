@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,11 +33,13 @@
 #include "kmvirtualmanager.h"
 
 #include <qtimer.h>
+#include <qsplitter.h>
 #include <qlayout.h>
 #include <qpopupmenu.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
+#include <kconfig.h>
 #include <ktoolbar.h>
 
 KMMainView::KMMainView(QWidget *parent, const char *name)
@@ -47,16 +49,18 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	m_current = 0;
 
 	// create widgets
-	m_printerview = new KMPrinterView(this,"PrinterView");
-	m_printerpages = new KMPages(this,"PrinterPages");
-	m_timer = new QTimer(this);
 	m_manager = KMFactory::self()->manager();
+	m_splitter = new QSplitter(Qt::Vertical,this, "Splitter");
+	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
+	m_printerpages = new KMPages(m_splitter,"PrinterPages");
+	m_timer = new QTimer(this);
 	m_pop = new QPopupMenu(this);
+	m_toolbar = new KToolBar(this, "ToolBar");
 
 	// layout
-	m_layout = new QBoxLayout(this, QBoxLayout::TopToBottom, 0, 10);
-	m_layout->addWidget(m_printerview);
-	m_layout->addWidget(m_printerpages);
+	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
+	m_layout->addWidget(m_toolbar);
+	m_layout->addWidget(m_splitter);
 
 	// connections
 	connect(m_timer,SIGNAL(timeout()),SLOT(slotTimer()));
@@ -69,14 +73,47 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	m_actions = new KActionCollection(this);
 	initActions();
 
+	// check if management supported
+	if (!m_manager->hasManagement())
+	{
+		m_printerpages->setEnabled(false);
+		m_toolbar->setEnabled(false);
+	}
+
 	// first update
+	restoreSettings();
 	slotTimer();
 }
 
 KMMainView::~KMMainView()
 {
 	KMTimer::setMainView(0);
+	saveSettings();
 	KMFactory::release();
+}
+
+void KMMainView::restoreSettings()
+{
+	KConfig	conf("kdeprintrc");
+	conf.setGroup("General");
+	setViewType((KMPrinterView::ViewType)conf.readNumEntry("ViewType",KMPrinterView::Icons));
+	setOrientation(conf.readNumEntry("Orientation",Qt::Vertical));
+	QValueList<int>	sz = conf.readIntListEntry("Sizes");
+	while (sz.count() < 2) sz.append(100);
+	m_splitter->setSizes(sz);
+	bool 	view = conf.readBoolEntry("ViewToolBar",true);
+	slotToggleToolBar(view);
+	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
+}
+
+void KMMainView::saveSettings()
+{
+	KConfig	conf("kdeprintrc");
+	conf.setGroup("General");
+	conf.writeEntry("ViewType",(int)m_printerview->viewType());
+	conf.writeEntry("Orientation",(int)m_splitter->orientation());
+	conf.writeEntry("Sizes",m_splitter->sizes());
+	conf.writeEntry("ViewToolBar",m_toolbar->isVisible());
 }
 
 void KMMainView::initActions()
@@ -94,11 +131,39 @@ void KMMainView::initActions()
 	new KAction(i18n("Set as local default"),"kdeprint_printer",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
 	new KAction(i18n("Set as user default"),"exec",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
 	new KAction(i18n("Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
+	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation));
 
 	KSelectAction	*dact = new KSelectAction(i18n("Orientation..."),0,m_actions,"orientation_change");
 	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false));
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
+
+	new KAction(i18n("Restart server"),"gear",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
+	new KAction(i18n("Configure server"),"configure",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
+	int 	mask = m_manager->serverOperationMask();
+	m_actions->action("server_restart")->setEnabled((mask & KMManager::ServerRestarting));
+	m_actions->action("server_configure")->setEnabled((mask & KMManager::ServerConfigure));
+
+	KToggleAction	*tact = new KToggleAction(i18n("View Toolbar"),0,m_actions,"view_toolbar");
+	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
+
+	// add actions to the toolbar
+	m_actions->action("printer_add")->plug(m_toolbar);
+	m_toolbar->insertLineSeparator();
+	m_actions->action("printer_disable")->plug(m_toolbar);
+	m_actions->action("printer_enable")->plug(m_toolbar);
+	m_toolbar->insertSeparator();
+	m_actions->action("printer_hard_default")->plug(m_toolbar);
+	m_actions->action("printer_soft_default")->plug(m_toolbar);
+	m_actions->action("printer_remove")->plug(m_toolbar);
+	m_toolbar->insertSeparator();
+	m_actions->action("printer_configure")->plug(m_toolbar);
+	m_actions->action("printer_test")->plug(m_toolbar);
+	m_toolbar->insertLineSeparator();
+	m_actions->action("server_restart")->plug(m_toolbar);
+	m_actions->action("server_configure")->plug(m_toolbar);
+
+	slotPrinterSelected(0);
 }
 
 void KMMainView::startTimer()
@@ -123,6 +188,20 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 	m_current = p;
 	if (p) KMFactory::self()->manager()->completePrinter(p);
 	m_printerpages->setPrinter(p);
+
+	// update actions state (only if toolbar enabled, workaround for toolbar
+	// problem).
+	if (m_toolbar->isEnabled())
+	{
+		int 	mask = m_manager->printerOperationMask();
+		m_actions->action("printer_remove")->setEnabled((mask & KMManager::PrinterRemoval) && (p != NULL));
+		m_actions->action("printer_configure")->setEnabled(((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) && p->isLocal()));
+		m_actions->action("printer_hard_default")->setEnabled(((mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
+		m_actions->action("printer_soft_default")->setEnabled((p && !p->isSoftDefault()));
+		m_actions->action("printer_test")->setEnabled(((mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
+		m_actions->action("printer_enable")->setEnabled(((mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
+		m_actions->action("printer_disable")->setEnabled(((mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
+	}
 }
 
 void KMMainView::slotShowMenu()
@@ -135,6 +214,12 @@ void KMMainView::slotHideMenu()
 	KMTimer::releaseTimer(false);
 }
 
+void KMMainView::setViewType(int ID)
+{
+	((KSelectAction*)m_actions->action("view_change"))->setCurrentItem(ID);
+	slotChangeView(ID);
+}
+
 void KMMainView::slotChangeView(int ID)
 {
 	if (ID >= KMPrinterView::Icons && ID <= KMPrinterView::Tree)
@@ -145,40 +230,45 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 {
 	// construct popup menu
 	m_pop->clear();
-	if (printer)
-	{
-		m_current = printer;
-		if (printer->state() == KMPrinter::Stopped)
-			m_actions->action("printer_enable")->plug(m_pop);
-		else
-			m_actions->action("printer_disable")->plug(m_pop);
-		m_pop->insertSeparator();
-		if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
-		if (printer->isLocal())
+	if (m_manager->hasManagement())
+		if (printer)
 		{
-			if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
-			m_actions->action("printer_remove")->plug(m_pop);
+			m_current = printer;
+			if (printer->state() == KMPrinter::Stopped)
+				m_actions->action("printer_enable")->plug(m_pop);
+			else
+				m_actions->action("printer_disable")->plug(m_pop);
 			m_pop->insertSeparator();
-			if (!printer->isClass(true))
+			if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
+			if (printer->isLocal())
 			{
-				m_actions->action("printer_configure")->plug(m_pop);
+				if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
+				m_actions->action("printer_remove")->plug(m_pop);
+				m_pop->insertSeparator();
+				if (!printer->isClass(true))
+				{
+					m_actions->action("printer_configure")->plug(m_pop);
+					m_actions->action("printer_test")->plug(m_pop);
+					m_pop->insertSeparator();
+				}
+			}
+			else if (!printer->isClass(true))
+			{
 				m_actions->action("printer_test")->plug(m_pop);
 				m_pop->insertSeparator();
 			}
 		}
-		else if (!printer->isClass(true))
+		else
 		{
-			m_actions->action("printer_test")->plug(m_pop);
+			m_actions->action("printer_add")->plug(m_pop);
+			m_pop->insertSeparator();
+			m_actions->action("server_restart")->plug(m_pop);
+			m_actions->action("server_configure")->plug(m_pop);
 			m_pop->insertSeparator();
 		}
-	}
-	else
-	{
-		m_actions->action("printer_add")->plug(m_pop);
-		m_pop->insertSeparator();
-	}
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
+	m_actions->action("view_toolbar")->plug(m_pop);
 
 	// pop the menu
 	m_pop->popup(p);
@@ -286,7 +376,7 @@ void KMMainView::setOrientation(int o)
 
 void KMMainView::slotChangeDirection(int d)
 {
-	m_layout->setDirection((d == 1 ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom));
+	m_splitter->setOrientation((d == 1 ? Qt::Horizontal : Qt::Vertical));
 }
 
 void KMMainView::slotTest()
@@ -311,5 +401,29 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 		s += i18n("Error message received from manager:<br><br>%1").arg(m_manager->errorMsg());
 	}
 	KMessageBox::error(this,s);
+}
+
+void KMMainView::slotServerRestart()
+{
+	KMTimer::blockTimer();
+	bool	result = m_manager->restartServer();
+	if (!result)
+		showErrorMsg(i18n("Unable to restart print server."));
+	KMTimer::releaseTimer(result);
+}
+
+void KMMainView::slotServerConfigure()
+{
+	KMTimer::blockTimer();
+	bool	result = m_manager->configureServer(this);
+	if (!result)
+		showErrorMsg(i18n("Unable to configure print server."));
+	KMTimer::releaseTimer(result);
+}
+
+void KMMainView::slotToggleToolBar(bool on)
+{
+	if (on) m_toolbar->show();
+	else m_toolbar->hide();
 }
 #include "kmmainview.moc"

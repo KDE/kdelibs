@@ -19,43 +19,33 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMPRINTERVIEW_H
-#define KMPRINTERVIEW_H
+#include "kmlpdunixfactory.h"
+#include "kmlpdunixmanager.h"
+#include "klpdunixprinterimpl.h"
 
-#include <qwidgetstack.h>
-#include <qlist.h>
-
-class KMIconView;
-class KMListView;
-class KMPrinter;
-class QIconViewItem;
-
-class KMPrinterView : public QWidgetStack
+extern "C"
 {
-	Q_OBJECT
-public:
-	enum ViewType { Icons = 0, List, Tree };
-
-	KMPrinterView(QWidget *parent = 0, const char *name = 0);
-	~KMPrinterView();
-
-	void setPrinterList(QList<KMPrinter> *list);
-	void setViewType(ViewType t);
-	ViewType viewType() const 	{ return m_type; }
-
-signals:
-	void printerSelected(KMPrinter*);
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-
-protected slots:
-	void slotPrinterSelected(KMPrinter*);
-
-private:
-	KMIconView		*m_iconview;
-	KMListView		*m_listview;
-	ViewType		m_type;
-	QList<KMPrinter>	*m_printers;
-	KMPrinter		*m_current;
+	void* init_libkdeprint_lpdunix()
+	{
+		return new KLpdUnixFactory;
+	}
 };
 
-#endif
+KLpdUnixFactory::KLpdUnixFactory(QObject *parent, const char *name)
+: KLibFactory(parent,name)
+{
+}
+
+KLpdUnixFactory::~KLpdUnixFactory()
+{
+}
+
+QObject* KLpdUnixFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
+{
+	if (strcmp(classname,"KMManager") == 0)
+		return new KMLpdUnixManager(parent,name);
+	else if (strcmp(classname,"KPrinterImpl") == 0)
+		return new KLpdUnixPrinterImpl(parent,name);
+	else
+		return NULL;
+}

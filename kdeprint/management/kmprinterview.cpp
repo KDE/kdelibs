@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,11 +31,13 @@
 #include <klocale.h>
 
 KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
-: QWidget(parent,name), m_type(KMPrinterView::Icons)
+: QWidgetStack(parent,name), m_type(KMPrinterView::Icons)
 {
 	m_printers = 0;
 	m_iconview = new KMIconView(this);
+	addWidget(m_iconview,0);
 	m_listview = new KMListView(this);
+	addWidget(m_listview,1);
 	m_current = 0;
 
 	connect(m_iconview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)));
@@ -44,10 +46,6 @@ KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
 	connect(m_listview,SIGNAL(printerSelected(KMPrinter*)),SIGNAL(printerSelected(KMPrinter*)));
 	connect(m_iconview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
 	connect(m_listview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
-
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 0);
-	main_->addWidget(m_iconview);
-	main_->addWidget(m_listview);
 
 	setViewType(m_type);
 }
@@ -83,14 +81,12 @@ void KMPrinterView::setViewType(ViewType t)
 	setPrinterList(m_printers);
 	if (m_type == KMPrinterView::Tree)
 	{
-		m_listview->show();
-		m_iconview->hide();
+		raiseWidget(m_listview);
 		m_listview->setPrinter(oldcurrent);
 	}
 	else
 	{
-		m_iconview->show();
-		m_listview->hide();
+		raiseWidget(m_iconview);
 		m_iconview->setPrinter(oldcurrent);
 	}
 }

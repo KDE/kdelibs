@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,7 +31,8 @@ class KMPages;
 class KActionCollection;
 class QPopupMenu;
 class QTimer;
-class QBoxLayout;
+class QSplitter;
+class KToolBar;
 
 class KMMainView : public QWidget
 {
@@ -43,6 +44,7 @@ public:
 	void startTimer();
 	void stopTimer();
 	void setOrientation(int);
+	void setViewType(int);
 
 public slots:
 	void slotTimer();
@@ -62,10 +64,15 @@ protected slots:
 	void slotSoftDefault();
 	void slotChangeDirection(int);
 	void slotTest();
+	void slotServerRestart();
+	void slotServerConfigure();
+	void slotToggleToolBar(bool);
 
 protected:
 	void initActions();
 	void showErrorMsg(const QString& msg, bool usemgr = true);
+	void restoreSettings();
+	void saveSettings();
 
 private:
 	KMPrinterView	*m_printerview;
@@ -75,7 +82,8 @@ private:
 	QPopupMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
-	QBoxLayout	*m_layout;
+	QSplitter	*m_splitter;
+	KToolBar	*m_toolbar;
 };
 
 #endif

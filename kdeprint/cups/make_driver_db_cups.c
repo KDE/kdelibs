@@ -105,7 +105,6 @@ int list_files(const char *dirname)
 		{
 			continue;
 		}
-		
 		if (len+strlen(entry->d_name)+1 < 4096)
 		{
 			struct stat	st;

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -128,6 +128,7 @@ void IppRequest::addBoolean(int group, const QString& name, const QValueList<boo
 void IppRequest::setOperation(int op)
 {
 	request_->request.op.operation_id = (ipp_op_t)op;
+	request_->request.op.request_id = 1;	// 0 is not RFC-compliant, should be at least 1
 }
 
 int IppRequest::status()

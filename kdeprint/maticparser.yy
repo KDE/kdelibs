@@ -25,7 +25,7 @@ extern MHash	*main_hash;
 	int	num;
 }
 %{
-#endif 
+#endif
 %}
 
 %token <string> STRING
