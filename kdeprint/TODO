@@ -1,10 +1,10 @@
 BUGS
 ----
 
-- Allow multiple "FontPath" directives in cupsd.conf:
-	FontPath /usr/...
-	FontPath /opt/...
-
+- CUPS: should continue working if unknown options are met:
+	. issue a warning with list of options
+	. make it able to restore those unknown option when
+	  writing a new config file
 
 WISHES
 ------
@@ -47,6 +47,9 @@ WISHES
   works on text and image files. It is not clear to me, if it 
   is also supposed to work for other kinds of input files.
   * make this an option in the kprinter dialog		 -kp-
+
+- Put those 2 new options along with schedule attribute into
+  a single "Advanced" tab
  
 - CUPS: a "Printer/Server Debugging Helper" would be nice: you could 
   vary the LogLevel there, restart the server, provide a viewer

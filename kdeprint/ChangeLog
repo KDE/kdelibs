@@ -370,3 +370,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     driver directories (to be done: should also be configurable in the
     options dialog)
   * general: Fixed bug -> XML commands couild not be saved
+  * CUPS: FontPath directive is now considered as a string list, multiple
+    directives are supported and a listview is used in the GUI
+  * CUPS: configuration tool now handles gracefully unrecognized options,
+    a warning is issued, and they are restored as-is on file saving.
