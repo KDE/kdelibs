@@ -234,6 +234,7 @@ int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance );
+    
     insertWidgetInternal( button, index, id );
     button->setEnabled( enabled );
     doConnections( button );
@@ -761,9 +762,7 @@ bool KToolBar::fullSize() const
 
 void KToolBar::enableMoving(bool flag )
 {
-    if ( !mainWindow() )
-        return;
-    mainWindow()->setToolBarsMovable( flag );
+    setMovingEnabled(flag);
 }
 
 
@@ -1181,6 +1180,7 @@ void KToolBar::rebuildLayout()
     if ( rightAligned ) {
         l->addStretch();
         l->addWidget( rightAligned );
+        rightAligned->show();
     }
 
     if ( fullSize() ) {

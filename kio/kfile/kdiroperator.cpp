@@ -49,6 +49,7 @@
 #include <kio/previewjob.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
+#include <kstdaccel.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -601,7 +602,7 @@ void KDirOperator::pathChanged()
 
 void KDirOperator::slotRedirected( const KURL& newURL )
 {
-    qDebug("*** REDIRECTED: %s", newURL.url().latin1());
+    currUrl = newURL;
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
@@ -995,9 +996,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    KURL tmp( currUrl );
-    tmp.cd(item->name());
-    setURL(tmp, true);
+    setURL(item->url(), true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)
@@ -1096,7 +1095,7 @@ void KDirOperator::setupActions()
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
-    reloadAction->setAccel( Key_F5 );
+    reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
 
     // the sort menu actions

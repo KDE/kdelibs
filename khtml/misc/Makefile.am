@@ -29,7 +29,7 @@ libkhtmlmisc_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
 	decoder.h      khtmllayout.h loader_jpeg.h loader.h \
-	stringit.h     htmlhashes.h    helper.h 
+	stringit.h     htmlhashes.h    helper.h shared.h
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/dcop -I$(top_srcdir)/kio -I$(top_srcdir)/libltdl \
            -I$(top_srcdir)/khtml $(all_includes)

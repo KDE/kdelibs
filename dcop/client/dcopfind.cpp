@@ -148,10 +148,49 @@ bool findObject( const char* app, const char* obj, const char* func, int argc, c
     return false;
 }
 
+bool launchApp(QString app)
+{
+    int l = app.length();
+    if (l && (app[l-1] == '*'))
+       l--;
+    if (l && (app[l-1] == '-'))
+       l--;
+    if (!l) return false;
+    app.truncate(l);
+    
+    QStringList URLs;
+    QByteArray data, replyData;
+    QCString replyType;
+    QDataStream arg(data, IO_WriteOnly);
+    arg << app << URLs;
+
+    if ( !dcop->call( "klauncher", "klauncher", "start_service_by_desktop_name(QString,QStringList)",  
+                      data, replyType, replyData) ) {
+	qWarning( "call to klauncher failed.");
+        return false;
+    } 
+    QDataStream reply(replyData, IO_ReadOnly);
+
+    if ( replyType != "serviceResult" )
+    {
+        qWarning( "unexpected result '%s' from klauncher.", replyType.data());
+        return false;
+    }
+    int result;
+    QCString dcopName;
+    QString error;
+    reply >> result >> dcopName >> error;
+    if (result != 0)
+    {
+        qWarning("Error starting '%s': %s", app.local8Bit().data(), error.local8Bit().data());
+        return false;
+    }
+    return true;
+}
+
 void usage()
 {
-//   fprintf( stderr, "Usage: dcopfind [-l] [-a] application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
-   fprintf( stderr, "Usage: dcopfind [-a] application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
+   fprintf( stderr, "Usage: dcopfind [-l] [-a] application [object [function [arg1] [arg2] [arg3] ... ] ] ] \n" );
    exit(0);
 }
 
@@ -221,7 +260,16 @@ int main( int argc, char** argv )
        argc = 0;
     }
 
-    findObject( app, objid, function, argc, args );
+    bool ok = findObject( app, objid, function, argc, args );
+    if (ok)
+       return 0;
+    if (bLaunchApp)
+    {
+       ok = launchApp(app);
+       if (!ok)
+          return 2;
+       ok = findObject( app, objid, function, argc, args );   
+    }
 
-    return 0;
+    return 1;
 }

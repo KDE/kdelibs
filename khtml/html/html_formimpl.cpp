@@ -303,6 +303,10 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
         m_enctype = "multipart/form-data";
         m_multipart = true;
         m_post = true;
+    } else if (type.string().find("text", 0, false) != -1 || type.string().find("plain", 0, false) != -1)
+    {
+        m_enctype = "text/plain";
+        m_multipart = false;
     }
     else
     {
@@ -922,6 +926,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_MAXLENGTH:
         m_maxLen = attr->val() ? attr->val()->toInt() : -1;
+        setChanged();
         break;
     case ATTR_SIZE:
         m_size = attr->val() ? attr->val()->toInt() : 20;
@@ -1255,13 +1260,6 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         xPos = me->clientX()-offsetX;
         yPos = me->clientY()-offsetY;
 
-        // since we are not called from a RenderFormElement, the DOMActivate event will not get
-        // sent so we have to do it here
-        if (me->detail() % 2 == 0) // double click
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
-        else
-            dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
-
 	me->setDefaultHandled();
     }
 
@@ -1382,13 +1380,17 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    uint i;
+    // return the number of the first option selected
+    uint o = 0;
     QMemArray<HTMLGenericFormElementImpl*> items = listItems();
-    for (i = 0; i < items.size(); i++) {
-        if (items[i]->id() == ID_OPTION
-            && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
-            return listToOptionIndex(int(i)); // selectedIndex is the *first* selected item; there may be others
+    for (unsigned int i = 0; i < items.size(); i++) {
+        if (items[i]->id() == ID_OPTION) {
+            if (static_cast<HTMLOptionElementImpl*>(items[i])->selected())
+                return o;
+            o++;
     }
+    }
+    Q_ASSERT(m_multiple);
     return -1;
 }
 
@@ -1679,31 +1681,32 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 void HTMLSelectElementImpl::recalcListItems()
 {
     NodeImpl* current = firstChild();
-    bool inOptGroup = false;
     m_listItems.resize(0);
-    bool foundSelected = false;
+    HTMLOptionElementImpl* foundSelected = 0;
     while(current) {
-        if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
+        if (current->id() == ID_OPTGROUP && current->firstChild()) {
             // ### what if optgroup contains just comments? don't want one of no options in it...
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
             current = current->firstChild();
-            inOptGroup = true;
         }
         if (current->id() == ID_OPTION) {
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
-            if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selected())
-                static_cast<HTMLOptionElementImpl*>(current)->setSelected(false);
-            foundSelected = static_cast<HTMLOptionElementImpl*>(current)->selected();
+            if (!foundSelected && !m_multiple) {
+                foundSelected = static_cast<HTMLOptionElementImpl*>(current);
+                foundSelected->m_selected = true;
+            }
+            else if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selected()) {
+                foundSelected->m_selected = false;
+                foundSelected = static_cast<HTMLOptionElementImpl*>(current);
+            }
         }
         NodeImpl *parent = current->parentNode();
         current = current->nextSibling();
         if (!current) {
-            if (inOptGroup) {
+            if (parent != this)
                 current = parent->nextSibling();
-                inOptGroup = false;
-            }
         }
     }
     m_recalcListItems = false;

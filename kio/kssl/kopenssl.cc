@@ -30,6 +30,7 @@
 extern "C" {
 #ifdef HAVE_SSL
 static int (*K_SSL_connect)     (SSL *) = NULL;
+static int (*K_SSL_accept)      (SSL *) = NULL;
 static int (*K_SSL_read)        (SSL *, void *, int) = NULL;
 static int (*K_SSL_write)       (SSL *, const void *, int) = NULL;
 static SSL *(*K_SSL_new)        (SSL_CTX *) = NULL;
@@ -152,6 +153,7 @@ static int (*K_X509_REQ_set_pubkey)(X509_REQ*, EVP_PKEY*) = NULL;
 static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), void *) = NULL;
 static int (*K_i2d_X509_REQ_fp)(FILE*, X509_REQ*) = NULL;
 static void (*K_ERR_clear_error)() = NULL;
+static void (*K_ERR_print_errors_fp)(FILE*) = NULL;
 #endif
 };
 
@@ -393,6 +395,7 @@ KConfig *cfg;
       K_RSA_generate_key = (RSA* (*)(int, unsigned long, void (*)(int,int,void *), void *)) _cryptoLib->symbol("RSA_generate_key");
       K_i2d_X509_REQ_fp = (int (*)(FILE *, X509_REQ *)) _cryptoLib->symbol("i2d_X509_REQ_fp");
       K_ERR_clear_error = (void (*)()) _cryptoLib->symbol("ERR_clear_error");
+      K_ERR_print_errors_fp = (void (*)(FILE*)) _cryptoLib->symbol("ERR_print_errors_fp");
 #endif
    }
 
@@ -425,6 +428,7 @@ KConfig *cfg;
 #ifdef HAVE_SSL 
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
+      K_SSL_accept = (int (*)(SSL *)) _sslLib->symbol("SSL_accept");
       K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
       K_SSL_write = (int (*)(SSL *, const void *, int)) 
                             _sslLib->symbol("SSL_write");
@@ -516,6 +520,12 @@ KOpenSSLProxy *KOpenSSLProxy::self() {
 
 int KOpenSSLProxy::SSL_connect(SSL *ssl) {
    if (K_SSL_connect) return (K_SSL_connect)(ssl);
+   return -1;
+}
+
+
+int KOpenSSLProxy::SSL_accept(SSL *ssl) {
+   if (K_SSL_accept) return (K_SSL_accept)(ssl);
    return -1;
 }
 
@@ -1199,6 +1209,11 @@ int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
 
 void KOpenSSLProxy::ERR_clear_error() {
    if (K_ERR_clear_error) (K_ERR_clear_error)();
+}
+
+
+void KOpenSSLProxy::ERR_print_errors_fp(FILE* fp) {
+   if (K_ERR_print_errors_fp) (K_ERR_print_errors_fp)(fp);
 }
 
 

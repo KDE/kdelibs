@@ -72,11 +72,11 @@ void RenderImage::setStyle(RenderStyle* _style)
     setOverhangingContents(style()->height().isPercent());
     setSpecialObjects(true);
 
-    if (style()->contentObject())
-    {
+    CachedObject* co = style()->contentObject();
+    if (co && image != co ) {
         if (image) image->deref(this);
         image = static_cast<CachedImage*>(style()->contentObject());
-        image->ref(this);
+        if (image) image->ref(this);
     }
 }
 
@@ -94,7 +94,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         int ih = p.height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
-        if ( !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
+        if ( element() && !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
             const QFontMetrics &fm = style()->fontMetrics();
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
@@ -309,7 +309,7 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj && !loadEventSent) {
+    if (image == finishedObj && !loadEventSent && element()) {
         loadEventSent = true;
         element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
@@ -339,11 +339,10 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    assert(element());
     CachedImage *new_image = element()->getDocument()->docLoader()->
                              requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
 
-    if(new_image && new_image != image) {
+    if(new_image && new_image != image && (!style() || !style()->contentObject())) {
         loadEventSent = false;
         if(image) image->deref(this);
         image = new_image;

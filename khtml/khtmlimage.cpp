@@ -33,13 +33,7 @@
 #include <kmimetype.h>
 #include <klocale.h>
 
-extern "C"
-{
-    void *init_libkhtmlimage()
-    {
-        return new KHTMLImageFactory();
-    }
-};
+K_EXPORT_COMPONENT_FACTORY( khtmlimagepart, KHTMLImageFactory );
 
 KInstance *KHTMLImageFactory::s_instance = 0;
 
@@ -113,7 +107,7 @@ bool KHTMLImage::openURL( const KURL &url )
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if ( impl && m_ext->urlArgs().reload )
-        impl->docLoader()->setReloading(true);
+        impl->docLoader()->setCachePolicy( KIO::CC_Refresh );
 
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();

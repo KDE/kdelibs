@@ -199,7 +199,10 @@ void KCompletionBox::popup()
         hide();
     else {
         ensureCurrentVisible();
+        bool block = signalsBlocked();
+        blockSignals( true );
         setCurrentItem( 0 );
+        blockSignals( block );
         clearSelection();
         if ( !isVisible() )
             show();

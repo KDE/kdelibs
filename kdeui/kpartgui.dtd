@@ -29,19 +29,19 @@
 >
 
 <!-- A tool bar
-  - Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
-  -             fullWidth: if true (default), the toolbar extends to the full width of the window
-  -             position: the position of the toolbar in the window
-  -             iconText: whether to show icon or text or both
-  -             iconSize: the size of the icons (0 for default, or usually 22 or 32)
-  -             index: the index in the toolbar dock (see QMainWindow::moveToolBar)
-  -             offset: the X offset in the toolbar dock (see QMainWindow::moveToolBar)
-  -             newline: if true, this toolbar will start a new line (i.e. under the ones before it).
-  -             group: optional group name, for named merging (?)
-  -             hidden: if true, the toolbar is initially hidden. There should be a menu entry for showing it.
-  -             noEdit: if true, the toolbar won't appear in the toolbar editor
+  -- Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
+  --             fullWidth: if true (default), the toolbar extends to the full width of the window
+  --             position: the position of the toolbar in the window
+  --             iconText: whether to show icon or text or both
+  --             iconSize: the size of the icons (0 for default, or usually 22 or 32)
+  --             index: the index in the toolbar dock (see QMainWindow::moveToolBar)
+  --             offset: the X offset in the toolbar dock (see QMainWindow::moveToolBar)
+  --             newline: if true, this toolbar will start a new line (i.e. under the ones before it).
+  --             group: optional group name, for named merging (?)
+  --             hidden: if true, the toolbar is initially hidden. There should be a menu entry for showing it.
+  --             noEdit: if true, the toolbar won't appear in the toolbar editor
   -->
-<!ELEMENT ToolBar (text?, (Action | Separator | WeakSeparator | ActionList | Merge | MergeLocal | DefineGroup)*)>
+<!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | MergeLocal | DefineGroup)*)>
 <!ATTLIST ToolBar
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
@@ -57,13 +57,11 @@
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
-<!ELEMENT Menu (text?, (title | Action | ActionList | Separator | WeakSeparator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
+<!ELEMENT Menu (text?, (title | Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
 <!ATTLIST Menu
-  append CDATA #IMPLIED
   name CDATA #REQUIRED
   group CDATA #IMPLIED
   icon CDATA #IMPLIED
-  noMerge (0|1) "0"
 >
 
 <!-- Defines both Standard and app-specific actions. An action can appear in a menu, a toolbar or in a
@@ -78,7 +76,6 @@
   whatsThis CDATA #IMPLIED
   toolTip CDATA #IMPLIED
   shortText CDATA #IMPLIED
-  shortcut CDATA #IMPLIED
   icon CDATA #IMPLIED
 >
 
@@ -88,8 +85,6 @@
   lineSeparator (true|false) "false"
   group CDATA #IMPLIED
 >
-
-<!ELEMENT WeakSeparator EMPTY>
 
 <!-- Inserts a tear-off handle into a menu -->
 <!ELEMENT TearOffHandle EMPTY>
@@ -142,7 +137,7 @@
 
 <!-- Defines a GUI state, esp. which actions to enable and which ones to -->
 <!-- disable on entering this state (see KXMLGUIClient::stateChanged())  -->
-<!ELEMENT State ( enable | disable | (enable, disable))>
+<!ELEMENT State ( enable | disable | enable disable )>
 <!ATTLIST State
   name CDATA #REQUIRED
 >

@@ -64,12 +64,12 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 
 
     connect( this, SIGNAL( returnPressed(QListViewItem *) ),
-	     SLOT( selected( QListViewItem *) ) );
+	     SLOT( slotActivate( QListViewItem *) ) );
 
     connect( this, SIGNAL( clicked(QListViewItem *, const QPoint&, int)),
 	     SLOT( selected( QListViewItem *) ) );
     connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
-	     SLOT( slotDoubleClicked( QListViewItem *) ) );
+	     SLOT( slotActivate( QListViewItem *) ) );
 
     connect( this, SIGNAL(contextMenuRequested( QListViewItem *,
                                                 const QPoint &, int )),
@@ -209,12 +209,12 @@ void KFileDetailView::insertItem( KFileItem *i )
     i->setExtraData( this, item );
 }
 
-void KFileDetailView::slotDoubleClicked( QListViewItem *item )
+void KFileDetailView::slotActivate( QListViewItem *item )
 {
     if ( !item )
 	return;
 
-    KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
 	sig->activate( fi );
 }
@@ -225,7 +225,7 @@ void KFileDetailView::selected( QListViewItem *item )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
-	KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+	const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
 	    sig->activate( fi );
     }
@@ -236,7 +236,7 @@ void KFileDetailView::highlighted( QListViewItem *item )
     if ( !item )
 	return;
 
-    KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
 	sig->highlightFile( fi );
 }

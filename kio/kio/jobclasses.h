@@ -585,10 +585,6 @@ namespace KIO {
 
         /**
          * Request for data.
-         * Please note, that you shouldn't put too large chunks
-         * of data in it as this requires copies within the frame
-         * work, so you should rather split the data you want
-         * to pass here in reasonable chunks (about 1MB maximum)
          *
          * @param data buffer to fill with data to send to the
          * slave. An empty buffer indicates end of data. (EOD)

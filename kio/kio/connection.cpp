@@ -169,9 +169,6 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 	return false;
     }
 
-    if (data.size() > 0xffffff)
-        return false;
-
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
 
@@ -232,8 +229,8 @@ int Connection::read( int* _cmd, QByteArray &data )
     data.resize( len );
 
     if ( len > 0L ) {
-	size_t bytesToGo = len;
-	size_t bytesRead = 0;
+	int bytesToGo = len;
+	int bytesRead = 0;
 	do {
 	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
 	    if (n == -1) {

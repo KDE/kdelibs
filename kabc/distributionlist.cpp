@@ -80,7 +80,8 @@ QStringList DistributionList::emails() const
   Entry::List::ConstIterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     Addressee a = (*it).addressee;
-    QString email = a.fullEmail();
+    QString email = (*it).email.isEmpty() ? a.fullEmail() :
+                                            a.fullEmail( (*it).email );
 
     if ( !email.isEmpty() ) {
       emails.append( email );

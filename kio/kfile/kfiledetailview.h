@@ -146,7 +146,7 @@ protected slots:
 private slots:
     void slotSortingChanged( int );
     void selected( QListViewItem *item );
-    void slotDoubleClicked( QListViewItem *item );
+    void slotActivate( QListViewItem *item );
     void highlighted( QListViewItem *item );
     void slotActivateMenu ( QListViewItem *item, const QPoint& pos );
 

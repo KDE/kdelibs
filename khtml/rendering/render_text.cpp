@@ -258,7 +258,7 @@ void RenderText::setStyle(RenderStyle *_style)
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
 
-        if (changedText && element())
+        if (changedText && element() && element()->string())
             setText(element()->string(), changedText);
     }
 }
@@ -325,14 +325,10 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
             break;
         }
 
-        s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
+        s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
     }
 
-    bool oldinside = mouseInside();
     setMouseInside(inside);
-// don't need this, no DOM Element associated with us
-//     if (mouseInside() != oldinside && element())
-//         element()->setChanged();
 
     return inside;
 }
@@ -710,7 +706,7 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     if(str) str->deref();
     str = text;
 
-    if ( style() ) {
+    if ( str && style() ) {
         if ( style()->fontVariant() == SMALL_CAPS )
             str = str->upper();
         else
@@ -721,8 +717,8 @@ void RenderText::setText(DOMStringImpl *text, bool force)
             case NONE:
             default:;
             }
+        str->ref();
     }
-    if(str) str->ref();
 
     // ### what should happen if we change the text of a
     // RenderBR object ?

@@ -82,6 +82,11 @@ public:
    int SSL_connect(SSL *ssl);
 
    /*
+    *   SSL_accept - initiate the TLS/SSL handshake with an TLS/SSL server
+    */
+   int SSL_accept(SSL *ssl);
+
+   /*
     *   SSL_get_error - get the error code
     */
    int SSL_get_error(SSL *ssl, int rc);
@@ -737,6 +742,9 @@ public:
 
    /* clear the current error  - use this often*/
    void ERR_clear_error();
+
+   /* Print the errors to this stream */
+   void ERR_print_errors_fp(FILE *fp);
 
 
 #endif

@@ -99,6 +99,8 @@ public:
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
 
+  QPoint m_mousePressPos;
+
   KInstance  *m_instance;
 };
 
@@ -301,7 +303,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
   {
     QToolButton::setPixmap( pixmap );
     return;
-  }    
+  }
   QIconSet set = iconSet();
   set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Active );
   QToolButton::setIconSet( set );
@@ -413,18 +415,40 @@ void KToolBarButton::enterEvent(QEvent *)
 
 bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 {
-  // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
-  if ((KToolBarButton *)o == this && ev->type() == QEvent::MouseButtonDblClick)
+  if ((KToolBarButton *)o == this)
   {
-    emit doubleClicked(d->m_id);
-    return true;
-  }
+    // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
+    if (ev->type() == QEvent::MouseButtonDblClick)
+    {
+      emit doubleClicked(d->m_id);
+      return true;
+    }
 
-  if ((KToolBarButton *) o == this)
     if ((ev->type() == QEvent::MouseButtonPress ||
          ev->type() == QEvent::MouseButtonRelease ||
          ev->type() == QEvent::MouseButtonDblClick) && d->m_isRadio && isOn())
       return true;
+
+    // Popup the menu when the left mousebutton is pressed and the mouse
+    // is moved by a small distance.
+    if (d->m_isPopup)
+    {
+      if (ev->type() == QEvent::MouseButtonPress)
+      {
+        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+        d->m_mousePressPos = mev->pos();
+      }
+
+      if (ev->type() == QEvent::MouseMove)
+      {
+        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+        if (d->m_delayTimer && d->m_delayTimer->isActive()
+         && (mev->pos() - d->m_mousePressPos).manhattanLength()
+              > KGlobalSettings::dndEventDelay())
+          slotDelayTimeout();
+      }
+    }
+  }
 
   if ((QPopupMenu *) o != d->m_popup)
     return false; // just in case
@@ -500,7 +524,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   if (d->m_iconText == KToolBar::IconOnly) // icon only
   {
     QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) : 
+        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
             	QIconSet::Disabled,
         isOn() ? QIconSet::On : QIconSet::Off );
     if( !pixmap.isNull())
@@ -518,7 +542,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   else if (d->m_iconText == KToolBar::IconTextRight) // icon and text (if any)
   {
     QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) : 
+        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
             	QIconSet::Disabled,
         isOn() ? QIconSet::On : QIconSet::Off );
     if( !pixmap.isNull())
@@ -567,7 +591,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   else if (d->m_iconText == KToolBar::IconTextBottom)
   {
     QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) : 
+        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
             	QIconSet::Disabled,
         isOn() ? QIconSet::On : QIconSet::Off );
     if( !pixmap.isNull())
@@ -705,7 +729,7 @@ void KToolBarButton::slotToggled()
 void KToolBarButton::setNoStyle(bool no_style)
 {
     d->m_noStyle = no_style;
-    
+
     modeChange();
     d->m_iconText = KToolBar::IconTextRight;
     repaint(false);
@@ -758,6 +782,22 @@ QSize KToolBarButton::minimumSize() const
 {
    return d->size;
 }
+
+bool KToolBarButton::isRaised() const
+{
+    return d->m_isRaised;
+}
+
+bool KToolBarButton::isActive() const
+{
+    return d->m_isActive;
+}
+
+int KToolBarButton::iconTextMode() const
+{
+    return static_cast<int>( d->m_iconText );
+}
+
 
 // KToolBarButtonList
 KToolBarButtonList::KToolBarButtonList()

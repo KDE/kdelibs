@@ -155,13 +155,15 @@ protected:
     // ### workaround for Qt3 bug (see #35080)
     virtual void showEvent( QShowEvent * );
 
+    virtual bool eventFilter( QObject *o, QEvent *e );
+    
 private slots:
     void selected( QIconViewItem *item );
+    void slotActivate( QIconViewItem * );
     void highlighted( QIconViewItem *item );
     void showToolTip( QIconViewItem *item );
     void removeToolTip();
     void slotActivateMenu( QIconViewItem *, const QPoint& );
-    void slotDoubleClicked( QIconViewItem * );
     void slotSelectionChanged();
 
     void slotSmallColumns();

@@ -21,6 +21,7 @@
 #include <qtextstream.h>
 
 #include <kdebug.h>
+#include <ksavefile.h>
 
 #include <VCard.h>
 
@@ -242,17 +243,15 @@ bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
 
   vcards.setCardList( vcardlist );
 
-  QFile f( fileName );
-  if ( f.open(IO_WriteOnly) ) {
-    QTextStream t( &f );
-    t.setEncoding(QTextStream::UnicodeUTF8);
-    t << QString::fromUtf8(vcards.asString());
-    f.close();
-  } else {
-    return false;
+  KSaveFile f( fileName );
+  if ( f.status() == 0 ) {
+    QTextStream *t = f.textStream();
+    t->setEncoding(QTextStream::UnicodeUTF8);
+    *t << QString::fromUtf8(vcards.asString());
+    return f.close();
   }
 
-  return true;
+  return false;
 }
 
 

@@ -35,7 +35,6 @@ class RenderReplaced : public RenderBox
 {
 public:
     RenderReplaced(DOM::NodeImpl* node);
-    virtual ~RenderReplaced() {}
 
     virtual const char *renderName() const { return "RenderReplaced"; }
 
@@ -64,7 +63,7 @@ private:
 };
 
 
-class RenderWidget : public QObject, public RenderReplaced, public DOM::DomShared
+class RenderWidget : public QObject, public RenderReplaced, public khtml::Shared<RenderWidget>
 {
     Q_OBJECT
 public:

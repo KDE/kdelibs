@@ -1,5 +1,6 @@
---- kdelibs-3.0.0-0rc2/Doxyfile	Wed Jan  9 09:53:13 2002
-+++ Doxyfile	Mon Mar 11 02:39:38 2002
+diff -Nru kdelibs.old/Doxyfile kdelibs.new/Doxyfile
+--- kdelibs.old/Doxyfile	Thu Mar 21 20:25:17 2002
++++ kdelibs.new/Doxyfile	Sat Apr  6 02:36:14 2002
 @@ -120,7 +120,7 @@
  #---------------------------------------------------------------------------
  # configuration options related to the LaTeX output
@@ -18,12 +19,3 @@
  MAN_OUTPUT             = man
  MAN_EXTENSION          = .kde3
  MAN_LINKS              = YES
-@@ -172,7 +172,7 @@
- # Configuration options related to the dot tool   
- #---------------------------------------------------------------------------
- CLASS_DIAGRAMS         = YES
--HAVE_DOT               = YES
-+HAVE_DOT               = NO
- CLASS_GRAPH            = YES
- COLLABORATION_GRAPH    = YES
- TEMPLATE_RELATIONS     = YES

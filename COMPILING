@@ -8,7 +8,7 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-3.0.1)
+qt-copy (This is qt-3.0.4)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
@@ -16,7 +16,7 @@ kdebase (strongly recommended but not strictly necessary)
 It is important that you compile AND INSTALL the above packages in the 
 above order.
 
-Further you will need GNU make, autoconf 2.13, automake 1.4 and 
+Further you will need GNU make, autoconf 2.52, automake 1.5 and 
 a working C++ compiler (eg. gcc 2.95.2)
 
 Preparations

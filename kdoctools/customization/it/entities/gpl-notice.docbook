@@ -1,15 +1,28 @@
-<para>This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.</para>
+<!-- This file can be used to include the notice in documentation
+     <!DOCTYPE book ... >
+    ...
+     <bookinfo>
+       <legalnotice>
+         <para>Copyright (C) 20yy  [name of author]</para>
+         &GPLnotice;
+       </legalnotice>
+     </bookinfo>
+    ...
 
-<para>This program is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.</para>
+    Alternatively, you can include the text literally.
+ -->
+<para>Questo programma è software libero; puoi redistribuirlo e/o
+modificarlo sotto i termini della GNU General Public License come
+pubblicata dalla Free Software Foundation; la versione 2 della licenza
+oppure (a tua scelta) una qualsiasi versione successiva.</para>
 
-<para>You should have received a copy of the GNU General Public
-License along with this program; if not, write to the Free Software
+<para>Questo programma è distribuito nella speranza che possa essere utile,
+ma SENZA ALCUNA GARANZIA; senza nemmeno la garanzia implicita di
+COMMERCIABILIT&Agrave; o di ADEGUATEZZA PER UN PARTICOLARE SCOPO. Consulta la GNU
+General Public License per ulteriori dettagli.</para>
+
+<para>Dovresti avere ricevuto una copia della GNU General Public
+License insieme a questo programma; in caso contrario, scrivi alla Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
 <!--
 Local variables:

@@ -126,6 +126,7 @@ public:
   int splitPosInPercent;
   bool pendingFocusInEvent;
   bool blockHasUndockedSignal;
+  bool pendingDtor;
 
 #ifndef NO_KDE2
   NET::WindowType windowType;

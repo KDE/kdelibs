@@ -66,6 +66,7 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   connect(selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()));
   connect(selectYear, SIGNAL(clicked()), SLOT(selectYearClicked()));
   connect(line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
+  table->setFocus();
 }
 
 KDatePicker::~KDatePicker()
@@ -125,6 +126,8 @@ KDatePicker::dateChangedSlot(QDate date)
 {
     kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
     line->setText(KGlobal::locale()->formatDate(date, true));
+    selectMonth->setText(KGlobal::locale()->monthName(date.month(), false));
+    selectYear->setText(date.toString("yyyy"));
     emit(dateChanged(date));
 }
 
@@ -169,77 +172,25 @@ KDatePicker::setDate(const QDate& date)
 void
 KDatePicker::monthForwardClicked()
 {
-    QDate temp=table->getDate();
-    int day=temp.day();
-    // -----
-    if(temp.month()==12) {
-	temp.setYMD(temp.year()+1, 1, 1);
-    } else {
-	temp.setYMD(temp.year(), temp.month()+1, 1);
-    }
-    if(temp.daysInMonth()<day) {
-	temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
-    } else {
-	temp.setYMD(temp.year(), temp.month(), day);
-    }
-    // assert(temp.isValid());
-    setDate(temp);
+    setDate( table->getDate().addMonths(1) );
 }
 
 void
 KDatePicker::monthBackwardClicked()
-{
-  QDate temp=table->getDate();
-  int day=temp.day();
-  // -----
-  if(temp.month()==1)
     {
-      temp.setYMD(temp.year()-1, 12, 1);
-    } else {
-      temp.setYMD(temp.year(), temp.month()-1, 1);
-    }
-  if(temp.daysInMonth()<day)
-    {
-      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
-    } else {
-      temp.setYMD(temp.year(), temp.month(), day);
-    }
-  // assert(temp.isValid());
-  setDate(temp);
+    setDate( table->getDate().addMonths(-1) );
 }
 
 void
 KDatePicker::yearForwardClicked()
 {
-  QDate temp=table->getDate();
-  int day=temp.day();
-  // -----
-  temp.setYMD(temp.year()+1, temp.month(), 1);
-  if(temp.daysInMonth()<day)
-    {
-      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
-    } else {
-      temp.setYMD(temp.year(), temp.month(), day);
+    setDate( table->getDate().addYears(1) );
     }
-  // assert(temp.isValid());
-  setDate(temp);
-}
 
 void
 KDatePicker::yearBackwardClicked()
-{
-  QDate temp=table->getDate();
-  int day=temp.day();
-  // -----
-  temp.setYMD(temp.year()-1, temp.month(), 1);
-  if(temp.daysInMonth()<day)
     {
-      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
-    } else {
-      temp.setYMD(temp.year(), temp.month(), day);
-    }
-  // assert(temp.isValid());
-  setDate(temp);
+    setDate( table->getDate().addYears(-1) );
 }
 
 void

@@ -85,6 +85,11 @@ public:
     void setToolTip( const QString& tip );
 
     /**
+     * returns the preferred size of this item
+     */
+    QSize sizeHint() const;
+
+    /**
      * returns the width of this item.
      */
     virtual int width( const QListBox * ) const;
@@ -321,6 +326,11 @@ public:
      */
     bool isModified() const             { return m_isModified; }
 
+    /**
+     * @returns true if the bar is in vertical mode.
+     */
+    bool isVertical() const { return orientation() == Vertical; }
+
 public slots:
     /**
      * Makes the item with the url @p url the current item. Does nothing
@@ -356,10 +366,6 @@ protected:
      * @reimpl
      */
     virtual void resizeEvent( QResizeEvent * );
-    /**
-     * @returns true if the bar is in vertical mode.
-     */
-    bool isVertical() const { return orientation() == Vertical; }
 
     /**
      * The currently active item.
@@ -448,6 +454,8 @@ public:
      */
     Qt::Orientation orientation() const { return m_orientation; }
 
+    bool isVertical() const { return m_orientation == Qt::Vertical; }
+    
 signals:
     /**
      * Emitted when a drop-event happened.

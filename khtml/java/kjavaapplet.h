@@ -29,7 +29,6 @@
 #include <qobject.h>
 #include <qmap.h>
 
-
 /**
  * @short A Java applet
  *
@@ -131,6 +130,12 @@ public:
      * Get a reference to the Paramaters and their values
      */
     QMap<QString,QString>& getParams();
+
+    /**
+     * Get a member value of this applet, return true on success
+     */
+    bool getMember(const QString & name, JType & type, QString & value);
+    bool callMember(const QString &, const QStringList &, JType &, QString &);
 
     /**
      * Set the window title for swallowing

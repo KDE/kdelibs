@@ -251,7 +251,6 @@ void KIO::SessionData::reset()
     }
     d->language = languageList.join( ", " );
     
-    // that's the right solution, said Lars
     d->charsets = QTextCodec::codecForLocale()->mimeName();
     KProtocolManager::reparseConfiguration();
 }

@@ -1,10 +1,9 @@
-kdelibs (3.0.0-0rc2-1) unstable; urgency=low
+kdelibs (4:3.0.1-0) unstable; urgency=low
 
   * New upstream.
   * rebuilt debian dir.
-  * can't use doxygen for docs due to graphviz being non-free
 
- -- Christopher L Cheney <ccheney@debian.org>  Fri,  8 Mar 2002 16:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Tue, 16 Apr 2002 22:00:00 -0500
 
 kdelibs (4:2.2.2-13) unstable; urgency=high
 
