@@ -222,6 +222,8 @@ protected:
   bool httpOpen();             // Open transfer
   void httpClose();            // Close transfer
 
+  void forwardHttpResponseHeader();
+
   bool httpOpenConnection();   // Open connection
   void httpCloseConnection();  // Close connection
   void httpCheckConnection();  // Check whether to keep connection.
