@@ -162,7 +162,7 @@ void KToolBar::init()
   orient->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   orient->insertSeparator(-1);
   orient->insertItem( i18n("Floating"), CONTEXT_FLOAT );
-  orient->insertItem( i18n("Flat"), CONTEXT_FLAT );
+  orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
 
   QPopupMenu *mode = new QPopupMenu( context, "mode" );
   mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
