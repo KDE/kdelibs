@@ -420,7 +420,8 @@ public class KJASAppletContext implements AppletContext
         Object [] objs = getObjectField(appletID, name);
         if(objs == null)
             return JError;
-        return getMemberAux(objs[0].getClass(), objs[0], (String) objs[1], value);
+        int ret = getMemberAux(objs[0].getClass(), objs[0], (String) objs[1], value);
+        return ret;
     }
     private Field findField(Class c, String name) {
         if (c == null)
@@ -491,16 +492,85 @@ public class KJASAppletContext implements AppletContext
         }
     }
     private Method findMethod(Class c, String name, Class [] argcls) {
+        
         if (c == null)
             return null;
+        
+        try {
+            Method[] methods = c.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                Method m = methods[i];
+                if (m.getName().equals(name)) {
+                    Main.debug("Candidate: " + m);
+                    Class [] parameterTypes = m.getParameterTypes();
+                    if (argcls == null) {
+                        if (parameterTypes.length == 0) {
+                           return m;
+                        } 
+                    } else {
+                        if (argcls.length == parameterTypes.length) {
+                          for (int j = 0; j < argcls.length; j++) {
+                            // Main.debug("Parameter " + j + " " + parameterTypes[j]);
+                            argcls[j] = parameterTypes[j];
+                          }
+                          return m;                        
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+        /*
         try {
             Method m = c.getDeclaredMethod(name, argcls);
             return m;
         } catch (Exception e) {
             return findMethod(c.getSuperclass(), name, argcls);
         }
+        */
     }
 
+    /**
+    * converts Object <b>arg</b> into an object of class <b>cl</b>.
+    * @param arg Object to convert
+    * @param cl Destination class
+    * @return An Object of the specified class with the value specified
+    *  in <b>arg</b>
+    */
+    private static final Object cast(Object arg, Class cl) throws NumberFormatException {
+        Object ret = arg;
+        if (arg == null) {
+            ret = null;
+        }
+        else if (cl.isAssignableFrom(arg.getClass())) {
+            return arg;
+        }
+        else if (arg instanceof String) {
+            String s = (String)arg;
+            Main.debug("Argument String: \"" + s + "\"");
+            if (cl == Boolean.TYPE || cl == Boolean.class) {
+                ret = new Boolean(s);
+            } else if (cl == Integer.TYPE || cl == Integer.class) {
+                ret = new Integer(s);
+            } else if (cl == Long.TYPE || cl == Long.class) {
+                ret = new Long(s);
+            } else if (cl == Float.TYPE || cl == Float.class) {
+                ret = new Float(s);
+            } else if (cl == Double.TYPE || cl == Double.class) {
+                ret = new Double(s);
+            } else if (cl == Short.TYPE || cl == Short.class) {
+                ret = new Short(s);
+            } else if (cl  == Byte.TYPE || cl == Byte.class) {
+                ret = new Byte(s);
+            } else if (cl == Character.TYPE || cl == Character.class) {
+                ret = new Character(s.charAt(0));
+            }
+        }
+        return ret;
+    }
+    
     public int callMember(String appletID, String name, StringBuffer value, java.util.List args)
     {
         Object [] objs = getObjectField(appletID, name);
@@ -513,24 +583,28 @@ public class KJASAppletContext implements AppletContext
             String type;
             Class [] argcls = new Class[args.size()];
             for (int i = 0; i < args.size(); i++)
-                argcls[i] = name.getClass(); // String for now
+                argcls[i] = name.getClass(); // String for now, will be updated by findMethod
             Method m = findMethod(c, (String) objs[1], argcls);
-            Object [] argobj = new Object[args.size()];
-            for (int i = 0; i < args.size(); i++)
-                argobj[i] = args.get(i); //for now
-            Object retval =  m.invoke(objs[0], argobj);
-            if (retval == null)
-                return JVoid; // void
-            return getTypedValue(retval, value);
+            Main.debug("Found Method: " + m);
+            if (m != null) {
+                Object [] argobj = new Object[args.size()];
+                for (int i = 0; i < args.size(); i++) {
+                    argobj[i] = cast(args.get(i), argcls[i]);
+                }
+                Object retval =  m.invoke(objs[0], argobj);
+                if (retval == null)
+                    return JVoid; // void
+                return getTypedValue(retval, value);
+             }
         } catch (Exception e) {
-            Main.debug("callMember throwed exception: " + e.toString());
+            Main.debug("callMember threw exception: " + e.toString());
             e.printStackTrace();
         }
         return JError;
     }
     public void derefObject(int objid) {
         if (jsReferencedObjects.remove(new Integer(objid)) == null)
-            Main.debug("couldn't remover referenced object");
+            Main.debug("couldn't remove referenced object");
     }
 
     public void setStream(String key, InputStream stream) throws IOException {

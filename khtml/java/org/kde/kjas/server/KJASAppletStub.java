@@ -84,7 +84,7 @@ public class KJASAppletStub extends Frame
     /*************************************************************************
      *********************** Runnable Interface ******************************
      *************************************************************************/
-    public void createApplet() {
+    public synchronized void createApplet() {
         panel = new KJASAppletPanel( appletSize );
         add( "Center", panel );
         pack();
@@ -97,45 +97,38 @@ public class KJASAppletStub extends Frame
                 //this order is very important and took a long time
                 //to figure out- don't modify it unless there are
                 //real bug fixes
-                // This whole code is very tricky.
-                // some strange blocking occurs when loading applets.
-                // Display of the applet takes place very late, so that
-                // progress messages etc of applets can not be seen.
-                // Repaints never happen when you want them to happen
-                // during startup.  
                 
-                active = true;
-                //synchronized( loader ) {
+                synchronized( me ) {
+                    active = true;
                     try {
                         appletClass = loader.loadClass( className );
                     } catch (Exception e) {
                         Main.kjas_err("Class could not be loaded: " + className, e);
                     }
-                //}
-                if( appletClass == null ) {
-                    Main.info( "Could not load applet class " + className);
-                    panel.showFailed();
-                    return;
-                }                
-                try {
-                    synchronized (appletClass) {
-                        Main.debug("Applet " + appletName + " id=" + appletID + " instantiating...");
-                        app = (Applet) appletClass.newInstance();
-                        Main.debug("Applet " + appletName + " id=" + appletID + " instantiated.");
+                    if( appletClass == null ) {
+                        Main.info( "Could not load applet class " + className);
+                        panel.showFailed();
+                        return;
+                    }                
+                    try {
+                        synchronized (appletClass) {
+                            Main.debug("Applet " + appletName + " id=" + appletID + " instantiating...");
+                            app = (Applet) appletClass.newInstance();
+                            Main.debug("Applet " + appletName + " id=" + appletID + " instantiated.");
+                        }
+                        app.setStub( me );
                     }
-                    app.setStub( me );
+                    catch( InstantiationException e ) {
+                        Main.kjas_err( "Could not instantiate applet", e );
+                        panel.showFailed();
+                        return;
+                    }
+                    catch( IllegalAccessException e ) {
+                        Main.kjas_err( "Could not instantiate applet", e );
+                        panel.showFailed();
+                        return;
+                    }
                 }
-                catch( InstantiationException e ) {
-                    Main.kjas_err( "Could not instantiate applet", e );
-                    panel.showFailed();
-                    return;
-                }
-                catch( IllegalAccessException e ) {
-                    Main.kjas_err( "Could not instantiate applet", e );
-                    panel.showFailed();
-                    return;
-                }
-                
                 app.setVisible(false);
                 Main.debug("panel.add( \"Center\", app );");                
                 panel.setApplet( app );
@@ -170,8 +163,8 @@ public class KJASAppletStub extends Frame
                 setVisible(true);
                 //repaint(1L);
                 //panel.repaint(1L);
-                Main.debug("app.repaint(1L);");                
-                app.repaint(1L);
+                //--Main.debug("app.repaint(1L);");                
+                //--app.repaint(1L);
  
                 context.showStatus("Starting Applet " + appletName + " ...");
                 // create a new thread, so we know, when the applet was started
@@ -221,7 +214,9 @@ public class KJASAppletStub extends Frame
 
     public Applet getApplet()
     {
-        return app;
+        synchronized ( this ) {
+            return app;
+        }
     }
 
     public Dimension getAppletSize()
