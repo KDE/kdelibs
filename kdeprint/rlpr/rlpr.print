@@ -36,5 +36,6 @@ Comment[tr]=RLPR ortamı (uzak LPD sunucuları)
 Comment[vi]=Môi trường RLPR(remote tới máy chủ LPD) 
 Comment[xxx]=xx
 Comment[zh_CN.GB2312]=RLPR 环境(远程 LPD 服务器)
+Comment[zh_TW.Big5]=RLPR 環境(遠端 LPD 伺服器)
 DetectUris=exec:/rlpr
 DetectPrecedence=0

@@ -44,6 +44,7 @@ Name[tr]=Xindow Biteşlemleri
 Name[vi]=Bitmaps của XWindows 
 Name[xxx]=xx
 Name[zh_CN.GB2312]=XWindow 位图
+Name[zh_TW.Big5]=XWindow 位圖
 Read=true
 Write=true
 Suffices=xbm,XBM

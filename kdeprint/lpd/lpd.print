@@ -35,5 +35,6 @@ Comment[sv]=LPR (Standardskrivarsystem för BSD)
 Comment[tr]=LPR (Standart BSD yazdırma sistemi)
 Comment[xxx]=xx
 Comment[zh_CN.GB2312]=LPR (标准BSD打印系统)
+Comment[zh_TW.Big5]=LPR (標準BSD列印系統)
 DetectUris=service:/printer,config:/printcap
 DetectPrecedence=5
