@@ -1286,10 +1286,10 @@ KJSO SourceElementsNode::evaluate()
 // ECMA 14
 void SourceElementsNode::processFuncDecl()
 {
-  element->processFuncDecl();
-
   if (elements)
     elements->processFuncDecl();
+
+  element->processFuncDecl();
 }
 
 void SourceElementsNode::deleteStatements()
