@@ -60,8 +60,7 @@ class KDirWatch : public QObject
     * Constructor.
     *
     * Does not begin scanning until @ref startScan()
-    * is called. Default frequency is 500 ms. The created list of
-    * directories has deep copies.
+    * is called. Default frequency is 500 ms.
     */
    KDirWatch ( int freq = 500 );
 
@@ -75,7 +74,6 @@ class KDirWatch : public QObject
    /**
     * Add a directory to the list of directories to be watched.
     *
-    * The list makes deep copies.
     */
    void addDir(const QString& path);
 
