@@ -1693,7 +1693,11 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     KURL newone = url();
                     newone.addPath(filename);
-                    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/",includeHidden);
+                    ListJob *job = new ListJob(newone,
+                                               false /*no progress info!*/,
+                                               true /*recursive*/,
+                                               prefix + filename + "/",
+                                               includeHidden);
                     Scheduler::scheduleJob(job);
                     connect(job, SIGNAL(entries( KIO::Job *,
                                                  const KIO::UDSEntryList& )),
