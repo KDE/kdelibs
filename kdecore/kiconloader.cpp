@@ -985,7 +985,6 @@ QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int s
     return loadIconSet( name, group, size, false );
 }
 
-#if QT_VERSION >= 0x030100 && 0
 /*** class for delayed icon loading for QIconSet ***/
 
 class KIconFactory
@@ -1045,27 +1044,6 @@ QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::
     QPixmap pm = loader->loadIcon( iconName, group, size, state );
     return new QPixmap( pm );
     }
-
-#else
-
-QIconSet KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size,
-    bool canReturnNull)
-{
-    QIconSet iconset;
-    QPixmap tmp = loadIcon(name, group, size, KIcon::ActiveState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Active );
-    // we don't use QIconSet's resizing anyway
-    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Active );
-    tmp = loadIcon(name, group, size, KIcon::DisabledState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Disabled );
-    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Disabled );
-    tmp = loadIcon(name, group, size, KIcon::DefaultState, NULL, canReturnNull);
-    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Normal );
-    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Normal );
-    return iconset;
-}
-
-#endif
 
 // Easy access functions
 
