@@ -238,6 +238,7 @@ protected:
   /**
    * Performs a WebDAV stat or list
    */
+  void davSetRequest( const QCString& requestXML );
   void davStatList( const KURL& url, bool stat = true );
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
   void davParseActiveLocks( const QDomNodeList& activeLocks,

@@ -484,6 +484,15 @@ void HTTPProtocol::listDir( const KURL& url )
   davStatList( url, false );
 }
 
+void HTTPProtocol::davSetRequest( const QCString& requestXML )
+{
+  // insert the document into the POST buffer, kill trailing zero byte
+  m_bufPOST = requestXML;
+
+  if (m_bufPOST.size())
+    m_bufPOST.truncate( m_bufPOST.size() - 1 );
+}
+
 void HTTPProtocol::davStatList( const KURL& url, bool stat )
 {
   UDSEntry entry;
@@ -502,9 +511,36 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     request.append( query.utf8() );
     request.append( "</D:searchrequest>\r\n" );
 
-    // insert the document into the POST buffer, kill trailing zero byte
-    m_bufPOST = request;
-    if (m_bufPOST.size()) m_bufPOST.truncate( m_bufPOST.size() - 1 );
+    davSetRequest( request );
+  } else {
+    // We are only after certain features...
+    QCString request;
+    request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+    "<propfind xmlns:D=\"DAV:\">";
+
+    // insert additional XML request from the davRequestResponse metadata
+    if ( hasMetaData( "davRequestResponse" ) )
+      request += metaData( "davRequestResponse" ).utf8();
+    else {
+      // No special request, ask for default properties
+      request += "<D:prop>"
+      "<D:creationdate/>"
+      "<D:getcontentlength/>"
+      "<D:displayname/>"
+      "<D:source/>"
+      "<D:getcontentlanguage/>"
+      "<D:getcontenttype/>"
+      "<D:executable/>"
+      "<D:getlastmodified/>"
+      "<D:getetag/>"
+      "<D:supportedlock/>"
+      "<D:lockdiscovery/>"
+      "<D:resourcetype/>"
+      "</prop>";
+    }
+    request += "</propfind>";
+
+    davSetRequest( request );
   }
 
   // WebDAV Stat or List...
@@ -615,6 +651,15 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     {
       kdDebug(7113) << "Error: no prop segment in this propstat." << endl;
       return;
+    }
+
+    if ( hasMetaData( "davRequestResponse" ) )
+    {
+      atom.m_uds = KIO::UDS_XML_PROPERTIES;
+      QDomDocument doc;
+      doc.appendChild(prop);
+      atom.m_str = doc.toString();
+      entry.append( atom );
     }
 
     for ( QDomElement property = prop.firstChild().toElement();

@@ -238,7 +238,9 @@ namespace KIO
     UDS_MIME_TYPE = 16384 | UDS_STRING,
     // A mime type to be used for displaying only.
     // But when 'running' the file, the mimetype is re-determined
-    UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING
+    UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING,
+    // XML properties, e.g. for WebDAV
+    UDS_XML_PROPERTIES = 32768 | UDS_STRING
   };
 
   enum CacheControl
