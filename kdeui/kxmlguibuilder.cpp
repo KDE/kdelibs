@@ -151,22 +151,17 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagMenu )
   {
-    QWidget *prnt = 0L;
-    // Look up to see if we are inside a menubar or not
-    // If yes, then use the parent widget (to get kaction to plug itself into the mainwindow)
-    // But we don't want to set the parent for a standalone popupmenu,
+    // Look up to see if we are inside a mainwindow. If yes, then
+    // use it as parent widget (to get kaction to plug itself into the
+    // mainwindow). Don't use a popupmenu as parent widget, otherwise
+    // the popup won't be hidden if it is used as a standalone menu as well.
+    // And we don't want to set the parent for a standalone popupmenu,
     // otherwise its shortcuts appear.
-    for ( QDomNode node = element; !node.isNull(); node = node.parentNode() )
-    {
-        if ( node.nodeType() == QDomNode::ElementNode &&
-                node.toElement().tagName().lower() == d->tagMenuBar )
-        {
-            prnt = parent;
-            break;
-        }
-    }
+    QWidget* p = parent;
+    while ( p && !p->inherits("KMainWindow") )
+        p = p->parentWidget();
 
-    KPopupMenu *popup = new KPopupMenu( prnt, element.attribute( d->attrName ).utf8());
+    KPopupMenu *popup = new KPopupMenu( p, element.attribute( d->attrName ).utf8());
 
     QString i18nText;
     QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
