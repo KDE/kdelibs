@@ -237,13 +237,14 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
 
     QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
      CSSProperty *current;
-     for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )
+     for ( lstValuesIt.toLast(); (current = lstValuesIt.current()); --lstValuesIt )  {
          if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
              value = current->value()->cssText();
              m_lstValues->removeRef(current);
              setChanged();
 	     break;
         }
+     }
 
     return value;
 }
@@ -527,8 +528,8 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPa
     switch(type)
     {
     case CSSPrimitiveValue::CSS_EMS:
-       	factor = style->font().pixelSize();
-		break;
+        factor = style->font().pixelSize();
+        break;
     case CSSPrimitiveValue::CSS_EXS:
 	{
         QFontMetrics fm = style->fontMetrics();
@@ -695,8 +696,15 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_RECT:
-	    // ###
-	    break;
+        {
+            RectImpl* rectVal = getRectValue();
+            text = "rect(";
+            text += rectVal->top()->cssText() + " ";
+            text += rectVal->right()->cssText() + " ";
+            text += rectVal->bottom()->cssText() + " ";
+            text += rectVal->left()->cssText() + ")";
+        }
+        break;
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
 	    text = QColor(m_value.rgbcolor).name();
 	    break;
