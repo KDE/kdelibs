@@ -39,13 +39,13 @@ public:
   KServiceOffer( const KServiceOffer& );
   KServiceOffer( KService::Ptr _service,
 		 int _pref, bool _default );
-  
+
   bool operator< ( const KServiceOffer& ) const;
   bool allowAsDefault() const { return m_bAllowAsDefault; }
   int preference() const { return m_iPreference; }
   KService::Ptr service() const { return m_pService; }
   bool isValid() const { return m_iPreference >= 0; }
-  
+
 private:
   /**
    * The bigger this number is, the better is this service.
@@ -64,29 +64,31 @@ private:
  */
 class KServiceTypeProfile
 {
-public:  
+public:
   typedef QValueList<KServiceOffer> OfferList;
-  
+
   ~KServiceTypeProfile();
-    
+
   /**
    * @return the users preference of this special service or 0 if
    *         the service is unknown.
    */
   int preference( const QString& _service ) const;
   bool allowAsDefault( const QString& _service ) const;
-  
+
   OfferList offers() const;
-  
+
   /**
    * @return the service type for which this profile is responsible.
    */
   QString serviceType() const { return m_strServiceType; }
-  
+
   /**
    * @return the preferred service (convenience method)
+   * @param needApp if we need an service of type Application
+   * (as opposed to any service, including non-app services)
    */
-  static KService::Ptr preferredService( const QString & _serviceType);
+  static KService::Ptr preferredService( const QString & _serviceType, bool needApp );
 
   /**
    * @return the profile for the requested service type.
@@ -97,14 +99,14 @@ public:
    * @return the offers associated with a given servicetype
    */
   static OfferList offers( const QString& _servicetype );
-  
+
   static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
 
   /**
    * Clear all cached information
    */
   static void clear() { delete s_lstProfiles; s_lstProfiles = 0L; }
-  
+
 protected:
   /**
    * Constructor is called when the user profile is read for the
@@ -132,12 +134,12 @@ private:
      */
     bool m_bAllowAsDefault;
   };
-  
+
   /**
    * Map of all services for which we have assessments.
    */
   QMap<QString,Service> m_mapServices;
-  
+
   /**
    * ServiceType of this profile.
    */

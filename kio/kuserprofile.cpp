@@ -199,17 +199,24 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
   return offers;
 }
 
-KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType )
+KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, bool needApp )
 {
   OfferList lst = offers( _serviceType );
 
-  if ( lst.count() == 0 || !(*lst.begin()).allowAsDefault() )
+  OfferList::Iterator itOff = lst.begin();
+  // Look for the first one that is allowed as default and
+  for( ; itOff != lst.end(); ++itOff )
   {
-    kdDebug(7010) << "No Offers" << endl;
-    return 0L;
+      if ((*itOff).allowAsDefault())
+      {
+          if (!needApp || (*itOff).service()->type() == "Application")
+              return (*itOff).service();
+      }
+      else break; // The allowed-as-default are first anyway
   }
 
-  return ( *lst.begin() ).service();
+  kdDebug(7010) << "No offers, or none allowed as default" << endl;
+  return 0L;
 }
 
 /*********************************************

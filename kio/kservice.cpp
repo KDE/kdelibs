@@ -151,14 +151,7 @@ KService::init( KDesktopFile *config )
 
   m_strDesktopEntryName = name.lower();
 
-  if ( m_strType == "Application" )
-    // Specify AllowDefault = false to explicitely forbid it.
-    // Most service files don't have that field, so true is the default
-    m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
-  else
-    // Doesn't exist for generic services, since KRun has to be able
-    // to run the default service. It can't run a lib...
-    m_bAllowAsDefault = false;
+  m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
 
   m_initialPreference = config->readNumEntry( "InitialPreference", 1 );
 

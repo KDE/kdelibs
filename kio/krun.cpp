@@ -76,7 +76,7 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
   KURL::List lst;
   lst.append( u );
 
-  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype );
+  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype, true /*need app*/ );
 
   if ( !offer )
   {
@@ -529,7 +529,7 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  // First, let's check for well-known extensions 
+  // First, let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   if ( m_strURL.query().isEmpty() )
   {
