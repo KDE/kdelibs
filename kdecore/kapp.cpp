@@ -39,6 +39,7 @@
 
 #include <kapp.h>
 #include <kglobal.h>
+#include <kstddirs.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 #include <kdebugdialog.h>
@@ -46,7 +47,6 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -238,6 +238,20 @@ DCOPClient *KApplication::dcopClient()
     return pDCOPClient;
 
   // create an instance specific DCOP client object
+  // if dcopserver lockfile not present, start the server.
+  QCString fName(::getenv("HOME"));
+  fName += "/.DCOPserver";
+  if (::access(fName.data(), R_OK) == -1) {
+    QString srv = KStandardDirs::findExe("dcopserver");
+    QApplication::flushX();
+    if (fork() == 0) {
+      execl(srv.latin1(), srv.latin1(), 0);
+      exit(1);
+    } else {
+      sleep(1); // give server some startup time. Race condition, I know...
+    }
+  }
+
   pDCOPClient = new DCOPClient();
   connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
 	  SLOT(dcopFailure(const QString &)));
