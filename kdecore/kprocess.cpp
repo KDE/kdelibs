@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.25  1998/09/22 18:03:13  ettrich
+   Matthias: small updates to kaccel
+
    Revision 1.24  1998/09/17 19:22:09  radej
    sven: made it work with egcs-1.1
 
@@ -580,11 +583,11 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     cmd += arguments.at(i);
     cmd += " "; // CC: to separate the arguments
   }
-  
-  // execution in background
-  cmd.stripWhiteSpace();
-  if (cmd[cmd.length()-1] != '&')
-      cmd += '&';
+
+//   // execution in background
+//   cmd.stripWhiteSpace();
+//   if (cmd[cmd.length()-1] != '&')
+//       cmd += '&';
   arglist[2] = cmd.data();
   arglist[3] = 0;
 
