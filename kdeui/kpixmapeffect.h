@@ -81,23 +81,23 @@ public:
     static KPixmap createTiled(const KPixmap& pixmap, QSize size);
 
     /**
-     * Either brighten or dim a pixmap by a specified percent.
+     * Either brighten or dim a pixmap by a specified ratio.
      *
      * @param pixmap The pixmap to process.
-     * @param percent The percent value. Use negative value to dim.
+     * @param ratio The ratio to use. Use negative value to dim.
      * @return Returns The @ref pixmap(), provided for convenience.
      */
-    static KPixmap& intensity(KPixmap& pixmap, float percent);
+    static KPixmap& intensity(KPixmap& pixmap, float ratio);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
      *
      * @param pixmap The pixmap to process.
-     * @param percent Percent value. Use negative value to dim.
+     * @param ratio value. Use negative value to dim.
      * @param channel Which channel(s) should be modified
      * @return Returns the @ref pixmap(), provided for convenience.
      */
-    static KPixmap& channelIntensity(KPixmap& pixmap, float percent,
+    static KPixmap& channelIntensity(KPixmap& pixmap, float ratio,
                                     RGBComponent channel);
 
     /**
