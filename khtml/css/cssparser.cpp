@@ -3,6 +3,8 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *               1999 Waldo Bastian (bastian@kde.org)
+ *               2001 Andreas Schlapbach (schlpbch@iam.unibe.ch)
+ *               2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -943,7 +945,9 @@ public:
 
     bool matchNameFamily( QString *ffamily )
     {
-	//kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;
+#if CSS_DEBUG
+      kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;
+#endif
       bool matched = false;
       if ( m_yyTok == TOK_SYMBOL || ( m_yyTok == TOK_STRING && !strictParsing ) ) {
 	// accept quoted "serif" only in non strict mode.
@@ -954,7 +958,7 @@ public:
 	}
 	matched = true;
       } else if ( m_yyTok == TOK_STRING ) {
-	  //kdDebug( 6080 ) << "[" << m_yyStr << "]" << endl;
+          //  kdDebug( 6080 ) << "[" << m_yyStr << "]" << endl;
 	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
 	if (!cssval || !(cssval->id >= CSS_VAL_SERIF && cssval->id <= CSS_VAL_MONOSPACE)) {
 	  *ffamily = m_yyStr;
@@ -967,7 +971,9 @@ public:
 
     bool matchFontFamily( QString *ffamily )
     {
-	//kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl;
+if CSS_DEBUG
+    kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl;
+#endif
       QStringList t;
       if ( !matchFontFamily( &t ) )
 	return false;
@@ -1002,7 +1008,6 @@ public:
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
 			QString *fsize, QString *lheight, QString *ffamily )
     {
-      //kdDebug( 6080 ) << "matchRealFont(..)" << endl;
       bool metFstyle = matchFontStyle( fstyle );
       bool metFvariant = matchFontVariant( fvariant );
       matchFontWeight( fweight );
@@ -1037,7 +1042,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
   const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
 
   if (cssval) {
-    //kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
+      //kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
     QFont sysFont;
     switch (cssval->id) {
     case CSS_VAL_MENU:
@@ -1074,8 +1079,8 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 	return false;
       }
   }
-  //kdDebug(6080) << "[" << fstyle << "] [" << fvariant << "] [" << fweight << "] ["
-  //		<< fsize << "] / [" << lheight << "] [" << ffamily << "]" << endl;
+//   kdDebug(6080) << "[" << fstyle << "] [" << fvariant << "] [" << fweight << "] ["
+//   		<< fsize << "] / [" << lheight << "] [" << ffamily << "]" << endl;
 
   if(!fstyle.isNull())
     parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), CSS_PROP_FONT_STYLE);
@@ -1849,13 +1854,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_FONT_FAMILY:
     	// [[ <family-name> | <generic-family> ],]* [<family-name> | <generic-family>] | inherit
 	{
-	  CSSValueListImpl *list = new CSSValueListImpl;
 	  // css2 compatible parsing...
 	  FontParser fp;
 	  fp.startTokenizer( value, strictParsing );
 	  QStringList families;
 	  if ( !fp.matchFontFamily( &families ) )
             return false;
+          CSSValueListImpl *list = new CSSValueListImpl;
 	  for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
             if( *it != QString::null ) {
 	      list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
