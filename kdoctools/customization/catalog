@@ -69,7 +69,7 @@ PUBLIC "-//KDE//DOCUMENT BSD License (HTML)//EN"
        "entities/bsd-license.html"
 PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
        "entities/artistic-license"
-PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
+PUBLIC "-//KDE//DOCUMENT Artistic License (HTML)//EN"
        "entities/artistic-license.html"
 
 CATALOG af/catalog
