@@ -80,7 +80,7 @@ public class KJASAppletContext implements AppletContext
         KJASAppletStub stub = (KJASAppletStub) stubs.get(appletID);
         if (stub == null)
             return null;
-        return stub.appletName;
+        return stub.getAppletName();
     }
     public void createApplet( String appletID, String name,
                               String className, String docBase,
@@ -181,8 +181,8 @@ public class KJASAppletContext implements AppletContext
         }
         else
         {
-            Main.debug( "stopping applet: " + appletID );
-            stub.die();
+            //Main.debug( "stopping applet: " + appletID );
+            stub.destroyApplet();
 
             stubs.remove( appletID );
         }
@@ -220,7 +220,7 @@ public class KJASAppletContext implements AppletContext
         while ( e.hasMoreElements() )
         {
             KJASAppletStub stub = (KJASAppletStub) e.nextElement();
-            stub.die();
+            stub.destroyApplet();
         }
 
         stubs.clear();
@@ -293,7 +293,7 @@ public class KJASAppletContext implements AppletContext
                 // Main.info("Getting image using ClassLoader:" + url); 
                 if (loader != null) {
                     url = loader.findResource(url.toString());
-                    Main.debug("Resulting URL:" + url);
+                    //Main.debug("Resulting URL:" + url);
                 }
                 Toolkit kit = Toolkit.getDefaultToolkit();
                 Image img = kit.createImage(url);
@@ -338,7 +338,7 @@ public class KJASAppletContext implements AppletContext
 
     public void showDocument( URL url )
     {
-        Main.debug( "showDocument, url = " + url );
+        //Main.debug( "showDocument, url = " + url );
 
         if( active && (url != null) )
         {
@@ -348,7 +348,7 @@ public class KJASAppletContext implements AppletContext
 
     public void showDocument( URL url, String targetFrame )
     {
-        Main.debug( "showDocument, url = " + url + " targetFrame = " + targetFrame );
+        //Main.debug( "showDocument, url = " + url + " targetFrame = " + targetFrame );
 
         if( active && (url != null) && (targetFrame != null) )
         {
@@ -399,15 +399,16 @@ public class KJASAppletContext implements AppletContext
     {
         Main.debug("getMember: " + name);
         Object o = null;
+        KJASAppletStub stub = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
         else {
-            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            stub = (KJASAppletStub) stubs.get( appletID );
             if (stub != null)
                 o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
         } 
         int ret[] = { JError, objid };
-        if (o == null)
+        if (o == null || (stub != null && !stub.isLoaded()))
             return ret;
 
         Class c = o.getClass();
@@ -437,15 +438,16 @@ public class KJASAppletContext implements AppletContext
             jsobject = null;
             return true;
         }
+        KJASAppletStub stub = null;
         Object o = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
         else {
-            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            stub = (KJASAppletStub) stubs.get( appletID );
             if (stub != null)
                 o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
         }
-        if (o == null) {
+        if (o == null || (stub != null && !stub.isLoaded())) {
             Main.debug("Error in putValue: applet " + appletID + " not found");
             return false;
         }
@@ -578,16 +580,17 @@ public class KJASAppletContext implements AppletContext
     public int[] callMember(String appletID, int objid, String name, StringBuffer value, java.util.List args)
     {
         Object o = null;
+        KJASAppletStub stub = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
         else {
-            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            stub = (KJASAppletStub) stubs.get( appletID );
             if (stub != null)
                 o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
         }
 
         int [] ret = { JError, objid };
-        if(o == null)
+        if (o == null || (stub != null && !stub.isLoaded()))
             return ret;
 
         try {

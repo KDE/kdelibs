@@ -6,31 +6,68 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.swing.JFrame;
+
 
 /**
  * The stub used by Applets to communicate with their environment.
  *
  */
-public class KJASAppletStub extends Frame
+public final class KJASAppletStub
     implements AppletStub
 {
-    KJASAppletContext context;    // The containing context.
-    Hashtable         params;     // Maps parameter names to values
-    URL               codeBase;   // The URL directory where files are
-    URL               docBase;    // The document that referenced the applet
-    boolean           active;     // Is the applet active?
-    String            appletName; // The name of this applet instance
-    String            appletID;   // The id of this applet- for use in callbacks
-    Dimension         appletSize;
-    String            windowName;
-    String            className;
-    Class             appletClass;
+    private KJASAppletContext context;    // The containing context.
+    private Hashtable         params;     // Maps parameter names to values
+    private URL               codeBase;   // The URL directory where files are
+    private URL               docBase;    // The document that referenced the applet
+    private boolean           active;     // Is the applet active?
+    private String            appletName; // The name of this applet instance
+    private String            appletID;   // The id of this applet- for use in callbacks
+    private Dimension         appletSize;
+    private String            windowName;
+    private String            className;
+    private Class             appletClass;
+    private JFrame            frame;
+    private boolean           failed = false;
+   
     
-    KJASAppletClassLoader loader;
-    KJASAppletPanel       panel;
-    Applet                app;
-    Thread                runThread;
-    KJASAppletStub        me;
+    /**
+    * applet state unknown
+    */
+    public static final int UNKNOWN = 0;
+    /**
+    * the applet class has been loaded 
+    */
+    public static final int CLASS_LOADED = 1;
+    /**
+    * the applet has been instanciated 
+    */
+    public static final int INSTANCIATED = 2;
+    /**
+    * the applet has been initialized 
+    */
+    public static final int INITIALIZED = 3;
+    /**
+    * the applet has been started 
+    */
+    public static final int STARTED = 4;
+    /**
+    * the applet has been stopped 
+    */
+    public static final int STOPPED = 5;
+    /**
+    * the applet has been destroyed 
+    */
+    public static final int DESTROYED = 6;
+   
+    
+    private int state = UNKNOWN;  
+    private KJASAppletClassLoader loader;
+    private KJASAppletPanel       panel;
+    private Applet                app;
+    private Thread                runThread;
+    private Thread                appletThread = null;
+    KJASAppletStub                me;
 
     /**
      * Create an AppletStub for the specified applet. The stub will be in
@@ -43,19 +80,19 @@ public class KJASAppletStub extends Frame
                            Dimension _appletSize, Hashtable _params,
                            String _windowName, KJASAppletClassLoader _loader )
     {
-        super( _windowName );
-        
         context    = _context;
         appletID   = _appletID;
         codeBase   = _codeBase;
         docBase    = _docBase;
+        active     = false;
+        state      = UNKNOWN;
         appletName = _appletName;
         className  = _className.replace( '/', '.' );
         appletSize = _appletSize;
         params     = _params;
         windowName = _windowName;
         loader     = _loader;
-
+ 
         String fixedClassName = _className;
         if (_className.endsWith(".class") || _className.endsWith(".CLASS"))
         {
@@ -70,30 +107,43 @@ public class KJASAppletStub extends Frame
         appletClass = null;
         me = this;
         
+        
+    }
+
+    private void stateChange(int newState) {
+        if (failed)
+            return;
+        state = newState;
+        Main.protocol.sendAppletStateNotification(
+            context.getID(),
+            appletID,
+            newState);
+    }
+    
+    private void setFailed(String why) {
+        failed = true;
+        Main.protocol.sendAppletFailed(context.getID(), appletID, why); 
+    }
+    
+    void createApplet() {
+        panel = new KJASAppletPanel( appletSize );
+        frame = new JFrame(windowName);
         // under certain circumstances, it may happen that the
         // applet is not embedded but shown in a separate window.
         // think of konqueror running under fvwm or gnome.
         // than, the user should have the ability to close the window.
         
-        addWindowListener
+        frame.addWindowListener
         (
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    me.die();
+                    me.destroyApplet();
                 }
             }
         );
-        
-    }
-
-    /*************************************************************************
-     *********************** Runnable Interface ******************************
-     *************************************************************************/
-    public synchronized void createApplet() {
-        panel = new KJASAppletPanel( appletSize );
-        add( "Center", panel );
-        pack();
-        setVisible(true);
+        frame.getContentPane().add( "Center", panel );
+        frame.pack();
+        frame.setVisible(true);
         loader.addStatusListener(panel);
         runThread = new Thread
         (
@@ -108,136 +158,193 @@ public class KJASAppletStub extends Frame
                 // it leads to a deadlock of the JVM with
                 // j2re 1.4.1
                 //synchronized( me ) {
-                    active = true;
                     try {
                         appletClass = loader.loadClass( className );
                     } catch (Exception e) {
                         Main.kjas_err("Class could not be loaded: " + className, e);
-                    }
-                    if( appletClass == null ) {
-                        Main.info( "Could not load applet class " + className);
+                        setFailed(e.toString());
                         panel.showFailed();
                         return;
-                    }                
+                    }
+                    stateChange(CLASS_LOADED);                
                     try {
                         synchronized (appletClass) {
-                            Main.debug("Applet " + appletName + " id=" + appletID + " instantiating...");
-                            app = (Applet) appletClass.newInstance();
-                            Main.debug("Applet " + appletName + " id=" + appletID + " instantiated.");
+                           app = (Applet) appletClass.newInstance();
                         }
-                        app.setStub( me );
                     }
                     catch( InstantiationException e ) {
                         Main.kjas_err( "Could not instantiate applet", e );
                         panel.showFailed();
+                        setFailed(e.toString());
                         return;
                     }
                     catch( IllegalAccessException e ) {
                         Main.kjas_err( "Could not instantiate applet", e );
                         panel.showFailed();
+                        setFailed(e.toString());
                         return;
                     }
                 //} // synchronized
+                app.setStub( me );
+                stateChange(INSTANCIATED);
                 app.setVisible(false);
-                Main.debug("panel.add( \"Center\", app );");                
                 panel.setApplet( app );
                 
-                Main.debug("app.setSize(appletSize);");
                 app.setSize(appletSize);
                                 
                 context.showStatus("Initializing Applet " + appletName + " ...");
                 
-                Main.debug("Applet " + appletName + " id=" + appletID + " initializing...");
                 try {
                     app.init();
                 } catch (Error e) {
                     Main.info("Error " + e.toString() + " during applet initialization"); 
                     e.printStackTrace();
+                    setFailed(e.toString());
                     return;
                 }
+                stateChange(INITIALIZED);
                 loader.removeStatusListener(panel);
                 app.setVisible(true);
-                Main.debug("Applet " + appletName + " id=" + appletID + " initialized.");
-                
-                Main.debug("app.setSize(appletSize);");                
-                app.setSize(appletSize);
-                
+                app.setSize(appletSize);                
                 app.validate();
-                
-                Main.debug("app.setVisible(true);");                
-                app.setVisible(true);
-                Main.debug("panel.setVisible(true);");                
-                panel.setVisible(true);
-                Main.debug("setVisible(true);");                
-                setVisible(true);
-                //repaint(1L);
-                //panel.repaint(1L);
-                //--Main.debug("app.repaint(1L);");                
-                app.repaint(0L);
- 
+               
                 context.showStatus("Starting Applet " + appletName + " ...");
-                // create a new thread, so we know, when the applet was started
-                
-                Main.debug("Applet " + appletName + " id=" + appletID + " starting...");
-                Thread appletThread = new KJASAppletThread(app, "KJAS-Applet-" + appletID + "-" + appletName); 
+                // stop the loading... animation 
                 panel.stopAnimation();
+                // create a new thread, so we know, when the applet was started
+                /*Thread appletThread = new KJASAppletThread(me, "KJAS-Applet-" + appletID + "-" + appletName); 
                 appletThread.start();
-                Main.debug("Applet " + appletName + " id=" + appletID + " started.");
-                context.showStatus("Applet " + appletName + " started.");
-                //setVisible(true);
-            }
+                state = STARTED;
+                context.showStatus("Applet " + appletName + " started.");*/
+           }
         }
         , "KJAS-AppletStub-" + appletID + "-" + appletName);
         runThread.setContextClassLoader(loader);
         runThread.start();
     }
 
-    public void startApplet()
+    /**
+    * starts the applet managed by this stub by calling the applets start() method.
+    * Also marks this stub as active.
+    * @see java.applet.Applet#start()
+    * @see java.applet.AppletStub#isActive()
+    * 
+    */
+    void startApplet()
     {
-        if( app != null )
-            app.start();
+        if( app != null ) {
+            active = true;                    
+            if (appletThread != null) {
+                appletThread = new Thread("KJAS-Applet-" + appletID + "-" + appletName) {
+                    public void run() {
+                        app.start();
+                        context.showStatus("Applet " + appletName + " started.");
+                        app.repaint();
+                    }
+                };
+                appletThread.start();
+            } else {
+                app.start();
+                app.repaint();
+            }
+            stateChange(STARTED);
+       }
     }
 
-    public void stopApplet()
+    /**
+    * stops the applet managed by this stub by calling the applets stop() method.
+    * Also marks this stub as inactive.
+    * @see java.applet.Applet#stop()
+    * @see java.applet.AppletStub#isActive()
+    * 
+    */
+    void stopApplet()
     {
-        if( app != null )
+        if( app != null ) {
+            active = false;
             app.stop();
+            stateChange(STOPPED);
+        }
     }
 
-    public void initApplet()
+    /**
+    * initialize the applet managed by this stub by calling the applets init() method.
+    * @see java.applet.Applet#init()
+    */
+    void initApplet()
     {
-        if( app != null )
+        if( app != null ) {
             app.init();
-    }
+        }
+        stateChange(INITIALIZED);
+   }
 
-    public void die()
+    /**
+    * destroys the applet managed by this stub by calling the applets destroy() method.
+    * Also marks the the applet as inactive.
+    * @see java.applet.Applet#init()
+    */
+    void destroyApplet()
     {
-        if( app != null )
-            app.stop();
+        if( app != null ) {
+            synchronized (app) {
+                if (active) {
+                    stopApplet();
+                }
+                app.destroy();
+            }
+            stateChange(DESTROYED);
+        }
 
         if( runThread != null && runThread.isAlive() )
             Main.debug( "runThread is active when stub is dying" );
-        
-        active = false;
-        dispose();
+        frame.dispose();
     }
 
-    public Applet getApplet()
+    /**
+    * get the Applet managed by this stub.
+    * @return the Applet or null if the applet could not be loaded
+    * or instanciated.
+    */
+    Applet getApplet()
     {
-        //synchronized ( this ) {
             return app;
-        //}
     }
 
-    public Dimension getAppletSize()
+    Dimension getAppletSize()
     {
         return appletSize;
     }
+    /**
+    * get a parameter value given in the &lt;APPLET&gt; tag 
+    * @param name the name of the parameter
+    * @return the value  or null if no parameter with this name exists.
+    */
+    
+    public String getParameter( String name )
+    {
+        return (String) params.get( name.toUpperCase() );
+    }
 
+    /**
+    * implements the isActive method of the AppletStub interface.
+    * @return if the applet managed by this stub is currently active. 
+    * @see java.applet.AppletStub#isActive()
+    */
+    public boolean isActive()
+    {
+        return active;
+    }
 
-    /*************************************************************************
-     ********************** AppletStub Interface *****************************
-     *************************************************************************/
+    /**
+    * determines if the applet has been loaded and instanciated
+    * and can hence be used.
+    * @return true if the applet has been completely loaded.
+    */
+    boolean isLoaded() {
+        return state >= INSTANCIATED;
+    }
+    
     public void appletResize( int width, int height )
     {
         if( active )
@@ -253,156 +360,63 @@ public class KJASAppletStub extends Frame
         }
     }
 
+    /*************************************************************************
+     ********************** AppletStub Interface *****************************
+     *************************************************************************/
+    /**
+    * implements the getAppletContext method of the AppletStub interface.
+    * @return the AppletContext to which this stub belongs.
+    * @see java.applet.AppletStub#getAppletContext()
+    */
     public AppletContext getAppletContext()
     {
-        if( active )
-            return context;
-
-        return null;
+        return context;
     }
 
+    /**
+    * implements the getCodeBase method of the AppletStub interface.
+    * @return the code base of the applet as given in the &lt;APPLET&gt; tag.
+    * @see java.applet.AppletStub#getCodeBase()
+    */
     public URL getCodeBase()
     {
-        if( active )
-            return codeBase;
-
-        return null;
+        return codeBase;
     }
 
+    /**
+    * implements the getDocumentBase method of the AppletStub interface.
+    * @return the code base of the applet as given in the 
+    * &lt;APPLET&gt; tag or determined by the containing page.
+    * @see java.applet.AppletStub#getDocumentBase()
+    */
     public URL getDocumentBase()
     {
-        if( active )
-            return docBase;
-
-        return null;
+        return docBase;
     }
 
+    /**
+    * get the applet's name
+    * @return the name of the applet as given in the 
+    * &lt;APPLET&gt; tag or determined by the <em>code</em> parameter.
+    */
     public String getAppletName()
     {
-        if( active )
-            return appletName;
-
-        return null;
+        return appletName;
     }
 
-    public String getParameter( String name )
-    {
-        if( active )
-            return (String) params.get( name.toUpperCase() );
-
-        return null;
-    }
-
-    public boolean isActive()
-    {
-        return active;
-    }
     
-    /*************************************************************************
-     ************************* Layout methods ********************************
-     *************************************************************************/
-    class KJASAppletPanel extends javax.swing.JPanel implements StatusListener
-    {
-        private Dimension size;
-        private Image img = null;
-        private boolean showStatusFlag = true;
-        private Font font;
-        private String msg = "Loading Applet...";
-        public KJASAppletPanel( Dimension _size )
-        {
-            super( new BorderLayout() );
-            size = _size;
-            font = new Font("SansSerif", Font.PLAIN, 10);
-            URL url = getClass().getClassLoader().getResource("images/animbean.gif");
-            img = getToolkit().createImage(url);
-            //setBackground(Color.white);
-        }
-
-        void setAppletSize( Dimension _size )
-        {
-            size = _size;
-        }
-
-        public Dimension getPreferredSize()
-        {
-            return size;
-        }
-
-        public Dimension getMinimumSize()
-        {
-            return size;
-        }
-        
-        
-        void setApplet(Applet applet) {
-            add("Center", applet);
-            validate();  
-        }
-        
-        public void showStatus(String msg) {
-            this.msg = msg;
-            repaint();
-        }
-        
-        public void paint(Graphics g) {
-            super.paint(g);
-            if (showStatusFlag) {
-                int x = getWidth() / 2;
-                int y = getHeight() / 2;
-                if (img != null) {
-                    //synchronized (img) {
-                        int w = img.getWidth(this);
-                        int h = img.getHeight(this);
-                        int imgx = x - w/2;
-                        int imgy = y - h/2;
-                        //g.setClip(imgx, imgy, w, h);
-                        g.drawImage(img, imgx, imgy, this);
-                        y += img.getHeight(this)/2;
-                    //}
-                }
-                if (msg != null) {
-                    //synchronized(msg) {
-                        g.setFont(font);
-                        FontMetrics m = g.getFontMetrics();
-                        int h = m.getHeight();
-                        int w = m.stringWidth(msg);
-                        int msgx = x - w/2;
-                        int msgy = y + h;
-                        //g.setClip(0, y, getWidth(), h);
-                        g.drawString(msg, msgx, msgy); 
-
-                    //}
-                }
-            }
-        }
-        void showFailed() {
-            URL url = getClass().getClassLoader().getResource("images/brokenbean.gif");
-            img = getToolkit().createImage(url);
-            msg = "Applet Failed.";
-            repaint();
-        }
-        
-        void showFailed(String message) {
-            showFailed();
-            showStatus(message);
-        }
-        
-        public void stopAnimation() {
-            showStatusFlag = false;
-        }
-    }
-    
+    /******************************************************************/
+    /**
+    * Helper class
+    */
     class KJASAppletThread extends Thread {
-        private Applet app;
-        public KJASAppletThread(Applet app, String name) {
+        private KJASAppletStub  stub;
+        public KJASAppletThread(KJASAppletStub stub, String name) {
             super(name);
-            this.app = app;
+            this.stub = stub;
         }
         public void run() {
-            app.start();
+            stub.startApplet();
         }
     }
-    
-    
-    
  }

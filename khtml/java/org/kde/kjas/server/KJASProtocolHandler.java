@@ -36,8 +36,10 @@ public class KJASProtocolHandler
     private static final int AudioClipPlayCode   = 20;
     private static final int AudioClipLoopCode   = 21;
     private static final int AudioClipStopCode   = 22;
-
-
+    
+    private static final int AppletStateNotificationCode = 23;
+    private static final int AppletFailedCode    = 24;
+    
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
 
@@ -46,7 +48,7 @@ public class KJASProtocolHandler
 
     //used for parsing each command as it comes in
     private int cmd_index;
-    private final char sep = (char) 0;
+    private final static char sep = (char) 0;
 
     private byte[] currentcommand = null;
 
@@ -373,6 +375,111 @@ public class KJASProtocolHandler
         }
     }
 
+    /**
+    * sends notification about the state of the applet.
+    * @see org.kde.kjas.server.KJASAppletStub for valid states
+    */
+    public void sendAppletStateNotification( 
+        String contextID, 
+        String appletID,
+        int state)
+    {
+        Main.debug( "sendAppletStateNotification, contextID = " + contextID + ", appletID = " +
+                    appletID + ", state=" + state );
+
+        String state_str = String.valueOf( state );
+
+        // message format:
+        // 8 bytes length
+        // 1 byte code
+        // 1 byte separator
+        // contextId.length bytes
+        // 1 byte separator
+        // appletID.length bytes
+        // 1 byte separator
+        // state_str.length bytes
+        // 1 byte separator
+        int length = contextID.length() + appletID.length() + state_str.length() + 5;
+        char[] chars = new char[ length + 8 ]; //for length of message
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) AppletStateNotificationCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = appletID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = state_str.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+ 
+    /**
+    * sends notification about applet failure.
+    * This can happen in any state.
+    * @param contextID context ID of the applet's context
+    * @param appletID  ID of the applet
+    * @param errorMessage any message
+    */
+    public void sendAppletFailed ( 
+        String contextID, 
+        String appletID,
+        String errorMessage)
+    {
+        Main.debug( "sendAppletFailed, contextID = " + contextID + ", appletID = " +
+                    appletID + ", errorMessage=" + errorMessage );
+
+        // message format:
+        // 8 bytes length
+        // 1 byte code
+        // 1 byte separator
+        // contextId.length bytes
+        // 1 byte separator
+        // appletID.length bytes
+        // 1 byte separator
+        // errorMessage.length bytes
+        // 1 byte separator
+        int length = contextID.length() + appletID.length() + errorMessage.length() + 5;
+        char[] chars = new char[ length + 8 ]; //for length of message
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) AppletFailedCode;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = appletID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = errorMessage.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+   
     public void sendShowDocumentCmd( String loaderKey, String url )
     {
         Main.debug( "sendShowDocumentCmd from context#" + loaderKey + " url = " + url );
