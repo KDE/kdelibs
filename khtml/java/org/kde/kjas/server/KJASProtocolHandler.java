@@ -69,6 +69,7 @@ public class KJASProtocolHandler
                 catch( Throwable t )
                 {
                     Main.debug( "commandLoop caught a throwable, still going" );
+                    t.printStackTrace();
                 }
             }
         }

@@ -122,17 +122,18 @@ public class KJASAppletClassLoader
                 else
                 {
                     //delete up to the ending '/'
-                    int dot_index = file.lastIndexOf( '/' );
-                    String newfile = file.substring( 0, dot_index+1 );
-                    codeBaseURL = new URL( docBaseURL.getProtocol(),
-                                           docBaseURL.getHost(),
-                                           newfile );
+                    String urlString = docBaseURL.toString();
+                    int dot_index = urlString.lastIndexOf( '/' );
+                    String newfile = urlString.substring( 0, dot_index+1 );
+                    codeBaseURL = new URL( urlString );
                 }
             }
 
             Main.debug( "codeBaseURL = " + codeBaseURL );
         }catch( Exception e )
         {
+            Main.debug( "KJASAppletClassLoader caught an exception: " + e );
+            e.printStackTrace();
         }
     }
 
