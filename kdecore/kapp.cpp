@@ -1757,7 +1757,7 @@ startServiceInternal( const QCString &function,
                       const QString& _name, const QStringList &URLs,
                       QString *error, QCString *dcopService, int *pid )
 {
-   typedef struct serviceResult
+   struct serviceResult
    {
       int result;
       QCString dcopName;
