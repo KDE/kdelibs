@@ -29,8 +29,9 @@ extern "C" { int start_launcher(int); }
 int
 start_launcher(int socket)
 {
+   const char *name = "klauncher";
    // Started via kinit.
-   KCmdLineArgs::init(0, (char **) 0, "klauncher", "A service launcher.", 
+   KCmdLineArgs::init(1, (char **) &name, name, "A service launcher.", 
                        "v0.1");
    KLauncher::addCmdLineOptions();
 
