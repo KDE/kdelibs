@@ -129,6 +129,18 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addMultiCellWidget( m_version, 2, 2, 1, 2 );
   QWhatsThis::add( m_version, qwtstr );
 
+  tmpLabel = new QLabel(i18n("OS:"), parent);
+  glay->addWidget( tmpLabel, 3, 0 );
+  tmpLabel = new QLabel(QString::fromLatin1("%1 (%2)").
+                        arg(KDE_COMPILING_OS).
+                        arg(KDE_DISTRIBUTION_TEXT), parent);
+  glay->addMultiCellWidget( tmpLabel, 3, 3, 1, 2 );
+
+  tmpLabel = new QLabel(i18n("Compiler:"), parent);
+  glay->addWidget( tmpLabel, 4, 0 );
+  tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
+  glay->addMultiCellWidget( tmpLabel, 4, 4, 1, 2 );
+
   // Configure email button
   m_configureEmail = new QPushButton( i18n("Configure E-Mail"),
 						  parent );
