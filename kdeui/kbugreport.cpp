@@ -42,7 +42,7 @@
 #include <pwd.h>
 #include <unistd.h>
 
-KBugReport::KBugReport( QWidget * parentw, bool modal )
+KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
   : KDialogBase( Plain,
                  i18n("Submit a bug report"),
                  Ok | Cancel,
@@ -53,7 +53,9 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
                  true // separator
                  )
 {
-  m_aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
+  m_aboutData = aboutData
+    ? aboutData
+    : KGlobal::instance()->aboutData(); // TODO : use the "active" instance
   m_process = 0L;
   QWidget * parent = plainPage();
   QLabel * tmpLabel;
