@@ -1,3 +1,11 @@
+kdelibs (4:1.1.1-19990822-1.0) unstable; urgency=low
+
+  * New upstream CVS version
+  * Adding in verification piece to make sure that /usr/doc/kde/HTML/default is
+    a link and not a directory
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Aug 1999 10:45:00 -0400
+
 kdelibs (4:1.1.1-19990817-1) unstable; urgency=low
 
   * New upstream CVS version
