@@ -1214,6 +1214,32 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
 
     case CSS_PROP_OVERFLOW:
+    {
+        if(value->valueType() == CSSValue::CSS_INHERIT)
+        {
+            if(!e->parentNode()) return;
+            style->setPosition(e->parentNode()->style()->position());
+            return;
+        }
+        if(!primitiveValue) return;
+        EOverflow o;
+        switch(primitiveValue->getIdent())
+        {
+        case CSS_VAL_VISIBLE:
+            o = OVISIBLE; break;
+        case CSS_VAL_HIDDEN:
+            o = OHIDDEN; kdDebug() << "overflow:hidden" << endl; break;
+        case CSS_VAL_SCROLL:
+            o = SCROLL; break;
+        case CSS_VAL_AUTO:
+            o = AUTO; break;
+        default:
+            return;
+        }
+        style->setOverflow(o);
+        return;
+    }
+    break;        
     case CSS_PROP_PAGE:
     case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
