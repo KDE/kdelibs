@@ -1,3 +1,8 @@
+2005-02-27  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/font.cpp (drawText): Only pass text from inline text box to
+	QPainter::drawText, not the whole RenderText's text.
+
 2005-02-27  Harri Porten  <porten@kde.org>
 
         * ecma/kjs_events.cpp: bind keyboard modifier properties like ctrlKey 

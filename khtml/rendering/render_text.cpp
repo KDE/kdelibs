@@ -136,7 +136,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 
     p->setPen(hc);
 
-    //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string() << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
+    //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string().left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
 		m_reversed ? QPainter::RTL : QPainter::LTR,
@@ -945,6 +945,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                     if (_style->textShadow())
                         s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
 #endif
+// kdDebug(6040) << QConstString(str->s + s->m_start, s->m_len).string().left(40) << endl;
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 	        }

@@ -104,7 +104,13 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
     // ### fixme for RTL
     if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
 	// simply draw it
-	p->drawText( x, y, qstr, pos, len, d );
+	// Due to some unfounded cause QPainter::drawText traverses the
+        // *whole* string when painting, not only the specified
+        // [pos, pos + len) segment. This makes painting *extremely* slow for
+        // long render texts (in the order of several megabytes).
+        // Hence, only hand over the piece of text of the actual inline text box
+	QConstString cstr = QConstString(str + pos, len);
+	p->drawText( x, y, cstr.string(), 0, len, d );
     } else {
 	if (from < 0) from = 0;
 	if (to < 0) to = len;
