@@ -578,11 +578,29 @@ void KHTMLView::drawContents( QPainter*)
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
-//    kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+//     kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
+
+    QPoint pt = contentsToViewport(QPoint(ex, ey));
+    QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
+//     kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
+    for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
+	int xp = 0, yp = 0;
+	QWidget *w = it.current();
+	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
+	QScrollView *sv = ::qt_cast<QScrollView *>(w);
+	if (sv || !rw->isFormElement()) {
+// 	    kdDebug(6000) << "    removing scrollview " << sv;
+	    cr -= w->geometry();
+	}
+    }
+    if (cr.isEmpty())
+	return;
+
+    p->setClipRegion(cr);
 
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
         if ( d->vertPaintBuffer->height() < visibleHeight() )
@@ -592,7 +610,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, ex, ey, ew, eh, 0, 0);
         d->tp->end();
-        p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
+	p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
     }
     else {
         if ( d->paintBuffer->width() < visibleWidth() )
@@ -614,7 +632,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 #endif
             d->tp->end();
 
-            p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
+	    p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
             py += PAINT_BUFFER_HEIGHT;
         }
     }
@@ -1254,13 +1272,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		QWidget *w = static_cast<QWidget *>(c);
 		// don't install the event filter on toplevels
 		if (w->parentWidget(true) == view) {
-		    if (w->inherits("QScrollView")) {
-			QScrollView *sv = static_cast<QScrollView *>(w);
-			sv->viewport()->installEventFilter(this);
-			QWidget *clipper = sv->clipper();
-			if (clipper != viewport())
-			    clipper->installEventFilter(this);
-		    } else {
+		    if (!::qt_cast<QScrollView *>(w)) {
 			w->installEventFilter(this);
 			w->unsetCursor();
 		    }
