@@ -48,15 +48,65 @@
      consist of any value.  However, if the first repetition consists
      of two letters, it must be an ISO 3166a2 country tag (so Nynorsk
      cannot be indicated by no-NY or no-ny).
+     Official site for ISO 639-*: http://lcweb.loc.gov/standards/iso639-2/
  -->
 <!ENTITY % lang.attrib
-	--Lang: Indicator of language in which element is written, for
-	translation, character set management, etc.; no default--
-	"Lang		(af|bg|br|ca|cs|da|de|el|en|en-GB|en-US|eo|es
-                        |et|eu|fi|fr|ga|he|hr|hu|is|it|ja|ko|lt|mi|mk
-                        |nl|no|no-nynorsk|no-bokmaal|pl|pt|pt-BR|pt-PT
-                        |ro|ru|sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh|zh-CN
-                        |zh-TW) #IMPLIED">
+        --Lang: Indicator of language in which element is written, for
+        translation, character set management, etc.; no default--
+        "Lang           (af|bg|br|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
+                        |es|et|eu|fi|fr|ga|he|hr|hu|id|is|it|ja|ko|lt
+                        |mi|mk|nl|no|nb|nn|pl|pt|pt-BR|pt-PT|ro|ru|si
+                        |sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh|zh-CN|zh-TW)
+                        #IMPLIED">
+<!-- List of languages
+     An new version of ISO 639 is due quite soon; also RFC1766 may be replaced
+af      Afrikaans
+bg      Bulgarian
+br      Breton
+ca      Catalan
+cs      Czech
+cy      Welsh
+da      Danish
+de      German
+el      Greek, Modern (1453-)
+en      English
+eo      Esperanto
+es      Spanish
+et      Estonian
+eu      Basque
+fi      Finnish
+fr      French
+ga      Irish
+he      Hebrew
+hr      Croatian
+hu      Hungarian
+id      Indonesian
+is      Icelandic
+it      Italian
+ja      Japanese
+ko      Korean
+lt      Lituanian - ISO639 is confused about this
+mi      Maori
+mk      Macedonian
+nb      Norwegian Bokmål
+nl      Dutch
+nn      Norwegian Nynorsk
+no      Norwegian
+pl      Polish
+pt      Portuguese
+ro      Romanian
+ru      Russian
+si      Sinhalese
+sk      Slovak
+sl      Slovenian
+sr      Serbian
+sv      Swedish
+ta      Tamil
+th      Thai
+tr      Turkish (seems to have disappeared from the lists in ISO639)
+uk      Ukrainian
+zh      Chinese
+-->
 <!-- end of KDE languages -->
 <!-- Languages could be made compulsory for books -->
 
@@ -70,24 +120,24 @@
 <!-- Unchanged -->
 <!ENTITY % local.person.ident.mix "">
 <!ENTITY % person.ident.mix
-		"Honorific|FirstName|Surname|Lineage|OtherName|Affiliation
-		|AuthorBlurb|Contrib %local.person.ident.mix;">
+                "Honorific|FirstName|Surname|Lineage|OtherName|Affiliation
+                |AuthorBlurb|Contrib %local.person.ident.mix;">
 
 <!ENTITY % local.bibliocomponent.mix "">
 <!-- Copy of bibliocomponent.mix without ReleaseInfo, Date or Abstract -->
 <!ENTITY % kde.bibliocomponent.mix
-		"Abbrev|Address|ArtPageNums|Author
-		|AuthorGroup|AuthorInitials|BiblioMisc|BiblioSet
-		|Collab|ConfGroup|ContractNum|ContractSponsor
-		|Copyright|CorpAuthor|CorpName|Edition
-		|Editor|InvPartNumber|ISBN|ISSN|IssueNum|OrgName
-		|OtherCredit|PageNums|PrintHistory|ProductName
-		|ProductNumber|PubDate|Publisher|PublisherName
-		|PubsNumber|RevHistory|SeriesVolNums
-		|Subtitle|Title|TitleAbbrev|VolumeNum|CiteTitle
-		|%person.ident.mix;
-		|%ndxterm.class;
-		%local.bibliocomponent.mix;">
+                "Abbrev|Address|ArtPageNums|Author
+                |AuthorGroup|AuthorInitials|BiblioMisc|BiblioSet
+                |Collab|ConfGroup|ContractNum|ContractSponsor
+                |Copyright|CorpAuthor|CorpName|Edition
+                |Editor|InvPartNumber|ISBN|ISSN|IssueNum|OrgName
+                |OtherCredit|PageNums|PrintHistory|ProductName
+                |ProductNumber|PubDate|Publisher|PublisherName
+                |PubsNumber|RevHistory|SeriesVolNums
+                |Subtitle|Title|TitleAbbrev|VolumeNum|CiteTitle
+                |%person.ident.mix;
+                |%ndxterm.class;
+                %local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
 
 <!-- Compulsory ID for sections and chapters must be declared in 
@@ -108,10 +158,10 @@
 <!ENTITY % kde.qandset.attlist "INCLUDE">
 <![ %kde.qandset.attlist; [
 <!ATTLIST QandASet
-		DefaultLabel	(qanda|number|none)       #IMPLIED
-		%idreq.common.attrib; -- ID is required for KDE --
-		%qandset.role.attrib;
-		%local.qandset.attrib;>
+                DefaultLabel    (qanda|number|none)       #IMPLIED
+                %idreq.common.attrib; -- ID is required for KDE --
+                %qandset.role.attrib;
+                %local.qandset.attrib;>
 <!--end of kde.qandset.attlist-->]]>
 <!--end of qandset.module-->]]>
 
@@ -123,9 +173,9 @@
 <!ENTITY % kde.qandadiv.attlist "INCLUDE">
 <![ %kde.qandadiv.attlist; [
 <!ATTLIST QandADiv
-		%idreq.common.attrib; -- ID is required for KDE --
-		%qandadiv.role.attrib;
-		%local.qandadiv.attrib;>
+                %idreq.common.attrib; -- ID is required for KDE --
+                %qandadiv.role.attrib;
+                %local.qandadiv.attrib;>
 <!--end of kde.qandadiv.attlist-->]]>
 <!--end of qandadiv.module-->]]>
 <!--end of qandset.content.module-->]]>

@@ -13,6 +13,7 @@ dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl kde-ttlpg.dsl \
 	   kde-l1et.dsl kde-l1et.ent \
 	   kde-l1fi.dsl kde-l1fi.ent \
 	   kde-l1fr.dsl kde-l1fr.ent \
+	   kde-l1hu.dsl kde-l1hu.ent \
 	   kde-l1it.dsl kde-l1it.ent \
 	   kde-l1ja.dsl kde-l1ja.ent \
 	   kde-l1nl.dsl kde-l1nl.ent \

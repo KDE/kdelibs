@@ -29,6 +29,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-home-url%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-home-url%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-home-url%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-home-url%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-home-url%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-home-url%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-home-url%) ]]>
@@ -59,6 +60,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-logo-alt%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-logo-alt%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-logo-alt%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-logo-alt%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-logo-alt%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-logo-alt%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-logo-alt%) ]]>
@@ -98,6 +100,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-html-header-tags%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-html-header-tags%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-html-header-tags%) ]]>	    
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-html-header-tags%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-html-header-tags%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-html-header-tags%) ]]>	    
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-html-header-tags%) ]]>	    
@@ -137,6 +140,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-encoding%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-encoding%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-encoding%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-encoding%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-encoding%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-encoding%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-encoding%) ]]>
@@ -165,6 +169,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-default%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-default%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-default%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-default%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-default%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-default%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-default%) ]]>
@@ -193,6 +198,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-language%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-language%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-language%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-language%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-language%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-language%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-language%) ]]>
@@ -221,6 +227,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-author-phrase%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-author-phrase%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-author-phrase%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-author-phrase%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-author-phrase%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-author-phrase%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-author-phrase%) ]]>
@@ -249,6 +256,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-date-phrase%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-date-phrase%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-date-phrase%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-date-phrase%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-date-phrase%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-date-phrase%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-date-phrase%) ]]>
@@ -277,6 +285,7 @@
     <![%kde-l10n-et[ (("et") %kde-gentext-et-releaseinfo-phrase%) ]]>
     <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-releaseinfo-phrase%) ]]>
     <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-hu[ (("hu") %kde-gentext-hu-releaseinfo-phrase%) ]]>
     <![%kde-l10n-it[ (("it") %kde-gentext-it-releaseinfo-phrase%) ]]>
     <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-releaseinfo-phrase%) ]]>
     <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-releaseinfo-phrase%) ]]>
