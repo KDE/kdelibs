@@ -55,6 +55,9 @@ public:
 
     virtual ~KBookmarkBar();
 
+    bool isReadOnly() const;
+    void setReadOnly(bool);
+
 signals:
     void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
 

@@ -58,6 +58,7 @@ static bool isAdvanced()
 class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
 public:
     QPtrList<KAction> m_actions;
+    bool m_readOnly;
 };
 QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
@@ -71,6 +72,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
       m_actionCollection( coll ), m_pManager(mgr)
 {
     m_lstSubMenus.setAutoDelete( true );
+    dptr()->m_readOnly = false;
 
     if ( isAdvanced() )
     {
@@ -148,6 +150,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
                 action->setProperty( "url", bm.url().url() );
                 action->setProperty( "address", bm.address() );
+                action->setProperty( "readOnly", dptr()->m_readOnly );
 
                 // ummm.... this doesn't appear do anything...
                 action->setToolTip( bm.url().prettyURL() );
@@ -163,6 +166,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                                                            m_actionCollection,
                                                            "bookmarkbar-actionmenu");
             action->setProperty( "address", bm.address() );
+            action->setProperty( "readOnly", dptr()->m_readOnly );
             action->setDelayed(false);
 
             // this flag doesn't have any UI yet
@@ -181,6 +185,16 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             dptr()->m_actions.append( action );
         }
     }
+}
+
+void KBookmarkBar::setReadOnly(bool readOnly)
+{
+    dptr()->m_readOnly = readOnly;
+}
+
+bool KBookmarkBar::isReadOnly() const
+{
+    return dptr()->m_readOnly;
 }
 
 void KBookmarkBar::slotBookmarkSelected()
@@ -284,6 +298,8 @@ failure_exit:
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     static bool atFirst = false;
     static KAction* a = 0;
+    if (dptr()->m_readOnly)
+        return false;
     if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep();
