@@ -1685,7 +1685,7 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
     return n;
 }
 
-bool ChildNodeListImpl::nodeMatches( NodeImpl */*testNode*/ ) const
+bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/ ) const
 {
     return true;
 }
