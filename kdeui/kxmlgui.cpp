@@ -254,8 +254,6 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
   KInstance *instance = _instance ? _instance : KGlobal::instance();
   QString xml_file;
 
-  kdDebug() << "trying to read " << filename << endl;
-
   if (filename[0] == '/')
     xml_file = filename;
   else
