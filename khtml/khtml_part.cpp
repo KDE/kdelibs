@@ -197,6 +197,8 @@ public:
             m_bJavaOverride = part->d->m_bJavaOverride;
             m_bPluginsForce = part->d->m_bPluginsForce;
             m_bPluginsOverride = part->d->m_bPluginsOverride;
+            // Same for SSL settings
+            m_ssl_in_use = part->d->m_ssl_in_use;
         }
     }
 
@@ -655,11 +657,9 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // Tell the slave where we come from (SSL or not)
   d->m_job->addMetaData( "ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
-  // GS - 9/15/00 - This seems to be wrong - don't know why it was here.
-  // d->m_ssl_in_use = false;
-  // Tell the slave that this is about loading the main page, so activate warnings
+  // Tell the slave to activate warnings about entering/leaving SSL
   d->m_job->addMetaData( "ssl_activate_warnings", "TRUE" );
-  kdDebug(6050) << "ACTIVATING SSL WARNINGS" << endl;
+  //kdDebug(6050) << "Activating SSL warnings" << endl;
 
   d->m_workingURL = url;
 
