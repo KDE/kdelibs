@@ -337,15 +337,7 @@ public:
 		Arts::Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
 	inline InterfaceRepo(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline InterfaceRepo(const Arts::DynamicCast& c) : _cache(0) {
-		InterfaceRepo_base * ptr = InterfaceRepo_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline InterfaceRepo(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepo_base::_fromString(c.object().toString())), _cache(0) {}
 	inline InterfaceRepo(const InterfaceRepo& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline InterfaceRepo(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static InterfaceRepo null() {return InterfaceRepo((InterfaceRepo_base*)0);}
@@ -437,15 +429,7 @@ public:
 		Arts::Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemSender(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemSender(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystemSender_base * ptr = FlowSystemSender_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline FlowSystemSender(const Arts::DynamicCast& c) : Arts::Object(FlowSystemSender_base::_fromString(c.object().toString())), _cache(0) {}
 	inline FlowSystemSender(const FlowSystemSender& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystemSender(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemSender null() {return FlowSystemSender((FlowSystemSender_base*)0);}
@@ -534,15 +518,7 @@ public:
 		Arts::Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemReceiver(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemReceiver(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystemReceiver_base * ptr = FlowSystemReceiver_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline FlowSystemReceiver(const Arts::DynamicCast& c) : Arts::Object(FlowSystemReceiver_base::_fromString(c.object().toString())), _cache(0) {}
 	inline FlowSystemReceiver(const FlowSystemReceiver& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystemReceiver(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemReceiver null() {return FlowSystemReceiver((FlowSystemReceiver_base*)0);}
@@ -641,15 +617,7 @@ public:
 		Arts::Object(FlowSystem_base::_create(s.string())), _cache(0) {}
 	inline FlowSystem(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystem(const Arts::DynamicCast& c) : _cache(0) {
-		FlowSystem_base * ptr = FlowSystem_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline FlowSystem(const Arts::DynamicCast& c) : Arts::Object(FlowSystem_base::_fromString(c.object().toString())), _cache(0) {}
 	inline FlowSystem(const FlowSystem& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline FlowSystem(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystem null() {return FlowSystem((FlowSystem_base*)0);}
@@ -747,15 +715,7 @@ public:
 		Arts::Object(GlobalComm_base::_create(s.string())), _cache(0) {}
 	inline GlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline GlobalComm(const Arts::DynamicCast& c) : _cache(0) {
-		GlobalComm_base * ptr = GlobalComm_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline GlobalComm(const Arts::DynamicCast& c) : Arts::Object(GlobalComm_base::_fromString(c.object().toString())), _cache(0) {}
 	inline GlobalComm(const GlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline GlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static GlobalComm null() {return GlobalComm((GlobalComm_base*)0);}
@@ -844,15 +804,7 @@ public:
 		Arts::Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
 	inline TmpGlobalComm(const Arts::Reference &r) :
 		Arts::Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TmpGlobalComm(const Arts::DynamicCast& c) : _cache(0) {
-		TmpGlobalComm_base * ptr = TmpGlobalComm_base::_fromString(c.object().toString());
-		if (ptr) {
-			_pool->Dec();
-			_pool = c.object()._get_pool();
-			_pool->Inc();
-			_cache = ptr;
-		}
-	}
+	inline TmpGlobalComm(const Arts::DynamicCast& c) : Arts::Object(TmpGlobalComm_base::_fromString(c.object().toString())), _cache(0) {}
 	inline TmpGlobalComm(const TmpGlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
 	inline TmpGlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static TmpGlobalComm null() {return TmpGlobalComm((TmpGlobalComm_base*)0);}
@@ -877,92 +829,92 @@ public:
 
 inline long Arts::InterfaceRepo::insertModule(const Arts::ModuleDef& newModule)
 {
-	return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);
+	return _cache?static_cast<InterfaceRepo_base*>(_cache)->insertModule(newModule):static_cast<InterfaceRepo_base*>(_method_call())->insertModule(newModule);
 }
 
 inline void Arts::InterfaceRepo::removeModule(long moduleID)
 {
-	 _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);
+	 _cache?static_cast<InterfaceRepo_base*>(_cache)->removeModule(moduleID):static_cast<InterfaceRepo_base*>(_method_call())->removeModule(moduleID);
 }
 
 inline Arts::InterfaceDef Arts::InterfaceRepo::queryInterface(const std::string& name)
 {
-	return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);
+	return _cache?static_cast<InterfaceRepo_base*>(_cache)->queryInterface(name):static_cast<InterfaceRepo_base*>(_method_call())->queryInterface(name);
 }
 
 inline Arts::TypeDef Arts::InterfaceRepo::queryType(const std::string& name)
 {
-	return _cache?_cache->queryType(name):_method_call()->queryType(name);
+	return _cache?static_cast<InterfaceRepo_base*>(_cache)->queryType(name):static_cast<InterfaceRepo_base*>(_method_call())->queryType(name);
 }
 
 inline void Arts::FlowSystemSender::processed()
 {
-	 _cache?_cache->processed():_method_call()->processed();
+	 _cache?static_cast<FlowSystemSender_base*>(_cache)->processed():static_cast<FlowSystemSender_base*>(_method_call())->processed();
 }
 
 inline long Arts::FlowSystemReceiver::receiveHandlerID()
 {
-	return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();
+	return _cache?static_cast<FlowSystemReceiver_base*>(_cache)->receiveHandlerID():static_cast<FlowSystemReceiver_base*>(_method_call())->receiveHandlerID();
 }
 
 inline void Arts::FlowSystem::startObject(Arts::Object node)
 {
-	 _cache?_cache->startObject(node):_method_call()->startObject(node);
+	 _cache?static_cast<FlowSystem_base*>(_cache)->startObject(node):static_cast<FlowSystem_base*>(_method_call())->startObject(node);
 }
 
 inline void Arts::FlowSystem::stopObject(Arts::Object node)
 {
-	 _cache?_cache->stopObject(node):_method_call()->stopObject(node);
+	 _cache?static_cast<FlowSystem_base*>(_cache)->stopObject(node):static_cast<FlowSystem_base*>(_method_call())->stopObject(node);
 }
 
 inline void Arts::FlowSystem::connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
 {
-	 _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);
+	 _cache?static_cast<FlowSystem_base*>(_cache)->connectObject(sourceObject, sourcePort, destObject, destPort):static_cast<FlowSystem_base*>(_method_call())->connectObject(sourceObject, sourcePort, destObject, destPort);
 }
 
 inline void Arts::FlowSystem::disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
 {
-	 _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);
+	 _cache?static_cast<FlowSystem_base*>(_cache)->disconnectObject(sourceObject, sourcePort, destObject, destPort):static_cast<FlowSystem_base*>(_method_call())->disconnectObject(sourceObject, sourcePort, destObject, destPort);
 }
 
 inline Arts::AttributeType Arts::FlowSystem::queryFlags(Arts::Object node, const std::string& port)
 {
-	return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);
+	return _cache?static_cast<FlowSystem_base*>(_cache)->queryFlags(node, port):static_cast<FlowSystem_base*>(_method_call())->queryFlags(node, port);
 }
 
 inline Arts::FlowSystemReceiver Arts::FlowSystem::createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender)
 {
-	return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);
+	return _cache?static_cast<FlowSystem_base*>(_cache)->createReceiver(destObject, destPort, sender):static_cast<FlowSystem_base*>(_method_call())->createReceiver(destObject, destPort, sender);
 }
 
 inline bool Arts::GlobalComm::put(const std::string& variable, const std::string& value)
 {
-	return _cache?_cache->put(variable, value):_method_call()->put(variable, value);
+	return _cache?static_cast<GlobalComm_base*>(_cache)->put(variable, value):static_cast<GlobalComm_base*>(_method_call())->put(variable, value);
 }
 
 inline std::string Arts::GlobalComm::get(const std::string& variable)
 {
-	return _cache?_cache->get(variable):_method_call()->get(variable);
+	return _cache?static_cast<GlobalComm_base*>(_cache)->get(variable):static_cast<GlobalComm_base*>(_method_call())->get(variable);
 }
 
 inline void Arts::GlobalComm::erase(const std::string& variable)
 {
-	 _cache?_cache->erase(variable):_method_call()->erase(variable);
+	 _cache?static_cast<GlobalComm_base*>(_cache)->erase(variable):static_cast<GlobalComm_base*>(_method_call())->erase(variable);
 }
 
 inline bool Arts::TmpGlobalComm::put(const std::string& variable, const std::string& value)
 {
-	return _cache?_cache->put(variable, value):_method_call()->put(variable, value);
+	return _cache?static_cast<GlobalComm_base*>(_cache)->put(variable, value):static_cast<GlobalComm_base*>(_method_call())->put(variable, value);
 }
 
 inline std::string Arts::TmpGlobalComm::get(const std::string& variable)
 {
-	return _cache?_cache->get(variable):_method_call()->get(variable);
+	return _cache?static_cast<GlobalComm_base*>(_cache)->get(variable):static_cast<GlobalComm_base*>(_method_call())->get(variable);
 }
 
 inline void Arts::TmpGlobalComm::erase(const std::string& variable)
 {
-	 _cache?_cache->erase(variable):_method_call()->erase(variable);
+	 _cache?static_cast<GlobalComm_base*>(_cache)->erase(variable):static_cast<GlobalComm_base*>(_method_call())->erase(variable);
 }
 
 };

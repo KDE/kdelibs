@@ -294,7 +294,7 @@ public:
 // Enables a different constructor, that should do the cast
 class DynamicCast {
 private:
-	const Object& obj;
+	Object obj;
 public:
 	inline explicit DynamicCast(const Object& o) : obj(o) {}
 	inline const Object& object() const {return obj;}

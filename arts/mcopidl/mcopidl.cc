@@ -1523,17 +1523,9 @@ void doInterfacesHeader(FILE *header)
 			"r.isString()?(%s_base::_fromString(r.string())):"
 			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
 			iname.c_str(),iname.c_str(), iname.c_str());
-		fprintf(header,"\tinline %s(const Arts::DynamicCast& c) : _cache(0) {\n",
-			iname.c_str());
-		fprintf(header,"\t\t%s_base * ptr = %s_base::_fromString(c.object().toString());\n",
-			iname.c_str(),iname.c_str());
-		fprintf(header,"\t\tif (ptr) {\n");
-		fprintf(header,"\t\t\t_pool->Dec();\n");
-		fprintf(header,"\t\t\t_pool = c.object()._get_pool();\n");
-		fprintf(header,"\t\t\t_pool->Inc();\n");
-		fprintf(header,"\t\t\t_cache = ptr;\n");
-		fprintf(header,"\t\t}\n");
-		fprintf(header,"\t}\n");
+		fprintf(header,"\tinline %s(const Arts::DynamicCast& c) : "
+			"Arts::Object(%s_base::_fromString(c.object().toString())), "
+			"_cache(0) {}\n", iname.c_str(),iname.c_str());
 
 		// copy constructors
 		fprintf(header,"\tinline %s(const %s& target) : Arts::Object(target._pool), _cache(target._cache) {}\n",
