@@ -1,0 +1,221 @@
+<HTML>
+<TITLE>
+References and error handling
+</TITLE>
+<BODY bgcolor="#EAEEEE">
+<h1>References and error handling in MCOP</h1>
+<p>
+MCOP references are one of the most central concepts in MCOP programming.
+This document will try to describe how exactly references are used, and
+will especially also try to cover cases of failure (server crashes).
+<p>
+<h2>Basic properties of references</h2>
+<p>
+<ol>
+<li>An MCOP reference is not an object, but a reference to an object:
+<p>
+Even though the following declaration
+<pre>
+   Arts::Synth_PLAY p;
+</pre>
+<p>
+looks like a definition of an object, it only declares a reference to an
+object. As C++ programmer, you might also think of it as Synth_PLAY *,
+a kind of pointer to a Synth_PLAY object. This especially means, that p
+can be the same thing as a NULL pointer.
+<p>
+<li>You can create a NULL reference by assigning it explicitely
+<p>
+<pre>
+   Arts::Synth_PLAY p = Arts::Synth_PLAY::null();
+</pre>
+<p>
+<li>Invoking things on a NULL reference leads to a core dump
+<p>
+<pre>
+   Arts::Synth_PLAY p = Arts::Synth_PLAY::null();
+   string s = p.toString();
+</pre>
+<p>
+will lead to a core dump. Comparing this to a pointer, it is essentially
+the same as
+<p>
+<pre>
+   QWindow* w = 0;
+   w-&gt;show();
+</pre>
+<p>
+which every C++ programmer would know to avoid.
+<p>
+<li>Uninitialized objects try to lazy-create themselves upon first use
+<p>
+<pre>
+   Arts::Synth_PLAY p;
+   string s = p.toString();
+</pre>
+<p>
+is something different than dereferencing a NULL pointer. You didn't tell
+the object at all what it is, and now you try to use it. The <b>guess</b> here
+is that you want to have a <b>new local instance</b> of a Arts::Synth_PLAY
+object. Of course you might have wanted something else (like creating the
+object somewhere else, or using an existing remote object). However, it
+is a convenient short cut to creating objects. Lazy creation will not work
+once you assigned something else (like a null reference).
+<p>
+The equivalent C++ terms would be
+<p>
+<pre>
+   QWidget* w;
+   w-&gt;show();
+</pre>
+<p>
+which obviously in C++ just plain segfaults. So this is different here.
+<p>
+This lazy creation is tricky especially as not necessarily an implementation
+exists for your interface. For instace, consider an abstract thing like a
+Arts::PlayObject. There are certainly concrete PlayObjects like those for
+playing mp3s or wavs, but
+<p>
+<pre>
+   Arts::PlayObject po;
+   po.play();
+</pre>
+<p>
+will certainly fail. The problem is that although lazy creation kicks in, and
+tries to create a PlayObject, it fails, because there are only things like
+Arts::WavPlayObject and similar. Thus, use lazy creation only when you are
+sure that an implementation exists.
+<p>
+<li>References may point to the same object
+<p>
+<pre>
+   Arts::SimpleSoundServer s = Arts::Reference("global:Arts_SimpleSoundServer");
+   Arts::SimpleSoundServer s2 = s;
+</pre>
+<p>
+creates two references referring to the same object. It doesn't copy any value,
+and doesn't create two objects. 
+<p>
+<li>All objects are reference counted
+<p>
+So once an object isn't referred any longer by any references, it gets deleted.
+There is no way to explicitely delete an object, however, you can use something
+like this
+<p>
+<pre>
+   Arts::Synth_PLAY p;
+   p.start();
+
+   [...]
+
+   p = Arts::Synth_PLAY::null();
+</pre>
+<p>
+to make the Synth_PLAY object go away in the end. Especially, it should never
+be necessary to use new and delete in conjunction with references.
+</ol>
+<p>
+<h2>The case of failure</h2>
+<p>
+As references can point to remote objects, the servers containing these objects
+can crash. What happens then?
+<p>
+<ol>
+<li>A crash doesn't change whether a reference is a null reference
+<p>
+This means that if foo.isNull() was true before a server crash then it is
+also true after a server crash (which is clear). It also means that if
+foo.isNull() was false before a server crash (foo referred to an object)
+then it is also false after the server crash.
+<p>
+<li>Invoking methods on a valid reference stays safe
+<p>
+Suppose the server containing the object calc crashed. Still calling things
+like
+<p>
+<pre>
+   int k = calc.subtract(i,j)
+</pre>
+<p>
+are safe. Obviously subtract has to return something here, which it can't
+because the remote object no longer exists. In this case (k == 0) would
+be true. Generally, operations try to return something "neutral" as result,
+such as 0.0, a null reference for objects or empty strings, when the object
+no longer exists.
+<p>
+<li>Checking error() reveals whether something worked
+<p>
+In the above case,
+<p>
+<pre>
+   int k = calc.subtract(i,j)
+   if(k.error()) {
+      printf("k is not i-j!\n");
+   }
+</pre>
+<p>
+would print out "k is not i-j" whenever the remote invocation didn't work.
+Otherwise k is really the result of the subtract operation as performed
+by the remote object (no server crash).
+<p>
+However, for methods doing things like deleting a file, you can't know for
+sure whether it really happened. Of course it happened if .error() is false.
+<p>
+However, if .error() is true, there are two possibilities:
+<p>
+<ul>
+<li> the file got deleted, and the server crashed just after deleting it, but
+     before transferring the result
+<li> the server crashed before beeing able to delete the file
+</ul>
+<p>
+<li>Using nested invocations is dangerous in crash resistent programs
+<p>
+Using something like
+<p>
+<pre>
+   window.titlebar().setTitle("foo");
+</pre>
+<p>
+is not a good idea. Suppose you know that window contains a valid Window
+reference. Suppose you know that window.titlebar() will return a Titlebar
+reference because the Window object is implemented properly. However, still
+the above statement isn't safe.
+<p>
+What could happen is that the server containing the Window object has crashed.
+Then, regardless of how good the Window implementation is, you will get a
+null reference as result of the window.titlebar() operation. And then of course
+invoking setTitle on that null reference will lead to a crash as well.
+<p>
+So a safe variant of this would be
+<p>
+<pre>
+   Titlebar titlebar = window.titlebar();
+   if(!window.error())
+      titlebar.setTitle("foo");
+</pre>
+<p>
+add the appropriate error handling if you like. If you don't trust the
+Window implementation, you might as well use
+<p>
+<pre>
+   Titlebar titlebar = window.titlebar();
+   if(!titlebar.isNull())
+      titlebar.setTitle("foo");
+</pre>
+<p>
+which are both safe.
+</ol>
+<p>
+There are other conditions of failure, such as network disconnection (suppose
+you remove the cable between your server and client while your application
+runs). However their effect is the same like a server crash.
+<p>
+Overall, it is of course a consideration of policy how strictly you try to
+trap communcation errors throughout your application. You might follow the
+"if the server crashes, we need to debug the server until it never crashes
+again" method, which would mean you need not bother about all these problems.
+<hr>
+<a href=index.html>back to index</a>
+</BODY>
+</HTML>
