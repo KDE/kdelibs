@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.63  1999/08/08 19:58:12  tibirna
+   CT: Mosfet, you should listen to elder people from time to time.
+   	when I said put the .png recompose inside the "if", I also
+   	said add the else (line 332). Oh, and "unknown.xpm" should
+   	be "unknown.png", Coolo. (That's the reason, Mos)
+
    Revision 1.62  1999/08/08 17:55:19  mosfet
    Moved the appending of .png into the check for .xpm, or else you get
    .png.png ;-)
@@ -332,7 +338,7 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
       else full_path = locate(iconType, path);
     }
     if (full_path.isNull() && always_valid)
-	full_path = locate(iconType, "unknown.png");
+	full_path = locate(iconType, "unknown.xpm");
     
     return full_path;
 }
