@@ -101,42 +101,4 @@ private:
   KJScript operator=(const KJScript&);
 };
 
-// callback functions for KJSProxy
-typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int);
-typedef void (KJSClearFunc)(KJScript *script);
-typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
-typedef void (KJSDestroyFunc)(KJScript *script);
-extern "C" {
-  KJSEvalFunc kjs_eval;
-  KJSClearFunc kjs_clear;
-  KJSSpecialFunc kjs_special;
-  KJSDestroyFunc kjs_destroy;
-}
-
-/**
- * @short Proxy class serving as interface when being dlopen'ed.
- */
-class KJSProxy {
-public:
-  KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c,
-	   KJSSpecialFunc sp, KJSDestroyFunc d)
-    : script(s), eval(e), clr(c), spec(sp), destr(d) {};
-  ~KJSProxy() { (*destr)(script); }
-  bool evaluate(const QChar *c, unsigned int l) {
-    return (*eval)(script, c, l);
-  }
-  const char *special(const char *c) {
-    return (*spec)(script, c);
-  }
-  void clear() {
-    (*clr)(script);
-  }
-private:
-  KJScript *script;
-  KJSEvalFunc *eval;
-  KJSClearFunc *clr;
-  KJSSpecialFunc *spec;
-  KJSDestroyFunc *destr;
-};
-
 #endif
