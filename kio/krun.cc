@@ -24,6 +24,7 @@
 #include "kmimetypes.h"
 #include "kmimemagic.h"
 #include "kio_error.h"
+#include "kio_openwith.h"
 
 #include <qmessagebox.h>
 
@@ -70,7 +71,17 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   
   if ( !offer )
   {
-    //HACK TODO: OpenWith
+    OpenWithDlg l( lst, i18n("Open With:"), "", (QWidget *)0L );
+    if ( l.exec() )
+    {
+      KSharedPtr<KService> service = l.service();
+      if ( service )
+        return KRun::run( *service, lst );
+	
+      QString exec = l.text();
+      exec += " %f";
+      return KRun::run( exec, lst );
+    }
     return false;
   }
   
