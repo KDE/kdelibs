@@ -26,7 +26,7 @@ disable email-link of author on title page, add date phrase: Last updated, revis
   <p class="{name(.)}">
   <xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
   <xsl:text>: </xsl:text>
-  <a name="./@id">
+  <a><!-- removed the name="./@id" attribute: it was wrong and I don't understand what it's supposed to do -->
     <xsl:call-template name="person.name"/>
   </a>
   </p>
