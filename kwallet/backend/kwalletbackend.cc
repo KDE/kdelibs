@@ -322,6 +322,12 @@ int Backend::open(const QByteArray& password) {
 
 	bf.setKey((void *)passhash.data(), passhash.size()*8);
 
+	if (!encrypted.data()) {
+		passhash.fill(0);
+		encrypted.fill(0);
+		return -7; // file structure error
+	}
+
 	int rc = bf.decrypt(encrypted.data(), encrypted.size());
 	if (rc < 0) {
 		passhash.fill(0);
@@ -433,6 +439,7 @@ int Backend::sync(const QByteArray& password) {
 	QFile *qf = sf.file();
 
 	if (!qf) {
+		sf.abort();
 		return -1;		// error opening file
 	}
 
@@ -516,6 +523,7 @@ int Backend::sync(const QByteArray& password) {
 	if (getRandomBlock(randBlock) < 0) {
 		sha.reset();
 		decrypted.fill(0);
+		sf.abort();
 		return -3;		// Fatal error: can't get random
 	}
 
@@ -551,6 +559,7 @@ int Backend::sync(const QByteArray& password) {
 	if (!bf.setKey(passhash.data(), passhash.size() * 8)) {
 		passhash.fill(0);
 		wholeFile.fill(0);
+		sf.abort();
 		return -2;
 	}
 
@@ -558,6 +567,7 @@ int Backend::sync(const QByteArray& password) {
 	if (rc < 0) {
 		passhash.fill(0);
 		wholeFile.fill(0);
+		sf.abort();
 		return -2;	// encrypt error
 	}
 
@@ -566,6 +576,8 @@ int Backend::sync(const QByteArray& password) {
 	// write the file
 	qf->writeBlock(wholeFile, wholeFile.size());
 	if (!sf.close()) {
+		wholeFile.fill(0);
+		sf.abort();
 		return -4; // write error
 	}
 
