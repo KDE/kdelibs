@@ -150,8 +150,8 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs4-cups --sourcedir=debian/build-tmp
 	dh_movefiles -plibarts1-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid0-alsa --sourcedir=debian/alsa-tmp
-	dh_movefiles -pkdelibs4-common --sourcedir=debian/build-tmp
 	dh_movefiles -pkdelibs4 --sourcedir=debian/build-tmp
+	dh_movefiles -pkdelibs4-bin --sourcedir=debian/build-tmp
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a

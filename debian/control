@@ -10,10 +10,21 @@ Package: kdelibs4
 Architecture: any
 Section: libs
 Replaces: kdelibs3
-Depends: ${shlibs:Depends}, python, xbase-clients
+Depends: ${shlibs:Depends}, kdelibs-bin
 Suggests: libarts1, libarts-bin, libkmid0, libkmid-bin, aspell | ispell, libssl0.9.6, anti-aliasing-howto, gdb, kdelibs4-cups
 Description: KDE core libraries (runtime files)
  KDE core libraries.
+ You need these files to run kde applications.
+
+Package: kdelibs4-bin
+Architecture: any
+Section: libs
+Replaces: kdelibs3, kdelibs4 (<< 3.0-0.beta1-1)
+Depends: ${shlibs:Depends}, python, xbase-clients
+Conflicts: kdelibs4 (<< 3.0-0.beta1-1)
+Provides: kdelibs-bin
+Description: KDE core binaries
+ KDE core binaries.
  You need these files to run kde applications.
 
 Package: kdelibs4-cups
