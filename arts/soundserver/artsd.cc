@@ -65,7 +65,7 @@ static void handleArgs(int argc, char **argv)
 		{
 			case 'r': cfgSamplingRate = atoi(optarg);
 				break;
-			case 'n': cfgServers |= Dispatcher::startTCPServer;
+			case 'n': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::startTCPServer);
 				break;
 			default: 
 					exitUsage(argc?argv[0]:"artsd");

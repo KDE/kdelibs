@@ -269,7 +269,7 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + "result->writeFloat("+name+");\n";
 		if(model==MODEL_INVOKE_SEQ)
 		{
-			result = indent + "vector<float> *_returnCode = "+name+";\n"
+			result = indent + "std::vector<float> *_returnCode = "+name+";\n"
 				   + indent + "result->writeFloatSeq(*_returnCode);\n"
 				   + indent + "delete _returnCode;\n";
 		}

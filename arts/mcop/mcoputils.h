@@ -46,7 +46,7 @@ public:
 	 *
 	 * The result is "localhost" if nothing at all can be found out.
 	 */
-	static string getFullHostname();
+	static std::string getFullHostname();
 };
 
 #endif /* MCOPUTILS_H */
