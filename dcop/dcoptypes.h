@@ -65,6 +65,9 @@ class QBitArray; inline const char* dcopTypeName( const QBitArray& ) { return "Q
 class QKeySequence; inline const char* dcopTypeName( const QKeySequence& ) { return "QKeySequence"; }
 class QVariant; inline const char* dcopTypeName( const QVariant& ) { return "QVariant"; }
 
+// And some KDE types
+class KURL; inline const char* dcopTypeName( const KURL& ) { return "KURL"; }
+
 // generic template fallback for unknown types
 template <class T> inline const char* dcopTypeName( const T& ) { return "<unknown>"; }
 
