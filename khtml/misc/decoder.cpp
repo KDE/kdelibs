@@ -30,6 +30,7 @@
 using namespace khtml;
 
 #include "htmlhashes.h"
+
 #include <qregexp.h>
 #include <qtextcodec.h>
 
@@ -38,6 +39,156 @@ using namespace khtml;
 
 #include <ctype.h>
 #include <kdebug.h>
+#include <klocale.h>
+
+// Kanji detection - start
+//
+// Extracted from libjconv. libjconv is licensed LGPL.
+//
+//  Copyright (C) 1999-2000 Toru Hoshina <t@kondara.org>
+//  Copyright (C) 1999-2000 Shingo Akagaki <dora@kondara.org>
+//  Copyright (C) 1999-2000 Akira Higuchi <a@kondara.org>
+
+#define _ASCII_         0
+#define _JIS_           1
+#define _EUC_           2
+#define _SJIS_          3
+#define _EUCORSJIS_     4
+#define _ESC_           0x1b
+#define _SS2_           0x8e
+
+static int detect_kanji(unsigned char *str)
+{
+   int expected = _ASCII_;
+   register int c;
+   int c1, c2;
+   int euc_c = 0, sjis_c = 0;
+   unsigned char *ptr;
+
+   if(!str) return (0);
+
+   ptr = str;
+   while ((c = (int)*ptr)!= '\0')
+     {
+	if (c == _ESC_)
+	  {
+	     if ((c = (int)*(++ptr)) == '\0') break;
+	     if (c == '$')
+	       {
+		  if ((c = (int)*(++ptr)) == '\0') break;
+		  if (c == 'B' || c == '@') return _JIS_;
+	       }
+	     ptr++;
+	     continue;
+	  }
+
+	if ((c >= 0x81 && c <= 0x8d) || (c >= 0x8f && c <= 0x9f))
+	  return _SJIS_;
+
+	if (c == _SS2_)
+	  {
+	     if ((c = (int)*(++ptr)) == '\0') break;
+	     if ((c >= 0x40 && c <= 0x7e) || (c >= 0x80 && c <= 0xa0) || 
+		 (c >= 0xe0 && c <= 0xfc)) return _SJIS_;
+	     if (c >= 0xa1 && c <= 0xdf) break;
+	     ptr++;
+	     continue;
+	  }
+
+	if (c >= 0xa1 && c <= 0xdf) /* euc or kana */
+	  {
+	     if((c = (int)*(++ptr)) == '\0') break;
+      
+	     if (c >= 0xe0 && c <= 0xfe)
+	       return _EUC_;
+	     if (c >= 0xa1 && c <= 0xdf)
+	       {
+		  expected = _EUCORSJIS_;
+		  ptr++;
+		  continue;
+	       }
+#if 1
+	     if (c == 0xa0 || (0xe0 <= c && c <= 0xfe))
+	       return _EUC_;
+	     else
+	       {
+		  expected = _EUCORSJIS_;
+		  ptr++;
+		  continue;
+	       }
+#else
+	     if (c <= 0x9f) return _SJIS_;
+	     if (c >= 0xf0 && c <= 0xfe) return _EUC_;
+#endif
+     
+	     if (c >= 0xe0 && c <= 0xef)
+	       {
+		  expected = _EUCORSJIS_;
+		  while (c >= 0x40)
+		    {
+		       if (c >= 0x81)
+			 {
+			    if (c <= 0x8d || (c >= 0x8f && c <= 0x9f))
+			      return _SJIS_;
+			    else if (c >= 0xfd && c <= 0xfe)
+			      {
+				 return _EUC_;
+			      }
+			 }
+		       if ((c = (int)*(++ptr)) == '\0') break;
+		    }
+		  ptr++;
+		  continue;
+	       }
+
+	     if (c >= 0xe0 && c <= 0xef)
+	       {
+		  if ((c = (int)*(++ptr)) == '\0') break;
+		  if ((c >= 0x40 && c <= 0x7e) || (c >= 0x80 && c <= 0xa0))
+		    return _SJIS_;
+		  if (c >= 0xfd && c <= 0xfe) return _EUC_;
+		  if (c >= 0xa1 && c <= 0xfc)
+		    expected = _EUCORSJIS_;
+	       }
+	  }
+#if 1
+	if (0xf0 <= c && c <= 0xfe)
+	  return _EUC_;
+#endif
+	ptr++;
+     }
+
+   ptr = str;
+   c2 = 0;
+   while ((c1 = (int)*ptr++) != '\0')
+     {
+	if (((c2 >  0x80 && c2 < 0xa0) || (c2 >= 0xe0 && c2 < 0xfd)) &&
+	    ((c1 >= 0x40 && c1 < 0x7f) || (c1 >= 0x80 && c1 < 0xfd)))
+	  sjis_c++, c1 = *ptr++;
+	c2 = c1;
+     }
+   if (sjis_c == 0)
+     expected = _EUC_;
+   else
+     {
+	ptr = str, c2 = 0;
+	while ((c1 = (int)*ptr++) != '\0')
+	  {
+	     if ((c2 > 0xa0  && c2 < 0xff) &&
+		 (c1 > 0xa0  && c1 < 0xff))
+	       euc_c++, c1 = *ptr++;
+	     c2 = c1;
+	  }
+	if (sjis_c > euc_c)
+	  expected = _SJIS_;
+	else
+	  expected = _EUC_;
+     }
+   return expected;
+}
+
+// Kanji detection - end
+
 
 Decoder::Decoder()
 {
@@ -222,6 +373,23 @@ QString Decoder::decode(const char *data, int len)
 #ifdef DECODE_DEBUG
 			kdDebug( 6005 ) << "Decoder: no charset found, using latin1. Id=" << id << endl;
 #endif
+			if ( KGlobal::locale()->country() == "jp" ) {
+			    switch ( detect_kanji( (unsigned char*)buffer.data() ) ) {
+			    case _JIS_:
+			        enc = "jis7";
+				break;
+			    case _EUC_:
+				enc = "eucjp";
+                                break;
+			    case _SJIS_:
+                                enc = "sjis";
+                                break;
+			    default:
+                                enc = "iso8859-1";
+				break;
+			    }			
+			    setEncoding(enc, true);
+			}
                         goto found;
                     }
                 }
