@@ -36,7 +36,6 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qiomanager.h>
-#include <qmessagebox.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 
@@ -47,13 +46,13 @@
 #include <kartsserver.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>
-#include <kcrash.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpassivepopup.h>
 #include <kiconloader.h>
+#include <kmacroexpander.h>
 #include <kplayobjectfactory.h>
 #include <kaudiomanagerplay.h>
 #include <kprocess.h>
@@ -95,10 +94,11 @@ int kdemain(int argc, char **argv)
 {
     KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
                          "3.0", I18N_NOOP("KDE Notification Server"),
-                         KAboutData::License_GPL, "(C) 1997-2002, KDE Developers");
+                         KAboutData::License_GPL, "(C) 1997-2003, KDE Developers");
+    aboutdata.addAuthor("Carsten Pfeiffer",I18N_NOOP("Current Maintainer"),"pfeiffer@kde.org");
     aboutdata.addAuthor("Christian Esken",0,"esken@kde.org");
     aboutdata.addAuthor("Stefan Westerfeld",I18N_NOOP("Sound support"),"stefan@space.twc.de");
-    aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@kde.org");
+    aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Previous Maintainer"),"charles@kde.org");
 
     KCmdLineArgs::init( argc, argv, &aboutdata );
     KUniqueApplication::addCmdLineOptions();
@@ -113,7 +113,7 @@ int kdemain(int argc, char **argv)
     KUniqueApplication app;
     app.disableSessionManagement();
 
-    // KNotify is started on KDE startup and on demand (using 
+    // KNotify is started on KDE startup and on demand (using
     // KNotifClient::startDaemon()) whenever a KNotify event occurs. Especially
     // KWin may fire many events (e.g. when a window pops up). When we have
     // problems with aRts or the installation, we might get an infinite loop
@@ -121,7 +121,7 @@ int kdemain(int argc, char **argv)
     // another event, starting knotify again...
     // We try to prevent this by tracking our startup and offer options to
     // abort this.
-    
+
     KConfigGroup config( KGlobal::config(), "StartProgress" );
     bool useArts = config.readBoolEntry( "Use Arts", true );
     bool ok = config.readBoolEntry( "Arts Init", true );
@@ -137,7 +137,7 @@ int kdemain(int argc, char **argv)
                  i18n("Try Again"),
                  i18n("Disable aRts Output"),
                  "KNotifyStartProgress",
-                 0 /* don't call KNotify :) */ 
+                 0 /* don't call KNotify :) */
                  )
              == KMessageBox::No )
         {
@@ -192,10 +192,10 @@ int kdemain(int argc, char **argv)
 
     // start notify service
     KNotify notify( useArts );
-    
+
     config.writeEntry( "KNotify Init", true );
     config.sync();
-    
+
     app.dcopClient()->setDefaultObject( "Notify" );
     app.dcopClient()->setDaemonMode( true );
     // kdDebug() << "knotify starting" << endl;
@@ -304,7 +304,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
     QString commandline;
 
     // check for valid events
-    if ( event.length()>0 )     {
+    if ( !event.isEmpty() ) {
 
         // get config file
         KConfig *eventsFile;
@@ -339,16 +339,20 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get sound file name
         if( present & KNotifyClient::Sound ) {
-            sound = configFile->readPathEntry( "soundfile" );
-            if ( sound.length()==0 )
-                sound = eventsFile->readPathEntry( "default_sound" );
+            QString theSound = configFile->readPathEntry( "soundfile" );
+            if ( theSound.isEmpty() )
+                theSound = eventsFile->readPathEntry( "default_sound" );
+            if ( !theSound.isEmpty() )
+                sound = theSound;
         }
 
         // get log file name
         if( present & KNotifyClient::Logfile ) {
-            file = configFile->readPathEntry( "logfile" );
-            if ( file.length()==0 )
-                file = eventsFile->readPathEntry( "default_logfile" );
+            QString theFile = configFile->readPathEntry( "logfile" );
+            if ( theFile.isEmpty() )
+                theFile = eventsFile->readPathEntry( "default_logfile" );
+            if ( !theFile.isEmpty() )
+                file = theFile;
         }
 
         // get default event level
@@ -358,7 +362,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         // get command line
         if (present & KNotifyClient::Execute ) {
             commandline = configFile->readPathEntry( "commandline" );
-            if ( commandline.length()==0 )
+            if ( commandline.isEmpty() )
                 commandline = eventsFile->readPathEntry( "default_commandline" );
         }
     }
@@ -380,7 +384,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByStderr( text );
 
     if ( present & KNotifyClient::Execute )
-        notifyByExecute( commandline );
+        notifyByExecute( commandline, event, fromApp, text, winId, eventId );
 
     if ( present & KNotifyClient::Taskbar )
         notifyByTaskbar( checkWinId( fromApp, winId ));
@@ -400,7 +404,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
         soundFinished( eventId, NoSoundFile );
         return false;
     }
-    
+
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
@@ -421,14 +425,14 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
     // kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
 
     if (!external) {
-        //If we disabled using aRts, just return, 
+        //If we disabled using aRts, just return,
         //(If we don't, we'll blow up accessing the null soundServer)
         if (!d->useArts)
         {
             soundFinished( eventId, NoSoundSupport );
             return false;
         }
-    
+
         // play sound finally
         while( d->playObjects.count()>5 )
             abortFirstPlayObject();
@@ -542,7 +546,7 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
     return true;
 }
 
-bool KNotify::notifyByPassivePopup( const QString &text, 
+bool KNotify::notifyByPassivePopup( const QString &text,
                                     const QString &appName,
                                     WId senderWinId )
 {
@@ -555,12 +559,24 @@ bool KNotify::notifyByPassivePopup( const QString &text,
     return true;
 }
 
-bool KNotify::notifyByExecute(const QString &command) {
+bool KNotify::notifyByExecute(const QString &command, const QString& event,
+                              const QString& fromApp, const QString& text,
+                              int winId, int eventId) {
     if (!command.isEmpty()) {
 	// kdDebug() << "executing command '" << command << "'" << endl;
+        QMap<QChar,QString> subst;
+        subst.insert( 'e', event );
+        subst.insert( 'a', fromApp );
+        subst.insert( 's', text );
+        subst.insert( 'w', QString::number( winId ));
+        subst.insert( 'i', QString::number( eventId ));
+        QString execLine = KMacroExpander::expandMacrosShellQuote( command, subst );
+        if ( execLine.isEmpty() )
+            execLine = command; // fallback
+        
 	KProcess p;
 	p.setUseShell(true);
-	p << command;
+	p << execLine;
 	p.start(KProcess::DontCare);
 	return true;
     }
@@ -659,7 +675,7 @@ bool KNotify::isPlaying( const QString& soundFile ) const
 
 void KNotify::slotPlayerProcessExited( KProcess *proc )
 {
-    soundFinished( d->externalPlayerEventId, 
+    soundFinished( d->externalPlayerEventId,
                    (proc->normalExit() && proc->exitStatus() == 0) ? PlayedOK : Unknown );
 }
 
@@ -691,7 +707,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
         QCString compare = (appName + "-mainwindow").latin1();
         int len = compare.length();
         // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
-    
+
         QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
         for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
             QCString obj( *it );

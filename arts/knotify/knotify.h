@@ -75,8 +75,13 @@ private:
 	bool notifyByStderr(const QString &text);
 	bool notifyByPassivePopup(const QString &text, const QString &appName,
                                   WId winId );
-	bool notifyByExecute(const QString &command);
-	bool notifyByTaskbar( WId winId );
+	bool notifyByExecute(const QString &command, 
+                             const QString& event, 
+                             const QString& fromApp, 
+                             const QString& text,
+                             int winId,
+                             int eventId );
+    bool notifyByTaskbar( WId winId );
 	
 	bool isPlaying( const QString& soundFile ) const;
 
