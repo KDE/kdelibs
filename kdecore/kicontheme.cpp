@@ -83,8 +83,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList::ConstIterator it;
     for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
     {
-	QFileInfo fi(*it + name + "/index.desktop");
-	if (fi.exists())
+	if (KStandardDirs::exists(*it + name + "/index.desktop"))
 	    break;
     }
     if (it == icnlibs.end())
@@ -109,8 +108,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
 	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
 	{
-	    QFileInfo fi(*it + appName + "/icons/" + name);
-	    if (fi.exists())
+	    if (KStandardDirs::exists(*it + appName + "/icons/" + name))
 		break;
 	}
 	if (it == icnlibs.end())
@@ -314,14 +312,12 @@ QStringList KIconTheme::list()
             continue;
         QStringList lst = dir.entryList(QDir::Dirs);
         QStringList::ConstIterator it2;
-        QFileInfo fi;
         for (it2=lst.begin(); it2!=lst.end(); it2++)
         {
             if ((*it2 == ".") || (*it2 == ".."))
                 continue;
-            fi.setFile(*it + *it2 + "/index.desktop");
-            if (!fi.exists())
-                continue;
+	    if (!KStandardDirs::exists(*it + *it2 + "/index.desktop"))
+		continue;
             if (!result.contains(*it2))
 		result += *it2;
         }

@@ -56,10 +56,7 @@ public:
 private:
     KIconTheme *myTheme;
     QList<KIconThemeNode> links;
-    static QStringList *mThemesInTree;
 };
-
-QStringList *KIconThemeNode::mThemesInTree = 0;
 
 void KIconThemeNode::printThemeTree(QString& dbgString) const
 {
@@ -87,19 +84,15 @@ void KIconThemeNode::queryIcons(QStringList *result, int size, int context) cons
 
 void KIconThemeNode::addIconTheme()
 {
-    // next time I purify I will add a qCleanUpRoutine :/
-    if (!mThemesInTree)
-	mThemesInTree = new QStringList();
-
     QStringList lst = myTheme->inherits();
     QStringList::ConstIterator it;
     static QStringList mThemeList = KIconTheme::list();
     for (it=lst.begin(); it!=lst.end(); it++)
     {
-      if (!mThemeList.contains(*it) || mThemesInTree->contains(*it))
+      if (!mThemeList.contains(*it)) // || mThemesInTree->contains(*it))
 	    continue;
         KIconThemeNode *n = new KIconThemeNode(new KIconTheme(*it));
-	mThemesInTree->append(*it);
+	// mThemesInTree->append(*it);
 	n->addIconTheme();
 	links.append(n);
     }
@@ -527,12 +520,10 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
     int i=1;
     QString fmt = file.left(file.length() - 8) + "%04d.png";
     file.sprintf(fmt.latin1(), i);
-    QFileInfo fi(file);
-    while (fi.exists())
+    while (KStandardDirs::exists(file))
     {
 	lst += file;
 	file.sprintf(fmt.latin1(), ++i);
-	fi.setFile(file);
     }
     return lst;
 }
