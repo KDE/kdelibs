@@ -23,6 +23,7 @@
 #include "kcmodule.h"
 #include <kinstance.h>
 #include <kglobal.h>
+#include <klocale.h>
 
 class KCModulePrivate
 {
