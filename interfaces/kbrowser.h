@@ -119,7 +119,7 @@ public:
   QValueList<ViewAction> *actions() { return &m_actionCollection; }
 
 signals:
-  void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset );
+  void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   void started();
   void completed();
   void canceled();
