@@ -108,7 +108,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
 	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
 	{
-	    if (KStandardDirs::exists(*it + appName + "/icons/" + name))
+	    if (QFile::exists(*it + appName + "/icons/" + name))
 		break;
 	}
 	if (it == icnlibs.end())
