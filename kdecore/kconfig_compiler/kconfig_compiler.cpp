@@ -736,7 +736,10 @@ int main( int argc, char **argv )
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
-  bool mutators = codegenConfig.readBoolEntry("Mutators");
+  QStringList mutators = codegenConfig.readListEntry("Mutators");
+  bool allMutators = false;
+  if ((mutators.count() == 1) && (mutators[0].lower() == "true"))
+     allMutators = true;
   itemAccessors = codegenConfig.readBoolEntry( "ItemAccessors", false );
   bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
 
@@ -930,7 +933,7 @@ int main( int argc, char **argv )
     QString t = e->type();
 
     // Manipulator
-    if (mutators)
+    if (allMutators || mutators.contains(n))
     {
       h << "    /**" << endl;
       h << "      Set " << e->label() << endl;
