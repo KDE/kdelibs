@@ -1,5 +1,5 @@
 
-SUBDIRS = kfile
+SUBDIRS = kfile kspell
 
 data_DATA = kdebug.html
 
