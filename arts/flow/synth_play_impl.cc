@@ -82,7 +82,8 @@ public:
 
 		channels = as->channels();
 		format = as->format();
-		arts_debug("audio format is %d bits", format);
+		arts_debug("audio format is %d Hz, %d bits, %d channels",
+					as->samplingRate(), format, channels);
 		maxsamples = 0;
 		outblock = 0;
 		retryOpen = false;
