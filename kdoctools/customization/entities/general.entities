@@ -162,6 +162,7 @@
 <!ENTITY kdessh	"<application>kdessh</application>">
 <!ENTITY kdesu  "<application>KDE su</application>">
 <!ENTITY kdf	"<application>kdf</application>">
+<!ENTITY kdict  "<application>KDict</application>">
 <!ENTITY kdm	"<application>kdm</application>">
 <!ENTITY kdvi	"<application>kdvi</application>">
 <!ENTITY kedit	"<application>KEdit</application>">
