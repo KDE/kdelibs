@@ -112,7 +112,7 @@ void kimgioRegister(void)
 
 }
 
-QString kimgio_patterns() {
+QString KImageIO::pattern(Mode ) {
 
   // this is hardcoded for the moment - but better hardcoded centrally :/
   return i18n( "*.gif *GIF *.bmp *.BMP *.xbm *.XBM *.xpm *.XPM *.pnm *.PNM "
@@ -149,17 +149,54 @@ bool KImageIO::canRead(const QString& type)
   return false;
 }
 
-QStringList kimgio_types() {
+QStringList KImageIO::types(Mode ) {
   static QStringList types;
   if (types.isEmpty()) {
     types.append("GIF");
 #ifdef HAVE_QIMGIO
     types.append("JPEG");
 #endif
-    types.append("JPG");
     types.append("XPM");
     types.append("XBM");
     types.append("PNG");
   }
   return types;
+}
+
+QString KImageIO::suffix(const QString& type)
+{
+  if (type == "GIF")
+    return "gif";
+
+#ifdef HAVE_QIMGIO
+  if (type == "JPEG")
+    return "jpg";
+#endif
+  
+  if (type == "XPM")
+    return "xpm";
+
+  if (type == "XBM")
+    return "xbm";
+  
+  if (type == "PNG")
+    return "png";
+
+  return QString::null;
+}
+
+QString KImageIO::type(const QString& filename)
+{
+  QString suffix = filename;
+  int dot = suffix.findRev('.');
+  if (dot >= 0) 
+    suffix = suffix.mid(dot + 1);
+
+  if (suffix == "gif")
+    return "GIF";
+
+  if (suffix == "jpeg")
+    return "JPEG";
+
+  return "PNG";
 }
