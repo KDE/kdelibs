@@ -1497,10 +1497,10 @@ void KHTMLPart::write( const QString &str )
 
 void KHTMLPart::end()
 {
-    // make sure nothing's left in there...
-    if(d->m_decoder)
-        write(d->m_decoder->flush());
-    d->m_doc->finishParsing();
+  d->m_bParsing = false;
+
+  checkEmitLoadEvent();
+  // we will finish parsing when the load event finshed
 }
 
 void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
@@ -1527,7 +1527,7 @@ void KHTMLPart::slotFinishedParsing()
 {
   d->m_bParsing = false;
   d->m_doc->close();
-  checkEmitLoadEvent();
+  assert(d->m_bLoadEventEmitted);
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   if (!d->m_view)
@@ -1708,6 +1708,10 @@ void KHTMLPart::emitLoadEvent()
 {
   d->m_bLoadEventEmitted = true;
 
+  // make sure nothing's left in there...
+  if(d->m_decoder)
+    write(d->m_decoder->flush());
+
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
     HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
 
@@ -1717,6 +1721,9 @@ void KHTMLPart::emitLoadEvent()
         d->m_doc->updateRendering();
     }
   }
+
+  if ( d->m_doc )
+    d->m_doc->finishParsing();
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
