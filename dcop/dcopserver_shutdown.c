@@ -167,7 +167,8 @@ static void cleanupDCOP(int dont_kill_dcop)
 
    while (!feof(f))
    {
-      fgets(buffer, 2048, f);
+      if (!fgets(buffer, 2048, f))
+         break;
       pid = strtol(buffer, NULL, 10);
       if (pid)
          break;
