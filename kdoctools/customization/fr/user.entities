@@ -110,6 +110,9 @@
 <!ENTITY traducteurLaurentRathle     '<othercredit role="translator"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLaurentRathle      '<othercredit role="relecteur"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurtraducteurDamienRaudeMorvan     '<othercredit role="translator"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurtraducteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -156,6 +159,7 @@
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
+<!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
