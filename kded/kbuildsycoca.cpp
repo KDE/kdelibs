@@ -54,6 +54,13 @@
 
 //#define ANNOYING_POPUP
 
+#ifdef Q_WS_WIN
+# include <qlabel.h>
+# define ANNOYING_POPUP
+  bool silent;
+  bool showprogress;
+#endif
+
 #ifdef ANNOYING_POPUP
 #include <kmessagebox.h>
 #endif
@@ -456,6 +463,9 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
 void KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
+#ifdef Q_WS_WIN
+  printf("kbuildsycoca: path='%s'\n", (const char*)path);
+#endif
 
   // KSaveFile first writes to a temp file.
   // Upon close() it moves the stuff to the right place.
@@ -464,6 +474,11 @@ void KBuildSycoca::recreate()
   {
     fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'!\n", path.local8Bit().data());
     fprintf(stderr, "kbuildsycoca: Wrong permissions on directory? Disk full?\n");
+#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
+                        // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
+    if (!silent)
+      KMessageBox::error(0, i18n("ERROR creating database '%1'!\nWrong permissions on directory? Disk full?\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
+#endif
     exit(-1);
   }
 
@@ -688,6 +703,10 @@ static KCmdLineOptions options[] = {
    { "global", I18N_NOOP("Create global database"), 0 },
    { "menutest", I18N_NOOP("Perform menu generation test run only"), 0 },
    { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
+#ifdef KBUILDSYCOCA_GUI
+   { "silent", I18N_NOOP("Silent work without windows and stderr"), 0 },
+   { "showprogress", I18N_NOOP("Show progress information (event if 'silent' mode is on"), 0 },
+#endif
    KCmdLineLastOption
 };
 
@@ -728,6 +747,21 @@ extern "C" int kdemain(int argc, char **argv)
    KApplication k(false, false);
 #endif
    k.disableSessionManagement();
+
+#ifdef KBUILDSYCOCA_GUI
+   silent = args->isSet("silent");
+   showprogress = args->isSet("showprogress");
+   QLabel progress( QString("<p><br><nobr>    %1    </nobr><br>").arg( i18n("Reloading KDE configuration, please wait...") ), 0, "", Qt::WType_Dialog | Qt::WStyle_DialogBorder  | Qt::WStyle_Customize| Qt::WStyle_Title );
+   capt = i18n("KDE configuration manager");
+   if (!silent) {
+     if (KMessageBox::No == KMessageBox::questionYesNo(0, i18n("Do you want to reload KDE configuration?"), capt))
+       return 0;
+   }
+   if (!silent || showprogress) {
+     progress.setCaption( capt );
+     progress.show();
+   }
+#endif
 
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(crashHandler);
@@ -838,7 +872,7 @@ extern "C" int kdemain(int argc, char **argv)
       g_ctimeDict = 0;
       if (incremental)
       {
-qWarning("Reusing existing ksycoca");
+         qWarning("Reusing existing ksycoca");
          KSycoca *oldSycoca = KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;
@@ -891,8 +925,16 @@ qWarning("Reusing existing ksycoca");
      stream << *g_changeList;
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }
-#ifdef ANNOYING_POPUP
+
+#ifdef KBUILDSYCOCA_GUI
+   if (!silent) {
+     progress.close();
+     KMessageBox::information(0, i18n("Configuration reloaded successfully."), capt);
+   }
+#else
+# ifdef ANNOYING_POPUP
    KMessageBox::information(0, i18n("System configuration cache (ksycoca) successfully updated."));
+# endif
 #endif
    return 0;
 }

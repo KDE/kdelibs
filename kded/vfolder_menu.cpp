@@ -431,14 +431,14 @@ QString
 VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepRelativeToCfg)
 {
    QString dir = _dir;
-   if (!dir.startsWith("/"))
+   if (QDir::isRelativePath(dir))
    {
       dir = baseDir + dir;
    }
    if (!dir.endsWith("/"))
       dir += '/';
 
-   if (!dir.startsWith("/") && !keepRelativeToCfg)
+   if (QDir::isRelativePath(dir) && !keepRelativeToCfg)
    {
       dir = KGlobal::dirs()->findResource("xdgconf-menu", dir);
    }      
@@ -632,7 +632,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          }
 
          QStringList fileList;
-         if (dir.startsWith("/"))
+         if (!QDir::isRelativePath(dir))
          {
             // Absolute
             fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, false);
@@ -680,14 +680,14 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    m_docInfoStack.push(m_docInfo);
    if (!baseDir.isEmpty())
    {
-      if (baseDir.startsWith("/"))
+      if (!QDir::isRelativePath(baseDir))
          m_docInfo.baseDir = KGlobal::dirs()->relativeLocation("xdgconf-menu", baseDir);
       else
          m_docInfo.baseDir = baseDir;
    }
 
    QString baseName = fileName;
-   if (baseName.startsWith("/"))
+   if (!QDir::isRelativePath(baseName))
       registerFile(baseName);
    else
       baseName = m_docInfo.baseDir + baseName;
@@ -723,7 +723,7 @@ VFolderMenu::popDocInfo()
 QString
 VFolderMenu::locateMenuFile(const QString &fileName)
 {
-   if (fileName.startsWith("/"))
+   if (!QDir::isRelativePath(fileName))
    {
       if (KStandardDirs::exists(fileName))
          return fileName;
@@ -742,7 +742,7 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
    if (fileName.isEmpty())
       return QString::null;
 
-   if (fileName.startsWith("/"))
+   if (!QDir::isRelativePath(fileName))
    {
       if (KStandardDirs::exists(fileName))
          return fileName;
