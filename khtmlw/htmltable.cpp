@@ -112,7 +112,7 @@ int HTMLTableCell::calcMinWidth()
 bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter )
 {
-	if ( _y + _height < y - getAscent() || _y > y )
+	if ( _y + _height < y - getAscent() || _y > y + descent )
 		return false;
 
  	if ( bg.isValid() )
@@ -1680,7 +1680,7 @@ void HTMLTable::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
 
 bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + descent )
 	return false;
 
     _tx += x;
@@ -1775,13 +1775,13 @@ void HTMLTable::print( QPainter *_painter, HTMLChain *_chain,int _x,
     if ( _chain->current() )
     {
 	_chain->current()->print( _painter, _chain, _x - x,
-	    _y - (y - getHeight()), _width, _height, _tx, _ty );
+	    _y - (y - ascent), _width, _height, _tx, _ty );
     }
 } 
 
 void HTMLTable::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + descent )
 	return;
 
     _tx += x;
