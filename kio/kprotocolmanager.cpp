@@ -358,10 +358,16 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      proxy = proxyForURL(url);
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
+        KConfig* cfg = config();
+        cfg->setGroup("Proxy Settings");
+        bool reversedException = cfg->readBoolEntry("ReversedException", false);
+
         QString noProxy = noProxyFor();
-        if (noProxy.isEmpty() || url.host().isEmpty() ||
-            !revmatch( url.host().lower().latin1(),
-                       noProxy.lower().latin1() ))
+        bool isException = (!noProxy.isEmpty() &&
+                            revmatch(url.host().lower().latin1(),
+                                     noProxy.lower().latin1()));
+        if ( !isException || url.host().isEmpty() ||
+             (reversedException && proxyType() == ManualProxy) )
         {
            d->url = url;
            d->protocol = QString::fromLatin1("http");
