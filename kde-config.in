@@ -1,5 +1,3 @@
-#! /bin/sh
-
 kde_htmldir='@kde_htmldir@'
 kde_appsdir='@kde_appsdir@'
 kde_icondir='@kde_icondir@'
