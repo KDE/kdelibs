@@ -171,6 +171,8 @@ bool AudioIOOSS::open()
 		_format = 8;
 	else if(gotFormat == AFMT_S16_LE)
 		_format = 16;
+	else if(gotFormat == AFMT_S16_BE)
+		_format = 17;
 	else
 	{
 		char details[80];

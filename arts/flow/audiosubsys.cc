@@ -292,6 +292,13 @@ int AudioSubSystem::format()
 	return d->audioIO->getParam(AudioIO::format);
 }
 
+int AudioSubSystem::bits()
+{
+	int _format = format();
+	arts_assert(_format == 0 || _format == 8 || _format == 16 || _format == 17);
+	return (_format & (16 | 8));
+}
+
 void AudioSubSystem::fullDuplex(bool fullDuplex)
 {
 	initAudioIO();

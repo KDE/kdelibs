@@ -70,6 +70,7 @@ protected:
 	unsigned long maxsamples;
 	unsigned long channels;
 	int format;
+	int bits;
 
 	bool retryOpen;
 public:
@@ -82,8 +83,9 @@ public:
 
 		channels = as->channels();
 		format = as->format();
+		bits = as->bits();
 		arts_debug("audio format is %d Hz, %d bits, %d channels",
-					as->samplingRate(), format, channels);
+					as->samplingRate(), bits, channels);
 		maxsamples = 0;
 		outblock = 0;
 		retryOpen = false;
@@ -179,25 +181,31 @@ public:
 
 		assert(channels);
 
+		arts_assert(format == 8 || format == 16 || format == 17);
 		if(channels == 1)
 		{
 			if(format == 8)
 				convert_mono_float_8(samples,invalue_left,outblock);
-			else
+			else if(format == 16)
 				convert_mono_float_16le(samples,invalue_left,outblock);
+			else if(format == 17)
+				convert_mono_float_16be(samples,invalue_left,outblock);
 		}
 		else if(channels == 2)
 		{
 			if(format == 8)
 				convert_stereo_2float_i8(samples,invalue_left,invalue_right,
 													outblock);
-			else
+			else if(format == 16)
 				convert_stereo_2float_i16le(samples,invalue_left,invalue_right,
+													outblock);
+			else if(format == 17)
+				convert_stereo_2float_i16be(samples,invalue_left,invalue_right,
 													outblock);
 		}
 		else arts_warning("channels != 1 && channels != 2?");
 
-		as->write(outblock,channels * (format / 8) * samples);
+		as->write(outblock,channels * (bits / 8) * samples);
 	}
 
 	/**

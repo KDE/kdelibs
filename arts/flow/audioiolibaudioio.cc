@@ -135,7 +135,15 @@ bool AudioIOLibAudioIO::open()
 	}
 
 
+	/*
+	 * since we use spec.endian=ENDIAN_NATURAL we'll have little endian audio
+	 * on little endian machines and big endian audio on big endian machines:
+	 */
+#ifdef WORDS_BIGENDIAN
+	_format = 17;
+#else
 	_format = 16;
+#endif
 
 	spec.channels=_channels;
 

@@ -51,6 +51,7 @@ protected:
 	unsigned long maxsamples;
 	unsigned long channels;
 	int format;
+	int bits;
 
 public:
 	/*
@@ -62,6 +63,7 @@ public:
 
 		channels = as->channels();
 		format = as->format();
+		bits = as->bits();
 		maxsamples = 0;
 		inblock = 0;
 
@@ -99,8 +101,9 @@ public:
 
 		assert(channels);
 
-		as->read(inblock,channels * (format/8) * samples);
+		as->read(inblock,channels * (bits/8) * samples);
 
+		arts_assert(format == 8 || format == 16 || format == 17);
 		if(format == 8)
 		{
 			if(channels == 1)
@@ -109,13 +112,21 @@ public:
 			if(channels == 2)
 				convert_stereo_i8_2float(samples,inblock,left,right);
 		}
-		else
+		else if(format == 16)
 		{
 			if(channels == 1)
 				convert_mono_16le_float(samples,inblock,left);
 
 			if(channels == 2)
 				convert_stereo_i16le_2float(samples,inblock,left,right);
+		}
+		else if(format == 17)
+		{
+			if(channels == 1)
+				convert_mono_16be_float(samples,inblock,left);
+
+			if(channels == 2)
+				convert_stereo_i16be_2float(samples,inblock,left,right);
 		}
 	}
 

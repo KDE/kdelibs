@@ -146,6 +146,13 @@ public:
 	void format(int format);
 	int format();
 
+	/**
+	 * As opposed to format(), this one returns the number of bits used per
+	 * sample. Thats sometimes a difference, for instance 16bit big endian
+	 * encoding has the format() 17, whereas bits() would return 16.
+	 */
+	int bits();
+
 	void fullDuplex(bool newFullDuplex);
 	bool fullDuplex();
 
