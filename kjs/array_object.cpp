@@ -21,6 +21,7 @@
 #include "operations.h"
 #include "types.h"
 #include "array_object.h"
+#include <stdio.h>
 
 using namespace KJS;
 
@@ -67,7 +68,7 @@ ArrayPrototype::ArrayPrototype(const Object& proto)
 
 KJSO ArrayPrototype::get(const UString &p) const
 {
-  int id; 
+  int id;
   if(p == "toString")
     id = ArrayProtoFunc::ToString;
   else if(p == "toLocaleString")
@@ -92,7 +93,7 @@ KJSO ArrayPrototype::get(const UString &p) const
     id = ArrayProtoFunc::Splice;
   else if(p == "unshift")
     id = ArrayProtoFunc::UnShift;
-  else 
+  else
     return Imp::get(p);
 
   return Function(new ArrayProtoFunc(id));
@@ -130,6 +131,7 @@ Completion ArrayProtoFunc::execute(const List &args)
     }
     result = String(str);
     break;
+  // TODO Concat
   case Pop:
     if (length == 0) {
       thisObj.put("length", Number(length), DontEnum | DontDelete);
@@ -195,7 +197,46 @@ Completion ArrayProtoFunc::execute(const List &args)
       thisObj.put("length", length - 1, DontEnum | DontDelete);
     }
     break;
-    /* TODO */
+  case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713
+    {
+        int begin = args[0].toUInt32();
+        int end = length;
+        if (!args[1].isA(UndefinedType))
+        {
+          end = args[1].toUInt32();
+          if ( end < 0 )
+            end += length;
+        }
+        // safety tests
+        if ( begin < 0 || end < 0 || begin > end ) {
+            thisObj.put("length", Number(0), DontEnum | DontDelete);
+            result = Undefined();
+            break;
+        }
+        //printf( "Slicing from %d to %d \n", begin, end );
+        if ( begin > 0 ) // we have some shifting to do
+            for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
+               str = UString::from(k+begin);
+               str2 = UString::from(k);
+               if (thisObj.hasProperty(str)) {
+                 obj = thisObj.get(str);
+                 thisObj.put(str2, obj);
+               } else
+                 thisObj.deleteProperty(str2);
+            }
+        for ( unsigned int k = end-begin; k < length; k++ ) {
+            str = UString::from(k);
+            thisObj.deleteProperty(str);
+        }
+        thisObj.put("length", end - begin, DontEnum | DontDelete);
+        result = thisObj;
+        break;
+    }
+  case Sort: // TODO
+    result = Undefined();
+    break;
+  // TODO Splice
+  // TODO Unshift
   default:
     result = Undefined();
   }
