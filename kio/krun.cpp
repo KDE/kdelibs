@@ -309,16 +309,25 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
-
+  
   KShellProcess proc;
 
-  // if we have the notify lib somewhere, use it
   QString lib = libmapnotify();
-  if (!lib.isEmpty())
-    {
-      proc << QString("LD_PRELOAD=%1").arg(lib);
-      kdDebug(7010) << "LD_PRELOAD=" << lib << endl;
-    }
+
+  // If we have the notify lib somewhere, use it.
+ 
+  if (!lib.isEmpty()) {
+
+    // Hack to work around csh being non-sh-compatible.
+  
+    QString prefix =
+      (QString(getenv("SHELL")).right(3) == "csh") ?
+      "setenv LD_PRELOAD %1 ;" :
+      "LD_PRELOAD=%1;";
+
+    proc << prefix.arg(lib);
+    kdDebug(7010) << prefix.arg(lib) << endl;
+  }
 
   proc << _cmd;
   proc.start(KShellProcess::DontCare);
