@@ -808,6 +808,12 @@ public:
   void installX11EventFilter( QWidget* filter );
 
   /**
+   * Removes global X11 event filter previously installed by
+   * @ref installX11EventFilter().
+   */
+  void removeX11EventFilter( const QWidget* filter );
+  
+  /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    */
