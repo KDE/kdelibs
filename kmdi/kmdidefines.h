@@ -84,10 +84,11 @@ namespace KMdi
    };
 
    enum MdiMode {
-      ToplevelMode   = 0,
-      ChildframeMode = 1,
-      TabPageMode    = 2,
-      IDEAlMode      = 3
+      UndefinedMode  = 0,
+      ToplevelMode   = 1,
+      ChildframeMode = 2,
+      TabPageMode    = 3,
+      IDEAlMode      = 4
    };
 
 } //namespace

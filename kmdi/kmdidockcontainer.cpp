@@ -1,4 +1,4 @@
-/* This file is part of the KDE project
+		/* This file is part of the KDE project
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
@@ -95,6 +95,13 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 
 KMdiDockContainer::~KMdiDockContainer()
 {	
+  for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it) {
+	KDockWidget *w=it.key();
+	  if (m_overlapButtons.contains(w)) {
+	    (static_cast<KDockWidgetHeader*>(w->getHeader()->qt_cast("KDockWidgetHeader")))->removeButton(m_overlapButtons[w]);
+	    m_overlapButtons.remove(w);
+	  }
+  }
 	deactivated(this);
 }
 
@@ -182,6 +189,13 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
   }
 
   m_ws->raiseWidget(tab);
+}
+
+void KMdiDockContainer::showWidget(KDockWidget *w) {
+	if (!m_map.contains(w)) return;
+	int id=m_map[w];
+	m_tb->setTab(id,true);
+	tabClicked(id);
 }
 
 void KMdiDockContainer::changeOverlapMode()

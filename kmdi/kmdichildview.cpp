@@ -38,6 +38,7 @@
 #include "kmdimainfrm.h"
 #include "kmdichildfrm.h"
 #include "kmdidefines.h"
+#include <kdebug.h>
 
 //============ KMdiChildView ============//
 
@@ -98,6 +99,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f)
 
 KMdiChildView::~KMdiChildView()
 {
+  kdDebug()<<"~KMdiChildView()"<<endl;
 }
 
 //============== internal geometry ==============//

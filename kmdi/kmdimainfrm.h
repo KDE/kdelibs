@@ -506,7 +506,6 @@ public slots:
    */
    virtual void switchToToplevelMode();
    virtual void finishToplevelMode();
-   void setupToolViewsForIDEALMode();
    /**
    * Docks all view windows (Windows-like)
    */
@@ -595,6 +594,11 @@ public slots:
    * Activates the view with the tab page index (TabPage mode only)
    */
    virtual void activateView(int index);
+
+private:
+   void setupToolViewsForIDEALMode();
+   void setupTabbedDocumentViewSpace();
+   class KMdiDocumentViewTabWidget * m_documentTabWidget;
 
 protected:
    /**
@@ -688,6 +692,7 @@ public slots:
 private slots:
    void setActiveToolDock(KMdiDockContainer*);
    void removeFromActiveDockList(KMdiDockContainer*);
+   void slotDocCurrentChanged(QWidget*);
 #define protected public
 signals:
 #undef protected

@@ -44,6 +44,7 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     KDockWidget *parentDockWidget();
 
     virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
+    virtual void showWidget (KDockWidget *w);
     virtual void setToolTip (KDockWidget *, QString &);
     virtual void setPixmap(KDockWidget*,const QPixmap&);
     virtual void undockWidget(KDockWidget*);

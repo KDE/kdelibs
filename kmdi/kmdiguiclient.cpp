@@ -115,8 +115,8 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
         setXML( completeDescription, false /*merge*/ );
     }
  
-    m_toolMenu=new KActionMenu(i18n("Tool Views"),actionCollection(),"kmdi_toolview_menu");
-    m_mdiModeAction=new KSelectAction(i18n("&MDI Mode"),0,actionCollection());
+    m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
+    m_mdiModeAction=new KSelectAction(i18n("MDI Mode"),0,actionCollection());
     QStringList modes;
     modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
     m_mdiModeAction->setItems(modes);
@@ -124,7 +124,7 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
     connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
 	this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
 
-    m_gotoToolDockMenu=new KActionMenu(i18n("Tooldocks"),actionCollection(),"kmdi_tooldock_menu");
+    m_gotoToolDockMenu=new KActionMenu(i18n("Tool &Docks"),actionCollection(),"kmdi_tooldock_menu");
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),ALT+CTRL+SHIFT+Key_T,this,SIGNAL(toggleTop()),
 		actionCollection(),"kmdi_activate_top"));
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Left Dock"),ALT+CTRL+SHIFT+Key_L,this,SIGNAL(toggleLeft()),
@@ -201,13 +201,13 @@ void KMDIGUIClient::setupActions()
 //             this, SLOT(blah()),actionCollection(),"nothing"));
 
       QPtrList<KAction> addList;
-      addList.append(m_mdiModeAction);
       if (m_toolViewActions.count()<3) 
 	for (int i=0;i<m_toolViewActions.count();i++)
 		addList.append(m_toolViewActions.at(i));
       else
         addList.append(m_toolMenu);
       if (m_mdiMode==KMdi::IDEAlMode) addList.append(m_gotoToolDockMenu);
+      addList.append(m_mdiModeAction);
       kdDebug()<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
 

@@ -121,12 +121,17 @@ void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetW
       bool DockToOurself = false;
       if(mdiMainFrm->m_pDockbaseAreaOfDocumentViews)
       {
-        if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews->getWidget()) DockToOurself = true;
+        if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews->getWidget()) {
+		DockToOurself = true;
+                pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
+	} else if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews) {
+		DockToOurself = true;
+                pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
+	}
       }
       // this is not inheriting QWidget*, its plain impossible that this condition is true
       //if (pTargetWnd == this) DockToOurself = true;
-      if (DockToOurself) pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
-      else if(pTargetWnd != 0L) {
+      if (!DockToOurself) if(pTargetWnd != 0L) {
          pTargetDock = mdiMainFrm->dockManager->findWidgetParentDock( pTargetWnd);
          if (!pTargetDock) {
             if (pTargetWnd->parentWidget()) {
@@ -135,7 +140,7 @@ void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetW
          }
       }
       if (pTargetDock) {
-	      if (mdiMainFrm->m_managedDockPositionMode && mdiMainFrm->m_pMdi) {
+	      if (mdiMainFrm->m_managedDockPositionMode && (mdiMainFrm->m_pMdi || mdiMainFrm->m_documentTabWidget)) {
 			KDockWidget *dw1=pTargetDock->findNearestDockWidget(pos);
                         if (dw1)
                         pCover->manualDock(dw1,KDockWidget::DockCenter,percent);
