@@ -552,6 +552,19 @@ signals:
                   const QString &mimeType, mode_t mode = (mode_t)-1 );
 
   /**
+   * Emit this to make the browser show a standard popup menu
+   * at the point @p global for the given @p url.
+   *
+   * Give as much information
+   * about this URL as possible, like @p args.mimeType and the file type
+   * (@p mode: S_IFREG, S_IFDIR...)
+   * The GUI described by @p client is being merged with the popupmenu of the host
+   */
+  void popupMenu( KXMLGUIClient *client,
+                  const QPoint &global, const KURL &url,
+                  const KParts::URLArgs &args, mode_t mode = (mode_t)-1 );
+
+  /**
    * Inform the hosting application about the current selection.
    * Used when a set of files/URLs is selected (with full information
    * about those URLs, including size, permissions etc.)
