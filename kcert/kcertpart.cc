@@ -409,6 +409,26 @@ if (_p12) {
 
 	return true;
 } else if (_ca) {
+  QString certFile = KFileDialog::getSaveFileName(QString::null, "application/x-x509-ca-cert");
+  if (certFile.isEmpty())
+    return false;
+
+  QByteArray enc;
+  if (certFile.endsWith("der") || certFile.endsWith("crt"))
+	enc = _ca->toDer();
+  else if (certFile.endsWith("netscape"))
+	enc = _ca->toNetscape();
+  else enc = _ca->toPem();
+
+  QFile of(certFile);
+
+  if (!of.open(IO_WriteOnly) || (unsigned)of.writeBlock(enc) != enc.size()) {
+    KMessageBox::sorry(_frame, i18n("Save failed."), i18n("Certificate Import"));
+    return false;
+  }
+
+  of.flush();
+
 	return true;
 } else {
 	return false;
