@@ -408,6 +408,9 @@ void DeviceManager::closeDev(void)
 #ifdef HAVE_OSS_SUPPORT
   if (seqfd==-1) return;
   tmrStop(); 
+  if (device)
+    for (int i=0;i<n_total;i++)
+       if (device[i]) device[i]->closeDev();
   /*
      DEBUGPRINTF("Closing devices : ");
      if (device!=NULL) for (int i=0;i<n_total;i++)

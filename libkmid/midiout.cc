@@ -298,5 +298,4 @@ void MidiOut::sync(int i)
      return;
   }
   SEQ_DUMPBUF();
-  printf("MidiOut::sync\n");
 }
