@@ -38,7 +38,7 @@ libkhtml_la_SOURCES = dtd.cpp\
 	khtmltoken.cpp khtmltokenizer.cpp khtmlparser.cpp\
 	khtmlsavedpage.cpp khtmldecoder.cpp khtml.cpp khtmlio.cpp\
 	khtmldata.cpp khtmltext.cpp \
-	khtmlstyle.cpp khtmlfont.cpp khtmlembed.cpp\
+	khtmlstyle.cpp khtmlfont.cpp \
 	dom_doc.cpp dom_docimpl.cpp dom_element.cpp dom_elementimpl.cpp \
 	dom_misc.cpp dom_node.cpp dom_nodeimpl.cpp \
 	dom_string.cpp dom_stringimpl.cpp dom_text.cpp dom_textimpl.cpp \
@@ -51,10 +51,10 @@ libkhtml_la_SOURCES = dtd.cpp\
 	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
 	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp
 
-libkhtml_la_METASOURCES = khtml.moc khtmlio.moc khtmlembed.moc \
+libkhtml_la_METASOURCES = khtml.moc khtmlio.moc \
 	html_formimpl.moc
 
-include_HEADERS = khtml.h khtmlsavedpage.h khtmlembed.h khtmlio.h \
+include_HEADERS = khtml.h khtmlsavedpage.h khtmlio.h \
 	dom_core.h dom_doc.h dom_element.h dom_exception.h \
 	dom_misc.h dom_node.h dom_string.h dom_text.h \
 	dom_xml.h \

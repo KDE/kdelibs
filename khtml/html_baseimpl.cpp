@@ -200,7 +200,7 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     if(url != 0)
     {
 	KURL u(w->url(), url.string());
-	static_cast<KBrowser *>(view)->openURL(u.url());
+	static_cast<KHTMLWidget *>(view)->openURL(u.url());
     }
 
     if(!parentWidget || !view) return;
