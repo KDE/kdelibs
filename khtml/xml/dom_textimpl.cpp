@@ -287,8 +287,10 @@ void TextImpl::attach()
 void TextImpl::detach()
 {
     CharacterDataImpl::detach();
-    delete m_render;
-    m_render = 0;
+    if (m_render) {
+	m_render->remove();
+	m_render = 0;
+    }
 }
 
 void TextImpl::applyChanges(bool,bool force)

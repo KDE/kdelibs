@@ -43,6 +43,7 @@ class QListboxItem;
 #include <qhbox.h>
 #include <klistbox.h>
 #include <kcombobox.h>
+#include "dom/dom_misc.h"
 
 class KHTMLPartBrowserExtension;
 
@@ -60,7 +61,7 @@ class DocLoader;
 
 // -------------------------------------------------------------------------
 
-class RenderFormElement : public khtml::RenderWidget
+class RenderFormElement : public khtml::RenderWidget, public DOM::DomShared
 {
     Q_OBJECT
 public:
@@ -77,8 +78,7 @@ public:
     DOM::HTMLGenericFormElementImpl *element() { return m_element; }
 
     virtual bool eventFilter(QObject*, QEvent*);
-    void ref() { _ref++; }
-    void deref() { if(_ref) _ref--; if(!_ref) delete this; }
+    virtual void remove();
 
 public slots:
     virtual void slotClicked();
@@ -94,7 +94,6 @@ protected:
     QPoint m_pressPos;
     int m_clickCount;
     bool m_isDoubleClick;
-    unsigned int _ref;
 };
 
 

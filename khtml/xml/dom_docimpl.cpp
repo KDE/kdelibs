@@ -720,8 +720,10 @@ void DocumentImpl::attach()
 void DocumentImpl::detach()
 {
     NodeBaseImpl::detach();
-    delete m_render;
-    m_render = 0;
+    if (m_render) {
+	m_render->remove();
+	m_render = 0;
+    }
 }
 
 void DocumentImpl::slotFinishedParsing()

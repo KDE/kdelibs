@@ -64,7 +64,6 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     m_element = element;
     m_clickCount = 0;
     m_isDoubleClick = false;
-    _ref = 0;
 }
 
 RenderFormElement::~RenderFormElement()
@@ -164,7 +163,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
     break;
     default: break;
     };
-    bool deleted = (_ref == 1);
+    bool deleted = (refCount() == 1);
     deref();
     if (deleted)
 	return true;
@@ -194,6 +193,12 @@ void RenderFormElement::handleMousePressed(QMouseEvent *e)
         m_clickCount++;
 
     m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEDOWN_EVENT,m_clickCount);
+}
+
+void RenderFormElement::remove()
+{
+    prepareRemove();
+    deref();
 }
 
 // -------------------------------------------------------------------------

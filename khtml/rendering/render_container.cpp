@@ -25,7 +25,6 @@
 
 #include "render_container.h"
 #include "render_table.h"
-#include "render_form.h"
 
 #include <kdebug.h>
 
@@ -46,11 +45,7 @@ RenderContainer::~RenderContainer()
 	n->removeFromSpecialObjects();
         n->setParent(0);
         next = n->nextSibling();
-
-	if (n->isFormElement())
-	    static_cast<RenderFormElement*>(n)->deref();
-	else
-	    delete n;
+	n->remove();
     }
     m_first = 0;
     m_last = 0;
@@ -145,6 +140,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+
     return oldChild;
 }
 
@@ -191,9 +187,6 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
             o = o->parent();
         }
     }
-
-    if (newChild->isFormElement())
-	static_cast<RenderFormElement*>(newChild)->ref();
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -225,9 +218,6 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
             o = o->parent();
         }
     }
-
-    if (child->isFormElement())
-	static_cast<RenderFormElement*>(child)->ref();
 }
 
 
