@@ -477,11 +477,30 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
         itemsCached.insert( urlStr, item ); // TODO: may return false!!
 
-        // watch cached directories if not manually mounted, otherwise set to "dirty"
-        if ( !KIO::manually_mounted( item->url.directory( false ) + item->url.fileName() ) )
-          item->incAutoUpdate();
+        // Should we forget the dir for good, or keep a watch on it?
+        // Generally keep a watch, except when it would prevent
+        // unmounting a removable device (#37780)
+        const bool isLocal = item->url.isLocalFile();
+        const bool isManuallyMounted = isLocal && KIO::manually_mounted( item->url.path() );
+        bool containsManuallyMounted = false;
+        if ( !isManuallyMounted && item->lstItems && isLocal ) {
+          // Look for a manually-mounted directory inside
+          // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
+          // I hope this isn't too slow (manually_mounted caches the last device so most
+          // of the time this is just a stat per subdir)
+          KFileItemListIterator kit( *item->lstItems );
+          for ( ; kit.current() && !containsManuallyMounted; ++kit )
+            if ( (*kit)->isDir() && KIO::manually_mounted( (*kit)->url().path() ) )
+              containsManuallyMounted = true;
+        }
+        if ( isManuallyMounted || containsManuallyMounted ) {
+          kdDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
+            ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" )
+                        << endl;
+          item->complete = false; // set to "dirty"
+        }
         else
-          item->complete = false;
+          item->incAutoUpdate(); // keep watch
       }
       else
       {
