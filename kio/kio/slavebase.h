@@ -527,7 +527,7 @@ public:
     bool pingCacheDaemon() const;
 
     /**
-     * Prompt the user for Authrization info (login & password).
+     * Prompt the user for Authorization info (login & password).
      *
      * Use this function to request authorization info from the
      * the end user. For example to open an empty password dialog
@@ -566,7 +566,7 @@ public:
     bool openPassDlg( KIO::AuthInfo& info );
 
     /**
-     * Checks for cached authentication based on paramters
+     * Checks for cached authentication based on parameters
      * given by @p info.
      *
      * Use this function to check if any cached password exists
