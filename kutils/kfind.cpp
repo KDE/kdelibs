@@ -331,10 +331,8 @@ bool KFind::shouldRestart( bool forceAsking ) const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.").arg(m_pattern);
-    message += "\n"; // can't be in the i18n() because of the plural form.
-    // Hope this word puzzle is ok, it's a different sentence
-    message += i18n("Do you want to restart search at the beginning?</qt>");
+        message = i18n("<qt>No matches found for '<b>%1</b>'.<br>"
+                       "Do you want to restart the search at the beginning?</qt>").arg(m_pattern);
 
     int ret = KMessageBox::questionYesNo( parentWidget(), message );
     bool yes = ( ret == KMessageBox::Yes );
