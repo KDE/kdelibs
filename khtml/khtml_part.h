@@ -668,6 +668,10 @@ private slots:
   /**
    * @internal
    */
+  void slotPartRemoved( KParts::Part *part );
+  /**
+   * @internal
+   */
   void slotActiveFrameChanged( KParts::Part *part );
   /**
    * @internal

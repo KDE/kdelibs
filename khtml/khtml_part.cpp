@@ -129,6 +129,7 @@ public:
     m_totalImageCount = 0;
     m_userHeaders = QString::null;
     m_haveEncoding = false;
+    m_activeFrame = 0L;
   }
   ~KHTMLPartPrivate()
   {
@@ -230,7 +231,8 @@ public:
 
   findState m_lastFindState;
 
-  QGuardedPtr<KParts::Part> m_activeFrame;
+  //QGuardedPtr<KParts::Part> m_activeFrame;
+  KParts::Part * m_activeFrame;
 };
 
 namespace khtml {
@@ -295,6 +297,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     setXMLFile( "khtml_browser.rc" );
 
   d = new KHTMLPartPrivate;
+  kdDebug() << "KHTMLPart::init this=" << this << " d=" << d << endl;
 
   d->m_view = view;
   setWidget( d->m_view );
@@ -356,7 +359,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 KHTMLPart::~KHTMLPart()
 {
   if ( d->m_manager )
+  {
     d->m_manager->setActivePart( 0 );
+    // Shouldn't we delete d->m_manager here ? (David)
+  }
   d->m_redirectionTimer.stop();
   closeURL();
 
@@ -1749,6 +1755,8 @@ KParts::PartManager *KHTMLPart::partManager()
     d->m_manager->setAllowNestedParts( true );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
              this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+    connect( d->m_manager, SIGNAL( partRemoved( KParts::Part * ) ),
+             this, SLOT( slotPartRemoved( KParts::Part * ) ) );
   }
 
   return d->m_manager;
@@ -2733,14 +2741,23 @@ bool KHTMLPart::checkLinkSecurity(KURL linkURL)
   return true;
 }
 
+void KHTMLPart::slotPartRemoved( KParts::Part *part )
+{
+    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
+    if ( part == d->m_activeFrame )
+        d->m_activeFrame = 0L;
+}
+
 void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 {
+    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged part=" << part << endl;
     if ( part == this )
     {
         kdDebug() << "strange error! we activated ourselves" << endl;
         assert( false );
         return;
     }
+    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged d->m_activeFrame=" << d->m_activeFrame << endl;
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
         QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
@@ -2751,7 +2768,7 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
     {
         QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
         frame->setLineWidth( frame->lineWidth() + 2 );
-        kdDebug() << "new active frame " << d->m_activeFrame << endl;
+        kdDebug(6050) << "new active frame " << d->m_activeFrame << endl;
     }
     updateActions();
 }
