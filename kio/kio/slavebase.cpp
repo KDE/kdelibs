@@ -39,6 +39,9 @@
 
 #include <qfile.h>
 
+#include <dcopclient.h>
+
+#include <kapplication.h>
 #include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
@@ -113,6 +116,7 @@ public:
     struct timeval last_tv;
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
+    DCOPClient *dcopClient;
 };
 
 };
@@ -203,11 +207,23 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->totalSize=0;
     d->sentListEntries=0;
     connectSlave(mAppSocket);
+    
+    d->dcopClient = 0;
 }
 
 SlaveBase::~SlaveBase()
 {
     delete d;
+}
+
+DCOPClient *SlaveBase::dcopClient()
+{
+    if (!d->dcopClient)
+    {
+       d->dcopClient = new DCOPClient();
+       d->dcopClient->attach();
+    }
+    return d->dcopClient;
 }
 
 void SlaveBase::dispatchLoop()
@@ -690,25 +706,62 @@ bool SlaveBase::dispatch()
 
 bool SlaveBase::openPassDlg( AuthInfo& info )
 {
+    return openPassDlg(info, QString::null);
+}
+
+bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
+{
     kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
-    int cmd;
-    KIO_DATA << info;
-    m_pConnection->send( INF_NEED_PASSWD, data );
-    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data, &cmd ) != -1 && cmd == CMD_USERPASS )
+
+    QCString replyType;
+    QByteArray params;
+    QByteArray reply;
+    AuthInfo authResult;
+    long windowId = metaData("window-id").toLong();
+    static long seqNr = 0;
+
+    (void) dcopClient(); // Make sure to have a dcop client.
+            
+    QDataStream stream(params, IO_WriteOnly);
+    stream << info << errorMsg << windowId << seqNr;
+            
+    bool attemptedRestart = false;
+    while ( 1 )
     {
-       AuthInfo res_info;
-        QDataStream stream( data, IO_ReadOnly );
-        stream >> res_info;
-       info.username = res_info.username;
-       info.password = res_info.password;
-       info.keepPassword = res_info.keepPassword;
-        kdDebug(7019) << "SlaveBase::openPassDlg got:" << endl
-                      << " User= " << info.username << endl
-                      << " Password= [hidden]" << endl
-                      << " KeepPassword= " << info.keepPassword << endl;
-        return true;
+        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
+                                   params, replyType, reply ) )
+        {
+            if ( !initCookieJar() || attemptedRestart )
+            {
+                kdWarning(7019) << "Can't communicate with cookiejar!" << endl;
+                return false;
+            }
+            else
+            {
+                attemptedRestart = true;
+            }
+        }
+        else
+        {
+            if ( replyType == "KIO::AuthInfo" )
+            {
+                QDataStream stream2( reply, IO_ReadOnly );
+                stream2 >> authResult >> seqNr;
+                break;
+            }
+            else
+            {
+                kdError(7019) << "DCOP function queryAuthInfo(...) returns "
+                              << replyType << ", expected KIO::AuthInfo" << endl;
+                return false;
+            }
+        }
     }
-    return false;
+    if (!authResult.isModified())
+       return false;
+
+    info = authResult;
+    return true;
 }
 
 int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QString &caption,
@@ -973,226 +1026,75 @@ bool SlaveBase::pingCacheDaemon() const
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
-    if ( !pingCacheDaemon() )
-        return false;
+    QCString replyType;
+    QByteArray params;
+    QByteArray reply;
+    AuthInfo authResult;
+    long windowId = metaData("window-id").toLong();
+            
+    (void) dcopClient(); // Make sure to have a dcop client.
 
-    QCString auth_key = createAuthCacheKey(info.url).utf8();
-    if ( auth_key.isEmpty() )
-        return false;
+    QDataStream stream(params, IO_WriteOnly);
+    stream << info << windowId;
 
-    KDEsuClient client;
-    bool found = false;
-    QCString grp_key = auth_key.copy();
-
-    // Always ask for the keys that belong in a single group.  This
-    // single check will determine whether we need to do further tests
-    // to find a matching stored authentication key and hence reduce
-    // the number of unnecessary calls to kdesud.
-    if ( client.findGroup(grp_key) )
+    bool attemptedRestart = false;
+    while ( 1 )
     {
-        AuthKeysList list = client.getKeys(grp_key);
-        int count = list.count();
-        if ( count > 0 )
+        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "checkCachedAuthInfo(KIO::AuthInfo, long int)",
+                                   params, replyType, reply ) )
         {
-            // Deal with protection space based authentications, namely HTTP.
-            // It has by far the most complex scheme in terms of password
-            // caching requirements. (DA)
-            if ( info.verifyPath )
+            if ( !initCookieJar() || attemptedRestart )
             {
-
-                AuthKeysMap path, keys;
-                AuthKeysList::Iterator lit = list.begin();
-                for( ; lit != list.end(); lit++ )
-                {
-                    kdDebug(7019) << "key: " << *lit << endl;
-                    path.insert(QString::fromUtf8( client.getVar(((*lit) +
-                                                   "-path"))), (*lit));
-
-                    if( !info.realmValue.isEmpty() )
-                        keys.insert(QString::fromUtf8( client.getVar(((*lit) +
-                                                       "-realm"))), (*lit));
-
-                    if( d->multipleAuthCaching && !info.username.isEmpty() )
-                        keys.insert(QString::fromUtf8( client.getVar(((*lit) +
-                                                       "-user"))), (*lit));
-                }
-
-                QString new_path = info.url.path();
-                if( new_path.isEmpty() )
-                    new_path = '/';
-
-                // Look for an exact match...
-                if ( path.contains(new_path) )
-                {
-                    kdDebug(7019) << "STRICT TEST: Absolute Path match for: "
-                                  << auth_key << endl;
-
-                    if ( !info.realmValue.isEmpty() )
-                    {
-                        if ( keys.contains(info.realmValue) &&
-                             (!d->multipleAuthCaching ||
-                              info.username.isEmpty() ||
-                              keys.find(info.username).data() ==
-                              keys.find(info.realmValue).data()) )
-                        {
-                            auth_key = keys[info.realmValue];
-                            found = true;
-                            kdDebug(7019) << "Realm match: " << auth_key
-                                          << endl;
-                        }
-                    }
-                    else
-                    {
-                        if ( !d->multipleAuthCaching ||
-                             info.username.isEmpty() ||
-                             keys.find(info.username).data() ==
-                             path.find(new_path).data() )
-                        {
-                            auth_key = path[new_path];
-                            found = true;
-                            kdDebug(7019) << "Path match: " << auth_key
-                                          << endl;
-                        }
-                    }
-                }
-
-                if ( !found )
-                {
-                    // Now we can attempt the directory prefix match, i.e.
-                    // testing whether the directiory of the new URL contains
-                    // the stored_one.  If it does, then we have a match...
-                    int last_slash = new_path.findRev( '/' );
-                    if ( last_slash >= 0 && new_path.length() > 1 )
-                        new_path.truncate(last_slash);
-
-                    uint slen;
-                    QString str;
-                    AuthKeysMap::Iterator mit = path.begin();
-                    kdDebug(7019) << "LOOSE TEST: Path only "
-                                     "match for: " << auth_key << endl;
-                    for ( ; mit != path.end(); ++mit )
-                    {
-                        str = mit.key();
-
-                        kdDebug(7019) << "Stored path: " << str << endl;
-                        kdDebug(7019) << "Stored Value: " << mit.data()
-                                      << endl;
-
-                        last_slash = str.findRev( '/' );
-                        slen = str.length();
-
-                        if ( last_slash >= 0 && slen > 1 )
-                        {
-                            str.truncate(last_slash);
-                            slen = str.length();
-                        }
-
-                        if ( new_path.startsWith(str) &&
-                             (new_path.length() == slen ||
-                             slen == 1 || new_path[slen] == '/') )
-                        {
-                            if ( !info.realmValue.isEmpty() )
-                            {
-                                if ( keys.contains(info.realmValue) &&
-                                     (!d->multipleAuthCaching ||
-                                      info.username.isEmpty() ||
-                                      keys.find(info.username).data() ==
-                                      keys.find(info.realmValue).data() ) )
-                                {
-                                    auth_key = keys[info.realmValue];
-                                    found = true;
-                                    kdDebug(7019) << "Realm match: " << auth_key
-                                                  << endl;
-                                }
-                            }
-                            else
-                            {
-                                if ( !d->multipleAuthCaching ||
-                                     info.username.isEmpty() ||
-                                     keys.find(info.username).data() ==
-                                     mit.data() )
-                                {
-                                    auth_key = mit.data();
-                                    found = true;
-                                    kdDebug(7019) << "Path match: " << auth_key
-                                                  << endl;
-                                }
-                            }
-                        }
-                    }
-                }
+                kdWarning(7019) << "Can't communicate with cookiejar!" << endl;
+                return false;
             }
             else
             {
-                // For non-realm based systems simply continue to the user
-                // name matching section.  Otherwise perform a realm-only
-                // based verification...
-                if ( info.realmValue.isEmpty() )
-                {
-                    if ( d->multipleAuthCaching && !info.username.isEmpty() )
-                    {
-                        QCString key = auth_key;
-                        key += ':';
-                        key += info.username.utf8();
-                        kdDebug(7019) << "Looking for: " << key << endl;
-                        if ( list.findIndex(key) != -1 )
-                        {
-                            kdDebug(7019) << "Found matching key!" << endl;
-                            auth_key = key;
-                        }
-                    }
-                    found = true;
-                }
-                else
-                {
-                    kdDebug(7019) << "Realm based match for: " << info.realmValue << endl;
-                    AuthKeysList::Iterator it = list.begin();
-                    for( ; it != list.end(); ++it )
-                    {
-                        if ( info.realmValue == QString::fromUtf8(client.getVar((*it) + "-realm")) )
-                        {
-                            kdDebug(7019) << "Found a realm match!" << endl;
-                            auth_key = (*it);
-                            found = true;
-                            break;
-                        }
-                    }
-                }
+                attemptedRestart = true;
             }
         }
-
-        // If we have no match then return false!!
-        if ( !found )
+        else
         {
-            kdDebug(7019) << "NO cached Authorization found!" << endl;
-            return false;
-        }
-
-        // Now we obtain the cached Authentication if the user
-        // name is empty or there is a match b/n the stored
-        // and the supplied one.
-        QString stored_user = QString::fromUtf8(client.getVar( auth_key + "-user") );
-        bool emptyUser = info.username.isEmpty();
-        kdDebug(7019) << "Stored username: " << stored_user << endl;
-        kdDebug(7019) << "Current username: " << info.username << endl;
-        if ( emptyUser || info.username == stored_user )
-        {
-            if ( emptyUser )
-                info.username = stored_user;
-            info.password = QString::fromUtf8(client.getVar( auth_key + "-pass" ) );
-            if ( info.realmValue.isEmpty() )
-                info.realmValue = QString::fromUtf8( client.getVar(auth_key + "-realm") );
-            info.digestInfo = QString::fromUtf8( client.getVar( auth_key + "-extra") );
-            kdDebug(7019) << "Found cached authorization for: " << auth_key << endl
-                          << "  User= " << info.username << endl
-                          << "  Password= [hidden]" << endl
-                          << "  Realm= " << info.realmValue << endl
-                          << "  Extra= " << info.digestInfo << endl;
-            sendAuthenticationKey( auth_key, grp_key, info.keepPassword );
-            return true;
+            if ( replyType == "KIO::AuthInfo" )
+            {
+                QDataStream stream2( reply, IO_ReadOnly );
+                stream2 >> authResult;
+                break;
+            }
+            else
+            {
+                kdError(7019) << "DCOP function checkCachedAuthInfo(...) returns "
+                              << replyType << ", expected KIO::AuthInfo" << endl;
+                return false;
+            }
         }
     }
-    return false;
+    if (!authResult.isModified())
+    {
+       kdWarning(7019) << "SlaveBase::checkCachedAuthInfo returns false" << endl; 
+       return false;
+    }       
+    kdWarning(7019) << "SlaveBase::checkCachedAuthInfo url = " << authResult.url.url() << endl; 
+
+    info = authResult;
+    return true;
+}
+
+
+bool SlaveBase::initCookieJar()
+{
+  (void) dcopClient(); // Make sure to have a dcop client.
+  if ( !d->dcopClient->isApplicationRegistered( "kcookiejar" ) )
+  {
+     QString error;
+     if ( KApplication::startServiceByDesktopName( "kcookiejar", QStringList(),
+                                                  &error ) )
+     {
+        kdDebug(7019) << "Error starting KCookiejar: " << error << endl;
+        return false;
+     }
+  }
+  return true;
 }
 
 bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
@@ -1229,30 +1131,7 @@ bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
 
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
-    QCString auth_key = createAuthCacheKey( info.url ).utf8();
-    QCString grp_key = auth_key.copy();
-
-    // Do not allow caching if: URL is malformed or user name is
-    // empty or the password is null!!  Empty password is acceptable
-    // but not a NULL one. This is mainly intended as a partial defense
-    // against incorrect use (read:abuse) of calling this function.
-    if (auth_key.isEmpty() || info.username.isNull() || info.password.isNull())
-        return false;
-
-    if ( !info.realmValue.isEmpty() )
-    {
-      auth_key += ':';
-      auth_key += info.realmValue.utf8();
-    }
-
-    bool isCached = storeAuthInfo(auth_key, grp_key, info);
-    if ( d->multipleAuthCaching )
-    {
-      auth_key += ':';
-      auth_key += info.username.utf8();
-      isCached &= storeAuthInfo(auth_key, grp_key, info);
-    }
-    return isCached;
+    return false;
 }
 
 void SlaveBase::setMultipleAuthCaching( bool enable )

@@ -25,6 +25,8 @@
 #include <kio/global.h>
 #include <kio/authinfo.h>
 
+class DCOPClient;
+
 namespace KIO {
 
 class Connection;
@@ -530,7 +532,9 @@ public:
      * Prompt the user for Authorization info (login & password).
      *
      * Use this function to request authorization info from the
-     * the end user. For example to open an empty password dialog
+     * the end user. You can also pass an errorMsg which explains
+     * why a previous authorisation attempt failed.
+     * For example to open an empty password dialog
      * using default values:
      *
      * <pre>
@@ -549,7 +553,8 @@ public:
      * KIO::AuthInfo authInfo;
      * authInfo.caption= "Acme Password Dialog";
      * authInfo.username= "Wile E. Coyote";
-     * if ( openPassDlg( authInfo ) )
+     * QString errorMsg = "You entered an incorrect password.";
+     * if ( openPassDlg( authInfo, errorMsg ) )
      * {
      *    printf( "Username: %s", authInfo.username.latin1() );
      *    printf( "Password: %s", authInfo.password.latin1() );
@@ -560,9 +565,12 @@ public:
      * in a return value of @p false, if the UIServer could not
      * be started for whatever reason.
      *
-     * @param       See @ref AuthInfo.
+     * @param info  See @ref AuthInfo.
+     * @param errorMsg Error message to show
      * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
      */
+    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg );
+
     bool openPassDlg( KIO::AuthInfo& info );
 
     /**
@@ -612,43 +620,22 @@ public:
      */
     bool checkCachedAuthentication( AuthInfo& info );
 
+    /**
+     * Initializes the cookiejar if it is not running already
+     * and returns true if successful, i.e. the cookiejar started
+     * okay or is currently running.
+     *
+     * The cookiejar is used for HTTP cookies and password storage.
+     */
+    bool initCookieJar();
 
     /**
-     * Caches authentication information in the "kdesud" deamon.
+     * @obsolete
      *
-     * Use this function to cache correct authorization information
-     * so that you will not have to request it again from the end
-     * user.  By default this info is automatically deleted if the
-     * application that cached it is shutdown properly.  You can
-     * change this by setting the @AuthInfo::keepPassword flag so
-     * that the password is cached for the duration of the current
-     * KDE session or until the end-user manually clears it by
-     * stopping the "kdesud" process.
-     *
-     * This method also allows you to cache different passwords for the
-     * same location by utilizing the @ref AuthInfo::realmValue variable.
-     * This identifier can be any value such as the path so long as it is
-     * @p unique.  However this function, by default, does not check whether
-     * the actual login information that is supposed to be cached is unique.
-     * Thus, if login information has previously been stored with the same
-     * key, it will simply be overwritten with this newer one.  If you require
-     * the ability to cache more than one login information per server, you
-     * can override this default behavior using @ref setMultipleAuthCaching(bool).
-     *
-     * NOTE: A call to this function can fail and return a negative result if
-     * the "kdesud" daemon used to cache the login information is not running
-     * and cannot for whatever reason be re-started. The same is true if
-     * invalid URL is supplied since a storage key cannot be generated without
-     * it!  Additionally, if the application that requested the caching of the
-     * login info terminates abnormally (ex: crashes), then the cached password
-     * will be kept for the entire duration of the current KDE session or until
-     * such time as the end-user manually stops the running "kdesud" process.
-     *
-     * @param       See @ref AuthInfo.
-     * @return      @p TRUE if the authorization info was sucessfully cached.
+     * Cache authentication information is now stored automatically
+     * by openPassDlg.
      */
     bool cacheAuthentication( const AuthInfo& info );
-
 
     /**
      * Creates a basic key to be used to cache the password.
@@ -658,30 +645,18 @@ public:
     QString createAuthCacheKey( const KURL& url );
 
     /**
-     * Sends the authentication key to the application.
+     * @obsolete
      *
-     * This method informs the scheduler about the password
-     * to be cached so that it can be removed promptly when
-     * the application closes if the keep flag is not set.
-     *
-     * Note that the reason for having and sending two keys
-     * is so that all passwords for a specific site get deleted
-     * properly.  This becomes an issue when some protocols such
-     * as
-     *
-     * @param gKey  the group id for auth-info stored
-     * @param key   modified group-key based on realm value
-     * @param keep  indicates password should be cahed for entire KDE session or not.
+     * Cache authentication information is now stored automatically
+     * by openPassDlg.
      */
     void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
 
     /**
-     * Delete any cached password with the given key.
+     * @obsolete
      *
-     * To use this function simply invoke it by doing
-     * delCachedAuthentication( createAuthCacheKey(KURL) );
-     *
-     * @param key  the cached password group-key to be deleted.
+     * Cache authentication information is now stored automatically
+     * by openPassDlg.
      */
     void delCachedAuthentication( const QString& key );
 
@@ -744,6 +719,11 @@ public:
      * A slave should call this function every time it disconnect from a host.
      * */
     void dropNetwork(const QString& host = QString::null);
+
+    /**
+     * Return the dcop client used by this slave.
+     */
+    DCOPClient *dcopClient();
 
     /**
      * Wait for an answer to our request, until we get @p expected1 or @p expected2
