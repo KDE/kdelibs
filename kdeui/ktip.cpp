@@ -201,13 +201,17 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     _tipOnStart = new QCheckBox(i18n("&Show tips on startup"), this);
     hbox2->addWidget(_tipOnStart, 1);
 
-    QPushButton *prev = new QPushButton(i18n("&Previous"), this);
+    KPushButton *prev = new KPushButton( KStdGuiItem::back( 
+            KStdGuiItem::UseRTL ), this );
+    prev->setText( "&Previous" );
     hbox2->addWidget(prev);
 
-    QPushButton *next = new QPushButton(i18n("&Next"), this);
+    KPushButton *next = new KPushButton( KStdGuiItem::forward( 
+            KStdGuiItem::UseRTL ), this );
+    next->setText( "&Next" );
     hbox2->addWidget(next);
 
-    QPushButton *ok = new QPushButton(i18n("&Close"), this);
+    KPushButton *ok = new KPushButton(KStdGuiItem::close(), this);
     ok->setDefault(true);
     hbox2->addWidget(ok);
 
