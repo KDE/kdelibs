@@ -251,9 +251,6 @@ void CachedCSSStyleSheet::error( int err, const char* text )
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
     for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->error( m_err, m_errText );
-
-    m_loading = false;
-    checkNotify();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -508,7 +505,6 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     bgColor = qRgba( 0, 0, 0, 0xFF );
     typeChecked = false;
     isFullyTransparent = false;
-    errorOccured = false;
     monochrome = false;
     formatType = 0;
     m_status = Unknown;
@@ -584,7 +580,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (r.isNull()) return r;
 
     // no error indication for background images
-    if(errorOccured) return *Cache::nullPixmap;
+    if(m_hadError) return *Cache::nullPixmap;
 
     bool isvalid = newc.isValid();
     QSize s(pixmap_size());
@@ -649,7 +645,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
 const QPixmap &CachedImage::pixmap( ) const
 {
-    if(errorOccured)
+    if(m_hadError)
         return *Cache::brokenPixmap;
 
     if(m)
@@ -875,7 +871,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #endif
                 if(p->isNull())
                 {
-                    errorOccured = true;
+                    m_hadError = true;
                     do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
                 }
                 else
@@ -902,7 +898,7 @@ void CachedImage::error( int /*err*/, const char* /*text*/ )
 {
     clear();
     typeChecked = true;
-    errorOccured = true;
+    m_hadError = true;
     m_loading = false;
     do_notify(pixmap(), QRect(0, 0, 16, 16));
     for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)

@@ -112,6 +112,7 @@ namespace khtml
             m_deleted = false;
             m_expireDateChanged = false;
             m_free = false;
+            m_hadError = false;
             m_prev = m_next = 0;
 	}
         virtual ~CachedObject();
@@ -177,6 +178,7 @@ namespace khtml
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
         bool m_free : 1;
+	bool m_hadError : 1;
 
     private:
         bool allowInLRUList() const { return canDelete() && status() != Persistent; }
@@ -214,7 +216,6 @@ namespace khtml
 
 	DOM::DOMString m_sheet;
         QTextCodec* m_codec;
-	bool m_hadError;
 	int m_err;
 	QString m_errText;
     };
@@ -273,7 +274,7 @@ namespace khtml
 	virtual void error( int err, const char *text );
 
         bool isTransparent() const { return isFullyTransparent; }
-        bool isErrorImage() const { return errorOccured; }
+        bool isErrorImage() const { return m_hadError; }
 
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
 
@@ -311,7 +312,6 @@ namespace khtml
 	// Is set if movie format type ( incremental/animation) was checked
 	bool typeChecked : 1;
         bool isFullyTransparent : 1;
-        bool errorOccured : 1;
         bool monochrome : 1;
         KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
 

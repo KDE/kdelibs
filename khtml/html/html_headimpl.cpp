@@ -233,10 +233,15 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     MediaListImpl *media = new MediaListImpl( m_sheet, m_media );
     m_sheet->setMedia( media );
 
+    finished();
+}
+
+void HTMLLinkElementImpl::finished()
+{
     m_loading = false;
 
     // Tell the doc about the sheet.
-    if (!isLoading() && m_sheet && !isDisabled() && !isAlternate())
+    if (!isLoading() && !isDisabled() && !isAlternate())
         getDocument()->styleSheetLoaded();
 
     // ### major inefficiency, but currently necessary for proper
@@ -244,6 +249,11 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     // when nothing actually changed!
     if ( isAlternate() && m_sheet && !isDisabled())
         getDocument()->updateStyleSelector();
+}
+
+void HTMLLinkElementImpl::error( int, const QString& )
+{
+    finished();
 }
 
 bool HTMLLinkElementImpl::isLoading() const

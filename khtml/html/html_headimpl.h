@@ -32,6 +32,7 @@ class KHTMLView;
 
 namespace khtml {
     class CachedCSSStyleSheet;
+    class CachedObject;
 }
 
 
@@ -91,6 +92,7 @@ public:
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    virtual void error(int err, const QString &text);
     bool isLoading() const;
     void sheetLoaded();
 
@@ -99,6 +101,8 @@ public:
     bool isDisabled() const { return m_isDisabled; }
 
 protected:
+    void finished();
+
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     CSSStyleSheetImpl *m_sheet;
     DOMString m_url;
