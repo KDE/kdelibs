@@ -1,5 +1,8 @@
 2003-10-18  Dirk Mueller  <dmuell@gmx.net>
 
+	* html/htmltokenizer.cpp (parseEntity): don't do the magic-unterminated-entities-IE-hack
+	when inside a tag. fixes <a href="/foo.html&section=2">
+
 	* html/htmlparser.cpp (insertNode): fix typo (#66200).
 
 	* rendering/render_table.cpp (seekCell): make static. check for out of bounds.

@@ -642,11 +642,14 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 cBuffer[cBufferPos++] = cc;
                 ++src;
 
-                // be IE compatible
-                const entity* e = kde_findEntity(cBuffer, cBufferPos);
-                if ( e && e->code < 256 ) {
-                    Entity = SearchSemicolon;
-                    break;
+                // be IE compatible and interpret even unterminated entities
+                // outside tags. like "foo &nbspstuff bla".
+                if ( tag == NoTag ) {
+                    const entity* e = kde_findEntity(cBuffer, cBufferPos);
+                    if ( e && e->code < 256 ) {
+                        Entity = SearchSemicolon;
+                        break;
+                    }
                 }
             }
             if(cBufferPos == 9) Entity = SearchSemicolon;
