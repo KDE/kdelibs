@@ -35,6 +35,7 @@ class QListViewItem;
 class KMPrinter;
 class QTimer;
 class QLineEdit;
+class QCheckBox;
 
 class KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
 {
@@ -47,6 +48,7 @@ public:
 	void setPrinter(KMPrinter *p);
 	void refresh(bool reload = false);
 	QString printer() const;
+	bool isSticky() const;
 
 signals:
 	void jobsShown(KMJobViewer*, bool hasJobs);
@@ -105,6 +107,7 @@ private:
 	int	m_type;
 	QString	m_username;
 	QLineEdit	*m_userfield;
+	QCheckBox	*m_stickybox;
 };
 
 inline QString KMJobViewer::printer() const

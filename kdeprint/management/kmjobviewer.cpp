@@ -50,6 +50,7 @@
 #include <stdlib.h>
 #include <qlineedit.h>
 #include <kdialogbase.h>
+#include <qcheckbox.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -63,6 +64,7 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 	m_items.setAutoDelete(false);
 	m_printers.setAutoDelete(false);
 	m_type = KMJobManager::ActiveJobs;
+	m_stickybox = 0;
 
 	setToolBarsMovable(false);
 	init();
@@ -288,6 +290,8 @@ void KMJobViewer::initActions()
 
 		// create status bar
 		KStatusBar	*statusbar = statusBar();
+		m_stickybox = new QCheckBox( i18n( "Keep window permanent" ), statusbar );
+		statusbar->addWidget( m_stickybox, 1, false );
 		statusbar->insertItem(" " + i18n("Max.: %1").arg(i18n("Unlimited"))+ " ", 0, 0, true);
 		statusbar->setItemFixed(0);
 		updateStatusBar();
@@ -660,6 +664,11 @@ void KMJobViewer::slotConfigure()
 	}
 
 	KMTimer::self()->release();
+}
+
+bool KMJobViewer::isSticky() const
+{
+	return ( m_stickybox ? m_stickybox->isChecked() : false );
 }
 
 #include "kmjobviewer.moc"
