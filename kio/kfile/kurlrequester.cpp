@@ -207,9 +207,6 @@ void KURLRequester::init()
     // height. Note: order is important here. As I said, weird.
     myButton->setFixedHeight( myButton->sizeHint().height() );
     myButton->setFixedWidth( myButton->sizeHint().width() );
-    widget->setMinimumHeight( QMAX( widget->minimumHeight(),
-                                    myButton->height() ));
-
 
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
