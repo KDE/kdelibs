@@ -287,6 +287,25 @@ QString KFileItem::linkDest() const
   return QString::null;
 }
 
+QString KFileItem::localPath() const
+{
+  if ( m_bIsLocalURL )
+  {
+    return m_url.path();
+  }
+  else
+  {
+    // Extract the local path from the KIO::UDSEntry
+    KIO::UDSEntry::ConstIterator it = m_entry.begin();
+    KIO::UDSEntry::ConstIterator end = m_entry.end();
+    for( ; it != end; it++ )
+      if ( (*it).m_uds == KIO::UDS_LOCAL_PATH )
+        return (*it).m_str;
+  }
+
+  return QString::null;
+}
+
 KIO::filesize_t KFileItem::size() const
 {
   if ( m_size != (KIO::filesize_t) -1 )

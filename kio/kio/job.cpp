@@ -2205,7 +2205,7 @@ void CopyJob::slotResultStating( Job *job )
         return;
     }
 
-    // Is it a file or a dir ?
+    // Is it a file or a dir ? Does it have a local path?
     UDSEntry entry = ((StatJob*)job)->statResult();
     bool bDir = false;
     bool bLink = false;
@@ -2373,6 +2373,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         info.size = (KIO::filesize_t)-1;
         QString displayName;
         KURL url;
+        QString localPath;
         bool isDir = false;
         for( ; it2 != (*it).end(); it2++ ) {
             switch ((*it2).m_uds) {
@@ -2385,6 +2386,9 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     break;
                 case UDS_URL: // optional
                     url = KURL((*it2).m_str);
+                    break;
+                case UDS_LOCAL_PATH:
+                    localPath = (*it2).m_str;
                     break;
                 case UDS_LINK_DEST:
                     info.linkDest = (*it2).m_str;
@@ -2407,7 +2411,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         }
         if (displayName != ".." && displayName != ".")
         {
-            bool hasCustomURL = !url.isEmpty();
+            bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
             if( !hasCustomURL ) {
                 // Make URL from displayName
                 url = ((SimpleJob *)job)->url();
@@ -2417,8 +2421,12 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 }
             }
             //kdDebug(7007) << "displayName=" << displayName << " url=" << url << endl;
+            if (!localPath.isEmpty()) {
+                url = KURL();
+                url.setPath(localPath);
+            }
 
-            info.uSource = url;
+	    info.uSource = url;
             info.uDest = m_currentDest;
             //kdDebug(7007) << " uSource=" << info.uSource << " uDest(1)=" << info.uDest << endl;
             // Append filename or dirname to destination URL, if allowed

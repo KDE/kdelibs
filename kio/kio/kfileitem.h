@@ -204,6 +204,13 @@ public:
   QString linkDest() const;
 
   /**
+   * Returns the local path if isLocalFile() == true or the KIO item has
+   * a UDS_LOCAL_PATH atom.
+   * @return the item local path, or QString::null if not known
+   */
+  QString localPath() const;
+  
+  /**
    * Returns the size of the file, if known.
    * @return the file size, or 0 if not known
    */

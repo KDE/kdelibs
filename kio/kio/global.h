@@ -298,8 +298,11 @@ namespace KIO
     /// Filename - as displayed in directory listings etc.
     /// "." has the usual special meaning of "current directory"
     UDS_NAME = 64 | UDS_STRING,
+    /// A local file path if the ioslave display files sitting
+    /// on the local filesystem (but in another hierarchy, e.g. media:/)
+    UDS_LOCAL_PATH = 72 | UDS_STRING,
 
-    // available: 72, 80, 88, 92, 100 etc.
+    // available: 80, 88, 92, 100, 108 etc.
 
     /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,
