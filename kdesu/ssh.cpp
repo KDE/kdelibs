@@ -31,7 +31,6 @@
 #include <qglobal.h>
 #include <qcstring.h>
 
-#include <krun.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstddirs.h>
