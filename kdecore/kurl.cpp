@@ -28,7 +28,7 @@
 
 #include <qurl.h>
 #include <qdir.h>
-
+#include <qstringlist.h>
 
 static bool
 isRelativeURL(const QString &_url)
@@ -46,6 +46,17 @@ isRelativeURL(const QString &_url)
 }
 
 // Reference: RFC 1738 Uniform Resource Locators
+
+KURL::List::List(const QStringList &list)
+{
+   for( QStringList::ConstIterator it = list.begin();
+        it != list.end();
+        it++)
+   {
+      append( KURL( *it));
+   }
+}
+
 
 KURL::KURL()
 {

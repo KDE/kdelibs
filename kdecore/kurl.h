@@ -24,6 +24,7 @@
 #include <qvaluelist.h>
 
 class QUrl;
+class QStringList;
 
 /**
  * Represent and parse a URL.
@@ -45,7 +46,12 @@ class QUrl;
 class KURL
 {
 public:
-  typedef QValueList<KURL> List;
+  class List : public QValueList<KURL> 
+  {
+  public:
+      List() { }
+      List(const QStringList &);
+  };
   /**
    * Construct an empty URL.
    */
