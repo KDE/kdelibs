@@ -384,6 +384,8 @@ KDatePicker::selectYearClicked()
   KDateInternalYearSelector* picker = new KDateInternalYearSelector(popup);
   // -----
   picker->resize(picker->sizeHint());
+  picker->setYear( table->getDate().year() );
+  picker->selectAll();
   popup->setMainWidget(picker);
   connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
   picker->setFocus();
