@@ -106,7 +106,7 @@ public:
    * @param _url the item URL
    * @return the pointer to the KFileItem
    **/
-  KFileItem* find( const QString& _url ); // why not a KURL ?
+  KFileItem* find( const KURL& _url );
 
   /**
    * @return the list of file items currently displayed

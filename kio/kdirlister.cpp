@@ -63,8 +63,9 @@ KDirLister::~KDirLister()
 
 void KDirLister::slotFileDirty( const QString& _file )
 {
-  //kdDebug(7003) << "KDirLister::slotFileDirty( " << _file << " )" << endl;
-  KFileItem * item = find( _file );
+  KURL u;
+  u.setPath( _file );
+  KFileItem * item = find( u.url() );
   if ( item ) {
     // We need to refresh the item, because i.e. the permissions can have changed.
     item->refresh();
@@ -393,7 +394,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
   }
 }
 
-KFileItem* KDirLister::find( const QString& _url )
+KFileItem* KDirLister::find( const KURL& _url )
 {
   QListIterator<KFileItem> it = m_lstFileItems;
   for( ; it.current(); ++it )
