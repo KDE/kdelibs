@@ -6,6 +6,7 @@
 
     Copyright (C) 1996 Bernd Johannes Wuebben  <wuebben@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+    Copyright (c) 1999 Mario Weilguni <mweilguni@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -39,6 +40,7 @@
 #include <qlistbox.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
+#include <qpushbutton.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -48,10 +50,9 @@
 #include <kapp.h>
 #include <kconfig.h>
 
-#include "kfontdialog.h"
-#include "kfontdialog.moc"
-
 #include <X11/Xlib.h>
+
+#include "kfontdialog.moc"
 
 #define MINSIZE(x) x->setMinimumSize(x->sizeHint());
 
@@ -133,30 +134,15 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeListBox = new QListBox(box1, "sizeListBox");
   box1Layout->addWidget(sizeListBox, 2, 5);
 
-  sizeListBox->insertItem( "4" );
-  sizeListBox->insertItem( "5" );
-  sizeListBox->insertItem( "6" );
-  sizeListBox->insertItem( "7" );
-  sizeListBox->insertItem( "8" );
-  sizeListBox->insertItem( "9" );
-  sizeListBox->insertItem( "10" );
-  sizeListBox->insertItem( "11" );
-  sizeListBox->insertItem( "12" );
-  sizeListBox->insertItem( "13" );
-  sizeListBox->insertItem( "14" );
-  sizeListBox->insertItem( "15" );
-  sizeListBox->insertItem( "16" );
-  sizeListBox->insertItem( "17" );
-  sizeListBox->insertItem( "18" );
-  sizeListBox->insertItem( "19" );
-  sizeListBox->insertItem( "20" );
-  sizeListBox->insertItem( "22" );
-  sizeListBox->insertItem( "24" );
-  sizeListBox->insertItem( "26" );
-  sizeListBox->insertItem( "28" );
-  sizeListBox->insertItem( "32" );
-  sizeListBox->insertItem( "48" );
-  sizeListBox->insertItem( "64" );
+  char *c[] = {"4",  "5",  "6",  "7",
+	       "8",  "9",  "10", "11",
+	       "12", "13", "14", "15",
+	       "16", "17", "18", "19",
+	       "20", "22", "24", "26",
+	       "28", "32", "48", "64",
+	       0};
+  for(int i = 0; c[i] != 0; i++)
+    sizeListBox->insertItem(c[i]);
 
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	  SLOT(size_chosen_slot(const QString&)) );
@@ -451,19 +437,32 @@ QString KFontChooser::getXLFD( const QFont& font )
   default:
 	xlfd += "*-";
   }
+
   if( fi.italic() )
 	xlfd += "i-"; // slant
   else
 	xlfd += "r-"; // slant
+
+  /* old version, why that complicated? */
+  /*
   xlfd += "*-"; // set width
   xlfd += "*-"; // pixels (we cannot know portably, because this
                 // depends on the screen resolution
-  QString numStr;
-  numStr.setNum(fi.pointSize()*10); // points
+  */
+  xlfd += "*-*-";
+
+  char numStr[10];
+  sprintf(numStr, "%d", fi.pointSize()*10); // points
   xlfd += numStr;
+
+  /* old version, why that complicated? */
+  /*
   xlfd += "-";
   xlfd += "*-"; // horz. resolution
   xlfd += "*-"; // vert. resolution
+  */
+  xlfd += "-*-*-";
+
   if( fi.fixedPitch() )
 	xlfd += "m-"; // spacing: monospaced
   else
@@ -579,3 +578,12 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 
   return result;
 }
+
+
+/*
+****************************************************************************
+*
+* $Log$ 
+*
+****************************************************************************
+*/

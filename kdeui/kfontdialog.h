@@ -6,6 +6,7 @@
     
     Copyright (C) 1997 Bernd Johannes Wuebben <wuebben@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+    Copyright (c) 1999 Mario Weilguni <mweilguni@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,7 +32,6 @@
 #include <qlineedit.h>
 
 class QLabel;
-class QLineEdit;
 class QListBox;
 class QComboBox;
 class QGroupBox;
