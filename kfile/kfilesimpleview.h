@@ -27,7 +27,7 @@ class QWidget;
 #include <qtablevw.h>
 #include "kfileinfocontents.h"
 
-class KFileSimpleView : protected QTableView, public KFileInfoContents {
+class KFileSimpleView : public QTableView, public KFileInfoContents {
     Q_OBJECT
 
 public:
