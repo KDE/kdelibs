@@ -27,14 +27,14 @@ using namespace KABC;
 
 LDIF::LDIF()
 {
-  startParsing(); 
+  startParsing();
 }
-    
+
 LDIF::~LDIF()
 {
 }
 
-QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value, 
+QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   uint linelen, bool url )
 {
   bool safe = false;
@@ -42,35 +42,35 @@ QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   QCString result;
   uint i;
 
-  if ( url ) {    
+  if ( url ) {
     result = fieldname.utf8() + ":< " + QCString( value.data(), value.size()+1 );
   } else {
     isDn = fieldname.lower() == "dn";
     //SAFE-INIT-CHAR
     if ( value.size() > 0 && value[0] > 0 && value[0] != '\n' &&
       value[0] != '\r' && value[0] != ':' && value[0] != '<' ) safe = true;
-  
+
     //SAFE-CHAR
     if ( safe ) {
       for ( i=1; i < value.size(); i++ ) {
       //allow utf-8 in Distinguished Names
-        if ( ( isDn && value[i] == 0 ) || 
-             ( !isDn && value[i] <= 0 ) || 
+        if ( ( isDn && value[i] == 0 ) ||
+             ( !isDn && value[i] <= 0 ) ||
              value[i] == '\r' || value[i] == '\n' ) {
           safe = false;
           break;
         }
       }
     }
-    
+
     if ( value.size() == 0 ) safe = true;
-    
+
     if( safe ) {
       result = fieldname.utf8() + ": " + QCString( value.data(), value.size()+1 );
     } else {
       result = fieldname.utf8() + ":: " + KCodecs::base64Encode( value, false );
     }
-  
+
     if ( linelen > 0 ) {
       i = (fieldname.length()+2) > linelen ? fieldname.length()+2 : linelen;
       while ( i < result.length() ) {
@@ -82,7 +82,7 @@ QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
   return result;
 }
 
-QCString LDIF::assembleLine( const QString &fieldname, const QCString &value, 
+QCString LDIF::assembleLine( const QString &fieldname, const QCString &value,
   uint linelen, bool url )
 {
   QCString ret;
@@ -92,10 +92,10 @@ QCString LDIF::assembleLine( const QString &fieldname, const QCString &value,
   ret = assembleLine( fieldname, tmp, linelen, url );
   tmp.resetRawData( value, valuelen );
   return ret;
-  
+
 }
 
-QCString LDIF::assembleLine( const QString &fieldname, const QString &value, 
+QCString LDIF::assembleLine( const QString &fieldname, const QString &value,
   uint linelen, bool url )
 {
   return assembleLine( fieldname, value.utf8(), linelen, url );
@@ -107,8 +107,8 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   QByteArray tmp;
   int linelen;
 
-//  kdDebug(7125) << "splitLine line: " << QString::fromUtf8(line) << endl;
-  
+//  kdDebug(5700) << "splitLine line: " << QString::fromUtf8(line) << endl;
+
   position = line.find( ":" );
   if ( position == -1 ) {
     // strange: we did not find a fieldname
@@ -119,15 +119,15 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     tmp.setRawData( str.data(), linelen );
     value = tmp.copy();
     tmp.resetRawData( str.data(), linelen );
-//    kdDebug(7125) << "value : " << value[0] << endl;
+//    kdDebug(5700) << "value : " << value[0] << endl;
     return false;
   }
-  
+
   linelen = line.length();
-  
+
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == ':' ) {
     // String is BASE64 encoded -> decode it now.
-    fieldname = QString::fromUtf8( 
+    fieldname = QString::fromUtf8(
       line.left( position ).stripWhiteSpace() );
     if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
@@ -138,7 +138,7 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     tmp.resetRawData( &line.data()[ position + 3 ], linelen - position - 3 );
     return false;
   }
-  
+
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == '<' ) {
     // String is an URL.
     fieldname = QString::fromUtf8(
@@ -164,23 +164,23 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   return false;
 }
 
-LDIF::ParseVal LDIF::processLine() 
+LDIF::ParseVal LDIF::processLine()
 {
-  
+
   if ( mIsComment ) return None;
-  
+
   ParseVal retval = None;
   if ( mLastParseVal == EndEntry ) mEntryType = Entry_None;
-      
+
   splitLine( line, mAttr, mVal );
-  
+
   switch ( mEntryType ) {
     case Entry_None:
       if ( mAttr.lower() == "version" ) {
         if ( !mDn.isEmpty() ) retval = Err;
       } else if ( mAttr.lower() == "dn" ) {
-        kdDebug(7125) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
-        mDn = QString::fromUtf8( mVal, mVal.size() ); 
+        kdDebug(5700) << "ldapentry dn: " << QString::fromUtf8( mVal, mVal.size() ) << endl;
+        mDn = QString::fromUtf8( mVal, mVal.size() );
         mModType = Mod_None;
         retval = NewEntry;
       } else if ( mAttr.lower() == "changetype" ) {
@@ -188,14 +188,14 @@ LDIF::ParseVal LDIF::processLine()
           retval = Err;
         else {
           QString tmpval = QString::fromUtf8( mVal, mVal.size() );
-          kdDebug(7125) << "changetype: " << tmpval << endl;
-          if ( tmpval == "add" ) mEntryType = Entry_Add; 
+          kdDebug(5700) << "changetype: " << tmpval << endl;
+          if ( tmpval == "add" ) mEntryType = Entry_Add;
           else if ( tmpval == "delete" ) mEntryType = Entry_Del;
           else if ( tmpval == "modrdn" || tmpval == "moddn" ) {
             mNewRdn = "";
             mNewSuperior = "";
             mDelOldRdn = true;
-            mEntryType = Entry_Modrdn; 
+            mEntryType = Entry_Modrdn;
           }
           else if ( tmpval == "modify" ) mEntryType = Entry_Mod;
           else retval = Err;
@@ -207,25 +207,25 @@ LDIF::ParseVal LDIF::processLine()
         retval = Item;
       }
       break;
-    case Entry_Add:  
+    case Entry_Add:
       if ( mAttr.isEmpty() && mVal.size() == 0 )
         retval = EndEntry;
-      else 
+      else
         retval = Item;
       break;
     case Entry_Del:
-      if ( mAttr.isEmpty() && mVal.size() == 0 ) 
+      if ( mAttr.isEmpty() && mVal.size() == 0 )
         retval = EndEntry;
-      else 
+      else
         retval = Err;
       break;
     case Entry_Mod:
       if ( mModType == Mod_None ) {
-        kdDebug(7125) << "kio_ldap: new modtype " << mAttr << endl;
+        kdDebug(5700) << "kio_ldap: new modtype " << mAttr << endl;
         if ( mAttr.isEmpty() && mVal.size() == 0 ) {
           retval = EndEntry;
         } else if ( mAttr.lower() == "add" ) {
-          mModType = Mod_Add; 
+          mModType = Mod_Add;
         } else if ( mAttr.lower() == "replace" ) {
           mModType = Mod_Replace;
           mAttr = QString::fromUtf8( mVal, mVal.size() );
@@ -249,19 +249,19 @@ LDIF::ParseVal LDIF::processLine()
             retval = Err;
         } else
           retval = Item;
-      }  
+      }
       break;
     case Entry_Modrdn:
-      if ( mAttr.isEmpty() && mVal.size() == 0 ) 
+      if ( mAttr.isEmpty() && mVal.size() == 0 )
         retval = EndEntry;
-      else if ( mAttr.lower() == "newrdn" ) 
-        mNewRdn = QString::fromUtf8( mVal, mVal.size() ); 
-      else if ( mAttr.lower() == "newsuperior" ) 
-        mNewSuperior = QString::fromUtf8( mVal, mVal.size() ); 
+      else if ( mAttr.lower() == "newrdn" )
+        mNewRdn = QString::fromUtf8( mVal, mVal.size() );
+      else if ( mAttr.lower() == "newsuperior" )
+        mNewSuperior = QString::fromUtf8( mVal, mVal.size() );
       else if ( mAttr.lower() == "deleteoldrdn" ) {
-        if ( mVal.size() > 0 && mVal[0] == '0' ) 
-          mDelOldRdn = false; 
-        else if ( mVal.size() > 0 && mVal[0] == '1' ) 
+        if ( mVal.size() > 0 && mVal[0] == '0' )
+          mDelOldRdn = false;
+        else if ( mVal.size() > 0 && mVal[0] == '1' )
           mDelOldRdn = true;
         else
           retval = Err;
@@ -272,11 +272,11 @@ LDIF::ParseVal LDIF::processLine()
   return retval;
 }
 
-LDIF::ParseVal LDIF::nextItem() 
+LDIF::ParseVal LDIF::nextItem()
 {
   ParseVal retval = None;
   char c=0;
-  
+
   while( retval == None ) {
     if ( mPos < mLdif.size() ) {
       c = mLdif[mPos];
@@ -302,7 +302,7 @@ LDIF::ParseVal LDIF::nextItem()
       retval = MoreData;
       break;
     }
-    
+
     if ( !mIsComment ) line += c;
   }
   return retval;
@@ -310,13 +310,13 @@ LDIF::ParseVal LDIF::nextItem()
 
 void LDIF::startParsing()
 {
-  mPos = mLineNo = 0; 
+  mPos = mLineNo = 0;
   mDelOldRdn = false;
   mEntryType = Entry_None;
-  mModType = Mod_None; 
-  mDn = mNewRdn = mNewSuperior = ""; 
-  line = ""; 
+  mModType = Mod_None;
+  mDn = mNewRdn = mNewSuperior = "";
+  line = "";
   mIsNewLine = false;
   mIsComment = false;
-  mLastParseVal = None; 
+  mLastParseVal = None;
 }

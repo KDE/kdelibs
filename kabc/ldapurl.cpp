@@ -35,16 +35,16 @@ LDAPUrl::LDAPUrl(const KURL &_url)
 {
   m_dn = path();
   if (m_dn.startsWith("/"))
-    m_dn.remove(0,1);  
+    m_dn.remove(0,1);
   parseQuery();
 }
 
-void LDAPUrl::setDn( const QString &dn) 
+void LDAPUrl::setDn( const QString &dn)
 {
-  m_dn = dn; 
+  m_dn = dn;
   if ( m_dn.startsWith("/") )
-    m_dn.remove(0,1);  
-  setPath(m_dn); 
+    m_dn.remove(0,1);
+  setPath(m_dn);
 }
 
 bool LDAPUrl::hasExtension( const QString &key ) const
@@ -55,9 +55,9 @@ bool LDAPUrl::hasExtension( const QString &key ) const
 LDAPUrl::Extension LDAPUrl::extension( const QString &key ) const
 {
   QMap<QString, Extension>::const_iterator it;
-  
+
   it = m_extensions.find( key );
-  if ( it != m_extensions.constEnd() ) 
+  if ( it != m_extensions.constEnd() )
     return (*it);
   else {
     Extension ext;
@@ -66,11 +66,11 @@ LDAPUrl::Extension LDAPUrl::extension( const QString &key ) const
     return ext;
   }
 }
-    
+
 QString LDAPUrl::extension( const QString &key, bool &critical ) const
 {
   Extension ext;
-  
+
   ext = extension( key );
   critical = ext.critical;
   return ext.value;
@@ -78,7 +78,7 @@ QString LDAPUrl::extension( const QString &key, bool &critical ) const
 
 void LDAPUrl::setExtension( const QString &key, const LDAPUrl::Extension &ext )
 {
-  m_extensions[ key ] = ext;  
+  m_extensions[ key ] = ext;
   updateQuery();
 }
 
@@ -117,13 +117,13 @@ void LDAPUrl::updateQuery()
     case Base:
       q += "base";
       break;
-  }    
+  }
 
   // set the filter
   q += "?";
-  if ( m_filter != "(objectClass=*)" && !m_filter.isEmpty() ) 
+  if ( m_filter != "(objectClass=*)" && !m_filter.isEmpty() )
     q += m_filter;
-  
+
   // set the extensions
   q += "?";
   for ( it = m_extensions.begin(); it != m_extensions.end(); it++ ) {
@@ -136,10 +136,10 @@ void LDAPUrl::updateQuery()
     q.remove( q.length() - 1, 1 );
 
   setQuery(q);
-  kdDebug(7125) << "LDAP URL updateQuery(): " << prettyURL() << endl;
+  kdDebug(5700) << "LDAP URL updateQuery(): " << prettyURL() << endl;
 }
 
-void LDAPUrl::parseQuery() 
+void LDAPUrl::parseQuery()
 {
   Extension ext;
   QStringList extensions;
@@ -155,7 +155,7 @@ void LDAPUrl::parseQuery()
   m_scope = Base;
   m_filter = "(objectClass=*)";
   m_extensions.clear();
-  
+
   int i = 0;
   for ( QStringList::Iterator it = url_items.begin(); it != url_items.end(); it++, i++ ) {
     switch (i) {
@@ -169,12 +169,12 @@ void LDAPUrl::parseQuery()
       case 2:
         m_filter = decode_string( *it );
         break;
-      case 3:    
+      case 3:
         extensions = QStringList::split(",", (*it), false);
         break;
     }
   }
-  
+
   QString name,value;
   for ( QStringList::Iterator it = extensions.begin(); it != extensions.end(); it++ ) {
     ext.critical = false;
@@ -184,7 +184,7 @@ void LDAPUrl::parseQuery()
       ext.critical = true;
       name.remove(0, 1);
     }
-    kdDebug(7125) << "LDAPUrl extensions name= " << name << " value: " << value << endl;
+    kdDebug(5700) << "LDAPUrl extensions name= " << name << " value: " << value << endl;
     ext.value = decode_string( value );
     setExtension( name, ext );
   }
