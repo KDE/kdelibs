@@ -114,7 +114,7 @@ namespace khtml
     QGuardedPtr<KHTMLRun> m_run;
     bool m_bPreloaded;
     KURL m_workingURL;
-      Type m_type;
+    Type m_type;
     QStringList m_params;
     bool m_bNotify;
   };
@@ -611,9 +611,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // request html anchor
   if ( d->m_frames.count() == 0 &&
        (url.htmlRef() != m_url.htmlRef()) &&
-       urlcmp( url.url(), m_url.url(), true, true ) &&
-       args.postData.size() == 0 &&
-       !args.reload )
+       urlcmp( url.url(), m_url.url(), true, true ) && !args.doPost && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
@@ -636,7 +634,7 @@ bool KHTMLPart::openURL( const KURL &url )
   closeURL();
 
   d->m_bReloading = args.reload;
-  if ( (args.postData.size() > 0) && (url.protocol().startsWith("http")) )
+  if ( args.doPost && (url.protocol().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, args.postData, false );
       d->m_job->addMetaData("content-type", args.contentType() );
@@ -2753,11 +2751,13 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
 
     args.frameName = target;
+    args.doPost = false;
   }
   else
   {
     args.postData = formData;
     args.frameName = target;
+    args.doPost = true;
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
