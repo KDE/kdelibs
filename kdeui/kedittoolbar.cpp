@@ -102,6 +102,16 @@ public:
   {
   }
 
+  virtual QString key(int column, bool) const
+  {
+    QString s = text( column );
+    if ( s == LINESEPARATORSTRING )
+      return "0";
+    if ( s == SEPARATORSTRING )
+      return "1";
+    return "2" + s;
+  }
+
   void setInternalTag(const QString &tag) { m_tag = tag; }
   void setInternalName(const QString &name) { m_name = name; }
   void setStatusText(const QString &text) { m_statusText = text; }
