@@ -36,22 +36,18 @@ kimgio_LIBS = -lqt
 kformula_FILES = *.h
 kformula_LIBS = -lkdecore -lkdeui -lqt
 
-kom_FILES = *.h
-#kom_FILES = *.idl *.h
+kom_FILES = *.idl *.h
 kom_PATH = corba/kom
 kom_LIBS = -lkdecore -lqt
 
-kpartsui_FILES = *.h
-#kpartsui_FILES = *.idl *.h
+kpartsui_FILES = *.idl *.h
 kpartsui_PATH = corba/partsui
 kpartsui_LIBS = -lkom -lkdeui -lkdecore -lqt
 
-kparts_FILES = *.h
-#kparts_FILES = *.idl *.h
+kparts_FILES = *.idl *.h
 kparts_PATH = corba/parts
 kparts_LIBS = -lkom -lkdeui -lkdecore -lqt
 
-kded_FILES = *.h
-#kded_FILES = *.idl *.h
+kded_FILES = *.idl *.h
 kded_PATH = corba/kded
 kded_LIBS = -lkom -lkio -lkdecore -lqt
