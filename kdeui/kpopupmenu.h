@@ -102,6 +102,12 @@ public:
      * Constructs a KPopupMenu.
      */
     KPopupMenu(QWidget *parent=0, const char *name=0);
+
+    /**
+     * Destructs the object
+     */
+    ~KPopupMenu();
+
     /**
      * Inserts a title item with no icon.
      */
@@ -146,9 +152,6 @@ public:
     void setTitle(const QString &title);
 
 private:
-    // For backwards compatibility
-    QString lastTitle;
-
     class KPopupMenuPrivate;
     KPopupMenuPrivate *d;
 };

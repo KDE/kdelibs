@@ -171,9 +171,26 @@ QSize KPopupTitle::sizeHint() const
     return(minimumSize());
 }
 
+
+class KPopupMenu::KPopupMenuPrivate
+{
+public:
+    KPopupMenuPrivate () {
+    }
+
+    QString m_lastTitle;
+};
+
+
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
+    d = new KPopupMenuPrivate;
+}
+
+KPopupMenu::~KPopupMenu()
+{
+    delete d;
 }
 
 int KPopupMenu::insertTitle(const QString &text, int id, int index)
@@ -219,8 +236,8 @@ void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
 
 QString KPopupMenu::title(int id) const
 {
-    if(id == -1) // obselete
-        return(lastTitle);
+    if(id == -1) // obsolete
+        return(d->m_lastTitle);
     QMenuItem *item = findItem(id);
     if(item){
         if(item->widget())
@@ -255,20 +272,20 @@ int KPopupMenu::insertTearOffHandle ( int id, int index )
   return 0;
 }
 
-// Obselete
+// Obsolete
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
     setTitle(title);
 }
 
-// Obselete
+// Obsolete
 void KPopupMenu::setTitle(const QString &title)
 {
     KPopupTitle *titleItem = new KPopupTitle();
     titleItem->setTitle(title);
     insertItem(titleItem);
-    lastTitle = title;
+    d->m_lastTitle = title;
 }
 
 #include "kpopupmenu.moc"
