@@ -41,6 +41,11 @@
 ; <!-- (define %kde-gentext-hu-author-phrase% "&by; ") -->
 (define %kde-gentext-hu-releaseinfo-phrase% "&Version; ") 
 
+; Should the following line go to the main KDE style sheet?
+; It would solve the lowbar and the verbar problems
+(declare-characteristic preserve-sdata?
+   "UNREGISTERED::James Clark//Characteristic::preserve-sdata?" #f)
+
    </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>
