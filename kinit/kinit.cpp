@@ -82,8 +82,12 @@ struct {
   int (*launcher_func)(int);
 } d;
 
+extern "C" {
+int kdeinit_xio_errhandler( Display * );
+}
+
 /*
- * Close fd's which are only usefull for the parent process.
+ * Close fd's which are only useful for the parent process.
  * Restore default signal handlers.
  */
 static void close_fds()
@@ -192,12 +196,17 @@ static pid_t launch(int argc, const char *_name, const char *args)
 
      d.handle = 0;
      if (lib.right(3) == ".la")
+     {
         d.handle = lt_dlopen( lib.data() );
+        if (!d.handle )
+        {
+            const char * ltdlError = lt_dlerror();
+            if ( ltdlError && strcmp(ltdlError,"file not found") )
+                fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
+        }
+     }
      if (!d.handle )
      {
-        const char * ltdlError = lt_dlerror();
-        if ( ltdlError && strcmp(ltdlError,"file not found") )
-          fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
         d.result = 2; // Try execing
         write(d.fd[1], &d.result, 1);
 
@@ -549,7 +558,7 @@ static void handle_launcher_request(int sock = -1)
    }
 
    klauncher_header request_header;
-   char *request_data;
+   char *request_data = 0L;
    int result = read_socket(sock, (char *) &request_header, sizeof(request_header));
    if (result != 0)
    {
@@ -558,15 +567,18 @@ static void handle_launcher_request(int sock = -1)
       return;
    }
 
-   request_data = (char *) malloc(request_header.arg_length);
-
-   result = read_socket(sock, request_data, request_header.arg_length);
-   if (result != 0)
+   if ( request_header.arg_length != 0 )
    {
-      if (launcher)
-         kill_launcher();
-      free(request_data);
-      return;
+       request_data = (char *) malloc(request_header.arg_length);
+
+       result = read_socket(sock, request_data, request_header.arg_length);
+       if (result != 0)
+       {
+           if (launcher)
+               kill_launcher();
+           free(request_data);
+           return;
+       }
    }
 
    if (request_header.cmd == LAUNCHER_EXEC)
@@ -648,7 +660,13 @@ static void handle_launcher_request(int sock = -1)
       }
       setenv( env_name, env_value, 1);
    }
-   free(request_data);
+   else if (request_header.cmd == LAUNCHER_TERMINATE_KDE)
+   {
+       fprintf(stderr,"kdeinit::LAUNCHER_TERMINATE_KDE -> terminateKDE\n");
+       kdeinit_xio_errhandler( 0L );
+   }
+   if (request_data)
+       free(request_data);
 }
 
 static void handle_requests(pid_t waitForPid)
@@ -796,6 +814,7 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
+/*
 static void output_kmapnotify_path()
 {
    KInstance instance( "kdeinit" );
@@ -814,10 +833,7 @@ static void output_kmapnotify_path()
 
    printf("%s\n", (const char *)output);
 }
-
-extern "C" {
-int kdeinit_xio_errhandler( Display * );
-}
+*/
 
 int kdeinit_xio_errhandler( Display * )
 {
@@ -872,7 +888,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
-   int libkmapnotify = 0;
+   //int libkmapnotify = 0;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -887,15 +903,15 @@ int main(int argc, char **argv, char **envp)
          launch_kded = 0;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
-      if (strcmp(safe_argv[i], "--libkmapnotify") == 0)
-         libkmapnotify = 1;
+      //if (strcmp(safe_argv[i], "--libkmapnotify") == 0)
+      //   libkmapnotify = 1;
    }
 
    /** Output path to stdout if libkmapnotify was specified **/
-   if (libkmapnotify) {
+   /*if (libkmapnotify) {
       output_kmapnotify_path();
       return 0;
-   }
+   }*/
 
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
