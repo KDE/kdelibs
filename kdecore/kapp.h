@@ -105,11 +105,6 @@ public:
    */
   int argc() const { return pArgc; }
 
-  /** A global event filter for KApplication.
-	* Filters out Ctrl-Shift-F12 for KDebug.
-	*/
-  virtual bool eventFilter( QObject*, QEvent* );
-
   /**
 	* Return the current application object.
 
@@ -547,6 +542,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.126  1999/12/10 16:47:32  waba
+// WABA: Adding KApplication::random() for real random numbers.
+//
 // Revision 1.125  1999/12/05 13:48:17  coolo
 // removing useless ::config()
 //

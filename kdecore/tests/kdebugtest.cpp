@@ -1,20 +1,19 @@
-#include <kDebug.h>
-#include <kinstance.h>
-
-// HACK !!!
 #include <kdebug.h>
-// HACK !!!
-#define kDebugInfo( area, f...) kdebug(KDEBUG_INFO,area,##f);
-#define kDebugError( area, f...) kdebug(KDEBUG_ERROR,area,##f);
+#include <kinstance.h>
 
 int main()
 {
-KInstance i("blah");
-kDebugInfo(150,"kDebugInfo");
-kDebugInfo(1202,"This number has a value of %d",5);
-kDebug("Hello world");
-QString s = "mystring";
-kDebugString(QString("This string is %1").arg(s));
-kDebugError(0,"Error !!!");
-return 0;
+  kDebug("Before instance creation");
+  kDebugArea(1202,"Before instance creation");
+  KInstance i("kdebugtest");
+  kDebugInfo(150,"kDebugInfo with inexisting area number");
+  kDebugInfo(1202,"This number has a value of %d",5);
+  kDebugWarning("1+1 = %d",1+1+1);
+  kDebug("Hello world");
+  QString s = "mystring";
+  kDebugString(s);
+  kDebugString(QString("This string is %1").arg(s));
+  kDebugError(1202,"Error !!!");
+  kDebugError("Error with no area");
+  return 0;
 }

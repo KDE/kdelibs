@@ -19,15 +19,13 @@
 
 // $Id$
 
-#include "kdebugdialog.h"
 #include "kdebug.h"
-#include "kapp.h"
 #include "kglobal.h"
+#include "kinstance.h"
 #include "kstddirs.h"
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
-#include <qlayout.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qtextstream.h>
@@ -35,8 +33,7 @@
 #include <stdlib.h>	// abort
 #include <stdarg.h>	// vararg stuff
 #include <syslog.h>
-#include <math.h>
-#include <kconfig.h>	// pow
+#include <kconfig.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -44,10 +41,6 @@
 
 class KDebugEntry;
 template class QList<KDebugEntry>;
-
-#ifdef kdebug
-#undef kdebug
-#endif
 
 class KDebugEntry
 { 
@@ -133,15 +126,9 @@ static QString getDescrFromNum(unsigned short _num)
   return "";
 }
 
-void kdebug_null( ushort /*nLevel*/, ushort /*nArea*/, 
-		  const char* /*pFormat*/, ... )
-{
-  return;
-}
-
 static int getNum (const char *key, int _default)
 {
-  return KGlobal::config()->readNumEntry(key, _default);
+  return KGlobal::_instance ? KGlobal::config()->readNumEntry(key, _default) : _default;
 }
 
 static QString getString (const char *key, const char * _default)
@@ -149,48 +136,58 @@ static QString getString (const char *key, const char * _default)
   return KGlobal::config()->readEntry(key, _default);
 }
 
-void kdebug( ushort nLevel, ushort nArea, 
-	     const char* pFormat, ... )
+
+// Private
+/* still public for now
+enum DebugLevels {
+        KDEBUG_INFO=    0,
+        KDEBUG_WARN=    1,
+        KDEBUG_ERROR=   2,
+        KDEBUG_FATAL=   3
+}; */
+
+void kDebugBackend( unsigned short nLevel, unsigned short nArea, 
+                    const char * pFormat, va_list arguments )
 {
   // Save old group
   QString aOldGroup;
-  if (kapp) {
+  if (KGlobal::_instance) {
     aOldGroup = KGlobal::config()->group();
     KGlobal::config()->setGroup( "KDebug" );
   }
-  /* The QBitArrays should rather be application-static, but since
-         some stupid platforms do not support that... */
-  va_list arguments; /* Handle variable arguments */
 
   /* Determine output */
   short nOutput = 0;
   int nPriority = 0; // for syslog
   QString aCaption;
-  QString aAppName = getDescrFromNum(nArea);
-  if (aAppName.isEmpty())
-    aAppName=KGlobal::instance()?KGlobal::instance()->instanceName():QCString("unknown");
+  QString aAreaName;
+  if ( nArea > 0 && KGlobal::_instance )
+    aAreaName = getDescrFromNum(nArea);
+  if (aAreaName.isEmpty() && KGlobal::_instance)
+    aAreaName = KGlobal::instance()->instanceName();
+
   switch( nLevel )
         {
         case KDEBUG_INFO:
           nOutput = getNum( "InfoOutput", 2 );
-          aCaption = "Info (" + aAppName + ")";
+          aCaption = "Info";
           nPriority = LOG_INFO;
           break;
         case KDEBUG_WARN:
           nOutput = getNum( "WarnOutput", 2 );
-          aCaption = "Warning (" + aAppName + ")";
+          aCaption = "Warning";
           nPriority = LOG_WARNING;
           break;
         case KDEBUG_FATAL:
           nOutput = getNum( "FatalOutput", 2 );
-          aCaption = "Fatal Error (" + aAppName + ")";
+          aCaption = "Fatal Error";
           nPriority = LOG_CRIT;
           break;
         case KDEBUG_ERROR:
         default:
           /* Programmer error, use "Error" as default */
           nOutput = getNum( "ErrorOutput", 2 );
-          aCaption = "Error (" + aAppName + ")";
+          aCaption = "Error";
           nPriority = LOG_ERR;
           break;
         };
@@ -217,15 +214,14 @@ void kdebug( ushort nLevel, ushort nArea,
                         aOutputFileName = getString( "ErrorFilename", "kdebug.dbg" );
                         break;
                   };
-                char buf[4096];
-                int nPrefix = sprintf( buf, "%s: ", aAppName.ascii() );
-                va_start( arguments, pFormat );
-                // use the more secure version if we have it
+                char buf[4096] = "";
+                int nPrefix = 0;
+                if ( !aAreaName.isEmpty() )
+                  nPrefix = sprintf( buf, "%s: ", aAreaName.ascii() );
                 unsigned int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
 		nSize = QMIN(nSize, sizeof(buf)-2-nPrefix);
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
-                va_end( arguments );
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly );
                 aOutputFile.writeBlock( buf, nSize+1 );
@@ -237,34 +233,30 @@ void kdebug( ushort nLevel, ushort nArea,
                 // Since we are in kdecore here, we cannot use KMsgBox and use
                 // QMessageBox instead 
                 char buf[4096]; // constants are evil, but this is evil code anyway
-                va_start( arguments, pFormat );
                 int nSize = vsprintf( buf, pFormat, arguments );
                 if( nSize > 4094 ) nSize = 4094;
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
-                va_end( arguments );
+                if ( !aAreaName.isEmpty() ) aCaption += QString("(")+aAreaName+")";
                 QMessageBox::warning( 0L, aCaption, buf, i18n("&OK") );
                 break;
           }
         case 2: // Shell
           {
-                va_start( arguments, pFormat );
-                fprintf( stderr, "%s: ", aAppName.ascii() );
+                if ( !aAreaName.isEmpty() ) fprintf( stderr, "%s: ", aAreaName.ascii() );
                 vfprintf( stderr, pFormat, arguments );
                 fprintf( stderr, "\n" );
-                va_end( arguments );
                 break;
           }
         case 3: // syslog
           {
-                char buf[4096];
-                int nPrefix = sprintf( buf, "%s: ", aAppName.ascii() );
-                va_start( arguments, pFormat );
+                char buf[4096] = "";
+                int nPrefix = 0;
+                if ( !aAreaName.isEmpty() ) nPrefix = sprintf( buf, "%s: ", aAreaName.ascii() );
                 int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
                 if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
-                va_end( arguments );
                 syslog( nPriority, buf );
           }       
         case 4: // nothing
@@ -278,330 +270,81 @@ void kdebug( ushort nLevel, ushort nArea,
         abort();
 
   // restore old group
-  if (kapp)
+  if (KGlobal::_instance)
     KGlobal::config()->setGroup( aOldGroup );
 }
 
 
-
-
-KDebugDialog::KDebugDialog( QWidget *parent, const char *name, bool modal )
-  : QDialog( parent, name, modal ),
-    mMarginHint(6), mSpacingHint(6)
+void kDebugInfo( const char* fmt, ... )
 {
-  setCaption(kapp->makeStdCaption(i18n("Debug Settings")));
- 
-  QVBoxLayout *topLayout = new QVBoxLayout( this, mMarginHint, mSpacingHint );
-  if( topLayout == 0 ) { return; }
-  
-  QGridLayout *gbox = new QGridLayout( 2, 2, mSpacingHint );
-  if( gbox == 0 ) { return; }
-  topLayout->addLayout( gbox );
-
-  QStringList destList;
-  destList.append( i18n("File") );
-  destList.append( i18n("Message Box") );
-  destList.append( i18n("Shell") );
-  destList.append( i18n("Syslog") );
-  destList.append( i18n("None") );
-
-  //
-  // Upper left frame
-  //
-  pInfoGroup = new QGroupBox( i18n("Information"), this );
-  gbox->addWidget( pInfoGroup, 0, 0 );
-  QVBoxLayout *vbox = new QVBoxLayout( pInfoGroup, mSpacingHint );
-  vbox->addSpacing( fontMetrics().lineSpacing() );
-  pInfoLabel1 = new QLabel( i18n("Output to:"), pInfoGroup );
-  vbox->addWidget( pInfoLabel1 );
-  pInfoCombo = new QComboBox( false, pInfoGroup );
-  vbox->addWidget( pInfoCombo );
-  pInfoCombo->insertStringList( destList );
-  pInfoLabel2 = new QLabel( i18n("Filename:"), pInfoGroup );
-  vbox->addWidget( pInfoLabel2 );
-  pInfoFile = new QLineEdit( pInfoGroup );
-  vbox->addWidget( pInfoFile );
-  pInfoLabel3 = new QLabel( i18n("Show only area(s):"), pInfoGroup );
-  vbox->addWidget( pInfoLabel3 );
-  pInfoShow = new QLineEdit( pInfoGroup );
-  vbox->addWidget( pInfoShow );
-
-  //
-  // Upper right frame
-  //
-  pWarnGroup = new QGroupBox( i18n("Warning"), this );
-  gbox->addWidget( pWarnGroup, 0, 1 );
-  vbox = new QVBoxLayout( pWarnGroup, mSpacingHint );
-  vbox->addSpacing( fontMetrics().lineSpacing() );
-  pWarnLabel1 = new QLabel( i18n("Output to:"), pWarnGroup );
-  vbox->addWidget( pWarnLabel1 );
-  pWarnCombo = new QComboBox( false, pWarnGroup );
-  vbox->addWidget( pWarnCombo );
-  pWarnCombo->insertStringList( destList );
-  pWarnLabel2 = new QLabel( i18n("Filename:"), pWarnGroup );
-  vbox->addWidget( pWarnLabel2 );
-  pWarnFile = new QLineEdit( pWarnGroup );
-  vbox->addWidget( pWarnFile );
-  pWarnLabel3 = new QLabel( i18n("Show only area(s):"), pWarnGroup );
-  vbox->addWidget( pWarnLabel3 );
-  pWarnShow = new QLineEdit( pWarnGroup );
-  vbox->addWidget( pWarnShow );
-
-  //
-  // Lower left frame
-  //
-  pErrorGroup = new QGroupBox( i18n("Error"), this );
-  gbox->addWidget( pErrorGroup, 1, 0 );
-  vbox = new QVBoxLayout( pErrorGroup, mSpacingHint );
-  vbox->addSpacing( fontMetrics().lineSpacing() );
-  pErrorLabel1 = new QLabel( i18n("Output to:"), pErrorGroup );
-  vbox->addWidget( pErrorLabel1 );
-  pErrorCombo = new QComboBox( false, pErrorGroup );
-  vbox->addWidget( pErrorCombo );
-  pErrorCombo->insertStringList( destList );
-  pErrorLabel2 = new QLabel( i18n("Filename:"), pErrorGroup );
-  vbox->addWidget( pErrorLabel2 );
-  pErrorFile = new QLineEdit( pErrorGroup );
-  vbox->addWidget( pErrorFile );
-  pErrorLabel3 = new QLabel( i18n("Show only area(s):"), pErrorGroup );
-  vbox->addWidget( pErrorLabel3 );
-  pErrorShow = new QLineEdit( pErrorGroup );
-  vbox->addWidget( pErrorShow );
-
-  //
-  // Lower right frame
-  //
-  pFatalGroup = new QGroupBox( i18n("Fatal error"), this );
-  gbox->addWidget( pFatalGroup, 1, 1 );
-  vbox = new QVBoxLayout( pFatalGroup, mSpacingHint );
-  vbox->addSpacing( fontMetrics().lineSpacing() );
-  pFatalLabel1 = new QLabel( i18n("Output to:"), pFatalGroup );
-  vbox->addWidget( pFatalLabel1 );
-  pFatalCombo = new QComboBox( false, pFatalGroup );
-  vbox->addWidget( pFatalCombo );
-  pFatalCombo->insertStringList( destList );
-  pFatalLabel2 = new QLabel( i18n("Filename:"), pFatalGroup );
-  vbox->addWidget( pFatalLabel2 );
-  pFatalFile = new QLineEdit( pFatalGroup );
-  vbox->addWidget( pFatalFile );
-  pFatalLabel3 = new QLabel( i18n("Show only area(s):"), pFatalGroup );
-  vbox->addWidget( pFatalLabel3 );
-  pFatalShow = new QLineEdit( pFatalGroup );
-  vbox->addWidget( pFatalShow );
-
-
-  pAbortFatal = new QCheckBox( i18n("Abort on fatal errors"), this );
-  topLayout->addWidget(pAbortFatal);
-
-  QFrame *hline = new QFrame( this );
-  hline->setFrameStyle( QFrame::Sunken | QFrame::HLine );
-  topLayout->addWidget( hline );
-
-  QHBoxLayout *hbox = new QHBoxLayout( mSpacingHint );
-  topLayout->addLayout( hbox );
-  pHelpButton = new QPushButton( i18n("&Help"), this );
-  hbox->addWidget( pHelpButton );
-  hbox->addStretch(10);
-  pOKButton = new QPushButton( i18n("&OK"), this );
-  hbox->addWidget( pOKButton );
-  pCancelButton = new QPushButton( i18n("&Cancel"), this );
-  hbox->addWidget( pCancelButton );
-
-  int w1 = pHelpButton->sizeHint().width();
-  int w2 = pOKButton->sizeHint().width();
-  int w3 = pCancelButton->sizeHint().width();
-  int w4 = QMAX( w1, QMAX( w2, w3 ) );
-
-  pHelpButton->setFixedWidth( w4 );
-  pOKButton->setFixedWidth( w4 );
-  pCancelButton->setFixedWidth( w4 );
-
-  connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
-  connect( pOKButton, SIGNAL( clicked() ), SLOT( accept() ) );
-  connect( pCancelButton, SIGNAL( clicked() ), SLOT( reject() ) );
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_INFO, 0, fmt, arguments );
+    va_end( arguments );
 }
 
-
-KDebugDialog::~KDebugDialog()
+void kDebugInfo( unsigned short area, const char* fmt, ... )
 {
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_INFO, area, fmt, arguments  );
+    va_end( arguments );
 }
 
-
-
-#if 0
-KDebugDialog::KDebugDialog() :
-  QDialog( 0L, i18n("Debug Settings"), true )
+void kDebugWarning( const char* fmt, ... )
 {
-  pInfoGroup = new QGroupBox( i18n("Information"), this );
-  pInfoCombo = new QComboBox( false, this );
-  pInfoGroup->setGeometry( 5, 10, 140, 185 );
-  pInfoLabel1 = new QLabel( i18n("Output to:"), this );
-  pInfoLabel1->setGeometry( 15, 30, 120, 15 );
-  pInfoCombo->setGeometry( 15, 50, 120, 20 );
-  pInfoCombo->insertItem( i18n("File") );
-  pInfoCombo->insertItem( i18n("Message Box") );
-  pInfoCombo->insertItem( i18n("Shell") );
-  pInfoCombo->insertItem( i18n("Syslog") );
-  pInfoCombo->insertItem( i18n("None") );
-  pInfoLabel2 = new QLabel( i18n("Filename:"), this );
-  pInfoLabel2->setGeometry( 15, 85, 120, 15 );
-  pInfoFile = new QLineEdit( this );
-  pInfoFile->setGeometry( 15, 105, 120, 20 );
-  pInfoLabel3 = new QLabel( i18n("Show only area(s):"), this );
-  pInfoLabel3->setGeometry( 15, 140, 120, 15 );
-  pInfoShow = new QLineEdit( this );
-  pInfoShow->setGeometry( 15, 160, 120, 20 );
-
-  pWarnGroup = new QGroupBox( i18n("Warning"), this );
-  pWarnGroup->setGeometry( 165, 10, 140, 185 );
-  pWarnLabel1 = new QLabel( i18n("Output to:"), this );
-  pWarnLabel1->setGeometry( 175, 30, 120, 15 );
-  pWarnCombo = new QComboBox( false, this );
-  pWarnCombo->setGeometry( 175, 50, 120, 20 );
-  pWarnCombo->insertItem( i18n("File") );
-  pWarnCombo->insertItem( i18n("Message Box") );
-  pWarnCombo->insertItem( i18n("Shell") );
-  pWarnCombo->insertItem( i18n("Syslog") );
-  pWarnCombo->insertItem( i18n("None") );
-  pWarnLabel2 = new QLabel( i18n("Filename:"), this );
-  pWarnLabel2->setGeometry( 175, 85, 120, 15 );
-  pWarnFile = new QLineEdit( this );
-  pWarnFile->setGeometry( 175, 105, 120, 20 );
-  pWarnLabel3 = new QLabel( i18n("Show only area(s):"), this );
-  pWarnLabel3->setGeometry( 175, 140, 120, 15 );
-  pWarnShow = new QLineEdit( this );
-  pWarnShow->setGeometry( 175, 160, 120, 20 );
-
-  pErrorGroup = new QGroupBox( i18n("Error"), this );
-  pErrorGroup->setGeometry( 5, 215, 140, 185 );
-  pErrorLabel1 = new QLabel( i18n("Output to:"), this );
-  pErrorLabel1->setGeometry( 15, 235, 120, 15 );
-  pErrorCombo = new QComboBox( false, this );
-  pErrorCombo->setGeometry( 15, 255, 120, 20 );
-  pErrorCombo->insertItem( i18n("File") );
-  pErrorCombo->insertItem( i18n("Message Box") );
-  pErrorCombo->insertItem( i18n("Shell") );
-  pErrorCombo->insertItem( i18n("Syslog") );
-  pErrorCombo->insertItem( i18n("None") );
-  pErrorLabel2 = new QLabel( i18n("Filename:"), this );
-  pErrorLabel2->setGeometry( 15, 290, 120, 15 );
-  pErrorFile = new QLineEdit( this );
-  pErrorFile->setGeometry( 15, 310, 120, 20 );
-  pErrorLabel3 = new QLabel( i18n("Show only area(s):"), this );
-  pErrorLabel3->setGeometry( 15, 345, 120, 15 );
-  pErrorShow = new QLineEdit( this );
-  pErrorShow->setGeometry( 15, 365, 120, 20 );
-
-  pFatalGroup = new QGroupBox( i18n("Fatal error"), this );
-  pFatalGroup->setGeometry( 165, 215, 140, 185 );
-  pFatalLabel1 = new QLabel( i18n("Output to:"), this );
-  pFatalLabel1->setGeometry( 175, 235, 120, 15 );
-  pFatalCombo = new QComboBox( false, this );
-  pFatalCombo->setGeometry( 175, 255, 120, 20 );
-  pFatalCombo->insertItem( i18n("File") );
-  pFatalCombo->insertItem( i18n("Message Box") );
-  pFatalCombo->insertItem( i18n("Shell") );
-  pFatalCombo->insertItem( i18n("Syslog") );
-  pFatalCombo->insertItem( i18n("None") );
-  pFatalLabel2 = new QLabel( i18n("Filename:"), this );
-  pFatalLabel2->setGeometry( 175, 290, 120, 15 );
-  pFatalFile = new QLineEdit( this );
-  pFatalFile->setGeometry( 175, 310, 100, 20 );
-  pFatalLabel3 = new QLabel( i18n("Show only area(s):"), this );
-  pFatalLabel3->setGeometry( 175, 345, 120, 15 );
-  pFatalShow = new QLineEdit( this );
-  pFatalShow->setGeometry( 175, 365, 120, 20 );
-
-  pAbortFatal = new QCheckBox( i18n("Abort on fatal errors"), this );
-  pAbortFatal->setGeometry( 15, 420, 200, 15 );
-  pOKButton = new QPushButton( i18n("&OK"), this );
-  pOKButton->setGeometry( 15, 460, 80, 20 );
-  pOKButton->setDefault( true );
-  connect( pOKButton, SIGNAL( clicked() ), SLOT( accept() ) );
-  pCancelButton = new QPushButton( i18n("&Cancel"), this );
-  pCancelButton->setGeometry( 110, 460, 80, 20 );
-  connect( pCancelButton, SIGNAL( clicked() ), SLOT( reject() ) );
-  pHelpButton = new QPushButton( i18n("&Help"), this );
-  pHelpButton->setGeometry( 205, 460, 80, 20 );
-  connect( pHelpButton, SIGNAL( clicked() ), SLOT( showHelp() ) );
-
-  pInfoGroup->show();
-  pInfoLabel1->show();
-  pInfoCombo->show();
-  pInfoLabel2->show();
-  pInfoFile->show();
-  pInfoLabel3->show();
-  pInfoShow->show();
-  pWarnGroup->show();
-  pWarnLabel1->show();
-  pWarnCombo->show();
-  pWarnLabel2->show();
-  pWarnFile->show();
-  pWarnLabel3->show();
-  pWarnShow->show();
-  pErrorGroup->show();
-  pErrorLabel1->show();
-  pErrorCombo->show();
-  pErrorLabel2->show();
-  pErrorFile->show();
-  pErrorLabel3->show();
-  pErrorShow->show();
-  pFatalGroup->show();
-  pFatalLabel1->show();
-  pFatalCombo->show();
-  pFatalLabel2->show();
-  pFatalFile->show();
-  pFatalLabel3->show();
-  pFatalShow->show();
-  pAbortFatal->show();
-  pOKButton->show();
-  pCancelButton->show();
-  pHelpButton->show();
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_WARN, 0, fmt, arguments );
+    va_end( arguments );
 }
 
-KDebugDialog::~KDebugDialog()
+void kDebugWarning( unsigned short area, const char* fmt, ... )
 {
-  delete pInfoGroup;
-  delete pInfoLabel1;
-  delete pInfoCombo;
-  delete pInfoLabel2;
-  delete pInfoFile;
-  delete pInfoLabel3;
-  delete pInfoShow;
-  delete pWarnGroup;
-  delete pWarnLabel1;
-  delete pWarnCombo;
-  delete pWarnLabel2;
-  delete pWarnFile;
-  delete pWarnLabel3;
-  delete pWarnShow;
-  delete pErrorGroup;
-  delete pErrorLabel1;
-  delete pErrorCombo;
-  delete pErrorLabel2;
-  delete pErrorFile;
-  delete pErrorLabel3;
-  delete pErrorShow;
-  delete pFatalGroup;
-  delete pFatalLabel1;
-  delete pFatalCombo;
-  delete pFatalLabel2;
-  delete pFatalFile;
-  delete pFatalLabel3;
-  delete pFatalShow;
-  delete pAbortFatal;
-  delete pOKButton;
-  delete pCancelButton;
-  delete pHelpButton;
-}
-#endif
-
-
-void KDebugDialog::showHelp()
-{
-  if (kapp)
-    kapp->invokeHTMLHelp( "kdelibs/kdebug.html", "" );
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_WARN, area, fmt, arguments );
+    va_end( arguments );
 }
 
-#include "kdebugdialog.moc"
+void kDebugError( const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_ERROR, 0, fmt, arguments );
+    va_end( arguments );
+}
+
+void kDebugError( unsigned short area, const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_ERROR, area, fmt, arguments );
+    va_end( arguments );
+}
+
+void kDebugFatal(const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_FATAL, 0, fmt, arguments );
+    va_end( arguments );
+}
+
+void kDebugFatal(unsigned short area, const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( KDEBUG_FATAL, area, fmt, arguments );
+    va_end( arguments );
+}
+
+// For compatibility
+void kdebug( ushort nLevel, ushort area, const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    kDebugBackend( nLevel, area, fmt, arguments );
+    va_end( arguments );
+}
 

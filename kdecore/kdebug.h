@@ -17,94 +17,99 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KDEBUG_H
-#define _KDEBUG_H "$Id$"
+#ifndef _KDEBUG_H_
+#define _KDEBUG_H_ "$Id$"
 
 #include <qstring.h>
 
 /**
-  * kdebug provides and advanced mechanism for displaying debugging
-  * information to the user.  kdebug works like printf does but takes two
-  * extra arguments.  If your program is compiled with NDEBUG defined,
-  * kdebug is rendered useless and your debugging statements hidden from
-  * the end-user's view.
+  * kDebug provides and advanced mechanism for displaying debugging
+  * information to the user.  kDebug works like printf does but takes one 
+  * or two extra arguments.  If your program is compiled with NDEBUG defined,
+  * the calls are rendered useless and your debugging statements 
+  * hidden from the end-user's view. This doesn't apply to kDebugWarning,
+  * kDebugError and kDebugFatal, since those should always been shown to the
+  * user.
   *
   *
-  * The first argument required by kdebug is an "level".  A kdebug level
-  * determines how important the message being displayed is.  There are
-  * four available levels:
-  *     KDEBUG_INFO
-  *       for informal messages to the user such as: hey don't press that button
-  *     KDEBUG_WARN
-  *       for when something is just a little bit more significant happens.
-  *     KDEBUG_ERROR
-  *       for when a non fatal error has occured.
-  *     KDEBUG_FATAL
-  *       for when a horrific error has happened (1+1 != 2 for instance)
-  * By pressing SHIFT-CTRL-F12 (C-Sh-f12) a small configuration dialog box
-  * will pop up and let one assign actions to each debug level on an
-  * application by application basis.
+  * There are two families of functions. The first one allows variable
+  * arguments, much like printf or the previous kdebug, and has the notion of
+  * level (see below). The second one does not allow variable arguments
+  * and only applies to debug info, but adds the filename and line number 
+  * before the message printed.
+  * You can't have both at the same time, for technical reasons
+  * (first faimly is functions, second one is macros, which can't have variable
+  * arguments since we support non-gcc compilers)
   *
-  * The second argument is a kdebug "area".  This "area" tells kdebug
-  * where the call to kdebug came from.  The "area" is an unsigned number
+  * 
+  * A kDebug level determines how important the message being displayed is. 
+  * The first family of functions define four functions, one for each level :
+  *     kDebugInfo
+  *       for debug output
+  *     kDebugWarning
+  *       for when something strange or unexpected happened.
+  *     kDebugError
+  *       for when an error has occured, but the program can continue.
+  *     kDebugFatal
+  *       for when a horrific error has happened and the program must stop.
+  *
+  * The first (and optional) argument is a debug "area".  This "area" tells 
+  * kDebug where the call to kDebug came from.  The "area" is an unsigned number
   * specified in kdebug.areas ($KDEDIR/share/config/kdebug.areas).  If
-  * this number is zero, the application name (from KApplication) will be
-  * used, and if that is not available, unknown will be used instead.
+  * this number is zero or unspecified, the instance (e.g. application) name
+  * will be used.
   *
-  * The third (and final) required argument is a format string identical
-  * to the kind used by printf.
+  * A separate program with a small configuration dialog box
+  * will soon be written, to let one assign actions to each debug level on an
+  * area by area basis.
   */
-extern "C" {
-void kdebug( unsigned short level, unsigned short area, const char* fmt, ... );
-void kdebug_null (unsigned short level, unsigned short area, const char* fmt, ...);
-}
 
-#ifdef kdebug
-#undef kdebug
-#endif
+void kDebugInfo( const char* fmt, ... );
+void kDebugInfo( unsigned short area, const char* fmt, ... );
+void kDebugWarning( const char* fmt, ... );
+void kDebugWarning( unsigned short area, const char* fmt, ... );
+void kDebugError( const char* fmt, ... );
+void kDebugError( unsigned short area, const char* fmt, ... );
+void kDebugFatal( const char* fmt, ... );
+void kDebugFatal( unsigned short area, const char* fmt, ... );
+
 #ifdef NDEBUG
-#define kdebug kdebug_null
+inline void kDebug_null( unsigned short area, const char* fmt, ... ) { return; }
+#define kDebugInfo kDebug_null
+// All the others remained defined, even with NDEBUG
 #endif
-
-#ifndef NDEBUG
-#define KASSERT( Cond, Level, Area, String ) { if( !Cond ) kdebug( (Level), (Area), (String) ); }
-#define KASSERT1( Cond, Level, Area, String, Par1 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1) ); }
-#define KASSERT2( Cond, Level, Area, String, Par1, Par2 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2) ); }
-#define KASSERT3( Cond, Level, Area, String, Par1, Par2, Par3 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3) ); }
-#define KASSERT4( Cond, Level, Area, String, Par1, Par2, Par3, Par4 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4) ); }
-#define KASSERT5( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4), (Par5) ); }
-#define KASSERT6( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4), (Par5), (Par6) ); }
-#define KASSERT7( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4), (Par5), (Par6), (Par7) ); }
-#define KASSERT8( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7, Par8 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4), (Par5), (Par6), (Par7), (Par8) ); }
-#define KASSERT9( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7, Par8, Par9 ) { if( !Cond ) kdebug( (Level), (Area), (String), (Par1), (Par2), (Par3), (Par4), (Par5), (Par6), (Par7), (Par8), (Par9) ); }
-#else
-#define KASSERT( Cond, Level, Area, String )
-#define KASSERT1( Cond, Level, Area, String, Par1 )
-#define KASSERT2( Cond, Level, Area, String, Par1, Par2 )
-#define KASSERT3( Cond, Level, Area, String, Par1, Par2, Par3 )
-#define KASSERT4( Cond, Level, Area, String, Par1, Par2, Par3, Par4 )
-#define KASSERT5( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5 )
-#define KASSERT6( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6 )
-#define KASSERT7( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7 )
-#define KASSERT8( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7, Par8 )
-#define KASSERT9( Cond, Level, Area, String, Par1, Par2, Par3, Par4, Par5, Par6, Par7, Par8, Par9 )
-#endif
-
-enum DebugLevels {
-	KDEBUG_INFO=	0,
-	KDEBUG_WARN=	1,
-	KDEBUG_ERROR=	2,
-	KDEBUG_FATAL=	3
-};
 
 /**
- * use debugString to output a QString in debug messages. This is a convenient function
- * that does nothing but return "<null>" when NDEBUG is defined.
+ * The second family of functions have more feature for debug output.
+ * Those print file and line information, which kDebugInfo can't do.
+ * And they also natively support QString.
+ *
+ * Applications using areas, or libraries :
+ * use kDebugArea( area, my_char_* ) and kDebugStringArea( area, my_QString )
+ *
+ * Applications not using areas :
+ * use kDebug( my_char_* ) and kDebugString( my_QString )
+ *
  */
-#if defined(NDEBUG)
-#define debugString(x) "<null>"
+#ifdef NDEBUG
+#define kDebugArea(a) ;
+#define kDebugStringArea(area,a) ;
+#define kDebug(a) ;
+#define kDebugString(a) ;
 #else
-inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
+#define kDebugArea(area, a) kDebugInfo( area, "[%s:%d] %s", __FILE__, __LINE__, a )
+#define kDebugStringArea(area, a) kDebugArea( area, a.ascii() )
+#define kDebug(a) kDebugArea(0, a)
+#define kDebugString(a) kDebugStringArea( 0, a )
 #endif
+
+// ----- OLD AND DEPRECATED
+extern "C" {
+  void kdebug( unsigned short level, unsigned short area, const char* fmt, ... );
+}
+enum DebugLevels { KDEBUG_INFO= 0, KDEBUG_WARN= 1, KDEBUG_ERROR= 2, KDEBUG_FATAL= 3 };
+inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
+#define KASSERT( Cond, Level, Area, String ) { if( !Cond ) kdebug( (Level), (Area), (String) ); }
+// -----
 
 #endif

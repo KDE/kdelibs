@@ -36,7 +36,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h
 
-noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
+noinst_HEADERS = kckey.h kregpriv.h
 
 libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp \
