@@ -18,4 +18,4 @@ libkimproxy_la_LDFLAGS = $(all_libraries)
 libkimproxy_la_LDADD = $(LIB_KDECORE)
 libkimproxy_la_SOURCES = kimproxy.cpp kimiface.stub kimproxyiface.skel imbutton.cpp imlabel.cpp imlabelbase.ui
 
-kimiface_DIR = $(top_builddir)/kimproxy/interfaces
+kimiface_DIR = $(top_srcdir)/kimproxy/interfaces
