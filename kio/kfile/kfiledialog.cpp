@@ -330,7 +330,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     KActionMenu *menu = new KActionMenu( i18n("Extras"), "configure", this, "extra menu" );
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
+    coll->action( "short view" )->setShortcut(Key_F6);
     menu->insert( coll->action( "short view" ));
+    coll->action( "detailed view" )->setShortcut(Key_F7);
     menu->insert( coll->action( "detailed view" ));
     menu->insert( coll->action( "separator" ));
     coll->action( "show hidden" )->setShortcut(Key_F8);
@@ -357,8 +359,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     toolbar->setMovingEnabled(false);
     toolbar->adjustSize();
 
-    locationEdit = new KURLComboBox(KURLComboBox::Files, true,
-				    d->mainWidget, "LocationEdit");
+    locationEdit = new KURLComboBox(KURLComboBox::Files, true, 
+                                    d->mainWidget, "LocationEdit");
     // to get the completionbox-signals connected:
     locationEdit->setHandleSignals( true );
     (void) locationEdit->completionBox();

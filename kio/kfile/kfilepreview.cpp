@@ -106,7 +106,7 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
 {
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 
-    if(w!=0L) {
+    if (w) {
         connect(this, SIGNAL( showPreview(const KURL &) ),
                 w, SLOT( showPreview(const KURL &) ));
         connect( this, SIGNAL( clearPreview() ),
@@ -118,13 +118,10 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
     }
 
     delete preview;
-
     preview = const_cast<QWidget*>(w);
-    if ( preview ) {
-        preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
-        preview->resize(preview->sizeHint());
-        preview->show();
-    }
+    preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
+    preview->resize(preview->sizeHint());
+    preview->show();
 }
 
 void KFilePreview::insertItem(KFileItem *item)

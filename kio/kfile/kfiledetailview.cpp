@@ -164,8 +164,8 @@ void KFileDetailView::invertSelection()
 void KFileDetailView::slotActivateMenu (QListViewItem *item,const QPoint& pos )
 {
     if ( !item ) {
-	sig->activateMenu( 0, pos );
-	return;
+        sig->activateMenu( 0, pos );
+        return;
     }
     KFileListViewItem *i = (KFileListViewItem*) item;
     sig->activateMenu( i->fileInfo(), pos );
@@ -194,33 +194,33 @@ void KFileDetailView::insertItem( KFileItem *i )
 void KFileDetailView::slotActivate( QListViewItem *item )
 {
     if ( !item )
-	return;
+        return;
 
     const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	sig->activate( fi );
+        sig->activate( fi );
 }
 
 void KFileDetailView::selected( QListViewItem *item )
 {
     if ( !item )
-	return;
+        return;
 
     if ( KGlobalSettings::singleClick() ) {
-	const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
-	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
-	    sig->activate( fi );
+        const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+        if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
+            sig->activate( fi );
     }
 }
 
 void KFileDetailView::highlighted( QListViewItem *item )
 {
     if ( !item )
-	return;
+        return;
 
     const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	sig->highlightFile( fi );
+        sig->highlightFile( fi );
 }
 
 
@@ -233,32 +233,32 @@ void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 
     switch ( KFileView::selectionMode() ) {
     case KFile::Multi:
-	QListView::setSelectionMode( QListView::Multi );
-	break;
+        QListView::setSelectionMode( QListView::Multi );
+        break;
     case KFile::Extended:
-	QListView::setSelectionMode( QListView::Extended );
-	break;
+        QListView::setSelectionMode( QListView::Extended );
+        break;
     case KFile::NoSelection:
-	QListView::setSelectionMode( QListView::NoSelection );
-	break;
+        QListView::setSelectionMode( QListView::NoSelection );
+        break;
     default: // fall through
     case KFile::Single:
-	QListView::setSelectionMode( QListView::Single );
-	break;
+        QListView::setSelectionMode( QListView::Single );
+        break;
     }
 
     if ( sm == KFile::Multi || sm == KFile::Extended )
-	connect( this, SIGNAL( selectionChanged() ),
-		 SLOT( slotSelectionChanged() ));
+        connect( this, SIGNAL( selectionChanged() ),
+                 SLOT( slotSelectionChanged() ));
     else
-	connect( this, SIGNAL( selectionChanged( QListViewItem * )),
-		 SLOT( highlighted( QListViewItem * )));
+        connect( this, SIGNAL( selectionChanged( QListViewItem * )),
+                 SLOT( highlighted( QListViewItem * )));
 }
 
 bool KFileDetailView::isSelected( const KFileItem *i ) const
 {
     if ( !i )
-	return false;
+        return false;
 
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     return (item && item->isSelected());
@@ -268,23 +268,23 @@ bool KFileDetailView::isSelected( const KFileItem *i ) const
 void KFileDetailView::updateView( bool b )
 {
     if ( !b )
-	return;
+        return;
 
     QListViewItemIterator it( (QListView*)this );
     for ( ; it.current(); ++it ) {
-	KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
-	item->setPixmap( 0, item->fileInfo()->pixmap(KIcon::SizeSmall) );
+        KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
+        item->setPixmap( 0, item->fileInfo()->pixmap(KIcon::SizeSmall) );
     }
 }
 
 void KFileDetailView::updateView( const KFileItem *i )
 {
     if ( !i )
-	return;
+        return;
 
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     if ( !item )
-	return;
+        return;
 
     item->init();
     setSortingKey( item, i );
@@ -312,7 +312,7 @@ void KFileDetailView::setSortingKey( KFileListViewItem *item,
 void KFileDetailView::removeItem( const KFileItem *i )
 {
     if ( !i )
-	return;
+        return;
 
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     m_resolver->m_lstPendingMimeIconItems.remove( item );
@@ -421,14 +421,15 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
     m_blockSortingSignal = false;
 }
 
-
 void KFileDetailView::ensureItemVisible( const KFileItem *i )
 {
     if ( !i )
-	return;
+        return;
+
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+        
     if ( item )
-	KListView::ensureItemVisible( item );
+        KListView::ensureItemVisible( item );
 }
 
 // we're in multiselection mode

@@ -198,7 +198,7 @@ void KDirOperator::updateSelectionDependentActions()
 void KDirOperator::setPreviewWidget(const QWidget *w)
 {
     if(w != 0L)
-        m_viewKind = (m_viewKind | KFile::PreviewContents) & ~KFile::SeparateDirs;
+        m_viewKind = (m_viewKind | KFile::PreviewContents);
     else
         m_viewKind = (m_viewKind & ~KFile::PreviewContents);
 
@@ -325,25 +325,25 @@ void KDirOperator::mkdir()
     // Create widgets, and display using geometry management
     //
     lMakeDir = new KDialogBase( viewWidget(),
-				"MakeDir Dialog", true, i18n("New Directory"),
-				KDialogBase::Ok | KDialogBase::Cancel );
+                                "MakeDir Dialog", true, i18n("New Directory"),
+                                KDialogBase::Ok | KDialogBase::Cancel );
     vbox = new QVBox( lMakeDir );
     vbox->setSpacing( KDialog::spacingHint() );
     lMakeDir->setMainWidget( vbox );
     label = new QLabel( vbox );
     label->setAlignment( AlignLeft | AlignVCenter );
     label->setText(i18n("Create new directory in: ") +
-		   QString::fromLatin1( "\n" ) + /* don't break i18n now*/
-		   url().prettyURL() );
+                   QString::fromLatin1( "\n" ) + /* don't break i18n now*/
+                   url().prettyURL() );
     ed= new KLineEdit( vbox );
     ed->setText( i18n("New Directory") );
     ed->selectAll();
     connect(ed, SIGNAL(returnPressed()), lMakeDir, SLOT(accept()) );
 
     connect( lMakeDir->actionButton( KDialogBase::Ok ), SIGNAL(clicked()),
-	     lMakeDir, SLOT(accept()) );
+             lMakeDir, SLOT(accept()) );
     connect( lMakeDir->actionButton( KDialogBase::Cancel ), SIGNAL(clicked()),
-	     lMakeDir, SLOT(reject()) );
+             lMakeDir, SLOT(reject()) );
 
 
     // If the users presses enter (not escape) then create the dir
@@ -373,7 +373,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 
     if ( !writeOk )
         KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
-					      "create that directory." ));
+                                              "create that directory." ));
     else {
         if ( enterDirectory )
             setURL( url, true );
@@ -743,9 +743,8 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
     bool separateDirs = KFile::isSeparateDirs( view );
     bool preview = ( KFile::isPreviewInfo(view) || KFile::isPreviewContents( view ) );
     
-    if( separateDirs || preview ) {
+    if ( separateDirs || preview ) {
         KCombiView *combi = 0L;
-        
         if (separateDirs)
         {
             combi = new KCombiView( parent, "combi view" );
@@ -753,15 +752,13 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
         }
         
         KFileView* v = 0L;
-        if ( (view & KFile::Simple) == KFile::Simple )
+        if ( KFile::isSimpleView( view ) )
             v = createView( combi, KFile::Simple );
         else
             v = createView( combi, KFile::Detail );
         
         if (combi)
-        {
             combi->setRight( v );
-        }
         
         if (preview)
         {
@@ -770,14 +767,13 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
             new_view = pView;
         }
         else
-        {
             new_view = combi;
-        }
     }
-    else if( (view & KFile::Detail) == KFile::Detail && !preview ) {
+    else if ( KFile::isDetailView( view ) && !preview ) {
         new_view = new KFileDetailView( parent, "detail view");
+        new_view->setViewName( i18n("Detiled View") );
     }
-    else /* if ((view & KFile::Simple) == KFile::Simple && !preview ) */ {
+    else /* if ( KFile::isSimpleView( view ) && !preview ) */ {
         new_view = new KFileIconView( parent, "simple view");
         new_view->setViewName( i18n("Short View") );
     }
@@ -796,10 +792,9 @@ void KDirOperator::setView( KFile::FileView view )
         else
             view = KFile::Simple;
 
-        separateDirs = KFile::isSeparateDirs( (KFile::FileView) defaultView );
-        preview = ( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                    (defaultView & KFile::PreviewContents) ==
-                    KFile::PreviewContents )
+        separateDirs = KFile::isSeparateDirs( static_cast<KFile::FileView>(defaultView) );
+        preview = ( KFile::isPreviewInfo( static_cast<KFile::FileView>(defaultView) ) ||
+                    KFile::isPreviewContents( static_cast<KFile::FileView>(defaultView) ) )
                   && myActionCollection->action("preview")->isEnabled();
 
         if ( preview ) { // instantiates KImageFilePreview and calls setView()
@@ -809,11 +804,11 @@ void KDirOperator::setView( KFile::FileView view )
         }
         else if ( !separateDirs )
             separateDirsAction->setChecked(true);
-
     }
 
     // if we don't have any files, we can't separate dirs from files :)
-    if ( (mode() & KFile::File) == 0 && mode() & KFile::Files == 0 ) {
+    if ( (mode() & KFile::File) == 0 && 
+         (mode() & KFile::Files) == 0 ) {
         separateDirs = false;
         separateDirsAction->setEnabled( false );
     }
@@ -822,19 +817,15 @@ void KDirOperator::setView( KFile::FileView view )
     view = static_cast<KFile::FileView>(m_viewKind);
 
     KFileView *new_view = createView( this, view );
-    if( preview ) {
+    if ( preview ) {
         // we keep the preview-_widget_ around, but not the KFilePreview.
-        // So in order to reuse the widget, we have to prevent it from
-        // being deleted by ~KFilePreview().
-        if ( myPreview && myPreview->parent() ) {
-            myPreview->parent()->removeChild( (QWidget*) myPreview );
-        }
-
-        dynamic_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
+        // KFilePreview::setPreviewWidget handles the reparenting for us
+        static_cast<KFilePreview*>(new_view)->setPreviewWidget(myPreview, url());
     }
 
     setView( new_view );
 }
+
 
 void KDirOperator::connectView(KFileView *view)
 {
@@ -865,7 +856,7 @@ void KDirOperator::connectView(KFileView *view)
         if ( oldCurrentItem ) {
             view->setCurrentItem( oldCurrentItem );
             view->setSelected( oldCurrentItem, false );
-	    view->ensureItemVisible( oldCurrentItem );
+            view->ensureItemVisible( oldCurrentItem );
         }
 
         const KFileItemList *oldSelected = m_fileView->selectedItems();

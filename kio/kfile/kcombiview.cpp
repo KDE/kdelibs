@@ -43,18 +43,16 @@
 KCombiView::KCombiView( QWidget *parent, const char *name)
   : QSplitter( parent, name),
     KFileView(),
-    right(0)
+    right(0),
+    m_lastViewForNextItem(0),
+    m_lastViewForPrevItem(0)
 {
-    KFileIconView *dirs = new KFileIconView( this, "left" );
-    dirs->KFileView::setViewMode( Directories );
-    dirs->setArrangement( QIconView::LeftToRight );
-    dirs->setParentView( this );
-    left = dirs;
+    left = new KFileIconView( this, "left" );
+    left->KFileView::setViewMode( Directories );
+    left->setArrangement( QIconView::LeftToRight );
+    left->setParentView( this );
 
-    m_lastViewForNextItem = 0L;
-    m_lastViewForPrevItem = 0L;
-
-    connect( left->signaler(), SIGNAL( sortingChanged( QDir::SortSpec ) ),
+    connect( sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
              SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
 
@@ -65,7 +63,7 @@ KCombiView::~KCombiView()
 
 void KCombiView::setRight(KFileView *view)
 {
-    // ### should we delete "right" here?
+    delete right;
     right = view;
     right->KFileView::setViewMode( Files );
     setViewName( right->viewName() );
@@ -76,10 +74,6 @@ void KCombiView::setRight(KFileView *view)
     setResizeMode( left, QSplitter::KeepSize );
 
     right->setParentView( this );
-    right->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
-
-    connect( right->signaler(), SIGNAL( sortingChanged( QDir::SortSpec ) ),
-             SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
 
 void KCombiView::insertItem( KFileItem *item )
@@ -242,13 +236,13 @@ KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
 {
     if ( !right )
         return left->nextItem( fileItem );
-
+    
     KFileView *preferredView = focusView( left );
     KFileView *otherView = (preferredView == left) ? right : left;
     KFileItem *item = preferredView->nextItem( fileItem );
+    
     if ( item )
         m_lastViewForNextItem = preferredView;
-
     else { // no item, check other view
         // when changing from one to another view, we need to continue
         // with the next view's first item!
