@@ -27,6 +27,7 @@
 
 #include <kdialogbase.h>
 #include <kservice.h>
+#include <klocale.h>
 
 class KCModuleProxy;
 class KCModuleInfo;
@@ -75,9 +76,14 @@ public:
      * two more buttons are available to users of KCMultiDialog. When clicked 
      * they trigger slotUser2() and slotUser3(). 
      *
-     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
+     * @param user2 User button2 text item.
+     * @param user3 User button3 text item.
+     * @param buttonMask Specifies which buttons will be visible. If zero
+     *        (0) no extra buttons will be added. You can only use the User2 and
+     *        User3 buttons. The User1 button is already used internally. @see
+     *        KDialogBase for more information on this.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
      * @param parent Parent of the dialog.
@@ -85,23 +91,11 @@ public:
      * @param modal Controls dialog modality. If @p false, the rest of the
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
-     * @param buttonMask Specifies which buttons will be visible. If zero
-     *        (0) no button box will be made.
-     * @param defaultButton Specifies which button will be marked as
-     *        the default.
-     * @param separator If @p true, a separator line is drawn between the
-     *        action buttons and the main widget.
-     * @param user2 User button2 text item.
-     * @param user3 User button3 text item.
      */
-    KCMultiDialog( KDialogBase::DialogType dialogFace, WFlags f,
-		 QWidget *parent=0, const char *name=0, bool modal=true,
-		 const QString &caption=QString::null,
-		 int buttonMask=Ok|Apply|Cancel|User1|User2|User3,
-       ButtonCode defaultButton=Ok,
-		 bool separator=false,
-		 const KGuiItem &user2=KGuiItem(),
-		 const KGuiItem &user3=KGuiItem() );
+    KCMultiDialog( int dialogFace, const KGuiItem &user2,
+            const KGuiItem &user3=KGuiItem(), int buttonMask=User2,
+            const QString &caption=i18n("Configure"), QWidget *parent=0,
+            const char *name=0, bool modal=false );
 
     /**
      * Destructor
