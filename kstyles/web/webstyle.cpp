@@ -49,6 +49,23 @@ static int        _savedFrameLineWidth;
 static int        _savedFrameMidLineWidth;
 static ulong      _savedFrameStyle;
 
+static QColor contrastingForeground(const QColor & fg, const QColor & bg)
+{
+  int h, s, vbg, vfg;
+
+  bg.hsv(&h, &s, &vbg);
+  fg.hsv(&h, &s, &vfg);
+
+  if ((vbg - vfg > -72) && ((vbg - vfg) < 72))
+  {
+    return (vbg < 72) ? Qt::white : Qt::black;
+  }
+  else
+  {
+    return fg;
+  }
+}
+
 // Gotta keep it separated.
 
   static void
@@ -310,7 +327,10 @@ WebStyle::drawButton
 {
   p->save();
 
-  p->setPen(sunken ? g.light() : g.mid());
+  if (sunken)
+    p->setPen(contrastingForeground(g.light(), g.button()));
+  else
+    p->setPen(contrastingForeground(g.mid(), g.button()));
 
   p->setBrush(0 == fill ? NoBrush : *fill);
 
@@ -349,32 +369,18 @@ WebStyle::drawPushButton(QPushButton * b, QPainter * p)
   bool sunken(b->isDown() || b->isOn());
   bool hl(_highlightedButton == b);
 
+  QColor bg(b->colorGroup().button());
+
   p->save();
   p->fillRect(b->rect(), b->colorGroup().brush(QColorGroup::Background));
 
   if (b->isDefault())
   {
-    p->setPen(hl ? b->colorGroup().highlight() : b->colorGroup().mid());
-    drawFunkyRect(p, 0, 0, b->width(), b->height(), false);
-  }
+    QColor c(hl ? b->colorGroup().highlight() : b->colorGroup().mid());
 
-  if (b->isEnabled())
-  {
-    if (sunken)
-    {
-      p->setPen(b->colorGroup().light());
-    }
-    else
-    {
-      if (hl)
-        p->setPen(b->colorGroup().highlight());
-      else
-        p->setPen(b->colorGroup().mid());
-    }
-  }
-  else
-  {
-    p->setPen(b->colorGroup().button());
+    p->setPen(contrastingForeground(c, bg));
+
+    drawFunkyRect(p, 0, 0, b->width(), b->height(), false);
   }
 
   p->fillRect
@@ -385,6 +391,25 @@ WebStyle::drawPushButton(QPushButton * b, QPainter * p)
      b->height() - 8,
      b->colorGroup().brush(QColorGroup::Button)
     );
+
+  if (b->isEnabled())
+  {
+    if (sunken)
+    {
+      p->setPen(contrastingForeground(b->colorGroup().light(), bg));
+    }
+    else
+    {
+      if (hl)
+        p->setPen(contrastingForeground(b->colorGroup().highlight(), bg));
+      else
+        p->setPen(contrastingForeground(b->colorGroup().mid(), bg));
+    }
+  }
+  else
+  {
+    p->setPen(b->colorGroup().button());
+  }
 
   drawFunkyRect(p, 3, 3, b->width() - 6, b->height() - 6, true);
 
@@ -668,7 +693,14 @@ WebStyle::drawIndicator
 
   p->fillRect(x, y, w, h, g.background());
 
-  p->setPen(enabled ? (down ? g.highlight() : g.dark()) : g.mid());
+  if (enabled)
+  {
+    p->setPen(down ? g.highlight() : contrastingForeground(g.dark(), g.background()));
+  }
+  else
+  {
+    g.mid();
+  }
 
   p->drawRect(x, y, w, h);
 
@@ -709,7 +741,14 @@ WebStyle::drawExclusiveIndicator
 
   p->fillRect(x, y, w, h, g.background());
 
-  p->setPen(enabled ? (down ? g.highlight() : g.dark()) : g.mid());
+  if (enabled)
+  {
+    p->setPen(down ? g.highlight() : contrastingForeground(g.dark(), g.background()));
+  }
+  else
+  {
+    p->setPen(g.mid());
+  }
 
   p->setBrush(g.brush(QColorGroup::Background));
 
@@ -787,13 +826,13 @@ WebStyle::drawComboButton
   if (enabled)
   {
     if (sunken)
-      p->setPen(g.highlight());
+      p->setPen(contrastingForeground(g.highlight(), g.background()));
     else
-      p->setPen(g.dark());
+      p->setPen(contrastingForeground(g.mid(), g.background()));
   }
   else
   {
-    p->setPen(g.mid());
+    p->setPen(contrastingForeground(g.mid(), g.background()));
   }
 
   drawFunkyRect(p, x, y, w, h, true);
@@ -1207,11 +1246,14 @@ WebStyle::drawKMenuItem
 {
   p->save();
 
-  p->fillRect(x, y, w, h, active ? g.highlight() : g.background());
+  QColor bg(active ? g.highlight() : g.background());
 
-  p->restore();
+  p->fillRect(x, y, w, h, bg);
 
-  QColor textColour = active ? g.highlightedText() : g.text();
+  QColor textColour =
+    active ?
+    contrastingForeground(g.highlightedText(), bg) :
+    contrastingForeground(g.text(), bg);
 
   QApplication::style().drawItem
     (
@@ -1228,6 +1270,8 @@ WebStyle::drawKMenuItem
      -1,
      &textColour
     );
+
+  p->restore();
 }
 
   void
@@ -1501,7 +1545,7 @@ WebStyle::drawKickerTaskButton
 {
   p->save();
 
-  p->setPen(active ? g.light() : g.mid());
+  p->setPen(active ? g.highlight() : g.mid());
 
   p->setBrush(0 == fill ? NoBrush : *fill);
 
@@ -1558,7 +1602,7 @@ WebStyle::drawKickerTaskButton
       s.append("...");
     }
 
-    p->setPen(g.buttonText());
+    p->setPen(active ? g.brightText() : g.buttonText());
 
     p->drawText
       (
