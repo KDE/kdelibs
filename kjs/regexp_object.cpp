@@ -174,10 +174,14 @@ Value RegExpObjectImp::get(ExecState *, const UString &p) const
   {
     bool ok;
     unsigned long i = p.substr(1).toULong(&ok);
-    if (ok && i < lastNrSubPatterns + 1)
+    if (ok)
     {
-      UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
-      return String(substring);
+      if (i < lastNrSubPatterns + 1)
+      {
+        UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
+        return String(substring);
+      }
+      return String("");
     }
   }
   return Undefined();
