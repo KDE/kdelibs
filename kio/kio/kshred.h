@@ -42,7 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Andreas F. Pour <bugs@mieterra.com>
  * @author David Faure <faure@kde.org> (integration into KDE and progress signal)
  */
-class KShred : public QObject {
+class KShred : public QObject { // KDE4: remove
 
   Q_OBJECT
 
