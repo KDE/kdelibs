@@ -52,7 +52,7 @@ public:
   virtual void save(KConfig *cfg);
   virtual void load(KConfig *cfg);
   virtual void setToolTip (KDockWidget *, QString &);
-  QStringList containedWidgets();
+  QStringList containedWidgets() const;
 protected:
   friend class KDockManager;
   friend class KDockSplitter;

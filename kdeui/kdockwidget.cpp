@@ -2801,7 +2801,7 @@ bool KDockContainer::isOverlapMode() {
 
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
 
-QStringList KDockContainer::containedWidgets() {
+QStringList KDockContainer::containedWidgets() const {
 	QStringList tmp;
 	for (struct ListItem *it=m_childrenListBegin;it;it=it->next) {
 		tmp<<QString(it->data);
