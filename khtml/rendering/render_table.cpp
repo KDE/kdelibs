@@ -158,7 +158,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
-                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
     RenderObject *o = child;
 
@@ -1599,18 +1599,20 @@ RenderTableSection::~RenderTableSection()
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", " <<
-                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
+                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
     RenderObject *row = child;
-    if( !beforeChild )
-        beforeChild = lastChild();
 
     if ( !child->isTableRow() ) {
+
+        if( !beforeChild )
+            beforeChild = lastChild();
+
         if( beforeChild && beforeChild->isAnonymousBox() )
             row = beforeChild;
         else {
-//          kdDebug( 6040 ) << "creating anonymous table row" << endl;
+            kdDebug( 6040 ) << "creating anonymous table row" << endl;
             row = new RenderTableRow();
             RenderStyle *newStyle = new RenderStyle(style());
             newStyle->setDisplay(TABLE_ROW);
@@ -1663,7 +1665,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
-                       beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+                       (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
     RenderTableCell *cell;
 
@@ -1882,7 +1884,7 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
     //kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )"  << ", " <<
-    //                   beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
+    //                   (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
 
     if (child->style()->display() == TABLE_COLUMN)
