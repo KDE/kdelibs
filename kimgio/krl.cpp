@@ -114,6 +114,8 @@ void kimgio_krl_read( QImageIO *iio )
 
 	Q_INT16 w = LOCAL_ENDIAN( buffer[ 35 ], buffer[ 34 ] );
 	Q_INT16 h = LOCAL_ENDIAN( buffer[ 37 ], buffer[ 36 ] );
+w=423;h=279;
+
 	int samples = (int)(w*h);
 
 	debug( "kimgio_krl_read: image w: %d, h: %d samples: %d", 
@@ -169,12 +171,28 @@ void kimgio_krl_write( QImageIO * imageio )
 {
    QIODevice& f = *( imageio->ioDevice() );
    const QImage& image = imageio->image();
-   char tmp[1024];
+   char tmp[512];
+   for (int p=0;p<512;p++) tmp[p]=0;
+
    int w=image.width();
    int h=image.height();
+   unsigned char *cc1,*cc2,cc3;    
+   cc1=(unsigned char *)&w;
+   cc2=cc1+1;
+   cc3=*cc1;
+   *cc1=*cc2;
+   *cc2=cc3;
    *(short *)&tmp[34]=w;
+
+   cc1=(unsigned char *)&h;
+   cc2=cc1+1;
+   cc3=*cc1;
+   *cc1=*cc2;
+   *cc2=cc3;
    *(short *)&tmp[36]=h;
 
+   w=image.width();
+   h=image.height();
    f.writeBlock( tmp, 512 );
    Q_INT16 c;
    for (int j=0;j<h;j++)
