@@ -207,7 +207,6 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 
 void KEMailSettings::setDefault(const QString &s)
 {
-	kdDebug() << "setDefault called with " << s << endl;
 	p->m_pConfig->setGroup("Defaults");
 	p->m_pConfig->writeEntry("Profile", s);
 	p->m_pConfig->sync();
@@ -260,7 +259,6 @@ KEMailSettings::KEMailSettings()
 			setDefault(p->m_sDefaultProfile);
 	} else {
 			if (p->profiles.count()) {
-				kdDebug() << "WE ALREADY HAVE PROFILES DAMNIT" << endl;
 				setDefault(p->profiles[0]);
 			} else
 				setDefault(i18n("Default"));
