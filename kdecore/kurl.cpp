@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/*
     Copyright (C) 1999 Torben Weis <weis@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -164,102 +164,101 @@ static QString lazy_encode( const QString& segment )
   return result;
 }
 
-static QString decode( const QString& segment, bool *keepEncoded=0, int encoding_hint=0 )
+static void decode( const QString& segment, QString &decoded, QString &encoded, int encoding_hint=0 )
 {
-  bool isUnicode = false; // This detects utf-16, not utf-8
-  bool isLocal = false;
-  bool isAscii = true;
-  bool bKeepEncoded = true;
+  decoded = QString::null;
+  encoded = segment;
+
   int old_length = segment.length();
   if ( !old_length )
-    return QString::null;
+    return;
+
+  QTextCodec *textCodec = 0;
+  if (encoding_hint)
+      textCodec = codecForHint( encoding_hint );
+  
+  if (!textCodec)
+      textCodec = QTextCodec::codecForLocale();
+
+  QCString csegment = textCodec->fromUnicode(segment);
+  old_length = csegment.length();
 
   int new_length = 0;
+  int new_length2 = 0;
 
   // make a copy of the old one
-  char *new_segment = new char[ old_length + 1];
-  QChar *new_usegment = new QChar[ old_length + 1 ];
+  char *new_segment = new char[ old_length + 1 ];
+  QChar *new_usegment = new QChar[ old_length * 3 + 1 ];
 
   int i = 0;
   while( i < old_length )
   {
-    unsigned int character = segment[ i++ ].unicode();
-    if ((character == ' ') || (character > 255))
-       bKeepEncoded = false;
+    bool bReencode = false;
+    unsigned char character = csegment[ i++ ];
+    if ((character == ' ') || (character > 127))
+       bReencode = true;
+
+    new_usegment [ new_length2++ ] = character;
     if (character == '%' )
     {
-      int a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
-      int b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      int a = i+1 < old_length ? hex2int( csegment[i] ) : -1;
+      int b = i+1 < old_length ? hex2int( csegment[i+1] ) : -1;
       if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
          // Contains stray %, make sure to re-encode!
-         bKeepEncoded = false;
+         bReencode = true;
       }
       else
       {
          // Valid %xx sequence
          character = a * 16 + b; // Replace with value of %dd
-         i += 2; // Skip dd
          if (!character)
             break; // Stop at %00
-         if (character > 127)
-            isLocal = true;
+
+         new_usegment [ new_length2++ ] = (unsigned char) csegment[i++];
+         new_usegment [ new_length2++ ] = (unsigned char) csegment[i++];
       }
     }
-    new_segment [ new_length ] = character;
-    new_usegment [ new_length ] = character;
-    new_length++;
-    if (character > 127)
+    if (bReencode)
     {
-       isAscii = false;
-       if (character > 255)
-          isUnicode = true;
+      new_length2--;
+      new_usegment [ new_length2++ ] = '%';
+
+      unsigned int c = character / 16;
+      c += (c > 9) ? ('A' - 10) : '0';
+      new_usegment[ new_length2++ ] = c;
+
+      c = character % 16;
+      c += (c > 9) ? ('A' - 10) : '0';
+      new_usegment[ new_length2++ ] = c;
     }
+    
+    new_segment [ new_length++ ] = character;
   }
   new_segment [ new_length ] = 0;
-  QString result;
-  
-  if (isAscii)
-  {
-     result = QString( new_usegment, new_length);
-  }
+
+  encoded = QString( new_usegment, new_length2);
+
   // Encoding specified
-  else if ( encoding_hint )
+  QByteArray array;
+  array.setRawData(new_segment, new_length);
+  decoded = textCodec->toUnicode( array, new_length );
+  array.resetRawData(new_segment, new_length);
+  QCString validate = textCodec->fromUnicode(decoded);
+  if (strcmp(validate.data(), new_segment) != 0)
   {
-      QTextCodec * textCodec = codecForHint( encoding_hint );
-      if (textCodec)
-      {
-          QByteArray array;
-          array.setRawData(new_segment, new_length);
-          result = textCodec->toUnicode( array, new_length );
-          array.resetRawData(new_segment, new_length);
-          QCString validate = textCodec->fromUnicode(result);
-          if (validate.data() == new_segment)
-          {
-             bKeepEncoded = false;
-          }
-          else
-          {
-             result = QString::fromLocal8Bit(new_segment, new_length);
-          }
-      }
-      else
-          result = QString::fromLocal8Bit(new_segment, new_length);
+      decoded = QString::fromLocal8Bit(new_segment, new_length);
   }
-  // Guess the encoding, if not specified
-  else if ((!isAscii && !isUnicode) || isLocal)
-  {
-     result = QString::fromLocal8Bit(new_segment, new_length);
-  }
-  // Fallback
-  else 
-  {
-     result = QString( new_usegment, new_length);
-  }
-  if (keepEncoded)
-     *keepEncoded = bKeepEncoded;
+
   delete [] new_segment;
   delete [] new_usegment;
+}
+
+static QString decode(const QString &segment, int encoding_hint = 0)
+{
+  QString result;
+  QString tmp;
+  decode(segment, result, tmp, encoding_hint);  
   return result;
 }
 
@@ -456,7 +455,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   else if ( rUrl[0] == '#' )
   {
     *this = _u;
-    QString ref = decode(rUrl.mid(1), 0, encoding_hint);
+    QString ref = decode(rUrl.mid(1), encoding_hint);
     if ( ref.isNull() )
         ref = ""; // we know there was an (empty) html ref, we saw the '#'
     setHTMLRef( ref );
@@ -600,30 +599,30 @@ void KURL::parse( const QString& _url, int encoding_hint )
      x = buf[++pos];
   if ( pos == len )
     {
-      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
       goto NodeOk;
     }
   if ( x == '@' )
     {
-      m_strUser = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+      m_strUser = decode(QString( buf + start, pos - start ), encoding_hint);
       pos++;
       goto Node7;
     }
   /* else if ( x == ':' )
      {
-     m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+     m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
      pos++;
      goto Node8a;
      } */
   else if ( (x == '/') || (x == '?') || (x == '#'))
     {
-      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
       start = pos;
       goto Node9;
     }
   else if ( x != ':' )
     goto NodeErr;
-  m_strUser = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+  m_strUser = decode(QString( buf + start, pos - start ), encoding_hint);
   pos++;
 
   // Node 5: We need at least one character
@@ -654,7 +653,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       start = pos++;
       goto Node9;
     }
-  m_strPass = decode(QString( buf + start, pos - start), 0, encoding_hint);
+  m_strPass = decode(QString( buf + start, pos - start), encoding_hint);
   pos++;
 
   // Node 7: We need at least one character
@@ -670,7 +669,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
     // Node 8b: Read everything until ] or terminate
     while( buf[pos] != ']' && pos < len ) pos++;
-    m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
        goto NodeOk;
@@ -684,10 +683,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
     while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
     if ( pos == len )
     {
-       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
        goto NodeOk;
     }
-    m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
   }
   x = buf[pos];
   if ( x == '/' )
@@ -1033,12 +1032,9 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
   static const QString & fileProt = KGlobal::staticQString( "file" );
   m_strPath_encoded = _txt;
 
-  bool keepEncoded;
-  m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
+  decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
   // Throw away encoding for local files, makes file-operations faster.
   if (m_strProtocol == fileProt)
-     keepEncoded = false;
-  if (!keepEncoded)
      m_strPath_encoded = QString::null;
 }
 
@@ -1618,11 +1614,9 @@ void KURL::setQuery( const QString &_txt, int encoding_hint)
       }
       if (i > s)
       {
-         bool keepEncoded;
          QString tmp = m_strQuery_encoded.mid(s, i-s);
-         QString newTmp = decode( tmp, &keepEncoded, encoding_hint );
-         if (!keepEncoded)
-            tmp = encode( newTmp, false, encoding_hint);
+         QString newTmp;
+         decode( tmp, newTmp, tmp, encoding_hint );
          result += tmp;
       }
       if (i < l)
@@ -1643,7 +1637,7 @@ QString KURL::query() const
 
 QString KURL::decode_string(const QString &str, int encoding_hint)
 {
-   return decode(str, 0, encoding_hint);
+   return decode(str, encoding_hint);
 }
 
 QString KURL::encode_string(const QString &str, int encoding_hint)
