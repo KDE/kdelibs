@@ -733,6 +733,8 @@ DCOPServer::~DCOPServer()
 
 DCOPConnection* DCOPServer::findApp( const QCString& appId )
 {
+    if ( appId.isNull() )
+	return 0;
     DCOPConnection* conn = appIds.find( appId );
     if ( !conn && appId.find( '-' ) < 0 ) {
 	for ( QAsciiDictIterator<DCOPConnection> it( appIds ); it.current(); ++it )
