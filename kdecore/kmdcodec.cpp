@@ -146,16 +146,16 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
         return;
     }
 
-    uint sidx=0;
-    uint didx=0;
-    uint len = in.size();
+    unsigned int sidx = 0;
+    unsigned int didx = 0;
+    const unsigned int len = in.size();
 
     out.resize( 0 );
     out.resize( ((len+2)/3)*4 );
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-    for ( ; sidx < len-2; sidx += 3)
+    while (sidx < len-2)
     {
         out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
         out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
@@ -163,6 +163,7 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
         out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
                                    (buf[sidx+1] << 2) & 077];
         out[didx++] = Base64EncMap[buf[sidx+2] & 077];
+	sidx += 3;
     }
 
     if (sidx < len)
@@ -179,8 +180,10 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out )
     }
 
     // Add padding
-    for ( ; didx < out.size(); didx++)
+    while (didx < out.size()) {
         out[didx] = '=';
+	didx++;
+    }
 }
 
 QCString KBase64::base64Decode( const QCString& str )
@@ -206,25 +209,32 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
         return;
     }
 
-    uint len = in.size();
-    uint tail = len;
+    const unsigned int len = in.size();
+    unsigned int tail = len;
 
-    while( in[tail-1] == '=' ) tail--;
+    while ( in[tail-1] == '=' )
+    {
+        tail--;
+    }
+
     out.resize( 0 );
     out.resize( tail-(len/4) );
     Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // ascii printable to 0-63 conversion
-    for (uint idx = 0; idx < len; idx++)
+    for (unsigned int idx = 0; idx < len; idx++)
+    {
         buf[idx] = Base64DecMap[buf[idx]];
+    }
 
     // 4-byte to 3-byte conversion
-    uint sidx=0, didx=0;
-    for ( ; didx < out.size()-2; sidx += 4, didx += 3)
+    unsigned int sidx = 0, didx = 0;
+    while (didx < out.size()-2)
     {
         out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
         out[didx+1] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
         out[didx+2] = (((buf[sidx+2] << 6) & 255) | (buf[sidx+3] & 077) );
+        sidx += 4; didx += 3;
     }
     if (didx < out.size())
         out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
@@ -256,24 +266,24 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
         return;
     }
 
-    uint sidx = 0;
-    uint didx = 0;
-    char nl[] = "\n";
-    uint len = in.size();
-    uint line_len = 45;
-    uint nl_len = strlen(nl);
+    unsigned int sidx = 0;
+    unsigned int didx = 0;
+    const char nl[] = "\n";
+    const unsigned int len = in.size();
+    unsigned int line_len = 45;
+    const unsigned int nl_len = strlen(nl);
     out.resize( 0 );
     out.resize( (len+2)/3*4 + ((len+line_len-1)/line_len)*(nl_len+1) );
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
 
     // split into lines, adding line-length and line terminator
-    for ( ; sidx+line_len < len; )
+    while (sidx+line_len < len)
     {
         // line length
         out[didx++] = UUEncMap[line_len];
 
         // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-        for (uint end = sidx+line_len; sidx < end; sidx += 3)
+        for (unsigned int end = sidx+line_len; sidx < end; sidx += 3)
         {
             out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
             out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
@@ -284,13 +294,16 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
         }
 
         // line terminator
-        for (uint idx=0; idx < nl_len; idx++)
-            out[didx++] = nl[idx];
+	//	for (unsigned int idx=0; idx < nl_len; idx++)
+	//	out[didx++] = nl[idx];
+	memcpy(out.data()+didx, nl, nl_len);
+	didx += nl_len;
     }
+
     // line length
     out[didx++] = UUEncMap[len-sidx];
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-    for (; sidx+2 < len; sidx += 3)
+    while (sidx+2 < len)
     {
         out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
         out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
@@ -298,6 +311,7 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
         out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
                                (buf[sidx+1] << 2) & 077];
         out[didx++] = UUEncMap[buf[sidx+2] & 077];
+	sidx += 3;
     }
 
     if (sidx < len-1)
@@ -317,11 +331,11 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
     }
 
     // line terminator
-    for (uint idx=0; idx<nl_len; idx++)
-        out[didx++] = nl[idx];
+    memcpy(out.data()+didx, nl, nl_len);
+    didx += nl_len;
 
     // sanity check
-    if ( didx !=  out.size()  )
+    if ( didx != out.size() )
         out.resize( 0 );
 }
 
@@ -348,41 +362,43 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
         return;
     }
 
-    uint sidx = 0;
-    uint didx = 0;
-    uint len = in.size();
-    uint line_len, end;
+    unsigned int sidx = 0;
+    unsigned int didx = 0;
+    const unsigned int len = in.size();
+    unsigned int line_len, end;
     out.resize( 0 );
     out.resize( len/4*3 );
-    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(in.data());
-    for (; sidx < len; )
+    Q_UINT8* buf = reinterpret_cast<Q_UINT8 *>(in.data());
+    while (sidx < len)
     {
         // get line length (in number of encoded octets)
         line_len = UUDecMap[buf[sidx++]];
         // ascii printable to 0-63 and 4-byte to 3-byte conversion
         end = didx+line_len;
-        for (; didx < end-2; sidx += 4)
+        char A, B, C, D;
+        while (didx < end-2)
         {
-            char A = UUDecMap[buf[sidx]];
-            char B = UUDecMap[buf[sidx+1]];
-            char C = UUDecMap[buf[sidx+2]];
-            char D = UUDecMap[buf[sidx+3]];
+            A = UUDecMap[buf[sidx]];
+            B = UUDecMap[buf[sidx+1]];
+            C = UUDecMap[buf[sidx+2]];
+            D = UUDecMap[buf[sidx+3]];
             out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
             out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
             out[didx++] = ( ((C << 6) & 255) | (D & 077) );
+            sidx += 4;
         }
 
         if (didx < end)
         {
-            char A = UUDecMap[buf[sidx]];
-            char B = UUDecMap[buf[sidx+1]];
+            A = UUDecMap[buf[sidx]];
+            B = UUDecMap[buf[sidx+1]];
             out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
         }
 
         if (didx < end)
         {
-            char B = UUDecMap[buf[sidx+1]];
-            char C = UUDecMap[buf[sidx+2]];
+            B = UUDecMap[buf[sidx+1]];
+            C = UUDecMap[buf[sidx+2]];
             out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
         }
 
@@ -409,7 +425,7 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 QString KCodecs::base64Encode( const QString& str )
 {
     QByteArray in, out;
-    int len = str.length();
+    const unsigned int len = str.length();
     in.resize( len );
     memcpy( in.data(), str.latin1(), len );
     base64Encode( in, out );
@@ -419,7 +435,7 @@ QString KCodecs::base64Encode( const QString& str )
 QString KCodecs::base64Decode( const QString& str )
 {
     QByteArray in, out;
-    int len = str.length();
+    const unsigned int len = str.length();
     in.resize( str.length() );
     memcpy( in.data(), str.latin1(), len );
     base64Decode( in, out );
@@ -429,7 +445,7 @@ QString KCodecs::base64Decode( const QString& str )
 QString KCodecs::uuencode( const QString& str )
 {
     QByteArray in, out;
-    int len = str.length();
+    const unsigned int len = str.length();
     in.resize( len );
     memcpy( in.data(), str.latin1(), len );
     uuencode( in, out );
@@ -439,7 +455,7 @@ QString KCodecs::uuencode( const QString& str )
 QString KCodecs::uudecode( const QString& str )
 {
     QByteArray in, out;
-    int len = str.length();
+    const unsigned int len = str.length();
     in.resize( len );
     memcpy( in.data(), str.latin1(), len );
     uudecode( in, out );
@@ -474,8 +490,8 @@ static int rikFindChar(register const char * _s, const char c)
 
 QCString KCodecs::quotedPrintableEncode(const QByteArray & in)
 {
-  const char * data = in.data();
-  unsigned int length = in.size();
+  const char *data = in.data();
+  const unsigned int length = in.size();
 
   // Reasonable guess for output size when we're encoding mostly-ASCII
   // data. It doesn't really matter, because the underlying allocation
@@ -559,13 +575,13 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in)
 
 QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
 {
-  const char * data = in.data();
+  const char *data = in.data();
   const unsigned int length = in.size();
 
   // Maximum output size is equal to input size.
 
   QByteArray output(length);
-  char * cursor = output.data();
+  char *cursor = output.data();
 
   for (unsigned int i = 0; i < length; i++)
   {
@@ -663,18 +679,18 @@ void KMD5::update ( const QString& str )
 
 void KMD5::update ( const QCString& in )
 {
-    update( reinterpret_cast<Q_UINT8*>(in.data()) );
+    update( reinterpret_cast<Q_UINT8 *>(in.data()) );
 }
 
 void KMD5::update( const QByteArray& in )
 {
-    update( reinterpret_cast<Q_UINT8*>(in.data()), in.size() );
+    update( reinterpret_cast<Q_UINT8 *>(in.data()), in.size() );
 }
 
 void KMD5::update( Q_UINT8 *in, int len )
 {
     if ( len == -1 )
-        len = qstrlen( reinterpret_cast<char*>(in) );
+        len = qstrlen( reinterpret_cast<char *>(in) );
 
     Q_UINT32 in_index;
     Q_UINT32 buffer_index;
@@ -735,7 +751,6 @@ void KMD5::update( FILE *file, bool closeFile )
 
 void KMD5::finalize ()
 {
-
     Q_UINT8 bits[8];
     Q_UINT32 index, padLen;
     static Q_UINT8 PADDING[64]=
@@ -780,7 +795,7 @@ void KMD5::reset()
 
 bool KMD5::verify( const char * msg_digest, DigestType type )
 {
-    if ( !m_finalized || !m_digest || m_error!= ERR_NONE )
+    if ( !m_finalized || !m_digest || m_error != ERR_NONE )
       return false;
     return isDigestMatch( msg_digest,  type );
 }
@@ -814,7 +829,7 @@ bool KMD5::verify( const QString& in, const char * msg_digest,
 Q_UINT8* KMD5::rawDigest()
 {
     Q_UINT8* s = new Q_UINT8[16];
-    rawDigest( reinterpret_cast<char*>(s) );
+    rawDigest( reinterpret_cast<char *>(s) );
     if ( m_error == ERR_NONE )
         return s;
     else
@@ -833,7 +848,7 @@ void KMD5::rawDigest( HASH bin )
 
 char * KMD5::hexDigest()
 {
-    char *s= new char[33];
+    char *s = new char[33];
     hexDigest( s );
     if ( m_error == ERR_NONE )
         return s;
@@ -856,7 +871,7 @@ void KMD5::hexDigest( HASHHEX hex )
 
 void KMD5::init()
 {
-    m_finalized= false;
+    m_finalized = false;
     m_error = ERR_NONE;
 
     m_count[0] = 0;
@@ -867,8 +882,8 @@ void KMD5::init()
     m_state[2] = 0x98badcfe;
     m_state[3] = 0x10325476;
 
-    memset ( (void *) m_buffer, 0, sizeof(*m_buffer));
-    memset ( (void *) m_digest, 0, sizeof(*m_digest));
+    memset ( static_cast<void *>(m_buffer), 0, sizeof(*m_buffer));
+    memset ( static_cast<void *>(m_digest), 0, sizeof(*m_digest));
 }
 
 bool KMD5::isDigestMatch( const char * msg_digest, DigestType type )
@@ -977,7 +992,7 @@ void KMD5::transform( Q_UINT8 block[64] )
     m_state[2] += c;
     m_state[3] += d;
 
-    memset ( (void *) x, 0, sizeof(x) );
+    memset ( static_cast<void *>(x), 0, sizeof(x) );
 }
 
 inline Q_UINT32 KMD5::rotate_left (Q_UINT32 x, Q_UINT32 n)
@@ -1067,4 +1082,3 @@ void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
                     (static_cast<Q_UINT32>(in[j+3]) << 24);
 #endif
 }
-
