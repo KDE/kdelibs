@@ -68,7 +68,7 @@ struct kde_sockaddr_in6
   Q_UINT32		sin6_scope_id;
 };
 
-/*** IPv6 test macros that could be missing from some implementations ***/
+/* IPv6 test macros that could be missing from some implementations */
 
 #define KDE_IN6_IS_ADDR_UNSPECIFIED(a) \
 	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
@@ -131,7 +131,7 @@ struct kde_sockaddr_in6
 # define IN6_IS_ADDR_MC_GLOBAL		KDE_IN6_IS_ADDR_MC_GLOBAL
 #endif
 
-/*** Special internal structure ***/
+/* Special internal structure */
 
 #define KAI_SYSTEM		0	/* data is all-system */
 #define KAI_LOCALUNIX		1	/* data contains a Unix addrinfo allocated by us */
