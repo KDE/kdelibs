@@ -30,14 +30,25 @@ KCardReader::KCardReader() {
 	_state = 0;
 	_atrLen = 0;
 	_readerLen = 0;
+	
 }
 
 
 KCardReader::~KCardReader() {
 	cancelTransaction();
-	SCardDisconnect(_card, SCARD_RESET_CARD);
+	//SCardDisconnect(_card, SCARD_RESET_CARD);
+	SCardDisconnect(_card, SCARD_UNPOWER_CARD);
 }
 
+int KCardReader::resetCard() {
+
+  long rc;
+  rc=SCardDisconnect(_card, SCARD_RESET_CARD);
+  if (rc != SCARD_S_SUCCESS) {
+    return rc;
+  }
+  return 0;
+}
 
 void KCardReader::setCard(long ctx, QString name, long card, unsigned long protocol) {
    _ctx = ctx;
@@ -52,7 +63,8 @@ long rc = 0;
 
 	rc = SCardStatus(_card, NULL, &_readerLen, &_state, &_protocol, NULL, &_atrLen);
 	if (rc != SCARD_S_SUCCESS) {
-		return false;
+	  
+	  return false;
 	}
 
 	/*
@@ -76,7 +88,10 @@ long rc;
 	if (_transacting) return 1;
 
 	rc = SCardBeginTransaction(_card);
-	if (rc != SCARD_S_SUCCESS) return rc;
+	if (rc != SCARD_S_SUCCESS){
+
+	  return rc;
+	}
 
 	_transacting = true;
 
@@ -92,7 +107,12 @@ long rc;
 	rc = SCardEndTransaction(_card, 0);
 	_transacting = false;
 
-	if (rc != SCARD_S_SUCCESS) return rc;
+	if (rc != SCARD_S_SUCCESS){
+
+	  return rc;
+	}
+
+ 
 
 return 0;
 }
@@ -106,17 +126,45 @@ int KCardReader::cancelTransaction() {
 return 0;
 }
 
+int KCardReader::doCommand(QString command, QString& response, QString & status) {
+  int rc;
+  KCardCommand resp;
 
-int KCardReader::doCommand(QString command, QString& response) {
-int rc;
-KCardCommand resp;
+  
+  rc = doCommand(command,response);
+  status=response.right(4);
+  response=response.mid(0,response.length()-4);
+  
 
-	rc = doCommand(KPCSC::encodeCommand(command), resp);
-	response = KPCSC::decodeCommand(resp);
-
-return rc;
+  
+  return rc;
 }
 
+
+int KCardReader::doCommand(QString command, QString& response) {
+  int rc;
+  KCardCommand resp;
+  
+  rc = doCommand(KPCSC::encodeCommand(command), resp);
+  response = KPCSC::decodeCommand(resp);
+  
+
+
+  return rc;
+}
+
+int KCardReader::doCommand(KCardCommand command, KCardCommand& response, KCardCommand & status) {
+  
+  int rc;
+  rc=doCommand(command,response);
+  for (unsigned int i=0;i<2;i++){
+    status[0+i]=response[response.size()-i];
+  }
+  response.resize(response.size()-2);
+  
+  return rc;
+  
+}
 
 int KCardReader::doCommand(KCardCommand command, KCardCommand& response) {
 long rc = 0;
@@ -127,6 +175,9 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 	if (command.size() == 0)
 		return -2;
 
+
+;
+
 	rc = SCardTransmit(_card, 
 			   SCARD_PCI_T0,
 			   command.data(),
@@ -134,6 +185,11 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 			   &_out,
 			   res,
 			   &resSize);
+
+
+	response.duplicate(res, resSize);
+	kdDebug()<<"main command " << KPCSC::decodeCommand(command) << endl;
+	kdDebug()<<"main  resp " << KPCSC::decodeCommand(response) << endl;
 
 	if (rc != SCARD_S_SUCCESS) {
 		response.resize(0);
@@ -144,6 +200,3 @@ SCARD_IO_REQUEST _out;        // hmm what to do with this
 	
 return 0;
 }
-
-
-

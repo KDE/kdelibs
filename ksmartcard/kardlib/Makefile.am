@@ -5,14 +5,21 @@ METASOURCES= AUTO
 
 include_HEADERS = kcardreader.h \
 		  kcardstatus.h \
-		  kpcsc.h
- 
+		  kpcsc.h \
+		  kcardfactory.h \
+	          kcardimplementation.h \
+	          kcardgsmimplementation.h
+
 noinst_HEADERS = 
 
 libksmartcard_la_SOURCES = \
 				kpcsc.cc  \
 				kcardstatus.cc \
-				kcardreader.cc
+				kcardreader.cc \
+				kcardfactory.cc \
+				kcardimplementation.cc \
+				kcardgsmimplementation.cc
+
 
 libksmartcard_la_LDFLAGS = $(all_libraries) $(PCSC_LDFLAGS) -version-info 1:0 -no-undefined
 libksmartcard_la_LIBADD = $(LIB_KDEUI) 

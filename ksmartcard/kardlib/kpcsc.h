@@ -41,6 +41,8 @@ public:
 	int disconnect();
 
 	QStringList listReaders(int *err);
+	static QString translateError(const long error);
+
 	KCardReader *getReader(QString x);
 
 	static KCardCommand encodeCommand(const QString command);

@@ -21,8 +21,10 @@
 
 #include "kpcsc.h"
 #include "kcardreader.h"
+#include <klocale.h>
 #include <stdlib.h>
 #include <winscard.h>
+
 
 KPCSC::KPCSC(bool autoConnect) {
 	_connected = false;
@@ -44,6 +46,7 @@ long rc;
 
 	if (rc != SCARD_S_SUCCESS) {
 		_connected = false;
+		
 		return rc;
 	}
 
@@ -59,7 +62,8 @@ long rc;
 
 	  rc = SCardReleaseContext(_ctx);
 	  if (rc != SCARD_S_SUCCESS) {
-		  return rc;
+	    
+	    return rc;
 	  }
 
 	  _connected = false;
@@ -81,12 +85,14 @@ long rc;
 
 	if (!_connected) {
 		if (err) *err = -1;
+		
 		return res;
 	}
 
 	rc = SCardListReaders(_ctx, (char *)NULL, 0, &readers);
 	if (rc != SCARD_S_SUCCESS) {
 		if (err) *err = rc;
+		
 		return res;
 	}
 
@@ -94,6 +100,7 @@ long rc;
 	rc = SCardListReaders(_ctx, (char *)NULL, rstr, &readers);
 	if (rc != SCARD_S_SUCCESS) {
 		if (err) *err = rc;
+		
 		delete[] rstr;
 		return res;
 	}
@@ -131,7 +138,7 @@ KCardCommand x(0);
 	if (command.length() % 2)
 		return x;
 
-	x.resize(command.length()/2 + 1);
+	x.resize(command.length()/2);
 
 	for (unsigned int n = 0, j = 0; j < command.length(); n++, j += 2) {
 		unsigned char Hnib = QChar(command.at(j)).upper();
@@ -149,7 +156,7 @@ KCardCommand x(0);
 		}
 	}
 
-	x[x.size()-1] = 0;
+	//x[x.size()-1] = 0;
 	
 return x;
 }
@@ -161,17 +168,24 @@ QString x;
 	for (unsigned int i = 0; i < command.size(); i++) {
 		unsigned short y = command[i] & 0x00ff;
 
-		if (y < 0x0f) {
+		if (y <= 0x0f) {
 			x += "0";
 		}
 
-		x += QString::number(y,16);
+		x += QString::number(y,16).upper();
 	}
 
 return x;
 }
 
+QString KPCSC::translateError (const long error){
 
+  QString j(pcsc_stringify_error(error));
+  
+  return j;
+
+
+}
 
 long KPCSC::context() {
 return _ctx;

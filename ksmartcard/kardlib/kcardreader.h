@@ -32,15 +32,20 @@ public:
 	~KCardReader();
 
 	bool isCardPresent();
+	bool inTransaction();
 
+	
+	QString getReaderName() const { return _name;}
+	
 	int beginTransaction();
 	int endTransaction();
 	int cancelTransaction();
-	bool inTransaction();
+        int resetCard();
 
 	int doCommand(QString command, QString& response);
+	int doCommand(QString command, QString& response, QString & status);
 	int doCommand(KCardCommand command, KCardCommand& response);
-
+	int doCommand(KCardCommand command, KCardCommand& response, KCardCommand & status);
 private:
 	class KCardReaderPrivate;
 	KCardReaderPrivate *d;
