@@ -123,23 +123,35 @@ public:
      * (it saves creating a slot and testing for the job result)
      *
      * @param url the url we are testing
-     *
      */
     static bool exists(const KURL& url);
 
+    /**
+     * Delete a file or a directory in an synchronous way
+     * This is a convenience function for KIO::del
+     * (it saves creating a slot and testing for the job result)
+     * This version also displays an error dialog box in case of errors.
+     * @param src the file or directory to delete
+     * @return true on success, false on failure
+     */
+    static bool del( const KURL & url );
+
 protected:
     /** Private constructor */
-    NetAccess() {}
+    NetAccess() { bDisplayErrors=false; }
     /** Private destructor */
     ~NetAccess() {}
     /** Internal methods */
     bool downloadInternal(const KURL& src, KURL& target,
                           KIO::Job *job = 0L);
     bool existsInternal(const KURL & url);
+    bool delInternal(const KURL & url);
     /** List of temporary files */
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */
     bool bDownloadOk;
+    /** Whether to display an error box on error */
+    bool bDisplayErrors;
 
 protected slots:
     virtual void slotResult( KIO::Job * job );
