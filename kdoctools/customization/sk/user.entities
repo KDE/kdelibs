@@ -6,3 +6,5 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY kcontrolcenter "<application>Ovl&#225;dacie centrum &kde;</application>">
+<!ENTITY bnp            "bodov na palec"> <!-- English: &dpi; -->
+<!ENTITY cdrom         	"<hardware>CD-ROM</hardware>">
