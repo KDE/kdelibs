@@ -178,6 +178,4 @@ QString KUser::shell() const {
 }
 
 KUser::~KUser() {
-    delete d;
-    d = 0;
 }
