@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
+              (C) 1998 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -40,6 +41,9 @@
 // Include Java Script
 #include <jsexec.h>
 
+// Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
+#define TOKEN_BUFFER_SIZE (32*1024)
+
 static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
 static const char *styleEnd = "</style>";
@@ -77,20 +81,20 @@ HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
     blocking.setAutoDelete( true );
     jsEnvironment = 0L;
     widget = _widget;
-    head = tail = curr = 0;
+    last = next = curr = 0;
     buffer = 0;
 }
 
 void HTMLTokenizer::reset()
 {
-    while ( head )
+    while (!tokenBufferList.isEmpty())
     {
-	curr = head->next();
-	delete head;
-	head = curr;
+    	char *oldBuffer = (char *) tokenBufferList.take(0);
+        delete [] oldBuffer;
     }
 
-    head = tail = curr = 0;
+    last = next = curr = 0;
+    tokenBufferSizeRemaining = 0; // No space allocated at all
 
     if ( buffer )
 	delete [] buffer;
@@ -129,7 +133,7 @@ void HTMLTokenizer::write( const char *str )
     // If this pointer is not null, one has to free the memory before leaving
     // this function.
     char *srcPtr = 0L;
-
+ 
     KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
     if ( str == 0L || buffer == 0L )
@@ -453,16 +457,16 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncmp( buffer+2, "frameset", 8 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::FrameSet,
-				tail ) );
+				last ) );
 	    }
 	    else if ( strncmp( buffer+2, "cell", 4 ) == 0 )
 	    {
-		blocking.append( new BlockingToken(BlockingToken::Cell,tail) );
+		blocking.append( new BlockingToken(BlockingToken::Cell, last) );
 	    }
 	    else if ( strncmp( buffer+2, "table", 5 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Table,
-				tail ) );
+				last ) );
 	    }
 	    else if ( !blocking.isEmpty() && 
 		    strncasecmp( buffer+1, blocking.getLast()->tokenName(),
@@ -509,19 +513,8 @@ void HTMLTokenizer::write( const char *str )
 		}
 		else if ( !space )
 		{
-#if 0
-		    *dest = 0;
-		    appendToken( buffer, dest-buffer );
-		    dest = buffer;
-
-		    *dest = ' ';
-		    *(dest+1) = 0;
-		    appendToken( buffer, 1 );
-		    dest = buffer;
-#else
 		    *dest = ' ';
 		    dest++;
-#endif
 		    space = true;
 		}
 	    }
@@ -552,19 +545,8 @@ void HTMLTokenizer::write( const char *str )
 	    }	
 	    else if ( !space )
 	    {
-#if 0
-		*dest = 0;
-		appendToken( buffer, dest-buffer );
-		dest = buffer;
-
-		*dest = ' ';
-		*(dest+1) = 0;
-		appendToken( buffer, 1 );
-		dest = buffer;
-#else
 		*dest = ' ';
 		dest++;
-#endif
 		space = true;
 	    }
 	    src++;
@@ -592,19 +574,8 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    else if ( !space )
 	    {
-#if 0
-		*dest = 0;
-		appendToken( buffer, dest-buffer );
-		dest = buffer;
-
-		*dest = ' ';
-		*(dest+1) = 0;
-		appendToken( buffer, 1 );
-		dest = buffer;
-#else
 		*dest = ' ';
 		dest++;
-#endif
 		space = true;
 	    }
 	    src++;
@@ -744,21 +715,59 @@ void HTMLTokenizer::end()
     blocking.clear();
 }
 
-char* HTMLTokenizer::nextToken()
+void HTMLTokenizer::appendTokenBuffer( int min_size)
 {
-    char *t = curr->token();
-    curr = curr->next();
+    int newBufSize = TOKEN_BUFFER_SIZE; 
 
-    return t;
+    // If we were using a buffer, mark it's end
+    if (next)
+    {
+       // Mark current buffer end
+       *next = '\0';
+    }
+
+    if (min_size > newBufSize)
+    {
+        // Wow! This surely is a big token...
+        newBufSize += min_size; 
+    }
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize ];
+    tokenBufferList.append( newBuffer);
+    next = newBuffer->first();
+    tokenBufferSizeRemaining = newBufSize;
+    if (!curr)
+    {
+       curr = tokenBufferList.at(0)->first();
+       tokenBufferCurrIndex = 0;
+    }
+}                                                                                         
+
+void HTMLTokenizer::nextTokenBuffer()
+{
+    tokenBufferCurrIndex++;
+    if (tokenBufferCurrIndex < tokenBufferList.count())
+    {
+        curr = tokenBufferList.at(tokenBufferCurrIndex)->first();
+    }
+    else 
+    {
+        // Should never occur.
+        printf("ERROR in HTMLTokenize::nextToken()\n");
+    }
 }
 
-bool HTMLTokenizer::hasMoreTokens()
-{
-    if ( !blocking.isEmpty() &&
-	    blocking.getFirst()->token() == curr )
-	return false;
-
-    return ( curr != 0 );
+void HTMLTokenizer::first()
+{ 
+    tokenBufferCurrIndex = 0;
+    HTMLTokenBuffer *tokenBufferCurr = tokenBufferList.at(tokenBufferCurrIndex);
+    if (tokenBufferCurr)
+    {
+        curr = tokenBufferCurr->first();
+    }
+    else
+    {
+        curr = 0;
+    }
 }
 
 HTMLTokenizer::~HTMLTokenizer()

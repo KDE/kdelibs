@@ -41,37 +41,7 @@ class HTMLTokenizer;
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
-
-
-//-----------------------------------------------------------------------------
-
-class Token
-{
-public:
-    Token( const char *t, int len )
-    {
-	tok = new char [ len + 1 ];
-	memcpy( tok, t, len+1 );
-	nextToken = 0;
-    }
-
-    ~Token()
-    {
-	delete [] tok;
-    }
-
-    char *token()
-	{ return tok; }
-
-    Token *next()
-	{ return nextToken; }
-    void setNext( Token *n )
-	{ nextToken = n; }
-
-private:
-    char *tok;
-    Token *nextToken;
-};
+typedef char * TokenPtr;
 
 //-----------------------------------------------------------------------------
 
@@ -80,19 +50,28 @@ class BlockingToken
 public:
     enum TokenType { Table, FrameSet, Script, Cell };
 
-    BlockingToken( TokenType tt, Token *t )
+    BlockingToken( TokenType tt, TokenPtr t )
 	    {	ttype = tt; tok = t; }
 
-    Token *token()
+    TokenPtr token()
 	    {	return tok; }
     const char *tokenName();
 
 protected:
     TokenType ttype;
-    Token *tok;
+    TokenPtr tok;
 };
 
 //-----------------------------------------------------------------------------
+
+class HTMLTokenBuffer
+{
+public:
+	TokenPtr first() 
+	{ return (TokenPtr) data; }
+protected:
+	char data[1];
+};
 
 class HTMLTokenizer
 {
@@ -107,45 +86,37 @@ public:
     char* nextToken();
     bool hasMoreTokens();
 
-    void first()
-	{ curr = head; }
+    void first();
 
 protected:
     void reset();
-    void appendToken( const char *t, int len )
-    {
-	if ( len < 1 )
-	    return;
-
-	Token *tok = new Token( t, len );
-
-	if ( head )
-	{
-	    tail->setNext( tok );
-	    tail = tok;
-	}
-	else
-	{
-	    head = tail = tok;
-	}
-
-	if ( !curr )
-	    curr = tok;
-    }
+    void appendToken( const char *t, int len );
+    void appendTokenBuffer( int min_size);
+    void nextTokenBuffer(); // Move curr to next tokenBuffer
     
 protected:
-//    QStrList tokenList;
+    // Internal buffers
+    ///////////////////
     char *buffer;
     char *dest;
 
-    Token *head;
-    Token *tail;
-
-    Token *curr;
-    
     // the size of buffer
     int size;
+
+    // Token List
+    /////////////
+	QList<HTMLTokenBuffer> tokenBufferList;
     
+	TokenPtr last;  // Last token appended
+
+    TokenPtr next;  // Token written next
+    int tokenBufferSizeRemaining; // The size remaining in the buffer written to
+
+    TokenPtr curr;  // Token read next 
+    unsigned int tokenBufferCurrIndex; // Index of HTMLTokenBuffer used by next read.
+    
+    // Tokenizer flags
+    //////////////////
     // are we in a html tag
     bool tag;
 
@@ -211,6 +182,54 @@ protected:
     // These are tokens for which we are awaiting ending tokens
     QList<BlockingToken> blocking;
 };
+
+inline void HTMLTokenizer::appendToken( const char *t, int len )
+{
+    if ( len < 1 )
+        return;
+
+    if (len > tokenBufferSizeRemaining)
+    {
+       // We need a new buffer
+       appendTokenBuffer( len);
+    }
+
+    last = next; // Last points to the start of the token we are going to append
+    tokenBufferSizeRemaining -= len+1; // One for the null-termination
+    while (len--)
+    {
+        *next++ = *t++;
+    }
+    *next++ = '\0';
+}
+
+inline char* HTMLTokenizer::nextToken()
+{
+    if (!curr)
+        return NULL;
+
+    char *t = (char *) curr;
+    curr += strlen(curr)+1;
+
+    if ((curr != next) && (*curr == '\0'))
+    {
+    	// End of HTMLTokenBuffer, go to next buffer.
+	    nextTokenBuffer();
+    }
+
+    return t;
+}
+
+inline bool HTMLTokenizer::hasMoreTokens()
+{
+    if ( !blocking.isEmpty() &&
+	    blocking.getFirst()->token() == curr )
+	{
+       	return false;
+    }
+
+    return ( ( curr != 0 ) && (curr != next) );
+}
 
 //-----------------------------------------------------------------------------
 
