@@ -194,7 +194,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 			 KKey defaultKeyCode3, KKey defaultKeyCode4,
 			 bool configurable )
 {
-	//kdDebug() << QString( "insertItem("+action+", %1, %2)\n" ).arg(defaultKeyCode3).arg(defaultKeyCode4);
+	//kdDebug(125) << QString( "insertItem("+action+", %1, %2)\n" ).arg(defaultKeyCode3).arg(defaultKeyCode4);
 	return insertItem( descr, action, defaultKeyCode3, defaultKeyCode4,
 			 0, 0, configurable);
 }
@@ -203,7 +203,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 			 KKey defaultKeyCode3, KKey defaultKeyCode4,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
-    kdDebug() << QString( "insertItem("+action+", 0x%1, 0x%2)\n" ).arg(defaultKeyCode3.key(),0,16).arg(defaultKeyCode4.key(),0,16);
+    kdDebug(125) << QString( "insertItem("+action+", 0x%1, 0x%2)\n" ).arg(defaultKeyCode3.key(),0,16).arg(defaultKeyCode4.key(),0,16);
 
     if (aKeyMap.contains(action))
         removeItem( action );
@@ -957,7 +957,7 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 		for( int i = 0; i < NB_KEYS; i++ ) {
 			if( keySymQt == (uint) KKEYS[i].code ) {
 				psKeySym = KKEYS[i].name;
-				//kdDebug() << " symbol found: \"" << psKeySym << "\"" << endl;
+				//kdDebug(125) << " symbol found: \"" << psKeySym << "\"" << endl;
 				break;
 			}
 		}
