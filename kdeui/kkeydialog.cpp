@@ -359,7 +359,7 @@ void KKeyChooser::init( KAccelActions& actions,
   // CHOOSE KEY GROUP LAYOUT MANAGER
   //
   QGridLayout *grid = new QGridLayout( d->fCArea, 3, 4, KDialog::spacingHint() );
-  grid->addRowSpacing( 0, 5 );
+  grid->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
   d->kbGroup = new QButtonGroup( d->fCArea );
   d->kbGroup->hide();
