@@ -14,6 +14,7 @@ Comment[he]=מערכת ההדפסה הכללית של יוניקס LPD (בריר
 Comment[hu]=LPD (standard UNIX nyomtatási rendszer, ez az alapértelmezés)
 Comment[ko]=보통 유닉스 LPD 인쇄 시스템 (기본)
 Comment[mt]=Sistema ġenerika tal-ipprintjar Unix LPD (standard)
+Comment[nl]=Generiek UNIX LPD-afdruksysteem (standaard)
 Comment[pt_BR]= LPD - Sistema Genérico do UNIX de Impressão (padrão)
 Comment[ro]=Sistem generic de tipărire UNIX LPD (implicit)
 Comment[sk]=Generický tlačový systém UNIX LPD (štandardné)
