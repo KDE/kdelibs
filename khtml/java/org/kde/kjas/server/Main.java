@@ -15,9 +15,8 @@ public class Main
 {
     //We need to save a reference to the original stdout
     //for sending messages back
-    public  static final PrintStream         protocol_stdout;
     public  static final KJASProtocolHandler protocol;
-    public  static final Console             console;
+    private static       Console             console = null;
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
@@ -31,30 +30,17 @@ public class Main
      **************************************************************************/
     static
     {
-        if( System.getProperty( "kjas.debug" ) != null )
-            Debug = true;
-        else
-            Debug = false;
+        Debug = System.getProperty( "kjas.debug" ) != null;
 
-        if( System.getProperty( "kjas.showConsole" ) != null )
-            show_console = true;
-        else
-            show_console = false;
+        show_console = System.getProperty( "kjas.showConsole" ) != null;
 
         if( System.getProperty( "kjas.useKio" ) != null )
             URL.setURLStreamHandlerFactory( new KJASURLStreamHandlerFactory() );
 
-        if( System.getProperty( "kjas.log" ) != null )
-            log = true;
-        else
-            log = false;
+        log = System.getProperty( "kjas.log" ) != null;
         
-        if ( System.getProperty( "kjas.noImageCache" ) != null ) {
-            cacheImages = false;
-        } else {
-            cacheImages = true;
-        }
-                
+        cacheImages = System.getProperty( "kjas.noImageCache" ) != null;
+
         // determine system proxy
         proxyHost = System.getProperty( "http.proxyHost" );
         String proxyPortString = System.getProperty( "http.proxyPort" );
@@ -62,26 +48,29 @@ public class Main
             proxyPort = Integer.parseInt(proxyPortString);
         } catch (Exception e) {
         }
-
-        protocol_stdout = System.out;
-        console         = new KJASSwingConsole();
-        protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
-        Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
+        //Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
         String version = System.getProperty("java.version").substring( 0, 3 );
         // Hack for SGI Java2 runtime
         if (version == "Jav") {     // Skip over JavaVM-  (the first 7 chars)
             version = System.getProperty("java.version").substring(7,3);
         }
-        Main.debug( "JVM numerical version = " + version );
-        try
-        {
+        //Main.debug( "JVM numerical version = " + version );
+        try {
             float java_version = Float.parseFloat( version );
             if( java_version < 1.2 )
                 good_jdk = false;
-        } catch( NumberFormatException e )
-        {
+        } catch( NumberFormatException e ) {
             good_jdk = false;
         }
+        PrintStream protocol_stdout = System.out;
+        if (show_console || !good_jdk) {
+            console = new KJASSwingConsole();
+        } else {
+            PrintStream ps = new java.io.PrintStream(System.err);
+            System.setOut(ps);
+            System.setErr(ps);
+        }
+        protocol = new KJASProtocolHandler( System.in, protocol_stdout );
     }
 
     /**************************************************************************

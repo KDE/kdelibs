@@ -220,9 +220,9 @@ public class KJASAppletContext implements AppletContext
         else
         {
             //Main.debug( "stopping applet: " + appletID );
-            stub.destroyApplet();
-
             stubs.remove( appletID );
+
+            stub.destroyApplet();
         }
     }
 

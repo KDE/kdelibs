@@ -292,6 +292,10 @@ public final class KJASAppletStub
             active = false;
             app.stop();
             stateChange(STOPPED);
+            // kill the windowClosing listener(s)
+            WindowListener[] wl = frame.getWindowListeners();
+            for (int i = 0; wl != null && wl[i] != null; i++)
+                frame.removeWindowListener(wl[i]);
             frame.hide();
         }
     }
@@ -318,6 +322,7 @@ public final class KJASAppletStub
         if( runThread != null && runThread.isAlive() ) {
             Main.debug( "runThread is active when stub is dying" );
             tryToStopThread(runThread);
+            runThread = null;
             panel.stopAnimation();
             loader.removeStatusListener(panel);
         }
@@ -333,14 +338,14 @@ public final class KJASAppletStub
                     app.destroy();
                 } catch (Exception e) {
                 }
+                frame.dispose();
             }
+            app = null;
             stateChange(DESTROYED);
         }
 
         loader = null;
         context = null;
-        app = null;
-        frame.dispose();
     }
 
     /**
