@@ -163,6 +163,7 @@
 5720        kaddressbook
 5800        libkcal
 5850        korganizer
+5855        korganizer (verbose)
 5900        kalarmd
 5901        kalarmd (check)
 5950        kalarm
