@@ -1,7 +1,32 @@
 dnl aRts specific configure tests
 dnl
-dnl libaudiofile is used for loading wave files
+dnl Check for libaudioio (which can be used to get solaris audio support)
+AC_DEFUN(AC_CHECK_LIBAUDIOIO,
+[
+  ac_ldflags_save="$LDFLAGS"
+  ac_CPPFLAGS_save="$CPPFLAGS"
+  LDFLAGS="$all_libraries $LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $all_includes"
+  arts_libaudioio_found=no
+  AC_LANG_SAVE
+  AC_LANG_C
+  AC_CHECK_HEADER(libaudioio.h,
+  [
+    AC_CHECK_LIB(audioio,GetAudioIOVersion,[
+      dnl LDFLAGS in case it's in KDEDIR/lib
+      LIBAUDIOIO="$LDFLAGS -laudioio"
+      AC_DEFINE(HAVE_LIBAUDIOIO, 1,
+        [Define if you have libaudioIO (required if you want to have libaudioio support)])
+      arts_libaudioio_found=yes
+    ])
+  ])
+  AC_SUBST(LIBAUDIOIO)
+  AC_LANG_RESTORE
+  CPPFLAGS="$ac_CPPFLAGS_save"
+  LDFLAGS="$ac_ldflags_save"
+])
 
+dnl libaudiofile is used for loading wave files
 AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
 [
   ac_ldflags_save="$LDFLAGS"
@@ -170,7 +195,7 @@ fi
 ])
                                                                       
 dnl call the tests
-
+AC_CHECK_LIBAUDIOIO
 AC_CHECK_LIBAUDIOFILE
 AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
