@@ -194,6 +194,7 @@ private:
 
 KJPEGFormat::KJPEGFormat()
 {
+    memset(&cinfo, 0, sizeof(cinfo));
     cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_decompress(&cinfo); 
     cinfo.err = jpeg_std_error(&jerr);
@@ -205,6 +206,7 @@ KJPEGFormat::KJPEGFormat()
 
 KJPEGFormat::~KJPEGFormat()
 {
+    jpeg_destroy_decompress(&cinfo);
 }
 
 /*
