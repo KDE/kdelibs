@@ -29,6 +29,7 @@
 // ### cellpadding and spacing should be converted to Length
 //#define TABLE_DEBUG
 // #define DEBUG_LAYOUT
+//#define DEBUG_DRAW_BORDER
 
 #include <qlist.h>
 #include <qstack.h>
@@ -310,6 +311,9 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	    border = 1;
 	else
 	    border = attr->val()->toInt();
+#ifdef DEBUG_DRAW_BORDER
+    	border=1;
+#endif
 	// wanted by HTML4 specs
 	if(!border)
 	    frame = Void, rules = None;
@@ -542,6 +546,10 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
     }
     else
     {
+    
+// This stuff does not work! We get much better results 
+// without it, until rewrite -antti
+#if 0  
 	int fixedCount = 0;
 	int percentCount = 0;
 	int relCount = 0;
@@ -639,6 +647,7 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 		addColsMaxWidthVar(_startCol, _colSpan, tooAdd, varCount);
 	    }
 	}
+#endif
     }
 #ifdef TABLE_DEBUG
     printf("  end: min=%d max=%d act=%d\n", colMinWidth[_startCol],
@@ -1051,8 +1060,25 @@ void HTMLTableElementImpl::calcColWidthII(void)
 
 // 7. spread remaining widths across variable columns
 
+    
     int tooAdd = tableWidth - actWidth;      // what we can add
-    int pref = maxRel + maxVar - minRel - minVar; // what we would like to add
+    int pref=-minRel-minVar; //= maxRel + maxVar - minRel - minVar; // what we would like to add
+    
+    for(i = 0; i < totalCols; i++)
+    {
+	switch(colType[i])
+	{
+	case Fixed:
+	case Percent:
+	    break;
+	case Relative:
+	    // ###
+	case Variable:
+	    pref += colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth;
+	}
+    }
+    
+    int tooOld = tooAdd;	
 #ifdef TABLE_DEBUG
     printf("adding another %d pixels! pref=%d\n", tooAdd, pref);
 #endif
@@ -1067,11 +1093,13 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	case Relative:
 	    // ###
 	case Variable:
-	    int cPref = (colMaxWidth[i] - colMinWidth[i]);
-#ifdef TABLE_DEBUG
+	    int cPref 
+	    	= (colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth)
+		- colMinWidth[i];
+//#ifdef TABLE_DEBUG
 	    printf("col %d prefWidth=%d space=%d\n", i, colMaxWidth[i],
-		colMaxWidth[i]-colMinWidth[i]);
-#endif
+		cPref);
+//#endif
 	    if(wide)
 	    {
 		actColWidth[i] += cPref;
@@ -1080,21 +1108,22 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    }
 	    else if(pref)
 	    {
-		int delta =  cPref * tooAdd / pref;
+		int delta =  cPref * tooOld / pref;
 		actColWidth[i] += delta;
 		tooAdd -= delta;
-		pref -= cPref;
 		totalVar += delta;
 	    }
 	}
     }
     int num = numRel + numVar;
+    int maxrv = maxRel + maxVar;
 
     if(tooAdd > 0)
     {
+    	tooOld=tooAdd;
 #ifdef TABLE_DEBUG
 	printf("spreading %d pixels equally across variable cols!\n", tooAdd);
-#endif
+#endif       	
 	for(i = 0; i < totalCols; i++)
 	{
 	    switch(colType[i])
@@ -1105,12 +1134,33 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    case Relative:
 		// ###
 	    case Variable:
-		int delta =  tooAdd/num;
-		actColWidth[i] += delta;
-		num--;
-		tooAdd -= delta;
+	    	if (maxrv)
+		{
+		    int delta = (colMaxWidth[i] * tooOld) /maxrv;
+		    actColWidth[i] += delta;
+		    num--;
+		    tooAdd -= delta;
+		}
 	    }
 	}
+	// spread the rest
+	int i=0;
+	while(tooAdd && maxrv)
+	{
+	    switch(colType[i])
+	    {
+	    case Fixed:
+	    case Percent:
+		break;
+	    case Relative:
+		// ###
+	    case Variable:
+		actColWidth[i]++;
+		tooAdd--;		
+	    }
+	    if(++i==totalCols) i=0;
+	}
+	printf("TOOADD %d\n",tooAdd);
     }
     else if(tooAdd < 0)
     {
@@ -1436,9 +1486,7 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
 
     if((_ty > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
-
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
-
+    
     if ( tCaption )
     {
 	tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
@@ -1451,6 +1499,8 @@ void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
     END_FOR_EACH
+    
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
 
 
 }
@@ -2019,7 +2069,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 
     NodeImpl *current = firstChild();
     
-    if (!current || valign==Top || hh <= getHeight())
+    if (!current || valign==Top)
     {
     	setLayouted();
     	return;
