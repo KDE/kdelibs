@@ -291,21 +291,38 @@ void KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 }
 
 
-//CT this is merely the same code as in the above method, but it's supposedly
+//CT this was (before Dirk A. Mueller's speedup changes) 
+//   merely the same code as in the above method, but it's supposedly
 //   way less performant since it introduces a lot of supplementary tests
 //   and simple math operations for the calculus of the balance.
+//      (surprizingly, it isn't less performant, in the contrary :-)
 //   Yes, I could have merged them, but then the excellent performance of
 //   the balanced code would suffer with no other gain than a mere
 //   source code and byte code size economy.
 
 void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
                                      const QColor &cb, GradientType eff,
-                                     int factor, int ncols)
+                                     int xfactor, int yfactor, int ncols)
 {
+    int dir; // general parameter used for direction switches
 
-    if (!factor) factor = 1;
+    bool _xanti = false , _yanti = false;
 
-    double balance = abs(factor)/1000.;
+    if (xfactor < 0) _xanti = true; // negative on X direction
+    if (yfactor < 0) _yanti = true; // negative on Y direction
+
+    xfactor = abs(xfactor); 
+    yfactor = abs(yfactor);
+
+    if (!xfactor) xfactor = 1;
+    if (!yfactor) yfactor = 1;
+
+    if (xfactor > 200 ) xfactor = 200;
+    if (yfactor > 200 ) yfactor = 200;
+
+
+    double xbal = xfactor/1000.;
+    double ybal = yfactor/1000.;
     double rat;
 
     int rDiff, gDiff, bDiff;
@@ -332,7 +349,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
         for ( y = 0; y < pixmap.height(); y++ ) {
             p = (uint *) image.scanLine(y);
 
-            rat =  exp( ((double)y - pixmap.height() ) * balance );
+            rat =  1 - exp( - (double)y  * ybal );
 
             cRow.setRgb( rca + (int) ( rDiff * rat ),
                          gca + (int) ( gDiff * rat ),
@@ -395,7 +412,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 	  unsigned int *src = (unsigned int *)image.scanLine(0);
 	  for(x = 0; x < pixmap.width(); x++ ) 
 	    {
-	      rat =  exp( ((double)x - pixmap.width() ) * balance );
+	      rat = 1 - exp( - (double)x  * xbal );
 
 	      rd = rca + (int) ( rDiff * rat );
 	      gd = gca + (int) ( gDiff * rat );
@@ -418,11 +435,10 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
 	else if ( eff == DiagonalGradient || eff == CrossDiagonalGradient) 
 	  {
-	    int dir;
 	    for (x = 0; x < pixmap.width(); x++) {
-	      dir = eff == DiagonalGradient? x : pixmap.width() - x - 1;
+	      dir = eff == DiagonalGradient? x : pixmap.width() - 1 - x;
 
-	      rat =  exp( ((double)x - pixmap.width() ) * balance );
+	      rat = 1 - exp( - (double)x * xbal );
 
 	      xtable[dir][0] = (unsigned char) (rca + (int) ( rDiff/2 * rat ));
 	      xtable[dir][1] = (unsigned char) (gca + (int) ( gDiff/2 * rat ));
@@ -431,7 +447,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
 	    for (y = 0; y < pixmap.height(); y++) {
 
-	      rat =  exp( ((double)y - pixmap.height() ) * balance );
+	      rat =  1 - exp( - (double)x  * xbal );
 
 	      ytable[y][0] = (unsigned char) ( rDiff/2 * rat );
 	      ytable[y][1] = (unsigned char) ( gDiff/2 * rat );
@@ -459,20 +475,23 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
 	    for (x = 0; x < pixmap.width(); x++) 
 	      {
-		rat =  exp( ((double)x - pixmap.width() ) * balance );
+		dir = _xanti ? x : pixmap.width() - 1 - x;
+		rat =  1 - exp( - (double)x * xbal );
 
-		xtable[x][0] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
-		xtable[x][1] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
-		xtable[x][2] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
+		xtable[dir][0] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
+		xtable[dir][1] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
+		xtable[dir][2] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
 	      }
 	    
 	    for (y = 0; y < pixmap.height(); y++) 
 	      {
-		rat =  exp( ((double)y - pixmap.height() ) * balance );
+		dir = _yanti ? y : pixmap.height() - 1 -y;
 
-		ytable[y][0] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
-		ytable[y][1] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
-		ytable[y][2] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
+		rat =  1 - exp( - (double)y * ybal );
+
+		ytable[dir][0] = (unsigned char) abs((int)(rDiff*(0.5-rat)));
+		ytable[dir][1] = (unsigned char) abs((int)(gDiff*(0.5-rat)));
+		ytable[dir][2] = (unsigned char) abs((int)(bDiff*(0.5-rat)));
 	      }
 	    
 	    for (y = 0; y < pixmap.height(); y++) {

@@ -29,14 +29,19 @@ public:
     /**
      * Draws a vertical, horizontal, diagonal, crossdiagonal,pyramid, 
      * rectangle, pipecross or elliptic gradient from color ca to color cb
-     * using an unbalanced (non-linear) ca-to-cb color table.
-     * int balance has a nonzero value between 1 and 100 with 
-     * a default of 30 (values larger than 100 don't make much sense, since
-     * the algorithm uses exponentials (I'd really need an algorithms book)
+     * using a bidirectional unbalanced (non-linear) ca-to-cb color table.
+     * @ int xfactor and 
+     * @ int yfactor have nonzero values between -200 and 200 with 
+     * a default of 100 (values larger than 200 don't make much sense, since
+     * the algorithm uses exponentials
+     * Negative values of xfactor and yfactor indicate a negative direction
+     * of the gradient
      */
-    static void unbalancedGradient(KPixmap &pixmap, const QColor &ca,
-                                 const QColor &cb, GradientType type,
-                                 int factor = 30, int ncols=3);
+    static void unbalancedGradient(KPixmap &pixmap, 
+				   const QColor &ca, const QColor &cb, 
+				   GradientType type,
+				   int xfactor = 100, int yfactor = 100,
+				   int ncols=3);
 
     /**
      * Either brightens or dims the image by a specified percent.
