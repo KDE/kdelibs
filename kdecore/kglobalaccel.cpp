@@ -257,7 +257,7 @@ void KGlobalAccel::readSettings()
 	KConfig globalConfig;// this way we are certain to get the global stuff!
 	KConfig *pConfig = &globalConfig;
 
-	pConfig->setGroup( aGroup.data() );
+	pConfig->setGroup( aGroup );
 
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
@@ -280,7 +280,7 @@ void KGlobalAccel::readSettings()
 		if ( s.isNull() )
 			pE->aConfigKeyCode = pE->aDefaultKeyCode;
 		else
-			pE->aConfigKeyCode = stringToKey( s.data() );
+			pE->aConfigKeyCode = stringToKey( s );
 		
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
 		
@@ -315,7 +315,7 @@ void KGlobalAccel::setConfigGroup( const QString& group )
 
 const QString KGlobalAccel::configGroup()
 {
-	return aGroup.data();
+	return aGroup;
 }
 
 void KGlobalAccel::setEnabled( bool activate )
@@ -470,7 +470,7 @@ void KGlobalAccel::writeSettings()
 	KConfig globalConfig;// this way we are certain to get the global stuff!
 	KConfig *pConfig = &globalConfig;
 
-	pConfig->setGroup( aGroup.data() );
+	pConfig->setGroup( aGroup );
 
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
