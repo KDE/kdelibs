@@ -3815,7 +3815,7 @@ void KHTMLPart::slotFind()
                this, SLOT( slotFindDialogDestroyed() ) );
   }
 
-  d->m_findDialog->setNewSearch();
+  d->m_findDialog->setPart( part );
   d->m_findDialog->setText( part->d->m_lastFindState.text );
   d->m_findDialog->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
   d->m_findDialog->setDirection( part->d->m_lastFindState.direction );
