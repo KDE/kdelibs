@@ -152,6 +152,10 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == d->tagMenu )
   {
     QWidget *prnt = 0L;
+    // Look up to see if we are inside a menubar or not
+    // If yes, then use the parent widget (to get kaction to plug itself into the mainwindow)
+    // But we don't want to set the parent for a standalone popupmenu,
+    // otherwise its shortcuts appear.
     for ( QDomNode node = element; !node.isNull(); node = node.parentNode() )
     {
         if ( node.nodeType() == QDomNode::ElementNode &&
