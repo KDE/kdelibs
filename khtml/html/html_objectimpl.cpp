@@ -404,7 +404,8 @@ void HTMLObjectElementImpl::detach()
 void HTMLObjectElementImpl::applyChanges(bool top, bool force)
 {
     if (needWidgetUpdate) {
-        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
+        if(m_render && strcmp( m_render->renderName(),  "RenderPartObject" ) == 0 )
+            static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
     }
     HTMLElementImpl::applyChanges(top,force);
