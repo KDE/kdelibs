@@ -447,7 +447,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	QScrollView *sv = ::qt_cast<QScrollView *>(w);
 	if (sv || !rw->isFormElement()) {
 // 	    kdDebug(6000) << "    removing scrollview " << sv;
-	    cr -= w->geometry();
+	    int x, y;
+	    rw->absolutePosition(x, y);
+	    contentsToViewport(x, y, x, y);
+	    cr -= QRect(x, y, rw->width(), rw->height());
 	}
     }
     if (cr.isEmpty())
@@ -1159,6 +1162,13 @@ void KHTMLView::doAutoScroll()
     }
 }
 
+
+class HackWidget : public QWidget
+{
+ public:
+    inline void setNoErase() { setWFlags(getWFlags()|WRepaintNoErase); }
+};
+
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::AccelOverride ) {
@@ -1200,6 +1210,20 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    if (!::qt_cast<QScrollView *>(w)) {
 			w->installEventFilter(this);
 			w->unsetCursor();
+			w->setBackgroundMode( QWidget::NoBackground );
+			static_cast<HackWidget *>(w)->setNoErase();
+			if (w->children()) {
+			    QObjectListIterator it(*w->children());
+			    for (; it.current(); ++it) {
+				QWidget *widget = ::qt_cast<QWidget *>(it.current());
+				if (widget && !widget->isTopLevel()
+				    && !::qt_cast<QScrollView *>(widget)) {
+				    widget->setBackgroundMode( QWidget::NoBackground );
+				    static_cast<HackWidget *>(widget)->setNoErase();
+				    widget->installEventFilter(this);
+				}
+			    }
+			}
 		    }
 		}
 	    }
@@ -1218,29 +1242,37 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    // eat the event. Like this we can control exactly when the widget
 		    // get's repainted.
 		    block = true;
-		    int x, y;
-		    viewportToContents( w->x(), w->y(), x, y );
+		    int x = 0, y = 0;
+		    QWidget *v = w;
+		    while (v && v != view) {
+			x += v->x();
+			y += v->y();
+			v = v->parentWidget();
+		    }
+		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
 				    pe->rect().width(), pe->rect().height());
 		}
 		break;
 	    case QEvent::Wheel:
-		// don't allow the widget to react to wheel event unless its
-		// currently focused. this avoids accidentally changing a select box
-		// or something while wheeling a webpage.
-		if (qApp->focusWidget() != w &&
-		    w->focusPolicy() <= QWidget::StrongFocus)  {
-		    static_cast<QWheelEvent*>(e)->ignore();
-		    QApplication::sendEvent(this, e);
-		    block = true;
+		if (w->parentWidget() == view) {
+		    // don't allow the widget to react to wheel event unless its
+		    // currently focused. this avoids accidentally changing a select box
+		    // or something while wheeling a webpage.
+		    if (qApp->focusWidget() != w &&
+			w->focusPolicy() <= QWidget::StrongFocus)  {
+			static_cast<QWheelEvent*>(e)->ignore();
+			QApplication::sendEvent(this, e);
+			block = true;
+		    }
 		}
 		break;
 	    case QEvent::MouseMove:
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (!::qt_cast<QScrollBar *>(w)) {
+		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
@@ -1259,7 +1291,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    }
 	    case QEvent::KeyPress:
 	    case QEvent::KeyRelease:
-		if (!::qt_cast<QScrollBar *>(w)) {
+		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
 		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 		    if (e->type() == QEvent::KeyPress)
 			keyPressEvent(ke);

@@ -34,6 +34,7 @@
 #include <qapplication.h>
 #include <qlineedit.h>
 #include <kglobalsettings.h>
+#include <qobjectlist.h>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -382,29 +383,44 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
 
 #include <private/qinternal_p.h>
 
+static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
+{
+    QPixmap pm = QPixmap(widget->width(), widget->height());
+    if ( p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget) ) {
+	// even hackier!
+	pm.fill(widget, QPoint(0, 0));
+    } else {
+	QPoint pt(tx, ty);
+	pt = p->xForm(pt);
+	bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
+    }
+    QPainter::redirect(widget, &pm);
+    QPaintEvent e( widget->rect(), false );
+    QApplication::sendEvent( widget, &e );
+    QPainter::redirect(widget, 0);
+    if (widget->children()) {
+	QObjectListIterator it(*widget->children());
+	for (; it.current(); ++it) {
+	    QWidget *w = ::qt_cast<QWidget *>(it.current());
+	    if (w && !w->isTopLevel()) {
+		QPixmap cp = copyWidget(tx + w->x(), ty + w->y(), p, w);
+		bitBlt(&pm, w->x(), w->y(), &cp, 0, 0);
+	    }
+	}
+    }
+    return pm;
+}
+
 
 void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int, int tx, int ty)
 {
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
 
-    QPixmap pm;
     if (!::qt_cast<QScrollView *>(widget)) {
         bool dsbld = QSharedDoubleBuffer::isDisabled();
         QSharedDoubleBuffer::setDisabled(true);
-        pm = QPixmap(widget->width(), widget->height());
-        if ( p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget) ) {
-            // even hackier!
-            pm.fill(widget, QPoint(0, 0));
-        } else {
-            QPoint pt(tx, ty);
-            pt = p->xForm(pt);
-            bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
-        }
-        QPainter::redirect(widget, &pm);
-        QPaintEvent e( widget->rect(), false );
-        QApplication::sendEvent( widget, &e );
-        QPainter::redirect(widget, 0);
+	QPixmap pm = copyWidget(tx, ty, p, widget);
         QSharedDoubleBuffer::setDisabled(dsbld);
         p->drawPixmap(tx, ty, pm);
     } else {
