@@ -19,7 +19,7 @@ public:
     /**
    * Construct a KApplet object.
    */
-    KApplet( const char* name = 0 );
+    KApplet( QWidget* parent = 0, const char* name = 0 );
     /*
      * Destroy a KApplet object.
      */
@@ -33,8 +33,6 @@ public:
        respectively.
      */
     void setup( int& argc, char ** argv );
-
-protected:
 
     /**
        Initializes the applet. This function needs to be reimplemented
@@ -53,6 +51,7 @@ protected:
        on the applets orientation.
      */
     virtual void init( Orientation orientation, int width, int height );
+
 
 private:
 
