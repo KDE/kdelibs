@@ -230,7 +230,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
 
       QCString name;
       QValueList<QCString> arg_list;
-      QCString startup_id = "";
+      QCString startup_id = "0";
       QValueList<QCString> envs;
       stream >> name >> arg_list;
       if( fun == "exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)" )
@@ -606,7 +606,7 @@ KLauncher::slotAutoStart()
       }
       s = new KService(service);
    }
-   while (!start_service(s, QStringList(), QValueList<QCString>(), "", false, true));
+   while (!start_service(s, QStringList(), QValueList<QCString>(), "0", false, true));
    // Loop till we find a service that we can start.
 }
 
