@@ -301,7 +301,7 @@ class Manager : private ManagerNotifier
     }
 
     /**
-      Creates a new resource of type @param type, with default
+      Creates a new resource of type @p type with default
       settings. The resource is
       not added to the manager, the application has to do that.
       Returns a pointer to a resource object or a null pointer
