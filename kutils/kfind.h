@@ -187,7 +187,7 @@ public:
      * @param matchedlength The length of the candidate match
      */
     virtual bool validateMatch( const QString & text, int index, int matchedlength ) {
-        Q_UNUSED(text); Q_UNUSED(index); Q_UNUSED(matchedLength); return true; }
+        Q_UNUSED(text); Q_UNUSED(index); Q_UNUSED(matchedlength); return true; }
 
     /**
      * Returns true if we should restart the search from scratch.
