@@ -71,6 +71,7 @@ const KKeys KKEYS[NB_KEYS] = {
 	{ "Menu", 0x1055 },
 	{ "Hyper_L", 0x1056 },
 	{ "Hyper_R", 0x1057 },
+	{ "Help", 0x1058 },
 	{ "Space", 0x20 },
 	{ "Any", Qt::Key_Space },
 	{ "Exclam", 0x21 },

@@ -11,7 +11,7 @@ typedef struct {
 #define MAX_KEY_LENGTH           15   // should be calculated (gawk ?) 
 #define MAX_KEY_MODIFIER_LENGTH   21  // "SHIFT + CRTL + ALT + " :  
 #define MAX_FCTN_LENGTH           50  // arbitrary limit 
-#define NB_KEYS                 233 
+#define NB_KEYS                 234 
 extern const KKeys KKEYS[NB_KEYS]; 
 
 #endif
