@@ -149,13 +149,13 @@ void KAction::unplug( QWidget *w )
     KToolBar *bar = (KToolBar *)w;
 
     int idx = findContainer( bar );
-    
+
     if ( idx != -1 )
     {
       bar->removeItem( menuId( idx ) );
       removeContainer( idx );
     }
-    
+
     return;
   }
   QAction::unplug( w );
@@ -251,29 +251,29 @@ int KToggleAction::plug( QWidget* widget )
         qDebug("Can not plug KToggleAction in %s", widget->className() );
         return -1;	
     }
-    
+
     int index = -1;
     if ( widget->inherits( "KToolBar" ) ) {
         KToolBar *bar = (KToolBar *)widget;
-        
+
         int id_ = get_toolbutton_id();
         bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
                            isEnabled(), plainText() );
-        
+
         addContainer( bar, id_ );
-        
+
         connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-        
+
         index =  containerCount() - 1;
     } else
         index = QToggleAction::plug( widget );
-    
+
     if ( index == -1 )
         return index;
-    
+
     if ( widget->inherits("QPopupMenu") ) {
         int id = menuId( index );
-        
+
         popupMenu( index )->setItemChecked( id, isChecked() );
     }
     else if ( widget->inherits("QActionWidget" ) )
@@ -573,6 +573,15 @@ void KFontAction::setFont( const QString &family )
 	setCurrentItem( i );
 }
 
+int KFontAction::plug( QWidget *w )
+{
+    int container = KSelectAction::plug( w );
+
+    if ( container != -1 && w->inherits( "KToolBar" ) )
+	((KToolBar *)w)->getCombo( menuId( container ) )->setAutoCompletion( TRUE );
+
+    return container;
+}
 
 KFontSizeAction::KFontSizeAction( const QString& text, int accel,
 				  QObject* parent, const char* name )
@@ -719,7 +728,7 @@ int KActionMenu::plug( QWidget* widget )
     return containerCount() - 1;
   }
 
-  return QActionMenu::plug( widget );  
+  return QActionMenu::plug( widget );
 }
 
 void KActionMenu::unplug( QWidget* widget )
@@ -734,8 +743,8 @@ void KActionMenu::unplug( QWidget* widget )
     {
       bar->removeItem( menuId( idx ) );
       removeContainer( idx );
-    }      
-    
+    }
+
     return;
   }
 

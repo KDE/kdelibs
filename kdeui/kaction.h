@@ -124,6 +124,8 @@ public:
 	return currentText();
     }
 
+    int plug( QWidget* );
+
 private:
     QStringList fonts;
 
@@ -167,10 +169,10 @@ public:
     KActionMenu( const QString& text, QObject* parent = 0, const char* name = 0 );
     KActionMenu( const QString& text, const QIconSet& icon, QObject* parent = 0, const char* name = 0 );
     KActionMenu( QObject* parent = 0, const char* name = 0 );
-  
+
     virtual int plug( QWidget* widget );
     virtual void unplug( QWidget* widget );
-    
+
     virtual void setEnabled( bool b );
 
     virtual void setText( const QString& text );
