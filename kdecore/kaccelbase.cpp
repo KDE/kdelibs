@@ -61,6 +61,7 @@ KAccelBase::KAccelBase( int fInitCode )
 	m_sConfigGroup = "Shortcuts";
 	m_bConfigIsGlobal = false;
 	m_bAutoUpdate = false;
+	mtemp_pActionRemoving = 0;
 }
 
 KAccelBase::~KAccelBase()
@@ -422,7 +423,7 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 	// For each action
 	for( uint iAction = 0; iAction < m_rgActions.count(); iAction++ ) {
 		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
-		if( pAction && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
+		if( pAction && pAction->m_pObjSlot && pAction->m_psMethodSlot && pAction != mtemp_pActionRemoving ) {
 			// For each key sequence associated with action
 			for( uint iSeq = 0; iSeq < pAction->shortcut().count(); iSeq++ ) {
 				const KKeySequence& seq = pAction->shortcut().seq(iSeq);
@@ -515,23 +516,19 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 
 		// If the given action is connected to this key,
 		if( &action == pInfo->pAction ) {
-			if( it == m_mapKeyToAction.begin() ) {
-				m_mapKeyToAction.remove( it );
-				it = m_mapKeyToAction.begin();
-			} else {
-				KKeyToActionMap::iterator itRemove = it;
-				--it;
-				m_mapKeyToAction.remove( itRemove );
-				it++;
-			}
 			disconnectKey( action, key );
 			action.decConnections();
+
+			KKeyToActionMap::iterator itRemove = it++;
+			m_mapKeyToAction.remove( itRemove );
 		}
 		// If this is a multi-key shortcut,
 		else if( (*it).pAction == 0 ) {
-			// FIXME: won't work for multi-key shortcuts.
+			// FIXME: make updating multi-key shortcuts efficient.
 			//if( cutOld.contains( key.key() ) )
-				return updateConnections();
+			mtemp_pActionRemoving = &action;
+			bool b = updateConnections();
+			mtemp_pActionRemoving = 0;
 		} else
 			it++;
 	}
@@ -549,7 +546,6 @@ bool KAccelBase::setShortcut( const QString& sAction, const KShortcut& cut )
 
 		if( m_bAutoUpdate && !pAction->shortcut().isNull() )
 			insertConnection( *pAction );
-
 		return true;
 	} else
 		return false;

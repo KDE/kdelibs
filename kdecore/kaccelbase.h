@@ -202,7 +202,10 @@ class KAccelBase
 	bool m_bConfigIsGlobal;
 	QString m_sConfigGroup;
 	bool m_bAutoUpdate;
+	KAccelAction* mtemp_pActionRemoving;
 
+ // Protected methods
+ protected:
 	void slotRemoveAction( KAccelAction* );
 
 	void createKeyList( QValueVector<struct X>& rgKeys );
