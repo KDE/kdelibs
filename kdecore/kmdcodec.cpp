@@ -130,10 +130,10 @@ static int rikFindChar(register const char * _s, const char c)
 
   while (true)
   {
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
+    if ((0 == *s) || (c == *s)) break; ++s;
+    if ((0 == *s) || (c == *s)) break; ++s;
+    if ((0 == *s) || (c == *s)) break; ++s;
+    if ((0 == *s) || (c == *s)) break; ++s;
   }
 
   return s - _s;
@@ -154,7 +154,7 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
   // the underlying allocation routines are quite efficient,
   // but it's nice to have 0 allocations in many cases.
 
-  QCString output(length * 1.2);
+  QCString output( (length*12)/10 );
 
   const unsigned int end = length - 1;
   unsigned int lineLength = 0;
