@@ -40,6 +40,10 @@
 #include <sys/mman.h>
 #endif
 
+#ifndef MAP_FAILED
+#define MAP_FAILED ((void *) -1)
+#endif
+
 template class QPtrList<KSycocaFactory>;
 
 struct KSycocaPrivate {
@@ -89,7 +93,9 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size,
                                 PROT_READ, MAP_SHARED,
                                 database->handle(), 0);
-     if (!m_sycoca_mmap)
+     /* POSIX mandates only MAP_FAILED, but we are paranoid so check for
+        null pointer too.  */
+     if (m_sycoca_mmap == MAP_FAILED || m_sycoca_mmap == 0)
      {
         kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
 #endif
