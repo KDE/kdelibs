@@ -264,7 +264,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
             xoff = -xoff + parent()->width();
     }
 
-    if ( listImage ) {
+    if ( listImage && !listImage->isErrorImage()) {
         p->drawPixmap( QPoint( _tx + xoff, _ty ), listImage->pixmap());
         return;
     }
