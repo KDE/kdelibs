@@ -76,11 +76,6 @@ struct KWizardPage
   int id;
 };
 
-
-#define NEXT klocale->translate("&Next >>")
-#define PREV klocale->translate("<< &Previous")
-
-
 /**
 * KWizard is a multi-purpose dialog. It is very useful for:
 *

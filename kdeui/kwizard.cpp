@@ -130,11 +130,11 @@ KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
   pwiz->sep2 = new KSeparator(this);
   //sep2->setFixedHeight(sep2->sizeHint().height());
 
-  pwiz->previous = new QPushButton(PREV, this);
+  pwiz->previous = new QPushButton("<< " + i18n("&Previous"), this);
   pwiz->previous->hide();
   connect( pwiz->previous, SIGNAL(clicked()), SLOT(previousPage()));
 
-  pwiz->next = new QPushButton(NEXT, this);
+  pwiz->next = new QPushButton(i18n("&Next") + " >>", this);
   pwiz->next->hide();
   connect( pwiz->next, SIGNAL(clicked()), SLOT(nextPage()));
 
@@ -403,8 +403,8 @@ void KWizard::resizeEvent(QResizeEvent *)
   }
   else
   {
-    pwiz->next->setText(NEXT);
-    pwiz->previous->setText(PREV);
+    pwiz->next->setText(i18n("&Next") + " >>");
+    pwiz->previous->setText("<< " + i18n("&Previous"));
   }
 
   pwiz->sep2->setGeometry(7, height()-(pwiz->next->height()+14+subtr),
