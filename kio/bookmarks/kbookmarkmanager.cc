@@ -411,4 +411,7 @@ void KBookmarkOwner::openBookmarkURL(const QString& url)
 void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+void KBookmarkOwnerListCapable::virtual_hook( int id, void* data )
+{ KBookmarkOwner::virtual_hook( id, data ); }
+
 #include "kbookmarkmanager.moc"

@@ -83,13 +83,15 @@ public:
    * (one instance of KBookmarkMenu is created for the toplevel menu,
    *  but also one per submenu).
    *
-   * @param owner implementation of the KBookmarkOwner interface (callbacks)
+   * @param owner implementation of the KBookmarkOwner interface (callbacks). If this is of type
+   *  KBookmarkOwnerListCapable (checked at runtime), then the menu will also allow group opens.
    * @param parentMenu menu to be filled
-   * @param collec parent collection for the KActions. Only used for other menus than the toplevel one.
+   * @param collec parent collection for the KActions. 
+   *  Only used for other menus than the toplevel one.
    * @param root true for the toplevel menu
    * @param add true to show the "Add Bookmark" and "New Folder" entries
    * @param parentAddress the address of the group containing the items
-   * that we want to show.
+   *  that we want to show.
    * @see KBookmark::address.
    * Be careful :
    * A _null_ parentAddress denotes a NS-bookmark menu.
@@ -110,7 +112,8 @@ public:
   void fillBookmarkMenu();
 
   /**
-   * Call ensureUpToDate() if you need KBookmarkMenu to adjust to its final size before it is executed.
+   * Call ensureUpToDate() if you need KBookmarkMenu to adjust to its 
+   * final size before it is executed.
    **/
   void ensureUpToDate();
 
@@ -122,6 +125,7 @@ protected slots:
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
   void slotRMBActionRemoveBookmark();
   void slotRMBActionOpenBookmark();
+  // void slotRMBActionOpenFolder(); TODO
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();
