@@ -553,8 +553,13 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
     if ( fragment.isNull() )
         return false;
 
-    removeChildren();
     int ec = 0;
+    // Make sure adding the new child is ok, before removing all children (#96187)
+    checkAddChild( fragment.handle(), ec);
+    if ( ec )
+        return false;
+
+    removeChildren();
     appendChild( fragment.handle(), ec );
     return !ec;
 }
