@@ -76,12 +76,16 @@ QString HelpProtocol::langLookup(QString fname)
         if (info.exists() && info.isFile() && info.isReadable())
             return *it;
 
-        QString file = (*it).left((*it).findRev('/')) + "/index.docbook";
-        kdDebug( 7119 ) << "Looking for help in: " << file << endl;
-        info.setFile(file);
-        if (info.exists() && info.isFile() && info.isReadable())
-            return *it;
+        if ( ( *it ).right( 5 ) == ".html" )
+        {
+            QString file = (*it).left((*it).findRev('/')) + "/index.docbook";
+            kdDebug( 7119 ) << "Looking for help in: " << file << endl;
+            info.setFile(file);
+            if (info.exists() && info.isFile() && info.isReadable())
+                return *it;
+        }
     }
+
 
     return QString::null;
 }
