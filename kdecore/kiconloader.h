@@ -97,24 +97,6 @@ public:
   KIconLoader( const KInstance* library );
     
   /**
-     Load a toolbar icon from disk or cache. Use this function to load
-     toolbar icons specific to your application. Don't use it to load
-     application icons. 
-     You shouldn't have to call this function on your own. Rather use
-     @see BarIcon
-     
-     @param name	The name of the icon to load. Absolute pathnames are
-                        allowed, but not recommended. An example of a name is
-			"filenew"
-     @param canReturnNull	If this is false, this function will return
-		the "unknown" icon if the requested icon is not found.
-		The default is to return null.
-
-     @return	The loaded icon.
-  */
-  QPixmap loadIcon( const QString& name, bool canReturnNull = true );
-
-  /**
   	Load an icon from disk without cache.
 
 	This is useful if the icon has changed on the filesystem and
@@ -127,7 +109,9 @@ public:
   QPixmap reloadIcon( const QString& name);
 
   /**
-   * The loadApplication-Icon is for loading applications icons (and more) 
+   * The loadIcon method should be used for loading most non-toolbar
+   * icons (it <em>will</em> load toolbar icons, but the recommended
+   * way is to use BarIcon).
    *
    * @param name icon name without extension. An example is "konqueror" or
    *             "mimetypes/postscript"
@@ -137,11 +121,9 @@ public:
    * @param canReturnNull If this is false, this function will return
 		the "unknown" icon if the requested icon is not found.
 		The default is to return null.
-   * @see loadIcon
    */
-  QPixmap loadApplicationIcon( const QString& name, Size size = Medium,
-                               QString *path_store = 0, 
-			       bool canReturnNull = true);
+    QPixmap loadIcon( const QString& name, Size size = Medium,
+                      QString *path_store = 0, bool can_return_null = true );
 
   /**
      Get the complete path for a toolbar icon name.

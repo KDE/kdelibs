@@ -522,16 +522,16 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    if (argv[i+1][0] == '/')
 		aIconPixmap = QPixmap(argv[i+1]);
 	    else
-		aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
+		aIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1] );
 	    if (aMiniIconPixmap.isNull())
-		aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1], KIconLoader::Small);
+		aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1], KIconLoader::Small);
 	    aDummyString2 += parameter_strings[icon-1];
 	    aDummyString2 += " ";
 	    aDummyString2 += argv[i+1];
 	    aDummyString2 += " ";
 	    break;
 	case miniicon:
-	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1],
+	    aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1],
 							    KIconLoader::Small);
 	    aDummyString2 += parameter_strings[miniicon-1];
 	    aDummyString2 += " ";
@@ -567,7 +567,7 @@ QPixmap KApplication::icon() const
 {
   if( aIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName() );
+      that->aIconPixmap = KGlobal::iconLoader()->loadIcon( instanceName() );
   }
   return aIconPixmap;
 }
@@ -576,7 +576,7 @@ QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName(), KIconLoader::Small);
+      that->aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( instanceName(), KIconLoader::Small);
   }
   return aMiniIconPixmap;
 }

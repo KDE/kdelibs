@@ -3,6 +3,8 @@
 
    This file is part of the KDE libraries
    Copyright (C) 1997 Christoph Neerfeld (chris@kde.org)
+             (C) 1999 Stephan Kulow (coolo@kde.org)
+             (C) 1999 Kurt Granroth (granroth@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -71,28 +73,13 @@ KIconLoader::KIconLoader( const KInstance* _library )
     initPath();
 }
 
-QPixmap KIconLoader::loadIcon ( const QString& name, bool canReturnNull )
-{
-    QPixmap result = loadInternal(name);
-    
-    if (result.isNull() && !canReturnNull) {
-	warning("%s : ERROR: couldn't find icon: %s",
-		appname.ascii(), name.ascii() );
-	result = loadInternal("unknown");
-    }
-    
-    return result;
-}
-
-
 QPixmap KIconLoader::reloadIcon ( const QString& name )
 {
     return loadInternal( name, false );
 }
 
-QPixmap KIconLoader::loadApplicationIcon ( const QString& name, 
-                                           Size size, QString* path_store, 
-                                           bool canReturnNull )
+QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
+                                QString* path_store, bool canReturnNull )
 {
     if (name.at(0) == '/')
         return loadInternal(name);
@@ -236,8 +223,8 @@ QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
 QPixmap BarIcon(const QString& pixmap , const KInstance* library )
 {
     if (pixmap.at(0) == '/')
-        return library->iconLoader()->loadApplicationIcon(pixmap);
+        return library->iconLoader()->loadIcon(pixmap);
     else
-        return library->iconLoader()->loadApplicationIcon("toolbar/" + pixmap,
-                                                      KIconLoader::Medium);
+        return library->iconLoader()->loadIcon("toolbar/" + pixmap,
+                                               KIconLoader::Medium);
 }
