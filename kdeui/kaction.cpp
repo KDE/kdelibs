@@ -722,7 +722,7 @@ void KAction::unplug( QWidget *w )
   else if ( w->inherits( "KToolBar" ) )
   {
     KToolBar *bar = static_cast<KToolBar *>( w );
-    bar->removeItem( id );
+    bar->removeItemDelayed( id );
   }
   else if ( w->inherits( "QMenuBar" ) )
   {

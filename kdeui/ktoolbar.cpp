@@ -102,6 +102,7 @@ public:
         NewLineDefault = false;
         OffsetDefault = -1;
         PositionDefault = "Top";
+        idleButtons.setAutoDelete(true);
     }
 
     int m_iconSize;
@@ -143,6 +144,7 @@ public:
   int OffsetDefault;
   QString PositionDefault;
 
+   QPtrList<QWidget> idleButtons;
 };
 
 KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
@@ -722,7 +724,7 @@ void KToolBar::clear ()
 }
 
 
-void KToolBar::removeItem (int id)
+void KToolBar::removeItem(int id)
 {
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
@@ -735,6 +737,25 @@ void KToolBar::removeItem (int id)
     widget2id.remove( w );
     widgets.removeRef( w );
     delete w;
+}
+
+
+void KToolBar::removeItemDelayed(int id)
+{
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
+    {
+        kdDebug(220) << "KToolBar::removeItem item " << id << " not found" << endl;
+        return;
+    }
+    QWidget * w = (*it);
+    id2widget.remove( id );
+    widget2id.remove( w );
+    widgets.removeRef( w );
+
+    w->blockSignals(true);
+    d->idleButtons.append(w);
+    layoutTimer->start( 50, TRUE );
 }
 
 
@@ -1189,6 +1210,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
 void KToolBar::rebuildLayout()
 {
+    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+       w->blockSignals(false);
+    d->idleButtons.clear();
+
     layoutTimer->stop();
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
     QBoxLayout *l = boxLayout();

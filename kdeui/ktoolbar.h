@@ -666,6 +666,13 @@ public:
     void removeItem (int id);
 
     /**
+   * Remove item @p id.
+   *
+   * Item is deleted when toolbar is redrawn.
+   */
+    void removeItemDelayed (int id);
+
+    /**
    * Hide item.
    */
     void hideItem (int id);
