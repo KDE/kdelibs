@@ -23,7 +23,6 @@
 
 #include <math.h>
 
-#include <dither.h>
 #include <qimage.h>
 #include <stdlib.h>
 
@@ -273,8 +272,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
 			     gca + gDiff * i / ( ncols - 1 ),
 			     bca + bDiff * i / ( ncols - 1 ) );
 	}
-	kFSDither dither(dPal, ncols);
-	image = dither.dither(image);
+    dither(image, dPal, ncols);
 	delete [] dPal;
     }
 
@@ -504,8 +502,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
                                gca + gDiff * i / ( ncols - 1 ),
                                bca + bDiff * i / ( ncols - 1 ) );
           }
-          kFSDither dither(dPal, ncols);
-          image = dither.dither(image);
+          dither(image, dPal, ncols);
           delete [] dPal;
       }
 
@@ -1065,8 +1062,7 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     for (int i=0; i<ncols; i++)
 	pal[i] = QColor(r1 + sr*i, g1 + sg*i, b1 + sb*i);
 	
-    kFSDither dither(pal, ncols);
-    img = dither.dither(img);
+    dither(img, pal, ncols);
 
     delete[] pal;
     return img;
@@ -1262,3 +1258,126 @@ QImage& KImageEffect::contrast(QImage &img, int c)
     return(img);
 }
 
+//======================================================================
+//
+// Dithering effects
+//
+//======================================================================
+
+// adapted from kFSDither (C) 1997 Martin Jones (mjones@kde.org)
+//
+// Floyd-Steinberg dithering
+// Ref: Bitmapped Graphics Programming in C++
+//      Marv Luse, Addison-Wesley Publishing, 1993.
+QImage& KImageEffect::dither(QImage &img, const QColor *palette, int size)
+{
+    if ( img.depth() <= 8 )
+        return img;
+
+    QImage dImage( img.width(), img.height(), 8, size );
+    int i;
+
+    dImage.setNumColors( size );
+    for ( i = 0; i < size; i++ )
+        dImage.setColor( i, palette[ i ].rgb() );
+
+    int *rerr1 = new int [ img.width() * 2 ];
+    int *gerr1 = new int [ img.width() * 2 ];
+    int *berr1 = new int [ img.width() * 2 ];
+
+    memset( rerr1, 0, sizeof( int ) * img.width() * 2 );
+    memset( gerr1, 0, sizeof( int ) * img.width() * 2 );
+    memset( berr1, 0, sizeof( int ) * img.width() * 2 );
+
+    int *rerr2 = rerr1 + img.width();
+    int *gerr2 = gerr1 + img.width();
+    int *berr2 = berr1 + img.width();
+
+    for ( int j = 0; j < img.height(); j++ )
+    {
+        uint *ip = (uint * )img.scanLine( j );
+        uchar *dp = dImage.scanLine( j );
+
+        for ( i = 0; i < img.width(); i++ )
+        {
+            rerr1[i] = rerr2[i] + qRed( *ip );
+            rerr2[i] = 0;
+            gerr1[i] = gerr2[i] + qGreen( *ip );
+            gerr2[i] = 0;
+            berr1[i] = berr2[i] + qBlue( *ip );
+            berr2[i] = 0;
+            ip++;
+        }
+
+        *dp++ = nearestColor( rerr1[0], gerr1[0], berr1[0], palette, size );
+
+        for ( i = 1; i < img.width()-1; i++ )
+        {
+            int indx = nearestColor( rerr1[i], gerr1[i], berr1[i], palette, size );
+            *dp = indx;
+
+            int rerr = rerr1[i];
+            rerr -= palette[indx].red();
+            int gerr = gerr1[i];
+            gerr -= palette[indx].green();
+            int berr = berr1[i];
+            berr -= palette[indx].blue();
+
+            // diffuse red error
+            rerr1[ i+1 ] += ( rerr * 7 ) >> 4;
+            rerr2[ i-1 ] += ( rerr * 3 ) >> 4;
+            rerr2[  i  ] += ( rerr * 5 ) >> 4;
+            rerr2[ i+1 ] += ( rerr ) >> 4;
+
+            // diffuse green error
+            gerr1[ i+1 ] += ( gerr * 7 ) >> 4;
+            gerr2[ i-1 ] += ( gerr * 3 ) >> 4;
+            gerr2[  i  ] += ( gerr * 5 ) >> 4;
+            gerr2[ i+1 ] += ( gerr ) >> 4;
+
+            // diffuse red error
+            berr1[ i+1 ] += ( berr * 7 ) >> 4;
+            berr2[ i-1 ] += ( berr * 3 ) >> 4;
+            berr2[  i  ] += ( berr * 5 ) >> 4;
+            berr2[ i+1 ] += ( berr ) >> 4;
+
+            dp++;
+        }
+
+        *dp = nearestColor( rerr1[i], gerr1[i], berr1[i], palette, size );
+    }
+
+    delete [] rerr1;
+    delete [] gerr1;
+    delete [] berr1;
+
+    img = dImage;
+    return img;
+}
+
+int KImageEffect::nearestColor( int r, int g, int b, const QColor *palette, int size )
+{
+    int dr = palette[0].red() - r;
+    int dg = palette[0].green() - g;
+    int db = palette[0].blue() - b;
+
+    int minDist =  dr*dr + dg*dg + db*db;
+    int nearest = 0;
+
+    for (int i = 1; i < size; i++ )
+    {
+        dr = palette[i].red() - r;
+        dg = palette[i].green() - g;
+        db = palette[i].blue() - b;
+
+        int dist = dr*dr + dg*dg + db*db;
+
+        if ( dist < minDist )
+        {
+            minDist = dist;
+            nearest = i;
+        }
+    }
+
+    return nearest;
+}

@@ -194,6 +194,16 @@ public:
      */
     static KPixmap& contrast(KPixmap& pixmap, int c);
 
+    /**
+     * Dithers an pixmap using Floyd-Steinberg dithering for low-color
+     * situations.
+     *
+     * @param pixmap The pixmap to process.
+     * @param palette The color palette to use
+     * @param size The size of the palette
+     * @return Returns the @ref #pixmap, provided for convenience.
+     */
+    static KPixmap& dither(KPixmap &pixmap, const QColor *palette, int size);
 };
 
 

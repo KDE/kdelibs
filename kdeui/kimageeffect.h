@@ -173,6 +173,18 @@ public:
      * @return Returns the @ref #image, provided for convenience.
      */
     static QImage& contrast(QImage &image, int c);
+
+    /**
+     * Dithers an image using Floyd-Steinberg dithering for low-color
+     * situations.
+     *
+     * @param image The QImage to process.
+     * @param palette The color palette to use
+     * @param size The size of the palette
+     * @return Returns the @ref #image, provided for convenience.
+     */
+    static QImage& dither(QImage &img, const QColor *palette, int size);
+
 private:
 
     /**
@@ -181,6 +193,11 @@ private:
      */
     static unsigned int lHash(unsigned int c);
     static unsigned int uHash(unsigned int c);
+
+    /**
+     * Helper function to find the nearest color to the RBG triplet
+     */
+    static int nearestColor( int r, int g, int b, const QColor *pal, int size );
 };
 
 #endif

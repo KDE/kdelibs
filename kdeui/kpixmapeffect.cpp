@@ -23,7 +23,6 @@
 
 #include <qimage.h>
 #include <qpainter.h>
-#include <dither.h>
 
 #include "kpixmapeffect.h"
 #include "kimageeffect.h"
@@ -169,8 +168,7 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
             tmp = 0 + 255 * i / ( ncols - 1 );
             dPal[i].setRgb ( tmp, tmp, tmp );
         }
-        kFSDither dither(dPal, ncols);
-        image = dither.dither(image);
+        KImageEffect::dither(image, dPal, ncols);
         pixmap.convertFromImage(image);
         delete [] dPal;
     }
@@ -203,8 +201,7 @@ KPixmap& KPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
             tmp = 0 + 255 * i / ( ncols - 1 );
             dPal[i].setRgb ( tmp, tmp, tmp );
         }
-        kFSDither dither(dPal, ncols);
-        image = dither.dither(image);
+        KImageEffect::dither(image, dPal, ncols);
         pixmap.convertFromImage(image);
         delete [] dPal;
     }
@@ -305,4 +302,18 @@ KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
     return pixmap;
 }
 
+//======================================================================
+//
+// Dither effects
+//
+//======================================================================
 
+// -----------------------------------------------------------------------------
+KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
+{
+    QImage img = pixmap.convertToImage();
+    KImageEffect::dither(img, palette, size);
+    pixmap.convertFromImage(img);
+
+    return pixmap;
+}

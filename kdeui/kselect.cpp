@@ -25,7 +25,7 @@
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qevent.h>
-#include <dither.h>
+#include <kimageeffect.h>
 #include "kselect.h"
 
 #define STORE_W 8
@@ -378,11 +378,10 @@ void KGradientSelector::drawContents( QPainter *painter )
 								color1.green() + greenDiff * s / 8,
 								color1.blue() + blueDiff * s / 8 );
 
-	kFSDither dither( ditherPalette, 8 );
-	QImage dImage = dither.dither( image );
+	KImageEffect::dither( image, ditherPalette, 8 );
 
 	QPixmap p;
-	p.convertFromImage( dImage );
+	p.convertFromImage( image );
 
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), p );
 
