@@ -79,7 +79,7 @@ public:
       *
       * @param dirName  The name of the directory to start in.
       * @param filter   A shell glob that specifies which files to display.
-      * see setFilter for details on how to use this argument
+      * See @ref setFilter for details on how to use this argument
       * @param acceptURLs If set to false, @ref KFileDialog will just accept
       * files on the local filesystem.
       */
