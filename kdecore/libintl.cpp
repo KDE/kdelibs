@@ -1210,7 +1210,7 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
   __argz_stringify (abs_filename, dirlist_len, ':');
   cp = abs_filename + (dirlist_len - 1);
   *cp++ = '/';
-  cp = stpcpy (cp, language);
+  cp = (char*)stpcpy (cp, language);
 
   if ((mask & TERRITORY) != 0)
     {
@@ -1512,42 +1512,6 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
      translations invalid.  */
   ++_nl_msg_cat_cntr;
 }
-
-/* For those loosing systems which don't have `alloca' we have to add
-   some additional code emulating it.  */
-#ifdef HAVE_ALLOCA
-/* Nothing has to be done.  */
-# define ADD_BLOCK(list, address) /* nothing */
-# define FREE_BLOCKS(list) /* nothing */
-#else
-struct block_list
-{
-  void *address;
-  struct block_list *next;
-};
-# define ADD_BLOCK(list, addr)						      \
-  do {									      \
-    struct block_list *newp = (struct block_list *) malloc (sizeof (*newp));  \
-    /* If we cannot get a free block we cannot add the new element to	      \
-       the list.  */							      \
-    if (newp != NULL) {							      \
-      newp->address = (addr);						      \
-      newp->next = (list);						      \
-      (list) = newp;							      \
-    }									      \
-  } while (0)
-# define FREE_BLOCKS(list)						      \
-  do {									      \
-    while (list != NULL) {						      \
-      struct block_list *old = list;					      \
-      list = list->next;						      \
-      free (old);							      \
-    }									      \
-  } while (0)
-# undef alloca
-# define alloca(size) (malloc (size))
-#endif	/* have alloca */
-
 
 struct alias_map
 {
