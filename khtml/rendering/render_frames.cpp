@@ -644,15 +644,16 @@ void RenderPartObject::updateWidget()
       params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
       params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(element()->getDocument()->baseURL().url()));
 
+      HTMLEmbedElementImpl *embed = 0;
       if ( element()->id() == ID_EMBED ) {
 
           serviceType = objbase->serviceType;
+          embed = static_cast<HTMLEmbedElementImpl *>( objbase );
 
       }
       else { // if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET)
 
           // check for embed child object
-          HTMLEmbedElementImpl *embed = 0;
           for (NodeImpl *child = objbase->firstChild(); child; child = child->nextSibling())
               if ( child->id() == ID_EMBED ) {
                   embed = static_cast<HTMLEmbedElementImpl *>( child );
@@ -704,7 +705,7 @@ void RenderPartObject::updateWidget()
               }
           }
       }
-      if ((url.isEmpty() && element()->id() != ID_EMBED) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
+      if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
       else
           objbase->setLiveConnect(part->liveConnectExtension(this));
