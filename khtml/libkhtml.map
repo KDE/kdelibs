@@ -7,6 +7,7 @@
     getValueName*;
     getPropertyName*;
     DOM::tagPriority;
+    DOM::getPropertyID*;
     DOM::*Impl::*;
     KJS::*;
     Q*KJS::*;
