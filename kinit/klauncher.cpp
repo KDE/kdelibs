@@ -164,7 +164,7 @@ IdleSlave::age(time_t now)
 
 KLauncher::KLauncher(int _kdeinitSocket)
   : KApplication( false, false ), // No Styles, No GUI
-    DCOPObject("klauncher"), 
+    DCOPObject("klauncher"),
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
 #ifdef Q_WS_X11
@@ -635,9 +635,9 @@ KLauncher::slotAppRegistered(const QCString &appId)
 
       // For unique services check the requested service name first
       if ((request->dcop_service_type == KService::DCOP_Unique) &&
-          ((appId == request->dcop_name) || 
+          ((appId == request->dcop_name) ||
            dcopClient()->isApplicationRegistered(request->dcop_name)))
-      {	  
+      {
          request->status = KLaunchRequest::Running;
          requestDone(request);
          continue;
@@ -686,7 +686,7 @@ KLauncher::slotAutoStart()
 	    QCString autoStartSignal( "autoStartDone()" );
 	    int phase = mAutoStart.phase();
 	    if ( phase > 1 )
-	        autoStartSignal.sprintf( "autoStart%dDone()", phase ); 
+	        autoStartSignal.sprintf( "autoStart%dDone()", phase );
             emitDCOPSignal(autoStartSignal, QByteArray());
 	 }
          return;
@@ -712,7 +712,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
-      DCOPresult.error = i18n("KDEInit could not launch '%1'").arg(request->name);
+      DCOPresult.error = i18n("KDEInit could not launch '%1'.").arg(request->name);
       if (!request->errorMsg.isEmpty())
          DCOPresult.error += ":\n" + request->errorMsg;
       DCOPresult.pid = 0;
@@ -744,7 +744,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       mAutoTimer.start(0, true);
    }
-   
+
    if (request->transaction)
    {
       QByteArray replyData;
@@ -787,7 +787,7 @@ KLauncher::requestStart(KLaunchRequest *request)
        length += request->startup_id.length() + 1;
    if (!request->cwd.isEmpty())
        length += request->cwd.length() + 1;
-       
+
    requestData.resize( length );
 
    char *p = requestData.data();
@@ -1116,7 +1116,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QCString&
            XCloseDisplay( mCached_dpy );
         mCached_dpy = dpy;
     }
-#endif    
+#endif
 }
 
 bool
@@ -1198,7 +1198,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestHoldSlave(const KURL &url, const QString &app_socket) 
+KLauncher::requestHoldSlave(const KURL &url, const QString &app_socket)
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
@@ -1219,7 +1219,7 @@ KLauncher::requestHoldSlave(const KURL &url, const QString &app_socket)
 pid_t
 KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
-                        const QString &app_socket, 
+                        const QString &app_socket,
                         QString &error)
 {
     IdleSlave *slave;
@@ -1309,7 +1309,7 @@ KLauncher::requestSlave(const QString &protocol,
     return pid;
 }
 
-void 
+void
 KLauncher::waitForSlave(pid_t pid)
 {
     IdleSlave *slave;
@@ -1321,7 +1321,7 @@ KLauncher::waitForSlave(pid_t pid)
     SlaveWaitRequest *waitRequest = new SlaveWaitRequest;
     waitRequest->transaction = dcopClient()->beginTransaction();
     waitRequest->pid = pid;
-    mSlaveWaitRequest.append(waitRequest);    
+    mSlaveWaitRequest.append(waitRequest);
 }
 
 void
@@ -1339,7 +1339,7 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
     }
 }
 
-void 
+void
 KLauncher::slotSlaveStatus(IdleSlave *slave)
 {
     SlaveWaitRequest *waitRequest = mSlaveWaitRequest.first();
