@@ -149,7 +149,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   QWhatsThis::add( tmpLabel, qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
   QWhatsThis::add( d->appcombo, qwtstr );
-  d->appcombo->insertStrList(packages);
+  d->appcombo->insertStrList((const char**)packages);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = QString::fromLatin1( m_aboutData
                                     ? m_aboutData->appName()
