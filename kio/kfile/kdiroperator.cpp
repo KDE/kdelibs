@@ -73,6 +73,7 @@ public:
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
         dirHighlighting = false;
+        config = 0L;
     }
 
     ~KDirOperatorPrivate() {
@@ -84,6 +85,9 @@ public:
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
     KActionSeparator *viewActionSeparator;
+
+    KConfig *config;
+    QString configGroup;
 };
 
 KDirOperator::KDirOperator(const KURL& _url,
@@ -836,6 +840,12 @@ void KDirOperator::connectView(KFileView *view)
         view->setSelectionMode( KFile::Single );
 
     if (m_fileView) {
+        if ( d->config ) // save and restore coniguration the views' config
+        {
+            m_fileView->writeConfig( d->config, d->configGroup );
+            view->readConfig( d->config, d->configGroup );
+        }
+
         // transfer the state from old view to new view
         view->clear();
         view->addItemList( *m_fileView->items() );
@@ -860,6 +870,12 @@ void KDirOperator::connectView(KFileView *view)
 
         m_fileView->widget()->hide();
         delete m_fileView;
+    }
+
+    else
+    {
+        if ( d->config )
+            view->readConfig( d->config, d->configGroup );
     }
 
     m_fileView = view;
@@ -1528,6 +1544,21 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
         m_fileView->updateView( it.current() );
 }
 
+void KDirOperator::setViewConfig( KConfig *config, const QString& group )
+{
+    d->config = config;
+    d->configGroup = group;
+}
+
+KConfig * KDirOperator::viewConfig()
+{
+    return d->config;
+}
+
+QString KDirOperator::viewConfigGroup() const
+{
+    return d->configGroup;
+}
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
