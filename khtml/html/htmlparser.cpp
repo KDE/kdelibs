@@ -729,7 +729,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
-        if ( inBody && noRealBody && !haveFrameSet) {
+        if ( inBody && !haveFrameSet) {
             popBlock( ID_BODY );
             doc()->setBody( 0 );
             inBody = false;
