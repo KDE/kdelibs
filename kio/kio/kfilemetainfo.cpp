@@ -31,6 +31,7 @@
 #include <kmimetype.h>
 #include <kdatastream.h> // needed for serialization of bool
 #include <klocale.h>
+#include <kio/global.h>
 
 #include "kfilemetainfo.h"
 
@@ -46,7 +47,7 @@ public:
           value( _value )
     {}
 
-    // wee use this one for the streaming operators
+    // we use this one for the streaming operators
     Data() {
         if ( this == null )
             delete const_cast<KFileMimeTypeInfo::ItemInfo*>( mimeTypeInfo );
@@ -785,6 +786,9 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
         case KFileMimeTypeInfo::Bytes:
             item->m_suffix = i18n("B"); break;
 
+        case KFileMimeTypeInfo::KiloBytes:
+            item->m_suffix = i18n("KB"); break;
+
         case KFileMimeTypeInfo::FramesPerSecond:
             item->m_suffix = i18n("fps"); break;
 
@@ -1425,7 +1429,18 @@ QString KFileMimeTypeInfo::ItemInfo::string(QVariant value, bool mangle) const
               s = hours ? QString().sprintf("%d:%02d:%02d",hours, minutes, seconds)
                         : QString().sprintf("%02d:%02d", minutes, seconds);
               return s; // no suffix wanted
-            } else
+            }
+            else if (unit() == KFileMimeTypeInfo::Bytes)
+            {
+                // convertSize already adds the correct suffix
+                return KIO::convertSize(value.toInt());
+            }
+            else if (unit() == KFileMimeTypeInfo::KiloBytes)
+            {
+                // convertSizeFromKB already adds the correct suffix
+                return KIO::convertSizeFromKB(value.toInt());
+            }
+            else
                 s = KGlobal::locale()->formatNumber( value.toInt() , 0);
             break;
 

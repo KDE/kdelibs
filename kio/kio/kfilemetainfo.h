@@ -124,9 +124,11 @@ public:
      * @li @p Inches          Sizes
      * @li @p Centimeters     Sizes
      * @li @p Bytes           Some data/file size in bytes
+     * @li @p KiloBytes       Some data/file size in kilobytes
      * @li @p FramesPerSecond A frame rate
      * @li @p DotsPerInch     Resolution in DPI
      * @li @p BitsPerPixel    A bit depth
+     * @li @p Hertz           Sample rates and similar
      **/
     enum Unit {
         NoUnit          = 0,
@@ -140,7 +142,8 @@ public:
         FramesPerSecond = 8,
         DotsPerInch     = 9,
         BitsPerPixel    = 10,
-        Hertz           = 11
+        Hertz           = 11,
+        KiloBytes       = 12
     };
 
 
