@@ -644,11 +644,12 @@ public:
 
     ~HTMLLabelElement();
 
+    // not part of the DOM.
     /**
      * Returns the <code> FORM </code> element containing this
      * control. Returns null if this control is not within the context
      * of a form.
-     *
+     * deprecated - don't use. Provided for KDE2 compatibility only.
      */
     HTMLFormElement form() const;
 

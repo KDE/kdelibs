@@ -958,7 +958,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         //n = new HTMLIsIndexElementImpl(document, form);
         break;
     case ID_LABEL:
-        n = new HTMLLabelElementImpl(document, form);
+        n = new HTMLLabelElementImpl(document);
         break;
     case ID_LEGEND:
         n = new HTMLLegendElementImpl(document, form);

@@ -593,10 +593,14 @@ HTMLLabelElement::~HTMLLabelElement()
 {
 }
 
+
 HTMLFormElement HTMLLabelElement::form() const
 {
     if(!impl) return 0;
-    return ((HTMLLabelElementImpl *)impl)->form();
+    ElementImpl *formElement = ((HTMLLabelElementImpl *)impl)->formElement();
+    if (!formElement)
+	return 0;
+    return ((HTMLGenericFormElementImpl *)formElement)->form();
 }
 
 DOMString HTMLLabelElement::accessKey() const

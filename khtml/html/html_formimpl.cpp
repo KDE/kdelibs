@@ -1183,13 +1183,8 @@ void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 
 // -------------------------------------------------------------------------
 
-HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f)
-{
-}
-
 HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentImpl *doc)
-    : HTMLGenericFormElementImpl(doc)
+    : HTMLElementImpl(doc)
 {
 }
 
@@ -1205,6 +1200,14 @@ const DOMString HTMLLabelElementImpl::nodeName() const
 ushort HTMLLabelElementImpl::id() const
 {
     return ID_LABEL;
+}
+
+ElementImpl *HTMLLabelElementImpl::formElement()
+{
+    DOMString formElementId = getAttribute(ATTR_FOR);
+    if (formElementId.isNull() || formElementId.isEmpty())
+	return 0;
+    return document->getElementById(formElementId);
 }
 
 // -------------------------------------------------------------------------

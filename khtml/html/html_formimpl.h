@@ -314,11 +314,10 @@ private:
 
 // -------------------------------------------------------------------------
 
-class HTMLLabelElementImpl : public HTMLGenericFormElementImpl
+class HTMLLabelElementImpl : public HTMLElementImpl
 {
 public:
     HTMLLabelElementImpl(DocumentImpl *doc);
-    HTMLLabelElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLabelElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -326,6 +325,13 @@ public:
 
     virtual tagStatus startTag() const { return LABELStartTag; }
     virtual tagStatus endTag() const { return LABELEndTag; }
+
+    /**
+     * the form element this label is associated to.
+     */
+    ElementImpl *formElement();
+ private:
+    DOMString m_formElementID;
 };
 
 // -------------------------------------------------------------------------
