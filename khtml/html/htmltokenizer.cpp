@@ -238,6 +238,7 @@ void HTMLTokenizer::begin()
 void HTMLTokenizer::processListing(DOMStringIt list)
 {
     bool old_pre = pre;
+
     // This function adds the listing 'list' as
     // preformatted text-tokens to the token-collection
     // thereby converting TABs.
@@ -305,10 +306,10 @@ void HTMLTokenizer::processListing(DOMStringIt list)
 
     if ((pending == SpacePending) || (pending == TabPending))
         addPending();
-    pending = NonePending;
+    else
+        pending = NonePending;
 
     prePos = 0;
-
     pre = old_pre;
 }
 
@@ -1405,12 +1406,19 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         {
             if ( pre || textarea)
             {
-                if (pending)
-                    addPending();
-                if (cc == ' ')
-                    pending = SpacePending;
-                else
-                    pending = TabPending;
+                if (discard == SpaceDiscard || discard == AllDiscard)
+                {
+                    // Ignore this LF
+                    discard = NoneDiscard; // We have discarded 1 LF
+                }
+                else {
+                    if (pending)
+                        addPending();
+                    if (cc == ' ')
+                        pending = SpacePending;
+                    else
+                        pending = TabPending;
+                }
             }
             else
             {
