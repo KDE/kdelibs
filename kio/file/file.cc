@@ -564,6 +564,9 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
         else if (errno == EXDEV) {
            error( KIO::ERR_UNSUPPORTED_ACTION, QString::fromLatin1("rename"));
         }
+        else if (errno == EROFS) { // The file is on a read-only filesystem
+           error( KIO::ERR_CANNOT_DELETE, src.path() );
+        }
         else {
            error( KIO::ERR_CANNOT_RENAME, src.path() );
         }
