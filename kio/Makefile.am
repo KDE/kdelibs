@@ -35,7 +35,7 @@ libksycoca_la_SOURCES = \
 	kmimetype.cpp \
 	kservice.cpp kservicefactory.cpp \
 	kuserpaths.cpp kuserprofile.cpp \
-	kdirwatch.cpp \
+	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp \
 	kopenwith.cpp krun.cpp \
 	yacc.c lex.c
@@ -43,7 +43,7 @@ libksycoca_la_SOURCES = \
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
-	kshred.h ktar.h ktrader.h kopenwith.h
+	kshred.h ktar.h ktrader.h kopenwith.h kurifilter.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la $(LIBZ)
@@ -79,6 +79,7 @@ noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ktraderparse.h ktraderparsetree.h yacc.h 
 
 kde_mime_DATA = magic
+kde_servicetypes_DATA = kurifilterplugin.desktop
 
 parserfiles = yacc.y lex.l
 
