@@ -1,60 +1,33 @@
+libkio has two major functionalities : network-transparent I/O operations and 
+system configuration cache (KSycoca).
 
-Format of the sycoca database file
-==================================
+KSycoca
+=======
 
-List of factories
- | * Factory id, Factory offset
- | * Factory id, Factory offset
- | * ...
- | * 0
+KMimeType :
+  KDE-1.x users/developers know what mimetypes are.
 
-Header
- | * Offer-list offset
- | * Mimetype-patterns index offset (fast patterns)
- | * Mimetype-patterns index offset (other)
- | * Entry size in the mimetype-patterns index ("fast" part)
+KService :
+  To a mimetype are bound one or more applications, now called services.
+  Services can be applications, but also libraries, dynamically opened.
 
-For each factory
- | * offset of the dict
- | KSycocaEntries
- | | * entry type
- | | Entry
- | | | entry-dependent information
- | | ...
- | |
- | Dict
- | | * hashtable size
- | | Hash list
- | | | * list of values used to compute a hash key
- | | Hash table
- | | | * id (positive = entry offset)
- | | | * id (negative = - offset in duplicates list )
- | | | * 0 if no entry for that hash value
- | | Table of duplicates
- | | |  * entry offset, key
- | | |  * entry offset, key
- | 
+KServiceType :
+  A service type allows the same mechanism to be extended to components.
+  For instance : the question "what are the koffice plugins" is solved by
+  a service type called KOfficePlugin, and by every plugin providing
+  a .desktop file stating that it is a service that implements the servicetype
+  KOfficePlugin.
 
-Offer list
-| * servicetype offset, service offset
-| * servicetype offset, service offset
-| * servicetype offset, service offset
-| * servicetype offset, service offset
-| * 0
-This allows to quickly find services associated with a servicetype.
-It does NOT reflect the user profile, which is stored in profilerc and
-implemented in KServiceTypeProfile.
+To use those three classes, have a look at their static methods first.
 
-Mimetype patterns
-| Fast patterns (fixed size)
-| * Extension (padded to 4 chars), mimetype offset
-| * Extension (padded to 4 chars), mimetype offset
-| * Extension (padded to 4 chars), mimetype offset
-| Other patterns (variable size)
-| * Pattern (ex : *.*gf), mimetype offset
-| * Pattern (ex : Makefile*), mimetype offset
-| * ""
+KServiceTypeProfile :
+  Stores the user's preferences for services bound to mimetypes/servicetypes.
 
-The first one is designed for a binary search, since entries have a fixed size
-and are sorted by extension.
-The second one (10% of the mimetypes usually) is for a linear search.
+KTrader :
+  Use it to query for which services implement a given mimetype/servicetype.
+  Has its own language, in order to allow complex queries.
+
+KIO
+===
+
+See kio_job.h

@@ -1,0 +1,81 @@
+kded
+====
+
+kded is responsible for creating the sycoca file, i.e. the binary 
+cache of servicetypes, mimetypes and services, for a particular user.
+
+Upon startup, and whenever such a .desktop file is installed/removed,
+it creates the sycoca file by :
+* parsing all .desktop files, replacing global ones by local ones (at any
+  level of the hierarchy)
+* creating all objects in memory
+* saving everything in the sycoca file (see below for ksycoca internals)
+* clearing all memory
+
+It uses KDirWatch to monitor the directories contain the .desktop files.
+When a file is added/removed, it waits 5 seconds (in case of series of
+updates), recreates the sycoca file, then notifies the applications
+that use ksycoca by a DCOP call (TODO).
+
+kded doesn't have to be fast, it is designed to eat very little memory.
+
+
+Format of the sycoca database file
+==================================
+
+List of factories
+ | * Factory id, Factory offset
+ | * Factory id, Factory offset
+ | * ...
+ | * 0
+
+Header
+ | * Offer-list offset
+ | * Mimetype-patterns index offset (fast patterns)
+ | * Mimetype-patterns index offset (other)
+ | * Entry size in the mimetype-patterns index ("fast" part)
+
+For each factory
+ | * offset of the dict
+ | KSycocaEntries
+ | | * entry type
+ | | Entry
+ | | | entry-dependent information
+ | | ...
+ | |
+ | Dict
+ | | * hashtable size
+ | | Hash list
+ | | | * list of values used to compute a hash key
+ | | Hash table
+ | | | * id (positive = entry offset)
+ | | | * id (negative = - offset in duplicates list )
+ | | | * 0 if no entry for that hash value
+ | | Table of duplicates
+ | | |  * entry offset, key
+ | | |  * entry offset, key
+ | 
+
+Offer list
+| * servicetype offset, service offset
+| * servicetype offset, service offset
+| * servicetype offset, service offset
+| * servicetype offset, service offset
+| * 0
+This allows to quickly find services associated with a servicetype.
+It does NOT reflect the user profile, which is stored in profilerc and
+implemented in KServiceTypeProfile.
+
+Mimetype patterns
+| Fast patterns (fixed size)
+| * Extension (padded to 4 chars), mimetype offset
+| * Extension (padded to 4 chars), mimetype offset
+| * Extension (padded to 4 chars), mimetype offset
+| Other patterns (variable size)
+| * Pattern (ex : *.*gf), mimetype offset
+| * Pattern (ex : Makefile*), mimetype offset
+| * ""
+
+The first one is designed for a binary search, since entries have a fixed size
+and are sorted by extension.
+The second one (10% of the mimetypes usually) is for a linear search.
