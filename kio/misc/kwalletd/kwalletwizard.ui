@@ -519,6 +519,7 @@
 </tabstops>
 <includes>
     <include location="global" impldecl="in declaration">qcheckbox.h</include>
+    <include location="global" impldecl="in implementation">klocale.h</include>
     <include location="local" impldecl="in implementation">kwalletwizard.ui.h</include>
 </includes>
 <slots>

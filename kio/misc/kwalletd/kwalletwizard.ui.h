@@ -7,8 +7,6 @@
 ** place of a destructor.
 *****************************************************************************/
 
-#include <klocale.h>
-
 void KWalletWizard::passwordPageUpdate()
 {
     bool fe = true;
@@ -17,6 +15,7 @@ void KWalletWizard::passwordPageUpdate()
         setFinishEnabled(page2, fe);
     } else {
 	fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
+        setNextEnabled(page2, fe);
         setFinishEnabled(page3, fe);
     }
     
@@ -55,6 +54,7 @@ void KWalletWizard::setAdvanced()
     setAppropriate(page4, true);
     bool fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
     setFinishEnabled(page2, false);
+    setNextEnabled(page2, fe);
     setFinishEnabled(page3, fe);
 }
 
