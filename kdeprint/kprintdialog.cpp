@@ -521,7 +521,11 @@ bool KPrintDialog::checkOutputFile()
 		KMessageBox::error(this,i18n("The output filename is empty."));
 	else
 	{
-		QFileInfo	f(d->m_file->lineEdit()->text());
+		KURL url( d->m_file->url() );
+		if ( !url.isLocalFile() )
+			return true;
+
+		QFileInfo	f(url.path());
 		if (f.exists())
 		{
 			if (f.isWritable())
@@ -590,9 +594,14 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 {
 	if (!ext.isEmpty())
 	{
-		QFileInfo	fi(d->m_file->lineEdit()->text());
-		QString		str = fi.dirPath(true)+"/"+fi.baseName()+"."+ext;
-		d->m_file->lineEdit()->setText(QDir::cleanDirPath(str));
+		KURL url( d->m_file->url() );
+		QString f( url.fileName() );
+		int p = f.findRev( '.' );
+		if ( p != -1 )
+			url.setFileName( f.left( p ) + "." + ext );
+		else
+			url.setFileName( f + "." + ext );
+		d->m_file->setURL( url.url() );
 	}
 }
 

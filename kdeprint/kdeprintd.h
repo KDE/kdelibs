@@ -48,19 +48,17 @@ k_dcop:
 	void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
 
 protected slots:
-	void slotProcessExited(KProcess*);
+	void slotPrintTerminated( KPrintProcess* );
+	void slotPrintError( KPrintProcess*, const QString& );
 	void slotClosed();
 	void processRequest();
 
 protected:
-	void cleanTempFiles();
-	void cleanTempFile(KProcess*);
 	bool checkFiles(QString& cmd, const QStringList& files);
 
 private:
 	class Request;
 	QPtrList<KPrintProcess>	m_processpool;
-	QPtrDict<QStringList>	m_tempfiles;
 	QIntDict<StatusWindow>	m_windows;
 	QPtrList<Request>       m_requestsPending;
 };

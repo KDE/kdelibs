@@ -111,24 +111,32 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 	{
 		if (p->option("kde-special-command").isEmpty() && p->outputToFile())
 		{
-			if (f.count() > 1)
+			KURL url( p->outputFileName() );
+			if ( !url.isLocalFile() )
 			{
-				p->setErrorMessage(i18n("Cannot copy multiple files into one file."));
-				return false;
+				cmd = ( flag ? "mv" : "cp" ) + ( " %in $out{" + p->outputFileName() + "}" );
 			}
 			else
 			{
-				KProcess proc;
-				proc << (flag?"mv":"cp") << f[0] << p->outputFileName();
-				if (!proc.start(KProcess::Block) || !proc.normalExit() || proc.exitStatus() != 0)
+				if (f.count() > 1)
 				{
-					p->setErrorMessage(i18n("Cannot save print file to %1. Check that you have write access to it.").arg(p->outputFileName()));
+					p->setErrorMessage(i18n("Cannot copy multiple files into one file."));
 					return false;
 				}
+				else
+				{
+					KProcess proc;
+					proc << (flag?"mv":"cp") << f[0] << p->outputFileName();
+					if (!proc.start(KProcess::Block) || !proc.normalExit() || proc.exitStatus() != 0)
+					{
+						p->setErrorMessage(i18n("Cannot save print file to %1. Check that you have write access to it.").arg(p->outputFileName()));
+						return false;
+					}
+				}
+				return true;
 			}
-			return true;
 		}
-		if (!setupSpecialCommand(cmd,p,f))
+		else if (!setupSpecialCommand(cmd,p,f))
 			return false;
 	}
 	else if (!setupCommand(cmd,p))
@@ -482,7 +490,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
 	s.replace(QRegExp("%psl"), ps.lower());
 	s.replace(QRegExp("%psu"), ps);
-	s.replace(QRegExp("%out"), quote(p->outputFileName())); // Replace as last
+	s.replace(QRegExp("%out"), "$out{" + p->outputFileName() + "}"); // Replace as last
 	cmd = s;
 	return true;
 }

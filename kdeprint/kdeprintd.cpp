@@ -31,9 +31,12 @@
 #include <qlabel.h>
 #include <kpushbutton.h>
 #include <kiconloader.h>
+#include <kstandarddirs.h>
 #include <kwin.h>
+#include <kapplication.h>
 #include <qlayout.h>
 #include <qtimer.h>
+#include <qregexp.h>
 
 #include <unistd.h>
 
@@ -43,12 +46,6 @@ extern "C"
 	{
 		return new KDEPrintd(name);
 	}
-}
-
-static void cleanFileList(const QStringList& files)
-{
-	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
-		QFile::remove(*it);
 }
 
 class StatusWindow : public QWidget
@@ -104,72 +101,62 @@ KDEPrintd::KDEPrintd(const QCString& obj)
 : KDEDModule(obj)
 {
 	m_processpool.setAutoDelete(true);
-	m_tempfiles.setAutoDelete(true);
 	m_windows.setAutoDelete(false);
 	m_requestsPending.setAutoDelete( true );
 }
 
 KDEPrintd::~KDEPrintd()
 {
-	cleanTempFiles();
 }
 
 int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
+	KPrintProcess *proc = new KPrintProcess;
 	QString	command(cmd);
-	if (!checkFiles(command, files))
-		return (-1);
+	QRegExp re( "\\$out\\{([^}]*)\\}" );
 
-	KPrintProcess	*proc = new KPrintProcess;
-	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
-//	connect(proc,SIGNAL(passwordRequested(KProcess*,const QString&)),SLOT(slotPasswordRequested(KProcess*,const QString&)));
-	*proc << command;
-	if (remflag)
-		m_tempfiles.insert(proc,new QStringList(files));
-	if (proc->print())
+	connect(proc,SIGNAL(printTerminated(KPrintProcess*)),SLOT(slotPrintTerminated(KPrintProcess*)));
+	connect(proc,SIGNAL(printError(KPrintProcess*,const QString&)),SLOT(slotPrintError(KPrintProcess*,const QString&)));
+	proc->setCommand( command );
+	if ( re.search( command ) != -1 )
 	{
-		m_processpool.append(proc);
-		return (int)(proc->pid());
+		KURL url( re.cap( 1 ) );
+		if ( !url.isLocalFile() )
+		{
+			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + kapp->randomString( 8 ) );
+			command.replace( re.pos( 0 ), re.matchedLength(), KProcess::quote( tmpFilename ) );
+			proc->setOutput( re.cap( 1 ) );
+			proc->setTempOutput( tmpFilename );
+		}
+		else
+			command.replace( re.pos( 0 ), re.matchedLength(), KProcess::quote( re.cap( 1 ) ) );
 	}
-	else
+
+	if ( checkFiles( command, files ) )
 	{
-		cleanTempFile(proc);
-		delete proc;
-		return (-1);
+		*proc << command;
+		if ( remflag )
+			proc->setTempFiles( files );
+		if ( proc->print() )
+		{
+			m_processpool.append( proc );
+			return ( int )proc->pid();
+		}
 	}
+
+	delete proc;
+	return -1;
 }
 
-void KDEPrintd::cleanTempFiles()
+void KDEPrintd::slotPrintTerminated( KPrintProcess *proc )
 {
-	QPtrDictIterator<QStringList>	it(m_tempfiles);
-	for (;it.current();++it)
-		cleanFileList(*(it.current()));
+	m_processpool.removeRef( proc );
 }
 
-void KDEPrintd::cleanTempFile(KProcess *p)
+void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 {
-	QStringList	*l = m_tempfiles.find(p);
-	if (l)
-		cleanFileList(*l);
-}
-
-void KDEPrintd::slotProcessExited(KProcess *proc)
-{
-	KPrintProcess	*pproc = (KPrintProcess*)proc;
-	if (m_processpool.findRef(pproc) != -1)
-	{
-		m_processpool.take();
-		QString		msg;
-		if (!pproc->normalExit())
-			msg = i18n("Abnormal process termination (<b>%1</b>).").arg(pproc->args().first());
-		else if (pproc->exitStatus() != 0)
-			msg = i18n("<b>%1</b>: execution failed with message:<p>%2</p>").arg(pproc->args().first()).arg(pproc->errorMessage());
-		cleanTempFile(pproc);
-
-		delete pproc;
-		if (!msg.isEmpty())
-			KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(msg));
-	}
+	KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(msg));
+	m_processpool.removeRef( proc );
 }
 
 QString KDEPrintd::openPassDlg(const QString& user)
