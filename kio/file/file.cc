@@ -742,9 +742,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 	atom.m_long = buff.st_atime;
 	entry.append( atom );
 
-	atom.m_uds = KIO::UDS_CREATION_TIME;
-	atom.m_long = buff.st_ctime;
-	entry.append( atom );
+	// Note: buff.st_ctime isn't the creation time !
+        // We made that mistake for KDE 2.0, but it's in fact the
+        // "file status" change time, which we don't care about.
+
 	return true;
 }
 
