@@ -84,7 +84,7 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version == "1.0" || version == "null" || version == "" || version.isNull()))
+        (version.isEmpty() || version == "1.0" || version == "null"))
         return true;
     else
         return false;
