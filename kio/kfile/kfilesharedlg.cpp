@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <kio/kfileshare.h>
-#include <libintl.h>
 #include <kseparator.h>
 #include <qpushbutton.h>
 #include <kapplication.h>
