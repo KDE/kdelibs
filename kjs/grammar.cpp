@@ -1558,11 +1558,11 @@ case 64:
     break;}
 case 66:
 #line 287 "grammar.y"
-{ yyval.node = new AddNode(yyvsp[-2].node, yyvsp[0].node, '+'); ;
+{ yyval.node = AddNode::create(yyvsp[-2].node, yyvsp[0].node, '+'); ;
     break;}
 case 67:
 #line 288 "grammar.y"
-{ yyval.node = new AddNode(yyvsp[-2].node, yyvsp[0].node, '-'); ;
+{ yyval.node = AddNode::create(yyvsp[-2].node, yyvsp[0].node, '-'); ;
     break;}
 case 69:
 #line 293 "grammar.y"

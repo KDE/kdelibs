@@ -284,8 +284,8 @@ MultiplicativeExpr:
 
 AdditiveExpr:
     MultiplicativeExpr
-  | AdditiveExpr '+' MultiplicativeExpr { $$ = new AddNode($1, $3, '+'); }
-  | AdditiveExpr '-' MultiplicativeExpr { $$ = new AddNode($1, $3, '-'); }
+  | AdditiveExpr '+' MultiplicativeExpr { $$ = AddNode::create($1, $3, '+'); }
+  | AdditiveExpr '-' MultiplicativeExpr { $$ = AddNode::create($1, $3, '-'); }
 ;
 
 ShiftExpr:

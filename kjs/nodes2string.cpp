@@ -236,6 +236,11 @@ void AddNode::streamTo(SourceStream &s) const
   s << term1 << oper << term2;
 }
 
+void AppendStringNode::streamTo(SourceStream &s) const
+{
+  s << term << "+" << str;
+}
+
 void ShiftNode::streamTo(SourceStream &s) const
 {
   s << term1;

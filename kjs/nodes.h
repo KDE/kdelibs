@@ -74,6 +74,10 @@ namespace KJS {
   public:
     Node();
     virtual ~Node();
+
+    // reusing Value Type here, declare new enum if required
+    virtual Type type() const { return UnspecifiedType; }
+
     /**
      * Evaluate this node and return the result, possibly a reference.
      */
@@ -84,6 +88,7 @@ namespace KJS {
     virtual Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
 
     UString toCode() const;
     virtual void streamTo(SourceStream &s) const = 0;
@@ -147,15 +152,18 @@ namespace KJS {
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   };
 
   class BooleanNode : public Node {
   public:
     BooleanNode(bool v) : val(v) {}
+    virtual Type type() const { return BooleanType; }
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     bool val;
@@ -164,9 +172,11 @@ namespace KJS {
   class NumberNode : public Node {
   public:
     NumberNode(double v) : val(v) { }
+    virtual Type type() const { return NumberType; }
     virtual Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     double val;
@@ -175,9 +185,11 @@ namespace KJS {
   class StringNode : public Node {
   public:
     StringNode(const UString *v) : val(*v) { }
+    virtual Type type() const { return StringType; }
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString val;
@@ -516,6 +528,9 @@ namespace KJS {
   class AddNode : public Node {
   public:
     AddNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
+
+    static Node* create(Node *t1, Node *t2, char op);
+
     virtual void ref();
     virtual bool deref();
     virtual ~AddNode();
@@ -524,6 +539,18 @@ namespace KJS {
   private:
     Node *term1, *term2;
     char oper;
+  };
+
+  class AppendStringNode : public Node {
+  public:
+    AppendStringNode(Node *t, const UString &s) : term(t), str(s) { }
+    virtual void ref();
+    virtual bool deref();
+    virtual Value value(ExecState *exec) const;
+    virtual void streamTo(SourceStream &s) const;
+  private:
+    Node *term;
+    UString str;
   };
 
   class ShiftNode : public Node {

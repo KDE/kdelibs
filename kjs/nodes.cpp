@@ -128,6 +128,11 @@ double Node::toNumber(ExecState *exec) const
   return value(exec).toNumber(exec);
 }
 
+UString Node::toString(ExecState *exec) const
+{
+  return value(exec).toString(exec);
+}
+
 #ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
@@ -204,6 +209,11 @@ double NullNode::toNumber(ExecState *) const
   return 0.0;
 }
 
+UString NullNode::toString(ExecState *) const
+{
+  return "null";
+}
+
 // ----------------------------- BooleanNode ----------------------------------
 
 Value BooleanNode::value(ExecState *) const
@@ -218,7 +228,12 @@ bool BooleanNode::toBoolean(ExecState *) const
 
 double BooleanNode::toNumber(ExecState *) const
 {
-  return val ? 0.0 : 1.0;
+  return val ? 1.0 : 0.0;
+}
+
+UString BooleanNode::toString(ExecState *) const
+{
+  return val ? "true" : "false";
 }
 
 // ----------------------------- NumberNode -----------------------------------
@@ -238,6 +253,11 @@ double NumberNode::toNumber(ExecState *) const
   return val;
 }
 
+UString NumberNode::toString(ExecState *) const
+{
+  return UString::from(val);
+}
+
 // ----------------------------- StringNode -----------------------------------
 
 Value StringNode::value(ExecState *) const
@@ -253,6 +273,11 @@ bool StringNode::toBoolean(ExecState *) const
 double StringNode::toNumber(ExecState *) const
 {
   return val.toDouble();
+}
+
+UString StringNode::toString(ExecState *) const
+{
+  return val;
 }
 
 // ----------------------------- RegExpNode -----------------------------------
@@ -1247,6 +1272,30 @@ Value MultNode::value(ExecState *exec) const
 
 // ----------------------------- AddNode --------------------------------------
 
+// factory for an appropriate addition or substraction node
+Node* AddNode::create(Node *t1, Node *t2, char op)
+{
+  // ### many more combinations to check for
+  // fold constants
+  if ((t1->type() == NumberType || t1->type() == BooleanType) &&
+      (t2->type() == NumberType || t2->type() == BooleanType)) {
+    double d = t2->toNumber(0);
+    Node* n = new NumberNode(t1->toNumber(0) + op == '+' ? d : -d);
+    // ### probably always count == 1
+    if (t1->deref())
+      delete t1;
+    if (t2->deref())
+      delete t2;
+    return n;
+  }
+
+  if (op == '+' && t2->type() == StringType)
+    return new AppendStringNode(t1, t2->toString(0));
+
+  // fall back to generic node
+  return new AddNode(t1, t2, op);
+}
+
 AddNode::~AddNode()
 {
 }
@@ -1279,6 +1328,30 @@ Value AddNode::value(ExecState *exec) const
   KJS_CHECKEXCEPTIONVALUE
 
   return add(exec,v1, v2, oper);
+}
+
+// ------------------------ AddNumberNode ------------------------------------
+
+void AppendStringNode::ref()
+{
+  Node::ref();
+  term->ref();
+}
+
+bool AppendStringNode::deref()
+{
+  if (term->deref())
+    delete term;
+  return Node::deref();
+}
+
+// ECMA 11.6 (special case of string appending)
+Value AppendStringNode::value(ExecState *exec) const
+{
+  UString s = term->toString(exec);
+  KJS_CHECKEXCEPTIONVALUE;
+
+  return String(s + str);
 }
 
 // ----------------------------- ShiftNode ------------------------------------
