@@ -270,7 +270,11 @@ Other defined actions:
 shell_access 
         - defines whether a shell suitable for entering random commands 
           may be started. This also determines whether the "Run Command"
-          option (Alt-F2) accepts shell-commands or not.
+          option (Alt-F2) can be used to run shell-commands and arbitrary  
+          executables. Likewise, executables placed in the user's
+          Autostart folder will no longer be executed. Applications can
+          still be autostarted by placing .desktop files in the $KDEHOME/Autostart
+          or $KDEDIR/share/autostart directory.
           See also run_desktop_files.
 
 custom_config 
@@ -299,18 +303,22 @@ editable_desktop_icons
 
 run_desktop_files
         - defines whether users may execute desktop files that are not
-          part of the default desktop, KDE menu or registered services.
-          The default desktop includes the files under 
-          $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
-          $HOME/Desktop. The KDE menu includes all files under
-          $KDEDIR/share/applnk. Registered services includes all files 
-          under $KDEDIR/share/services.
+          part of the default desktop, KDE menu, registered services and
+          autostarting services.
+          * The default desktop includes the files under 
+            $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
+            $HOME/Desktop. 
+          * The KDE menu includes all files under $KDEDIR/share/applnk. 
+          * Registered services includes all files under $KDEDIR/share/services. 
+          * Autostarting services include all files under $KDEDIR/share/autostart 
+            but _NOT_ the files under $KDEHOME/Autostart
 
           You probably also want to activate the following resource
           restictions:
           "appdata_kdesktop" - To restrict the default desktop.
           "applnk" - To restrict the KDE menu.
           "services" - To restrict registered services.
+          "autostart" - To restrict autostarting services.
           Otherwise users can still execute .desktop files by placing them
           in e.g. $KDEHOME/share/kdesktop/Desktop
 
