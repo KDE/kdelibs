@@ -424,12 +424,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KButtonBox* b = new KButtonBox( this );
   b->addStretch( 2 );
 
-  ok = b->addButton(  i18n ( "&OK" ) );
+  QPushButton* ok = b->addButton(  i18n ( "&OK" ) );
   ok->setDefault( true );
-  connect(  ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
+  connect( ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
-  cancel = b->addButton(  i18n( "&Cancel" ) );
-  connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
+  QPushButton* cancel = b->addButton(  i18n( "&Cancel" ) );
+  connect( cancel, SIGNAL( clicked() ), SLOT( reject() ) );
 
   b->layout();
   topLayout->addWidget( b );
@@ -528,9 +528,10 @@ void KOpenWithDlg::slotOK()
     initialServiceName = serviceName;
     int i = 1; // We have app, app-2, app-3... Looks better for the user.
     // Check if there's already a service by that name, with the same Exec line
+    bool ok = false;
     do {
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
-        bool ok = !serv; // ok if no such service yet
+        ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
         if ( serv &&
              serv->type() == "Application" && ( // only apps
