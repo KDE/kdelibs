@@ -271,7 +271,7 @@ dcop_area_begin
 	: T_DCOP_AREA T_COLON
 	{
 	  dcop_area = 1;
-	  dcop_signal_area = 1;
+	  dcop_signal_area = 0;
 	}
 	;
 
