@@ -29,7 +29,7 @@ namespace KJS {
   public:
     BooleanObject(Object *p) : Constructor(p, 1) { }
     KJSO* execute(Context *);
-    Object* construct(List *);
+    Object* construct(const List &);
   };
 
   class BooleanPrototype : public Object {

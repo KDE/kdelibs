@@ -47,7 +47,7 @@ KJSO* NumberObject::execute(Context * /*context*/)
 }
 
 // ECMA 15.7.2
-Object* NumberObject::construct(List * /*args*/)
+Object* NumberObject::construct(const List & /*args*/)
 {
   /* TODO */
   return Object::create(NumberClass, zeroRef(newUndefined()));

@@ -126,7 +126,7 @@ namespace KJS {
     DeclaredFunction(ParamList *p, StatementNode *b);
     Type type() const { return DeclaredFunctionType; }
     KJSO* execute(Context *);
-    CodeType codeType() { return FunctionCode; }
+    CodeType codeType() const { return FunctionCode; }
   private:
     StatementNode *block;
   };
@@ -136,7 +136,7 @@ namespace KJS {
     AnonymousFunction() { /* TODO */ }
     Type type() const { return AnonymousFunctionType; }
     KJSO* execute(Context *);
-    CodeType codeType() { return AnonymousCode; }
+    CodeType codeType() const { return AnonymousCode; }
   };
 
 }; // namespace

@@ -30,12 +30,12 @@ KJSO *ObjectObject::execute(Context *context)
 
   List argList;
   if (numArgs == 0) {
-    result = construct(&argList);
+    result = construct(argList);
   } else {
     KJSO *arg = context->arg(0);
     if (arg->isA(NullType) || arg->isA(UndefinedType)) {
       argList.append(arg);
-      result = construct(&argList);
+      result = construct(argList);
     } else
       result = toObject(arg);
   }
@@ -43,13 +43,13 @@ KJSO *ObjectObject::execute(Context *context)
 }
 
 // ECMA 15.2.2
-Object* ObjectObject::construct(List *args)
+Object* ObjectObject::construct(const List &args)
 {
   // if no arguments have been passed ...
-  if (args->size() == 0)
+  if (args.size() == 0)
     return Object::create(ObjectClass);
 
-  KJSO *arg = args->begin();
+  KJSO *arg = args.begin();
   if (arg->isA(ObjectType)) {
     /* TODO: handle host objects */
     Object *obj = static_cast<Object*>(arg->ref());

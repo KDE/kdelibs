@@ -42,11 +42,11 @@ KJSO* StringObject::execute(Context *context)
 }
 
 // ECMA 15.8.2
-Object* StringObject::construct(List *args)
+Object* StringObject::construct(const List &args)
 {
   Ptr s;
-  if (args->size() > 0)
-    s = toString(args->begin());
+  if (args.size() > 0)
+    s = toString(args.begin());
   else
     s = newString("");
 

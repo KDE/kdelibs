@@ -47,7 +47,7 @@ namespace KJS {
     void processParameters(List *);
     virtual KJSO* execute(Context *) = 0;
     virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
-    virtual CodeType codeType() = 0;
+    virtual CodeType codeType() const = 0;
   protected:
     FunctionAttribute attr;
     ParamList *param;
@@ -67,7 +67,7 @@ namespace KJS {
     /**
      * @return @ref HostCode
      */
-    CodeType codeType() { return HostCode; }
+    CodeType codeType() const { return HostCode; }
   };
 
   /**
@@ -82,7 +82,7 @@ namespace KJS {
      */
     virtual Type type() const { return ConstructorType; }
     virtual KJSO* execute(Context *);
-    virtual Object* construct(List *args) = 0;
+    virtual Object* construct(const List &args) = 0;
   };
 
   class Activation;

@@ -40,11 +40,11 @@ KJSO* BooleanObject::execute(Context *context)
 }
 
 // ECMA 15.6.2
-Object* BooleanObject::construct(List *args)
+Object* BooleanObject::construct(const List &args)
 {
   Ptr b;
-  if (args->size() > 0)
-    b = toBoolean(args->begin());
+  if (args.size() > 0)
+    b = toBoolean(args.begin());
   else
     b = newBoolean(false);
 

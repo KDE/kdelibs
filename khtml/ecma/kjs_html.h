@@ -93,7 +93,7 @@ namespace KJS {
   class ImageConstructor : public Constructor {
   public:
     ImageConstructor(Global *global);
-    Object* construct(List *);
+    Object* construct(const List &);
   private:
     Global *global;
   };

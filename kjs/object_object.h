@@ -29,7 +29,7 @@ namespace KJS {
   public:
     ObjectObject(Object *proto) : Constructor(proto, 1) { }
     KJSO* execute(Context *);
-    Object* construct(List *);
+    Object* construct(const List &);
   };
 
   class ObjectPrototype : public Object {

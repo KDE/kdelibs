@@ -32,25 +32,25 @@ KJSO* ArrayObject::execute(Context *context)
   for (unsigned int u = 0; u < numArgs; u++)
     argList.append(context->arg(u));
 
-  Ptr result = construct(&argList);
+  Ptr result = construct(argList);
 
   return newCompletion(Normal, result);
 }
 
 // ECMA 15.6.2
-Object* ArrayObject::construct(List *args)
+Object* ArrayObject::construct(const List &args)
 {
   Object *result = Object::create(ArrayClass);
 
   unsigned int len;
-  ListIterator it = args->begin();
+  ListIterator it = args.begin();
   // a single argument might denote the array size
-  if (args->size() == 1 && it->isA(NumberType))
+  if (args.size() == 1 && it->isA(NumberType))
     len = toUInt32(it);
   else {
     // initialize array
-    len = args->size();
-    for (unsigned int u = 0; it != args->end(); it++, u++)
+    len = args.size();
+    for (unsigned int u = 0; it != args.end(); it++, u++)
       result->put(int2String(u), it);
   }
 

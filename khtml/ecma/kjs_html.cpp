@@ -564,7 +564,7 @@ ImageConstructor::ImageConstructor(Global *glob)
   setPrototype(glob->funcProto);
 }
 
-Object* ImageConstructor::construct(List *)
+Object* ImageConstructor::construct(const List &)
 {
   /* TODO: fetch optional height & width from arguments */
 

@@ -177,7 +177,7 @@ KJSO *NewExprNode::evaluate()
   else
     tmp2 = &nullList;
 
-  KJSO *res = constr->construct(tmp2);
+  KJSO *res = constr->construct(*tmp2);
 
   if (!res->isObject())
     return KJSO::newError(ErrResNoObject, this);

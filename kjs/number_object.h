@@ -30,7 +30,7 @@ namespace KJS {
     NumberObject(Object *proto) : Constructor(proto, 1) { }
     KJSO *get(const UString &p);
     KJSO* execute(Context *);
-    Object* construct(List *);
+    Object* construct(const List &);
   };
 
   class NumberPrototype : public Object {
