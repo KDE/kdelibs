@@ -1,3 +1,9 @@
+kdelibs-cvs (4:2.0-20000220-1.0) experimental; urgency=low
+
+  * More upstream changes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 20 Feb 2000 22:00:00 -0700
+
 kdelibs-cvs (4:2.0-19991117-1.0) experimental; urgency=low
 
   * More upstream changes
