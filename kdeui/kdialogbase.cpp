@@ -911,6 +911,18 @@ void KDialogBase::initializeGeometry( void )
   else if( mMainWidget != 0 )
   {
     s2 = mMainWidget->minimumSize() + QSize(0,1); // Required for QTextView
+    if( s2.isEmpty() == true )
+    {
+      s2 = mMainWidget->minimumSizeHint();
+      if( s2.isEmpty() == true )
+      {
+	s2 = mMainWidget->sizeHint();
+	if( s2.isEmpty() == true )
+	{
+	  s2 = QSize( 100, 100 ); // Default size
+	}
+      }
+    }
   }
   else
   {
