@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qaccel.h>
+#include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
@@ -53,6 +54,7 @@ protected:
 
 extern "C"
 {
+	void* init_kdeprint_tool_escputil() KDE_EXPORT;
 	void* init_kdeprint_tool_escputil()
 	{
 		return new EscpFactory;
