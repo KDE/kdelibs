@@ -46,6 +46,8 @@
  */
 
 #include "kbuttonbox.moc"
+#include <kglobalsettings.h>
+#include <kguiitem.h>
 #include <qpushbutton.h>
 #include <qptrlist.h>
 #include <assert.h>
@@ -97,7 +99,23 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   item->button->adjustSize();
 
   this->updateGeometry();
-  
+
+  return item->button;
+}
+
+QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
+  Item *item = new Item;
+
+  if ( KGlobalSettings::showIconsOnPushButtons() )
+    item->button = new QPushButton( guiitem.iconSet(), guiitem.text(), this);
+  else
+    item->button = new QPushButton( guiitem.text(), this);
+  item->noexpand  = noexpand;
+  data->buttons.append(item);
+  item->button->adjustSize();
+
+  this->updateGeometry();
+
   return item->button;
 }
 
@@ -117,6 +135,21 @@ KButtonBox::addButton(
   return pb;
 }
 
+  QPushButton *
+KButtonBox::addButton(
+  const KGuiItem& guiitem,
+  QObject *       receiver,
+  const char *    slot,
+  bool            noexpand
+)
+{
+  QPushButton * pb = addButton(guiitem, noexpand);
+
+  if ((0 != receiver) && (0 != slot))
+    QObject::connect(pb, SIGNAL(clicked()), receiver, slot);
+
+  return pb;
+}
 
 void KButtonBox::addStretch(int scale) {
   if(scale > 0) {

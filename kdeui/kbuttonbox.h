@@ -22,6 +22,7 @@
 
 #include <qwidget.h>
 class QPushButton;
+class KGuiItem;
 
 class KButtonBoxPrivate;
 /**
@@ -93,6 +94,38 @@ public:
     * @return A pointer to the new button.
     */
   QPushButton *addButton(const QString& text, QObject * receiver, const char * slot, bool noexpand = false);
+
+  /**
+    * Add a new QPushButton.
+    *
+    * @param guiitem text and icon on the button
+    * @param noexpand If @p noexpand is @p false, the width
+    * of the button is adjusted to fit the other buttons (the maximum
+    * of all buttons is taken). If @p noexpand is @p true, the width of this
+    * button will be set to the minimum width needed for the given text).
+    *
+    * @return A pointer to the new button.
+    *
+    * @since 3.3
+    */
+  QPushButton *addButton(const KGuiItem& guiitem, bool noexpand = false);
+
+  /**
+    * Add a new QPushButton.
+    *
+    * @param guiitem text and icon on the button
+    * @param receiver An object to connect to.
+    * @param slot A Qt slot to connect the 'clicked()' signal to.
+    * @param noexpand If @p noexpand is @p false, the width
+    * of the button is adjusted to fit the other buttons (the maximum
+    * of all buttons is taken). If @p noexpand @p true, the width of this
+    * button will be set to the minimum width needed for the given text).
+    *
+    * @return A pointer to the new button.
+    *
+    * @since 3.3
+    */
+  QPushButton *addButton(const KGuiItem& guiitem, QObject * receiver, const char * slot, bool noexpand = false);
 
   /**
     * Add a stretch to the buttonbox.
