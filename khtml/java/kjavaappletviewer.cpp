@@ -25,6 +25,7 @@
 #endif
 #include <qtable.h>
 #include <qpair.h>
+#include <qguardedptr.h>
 
 #include <klibloader.h>
 #include <kaboutdata.h>
@@ -67,14 +68,21 @@ static KJavaServerMaintainer * serverMaintainer = 0;
 class KJavaServerMaintainer {
 public:
     KJavaServerMaintainer () { }
+    ~KJavaServerMaintainer ();
 
     KJavaAppletContext * getContext (QObject*, const QString &);
     void releaseContext (QObject*, const QString &);
-public:
+    void setServer (KJavaAppletServer * s);
+private:
     typedef QMap <QPair <QObject*, QString>, QPair <KJavaAppletContext*, int> >
             ContextMap;
     ContextMap m_contextmap;
+    QGuardedPtr <KJavaAppletServer> server;
 };
+
+KJavaServerMaintainer::~KJavaServerMaintainer () {
+    delete server;
+}
 
 KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w, const QString & doc) {
     ContextMap::key_type key = qMakePair (w, doc);
@@ -95,6 +103,11 @@ void KJavaServerMaintainer::releaseContext (QObject * w, const QString & doc) {
         (*it).first->deleteLater ();
         m_contextmap.remove (it);
     }
+}
+
+inline void KJavaServerMaintainer::setServer (KJavaAppletServer * s) {
+    if (!server)
+        server = s;
 }
 
 static KStaticDeleter <KJavaServerMaintainer> serverMaintainerDeleter;
@@ -236,7 +249,11 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     KJavaAppletContext * cxt = serverMaintainer->getContext (parent, baseurl);
     applet->setAppletContext (cxt);
 
-    if (!cxt->getServer ()->usingKIO ()) {
+    KJavaAppletServer * server = cxt->getServer ();
+
+    serverMaintainer->setServer (server);
+
+    if (!server->usingKIO ()) {
         /* if this page needs authentication */
         KIO::AuthInfo info;
         QString errorMsg;

@@ -314,6 +314,8 @@ bool KJavaProcess::invokeJVM()
 void KJavaProcess::killJVM()
 {
    d->processKilled = true;
+   disconnect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
+               this, SLOT( slotReceivedData(int, int&) ) );
    javaProcess->kill();
 }
 
