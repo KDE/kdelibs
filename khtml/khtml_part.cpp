@@ -575,6 +575,7 @@ bool KHTMLPart::openURL( const KURL &url )
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
     d->m_extension->setURLArgs(args);
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
     connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
@@ -2241,9 +2242,12 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 void KHTMLPart::gotoAnchor()
 {
-  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-  if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-      gotoAnchor( m_url.htmlRef() );
+  if ( !d->m_doc || !d->m_doc->parsing() ) {
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  }
+
+  if ( !gotoAnchor(m_url.encodedHtmlRef()) )
+      gotoAnchor(m_url.htmlRef());
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )
@@ -2261,7 +2265,13 @@ bool KHTMLPart::gotoAnchor( const QString &name )
       n = d->m_doc->getElementById( name );
   }
 
-  if(!n) {
+  // Implement the rule that "" and "top" both mean top of page as in other browsers.
+  bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
+
+  if (quirkyName) {
+      d->m_view->setContentsPos(0, 0);
+      return true;
+  } else if (!n) {
       kdDebug(6050) << "KHTMLPart::gotoAnchor node '" << name << "' not found" << endl;
       return false;
   }

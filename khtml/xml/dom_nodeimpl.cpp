@@ -1350,11 +1350,13 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition( xPos, yPos );
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos();
-            else
+            if (o->isText()) {
+                xPos += o->inlineXPos();
+                yPos += o->inlineYPos();
+            } else {
                 xPos += o->xPos();
-            yPos += o->yPos();
+                yPos += o->yPos();
+            }
             return true;
         }
     }
@@ -1392,11 +1394,13 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition(xPos, yPos);
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
-            else
-                xPos += o->xPos()+o->width();
-            yPos += o->yPos()+o->height();
+            if (o->isText()) {
+                xPos += o->inlineXPos() + o->width();
+                yPos += o->inlineYPos() + o->height();
+            } else {
+                xPos += o->xPos() + o->width();
+                yPos += o->yPos() + o->height();
+            }
             return true;
         }
     }
