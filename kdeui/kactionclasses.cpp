@@ -50,6 +50,7 @@
 #include <ktoolbarbutton.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
+#include <kstringhandler.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -2185,6 +2186,8 @@ void KPasteTextAction::menuAboutToShow()
         list = reply;          
     }
     QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
+    clipboardText.replace("&", "&&");
+    clipboardText = KStringHandler::csqueeze(clipboardText, 45);
     if (list.isEmpty())
         list << clipboardText;
     bool found = false;        
@@ -2202,9 +2205,13 @@ void KPasteTextAction::menuAboutToShow()
 void KPasteTextAction::menuItemActivated( int id)
 {
     DCOPClient *client = kapp->dcopClient();
-    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
+    if (client->isAttached() && client->isApplicationRegistered("klipper")) { 
       DCOPRef klipper("klipper","klipper");
-      DCOPReply reply = klipper.call("setClipboardContents", m_popup->text(id));
+      DCOPReply reply = klipper.call("getClipboardHistoryItem(int)", m_popup->indexOf(id));
+      if (!reply.isValid())
+        return;
+      QString clipboardText = reply;
+      reply = klipper.call("setClipboardContents(QString)", clipboardText);
       if (reply.isValid())
         kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;    
     }
