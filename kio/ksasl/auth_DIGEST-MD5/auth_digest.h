@@ -1,8 +1,8 @@
 #ifndef _KDIGEST_AUTH_MODULE_H
 #define _KDIGEST_AUTH_MODULE_H "$Id$"
 
-/*-
- * Copyright (c) 2000,2001 Alex Zepeda <jazepeda@pacbell.net>
+/*
+ * Copyright (c) 2000, 2001 Alex Zepeda <jazepeda@pacbell.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,17 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. Redistributions of source code or in binary form must consent to
- *    future terms and conditions as set forth by the original author.
+ *    future terms and conditions as set forth by the founding author(s).
+ *    The founding author is defined as the creator of following code, or
+ *    lacking a clearly defined creator, the founding author is defined as
+ *    the first person to claim copyright to, and contribute significantly
+ *    to the following code.
+ * 4. The following code may be used without explicit consent in any
+ *    product provided the previous three conditions are met, and that
+ *    the following source code be made available at no cost to consumers
+ *    of mentioned product and the founding author as defined above upon
+ *    request.  This condition may at any time be waived by means of 
+ *    explicit written consent from the founding author.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,7 +46,8 @@
 #include <kinstance.h>
 #include <klibloader.h>
 #include <kmdcodec.h>
-#include <kio/ksasl/saslmodule.h>
+
+#include "saslmodule.h"
 
 class DigestAuthModule
 	: public KSASLAuthModule

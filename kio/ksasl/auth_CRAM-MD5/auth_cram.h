@@ -1,7 +1,7 @@
 #ifndef AUTH_CRAM_H
 #define AUTH_CRAM_H "$Id$"
 
-/*-
+/*
  * Copyright (c) 2000,2001 Alex Zepeda <jazepeda@pacbell.net>
  * All rights reserved.
  *
@@ -34,7 +34,7 @@
 #include <kinstance.h>
 #include <klibloader.h>
 
-#include <kio/ksasl/saslmodule.h>
+#include "saslmodule.h"
 
 class CramAuthModule
 	: public KSASLAuthModule
