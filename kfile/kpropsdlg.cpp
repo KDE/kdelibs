@@ -1711,17 +1711,7 @@ void KApplicationPropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
 
-  // we can't simply write the stringlist, as it has to end with a ";". So we
-  // just create a QString with ; as separators after each mimetype. 
-  QString e;
-  for ( uint i = 0; i < extensionsList->count(); i++ ) {
-    if ( !extensionsList->text( i ).isEmpty() ) {
-      e.append( extensionsList->text( i ) );
-      e += ';';
-    }
-  }
-
-  config.writeEntry( QString::fromLatin1("MimeType"), e );
+  config.writeEntry( QString::fromLatin1("MimeType"), extensions, ';' );
   QString nameStr = nameEdit->text();
   if ( nameStr.isEmpty() )
   {
