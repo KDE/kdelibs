@@ -784,14 +784,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         // (tested with Apache + mod_dav 1.0.3)
         if ( property.text() == "httpd/unix-directory" )
         {
-          if ( !isDirectory )
-          {
-            atom.m_uds = KIO::UDS_FILE_TYPE;
-            atom.m_long = S_IFDIR;
-            entry.append( atom );
-
-            isDirectory = true;
-          }
+          isDirectory = true;
         }
         else if ( property.text() != "" )
         {
@@ -861,13 +854,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         if ( !property.namedItem( "collection" ).toElement().isNull() )
         {
           // This is a collection (directory)
-          if ( !isDirectory )
-          {
-            atom.m_uds = KIO::UDS_FILE_TYPE;
-            atom.m_long = S_IFDIR;
-            entry.append( atom );
-            isDirectory = true;
-          }
+          isDirectory = true;
         }
       }
       else
@@ -879,6 +866,20 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
+
+  if ( isDirectory )
+  {
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFDIR;
+    entry.append( atom );
+  }
+  else if ( !foundContentType )
+  {
+    // No type specified for this resource. Assume file.
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFREG;
+    entry.append( atom );
+  }
 
   if ( foundExecutable || isDirectory )
   {
@@ -892,14 +893,6 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = 0600;
     entry.append(atom);
-  }
-
-  if ( !foundContentType && !isDirectory )
-  {
-    // No type specified for this resource. Assume file.
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFREG;
-    entry.append( atom );
   }
 }
 
