@@ -36,9 +36,7 @@ include_HEADERS = \
 		ksslx509map.h		 \
 		ksmimecrypto.h
 
-noinst_HEADERS = sslio.h			 \
-		sslserversocket.h		 \
-		ksslcsessioncache.h
+noinst_HEADERS = ksslcsessioncache.h
 
 
 libkssl_la_SOURCES	= \
@@ -66,10 +64,8 @@ libkssl_la_SOURCES	= \
 			keygenwizard.ui		  \
 			keygenwizard2.ui	  \
 			ksmimecrypto.cc		  \
-			sslio.cc		  \
 			ksslcsessioncache.cc
 
-#			sslserversocket.cc
 
 SUBDIRS = kssl
 
