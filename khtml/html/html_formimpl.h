@@ -142,7 +142,7 @@ public:
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled);
 
-    virtual bool isSelectable() const;
+    virtual bool isFocusable() const;
     virtual bool isEnumeratable() const { return false; }
 
     bool readOnly() const { return m_readOnly; }
@@ -322,7 +322,8 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual bool isSelectable() const { return true; }
+    virtual bool isFocusable() const { return true; };
+    virtual bool isTabFocusable() const { return false; };
     NodeImpl* getFormElement();
 
  private:

@@ -1787,7 +1787,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 {
     // Sets the focus node of the document to be the node after (or if
     // next is false, before) the current focus node.  Only nodes that
-    // are selectable (i.e. for which isSelectable() returns true) are
+    // are selectable (i.e. for which isFocusable() returns true) are
     // taken into account, and the order used is that specified in the
     // HTML spec (see DocumentImpl::nextFocusNode() and
     // DocumentImpl::previousFocusNode() for details).
@@ -2032,7 +2032,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
     ensureVisible( r.left(), r.top());
 
     Node guard( node );
-    if( node->isSelectable()) {
+    if( node->isFocusable()) {
 	if (node->id()==ID_LABEL) {
 	    // if Accesskey is a label, give focus to the label's referrer.
 	    node=static_cast<ElementImpl *>(static_cast< HTMLLabelElementImpl* >( node )->getFormElement());
@@ -2531,7 +2531,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
         me->deref();
 
         if (eventId == EventImpl::MOUSEDOWN_EVENT) {
-            if (targetNode->isSelectable())
+            if (targetNode->isFocusable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
                 m_part->xmlDocImpl()->setFocusNode(0);

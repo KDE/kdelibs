@@ -1250,7 +1250,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	int lowestTabIndex = 65535;
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable()) {
+	    if (n->isTabFocusable()) {
 		if ((n->tabIndex() > 0) && (n->tabIndex() < lowestTabIndex))
 		    lowestTabIndex = n->tabIndex();
 	    }
@@ -1261,7 +1261,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	// Go to the first node in the document that has the desired tab index
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestTabIndex))
 		return n;
 	}
 
@@ -1274,7 +1274,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
     if (fromTabIndex == 0) {
 	// Just need to find the next selectable node after fromNode (in document order) that doesn't have a tab index
 	NodeImpl *n = fromNode->traverseNextNode();
-	while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 	    n = n->traverseNextNode();
 	return n;
     }
@@ -1288,7 +1288,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	bool reachedFromNode = false;
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() &&
+	    if (n->isTabFocusable() &&
 		((reachedFromNode && (n->tabIndex() >= fromTabIndex)) ||
 		 (!reachedFromNode && (n->tabIndex() > fromTabIndex))) &&
 		(n->tabIndex() < lowestSuitableTabIndex) &&
@@ -1306,20 +1306,20 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 	if (lowestSuitableTabIndex == 65535) {
 	    // No next node with a tab index -> just take first node with tab index of 0
 	    NodeImpl *n = this;
-	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	    while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 		n = n->traverseNextNode();
 	    return n;
 	}
 
 	// Search forwards from fromNode
 	for (n = fromNode->traverseNextNode(); n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestSuitableTabIndex))
 		return n;
 	}
 
 	// The next node isn't after fromNode, start from the beginning of the document
 	for (n = this; n != fromNode; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestSuitableTabIndex))
 		return n;
 	}
 
@@ -1340,7 +1340,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	int highestTabIndex = 0;
 	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-	    if (n->isSelectable()) {
+	    if (n->isTabFocusable()) {
 		if (n->tabIndex() == 0)
 		    return n;
 		else if (n->tabIndex() > highestTabIndex)
@@ -1350,7 +1350,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	// No node with a tab index of 0; just go to the last node with the highest tab index
 	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == highestTabIndex))
 		return n;
 	}
 
@@ -1362,7 +1362,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	if (fromTabIndex == 0) {
 	    // Find the previous selectable node before fromNode (in document order) that doesn't have a tab index
 	    NodeImpl *n = fromNode->traversePreviousNode();
-	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	    while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 		n = n->traversePreviousNode();
 	    if (n)
 		return n;
@@ -1370,7 +1370,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	    // No previous nodes with a 0 tab index, go to the last node in the document that has the highest tab index
 	    int highestTabIndex = 0;
 	    for (n = this; n != 0; n = n->traverseNextNode()) {
-		if (n->isSelectable() && (n->tabIndex() > highestTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() > highestTabIndex))
 		    highestTabIndex = n->tabIndex();
 	    }
 
@@ -1378,7 +1378,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 		return 0;
 
 	    for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestTabIndex))
 		    return n;
 	    }
 
@@ -1395,7 +1395,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	    bool reachedFromNode = false;
 	    for (n = this; n != 0; n = n->traverseNextNode()) {
-		if (n->isSelectable() &&
+		if (n->isTabFocusable() &&
 		    ((!reachedFromNode && (n->tabIndex() <= fromTabIndex)) ||
 		     (reachedFromNode && (n->tabIndex() < fromTabIndex)))  &&
 		    (n->tabIndex() > highestSuitableTabIndex) &&
@@ -1418,12 +1418,12 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	    // Search backwards from fromNode
 	    for (n = fromNode->traversePreviousNode(); n != 0; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestSuitableTabIndex))
 		    return n;
 	    }
 	    // The previous node isn't before fromNode, start from the end of the document
 	    for (n = lastNode; n != fromNode; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestSuitableTabIndex))
 		    return n;
 	    }
 
