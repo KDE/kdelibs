@@ -46,14 +46,14 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
-libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
+libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
 		klined.cpp kledlamp.cpp kprogress.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp \
-		kseparator.cpp krestrictedline.cpp knuminput.cpp \
+		kseparator.cpp krestrictedline.cpp  \
 		kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
 		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp kdbtn.cpp \
 		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
