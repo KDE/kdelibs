@@ -716,6 +716,22 @@ public:
     /**
        Returns the window type for this client (see the NET base class
        documentation for a description of the various window types).
+       Since clients may specify several windows types for a window
+       in order to support backwards compatibility and extensions
+       not available in the NETWM spec, you should specify all
+       window types you application supports (see the NET::WindowTypeMask
+       mask values for various window types). This method will
+       return the first window type that is listed in the supported types,
+       or NET::Unknown if none of the window types is supported.
+
+       @return the type of the window
+    **/
+    WindowType windowType( int supported_types ) const;
+
+    /**
+       @deprecated
+       Returns the window type for this client (see the NET base class
+       documentation for a description of the various window types).
 
        @return the type of the window
     **/

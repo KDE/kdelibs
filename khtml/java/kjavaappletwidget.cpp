@@ -79,9 +79,9 @@ void KJavaAppletWidget::showApplet()
 void KJavaAppletWidget::setWindow( WId w )
 {
     //make sure that this window has the right name, if so, embed it...
-    KWin::Info w_info = KWin::info( w );
-    if ( m_swallowTitle == w_info.name ||
-         m_swallowTitle == w_info.visibleName )
+    KWin::WindowInfo w_info = KWin::windowInfo( w );
+    if ( m_swallowTitle == w_info.name() ||
+         m_swallowTitle == w_info.visibleName() )
     {
         kdDebug(6100) << "swallowing our window: " << m_swallowTitle
                       << ", window id = " << w << endl;

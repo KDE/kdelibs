@@ -197,6 +197,22 @@ void KWin::setActiveWindow( WId win)
     info.setActiveWindow( win );
 }
 
+KWin::WindowInfo KWin::windowInfo( WId win, unsigned long properties )
+{
+    return WindowInfo( win, properties );
+}
+
+
+WId KWin::transientFor( WId win, bool allow_root_window )
+{
+    Window transient_for = None;
+    XGetTransientForHint( qt_xdisplay(), win, &transient_for );
+    if( allow_root_window )
+	return transient_for;
+    return transient_for == qt_xrootwin() ? None : transient_for;
+}
+
+// this one is deprecated, KWin::WindowInfo should be used instead
 KWin::Info KWin::info( WId win )
 {
     Info w;
@@ -399,36 +415,6 @@ void KWin::setOnDesktop( WId win, int desktop )
     info.setDesktop( desktop );
 }
 
-
-QString KWin::Info::visibleNameWithState() const
-{
-    QString s = visibleName;
-    if ( isIconified() ) {
-	s.prepend('(');
-	s.append(')');
-    }
-    return s;
-}
-
-// see NETWM spec section 7.6
-bool KWin::Info::isIconified() const
-{
-    if( mappingState != NET::Iconic )
-        return false;
-    if( state & NET::Hidden ) // NETWM 1.2 compliant WM
-        return true;
-    static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
-    if( wm_is_1_2_compliant == noidea ) {
-        NETRootInfo info( qt_xdisplay(), NET::Supported );
-        wm_is_1_2_compliant =
-            info.supportedProperties()[ NETRootInfo::STATES ] & NET::Hidden
-            ? yes : no;
-    }
-    // older WMs use WithdrawnState for other virtual desktops
-    // and IconicState only for minimized
-    return wm_is_1_2_compliant == yes ? false : true;
-}
-
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {
     NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
@@ -481,6 +467,168 @@ void KWin::deIconifyWindow( WId win, bool animation )
 void KWin::appStarted()
 {
     KStartupInfo::appStarted();
+}
+
+
+
+// KWin::info() should be updated too if something has to be changed here
+KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
+{
+    if( properties == 0 )
+	properties = NET::WMState |
+		     NET::WMStrut |
+		     NET::WMWindowType |
+		     NET::WMName |
+		     NET::WMVisibleName |
+		     NET::WMDesktop |
+		     NET::WMPid |
+		     NET::WMKDEFrameStrut |
+		     NET::XAWMState;
+    if( properties & NET::WMVisibleName )
+	properties |= NET::WMName; // force, in case it will be used as a fallback
+    info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), properties );
+    win_ = win;
+    if ( info->name() ) {
+	name_ = QString::fromUtf8( info->name() );
+    } else {
+	char* c = 0;
+	if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
+	    name_ = QString::fromLocal8Bit( c );
+	    XFree( c );
+	}
+    }
+    NETRect frame, geom;
+    info->kdeGeometry( frame, geom );
+    geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+}
+
+KWin::WindowInfo::WindowInfo()
+    : info( NULL )
+{
+}
+
+KWin::WindowInfo::~WindowInfo()
+{
+    delete info;
+}
+
+WId KWin::WindowInfo::win() const
+{
+    return win_;
+}
+
+unsigned long KWin::WindowInfo::state() const
+{
+    return info->state();
+}
+
+NET::MappingState KWin::WindowInfo::mappingState() const
+{
+    return info->mappingState();
+}
+
+NETStrut KWin::WindowInfo::strut() const
+{
+    return info->strut();
+}
+
+NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
+{
+    return info->windowType( supported_types );
+}
+
+QString KWin::WindowInfo::visibleNameWithState() const
+{
+    QString s = visibleName();
+    if ( isMinimized() ) {
+	s.prepend('(');
+	s.append(')');
+    }
+    return s;
+}
+
+QString KWin::Info::visibleNameWithState() const
+{
+    QString s = visibleName;
+    if ( isMinimized() ) {
+	s.prepend('(');
+	s.append(')');
+    }
+    return s;
+}
+
+QString KWin::WindowInfo::visibleName() const
+{
+    return info->visibleName() ? info->visibleName() : name_;
+}
+
+QString KWin::WindowInfo::name() const
+{
+    return name_;
+}
+
+bool KWin::WindowInfo::isOnCurrentDesktop() const
+{
+    return isOnDesktop( KWin::currentDesktop());
+}
+
+bool KWin::WindowInfo::isOnDesktop( int desktop ) const
+{
+    return info->desktop() == desktop || info->desktop() == NET::OnAllDesktops;
+}
+
+bool KWin::WindowInfo::onAllDesktops() const
+{
+    return info->desktop() == NET::OnAllDesktops;
+}
+
+int KWin::WindowInfo::desktop() const
+{
+    return info->desktop();
+}
+
+QRect KWin::WindowInfo::geometry() const
+{
+    return geometry_;
+}
+
+// see NETWM spec section 7.6
+bool KWin::WindowInfo::isMinimized() const
+{
+    if( mappingState() != NET::Iconic )
+        return false;
+    // NETWM 1.2 compliant WM - uses NET::Hidden for minimized windows
+    if(( state() & NET::Hidden ) != 0
+	&& ( state() & NET::Shaded ) == 0 ) // shaded may have NET::Hidden too
+        return true;
+    // older WMs use WithdrawnState for other virtual desktops
+    // and IconicState only for minimized
+    return icccmCompliantMappingState() ? false : true;
+}
+
+bool KWin::Info::isMinimized() const
+{
+    if( mappingState != NET::Iconic )
+        return false;
+    // NETWM 1.2 compliant WM - uses NET::Hidden for minimized windows
+    if(( state & NET::Hidden ) != 0
+	&& ( state & NET::Shaded ) == 0 ) // shaded may have NET::Hidden too
+        return true;
+    // older WMs use WithdrawnState for other virtual desktops
+    // and IconicState only for minimized
+    return icccmCompliantMappingState() ? false : true;
+}
+
+bool KWin::icccmCompliantMappingState()
+{
+    static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
+    if( wm_is_1_2_compliant == noidea ) {
+        NETRootInfo info( qt_xdisplay(), NET::Supported );
+        wm_is_1_2_compliant =
+            info.supportedProperties()[ NETRootInfo::STATES ] & NET::Hidden
+            ? yes : no;
+    }
+    return wm_is_1_2_compliant == yes;
 }
 
 // Fix for --enable-final. This gets defined at the top of this file.

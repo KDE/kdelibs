@@ -528,9 +528,9 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     {
       if (!m_part->widget())
         return Number(0);
-      KWin::Info inf = KWin::info(m_part->widget()->topLevelWidget()->winId());
+      KWin::WindowInfo inf = KWin::windowInfo(m_part->widget()->topLevelWidget()->winId());
       return Number(entry->value == OuterHeight ?
-                    inf.geometry.height() : inf.geometry.width());
+                    inf.geometry().height() : inf.geometry().width());
     }
     case PageXOffset:
       return Number(m_part->view()->contentsX());

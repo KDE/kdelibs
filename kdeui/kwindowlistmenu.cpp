@@ -43,7 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // helper class
 namespace
 {
-class NameSortedInfoList : public QPtrList<KWin::Info>
+class NameSortedInfoList : public QPtrList<KWin::WindowInfo>
 {
 public:
     NameSortedInfoList() { setAutoDelete(true); };
@@ -56,8 +56,8 @@ private:
 int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 )
 {
 #ifndef Q_WS_QWS //FIXME
-    KWin::Info *i1 = static_cast<KWin::Info *>(s1);
-    KWin::Info *i2 = static_cast<KWin::Info *>(s2);
+    KWin::WindowInfo *i1 = static_cast<KWin::WindowInfo *>(s1);
+    KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
     QString title1, title2;
     if (i1)
         title1 = i1->visibleNameWithState().lower();
@@ -177,16 +177,17 @@ void KWindowListMenu::init()
 
 	for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
              it != kwin_module->windows().end(); ++it) {
-	    KWin::Info info = KWin::info( *it );
-	    if ((info.desktop == d) || (d == cd && info.onAllDesktops))
-                list.inSort(new KWin::Info(info));
+	    KWin::WindowInfo info = KWin::windowInfo( *it );
+	    if ((info.desktop() == d) || (d == cd && info.onAllDesktops()))
+                list.inSort(new KWin::WindowInfo(info));
         }
 
-        for (KWin::Info* info = list.first(); info!=0; info = list.next(), i++)
+        for (KWin::WindowInfo* info = list.first(); info!=0; info = list.next(), i++)
         {
             QString title = info->visibleNameWithState();
-            if ( info->windowType == NET::Normal || info->windowType == NET::Unknown ) {
-                QPixmap pm = KWin::icon(info->win, 16, 16, true );
+	    NET::WindowType windowType = info->windowType( NET::NormalMask );
+            if ( windowType == NET::Normal || windowType == NET::Unknown ) {
+                QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
                 if (items == 1 && nd > 1)
                     insertSeparator();
@@ -194,8 +195,8 @@ void KWindowListMenu::init()
 		// Avoid creating unwanted accelerators.
 		itemText.replace("&", "&&");
                 insertItem( pm, QString("   ")+ itemText, i);
-                map.insert(i, info->win);
-                if (info->win == active_window)
+                map.insert(i, info->win());
+                if (info->win() == active_window)
                     setItemChecked(i, TRUE);
             }
         }

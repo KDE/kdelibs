@@ -2150,7 +2150,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->mapping_state = Withdrawn;
     p->mapping_state_dirty = True;
     p->state = 0;
-    p->type = Unknown;
+    p->types[ 0 ] = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
     p->icon_name = (char *) 0;
@@ -3073,7 +3073,8 @@ void NETWinInfo::update(unsigned long dirty) {
     }
 
     if (dirty & WMWindowType) {
-	p->type = Unknown;
+	p->types.reset();
+	p->types[ 0 ] = Unknown;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
 			       False, XA_ATOM, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -3087,11 +3088,10 @@ void NETWinInfo::update(unsigned long dirty) {
 
 		unsigned long count = 0;
 		long *types = (long *) data_ret;
+		int pos = 0;
 
-		while (p->type == Unknown && count < nitems_ret) {
-		    // check the types for the types we know about... types[count] is
-		    // not known, p->type is unchanged (Unknown)
-
+		while (count < nitems_ret) {
+		    // remember all window types we know
 #ifdef NETWMDEBUG
 		    fprintf(stderr,
 			    "NETWinInfo::update:   examining window type %ld %s\n",
@@ -3100,25 +3100,25 @@ void NETWinInfo::update(unsigned long dirty) {
 #endif
 
 		    if ((Atom) types[count] == net_wm_window_type_normal)
-			p->type = Normal;
+			p->types[ pos++ ] = Normal;
 		    else if ((Atom) types[count] == net_wm_window_type_desktop)
-			p->type = Desktop;
+			p->types[ pos++ ] = Desktop;
 		    else if ((Atom) types[count] == net_wm_window_type_dock)
-			p->type = Dock;
+			p->types[ pos++ ] = Dock;
 		    else if ((Atom) types[count] == net_wm_window_type_toolbar)
-			p->type = Tool;
+			p->types[ pos++ ] = Tool;
 		    else if ((Atom) types[count] == net_wm_window_type_menu)
-			p->type = Menu;
+			p->types[ pos++ ] = Menu;
 		    else if ((Atom) types[count] == net_wm_window_type_dialog)
-			p->type = Dialog;
+			p->types[ pos++ ] = Dialog;
 		    else if ((Atom) types[count] == net_wm_window_type_utility)
-			p->type = Utility;
+			p->types[ pos++ ] = Utility;
 		    else if ((Atom) types[count] == net_wm_window_type_splash)
-			p->type = Splash;
+			p->types[ pos++ ] = Splash;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
-			p->type = Override;
+			p->types[ pos++ ] = Override;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_topmenu)
-			p->type = TopMenu;
+			p->types[ pos++ ] = TopMenu;
 
 		    count++;
 		}
@@ -3235,9 +3235,37 @@ NETStrut NETWinInfo::strut() const {
     return p->strut;
 }
 
+NET::WindowType NETWinInfo::windowType( int supported_types ) const {
+    for( int i = 0;
+	 i < p->types.size();
+	 ++i ) {
+	switch( p->types[ i ] ) {
+	// return the type only if the application supports it
+#define CHECK_TYPE_MASK( type ) \
+	    case type: \
+		if( supported_types & type##Mask ) \
+		    return type; \
+		break;
+	    CHECK_TYPE_MASK( Normal )
+	    CHECK_TYPE_MASK( Desktop )
+	    CHECK_TYPE_MASK( Dock )
+	    CHECK_TYPE_MASK( Toolbar )
+	    CHECK_TYPE_MASK( Menu )
+	    CHECK_TYPE_MASK( Dialog )
+	    CHECK_TYPE_MASK( Override )
+	    CHECK_TYPE_MASK( TopMenu )
+	    CHECK_TYPE_MASK( Utility )
+	    CHECK_TYPE_MASK( Splash )
+#undef CHECK_TYPE_MASK
+	    default:
+		break;
+	}
+    }
+    return Unknown;
+}
 
 NET::WindowType NETWinInfo::windowType() const {
-    return p->type;
+    return p->types[ 0 ];
 }
 
 

@@ -24,7 +24,8 @@
 #include <qstring.h>
 #include <qpixmap.h>
 
-#include "netwm_def.h"
+#include <netwm_def.h>
+class NETWinInfo;
 
 /**
  * Convenience access to certain properties and features of the
@@ -36,8 +37,8 @@
  * In KDE 2 and KDE 3, communication with the windowmanager is done with the
  * NET-protocol, a common window manager specification designed by
  * various authors of X11 window managers (including those of the KDE
- * project).  The full specification can be found in
- * kdebase/kwin/wm-spec/
+ * project).  The full specification can be found at
+ * www.freedesktop.org/standards/wm-spec .
  *
  * To access features of the NET-protocol, use the classes @ref NETRootInfo
  * and @ref NETWinInfo.
@@ -63,7 +64,7 @@ public:
      *
      * This is a request to the window manager. It may or may not be
      * obeyed.
-     * @param win the id of the window to make active
+     * @param win the if of the window to make active
     */
     static void setActiveWindow( WId win);
 
@@ -84,58 +85,26 @@ public:
      */
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
-
-    /**
-     * Information about a window.
-     */
-    struct Info
-    {
-      /// The window's id.
-	WId win;
-      /// The window's state.
- 	long unsigned int state;
-      /**
-       * Checks whether the window is iconified (minimized).
-       * @return true if iconified
-       */
-	bool isIconified() const;
-      /// The mapping state.
-      // Use isIconified() if possible !
-	NET::MappingState mappingState;
-      /// The strut.
-	NETStrut strut;
-      /// The window type.
-	NET::WindowType windowType;
-      /// The visible name of the window.
-	QString visibleName;
-      /// The name of the window.
-	QString name;
-      /// The number of the window's desktop.
-	int desktop;
-      /// true if the window is on all desktops.
-	bool onAllDesktops;
-      /// The process id of the window's owner
-	pid_t pid;
-      /// Position and size of the window contents.
-	QRect geometry;
-      /// Position and size of the window's frame.
-	QRect frameGeometry;
-
-	/** Returns a visible name with state.
-	 *
-	 * This is a simple convenience function that returns the
-	 * visible name but with parentheses around iconified windows
-	 * @return the window name with state
-	 */
-	QString visibleNameWithState() const;
-    };
-
+    class WindowInfo;
     /**
      * Returns information about window @p win.
      * @param win the id of the window
+     * @param properties all properties that should be retrieved (see NET::Property
+     *    enum for details) - passing 0 means all properties. Unlisted properties
+     *    cause related information to be invalid in the returned data, but
+     *    make this function faster when not all data is needed.
      * @return the window information
      */
-    static Info info( WId win );
+    static WindowInfo windowInfo( WId win, unsigned long properties = 0 );
+
+    /**
+     * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow
+     * for this window.
+     *
+     * @param allow_root_window if false, and the WM_TRANSIENT_FOR property points
+     *    to the root window, no window is returned
+     */
+    static WId transientFor( WId window, bool allow_root_window );
 
     /**
      * Returns an icon for window @p win.
@@ -251,6 +220,24 @@ public:
      */
     static void setCurrentDesktop( int desktop );
 
+    /**
+     * Minimizes a window. Compatible to XIconifyWindow but has an
+     * additional parameter @p animation.
+     *
+     * @param win the id of the window
+     * @param animation true to show an animation
+     * @see deIconifyWindow()
+     */
+    static void minimizeWindow( WId win, bool animation = true );
+    /**
+     * Unminimizes a window. Compatible to XMapWindow but has an
+     * additional parameter @p animation.
+     *
+     * @param win the id of the window
+     * @param animation true to show an animation
+     * @see iconifyWindow()
+     */
+    static void unminimizeWindow( WId win, bool animation = true );
 
     /**
      * Iconifies a window. Compatible to XIconifyWindow but has an
@@ -272,6 +259,54 @@ public:
      */
     static void deIconifyWindow( WId win, bool animation = true );
 
+    /**
+     * @internal
+     * Returns true if the WM uses IconicState also for windows
+     * on inactive virtual desktops.
+     */
+    static bool icccmCompliantMappingState();
+
+    /**
+     * @deprecated
+     * Use @see WindowInfo .
+     */
+    struct Info
+    {
+      /// The window's id.
+	WId win;
+      /// The window's state.
+ 	long unsigned int state;
+      /// The mapping state.
+	bool isMinimized() const;
+	NET::MappingState mappingState;
+      /// The strut.
+	NETStrut strut;
+      /// The window type.
+	NET::WindowType windowType;
+      /// The visible name of the window.
+	QString visibleName;
+      /// The name of the window.
+	QString name;
+      /// The number of the window's desktop.
+	int desktop;
+      /// true if the window is on all desktops.
+	bool onAllDesktops;
+      /// The process id of the window's owner
+	pid_t pid;
+      /// Position and size of the window contents.
+	QRect geometry;
+      /// Position and size of the window's frame.
+	QRect frameGeometry;
+
+	QString visibleNameWithState() const;
+    };
+
+    /**
+     * @deprecated
+     * Use @see windowInfo() .
+     */
+    static Info info( WId win );
+
 #ifdef KDE_NO_COMPAT
 private:
 #endif
@@ -280,6 +315,109 @@ private:
      * Use @ref KStartupInfo::appStarted
      */
     static void appStarted();
+};
+
+
+/**
+ * Information about a window.
+ */
+class KWin::WindowInfo
+{
+public:
+    /**
+     * Reads all the info about the given window.
+     */
+    WindowInfo( WId window, unsigned long properties );
+    WindowInfo(); // to make QValueList and others happy
+    ~WindowInfo();
+    /**
+     * Returns the window identifier.
+     */ 
+    WId win() const;
+    /**
+     * Returns the window's state flags(see the NET::State enum for details).
+     * Requires NET::WMState passed to KWin::windowInfo().
+     */
+    unsigned long state() const;
+    /**
+     * Returns true if the window is minimized. Note that it is true only if
+     * the window is truly minimized, not shaded or on another virtual desktops,
+     * which makes it different from mappingState() == NET::Iconic
+     * or QWidget::isMinimized().
+     * Requires NET::WMState and NET::XAWMState passed to KWin::windowInfo().
+     */
+    bool isMinimized() const;
+    /**
+     * Returns the mapping state of the window (see NET::MappingState). Note that
+     * it's very likely that you don't want to use this function, and use isOnDesktop(),
+     * isMinimized() etc. instead.
+     * Requires NET::XAWMState passed to KWin::windowInfo().
+     */
+    NET::MappingState mappingState() const;
+    /**
+     * Returns the window strut.
+     * Requires NET::WMStrut passed to KWin::windowInfo().
+     */
+    NETStrut strut() const;
+    /**
+     * Returns the window type of this window (see NET::WindowType). The argument
+     * should be all window types your application supports (see NET::WindowTypeMask).
+     * Requires NET::WMWindowType passed to KWin::windowInfo().
+     */
+    NET::WindowType windowType( int supported_types ) const;
+    /** Returns a visible name with state.
+     *
+     * This is a simple convenience function that returns the
+     * visible name but with parentheses around iconified windows.
+     * Requires NET::WMVisibleName, NET::WMState and NET::XAWMState passed
+     * to KWin::windowInfo().
+     * @return the window name with state
+     */
+    QString visibleNameWithState() const;
+    /**
+     * Returns the visible name of the window (i.e. including possible <2> appended
+     * when there are two or more windows with the same name).
+     * Requires NET::WMVisibleName passed to KWin::windowInfo().
+     */
+    QString visibleName() const;
+    /**
+     * Returns the name of the window, as specified by the application, without
+     * any modifications. You should often use visibleName() instead.
+     * Requires NET::WMName passed to KWin::windowInfo().
+     */
+    QString name() const;
+    /**
+     * Returns true if the window is on the currently active virtual desktop.
+     * Requires NET::WMDesktop passed to KWin::windowInfo().
+     */
+    bool isOnCurrentDesktop() const;
+    /**
+     * Returns true if the window is on the given virtual desktop.
+     * Requires NET::WMDesktop passed to KWin::windowInfo().
+     */
+    bool isOnDesktop( int desktop ) const;
+    /**
+     * Returns true if the window is on all desktops
+     * (equal to desktop()==NET::OnAllDesktops).
+     * Requires NET::WMDesktop passed to KWin::windowInfo().
+     */
+    bool onAllDesktops() const;
+    /**
+     * Returns the virtual desktop this window is on (NET::OnAllDesktops if the window
+     * is on all desktops). You should prefer using isOnDesktop().
+     * Requires NET::WMDesktop passed to KWin::windowInfo().
+     */
+    int desktop() const;
+    /**
+     * Returns the position and size of the window contents.
+     */
+    QRect geometry() const;
+private:
+    NETWinInfo* info;
+    WId win_;
+    QString name_;
+    QRect geometry_;
+    class WindowInfoPrivate* d;
 };
 
 #endif

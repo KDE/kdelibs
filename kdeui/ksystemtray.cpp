@@ -86,8 +86,8 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
-	KWin::Info info = KWin::info( parentWidget()->winId());
-	d->on_all_desktops = info.onAllDesktops;
+	KWin::WindowInfo info = KWin::windowInfo( parentWidget()->winId());
+	d->on_all_desktops = info.onAllDesktops();
     }
     else
     {
@@ -203,9 +203,9 @@ void KSystemTray::activateOrHide()
     if ( !pw )
 	return;
 
-    KWin::Info info = KWin::info( pw->winId() );
+    KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
     // mapped = not hidden by calling hide()
-    bool mapped = (info.mappingState != NET::Withdrawn);
+    bool mapped = (info.mappingState() != NET::Withdrawn);
     // SELI using !pw->isActiveWindow() should be enough here,
     // but it doesn't work - e.g. with kscd, the "active" window
     // is the widget docked in Kicker
@@ -222,7 +222,7 @@ void KSystemTray::minimizeRestore( bool restore )
     QWidget* pw = parentWidget();
     if( !pw )
 	return;
-    KWin::Info info = KWin::info( pw->winId() );
+    KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
     if ( restore )
     {
 #ifndef Q_WS_QWS //FIXME
@@ -230,12 +230,12 @@ void KSystemTray::minimizeRestore( bool restore )
 	    KWin::setOnAllDesktops( pw->winId(), true );
 	else
 	    KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
-        pw->move( info.geometry.topLeft() ); // avoid placement policies
+        pw->move( info.geometry().topLeft() ); // avoid placement policies
         pw->show();
 	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
-	d->on_all_desktops = info.onAllDesktops;
+	d->on_all_desktops = info.onAllDesktops();
 	pw->hide();
     }
 }
