@@ -465,7 +465,7 @@ void KBookmarkMenu::addAddBookmarksList()
   if (!kapp->authorizeKAction("bookmarks"))
      return;
   
-  QString title = i18n( "Bookmark Tabs as Folder" );
+  QString title = i18n( "Bookmark Tabs as Folder..." );
 
   KAction * paAddBookmarksList = new KAction( title,
                                           "bookmarks_list_add",
