@@ -152,6 +152,7 @@ void IppRequest::init()
 	lang->encoding = CUPS_UTF8;
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_CHARSET, "attributes-charset", NULL, cupsLangEncoding(lang));
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE, "attributes-natural-language", NULL, lang->language);
+	cupsLangFree(lang);
 }
 
 void IppRequest::addString_p(int group, int type, const QString& name, const QString& value)
