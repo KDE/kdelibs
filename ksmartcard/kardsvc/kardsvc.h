@@ -45,16 +45,28 @@ public:
   
   virtual ~KardSvc();
 
+
+
 k_dcop:
+
   QStringList getSlotList();
   bool isCardPresent(QString slot);
   QString getCardATR(QString slot);
   void reconfigure();
 
-private slots:
-  void poll();
 
-private:
+  
+  private slots:
+    void poll();
+  
+
+
+
+ private:
+
+  void emitreaderListChanged();
+
+  
   KPCSC *_pcsc;
   KSimpleConfig *_cfg;
   QTimer *_timer;

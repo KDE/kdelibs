@@ -53,19 +53,39 @@ KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 {
   //I don't use the automatic connection mode for kpcsc, this allows to work normally if the users starts pcscd after KDE.
   //If not done so, the _pcsc object is not properly created at kardsvc initialization and we need to re-start kde.
-	_pcsc = new KPCSC(FALSE);
-	_pcsc->connect();
-	_timer = NULL;
-	_readers = _pcsc->listReaders(NULL);
-	reconfigure();
+
+
+  _readers.clear();
+  _pcsc = new KPCSC(FALSE);
+  _pcsc->connect();
+  _timer = NULL;
+  _readers = _pcsc->listReaders(NULL);
+  reconfigure();
 }
   
 
 KardSvc::~KardSvc()
 {
+
 	delete _pcsc;
 }
 
+
+
+void KardSvc::emitreaderListChanged(){
+
+//   kdDebug() <<"Emitting" << endl;
+//   for (QStringList::Iterator _slot= _readers.begin();_slot!=_readers.end();++_slot){  
+//   kdDebug ()<< *_slot << endl;
+//   }
+
+
+  QByteArray val;
+  QDataStream _retReader(val, IO_WriteOnly);
+  _retReader<<_readers;
+  
+  emitDCOPSignal ("readerListChanged(QStringList &)",val);
+}
 
 QStringList KardSvc::getSlotList() {
 
@@ -91,10 +111,18 @@ bool KardSvc::isCardPresent(QString slot) {
 
 
 void KardSvc::poll() {
+
+	kdDebug()<<"Polling" << endl;
 int err;
- _pcsc->connect(); 
+ int err2=_pcsc->connect();
+ if (err2 ){
+   kdDebug()<<"Error connections" <<KPCSC::translateError(err2)<< endl;
+ }
  QStringList newReaders = _pcsc->listReaders(&err);
 
+  if ( err!=0){
+   kdDebug()<<"Error listing" <<KPCSC::translateError(err)<< endl;
+ }
  // Update the list of readers
  if (_readers != newReaders) {
    if (err == 0) {
@@ -115,6 +143,7 @@ int err;
      }
      
      _readers = newReaders;
+     emitreaderListChanged();
      
    } else return;
  }
