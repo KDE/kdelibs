@@ -7,7 +7,7 @@ if test "$xrender_h" = yes; then
   KDE_CHECK_LIB(Xrender, XRenderComposite, [
     LIB_XRENDER=-lXrender
     AC_DEFINE_UNQUOTED(HAVE_XRENDER, 1, [Defined if your system has XRender support])
-  ], [])
+  ], [], -lXext -lX11 $X_EXTRA_LIBS)
 else
   LIB_XRENDER=
 fi
