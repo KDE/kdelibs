@@ -206,7 +206,11 @@ void KLibrary::slotTimeout()
   if ( m_objs.count() != 0 )
     return;
 
-  KLibLoader::self()->unloadLibrary( m_libname.latin1() );
+  /* Don't go through KLibLoader::unloadLibrary(), because that uses the
+     ref counter, but this timeout means to unconditionally close this library
+     The destroyed() signal will take care to remove us from all lists.
+  */
+  delete this;
 }
 
 // -------------------------------------------------
@@ -224,10 +228,11 @@ public:
     int ref_count;
     lt_dlhandle handle;
     QString name;
+    QString filename;
 };
 
 KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
- : lib(l), ref_count(1), handle(h), name(l->name())
+ : lib(l), ref_count(1), handle(h), name(l->name()), filename(l->fileName())
 {
     unload_mode = UNKNOWN;
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
@@ -241,7 +246,6 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
 class KLibLoaderPrivate
 {
 public:
-    //QAsciiDict<KLibWrapPrivate> libs;
     QList<KLibWrapPrivate> loaded_stack;
     QList<KLibWrapPrivate> pending_close;
     enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
@@ -301,54 +305,72 @@ KLibrary* KLibLoader::library( const char *name )
     if (!name)
         return 0;
 
-    QCString libname( name );
-
-    // only append ".la" if there is no extension
-    // this allows to load non-libtool libraries as well
-    // (mhk, 20000228)
-    int pos = libname.findRev('/');
-    if (pos < 0)
-      pos = 0;
-    if (libname.find('.', pos) < 0)
-      libname += ".la";
-
     KLibWrapPrivate* wrap = m_libs[name];
     if (wrap) {
+      /* Nothing to do to load the library.  */
       wrap->ref_count++;
       return wrap->lib;
     }
 
-    // only look up the file if it is not an absolute filename
-    // (mhk, 20000228)
-    QString libfile;
-    if (libname[0] == '/')
-      libfile = libname;
-    else
-      {
-        libfile = KGlobal::dirs()->findResource( "lib", libname );
-        if ( libfile.isEmpty() )
-          {
-            kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
-            return 0;
-          }
-      }
-
-    lt_dlhandle handle = lt_dlopen( libfile.latin1() );
-    if ( !handle )
-    {
-        kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
-        return 0;
+    /* Test if this library was loaded at some time, but got
+       unloaded meanwhile, whithout being dlclose()'ed.  */
+    QListIterator<KLibWrapPrivate> it(d->loaded_stack);
+    for (; it.current(); ++it) {
+      if (it.current()->name == name)
+        wrap = it.current();
     }
 
-    KLibrary *lib = new KLibrary( name, libfile, handle );
-    wrap = new KLibWrapPrivate(lib, handle);
-    m_libs.insert( name, wrap );
-    d->loaded_stack.prepend(wrap);
+    if (wrap) {
+      d->pending_close.removeRef(wrap);
+      if (!wrap->lib) {
+        /* This lib only was in loaded_stack, but not in m_libs.  */
+        wrap->lib = new KLibrary( name, wrap->filename, wrap->handle );
+      }
+      wrap->ref_count++;
+    } else {
+      QCString libname( name );
 
-    connect( lib, SIGNAL( destroyed() ),
+      // only append ".la" if there is no extension
+      // this allows to load non-libtool libraries as well
+      // (mhk, 20000228)
+      int pos = libname.findRev('/');
+      if (pos < 0)
+        pos = 0;
+      if (libname.find('.', pos) < 0)
+        libname += ".la";
+
+      // only look up the file if it is not an absolute filename
+      // (mhk, 20000228)
+      QString libfile;
+      if (libname[0] == '/')
+        libfile = libname;
+      else
+        {
+          libfile = KGlobal::dirs()->findResource( "lib", libname );
+          if ( libfile.isEmpty() )
+            {
+              kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
+              return 0;
+            }
+        }
+
+      lt_dlhandle handle = lt_dlopen( libfile.latin1() );
+      if ( !handle )
+      {
+        kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
+        return 0;
+      }
+
+      KLibrary *lib = new KLibrary( name, libfile, handle );
+      wrap = new KLibWrapPrivate(lib, handle);
+      d->loaded_stack.prepend(wrap);
+    }
+    m_libs.insert( name, wrap );
+
+    connect( wrap->lib, SIGNAL( destroyed() ),
              this, SLOT( slotLibraryDestroyed() ) );
 
-    return lib;
+    return wrap->lib;
 }
 
 void KLibLoader::unloadLibrary( const char *libname )
@@ -398,7 +420,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
   if (wrap && !d->pending_close.containsRef( wrap ))
     d->pending_close.append( wrap );
 
-  /* First delete all KLibrary object in pending_close, but _don't_ unload
+  /* First delete all KLibrary objects in pending_close, but _don't_ unload
      the DSO behind it.  */
   QListIterator<KLibWrapPrivate> it(d->pending_close);
   for (; it.current(); ++it) {
