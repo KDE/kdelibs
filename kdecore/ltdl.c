@@ -2,6 +2,8 @@
    Copyright (C) 1998-1999 Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
+   This file is a horrible hack.  Avoid it like the plague.  Please put it
+      out of its misery.  May noone ever have to debug this fucker again.
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -30,6 +32,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #include <config.h>
 #endif
 
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+
 #if HAVE_STRING_H
 #include <string.h>
 #endif
@@ -40,10 +46,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 #if HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-
-#if HAVE_MALLOC_H
-#include <malloc.h>
 #endif
 
 #if HAVE_MEMORY_H
@@ -206,7 +208,7 @@ strrchr(str, ch)
 
 #endif
 
-#if HAVE_LIBDL
+#if defined(HAVE_LIBDL) || defined(BSD)
 
 /* dynamic linking with dlopen/dlsym */
 
