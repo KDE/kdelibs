@@ -23,6 +23,8 @@
 - support channels != 2
 - expand capabilities of shell utils (making them eventually as powerful as
   artscontrol, or better ;)
+- make it possible to share a cookie between multiple hosts (like storing it
+  in nfs mounted home directory)
 
 ## KMedia2
 
