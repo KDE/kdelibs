@@ -54,11 +54,7 @@
 
 static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;
-#ifdef QT_COPY_PATCH_0008
 extern Time qt_x_last_input_time;
-#else
-extern Time qt_x_time;
-#endif
 
 static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
@@ -197,22 +193,14 @@ void KWin::activateWindow( WId win, long time )
 {
     NETRootInfo info( qt_xdisplay(), 0 );
     if( time == 0 )
-#ifdef QT_COPY_PATCH_0008
         time = qt_x_last_input_time;
-#else
-        time = qt_x_time;
-#endif
     info.setActiveWindow( win, NET::FromApplication, time );
 }
 
 void KWin::setActiveWindow( WId win, long time )
 {
     NETRootInfo info( qt_xdisplay(), 0 );
-#ifdef QT_COPY_PATCH_0008
         time = qt_x_last_input_time;
-#else
-        time = qt_x_time;
-#endif
     info.setActiveWindow( win, NET::FromTool, time );
 }
 
