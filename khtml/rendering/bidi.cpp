@@ -330,7 +330,12 @@ static void embed( QChar::Direction d )
 // collects one line of the paragraph and transforms it to visual order
 void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &end)
 {
-    if ( start == end ) return;
+    if ( start == end ) {
+	if ( start.current() == '\n' ) {
+	    m_height += lineHeight( firstLine );
+	}
+	return;
+    }
 #if BIDI_DEBUG > 1    
     kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 #endif
@@ -920,7 +925,7 @@ void RenderFlow::layoutInlineChildren()
     qt.start();
     kdDebug( 6040 ) << renderName() << " layoutInlineChildren( " << this <<" )" << endl;
 #endif
-#if BIDI_DEBUG > 1
+#if BIDI_DEBUG > 1 || defined( DEBUG_LINEBREAKS )
     kdDebug(6041) << " ------- bidi start " << this << " -------" << endl;
 #endif    
     int toAdd = style()->borderBottomWidth();
@@ -969,14 +974,7 @@ void RenderFlow::layoutInlineChildren()
         firstLine = true;
         while( !end.atEnd() ) {
             start = end;
-            if(m_pre && start.current() == QChar('\n') ) {
-		adjustEmbeddding = true;
-                ++start;
-		adjustEmbeddding = false;
-                if( start.atEnd() )
-                    break;
-            }
-
+	    
             end = findNextLineBreak(start);
             if( start.atEnd() ) break;
 	    bidiReorderLine(start, end);
@@ -985,7 +983,12 @@ void RenderFlow::layoutInlineChildren()
 		adjustEmbeddding = true;
                 ++end;
 		adjustEmbeddding = false;
-	    }
+	    } else if(m_pre && end.current() == QChar('\n') ) {
+		adjustEmbeddding = true;
+                ++end;
+		adjustEmbeddding = false;
+            }
+
             newLine();
             firstLine = false;
         }
