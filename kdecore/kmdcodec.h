@@ -90,7 +90,7 @@ public:
    * Same as above except it accepts a null terminated
    * string instead an array.
    *
-   * @param in      data to be encoded.
+   * @param str     data to be encoded.
    * @param useCRLF if true the input data is expected to have
    *                CRLF line breaks and the output will have CRLF line
    *                breaks, too.
@@ -295,8 +295,8 @@ public:
    * output array will be lost.
    *
    * @param in        the data to be encoded using base64.
-   * @param insertLFs limit the number of characters per line.
    * @param out       the container for the encoded data.
+   * @param insertLFs limit the number of characters per line.
    */
   static void base64Encode( const QByteArray& in, QByteArray& out,
                             bool insertLFs = false );
@@ -438,7 +438,7 @@ public:
    * before you read the digest. After reading the digest, you
    * can <b>not</b> add more data!
    *
-   * @param input  message to be added to digest
+   * @param in     message to be added to digest
    * @param len    the length of the given message.
    */
   void update(const char* in, int len = -1) { update(reinterpret_cast<const unsigned char*>(in), len); }
@@ -451,14 +451,14 @@ public:
   /**
    * @overload
    *
-   * @param input  message to be added to the digest (QByteArray).
+   * @param in     message to be added to the digest (QByteArray).
    */
   void update(const QByteArray& in );
 
   /**
    * @overload
    *
-   * @param input  message to be added to the digest (QByteArray).
+   * @param in     message to be added to the digest (QByteArray).
    */
   void update(const QCString& in );
 
