@@ -217,6 +217,8 @@ private:
     static QFont *_fixedFont;
     static QFont *_toolBarFont;
     static QFont *_menuFont;
+    static QColor * kde2Gray;
+    static QColor * kde2Blue;
 
     friend class KApplication;
 };

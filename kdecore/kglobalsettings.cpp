@@ -34,6 +34,8 @@ QFont *KGlobalSettings::_generalFont = 0;
 QFont *KGlobalSettings::_fixedFont = 0;
 QFont *KGlobalSettings::_toolBarFont = 0;
 QFont *KGlobalSettings::_menuFont = 0;
+QColor *KGlobalSettings::kde2Blue = 0;
+QColor *KGlobalSettings::kde2Gray = 0;
 
 
 int KGlobalSettings::dndEventDelay()
@@ -132,14 +134,14 @@ QColor KGlobalSettings::toolBarHighlightColor()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("Toolbar style") );
-    return c->readColorEntry("HighlightColor", &Qt::blue);
+    return c->readColorEntry("HighlightColor", kde2Blue);
 }
 
 QColor KGlobalSettings::inactiveTitleColor()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
-    return c->readColorEntry( "inactiveBackground", &Qt::lightGray );
+    return c->readColorEntry( "inactiveBackground", kde2Gray );
 }
 
 QColor KGlobalSettings::inactiveTextColor()
@@ -153,7 +155,7 @@ QColor KGlobalSettings::activeTitleColor()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
-    return c->readColorEntry( "activeBackground", &Qt::darkBlue );
+    return c->readColorEntry( "activeBackground", kde2Blue);
 }
 
 QColor KGlobalSettings::activeTextColor()
@@ -207,14 +209,14 @@ QColor KGlobalSettings::highlightColor()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    return c->readColorEntry( "selectBackground", &Qt::darkBlue );
+    return c->readColorEntry( "selectBackground", kde2Blue );
 }
 
 QColor KGlobalSettings::linkColor()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    return c->readColorEntry( "linkColor", &Qt::blue );
+    return c->readColorEntry( "linkColor", kde2Blue );
 }
 
 QColor KGlobalSettings::visitedLinkColor()
@@ -327,6 +329,9 @@ void KGlobalSettings::initStatic()
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( s_autostartPath->right(1) != "/")
 	*s_autostartPath += "/";
+
+    kde2Gray = new QColor(220, 220, 220);
+    kde2Blue = new QColor(0, 128, 128);
 
     config->setDollarExpansion(dollarExpansion);
 }

@@ -1104,11 +1104,14 @@ void KApplication::kdisplaySetPalette()
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
 
-    QColor background = config->readColorEntry( "background", &lightGray );
+    QColor kde2Gray(220, 220, 220);
+    QColor kde2Blue(0, 128, 128);
+
+    QColor background = config->readColorEntry( "background", &kde2Gray );
     QColor foreground = config->readColorEntry( "foreground", &black );
     QColor button = config->readColorEntry( "buttonBackground", &background );
     QColor buttonText = config->readColorEntry( "buttonForeground", &foreground );
-    QColor highlight = config->readColorEntry( "selectBackground", &darkBlue);
+    QColor highlight = config->readColorEntry( "selectBackground", &kde2Blue);
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
