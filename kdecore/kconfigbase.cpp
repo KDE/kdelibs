@@ -1077,17 +1077,25 @@ static QString translatePath( QString path )
    if (path.isEmpty())
        return path;
 
-   QString value;
    bool startsWithFile = path.left(5).lower() == QString::fromLatin1("file:");
-   path = startsWithFile ? path.mid(5) : path;
-   value = KGlobal::dirs()->relativeLocation("home", path);
-   // replace by $HOME, but ignore other IO-protocols (e.g. "http:/")
-   if (value[0] != '/' && value.find(':')==-1) 
-      value = QString::fromLatin1("$HOME/") + value;
-   if (startsWithFile)
-      value = QString::fromLatin1("file:") + value;
 
-   return value;
+   // return original path, if it refers to another type of URL (e.g. http:/), or
+   // if the path is already relative to another directory
+   if (!startsWithFile && path[0] != '/' ||
+        startsWithFile && path[5] != '/')
+	return path;
+
+   if (startsWithFile)
+        path.remove(0,5); // strip leading "file:/" off the string
+
+   path = KGlobal::dirs()->relativeLocation("home", path);
+   // replace by $HOME if necessary
+   if (path[0] != '/') 
+      path.prepend( "$HOME/" );
+   if (startsWithFile)
+      path.prepend( "file:" );
+
+   return path;
 }
 
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
