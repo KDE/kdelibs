@@ -166,12 +166,14 @@ QString KGlobalAccel::findKey( int key ) const
 
 bool grabFailed;
 
-static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
+extern "C" {
+  static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
 	if ( e->error_code != BadAccess ) {
 		warning( "grabKey: got X error %d instead of BadAccess", e->type );
 	}
 	grabFailed = true;
 	return 0;
+  }
 }
 
 bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
