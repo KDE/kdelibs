@@ -58,6 +58,12 @@ void KIconEffect::init()
     states += "Disabled";
 
     QStringList::ConstIterator it, it2;
+    QString _togray("togray");
+    QString _colorize("colorize");
+    QString _desaturate("desaturate");
+    QString _togamma("togamma");
+    QString _none("none");
+    
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	// Default effects
@@ -78,15 +84,15 @@ void KIconEffect::init()
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
 	{
 	    QString tmp = config->readEntry(*it2 + "Effect");
-	    if (tmp == "togray")
+	    if (tmp == _togray)
 		effect = ToGray;
-	    else if (tmp == "colorize")
+	    else if (tmp == _colorize)
 		effect = Colorize;
-	    else if (tmp == "desaturate")
+	    else if (tmp == _desaturate)
 		effect = DeSaturate;
-	    else if (tmp == "togamma")
+	    else if (tmp == _togamma)
 		effect = ToGamma;
-            else if (tmp == "none")
+            else if (tmp == _none)
 		effect = NoEffect;
 	    else
 		continue;

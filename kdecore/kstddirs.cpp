@@ -239,11 +239,14 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 
     struct dirent *ep;
     struct stat buff;
+    
+    QString _dot(".");
+    QString _dotdot("..");
 
     while( ( ep = readdir( dp ) ) != 0L )
     {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
 	continue;
 
       if (!recursive && (regexp.match(fn) == -1))
