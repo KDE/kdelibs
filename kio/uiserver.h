@@ -48,7 +48,7 @@ class ProgressItem : public QObject, public QListViewItem {
 
 public:
   ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
-		bool showDefault = true );
+                bool showDefault = true );
   ~ProgressItem();
 
   QCString appId() { return m_sAppId; }
@@ -197,31 +197,31 @@ k_dcop:
    */
   int newJob( QCString appId );
 
-  void jobFinished( int id );
+  ASYNC jobFinished( int id );
 
-  void totalSize( int id, unsigned long size );
-  void totalFiles( int id, unsigned long files );
-  void totalDirs( int id, unsigned long dirs );
+  ASYNC totalSize( int id, unsigned long size );
+  ASYNC totalFiles( int id, unsigned long files );
+  ASYNC totalDirs( int id, unsigned long dirs );
 
-  void processedSize( int id, unsigned long bytes );
-  void processedFiles( int id, unsigned long files );
-  void processedDirs( int id, unsigned long dirs );
+  ASYNC processedSize( int id, unsigned long bytes );
+  ASYNC processedFiles( int id, unsigned long files );
+  ASYNC processedDirs( int id, unsigned long dirs );
 
-  void percent( int id, unsigned long ipercent );
-  void speed( int id, unsigned long bytes_per_second );
-  void infoMessage( int id, const QString & msg );
+  ASYNC percent( int id, unsigned long ipercent );
+  ASYNC speed( int id, unsigned long bytes_per_second );
+  ASYNC infoMessage( int id, const QString & msg );
 
-  void copying( int id, KURL from, KURL to );
-  void moving( int id, KURL from, KURL to );
-  void deleting( int id, KURL url );
-  void creatingDir( int id, KURL dir );
-  void stating( int id, KURL url );
+  ASYNC copying( int id, KURL from, KURL to );
+  ASYNC moving( int id, KURL from, KURL to );
+  ASYNC deleting( int id, KURL url );
+  ASYNC creatingDir( int id, KURL dir );
+  ASYNC stating( int id, KURL url );
 
-  void mounting( int id, QString dev, QString point );
-  void unmounting( int id, QString point );
+  ASYNC mounting( int id, QString dev, QString point );
+  ASYNC unmounting( int id, QString point );
 
   // currently unused
-  void canResume( int id, unsigned int can_resume );
+  ASYNC canResume( int id, unsigned int can_resume );
 
   /**
    * Invoke this method to request autorization info from the user
