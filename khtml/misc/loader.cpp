@@ -402,7 +402,6 @@ void CachedImage::ref( CachedObjectClient *c )
     kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
 #endif
 
-    m_clients.remove( c );
     m_clients.append(c);
 
     if( m ) {
