@@ -493,6 +493,19 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &dontAskAgainName,
                                 int options)
 {
+   return warningYesNoCancelList(parent, text, QStringList(), caption,
+                      buttonYes, buttonNo, dontAskAgainName, options);
+}
+
+int
+KMessageBox::warningYesNoCancelList(QWidget *parent, const QString &text,
+                                    const QStringList &strlist,
+                                    const QString &caption,
+                                    const KGuiItem &buttonYes,
+                                    const KGuiItem &buttonNo,
+                                    const QString &dontAskAgainName,
+                                    int options)
+{
     ButtonCode res;
     if ( !shouldBeShownYesNo(dontAskAgainName, res) )
         return res;
@@ -505,7 +518,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                        buttonYes, buttonNo);
 
     bool checkboxResult = false;
-    int result = createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(),
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
                        dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
     if ( result==KDialogBase::Cancel ) return Cancel;

@@ -379,6 +379,51 @@ public:
                                 int options = Notify);
 
  /**
+  * Display a Yes/No/Cancel "warning" dialog with a listbox to show information
+  * to the user.
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string.
+  * @param strlist List of strings to be written in the listbox. If the
+  *                list is empty, it doesn't show any listbox, working
+  *                as warningYesNoCancel.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Warning").
+  * @param buttonYes The text for the first button.
+  *                  The default is i18n("&Yes").
+  * @param buttonNo  The text for the second button.
+  *                  The default is i18n("&No").
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further questions can be turned off. If turned off
+  *                all questions will be automatically answered with the
+  *                last answer (either Yes or No).
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
+  * @param options  see @ref OptionsType
+  *
+  * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
+  *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
+  *          button is pressed.
+  *
+  * To be used for questions "Do you want to save your changes?"
+  * The text should explain the implication of choosing 'No'.
+  *
+  * The default button is "Yes". Pressing "Esc" selects "Cancel"
+  *
+  * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
+  */
+  static int warningYesNoCancelList(QWidget *parent,
+                                const QString &text,
+                                const QStringList &strlist,
+                                const QString &caption = QString::null,
+                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStdGuiItem::no(),
+                                const QString &dontAskAgainName = QString::null,
+                                int options = Notify);
+
+ /**
   * Display an "Error" dialog.
   *
   * @param parent  If @p parent is 0, then the message box becomes an
