@@ -126,15 +126,15 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             if ( t == tab( currentTab() ) ) {
 #if QT_VERSION >= 0x030200
                 xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
-                yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 1;
+                yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 2;
 #else
                 xoff = 3;
-                yoff = -1;
+                yoff = -2;
 #endif
             }
             else {
                 xoff = 5;
-                yoff = 1;
+                yoff = 2;
             }
             rect.moveLeft( t->rect().left() + 2 + xoff );
             rect.moveTop( t->rect().center().y()-pixmap.height()/2 + yoff );
