@@ -26,13 +26,14 @@
       	    	    	border-collapse: separate;
 			vertical-align: middle;
                         text-align: justify;
-			border-spacing: 2px;
+			border-spacing: 2px;                        
 			border-left-color: #eeeeee;
 			border-top-color: #eeeeee;
 			border-bottom-color: #666666;
 			border-right-color: #666666;
 			border-style: solid;
 			border-width: 0px;
+                        padding: 1px;
 		      }
       TR              { display: table-row;
       	    	    	    vertical-align: inherit; border: inherit;
