@@ -27,6 +27,12 @@
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
 
+class KRootPixmapData
+{
+public:
+    QWidget *toplevel;
+};
+
 
 KRootPixmap::KRootPixmap( QWidget *widget, const char *name )
     : QObject(widget, name ? name : "KRootPixmap" ), m_pWidget(widget)
@@ -42,6 +48,7 @@ KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
 
 void KRootPixmap::init()
 {
+    d = new KRootPixmapData;
     m_Fade = 0;
     m_pPixmap = new KSharedPixmap;
     m_pTimer = new QTimer( this );
@@ -53,15 +60,14 @@ void KRootPixmap::init()
     connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
 
-    QObject *obj = m_pWidget;
-    while (obj->parent())
-	obj = obj->parent();
-    obj->installEventFilter(this);
+    d->toplevel = m_pWidget->topLevelWidget();
+    d->toplevel->installEventFilter(this);
 }
 
 KRootPixmap::~KRootPixmap()
 {
     delete m_pPixmap;
+    delete d;
 }
 
 
@@ -133,6 +139,12 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     case QEvent::Paint:
 	m_pTimer->start(0, true);
 	break;
+
+    case QEvent::Reparent:
+        d->toplevel->removeEventFilter(this);
+        d->toplevel = m_pWidget->topLevelWidget();
+        d->toplevel->installEventFilter(this);
+        break;
 
     default:
 	break;
