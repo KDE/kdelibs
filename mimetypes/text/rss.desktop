@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=text/rss
+Comment=RDF Site Summary
+Icon=news
+Type=MimeType
+Patterns=*.rss;*.RSS;

@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=text/rdf
+Comment=Ressource Definition File
+Icon=news
+Type=MimeType
+Patterns=*.rdf;*.RDF;
