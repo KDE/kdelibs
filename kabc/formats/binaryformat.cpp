@@ -133,7 +133,7 @@ bool BinaryFormat::checkHeader( QDataStream &stream ) const
   kdDebug() << "magic=" << magic << endl;
 
   if ( magic != 0x2e93e ) {
-    kdError() << i18n("File '%1' has no binary format.").arg( file->name() ) << endl;
+    kdError() << i18n("File '%1' is not binary format.").arg( file->name() ) << endl;
     return false;
   }
 
