@@ -6,7 +6,7 @@
 #include <qlist.h>
 #include <qstring.h>
 
-#include "plugin.h"
+#include "kplugin.h"
 
 class KPart : public QWidget
 {
