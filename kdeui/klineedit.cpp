@@ -194,13 +194,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-
-        QString keycode = e->text();
         bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
+            QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
                 QLineEdit::keyPressEvent ( e );
@@ -226,9 +225,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QString txt = text();
             int len = txt.length();
 
-            if ( cursorPosition() == len && len && txt != old_txt &&
-                 (!keycode.isNull() && keycode.unicode()->isPrint()) ||
-                 e->key() == Key_BackSpace )
+            QString keycode = e->text();
+            int key = e->key();
+            if ( len && cursorPosition() == len && txt != old_txt &&
+                 ((!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                  key == Qt::Key_BackSpace || key == Qt::Key_Delete) )
             {
                 kdDebug() << "Popup Completion" << endl;
                 if ( emitSignals() )
@@ -476,13 +477,12 @@ void KLineEdit::makeCompletionBox()
         return;
 
     d->completionBox = new KCompletionBox( this, "completion box" );
-
     if ( handleSignals() )
     {
         connect( d->completionBox, SIGNAL(highlighted( const QString& )),
-                 SLOT(setText( const QString& )));
+                 SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
-                 SLOT(setText( const QString& )));
+                 SLOT(setText( const QString& )) );
     }
 }
 
