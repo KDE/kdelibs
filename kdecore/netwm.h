@@ -681,7 +681,7 @@ public:
        Sentinel value to indicate that the client wishes to be visible on
        all desktops.
     **/
-    static const int OnAllDesktops = (int) -1;
+    static const int OnAllDesktops;
 
 
 protected:

@@ -64,7 +64,7 @@ public:
     /** Erase the current password. */
     void erase();
 
-    static const int PassLen = 100;
+    static const int PassLen;
     enum EchoModes { OneStar, ThreeStars, NoEcho };
 
 protected:

@@ -45,6 +45,9 @@
 /*
  * Password line editor.
  */
+
+const int KPasswordEdit::PassLen = 100;
+
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(OneStar)
 {

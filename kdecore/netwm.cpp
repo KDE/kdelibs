@@ -1764,6 +1764,8 @@ Window NETRootInfo::activeWindow() const {
 
 // NETWinInfo stuffs
 
+const int NETWinInfo::OnAllDesktops = (int) -1;
+
 NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 		       unsigned long properties, Role role)
 {
