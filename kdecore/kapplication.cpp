@@ -102,10 +102,6 @@
 #include <paths.h>
 #endif
 
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp/"
-#endif
-
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -2124,8 +2120,8 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
         {
-          // Last chance: use _PATH_TMP
-          aAutosaveDir.setPath( _PATH_TMP );
+          // Last chance: use temp dir
+          aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
         }
     }
 
@@ -2153,8 +2149,8 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
         {
-          // Last chance: use _PATH_TMP
-          aAutosaveDir.setPath( _PATH_TMP );
+          // Last chance: use temp dir
+          aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
         }
     }
 
