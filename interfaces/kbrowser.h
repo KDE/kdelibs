@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */     
 
-#ifndef __browser_h__
-#define __browser_h__
+#ifndef __kbrowser_h__
+#define __kbrowser_h__
 
 #include <qwidget.h>
 #include <qpoint.h>
