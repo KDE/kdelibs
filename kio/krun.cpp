@@ -376,7 +376,6 @@ void KRun::init()
       struct stat buff;
       if ( stat( m_strURL.path(), &buff ) == -1 )
       {
-	// Hmm, duplicated from global.cpp (ERR_DOES_NOT_EXIST)
 	KMessageBoxWrapper::error( 0L, i18n( "The file or directory\n%1\ndoes not exist" ).arg( m_strURL.url() ) );
 	m_bFault = true;
 	m_bFinished = true;
@@ -430,7 +429,9 @@ void KRun::scanFile()
   if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
   {
      kDebugError( 7010, "#### NO SUPPORT FOR READING!" );
-     emit error();
+     m_bFault = true;
+     m_bFinished = true;
+     m_timer.start( 0, true );
      return;
   }
   kDebugInfo( 7010, "###### Scanning file %s", debugString(m_strURL.url()) );
