@@ -202,11 +202,14 @@ QIconViewItemLineEdit::QIconViewItemLineEdit( const QString &text, QWidget *pare
 					      QIconViewItem *theItem, const char *name )
     : QMultiLineEdit( parent, name ), item( theItem ), startText( text )
 {
-    setWordWrap( QMultiLineEdit::FixedPixelWidth );
+
+// Commented out by David, to fix compilation.
+// We don't even use inline renaming in KDE !
+    //setWordWrap( QMultiLineEdit::FixedPixelWidth );
     setWrapColumnOrWidth( item->iconView()->maxItemWidth() -
 			  ( item->iconView()->itemTextPos() == QIconView::Bottom ?
 			    0 : item->iconRect().width() ) );
-    setWrapPolicy( QMultiLineEdit::Anywhere );
+    //setWrapPolicy( QMultiLineEdit::Anywhere );
     setMaxLength( item->iconView()->maxItemTextLength() );
     setAlignment( Qt::AlignCenter );
     setText( text );
