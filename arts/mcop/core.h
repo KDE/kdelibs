@@ -329,31 +329,30 @@ public:
 
 class InterfaceRepo : virtual public SmartWrapper {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline InterfaceRepo_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
+		return dynamic_cast<InterfaceRepo_base *>(_pool->base);
 	}
 
 public:
-	inline InterfaceRepo() : SmartWrapper(_Creator, _Caster) {}
+	inline InterfaceRepo() : SmartWrapper(_Creator) {}
 	inline InterfaceRepo(const SubClass& s) :
-		SmartWrapper(InterfaceRepo_base::_create(s.string()), _Caster) {}
+		SmartWrapper(InterfaceRepo_base::_create(s.string())) {}
 	inline InterfaceRepo(const Reference &r) :
-		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))) {}
+	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b) {}
 	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool) {}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
-		InterfaceRepo_base *sav = (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
+		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~InterfaceRepo() {
 	if (!_pool) return;
-		InterfaceRepo_base *sav = (InterfaceRepo_base *)_pool->cast("InterfaceRepo");
+		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -410,31 +409,30 @@ public:
 
 class FlowSystemSender : virtual public SmartWrapper {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline FlowSystemSender_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
+		return dynamic_cast<FlowSystemSender_base *>(_pool->base);
 	}
 
 public:
-	inline FlowSystemSender() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystemSender() : SmartWrapper(_Creator) {}
 	inline FlowSystemSender(const SubClass& s) :
-		SmartWrapper(FlowSystemSender_base::_create(s.string()), _Caster) {}
+		SmartWrapper(FlowSystemSender_base::_create(s.string())) {}
 	inline FlowSystemSender(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))) {}
+	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b) {}
 	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool) {}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
-		FlowSystemSender_base *sav = (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
+		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~FlowSystemSender() {
 	if (!_pool) return;
-		FlowSystemSender_base *sav = (FlowSystemSender_base *)_pool->cast("FlowSystemSender");
+		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -488,31 +486,30 @@ public:
 
 class FlowSystemReceiver : virtual public SmartWrapper {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline FlowSystemReceiver_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
+		return dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
 	}
 
 public:
-	inline FlowSystemReceiver() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystemReceiver() : SmartWrapper(_Creator) {}
 	inline FlowSystemReceiver(const SubClass& s) :
-		SmartWrapper(FlowSystemReceiver_base::_create(s.string()), _Caster) {}
+		SmartWrapper(FlowSystemReceiver_base::_create(s.string())) {}
 	inline FlowSystemReceiver(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))) {}
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b) {}
 	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool) {}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
-		FlowSystemReceiver_base *sav = (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
+		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~FlowSystemReceiver() {
 	if (!_pool) return;
-		FlowSystemReceiver_base *sav = (FlowSystemReceiver_base *)_pool->cast("FlowSystemReceiver");
+		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -576,31 +573,30 @@ public:
 
 class FlowSystem : virtual public SmartWrapper {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline FlowSystem_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (FlowSystem_base *)_pool->cast("FlowSystem");
+		return dynamic_cast<FlowSystem_base *>(_pool->base);
 	}
 
 public:
-	inline FlowSystem() : SmartWrapper(_Creator, _Caster) {}
+	inline FlowSystem() : SmartWrapper(_Creator) {}
 	inline FlowSystem(const SubClass& s) :
-		SmartWrapper(FlowSystem_base::_create(s.string()), _Caster) {}
+		SmartWrapper(FlowSystem_base::_create(s.string())) {}
 	inline FlowSystem(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))) {}
+	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b) {}
 	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool) {}
 	inline FlowSystem& operator=(const FlowSystem& target) {
-		FlowSystem_base *sav = (FlowSystem_base *)_pool->cast("FlowSystem");
+		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~FlowSystem() {
 	if (!_pool) return;
-		FlowSystem_base *sav = (FlowSystem_base *)_pool->cast("FlowSystem");
+		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -663,31 +659,30 @@ public:
 
 class GlobalComm : virtual public SmartWrapper {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline GlobalComm_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (GlobalComm_base *)_pool->cast("GlobalComm");
+		return dynamic_cast<GlobalComm_base *>(_pool->base);
 	}
 
 public:
-	inline GlobalComm() : SmartWrapper(_Creator, _Caster) {}
+	inline GlobalComm() : SmartWrapper(_Creator) {}
 	inline GlobalComm(const SubClass& s) :
-		SmartWrapper(GlobalComm_base::_create(s.string()), _Caster) {}
+		SmartWrapper(GlobalComm_base::_create(s.string())) {}
 	inline GlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))) {}
+	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b) {}
 	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool) {}
 	inline GlobalComm& operator=(const GlobalComm& target) {
-		GlobalComm_base *sav = (GlobalComm_base *)_pool->cast("GlobalComm");
+		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~GlobalComm() {
 	if (!_pool) return;
-		GlobalComm_base *sav = (GlobalComm_base *)_pool->cast("GlobalComm");
+		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -741,31 +736,30 @@ public:
 
 class TmpGlobalComm : virtual public GlobalComm {
 private:
-	static void* _Caster(void *p, const char* c);
-	static void* _Creator();
+	static Object_base* _Creator();
 	inline TmpGlobalComm_base *_method_call() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
+		return dynamic_cast<TmpGlobalComm_base *>(_pool->base);
 	}
 
 public:
-	inline TmpGlobalComm() : SmartWrapper(_Creator, _Caster) {}
+	inline TmpGlobalComm() : SmartWrapper(_Creator) {}
 	inline TmpGlobalComm(const SubClass& s) :
-		SmartWrapper(TmpGlobalComm_base::_create(s.string()), _Caster) {}
+		SmartWrapper(TmpGlobalComm_base::_create(s.string())) {}
 	inline TmpGlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true)), _Caster) {}
-	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b, _Caster) {}
+		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))) {}
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b) {}
 	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool) {}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
-		TmpGlobalComm_base *sav = (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
+		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
 	}
 	inline ~TmpGlobalComm() {
 	if (!_pool) return;
-		TmpGlobalComm_base *sav = (TmpGlobalComm_base *)_pool->cast("TmpGlobalComm");
+		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}

@@ -939,16 +939,7 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
-#include <string.h>
-
-void* InterfaceRepo::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	InterfaceRepo_base* b = (InterfaceRepo_base*)p;
-	if (!strcmp(c,"InterfaceRepo")) return b;
-	return (Object_base*)b;
-}
-
-void* InterfaceRepo::_Creator() {
+Object_base* InterfaceRepo::_Creator() {
 	return InterfaceRepo_base::_create();
 }
 
@@ -1054,16 +1045,7 @@ FlowSystemSender_skel::FlowSystemSender_skel()
 {
 }
 
-#include <string.h>
-
-void* FlowSystemSender::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	FlowSystemSender_base* b = (FlowSystemSender_base*)p;
-	if (!strcmp(c,"FlowSystemSender")) return b;
-	return (Object_base*)b;
-}
-
-void* FlowSystemSender::_Creator() {
+Object_base* FlowSystemSender::_Creator() {
 	return FlowSystemSender_base::_create();
 }
 
@@ -1176,16 +1158,7 @@ FlowSystemReceiver_skel::FlowSystemReceiver_skel()
 {
 }
 
-#include <string.h>
-
-void* FlowSystemReceiver::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	FlowSystemReceiver_base* b = (FlowSystemReceiver_base*)p;
-	if (!strcmp(c,"FlowSystemReceiver")) return b;
-	return (Object_base*)b;
-}
-
-void* FlowSystemReceiver::_Creator() {
+Object_base* FlowSystemReceiver::_Creator() {
 	return FlowSystemReceiver_base::_create();
 }
 
@@ -1475,16 +1448,7 @@ FlowSystem_skel::FlowSystem_skel()
 {
 }
 
-#include <string.h>
-
-void* FlowSystem::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	FlowSystem_base* b = (FlowSystem_base*)p;
-	if (!strcmp(c,"FlowSystem")) return b;
-	return (Object_base*)b;
-}
-
-void* FlowSystem::_Creator() {
+Object_base* FlowSystem::_Creator() {
 	return FlowSystem_base::_create();
 }
 
@@ -1657,16 +1621,7 @@ GlobalComm_skel::GlobalComm_skel()
 {
 }
 
-#include <string.h>
-
-void* GlobalComm::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	GlobalComm_base* b = (GlobalComm_base*)p;
-	if (!strcmp(c,"GlobalComm")) return b;
-	return (Object_base*)b;
-}
-
-void* GlobalComm::_Creator() {
+Object_base* GlobalComm::_Creator() {
 	return GlobalComm_base::_create();
 }
 
@@ -1760,17 +1715,7 @@ TmpGlobalComm_skel::TmpGlobalComm_skel()
 {
 }
 
-#include <string.h>
-
-void* TmpGlobalComm::_Caster(void *p, const char* c) {
-	if (!p) return 0;
-	TmpGlobalComm_base* b = (TmpGlobalComm_base*)p;
-	if (!strcmp(c,"TmpGlobalComm")) return b;
-	if (!strcmp(c,"GlobalComm")) return (GlobalComm_base*)b;
-	return (Object_base*)b;
-}
-
-void* TmpGlobalComm::_Creator() {
+Object_base* TmpGlobalComm::_Creator() {
 	return TmpGlobalComm_base::_create();
 }
 

@@ -85,16 +85,14 @@ protected:
 	// Pool of common variables for a bunch a wrappers
 	class Pool {
 		int count;
-		void* (*creator)();
-		void* (*caster)(void*,const char*);
+		Object_base* (*creator)();
 		bool created;
 	public:
-		void* base;
-		inline void* cast(const char* c) {return caster(base, c);}
-		inline Pool(void* b, void* (*cst)(void*,const char*))
-			: creator(0), caster(cst), base(b), created(true), count(1) {}
-		inline Pool(void* (*cor)(), void* (*cst)(void*,const char*))
-			: creator(cor), caster(cst), base(0), created(false), count(1) {}
+		Object_base* base;
+		inline Pool(Object_base* b)
+			: creator(0), base(b), created(true), count(1) {}
+		inline Pool(Object_base* (*cor)())
+			: creator(cor), base(0), created(false), count(1) {}
 		inline void Inc() {count++;}
 		inline bool Dec() {
 			if (--count==0) {delete this; return true;}
@@ -105,11 +103,11 @@ protected:
 		}
 	} *_pool;
 
-	inline SmartWrapper(void* (*cor)(), void* (*cst)(void*,const char*)) {
-		_pool = new Pool(cor, cst);
+	inline SmartWrapper(Object_base* (*cor)()) {
+		_pool = new Pool(cor);
 	}
-	inline SmartWrapper(void* b, void* (*cst)(void*,const char*)) {
-		_pool = new Pool(b, cst);
+	inline SmartWrapper(Object_base* b) {
+		_pool = new Pool(b);
 	}
 	inline SmartWrapper(Pool* p) : _pool(p) {
 		_pool->Inc();
@@ -122,27 +120,28 @@ public:
 	}
 	inline bool error() const {
 		_pool->checkcreate();
-    	return _pool->base && ((Object_base*)_pool->cast("Object"))->_error();
+    	return _pool->base && _pool->base->_error();
 	}
 	
 	// Default I/O info
 	inline vector<std::string> defaultPortsIn() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return ((Object_base*)_pool->cast("Object"))->_defaultPortsIn();
+		return _pool->base->_defaultPortsIn();
 	}
 	inline vector<std::string> defaultPortsOut() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return ((Object_base*)_pool->cast("Object"))->_defaultPortsOut();
+		return _pool->base->_defaultPortsOut();
 	}
 	// Node info
 	inline ScheduleNode *node() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return ((Object_base*)_pool->cast("Object"))->_node();
+		return _pool->base->_node();
 	}
-	inline std::string toString() const {return ((Object_base*)_pool->cast("Object"))->_toString();}
+	
+	inline std::string toString() const {return _pool->base->_toString();}
 };
 
 #endif
