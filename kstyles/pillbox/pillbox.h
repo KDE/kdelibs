@@ -34,12 +34,15 @@ public:
                          const QColorGroup &g, bool sunken,
                          const QBrush *fill=NULL);
     void drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                      const QColorGroup &g, bool);
-    void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                      const QColorGroup &g, QBrush *fill=0);
+                      const QColorGroup &g, KToolBarPos type,
+                      QBrush *fill=NULL);
     void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                        const QColorGroup &g, bool horizontal=false,
-                        QBrush *fill=NULL);
+                        const QColorGroup &g,
+                        KToolBarPos type, QBrush *fill=NULL);
+    void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                      const QColorGroup &g, bool macMode,
+                      QBrush *fill=NULL);
+
     void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                        const QColorGroup &g, bool active,
                        QMenuItem *item, QBrush *fill=NULL);

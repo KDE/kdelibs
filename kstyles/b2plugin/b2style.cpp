@@ -788,7 +788,8 @@ void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
 }
 
 void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool, QBrush *)
+                             const QColorGroup &g, KToolBarPos,
+                             QBrush *)
 {
     if(h > w){
         p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
@@ -839,14 +840,29 @@ void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 }
 
 void B2Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                           const QColorGroup &g, QBrush *)
+                           const QColorGroup &g, bool mac, QBrush *)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1,
-                    &g.brush(QColorGroup::Background));
+    if(mac){
+        p->setPen(g.dark());
+        p->drawRect(x, y, w, h);
+        ++x, ++y, w-=2, h-=2;
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        p->setPen(g.light());
+        p->drawLine(x, y, x2, y);
+        p->drawLine(x, y, x, y2);
+        p->setPen(g.mid());
+        p->drawLine(x2, y, x2, y2);
+        p->drawLine(x, y2, x2, y2);
+        p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Midlight));
+    }
+    else
+        qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                        &g.brush(QColorGroup::Background));
 }
 
 void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                           const QColorGroup &g, bool)
+                           const QColorGroup &g, KToolBarPos, QBrush *)
 {
     qDrawShadePanel(p, x, y, w, h, g, false, 1,
                     &g.brush(QColorGroup::Background));

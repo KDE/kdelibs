@@ -58,13 +58,15 @@ public:
     void polish(QWidget *w);
     void polish( QPalette &);
     void unPolish( QApplication*);
-    virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool floating = false);
+    void drawKToolBar(QPainter *p, int x, int y, int w, int h,
+                      const QColorGroup &g, KToolBarPos type,
+                      QBrush *fill=NULL);
     void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                        const QColorGroup &g, bool horizontal=false,
-                        QBrush *fill=NULL);
+                        const QColorGroup &g,
+                        KToolBarPos type, QBrush *fill=NULL);
     void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                      const QColorGroup &g, QBrush *fill=NULL);
+                      const QColorGroup &g, bool macMode,
+                      QBrush *fill=NULL);
     void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool sunken=false,
                             bool raised = true, bool enabled = true,

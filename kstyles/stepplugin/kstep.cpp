@@ -579,19 +579,19 @@ void KStepStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
 }
 
 void KStepStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool, QBrush *)
+                                const QColorGroup &g, KToolBarPos, QBrush *)
 {
     drawButton(p, x, y, w, h, g, false, &g.brush(QColorGroup::Mid));
 }
 
 void KStepStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, QBrush *)
+                              const QColorGroup &g, bool, QBrush *)
 {
     drawButton(p, x, y, w, h, nextGrp, false, &g.brush(QColorGroup::Background));
 }
 
 void KStepStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool)
+                              const QColorGroup &g, KToolBarPos, QBrush *)
 {
    // drawButton(p, x, y, w, h, nextGrp, false, &g.brush(QColorGroup::Background));
     int x2 = x+w-1;

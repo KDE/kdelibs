@@ -285,13 +285,14 @@ void ColdIonsStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 }
 
 void ColdIonsStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &cg, QBrush *)
+                                 const QColorGroup &cg, bool, QBrush *)
 {
     drawButton(p, x, y, w, h, cg, false);
 }
 
 void ColdIonsStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &cg, bool)
+                                 const QColorGroup &cg, KToolBarPos,
+                                 QBrush *)
 {
     drawButton(p, x, y, w, h, cg, false);
 }
@@ -311,8 +312,8 @@ void ColdIonsStyle::drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
 }
     
 void ColdIonsStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool,
-                                 QBrush *)
+                                   const QColorGroup &g, KToolBarPos,
+                                   QBrush *)
 {
   drawButton(p, x, y, w, h, g, false, &g.brush(QColorGroup::Mid));
 

@@ -163,13 +163,13 @@ void PillBoxStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 
 
 void PillBoxStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, bool)
+                                const QColorGroup &g, KToolBarPos, QBrush *)
 {
     p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
 }
 
 void PillBoxStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *fill)
+                                const QColorGroup &g, bool, QBrush *fill)
 {
     p->fillRect(x, y, w, h, fill ? *fill : g.brush(QColorGroup::Background));
 }
@@ -190,7 +190,7 @@ void PillBoxStyle::drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
     
 
 void PillBoxStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool,
+                                 const QColorGroup &g, KToolBarPos,
                                  QBrush *fill)
 {
     qDrawShadeRect(p, x, y, w, h, g, false, 1, 0,
