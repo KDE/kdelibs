@@ -131,46 +131,50 @@ embed {
 
 /*
  * heading elements
+ * margin values rely on font-sizes ratio defined in CSS-2.1 §15.7
+ * (cf. CSSStyleSelector for absolute font-sizes computation) 
+ * We have an 1.1/font-ratio margin
  */
 
 H1 {
 	display: block;
-	font-size: 1.7em;
-	margin: .67__qem 0 .67em 0;
+	font-size: xx-large;
+	margin: .55__qem 0 .55em 0;
 	font-weight: bolder;
 }
 
 H2 {
 	display: block;
-	font-size: 1.4em;
-	margin: .83__qem 0 .83em 0;
+	font-size: x-large;
+	margin: .73__qem 0 .73em 0;
 	font-weight: bolder;
 }
 
 H3 {
 	display: block;
-	font-size: 1.17em;
-	margin: 1__qem 0 1em 0;
+	font-size: large;
+	margin: 0.92__qem 0 0.92em 0;
 	font-weight: bolder;
 }
 
 H4 {
 	display: block;
-	margin: 1.33__qem 0 1.33em 0;
+        font-size: medium;
+	margin: 1.1__qem 0 1.1em 0;
 	font-weight: bolder;
 }
 
 H5 {
 	display: block;
-	font-size: .83em;
-	margin: 1.67__qem 0 1.67em 0;
+	font-size: small;
+	margin: 1.24__qem 0 1.24em 0;
 	font-weight: bolder;
 }
 
 H6 {
 	display: block;
-	font-size: .67em;
-	margin: 2.33__qem 0 2.33em 0;
+	font-size: xx-small;
+	margin: 1.83__qem 0 1.83em 0;
 	font-weight: bolder;
 }
 

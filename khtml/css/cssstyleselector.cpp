@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -298,7 +299,7 @@ void CSSStyleSelector::reparseConfiguration()
     s_defaultSheet = 0;
 }
 
-#define MAXFONTSIZES 15
+#define MAXFONTSIZES 9
 
 void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
 {
@@ -320,10 +321,9 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 #endif // ######### fix isFixed code again.
 
     fontSizes.clear();
-    const float factor = 1.2;
-    float scale = 1.0 / (factor*factor*factor);
-    float mediumFontSize;
-    float minFontSize;
+    float scale = 1.0;
+    const float fontFactors[] = {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    float mediumFontSize, minFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
 #ifdef APPLE_CHANGES
@@ -341,8 +341,11 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
     }
 
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-        fontSizes << int(KMAX( mediumFontSize * scale + 0.5f, minFontSize));
-        scale *= factor;
+        // IE quirk: scale is shifted one degree up starting at 'small'
+        if (i==2 && !strictParsing) continue;
+        factor = scale*fontFactors[i];
+        fontSizes << int(KMAX( mediumFontSize*factor +.5f, minFontSize));
+        kdDebug( 6080 ) << "index: " << i << " factor: " << fontFactors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 
@@ -2716,12 +2719,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
         } else
-            oldSize = m_fontSizes[3];
+            oldSize = m_fontSizes[2 + strictParsing];
 
         if (isInherit )
             size = oldSize;
         else if (isInitial)
-            size = m_fontSizes[3];
+            size = m_fontSizes[2 + strictParsing];
         else if(primitiveValue->getIdent()) {
 	    // keywords are being used.  Pick the correct default
 	    // based off the font family.
@@ -2740,7 +2743,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             case CSS_VAL_LARGE:    size = int( fontSizes[4] ); break;
             case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
             case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
-            case CSS_VAL__KHTML_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
+            case CSS_VAL__KHTML_XXX_LARGE: size = int( fontSizes[7] ); break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = ( oldSize * 5 ) / 4;
@@ -2755,7 +2758,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-                if (!khtml::printpainter && element && element->getDocument()->view())
+                if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS && 
+                     element && element->getDocument()->view())
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
                                 element->getDocument()->view()->part()->zoomFactor() ) / 100;
 		else
