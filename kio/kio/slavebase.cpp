@@ -752,30 +752,31 @@ bool SlaveBase::openPassDlg( AuthInfo& info )
 
 bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 {
-    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
-
     QCString replyType;
     QByteArray params;
     QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
+    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
+    kdDebug(7019) << "SlaveBase::OpenPassDlg window-id= " << windowId << endl;
+
     (void) dcopClient(); // Make sure to have a dcop client.
-            
+
     QDataStream stream(params, IO_WriteOnly);
-    
+
     if (metaData("no-auth-prompt").lower() == "true")
        stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
     else
        stream << info << errorMsg << windowId << s_seqNr;
-            
+
     if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
                                params, replyType, reply ) )
     {
        kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
-    
+
     if ( replyType == "KIO::AuthInfo" )
     {
        QDataStream stream2( reply, IO_ReadOnly );
