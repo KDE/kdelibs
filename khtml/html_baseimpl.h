@@ -50,6 +50,7 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(Attribute *);
+    virtual void setStyle(CSSStyle *currentStyle);
 
     virtual void close();
 

@@ -75,10 +75,38 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     case ATTR_BACKGROUND:
         bgURL = attr->value();
 	break;
-	// ### add the other attrs...
+    case ATTR_TEXT:
+    case ATTR_LINK:
+    case ATTR_VLINK:
+      // handled in setStyle()
+    case ATTR_ALINK:
+      break;
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLBodyElementImpl::setStyle(CSSStyle *currentStyle)
+{
+  DOMString s = attributeMap.valueForId(ATTR_TEXT);
+    if(!s.isEmpty())
+    {
+	setNamedColor( currentStyle->font.color, s.string() );
+    }
+    s = attributeMap.valueForId(ATTR_LINK);
+    if(!s.isEmpty())
+    {
+	setNamedColor( pSettings->linkColor, s.string() );
+    }
+    s = attributeMap.valueForId(ATTR_VLINK);
+    if(!s.isEmpty())
+    {
+	setNamedColor( pSettings->vLinkColor, s.string() );
+    }
+
+
+    HTMLElementImpl::setStyle(currentStyle);
+
 }
 
 
@@ -115,6 +143,7 @@ void HTMLBodyElementImpl::close()
     setLayouted(false);
     _parent->updateSize();
 }
+
 
 // -------------------------------------------------------------------------
 
