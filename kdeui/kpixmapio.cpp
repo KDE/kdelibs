@@ -11,6 +11,7 @@
  * kpixmapio.cpp: Fast pixmap <-> image conversion.
  */
 
+#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
