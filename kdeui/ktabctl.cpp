@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
+ *
+ * Revision 1.4  1997/05/30 20:04:41  kalle
  * Kalle:
  * 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
  * 		patch to KIconLoader by Christian Esken
@@ -193,7 +196,7 @@ void KTabCtl::paintEvent(QPaintEvent *pev)
     p.setPen( colorGroup().light() );
     p.drawLine(x0, y0, x1 - 1, y0);      /* top line */
     p.drawLine(x0, y0 + 1, x0, y1);      /* left line */
-		  height() - bh - tabs->height() - 4);
+    p.setPen(black);
     p.drawLine(x1, y1, x0, y1);          /* bottom line */
     p.drawLine(x1, y1 - 1, x1, y0);
     p.setPen(colorGroup().dark());
