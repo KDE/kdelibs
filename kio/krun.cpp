@@ -282,7 +282,8 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
     }
     while ( ( pos = exec.find( "%u" )) != -1 )
     {
-      QString u ( firstURL.url() );
+      // Non-kde applications prefer paths when possible (eg xmms)
+      QString u ( firstURL.isLocalFile() ? firstURL.path() : firstURL.url() );
       shellQuote( u );
       exec.replace( pos, 2, u );
     }
@@ -312,7 +313,8 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
       shellQuote( d );
       QString n ( url.fileName() );
       shellQuote( n );
-      QString u ( url.url() );
+      // Non-kde applications prefer paths when possible (eg xmms)
+      QString u ( url.isLocalFile() ? url.path() : url.url() );
       shellQuote( u );
 
       while ( ( pos = e.find( "%f" )) != -1 )
