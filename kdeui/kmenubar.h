@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.21  1999/06/09 21:52:26  cschlaeg
+//serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
+//
 //Revision 1.20  1999/05/11 23:39:48  dfaure
 //Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
 // connected it to updateRects in KTMainWindow.
@@ -117,6 +120,9 @@ class KMenuBar : public QFrame
     * or hide, but if you do that the signal @ref #moved won't be emitted.
     */
    bool enable( BarStatus stat );
+
+   /** Hack: this is needed for Qt-2 */
+   void show();
 
    /**
 	* Reimplemented to return some useful measures.

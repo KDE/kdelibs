@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.123  1999/06/18 20:28:19  kulow
+// getConfig -> config
+//
 // Revision 1.122  1999/06/15 20:36:33  cschlaeg
 // some more cleanup in ktmlayout; fixed random toolbar handle highlighting
 //
@@ -1862,8 +1865,7 @@ void KToolBar::paintEvent(QPaintEvent *)
         qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
                          g , false, 1, &b);
         paint->setPen( g.light() );
-        if (style() == MotifStyle)
-          paint->drawLine( 9, 0, 9, toolbarHeight);
+	paint->drawLine( 9, 0, 9, toolbarHeight);
         stipple_height = 3;
         while ( stipple_height < toolbarHeight-4 ) {
           paint->drawPoint( 1, stipple_height+1);
@@ -1913,8 +1915,7 @@ void KToolBar::paintEvent(QPaintEvent *)
                          g , false, 1, &b);
 
         paint->setPen( g.light() );
-        if (style() == MotifStyle)
-          paint->drawLine( 0, 9, toolbarWidth, 9);
+	paint->drawLine( 0, 9, toolbarWidth, 9);
         stipple_height = 3;
         while ( stipple_height < toolbarWidth-4 ) {
           paint->drawPoint( stipple_height+1, 1);

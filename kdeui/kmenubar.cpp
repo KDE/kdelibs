@@ -45,6 +45,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.77  1999/06/10 01:05:35  pbrown
+// kde_whateverdir() --> locate.
+//
 // Revision 1.76  1999/06/09 21:52:25  cschlaeg
 // serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
 //
@@ -268,6 +271,17 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   handle->raise();
   buttonDownOnHandle = FALSE;
   init();
+}
+
+void KMenuBar::show() {
+#warning <mweilguni@kde.org> Test if this hack is really necessary in the next version (Qt-2 beta4)
+#warning If it works without the menu->show() call, remove the whole method
+  /* TODO: it seems to be necessary to have an extra show() call for
+   * the QMenuBar, otherwise not all menu items are redrawn correctly
+   * Recheck this after the next Qt-Beta (Beta 4?)
+   */
+  QFrame::show();
+  menu->show();
 }
 
 int KMenuBar::idAt( int index )
