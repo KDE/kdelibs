@@ -147,14 +147,14 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
     }
 
     QString simplified = text;
-    simplified = simplified.replace( QRegExp( "\\s" ), "" ).replace( "|", ">" );
-    while ( simplified.startsWith( ">>>>" ) )
+    simplified = simplified.replace( QRegExp( "\\s" ), QString::null ).replace( '|', QString::fromLatin1(">") );
+    while ( simplified.startsWith( QString::fromLatin1(">>>>") ) )
 	simplified = simplified.mid(3);
-    if	( simplified.startsWith( ">>>" ) || simplified.startsWith( "> >	>" ) )
+    if	( simplified.startsWith( QString::fromLatin1(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
 	setFormat( 0, text.length(), d->col2 );
-    else if	( simplified.startsWith( ">>" )	|| simplified.startsWith( "> >"	) )
+    else if	( simplified.startsWith( QString::fromLatin1(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
 	setFormat( 0, text.length(), d->col3 );
-    else if	( simplified.startsWith( ">" ) )
+    else if	( simplified.startsWith( QString::fromLatin1(">") ) )
 	setFormat( 0, text.length(), d->col4 );
     else
 	setFormat( 0, text.length(), d->col5 );

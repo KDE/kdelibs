@@ -358,11 +358,11 @@ QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
 
     if ( !d.isEmpty() && d != "." )
       for ( int idx = s.find( d ) ; idx >= 0 ; idx = s.find( d, idx + 1 ) )
-	s.replace( idx, d.length(), ".");
+	s.replace( idx, d.length(), '.');
 
     if ( !n.isEmpty() && n != "-" )
       for ( int idx = s.find( n ) ; idx >= 0 ; idx = s.find( n, idx + 1 ) )
-	s.replace( idx, n.length(), "-" );
+	s.replace( idx, n.length(), '-' );
   }
 
   return base::validate( s, p );
