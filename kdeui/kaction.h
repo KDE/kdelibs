@@ -241,20 +241,21 @@ public:
 	virtual void unplugAccel();
 	
 	virtual bool isPlugged() const;
-	
-	virtual void setText(const QString &text);
-	virtual void setEnabled(bool enable);
-	virtual void setAccel(int a);
-	virtual void setIconSet(const QIconSet &iconSet);
 
+    virtual void setText(const QString &text);
+    virtual void setAccel(int a);
+    virtual void setEnabled(bool enable);
+    virtual void setIconSet( const QIconSet &iconSet );
+	
  protected slots:
 	virtual void slotDestroyed();
 	virtual void slotKeycodeChanged();
 	
  protected:
-    virtual void setEnabled( int id, bool enable );
-    virtual void setIconSet( int id, const QIconSet& iconSet );
-	
+    virtual void setText(int i, const QString &text);
+    virtual void setEnabled(int i, bool enable);
+    virtual void setIconSet(int i, const QIconSet &iconSet);
+
  private:
 	KAccel  *kaccel;
     QString  actionName;
@@ -335,7 +336,9 @@ public:
      *  @param widget The GUI element to display this action.
      *  @param index  The index of the item.
      */
-    int plug( QWidget*, int index = -1 );
+    virtual int plug( QWidget*, int index = -1 );
+
+    virtual void unplug( QWidget *w );
 
     /**
      *  Sets the state of the action.
@@ -352,6 +355,9 @@ protected slots:
     virtual void slotActivated();
 
 protected:
+    virtual void setChecked( int id, bool checked );
+    virtual void setText(int i, const QString &text);
+
 
     bool locked, locked2;
     bool checked;
@@ -504,18 +510,6 @@ public:
      */
     virtual void setCurrentItem( int index );	
 
-    /**
-     *  Sets a list of strings as items into the menu.
-     *
-     *  @param lst A list of strings that represents the items.
-     */
-    void setItems( const QStringList& lst );
-
-    /**
-     *  Clears all items in the select action.
-     */
-    void clear();
-
 protected slots:
 
     void slotActivated( const QString &text );
@@ -523,6 +517,11 @@ protected slots:
 signals:
 
     void activate();
+
+protected:
+    virtual void setCurrentItem( int id, int index );
+    virtual void setItems( int id, const QStringList &lst );
+    virtual void clear( int id );
 
 private:
 
@@ -668,11 +667,12 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
-    virtual void setEnabled( bool b );
+protected:
+    virtual void setEnabled( int id, bool b );
 
-    virtual void setText( const QString& text );
+    virtual void setText( int id, const QString& text );
 
-    virtual void setIconSet( const QIconSet& iconSet );
+    virtual void setIconSet( int id, const QIconSet& iconSet );
 };
 
 class KActionSeparator : public QActionSeparator
