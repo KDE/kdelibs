@@ -170,7 +170,8 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const Q
             return false;
 
         // Maybe the domain needs an extra dot.
-        if (!domains.contains(QString(".%1").arg( mDomain )))
+        QString domain = "." + mDomain;
+        if ( !domains.contains( domain ) )
             return false;   // Domain of cookie does not match with host of URL
     }
 
@@ -249,7 +250,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
         it != domains.end();
         ++it)
     {
-       //kdDebug(7104) << "KCookieJar::findCookies: Current Domain: " << (*it) << endl;
        KHttpCookieList *cookieList = cookieDomains[(*it)];  // Why not simply use the deref'ed string directly ?
 
        if (!cookieList)
@@ -426,8 +426,6 @@ bool KCookieJar::parseURL(const QString &_url,
     _path = kurl.path();
     if (_path.isEmpty())
        _path = "/";
-    //kdDebug(7104) << "KCookieJar::parseURL: Parsed URL: " << _fqdn << endl;
-    //kdDebug(7104) << "KCookieJar::parseURL: Parsed Path: " << _path << endl;
     return true;
 }
 
