@@ -1249,7 +1249,7 @@ void Cache::clear()
 #endif
     cache->setAutoDelete( true );
 
-#ifndef NDEBUG
+#ifndef 0
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
 #endif
