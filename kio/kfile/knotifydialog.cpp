@@ -162,11 +162,19 @@ void KNotifyDialog::slotDefault()
 #define COL_SOUND   4
 #define COL_EVENT   5
 
+class KNotifyWidget::Private
+{
+public:
+    QPixmap pixmaps[5];
+};
+
 // simple access to all knotify-handled applications
 KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
                               bool handleAllApps )
     : KNotifyWidgetBase( parent, name ? name : "KNotifyWidget" )
 {
+    d = new Private;
+    
     m_apps.setAutoDelete( true );
 
     layout()->setMargin( 0 );
@@ -185,11 +193,17 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     m_listview->setAllColumnsShowFocus( true );
 
     QPixmap pexec = SmallIcon("exec");
-    QPixmap psound = SmallIcon("sound");
-    QPixmap plogfile = SmallIcon("log");
-    QPixmap pmessage = SmallIcon("info");
     QPixmap pstderr = SmallIcon("terminal");
+    QPixmap pmessage = SmallIcon("info");
+    QPixmap plogfile = SmallIcon("log");
+    QPixmap psound = SmallIcon("sound");
 
+    d->pixmaps[COL_EXECUTE] = pexec;
+    d->pixmaps[COL_STDERR]  = pstderr;
+    d->pixmaps[COL_MESSAGE] = pmessage;
+    d->pixmaps[COL_LOGFILE] = plogfile;
+    d->pixmaps[COL_SOUND]   = psound;
+    
     int w = KIcon::SizeSmall + 6;
 
     QHeader *header = m_listview->header();
@@ -243,7 +257,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
 KNotifyWidget::~KNotifyWidget()
 {
-
+    delete d;
 }
 
 void KNotifyWidget::toggleAdvanced()
@@ -390,24 +404,24 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
 
     item->setPixmap( COL_EXECUTE, 
                      (event.presentation & KNotifyClient::Execute) ?
-                     SmallIcon("exec") : emptyPix );
+                     d->pixmaps[COL_EXECUTE] : emptyPix );
     
     item->setPixmap( COL_SOUND, 
                      (event.presentation & KNotifyClient::Sound) ?
-                     SmallIcon("sound") : emptyPix );
+                     d->pixmaps[COL_SOUND] : emptyPix );
 
     item->setPixmap( COL_LOGFILE, 
                      (event.presentation & KNotifyClient::Logfile) ?
-                     SmallIcon("log") : emptyPix );
+                     d->pixmaps[COL_LOGFILE] : emptyPix );
 
     item->setPixmap( COL_MESSAGE, 
                      (event.presentation & 
                       (KNotifyClient::Messagebox | KNotifyClient::PassivePopup)) ?
-                     SmallIcon("info") : emptyPix );
+                     d->pixmaps[COL_MESSAGE] : emptyPix );
 
     item->setPixmap( COL_STDERR, 
                      (event.presentation & KNotifyClient::Stderr) ?
-                     SmallIcon("terminal") : emptyPix );
+                     d->pixmaps[COL_STDERR] : emptyPix );
 }
 
 void KNotifyWidget::setCurrentApplication( Application *app )
@@ -427,27 +441,21 @@ void KNotifyWidget::addToView( const EventList& events )
 
     EventListIterator it( events );
 
-    QPixmap pexec = SmallIcon("exec");
-    QPixmap psound = SmallIcon("sound");
-    QPixmap plogfile = SmallIcon("log");
-    QPixmap pmessage = SmallIcon("info");
-    QPixmap pstderr = SmallIcon("terminal");
-
     for ( ; it.current(); ++it )
     {
         Event *event = it.current();
         item = new ListViewItem( m_listview, event );
 
         if ( event->presentation & KNotifyClient::Execute )
-            item->setPixmap( COL_EXECUTE, pexec );
+            item->setPixmap( COL_EXECUTE, d->pixmaps[COL_EXECUTE] );
         if ( event->presentation & KNotifyClient::Sound )
-            item->setPixmap( COL_SOUND, psound );
+            item->setPixmap( COL_SOUND, d->pixmaps[COL_SOUND] );
         if ( event->presentation & KNotifyClient::Logfile )
-            item->setPixmap( COL_LOGFILE, plogfile );
+            item->setPixmap( COL_LOGFILE, d->pixmaps[COL_LOGFILE] );
         if ( event->presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup) )
-            item->setPixmap( COL_MESSAGE, pmessage );
+            item->setPixmap( COL_MESSAGE, d->pixmaps[COL_MESSAGE] );
         if ( event->presentation & KNotifyClient::Stderr )
-            item->setPixmap( COL_STDERR, pstderr );
+            item->setPixmap( COL_STDERR, d->pixmaps[COL_STDERR] );
     }
 }
 
@@ -478,7 +486,7 @@ void KNotifyWidget::soundToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_SOUND, on ? SmallIcon("sound") : QPixmap() );
+    item->setPixmap( COL_SOUND, on ? d->pixmaps[COL_SOUND] : QPixmap() );
     widgetChanged( item, KNotifyClient::Sound, on, m_soundPath );
 }
 
@@ -487,7 +495,7 @@ void KNotifyWidget::loggingToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_LOGFILE, on ? SmallIcon("log") : QPixmap() );
+    item->setPixmap( COL_LOGFILE, on ? d->pixmaps[COL_LOGFILE] : QPixmap() );
     widgetChanged( item, KNotifyClient::Logfile, on, m_logfilePath );
 }
 
@@ -496,7 +504,7 @@ void KNotifyWidget::executeToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_EXECUTE, on ? SmallIcon("exec") : QPixmap() );
+    item->setPixmap( COL_EXECUTE, on ? d->pixmaps[COL_EXECUTE] : QPixmap() );
     widgetChanged( item, KNotifyClient::Execute, on, m_executePath );
 }
 
@@ -512,7 +520,7 @@ void KNotifyWidget::messageBoxChanged()
         return;
 
     bool on = m_passivePopup->isEnabled();
-    item->setPixmap( COL_MESSAGE, on ? SmallIcon("info") : QPixmap() );
+    item->setPixmap( COL_MESSAGE, on ? d->pixmaps[COL_MESSAGE] : QPixmap() );
 
     Event &e = static_cast<ListViewItem*>( item )->event();
 
@@ -539,7 +547,7 @@ void KNotifyWidget::stderrToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_STDERR, on ? SmallIcon("terminal") : QPixmap() );
+    item->setPixmap( COL_STDERR, on ? d->pixmaps[COL_STDERR] : QPixmap() );
     widgetChanged( item, KNotifyClient::Stderr, on );
 }
 
