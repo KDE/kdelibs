@@ -399,6 +399,50 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
+
+void HTMLTablePartElementImpl::recalcTable()
+{
+    // this is slow but at least it works ;)
+    // ### just make the change in the rendering tree and make sure the table
+    // gets re-layed out again on the next layout
+    NodeImpl *table = parentNode();
+    while (table && !(table->isElementNode() && table->id() == ID_TABLE))
+	table = table->parentNode();
+    if (table) {
+	table->detach();
+	table->attach(document->view());
+    }
+}
+
+NodeImpl *HTMLTablePartElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+{
+    NodeImpl *result = HTMLElementImpl::insertBefore(newChild,refChild);
+    recalcTable();
+    return result;
+}
+
+NodeImpl *HTMLTablePartElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLElementImpl::replaceChild(newChild,oldChild);
+    recalcTable();
+    return result;
+}
+
+NodeImpl *HTMLTablePartElementImpl::removeChild ( NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLElementImpl::removeChild(oldChild);
+    recalcTable();
+    return result;
+}
+
+NodeImpl *HTMLTablePartElementImpl::appendChild ( NodeImpl *newChild )
+{
+    NodeImpl *result = HTMLElementImpl::appendChild(newChild);
+    recalcTable();
+    setChanged(true);
+    return result;
+}
+
 void HTMLTablePartElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);

@@ -461,7 +461,11 @@ void ElementImpl::attach(KHTMLView *w)
 
 void ElementImpl::detach()
 {
-    if(m_render) m_render->deref();
+    if(m_render) {
+	if (m_render->parent())
+	    m_render->parent()->removeChild(m_render);
+	m_render->deref();
+    }
     m_render = 0;
     NodeBaseImpl::detach();
 }

@@ -125,6 +125,11 @@ public:
 	{ }
 
     virtual void parseAttribute(AttrImpl *attr);
+    void recalcTable();
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild );
 
     void attach(KHTMLView *);
 };
