@@ -282,6 +282,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 #ifdef HAVE_SETLOCALE
   setlocale(LC_MESSAGES,lang.ascii());
   lc_numeric  = setlocale(LC_NUMERIC, 0); // save these values
+debug("I just set lc_numeric to %s", lc_numeric.ascii());
   lc_monetary = setlocale(LC_MONETARY, 0); 
   lc_time     = setlocale(LC_TIME, 0);
   setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
@@ -569,10 +570,10 @@ QString KLocale::formatMoney(const QString &numStr) const
   return formatMoney(numStr.toDouble());
 }
 
-QString KLocale::formatNumber(double num) const
+QString KLocale::formatNumber(double num, int precision) const
 {
     bool neg = num < 0;
-    QString res = QString::number(neg?-num:num, 'f', fracDigits());
+    QString res = QString::number(neg?-num:num, 'f', (precision==-1) ? fracDigits() : precision);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, decimalSymbol());
@@ -711,7 +712,7 @@ void KLocale::aliasLocale( const char* text, long int index)
 QString KLocale::getLocale(const QString& cat){
 
     cat.upper();
-    if (cat=="LC_NUMERIC") return lc_numeric;
+    if (cat=="LC_NUMERIC") { debug("returning %s", lc_numeric.ascii());  return lc_numeric; }
     if (cat=="LC_MONETARY") return lc_monetary;
 #ifdef HAVE_SETLOCALE        
     else if (cat=="LC_MESSAGES") return setlocale(LC_MESSAGES,0);
@@ -725,6 +726,8 @@ QString KLocale::getLocale(const QString& cat){
 void KLocale::enableNumericLocale(bool on){
 #ifdef HAVE_SETLOCALE
   if (on) {
+   debug(" KLocale::enableNumericLocale(true) called.");
+   debug(" lc_numeric = %s", lc_numeric.ascii());
     setlocale(LC_NUMERIC, lc_numeric.ascii());
     setlocale(LC_MONETARY, lc_monetary.ascii());
   } else {

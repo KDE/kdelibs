@@ -188,8 +188,9 @@ public:
      * the localized numeric equivalent.
      * 
      * e.g. given 123456.78, return "123,456.78" (for some European country).  
+     * If precision isn't specified, fracDigits is used.
      */
-    QString formatNumber(double num) const;
+    QString formatNumber(double num, int precision = -1) const;
 
     /**
      * This function differs from the above only in that it can take
