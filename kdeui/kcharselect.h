@@ -66,6 +66,7 @@ protected:
     virtual void paintCell( class QPainter *p, int row, int col );
 
     virtual void mousePressEvent( QMouseEvent *e ) {  mouseMoveEvent( e ); }
+    virtual void mouseDoubleClickEvent ( QMouseEvent *e ){  mouseMoveEvent( e ); emit doubleClicked();}
     virtual void mouseReleaseEvent( QMouseEvent *e ) { mouseMoveEvent( e ); emit activated( chr() ); emit activated(); }
     virtual void mouseMoveEvent( QMouseEvent *e );
 
@@ -92,6 +93,7 @@ signals:
     void focusItemChanged( const QChar &c );
     void tableUp();
     void tableDown();
+    void doubleClicked();
 
 private:
     KCharSelectTablePrivate *d;
@@ -228,7 +230,7 @@ protected slots:
     void charFocusItemChanged( const QChar &c ) { emit focusItemChanged( c ); }
     void charTableUp() { if ( tableNum() < 255 ) setTableNum( tableNum() + 1 ); }
     void charTableDown() { if ( tableNum() > 0 ) setTableNum( tableNum() - 1 ); }
-
+    void slotDoubleClicked() { emit doubleClicked(); }
 signals:
     void highlighted( const QChar &c );
     void highlighted();
@@ -237,6 +239,7 @@ signals:
     void fontChanged( const QString &_font );
     void focusItemChanged();
     void focusItemChanged( const QChar &c );
+    void doubleClicked();
 
 private:
     KCharSelectPrivate *d;

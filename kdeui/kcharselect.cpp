@@ -340,6 +340,8 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( charTable, SIGNAL( tableUp() ), this, SLOT( charTableUp() ) );
     connect( charTable, SIGNAL( tableDown() ), this, SLOT( charTableDown() ) );
 
+    connect( charTable, SIGNAL(doubleClicked()),this,SLOT(slotDoubleClicked()));
+
     setFocusPolicy( QWidget::StrongFocus );
     setFocusProxy( charTable );
 }
