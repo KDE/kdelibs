@@ -32,7 +32,10 @@ Author: Ralph Mor, X Consortium
 #include <KDE-ICE/ICElib.h>
 #include "KDE-ICE/ICElibint.h"
 #include <KDE-ICE/ICEutil.h>
+#include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
 #include <errno.h>
 #include <string.h>
 
@@ -169,7 +172,7 @@ long	dead;
 	    unlink (link_name);
 	}
     }
-    
+
     while (retries > 0)
     {
 	if (creat_fd == -1)

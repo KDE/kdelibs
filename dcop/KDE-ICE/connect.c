@@ -50,7 +50,7 @@ static char *Strstr(s1, s2)
     for ( ; n1 >= n2; s1++, n1--) {
 	if (!strncmp(s1, s2, n2))
 	    return s1;
-    }	
+    }
     return NULL;
 }
 #endif
@@ -101,7 +101,7 @@ char 	   *errorStringRet;
      * connection if the specified 'context' is equal to the context
      * associated with the ICE connection, or if the context associated
      * with the ICE connection is NULL.
-     * 
+     *
      * If 'majorOpcodeCheck' is non-zero, it will contain a protocol major
      * opcode that we should make sure is not already active on the ICE
      * connection.  Some clients will want two seperate connections for the
@@ -533,7 +533,7 @@ ConnectToPeer (char *networkIdsList, char **actualConnectionRet)
 	*actualConnectionRet = (char *) malloc (strlen (address) + 1);
 	strcpy (*actualConnectionRet, address);
 
-	
+
 	/*
 	 * Return the file descriptor
 	 */

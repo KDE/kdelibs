@@ -249,7 +249,7 @@ extern void _IceErrorBadValue (
     unsigned long _bytes; \
     IceReadMessageHeader (_iceConn, _headerSize, _msgType, _pMsg); \
     _bytes = (_pMsg->length << 3) - (_headerSize - SIZEOF (iceMsg)); \
-    if ((_iceConn->inbufmax - _iceConn->inbufptr) >= _bytes) \
+    if ((unsigned long)(_iceConn->inbufmax - _iceConn->inbufptr) >= _bytes) \
     { \
 	_IceRead (_iceConn, _bytes, _iceConn->inbufptr); \
 	_pData = _iceConn->inbufptr; \

@@ -30,6 +30,7 @@ in this Software without prior written authorization from The Open Group.
 #include "KDE-ICE/ICElibint.h"
 #include <KDE-ICE/Xtrans.h>
 #include <stdio.h>
+#include <string.h>
 
 
 Status
@@ -80,7 +81,7 @@ char		*errorStringRet;
 	{
 	    listenObjs[*countRet].trans_conn = transConns[i];
 	    listenObjs[*countRet].network_id = networkId;
-		
+
 	    (*countRet)++;
 	}
     }
@@ -135,7 +136,7 @@ char		*errorStringRet;
     {
 	if (errorStringRet && errorLength > 0)
 	    *errorStringRet = '\0';
-	
+
 	for (i = 0; i < *countRet; i++)
 	{
 	    (*listenObjsRet)[i]->host_based_auth_proc = NULL;

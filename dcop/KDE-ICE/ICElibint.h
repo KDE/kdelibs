@@ -4,7 +4,7 @@
 
 Copyright (c) 1993, 1998  The Open Group
 
-All Rights Reserved. 
+All Rights Reserved.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -28,8 +28,8 @@ Author: Ralph Mor, X Consortium
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xos.h> 
-#include <X11/Xfuncs.h> 
+#include <X11/Xos.h>
+#include <X11/Xfuncs.h>
 #include <X11/Xmd.h> //schroder
 #else
 #define _SIZEOF(x) sz_##x
@@ -297,7 +297,7 @@ typedef struct {
     if (_pBuf > _end) { \
        _bail; \
     } \
-} 
+}
 
 #define SKIP_LISTOF_STRING(_pBuf, _swap, _count, _end, _bail) \
 { \

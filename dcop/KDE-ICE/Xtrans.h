@@ -52,8 +52,8 @@ from The Open Group.
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xfuncproto.h> 
-#include <X11/Xos.h> 
+#include <X11/Xfuncproto.h>
+#include <X11/Xos.h>
 #else
 #include <KDE-ICE/Xfuncproto.h>
 #include <fcntl.h>
@@ -126,7 +126,7 @@ static char* __xtransname = "_FontTrans";
 #define TRANS(func) _kde_IceTrans/**/func
 #endif
 #ifdef XTRANSDEBUG
-static char* __xtransname = "_kde_IceTrans";
+static char* __xtransname = (char *)"_kde_IceTrans";
 #endif
 #endif /* ICE_t */
 
@@ -466,7 +466,7 @@ TRANS(GetPeerNetworkId)(
 
 #endif /* ICE_t */
 
-int 
+int
 TRANS(GetHostname) (
     char *	/* buf */,
     int 	/* maxlen */

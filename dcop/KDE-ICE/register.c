@@ -26,6 +26,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/globals.h"
+#include <string.h>
 
 int
 IceRegisterForProtocolSetup (protocolName, vendor, release,
@@ -53,7 +54,7 @@ IceIOErrorProc		IOErrorProc;
 		/*
 		 * We've already registered this protocol.
 		 */
-		
+
 		return (i);
 	    }
 	    else
@@ -61,7 +62,7 @@ IceIOErrorProc		IOErrorProc;
 		break;
 	    }
 	}
-	    
+
     if (i <= _IceLastMajorOpcode)
     {
 	p = _IceProtocols[i - 1].orig_client =
@@ -164,7 +165,7 @@ IceIOErrorProc			IOErrorProc;
 		/*
 		 * We've already registered this protocol.
 		 */
-		
+
 		return (i);
 	    }
 	    else
@@ -172,7 +173,7 @@ IceIOErrorProc			IOErrorProc;
 		break;
 	    }
 	}
-	    
+
 
     if (i <= _IceLastMajorOpcode)
     {

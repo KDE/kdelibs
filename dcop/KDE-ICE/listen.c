@@ -33,6 +33,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/Xtrans.h"
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 
 Status
@@ -52,10 +53,10 @@ char		*errorStringRet;
     Status			status = 1;
     XtransConnInfo		*transConns = NULL;
 
-    while ((result < 0) && (count < 5)) 
+    while ((result < 0) && (count < 5))
     {
        char buf[128];
-       sprintf(buf, "dcop%d-%d", getpid(), time(NULL)+count);
+       sprintf(buf, "dcop%d-%ld", getpid(), time(NULL)+count);
        result = _kde_IceTransMakeAllCOTSServerListeners (buf, &partial,
                                               &transCount, &transConns);
        count++;
@@ -91,7 +92,7 @@ char		*errorStringRet;
 	{
 	    listenObjs[*countRet].trans_conn = transConns[i];
 	    listenObjs[*countRet].network_id = networkId;
-		
+
 	    (*countRet)++;
 	}
     }
@@ -146,7 +147,7 @@ char		*errorStringRet;
     {
 	if (errorStringRet && errorLength > 0)
 	    *errorStringRet = '\0';
-	
+
 	for (i = 0; i < *countRet; i++)
 	{
 	    (*listenObjsRet)[i]->host_based_auth_proc = NULL;

@@ -48,6 +48,9 @@ from The Open Group.
  */
 
 #include <ctype.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 #ifndef WIN32
 
 #if defined(TCPCONN) || defined(UNIXCONN)
@@ -84,7 +87,7 @@ from The Open Group.
 #ifdef __osf__
 #include <sys/param.h>
 #endif /* osf */
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__) 
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 #include <machine/endian.h>
 #endif /* __NetBSD__ || __OpenBSD__ || __FreeBSD__ */
 #include <netinet/tcp.h>
@@ -167,7 +170,7 @@ static int IBMsockInit = 0;
  *
  */
 
-typedef struct _Sockettrans2dev {      
+typedef struct _Sockettrans2dev {
     char	*transname;
     int		family;
     int		devcotsname;
@@ -177,13 +180,13 @@ typedef struct _Sockettrans2dev {
 
 static Sockettrans2dev Sockettrans2devtab[] = {
 #ifdef TCPCONN
-    {"inet",AF_INET,SOCK_STREAM,SOCK_DGRAM,0},
-    {"tcp",AF_INET,SOCK_STREAM,SOCK_DGRAM,0},
+    {(char *)"inet",AF_INET,SOCK_STREAM,SOCK_DGRAM,0},
+    {(char *)"tcp",AF_INET,SOCK_STREAM,SOCK_DGRAM,0},
 #endif /* TCPCONN */
 #ifdef UNIXCONN
-    {"unix",AF_UNIX,SOCK_STREAM,SOCK_DGRAM,0},
+    {(char *)"unix",AF_UNIX,SOCK_STREAM,SOCK_DGRAM,0},
 #if !defined(LOCALCONN)
-    {"local",AF_UNIX,SOCK_STREAM,SOCK_DGRAM,0},
+    {(char *)"local",AF_UNIX,SOCK_STREAM,SOCK_DGRAM,0},
 #endif /* !LOCALCONN */
 #endif /* UNIXCONN */
 };
@@ -265,7 +268,7 @@ TRANS(SocketSelectFamily) (char *family)
 {
     int     i;
 
-    PRMSG (3,"SocketSelectFamily(%s)\n", family, 0, 0);
+    PRMSG (3,(const char*)"SocketSelectFamily(%s)\n", family, 0, 0);
 
     for (i = 0; i < (int) NUMSOCKETFAMILIES;i++)
     {
@@ -440,7 +443,7 @@ TRANS(SocketReopen) (int i, int type, int fd, char *port)
 #ifdef TRANS_CLIENT
 
 static XtransConnInfo
-TRANS(SocketOpenCOTSClient) (Xtransport *thistrans, char *protocol, 
+TRANS(SocketOpenCOTSClient) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
@@ -481,7 +484,7 @@ TRANS(SocketOpenCOTSClient) (Xtransport *thistrans, char *protocol,
 #ifdef TRANS_SERVER
 
 static XtransConnInfo
-TRANS(SocketOpenCOTSServer) (Xtransport *thistrans, char *protocol, 
+TRANS(SocketOpenCOTSServer) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
@@ -539,7 +542,7 @@ TRANS(SocketOpenCOTSServer) (Xtransport *thistrans, char *protocol,
 #ifdef TRANS_CLIENT
 
 static XtransConnInfo
-TRANS(SocketOpenCLTSClient) (Xtransport *thistrans, char *protocol, 
+TRANS(SocketOpenCLTSClient) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
@@ -579,7 +582,7 @@ TRANS(SocketOpenCLTSClient) (Xtransport *thistrans, char *protocol,
 #ifdef TRANS_SERVER
 
 static XtransConnInfo
-TRANS(SocketOpenCLTSServer) (Xtransport *thistrans, char *protocol, 
+TRANS(SocketOpenCLTSServer) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
@@ -727,7 +730,7 @@ set_sun_path(const char *port, const char *upath, char *path)
 #ifdef TRANS_SERVER
 
 static int
-TRANS(SocketCreateListener) (XtransConnInfo ciptr, 
+TRANS(SocketCreateListener) (XtransConnInfo ciptr,
 			     struct sockaddr *sockname, int socknamelen)
 
 {
@@ -780,7 +783,7 @@ TRANS(SocketCreateListener) (XtransConnInfo ciptr,
 	close (fd);
 	return TRANS_CREATE_LISTENER_FAILED;
     }
-	
+
     /* Set a flag to indicate that this connection is a listener */
 
     ciptr->flags = 1;
@@ -802,7 +805,7 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port)
 #ifdef X11_t
     char	portbuf[PORTBUFSIZE];
 #endif
-    
+
     PRMSG (2, "SocketINETCreateListener(%s)\n", port, 0, 0);
 
 #ifdef X11_t
@@ -843,11 +846,11 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port)
 	else
 	{
 	    tmpport = strtol (port, (char**)NULL, 10);
-	    /* 
+	    /*
 	     * check that somehow the port address isn't negative or in
 	     * the range of reserved port addresses. This can happen and
-	     * be very bad if the server is suid-root and the user does 
-	     * something (dumb) like `X :60049`. 
+	     * be very bad if the server is suid-root and the user does
+	     * something (dumb) like `X :60049`.
 	     */
 	    if (tmpport < 1024 || tmpport > USHRT_MAX)
 		return TRANS_CREATE_LISTENER_FAILED;
@@ -912,7 +915,7 @@ TRANS(SocketUNIXCreateListener) (XtransConnInfo ciptr, char *port)
 #else
     mode = 0777;
 #endif
-    if (trans_mkdir(UNIX_DIR, mode) == -1) {
+    if (trans_mkdir((char*)UNIX_DIR, mode) == -1) {
 	PRMSG (1, "SocketUNIXCreateListener: mkdir(%s) failed, errno = %d\n",
 	       UNIX_DIR, errno, 0);
 	(void) umask (oldUmask);
@@ -1007,7 +1010,7 @@ TRANS(SocketUNIXResetListener) (XtransConnInfo ciptr)
 #else
 	mode = 0777;
 #endif
-        if (trans_mkdir(UNIX_DIR, mode) == -1) {
+        if (trans_mkdir((char*)UNIX_DIR, mode) == -1) {
             PRMSG (1, "SocketUNIXResetListener: mkdir(%s) failed, errno = %d\n",
 	    UNIX_DIR, errno, 0);
 	    (void) umask (oldUmask);
@@ -1097,7 +1100,7 @@ TRANS(SocketINETAccept) (XtransConnInfo ciptr, int *status)
 #endif
 
     /*
-     * Get this address again because the transport may give a more 
+     * Get this address again because the transport may give a more
      * specific address now that a connection is established.
      */
 
@@ -1195,7 +1198,7 @@ TRANS(SocketUNIXAccept) (XtransConnInfo ciptr, int *status)
 	*status = TRANS_ACCEPT_BAD_MALLOC;
         return NULL;
     }
-    
+
     newciptr->peeraddrlen = ciptr->addrlen;
     memcpy (newciptr->peeraddr, ciptr->addr, newciptr->addrlen);
 
@@ -1302,7 +1305,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
 	    ESET(EPROTOTYPE);
 	    return TRANS_CONNECT_FAILED;
 	}
-	
+
 #if defined(CRAY) && defined(OLDTCP)
         /* Only Cray UNICOS3 and UNICOS4 will define this */
         {
@@ -1314,7 +1317,7 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
         memcpy ((char *) &sockname.sin_addr, (char *) hostp->h_addr,
 		sizeof (sockname.sin_addr));
 #endif /* CRAY and OLDTCP */
-	
+
     }
 else
     {
@@ -1329,7 +1332,7 @@ else
     /*
      * fill in sin_port
      */
-    
+
     /* Check for number in the port string */
 
     if (!is_numeric (port))
@@ -1349,7 +1352,7 @@ else
 	    return TRANS_CONNECT_FAILED;
 	sockname.sin_port = htons (((unsigned short) tmpport));
     }
-    
+
     PRMSG (4,"SocketINETConnect: sockname.sin_port = %d\n",
 	  ntohs(sockname.sin_port), 0, 0);
 
@@ -1385,15 +1388,15 @@ else
 	    PRMSG (2,"SocketINETConnect: Can't connect: errno = %d\n",
 		   olderrno,0, 0);
 
-	    return TRANS_CONNECT_FAILED;	
+	    return TRANS_CONNECT_FAILED;
 	}
     }
-    
+
 
     /*
      * Sync up the address fields of ciptr.
      */
-    
+
     if (TRANS(SocketINETGetAddr) (ciptr) < 0)
     {
 	PRMSG (1,
@@ -1459,13 +1462,13 @@ UnixHostReallyLocal (char *host)
 	     * from the 1st call, so we must save the address list.
 	     */
 
-	    specified_local_addr_list[scount][0] = 
+	    specified_local_addr_list[scount][0] =
 				hostp->h_addr_list[scount][0];
-	    specified_local_addr_list[scount][1] = 
+	    specified_local_addr_list[scount][1] =
 				hostp->h_addr_list[scount][1];
-	    specified_local_addr_list[scount][2] = 
+	    specified_local_addr_list[scount][2] =
 				hostp->h_addr_list[scount][2];
-	    specified_local_addr_list[scount][3] = 
+	    specified_local_addr_list[scount][3] =
 				hostp->h_addr_list[scount][3];
 	    scount++;
 	}
@@ -1481,17 +1484,17 @@ UnixHostReallyLocal (char *host)
 
 	    while (hostp->h_addr_list[j])
 	    {
-		if ((specified_local_addr_list[i][0] == 
+		if ((specified_local_addr_list[i][0] ==
 					hostp->h_addr_list[j][0]) &&
-		    (specified_local_addr_list[i][1] == 
+		    (specified_local_addr_list[i][1] ==
 					hostp->h_addr_list[j][1]) &&
-		    (specified_local_addr_list[i][2] == 
+		    (specified_local_addr_list[i][2] ==
 					hostp->h_addr_list[j][2]) &&
-		    (specified_local_addr_list[i][3] == 
+		    (specified_local_addr_list[i][3] ==
 					hostp->h_addr_list[j][3]))
 		{
 		    /* They're equal, so we're done */
-		    
+
 		    equiv = 1;
 		    break;
 		}
@@ -1501,7 +1504,7 @@ UnixHostReallyLocal (char *host)
 
 	    i++;
 	}
-	
+
     return (equiv);
     }
 }
@@ -1520,7 +1523,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
 
 
     PRMSG (2,"SocketUNIXConnect(%d,%s,%s)\n", ciptr->fd, host, port);
-    
+
     /*
      * Make sure 'host' is really local.  If not, we return failure.
      * The reason we make this check is because a process may advertise
@@ -1552,7 +1555,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
     /*
      * Build the socket name.
      */
-    
+
     sockname.sun_family = AF_UNIX;
 
     if (set_sun_path(port, UNIX_PATH, sockname.sun_path) != 0) {
@@ -1587,7 +1590,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
     {
 	int olderrno = errno;
 	int connected = 0;
-	
+
 #if defined(hpux) && defined(X11_t)
 	if (olderrno == ENOENT)
 	{
@@ -1603,7 +1606,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
 	if (!connected)
 	{
 	    errno = olderrno;
-	    
+
 	    /*
 	     * If the error was ENOENT, the server may be starting up
 	     * and we should try again.
@@ -1648,7 +1651,7 @@ TRANS(SocketUNIXConnect) (XtransConnInfo ciptr, char *host, char *port)
     ciptr->peeraddrlen = namelen;
     memcpy (ciptr->addr, &sockname, ciptr->addrlen);
     memcpy (ciptr->peeraddr, &sockname, ciptr->peeraddrlen);
-    
+
     return 0;
 }
 
@@ -1890,7 +1893,7 @@ Xtransport	TRANS(SocketINETFuncs) = {
 #if !defined(LOCALCONN)
 Xtransport	TRANS(SocketLocalFuncs) = {
 	/* Socket Interface */
-	"local",
+        (char*)"local",
 	0,
 #ifdef TRANS_CLIENT
 	TRANS(SocketOpenCOTSClient),
@@ -1930,7 +1933,7 @@ Xtransport	TRANS(SocketLocalFuncs) = {
 
 Xtransport	TRANS(SocketUNIXFuncs) = {
 	/* Socket Interface */
-	"unix",
+	(char*)"unix",
 #if !defined(LOCALCONN)
         TRANS_ALIAS,
 #else

@@ -35,6 +35,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/globals.h"
 
 #include <sys/time.h>
+#include <string.h>
 
 #if defined(X_NOT_STDC_ENV) && !defined(__EMX__)
 #define Time_t long
@@ -65,7 +66,7 @@ int len;
     int	    seed;
     int	    value;
     int	    i;
-    
+
     if ((auth = (char *) malloc (len + 1)) == NULL)
 	return (NULL);
 
@@ -103,6 +104,9 @@ IcePointer	*replyDataRet;
 char    	**errorStringRet;
 
 {
+    (void)swap;/*unused*/
+    (void)authDataLen;/*unused*/
+    (void)authData;/*unused*/
     if (cleanUp)
     {
 	/*
@@ -182,6 +186,7 @@ IcePointer	*replyDataRet;
 char    	**errorStringRet;
 
 {
+    (void)swap;/*unused*/
     *errorStringRet = NULL;
     *replyDataLenRet = 0;
     *replyDataRet = NULL;

@@ -225,7 +225,7 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
     strcpy (mybuf, address);
 
     /* Parse the string to get each component */
-    
+
     /* Get the protocol part */
 
     _protocol = mybuf;
@@ -249,12 +249,12 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 	if (mybuf == tmpptr)
 	{
 	    /* There is neither a protocol or host specified */
-	    _protocol = "local";
+	    _protocol = (char*)"local";
 	}
 	else
 	{
 	    /* Ther is a hostname specified */
-	    _protocol = "inet";
+	    _protocol = (char*)"inet";
 	    mybuf = tmpptr;	/* reset to the begining of the host ptr */
 	}
     }
@@ -271,9 +271,9 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 	     * it must be local.
 	     */
 	    if (*mybuf != ':')
-		_protocol = "inet";
+		_protocol = (char*)"inet";
 	    else
-		_protocol = "local";
+		_protocol = (char*)"local";
 	}
     }
 
@@ -442,7 +442,7 @@ TRANS(Open) (int type, char *address)
 
     if (ciptr == NULL)
     {
-	if (!(thistrans->flags & TRANS_DISABLED)) 
+	if (!(thistrans->flags & TRANS_DISABLED))
 	{
 	    PRMSG (1,"Open: transport open failed for %s/%s:%s\n",
 	           protocol, host, port);
@@ -616,7 +616,7 @@ TRANS(ReopenCLTSServer) (int trans_id, int fd, char *port)
 
 
 int
-TRANS(GetReopenInfo) (XtransConnInfo ciptr, 
+TRANS(GetReopenInfo) (XtransConnInfo ciptr,
 		      int *trans_id, int *fd, char **port)
 
 {
@@ -726,7 +726,7 @@ TRANS(SetOption) (XtransConnInfo ciptr, int option, int arg)
 #endif /* F_SETFD */
 	break;
     }
-    
+
     return ret;
 #endif /* MINIX */
 }
@@ -742,18 +742,18 @@ TRANS(CreateListener) (XtransConnInfo ciptr, char *port)
 
 int
 TRANS(NoListen) (char * protocol)
-	
+
 {
    Xtransport *trans;
-   
-   if ((trans = TRANS(SelectTransport)(protocol)) == NULL) 
+
+   if ((trans = TRANS(SelectTransport)(protocol)) == NULL)
    {
-	PRMSG (1,"TRANS(TransNoListen): unable to find transport: %s\n", 
+	PRMSG (1,"TRANS(TransNoListen): unable to find transport: %s\n",
 	       protocol, 0, 0);
 
 	return -1;
    }
-   
+
    trans->flags |= TRANS_NOLISTEN;
    return 0;
 }
@@ -822,7 +822,7 @@ TRANS(Connect) (XtransConnInfo ciptr, char *address)
     if (protocol) xfree (protocol);
     if (host) xfree (host);
     if (port) xfree (port);
-    
+
     return ret;
 }
 
@@ -910,7 +910,7 @@ TRANS(IsLocal) (XtransConnInfo ciptr)
 
 
 int
-TRANS(GetMyAddr) (XtransConnInfo ciptr, int *familyp, int *addrlenp, 
+TRANS(GetMyAddr) (XtransConnInfo ciptr, int *familyp, int *addrlenp,
 		  Xtransaddr **addrp)
 
 {
@@ -930,7 +930,7 @@ TRANS(GetMyAddr) (XtransConnInfo ciptr, int *familyp, int *addrlenp,
 }
 
 int
-TRANS(GetPeerAddr) (XtransConnInfo ciptr, int *familyp, int *addrlenp, 
+TRANS(GetPeerAddr) (XtransConnInfo ciptr, int *familyp, int *addrlenp,
 		    Xtransaddr **addrp)
 
 {
@@ -996,7 +996,7 @@ complete_network_count (void)
 
 
 int
-TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret, 
+TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret,
 				   XtransConnInfo **ciptrs_ret)
 
 {
@@ -1093,12 +1093,12 @@ TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret,
     }
     else
 	*ciptrs_ret = NULL;
- 
+
     return 0;
 }
 
 int
-TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret, 
+TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret,
 				   XtransConnInfo **ciptrs_ret)
 
 {
@@ -1191,7 +1191,7 @@ TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret,
     }
     else
 	*ciptrs_ret = NULL;
-    
+
     return 0;
 }
 

@@ -32,6 +32,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/ICEutil.h"
 #include "KDE-ICE/globals.h"
+#include <string.h>
 #ifdef _AIX
 #include <sys/access.h>
 #endif
@@ -257,7 +258,7 @@ auth_valid (const char *auth_name, int num_auth_names, const char **auth_names, 
 	{
 	    break;
 	}
-   
+
     if (i < num_auth_names)
     {
 	*index_ret = i;

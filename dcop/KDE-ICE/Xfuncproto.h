@@ -1,6 +1,6 @@
 /* $Xorg: Xfuncproto.h,v 1.3 2000/08/18 04:05:44 coskrey Exp $ */
-/* 
- * 
+/*
+ *
 Copyright 1989, 1991, 1998  The Open Group
 
 All Rights Reserved.

@@ -33,6 +33,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/globals.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 
 #ifdef X_NOT_STDC_ENV
@@ -124,7 +125,7 @@ IcePointer	value;
 
     if (PAD64 (length))
 	IceWritePad (iceConn, PAD64 (length));
-    
+
     IceFlush (iceConn);
 }
 
@@ -385,44 +386,45 @@ IcePointer	values;
 {
     char *str;
     char *pData = (char *) values;
+    (void)iceConn;/*unused*/
 
     switch (offendingMinorOpcode)
     {
         case ICE_ConnectionSetup:
-            str = "ConnectionSetup";
+            str = (char *)"ConnectionSetup";
 	    break;
         case ICE_AuthRequired:
-            str = "AuthRequired";
+            str = (char *)"AuthRequired";
 	    break;
         case ICE_AuthReply:
-            str = "AuthReply";
+            str = (char *)"AuthReply";
 	    break;
         case ICE_AuthNextPhase:
-            str = "AuthNextPhase";
+            str = (char *)"AuthNextPhase";
 	    break;
         case ICE_ConnectionReply:
-            str = "ConnectionReply";
+            str = (char *)"ConnectionReply";
 	    break;
         case ICE_ProtocolSetup:
-            str = "ProtocolSetup";
+            str = (char *)"ProtocolSetup";
 	    break;
         case ICE_ProtocolReply:
-            str = "ProtocolReply";
+            str = (char *)"ProtocolReply";
 	    break;
         case ICE_Ping:
-            str = "Ping";
+            str = (char *)"Ping";
 	    break;
         case ICE_PingReply:
-            str = "PingReply";
+            str = (char *)"PingReply";
 	    break;
         case ICE_WantToClose:
-            str = "WantToClose";
+            str = (char *)"WantToClose";
 	    break;
         case ICE_NoClose:
-            str = "NoClose";
+            str = (char *)"NoClose";
 	    break;
 	default:
-	    str = "";
+	    str = (char *)"";
 	}
 
     fprintf (stderr, "\n");
@@ -436,58 +438,58 @@ IcePointer	values;
     switch (errorClass)
     {
         case IceBadMinor:
-            str = "BadMinor";
+            str = (char *)"BadMinor";
             break;
         case IceBadState:
-            str = "BadState";
+            str = (char *)"BadState";
             break;
         case IceBadLength:
-            str = "BadLength";
+            str = (char *)"BadLength";
             break;
         case IceBadValue:
-            str = "BadValue";
+            str = (char *)"BadValue";
             break;
         case IceBadMajor:
-            str = "BadMajor";
+            str = (char *)"BadMajor";
             break;
         case IceNoAuth:
-            str = "NoAuthentication";
+            str = (char *)"NoAuthentication";
             break;
         case IceNoVersion:
-            str = "NoVersion";
+            str = (char *)"NoVersion";
             break;
         case IceSetupFailed:
-            str = "SetupFailed";
+            str = (char *)"SetupFailed";
             break;
         case IceAuthRejected:
-            str = "AuthenticationRejected";
+            str = (char *)"AuthenticationRejected";
             break;
         case IceAuthFailed:
-            str = "AuthenticationFailed";
+            str = (char *)"AuthenticationFailed";
             break;
         case IceProtocolDuplicate:
-            str = "ProtocolDuplicate";
+            str = (char *)"ProtocolDuplicate";
             break;
         case IceMajorOpcodeDuplicate:
-            str = "MajorOpcodeDuplicate";
+            str = (char *)"MajorOpcodeDuplicate";
             break;
         case IceUnknownProtocol:
-            str = "UnknownProtocol";
+            str = (char *)"UnknownProtocol";
             break;
 	default:
-	    str = "???";
+	    str = (char *)"???";
     }
 
     fprintf (stderr, "            Error class               = %s\n", str);
 
     if (severity == IceCanContinue)
-	str = "CanContinue";
+	str = (char *)"CanContinue";
     else if (severity == IceFatalToProtocol)
-	str = "FatalToProtocol";
+	str = (char *)"FatalToProtocol";
     else if (severity == IceFatalToConnection)
-	str = "FatalToConnection";
+	str = (char *)"FatalToConnection";
     else
-	str = "???";
+	str = (char *)"???";
 
     fprintf (stderr, "            Severity                  = %s\n", str);
 
@@ -576,12 +578,12 @@ IcePointer	values;
 
 
 
-/* 
+/*
  * This procedure sets the ICE error handler to be the specified
  * routine.  If NULL is passed in the default error handler is restored.
  * The function's return value is the previous error handler.
  */
- 
+
 IceErrorHandler
 IceSetErrorHandler (handler)
 
@@ -610,6 +612,7 @@ _IceDefaultIOErrorHandler (iceConn)
 IceConn iceConn;
 
 {
+    (void)iceConn;/*unused*/
     fprintf (stderr,
 	"ICE default IO error handler doing an exit(), pid = %d, errno = %d\n",
 	getpid(), errno);
@@ -619,13 +622,13 @@ IceConn iceConn;
 
 
 
-/* 
+/*
  * This procedure sets the ICE fatal I/O error handler to be the
  * specified routine.  If NULL is passed in the default error
  * handler is restored.   The function's return value is the
  * previous error handler.
  */
- 
+
 IceIOErrorHandler
 IceSetIOErrorHandler (handler)
 

@@ -175,7 +175,7 @@ TRANS(ConvertAddress)(int *familyp, int *addrlenp, Xtransaddr **addrp)
 	 * In the case of a local connection, we need to get the
 	 * host name for authentication.
 	 */
-	
+
 	char hostnamebuf[256];
 	int len = TRANS(GetHostname) (hostnamebuf, sizeof hostnamebuf);
 
@@ -283,7 +283,7 @@ static jmp_buf env;
 #ifdef SIGALRM
 static int nameserver_timedout = 0;
 
-static 
+static
 #ifdef SIGNALRETURNSINT
 int
 #else
@@ -291,6 +291,7 @@ void
 #endif
 nameserver_lost(int sig)
 {
+  (void)sig;/*unused*/
   nameserver_timedout = 1;
   longjmp (env, -1);
   /* NOTREACHED */
@@ -338,7 +339,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 	 * Assume that if it does not respond in NAMESERVER_TIMEOUT seconds
 	 * that something is wrong and do not make the user wait.
 	 * gethostbyaddr will continue after a signal, so we have to
-	 * jump out of it. 
+	 * jump out of it.
 	 */
 
 	nameserver_timedout = 0;
@@ -454,7 +455,7 @@ is_numeric (char *str)
 #define lstat(a,b) stat(a,b)
 #endif
 
-static int 
+static int
 trans_mkdir(char *path, int mode)
 {
     struct stat buf;
@@ -463,7 +464,7 @@ trans_mkdir(char *path, int mode)
 	chmod(path, mode);
 	return 0;
     }
-    /* If mkdir failed with EEXIST, test if it is a directory with 
+    /* If mkdir failed with EEXIST, test if it is a directory with
        the right modes, else fail */
     if (errno == EEXIST) {
 	if (lstat(path, &buf) != 0) {

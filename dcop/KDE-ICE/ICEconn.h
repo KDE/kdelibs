@@ -29,7 +29,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElib.h"
 
 /*
- * Data structures for ICE connection object 
+ * Data structures for ICE connection object
  */
 
 typedef struct _IceSavedReplyWait {

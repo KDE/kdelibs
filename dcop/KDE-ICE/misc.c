@@ -34,6 +34,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/globals.h"
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 
 /*
@@ -268,7 +269,7 @@ register char	 *ptr;
 
 		return (0);
 	    }
-	    else 
+	    else
 	    {
 		/*
 		 * Fatal IO error.  First notify each protocol's IceIOErrorProc

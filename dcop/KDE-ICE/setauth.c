@@ -28,6 +28,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/ICEutil.h"
 #include "KDE-ICE/globals.h"
+#include <string.h>
 
 
 /*

@@ -46,6 +46,7 @@ IceAppLockConn (iceConn)
 IceConn iceConn;
 
 {
+    (void)iceConn;/*unused in the macro*/
     IceLockConn (iceConn);
 }
 
@@ -56,5 +57,6 @@ IceAppUnlockConn (iceConn)
 IceConn iceConn;
 
 {
+    (void)iceConn;/*unused in the macro*/
     IceUnlockConn (iceConn);
 }
