@@ -33,6 +33,8 @@
 
 #include <kdebug.h>
 
+//#define BOX_DEBUG
+
 using namespace khtml;
 
 static QString toRoman( int number, bool upper )
@@ -239,21 +241,14 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 {
     if( !isVisible() )
         return;
-#ifdef DEBUG_LAYOUT
 
-        kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(style()->font());
-    p->setPen(style()->color());
     QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
 
-#ifdef BOX_DEBUG
-    p->setPen( QColor("red") );
-    QCOORD points[] = { _tx,_ty, _tx+offset,_ty, _tx+offset,_ty+offset, _tx,_ty+offset, _tx,_ty };
-    QPointArray a( 5, points );
-    p->drawPolyline( a );
-#endif
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;
@@ -269,26 +264,30 @@ void RenderListMarker::printObject(QPainter *p, int, int,
         return;
     }
 
+#ifdef BOX_DEBUG
+    p->setPen( Qt::red );
+    p->drawRect( _tx + xoff, _ty + yoff, offset, offset );
+#endif
+
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
 
     switch(style()->listStyleType()) {
     case DISC:
         p->setBrush( QBrush( color ) );
-        p->drawEllipse( _tx + xoff, _ty + yoff, offset, offset );
+        p->drawEllipse( _tx + xoff, _ty + yoff, offset/2+1, offset/2+1 );
         return;
     case CIRCLE:
-        p->setBrush( QBrush( color ) );
-        p->drawArc( _tx + xoff, _ty + yoff, offset, offset, 0, 16*360 );
+        p->setPen( QPen( color ) );
+        p->setBrush( Qt::NoBrush );
+        p->drawEllipse( _tx + xoff, _ty + yoff, offset-1, offset-1 );
         return;
     case SQUARE:
     {
         int xp = _tx + xoff;
         int yp = _ty + fm.ascent() - offset + 1;
-        p->setBrush( QBrush( color ) );
-        QCOORD points[] = { xp,yp, xp+offset,yp, xp+offset,yp+offset, xp,yp+offset, xp,yp };
-        QPointArray a( 5, points );
-        p->drawPolyline( a );
+        p->setBrush( color );
+        p->drawRect( _tx + xoff, _ty + yoff, offset, offset );
         return;
     }
     case LNONE:
@@ -313,7 +312,11 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 
 void RenderListMarker::layout()
 {
+    if ( layouted() ) return;
+
     calcMinMaxWidth();
+
+    setLayouted();
 }
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate)
@@ -428,3 +431,5 @@ void RenderListMarker::calcWidth()
 {
     RenderBox::calcWidth();
 }
+
+#undef BOX_DEBUG
