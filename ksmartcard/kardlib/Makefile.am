@@ -1,4 +1,4 @@
-INCLUDES=$(all_includes) $(PCSC_INCLUDES)
+INCLUDES=$(all_includes) $(PCSC_INCLUDES) -I$(top_srcdir)/kio
 
 lib_LTLIBRARIES = libksmartcard.la
 METASOURCES= AUTO
