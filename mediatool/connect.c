@@ -265,6 +265,7 @@ void MdConnectNew(MediaCon *mcon)
   EventCounterReset(&(KeysChunk.play));
   EventCounterReset(&(KeysChunk.posnew));
   KeysChunk.pos_new =0;
+  KeysChunk.sync_id=0;
 
   /* 3b) Write keys chunk */
   if (! WriteChunk(tmpadr, "KEYS", (char*)(&KeysChunk), sizeof(MdCh_KEYS) ))
@@ -276,6 +277,7 @@ void MdConnectNew(MediaCon *mcon)
   StatChunk.supp_keys	= \
   StatChunk.pos_current	= \
   StatChunk.pos_max	= 0;
+  StatChunk.sync_id	= 0;
   memset(StatChunk.songname, 0, LEN_NAME+1);
   /* 4b) Write status chunk */
   if(! WriteChunk(tmpadr, "STAT", (char*)(&StatChunk), sizeof(MdCh_STAT) ))
