@@ -37,9 +37,11 @@ bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
 {
   kdDebug(5700) << "VCardFormat::load()" << endl;
 
-  QCString data( file->readAll() );
+  QByteArray fdata = file->readAll();
+  QCString data(fdata.data(), fdata.size()+1);
+
   VCardEntity e( data );
-  
+
   VCardListIterator it( e.cardList() );
 
   if ( it.current() ) {
@@ -55,9 +57,11 @@ bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFi
 {
   kdDebug(5700) << "VCardFormat::loadAll()" << endl;
 
-  QCString data( file->readAll() );
+  QByteArray fdata = file->readAll();
+  QCString data(fdata.data(), fdata.size()+1);
+
   VCardEntity e( data );
-  
+
   VCardListIterator it( e.cardList() );
 
   for (; it.current(); ++it) {
@@ -125,7 +129,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
                         QString::fromUtf8( cl->value()->asString() ) );
         continue;
     }
-    
+
     EntityType type = cl->entityType();
     switch( type ) {
 
@@ -275,7 +279,7 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool 
   addTextValue( v, EntityName, addressee.name() );
   addTextValue( v, EntityUID, addressee.uid() );
   addTextValue( v, EntityFullName, addressee.formattedName() );
-    
+
   QStringList emails = addressee.emails();
   QStringList::ConstIterator it4;
   for( it4 = emails.begin(); it4 != emails.end(); ++it4 ) {
@@ -416,9 +420,9 @@ void VCardFormatImpl::addLabelValue( VCard *vcard, const Address &a )
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityLabel ) );
   cl.setValue( new TextValue( a.label().utf8() ) );
-  
+
   addAddressParam( &cl, a.type() );
-  
+
   vcard->add( cl );
 }
 
@@ -536,7 +540,7 @@ void VCardFormatImpl::addNValue( VCard *vcard, const Addressee &a )
   v->setMiddle( a.additionalName().utf8() );
   v->setPrefix( a.prefix().utf8() );
   v->setSuffix( a.suffix().utf8() );
-  
+
   cl.setValue( v );
   vcard->add(cl);
 }
