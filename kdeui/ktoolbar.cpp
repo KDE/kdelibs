@@ -23,14 +23,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#define private public
-// Reggie: Bad hack but we need to access QToolBar::bl (QBoxLayout*)
-// to be able to do some KDE specific toolbar stuff
-// In Qt 2.2 this will be "fixed", so that we don't need this very ugly hack anymore.
-// Please be careful and don't use any other private QToolBar memebers!!!!
-#include <qtoolbar.h>
-#undef private
-
 #include "ktoolbar.h"
 #include "ktmainwindow.h"
 
@@ -1248,12 +1240,12 @@ void KToolBar::rebuildLayout()
 {
     layoutTimer->stop();
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
-    delete bl;
-    bl = new QBoxLayout( this, orientation() == Vertical
-                         ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
+    delete layout();
+    QBoxLayout *bl = new QBoxLayout( this, orientation() == Vertical
+				     ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
     bl->addSpacing( 9 );
-    bl->setDirection( orientation() ==Horizontal ? QBoxLayout::LeftToRight :
-                      QBoxLayout::TopToBottom );
+    bl->setDirection( orientation() == Horizontal ? QBoxLayout::LeftToRight :
+		      QBoxLayout::TopToBottom );
     for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
         if ( w == rightAligned )
             continue;
@@ -1288,12 +1280,15 @@ void KToolBar::childEvent( QChildEvent *e )
 {
     int dummy = -1;
     if ( e->child()->isWidgetType() ) {
-        if ( e->type() == QEvent::ChildInserted )
-            insertWidgetInternal( (QWidget*)e->child(), dummy, -1 );
-        else
-            widgets.removeRef( (QWidget*)e->child() );
-        if ( isVisibleTo( 0 ) )
-            layoutTimer->start( 0, TRUE );
+	if ( e->type() == QEvent::ChildInserted ) {
+	    insertWidgetInternal( (QWidget*)e->child(), dummy, -1 );
+	    if ( !e->child()->inherits( "QPopupMenu" ) )
+		( (QWidget*)e->child() )->show();
+	} else {
+	    widgets.removeRef( (QWidget*)e->child() );
+	}
+	if ( isVisibleTo( 0 ) )
+	    layoutTimer->start( 0, TRUE );
     }
     QToolBar::childEvent( e );
 }
