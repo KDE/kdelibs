@@ -1348,3 +1348,35 @@ Comment[sv]=Ett utskriftsfel har inträffat
 Comment[xx]=xxA print error has occurredxx
 default_presentation=2
 level=8
+
+[messageInformation]
+Name=Information message
+Comment=An information message is being shown
+default_sound=KDE_Notify.wav
+default_presentation=65
+nopresentation=18
+
+[messageWarning]
+Name=Warning message
+Comment=A warning message is being shown
+default_sound=KDE_Error.wav
+default_presentation=65
+nopresentation=18
+level=2
+
+[messageCritical]
+Name=Critical message
+Comment=A critical message is being shown
+default_sound=KDE_Critical_Error.wav
+default_presentation=65
+nopresentation=18
+level=4
+
+[messageboxQuestion]
+Name=Question
+Comment=A question is being asked
+default_sound=KDE_Beep_Ahem.wav
+default_presentation=65
+nopresentation=18
+
+
