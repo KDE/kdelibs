@@ -240,6 +240,14 @@ public:
 	string filename() { return _filename; }
 	void filename(const string& filename) { _filename = filename; load(); }
 
+	void finished(bool f)
+	{
+		if(_finished != f)
+		{
+			_finished = f;
+			finished_changed(f);
+		}
+	}
 	bool finished() { return _finished; }
 
 	Synth_PLAY_WAV_impl();
@@ -258,6 +266,7 @@ Synth_PLAY_WAV_impl::Synth_PLAY_WAV_impl()
 	cachedwav = 0;
 	_speed = 1.0;
 	_filename = "";
+	_finished = false;
 }
 
 Synth_PLAY_WAV_impl::~Synth_PLAY_WAV_impl()
@@ -267,7 +276,7 @@ Synth_PLAY_WAV_impl::~Synth_PLAY_WAV_impl()
 
 void Synth_PLAY_WAV_impl::streamInit()
 {
-	_finished = false;
+	finished(false);
 }
 
 void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
@@ -292,7 +301,7 @@ void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 		for(i=haveSamples;i<samples;i++)
 			left[i] = right[i] = 0.0;
 
-		_finished = true;
+		finished(true);
 	}
 
 /*
