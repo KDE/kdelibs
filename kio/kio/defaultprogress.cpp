@@ -390,7 +390,7 @@ void DefaultProgress::setDestVisible( bool visible )
 
 void DefaultProgress::slotClean() {
   if (d->keepOpenChecked) {
-    slotPercent(0, 100.0);
+    slotPercent(0, 100);
     d->cancelClose->setText( KStdGuiItem::close().text() );
     d->openFile->setEnabled(true);
     setOnlyClean(false);
