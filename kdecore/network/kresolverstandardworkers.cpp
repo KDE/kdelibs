@@ -31,6 +31,7 @@
 #include <netdb.h>
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef HAVE_NET_IF_H
 #include <net/if.h>
@@ -712,7 +713,9 @@ bool KStandardWorker::run()
 		  , { KResolver::IPv6Family, AF_INET6 }
 #endif
   };
-  const int familyCount = sizeof(families)/sizeof(families[0]);
+  int familyCount = sizeof(families)/sizeof(families[0]);
+  if (getenv("KDE_NO_IPV6"))
+     familyCount--;
   resultList.setAutoDelete(true);
 
   for (int i = 0; i < familyCount; i++)
