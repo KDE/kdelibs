@@ -242,7 +242,7 @@ public:
        @li Shaded indicates that the window is shaded (rolled-up).
 
        @li SkipTaskbar indicates that a window should not be included on a taskbar.
-
+       
        @li StaysOnTop indicate that a window should be kept on top of other windows.
     **/
 
@@ -254,7 +254,8 @@ public:
 	Max = MaxVert | MaxHoriz,
 	Shaded       = 1<<4,
 	SkipTaskbar  = 1<<5,
-	StaysOnTop   = 1<<6
+	StaysOnTop   = 1<<6,
+	SkipPager    = 1<<7
     };
 
     /**
@@ -275,15 +276,15 @@ public:
     **/
 
     enum Direction {
-	TopLeft      =0,
-	Top          =1,
-	TopRight     =2,
-	Right        =3,
-	BottomRight  =4,
-	Bottom       =5,
-	BottomLeft   =6,
-	Left         =7,
-	Move         =8 // movement only
+	TopLeft      = 0,
+	Top          = 1,
+	TopRight     = 2,
+	Right        = 3,
+	BottomRight  = 4,
+	Bottom       = 5,
+	BottomLeft   = 6,
+	Left         = 7,
+	Move         = 8  // movement only
     };
 
     /**
@@ -350,38 +351,41 @@ public:
 
     enum Property {
 	// root
-	Supported           = 1<<0,
-	ClientList          = 1<<1,
-	ClientListStacking  = 1<<2,
-	NumberOfDesktops    = 1<<3,
-	DesktopGeometry     = 1<<4,
-	DesktopViewport     = 1<<5,
-	CurrentDesktop      = 1<<6,
-	DesktopNames        = 1<<7,
-	ActiveWindow        = 1<<8,
-	WorkArea            = 1<<9,
-	SupportingWMCheck   = 1<<10,
-	VirtualRoots        = 1<<11,
-	KDESystemTrayWindows   = 1<<12, // NOT STANDARD
-	CloseWindow         = 1<<13,
-	WMMoveResize        = 1<<14,
+	Supported             = 1<<0,
+	ClientList            = 1<<1,
+	ClientListStacking    = 1<<2,
+	NumberOfDesktops      = 1<<3,
+	DesktopGeometry       = 1<<4,
+	DesktopViewport       = 1<<5,
+	CurrentDesktop        = 1<<6,
+	DesktopNames          = 1<<7,
+	ActiveWindow          = 1<<8,
+	WorkArea              = 1<<9,
+	SupportingWMCheck     = 1<<10,
+	VirtualRoots          = 1<<11,
+	KDESystemTrayWindows  = 1<<12, // NOT STANDARD
+	CloseWindow           = 1<<13,
+	WMMoveResize          = 1<<14,
 
 	// window
-	WMName              = 1<<15,
-	WMVisibleName       = 1<<16,
-	WMDesktop           = 1<<17,
-	WMWindowType        = 1<<18,
-	WMState             = 1<<19,
-	WMStrut             = 1<<20,
-	WMIconGeometry      = 1<<21,
-	WMIcon              = 1<<22,
-	WMPid               = 1<<23,
-	WMHandledIcons      = 1<<24,
-	WMPing              = 1<<25,
-	WMKDESystemTrayWinFor     = 1<<26, // NOT STANDARD
-	XAWMState           = 1<<27,  // NOT STANDARD
-	WMKDEFrameStrut     = 1<<28 // NOT STANDARD
-
+	WMName                = 1<<15,
+	WMVisibleName         = 1<<16,
+	WMDesktop             = 1<<17,
+	WMWindowType          = 1<<18,
+	WMState               = 1<<19,
+	WMStrut               = 1<<20,
+	WMIconGeometry        = 1<<21,
+	WMIcon                = 1<<22,
+	WMPid                 = 1<<23,
+	WMHandledIcons        = 1<<24,
+	WMPing                = 1<<25,
+	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
+	XAWMState             = 1<<27, // NOT STANDARD
+	WMKDEFrameStrut       = 1<<28, // NOT STANDARD
+	
+	// Need to be reordered
+	WMIconName            = 1<<29,
+	WMVisibleIconName     = 1<<30
     };
 };
 

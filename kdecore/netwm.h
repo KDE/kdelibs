@@ -172,7 +172,10 @@ public:
     int kdeSystemTrayWindowsCount() const;
 
     /**
-       Returns the size of the specified desktop.
+       Returns the desktop geometry size.
+
+       The desktop argument is ignored. Early drafts of the NET WM
+       Specification were unclear about the semantics of this property.
     **/
     NETSize desktopGeometry(int desktop) const;
 
@@ -266,13 +269,18 @@ public:
     void setCurrentDesktop(int desktop);
 
     /**
-       Sets the specified desktop geometry to the specified geometry.
+       Sets the desktop geometry to the specified geometry.
 
+       The desktop argument is ignored. Early drafts of the NET WM
+       Specification were unclear about the semantics of this property.
     **/
     void setDesktopGeometry(int desktop, const NETSize &geometry);
 
     /**
-       Sets the specified desktop viewport to the specified viweport.
+       Sets the viewport for the current desktop to the specified point.
+
+       The desktop argument is ignored. Early drafts of the NET WM
+       Specification were unclear about the semantics of this property.
     **/
     void setDesktopViewport(int desktop, const NETPoint &viewport);
 
@@ -536,6 +544,16 @@ public:
     const char *visibleName() const;
 
     /**
+       Returns the icon name of the window in UTF-8 format.
+    **/
+    const char *iconName() const;
+
+    /**
+       Returns the visible icon name as set by the window manager in UTF-8 format.
+    **/
+    const char *visibleIconName() const;
+
+    /**
        Returns the desktop where the window is residing.
     **/
     int desktop() const;
@@ -601,6 +619,17 @@ public:
        xterm <3>, ... )
     **/
     void setVisibleName(const char *visibleName);
+
+    /**
+       Sets the icon name for the application window.
+    **/
+    void setIconName(const char *name);
+
+    /**
+       For Window Managers only: set the visible icon name ( i.e. xterm, xterm <2>,
+       xterm <3>, ... )
+    **/
+    void setVisibleIconName(const char *name);
 
     /**
        Set which window the desktop is (should be) on.
@@ -669,9 +698,10 @@ protected:
        it wants to know when a Client made a request to change state (ie. to
        Shade / Unshade).
     **/
-    virtual void changeState(unsigned long state, unsigned long mask) { }
-
-
+    // virtual void changeState(unsigned long state, unsigned long mask) { }
+    virtual void changeState(unsigned long, unsigned long) { }
+    
+    
 private:
     void update(unsigned long);
 

@@ -84,7 +84,7 @@ struct NETRootInfoPrivate {
     // and requires updates
     RArray<NETPoint> viewport;
     RArray<NETRect> workarea;
-    RArray<NETSize> geometry;
+    NETSize geometry;
     Window active;
     Window *clients, *stacking, *virtual_roots, *kde_system_tray_windows;
     RArray<const char *> desktop_names;
@@ -119,7 +119,7 @@ struct NETWinInfoPrivate {
     unsigned long state;
     NETStrut strut, frame_strut;
     NET::WindowType type;
-    char *name, *visible_name;
+    char *name, *visible_name, *icon_name, *visible_icon_name;
     int desktop;
     int pid;
     int handled_icons;

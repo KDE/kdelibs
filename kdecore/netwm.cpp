@@ -35,6 +35,9 @@
 #include "netwm_p.h"
 
 
+// UTF-8 string
+static Atom UTF8_STRING = 0;
+
 // root window properties
 static Atom net_supported            = 0;
 static Atom net_client_list          = 0;
@@ -56,6 +59,8 @@ static Atom net_wm_moveresize        = 0;
 // application window properties
 static Atom net_wm_name              = 0;
 static Atom net_wm_visible_name      = 0;
+static Atom net_wm_icon_name         = 0;
+static Atom net_wm_visible_icon_name = 0;
 static Atom net_wm_desktop           = 0;
 static Atom net_wm_window_type       = 0;
 static Atom net_wm_state             = 0;
@@ -89,12 +94,15 @@ static Atom net_wm_state_max_vert     = 0;
 static Atom net_wm_state_max_horiz    = 0;
 static Atom net_wm_state_shaded       = 0;
 static Atom net_wm_state_skip_taskbar = 0;
-static Atom net_wm_state_stays_on_top     = 0;
+static Atom net_wm_state_skip_pager   = 0;
+static Atom net_wm_state_stays_on_top = 0;
 
 // used to determine whether application window is managed or not
 static Atom xa_wm_state = 0;
 
 static Bool netwm_atoms_created      = False;
+static unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
+					     SubstructureNotifyMask);
 
 
 static char *nstrdup(const char *s1) {
@@ -176,11 +184,12 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
+static const int netAtomCount = 47;
 static void create_atoms(Display *d) {
-    static const int atomCount = 43;
-    static const char *names[atomCount] =
+    static const char *names[netAtomCount] =
     {
-	"_NET_SUPPORTED",
+	"UTF8_STRING",
+	    "_NET_SUPPORTED",
 	    "_NET_SUPPORTING_WM_CHECK",
 	    "_NET_CLIENT_LIST",
 	    "_NET_CLIENT_LIST_STACKING",
@@ -197,6 +206,8 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_MOVERESIZE",
 	    "_NET_WM_NAME",
 	    "_NET_WM_VISIBLE_NAME",
+	    "_NET_WM_ICON_NAME",
+	    "_NET_WM_VISIBLE_ICON_NAME",
 	    "_NET_WM_DESKTOP",
 	    "_NET_WM_WINDOW_TYPE",
 	    "_NET_WM_STATE",
@@ -220,6 +231,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_MAXIMIZED_HORIZ",
 	    "_NET_WM_STATE_SHADED",
 	    "_NET_WM_STATE_SKIP_TASKBAR",
+	    "_NET_WM_STATE_SKIP_PAGER",
 	    "_NET_WM_STATE_STAYS_ON_TOP",
 
 	    "_KDE_NET_SYSTEM_TRAY_WINDOWS",
@@ -230,9 +242,10 @@ static void create_atoms(Display *d) {
 	    "WM_STATE"
 	    };
 
-    Atom atoms[atomCount], *atomsp[atomCount] =
+    Atom atoms[netAtomCount], *atomsp[netAtomCount] =
     {
-	&net_supported,
+	&UTF8_STRING,
+	    &net_supported,
 	    &net_supporting_wm_check,
 	    &net_client_list,
 	    &net_client_list_stacking,
@@ -249,6 +262,8 @@ static void create_atoms(Display *d) {
 	    &net_wm_moveresize,
 	    &net_wm_name,
 	    &net_wm_visible_name,
+	    &net_wm_icon_name,
+	    &net_wm_visible_icon_name,
 	    &net_wm_desktop,
 	    &net_wm_window_type,
 	    &net_wm_state,
@@ -272,6 +287,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_max_horiz,
 	    &net_wm_state_shaded,
 	    &net_wm_state_skip_taskbar,
+	    &net_wm_state_skip_pager,
 	    &net_wm_state_stays_on_top,
 
 	    &kde_net_system_tray_windows,
@@ -282,13 +298,13 @@ static void create_atoms(Display *d) {
 	    &xa_wm_state,
 	    };
 
-    int i = atomCount;
+    int i = netAtomCount;
     while (i--)
 	atoms[i] = 0;
 
-    XInternAtoms(d, (char **) names, atomCount, False, atoms);
+    XInternAtoms(d, (char **) names, netAtomCount, False, atoms);
 
-    i = atomCount;
+    i = netAtomCount;
     while (i--)
 	*atomsp[i] = atoms[i];
 
@@ -635,7 +651,7 @@ void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
 }
 
@@ -650,7 +666,6 @@ void NETRootInfo::setCurrentDesktop(int desktop) {
 
     if (role == WindowManager) {
 	p->current_desktop = desktop;
-	// CARD32 d = p->current_desktop - 1;
 	long d = p->current_desktop - 1;
 	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
@@ -668,7 +683,7 @@ void NETRootInfo::setCurrentDesktop(int desktop) {
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
 }
 
@@ -702,38 +717,29 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
 	    desktop, desktopName, proplen);
 #endif
 
-    XChangeProperty(p->display, p->root, net_desktop_names, XA_STRING, 8,
+    XChangeProperty(p->display, p->root, net_desktop_names, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) prop, proplen);
 
     delete [] prop;
 }
 
 
-void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
+void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry) {
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::setDesktopGeometry(%d, { %d, %d }) (%s)\n",
-	    desktop, geometry.width, geometry.height,
-	    (role == WindowManager) ? "WM" : "Client");
+    fprintf(stderr, "NETRootInfo::setDesktopGeometry( -- , { %d, %d }) (%s)\n",
+	    geometry.width, geometry.height, (role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (desktop <  1) return;
-
     if (role == WindowManager) {
-	p->geometry[desktop - 1] = geometry;
+	p->geometry = geometry;
 
-	int d, i, l;
-	l = p->geometry.size() * 2;
-	long *data = new long[l];
-	for (d = 0, i = 0; d < p->geometry.size(); d++) {
-	    data[i++] = p->geometry[d].width;
-	    data[i++] = p->geometry[d].height;
-	}
+	long data[2];
+	data[0] = p->geometry.width;
+	data[1] = p->geometry.height;
 
 	XChangeProperty(p->display, p->root, net_desktop_geometry, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) data, l);
-
-	delete [] data;
+			PropModeReplace, (unsigned char *) data, 2);
     } else {
 	XEvent e;
 
@@ -742,13 +748,13 @@ void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->root;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = desktop - 1;
-	e.xclient.data.l[1] = geometry.width;
-	e.xclient.data.l[2] = geometry.height;
+	e.xclient.data.l[0] = geometry.width;
+	e.xclient.data.l[1] = geometry.height;
+	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
 }
 
@@ -767,7 +773,6 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 
 	int d, i, l;
 	l = p->viewport.size() * 2;
-	// CARD32 *data = new CARD32[l];
 	long *data = new long[l];
 	for (d = 0, i = 0; d < p->viewport.size(); d++) {
 	    data[i++] = p->viewport[d].x;
@@ -792,7 +797,7 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
 }
 
@@ -808,9 +813,10 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	return;
     }
 
-    Atom atoms[27];
+    Atom atoms[netAtomCount];
     int pnum = 2;
 
+    // Root window properties/messages
     atoms[0] = net_supported;
     atoms[1] = net_supporting_wm_check;
 
@@ -844,26 +850,55 @@ void NETRootInfo::setSupported(unsigned long pr) {
     if (p->protocols & VirtualRoots)
 	atoms[pnum++] = net_virtual_roots;
 
-    if (p->protocols & KDESystemTrayWindows)
-	atoms[pnum++] = kde_net_system_tray_windows;
-
     if (p->protocols & CloseWindow)
 	atoms[pnum++] = net_close_window;
 
+
+    // Application window properties/messages
     if (p->protocols & WMMoveResize)
 	atoms[pnum++] = net_wm_moveresize;
 
     if (p->protocols & WMName)
 	atoms[pnum++] = net_wm_name;
 
+    if (p->protocols & WMVisibleName)
+	atoms[pnum++] = net_wm_visible_name;
+
+    if (p->protocols & WMIconName)
+	atoms[pnum++] = net_wm_icon_name;
+
+    if (p->protocols & WMVisibleIconName)
+	atoms[pnum++] = net_wm_visible_icon_name;
+
     if (p->protocols & WMDesktop)
 	atoms[pnum++] = net_wm_desktop;
 
-    if (p->protocols & WMWindowType)
+    if (p->protocols & WMWindowType) {
 	atoms[pnum++] = net_wm_window_type;
 
-    if (p->protocols & WMState)
+	// Application window types
+	atoms[pnum++] = net_wm_window_type_normal;
+	atoms[pnum++] = net_wm_window_type_desktop;
+	atoms[pnum++] = net_wm_window_type_dock;
+	atoms[pnum++] = net_wm_window_type_toolbar;
+	atoms[pnum++] = net_wm_window_type_menu;
+	atoms[pnum++] = net_wm_window_type_dialog;
+	atoms[pnum++] = kde_net_wm_window_type_override;
+    }
+
+    if (p->protocols & WMState) {
 	atoms[pnum++] = net_wm_state;
+
+	// Application window states
+	atoms[pnum++] = net_wm_state_modal;
+	atoms[pnum++] = net_wm_state_sticky;
+	atoms[pnum++] = net_wm_state_max_vert;
+	atoms[pnum++] = net_wm_state_max_horiz;
+	atoms[pnum++] = net_wm_state_shaded;
+	atoms[pnum++] = net_wm_state_skip_taskbar;
+	atoms[pnum++] = net_wm_state_skip_pager;
+	atoms[pnum++] = net_wm_state_stays_on_top;
+    }
 
     if (p->protocols & WMStrut)
 	atoms[pnum++] = net_wm_strut;
@@ -882,6 +917,10 @@ void NETRootInfo::setSupported(unsigned long pr) {
 
     if (p->protocols & WMPing)
 	atoms[pnum++] = net_wm_ping;
+
+    // KDE specific extensions
+    if (p->protocols & KDESystemTrayWindows)
+	atoms[pnum++] = kde_net_system_tray_windows;
 
     if (p->protocols & WMKDESystemTrayWinFor)
 	atoms[pnum++] = kde_net_wm_system_tray_window_for;
@@ -904,7 +943,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
     XChangeProperty(p->display, p->supportwindow, net_supporting_wm_check,
 		    XA_WINDOW, 32, PropModeReplace,
 		    (unsigned char *) &(p->supportwindow), 1);
-    XChangeProperty(p->display, p->supportwindow, net_wm_name, XA_STRING, 8,
+    XChangeProperty(p->display, p->supportwindow, net_wm_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->name,
 		    strlen(p->name) + 1);
 }
@@ -927,15 +966,15 @@ void NETRootInfo::setActiveWindow(Window window) {
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = net_active_window;
 	e.xclient.display = p->display;
-	e.xclient.window = p->root;
+	e.xclient.window = window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = window;
+	e.xclient.data.l[0] = 0l;
 	e.xclient.data.l[1] = 0l;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     }
 }
 
@@ -952,7 +991,6 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
 
     p->workarea[desktop - 1] = workarea;
 
-    // CARD32 *wa = new CARD32[p->number_of_desktops * 4];
     long *wa = new long[p->number_of_desktops * 4];
     int i, o;
     for (i = 0, o = 0; i < p->number_of_desktops; i++) {
@@ -999,15 +1037,15 @@ void NETRootInfo::closeWindowRequest(Window window) {
     e.xclient.type = ClientMessage;
     e.xclient.message_type = net_close_window;
     e.xclient.display = p->display;
-    e.xclient.window = p->root;
+    e.xclient.window = window;
     e.xclient.format = 32;
-    e.xclient.data.l[0] = window;
+    e.xclient.data.l[0] = 0l;
     e.xclient.data.l[1] = 0l;
     e.xclient.data.l[2] = 0l;
     e.xclient.data.l[3] = 0l;
     e.xclient.data.l[4] = 0l;
 
-    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
 
@@ -1026,15 +1064,15 @@ void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
     e.xclient.type = ClientMessage;
     e.xclient.message_type = net_wm_moveresize;
     e.xclient.display = p->display;
-    e.xclient.window = p->root;
+    e.xclient.window = window,
     e.xclient.format = 32;
-    e.xclient.data.l[0] = window;
-    e.xclient.data.l[1] = x_root;
-    e.xclient.data.l[2] = y_root;
-    e.xclient.data.l[3] = direction;
+    e.xclient.data.l[0] = x_root;
+    e.xclient.data.l[1] = y_root;
+    e.xclient.data.l[2] = direction;
+    e.xclient.data.l[3] = 0l;
     e.xclient.data.l[4] = 0l;
 
-    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
 
@@ -1083,22 +1121,18 @@ unsigned long NETRootInfo::event(XEvent *event) {
 	} else if (event->xclient.message_type == net_desktop_geometry) {
 	    dirty = DesktopGeometry;
 
-	    int desktop = event->xclient.data.l[0];
-
 	    NETSize sz;
-	    sz.width = event->xclient.data.l[1];
-	    sz.height = event->xclient.data.l[2];
+	    sz.width = event->xclient.data.l[0];
+	    sz.height = event->xclient.data.l[1];
 
 #ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::event: changeDesktopGeometry(%d, { %d, %d })\n",
-		    desktop, sz.width, sz.height);
+	    fprintf(stderr, "NETRootInfo::event: changeDesktopGeometry( -- , { %d, %d })\n",
+		    sz.width, sz.height);
 #endif
 
-	    changeDesktopGeometry(desktop, sz);
+	    changeDesktopGeometry(~0, sz);
 	} else if (event->xclient.message_type == net_desktop_viewport) {
 	    dirty = DesktopViewport;
-
-	    int desktop = event->xclient.data.l[0];
 
 	    NETPoint pt;
 	    pt.x = event->xclient.data.l[0];
@@ -1106,10 +1140,10 @@ unsigned long NETRootInfo::event(XEvent *event) {
 
 #ifdef   NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: changeDesktopViewport(%d, { %d, %d })\n",
-		    desktop, pt.x, pt.y);
+		    p->current_desktop, pt.x, pt.y);
 #endif
 
-	    changeDesktopViewport(desktop, pt);
+	    changeDesktopViewport(p->current_desktop, pt);
 	} else if (event->xclient.message_type == net_current_desktop) {
 	    dirty = CurrentDesktop;
 
@@ -1124,33 +1158,33 @@ unsigned long NETRootInfo::event(XEvent *event) {
 
 #ifdef    NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: changeActiveWindow(0x%lx)\n",
-		    event->xclient.data.l[0]);
+		    event->xclient.window);
 #endif
 
-	    changeActiveWindow(event->xclient.data.l[0]);
+	    changeActiveWindow(event->xclient.window);
 	} else if (event->xclient.message_type == net_wm_moveresize) {
 
 #ifdef    NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: moveResize(%ld, %ld, %ld, %ld)\n",
+		    event->xclient.window,
 		    event->xclient.data.l[0],
 		    event->xclient.data.l[1],
-		    event->xclient.data.l[2],
-		    event->xclient.data.l[3]
+		    event->xclient.data.l[2]
 		    );
 #endif
 
-	    moveResize(event->xclient.data.l[0],
+	    moveResize(event->xclient.window,
+		       event->xclient.data.l[0],
 		       event->xclient.data.l[1],
-		       event->xclient.data.l[2],
-		       event->xclient.data.l[3]);
+		       event->xclient.data.l[2]);
 	} else if (event->xclient.message_type == net_close_window) {
 
 #ifdef   NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: closeWindow(0x%lx)\n",
-		    event->xclient.data.l[0]);
+		    event->xclient.window);
 #endif
 
-	    closeWindow(event->xclient.data.l[0]);
+	    closeWindow(event->xclient.window);
 	}
     }
 
@@ -1396,37 +1430,22 @@ void NETRootInfo::update(unsigned long dirty) {
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret >= 2) {
-		// CARD32 *data = (CARD32 *) data_ret;
+		nitems_ret == 2) {
 		long *data = (long *) data_ret;
 
-		int d, i, n;
-		n = nitems_ret / 2;
-		for (d = 0, i = 0; d < n; d++) {
-		    p->geometry[d].width  = data[i++];
-		    p->geometry[d].height = data[i++];
-		}
+		p->geometry.width  = data[0];
+		p->geometry.height = data[1];
 
 #ifdef    NETWMDEBUG
-		fprintf(stderr,
-			"NETRootInfo::update: desktop geometry array updated (%d entries)\n",
-			p->geometry.size());
-
-		if (nitems_ret % 2 != 0) {
-		    fprintf(stderr,
-			    "NETRootInfo::update: desktop geometry array size "
-			    "not a multipe of 2\n");
-		}
+		fprintf(stderr, "NETRootInfo::update: desktop geometry updated\n");
 #endif
 	    }
 	    if ( data_ret )
 		XFree(data_ret);
 	}
     } else {
-	int i;
-	for (i = 0; i < p->geometry.size(); i++) {
-	    p->geometry[i] = p->rootSize;
-	}
+	// insurance
+	p->geometry = p->rootSize;
     }
 
     if (dirty & DesktopViewport) {
@@ -1436,7 +1455,6 @@ void NETRootInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == 2) {
-		// CARD32 *data = (CARD32 *) data_ret;
 		long *data = (long *) data_ret;
 
 		int d, i, n;
@@ -1489,10 +1507,10 @@ void NETRootInfo::update(unsigned long dirty) {
 
     if (dirty & DesktopNames) {
 	if (XGetWindowProperty(p->display, p->root, net_desktop_names,
-			       0l, (long) BUFSIZE, False, XA_STRING, &type_ret,
+			       0l, (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8) {
+	    if (type_ret == UTF8_STRING && format_ret == 8) {
 		// force the last element in the data array to be NUL
 		data_ret[nitems_ret - 1] = '\0';
 
@@ -1542,7 +1560,6 @@ void NETRootInfo::update(unsigned long dirty) {
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
-		// CARD32 *d = (CARD32 *) data_ret;
 		long *d = (long *) data_ret;
 		int i, j;
 		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
@@ -1574,10 +1591,10 @@ void NETRootInfo::update(unsigned long dirty) {
 		unsigned char *name_ret;
 		if (XGetWindowProperty(p->display, p->supportwindow,
 				       net_wm_name, 0l, (long) BUFSIZE, False,
-				       XA_STRING, &type_ret, &format_ret,
+				       UTF8_STRING, &type_ret, &format_ret,
 				       &nitems_ret, &unused, &name_ret)
 		    == Success) {
-		    if (type_ret == XA_STRING && format_ret == 8)
+		    if (type_ret == UTF8_STRING && format_ret == 8)
 			p->name = nstrdup((const char *) name_ret);
 
 		    if ( data_ret )
@@ -1681,13 +1698,8 @@ int NETRootInfo::kdeSystemTrayWindowsCount() const {
 }
 
 
-NETSize NETRootInfo::desktopGeometry(int desktop) const {
-    if (desktop < 1) {
-	NETSize sz;
-	return sz;
-    }
-
-    return p->geometry[desktop - 1];
+NETSize NETRootInfo::desktopGeometry(int) const {
+    return p->geometry;
 }
 
 
@@ -1769,9 +1781,14 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->type = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
+    p->icon_name = (char *) 0;
+    p->visible_icon_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
-    p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
-    p->frame_strut.left = p->frame_strut.right = p->frame_strut.top = p->frame_strut.bottom = 0;
+
+    // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
+    // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
+    // p->frame_strut.bottom = 0;
+
     p->kde_system_tray_win_for = 0;
 
     p->properties = properties;
@@ -1888,6 +1905,12 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     if (p->mapping_state_dirty) update(XAWMState);
 
     if (role == Client && p->mapping_state != Withdrawn) {
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETWinInfo::setState (0x%lx, 0x%lx) (Client)\n",
+                state, mask);
+#endif // NETWMDEBUG
+
 	XEvent e;
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = net_wm_state;
@@ -1897,30 +1920,30 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	if ((mask & Modal) && (p->state & Modal) != (state & Modal)) {
+	if ((mask & Modal) && ((p->state & Modal) != (state & Modal))) {
 	    e.xclient.data.l[0] = (state & Modal) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_modal;
 	    e.xclient.data.l[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
 
-	if ((mask & Sticky) && (p->state & Sticky) != (state & Sticky)) {
+	if ((mask & Sticky) && ((p->state & Sticky) != (state & Sticky))) {
 	    e.xclient.data.l[0] = (state & Sticky) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_sticky;
 	    e.xclient.data.l[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
 
-	if ((mask & Max) && (p->state & Max) != (state & Max)) {
+	if ((mask & Max) && ((p->state & Max) != (state & Max))) {
 	    if ((state & Max) == Max) {
 		// client wants to be fully maximized
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = net_wm_state_max_horiz;
 
-		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	    } else if ((state & Max) == MaxVert) {
 		// client wants to be maximized vertically
 
@@ -1930,14 +1953,15 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 		    e.xclient.data.l[1] = net_wm_state_max_horiz;
 		    e.xclient.data.l[2] = 0l;
 
-		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
-		}
+		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+                }
 
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = 0l;
 
-		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		XSendEvent(p->display, p->root, False,
+                           netwm_sendevent_mask, &e);
 	    } else if ((state & Max) == MaxHoriz) {
 		// client wants to be maximized horizontally
 
@@ -1947,52 +1971,68 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 		    e.xclient.data.l[1] = net_wm_state_max_vert;
 		    e.xclient.data.l[2] = 0l;
 
-		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 		}
 
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_horiz;
 		e.xclient.data.l[2] = 0l;
 
-		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+		XSendEvent(p->display, p->root, False,
+                           netwm_sendevent_mask, &e);
 	    } else {
 		// client doesn't want to be maximized at all
 		e.xclient.data.l[0] = 0;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = net_wm_state_max_horiz;
 
-		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+#ifdef NETWMDEBUG
+                fprintf(stderr, "NETWinInfo::setState: clearing maximized\n");
+#endif // NETWMDEBUG
+
+		XSendEvent(p->display, p->root, False,
+                           netwm_sendevent_mask, &e);
 	    }
 	}
 
-	if ((mask & Shaded) && (p->state & Shaded) != (state & Shaded)) {
+	if ((mask & Shaded) && ((p->state & Shaded) != (state & Shaded))) {
 	    e.xclient.data.l[0] = (state & Shaded) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_shaded;
 	    e.xclient.data.l[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
 
-	if ((mask & SkipTaskbar) && (p->state & SkipTaskbar) != (state & SkipTaskbar)) {
+	if ((mask & SkipTaskbar) &&
+	    ((p->state & SkipTaskbar) != (state & SkipTaskbar))) {
 	    e.xclient.data.l[0] = (state & SkipTaskbar) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_skip_taskbar;
 	    e.xclient.data.l[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
 
-	if ((mask & StaysOnTop) && (p->state & StaysOnTop) != (state & StaysOnTop)) {
+        if ((mask & SkipPager) &&
+	    ((p->state & SkipPager) != (state & SkipPager))) {
+            e.xclient.data.l[0] = (state & SkipPager) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_skip_pager;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+	
+	if ((mask & StaysOnTop) && ((p->state & StaysOnTop) != (state & StaysOnTop))) {
 	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
 	    e.xclient.data.l[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
     } else {
 	p->state &= ~mask;
 	p->state |= state;
 
-	long data[7];
+	long data[8];
 	int count = 0;
 
 	// hints
@@ -2005,6 +2045,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
 	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
 	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
+	if (p->state & SkipPager) data[count++] = net_wm_state_skip_pager;
 
 #ifdef NETWMDEBUG
 	fprintf(stderr, "NETWinInfo::setState: setting state property (%d)\n", count);
@@ -2082,7 +2123,7 @@ void NETWinInfo::setName(const char *name) {
 
     if (p->name) delete [] p->name;
     p->name = nstrdup(name);
-    XChangeProperty(p->display, p->window, net_wm_name, XA_STRING, 8,
+    XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->name,
 		    strlen(p->name) + 1);
 }
@@ -2093,9 +2134,31 @@ void NETWinInfo::setVisibleName(const char *visibleName) {
 
     if (p->visible_name) delete [] p->visible_name;
     p->visible_name = nstrdup(visibleName);
-    XChangeProperty(p->display, p->window, net_wm_visible_name, XA_STRING, 8,
+    XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_name,
 		    strlen(p->visible_name) + 1);
+}
+
+
+void NETWinInfo::setIconName(const char *iconName) {
+    if (role != Client) return;
+
+    if (p->icon_name) delete [] p->icon_name;
+    p->icon_name = nstrdup(iconName);
+    XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
+		    PropModeReplace, (unsigned char *) p->icon_name,
+		    strlen(p->icon_name) + 1);
+}
+
+
+void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
+    if (role != WindowManager) return;
+
+    if (p->visible_icon_name) delete [] p->visible_icon_name;
+    p->visible_icon_name = nstrdup(visibleIconName);
+    XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
+		    PropModeReplace, (unsigned char *) p->visible_icon_name,
+		    strlen(p->visible_icon_name) + 1);
 }
 
 
@@ -2121,7 +2184,7 @@ void NETWinInfo::setDesktop(int desktop) {
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
-	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
     } else {
 	// otherwise we just set or remove the property directly
 	p->desktop = desktop;
@@ -2245,6 +2308,11 @@ unsigned long NETWinInfo::event(XEvent *event) {
 
     if (role == WindowManager && event->type == ClientMessage &&
 	event->xclient.format == 32) {
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETWinInfo::event: handling ClientMessage event\n");
+#endif // NETWMDEBUG
+
 	if (event->xclient.message_type == net_wm_state) {
 	    dirty = WMState;
 
@@ -2277,6 +2345,8 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		    mask |= Shaded;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_taskbar)
 		    mask |= SkipTaskbar;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_pager)
+		    mask |= SkipPager;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
 		    mask |= StaysOnTop;
 	    }
@@ -2434,7 +2504,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			    states[count],
 			    XGetAtomName(p->display, (Atom) states[count]));
 #endif
-
+		    
 		    if ((Atom) states[count] == net_wm_state_modal)
 			p->state |= Modal;
 		    else if ((Atom) states[count] == net_wm_state_sticky)
@@ -2447,6 +2517,8 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->state |= Shaded;
 		    else if ((Atom) states[count] == net_wm_state_skip_taskbar)
 			p->state |= SkipTaskbar;
+		    else if ((Atom) states[count] == net_wm_state_skip_pager)
+			p->state |= SkipPager;
 		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
 			p->state |= StaysOnTop;
 		}
@@ -2479,10 +2551,10 @@ void NETWinInfo::update(unsigned long dirty) {
 
     if (dirty & WMName) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_name, 0l,
-			       (long) BUFSIZE, False, XA_STRING, &type_ret,
+			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
 		if (p->name) delete [] p->name;
 		p->name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
@@ -2494,10 +2566,10 @@ void NETWinInfo::update(unsigned long dirty) {
 
     if (dirty & WMVisibleName) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_name, 0l,
-			       (long) BUFSIZE, False, XA_STRING, &type_ret,
+			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8 &&
+	    if (type_ret == UTF8_STRING && format_ret == 8 &&
 		nitems_ret > 0) {
 		if (p->visible_name) delete [] p->visible_name;
 		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
@@ -2508,6 +2580,36 @@ void NETWinInfo::update(unsigned long dirty) {
 	}
     }
 
+    if (dirty & WMIconName) {
+	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
+			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
+		if (p->icon_name) delete [] p->icon_name;
+		p->icon_name = nstrndup((const char *) data_ret, nitems_ret);
+	    }
+
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
+
+    if (dirty & WMVisibleIconName) {
+	if (XGetWindowProperty(p->display, p->window, net_wm_visible_icon_name, 0l,
+			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
+		if (p->visible_icon_name) delete [] p->visible_icon_name;
+		p->visible_icon_name = nstrndup((const char *) data_ret, nitems_ret);
+	    }
+
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
+    
     if (dirty & WMWindowType) {
 	p->type = Unknown;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
@@ -2675,6 +2777,16 @@ const char *NETWinInfo::name() const {
 
 const char *NETWinInfo::visibleName() const {
     return p->visible_name;
+}
+
+
+const char *NETWinInfo::iconName() const {
+    return p->icon_name;
+}
+
+
+const char *NETWinInfo::visibleIconName() const {
+    return p->visible_icon_name;
 }
 
 
