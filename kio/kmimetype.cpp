@@ -273,7 +273,7 @@ void KMimeType::init( KDesktopFile * config )
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QString::fromLatin1("X-KDE-AutoEmbed");
   if ( config->hasKey( XKDEAutoEmbed ) )
-    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ) ) );
+    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ), 0 ) );
 
 }
 
