@@ -36,7 +36,7 @@
 #define	TYPEOF	279
 #define	WITH	280
 #define	RESERVED	281
-#define	PRINT	282
+#define	DEBUG	282
 #define	ALERT	283
 #define	EQEQ	284
 #define	NE	285
@@ -240,7 +240,7 @@ static const short yyrline[] = { 0,
 static const char * const yytname[] = {   "$","error","$undefined.","LF","NULLTOKEN",
 "TRUETOKEN","FALSETOKEN","STRING","DECIMAL","INTEGER","BREAK","FOR","NEW","VAR",
 "CONTINUE","FUNCTION","RETURN","VOID","DELETE","IF","THIS","WHILE","ELSE","IN",
-"TYPEOF","WITH","RESERVED","PRINT","ALERT","EQEQ","NE","LE","GE","OR","AND",
+"TYPEOF","WITH","RESERVED","DEBUG","ALERT","EQEQ","NE","LE","GE","OR","AND",
 "PLUSPLUS","MINUSMINUS","LSHIFT","RSHIFT","URSHIFT","PLUSEQUAL","MINUSEQUAL",
 "MULTEQUAL","DIVEQUAL","LSHIFTEQUAL","RSHIFTEQUAL","URSHIFTEQUAL","ANDEQUAL",
 "MODEQUAL","XOREQUAL","OREQUAL","DOUBLE","IDENT","'('","')'","'['","']'","'.'",
@@ -1270,7 +1270,7 @@ case 86:
     break;}
 case 97:
 #line 287 "grammar.y"
-{ yyval.stat = new PrintNode(yyvsp[-1].node); ;
+{ yyval.stat = new DebugNode(yyvsp[-1].node); ;
     break;}
 case 98:
 #line 288 "grammar.y"

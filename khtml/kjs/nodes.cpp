@@ -857,7 +857,7 @@ void SourceElementNode::processFuncDecl()
 }
 
 // for debugging purposes
-KJSO *PrintNode::evaluate()
+KJSO *DebugNode::evaluate()
 {
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();

@@ -42,7 +42,7 @@ typedef union {
 #define	TYPEOF	279
 #define	WITH	280
 #define	RESERVED	281
-#define	PRINT	282
+#define	DEBUG	282
 #define	ALERT	283
 #define	EQEQ	284
 #define	NE	285

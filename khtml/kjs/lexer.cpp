@@ -352,9 +352,10 @@ int KJSLexer::lex()
     kjsyylval.dval = strtod(buffer8, 0L); return DOUBLE;
   case Bad:
     fprintf(stderr, "yylex: ERROR.\n");
-    return Bad;
+    return -1;
   default:
     assert(!"unhandled numeration value in switch");
+    return -1;
   }
 }
 
@@ -644,7 +645,7 @@ struct KJSLexer::keyword KJSLexer::keytable[] = {
   { "import",    RESERVED },
   { "try",       RESERVED },
   // extension for debugging purposes
-  { "print",     PRINT },
+  { "debug",     DEBUG },
   { "alert",     ALERT },
   { 0,             0      }
 };

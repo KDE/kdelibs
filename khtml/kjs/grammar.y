@@ -52,7 +52,7 @@ using namespace KJS;
 %token WITH RESERVED
 
 /* for debugging purposes */
-%token PRINT ALERT
+%token DEBUG ALERT
 
 /* punctuators */
 %token EQEQ NE                     /* == and != */
@@ -284,7 +284,7 @@ Statement:
   | BreakStatement
   | ReturnStatement
   | WithStatement
-  | PRINT '(' Expr ')'             { $$ = new PrintNode($3); }
+  | DEBUG '(' Expr ')'             { $$ = new DebugNode($3); }
   | ALERT '(' Expr ')'             { $$ = new AlertNode($3); }
 ;
 

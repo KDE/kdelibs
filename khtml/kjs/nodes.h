@@ -525,9 +525,9 @@ private:
 };
 
 // for debugging
-class PrintNode : public StatementNode {
+class DebugNode : public StatementNode {
 public:
-  PrintNode(Node *e) : expr(e) { }
+  DebugNode(Node *e) : expr(e) { }
   KJSO *evaluate();
 private:
   Node *expr;
