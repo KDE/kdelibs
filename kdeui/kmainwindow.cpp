@@ -423,7 +423,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
 {
-    kdDebug(200) << "KMainWindow::saveMainWindowSettings\n";
+    kdDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
     QString entry;
     QStrList entryList;
 
@@ -573,7 +573,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
 void KMainWindow::finalizeGUI( bool force )
 {
-    kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
+    //kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
     // The whole reason for this is that moveToolBar relies on the indexes
     // of the other toolbars, so in theory it should be called only once per
     // toolbar, but in increasing order of indexes.
@@ -590,7 +590,7 @@ void KMainWindow::finalizeGUI( bool force )
 
 void KMainWindow::setSettingsDirty()
 {
-    kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
+    //kdDebug(200) << "KMainWindow::setSettingsDirty" << endl;
     d->settingsDirty = true;
 }
 
