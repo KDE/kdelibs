@@ -17,3 +17,4 @@ libkmid_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 0:95  -no-undefined
 libkmid_la_LIBADD = $(LIBASOUND) ../kdecore/libkdecore.la
 
 DOXYGEN_REFERENCES = kdecore
+include ../Doxyfile.am

@@ -35,3 +35,4 @@ libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
 METASOURCES = AUTO
 
 DOXYGEN_REFERENCES = kdecore
+include ../Doxyfile.am

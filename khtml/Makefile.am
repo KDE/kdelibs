@@ -100,3 +100,4 @@ test_regression_LDADD = libkhtml.la ecma/kjs_html.la $(top_builddir)/kjs/libkjs.
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
 DOXYGEN_EXCLUDE =  test*.*
+include ../Doxyfile.am

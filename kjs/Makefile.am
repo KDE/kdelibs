@@ -76,3 +76,4 @@ testkjs_SOURCES = testkjs.cpp
 testkjs_LDADD = libkjs.la
 
 DOXYGEN_REFERENCES = kdecore
+include ../Doxyfile.am

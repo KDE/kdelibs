@@ -62,3 +62,4 @@ autostart_DATA = kab2kabc.desktop
 autostartdir = $(prefix)/share/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
+include ../Doxyfile.am

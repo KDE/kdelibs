@@ -37,3 +37,4 @@ kspelltest_LDADD = libkspell.la
 
 DOXYGEN_REFERENCES = kdecore kdefx kdeui
 DOXYGEN_EXCLUDE = *test.*
+include ../Doxyfile.am

@@ -130,3 +130,5 @@ DISTCLEANFILES = kde-config.cpp
 DOXYGEN_REFERENCES = dcop kdeui
 DOXYGEN_EXCLUDE = malloc/*
 
+include ../Doxyfile.am
+

@@ -70,3 +70,4 @@ dummy.cpp:
 
 DOXYGEN_REFERENCES = kdecore
 DOXYGEN_EXCLUDE = KDE-ICE/*
+include ../Doxyfile.am
