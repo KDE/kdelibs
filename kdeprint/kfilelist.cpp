@@ -232,7 +232,7 @@ void KFileList::slotUp()
 	selection(l);
 	if (l.count() == 1 && l.first()->itemAbove())
 	{
-		QListViewItem	*item(l.first()), *clone(0);
+		QListViewItem	*item(l.first()), *clone;
 		clone = new QListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;
@@ -247,7 +247,7 @@ void KFileList::slotDown()
 	selection(l);
 	if (l.count() == 1 && l.first()->itemBelow())
 	{
-		QListViewItem	*item(l.first()), *clone(0);
+		QListViewItem	*item(l.first()), *clone;
 		clone = new QListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;
