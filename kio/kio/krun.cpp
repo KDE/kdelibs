@@ -764,6 +764,17 @@ void KRun::init()
     m_timer.start( 0, true );
     return;
   }
+  if ( !kapp->authorizeURLAction( "open", KURL(), m_strURL))
+  {
+    QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyURL());
+    d->m_showingError = true;
+    KMessageBoxWrapper::error( 0L, msg );
+    d->m_showingError = false;
+    m_bFault = true;
+    m_bFinished = true;
+    m_timer.start( 0, true );
+    return;
+  }
 
   if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
 
