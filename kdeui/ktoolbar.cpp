@@ -1515,15 +1515,15 @@ int KToolBar::insertLineSeparator( int index )
   KSeparator *separ = new KSeparator(QFrame::VLine, this);
 
   KToolBarItem *item = new KToolBarItem(separ, KToolBarItem::Frame, -1, true);
-  item->resize( 5, d->m_approxItemSize - 2 );
 
   if ( index == -1 )
     d->m_items->append( item );
   else
     d->m_items->insert( index, item );
 
-  if (d->m_position == Flat)
-    item->hide();
+  item->resize( 5, 20 );
+  if (d->m_position != Flat)
+    item->show();
   updateRects(true);
   return d->m_items->at();
 }
