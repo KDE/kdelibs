@@ -157,7 +157,7 @@ LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
 AC_SUBST(LIB_KFORMULA)
 LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
 AC_SUBST(LIB_KDEUTIL)
-LIB_KIO='$(top_builddir)/kio/libkio.la $(LIB_KFILE)'
+LIB_KIO='$(top_builddir)/kio/libkio.la'
 AC_SUBST(LIB_KIO)
 LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
 AC_SUBST(LIB_KFILE)
