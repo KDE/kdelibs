@@ -77,7 +77,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit dataReq();
 	break;
     case MSG_FINISHED:
-	kdDebug(7007) << "Finished [this = " << this << "]" << endl;
+	//kdDebug(7007) << "Finished [this = " << this << "]" << endl;
 	emit finished();
 	break;
     case MSG_STAT_ENTRY:

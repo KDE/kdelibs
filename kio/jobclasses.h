@@ -805,14 +805,6 @@ namespace KIO {
         bool m_bOverwriteAll;
         int m_conflictError;
 
-        /**
-         if showProgressInfo is true, we store Observer::self() here,
-         so that we can call the functions directly instead of using signals
-
-         calling a function via a signal takes approx. 65 times the time
-         compared to calling it directly ( at least on my machine) aleXXX
-         */
-        Observer *m_observer;
         QTimer *m_reportTimer;
         //these both are used for progress dialog reporting
         KURL m_currentSrcURL;
@@ -868,14 +860,6 @@ namespace KIO {
         KURL::List m_srcList; // is emptied while deleting
         KURL::List m_srcListCopy;
         bool m_shred;
-        /**
-         if showProgressInfo is true, we store Observer::self() here,
-         so that we can call the functions directly instead of using signals
-
-         calling a function via a signal takes approx. 65 times the time
-         compared to calling it directly ( at least on my machine) aleXXX
-         */
-        Observer *m_observer;
         QTimer *m_reportTimer;
     };
 

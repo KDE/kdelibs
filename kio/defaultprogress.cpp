@@ -145,6 +145,7 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
   }
 
   setCaption( tmp );
+  d->noCaptionYet = false;
 }
 
 
