@@ -235,7 +235,6 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         bool part_exists = ( ::stat( _dest_part.data(), &buff_part ) != -1 );
         if ( part_exists && !_resume )
         {
-             /*
              kdDebug(7101) << "Deleting partial file " << dest_part << endl;
              if ( ! remove( _dest_part.data() ) ) {
                  part_exists = false;
@@ -243,12 +242,14 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
                  error( KIO::ERR_CANNOT_DELETE_PARTIAL, dest_part );
                  return;
              }
-             */
              // The whole point in .part files is being able to resume... (David)
              // Note that resuming a normal file needs the bool passed to this method,
              // because the user has to choose it instead of overwrite, which is not
              // implemented currently (RenameDlg's M_RESUME flag never set).
-             _resume = true;
+             //_resume = true;
+             // Problem is: we need to tell the job who does the 'put' to skip
+             // the beginning.... That's probably what canResume is about, but it lacks
+             // the size !
         }
     }
     else
