@@ -32,8 +32,8 @@
 
 //
 // 2000-03-25 Espen Sand
-// Added a fix (using sizeHint().height() instead of height()) to reduce the 
-// height of the status bar to something sensible. If this needs to be 
+// Added a fix (using sizeHint().height() instead of height()) to reduce the
+// height of the status bar to something sensible. If this needs to be
 // reverted for some reason, then search for "/*ES*/"
 //
 
@@ -48,7 +48,7 @@ KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 	maxWraps = (unsigned) -1;	// set to maximum value
 }
 
-void 
+void
 KTMLayout::setGeometry(const QRect& rect)
 {
 	/* The main item is required so it makes no sense to do a layout without
@@ -71,6 +71,9 @@ KTMLayout::setGeometry(const QRect& rect)
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver( config, grpKDE );
     bool mac_mode = config->readBoolEntry( keyMac, false );
+    mac_mode = FALSE; // disabled until somebody implements it
+    // correctly. If you have questions about thxis, write to
+    // ettrich@kde.org, subject "macMode".
 
 	/* position top menu bar */
 	if (topMenuBar && !mac_mode)
@@ -155,7 +158,7 @@ KTMLayout::setGeometry(const QRect& rect)
 	}
 }
 
-QSize 
+QSize
 KTMLayout::sizeHint() const
 {
 	/* Return the current size if we are not fully set up yet to avoid
@@ -259,14 +262,14 @@ KTMLayout::minimumSize() const
 	return (QSize(mainW, currMargin + mainH));
 }
 
-void 
+void
 KTMLayout::addItem(QLayoutItem*)
 {
 	/* we do not support sub layouts */
 }
 
 QLayoutIterator KTMLayout::iterator()
-{       
+{
 	return QLayoutIterator(new KTMLayoutIterator(&list));
 }
 
