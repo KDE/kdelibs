@@ -1,6 +1,7 @@
 KDE Image I/O library
 ---------------------
-This library allows applications that use the Qt library to read and
+This library allows applications that use the Qt library
+(i.e. QImageIO, QImage, QPixmap and friends) to read and
 write images in extra formats. Current formats include:
 
 JPEG	<read>
@@ -10,13 +11,12 @@ EPS	<read> <write>
 NETPBM	<incomplete>
 PNG	<read> <write, only with newer libraries>
 TIFF	<read>
-KRL	<read>
 TGA	<read> <write>
 PCX <read> <write>
 
-To use these formats, you must 
+To use these formats, you only need to:
 
-1. link the application with the libkimgio library
+1. link the application with the libkio library
 2. Include the <kimageio.h> header
 3. call KImageIO::registerFormats() once, somewhere in your code
    before you load an image.
