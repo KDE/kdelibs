@@ -1,6 +1,10 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.8  1997/09/18 12:16:04  kulow
+ * corrected some header dependencies. Removed most of them in drag.h and put
+ * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
+ *
  * Revision 1.7  1997/07/25 19:46:40  kalle
  * SGI changes
  *
@@ -53,6 +57,8 @@
  * formatting
 
 #include "kpixmap.h"
+
+#include<X11/X.h>
  *
 // From Offix
 //@Man: DND Types
