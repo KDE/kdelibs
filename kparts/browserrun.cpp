@@ -299,7 +299,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     // Text used for the open button
     QString openText = (offer && !offer->name().isEmpty())
                        ? i18n("&Open with '%1'").arg(offer->name())
-                       : i18n("&Open with...");
+                       : i18n("&Open With...");
 
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
