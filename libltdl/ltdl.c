@@ -508,13 +508,7 @@ rpl_realloc (ptr, size)
   else
     {
       /* Allocate a new block, copy and free the old block.  */
-      lt_ptr mem = lt_dlmalloc (size);
-
-      if (mem)
-	{
-	  memcpy (mem, ptr, size);
-	  lt_dlfree (ptr);
-	}
+      lt_ptr mem = (lt_ptr) realloc (ptr, size);
 
       /* Note that the contents of PTR are not damaged if there is
 	 insufficient memory to realloc.  */
