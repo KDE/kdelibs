@@ -9,7 +9,7 @@ Type=QString
 [PropertyDef::X-KDE-BrowserView-AllowAsDefault]
 Type=bool
 
-[PropertyDef::X-KDE-BrowserView-Builtin]
+[PropertyDef::X-KDE-BrowserView-HideFromMenus]
 Type=bool
 
 [PropertyDef::X-KDE-BrowserView-PassiveMode]
