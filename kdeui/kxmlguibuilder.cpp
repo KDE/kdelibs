@@ -314,8 +314,11 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
                return 0;
          }
       }
-      
-      return menu->insertSeparator( index );
+      // Don't insert a separator at the top of the menu
+      if(count == 0)
+        return 0;
+      else
+        return menu->insertSeparator( index );
     }
     else if ( parent->inherits( "QMenuBar" ) )
        return static_cast<QMenuBar *>(parent)->insertSeparator( index );
