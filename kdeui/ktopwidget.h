@@ -14,6 +14,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.29  1998/06/19 14:16:36  radej
+ // sven: Docs.
+ //
  // Revision 1.28  1998/06/12 19:39:18  ettrich
  // Matthias: Something I noticed with KLyX
  //
@@ -64,7 +67,7 @@
   * your main view. You set that main view only once.
   *
   * You can add as many toolbar(s) as you like. There can be only one Menubar
-  * and only oneStatusBar.
+  * and only one StatusBar.
   *
   * YOU MUST DELETE TOOLBARS AND MENUBAR ON EXIT (in destructor);
   * If you have multiple windows then create window on the heap and
@@ -88,6 +91,16 @@
   * There is also a macro RESTORE which can restore all your windows
   * on next login.
   *
+  * There is also an easyer to use top level widget, KTMainWindow by
+  * Matthiass Ettrich.
+  *
+  * KTopLevelWidget might be replaced/extended in the future to
+  * KMainWindow which will be a child of QMainWindow. Anyway,
+  * the current interface (as well as KTMainWindow) will be
+  * supported for compatibility reasons. It is also probable that
+  * both widgets will merge.
+  *
+  * @see KTMainWindow
   * @see KApplication
   * @short KDE top level widget
   * @author Stephan Kullow (coolo@kde.org) Maintained by Sven Radej (sven@lisa.exp.univie.ac.at)
