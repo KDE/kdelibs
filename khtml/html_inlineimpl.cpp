@@ -108,7 +108,7 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 	}
 	child = child->nextSibling();
     }
-    //printf("Anchor::mouseEvent inside=%d\n", inside);
+    printf("Anchor::mouseEvent inside=%d\n", inside);
 
     if(inside)
     {

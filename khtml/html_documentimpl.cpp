@@ -292,9 +292,9 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
 				  int, int, DOMString &url)
 {
     if(body())
-      {
+    {
 	return bodyElement->mouseEvent(_x, _y, button, type, 0, 0, url);
-      }
+    }
     return false;
 }
 

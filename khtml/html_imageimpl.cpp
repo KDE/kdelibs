@@ -91,17 +91,16 @@ void HTMLImageElementImpl::setIsMap( bool b)
 bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url)
 {
-    _x-=_tx;
-    _y-=_ty;
+    printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
     if (ismap)
     {
     	cout << "ismap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap)) )
-    	    return map->mapMouseEvent(_x-getXPos(), _y-getYPos()+ascent,
+    	    return map->mapMouseEvent(_x-getXPos()-_tx, _y-getYPos()-_ty+ascent,
 	    	getWidth(), getHeight(), button, type, url);
     }
-    return false;
+    return HTMLPositionedElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url);
 }
 
 // other stuff...
