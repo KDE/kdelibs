@@ -204,6 +204,11 @@ QString ResourceFile::identifier() const
     return fileName();
 }
 
+QString ResourceFile::typeInfo() const
+{
+    return mFormat->typeInfo();
+}
+
 void ResourceFile::removeAddressee( const Addressee& addr )
 {
     mFormat->removeAddressee( addr );

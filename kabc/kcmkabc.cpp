@@ -30,6 +30,7 @@
 #include <klocale.h>
 #include <klistbox.h>
 #include <ksimpleconfig.h>
+#include <kstandarddirs.h>
 #include <kurlrequester.h>
 
 #include "kcmkabc.h"
@@ -75,12 +76,12 @@ ConfigPageImpl::ConfigPageImpl( QWidget *parent, const char *name )
 	    typeCombo->insertItem( info->name );
     }
 
-    config = new KConfig( "kabcrc" );
-
     connect( addButton, SIGNAL(clicked()), this, SLOT(slotAdd()) );
     connect( removeButton, SIGNAL(clicked()), this, SLOT(slotRemove()) );
     connect( editButton, SIGNAL(clicked()), this, SLOT(slotEdit()) );
     connect( listBox, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+
+    config = 0;
 
     load();
 }
@@ -89,12 +90,19 @@ void ConfigPageImpl::load()
 {
     QStringList keys;
 
+    delete config;
+    config = new KConfig( "kabcrc" );
+
     config->setGroup( "General" );
     keys = config->readListEntry( "ResourceKeys" );
 
+    listBox->clear();
+
     for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
 	config->setGroup( "Resource_" + (*it) );
-	ConfigBoxItem *item = new ConfigBoxItem( config->readEntry( "ResourceName" ) );
+	ConfigBoxItem *item = new ConfigBoxItem( config->readEntry( "ResourceName" ) +
+	" (" + config->readEntry( "ResourceType" ) + ")" );
+
 	item->key = (*it);
 	item->type = config->readEntry( "ResourceType" );
 
@@ -123,6 +131,38 @@ void ConfigPageImpl::save()
     emit changed( false );
 }
 
+void ConfigPageImpl::defaults()
+{
+    QStringList groups = config->groupList();
+    QStringList::Iterator it;
+    for ( it = groups.begin(); it != groups.end(); ++it )
+	config->deleteGroup( (*it) );
+    
+    QString key = KApplication::randomString( 10 );
+    QString type = "file";
+
+    groups.clear();
+    groups << key;
+
+    config->setGroup( "General" );
+    config->writeEntry( "ResourceKeys", groups );
+    
+    config->setGroup( "Resource_" + key );
+    config->writeEntry( "ResourceName", "Default" );
+    config->writeEntry( "ResourceType", type );
+    config->writeEntry( "ResourceIsReadOnly", false );
+    config->writeEntry( "ResourceIsFast", true );
+    config->writeEntry( "FileFormat", 0 );
+    config->writeEntry( "FileName", locateLocal( "data", "kabc/std.vcf" ) );
+
+    listBox->clear();
+
+    ConfigBoxItem *item = new ConfigBoxItem( "Default (" + type + ")" );
+    item->key = key;
+    item->type = type;
+    listBox->insertItem( item );
+}
+
 void ConfigPageImpl::slotAdd()
 {
     QString key = KApplication::randomString( 10 );
@@ -141,7 +181,7 @@ void ConfigPageImpl::slotAdd()
 	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
 	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-	ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() );
+	ConfigBoxItem *item = new ConfigBoxItem( dlg.resourceName->text() + " (" + type + ")" );
 	item->key = key;
 	item->type = type;
 	listBox->insertItem( item );
@@ -186,7 +226,7 @@ void ConfigPageImpl::slotEdit()
 	config->writeEntry( "ResourceIsReadOnly", dlg.resourceIsReadOnly->isChecked() );
 	config->writeEntry( "ResourceIsFast", dlg.resourceIsFast->isChecked() );
 
-	configItem->setText( dlg.resourceName->text() );
+	configItem->setText( dlg.resourceName->text() + " (" + type + ")" );
 	emit changed( true );
     }
 }
@@ -197,10 +237,6 @@ void ConfigPageImpl::slotSelectionChanged()
 
     removeButton->setEnabled( state );
     editButton->setEnabled( state );
-}
-
-void ConfigPageImpl::slotStandard()
-{
 }
 
 KCMkabc::KCMkabc( QWidget *parent, const char *name )
@@ -220,6 +256,11 @@ void KCMkabc::load()
 void KCMkabc::save()
 {
     mConfigPage->save();
+}
+
+void KCMkabc::defaults()
+{
+    mConfigPage->defaults();
 }
 
 extern "C"

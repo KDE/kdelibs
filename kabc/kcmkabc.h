@@ -42,12 +42,12 @@ public:
 
     void load();
     void save();
+    void defaults();
 
 public slots:
     void slotAdd();
     void slotRemove();
     void slotEdit();
-    void slotStandard();
     void slotSelectionChanged();
 
 signals:
@@ -66,6 +66,7 @@ public:
 
     void load();
     void save();
+    void defaults();
 
 private:
     ConfigPageImpl *mConfigPage;

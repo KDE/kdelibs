@@ -51,6 +51,11 @@ class Format {
       Remove a addressee from file.
     */
     virtual void removeAddressee( const Addressee& addr ) = 0;
+
+    /**
+      String representation of this format.
+    */
+    virtual QString typeInfo() const = 0;
 };
 
 }

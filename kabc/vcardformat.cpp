@@ -18,8 +18,9 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "vcardformatimpl.h"
+#include <klocale.h>
 
+#include "vcardformatimpl.h"
 #include "vcardformat.h"
 
 using namespace KABC;
@@ -47,4 +48,9 @@ bool VCardFormat::save( AddressBook *addressBook, Resource *resource, const QStr
 void VCardFormat::removeAddressee( const Addressee& addr )
 {
   return mImpl->removeAddressee( addr );
+}
+
+QString VCardFormat::typeInfo() const
+{
+  return i18n( "VCard" );
 }

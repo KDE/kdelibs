@@ -48,6 +48,7 @@ public:
     bool save( Ticket * );
 
     QString identifier() const;
+    QString typeInfo() const;
 
 private:
     void init(const QString &user, const QString &password,

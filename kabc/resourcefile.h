@@ -42,6 +42,8 @@ class ResourceFile : public QObject, public Resource {
 
     virtual QString identifier() const;
 
+    QString typeInfo() const;
+
     /**
       Remove a addressee from its source.
       This method is maily called by KABC::AddressBook.

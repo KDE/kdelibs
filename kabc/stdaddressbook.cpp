@@ -42,6 +42,9 @@ AddressBook *StdAddressBook::self()
     if ( !mSelf ) {
 	mSelf = new StdAddressBook;
     }
+
+    kdDebug() << "self: " << mSelf->identifier() << endl;
+
     return mSelf;
 }
 
@@ -72,11 +75,9 @@ StdAddressBook::StdAddressBook()
 	resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
 	resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
 	resource->setName( config.readEntry( "ResourceName" ) );
-    }
 
-    for ( uint i = 0; i < mResources.count(); ++i ) {
-	Resource *resource = mResources.at( i );
-	mIdentifier += ( i == 0 ? "" : ":" ) + resource->identifier();
+	if ( !addResource( resource ) )
+	    delete resource;
     }
 
     load();
@@ -85,9 +86,4 @@ StdAddressBook::StdAddressBook()
 StdAddressBook::~StdAddressBook()
 {
     save();
-}
-
-QString StdAddressBook::identifier()
-{
-    return mIdentifier;
 }

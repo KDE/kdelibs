@@ -52,6 +52,7 @@ public:
     void removeAddressee( const Addressee& addr );
 
     QString identifier() const;
+    QString typeInfo() const;
 
 private:
     QString mUser;

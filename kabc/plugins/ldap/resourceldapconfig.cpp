@@ -25,6 +25,7 @@
 
 #include <klocale.h>
 
+#include "resource.h"
 #include "resourceldapconfig.h"
 
 ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
@@ -74,7 +75,7 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
 void ResourceLDAPConfig::loadSettings( KConfig *config )
 {
     user->setText( config->readEntry( "LdapUser" ) );
-    password->setText( config->readEntry( "LdapPassword" ) );
+    password->setText( KABC::Resource::cryptStr( config->readEntry( "LdapPassword" ) ) );
     host->setText( config->readEntry( "LdapHost" ) );
     port->setText( config->readEntry( "LdapPort" ) );
     dn->setText( config->readEntry( "LdapDn" ) );
@@ -84,7 +85,7 @@ void ResourceLDAPConfig::loadSettings( KConfig *config )
 void ResourceLDAPConfig::saveSettings( KConfig *config )
 {
     config->writeEntry( "LdapUser", user->text() );
-    config->writeEntry( "LdapPassword", password->text() );
+    config->writeEntry( "LdapPassword", KABC::Resource::cryptStr( password->text() ) );
     config->writeEntry( "LdapHost", host->text() );
     config->writeEntry( "LdapPort", port->text() );
     config->writeEntry( "LdapDn", dn->text() );

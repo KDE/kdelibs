@@ -48,15 +48,12 @@ class StdAddressBook : public AddressBook
 
     static QString fileName();
 
-    QString identifier();
-    
   protected:
     StdAddressBook();
     ~StdAddressBook();
     
   private:
     static AddressBook *mSelf;
-    QString mIdentifier;
 };
 
 }

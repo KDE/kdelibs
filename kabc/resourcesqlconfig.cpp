@@ -25,6 +25,7 @@
 
 #include <klocale.h>
 
+#include "resource.h"
 #include "resourcesqlconfig.h"
 
 ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
@@ -63,7 +64,7 @@ ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
 void ResourceSqlConfig::loadSettings( KConfig *config )
 {
     user->setText( config->readEntry( "SqlUser" ) );
-    password->setText( config->readEntry( "SqlPassword" ) );
+    password->setText( KABC::Resource::cryptStr( config->readEntry( "SqlPassword" ) ) );
     dbName->setText( config->readEntry( "SqlName" ) );
     host->setText( config->readEntry( "SqlHost" ) );
 }
@@ -71,7 +72,7 @@ void ResourceSqlConfig::loadSettings( KConfig *config )
 void ResourceSqlConfig::saveSettings( KConfig *config )
 {
     config->writeEntry( "SqlUser", user->text() );
-    config->writeEntry( "SqlPassword", password->text() );
+    config->writeEntry( "SqlPassword", KABC::Resource::cryptStr( password->text() ) );
     config->writeEntry( "SqlName", dbName->text() );
     config->writeEntry( "SqlHost", host->text() );
 }

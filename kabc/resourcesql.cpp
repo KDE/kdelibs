@@ -25,6 +25,7 @@
 
 #include <kdebug.h>
 #include <klineedit.h>
+#include <klocale.h>
 
 #include "resourcesql.h"
 #include "resourcesqlconfig.h"
@@ -50,7 +51,7 @@ ResourceSql::ResourceSql( AddressBook *ab, const KConfig *config ) :
     QString user, password, db, host;
 
     user = config->readEntry( "SqlUser" );
-    password = config->readEntry( "SqlPassword " );
+    password = cryptStr( config->readEntry( "SqlPassword " ) );
     db = config->readEntry( "SqlName" );
     host = config->readEntry( "SqlHost" );
 
@@ -341,4 +342,9 @@ bool ResourceSql::save( Ticket * )
 QString ResourceSql::identifier() const
 {
     return mHost + "_" + mDbName;
+}
+
+QString ResourceSql::typeInfo() const
+{
+    return i18n( "sql" );
 }

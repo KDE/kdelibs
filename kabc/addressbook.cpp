@@ -186,11 +186,13 @@ bool AddressBook::ConstIterator::operator!=( const ConstIterator &it )
 AddressBook::AddressBook()
 {
   d = new AddressBookData;
+  mResources.setAutoDelete( true );
 }
 
 AddressBook::~AddressBook()
 {
   delete d;
+  mResources.clear();
 }
 
 bool AddressBook::load()
@@ -389,7 +391,14 @@ void AddressBook::dump() const
 
 QString AddressBook::identifier()
 {
-  return "NoIdentifier";
+    QString identifier;
+
+    for ( uint i = 0; i < mResources.count(); ++i ) {
+	Resource *resource = mResources.at( i );
+	identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
+    }
+
+    return identifier;
 }
 
 Field::List AddressBook::fields( int category )
@@ -448,12 +457,11 @@ QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
 
 bool AddressBook::addResource( Resource *resource )
 {
-    kdDebug() << "AddressBook::addResource()" << endl;
-
   if ( !resource->open() ) {
-    kdDebug() << "AddressBook::addResource(): not added" << endl;
-      return false;
-    }
+    kdDebug(5700) << "AddressBook::addResource(): can't add resource" << endl;
+    return false;
+  }
+
   mResources.append( resource );
   return true;
 }

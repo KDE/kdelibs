@@ -22,6 +22,7 @@
 
 #include <kdebug.h>
 #include <klineedit.h>
+#include <klocale.h>
 
 #include <stdlib.h>
 
@@ -51,7 +52,7 @@ ResourceLDAP::ResourceLDAP( AddressBook *ab, const KConfig *config ) :
     mLdap = 0;
 
     mUser = config->readEntry( "LdapUser" );
-    mPassword = config->readEntry( "LdapPassword" );
+    mPassword = cryptStr( config->readEntry( "LdapPassword" ) );
     mDn = config->readEntry( "LdapDn" );
     mHost = config->readEntry( "LdapHost" );
     mPort = config->readEntry( "LdapPort" );
@@ -128,18 +129,15 @@ bool ResourceLDAP::load()
     char *name;
     char **values;
 
-    char *LdapSearchAttr[ 6 ] = {
+    const char *LdapSearchAttr[ 5 ] = {
 	"uid",
 	"cn",
         "mail",
-	"telephoneNumber",
-        "title",
+	"phoneNumber",
 	 0 };
 
-    open();
-
     ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, "objectClass=person",
-	    LdapSearchAttr, 0, &res );
+	    (char **)LdapSearchAttr, 0, &res );
 
     for ( msg = ldap_first_entry( mLdap, res ); msg; msg = ldap_next_entry( mLdap, msg ) ) {
 	Addressee addr;
@@ -147,27 +145,23 @@ bool ResourceLDAP::load()
 	for ( name = ldap_first_attribute( mLdap, msg, &track ); name; name = ldap_next_attribute( mLdap, msg, track ) ) {
 	    values = ldap_get_values( mLdap, msg, name );
 	    for ( int i = 0; i < ldap_count_values( values ); ++i ) {
-		if ( qstrcmp( name, "uid" ) == 0 ) {
+		if ( qstricmp( name, "uid" ) == 0 ) {
 		    addr.setUid( values[ i ] );
-		    break;
+		    continue;
 		}
-		if ( qstrcmp( name, "cn" ) == 0 ) {
+		if ( qstricmp( name, "cn" ) == 0 ) {
 		    addr.setNameFromString( values[ i ] );
-		    break;
+		    continue;
 		}
-		if ( qstrcmp( name, "mail" ) == 0 ) {
+		if ( qstricmp( name, "mail" ) == 0 ) {
 		    addr.insertEmail( values[ i ] );
-		    break;
+		    continue;
 		}
-		if ( qstrcmp( name, "phoneNumber" ) == 0 ) {
+		if ( qstricmp( name, "phoneNumber" ) == 0 ) {
 		    PhoneNumber phone;
 		    phone.setNumber( values[ i ] );
 		    addr.insertPhoneNumber( phone );
-		    break;
-		}
-		if ( qstrcmp( name, "title" ) == 0 ) {
-		    addr.setTitle( values[ i ] );
-		    break;
+		    break; // read only the home number
 		}
 	    }
 	    ldap_value_free( values );
@@ -193,7 +187,6 @@ bool ResourceLDAP::save( Ticket * )
 	    addModOp( &mods, "objectClass", "person" );
 	    addModOp( &mods, "uid", (*it).uid() );
 	    addModOp( &mods, "cn", (*it).formattedName() );
-	    addModOp( &mods, "title", (*it).title() );
 
 
 	    QStringList emails = (*it).emails();
@@ -202,6 +195,9 @@ bool ResourceLDAP::save( Ticket * )
 		QString email = (*mailIt);
 		addModOp( &mods, "mail", email );
 	    }
+
+	    PhoneNumber number = (*it).phoneNumber( PhoneNumber::Home );
+	    addModOp( &mods, "phoneNumber", number.number() );
 
 	    QString dn = "uid=" + (*it).uid() + "," + mDn;
 
@@ -243,6 +239,11 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
 QString ResourceLDAP::identifier() const
 {
     return mHost + "_" + mPort + "_" + mDn + "_" + mFilter;
+}
+
+QString ResourceLDAP::typeInfo() const
+{
+    return i18n( "LDAP" );
 }
 
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )

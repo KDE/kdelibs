@@ -20,6 +20,7 @@
 
 #include <qfile.h>
 
+#include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -124,4 +125,9 @@ bool SimpleFormat::save( AddressBook *addressBook, Resource *resource, const QSt
 void SimpleFormat::removeAddressee( const Addressee& )
 {
     // FIXME: Implement when splitting simple file into single files
+}
+
+QString SimpleFormat::typeInfo() const
+{
+    return i18n( "simple" );
 }

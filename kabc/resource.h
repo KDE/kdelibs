@@ -53,7 +53,12 @@ class Resource {
     virtual bool fastResource();
 
     virtual void setName( const QString& name );
-    virtual QString name();
+    virtual QString name() const;
+
+    virtual QString typeInfo() const;
+    virtual QString paramInfo() const;
+
+    static QString cryptStr( const QString & );
 
   protected:
     Ticket *createTicket( Resource * );

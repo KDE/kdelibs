@@ -22,6 +22,7 @@
 #include <qfile.h>
 
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "addressbook.h"
 #include "binaryformat.h"
@@ -117,4 +118,9 @@ bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QSt
 void BinaryFormat::removeAddressee( const Addressee& )
 {
     // FIXME: implement when splitting binary file into single files
+}
+
+QString BinaryFormat::typeInfo() const
+{
+    return i18n( "binary" );
 }
