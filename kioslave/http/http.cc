@@ -920,6 +920,9 @@ void HTTPProtocol::mkdir( const KURL& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for MKDIR
+  httpCloseConnection();
+
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -967,6 +970,9 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for PUT
+  httpCloseConnection();
+
   retrieveHeader( true );
 }
 
@@ -989,6 +995,9 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for COPY
+  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1019,6 +1028,9 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for MOVE
+  httpCloseConnection();
+
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -1040,6 +1052,9 @@ void HTTPProtocol::del( const KURL& url, bool )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for DELETE
+  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1064,6 +1079,9 @@ void HTTPProtocol::post( const KURL& url )
   m_request.query = url.query();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for POST
+  httpCloseConnection();
 
   retrieveContent();
 }
@@ -1112,6 +1130,9 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   // insert the document into the POST buffer
   m_bufPOST = lockReq.toCString();
 
+  // Never use a keep-alive connection for LOCK
+  httpCloseConnection();
+
   retrieveContent( true );
 
   if ( m_responseCode == 200 ) {
@@ -1147,6 +1168,9 @@ void HTTPProtocol::davUnlock( const KURL& url )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for UNLOCK
+  httpCloseConnection();
 
   retrieveContent( true );
 
