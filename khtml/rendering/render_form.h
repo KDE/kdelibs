@@ -217,6 +217,7 @@ public:
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
     virtual void updateFromElement();
+    virtual void setStyle(RenderStyle *style);
 
     void select();
 
@@ -441,6 +442,7 @@ public:
     virtual void updateFromElement();
 
     // don't even think about making this method virtual!
+    TextAreaWidget *widget() const { return static_cast<TextAreaWidget*>(m_widget); }
     DOM::HTMLTextAreaElementImpl* element() const
     { return static_cast<DOM::HTMLTextAreaElementImpl*>(RenderObject::element()); }
 

@@ -952,15 +952,6 @@ void HTMLFieldSetElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
-    addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
-    addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
-    addCSSProperty(CSS_PROP_PADDING_LEFT, "4px");
-    addCSSProperty(CSS_PROP_PADDING_RIGHT, "4px");
-    addCSSProperty(CSS_PROP_PADDING_BOTTOM, "4px");
-
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -1200,32 +1191,16 @@ void HTMLInputElementImpl::attach()
         m_inited = true;
     }
 
-    // make sure we don't inherit a color to the form elements
-    // by adding a non-CSS color property. this his higher
-    // priority than inherited color, but lesser priority than
-    // any color specified by CSS for the elements.
     switch( m_type ) {
     case PASSWORD:
         if (getDocument()->isHTMLDocument())
             static_cast<HTMLDocumentImpl*>(getDocument())->setAutoFill();
-        /* nobreak */
-    case TEXT:
-        addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
-        /* nobreak */
-    case ISINDEX:
-    case FILE:
-        addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
         break;
-    case SUBMIT:
-    case RESET:
-    case BUTTON:
-    case CHECKBOX:
-    case RADIO:
-        addCSSProperty(CSS_PROP_COLOR, CSS_VAL_BUTTONTEXT );
     case HIDDEN:
     case IMAGE:
         if (!getAttribute(ATTR_WIDTH).isNull())
             addCSSLength(CSS_PROP_WIDTH, getAttribute(ATTR_WIDTH));
+    default:
         break;
     };
 
@@ -1563,8 +1538,6 @@ void HTMLLegendElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
-    addCSSProperty(CSS_PROP_PADDING_LEFT, "1px");
-    addCSSProperty(CSS_PROP_PADDING_RIGHT, "1px");
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
@@ -1818,8 +1791,6 @@ void HTMLSelectElementImpl::attach()
     assert(!attached());
     assert(parentNode());
     assert(!renderer());
-
-    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -2231,9 +2202,6 @@ void HTMLTextAreaElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
-
-    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
-    addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();

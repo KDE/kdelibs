@@ -445,12 +445,21 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     setQWidget(edit);
 }
 
+void RenderLineEdit::setStyle(RenderStyle* _style)
+{
+    RenderFormElement::setStyle( _style );
+
+    widget()->setAlignment(style()->direction() == RTL
+                           ? Qt::AlignRight : Qt::AlignLeft);
+}
+
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
 {
     LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
     if ( w )
         w->highLightWord( length, pos );
 }
+
 
 void RenderLineEdit::slotReturnPressed()
 {
@@ -1478,7 +1487,7 @@ void TextAreaWidget::slotFind()
         return;
 
     if ( m_findDlg ) {
-      KWin::setActiveWindow( m_findDlg->winId() );
+      KWin::activateWindow( m_findDlg->winId() );
     } else {
       m_findDlg = new KFindDialog(false, this, "KHTML Text Area Find Dialog");
       connect( m_findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
@@ -1493,7 +1502,7 @@ void TextAreaWidget::slotReplace()
         return;
 
     if ( m_repDlg ) {
-      KWin::setActiveWindow( m_repDlg->winId() );
+      KWin::activateWindow( m_repDlg->winId() );
     } else {
       m_repDlg = new KReplaceDialog(this, "KHTMLText Area Replace Dialog", 0,
                                     QStringList(), QStringList(), false);
@@ -1578,6 +1587,9 @@ void RenderTextArea::calcMinMaxWidth()
 void RenderTextArea::setStyle(RenderStyle* _style)
 {
     RenderFormElement::setStyle(_style);
+
+    widget()->setAlignment( _style->direction() == RTL ?
+                            Qt::AlignRight : Qt::AlignLeft );
 
     scrollbarsStyled = false;
 }

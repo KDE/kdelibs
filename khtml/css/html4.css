@@ -390,17 +390,28 @@ BUTTON:active {
         border-style: inset;
 }
 
+INPUT { color: windowtext; }
+
 INPUT[type="hidden"] {
 	display: none; 
 }
 
 INPUT[type="radio"], INPUT[type="checkbox"] {
         margin: 0 0.5ex;
+        color: buttontext;
 }
 
-INPUT[type="text"] {
+INPUT[type="text"], INPUT[type="password"] {
 	cursor: text;
+        font-family: monospace;
 }
+
+INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] { 
+        color: buttontext; 
+}
+
+ISINDEX { color: windowtext; }
+
       
 OPTION, 
 OPTGROUP, 
@@ -409,7 +420,16 @@ PARAM  {
 	display: none; 
 }
 
-SELECT { display: block; font-size: medium; }
+SELECT { 
+        display: block; 
+        font-size: medium; 
+        color: windowtext; 
+}
+
+TEXTAREA { 
+        color: windowtext; 
+        font-family: monospace; 
+}
 
 /*
  * inline elements
