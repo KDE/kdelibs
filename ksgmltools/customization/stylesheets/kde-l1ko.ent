@@ -8,8 +8,8 @@
     value for the character (e.g. \U-00F3).
     Let us know should you know of other encodings that work.
  -->
-<!ENTITY Default "Default">
-<!ENTITY Korean "Korean">
-<!ENTITY Version "Version">
-<!ENTITY LastUpdated "Last updated">
+<!ENTITY Default "\U-AE30;\U-BCF8;" --EUC-KR "기본"-->
+<!ENTITY Korean "\U-D55C;\U-AD6D;\U-B9D0;" --EUC-KR "한국말"-->
+<!ENTITY Version "\U-D310; \U-BC88;\U-D638;" --EUC-KR "판 번호"-->
+<!ENTITY LastUpdated "\U-B9C8;\U-C9C0;\U-B9C9;\U-C73C;\U-B85C; \U-ACE0;\U-CE5C; \U-B0A0;" --EUC-KR "마지막으로 고친 날"-->
 <!--ENTITY By "By"-->
