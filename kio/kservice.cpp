@@ -64,6 +64,7 @@ KService::init( KDesktopFile *config )
   bool absPath = (entryPath()[0] == '/');
 
   config->setDesktopGroup();
+  config->setDollarExpansion( true ); // mainly for Exec and Path
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
