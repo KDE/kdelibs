@@ -115,12 +115,12 @@ QStringList KCrashBookmarkImporter::getCrashLogs() {
       }
    }
 
-   QDir dir( crashBookmarksDir() );
-   dir.setSorting( QDir::Time );
-   dir.setFilter( QDir::Files );
-   dir.setNameFilter( "konqueror-crash-*.log" );
+   QDir d( crashBookmarksDir() );
+   d.setSorting( QDir::Time );
+   d.setFilter( QDir::Files );
+   d.setNameFilter( "konqueror-crash-*.log" );
 
-   const QFileInfoList *list = dir.entryInfoList();
+   const QFileInfoList *list = d.entryInfoList();
    QFileInfoListIterator it( *list );
 
    QFileInfo *fi;

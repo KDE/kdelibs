@@ -71,7 +71,7 @@ public:
 };
 QPtrDict<KBookmarkBarPrivate>* Private<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
-#define d() KBookmarkBarPrivate::d(this)
+#define dptr() KBookmarkBarPrivate::d(this)
 
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
@@ -87,7 +87,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     m_toolBar->installEventFilter( this ); // for drops
 #endif
 
-    d()->m_actions.setAutoDelete( true );
+    dptr()->m_actions.setAutoDelete( true );
 
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
@@ -107,11 +107,11 @@ void KBookmarkBar::clear()
     if ( m_toolBar )
         m_toolBar->clear();
 
-    QPtrListIterator<KAction> it( d()->m_actions );
+    QPtrListIterator<KAction> it( dptr()->m_actions );
     for (; it.current(); ++it )
         it.current()->unplugAll();
 
-    d()->m_actions.clear();
+    dptr()->m_actions.clear();
 }
 
 void KBookmarkBar::slotBookmarksChanged( const QString & group )
@@ -163,7 +163,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
                 action->plug(m_toolBar);
 
-                d()->m_actions.append( action );
+                dptr()->m_actions.append( action );
             }
         }
         else
@@ -185,7 +185,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
 
-            d()->m_actions.append( action );
+            dptr()->m_actions.append( action );
         }
     }
 }
@@ -270,7 +270,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         KToolBar* otb = tb;
         KToolBarButton* b;
-        if (findDestAction(dme, d()->m_actions, b, tb, a)
+        if (findDestAction(dme, dptr()->m_actions, b, tb, a)
          && KBookmarkDrag::canDecode( dme ) 
         ) {
             int index = tb->itemIndex(b->id());
@@ -287,4 +287,5 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     return false;
 }
 
+#undef dptr
 #include "kbookmarkbar.moc"
