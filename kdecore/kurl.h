@@ -77,10 +77,6 @@ public:
   /**
    * Constructor allowing relative URLs.
    *
-   * Example : @ref KURL u( QDir::currentDirPath()+"/", _url )
-   * Very useful for command-line parameters, where people tend to do
-   * "myprog myfile.ext"
-   *
    * @param _baseurl The base url.
    * @param _rel_url This is considered to be encoded. If an absolute path/URL,
    * then _baseurl will be ignored.
@@ -331,6 +327,8 @@ public:
    * still be in tar:/#file:/dir/dir2/my.tgz.
    *
    * @param zapRef If @p true, delete the HTML-style reference.
+   * @return true if the operation was successful
+   * For instance, (cd ".." from "/" is impossible)
    */
   bool cd( const QString& _dir, bool zapRef = true );
 

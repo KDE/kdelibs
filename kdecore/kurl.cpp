@@ -153,7 +153,6 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
 
 void KURL::reset()
 {
-  // (David) protocol used to be set to "file", which broke isEmpty()
   m_strProtocol = QString::null;
   m_strUser = QString::null;
   m_strPass = QString::null;
@@ -177,6 +176,7 @@ void KURL::parse( const QString& _url )
     }
 
   m_bIsMalformed = false;
+  m_strProtocol = "";
 
   QString port;
   int start = 0;
@@ -626,10 +626,12 @@ QString KURL::url() const
 QString KURL::url( int _trailing ) const
 {
    if( m_bIsMalformed )
+   {
       // Return the whole url even when the url is
       // malformed.  Under such conditions the url
       // is stored in m_strProtocol.
       return m_strProtocol;
+   }
 
   // HACK encode parts here!
 
@@ -931,7 +933,7 @@ void KURL::decode( QString& _url )
 // Modified by Torben, weis@kde.org
 bool KURL::cd( const QString& _dir, bool zapRef )
 {
-  if ( _dir.isEmpty() )
+  if ( _dir.isEmpty() || m_bIsMalformed )
     return false;
 
   // absolute path ?
