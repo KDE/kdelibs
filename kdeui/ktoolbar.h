@@ -620,6 +620,9 @@ private:
   int max_height;
   
   BarPosition lastPosition;
+
+  bool mouseEntered;
+  bool horizontal;
   
 protected:
   QPopupMenu *context;
@@ -632,6 +635,8 @@ protected:
   void init();
   void layoutVertical ();
   void layoutHorizontal ();
+  void leaveEvent (QEvent *e);
+  
   
 protected slots:
   void ButtonClicked(int);

@@ -18,6 +18,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+// Solved one-button problem and added handle-highlighting - sven 5.1.1998
+
 #include <qpainter.h>
 #include <qtooltip.h> 
 #include <qdrawutl.h>
@@ -275,6 +278,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name)
   Parent = parent;        // our father
   max_width=-1;
   title = 0;
+  mouseEntered=false;
 }
 {
 void KToolBar::ContextCallback( int index )
@@ -325,6 +329,10 @@ void KToolBar::init()
   resize( width(), TOOLBARHEIGHT );
   items.setAutoDelete(TRUE);
   enableFloating (TRUE);
+  // To make touch-sensitive handle - sven 040198
+  setMouseTracking(true);
+  // To solve one-button problem
+  setMinimumSize (TOOLBARHEIGHT+9+4, TOOLBARHEIGHT); // Smart, eh?
 }
     emit (moved(position));
 void KToolBar::drawContents ( QPainter *)
@@ -367,12 +375,13 @@ void KToolBar::layoutHorizontal ()
   KToolBarItem *autoSize = 0;
   int maxwidth;
 
+  horizontal = true; // sven - 040198
   
   if (position == Floating)
     maxwidth = width();
   else
     if (max_width != -1)
-      maxwidth = /*Parent->width()-*/max_width;
+      maxwidth = max_width;
     else
       maxwidth = Parent->width();
 
@@ -440,8 +449,6 @@ void KToolBar::layoutHorizontal ()
    }
   if (autoSize != 0)
     autoSize->resize(rightOffset - autoSize->x()-1, autoSize->height() );
-  //if (position == Floating)
-  //  toolbarWidth++;
 }
 
 void KToolBar::layoutVertical ()
@@ -450,6 +457,8 @@ void KToolBar::layoutVertical ()
   int yOffset=3;
   int widest;
 
+  horizontal=false; // sven - 040198
+  
   toolbarHeight = offset;
 
   toolbarWidth= TOOLBARHEIGHT;
@@ -492,8 +501,6 @@ void KToolBar::layoutVertical ()
           toolbarHeight = offset;
       }
    }
-  //if (position == Floating)
-  //  toolbarHeight++;
 }
 
 void KToolBar::updateRects( bool res )
@@ -522,22 +529,25 @@ void KToolBar::updateRects( bool res )
 
   if (res == TRUE)
     resize (toolbarWidth, toolbarHeight);
-  //else
+  //else         // Oh, Gooood....
   //repaint();
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-  pointerOffset = m->pos();
-  if ( moving && m->button() != LeftButton)
-    context->popup( mapToGlobal( m->pos() ), 0 );
-  else
-    grabMouse(sizeAllCursor);
+    if ((horizontal && m->x()<9) || (!horizontal && m->y()<9))
+    {
+        pointerOffset = m->pos();
+        if ( moving && m->button() != LeftButton)
+            context->popup( mapToGlobal( m->pos() ), 0 );
+        else
+            grabMouse(sizeAllCursor);
+    }
 }
 
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
-
+     /* Old - sven
   if (position == Floating)
    {
      updateRects (FALSE);
@@ -547,6 +557,17 @@ void KToolBar::resizeEvent( QResizeEvent *e )
         resize (toolbarWidth, toolbarHeight);
       }
    }
+      */
+
+    //New - sven
+
+    if (position == Floating)
+    {
+        updateRects(FALSE);
+        if (e->size().width() - toolbarWidth > 2 ||
+            e->size().height() - toolbarHeight > 2)
+            resize (toolbarWidth, toolbarHeight);
+    }
 }
 
 void KToolBar::paintEvent(QPaintEvent *)
@@ -560,26 +581,34 @@ void KToolBar::paintEvent(QPaintEvent *)
   QPainter *paint = new QPainter();
   paint->begin( this );
 
+  // Took higlighting handle from kmenubar - sven 040198
+  QBrush b;
+  if (mouseEntered)
+      b = QColor(100,100,200);
+  else
+      b = QWidget::backgroundColor();
+
+  
   // Handle point
   switch ( position ) {
     
 		case Top:
-    case Bottom:
+                case Bottom:
       
 			qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
-                			 g , FALSE, 1);
+                			 g , FALSE, 1, &b);
 
 			paint->setPen( g.light() );
 			paint->drawLine( 9, 0, 9, toolbarHeight);
-      stipple_height = 3;
-      while ( stipple_height < toolbarHeight-4 ) {
+                        stipple_height = 3;
+                        while ( stipple_height < toolbarHeight-4 ) {
 				paint->drawPoint( 1, stipple_height+1);
 				paint->drawPoint( 4, stipple_height);
 				stipple_height+=3;
 			}
 			paint->setPen( g.dark() );
-      stipple_height = 4;
-      while ( stipple_height < toolbarHeight-4 ) {
+                        stipple_height = 4;
+                        while ( stipple_height < toolbarHeight-4 ) {
 				paint->drawPoint( 2, stipple_height+1);
 				paint->drawPoint( 5, stipple_height);
 				stipple_height+=3;
@@ -587,47 +616,47 @@ void KToolBar::paintEvent(QPaintEvent *)
 
 			break;
 
-    case Left:
-    case Right:
+                case Left:
+                case Right:
       
 			qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
-              			 		g , FALSE, 1);
+              			 		g , FALSE, 1, &b);
 
 			paint->setPen( g.light() );
 			paint->drawLine( 0, 9, toolbarWidth, 9);
-      stipple_height = 3;
-      while ( stipple_height < toolbarWidth-4 ) {
+                        stipple_height = 3;
+                        while ( stipple_height < toolbarWidth-4 ) {
 				paint->drawPoint( stipple_height+1, 1);
 				paint->drawPoint( stipple_height, 4 );
 				stipple_height+=3;
 			}
 			paint->setPen( g.dark() );
-      stipple_height = 4;
-      while ( stipple_height < toolbarWidth-4 ) {
+                        stipple_height = 4;
+                        while ( stipple_height < toolbarWidth-4 ) {
 				paint->drawPoint( stipple_height+1, 2 );
 				paint->drawPoint( stipple_height, 5);
 				stipple_height+=3;
 			}
 			
-      break;
+                        break;
     
-		case Floating:
+                case Floating:
 		
 			if (width() <= height()-20) {
 			
 				qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
-              			 		g , FALSE, 1);
+              			 		g , FALSE, 1, &b);
 				paint->setPen( g.light() );
 				paint->drawLine( 0, 9, toolbarWidth, 9);
-      	stipple_height = 3;
-      	while ( stipple_height < toolbarWidth-4 ) {
+      	                        stipple_height = 3;
+      	                        while ( stipple_height < toolbarWidth-4 ) {
 					paint->drawPoint( stipple_height+1, 1);
 					paint->drawPoint( stipple_height, 4 );
 					stipple_height+=3;
 				}
 				paint->setPen( g.dark() );
-      	stipple_height = 4;
-      	while ( stipple_height < toolbarWidth-4 ) {
+      	                        stipple_height = 4;
+      	                        while ( stipple_height < toolbarWidth-4 ) {
 					paint->drawPoint( stipple_height+1, 2 );
 					paint->drawPoint( stipple_height, 5);
 					stipple_height+=3;
@@ -635,102 +664,27 @@ void KToolBar::paintEvent(QPaintEvent *)
 			} else {
 			
 				qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
-                			 g , FALSE, 1);
+                			 g , FALSE, 1, &b);
 
 				paint->setPen( g.light() );
 				paint->drawLine( 9, 0, 9, toolbarHeight);
-      	stipple_height = 3;
-      	while ( stipple_height < toolbarHeight-4 ) {
+      	                        stipple_height = 3;
+      	                        while ( stipple_height < toolbarHeight-4 ) {
 					paint->drawPoint( 1, stipple_height+1);
 					paint->drawPoint( 4, stipple_height);
 					stipple_height+=3;
 				}
 				paint->setPen( g.dark() );
-      	stipple_height = 4;
-      	while ( stipple_height < toolbarHeight-4 ) {
+      	                        stipple_height = 4;
+      	                        while ( stipple_height < toolbarHeight-4 ) {
 					paint->drawPoint( 2, stipple_height+1);
 					paint->drawPoint( 5, stipple_height);
 					stipple_height+=3;
 				}		
 			}
 		
-		  break;
+                        break;
    }
-
-//	MD I left this in to show what it was like before
-//	
-//   	 if (width() <= height()-20)
-//       {
-//         qDrawShadePanel( paint, 3, offset, toolbarWidth-8, 4,
-//                          g , FALSE, 2);
-//         offset+=4;
-//         qDrawShadePanel( paint, 3, offset,  toolbarWidth-8, 4,
-//                          g , FALSE, 2);
-//         offset+=9;
-//       }
-//  	else if(width() >= height ()+20)
-//  	 {
-//  	   qDrawShadePanel( paint, offset, 3, 4, toolbarHeight-8,
-//  						g , FALSE, 2);
-//  	   offset+=4;
-//  	   qDrawShadePanel( paint, offset, 3, 4, toolbarHeight-8,
-//  						g , FALSE, 2);
-//  	   offset+=9;
-//  	 }
-//  	else
-//  	 {
-//  	   qDrawShadePanel( paint, offset, 3, 4, toolbarHeight-8,
-//  						g , FALSE, 2);
-//  	   offset+=4;
-//  	   qDrawShadePanel( paint, offset, 3, 4, toolbarHeight-8,
-//  						g , FALSE, 2);
-//  	   offset+=9;
-//  	 }
-
-// Separators
-//  for ( KToolBarItem *b = items.first(); b; b=items.next() )
-//   {
-//     switch ( position )
-//      {
-//       case Top:
-//       case Bottom:
-//         if ( getID(b) == -1 )   // is a separator
-//           qDrawShadePanel(paint, ((KToolBarButton *) b)->x()+2,
-//                           ((KToolBarButton *) b)->y(), 2, TOOLBARHEIGHT-4,
-//                             g , TRUE, 1);
-//         break;
-//       case Left:
-//       case Right:
-//         if ( getID(b) == -1 )  // is a separator
-//           qDrawShadePanel(paint, ((KToolBarButton *) b)->x(),
-//                           ((KToolBarButton *) b)->y()+2, TOOLBARHEIGHT-4, 2,
-//                             g , TRUE, 1);
-//         break;
-//       case Floating:
-//         if (width() <= height()-20)
-//          {
-//            if ( getID(b) == -1 )  // is a separator
-//              qDrawShadePanel(paint, ((KToolBarButton *) b)->x(),
-//                              ((KToolBarButton *) b)->y()+2, TOOLBARHEIGHT-4, 2,
-//                              g , TRUE, 1);
-//          }
-//         else if(width() >= height ()+20)
-//          {
-//            if ( getID(b) == -1 )   // is a separator
-//              qDrawShadePanel(paint, ((KToolBarButton *) b)->x()+2,
-//                              ((KToolBarButton *) b)->y(), 2, TOOLBARHEIGHT-4,
-//                              g , TRUE, 1);
-//          }
-//         else
-//          {
-//            if ( getID(b) == -1 )   // is a separator
-//              qDrawShadePanel(paint, ((KToolBarButton *) b)->x()+2,
-//                              ((KToolBarButton *) b)->y(), 2, TOOLBARHEIGHT-4,
-//                              g , TRUE, 1);
-//          }
-//         break;
-//      }
-//   }
 
 #ifdef TOOLBAR_IS_RAISED
 
@@ -1362,6 +1316,8 @@ void KToolBar::setBarPos(BarPosition bpos)
         //show();
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
         emit moved (bpos);
+        setMouseTracking(true);
+        mouseEntered=false;
         return;
       }
      else if (position == Floating) // was floating
@@ -1372,6 +1328,8 @@ void KToolBar::setBarPos(BarPosition bpos)
         updateRects (TRUE);
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (bpos);
+        setMouseTracking(true);
+        mouseEntered = false;
         return;
       }
      else
@@ -1433,9 +1391,63 @@ void KToolBar::setItemPixmap( int _id, const QPixmap& _pixmap )
   this->setButtonPixmap (_id, _pixmap);
 }
 
-void KToolBar::mouseMoveEvent(QMouseEvent* /* m */){
+/*************************************************************
+
+Mouse move and drag routines
+
+*************************************************************/
+
+
+void KToolBar::leaveEvent (QEvent *)
+{
+    mouseEntered = false;
+    repaint();
+}
+
+void KToolBar::mouseMoveEvent(QMouseEvent* mev){
+
+
+    // Handle highlighting - sven 050198
+    if (horizontal)
+        if (mev->x() < 9)
+        {
+            if (!mouseEntered)
+            {
+                mouseEntered = true;
+                repaint();
+            }
+        }
+        else
+        {
+            if (mouseEntered)
+            {
+                mouseEntered = false;
+                repaint();
+            }
+        }
+    
+    else
+        if (mev->y() < 9)
+        {
+            if (!mouseEntered)
+            {
+                mouseEntered = true;
+                repaint();
+            }
+        }
+        else
+        {
+            if (mouseEntered)
+            {
+                mouseEntered = false;
+                repaint();
+            }
+        }
+
+
+
   if (!moving || mouseGrabber() != this)
-    return;
+      return;
   if (position != Floating){
     QPoint p = mapFromGlobal(QCursor::pos()) - pointerOffset;
     if (p.x()*p.x()+p.y()*p.y()<169)
