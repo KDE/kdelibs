@@ -1512,10 +1512,12 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
             swallowEvent = true;
 	me->deref();
 
+        if( eventId == EventImpl::CLICK_EVENT ) {
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
                 m_part->xmlDocImpl()->setFocusNode(0);
+        }
     }
 
     return swallowEvent;
