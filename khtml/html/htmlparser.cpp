@@ -188,39 +188,39 @@ void KHTMLParser::reset()
 
 void KHTMLParser::parseToken(Token *t)
 {
-    if (t->id > 2*ID_CLOSE_TAG)
+    if (t->tid > 2*ID_CLOSE_TAG)
     {
-      kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->id << endl;
+      kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->tid << endl;
       return;
     }
     if(discard_until) {
-        if(t->id == discard_until)
+        if(t->tid == discard_until)
             discard_until = 0;
 
         // do not skip </iframe>
-        if ( discard_until || current->id() + ID_CLOSE_TAG != t->id )
+        if ( discard_until || current->id() + ID_CLOSE_TAG != t->tid )
             return;
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->id).string() << "(" << t->id << ")"
+    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid).string() << "(" << t->tid << ")"
                     << " current = " << getTagName(current->id()).string() << "(" << current->id() << ")" << endl;
     kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent << endl;
 #endif
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
-        t->id -= ID_CLOSE_TAG;
+    if(t->tid == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
+        t->tid -= ID_CLOSE_TAG;
 
-    if(t->id > ID_CLOSE_TAG)
+    if(t->tid > ID_CLOSE_TAG)
     {
         processCloseTag(t);
         return;
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if( t->id == ID_TEXT && t->text ) {
+    if( t->tid == ID_TEXT && t->text ) {
         if(inBody && !skipMode() &&
            current->id() != ID_STYLE && current->id() != ID_TITLE &&
            current->id() != ID_SCRIPT &&
@@ -236,39 +236,39 @@ void KHTMLParser::parseToken(Token *t)
         return;
 
     // set attributes
-    if(n->isElementNode() && t->id != ID_ISINDEX)
+    if(n->isElementNode() && t->tid != ID_ISINDEX)
     {
         ElementImpl *e = static_cast<ElementImpl *>(n);
         e->setAttributeMap(t->attrs);
 
         // take care of optional close tags
         if(endTag[e->id()] == DOM::OPTIONAL)
-            popBlock(t->id);
+            popBlock(t->tid);
     }
 
     // if this tag is forbidden inside the current context, pop
     // blocks until we are allowed to add it...
-    while(forbiddenTag[t->id]) {
+    while(forbiddenTag[t->tid]) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "t->id: " << t->id << " is forbidden :-( " << endl;
+        kdDebug( 6035 ) << "t->id: " << t->tid << " is forbidden :-( " << endl;
 #endif
         popOneBlock();
     }
 
     // sometimes flat doesn't make sense
-    switch(t->id) {
+    switch(t->tid) {
     case ID_OPTION:
         t->flat = false;
     }
 
     // the tokenizer needs the feedback for space discarding
-    if ( tagPriority[t->id] == 0 )
+    if ( tagPriority[t->tid] == 0 )
 	t->flat = true;
 
     if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
+        kdDebug( 6035 ) << "insertNode failed current=" << current->tid() << ", new=" << n->id() << "!" << endl;
 #endif
         if (map == n)
         {
@@ -714,7 +714,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 {
     NodeImpl *n = 0;
 
-    switch(t->id)
+    switch(t->tid)
     {
     case ID_HTML:
         n = new HTMLHtmlElementImpl(document);
@@ -831,12 +831,12 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLDListElementImpl(document);
         break;
     case ID_DD:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         popBlock(ID_DT);
         popBlock(ID_DD);
         break;
     case ID_DT:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         popBlock(ID_DD);
         popBlock(ID_DT);
         break;
@@ -866,11 +866,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // formatting elements (block)
     case ID_BLOCKQUOTE:
     case ID_LAYER:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
     case ID_P:
     case ID_DIV:
-        n = new HTMLDivElementImpl(document, t->id);
+        n = new HTMLDivElementImpl(document, t->tid);
         break;
     case ID_H1:
     case ID_H2:
@@ -878,7 +878,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(document);
@@ -887,7 +887,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         ++inPre;
     case ID_XMP:
     case ID_PLAINTEXT:
-        n = new HTMLPreElementImpl(document, t->id);
+        n = new HTMLPreElementImpl(document, t->tid);
         break;
 
 // font stuff
@@ -901,7 +901,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // ins/del
     case ID_DEL:
     case ID_INS:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
 
 // anchor
@@ -950,7 +950,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_COLGROUP:
     case ID_COL:
-        n = new HTMLTableColElementImpl(document, t->id);
+        n = new HTMLTableColElementImpl(document, t->tid);
         break;
     case ID_TR:
         popBlock(ID_TR);
@@ -960,7 +960,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_TH:
         popBlock(ID_TH);
         popBlock(ID_TD);
-        n = new HTMLTableCellElementImpl(document, t->id);
+        n = new HTMLTableCellElementImpl(document, t->tid);
         break;
     case ID_TBODY:
     case ID_THEAD:
@@ -968,7 +968,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         popBlock( ID_THEAD );
         popBlock( ID_TBODY );
         popBlock( ID_TFOOT );
-        n = new HTMLTableSectionElementImpl(document, t->id, false);
+        n = new HTMLTableSectionElementImpl(document, t->tid, false);
         break;
 
 // inline elements
@@ -976,7 +976,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLBRElementImpl(document);
         break;
     case ID_Q:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
 
 // elements with no special representation in the DOM
@@ -984,7 +984,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
 // inline
         // %fontstyle
@@ -1016,25 +1016,25 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_NOBR:
     case ID_WBR:
     case ID_BDO:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
 
         // these are special, and normally not rendered
     case ID_NOEMBED:
         if (!t->flat) {
-            n = new HTMLGenericElementImpl(document, t->id);
+            n = new HTMLGenericElementImpl(document, t->tid);
             discard_until = ID_NOEMBED + ID_CLOSE_TAG;
         }
         return n;
     case ID_NOFRAMES:
         if (!t->flat) {
-            n = new HTMLGenericElementImpl(document, t->id);
+            n = new HTMLGenericElementImpl(document, t->tid);
             discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
         }
         return n;
     case ID_NOSCRIPT:
         if (!t->flat) {
-            n = new HTMLGenericElementImpl(document, t->id);
+            n = new HTMLGenericElementImpl(document, t->tid);
             if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
                 discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
         }
@@ -1044,7 +1044,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         return 0;
         break;
     case ID_MARQUEE:
-        n = new HTMLGenericElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->tid);
         break;
 // text
     case ID_TEXT:
@@ -1056,7 +1056,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 #endif
         break;
     default:
-        kdDebug( 6035 ) << "Unknown tag " << t->id << "!" << endl;
+        kdDebug( 6035 ) << "Unknown tag " << t->tid << "!" << endl;
     }
     return n;
 }
@@ -1064,7 +1064,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 void KHTMLParser::processCloseTag(Token *t)
 {
     // support for really broken html. Can't believe I'm supporting such crap (lars)
-    switch(t->id)
+    switch(t->tid)
     {
     case ID_HTML+ID_CLOSE_TAG:
     case ID_BODY+ID_CLOSE_TAG:
@@ -1094,7 +1094,7 @@ void KHTMLParser::processCloseTag(Token *t)
         child = child->nextSibling();
     }
 #endif
-    popBlock(t->id-ID_CLOSE_TAG);
+    popBlock(t->tid-ID_CLOSE_TAG);
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "closeTag --> current = " << current->nodeName().string() << endl;
 #endif

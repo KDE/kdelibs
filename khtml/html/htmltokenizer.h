@@ -63,7 +63,7 @@ namespace khtml {
     {
     public:
         Token() {
-            id = 0;
+            tid = 0;
             attrs = 0;
             text = 0;
             flat = false;
@@ -76,13 +76,13 @@ namespace khtml {
         void addAttribute(DocumentImpl* doc, QChar* buffer, const QString& attrName, const DOMString& v)
         {
             DOMStringImpl *value = 0;
-            NodeImpl::Id id = 0;
+            NodeImpl::Id tid = 0;
             if(buffer->unicode()) {
-		id = buffer->unicode();
+		tid = buffer->unicode();
 		value = v.implementation();
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-		id = doc->attrNames()->getId(DOMString(attrName).implementation(), false);
+		tid = doc->attrNames()->getId(DOMString(attrName).implementation(), false);
 		value = v.implementation();
             }
 
@@ -91,8 +91,8 @@ namespace khtml {
                     attrs = new DOM::NamedAttrMapImpl(0);
                     attrs->ref();
                 }
-                if (!attrs->getValue(id))
-		    attrs->setValue(id,0,0,value);
+                if (!attrs->getValue(tid))
+		    attrs->setValue(tid,0,0,value);
             }
         }
         void reset()
@@ -101,7 +101,7 @@ namespace khtml {
                 attrs->deref();
                 attrs = 0;
             }
-            id = 0;
+            tid = 0;
             if(text) {
                 text->deref();
                 text = 0;
@@ -110,7 +110,7 @@ namespace khtml {
         }
         DOM::NamedAttrMapImpl* attrs;
         DOMStringImpl* text;
-        ushort id;
+        ushort tid;
         bool flat;
     };
 

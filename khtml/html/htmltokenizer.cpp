@@ -36,7 +36,6 @@
 #include "config.h"
 #endif
 
-//#include <string.h>
 #include "html/htmltokenizer.h"
 #include "html/html_documentimpl.h"
 #include "html/htmlparser.h"
@@ -324,10 +323,10 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src)
             else {
                 processListing(DOMStringIt(scriptCode, scriptCodeSize));
                 processToken();
-                if ( style )         { currToken.id = ID_STYLE + ID_CLOSE_TAG; }
-                else if ( textarea ) { currToken.id = ID_TEXTAREA + ID_CLOSE_TAG; }
-                else if ( title ) { currToken.id = ID_TITLE + ID_CLOSE_TAG; }
-                else if ( xmp )  { currToken.id = ID_XMP + ID_CLOSE_TAG; }
+                if ( style )         { currToken.tid = ID_STYLE + ID_CLOSE_TAG; }
+                else if ( textarea ) { currToken.tid = ID_TEXTAREA + ID_CLOSE_TAG; }
+                else if ( title ) { currToken.tid = ID_TITLE + ID_CLOSE_TAG; }
+                else if ( xmp )  { currToken.tid = ID_XMP + ID_CLOSE_TAG; }
                 processToken();
                 style = script = style = textarea = title = xmp = false;
                 tquote = NoQuote;
@@ -374,7 +373,7 @@ void HTMLTokenizer::scriptHandler()
     QString exScript( buffer, dest-buffer );
 
     processToken();
-    currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
+    currToken.tid = ID_SCRIPT + ID_CLOSE_TAG;
     processToken();
 
     QString prependingSrc;
@@ -701,6 +700,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
     assert(!Entity );
+    checkScriptBuffer( src.length() );
 
     while ( src.length() )
     {
@@ -714,9 +714,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif
         switch(tag) {
         case NoTag:
-        {
             return;
-        }
         case TagName:
         {
 #if defined(TOKEN_DEBUG) &&  TOKEN_DEBUG > 1
@@ -809,7 +807,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     QCString tmp(ptr, len+1);
                     kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
 #endif
-                    currToken.id = beginTag ? tagID : tagID + ID_CLOSE_TAG;
+                    currToken.tid = beginTag ? tagID : tagID + ID_CLOSE_TAG;
                     dest = buffer;
                 }
                 tag = SearchAttribute;
@@ -880,7 +878,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         break;
                     }
                 }
-                cBuffer[cBufferPos++] = (char) curchar | 0x20;
+                cBuffer[cBufferPos++] = toupper(curchar);
                 ++src;
             }
             if ( cBufferPos == CBUFLEN ) {
@@ -1041,10 +1039,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             tquote = NoQuote;
             ++src;
 
-            if ( !currToken.id ) //stop if tag is unknown
+            if ( !currToken.tid ) //stop if tag is unknown
                 return;
 
-            uint tagID = currToken.id;
+            uint tagID = currToken.tid;
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
@@ -1466,6 +1464,9 @@ void HTMLTokenizer::end()
 
 void HTMLTokenizer::finish()
 {
+    if ( buffer && tag ) {
+        qDebug( "in tag: %s", QString( buffer, dest-buffer ).latin1() );
+    }
     // do this as long as we don't find matching comment ends
     while((comment || server) && scriptCode && scriptCodeSize)
     {
@@ -1512,17 +1513,17 @@ void HTMLTokenizer::processToken()
     if ( dest > buffer )
     {
 #if 0
-        if(currToken.id) {
-            qDebug( "unexpected token id: %d, str: *%s*", currToken.id,QConstString( buffer,dest-buffer ).string().latin1() );
+        if(currToken.tid) {
+            qDebug( "unexpected token id: %d, str: *%s*", currToken.tid,QConstString( buffer,dest-buffer ).string().latin1() );
             assert(0);
         }
 
 #endif
         currToken.text = new DOMStringImpl( buffer, dest - buffer );
         currToken.text->ref();
-        currToken.id = ID_TEXT;
+        currToken.tid = ID_TEXT;
     }
-    else if(!currToken.id) {
+    else if(!currToken.tid) {
         currToken.reset();
         if (jsProxy)
             jsProxy->setEventHandlerLineno(lineno+src.lineCount()+1);
@@ -1532,12 +1533,12 @@ void HTMLTokenizer::processToken()
     dest = buffer;
 
 #ifdef TOKEN_DEBUG
-    QString name = getTagName(currToken.id).string();
+    QString name = getTagName(currToken.tid).string();
     QString text;
     if(currToken.text)
         text = QConstString(currToken.text->s, currToken.text->l).string();
 
-    kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.id << endl;
+    kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.tid << endl;
     if (currToken.flat)
         kdDebug( 6036 ) << "Token is FLAT!" << endl;
     if(!text.isNull())
@@ -1565,7 +1566,7 @@ void HTMLTokenizer::processToken()
 
     m_executingScript--;
 
-    if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
+    if ( currToken.flat && currToken.tid != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
     else if ( parser->selectMode() )
         discard = AllDiscard;
