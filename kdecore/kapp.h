@@ -118,7 +118,7 @@ public:
                bool allowStyles=true, bool GUIenabled=true);
 
   /**
-   * @depreciated
+   * @deprecated
    *
    * Constructor. Parses command-line arguments.
    *
@@ -800,6 +800,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.208  2001/01/30 21:19:21  coolo
+// moved --geometry from qt options to kde options and support it in kmainwindow.
+// the qt option only works for setMainWidget calls and is called -geometry not
+// --geometry as --help-qt says (the same with every qt option)
+//
 // Revision 1.207  2001/01/28 14:47:59  mueller
 // make HEAD distinguishable from beta2
 //

@@ -411,7 +411,9 @@ namespace KJS {
 
     void* operator new(size_t);
     void operator delete(void*);
-    /** @deprecated  */
+    /**
+     * @deprecated
+     */
     void operator delete(void*, size_t);
 
 #ifdef KJS_DEBUG_MEM

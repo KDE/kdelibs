@@ -76,7 +76,7 @@ public:
   Mode mode() const;
 
   /**
-   * Returns the index of @param item or -1 if @param item doesn't exist
+   * Returns the index of @p item or -1 if @p item doesn't exist
    * in this icon view.
    */
   //BCI: Remove this function. The bug(crash for nonexistent items) will hopefully be fixed then.

@@ -231,7 +231,8 @@ public:
 
   /**
    * @returns true if @p name matches a filter in the list,
-   * otherwise false. Also @see #setNameFilter.
+   * otherwise false.
+   * @see #setNameFilter.
    *
    * @param mime the mimetype to find in the filter list.
    */
