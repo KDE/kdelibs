@@ -1238,11 +1238,13 @@ public:
   KSelectActionPrivate()
   {
     m_edit = false;
+    m_bRemoveAmpersandsInCombo = false;
     m_menu = 0;
     m_current = -1;
     m_comboWidth = -1;
   }
   bool m_edit;
+  bool m_bRemoveAmpersandsInCombo;
   QPopupMenu *m_menu;
   int m_current;
   int m_comboWidth;
@@ -1496,8 +1498,9 @@ void KSelectAction::updateItems( int id )
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
       cb->clear();
-      QStringList::ConstIterator it = d->m_list.begin();
-      for( ; it != d->m_list.end(); ++it )
+      QStringList lst = comboItems();
+      QStringList::ConstIterator it = lst.begin();
+      for( ; it != lst.end(); ++it )
         cb->insertItem( *it );
       // Ok, this currently doesn't work due to a bug in QComboBox
       // (the sizehint is cached for ever and never recalculated)
@@ -1540,7 +1543,7 @@ int KSelectAction::plug( QWidget *widget, int index )
   {
     KToolBar* bar = static_cast<KToolBar*>( widget );
     int id_ = KAction::getToolButtonID();
-    bar->insertCombo( items(), id_, isEditable(),
+    bar->insertCombo( comboItems(), id_, isEditable(),
                       SIGNAL( activated( const QString & ) ), this,
                       SLOT( slotActivated( const QString & ) ), isEnabled(),
                       toolTip(), -1, index );
@@ -1566,6 +1569,25 @@ int KSelectAction::plug( QWidget *widget, int index )
 
   kdWarning() << "Can not plug KAction in " << widget->className() << endl;
   return -1;
+}
+
+QStringList KSelectAction::comboItems() const
+{
+  if( d->m_bRemoveAmpersandsInCombo ) {
+    QStringList lst;
+    QStringList::ConstIterator it = d->m_list.begin();
+    for( ; it != d->m_list.end(); ++it )
+    {
+      QString item = *it;
+      int i = item.find( '&' );
+      if ( i > -1 )
+        item = item.remove( i, 1 );
+      lst.append( item );
+    }
+    return lst;
+  }
+  else
+    return d->m_list;
 }
 
 void KSelectAction::clear()
@@ -1634,6 +1656,16 @@ void KSelectAction::setEditable( bool edit )
 bool KSelectAction::isEditable() const
 {
   return d->m_edit;
+}
+
+void KSelectAction::setRemoveAmpersandsInCombo( bool b )
+{
+    d->m_bRemoveAmpersandsInCombo = b;
+}
+
+bool KSelectAction::removeAmpersandsInCombo() const
+{
+    return d->m_bRemoveAmpersandsInCombo;
 }
 
 class KListAction::KListActionPrivate

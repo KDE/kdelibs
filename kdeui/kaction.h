@@ -943,6 +943,17 @@ public:
 
     QPopupMenu* popupMenu() const;
 
+    /**
+     * Call setRemoveAmpersandsInCombo to ask KSelectAction to remove
+     * '&' signs from the combobox that is created when plugging this action
+     * into a toolbar. This is useful when the items have an '&' for providing
+     * accelerators in the menu-items; those '&' shouldn't appear in comboboxes.
+     * By default this setting is false.
+     * Call this before plugging the action.
+     */
+    void setRemoveAmpersandsInCombo( bool b );
+    bool removeAmpersandsInCombo() const;
+
 public slots:
     /**
      *  Sets the currently checked item.
@@ -977,6 +988,7 @@ public slots:
 
 protected:
     virtual void changeItem( int id, int index, const QString& text );
+    QStringList comboItems() const;
 
 protected slots:
     virtual void slotActivated( int id );
@@ -1004,6 +1016,10 @@ private:
 
 };
 
+/// Remove this class in KDE-4.0. It doesn't add _anything_ to KSelectAction
+/**
+ * @deprecated Use KSelectAction instead.
+ */
 class KListAction : public KSelectAction
 {
     Q_OBJECT
@@ -1118,7 +1134,7 @@ private:
  *  @author Michael Koch
  *  @short Recent files action
  */
-class KRecentFilesAction : public KListAction
+class KRecentFilesAction : public KListAction  // TODO public KSelectAction
 {
   Q_OBJECT
   Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems )
@@ -1459,7 +1475,7 @@ private:
 
 /**
  * This action is a normal action everywhere, except in a toolbar
- * where it also has a delayed popupmenu. This action is designed
+ * where it also has a popupmenu (optionnally delayed). This action is designed
  * for history actions (back/forward, undo/redo) and for any other action
  * that has more detail in a toolbar than in a menu (e.g. tool chooser
  * with "Other" leading to a dialog...).
@@ -1472,7 +1488,7 @@ class KToolBarPopupAction : public KAction
 
 public:
     //Not all constructors - because we need an icon, since this action only makes
-    // sense in a toolbar (as well as menubar)
+    // sense when being plugged at least in a toolbar.
     /**
      * Create a KToolBarPopupAction, with a text, an icon, an optionnal accelerator,
      * parent and name.
