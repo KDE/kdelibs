@@ -34,7 +34,6 @@ AC_DEFUN(AC_CHECK_LIBASOUND,
   LDFLAGS="$all_libraries $LDFLAGS"
   AC_CHECK_HEADER(sys/asoundlib.h,
   [
-#    AC_CHECK_LIB(asound,snd_seq_open,[
     AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
       alsa=true
       LIBASOUND="-lasound"
