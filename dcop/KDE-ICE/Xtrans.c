@@ -1025,7 +1025,7 @@ TRANS(MakeAllCOTSServerListeners) (char *port, int *partial, int *count_ret,
 	if (trans->flags&TRANS_ALIAS || trans->flags&TRANS_NOLISTEN)
 	    continue;
 
-	sprintf(buffer,"%s/:%s", trans->TransName, port ? port : "");
+	snprintf(buffer, sizeof(buffer), "%s/:%s", trans->TransName, port ? port : "");
 
 	PRMSG (5,"MakeAllCOTSServerListeners: opening %s\n",
 	       buffer, 0, 0);
@@ -1127,7 +1127,7 @@ TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret,
 	if (trans->flags&TRANS_ALIAS || trans->flags&TRANS_NOLISTEN)
 	    continue;
 
-	sprintf(buffer,"%s/:%s", trans->TransName, port ? port : "");
+	snprintf(buffer, sizeof(buffer), "%s/:%s", trans->TransName, port ? port : "");
 
 	PRMSG (5,"MakeAllCLTSServerListeners: opening %s\n",
 	    buffer, 0, 0);

@@ -367,9 +367,9 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 
 	if (np = getnodebyaddr(saddr->sdn_add.a_addr,
 	    saddr->sdn_add.a_len, AF_DECnet)) {
-	    sprintf(addrbuf, "%s:", np->n_name);
+	    snprintf(addrbuf, sizeof(addrbuf), "%s:", np->n_name);
 	} else {
-	    sprintf(addrbuf, "%s:", dnet_htoa(&saddr->sdn_add));
+	    snprintf(addrbuf, sizeof(addrbuf), "%s:", dnet_htoa(&saddr->sdn_add));
 	}
 	addr = addrbuf;
 	break;
