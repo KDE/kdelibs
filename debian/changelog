@@ -1,9 +1,37 @@
+ikdelibs (4:2.1.1-6) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Locale updates
+    More http fixes
+  * Update build-depends to include real | virtual
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 08 Apr 2001 18:00:00 -0700
+
+kdelibs (4:2.1.1-5) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Several more http fixes
+  * Removing old AA bits 
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Apr 2001 04:33:00 -0700
+
+kdelibs (4:2.1.1-4) unstable; urgency=low
+ 
+  * Sync with upstream.
+    Proxy Authentication fix...round 2.
+  * Oh..and Happy Birthday to my wife Audra.  :)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 04 Apr 2001 18:04:00 -0700
+
 kdelibs (4:2.1.1-3) unstable; urgency=low
  
-  * Sync with upstream.  Includes several khtml fixes
+  * Sync with upstream.  
+    Includes several khtml fixes
+    Memory leak fix
+    Proxy Authentication fix
   * Update pam file for kde, add more documentation in it and modify defaults
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 01 Apr 2001 06:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 03 Apr 2001 10:18:00 -0700
 
 kdelibs (4:2.1.1-2) unstable; urgency=low
  
