@@ -1549,33 +1549,7 @@ private:
     KActionSeparatorPrivate *d;
 };
 
-/**
- * A set of pointers to possibly unrelated KAction objects from zero or
- * more KActionCollections.
- */
-class KActionPtrList : public QValueList<KAction*>
-{
-public:
-  KActionPtrList();
-  KActionPtrList( const KActionPtrList& );
-  KActionPtrList( const KActionCollection& );
-
-  void insert( KAction* );
-  KAction* take( KAction* );
-
-  KAction* action( int index ) const;
-  KAction* action( const char* name, const char* classname = 0 ) const;
-
-  void createKeyMap( KAccelActions& ) const;
-  void setKeyMap( const KAccelActions& map );
-
-  KActionPtrList &operator=( const KActionPtrList &c );
-  KActionPtrList &operator=( const KActionCollection &c );
-  KActionPtrList &operator+=( const KActionCollection &c );
-
-private:
-  class KActionPtrListPrivate* d;
-};
+typedef QValueList<KAction *> KActionPtrList;
 
 /**
  * A managed set of KAction objects.
