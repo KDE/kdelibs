@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.50  1998/06/16 06:03:15  kalle
+// Implemented copy constructors and assignment operators or disabled them
+//
 // Revision 1.49  1998/05/28 20:35:26  kalle
 // On Matthias' request: ICON(x) in addition to Icon(x)
 //
@@ -145,8 +148,13 @@
 #ifndef _KAPP_H
 #define _KAPP_H
 
-#include <kconfig.h>
+// Version macros. Never put this further down.
+#define KDE_VERSION_STRING 1.0pre
+#define KDE_VERSION_MAJOR 0
+#define KDE_VERSION_MINOR 99
+#define KDE_VERSION_RELEASE 1
 
+#include <kconfig.h>
 
 #ifndef klocale
 #define klocale KApplication::getKApplication()->getLocale()
