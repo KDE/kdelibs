@@ -86,7 +86,10 @@ public:
    KProcessPrivate() : 
      usePty(KProcess::NoCommunication),
      addUtmp(false), useShell(false),
-     pty(0)
+     pty(0),
+     input_data(0),
+     input_sent(0),
+     input_total(0) 
    {
    }
 
@@ -101,6 +104,19 @@ public:
    QString wd;
    QCString shell;
    QCString executable;
+
+    /**
+     * The buffer holding the data that has to be sent to the child
+     */
+    const char *input_data;
+    /**
+     * The number of bytes already transmitted
+     */
+    int input_sent;
+    /**
+     * The total length of input_data
+     */
+    int input_total;
 };
 
 /////////////////////////////
@@ -117,10 +133,7 @@ KProcess::KProcess( QObject* parent, const char *name )
     innot(0),
     outnot(0),
     errnot(0),
-    communication(NoCommunication),
-    input_data(0),
-    input_sent(0),
-    input_total(0)
+    communication(NoCommunication)
 {
   KProcessController::ref();
   KProcessController::theKProcessController->addKProcess(this);
@@ -142,10 +155,7 @@ KProcess::KProcess()
     innot(0),
     outnot(0),
     errnot(0),
-    communication(NoCommunication),
-    input_data(0),
-    input_sent(0),
-    input_total(0)
+    communication(NoCommunication)
 {
   KProcessController::ref();
   KProcessController::theKProcessController->addKProcess(this);
@@ -446,7 +456,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
     emit processExited(this);
     break;
   default: // NotifyOnExit
-    input_data = 0; // Discard any data for stdin that might still be there
+    d->input_data = 0; // Discard any data for stdin that might still be there
     break;
   }
 
@@ -570,15 +580,15 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   // if there is still data pending, writing new data
   // to stdout is not allowed (since it could also confuse
   // kprocess ...)
-  if (input_data != 0)
+  if (d->input_data != 0)
     return false;
 
   if (communication & Stdin) {
-    input_data = buffer;
-    input_sent = 0;
-    input_total = buflen;
+    d->input_data = buffer;
+    d->input_sent = 0;
+    d->input_total = buflen;
     innot->setEnabled(true);
-    if (input_total)
+    if (d->input_total)
        slotSendData(0);
     return true;
   } else
@@ -680,12 +690,12 @@ void KProcess::slotChildError(int fdno)
 
 void KProcess::slotSendData(int)
 {
-  if (input_sent == input_total) {
+  if (d->input_sent == d->input_total) {
     innot->setEnabled(false);
-    input_data = 0;
+    d->input_data = 0;
     emit wroteStdin(this);
   } else
-    input_sent += ::write(in[1], input_data+input_sent, input_total-input_sent);
+    d->input_sent += ::write(in[1], d->input_data+d->input_sent, d->input_total-d->input_sent);
 }
 
 void KProcess::setUseShell(bool useShell, const char *shell)
