@@ -156,6 +156,7 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 
 void TCPSlaveBase::CloseDescriptor()
 {
+        stopTLS();
 	if (fp) {
 		fclose(fp);
 		fp=0;
@@ -225,6 +226,12 @@ bool TCPSlaveBase::canUseTLS()
 {
         if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
         return d->kssl->settings()->tlsv1();
+}
+
+
+bool TCPSlaveBase::usingTLS()
+{
+        return d->usingTLS;
 }
 
 

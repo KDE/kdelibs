@@ -78,6 +78,14 @@ protected:
     bool ConnectToHost(const QCString &host, unsigned short int port);
 
     /**
+     * Are we using TLS?
+     *
+     * @return if so, true is returned.
+     *         if not, true isn't returned.
+     */
+    bool usingTLS();
+
+    /**
      * Can we use TLS?
      *
      * @return if so, true is returned.
