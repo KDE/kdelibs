@@ -951,6 +951,11 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
      * isn't supported that's no problem, plugins just won't work and you'll
      * be restricted to the internal styles.
      *
+     * Whenever we create a KStyle object, we have to connect to its signal
+     * destroyed() to make sure we notice its destruction when someone calls
+     * QApplication::setStyle(). He shouldn't do this of course, but we can't
+     * prevent it. (pfeiffer)
+     *
      * mosfet@jorsm.com
      */
 
@@ -962,6 +967,9 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
     void *oldHandle = styleHandle;
 
+    if(pKStyle)
+	disconnect(pKStyle, SIGNAL(destroyed()), this, 0);
+    
     if(styleStr == "Default"){
         pKStyle = new KDEStyle;
         setStyle(pKStyle);
@@ -1002,6 +1010,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             pKStyle = new KDEStyle;
             setStyle(pKStyle);
             styleHandle=0;
+	    connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
             return;
         }
 
@@ -1049,9 +1058,16 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     if(oldHandle){
         lt_dlclose((lt_dlhandle*)oldHandle);
     }
-
+    if(pKStyle)
+	connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
 }
 
+// in case someone calls QApplication::setStyle(), our kstyle would get deleted
+// without us noticing...
+void KApplication::kstyleDestroyed()
+{
+    pKStyle = 0L;
+}
 
 QString KApplication::caption() const
 {

@@ -198,7 +198,7 @@ public:
    */
   bool requestShutDown();
 
-  /** 
+  /**
    * Propagates the network address of the session manager in the
    * SESSION_MANAGER environment variable so that child processes can
    * pick it up.
@@ -212,7 +212,7 @@ public:
    * are kdesktop or kicker.
    */
     void propagateSessionManager();
-    
+
     /*
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with @ref KSessionManaged.
@@ -308,16 +308,16 @@ public:
    *
    * There are three possibilities:
    * @li X-DCOP-ServiceType=None (default)
-   *    Always start a new service, 
+   *    Always start a new service,
    *    don't wait till the service registers with dcop.
    * @li X-DCOP-ServiceType=Multi
-   *    Always start a new service, 
+   *    Always start a new service,
    *    wait until the service has registered with dcop.
    * @li X-DCOP-ServiceType=Unique
-   *    Only start the service if it isn't already running, 
+   *    Only start the service if it isn't already running,
    *    wait until the service has registered with dcop.
    */
-   
+
   /**
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
@@ -349,9 +349,9 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopPath( const QString& _name, const QString &URL, 
+  static int startServiceByDesktopPath( const QString& _name, const QString &URL,
 		QString *error=0, QCString *dcopService=0, int *pid = 0 );
-  static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(), 
+  static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
 		QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
@@ -363,14 +363,14 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
    *         this service is available. If empty, the service does
-   *         not provide DCOP services. iff a process was started, 'pid' 
+   *         not provide DCOP services. iff a process was started, 'pid'
    *         contains its pid.
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopName( const QString& _name, const QString &URL, 
+  static int startServiceByDesktopName( const QString& _name, const QString &URL,
 		QString *error=0, QCString *dcopService=0, int *pid = 0 );
-  static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(), 
+  static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
   		QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
@@ -471,7 +471,7 @@ public:
    * @return A truly unpredictable number in the range [0, MAX_RAND)
    */
   static int random();
-  
+
   /**
    * Generate a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.  If negative, the
@@ -522,6 +522,7 @@ protected slots:
 private slots:
   void dcopFailure(const QString &);
   void x11FilterDestroyed();
+  void kstyleDestroyed();
 
 private:
   KApplicationPrivate* pAppData;
@@ -739,6 +740,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.151  2000/05/17 09:30:12  faure
+// Updated date in version number - since you have to recompile all of
+// KDE anyway :/
+//
 // Revision 1.150  2000/05/11 19:24:21  coolo
 // including a date in the version string so we have an idea what it is
 // when bug reports come in
