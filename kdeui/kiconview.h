@@ -211,7 +211,7 @@ public:
    /**
     * @return The size set by setPixmapSize() or QSize( 0, 0 )
     */
-    const QSize pixmapSize() const;
+    QSize pixmapSize() const;
 
 protected:
     void init();
