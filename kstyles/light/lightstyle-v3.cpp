@@ -452,7 +452,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 			p->setPen( cg.midlight() );
 			p->drawLine( i, r.top(), i, r.bottom() );
 			p->setPen( cg.background() );
-			p->drawLine( i + 1, r.top(), i, r.bottom() );
+			p->drawLine( i + 1, r.top(), i + 1, r.bottom() );
 			p->setPen( cg.mid() );
 			p->drawLine( i + 2, r.top(), i + 2, r.bottom() );
 		    }
@@ -467,7 +467,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 			p->setPen( cg.midlight() );
 			p->drawLine( r.left(), i, r.right(), i );
 			p->setPen( cg.background() );
-			p->drawLine( r.left(), i + 1, r.right(), i );
+			p->drawLine( r.left(), i + 1, r.right(), i + 1);
 			p->setPen( cg.mid() );
 			p->drawLine( r.left(), i + 2, r.right(), i + 2 );
 		    }
