@@ -288,11 +288,12 @@ public:
 class Object_stub_private;
 
 class Object_stub : virtual public Object_base {
-protected:
+private:
 	friend class Object_base;
 
 	Object_stub_private *d;		// do not use until there is a very big problem
 
+protected:
 	long _objectID,_lookupCacheRandom;
 	Connection *_connection;
 
