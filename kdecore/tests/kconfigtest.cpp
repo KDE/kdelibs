@@ -287,6 +287,8 @@ qWarning("Reverting entries");
   test( "hasKey() 2", sc2.hasKey( "stringEntry2" ) == false);
   test( "readEntry() 2", sc2.readEntry( "stringEntry2", "bla" ) == "bla" );
 
+  qWarning("hasDefault() 1: %s", sc2.hasDefault( "stringEntry1" ) ? "YES" : "NO");
+
   sc2.setGroup("Hello");
   test( "readEntry()", sc2.readEntry( "Test" ) == LOCAL8BITENTRY );
   test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel").isEmpty() );

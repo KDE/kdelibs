@@ -1725,6 +1725,30 @@ void KConfigBase::revertToDefault(const QString &key)
   putData(aEntryKey, entry, true); // Revert
 }
 
+bool KConfigBase::hasDefault(const QString &key)
+{
+  KEntryKey aEntryKey(mGroup, key.utf8());
+  aEntryKey.bDefault = true;
+
+  if (!locale().isNull()) {
+    // try the localized key first
+    aEntryKey.bLocal = true;
+    KEntry entry = lookupData(aEntryKey);
+    if (!entry.mValue.isNull())
+        return true;
+
+    aEntryKey.bLocal = false;
+  }
+
+  // try the non-localized version
+  KEntry entry = lookupData(aEntryKey);
+  if (!entry.mValue.isNull())
+     return true;
+
+  return false;  
+}
+
+
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
 {
