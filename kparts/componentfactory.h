@@ -232,8 +232,8 @@ namespace KParts
                 return 0;
             }
 
-            return createPartInstanceFromLibrary<T>( library.local8Bit(), parent, name, 
-                                                     args, error );
+            return createPartInstanceFromLibrary<T>( library.local8Bit(), parentWidget,
+                                                     widgetName, parent, name, args, error );
         }
 
         template <class T, class ServiceIterator>
