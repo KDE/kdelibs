@@ -32,14 +32,14 @@ void KXMLGUIFactory::mergeXML( QDomElement base, QDomElement additive )
 
     if ( !matchingElement.isNull() )
       mergeXML( e, matchingElement );
-      
+
   }
 
   e = additive.firstChild().toElement();
   while ( !e.isNull() )
   {
     QDomElement matchingElement = findMatchingElement( e, base );
-    
+
     if ( matchingElement.isNull() )
     {
       QDomElement newChild = e;
@@ -48,7 +48,7 @@ void KXMLGUIFactory::mergeXML( QDomElement base, QDomElement additive )
     }
     else
       e = e.nextSibling().toElement();
-    
+
   }
 
 }

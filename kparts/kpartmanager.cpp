@@ -22,30 +22,6 @@ KPartManager::~KPartManager()
 bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 {
 
-  /*
-  if ( ev->type() == QEvent::FocusIn )
-  {
-    qDebug("FocusIn Event");
-    QObject* o = obj;
-    do
-    {
-      if ( o->inherits("QWidget") )
-      {
-        KPart * part = findPartFromWidget( (QWidget*)o );
-	if ( !part )
-	  return FALSE;
-		
-        m_activePart = part;
-        emit activePartChanged( m_activePart );
-	return FALSE;
-      }
-      o = o->parent();
-    } while( o );
-
-    return FALSE;
-  }
-  */
-
   if ( ev->type() != QEvent::MouseButtonPress &&
        ev->type() != QEvent::MouseButtonDblClick &&
        ev->type() != QEvent::FocusIn )
@@ -67,10 +43,12 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( part && part != m_activePart )
     {
       m_activePart = part;
+      qDebug(QString("Part %1 made active because %2 got focus").arg(part->name()).arg(w->className()));
       emit activePartChanged( m_activePart );
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
+
     }
 
     w = w->parentWidget();
@@ -101,15 +79,22 @@ void KPartManager::addPart( KPart *part )
 
   m_parts.append( part );
 
+  part->setManager( this );
+
   m_activePart = part;
+  //qDebug(QString("Part %1 added. Making active").arg(part->name()));
   emit activePartChanged( m_activePart );
 }
 
 void KPartManager::removePart( KPart *part )
 {
   if ( m_parts.findRef( part ) == -1 )
+  {
+    qDebug(QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()));
     return;
+  }
 
+  //qDebug(QString("Part %1 removed").arg(part->name()));
   m_parts.removeRef( part );
 
   if ( part == m_activePart )

@@ -4,10 +4,12 @@
 
 #include <qsplitter.h>
 #include <qlayout.h>
+#include <qcheckbox.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qtextstream.h>
 #include <qmultilinedit.h>
+#include <qlineedit.h>
 #include <qvbox.h>
 
 #include <kiconloader.h>
@@ -109,7 +111,7 @@ void Shell::slotFileEdit()
 Part1::Part1( QWidget * parentWidget )
  : KReadOnlyPart( "Part1" )
 {
-  m_instance = new KInstance( "part1" ); 
+  m_instance = new KInstance( "part1" );
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
   setXMLFile( "part1.rc" );
@@ -119,13 +121,13 @@ Part1::Part1( QWidget * parentWidget )
 
 Part1::~Part1()
 {
-  delete m_instance; 
+  delete m_instance;
 }
 
 KInstance *Part1::instance()
 {
-  return m_instance; 
-} 
+  return m_instance;
+}
 
 bool Part1::openFile()
 {
@@ -153,14 +155,26 @@ bool Part1::openFile()
 Part2::Part2( QWidget * parentWidget )
  : KPart( "Part2" )
 {
-  m_instance = new KInstance( "part2" ); 
-  setWidget( new QWidget( parentWidget, "Part2Widget" ) );
+  m_instance = new KInstance( "part2" );
+  QWidget * w = new QWidget( parentWidget, "Part2Widget" );
+  setWidget( w );
+
+  // Added some more widgets to test the focus thing
+  QCheckBox * cb = new QCheckBox( "something", widget() );
+  QLineEdit * l = new QLineEdit( "something", widget() );
+  l->move(0,50);
+  // Since the main widget is a dummy one, we HAVE to set
+  // a focus proxy for it, otherwise we get the
+  // the famous activating-file-menu-switches-part bug.
+  w->setFocusProxy( cb );
+  w->setFocusPolicy( cb->focusPolicy() );
+
   // setXMLFile( ... ); // no actions currently
 }
 
 Part2::~Part2()
 {
-  delete m_instance; 
+  delete m_instance;
 }
 
 KInstance *Part2::instance()

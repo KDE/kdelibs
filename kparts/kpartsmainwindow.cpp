@@ -141,6 +141,7 @@ QWidget *KPartsMainWindow::createContainer( QObject *parent, const QDomElement &
 
 void KPartsMainWindow::createGUI( KPart * part )
 {
+  qDebug(QString("KPartsMainWindow::createGUI for %1").arg(part?part->name():"0L"));
   // start the factory with this as an input (shell servant),
   // the part servant (or none) as the other input, and this as an output (GUI builder)
 

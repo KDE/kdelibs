@@ -44,7 +44,7 @@ QStringList KPart::pluginActionDocuments()
 {
   if ( !instance() )
     return QStringList();
-  
+
 #warning FIX THIS WHEN MOVING TO KDELIBS
   return instance()->dirs()->findAllResources( "appdata", "*", true, false );
 }
@@ -58,7 +58,8 @@ QDomDocument KPart::mergedActionDOM()
  if ( pluginDocuments.count() == 0 && instance() )
   {
     qDebug( "no plugins found for %s", instance()->instanceName().data() );
-    assert( !m_config.isNull() );
+    if( m_config.isNull() )
+      qDebug(QString("ERROR : empty configuration for part %1").arg(name()));
     m_mergedDOM.setContent( m_config );
     m_bPluginActionsMerged = true;
     return m_mergedDOM;
@@ -68,11 +69,11 @@ QDomDocument KPart::mergedActionDOM()
   QStringList::ConstIterator pluginEnd = pluginDocuments.end();
 
   QDomDocument pluginDoc;
-  
+
   for (; pluginIt !=  pluginEnd; ++pluginIt )
   {
     QString xml = KXMLGUIFactory::readConfigFile( *pluginIt );
-  
+
     if ( pluginDoc.documentElement().isNull() )
       pluginDoc.setContent( xml );
     else
@@ -85,15 +86,16 @@ QDomDocument KPart::mergedActionDOM()
     }
   }
 
-  assert( !m_config.isNull() );
+  if( m_config.isNull() )
+    qDebug(QString("ERROR : empty configuration for part %1").arg(name()));
   m_mergedDOM.setContent( m_config );
-  
+
   KXMLGUIFactory::mergeXML( m_mergedDOM.documentElement(), pluginDoc.documentElement() );
 
   m_bPluginActionsMerged = true;
 
   return m_mergedDOM;
-} 
+}
 
 void KPart::setWidget( QWidget *widget )
 {
@@ -105,6 +107,7 @@ void KPart::setWidget( QWidget *widget )
 void KPart::setXMLFile( const QString & file )
 {
     m_config = KXMLGUIFactory::readConfigFile( file );
+    //qDebug(QString("KPart::setXMLFile %1 :\n%2").arg(file).arg(m_config));
 }
 
 QAction* KPart::action( const char* name )
