@@ -9,13 +9,17 @@
 int main(int argc, char **argv)
 {
 	if(argc < 5)
+	{
+		cout << "Usage : ksvg2png width height svgfilename outputfilename" << endl;
+		cout << "Please use full path name for svgfilename" << endl;
 		return -1;
-	
+	}
+
 	int width = atoi(argv[1]);
 	int height = atoi(argv[2]);
 
 	QImage *img = 0;
-	
+
 	KSVGIconEngine *svgEngine = new KSVGIconEngine();
 
 	if(svgEngine->load(width, height, argv[3]))
@@ -24,7 +28,7 @@ int main(int argc, char **argv)
 		img = new QImage();
 
 	delete svgEngine;
-	
+
 	img->save(argv[4], "PNG");
 
 	delete img;
