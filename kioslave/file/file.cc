@@ -1060,8 +1060,18 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
               buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
+#if defined(__svr4__) && defined(__sun__) // MARCO for Solaris 8 and I
+                // believe this is true for SVR4 in general
+                buffer.sprintf( "mount -F %s %s %s %s 2>%s"
+                                fstype.data()
+                                _ro ? "-oro" : ""
+                                dev.data()
+                                point.data()
+                                tmp );
+#else
               buffer.sprintf( "mount %s -t %s %s %s 2>%s", readonly.data(),
                               fstype.data(), dev.data(), point.data(), tmp );
+#endif
 
         kdDebug(7101) << buffer << endl;
 
