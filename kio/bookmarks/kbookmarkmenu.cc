@@ -164,7 +164,7 @@ QString KBookmarkMenu::contextMenuItemAddress()
   Q_ASSERT(!parentBookmark.isNull());
   int length = 0;
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) ) 
-     length++;
+    length++;
 
   // find relative position
   int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
@@ -185,18 +185,18 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << address << endl;
   if (address.isNull())
-     return;
+    return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
   
   contextMenu->clear();
 
   if (bookmark.isGroup()) {
-     contextMenu->insertItem("Delete Folder", this, SLOT(slotRMBActionRemoveBookmark()));
-     contextMenu->insertItem("Open Folder in Tabs", this, SLOT(slotRMBActionOpenFolder()));
+    contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemoveBookmark()) );
+    contextMenu->insertItem( i18n( "Open Folder in Tabs" ), this, SLOT(slotRMBActionOpenFolder()) );
   } else {
-     contextMenu->insertItem("Delete bookmark", this, SLOT(slotRMBActionRemoveBookmark()));
-     contextMenu->insertItem("Open bookmark", this, SLOT(slotRMBActionOpenBookmark()));
+    contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemoveBookmark()) );
+    contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpenBookmark()) );
   }
 }
 
@@ -205,7 +205,7 @@ void KBookmarkMenu::slotRMBActionRemoveBookmark()
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemoveBookmark" << address << endl;
   if (address.isNull())
-     return;
+    return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
@@ -221,7 +221,7 @@ void KBookmarkMenu::slotRMBActionOpenBookmark()
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenBookmark" << address << endl;
   if (address.isNull())
-     return;
+    return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
@@ -233,7 +233,7 @@ void KBookmarkMenu::slotRMBActionOpenFolder()
   QString address = contextMenuItemAddress();
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpenFolder" << address << endl;
   if (address.isNull())
-     return;
+    return;
   KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
 
@@ -249,7 +249,7 @@ void KBookmarkMenu::slotRMBActionOpenFolder()
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) )
   {
     if ( bm.isSeparator() || bm.isGroup() ) 
-       continue;
+      continue;
     urlList << bm.url().url().utf8();
   }
   
@@ -599,7 +599,7 @@ void KBookmarkMenuNSImporter::endFolder()
 
 BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name, const QString& caption)
-  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem("Insert Folder..."))
+  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem("New Folder..."))
 {
   m_mgr = mgr;
 
@@ -625,7 +625,6 @@ BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url,
   vert->addWidget( m_folderTree );
 
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
-
 }
 
 void BookmarkEditDialog::slotOk() { accept(); }
