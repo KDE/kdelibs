@@ -620,7 +620,7 @@ int TCPSlaveBase::verifyCertificate()
     setMetaData("ssl_cert_state", QString::number(ksv));
     setMetaData("ssl_peer_certificate", pc.toString());
 
-    if (pc.chain().isValid() && pc.chain().depth() >= 1) {
+    if (pc.chain().isValid() && pc.chain().depth() > 1) {
        QString theChain;
        QPtrList<KSSLCertificate> chain = pc.chain().getChain();
        for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
