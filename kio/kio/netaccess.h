@@ -241,35 +241,10 @@ public:
     /**
      * Tests whether a URL exists.
      *
-     * This is a convenience function for @ref KIO::stat
-     * (it saves creating a slot and testing for the job result).
-     *
-     * @param url the url we are testing
-     * @param window main window associated with this job. This is used to
-     *               automatically cache and discard authentication information
-     *               as needed. If NULL, authentication information will be
-     *               cached only for a short duration after which the user will
-     *               again be prompted for passwords as needed.
-     * @return true if the URL exists, false otherwise
-     */
-    static bool exists(const KURL& url, QWidget* window);
-
-    /**
-     * @deprecated. Use the function above instead.
-     */
-    static bool exists(const KURL& url);
-
-    /**
-     * Overloaded version of @ref exists().
-     * A stat() can have two meanings. Either we want to read from this URL,
-     * or to check if we can write to it. First case is "source", second is "dest".
-     * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
-     * (e.g. with FTP)
-     * Tests whether a URL exists.
-     *
      * @param url the url we are testing
      * @param source if true, we want to read from that URL.
      *               If false, we want to write to it.
+     * IMPORTANT: see documentation for @ref KIO::stat for more details about this.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
@@ -283,7 +258,17 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool exists(const KURL& url, bool source);
+    static bool exists(const KURL& url, QWidget* window);
+
+    /**
+     * @deprecated. Use the function above instead.
+     */
+    static bool exists(const KURL& url);
+
+    /**
+     * @deprecated. Use the function above instead.
+     */
+    static bool exists(const KURL& url, bool source); // KDE4: merge
 
     /**
      * Tests whether a URL exists and return information on it.
