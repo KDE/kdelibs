@@ -36,15 +36,15 @@
 # that uses little-endian encoding and has a different magic number
 # (0x0064732E in little-endian encoding).
 0	lelong		0x0064732E	
->12	lelong		1		audio/x-dec-basic
->12	lelong		2		audio/x-dec-basic
->12	lelong		3		audio/x-dec-basic
->12	lelong		4		audio/x-dec-basic
->12	lelong		5		audio/x-dec-basic
->12	lelong		6		audio/x-dec-basic
->12	lelong		7		audio/x-dec-basic
+>12	lelong		1		audio/x-adpcm
+>12	lelong		2		audio/x-adpcm
+>12	lelong		3		audio/x-adpcm
+>12	lelong		4		audio/x-adpcm
+>12	lelong		5		audio/x-adpcm
+>12	lelong		6		audio/x-adpcm
+>12	lelong		7		audio/x-adpcm
 #                                       compressed (G.721 ADPCM)
->12	lelong		23		audio/x-dec-adpcm
+>12	lelong		23		audio/x-adpcm
 
 # Bytes 0-3 of AIFF, AIFF-C, & 8SVX audio files are "FORM"
 #					AIFF audio data
@@ -56,17 +56,6 @@
 
 # MIDI
 0       string		MThd            audio/x-midi
-# Creative Labs AUDIO stuff
-#					Standard MIDI data
-0	string	MThd			audio/unknown	
-#					Creative Music (CMF) data
-0	string	CTMF			audio/unknown	
-#					SoundBlaster instrument data
-0	string	SBI			audio/unknown	
-#					Creative Labs voice data
-0	string	Creative\ Voice\ File	audio/unknown	
-## is this next line right?  it came this way...
-#>19	byte	0x1A
 
 # [GRR 950115:  is this also Creative Labs?  Guessing that first line
 #  should be string instead of unknown-endian long...]
@@ -421,22 +410,6 @@
 #					TIFF file, little-endian
 0	string		II		image/tiff
 
-# possible GIF replacements; none yet released!
-# (Greg Roelofs, newt@uchicago.edu)
-#
-# GRR 950115:  this was mine ("Zip GIF"):
-#					ZIF image (GIF+deflate alpha)
-0	string		GIF94z		image/unknown
-#
-# GRR 950115:  this is Jeremy Wohl's Free Graphics Format (better):
-#					FGF image (GIF+deflate beta)
-0	string		FGF95a		image/unknown
-#
-# GRR 950115:  this is Thomas Boutell's Portable Bitmap Format proposal
-# (best; not yet implemented):
-#					PBF image (deflate compression)
-0	string		PBF		image/unknown
-
 # GIF
 0	string		GIF		image/gif
 
@@ -572,7 +545,7 @@
 #						MPEG file
 0       belong          0x000001b3              video/mpeg
 0       belong          0x000001ba              video/mpeg
-0       beshort&0xfff0  0xfff0                  audio/mpeg
+0       beshort&0xfff0  0xfff0                  audio/x-mp3
 
 # FLI animation format
 0	leshort		0xAF11				video/fli
@@ -644,7 +617,7 @@
 # Java
 
 0	short		0xcafe
->2	short		0xbabe		application/java
+>2	short		0xbabe		application/x-java
 
 # news and mail
 0       string          Return-Path:    message/rfc822
@@ -652,7 +625,7 @@
 0       string          Xref:           message/news
 0       string          From:           message/rfc822
 0       string          Article         message/news
-0       string          BABYL           message/x-gnu-rmail
+#0       string          BABYL           message/x-gnu-rmail
 0       string          Received:       message/rfc822
 
 # vcard / vcalendar
@@ -669,10 +642,10 @@
 0       string          *BEGIN
 >7      string          WORDS           application/x-applixword
 >7      string          GRAPHICS	application/x-applixgraphics
->7      string          RASTER          application/x-applix
+#>7      string          RASTER          application/x-applix
 >7      string          SPREADSHEETS    application/x-applixspread
->7      string          MACRO		application/x-applix
->7      string          BUILDER		application/x-applix
+#>7      string          MACRO		application/x-applix
+#>7      string          BUILDER		application/x-applix
 
 #------------------------------------------------------------------------------
 # diff:  file(1) magic for diff(1) output
