@@ -1232,8 +1232,10 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
  */
 void KMdiMainFrm::switchToToplevelMode()
 {
-   if (m_mdiMode == KMdi::ToplevelMode)
-      return;
+   if (m_mdiMode == KMdi::ToplevelMode) {
+	   mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
+           return;
+   }
 
    KMdi::MdiMode oldMdiMode = m_mdiMode;
 
@@ -1333,8 +1335,10 @@ void KMdiMainFrm::finishToplevelMode()
  */
 void KMdiMainFrm::switchToChildframeMode()
 {
-   if (m_mdiMode == KMdi::ChildframeMode)
+   if (m_mdiMode == KMdi::ChildframeMode) {
+      mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
       return;
+   }
 
    QPtrList<KDockWidget> rootDockWidgetList;
    if (m_mdiMode == KMdi::TabPageMode) {
@@ -1475,8 +1479,10 @@ void KMdiMainFrm::switchToTabPageMode()
 {
    KMdiChildView* pRemActiveWindow = activeWindow();
 
-   if (m_mdiMode == KMdi::TabPageMode)
+   if (m_mdiMode == KMdi::TabPageMode) {
+      mdiModeHasBeenChangedTo(KMdi::TabPageMode);
       return;  // nothing need to be done
+   }
 
    // make sure that all MDI views are detached
    if (m_mdiMode == KMdi::ChildframeMode) {
@@ -1595,8 +1601,10 @@ void KMdiMainFrm::switchToIDEAlMode()
    kdDebug()<<"SWITCHING TO IDEAL"<<endl;
    KMdiChildView* pRemActiveWindow = activeWindow();
 
-   if (m_mdiMode == KMdi::IDEAlMode)
+   if (m_mdiMode == KMdi::IDEAlMode) {
+      mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
       return;  // nothing need to be done
+   }
 
    // make sure that all MDI views are detached
    if (m_mdiMode == KMdi::ChildframeMode) {
@@ -1607,6 +1615,7 @@ void KMdiMainFrm::switchToIDEAlMode()
    } else if (m_mdiMode == KMdi::TabPageMode) {
       m_mdiMode=KMdi::IDEAlMode;
       setupToolViewsForIDEALMode();
+      mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
       return;
    }
 

@@ -115,6 +115,8 @@ KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,const char* name): QObject(
         setXML( completeDescription, false /*merge*/ );
     }
  
+    if (actionCollection()->kaccel()==0)
+	    actionCollection()->setWidget(mdiMainFrm);
     m_toolMenu=new KActionMenu(i18n("Tool &Views"),actionCollection(),"kmdi_toolview_menu");
     m_mdiModeAction=new KSelectAction(i18n("MDI Mode"),0,actionCollection());
     QStringList modes;
