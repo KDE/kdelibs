@@ -1468,8 +1468,8 @@ Object KJS::getDOMExceptionConstructor(ExecState *exec)
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *, QValueList<DOM::Node>& nodes )
-  : DOMObject(), m_nodes(nodes)
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *, QValueList<DOM::Node>& nodes, int returnType )
+  : DOMObject(), m_nodes(nodes), m_returnType(returnType)
 {
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
 }
@@ -1483,7 +1483,10 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
     DOM::Node node = m_nodes[u];
-    return getDOMNodeOrFrame(exec,node); // optionnally call getDOMNode?
+    if ( m_returnType == KJS::HTMLCollection::ReturnNodeOrFrame )
+      return getDOMNodeOrFrame(exec,node);
+    else
+      return getDOMNode(exec,node);
   }
   return DOMObject::tryGet(exec,propertyName);
 }

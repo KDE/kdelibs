@@ -162,7 +162,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
   {
-    KJS::HTMLCollection htmlcoll(exec,coll);
+    KJS::HTMLCollection htmlcoll(exec,coll,KJS::HTMLCollection::ReturnNode);
     return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
   }
 
@@ -259,7 +259,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
   if(!element.isNull())
   {
-    KJS::HTMLCollection htmlcoll(exec,coll);
+    /// ### We use the document.all collection here, but in fact in IE:
+    // * document.all('bleh') looks for id=bleh or name=bleh,
+    // * document.bleh looks for name=bleh only (!)
+    // The other difference is what they return for frames/iframes, but we already take
+    // care of that with ReturnNodeOfFrame.
+    KJS::HTMLCollection htmlcoll(exec,coll, KJS::HTMLCollection::ReturnNodeOrFrame);
     return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
   }
   return Undefined();
@@ -973,7 +978,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       uint u = propertyName.toULong(&ok);
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
-      KJS::HTMLCollection coll(exec,form.elements());
+      KJS::HTMLCollection coll(exec, form.elements(), KJS::HTMLCollection::ReturnNode);
       Value namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems.type() != UndefinedType)
         return namedItems;
@@ -2631,8 +2636,8 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
+HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c, ReturnType ret)
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c), m_returnType(ret) {}
 
 HTMLCollection::~HTMLCollection()
 {
@@ -2760,7 +2765,10 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning single node" << endl;
 #endif
-      return getDOMNodeOrFrame(exec,node);
+      if ( m_returnType == ReturnNodeOrFrame )
+        return getDOMNodeOrFrame(exec,node);
+      else
+        return getDOMNode(exec,node);
     }
     else // multiple items, return a collection
     {
@@ -2773,7 +2781,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
-      return Value(new DOMNamedNodesCollection(exec,nodes));
+      return Value(new DOMNamedNodesCollection(exec,nodes,m_returnType));
     }
   }
 #ifdef KJS_VERBOSE
