@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <netwm.h>
 #include <dcopclient.h>
+#include <dcopref.h>
 
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
@@ -30,25 +31,7 @@
 
 static QString wallpaperForDesktop(int desktop)
 {
-    QString wallpaper;
-
-    QByteArray input;	
-    QByteArray output;
-
-    QDataStream s(input, IO_WriteOnly);
-    s << desktop;
-
-    QCString returnType;
-    
-    if (kapp->dcopClient()->call("kdesktop", "KBackgroundIface",
-				 "currentWallpaper(int)", input, returnType, output,
-				 false, 200) && returnType == "QString")
-    {
-	QDataStream s(output, IO_ReadOnly);
-	s >> wallpaper;
-    }
-
-    return wallpaper;
+    return DCOPRef("kdesktop", "KBackgroundIface").call("currentWallpaper", desktop);
 }
 
 class KRootPixmapData
