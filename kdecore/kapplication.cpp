@@ -2730,7 +2730,7 @@ bool KApplication::authorizeKAction(const char *action)
 
 bool KApplication::authorizeControlModule(const QString &menuId)
 {
-   if (menuId.isEmpty())
+   if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
    KConfig *config = KGlobal::config();
    KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
