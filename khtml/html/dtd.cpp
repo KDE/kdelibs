@@ -380,7 +380,9 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_FONT:
         // special handling for FONT: (_0 | 3)
         return check_array(childID, tag_list_3) || check_array(childID, tag_list_0);
-
+    case ID__KONQBLOCK:
+        if ( childID == ID__KONQBLOCK ) return false;
+        // Fall through!
     case ID_LI:
     case ID_DT:
     case ID_DIV:
@@ -396,7 +398,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_NOFRAMES:
     case ID_NOSCRIPT:
     case ID_CAPTION:
-    case ID__KONQBLOCK:
         // DIV: _1 *
         return check_array(childID, tag_list_1);
     case ID_A:
