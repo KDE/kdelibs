@@ -71,6 +71,7 @@ class KIO::SlaveList: public QList<Slave>
 
 Scheduler::Scheduler()
     : QObject(0, "scheduler"),
+      DCOPObject( "KIO::Scheduler" ),
     mytimer(this, "Scheduler::mytimer"),
     cleanupTimer(this, "Scheduler::cleanupTimer")
 {
@@ -113,6 +114,34 @@ Scheduler::debug_info()
         kdDebug(7006) << " Job: " << job->url().url() << endl;
     }
 }
+
+bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData )
+{
+  if ( fun != "reparseSlaveConfiguration(QString)" )
+    return DCOPObject::process( fun, data, replyType, replyData );
+
+  replyType = "void";
+  
+  QDataStream stream( data, IO_ReadOnly );
+  
+  QString proto;
+  
+  stream >> proto;
+
+  kdDebug( 7006 ) << "reparseConfiguration( " << proto << " )" << endl;
+  
+  Slave *slave = slaveList->first();
+  for (; slave; slave = slaveList->next() )
+    if ( slave->protocol() == proto || proto.isEmpty() )
+      slave->connection()->send( CMD_REPARSECONFIGURATION );
+  
+  return true;
+} 
+
+QCString Scheduler::functions()
+{
+  return DCOPObject::functions() + "reparseSlaveConfiguration(QString);";
+} 
 
 void Scheduler::_doJob(SimpleJob *job) {
     joblist.append(job);

@@ -366,6 +366,10 @@ void SlaveBase::chmod(KURL const &, int)
 void SlaveBase::slave_status()
 { slaveStatus( QString::null, false ); }
 
+void SlaveBase::reparseConfiguration()
+{
+} 
+
 bool SlaveBase::dispatch()
 {
     assert( m_pConnection );
@@ -448,6 +452,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_SLAVE_STATUS:
         slave_status();
         break;
+    case CMD_REPARSECONFIGURATION:
+        reparseConfiguration();
+	break;
     case CMD_GET: {
         Q_INT8 iReload;
 

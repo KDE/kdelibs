@@ -110,6 +110,8 @@ public:
 
   virtual void stat( const KURL& url );
 
+  virtual void reparseConfiguration();
+
 protected:
 
   void error( int _errid, const QString &_text );

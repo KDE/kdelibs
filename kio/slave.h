@@ -123,7 +123,7 @@ namespace KIO {
 
         void suspend();
         void resume();
-        
+
         bool suspended();
 	
 	/**
@@ -136,6 +136,8 @@ namespace KIO {
 	 */
 	void setIdle();
 
+        Connection *connection() { return &slaveconn; }
+    
     public slots:
         void accept(KSocket *socket);
 	void gotInput();

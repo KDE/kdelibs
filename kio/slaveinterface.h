@@ -56,7 +56,8 @@ class Connection;
    CMD_DEL = 'K',
    CMD_CHMOD = 'L',
    CMD_SPECIAL = 'M',
-   CMD_USERPASS = 'N'
+   CMD_USERPASS = 'N',
+   CMD_REPARSECONFIGURATION = 'O'
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };

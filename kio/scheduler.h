@@ -25,12 +25,14 @@
 #include "kio/job.h"
 #include <qtimer.h>
 
+#include <dcopobject.h>
+
 namespace KIO {
 
     class Slave;
     class SlaveList;
 
-    class Scheduler : public QObject {
+    class Scheduler : public QObject, virtual public DCOPObject {
 	Q_OBJECT
 
     public:
@@ -49,6 +51,11 @@ namespace KIO {
 
         void debug_info();
 
+        virtual bool process(const QCString &fun, const QByteArray &data,
+		             QCString& replyType, QByteArray &replyData);
+    
+        virtual QCString functions();
+    
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
 	void slotSlaveStatus(pid_t pid, const QCString &protocol,
@@ -62,7 +69,7 @@ namespace KIO {
 	Scheduler();
 
     public: // InfoDict needs Info, so we can't declare it private
-	class ProtocolInfo; 
+	class ProtocolInfo;
     private:
         class ProtocolInfoDict;
 

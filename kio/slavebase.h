@@ -333,6 +333,12 @@ public:
     virtual void slave_status();
 
     /**
+     * Called by the scheduler to tell the slave that the configuration
+     * changed (i.e. proxy settings) .
+     */
+    virtual void reparseConfiguration();
+
+    /**
      * @internal
      */
     static void sigsegv_handler(int);
