@@ -262,6 +262,10 @@ void KFileDialog::setFilter(const QString& filter)
     ops->setNameFilter(filterWidget->currentFilter());
 }
 
+void KFileDialog::setPreviewWidget(const QWidget *w) {
+    ops->setPreviewWidget(w);
+}
+
 void KFileDialog::slotOk()
 {
     if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
@@ -505,7 +509,7 @@ void KFileDialog::urlEntered(const KURL& url)
 	int newpos = urlstr.find('/', pos + 1);
 	if (newpos < 0)
 	    break;
-	
+
 	QString tmp = urlstr.mid(pos + 1, newpos - pos - 1);
 	list.append(tmp);
 	pos = newpos;

@@ -149,6 +149,16 @@ public:
     void setFilter(const QString& filter);
 
     /**
+     * Adds a preview widget and enters the preview mode. In this mode
+     * the dialog is splitted and the right part contains your widget.
+     * This widget has to inherit QWidget and it has to implement
+     * a slot <pre>showPreview(const KURL &);</pre> which is called
+     * every time the file changes. You may want to look at
+     * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
+     */
+    void setPreviewWidget(const QWidget *w);
+
+    /**
      * This method creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen. Note that with
      * this method the user must select an existing filename.

@@ -22,13 +22,12 @@
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
 
-KFilePreview::KFilePreview(QWidget *parent, const char *name) :
-                           QSplitter(parent, name), KFileView(), preview(0L) {
+KFilePreview::KFilePreview(KDirOperator *parent, const char *name) :
+                           QSplitter(parent, name), KFileView(), preview(0L), p(parent) {
 
     // only default stuff for now
     KFileIconView *files = new KFileIconView((QSplitter*)this, "left");
     files->KFileView::setViewMode(All);
-    //files->setAlignMode(QIconView::East);
     left=files;
     files->setOperator(this);
 
@@ -39,19 +38,24 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     l->move(10, 5);
     preview->setMinimumWidth(l->sizeHint().width()+20);
     setResizeMode(preview, QSplitter::KeepSize);
+    deleted=false;
 }
 
 KFilePreview::~KFilePreview() {
+    if(!deleted && preview)
+        delete preview;
 }
 
-void KFilePreview::setPreviewWidget(QWidget *w) {
+void KFilePreview::setPreviewWidget(const QWidget *w) {
 
     if(!w)
         return;
-    if(preview)
+    if(preview) {
+        deleted=true;
         delete preview;
+    }
 
-    preview=w;
+    preview=const_cast<QWidget*>(w);
     connect(this, SIGNAL(showPreview(const KURL &)),
             preview, SLOT(showPreview(const KURL &)));
     preview->recreate((QSplitter*)this, 0, QPoint(0, 0), true);
@@ -106,7 +110,8 @@ void KFilePreview::highlightFile(const KFileViewItem* item) {
 
 void KFilePreview::selectFile(const KFileViewItem* item) {
     sig->activateFile(item);
-    //emit showPreview();???
+    debug("------------ showPreview()");
+    emit showPreview(p->url());
 }
 
 void KFilePreview::activatedMenu(const KFileViewItem *item) {

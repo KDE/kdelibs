@@ -29,31 +29,23 @@
 #include <kdirlistbox.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
+#include <kdiroperator.h>
 #include <config-kfile.h>
 
 #include <qsplitter.h>
 
 #include <qstring.h>
 #include <qlabel.h>
-//#include <qpainter.h>
-//#include <qlistbox.h>
-
-//#include <qdir.h>
 
 #include <klocale.h>
-//#include <kconfig.h>
-//#include <kglobal.h>
 
-//#include <qvaluelist.h>
-
-//class QIconViewItem;
 
 class KFilePreview : public QSplitter, public KFileView
 {
     Q_OBJECT
 
 public:
-    KFilePreview(QWidget *parent, const char *name);
+    KFilePreview(KDirOperator *parent, const char *name);
     virtual ~KFilePreview();
 
     virtual QWidget *widget() { return this; }
@@ -67,7 +59,7 @@ public:
     virtual void clear();
     virtual void clearSelection();
 
-    void setPreviewWidget(QWidget *w);
+    void setPreviewWidget(const QWidget *w);
 
 signals:
     void showPreview(const KURL &url);
@@ -83,7 +75,9 @@ protected slots:
     void selectFile(const KFileViewItem*);
 
 private:
+    bool deleted;
     KFileView *left;
     QWidget *preview;
+    const KDirOperator * const p;  // parent (needed for url) - ugly hack :(
 };
 #endif

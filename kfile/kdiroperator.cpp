@@ -167,6 +167,12 @@ void KDirOperator::simpleView()
     setView(Simple, (viewKind & SeparateDirs) == SeparateDirs);
 }
 
+void KDirOperator::setPreviewWidget(const QWidget *w) {
+    _mode=static_cast<KFileDialog::Mode>(_mode | KFileDialog::Preview);
+    preview=const_cast<QWidget*>(w);
+    setView(Simple, false);
+}
+
 int KDirOperator::numDirs() const
 {
     return fileList->numDirs();
@@ -515,27 +521,28 @@ void KDirOperator::setView(FileView view, bool separateDirs)
     KFileView *myFileView = 0;
 
     if (separateDirs) {
-	KCombiView *combi = new KCombiView(this, "combi view");
-	if (view == Simple)
-	    combi->
-		setRight(new KFileIconView( combi, "simple view" ));
-	else
-	    combi->
-		setRight(new KFileDetailView( combi, "detail view" ));
-	myFileView = combi;
+        KCombiView *combi = new KCombiView(this, "combi view");
+        if (view == Simple)
+            combi->setRight(new KFileIconView( combi, "simple view" ));
+        else
+            combi->setRight(new KFileDetailView( combi, "detail view" ));
+        myFileView = combi;
     } else {
-	if (view == Simple)
-	    myFileView = new KFileIconView( this, "simple view" );
-	else if (view == Detail)
-	    myFileView = new KFileDetailView( this, "detail view" );
-    else
-        myFileView = new KFilePreview(this, "preview");
+        if (view == Simple)
+            myFileView = new KFileIconView( this, "simple view" );
+        else if (view == Detail)
+            myFileView = new KFileDetailView( this, "detail view" );
+        else {
+            KFilePreview *tmp=new KFilePreview(this, "preview");
+            tmp->setPreviewWidget(preview);
+            myFileView=tmp;
+        }
     }
 
     if ( (mode() & KFileDialog::Directory) )
-	myFileView->setViewMode(KFileView::Directories);
+        myFileView->setViewMode(KFileView::Directories);
     else
-	myFileView->setViewMode(KFileView::All);
+        myFileView->setViewMode(KFileView::All);
 
     setFocusProxy(myFileView->widget());
     connectView(myFileView);

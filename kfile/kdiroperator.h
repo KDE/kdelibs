@@ -70,6 +70,8 @@ class KDirOperator : public QWidget {
     void setMode( KFileDialog::Mode m );
     KFileDialog::Mode mode() const;
 
+    void setPreviewWidget(const QWidget *w);
+
     int numDirs() const;
     int numFiles() const;
 
@@ -122,6 +124,8 @@ class KDirOperator : public QWidget {
 
     KFileDialog::Mode _mode;
     KProgress *progress;
+
+    QWidget *preview;    // temporary pointer for the preview widget
 
  public slots:
     void back();
