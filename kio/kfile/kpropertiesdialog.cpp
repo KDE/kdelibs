@@ -804,7 +804,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   ++curRow;
 
   QLabel *l;
-  if ( !mimeComment.isEmpty() )
+  if ( !mimeComment.isEmpty() && !isDevice && !isIntoTrash)
   {
     l = new QLabel(i18n("Type:"), d->m_frame );
 
