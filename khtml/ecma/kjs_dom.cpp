@@ -237,7 +237,6 @@ const TypeInfo DOMDocument::info = { "Document", HostType,
 
 KJSO DOMDocument::tryGet(const UString &p) const
 {
-  KJSO result;
   DOM::Document doc = static_cast<DOM::Document>(node);
 
   if (p == "doctype")
@@ -294,7 +293,6 @@ Completion DOMDocFunction::tryExecute(const List &args)
   DOM::DOMString s = str.value().string();
 
   DOM::HTMLDocument d = DOM::HTMLDocument();
-  DOM::Element e2 = d.createElement(DOM::DOMString("br"));
 
   switch(id) {
   case CreateElement:
@@ -540,7 +538,7 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
 
   // array index ?
   bool ok;
-  long unsigned int idx = p.toULong();
+  long unsigned int idx = p.toULong(&ok);
   if (ok)
     result = getDOMNode(map.item(idx));
 
