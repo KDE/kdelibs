@@ -327,8 +327,8 @@ bool TextImpl::mouseEvent( int _x, int _y,
 int TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
                                  DOM::Node & node, int & offset )
 {
-    kdDebug(6030) << "TextImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
-               << " _tx=" << _tx << " _ty=" << _ty << endl;
+    //kdDebug(6030) << "TextImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
+    //           << " _tx=" << _tx << " _ty=" << _ty << endl;
     if(!m_render) return -2;
 
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
@@ -361,7 +361,7 @@ void TextImpl::recalcStyle()
 }
 
 // DOM Section 1.1.1
-bool TextImpl::childAllowed( NodeImpl */*newChild*/ )
+bool TextImpl::childAllowed( NodeImpl * /*newChild*/ )
 {
     return false;
 }
