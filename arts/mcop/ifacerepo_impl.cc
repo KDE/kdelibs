@@ -21,6 +21,7 @@
     */
 
 #include "ifacerepo_impl.h"
+#include <iostream>
 #include <stdio.h>
 
 using namespace std;
