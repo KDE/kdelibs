@@ -43,7 +43,6 @@ Name[tg]=Тасвири SGI (RGB)
 Name[th]=แฟ้มภาพ SGI (RGB)
 Name[uk]=Зображення SGI (RGB)
 Name[uz]=SGI-расм (RGB)
-Name[xx]=xxSGI Image (RGB)xx
 Name[zh_CN]=SGI 图像(RGB)
 Read=true
 Write=true

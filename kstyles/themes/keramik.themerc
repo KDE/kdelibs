@@ -21,7 +21,6 @@ Name[ta]=கேராமில்க்
 Name[tg]=Сафолӣ
 Name[th]=เครามิก - K
 Name[uz]=Керамика
-Name[xx]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=The default style using alphablending
 Comment[az]=Alfa şəffaflıq işlədən ön qurğulu tərz
@@ -77,7 +76,6 @@ Comment[th]=รูปแบบปริยาย - เทคนิคการ�
 Comment[tr]=Alpha karışımı kullanan öntanımlı stil
 Comment[uk]=Стиль з використанням плавного переходу кольорів
 Comment[uz]=Alphablending'ли андоза услуб
-Comment[xx]=xxThe default style using alphablendingxx
 Comment[zh_CN]=使用 alpha 混和的默认风格
 Comment[zh_TW]=使用 alphablending 的預設風格
 
