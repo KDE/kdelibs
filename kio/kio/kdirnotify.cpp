@@ -28,7 +28,7 @@ KDirNotify::KDirNotify()
    connectDCOPSignal(0, "KDirNotify", "FilesAdded(KURL)", "FilesAdded(KURL)", false);
    connectDCOPSignal(0, "KDirNotify", "FilesRemoved(KURL::List)", "FilesRemoved(KURL::List)", false);
    connectDCOPSignal(0, "KDirNotify", "FilesChanged(KURL::List)", "FilesChanged(KURL::List)", false);
-   connectDCOPSignal(0, "KDirNotify", "FilesRenamed(KURL,KURL)", "FilesRenamed(KURL,KURL)", false);
+   connectDCOPSignal(0, "KDirNotify", "FileRenamed(KURL,KURL)", "FileRenamed(KURL,KURL)", false);
 }
 
 void KDirNotify::FileRenamed( const KURL &, const KURL & )
