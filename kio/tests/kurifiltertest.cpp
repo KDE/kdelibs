@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 
     // Absolute Path tests for kshorturifilter
     filter( "../../index.html", "http://www.kde.org/index.html", "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
-    filter( "./", QCString("file:")+home+"/.kde/share", "kshorturifilter", QCString("file:")+home+"/.kde/share/" );
+    filter( "./", QCString("file:")+home+"/.kde/share/", "kshorturifilter", QCString("file:")+home+"/.kde/share/" );
     return 0;
 }
 
