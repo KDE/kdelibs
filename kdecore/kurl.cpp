@@ -1183,6 +1183,7 @@ void
 KURL::setProtocol( const QString& _txt )
 {
    m_strProtocol = _txt;
+   m_bIsMalformed = false;
 }
 
 void
