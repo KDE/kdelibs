@@ -159,9 +159,9 @@ void KDockSplitter::setupMinMaxSize()
     maxx = (child0->maximumSize().width() > child1->maximumSize().width()) ? child0->maximumSize().width() : child1->maximumSize().width();
 
     miny = (miny > 4) ? miny : 4;
-    maxy = (maxy < 2000) ? maxy : 2000;
+    maxy = (maxy < 32000) ? maxy : 32000;
     minx = (minx > 2) ? minx : 2;
-    maxx = (maxx < 2000) ? maxx : 2000;
+    maxx = (maxx < 32000) ? maxx : 32000;
   } else {
     minx = child0->minimumSize().width() + child1->minimumSize().width()+4;
     maxx = child0->maximumSize().width() + child1->maximumSize().width()+4;
@@ -169,9 +169,9 @@ void KDockSplitter::setupMinMaxSize()
     maxy = (child0->maximumSize().height() > child1->maximumSize().height()) ? child0->maximumSize().height() : child1->maximumSize().height();
 
     minx = (minx > 4) ? minx : 4;
-    maxx = (maxx < 2000) ? maxx : 2000;
+    maxx = (maxx < 32000) ? maxx : 32000;
     miny = (miny > 2) ? miny : 2;
-    maxy = (maxy < 2000) ? maxy : 2000;
+    maxy = (maxy < 32000) ? maxy : 32000;
   }
   setMinimumSize(minx, miny);
   setMaximumSize(maxx, maxy);
