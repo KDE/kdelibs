@@ -736,6 +736,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
     KFileItemListIterator it( newone );
     while ( it.current() ) {
+	if ( !it.current()->isMimeTypeKnown() )
 	pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
 	++it;
     }
