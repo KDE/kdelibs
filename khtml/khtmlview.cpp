@@ -828,7 +828,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     }
 }
 
-void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
+void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent * /*ce*/ )
 {
 // ### what kind of c*** is that ?
 #if 0
