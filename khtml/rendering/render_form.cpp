@@ -995,9 +995,8 @@ void RenderSelect::updateSelection()
         // ok, nothing was selected, select the first one..
         for (i = 0; !found && i < int(listItems.size()); i++)
             if ( listItems[i]->id() == ID_OPTION ) {
-                static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = true;
+//                static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = true;
                 static_cast<KComboBox*>( m_widget )->setCurrentItem( i );
-                found = true;
                 break;
             }
     }
