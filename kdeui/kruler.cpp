@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2000/06/05 21:31:45  gehrmab
+ * QFrame's 4th argument is no more
+ *
  * Revision 1.12  2000/06/03 23:09:02  gehrmab
  * Completely redesigned KRuler's API
  *
@@ -107,14 +110,14 @@ public:
   bool showEndL;
   bool lengthFix;
   int  endOffset_length;  /* marks the offset at the end of the ruler
-			   * i.e. right side at horizontal and down side
-			   * at vertical rulers.
-			   * the ruler end mark is moved endOffset_length
-			   * ticks away from the widget end.
-			   * positive offset moves end mark inside the ruler.
-			   * if lengthFix is true, endOffset_length holds the 
-			   * length of the ruler.
-			   */
+                           * i.e. right side at horizontal and down side
+                           * at vertical rulers.
+                           * the ruler end mark is moved endOffset_length
+                           * ticks away from the widget end.
+                           * positive offset moves end mark inside the ruler.
+                           * if lengthFix is true, endOffset_length holds the
+                           * length of the ruler.
+                           */
   int fontWidth; // ONLY valid for vertical rulers
 };
 
@@ -139,7 +142,7 @@ KRuler::KRuler(Orientation orient,
   init();
   if (orient == Horizontal)
     setFixedHeight(FIX_WIDTH);
-  else 
+  else
     setFixedWidth(FIX_WIDTH);
 }
 
@@ -186,7 +189,7 @@ KRuler::~KRuler()
   delete d;
 }
 
-void 
+void
 KRuler::setMinValue(int value)
 {
   if (range.minValue() != value) {
@@ -195,7 +198,7 @@ KRuler::setMinValue(int value)
   }
 }
 
-void 
+void
 KRuler::setMaxValue(int value)
 {
   if (range.maxValue() != value) {
@@ -204,7 +207,7 @@ KRuler::setMaxValue(int value)
   }
 }
 
-void 
+void
 KRuler::setRange(int min, int max)
 {// debug("set range from %i to %i", min, max);
   if ((range.minValue() != min) || (range.maxValue() != max)) {
@@ -213,14 +216,14 @@ KRuler::setRange(int min, int max)
   }
 }
 
-void 
+void
 KRuler::setValue(int value)
 {
   range.setValue(value);
   update(contentsRect());
 }
 
-void 
+void
 KRuler::setTinyMarkDistance(int dist)
 {
   if (dist != tmDist) {
@@ -229,7 +232,7 @@ KRuler::setTinyMarkDistance(int dist)
   }
 }
 
-void 
+void
 KRuler::setLittleMarkDistance(int dist)
 {
   if (dist != lmDist) {
@@ -238,7 +241,7 @@ KRuler::setLittleMarkDistance(int dist)
   }
 }
 
-void 
+void
 KRuler::setMediumMarkDistance(int dist)
 {
   if (dist != mmDist) {
@@ -248,7 +251,7 @@ KRuler::setMediumMarkDistance(int dist)
   }
 }
 
-void 
+void
 KRuler::setBigMarkDistance(int dist)
 {
   if (dist != bmDist) {
@@ -258,7 +261,7 @@ KRuler::setBigMarkDistance(int dist)
   }
 }
 
-void 
+void
 KRuler::setShowTinyMarks(bool show)
 {
   if (show != showtm) {
@@ -267,13 +270,13 @@ KRuler::setShowTinyMarks(bool show)
   }
 }
 
-bool 
+bool
 KRuler::showTinyMarks() const
 {
   return showtm;
 }
 
-void 
+void
 KRuler::setShowLittleMarks(bool show)
 {
   if (show != showlm) {
@@ -282,13 +285,13 @@ KRuler::setShowLittleMarks(bool show)
   }
 }
 
-bool 
+bool
 KRuler::showLittleMarks() const
 {
   return showlm;
 }
 
-void 
+void
 KRuler::setShowMediumMarks(bool show)
 {
   if (show != showmm) {
@@ -297,13 +300,13 @@ KRuler::setShowMediumMarks(bool show)
   }
 }
 
-bool 
+bool
 KRuler::showMediumMarks() const
 {
   return showmm;
 }
 
-void 
+void
 KRuler::setShowBigMarks(bool show)
 {
   if (show != showbm) {
@@ -313,13 +316,13 @@ KRuler::setShowBigMarks(bool show)
 }
 
 
-bool 
+bool
 KRuler::showBigMarks() const
 {
   return showbm;
 }
 
-void 
+void
 KRuler::setShowEndMarks(bool show)
 {
   if (show != showem) {
@@ -328,13 +331,13 @@ KRuler::setShowEndMarks(bool show)
   }
 }
 
-bool 
+bool
 KRuler::showEndMarks() const
 {
   return showem;
 }
 
-void 
+void
 KRuler::setShowPointer(bool show)
 {
   if (show != d->showpointer) {
@@ -344,13 +347,13 @@ KRuler::setShowPointer(bool show)
 }
 
 
-bool 
+bool
 KRuler::showPointer() const
 {
   return d->showpointer;
 }
 
-void 
+void
 KRuler::setValuePerLittleMark(int value)
 {
   if ((value != valuelm) && (!showValuelm)) {
@@ -364,7 +367,7 @@ KRuler::setValuePerLittleMark(int value)
   }
 }
 
-void 
+void
 KRuler::setValuePerMediumMark(int value)
 {
   if ((value != valuemm) && (!showValuemm)) {
@@ -377,7 +380,7 @@ KRuler::setValuePerMediumMark(int value)
   }
 }
 
-void 
+void
 KRuler::setValuePerBigMark(int value)
 {
   if ((value != valuebm) && (!showValuebm)) {
@@ -389,7 +392,7 @@ KRuler::setValuePerBigMark(int value)
   }
 }
 
-void 
+void
 KRuler::setShowEndLabel(bool show)
 {
   if (d->showEndL != show) {
@@ -406,7 +409,7 @@ KRuler::showEndLabel() const
 }
 
 
-void 
+void
 KRuler::setEndLabel(const QString& label)
 {
   endlabel = label;
@@ -426,7 +429,7 @@ QString KRuler::endLabel() const
   return endlabel;
 }
 
-void 
+void
 KRuler::setRulerMetricStyle(KRuler::MetricStyle style)
 {
   switch (style) {
@@ -503,15 +506,7 @@ KRuler::setRulerMetricStyle(KRuler::MetricStyle style)
   // -> no update() call needed here !
 }
 
-#if implemented
-void 
-KRuler::setRulerStyle(KRuler::paint_style);
-void 
-KRuler::setTickStyle(KRuler::paint_style);
-#endif
-
-
-void 
+void
 KRuler::setPixelPerMark(double rate)
 { // never compare floats against each other :)
   ppm = rate;
@@ -519,7 +514,7 @@ KRuler::setPixelPerMark(double rate)
 }
 
 
-void 
+void
 KRuler::setLength(int length)
 {
   int tmp;
@@ -535,23 +530,23 @@ KRuler::setLength(int length)
   }
 }
 
-int 
+int
 KRuler::length() const
 {
-  if (d->lengthFix) {  
+  if (d->lengthFix) {
     return d->endOffset_length;
   }
   return (this->width() - d->endOffset_length);
 }
 
 
-void 
+void
 KRuler::setLengthFixed(bool fix)
 {
   d->lengthFix = fix;
 }
 
-bool 
+bool
 KRuler::lengthFixed() const
 {
   return d->lengthFix;
@@ -566,7 +561,7 @@ KRuler::setOffset(int _offset)
   }
 }
 
-int 
+int
 KRuler::endOffset() const
 {
   if (d->lengthFix) {
@@ -576,7 +571,7 @@ KRuler::endOffset() const
 }
 
 
-void 
+void
 KRuler::slideUp(int count)
 {
   if (count) {
@@ -585,7 +580,7 @@ KRuler::slideUp(int count)
   }
 }
 
-void 
+void
 KRuler::slideDown(int count)
 {
   if (count) {
@@ -595,7 +590,7 @@ KRuler::slideDown(int count)
 }
 
 
-void  
+void
 KRuler::slotNewValue(int _value)
 {
   int oldvalue = range.value();
@@ -621,7 +616,7 @@ KRuler::slotNewValue(int _value)
   }
 }
 
-void  
+void
 KRuler::slotNewOffset(int _offset)
 {
   if (offset_ != _offset) {
@@ -632,7 +627,7 @@ KRuler::slotNewOffset(int _offset)
 }
 
 
-void 
+void
 KRuler::slotEndOffset(int offset)
 {
   int tmp;
@@ -648,7 +643,7 @@ KRuler::slotEndOffset(int offset)
   }
 }
 
-void  
+void
 KRuler::drawContents(QPainter *p)
 {
   //  debug ("KRuler::drawContents, %s",(horizontal==dir)?"horizontal":"vertical");
@@ -661,7 +656,7 @@ KRuler::drawContents(QPainter *p)
 
   int value  = range.value(),
     minval = range.minValue(),
-    maxval = range.maxValue() 
+    maxval = range.maxValue()
     + offset_
     - (d->lengthFix?(width()-d->endOffset_length):d->endOffset_length);
     //ioffsetval = value-offset;
@@ -678,7 +673,7 @@ KRuler::drawContents(QPainter *p)
   font.setPointSize(LABEL_SIZE);
   p->setFont( font );
   // draw littlemarklabel
-  
+
   // draw mediummarklabel
 
   // draw bigmarklabel
@@ -693,8 +688,8 @@ KRuler::drawContents(QPainter *p)
       //QFontMetrics fm(font);
 #ifdef KRULER_ROTATE_TEST
       p->rotate( -90.0 + rotate );
-      p->translate( -8.0 - fontOffset - d->fontWidth + xtrans, 
-		    ytrans );
+      p->translate( -8.0 - fontOffset - d->fontWidth + xtrans,
+                    ytrans );
 #else
       p->rotate( -90.0 );
       p->translate( -8.0 - fontOffset - d->fontWidth, 0.0 );
@@ -708,10 +703,10 @@ KRuler::drawContents(QPainter *p)
   if (showtm) {
     for ( f=offsetmin; f<offsetmax; f+=ppm ) {
       if (dir == Horizontal) {
-	p->drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
+        p->drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
       }
       else {
-	p->drawLine(BASE_MARK_X1, (int)f, BASE_MARK_X2, (int)f);
+        p->drawLine(BASE_MARK_X1, (int)f, BASE_MARK_X2, (int)f);
       }
     }
   }
@@ -720,10 +715,10 @@ KRuler::drawContents(QPainter *p)
     fend = ppm*lmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
       if (dir == Horizontal) {
-	p->drawLine((int)f, LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2);
+        p->drawLine((int)f, LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2);
       }
       else {
-	p->drawLine(LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2, (int)f);
+        p->drawLine(LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2, (int)f);
       }
     }
   }
@@ -732,10 +727,10 @@ KRuler::drawContents(QPainter *p)
     fend = ppm*mmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
       if (dir == Horizontal) {
-	p->drawLine((int)f, MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2);
+        p->drawLine((int)f, MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2);
       }
       else {
-	p->drawLine(MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2, (int)f);
+        p->drawLine(MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2, (int)f);
       }
     }
   }
@@ -744,10 +739,10 @@ KRuler::drawContents(QPainter *p)
     fend = ppm*bmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
       if (dir == Horizontal) {
-	p->drawLine((int)f, BIG_MARK_X1, (int)f, BIG_MARK_X2);
+        p->drawLine((int)f, BIG_MARK_X1, (int)f, BIG_MARK_X2);
       }
       else {
-	p->drawLine(BIG_MARK_X1, (int)f, BIG_MARK_X2, (int)f);
+        p->drawLine(BIG_MARK_X1, (int)f, BIG_MARK_X2, (int)f);
       }
     }
   }
@@ -759,7 +754,7 @@ KRuler::drawContents(QPainter *p)
     }
     else {
       p->drawLine(END_MARK_X1, minval-offset_, END_MARK_X2, minval-offset_);
-      p->drawLine(END_MARK_X1, maxval-offset_, END_MARK_X2, maxval-offset_);    
+      p->drawLine(END_MARK_X1, maxval-offset_, END_MARK_X2, maxval-offset_);
     }
   }
 
@@ -781,6 +776,6 @@ KRuler::drawContents(QPainter *p)
   int elapsed = time.elapsed();
   debug("paint time %i",elapsed);
 #endif
-  
+
 }
 #include "kruler.moc"
