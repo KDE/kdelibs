@@ -455,7 +455,8 @@ if test "${prefix}" != NONE; then
   ac_kde_libraries=$prefix/lib
   ac_kde_includes=$prefix/include
 else
-  ac_kde_includes=NO ac_kde_libraries=NO
+  ac_kde_includes= 
+  ac_kde_libraries=
   kde_libraries=""
   kde_includes=""
 fi
@@ -479,7 +480,7 @@ kde_libdirs="$ac_kde_libraries /usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib 
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 
-if test -n "ac_$kde_libraries" && test ! -r "$ac_kde_libraries/libkdecore.la"; then
+if test -n "$ac_kde_libraries" && test ! -r "$ac_kde_libraries/libkdecore.la"; then
 AC_MSG_ERROR([
 in the prefix, you've choosen, are no kde libraries installed. This will fail.
 So, check this please and use another prefix!])
