@@ -564,10 +564,10 @@ QString addFunction( const QString &type )
 }
 
 QString newItem( const QString &type, const QString &name, const QString &key,
-                 const QString defaultValue )
+                 const QString &defaultValue, const QString &param = QString::null)
 {
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
-              "( currentGroup(), " + key + ", " + varName( name );
+              "( currentGroup(), " + key + ", " + varName( name ) + param;
   if ( type == "Enum" ) t += ", values" + name;
   if ( !defaultValue.isEmpty() ) t += ", " + defaultValue;
   t += " );";
@@ -1091,15 +1091,18 @@ int main( int argc, char **argv )
         // Indexed
         for(int i = 0; i <= e->paramMax(); i++)
         {
+          QString defaultStr;
+          if ( !e->paramDefaultValue(i).isEmpty() )
+            defaultStr = e->paramDefaultValue(i);
+          else if ( !e->defaultValue().isEmpty() )
+            defaultStr = paramString(e->defaultValue(), e, i);
+          else
+            defaultStr = defaultValue( e->type() );
+
           cpp << "  item" << e->name()
-              << " = new KConfigSkeleton::ItemEnum( currentGroup(), "
-              << paramString(key, e, i) << ", " << varName(e->name())
-              << QString("[%1], values").arg(i) << e->name();
-        if ( !e->paramDefaultValue(i).isEmpty() )
-          cpp << ", " << e->paramDefaultValue(i);
-        else if ( !e->defaultValue().isEmpty() )
-          cpp << ", " << e->defaultValue();
-          cpp << " );" << endl;
+              << " = " << newItem( "Enum", e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
+              << endl;
+
           cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", item" << e->name() << " );" << endl;
 
           if ( itemAccessors ) {
@@ -1143,12 +1146,21 @@ int main( int argc, char **argv )
         {
           cpp << "  " << addFunction( e->type() ) << "( \""
               << paramString(e->paramName(), e, i) << "\", "
-              << paramString(key, e, i) << ", "
               << varName(e->name()) << QString("[%1]").arg(i);
+
+          QString defaultStr;
           if ( !e->paramDefaultValue(i).isEmpty() )
-            cpp << ", " << e->paramDefaultValue(i);
+            defaultStr = e->paramDefaultValue(i);
           else if ( !e->defaultValue().isEmpty() )
-            cpp << ", " << e->defaultValue();
+            defaultStr = paramString(e->defaultValue(), e, i);
+          else
+            defaultStr = defaultValue( e->type() );
+          
+          cpp << ", " << defaultStr;
+          
+          if (!key.isEmpty())
+            cpp << ", " << paramString(key, e, i);
+
           cpp << " );" << endl;
         }
       }
