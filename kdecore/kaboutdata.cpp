@@ -80,6 +80,7 @@ public:
         {};
     const char *translatorName;
     const char *translatorEmail;
+    const char *productName;
 };
 
 
@@ -104,6 +105,7 @@ KAboutData::KAboutData( const char *appName,
   mBugEmailAddress( bugsEmailAddress )
 {
    d = new KAboutDataPrivate;
+   d->productName = 0;
 
    if( appName ) {
      const char *p = strrchr(appName, '/');
@@ -155,11 +157,25 @@ KAboutData::setLicenseTextFile( const QString &file )
   mLicenseKey = License_File;
 }
 
+void
+KAboutData::setProductName( const char *productName )
+{
+  d->productName = productName;
+}
 
 const char *
 KAboutData::appName() const
 {
    return mAppName;
+}
+
+const char *
+KAboutData::productName() const
+{
+   if (d->productName)
+      return d->productName;
+   else
+      return appName();
 }
 
 QString

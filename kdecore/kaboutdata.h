@@ -333,11 +333,29 @@ class KAboutData
     void setLicenseTextFile( const QString &file );
 
     /**
+     * Defines the product name wich will be used in the KBugReport dialog.
+     * By default it's the appName, but you can overwrite it here to provide
+     * support for special components e.g. 'product/component' like
+     * 'kontact/summary'.
+     *
+     * @param name The name of product
+     */
+    void setProductName( const char *name );
+
+    /**
      * Returns the application's internal name.
      * @return the internal program name.
      */
     const char *appName() const;
 
+    /**
+     * Returns the application's product name, which will be used in KBugReport
+     * dialog. By default it returns appName(), otherwise the one which is set
+     * with setProductName()
+     * 
+     * @return the product name.
+     */
+    const char *productName() const;
     /**
      * Returns the translated program name.
      * @return the program name (translated).
