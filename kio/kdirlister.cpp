@@ -198,7 +198,9 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
       if ( (*entit).m_uds == KIO::UDS_NAME )
         name = (*entit).m_str;
 
-    assert( !name.isEmpty() );
+    ASSERT( !name.isEmpty() );
+    if ( name.isEmpty() )
+      continue;
 
     if ( name == dot )
     {
@@ -325,11 +327,11 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       if ( (*it2).m_uds == KIO::UDS_NAME )
         name = (*it2).m_str;
 
-    assert( !name.isEmpty() );
+    ASSERT( !name.isEmpty() );
 
     // we duplicate the check for dotdot here, to avoid iterating over
     // all items in m_lstFileItems and checking in matchesFilter() that way.
-    if ( name == dot || name == dotdot )
+    if ( name.isEmpty() || name == dot || name == dotdot )
       continue;
 
     if ( m_isShowingDotFiles || name[0]!='.' )
