@@ -248,10 +248,7 @@ public:
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
 
-    // Cannot use static_cast because RenderCanvas depends on RenderObject.
-    // Thus, the class hierarchy cannot be known at this point.
-    RenderCanvas* canvas() const
-    { return reinterpret_cast<RenderCanvas*>(document()->renderer()); }
+    RenderCanvas* canvas() const;
     // don't even think about making this method virtual!
     DOM::DocumentImpl* document() const;
     DOM::NodeImpl* element() const { return isAnonymous() ? 0L : m_node; }

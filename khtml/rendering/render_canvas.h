@@ -113,5 +113,11 @@ protected:
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
 };
 
+inline RenderCanvas* RenderObject::canvas() const
+{ 
+    return static_cast<RenderCanvas*>(document()->renderer()); 
+}
+ 
+
 }
 #endif
