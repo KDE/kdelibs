@@ -30,32 +30,33 @@
 
 #include "kaction.h"
 
+#include <assert.h>
+
 #include <qfontdatabase.h>
 #include <qobjectlist.h>
 #include <qptrdict.h>
-#include <qwhatsthis.h>
 #include <qtl.h>
 #include <qtooltip.h>
 #include <qvariant.h>
+#include <qwhatsthis.h>
 
-#include <kguiitem.h>
-#include <ktoolbar.h>
-#include <ktoolbarbutton.h>
-#include <kmenubar.h>
-#include <kapplication.h>
 #include <kaccel.h>
 #include <kaccelbase.h>
-#include <kconfig.h>
-#include <kstdaccel.h>
-#include <kurl.h>
-#include <kiconloader.h>
-#include <kpopupmenu.h>
-#include <kmainwindow.h>
-#include <kglobalsettings.h>
+#include <kapplication.h>
 #include <kcombobox.h>
-#include <kfontcombo.h>
+#include <kconfig.h>
 #include <kdebug.h>
-#include <assert.h>
+#include <kfontcombo.h>
+#include <kglobalsettings.h>
+#include <kguiitem.h>
+#include <kiconloader.h>
+#include <kmainwindow.h>
+#include <kmenubar.h>
+#include <kpopupmenu.h>
+#include <kstdaccel.h>
+#include <ktoolbar.h>
+#include <ktoolbarbutton.h>
+#include <kurl.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -248,6 +249,10 @@ KAction::~KAction()
     kdDebug(125) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
     if (d->m_kaccel)
       unplugAccel();
+
+    // Unplug from menus and toolbars.
+    unplugAll();
+
     if ( m_parentCollection )
       m_parentCollection->take( this );
 
@@ -880,7 +885,6 @@ void KAction::slotDestroyed()
   if ( sender() == d->m_kaccel )
   {
     d->m_kaccel = 0;
-    //d->m_pAccelAction = 0;
     return;
   }
 
