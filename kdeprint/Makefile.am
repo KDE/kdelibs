@@ -42,3 +42,8 @@ maticparser.cpp: matic.h maticparser.yy
 
 maticscanner.cpp: matic.h maticparser.cpp maticscanner.ll
 	flex -omaticscanner.cpp -Pmatic maticscanner.ll
+
+noinst_DATA = kdeprint
+
+kdeprint:
+	$(LN_S) $(srcdir)/management kdeprint

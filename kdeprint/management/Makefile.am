@@ -16,6 +16,9 @@ libkdeprint_management_la_LDFLAGS = $(all_libraries) -version 0:1
 libkdeprint_management_la_LIBADD = $(top_builddir)/kdeprint/libkdeprint.la
 libkdeprint_management_la_METASOURCES = AUTO
 
+kdeprint_HEADERS = kmmainview.h kmjobviewer.h kmprinterpage.h
+kdeprintdir = $(includedir)/kdeprint
+
 noinst_HEADERS = kmdbcreator.h kmdriverdb.h kmdriverdbwidget.h kmiconview.h \
 		 kminfopage.h kmmainview.h kmpages.h \
 		 kmprinterpage.h kmprinterview.h kmjobviewer.h jobitem.h kmtimer.h kmpropwidget.h kmpropcontainer.h \
