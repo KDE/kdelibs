@@ -438,6 +438,27 @@
      flite -t "%t"
    @endverbatim
  *
+ * @section hadifax Using with Hadifax (mbrola and txt2pho)
+ *
+ * Hadifax consists of the mbrola diphone to speech synthesizer and txt2pho, a utility for converting
+ * german text to diphones.
+ *
+ * If you do not already have Hadifax installed, do this:
+ *
+ * - Download mbrola binary from
+ *   <a href="http://tcts.fpms.ac.be/synthesis/mbrola.html">http://tcts.fpms.ac.be/synthesis/mbrola.html</a>.
+ * - Install mbrola to /usr/local/mbrola directory.
+ * - Download at least one german language file from the mbrola site.
+ *   Unzip to the /usr/local/mbrola directory.
+ * - Download txt2pho from
+ *   <a href="http://www.ikp.uni-bonn.de/dt/forsch/phonetik/hadifix/HADIFIXforMBROLA.html">
+ http://www.ikp.uni-bonn.de/dt/forsch/phonetik/hadifix/HADIFIXforMBROLA.html</a>
+ * - Unzip txt2pho to /usr/local/txt2pho.
+ * - Edit txt2phorc file, putting correct data paths in.
+ * - Either copy txt2phorc to ~/.txt2phorc or to /etc/txt2pho.  Note that you drop the "rc" in file name.
+ * - In kttsmgr, choose the German language (de), and add Hadifax.  On the properties page configure
+ *   a voice and the paths to mbrola and txt2pho.
+ *
  * @author José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
  * @author Olaf Schmidt <ojschmidt@kde.org>
  * @author Gary Cramblitt <garycramblitt@comcast.net>
