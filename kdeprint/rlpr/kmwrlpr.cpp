@@ -59,8 +59,10 @@ KMWRlpr::KMWRlpr(QWidget *parent, const char *name)
 	m_view->setSorting(0);
 	m_host = new QLineEdit(this);
 	m_queue = new QLineEdit(this);
-	QLabel	*m_hostlabel = new QLabel(i18n("Host"), this);
-	QLabel	*m_queuelabel = new QLabel(i18n("Queue"), this);
+	QLabel	*m_hostlabel = new QLabel(i18n("Host:"), this);
+	QLabel	*m_queuelabel = new QLabel(i18n("Queue:"), this);
+	m_hostlabel->setBuddy(m_host);
+	m_queuelabel->setBuddy(m_queue);
 	connect(m_view,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
 
 	QHBoxLayout	*lay0 = new QHBoxLayout(this, 0, 10);

@@ -65,17 +65,19 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 	// widget creation
 	QGroupBox	*m_hostbox = new QGroupBox(0, Qt::Vertical, i18n("Server information"), this);
 	QGroupBox	*m_loginbox = new QGroupBox(0, Qt::Vertical, i18n("Account information"), this);
-	QLabel	*m_hostlabel = new QLabel(i18n("Host:"), m_hostbox);
-	QLabel	*m_portlabel = new QLabel(i18n("Port:"), m_hostbox);
+	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), m_hostbox);
+	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), m_hostbox);
 	m_host = new QLineEdit(m_hostbox);
 	m_port = new QLineEdit(m_hostbox);
+	m_hostlabel->setBuddy(m_host);
+	m_portlabel->setBuddy(m_port);
 	m_port->setValidator(new PortValidator(m_port));
 	m_login = new QLineEdit(m_loginbox);
-	QLabel	*m_loginlabel = new QLabel(i18n("User:"), m_loginbox);
-	QLabel	*m_passwordlabel = new QLabel(i18n("Password:"), m_loginbox);
+	QLabel	*m_loginlabel = new QLabel(i18n("&User:"), m_loginbox);
+	QLabel	*m_passwordlabel = new QLabel(i18n("&Password:"), m_loginbox);
 	m_password = new QLineEdit(m_loginbox);
 	m_password->setEchoMode(QLineEdit::Password);
-	m_anonymous = new QCheckBox(i18n("Use anonymous access"), m_loginbox);
+	m_anonymous = new QCheckBox(i18n("&Use anonymous access"), m_loginbox);
 	m_anonymous->setCursor(KCursor::handCursor());
 
 	// layout creation

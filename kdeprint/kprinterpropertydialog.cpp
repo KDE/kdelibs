@@ -34,9 +34,9 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, co
 : QTabDialog(parent,name,true), m_printer(p), m_driver(0), m_current(0)
 {
 	m_pages.setAutoDelete(false);
-	setOkButton(i18n("OK"));
-	setCancelButton(i18n("Cancel"));
-	setDefaultButton(i18n("Save"));
+	setOkButton(i18n("&OK"));
+	setCancelButton(i18n("&Cancel"));
+	setDefaultButton(i18n("&Save"));
 
 	if (m_printer)
 		m_options = (m_printer->isEdited() ? m_printer->editedOptions() : m_printer->defaultOptions());

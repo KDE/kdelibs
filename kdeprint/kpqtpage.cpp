@@ -100,12 +100,12 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 
 	// widget creation
 	m_pagesize = new QComboBox(this);
-	QLabel	*m_pagesizelabel = new QLabel(i18n("Page size:"), this);
+	QLabel	*m_pagesizelabel = new QLabel(i18n("&Page size:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_orientbox = new QButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-	m_colorbox = new QButtonGroup(0, Qt::Vertical, i18n("Color mode"), this);
-	QRadioButton	*m_portrait = new QRadioButton(i18n("Portrait"), m_orientbox);
-	QRadioButton	*m_landscape = new QRadioButton(i18n("Landscape"), m_orientbox);
+	m_colorbox = new QButtonGroup(0, Qt::Vertical, i18n("Co&lor mode"), this);
+	QRadioButton	*m_portrait = new QRadioButton(i18n("Po&rtrait"), m_orientbox);
+	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
 	QRadioButton	*m_color = new QRadioButton(i18n("Color"), m_colorbox);
@@ -113,10 +113,10 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
 	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per sheet"), this);
-	QRadioButton	*m_nup1 = new QRadioButton("1", m_nupbox);
-	QRadioButton	*m_nup2 = new QRadioButton("2", m_nupbox);
-	QRadioButton	*m_nup4 = new QRadioButton("4", m_nupbox);
-	QRadioButton	*m_nupother = new QRadioButton("Other", m_nupbox);
+	QRadioButton	*m_nup1 = new QRadioButton("&1", m_nupbox);
+	QRadioButton	*m_nup2 = new QRadioButton("&2", m_nupbox);
+	QRadioButton	*m_nup4 = new QRadioButton("&4", m_nupbox);
+	QRadioButton	*m_nupother = new QRadioButton("&Other", m_nupbox);
 	m_nuppix = new QLabel(m_nupbox);
 	m_nuppix->setAlignment(Qt::AlignCenter);
 

@@ -36,6 +36,7 @@ class QLineEdit;
 class QVBox;
 class PluginComboBox;
 class KFileList;
+class KURLRequester;
 
 class KPrintDialog : public KDialog, public KPReloadObject
 {
@@ -53,7 +54,6 @@ public:
 
 protected slots:
 	void slotPrinterSelected(int);
-	void slotBrowse();
 	void slotProperties();
 	void slotSetDefault();
 	void slotOptions();
@@ -69,13 +69,14 @@ protected:
 
 protected:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_filebrowse, *m_ok, *m_wizard;
+	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard;
 	QCheckBox	*m_preview;
-	QLineEdit	*m_file, *m_cmd;
+	QLineEdit	*m_cmd;
 	QComboBox	*m_printers;
 	QVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
 	KFileList	*m_fileselect;
+	KURLRequester	*m_file;
 
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;

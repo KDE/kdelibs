@@ -51,17 +51,20 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_list->setLineWidth(1);
 
-	QLabel	*l1 = new QLabel(i18n("Printer address"),this);
-	QLabel	*l2 = new QLabel(i18n("Port"),this);
-	QLabel	*l3 = new QLabel(i18n("Network scan"), this);
+	QLabel	*l1 = new QLabel(i18n("&Printer address:"),this);
+	QLabel	*l2 = new QLabel(i18n("P&ort:"),this);
+	QLabel	*l3 = new QLabel(i18n("Network scan:"), this);
 
 	m_printer = new QLineEdit(this);
 	m_port = new QLineEdit(this);
 
+   l1->setBuddy(m_printer);
+   l2->setBuddy(m_port);
+
 	m_bar = new QProgressBar(this);
 
-	QPushButton	*settings_ = new QPushButton(i18n("Settings"),this);
-	QPushButton	*scan_ = new QPushButton(i18n("Scan"),this);
+	QPushButton	*settings_ = new QPushButton(i18n("&Settings"),this);
+	QPushButton	*scan_ = new QPushButton(i18n("S&can"),this);
 
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(40);

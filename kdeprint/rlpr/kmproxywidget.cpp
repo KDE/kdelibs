@@ -31,13 +31,16 @@
 KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 : QGroupBox(0, Qt::Vertical, i18n("Proxy settings"), parent, name)
 {
-	QLabel	*m_hostlabel = new QLabel(i18n("Host:"), this);
-	QLabel	*m_portlabel = new QLabel(i18n("Port:"), this);
-	m_useproxy = new QCheckBox(i18n("Use proxy server"), this);
+	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
+	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);
+	m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);
 	m_useproxy->setCursor(KCursor::handCursor());
 	m_proxyhost = new QLineEdit(this);
 	m_proxyport = new QLineEdit(this);
 	m_proxyport->setValidator(new QIntValidator(m_proxyport));
+	m_hostlabel->setBuddy(m_proxyhost);
+	m_portlabel->setBuddy(m_proxyport);
+	
 	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyhost,SLOT(setEnabled(bool)));
 	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyport,SLOT(setEnabled(bool)));
 	m_proxyhost->setEnabled(false);

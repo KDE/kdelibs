@@ -72,9 +72,9 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	connect(ok,SIGNAL(clicked()),SLOT(accept()));
 	connect(cancel,SIGNAL(clicked()),SLOT(reject()));
 
-	QLabel	*masklabel = new QLabel(i18n("Subnetwork"),this);
-	QLabel	*portlabel = new QLabel(i18n("Port"),this);
-	QLabel	*toutlabel = new QLabel(i18n("Timeout (ms)"),this);
+	QLabel	*masklabel = new QLabel(i18n("&Subnetwork:"),this);
+	QLabel	*portlabel = new QLabel(i18n("&Port:"),this);
+	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),this);
 	QLineEdit	*mm = new QLineEdit(this);
 	mm->setText(QString::fromLatin1(".[1-254]"));
 	mm->setReadOnly(true);
@@ -84,6 +84,10 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	mask_->setAlignment(Qt::AlignRight);
 	port_ = new QComboBox(true,this);
 	tout_ = new QLineEdit(this);
+
+	masklabel->setBuddy(mask_);
+	portlabel->setBuddy(port_);
+	toutlabel->setBuddy(tout_);
 
 	QString	IPTest = inet_ntoa(LONGTOIN(util->start_));
 	int 	p = IPTest.findRev('.');

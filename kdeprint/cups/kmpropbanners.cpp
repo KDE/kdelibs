@@ -33,8 +33,11 @@ KMPropBanners::KMPropBanners(QWidget *parent, const char *name)
 	m_startbanner = new QLabel(this);
 	m_stopbanner = new QLabel(this);
 
-	QLabel	*l1 = new QLabel(i18n("Starting banner:"), this);
-	QLabel	*l2 = new QLabel(i18n("Ending banner:"), this);
+	QLabel	*l1 = new QLabel(i18n("&Starting banner:"), this);
+	QLabel	*l2 = new QLabel(i18n("&Ending banner:"), this);
+
+	l1->setBuddy(m_startbanner);
+	l2->setBuddy(m_stopbanner);
 
 	QGridLayout	*main_ = new QGridLayout(this, 3, 2, 10, 10);
 	main_->setColStretch(1,1);

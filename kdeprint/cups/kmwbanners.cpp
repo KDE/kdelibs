@@ -72,8 +72,12 @@ KMWBanners::KMWBanners(QWidget *parent, const char *name)
 	m_start = new QComboBox(this);
 	m_end = new QComboBox(this);
 
-	QLabel	*l1 = new QLabel(i18n("Starting banner:"),this);
-	QLabel	*l2 = new QLabel(i18n("Ending banner:"),this);
+	QLabel	*l1 = new QLabel(i18n("&Starting banner:"),this);
+	QLabel	*l2 = new QLabel(i18n("&Ending banner:"),this);
+
+	l1->setBuddy(m_start);
+	l2->setBuddy(m_end);
+
 	QLabel	*l0 = new QLabel(this);
 	l0->setText(i18n("<p>Select the default banners associated with this printer. These "
 			 "banners will be inserted before and/or after each print job sent "

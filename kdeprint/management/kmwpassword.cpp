@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -48,10 +48,13 @@ KMWPassword::KMWPassword(QWidget *parent, const char *name)
 	m_login->setText(QString::fromLocal8Bit(getenv("USER")));
 	m_password = new QLineEdit(this);
 	m_password->setEchoMode(QLineEdit::Password);
-	QLabel	*loginlabel_ = new QLabel(i18n("Login:"),this);
-	QLabel	*passwdlabel_ = new QLabel(i18n("Password:"),this);
-	m_guest = new QCheckBox(i18n("Guest account"),this);
+	QLabel	*loginlabel_ = new QLabel(i18n("&Login:"),this);
+	QLabel	*passwdlabel_ = new QLabel(i18n("&Password:"),this);
+	m_guest = new QCheckBox(i18n("&Guest account"),this);
 	m_guest->setCursor(KCursor::handCursor());
+
+	loginlabel_->setBuddy(m_login);
+	passwdlabel_->setBuddy(m_password);
 
 	m_guest->setChecked(true);
 	m_login->setEnabled(false);

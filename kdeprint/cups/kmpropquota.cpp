@@ -36,9 +36,13 @@ KMPropQuota::KMPropQuota(QWidget *parent, const char *name)
 	m_sizelimit = new QLabel(this);
 	m_pagelimit = new QLabel(this);
 
-	QLabel	*l1 = new QLabel(i18n("Period:"), this);
-	QLabel	*l2 = new QLabel(i18n("Size limit (KB):"), this);
-	QLabel	*l3 = new QLabel(i18n("Page limit:"), this);
+	QLabel	*l1 = new QLabel(i18n("&Period:"), this);
+	QLabel	*l2 = new QLabel(i18n("&Size limit (KB):"), this);
+	QLabel	*l3 = new QLabel(i18n("&Page limit:"), this);
+
+	l1->setBuddy(m_period);
+	l2->setBuddy(m_sizelimit);
+	l3->setBuddy(m_pagelimit);
 
 	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 10);
 	main_->setColStretch(1,1);

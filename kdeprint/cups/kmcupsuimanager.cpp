@@ -83,16 +83,16 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	KMWBackend	*backend = wizard->backendPage();
 	if (!backend)
 		return;
-	backend->addBackend(KMWizard::Local,i18n("Local printer (parallel, serial, USB)"),false);
-	backend->addBackend(KMWizard::LPD,i18n("Remote LPD queue"),false);
-	backend->addBackend(KMWizard::SMB,i18n("SMB shared printer (Windows)"),false,KMWizard::Password);
-	backend->addBackend(KMWizard::TCP,i18n("Network printer (TCP)"),false);
-	backend->addBackend(KMWizard::IPP,i18n("Remote CUPS server (IPP/HTTP)"),false,KMWizard::Password);
-	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/IPP (IPP/HTTP)"),false);
-	backend->addBackend(KMWizard::Custom+2,i18n("Serial Fax/Modem printer"),false);
-	backend->addBackend(KMWizard::Custom+5,i18n("Other Printer Type"),true);
+	backend->addBackend(KMWizard::Local,i18n("&Local printer (parallel, serial, USB)"),false);
+	backend->addBackend(KMWizard::LPD,i18n("&Remote LPD queue"),false);
+	backend->addBackend(KMWizard::SMB,i18n("&SMB shared printer (Windows)"),false,KMWizard::Password);
+	backend->addBackend(KMWizard::TCP,i18n("&Network printer (TCP)"),false);
+	backend->addBackend(KMWizard::IPP,i18n("Remote &CUPS server (IPP/HTTP)"),false,KMWizard::Password);
+	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/&IPP (IPP/HTTP)"),false);
+	backend->addBackend(KMWizard::Custom+2,i18n("S&erial Fax/Modem printer"),false);
+	backend->addBackend(KMWizard::Custom+5,i18n("&Other Printer Type"),true);
 	backend->addBackend();
-	backend->addBackend(KMWizard::Class,i18n("Class of printers"));
+	backend->addBackend(KMWizard::Class,i18n("C&lass of printers"));
 
 	IppRequest	req;
 	QString		uri;

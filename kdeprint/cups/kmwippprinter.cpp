@@ -54,20 +54,23 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	m_list->setLineWidth(1);
 
-	QLabel	*l1 = new QLabel(i18n("Printer URI"),this);
-	QLabel	*l3 = new QLabel(i18n("Network scan"), this);
+	QLabel	*l1 = new QLabel(i18n("&Printer URI:"),this);
+	QLabel	*l3 = new QLabel(i18n("Network scan:"), this);
 
 	m_uri = new QLineEdit(this);
 	m_bar = new QProgressBar(this);
+
+	l1->setBuddy(m_uri);
+
 	m_info = new QTextView(this);
 	m_info->setPaper(colorGroup().background());
 	m_info->setMinimumHeight(100);
 	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
-	m_ippreport = new QPushButton(i18n("IPP Report..."), this);
+	m_ippreport = new QPushButton(i18n("&IPP Report..."), this);
 	m_ippreport->setEnabled(false);
 
-	QPushButton	*settings_ = new QPushButton(i18n("Settings"),this);
-	QPushButton	*scan_ = new QPushButton(i18n("Scan"),this);
+	QPushButton	*settings_ = new QPushButton(i18n("&Settings"),this);
+	QPushButton	*scan_ = new QPushButton(i18n("S&can"),this);
 
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(20);

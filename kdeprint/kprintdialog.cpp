@@ -35,7 +35,6 @@
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
-#include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -50,6 +49,8 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kfiledialog.h>
+#include <kurlrequester.h>
+#include <klineedit.h>
 #include <kdebug.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
@@ -69,34 +70,36 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_location = new QLabel(m_pbox);
 	m_printers = new QComboBox(m_pbox);
 	m_printers->setMinimumHeight(25);
-	QLabel	*m_printerlabel = new QLabel(i18n("Name:"), m_pbox);
+	QLabel	*m_printerlabel = new QLabel(i18n("&Name:"), m_pbox);
 	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), m_pbox);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), m_pbox);
 	QLabel	*m_locationlabel = new QLabel(i18n("Location:"), m_pbox);
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
-	m_properties = new QPushButton(i18n("Properties..."), m_pbox);
-	m_options = new QPushButton(i18n("Options..."), this);
-	m_default = new QPushButton(i18n("Set as default"), m_pbox);
-	m_filebrowse = new QPushButton(i18n("Browse..."), m_pbox);
+	m_printerlabel->setBuddy(m_printers);
+	m_properties = new QPushButton(i18n("&Properties..."), m_pbox);
+	m_options = new QPushButton(i18n("Op&tions..."), this);
+	m_default = new QPushButton(i18n("S&et as default"), m_pbox);
 	m_wizard = new QPushButton(m_pbox);
 	m_wizard->setPixmap(SmallIcon("wizard"));
 	m_wizard->setMinimumSize(QSize(m_printers->minimumHeight(),m_printers->minimumHeight()));
-	QToolTip::add(m_wizard, i18n("Add printer..."));
-	m_ok = new QPushButton(i18n("OK"), this);
+	QToolTip::add(m_wizard, i18n("&Add printer..."));
+	m_ok = new QPushButton(i18n("&OK"), this);
 	m_ok->setDefault(true);
-	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
-	m_preview = new QCheckBox(i18n("Preview"), m_pbox);
-	m_filelabel = new QLabel(i18n("Output file:"), m_pbox);
-	m_file = new QLineEdit(m_pbox);
+	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
+	m_preview = new QCheckBox(i18n("&Preview"), m_pbox);
+	m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
+	m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
+	m_file->fileDialog()->setCaption(i18n("Print to file"));
 	m_file->setEnabled(false);
-	m_file->setText(QDir::homeDirPath()+"/print.ps");
-	m_filebrowse->setEnabled(false);
-	m_cmdlabel = new QLabel(i18n("Print command:"), m_pbox);
+	m_filelabel->setBuddy(m_file);
+	m_cmdlabel = new QLabel(i18n("Pr&int command:"), m_pbox);
 	m_cmd = new QLineEdit(m_pbox);
+	m_cmdlabel->setBuddy(m_cmd);
 	m_dummy = new QVBox(this);
 	m_plugin = new PluginComboBox(this);
-	QLabel	*pluginlabel = new QLabel(i18n("Print system currently used:"), this);
+	QLabel	*pluginlabel = new QLabel(i18n("Print s&ystem currently used:"), this);
 	pluginlabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+	pluginlabel->setBuddy(m_plugin);
 	m_fileselect = new KFileList(this);
 
 	// layout creation
@@ -143,7 +146,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	//***
 	l3->addWidget(m_filelabel,1,0);
 	l3->addWidget(m_file,1,1);
-	l3->addWidget(m_filebrowse,1,2);
 	//***
 	l3->addWidget(m_cmdlabel,2,0);
 	l3->addMultiCellWidget(m_cmd,2,2,1,2);
@@ -153,7 +155,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_properties,SIGNAL(clicked()),SLOT(slotProperties()));
 	connect(m_default,SIGNAL(clicked()),SLOT(slotSetDefault()));
-	connect(m_filebrowse,SIGNAL(clicked()),SLOT(slotBrowse()));
 	connect(m_printers,SIGNAL(activated(int)),SLOT(slotPrinterSelected(int)));
 	connect(m_options,SIGNAL(clicked()),SLOT(slotOptions()));
 	connect(m_wizard,SIGNAL(clicked()),SLOT(slotWizard()));
@@ -173,7 +174,6 @@ void KPrintDialog::setFlags(int f)
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(m_filelabel, on)
 	SHOWHIDE(m_file, on)
-	SHOWHIDE(m_filebrowse, on)
 	on = (f & KMUiManager::PrintCommand);
 	SHOWHIDE(m_cmdlabel, on)
 	SHOWHIDE(m_cmd, on)
@@ -273,7 +273,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	// Initialize output filename
 	if (!m_printer->outputFileName().isEmpty())
-		m_file->setText(m_printer->outputFileName());
+		m_file->lineEdit()->setText(m_printer->outputFileName());
 
 	// update with KPrinter options
 	if (m_printer->option("kde-preview") == "1" || m_printer->previewOnly())
@@ -312,13 +312,6 @@ void KPrintDialog::slotPrinterSelected(int index)
 	}
 	m_properties->setEnabled(ok);
 	m_ok->setEnabled(ok);
-}
-
-void KPrintDialog::slotBrowse()
-{
-	QString	fname = KFileDialog::getOpenFileName(m_file->text(),QString::null,this,i18n("Print to file"));
-	if (!fname.isEmpty())
-		m_file->setText(fname);
 }
 
 void KPrintDialog::slotProperties()
@@ -366,7 +359,7 @@ void KPrintDialog::done(int result)
 		{
 			if (!checkOutputFile()) return;
 			m_printer->setOutputToFile(true);
-			m_printer->setOutputFileName(m_file->text());
+			m_printer->setOutputFileName(m_file->lineEdit()->text());
 		}
 		else
 			m_printer->setOutputToFile(false);
@@ -397,11 +390,11 @@ void KPrintDialog::done(int result)
 bool KPrintDialog::checkOutputFile()
 {
 	bool	value(false);
-	if (m_file->text().isEmpty())
+	if (m_file->lineEdit()->text().isEmpty())
 		KMessageBox::error(this,i18n("The output filename is empty."));
 	else
 	{
-		QFileInfo	f(m_file->text());
+		QFileInfo	f(m_file->lineEdit()->text());
 		if (f.exists())
 		{
 			if (f.isWritable())
@@ -430,7 +423,6 @@ void KPrintDialog::enableOutputFile(bool on)
 {
 	m_filelabel->setEnabled(on);
 	m_file->setEnabled(on);
-	m_filebrowse->setEnabled(on);
 }
 
 void KPrintDialog::enableSpecial(bool on)
@@ -451,9 +443,9 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 {
 	if (!ext.isEmpty())
 	{
-		QFileInfo	fi(m_file->text());
+		QFileInfo	fi(m_file->lineEdit()->text());
 		QString		str = fi.dirPath(true)+"/"+fi.baseName()+"."+ext;
-		m_file->setText(QDir::cleanDirPath(str));
+		m_file->lineEdit()->setText(QDir::cleanDirPath(str));
 	}
 }
 

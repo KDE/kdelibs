@@ -47,13 +47,15 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 	// build widget
 	m_manu = new KListBox(this);
 	m_model = new KListBox(this);
-	m_postscript = new QCheckBox(i18n("Postscript printer"),this);
-	m_raw = new QCheckBox(i18n("Raw printer (no driver needed)"),this);
+	m_postscript = new QCheckBox(i18n("&Postscript printer"),this);
+	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
 	m_postscript->setCursor(KCursor::handCursor());
 	m_raw->setCursor(KCursor::handCursor());
-	m_other = new QPushButton(i18n("Other..."),this);
-	QLabel	*l1 = new QLabel(i18n("Manufacturer"), this);
-	QLabel	*l2 = new QLabel(i18n("Model"), this);
+	m_other = new QPushButton(i18n("&Other..."),this);
+	QLabel	*l1 = new QLabel(i18n("&Manufacturer:"), this);
+	QLabel	*l2 = new QLabel(i18n("Mo&del:"), this);
+	l1->setBuddy(m_manu);
+	l2->setBuddy(m_model);
 
 	// build layout
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);

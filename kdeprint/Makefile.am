@@ -6,7 +6,7 @@ INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kio/kded -I$(top_srcdir)/kfile -I$
 kde_module_LTLIBRARIES = libkded_kdeprintd.la
 
 libkded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
-libkded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_KIO)
+libkded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_KIO) $(LIB_KFILE)
 libkded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
 #libkded_kdeprintd_la_METASOURCES = AUTO
 
@@ -21,7 +21,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp kfilelist.cpp \
 			 kprintaction.cpp kmfactory.skel
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
-libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
+libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
 libkdeprint_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \

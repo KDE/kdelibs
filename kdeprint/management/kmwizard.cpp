@@ -61,10 +61,10 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	m_pagepool.setAutoDelete(false);
 
 	m_stack = new QWidgetStack(this);
-	m_next = new QPushButton(i18n("Next >"), this);
+	m_next = new QPushButton(i18n("&Next >"), this);
 	m_next->setDefault(true);
-	m_prev = new QPushButton(i18n("< Back"), this);
-	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
+	m_prev = new QPushButton(i18n("< &Back"), this);
+	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
 	m_title = new QLabel(this);
 	QFont	f(m_title->font());
 	f.setBold(true);
@@ -201,9 +201,9 @@ void KMWizard::setCurrentPage(int ID, bool back)
 	if (ID == m_start) m_prev->setEnabled(false);
 	else m_prev->setEnabled(true);
 	if ((m_inclusive && ID == m_end) || (!m_inclusive && page->nextPage() == m_end))
-		m_next->setText(i18n("Finish"));
+		m_next->setText(i18n("&Finish"));
 	else
-		m_next->setText(i18n("Next >"));
+		m_next->setText(i18n("&Next >"));
 }
 
 void KMWizard::slotPrev()
@@ -228,7 +228,7 @@ void KMWizard::slotNext()
 		else
 		{
 			page->updatePrinter(m_printer);
-			if (m_next->text() == i18n("Finish"))
+			if (m_next->text() == i18n("&Finish"))
 				accept();
 			else
 			{

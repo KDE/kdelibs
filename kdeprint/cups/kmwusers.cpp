@@ -42,7 +42,9 @@ KMWUsers::KMWUsers(QWidget *parent, const char *name)
 	m_type->insertItem(i18n("Denied users"));
 
 	QLabel	*lab1 = new QLabel(i18n("Define here a group of allowed/denied users for this printer."), this);
-	QLabel	*lab2 = new QLabel(i18n("Type:"), this);
+	QLabel	*lab2 = new QLabel(i18n("&Type:"), this);
+
+	lab2->setBuddy(m_type);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
 	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);

@@ -93,9 +93,14 @@ KMWQuota::KMWQuota(QWidget *parent, const char *name)
 		m_timeunit->insertItem(i18n(time_keywords[i]));
 	m_timeunit->setCurrentItem(3);
 
-	QLabel	*lab1 = new QLabel(i18n("Period:"), this);
-	QLabel	*lab2 = new QLabel(i18n("Size limit (KB):"), this);
-	QLabel	*lab3 = new QLabel(i18n("Page limit:"), this);
+	QLabel	*lab1 = new QLabel(i18n("&Period:"), this);
+	QLabel	*lab2 = new QLabel(i18n("&Size limit (KB):"), this);
+	QLabel	*lab3 = new QLabel(i18n("&Page limit:"), this);
+
+	lab1->setBuddy(m_period);
+	lab2->setBuddy(m_sizelimit);
+	lab3->setBuddy(m_pagelimit);
+
 	QLabel	*lab4 = new QLabel(i18n("<p>Set here the quota for this printer. Using limits of <b>0</b> means "
 					"that no quota will be used. This is equivalent to set quota period to "
 					"<b><nobr>No quota</nobr></b> (-1). Quota limits are defined on a per-user base and "
