@@ -226,7 +226,7 @@ void KURLComboBox::setURL( const KURL& url )
         itemList.removeLast();
         urlAdded = false;
     }
-    
+
     setDefaults();
 
     QPtrListIterator<KURLComboItem> it( itemList );
@@ -334,7 +334,7 @@ void KURLComboBox::updateItem( const KURLComboItem *item,
 {
     // QComboBox::changeItem() doesn't honour the pixmap when
     // using an editable combobox, so we just remove and insert
-    if ( isEditable() ) {
+    if ( editable() ) {
 	removeItem( index );
 	insertItem( pixmap,
 		    item->url.isLocalFile() ? item->url.path( myMode ) :
