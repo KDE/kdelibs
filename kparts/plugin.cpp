@@ -231,39 +231,39 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
 
         // Check configuration
         QString name = docElem.attribute( "name" );
-		bool pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled", enableNewPluginsByDefault );
+        bool pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled", enableNewPluginsByDefault );
 
-		// search through already present plugins
-		QObjectList *pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
-		QObjectListIt it( *pluginList );
-		bool pluginFound = false;
-		for ( ; it.current() ; ++it )
-		{
-			Plugin * plugin = static_cast<Plugin *>( it.current() );
-			if( plugin->d->m_library == library )
-			{
-				// delete and unload disabled plugins
-				if( !pluginEnabled )
-				{
-					kdDebug( 1000 ) << "remove plugin " << name << endl;
-					KXMLGUIFactory * factory = plugin->factory();
-					if( factory )
-						factory->removeClient( plugin );
-					delete plugin;
-				}
+        // search through already present plugins
+        QObjectList *pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
+        QObjectListIt it( *pluginList );
+        bool pluginFound = false;
+        for ( ; it.current() ; ++it )
+        {
+            Plugin * plugin = static_cast<Plugin *>( it.current() );
+            if( plugin->d->m_library == library )
+            {
+                // delete and unload disabled plugins
+                if( !pluginEnabled )
+                {
+                    kdDebug( 1000 ) << "remove plugin " << name << endl;
+                    KXMLGUIFactory * factory = plugin->factory();
+                    if( factory )
+                        factory->removeClient( plugin );
+                    delete plugin;
+                }
 
-				pluginFound = true;
-				break;
-			}
-		}
-		delete pluginList;
+                pluginFound = true;
+                break;
+            }
+        }
+        delete pluginList;
 
-		// if the plugin is already loaded or if it's disabled in the
-		// configuration do nothing
-		if( pluginFound || !pluginEnabled )
+        // if the plugin is already loaded or if it's disabled in the
+        // configuration do nothing
+        if( pluginFound || !pluginEnabled )
             continue;
 
-		kdDebug( 1000 ) << "load plugin " << name << endl;
+        kdDebug( 1000 ) << "load plugin " << name << endl;
         Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
 
         if ( plugin )
@@ -275,5 +275,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
     }
 }
+
+// vim:sw=4:et:sts=4
 
 #include "plugin.moc"
