@@ -215,7 +215,7 @@ Completion GlobalFunc::execute(const List &args)
 
   static const char non_escape[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				   "abcdefghijklmnopqrstuvwxyz"
-				   "0123456789@*_+-";
+				   "0123456789@*_+-./";
 
   if (id == Eval) { // eval()
     KJSO x = args[0];
