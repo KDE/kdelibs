@@ -997,6 +997,33 @@ if eval "test ! \"`echo $ac_cv_lib_jpeg`\" = no"; then
 fi
 ])
 
+AC_DEFUN(AC_FIND_TIFF,
+   [AC_MSG_CHECKING([for libtiff])
+AC_CACHE_VAL(ac_cv_lib_tiff,
+[ac_save_LIBS="$LIBS"
+LIBS="$all_libraries -ltiff -lX11 $LIBSOCKET"
+AC_TRY_LINK(dnl
+[
+#include<tiff.h>
+],
+            [return (TIFFOpen( "", "r") == 0); ],
+            eval "ac_cv_lib_tiff=-ltiff",
+            eval "ac_cv_lib_tiff=no")
+LIBS="$ac_save_LIBS"
+])dnl
+if eval "test ! \"`echo $ac_cv_lib_tiff`\" = no"; then
+  AC_DEFINE_UNQUOTED(HAVE_LIBTIFF)
+  LIBTIFF="$ac_cv_lib_tiff"
+  AC_SUBST(LIBTIFF)
+  AC_MSG_RESULT($ac_cv_lib_tiff)
+else
+  AC_MSG_RESULT(no)
+  LIBTIFF=""
+  AC_SUBST(LIBTIFF)
+fi
+])
+
+
 AC_DEFUN(AC_CHECK_BOOL,
 [
 	AC_MSG_CHECKING([for bool])
