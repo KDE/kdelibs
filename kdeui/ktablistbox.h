@@ -106,7 +106,7 @@ public:
   /** Change part of the contents of a line. */
   virtual void changeItemPart (const char* string, int itemIndex, int column);
 
-  /** Change color of line. */
+  /** Change color of line. Changes last inserted item when itemIndex==-1 */
   virtual void changeItemColor (const QColor& color, int itemIndex=-1);
 
   /** Get number of pixels one tab character stands for. Default: 10 */

@@ -183,8 +183,8 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 	pix = parent->dict().find(pixName);
 	if (!pix)
 	{
-	  warning("KTabListBox "+QString(name())+
-		  ":\nno pixmap for\n`"+pixName+"' registered.");
+	  debug("KTabListBox "+QString(name())+
+		":\nno pixmap for\n`"+pixName+"' registered.");
 	} 
 	if (!pix->isNull()) paint->drawPixmap(x, 0, *pix);
 	x += pix->width()+1;
@@ -708,6 +708,7 @@ void KTabListBox::paintEvent(QPaintEvent*)
   QPainter paint;
   QWMatrix matrix;
   QRect    clipR;
+  QFont    font, oldFont;
 
   ih = numCols();
   x  = -lbox.xOffset();
@@ -726,7 +727,18 @@ void KTabListBox::paintEvent(QPaintEvent*)
       paint.setWorldMatrix(matrix, FALSE);
       paint.setClipRect(clipR);
 
-      colList[i]->paint(&paint);
+      if (mSortCol == i)
+      {
+	oldFont = paint.font();
+	font = oldFont;
+	if (font.bold()) font.setItalic(TRUE);
+	else font.setBold(TRUE);
+	paint.setFont(font);
+	colList[i]->paint(&paint);
+	paint.setFont(oldFont);
+      }
+      else colList[i]->paint(&paint);
+
       if (mMouseCol != i)
       {
 	qDrawShadePanel(&paint, 0, 0, w, labelHeight, 
@@ -802,11 +814,14 @@ void KTabListBox::mousePressEvent(QMouseEvent* e)
   if (!mResizeCol && e->button() == LeftButton)
   {
     mMouseStart = e->pos();
-    mMouseCol = findCol(e->pos().x());
-    if (mMouseCol < 0) return;
-    mMouseColWidth = colList[mMouseCol]->width();
-    colXPos(mMouseCol, &mMouseColLeft);
-    repaint();
+    if (receivers("headerClicked(int)"))
+    {
+      mMouseCol = findCol(e->pos().x());
+      if (mMouseCol < 0) return;
+      mMouseColWidth = colList[mMouseCol]->width();
+      colXPos(mMouseCol, &mMouseColLeft);
+      repaint();
+    }
   }
   KTabListBoxInherited::mousePressEvent(e);
 }
