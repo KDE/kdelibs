@@ -1,11 +1,11 @@
 /*
    This file is part of KDE/aRts (Noatun) - xine integration
    Copyright (C) 2002 Ewald Snel <ewald@rambo.its.tudelft.nl>
+   Copyright (C) 2002 Neil Stevens <neil@qualityassistant.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
+   License version 2 as published by the Free Software Foundation.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -20,6 +20,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <kaction.h>
+#include <klocale.h>
 #include "kvideowidget.h"
 
 #define VPO_ADD_WINDOW		1
@@ -59,14 +60,13 @@ static void releaseWinId( Window window )
     // Wait until the Window is released by the VideoPlayObject
     while (XGetTextProperty( qt_xdisplay(), window, &prop, atom ))
     {
-	struct timespec ts;
-
 	sendEvent( window, VPO_RELEASE_WINDOW );
 
 	// Do not consume 100% CPU (wait 50ms)
 #	ifdef HAVE_USLEEP
 	usleep(50000);
 #	else
+	struct timespec ts;
 	ts.tv_sec  = 0;
 	ts.tv_nsec = 50000000;
 	nanosleep( &ts, NULL );
@@ -129,7 +129,8 @@ KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const 
 {
 	init();
 	// ???
-	// setXML("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Action name=\"fullscreen_mode\"><Separator/></Menu></MenuBar></kpartgui>");
+	QString toolbarName = i18n("Video Toolbar");
+	setXML(QString("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Separator/><Action name=\"double_size\"/><Action name=\"normal_size\"/><Action name=\"half_size\"/><Separator/><Action name=\"fullscreen_mode\"/></Menu></MenuBar><ToolBar name=\"%1\"><Action name=\"fullscreen_mode\"/></ToolBar></kpartgui>").arg(toolbarName));
 }
 
 KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
@@ -152,16 +153,16 @@ void KVideoWidget::init(void)
     videoHeight	     = 0;
 
     // Setup actions
-    new KToggleAction( "Fullscreen &Mode", "window_fullscreen",
+    new KToggleAction( i18n("Fullscreen &Mode"), "window_fullscreen",
 		       CTRL+SHIFT+Key_F, this, SLOT(fullscreenActivated()),
 		       actionCollection(), "fullscreen_mode" );
-    new KRadioAction( "&Half Size", ALT+Key_0,
+    new KRadioAction( i18n("&Half Size"), ALT+Key_0,
 		      this, SLOT(halfSizeActivated()),
 		      actionCollection(), "half_size" );
-    new KRadioAction( "&Normal Size", ALT+Key_1,
+    new KRadioAction( i18n("&Normal Size"), ALT+Key_1,
 		      this, SLOT(normalSizeActivated()),
 		      actionCollection(), "normal_size" );
-    new KRadioAction( "&Double Size", ALT+Key_2,
+    new KRadioAction( i18n("&Double Size"), ALT+Key_2,
 		      this, SLOT(doubleSizeActivated()),
 		      actionCollection(), "double_size" );
 
