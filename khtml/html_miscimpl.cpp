@@ -236,7 +236,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len)
 		printf("Error in HTMLCollection, wrong tagId!\n");
 	    }
 	    if(len == index) return current;
-	    NodeImpl *retval;
+	    NodeImpl *retval=0;
 	    if(deep && current->firstChild())
 		retval = getItem(current->firstChild(), index, len);
 	    if(retval) return retval;
