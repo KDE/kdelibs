@@ -97,7 +97,7 @@ public:
      */
     void showApplet();
 
-    QSize sizeHint();
+    QSize sizeHint() const;
     void resize( int, int );
 
 protected slots:

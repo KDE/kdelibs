@@ -51,7 +51,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
     d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     d->tmplabel->show();
-    
+
     m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", appletCount++ );
     m_applet->setWindowName( m_swallowTitle );
 }
@@ -66,7 +66,7 @@ void KJavaAppletWidget::showApplet()
 {
     connect( m_kwm, SIGNAL( windowAdded( WId ) ),
 	         this,  SLOT( setWindow( WId ) ) );
-    
+
     m_kwm->doNotManage( m_swallowTitle );
 
     //Now we send applet info to the applet server
@@ -85,18 +85,18 @@ void KJavaAppletWidget::setWindow( WId w )
                       << ", window id = " << w << endl;
         delete d->tmplabel;
         d->tmplabel = 0;
-        
+
         // disconnect from KWM events
         disconnect( m_kwm, SIGNAL( windowAdded( WId ) ),
                     this,  SLOT( setWindow( WId ) ) );
 
-        
+
         embed( w );
         setFocus();
     }
 }
 
-QSize KJavaAppletWidget::sizeHint()
+QSize KJavaAppletWidget::sizeHint() const
 {
     kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
     QSize rval = QXEmbed::sizeHint();
