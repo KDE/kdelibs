@@ -97,7 +97,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    QString path;
    QCString ksycoca_env = getenv("KDESYCOCA");
    if (ksycoca_env.isEmpty())
-      path = KGlobal::dirs()->saveLocation("tmp") + "ksycoca";
+      path = KGlobal::dirs()->saveLocation("cache") + "ksycoca";
    else
       path = QFile::decodeName(ksycoca_env);
    //kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
