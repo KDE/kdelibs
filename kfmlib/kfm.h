@@ -49,12 +49,16 @@ public:
      * You have to call @ref #allowKFMRestart before
      * calling any other function. This will allow to
      * restart KFM on demand.
-     * @arg silent set to true if you don't want error messages on stderr
-     *      (useful e.g. to simply test if KFM is running or not)
      */
-    KFM(bool silent = false);
+    KFM();
     ~KFM();
 
+    /*  Call setSilent(true) before you create a KFM instance
+     *   if you don't want error messages on stderr 
+     *   (useful e.g. to simply test if KFM is running or not)
+     *  Default behaviour is NOT silent.
+     */
+    static void setSilent(bool _silent);
 
     /* This function is probably what you are looking for.  It can be
      * used to download a file from an arbitrary URL (source) to a
@@ -135,7 +139,7 @@ public slots:
 		      const char* _group, const char* _date, int _size);
     
 protected:
-    void init(bool silent);
+    void init();
     bool test();
     
     char flag;
@@ -151,6 +155,7 @@ protected:
     QWidget* modal_hack_widget;
     bool download_state; /* to indicate wether the download was successful */
     static QStrList* tmpfiles;
+    static bool silent;
 };
 
 /// Asking for a location
