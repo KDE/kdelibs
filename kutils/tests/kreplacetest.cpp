@@ -115,6 +115,17 @@ int main( int argc, char **argv )
 
   {
     KReplaceTest test( QString( "aaaa" ) );
+    test.replace( "a", "aa", 0 );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "aaaaaaaa" ) {
+      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'aaaaaaaa'" << endl;
+      return 1;
+    }
+  }
+
+  {
+    KReplaceTest test( QString( "aaaa" ) );
     test.replace( "a", "bb", 0 );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
