@@ -145,9 +145,29 @@ void KComboBox::setCompletionMode( KGlobal::Completion mode )
 
 bool KComboBox::setCompletionKey( int ckey )
 {
-    if( m_pEdit != 0 && ckey >= 0 )
+    if( m_pEdit != 0 && ( ckey >= 0 && ckey != m_iRotateDnKey && ckey != m_iRotateUpKey) )
     {
         m_iCompletionKey = ckey;
+        return true;
+    }
+    return false;
+}
+
+bool KComboBox::setRotateUpKey( int rUpKey )
+{
+    if( rUpKey == 0 || (rUpKey > 0 && rUpKey != m_iRotateDnKey && rUpKey != m_iCompletionKey) )
+    {
+        m_iRotateUpKey = rUpKey;
+        return true;
+    }
+    return false;
+}
+
+bool KComboBox::setRotateDownKey( int rDnKey )
+{
+    if ( rDnKey == 0 || (rDnKey > 0 && rDnKey != m_iRotateUpKey && rDnKey != m_iCompletionKey) )
+    {
+        m_iRotateDnKey = rDnKey;
         return true;
     }
     return false;
@@ -390,6 +410,20 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
                         emit completion( m_pEdit->text() );
                         return true;
                     }
+                }
+                // Handles rotateUp.
+                key = ( m_iRotateUpKey == 0 ) ? KStdAccel::rotateUp() : m_iRotateUpKey;
+                if( KStdAccel::isEqual( e, key ) )
+                {
+                    emit rotateUp ();
+                    return true;
+                }
+                // Handles rotateDown.
+                key = ( m_iRotateDnKey == 0 ) ? KStdAccel::rotateDown() : m_iRotateDnKey;
+                if( KStdAccel::isEqual( e, key ) )
+                {
+                    emit rotateDown();
+                    return true;
                 }
                 // Always update the position holder if the user
                 // pressed the END key in auto completion mode.

@@ -258,6 +258,36 @@ public:
     KGlobal::Completion completionMode() const { return m_iCompletionMode; }
 
     /**
+    * Set the key-binding to be used for rotating through a list to find the
+    * next match.
+    *
+    * When this key is activated by the user a @ref rotateDown signal will be
+    * emitted.  If no value is supplied for @p rDnkey or it is set to 0, then
+    * the completion key will be defaulted to the global setting.  This method
+    * returns false if @p rDnkey is negative or the supplied key-binding
+    * conflicts with either @ref completion or @ref rotateUp keys.
+    *
+    * @param @p rDnkey the key-binding to use for rotating up in a list.
+    * @return @p true if key-binding can successfully be set.
+    */
+    bool setRotateDownKey( int rDnKey = 0 );
+
+    /**
+    * Sets the key-binding to be used for rotating through a list to find the
+    * previous match.
+    *
+    * When this key is activated by the user a @ref rotateUp signal will be
+    * emitted.  If no value is supplied for @p rUpkey or it is set to 0, then
+    * the completion key will be defaulted to the global setting.  This method
+    * returns false if @p rUpkey is negative or the supplied key-binding
+    * conflicts with either @ref completion or @ref rotateDown keys.
+    *
+    * @param @p rUpkey the key-binding to use for rotating down in a list.
+    * @return @p true if key-binding can successfully be set.
+    */
+    bool setRotateUpKey( int rUpKey = 0 );
+
+    /**
     * Sets the key-binding to be used for the two manual completion types:
     * CompletionMan and CompletionShell.
     *
@@ -287,6 +317,34 @@ public:
     * @return the key-binding used for rotating through a list.
     */
     int completionKey() const { return m_iCompletionKey; }
+
+    /**
+    * Returns the key-binding used for rotating up in a list.
+    *
+    * This methods returns the key used to iterate through a list in the
+    * "UP" direction.  This is opposite to what the @ref rotateDown key
+    * does.
+    *
+    * If the key binding contains modifier key(s), the SUM of their values
+    * is returned.  See also @ref setRotateUpKey.
+    *
+    * @return the key-binding used for rotating up in a list.
+    */
+    int rotateUpKey() const { return m_iRotateUpKey; }
+
+    /**
+    * Returns the key-binding used for rotating down in a list.
+    *
+    * This methods returns the key used to iterate through a list in the
+    * "DOWN" direction.  This is opposite to what the @ref rotateDown key
+    * does.
+    *
+    * If the key binding contains modifier key(s), the SUM of their values
+    * is returned.  See also @ref setRotateDownKey.
+    *
+    * @return the key-binding used for rotating down in a list.
+    */
+    int rotateDownKey() const { return m_iRotateDnKey; }
 
     /**
     * Sets this widget to use global values for key-bindings.
@@ -419,6 +477,23 @@ signals:
     */
     void completion( const QString& );
 
+    /**
+    * This signal is emitted when the rotate up key is pressed.
+    *
+    * Note that this signal is NOT available if this widget is non-editable
+    * or the completion mode is set to KGlobal::CompletionNone.
+    */
+    void rotateUp();
+
+    /**
+    * This signal is emitted when the rotate down key is pressed.
+    *
+    * Note that this signal is NOT available if this widget is non-editable
+    * or the completion mode is set to KGlobal::CompletionNone.
+    */
+    void rotateDown();
+
+
 public slots:
 
     /**
@@ -503,6 +578,10 @@ protected:
 private :
     // Stores the completion key locally
     int m_iCompletionKey;
+    // Stores the Rotate up key locally
+    int m_iRotateUpKey;
+    // Stores the Rotate down key locally
+    int m_iRotateDnKey;
     // Holds the length of the entry.
     int m_iPrevlen;
     // Holds the current cursor position.
