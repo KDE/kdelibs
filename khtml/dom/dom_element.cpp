@@ -24,7 +24,9 @@
 #include "dom/dom_exception.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"
+
 #include "html/html_formimpl.h"
+#include "misc/htmltags.h"
 
 using namespace DOM;
 
@@ -301,7 +303,7 @@ bool Element::isHTMLElement() const
 
 Element Element::form() const
 {
-    if (!impl || !impl->isGenericFormElement()) return 0;
+    if (!impl || !impl->isGenericFormElement() || impl->id() == ID_ISINDEX) return 0;
     return static_cast<HTMLGenericFormElementImpl*>(impl)->form();
 }
 
