@@ -372,7 +372,7 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ACTION:
-        m_url = attr->value();
+        m_url = khtml::parseURL(attr->value());
         break;
     case ATTR_TARGET:
         m_target = attr->value();
