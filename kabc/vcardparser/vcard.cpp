@@ -75,7 +75,10 @@ VCardLine VCard::line( const QString& identifier ) const
   if ( it == mLineMap.end() )
     return VCardLine();
 
-  return ( *it ).first();
+  if ( (*it).isEmpty() )
+    return VCardLine();
+  else
+    return (*it).first();
 }
 
 void VCard::setVersion( Version version )

@@ -24,14 +24,24 @@
 #include <kabc/picture.h>
 #include <kabc/sound.h>
 #include <kabc/secrecy.h>
+#include <kaboutdata.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
 
 #include "vcardtool.h"
 
-int main()
+int main( int argc, char **argv )
 {
+  KAboutData aboutData( "testwrite", "vCard test writer", "0.1" );
+
+  KCmdLineArgs::init( argc, argv, &aboutData );
+
+  KApplication app( false, false );
+  
+
   KABC::Addressee addressee;
 
   addressee.setNameFromString( "Mr. Tobias Koenig Jr." );

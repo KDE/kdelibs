@@ -33,6 +33,7 @@ class VCardLine
 {
   public:
     typedef QValueList<VCardLine> List;
+    typedef QMap<QString, QStringList> ParamMap;
 
     VCardLine();
     VCardLine( const QString &identifier );
@@ -86,7 +87,7 @@ class VCardLine
     QString parameter( const QString& param ) const;
 
   private:
-    QMap< QString, QStringList > *mParamMap;
+    ParamMap mParamMap;
     QString mIdentifier;
     QVariant mValue;
 

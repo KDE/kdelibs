@@ -23,44 +23,29 @@
 using namespace KABC;
 
 VCardLine::VCardLine()
-  : mParamMap( 0 )
 {
 }
 
 VCardLine::VCardLine( const QString &identifier )
-  : mParamMap( 0 )
 {
   mIdentifier = identifier;
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
-  : mParamMap( 0 )
 {
   mIdentifier = identifier;
   mValue = value;
 }
 
 VCardLine::VCardLine( const VCardLine& line )
-  : mParamMap( 0 )
 {
-  if ( line.mParamMap ) {
-    if ( !mParamMap )
-      mParamMap = new QMap<QString, QStringList>;
-
-    *mParamMap = *(line.mParamMap);
-  } else {
-    delete mParamMap;
-    mParamMap = 0;
-  }
-
+  mParamMap = line.mParamMap;
   mValue = line.mValue;
   mIdentifier = line.mIdentifier;
 }
 
 VCardLine::~VCardLine()
 {
-  delete mParamMap;
-  mParamMap = 0;
 }
 
 VCardLine& VCardLine::operator=( const VCardLine& line )
@@ -68,16 +53,7 @@ VCardLine& VCardLine::operator=( const VCardLine& line )
   if ( &line == this )
     return *this;
 
-  if ( line.mParamMap ) {
-    if ( !mParamMap )
-      mParamMap = new QMap<QString, QStringList>;
-
-    *mParamMap = *(line.mParamMap);
-  } else {
-    delete mParamMap;
-    mParamMap = 0;
-  }
-
+  mParamMap = line.mParamMap;
   mValue = line.mValue;
   mIdentifier = line.mIdentifier;
 
@@ -106,34 +82,34 @@ QVariant VCardLine::value() const
 
 QStringList VCardLine::parameterList() const
 {
-  if ( !mParamMap )
-    return QStringList();
-  else
-    return mParamMap->keys();
+  return mParamMap.keys();
 }
 
 void VCardLine::addParameter( const QString& param, const QString& value )
 {
-  if ( !mParamMap )
-    mParamMap = new QMap<QString, QStringList>;
-
-  QStringList &list = (*mParamMap)[ param ];
+  QStringList &list = mParamMap[ param ];
   if ( list.findIndex( value ) == -1 ) // not included yet
     list.append( value );
 }
 
 QStringList VCardLine::parameters( const QString& param ) const
 {
-  if ( !mParamMap )
+  ParamMap::ConstIterator it = mParamMap.find( param );
+  if ( it == mParamMap.end() )
     return QStringList();
   else
-    return (*mParamMap)[ param ];
+    return *it;
 }
 
 QString VCardLine::parameter( const QString& param ) const
 {
-  if ( !mParamMap )
+  ParamMap::ConstIterator it = mParamMap.find( param );
+  if ( it == mParamMap.end() )
     return QString::null;
-  else
-    return (*mParamMap)[ param ][ 0 ];
+  else {
+    if ( (*it).isEmpty() )
+      return QString::null;
+    else
+      return (*it).first();
+  }
 }
