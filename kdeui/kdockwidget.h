@@ -944,6 +944,13 @@ public:
   void makeDockVisible( KDockWidget* dock );
 
   /**
+   * This method hides the given dockwidget.
+   *
+   * @param dock the dockwidget that is to be shown
+   */
+  void makeDockInvisible( KDockWidget* dock );
+
+  /**
    * This is an overloaded member function, provided for convenience.
    * It differs from the above function only in what argument(s) it accepts. 
    */

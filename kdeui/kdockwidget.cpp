@@ -353,7 +353,6 @@ void KDockMainWindow::makeDockVisible( KDockWidget* dock )
     toolbar->blockSignals( true );
 
     QWidget* testWidget = dock;
-    bool found = false;
 
     while ( testWidget != 0L ){
       if ( testWidget->isA("KDockWidget") ){
@@ -361,22 +360,18 @@ void KDockMainWindow::makeDockVisible( KDockWidget* dock )
         if ( !toolbar->isButtonOn(1) && DockT.dock == test ){
           toolbar->toggleButton(1);
           toolBarManager( true, DockT );
-          found = true;
         }
         if ( !toolbar->isButtonOn(2) && DockL.dock == test ){
           toolbar->toggleButton(2);
           toolBarManager( true, DockL );
-          found = true;
         }
         if ( !toolbar->isButtonOn(3) && DockR.dock == test ){
           toolbar->toggleButton(3);
           toolBarManager( true, DockR );
-          found = true;
         }
         if ( !toolbar->isButtonOn(4) && DockB.dock == test ){
           toolbar->toggleButton(4);
           toolBarManager( true, DockB );
-          found = true;
         }
       }
       testWidget = testWidget->parentWidget();
@@ -387,6 +382,44 @@ void KDockMainWindow::makeDockVisible( KDockWidget* dock )
     toolbar->blockSignals( false );
   } else {
     dock->makeDockVisible();
+  }
+}
+
+void KDockMainWindow::makeDockInvisible( KDockWidget* dock )
+{
+  if ( !dock ) return;
+
+  if ( toolbar ){
+    toolbar->blockSignals( true );
+
+    QWidget* testWidget = dock;
+
+    while ( testWidget != 0L ){
+      if ( testWidget->isA("KDockWidget") ){
+        KDockWidget* test = (KDockWidget*)testWidget;
+        if ( toolbar->isButtonOn(1) && DockT.dock == test ){
+          toolbar->toggleButton(1);
+          toolBarManager( false, DockT );
+        }
+        if ( toolbar->isButtonOn(2) && DockL.dock == test ){
+          toolbar->toggleButton(2);
+          toolBarManager( false, DockL );
+        }
+        if ( toolbar->isButtonOn(3) && DockR.dock == test ){
+          toolbar->toggleButton(3);
+          toolBarManager( false, DockR );
+        }
+        if ( toolbar->isButtonOn(4) && DockB.dock == test ){
+          toolbar->toggleButton(4);
+          toolBarManager( false, DockB );
+        }
+      }
+      testWidget = testWidget->parentWidget();
+    }
+
+    toolbar->blockSignals( false );
+  } else {
+    dock->undock();
   }
 }
 
