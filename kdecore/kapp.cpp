@@ -636,7 +636,7 @@ QPixmap KApplication::icon() const
 {
   if( aIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( QString(name()) + ".xpm");
+      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName() );
   }
   return aIconPixmap;
 }
@@ -645,7 +645,7 @@ QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName() );
+      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName(), KIconLoader::Small);
   }
   return aMiniIconPixmap;
 }
