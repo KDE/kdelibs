@@ -45,7 +45,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopwidget.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
-libkdefakes_la_LDFLAGS = -version-info 3:0
+libkdefakes_la_LDFLAGS = -version-info 4:0
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h kextsocklookup.h
@@ -73,7 +73,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	kxmessages.cpp kstartupinfo.cpp kdesktopwidget.cpp
 
 
-libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
+libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
 libkdecore_la_LIBADD = ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV) $(LIBXINERAMA)
 
 libkdecore_la_METASOURCES = AUTO
