@@ -85,6 +85,7 @@ struct {
   char **argv;
   int (*func)(int, char *[]);
   int (*launcher_func)(int);
+  bool debug_wait;
 } d;
 
 extern "C" {
@@ -249,6 +250,14 @@ static pid_t launch(int argc, const char *_name, const char *args)
         close(d.fd[1]);
 
         d.func = (int (*)(int, char *[])) d.sym;
+        if (d.debug_wait)
+        {
+           fprintf(stderr, "kdeinit: Suspending process\n"
+                           "kdeinit: 'gdb kdeinit %d' to debug\n"
+                           "kdeinit: 'kill -SIGCONT %d' to continue\n", 
+                           getpid(), getpid());
+           kill(getpid(), SIGSTOP);
+        }
 
         exit( d.func( argc, d.argv)); /* Launch! */
      }
@@ -600,9 +609,9 @@ static void handle_launcher_request(int sock = -1)
 
 #ifndef NDEBUG
       if (launcher)
-         fprintf(stderr, "KInit: Got EXEC '%s' from klauncher.\n", name);
+         fprintf(stderr, "kdeinit: Got EXEC '%s' from klauncher.\n", name);
       else
-         fprintf(stderr, "KInit: Got EXEC '%s' from socket.\n", name);
+         fprintf(stderr, "kdeinit: Got EXEC '%s' from socket.\n", name);
 #endif
 
       {
@@ -620,6 +629,7 @@ static void handle_launcher_request(int sock = -1)
            fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
 #endif
            free(request_data);
+           d.debug_wait = false;	
            return;
          }
       }
@@ -654,6 +664,7 @@ static void handle_launcher_request(int sock = -1)
          response_header.arg_length = 0;
          write(sock, &response_header, sizeof(response_header));
       }
+      d.debug_wait = false;
    }
    else if (request_header.cmd == LAUNCHER_SETENV)
    {
@@ -696,6 +707,13 @@ static void handle_launcher_request(int sock = -1)
           kill(d.launcher_pid, SIGTERM);
        if (d.my_pid)
           kill(d.my_pid, SIGTERM);
+   }
+   else if (request_header.cmd == LAUNCHER_DEBUG_WAIT)
+   {
+#ifndef NDEBUG
+       fprintf(stderr,"kdeinit: Debug wait activated.\n");
+#endif
+       d.debug_wait = true;
    }
    if (request_data)
        free(request_data);
@@ -970,6 +988,7 @@ int main(int argc, char **argv, char **envp)
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
    d.wrapper = 0;
+   d.debug_wait = false;
    init_signals();
 
 
