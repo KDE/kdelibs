@@ -50,12 +50,13 @@ void DataSlave::hold(const KURL &/*url*/) {
 
 void DataSlave::suspend() {
   _suspended = true;
+  //kdDebug() << this << k_funcinfo << endl;
   timer->stop();
 }
 
 void DataSlave::resume() {
   _suspended = false;
-  kdDebug() << this << k_funcinfo << endl;
+  //kdDebug() << this << k_funcinfo << endl;
   // aarrrgh! This makes the once hyper fast and efficient data protocol
   // implementation slow as molasses. But it wouldn't work otherwise,
   // and I don't want to start messing around with threads
@@ -72,12 +73,7 @@ void DataSlave::dispatchNext() {
     case QueueTotalSize:	totalSize(q.size); break;
     case QueueSendMetaData:	sendMetaData(); break;
     case QueueData:		data(q.ba); break;
-    case QueueFinished:
-      finished();
-      kill();			// commit suicide, we don't want to be reused
-      emit slaveDied(this);
-      //delete this;
-      return;
+    case QueueFinished:		finished(); break;
   }/*end switch*/
 
   dispatchQueue.pop_front();
