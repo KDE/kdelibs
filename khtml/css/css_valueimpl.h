@@ -158,7 +158,7 @@ public:
     virtual ~CSSPrimitiveValueImpl();
 
     void cleanup();
-    
+
     unsigned short primitiveType() const;
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
@@ -192,7 +192,7 @@ protected:
 
 class CounterImpl : public DomShared {
 public:
-    CounterImpl() { m_identifier = 0; m_listStyle = 0; m_separator = 0; }
+    CounterImpl() { }
     DOMString identifier() const { return m_identifier; }
     DOMString listStyle() const { return m_listStyle; }
     DOMString separator() const { return m_separator; }

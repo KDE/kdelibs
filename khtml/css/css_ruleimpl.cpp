@@ -67,7 +67,7 @@ CSSRuleImpl *CSSRuleImpl::parentRule() const
 DOM::DOMString CSSRuleImpl::cssText() const
 {
     // ###
-    return 0;
+    return DOMString();
 }
 
 void CSSRuleImpl::setCssText(DOM::DOMString /*str*/)
@@ -78,10 +78,9 @@ void CSSRuleImpl::setCssText(DOM::DOMString /*str*/)
 // ---------------------------------------------------------------------------
 
 CSSCharsetRuleImpl::CSSCharsetRuleImpl(StyleBaseImpl *parent)
-    : CSSRuleImpl(parent)
+    : CSSRuleImpl(parent), m_encoding()
 {
     m_type = CSSRule::CHARSET_RULE;
-    m_encoding = 0;
 }
 
 CSSCharsetRuleImpl::~CSSCharsetRuleImpl()
@@ -217,7 +216,7 @@ unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
 {
     const QChar *curP = rule.unicode();
     CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
-                                   
+
     if( newRule )
     {
         newRule->ref();
@@ -254,7 +253,7 @@ CSSStyleDeclarationImpl *CSSPageRuleImpl::style() const
 DOM::DOMString CSSPageRuleImpl::selectorText() const
 {
     // ###
-    return 0;
+    return DOMString();
 }
 
 void CSSPageRuleImpl::setSelectorText(DOM::DOMString /*str*/)
@@ -289,7 +288,7 @@ CSSStyleDeclarationImpl *CSSStyleRuleImpl::style() const
 DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
     // ###
-    return 0;
+    return DOMString();
 }
 
 void CSSStyleRuleImpl::setSelectorText(DOM::DOMString /*str*/)
@@ -369,7 +368,7 @@ unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
         return index;
     else
         rule->deref();    // insertion failed
-        
+
     return 0;
 }
 

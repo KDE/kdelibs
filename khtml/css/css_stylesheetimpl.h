@@ -52,10 +52,10 @@ class DocumentImpl;
 class StyleSheetImpl : public StyleListImpl
 {
 public:
-    StyleSheetImpl(DOM::NodeImpl *ownerNode, DOM::DOMString href = 0);
-    StyleSheetImpl(StyleSheetImpl *parentSheet, DOM::DOMString href = 0);
-    StyleSheetImpl(StyleBaseImpl *owner, DOM::DOMString href  = 0);
-    StyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = 0);
+    StyleSheetImpl(DOM::NodeImpl *ownerNode, DOM::DOMString href = DOMString());
+    StyleSheetImpl(StyleSheetImpl *parentSheet, DOM::DOMString href = DOMString());
+    StyleSheetImpl(StyleBaseImpl *owner, DOM::DOMString href  = DOMString());
+    StyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = DOMString());
 
     virtual ~StyleSheetImpl();
 
@@ -63,7 +63,7 @@ public:
 
     virtual bool deleteMe();
 
-    virtual DOM::DOMString type() const { return 0; }
+    virtual DOM::DOMString type() const { return DOMString(); }
 
     bool disabled() const;
     void setDisabled( bool );
@@ -85,9 +85,9 @@ protected:
 class CSSStyleSheetImpl : public StyleSheetImpl
 {
 public:
-    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = 0, bool _implicit = false);
-    CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOM::DOMString href = 0);
-    CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOM::DOMString href  = 0);
+    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = DOMString(), bool _implicit = false);
+    CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOM::DOMString href = DOMString());
+    CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOM::DOMString href = DOMString());
     // clone from a cached version of the sheet
     CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig);

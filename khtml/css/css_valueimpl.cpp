@@ -65,7 +65,7 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyNa
 {
     CSSValueImpl *val = getPropertyCSSValue( propertyName );
     if ( !val )
-	return 0;
+	return DOMString();
     return val->cssText();
 }
 
@@ -73,7 +73,7 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int id )
 {
     CSSValueImpl *val = getPropertyCSSValue( id );
     if ( !val )
-	return 0;
+	return DOMString();
     return val->cssText();
 }
 
@@ -124,7 +124,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName
 
 DOMString CSSStyleDeclarationImpl::removeProperty(int id)
 {
-    if(!m_lstValues) return 0;
+    if(!m_lstValues) return DOMString();
     DOMString value;
 
     QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
@@ -266,7 +266,7 @@ DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ )
 {
     // ###
     //return m_lstValues->at(index);
-    return 0;
+    return DOMString();
 }
 
 CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const

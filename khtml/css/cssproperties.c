@@ -458,7 +458,7 @@ static const char * propertyList[] = {
 DOMString getPropertyName(unsigned short id)
 {
     if(id >= CSS_PROP_TOTAL || id == 0)
-      return 0;
+      return DOMString();
     else
       return DOMString(propertyList[id]);
 };
