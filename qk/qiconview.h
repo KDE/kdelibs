@@ -110,6 +110,10 @@ public:
     virtual QByteArray encodedData( const char* mime ) const;
 
 private:
+    // Do not delete the two lines below, instead #ifdef them out appropriately.
+    struct Item; // ### Needed by SunPro. Possibly breaks MipsPro.
+    friend struct Item; // ### Needed by ISO C++, SunPro and MipsPro.
+
     struct IconDragItem
     {
 	IconDragItem();
