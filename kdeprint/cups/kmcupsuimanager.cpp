@@ -48,6 +48,7 @@
 #include "kpgeneralpage.h"
 #include "kpimagepage.h"
 #include "kptextpage.h"
+#include "kphpgl2page.h"
 
 #include "ipprequest.h"
 #include "cupsinfos.h"
@@ -142,6 +143,7 @@ void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 	{
 		dlg->addPage(new KPImagePage(dlg->driver(), dlg, "ImagePage"));
 		dlg->addPage(new KPTextPage(dlg->driver(), dlg, "TextPage"));
+		dlg->addPage(new KPHpgl2Page(dlg, "Hpgl2Page"));
 	}
 }
 
