@@ -44,7 +44,7 @@ public:
      * Main method for wrapping text.
      *
      * @param fm Font metrics, for the chosen font. Better cache it, creating a QFontMetrics is expensive.
-     * @param r Constraining rectangle. Only the width and height matter.
+     * @param r Constraining rectangle. Only the width matters.
      * @param flags - currently unused.
      * @param str The text to be wrapped.
      * @param len Length of text to wrap (default is -1 for all).
@@ -53,7 +53,10 @@ public:
     static KWordWrap* formatText( QFontMetrics &fm, const QRect & r, int flags, const QString & str, int len = -1 );
 
     /**
-     * @return the bounding rect, calculated by formatText.
+     * @return the bounding rect, calculated by formatText. The width is the
+     *         width of the widest text line, and never wider than
+     *         the rectangle given to @ref formatText. The height is the
+     *         text block. X and Y are always 0.
      */
     QRect boundingRect() const { return m_boundingRect; }
 
