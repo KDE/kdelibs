@@ -3,7 +3,7 @@ Build-Depends: automake, autoconf, libtool, debhelper, gettext, libqt2.2-dev (>=
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
-Standards-Version: 3.2.1
+Standards-Version: 3.5.0
 
 Package: kdelibs3
 Architecture: any

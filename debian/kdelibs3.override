@@ -77,6 +77,9 @@ kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-CN/entities/underX11Li
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underArtisticLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/ko/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/ko/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/ko/entities/underX11License.docbook
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license.gz
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license.gz
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license.gz
