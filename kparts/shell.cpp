@@ -537,9 +537,8 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 	return FALSE;
     }
 
-    if ( ( ev->type() == QEvent::MouseButtonPress ||
-	   ( ev->type() == QEvent::MouseButtonDblClick && m_bDoPartActivation ) )
-	 && m_policy == TriState )
+    if ( m_policy == TriState && ( ev->type() == QEvent::MouseButtonPress ||
+				   ( ev->type() == QEvent::MouseButtonDblClick && m_bDoPartActivation ) ) )
     {
 	if ( obj->inherits("Frame") )
 	    return FALSE;
@@ -573,6 +572,11 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 		// Double clicks always activate
 		if ( ev->type() == QEvent::MouseButtonDblClick )
 	        {
+		    // Hmmmm, the view/part is already active, so dont
+		    // eat the double click event.
+		    if ( _view == m_activeView && part == m_activePart )
+			return FALSE;
+		
 		    setActiveView( _view, part );
 		    return TRUE;
 		}
