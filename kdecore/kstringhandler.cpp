@@ -402,10 +402,17 @@ QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& font
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
+static inline int emSqueezeLimit(int delta, int min, int max)
+{
+  if (delta < min) return min;
+  if (delta > max) return max;
+  return delta;
+}
+
 QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
-  
+
   if (maxPixels < nameWidth)
   {
     QString tmp = name;
@@ -415,11 +422,7 @@ QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& f
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
-
-      if (delta < 1) 
-      {
-        delta = 1;
-      }
+      delta = emSqueezeLimit(delta, 1, delta); // no max
 
       tmp.remove(0, delta);
       nameWidth = fontMetrics.width(tmp);
@@ -439,7 +442,7 @@ QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& font
 QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
-  
+
   if (maxPixels < nameWidth)
   {
     QString tmp = name;
@@ -448,14 +451,11 @@ QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& f
 
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
+      int length = tmp.length();
       int delta = (nameWidth - maxPixels) / em;
+      delta = emSqueezeLimit(delta, 1, length) ;
 
-      if (delta < 1) 
-      { 
-        delta = 1;
-      }
-
-      tmp.remove((tmp.length() / 2) - (delta / 2), delta);
+      tmp.remove((length / 2) - (delta / 2), delta);
       nameWidth = fontMetrics.width(tmp);
     }
 
@@ -482,14 +482,11 @@ QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& f
 
     while (maxPixels < nameWidth && !tmp.isEmpty())
     {
+      int length = tmp.length();
       int delta = (nameWidth - maxPixels) / em;
+      delta = emSqueezeLimit(delta, 1, length) ;
 
-      if (delta < 1)
-      {
-        delta = 1;
-      }
-
-      tmp.remove(tmp.length() - delta, delta);
+      tmp.remove(length - delta, delta);
       nameWidth = fontMetrics.width(tmp);
     }
 
