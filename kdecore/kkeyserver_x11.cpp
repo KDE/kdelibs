@@ -18,6 +18,10 @@
 #include <X11/keysymdef.h>
 #undef NONE
 
+#ifndef KeyPress // for --enable-final
+#define KeyPress XKeyPress
+#endif
+
 namespace KKeyServer
 {
 
@@ -692,5 +696,5 @@ QString modToStringUser( uint mod )     { return modToString( mod, true ); }
 }*/
 
 }; // end of namespace KKeyServer block
-
+#undef KeyPress
 #endif // Q_WS_X11
