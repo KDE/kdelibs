@@ -43,9 +43,10 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
 
 KFilePreview::~KFilePreview()
 {
-    // don't delete the view's actions (inserted into our collection)!
-    for ( uint i = 0; i < left->actionCollection()->count(); i++ )
-        actionCollection()->take( left->actionCollection()->action( i ));
+    // Why copy the actions in the first place? --ellis, 13 Jan 02.
+    //// don't delete the view's actions (inserted into our collection)!
+    //for ( uint i = 0; i < left->actionCollection()->count(); i++ )
+    //    actionCollection()->take( left->actionCollection()->action( i ));
 
     // don't delete the preview, we can reuse it
     // (it will get deleted by ~KDirOperator)
@@ -69,18 +70,20 @@ void KFilePreview::init( KFileView *view )
     preview->setMinimumWidth(l->sizeHint().width()+20);
     setResizeMode(preview, QSplitter::KeepSize);
 
-    for ( uint i = 0; i < view->actionCollection()->count(); i++ )
-        actionCollection()->insert( view->actionCollection()->action( i ));
+    // Why copy the actions? --ellis, 13 Jan 02.
+    //for ( uint i = 0; i < view->actionCollection()->count(); i++ )
+    //    actionCollection()->insert( view->actionCollection()->action( i ));
 }
 
 void KFilePreview::setFileView( KFileView *view )
 {
     Q_ASSERT( view );
 
-    if ( left ) { // remove any previous actions
-        for ( uint i = 0; i < left->actionCollection()->count(); i++ )
-            actionCollection()->take( left->actionCollection()->action( i ));
-    }
+    // Why copy the actions? --ellis, 13 Jan 02.
+    //if ( left ) { // remove any previous actions
+    //    for ( uint i = 0; i < left->actionCollection()->count(); i++ )
+    //        actionCollection()->take( left->actionCollection()->action( i ));
+    //}
 
     delete left;
     view->widget()->reparent( this, QPoint(0,0) );
@@ -92,8 +95,9 @@ void KFilePreview::setFileView( KFileView *view )
     connect( left->signaler(), SIGNAL( fileHighlighted(const KFileItem*) ),
              SLOT( slotHighlighted( const KFileItem * )));
 
-    for ( uint i = 0; i < view->actionCollection()->count(); i++ )
-        actionCollection()->insert( view->actionCollection()->action( i ));
+    // Why copy the actions? --ellis, 13 Jan 02.
+    //for ( uint i = 0; i < view->actionCollection()->count(); i++ )
+    //    actionCollection()->insert( view->actionCollection()->action( i ));
 }
 
 // this url parameter is useless... it's the url of the current directory.
