@@ -32,72 +32,349 @@
 #include "array_object.lut.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 using namespace KJS;
 
 // ------------------------------ ArrayInstanceImp -----------------------------
 
+const unsigned sparseArrayCutoff = 10000;
+
 const ClassInfo ArrayInstanceImp::info = {"Array", 0, 0, 0};
 
-ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto)
+ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto, unsigned initialLength)
   : ObjectImp(proto)
+  , length(initialLength)
+  , storageLength(initialLength < sparseArrayCutoff ? initialLength : 0)
+  , capacity(storageLength)
+  , storage(capacity ? (ValueImp **)calloc(capacity, sizeof(ValueImp *)) : 0)
 {
+}
+
+ArrayInstanceImp::ArrayInstanceImp(ObjectImp *proto, const List &list)
+  : ObjectImp(proto)
+  , length(list.size())
+  , storageLength(length)
+  , capacity(storageLength)
+  , storage(capacity ? (ValueImp **)malloc(sizeof(ValueImp *) * capacity) : 0)
+{
+  ListIterator it = list.begin();
+  unsigned l = length;
+  for (unsigned i = 0; i < l; ++i) {
+    storage[i] = (it++).imp();
+  }
+}
+
+ArrayInstanceImp::~ArrayInstanceImp()
+{
+  free(storage);
+}
+
+Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) const
+{
+  if (propertyName == lengthPropertyName)
+    return Number(length);
+
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok) {
+    if (index >= length)
+      return Undefined();
+    if (index < storageLength) {
+      ValueImp *v = storage[index];
+      return v ? Value(v) : Undefined();
+    }
+  }
+
+  return ObjectImp::get(exec, propertyName);
+}
+
+Value ArrayInstanceImp::get(ExecState *exec, unsigned index) const
+{
+  if (index >= length)
+    return Undefined();
+  if (index < storageLength) {
+    ValueImp *v = storage[index];
+    return v ? Value(v) : Undefined();
+  }
+  
+  return ObjectImp::get(exec, Identifier::from(index));
 }
 
 // Special implementation of [[Put]] - see ECMA 15.4.5.1
 void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr)
 {
-  if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName))
-    return;
-
-  if (hasProperty(exec,propertyName)) {
-    if (propertyName == lengthPropertyName) {
-      Value len = get(exec,lengthPropertyName);
-      unsigned int oldLen = len.toUInt32(exec);
-      unsigned int newLen = value.toUInt32(exec);
-      if (value.toNumber(exec) != double(newLen)) {
-	Object err = Error::create(exec, RangeError, "Invalid array length.");
-	exec->setException(err);
-	return;
-      }
-      // shrink array
-      for (unsigned int u = newLen; u < oldLen; u++) {
-	Identifier p = Identifier::from(u);
-	if (hasOwnProperty(exec, p))
-	  deleteProperty(exec, p);
-      }
-      ObjectImp::put(exec, lengthPropertyName, Number(newLen), DontEnum | DontDelete);
+  if (propertyName == lengthPropertyName) {
+    unsigned int newLen = value.toUInt32(exec);
+    if (value.toNumber(exec) != double(newLen)) {
+      Object err = Error::create(exec, RangeError, "Invalid array length.");
+      exec->setException(err);
       return;
     }
-    //    put(p, v);
-  } //  } else
-    ObjectImp::put(exec, propertyName, value, attr);
-
-  // array index ?
-  unsigned int idx;
-  if (!sscanf(propertyName.ustring().cstring().c_str(), "%u", &idx)) /* TODO */
+    setLength(newLen, exec);
     return;
-
-  // do we need to update/create the length property ?
-  if (hasOwnProperty(exec, lengthPropertyName)) {
-    Value len = get(exec, lengthPropertyName);
-    if (idx < len.toUInt32(exec))
-      return;
   }
-
-  ObjectImp::put(exec, lengthPropertyName, Number(idx+1), DontDelete | DontEnum);
+  
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok) {
+    put(exec, index, value, attr);
+    return;
+  }
+  
+  ObjectImp::put(exec, propertyName, value, attr);
 }
 
-bool ArrayInstanceImp::hasOwnProperty(ExecState *exec,
-                                      const Identifier &propertyName)
+void ArrayInstanceImp::put(ExecState *exec, unsigned index, const Value &value, int attr)
 {
-  // disable this object's prototype temporarily for the hasProperty() call
-  Value protoBackup = prototype();
-  setPrototype(Undefined());
-  bool b = hasProperty(exec, propertyName);
-  setPrototype(protoBackup);
-  return b;
+  if (index < sparseArrayCutoff && index >= storageLength) {
+    resizeStorage(index + 1);
+  }
+
+  if (index >= length) {
+    length = index + 1;
+  }
+
+  if (index < storageLength) {
+    storage[index] = value.imp();
+    return;
+  }
+  
+  assert(index >= sparseArrayCutoff);
+  ObjectImp::put(exec, Identifier::from(index), value, attr);
+}
+
+bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
+{
+  if (propertyName == lengthPropertyName)
+    return true;
+  
+  bool ok;
+  unsigned index = propertyName.toULong(&ok);
+  if (ok) {
+    if (index >= length)
+      return false;
+    if (index < storageLength) {
+      ValueImp *v = storage[index];
+      return v && v != UndefinedImp::staticUndefined;
+    }
+  }
+  
+  return ObjectImp::hasProperty(exec, propertyName);
+}
+
+bool ArrayInstanceImp::hasProperty(ExecState *exec, unsigned index) const
+{
+  if (index >= length)
+    return false;
+  if (index < storageLength) {
+    ValueImp *v = storage[index];
+    return v && v != UndefinedImp::staticUndefined;
+  }
+  
+  return ObjectImp::hasProperty(exec, Identifier::from(index));
+}
+
+bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
+{
+  if (propertyName == lengthPropertyName)
+    return false;
+  
+  bool ok;
+  unsigned long index = propertyName.toULong(&ok);
+  if (ok) {
+    if (index >= length)
+      return true;
+    if (index < storageLength) {
+      storage[index] = 0;
+      return true;
+    }
+  }
+  
+  return ObjectImp::deleteProperty(exec, propertyName);
+}
+
+bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
+{
+  if (index >= length)
+    return true;
+  if (index < storageLength) {
+    storage[index] = 0;
+    return true;
+  }
+  
+  return ObjectImp::deleteProperty(exec, Identifier::from(index));
+}
+
+ReferenceList ArrayInstanceImp::propList(ExecState *exec, bool recursive)
+{
+  ReferenceList properties = ObjectImp::propList(exec,recursive);
+
+  // avoid fetching this every time through the loop
+  ValueImp *undefined = UndefinedImp::staticUndefined;
+
+  for (unsigned i = 0; i < storageLength; ++i) {
+    ValueImp *imp = storage[i];
+    if (imp && imp != undefined) {
+      properties.append(Reference(this, i));
+    }
+  }
+  return properties;
+}
+
+void ArrayInstanceImp::resizeStorage(unsigned newLength)
+{
+    if (newLength < storageLength) {
+      memset(storage + newLength, 0, sizeof(ValueImp *) * (storageLength - newLength));
+    }
+    if (newLength > capacity) {
+      unsigned newCapacity;
+      if (newLength > sparseArrayCutoff) {
+        newCapacity = newLength;
+      } else {
+        newCapacity = (newLength * 3 + 1) / 2;
+        if (newCapacity > sparseArrayCutoff) {
+          newCapacity = sparseArrayCutoff;
+        }
+      }
+      storage = (ValueImp **)realloc(storage, newCapacity * sizeof (ValueImp *));
+      memset(storage + capacity, 0, sizeof(ValueImp *) * (newCapacity - capacity));
+      capacity = newCapacity;
+    }
+    storageLength = newLength;
+}
+
+void ArrayInstanceImp::setLength(unsigned newLength, ExecState *exec)
+{
+  if (newLength <= storageLength) {
+    resizeStorage(newLength);
+  }
+
+  if (newLength < length) {
+    ReferenceList sparseProperties;
+    
+    _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, Object(this));
+    
+    ReferenceListIterator it = sparseProperties.begin();
+    while (it != sparseProperties.end()) {
+      Reference ref = it++;
+      bool ok;
+      if (ref.getPropertyName(exec).toULong(&ok) > newLength) {
+	ref.deleteValue(exec);
+      }
+    }
+  }
+  
+  length = newLength;
+}
+
+void ArrayInstanceImp::mark()
+{
+  ObjectImp::mark();
+  unsigned l = storageLength;
+  for (unsigned i = 0; i < l; ++i) {
+    ValueImp *imp = storage[i];
+    if (imp && !imp->marked())
+      imp->mark();
+  }
+}
+
+static ExecState *execForCompareByStringForQSort;
+
+static int compareByStringForQSort(const void *a, const void *b)
+{
+    ExecState *exec = execForCompareByStringForQSort;
+    return compare(Value(*(ValueImp **)a).toString(exec), Value(*(ValueImp **)b).toString(exec));
+}
+
+void ArrayInstanceImp::sort(ExecState *exec)
+{
+    int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
+    
+    execForCompareByStringForQSort = exec;
+    qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareByStringForQSort);
+    execForCompareByStringForQSort = 0;
+}
+
+struct CompareWithCompareFunctionArguments {
+    CompareWithCompareFunctionArguments(ExecState *e, ObjectImp *cf)
+        : exec(e)
+        , compareFunction(cf)
+        , globalObject(e->interpreter()->globalObject())
+    {
+        arguments.append(Undefined());
+        arguments.append(Undefined());
+    }
+
+    ExecState *exec;
+    ObjectImp *compareFunction;
+    List arguments;
+    Object globalObject;
+};
+
+static CompareWithCompareFunctionArguments *compareWithCompareFunctionArguments;
+
+static int compareWithCompareFunctionForQSort(const void *a, const void *b)
+{
+    CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
+    
+    args->arguments.clear();
+// delme
+    args->arguments.append(Value(*(ValueImp **)a));
+    args->arguments.append(Value(*(ValueImp **)b));
+// fixme
+//     args->arguments.append(*(ValueImp **)a);
+//     args->arguments.append(*(ValueImp **)b);
+    return args->compareFunction->call(args->exec, args->globalObject, args->arguments)
+        .toInt32(args->exec);
+}
+
+void ArrayInstanceImp::sort(ExecState *exec, Object &compareFunction)
+{
+    int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
+    
+    CompareWithCompareFunctionArguments args(exec, compareFunction.imp());
+    compareWithCompareFunctionArguments = &args;
+    qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareWithCompareFunctionForQSort);
+    compareWithCompareFunctionArguments = 0;
+}
+
+unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
+{
+    ValueImp *undefined = UndefinedImp::staticUndefined;
+
+    unsigned o = 0;
+    
+    for (unsigned i = 0; i != storageLength; ++i) {
+        ValueImp *v = storage[i];
+        if (v && v != undefined) {
+            if (o != i)
+                storage[o] = v;
+            o++;
+        }
+    }
+    
+    ReferenceList sparseProperties;
+    _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, Object(this));
+    unsigned newLength = o + sparseProperties.length();
+
+    if (newLength > storageLength) {
+      resizeStorage(newLength);
+    } 
+
+    ReferenceListIterator it = sparseProperties.begin();
+    while (it != sparseProperties.end()) {
+      Reference ref = it++;
+      storage[o] = ref.getValue(exec).imp();
+      ObjectImp::deleteProperty(exec, ref.getPropertyName(exec));
+      o++;
+    }
+    
+    if (newLength != storageLength)
+        memset(storage + o, 0, sizeof(ValueImp *) * (storageLength - o));
+    
+    return o;
 }
 
 // ------------------------------ ArrayPrototypeImp ----------------------------
@@ -122,15 +399,12 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 */
 
 // ECMA 15.4.4
-ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
+ArrayPrototypeImp::ArrayPrototypeImp(ExecState */*exec*/,
                                      ObjectPrototypeImp *objProto)
-  : ArrayInstanceImp(objProto)
+  : ArrayInstanceImp(objProto,0)
 {
   Value protect(this);
   setInternalValue(Null());
-
-  // The constructor will be added later, by InterpreterImp, once ArrayObjectImp has been constructed.
-  put(exec,lengthPropertyName, Number(0), DontEnum | DontDelete);
 }
 
 Value ArrayPrototypeImp::get(ExecState *exec, const Identifier &propertyName) const
@@ -569,31 +843,12 @@ bool ArrayObjectImp::implementsConstruct() const
 
 // ECMA 15.4.2
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
-{
-  Object result(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp()));
+{  // a single numeric argument denotes the array size (!)
+  if (args.size() == 1 && args[0].type() == NumberType)
+    return Object(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp(), args[0].toUInt32(exec)));
 
-  unsigned int len;
-  ListIterator it = args.begin();
-  // a single argument might denote the array size
-  if (args.size() == 1 && it->type() == NumberType) {
-    len = it->toUInt32(exec);
-    if (it->toNumber(exec) != double(len)) {
-      Object err = Error::create(exec, RangeError, "Invalid array length.");
-      exec->setException(err);
-      return err;
-    }
-  } else {
-    // initialize array
-    len = args.size();
-    for (unsigned int u = 0; it != args.end(); it++, u++)
-      result.put(exec, u, *it);
-  }
-
-  // array size
-  result.put(exec, lengthPropertyName, Number(len), DontEnum | DontDelete);
-  static_cast<ArrayInstanceImp*>(result.imp())->putDirect(lengthPropertyName, Number(len).imp(), DontEnum | DontDelete);
-
-  return result;
+  // otherwise the array is constructed with the arguments in it
+  return Object(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp(), args));
 }
 
 bool ArrayObjectImp::implementsCall() const
@@ -607,4 +862,3 @@ Value ArrayObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &arg
   // equivalent to 'new Array(....)'
   return construct(exec,args);
 }
-

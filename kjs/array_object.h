@@ -27,21 +27,6 @@
 
 namespace KJS {
 
-  class ArrayInstanceImp : public ObjectImp {
-  public:
-    ArrayInstanceImp(ObjectImp *proto);
-
-    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
-    /**
-     * A shallow hasProperty() variant that doesn't look at the prototype's
-     * properties.
-     */
-    virtual bool hasOwnProperty(ExecState *exec, const Identifier &propertyName);
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
-
  class ArrayPrototypeImp : public ArrayInstanceImp {
   public:
     ArrayPrototypeImp(ExecState *exec,

@@ -562,7 +562,7 @@ namespace KJS {
     const List scope() const;
     void setScope(const List &s);
 
-    ReferenceList propList(ExecState *exec, bool recursive = true);
+    virtual ReferenceList propList(ExecState *exec, bool recursive = true);
 
     Value internalValue() const;
     void setInternalValue(const Value &v);
