@@ -161,18 +161,35 @@ KShred::writeData(char *data, uint size)
 bool
 KShred::shred()
 {
+  kdDebug() << "KShred::shred" << endl;
+  unsigned long size = file->size();
+  emit processedSize( 0 );
   if (!fill0s())
     return false;
+  kdDebug() << "KShred::shred 1" << endl;
+  emit processedSize( size/6 );
   if (!fill1s())
     return false;
+  kdDebug() << "KShred::shred 2" << endl;
+  emit processedSize( 2*size/6 );
   if (!fillrandom())
     return false;
+  kdDebug() << "KShred::shred 3" << endl;
+  emit processedSize( 3*size/6 );
   if (!fillbyte((uint) 0x55))     // '0x55' is 01010101
     return false;
+  kdDebug() << "KShred::shred 4" << endl;
+  emit processedSize( 4*size/6 );
   if (!fillbyte((uint) 0xAA))     // '0xAA' is 10101010
     return false;
+  kdDebug() << "KShred::shred 5" << endl;
+  emit processedSize( 5*size/6 );
   if (!file->remove())
     return false;
+  emit processedSize( size );
   file = 0L;
   return true;
 }
+
+#include "kshred.moc"
+

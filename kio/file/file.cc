@@ -795,7 +795,10 @@ void FileProtocol::special( const QByteArray &data)
     {
       QString filename;
       stream >> filename;
-      if (!KShred::shred(filename))
+      KShred shred( filename );
+      connect( &shred, SIGNAL( processedSize( unsigned long ) ),
+               this, SLOT( slotProcessedSize( unsigned long ) ) );
+      if (!shred.shred())
         error( KIO::ERR_CANNOT_DELETE, filename );
       finished();
       break;
@@ -804,6 +807,14 @@ void FileProtocol::special( const QByteArray &data)
       assert(0);
     }
 }
+
+// Connected to KShred
+void FileProtocol::slotProcessedSize( unsigned long bytes )
+{
+  kdDebug(7006) << "FileProtocol::slotProcessedSize (" << bytes << ")" << endl;
+  processedSize( bytes );
+}
+
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     QString buffer;
@@ -895,3 +906,4 @@ QString testLogFile( const QString& _filename )
     return result;
 }
 
+#include "file.moc"

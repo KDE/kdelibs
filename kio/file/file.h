@@ -14,8 +14,9 @@
 #include <kio/global.h>
 #include <kio/slavebase.h>
 
-class FileProtocol : public KIO::SlaveBase
+class FileProtocol : public QObject, public KIO::SlaveBase
 {
+  Q_OBJECT
 public:
   FileProtocol( const QCString &pool, const QCString &app);
   virtual ~FileProtocol() { }
@@ -50,6 +51,9 @@ public:
   virtual void special( const QByteArray &data);
   void unmount( const QString& point );
   void mount( bool _ro, const char *_fstype, const QString& dev, const QString& point );
+
+protected slots:
+  void slotProcessedSize( unsigned long _bytes );
 
 protected:
 

@@ -35,6 +35,7 @@
 #include <string.h>
 #include <qstring.h>
 #include <qfile.h>
+#include <qobject.h>
 
 /**
  * Erase a file in a way that makes recovery impossible.
@@ -43,7 +44,9 @@
  * @author Andreas F. Pour <bugs@mieterra.com>
  * Integrated into KDE by David Faure <faure@kde.org>
  */
-class KShred {
+class KShred : public QObject {
+
+  Q_OBJECT
 
     public:
 
@@ -64,6 +67,12 @@ class KShred {
          * No need to create an instance of the class
          */
         static bool shred(QString fileName);
+
+    signals:
+        /**
+         * Some progress info
+         */
+        void processedSize( unsigned long bytes );
 
     private:
         bool writeData(char *data, uint size);

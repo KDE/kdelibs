@@ -11,5 +11,7 @@ kio_file_la_LIBADD = ../libkio.la
 kio_file_la_LDFLAGS = -module -avoid-version -no-undefined
 noinst_HEADERS = file.h
 
+METASOURCES = AUTO
+
 kioconfig_DATA = file.desktop
 kioconfigdir = $(kde_confdir)/protocols
