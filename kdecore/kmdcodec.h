@@ -552,7 +552,7 @@ public:
    * NOTE: you are responsible for making a copy of this
    * string.
    *
-   * @return the hex represenation of the digest or NULL
+   * @return the raw represenation of the digest or NULL
    *         if there was error calculating the digest.
    */
   Q_UINT8* rawDigest ();
