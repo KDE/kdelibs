@@ -309,6 +309,9 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
+        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+
         // Handle frame and iframe
         DOM::ElementImpl* elt = ownerElement();
         if ( elt ) {
@@ -324,9 +327,6 @@ void HTMLDocumentImpl::close()
 	      kdWarning(6010) << "Load event: access denied to [i]frame " << domain().string() << " from " << parentDoc->domain().string() << endl;
             }
         }
-
-        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
-        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
