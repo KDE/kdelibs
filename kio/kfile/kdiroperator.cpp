@@ -946,7 +946,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
 {
-    if (newone.isEmpty())
+    if ( newone.isEmpty() || !fileView )
         return;
 
     myCompleteListDirty = true;
