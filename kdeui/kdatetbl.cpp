@@ -181,14 +181,11 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       font.setBold(true);
       painter->setFont(font);
       bool normalday = true;
-      QString daystr;
       int firstWeekDay = KGlobal::locale()->weekStartDay();
-      if ( col+firstWeekDay < 8 )
-          daystr = calendar->weekDayName(col+firstWeekDay, true);
-      else
-          daystr = calendar->weekDayName(col+firstWeekDay-7, true);
-      // ### HPB Use the KCalendarSystem here?
-      if ( daystr==i18n("Sunday", "Sun") || daystr==i18n("Saturday", "Sat") )
+      int daynum = ( col+firstWeekDay < 8 ) ? col+firstWeekDay :
+                                              col+firstWeekDay-7;
+      if ( daynum == calendar->weekDayOfPray() ||
+         ( daynum == 6 && calendar->calendarName() == "gregorian" ) )
           normalday=false;
 
       if (!normalday)
@@ -204,7 +201,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(KGlobalSettings::activeTextColor());
         }
       painter->drawText(0, 0, w, h-1, AlignCenter,
-                        daystr, -1, &rect);
+                        calendar->weekDayName(daynum, true), -1, &rect);
       painter->setPen(KGlobalSettings::textColor());
       painter->moveTo(0, h-1);
       painter->lineTo(w-1, h-1);
