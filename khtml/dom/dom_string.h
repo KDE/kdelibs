@@ -117,9 +117,15 @@ protected:
     DOMStringImpl *impl;
 };
 
+#ifndef NDEBUG
 inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) { 
 	return (stream << string.string());
 }
+#else
+inline kndbgstream &operator<<(kndbgstream &stream, const DOMString &string) {
+	return stream;
+}
+#endif
 
 bool operator==( const DOMString &a, const DOMString &b );
 bool operator==( const DOMString &a, const QString &b );
