@@ -93,3 +93,8 @@ EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
+
+bin_PROGRAMS = kde-config
+kde_config_SOURCES = kde-config.cpp
+kde_config_LDADD = ./libkdecore.la
+kde_config_LDFLAGS = $(KDE_RPATH)

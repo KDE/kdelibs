@@ -1,0 +1,182 @@
+// -*- c++ -*-
+
+#include <kcmdlineargs.h>
+#include <klocale.h>
+#include <kinstance.h>
+#include <kstddirs.h>
+#include <kglobal.h>
+#include <stdio.h>
+#include <kaboutdata.h>
+#include <config.h>
+#include <kapp.h>
+
+static const char *description = I18N_NOOP("A little program to output installation paths");
+
+static KCmdLineOptions options[] =
+{
+    { "expandvars", I18N_NOOP("expand ${prefix} and ${exec_prefix} in output"), 0 },
+    { "prefix",	   I18N_NOOP("Compiled in prefix for KDE libraries"), 0 },
+    { "exec-prefix", I18N_NOOP("Compiled in exec_prefix for KDE libraries"), 0 },
+    { "localprefix", I18N_NOOP("Prefix in $HOME used to write files"), 0},
+    { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
+    { "types",     I18N_NOOP("Available KDE resource types"), 0 },
+    { "path type", I18N_NOOP("Search path for resource type"), 0 },
+    { "install type", I18N_NOOP("Prefix to install resource files to"), 0},
+    { 0,0,0 }
+};
+
+bool _expandvars = false;
+
+QString expandvars(const char *_input)
+{
+    QString result = QString::fromLatin1(_input);
+    if (!_expandvars)
+        return result;
+
+    bool changed = false;
+    int index = result.find("${prefix}");
+    if (index >= 0) {
+        result = result.replace(index, 9, "@prefix@");
+        changed = true;
+    }
+    index = result.find("${exec_prefix}");
+    if (index >= 0) {
+        result = result.replace(index, 14, "@exec_prefix@");
+        changed = true;
+    }
+    index = result.find("$(exec_prefix)");
+    if (index >= 0) {
+        result = result.replace(index, 14, "@exec_prefix@");
+        changed = true;
+    }
+    index = result.find("$(prefix");
+    if (index >= 0) {
+        result = result.replace(index, 9, "@prefix@");
+        changed = true;
+    }
+    if (changed)
+        return expandvars(result.latin1());
+    else
+        return result;
+}
+
+int main(int argc, char **argv)
+{
+    KLocale::setMainCatalogue("kdelibs");
+    KAboutData about("kde-config", "kde-config", "1.0", description, KAboutData::License_GPL, "(C) 2000 Stephan Kulow");
+    KCmdLineArgs::init( argc, argv, &about);
+
+    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
+
+    KInstance a("kde-config");
+    (void)KGlobal::dirs(); // trigger the creation
+    (void)KGlobal::config();
+
+    // Get application specific arguments
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+    _expandvars = args->isSet("expandvars");
+
+    if (args->isSet("prefix"))
+    {
+        printf("%s\n", expandvars("@prefix@").latin1());
+        return 0;
+    }
+
+    if (args->isSet("exec-prefix"))
+    {
+        printf("%s\n", expandvars("@exec_prefix@").latin1());
+        return 0;
+    }
+
+    if (args->isSet("localprefix"))
+    {
+        printf("%s\n", KGlobal::dirs()->localkdedir().latin1());
+        return 0;
+    }
+
+    if (args->isSet("version"))
+    {
+        printf("%s\n", KDE_VERSION_STRING);
+        return 0;
+    }
+
+    if (args->isSet("types"))
+    {
+        QStringList types = KGlobal::dirs()->allTypes();
+        types.sort();
+        const char *helptexts[] = {
+            "apps", I18N_NOOP("Applications menu (.desktop files)"),
+            "cgi", I18N_NOOP("CGIs to run from kdehelp"),
+            "config", I18N_NOOP("Configuration files"),
+            "data", I18N_NOOP("Where applications store data"),
+            "exe", I18N_NOOP("Executables in $prefix/bin"),
+            "html", I18N_NOOP("HTML documentation"),
+            "icon", I18N_NOOP("Icons"),
+            "lib", I18N_NOOP("Libraries"),
+            "locale", I18N_NOOP("Translation files for KLocale"),
+            "mime", I18N_NOOP("Mime types"),
+            "services", I18N_NOOP("Services"),
+            "servicetypes", I18N_NOOP("Service types"),
+            "sound", I18N_NOOP("Application sounds"),
+            "templates", I18N_NOOP("Templates"),
+            "wallpaper", I18N_NOOP("Wallpapers"),
+            "tmp", I18N_NOOP("Temporary files (specfic for both current host and current user)"),
+            "socket", I18N_NOOP("UNIX Sockets (specific for both current host and current user)"),
+            0, 0
+        };
+        for (QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
+        {
+            int index = 0;
+            while (helptexts[index] && *it != helptexts[index]) {
+                index += 2;
+            }
+            if (helptexts[index]) {
+                printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).local8Bit().data());
+            } else {
+                printf(i18n("%1 - unknown type\n").arg(*it).local8Bit().data());
+            }
+        }
+        return 0;
+    }
+
+    QString type = args->getOption("path");
+    if (!type.isEmpty())
+    {
+        printf("%s\n", KGlobal::dirs()->resourceDirs(type.latin1()).
+               join(":").latin1());
+        return 0;
+    }
+
+    type = args->getOption("install");
+    if (!type.isEmpty())
+    {
+        const char *installprefixes[] = {
+            "apps",   "@kde_appsdir@",
+            "config", "@kde_confdir@",
+            "data",   "@kde_datadir@",
+            "exe",    "@kde_bindir@",
+            "html",   "@kde_htmldir@",
+            "icon",   "@kde_icondir@",
+            "lib",    "@libdir@",
+            "locale", "@kde_locale@",
+            "mime",   "@kde_mimedir@",
+            "services", "@kde_servicesdir@",
+            "servicetypes", "@kde_servicetypesdir@",
+            "sound", "@kde_sounddir@",
+            "templates", "@kde_templatesdir@",
+            "wallpaper", "@kde_wallpaperdir@",
+            0, 0
+        };
+        int index = 0;
+        while (installprefixes[index] && type != installprefixes[index]) {
+            index += 2;
+        }
+        if (installprefixes[index]) {
+            printf("%s\n", expandvars(installprefixes[index+1]).latin1());
+        } else {
+            printf("NONE\n"); // no i18n here as for scripts
+        }
+    }
+    return 0;
+}
