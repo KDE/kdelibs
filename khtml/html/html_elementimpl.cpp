@@ -247,48 +247,52 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     KHTMLWidget *htmlwidget = (KHTMLWidget *) static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
     if(!htmlwidget) return;
 
-    int id;
-    bool click = false;
-
-    switch(type)
+    if(inside)
     {
-    case MousePress:
-	id = ATTR_ONMOUSEDOWN;
-	setPressed();
-	break;
-    case MouseRelease:
-	id = ATTR_ONMOUSEUP;
-	if(pressed()) click = true;
-	setPressed(false);
-	break;
-    case MouseClick:
-	// handled differently at the moment
-	break;
-    case MouseDblClick:
-	id = ATTR_ONDBLCLICK;
-	break;
-    case MouseMove:
-	id = ATTR_ONMOUSEMOVE;
-	break;
-    default:
-	break;
-    }
+	int id;
+	bool click = false;
 
-    DOMString script = getAttribute(id);
-    if(script.length())
-    {
-	printf("emit executeScript( %s )\n", script.string().ascii());
-	htmlwidget->executeScript( script.string() );
-    }
+	switch(type)
+	{
+	case MousePress:
+	    id = ATTR_ONMOUSEDOWN;
+	    setPressed();
+	    break;
+	case MouseRelease:
+	    id = ATTR_ONMOUSEUP;
+	    if(pressed()) click = true;
+	    setPressed(false);
+	    break;
+	case MouseClick:
+	    // handled differently at the moment
+	    break;
+	case MouseDblClick:
+	    id = ATTR_ONDBLCLICK;
+	    break;
+	case MouseMove:
+	    id = ATTR_ONMOUSEMOVE;
+	    break;
+	default:
+	    break;
+	}
 
-    if(click)
-    {
-	script = getAttribute(ATTR_ONCLICK);
+	DOMString script = getAttribute(id);
 	if(script.length())
 	{
-	    htmlwidget->executeScript( script.string() );
 	    printf("emit executeScript( %s )\n", script.string().ascii());
+	    htmlwidget->executeScript( script.string() );
 	}
+
+	if(click)
+	{
+	    script = getAttribute(ATTR_ONCLICK);
+	    if(script.length())
+	    {
+		htmlwidget->executeScript( script.string() );
+		printf("emit executeScript( %s )\n", script.string().ascii());
+	    }
+	}
+
     }
 
     if(inside != mouseInside())
@@ -558,7 +562,7 @@ bool HTMLPositionedElementImpl::mouseEvent( int _x, int _y, int button,
     if((_tx > _x) || (_tx + width < _x)) inside = false;
 
     if(!inside && !mouseInside()) return false;
-    
+
     NodeImpl *child = firstChild();
     if(child)
     {
