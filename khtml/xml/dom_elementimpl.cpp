@@ -638,7 +638,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
 	if (m_attrs[i].id() == id) {
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
-	    memmove(m_attrs+i,m_attrs+i+1,m_attrCount-i-1);
+	    memmove(m_attrs+i,m_attrs+i+1,m_attrCount-i-1*sizeof(AttributeImpl));
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
 	    m_element->parseAttribute(id,0);
@@ -767,8 +767,8 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value)
 		m_attrs[i].setValue(value,m_element);
 	    }
 	    else {
-		memmove(m_attrs+i,m_attrs+i+1,m_attrCount-i-1);
 		m_attrs[i].free();
+		memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
 		m_attrCount--;
 		m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
 		if (m_element)
