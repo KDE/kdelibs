@@ -110,7 +110,7 @@ void KFileSimpleView::highlightItem(int row, int col)
 	    setLeftCell( leftCell() + col - edge + 1 );
 	else setLeftCell( col );
     }
-    
+
     edge = topCell();
     if ( row < edge ) {
 	setTopCell( edge - 1 );
@@ -126,7 +126,7 @@ void KFileSimpleView::highlightItem(int row, int col)
     while ( col > leftCell() && !isColCompletelyVisible( col ) ) {
         setLeftCell( leftCell()+1 );
     }
-    
+
 
     if (curCol != static_cast<int>(col) ||
 	curRow != static_cast<int>(row))
@@ -144,19 +144,19 @@ bool KFileSimpleView::isColCompletelyVisible( int col )
 {
   if ( !colIsVisible(col) ) 		// out of visible area
       return false;
-  
+
   else if ( col < lastColVisible() ) 	// visible and not last column
       return true;
-  
+
   else { 				// last column, may be clipped
     int tableWidth = 0;
     for ( int i = leftCell(); i <= lastColVisible(); i++ ) {
         tableWidth += cellWidth( i );
     }
-  
+
     return ( viewWidth() >= tableWidth );
   }
-}    
+}
 
 
 void KFileSimpleView::clearView()
@@ -207,14 +207,14 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     int jump     = 0;
     bool oneColOnly = leftCell() == lastColVisible();
 
-    
+
     // if user scrolled current item out of view via scrollbar and then
     // tries to scroll via keyboard, make item visible before going on
     if ( !colIsVisible( curCol ) ) {
         setLeftCell( curCol );
     }
 
-    
+
     switch( e->key() ) {                        // Look at the key code
     case Key_Left:
 	if( newCol > 0 )
@@ -373,6 +373,8 @@ int KFileSimpleView::cellWidth ( int col )
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
     int index = curCol * rowsVisible + curRow;
+    if ( index < 0 ) index = 0;
+
     QTableView::resizeEvent(e);
     rowsVisible = viewHeight() / cellHeight();
     if (!rowIsVisible(rowsVisible))
@@ -383,7 +385,7 @@ void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 	rowsVisible = 1;
     setNumRows(rowsVisible);
     cols = count() / rowsVisible + 1;
-    if ( static_cast<int>(count()) <= rowsVisible * (cols-1) )
+    if ( static_cast<int>(count()) <= rowsVisible * (cols-1) && cols >= 1)
         cols--; // if last col is completely filled, we calc'ed 1 col too much
     setNumCols(cols);
     QTableView::repaint(true);
