@@ -396,7 +396,6 @@ void KSelectAction::setCurrentItem( int id )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 	
-    qDebug( "activated!" );
     emit activate();
 }
 
