@@ -342,6 +342,7 @@ protected:
 
   // Proxy related members
   bool m_bUseProxy;
+  bool m_bIsTunneled;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strProxyRealm;
