@@ -148,7 +148,7 @@ void MainWindow::createShellGUI( bool create )
 {
     if ( create )
     {
-        if ( isHelpMenuEnabled() )
+        if ( isHelpMenuEnabled() && !d->m_helpMenu )
             d->m_helpMenu = new KHelpMenu( this, instance()->aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
