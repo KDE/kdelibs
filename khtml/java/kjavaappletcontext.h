@@ -44,8 +44,7 @@ class KJavaApplet;
 class KJavaAppletContextPrivate;
 class DCOPObject;
 
-typedef 
-enum { JError=0, JArray, JBoolean, JFunction, JNull, JNumber, JObject, JString, JVoid } JType;
+enum JType { JError=0, JArray, JBoolean, JFunction, JNull, JNumber, JObject, JString, JVoid };
 
 class KJavaAppletContext : public QObject
 {
