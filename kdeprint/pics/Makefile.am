@@ -8,5 +8,5 @@ stdicon_ICON = kdeprint_job kdeprint_job_error kdeprint_job_process kdeprint_job
 	       kdeprint_printer_class kdeprint_printer_class_stopped kdeprint_printer_defect kdeprint_printer_remote \
 	       kdeprint_printer_remote_stopped kdeprint_printer_stopped kdeprint_printer_remote_process \
 	       kdeprint_printer_process kdeprint_printer_class_process kdeprint_computer kdeprint_printer_infos history \
-	       kdeprint_printer_users filterstop
+	       kdeprint_printer_users filterstop kdeprint_job_completed kdeprint_job_cancelled
 stdicondir = $(kde_datadir)/kdeprint/icons
