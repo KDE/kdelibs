@@ -111,6 +111,12 @@ QString KSSLCertDlg::getChoice() {
 }
 
 
+void KSSLCertDlg::setHost(const QString& host) {
+   _host = host;
+   setCaption(i18n("KDE SSL Certificate Dialog")+" - "+host);
+}
+
+
 void KSSLCertDlg::slotSend() {
    _dont->setChecked(false);
    _certs->setEnabled(true);

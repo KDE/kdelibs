@@ -46,6 +46,8 @@ public:
 
   bool saveChoice();
 
+  void setHost(const QString& host);
+
 private slots:
   void slotSend();
   void slotDont();
@@ -58,6 +60,7 @@ private:
   QRadioButton *_send, *_dont;
   QListView *_certs;
   QPushButton *_ok;
+  QString _host;
 
 };
 
