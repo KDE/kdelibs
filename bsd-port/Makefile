@@ -28,5 +28,26 @@ CONFIGURE_ARGS=	"--prefix=$(PREFIX)" \
 		"--with-extra-includes=$(PREFIX)/include/giflib"
 INSTALL_TARGET=	prefix=$(INSTALL_ROOT)$(PREFIX) install
 
+post-install:
+	${SETENV} OBJFORMAT=${PORTOBJFORMAT}
+	if [ "${PORTOBJFORMAT}" = "aout" ]; then \
+		${LN} -sf libjscript.so.0.90  ${PREFIX}/lib/libjscript.so; \
+		${LN} -sf libkdecore.so.1.0   ${PREFIX}/lib/libkdecore.so; \
+		${LN} -sf libkdeui.so.1.0     ${PREFIX}/lib/libkdeui.so; \
+		${LN} -sf libkfile.so.1.0     ${PREFIX}/lib/libkfile.so; \
+		${LN} -sf libkfm.so.1.0       ${PREFIX}/lib/libkfm.so; \
+		${LN} -sf libkhtmlw.so.1.0    ${PREFIX}/lib/libkhtmlw.so; \
+		${LN} -sf libmediatool.so.1.0 ${PREFIX}/lib/libmediatool.so; \
+	else
+		${LN} -sf libjscript.so.0     ${PREFIX}/lib/libjscript.so; \
+		${LN} -sf libkdecore.so.1     ${PREFIX}/lib/libkdecore.so; \
+		${LN} -sf libkdeui.so.1       ${PREFIX}/lib/libkdeui.so; \
+		${LN} -sf libkfile.so.1       ${PREFIX}/lib/libkfile.so; \
+		${LN} -sf libkfm.so.1         ${PREFIX}/lib/libkfm.so; \
+		${LN} -sf libkhtmlw.so.1      ${PREFIX}/lib/libkhtmlw.so; \
+		${LN} -sf libmediatool.so.1   ${PREFIX}/lib/libmediatool.so; \
+	fi
+	${LDCONFIG} -m ${PREFIX}/lib
+
 .include "kde-snapshot.mk"
 .include <bsd.port.mk>
