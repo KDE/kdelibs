@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                       David Faure <faure@kde.org>
+                 2001 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -853,7 +854,8 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
                meta["ssl_cipher_bits"].toInt(),
                KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()),
                meta["ssl_good_from"],
-               meta["ssl_good_until"] );
+               meta["ssl_good_until"],
+               meta["ssl_peer_cert_serial"]);
    kdDebug(7024) << "Showing SSL Info dialog" << endl;
    kid->exec();
    kdDebug(7024) << "SSL Info dialog closed" << endl;
