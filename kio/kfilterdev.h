@@ -101,7 +101,8 @@ public:
      *
      * The returned QIODevice has to be deleted after using.
      */
-    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null );
+    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null,
+                                      bool forceFilter = false );
 
 private:
     KFilterBase *filter;

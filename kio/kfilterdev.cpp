@@ -77,7 +77,8 @@ QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
 };
 
 //static
-QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype )
+QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype,
+                                       bool forceFilter )
 {
     QFile * f = new QFile( fileName );
     KFilterBase * base = mimetype.isEmpty() ? KFilterBase::findFilterByFileName( fileName )
@@ -87,7 +88,13 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
         base->setDevice(f, true);
         return new KFilterDev(base, true);
     }
-    return f;
+    if(!forceFilter)
+        return f;
+    else
+    {
+        delete f;
+        return 0L;
+    }
 }
 
 bool KFilterDev::open( int mode )

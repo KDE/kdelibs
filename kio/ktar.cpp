@@ -78,6 +78,9 @@ QIODevice * KTarBase::device() const
 
 bool KTarBase::open( int mode )
 {
+  if(0 == d->dev)
+    return false; // Fail w/o segfaulting if the device is no good
+
   d->dev->open( mode );
 
   if ( m_open )
@@ -525,23 +528,23 @@ KTarGz::KTarGz( const QString& filename )
   url.setPath( filename );
   QString mimetype = KMimeType::findByURL( url )->name();
 //kdDebug() << "KTarGz::KTarGz mimetype=" << mimetype << endl;
+
+  // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
   if (mimetype == "application/x-tgz" || mimetype == "application/x-targz") // the latter is deprecated but might still be around
     // that's a gzipped tar file, so ask for gzip filter
     mimetype = "application/x-gzip";
   else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
     mimetype = "application/x-bzip2";
-  QIODevice * dev = KFilterDev::deviceForFile( filename, mimetype );
-  if ( dev )
-    setDevice( dev );
+
+  prepareDevice( filename, mimetype );
 }
 
 KTarGz::KTarGz( const QString& filename, const QString & mimetype )
 {
   m_filename = filename;
   d = new KTarGzPrivate;
-  QIODevice * dev = KFilterDev::deviceForFile( filename, mimetype );
-  if ( dev )
-    setDevice( dev );
+
+  prepareDevice( filename, mimetype, true );
 }
 
 KTarGz::KTarGz( QIODevice * dev )
@@ -583,6 +586,19 @@ void KTarGz::write( const char * buffer, int len )
 int KTarGz::position()
 {
   return device()->at();
+}
+
+
+void KTarGz::prepareDevice( const QString & filename,
+                            const QString & mimetype, bool forced )
+{
+  if(   "application/x-gzip" == mimetype
+     || "application/x-bzip2" == mimetype)
+      forced = true;
+
+  QIODevice *dev = KFilterDev::deviceForFile( filename, mimetype, forced );
+  if( 0 != dev )
+    setDevice( dev );
 }
 
 

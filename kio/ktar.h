@@ -199,6 +199,8 @@ private:
    */
   virtual int position();
 
+  void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
+
   class KTarGzPrivate;
   KTarGzPrivate * d;
   QString m_filename;
