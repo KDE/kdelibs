@@ -108,6 +108,8 @@ public:
     QString id;
     DAVRequest davData;
 
+    bool bNoAuth; // Do not authenticate 
+    
     // Cache related
     QString cef; // Cache Entry File belonging to this URL.
     bool bUseCache; // Whether the cache is active

@@ -212,6 +212,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.bUseCookiejar = config()->readBoolEntry("Cookies");
   m_request.bUseCache = config()->readBoolEntry("UseCache", true);
   m_request.bErrorPage = config()->readBoolEntry("errorPage", true);
+  m_request.bNoAuth = config()->readBoolEntry("no-auth");
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
@@ -2167,7 +2168,7 @@ bool HTTPProtocol::httpOpen()
 
     // Only check for a cached copy if the previous
     // response was NOT a 401 or 407.
-    if ( m_responseCode != 401 && m_responseCode != 407 )
+    if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 )
     {
       AuthInfo info;
       info.url = m_request.url;
@@ -4587,6 +4588,15 @@ bool HTTPProtocol::getAuthorization()
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::getAuthorization: "
                  << "Current Response: " << m_responseCode << ", "
                  << "Previous Response: " << m_prevResponseCode << endl;
+
+  if (m_request.bNoAuth)
+  {
+     if (m_request.bErrorPage)
+        errorPage();
+     else
+        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %s but authentication is disabled.").arg(m_request.hostname));
+     return false;
+  }
   
   bool repeatFailure = (m_prevResponseCode == m_responseCode);
 
