@@ -726,8 +726,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_TFOOT:
     case ID_TBODY:
         // THEAD: TR +
-        // allowing script here breaks spiegel.de. Some bug elsewhere. FIXME
-        if(childID == ID_TR /*|| ID_SCRIPT*/) return true;
+        if(childID == ID_TR || childID == ID_SCRIPT) return true;
         return false;
     case ID_COLGROUP:
         // COLGROUP: COL *
