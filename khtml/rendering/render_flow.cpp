@@ -952,7 +952,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 
 	    if ( child )
 		r->noPaint = true;
-	    
+
 	    SpecialObject* f = 0;
 	    // don't insert it twice!
 	    QPtrListIterator<SpecialObject> it(*specialObjects);
@@ -1231,7 +1231,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     }
     if (m_blockBidi)
 	    newChild->setBlockBidi();
-    
+
     RenderStyle* pseudoStyle=0;
     if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
@@ -1509,7 +1509,7 @@ void RenderFlow::printTree(int indent) const
             kdDebug() << s << renderName() << ":  " <<
                 (r->type == SpecialObject::FloatLeft ? "FloatLeft" : (r->type == SpecialObject::FloatRight ? "FloatRight" : "Positioned"))  <<
                 "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" <<
-                (r->noPaint ? " noPaint" : " ") << "width: " << r->width <<
+                (r->noPaint ? "noPaint " : " ") << "width: " << r->width <<
                 endl;
         }
     }
