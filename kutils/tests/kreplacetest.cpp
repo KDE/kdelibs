@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <assert.h>
+
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "../kreplace.h"
