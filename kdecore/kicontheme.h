@@ -94,7 +94,9 @@ public:
         /// large sized icons for the panel
         SizeLarge=48,
         /// huge sized icons for iconviews
-        SizeHuge=64
+        SizeHuge=64,
+        /// enormous (ugh!) sized icons for iconviews
+        SizeEnormous=128
          };
 
     /**
