@@ -58,11 +58,9 @@ extern "C" {
     script->enableDebug();
 
     KJS::Global global(Global::current());
-    DOM::HTMLDocument doc;
-    doc = khtml->htmlDocument();
 
     KJSO window(new KJS::Window(khtml->view()));
-    KJSO document(new KJS::HTMLDocument(doc));
+    KJSO document(new KJS::HTMLDocument(khtml));
 
     window.put("document", document);
     global.put("window", window);
