@@ -49,16 +49,16 @@ class KLed : public QWidget
    * Status of the light is on/off
    * @short led on/off
    */
-  enum State { Off=0, On=1 };
+  enum State { Off, On, NoOfStates };
   
   /** 
    * Shades of the lamp. 
    * @short shade
    */ 
-  enum Shape { NoShape, Rectangular, Circular };
+  enum Shape { NoShape, Rectangular, Circular, NoOfShapes=Circular };
   
   /**
-   * Displays a flat, round or round-sunken led.
+   * Displays a flat, round or sunken led.
    * Displaying the led flat is less time and color consuming,
    * but not so nice to see.
    *
@@ -75,7 +75,7 @@ class KLed : public QWidget
    * The widget will be updated the next repaining event.
    * @short led look
    */
-  enum Look  { flat, round, sunken };
+  enum Look  { NoLook, Flat, Raised, Sunken, NoOfLooks=Sunken };
 
   /**
    * Constructor with the ledcolor, the parent widget, and the name.
@@ -200,7 +200,8 @@ class KLed : public QWidget
   void paintround();
   void paintsunken();
   void paintrect();
-  void paintrectsunken();
+  // paints the LED lamp with a frame, either raised (true) or sunken(false)
+  void paintrectframe(bool raised);
 
   State led_state;
   QColor led_color;

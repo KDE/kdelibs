@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/11/12 21:17:09  antlarr
+ * Fixed some bugs.
+ * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did.
+ *
  * Revision 1.9  1999/11/11 16:08:15  antlarr
  * Fixed some bugs.
  * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did. 
@@ -58,7 +62,7 @@
 KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   : QWidget( parent, name),
     led_state(On),
-    led_look(round)
+    led_look(Raised)
 {
   setColor(col);
   setShape(Circular);
@@ -78,38 +82,40 @@ void
 KLed::paintEvent(QPaintEvent *)
 {
   switch(led_shape)
-  {
-  case Rectangular:
-    switch (led_look) 
     {
-    case sunken: 
-      paintrectsunken(); 
+    case Rectangular:
+      switch (led_look) 
+	{
+	case Sunken: 
+	  paintrectframe(false); 
+	  break;
+	case Raised:
+	  paintrectframe(true);
+	  break;
+	default  : 
+	  paintrect();
+	  break;
+	}
       break;
-    default  : 
-      paintrect();
+    case Circular:
+      switch (led_look) 
+	{
+	case Flat  : 
+	  paintflat(); 
+	  break;
+	case Raised : 
+	  paintround(); 
+	  break;
+	default: 
+	  paintsunken(); 
+	}
+    case NoShape:
       break;
     }
-    break;
-  case Circular:
-    switch (led_look) 
-    {
-    case flat  : 
-      paintflat(); 
-      break;
-    case round : 
-      paintround(); 
-      break;
-    case sunken: 
-      paintsunken(); 
-      break;
-    }
-  case NoShape:
-    break;
-  }
 }
 
 void
-KLed::paintflat()
+KLed::paintflat() // paint a ROUND FLAT led lamp
 {
   QPainter p(this);
   int x=this->x(), y=this->y(), w=width(), h=height();
@@ -150,14 +156,13 @@ KLed::paintflat()
   w-=2; h-=2;
   x++; y++;
   // draw the flat led grounding
-  c=led_state ? led_color.light() : led_color.dark();
-  p.setPen(c);
+  c= led_state ? led_color : led_color.dark(300);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
 }
 
 void
-KLed::paintround()
+KLed::paintround() // paint a ROUND RAISED led lamp
 {
   QPainter p(this);
   KPixmap pix;
@@ -174,7 +179,7 @@ KLed::paintround()
 
 
 void
-KLed::paintsunken()
+KLed::paintsunken() // paint a ROUND SUNKEN led lamp
 {
   QPainter p(this);
   int x=this->x(), y=this->y(), w=width(), h=height();
@@ -306,21 +311,35 @@ KLed::paintrect()
 }
 
 void 
-KLed::paintrectsunken()
+KLed::paintrectframe(bool raised)
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
-  QBrush darkBrush(led_color.dark(400));
+  QBrush darkBrush(led_color.dark(300));
   int w=width();
   int h=height();
+  QColor black=Qt::black;
+  QColor white=Qt::white;
   // -----
-  painter.setPen(Qt::black);
-  painter.drawRect(0,0,w,h);
-  painter.drawRect(0,0,w-1,h-1);
-  painter.setPen(Qt::white);
-  painter.drawRect(1,1,w-1,h-1);
-
-  painter.fillRect(2, 2, w-4, h-4,(led_state==On)? lightBrush : darkBrush);
+  if(raised)
+    {
+      painter.setPen(white);
+      painter.drawLine(0, 0, 0, h-1);
+      painter.drawLine(1, 0, w-1, 0);
+      painter.setPen(black);
+      painter.drawLine(1, h-1, w-1, h-1);
+      painter.drawLine(w-1, 1, w-1, h-1);
+      painter.fillRect(1, 1, w-2, h-2,
+       		       (led_state==On)? lightBrush : darkBrush);
+    } else { 
+      painter.setPen(black);
+      painter.drawRect(0,0,w,h);
+      painter.drawRect(0,0,w-1,h-1);
+      painter.setPen(white);
+      painter.drawRect(1,1,w-1,h-1);
+      painter.fillRect(2, 2, w-4, h-4,
+		       (led_state==On)? lightBrush : darkBrush);
+    }
 }
 
 KLed::State
