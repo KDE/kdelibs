@@ -757,7 +757,7 @@ void KKeyChooser::shiftClicked()
 
 void KKeyChooser::listSync()
 {
-    QListView *item = d->wList->firstItem();
+    QListViewItem *item = d->wList->firstChild();
 
     while (item) {
         KKeyEntryMap::Iterator it = d->actionMap[item];
