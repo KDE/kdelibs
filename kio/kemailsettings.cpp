@@ -154,7 +154,14 @@ void KEMailSettings::setDefault(const QString &s)
 
 void KEMailSettings::setProfile (const QString &s)
 {
+	QCString groupname="PROFILE_";
+	groupname.append(s.latin1());
 	p->m_sCurrentProfile=s;
+	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
+		p->m_pConfig->setGroup(groupname);
+		p->m_pConfig->writeEntry("ServerType", QString::null);
+		p->m_pConfig->sync();
+	}
 }
 
 QString KEMailSettings::currentProfileName() const
