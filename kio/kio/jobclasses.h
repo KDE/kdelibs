@@ -432,7 +432,8 @@ namespace KIO {
          */
         enum { EF_TransferJobAsync    = (1 << 0),
                EF_TransferJobNeedData = (1 << 1),
-               EF_TransferJobDataSent = (1 << 2) };
+               EF_TransferJobDataSent = (1 << 2),
+               EF_ListJobUnrestricted = (1 << 3) };
         int &extraFlags();
 
         QPtrList<Job> subjobs;
@@ -1167,6 +1168,12 @@ namespace KIO {
          */
         virtual void start( Slave *slave );
 
+        /**
+         * Do not apply any KIOSK restrictions to this job.
+         * @since 3.2
+         */
+        void setUnrestricted(bool unrestricted);
+
     signals:
         /**
          * This signal emits the entry found by the job while listing.
@@ -1197,7 +1204,7 @@ namespace KIO {
 	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
-
+        
     protected slots:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);

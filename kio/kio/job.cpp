@@ -378,13 +378,6 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         return;
     }
 
-    if ((m_command == CMD_LISTDIR) && !kapp->authorizeURLAction("list", m_url, m_url))
-    {
-        m_error = ERR_ACCESS_DENIED;
-        m_errorText = m_url.url();
-        QTimer::singleShot(0, this, SLOT(slotFinished()) );
-        return;
-    }
 
     if (m_url.hasSubURL())
     {
@@ -1846,8 +1839,23 @@ ListJob *KIO::listRecursive( const KURL& url, bool showProgressInfo, bool includ
     return job;
 }
 
+void ListJob::setUnrestricted(bool unrestricted)
+{
+    if (unrestricted)
+       extraFlags() |= EF_ListJobUnrestricted;
+    else
+       extraFlags() &= ~EF_ListJobUnrestricted;
+}
+
 void ListJob::start(Slave *slave)
 {
+    if (!kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    {
+        m_error = ERR_ACCESS_DENIED;
+        m_errorText = m_url.url();
+        QTimer::singleShot(0, this, SLOT(slotFinished()) );
+        return;
+    }
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
              SLOT( slotListEntries( const KIO::UDSEntryList& )));
     connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
@@ -2258,6 +2266,7 @@ void CopyJob::startListing( const KURL & src )
 {
     state = STATE_LISTING;
     ListJob * newjob = listRecursive( src, false );
+    newjob->setUnrestricted(true);
     connect(newjob, SIGNAL(entries( KIO::Job *,
                                     const KIO::UDSEntryList& )),
             SLOT( slotEntries( KIO::Job*,
@@ -3497,6 +3506,7 @@ void DeleteJob::slotResult( Job *job )
             // List it
             state = STATE_LISTING;
             ListJob *newjob = listRecursive( url, false );
+            newjob->setUnrestricted(true); // No KIOSK restrictions
             Scheduler::scheduleJob(newjob);
             connect(newjob, SIGNAL(entries( KIO::Job *,
                                             const KIO::UDSEntryList& )),
