@@ -20,9 +20,6 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
     checkSettings();
 
-    connect( this, SIGNAL( executed( QIconViewItem * ) ),
-	     this, SLOT( slotExecute( QIconViewItem * ) ) );
-
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
