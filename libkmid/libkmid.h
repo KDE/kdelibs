@@ -183,6 +183,8 @@ class KMID_EXPORT KMidSimpleAPI
 
 extern "C" {
 
+#else
+#define KMID_EXPORT
 #endif
 
  
