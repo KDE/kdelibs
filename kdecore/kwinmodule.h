@@ -29,10 +29,10 @@
 class KWinModulePrivate;
 
 /**
-   
+
    THIS API ISN'T FINISHED YET: IT'S STILL VERY COMPATIBLE WITH THE OLD KWMMODULEAPPLICATION.
    BE AWARE THAT IT MIGHT CHANGE A BIT BEFORE KDE-2.0 FREEZE
-   
+
  *   The class KWinModule provides information about the window manager required by
  * windowmanager modules. It mainly informs a module about all
  * currently managed windows and changes to them (via Qt
@@ -42,10 +42,10 @@ class KWinModulePrivate;
  * @author Matthias Ettrich (ettrich@kde.org)
  * @version $Id$
  */
-class KWinModule : public QObject 
+class KWinModule : public QObject
 {
     Q_OBJECT
-    
+
 public:
 
     /**
@@ -54,12 +54,12 @@ public:
        serve as docking module.
      */
     KWinModule( QObject* parent = 0, bool dockModule = FALSE );
-    
+
     /**
        Destructor. Internal cleanup, nothing fancy.
     */
     ~KWinModule();
-    
+
   /**
    * A list of all toplevel windows currently managed by the
    * windowmanger in the order of creation. Please do not rely on
@@ -95,6 +95,12 @@ public:
     * docking module
     */
     const QValueList<WId>& dockWindows() const;
+    
+    
+    /*
+      A cached shortcut for KWM::currentDesktop()
+     */
+    int currentDesktop() const;
 
 signals:
 
@@ -201,10 +207,10 @@ signals:
     void playSound(QString);
     void registerSound(QString);
     void unregisterSound(QString);
-    
+
 private:
     KWinModulePrivate* d;
-    
+
     friend KWinModulePrivate;
 };
 

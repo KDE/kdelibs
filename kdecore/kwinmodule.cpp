@@ -22,7 +22,11 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
-    
+    Revision 1.1  1999/08/16 20:31:07  ettrich
+    Easier access to the window manager with KWinModule.
+    This makes the former KWMModuleApplication obsolete.
+
+
 */
 
 
@@ -36,19 +40,21 @@ public:
 	: QWidget(0,0)
     {
 	module = m;
+	desktop = KWM::currentDesktop();
     }
     ~KWinModulePrivate()
     {
     }
-    
+
     KWinModule* module;
-    
+
     QValueList<WId> windows;
     QValueList<WId> windowsSorted;
     QValueList<WId> dockWindows;
-    
+
     bool x11Event( XEvent * ev );
-    
+    int desktop;
+
 };
 
 
@@ -178,16 +184,14 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	emit module->initialized();
     }
     else if ( a == module_desktop_change) {
-	int d = (int) w;
-	emit module->desktopChange(d);
+	desktop = (int) w;
+	emit module->desktopChange( (int) w);
     }
     else if (a == module_desktop_name_change){
-	int d = (int) w;
-	emit module->desktopNameChange(d, KWM::getDesktopName(d));
+	emit module->desktopNameChange( (int) w, KWM::getDesktopName( (int) w ) );
     }
     else if (a == module_desktop_number_change){
-	int d = (int) w;
-	emit module->desktopNumberChange(d);
+	emit module->desktopNumberChange( (int) w);
     }
     else if (a == module_win_add){
 
@@ -284,6 +288,12 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
     }
 
     return TRUE;
+}
+
+
+int KWinModule::currentDesktop() const
+{
+    return d->desktop;
 }
 
 #include "kwinmodule.moc"
