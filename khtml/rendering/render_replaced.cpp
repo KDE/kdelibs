@@ -303,6 +303,7 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
 	m_widget->show();
 //    }
 
+/*
     m_view->setIgnoreEvents(true);
     QWidget *prevFocusWidget = qApp->focusWidget();
     DocumentImpl *doc = m_view->part()->xmlDocImpl();
@@ -318,6 +319,7 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
     m_view->setIgnoreEvents(false);
 
     p->drawPixmap(_tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop(), widgetPixmap);
+*/
 }
 
 bool RenderWidget::eventFilter(QObject *o, QEvent *e)
