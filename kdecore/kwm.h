@@ -138,8 +138,8 @@ public:
    * WM_SAVE_YOURSELF or anytime during runtime. Please make sure that
    * the hint is also reset after the user saved the data!
    *
-   * Note: The hint has only effect for clients that are session management
-   * enabled or do at least pseudo session management
+   * Note: The hint has also effect for clients that are not session management
+   * enabled or do not even do pseudo session management
    *
    * Note 2: May have no effekt with other window- or session managers 
    */
