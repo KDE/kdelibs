@@ -166,7 +166,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	else
 		KMessageBox::error(wizard,
 			"<qt><nobr>" +
-			i18n("An error occured while retrieving the list of available backends:") +
+			i18n("An error occurred while retrieving the list of available backends:") +
 			"</nobr><br><br>" + req.statusMessage() + "</qt>");
 
 	// banners page
