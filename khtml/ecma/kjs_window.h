@@ -20,33 +20,45 @@
 #ifndef _KJS_WINDOW_H_
 #define _KJS_WINDOW_H_
 
+#include <qobject.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
 
 #include "kjs_binding.h"
 
+class QTimer;
 class KHTMLView;
 class KHTMLPart;
 
 namespace KJS {
 
-  class Window : public DOMObject {
+  class WindowFunc;
+
+  class Window : public QObject, public DOMObject {
+    Q_OBJECT
+    friend class WindowFunc;
   public:
-    Window(KHTMLView *w) : widget(w) { }
+    Window(KHTMLView *w) : widget(w), timer(0L) { }
+    ~Window();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
+    void installTimeout(const UString &handler, int t);
+  public slots:
+    void timeout();
   private:
     KHTMLView *widget;
+    QTimer *timer;
+    UString timeoutHandler;
   };
 
   class WindowFunc : public DOMFunction {
   public:
-    WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
+    WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
-    enum { Alert, Confirm, Open };
+    enum { Alert, Confirm, Open, SetTimeout };
     static void setStatusBarText(KHTMLPart *, const QString &);
   private:
-    KHTMLView *widget;
+    const Window *window;
     int id;
   };
 
