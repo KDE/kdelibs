@@ -2,6 +2,7 @@
 
 /*
  *   Copyright            : (C) 2001-2002 by Richard Moore
+ *   License              : This file is released under the terms of the LGPL, version 2.
  *   Email                : rich@kde.org
  */
 
