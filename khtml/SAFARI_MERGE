@@ -85,14 +85,8 @@ Needs other stuff before it can be applied:
   being a null wrapper just using unicode directly instead of working
   on charset specific 8bit data. 
 
-- htmlhashes.cpp: patches to fix compiler warning. which ?
-
-- htmltags.in: removal of <-konqblock>, to be  merged after 3.1
-
-- loader.cpp/loader.h: many improvements to memory cache handling. 
-  will be reviewed and merged. 
-  
-  some code removal in APPLE_CHANGES
+- htmltags.in: removal of <-konqblock>, not sure if that should ever
+  be merged. 
 
 ===========================================================================
 # rendering
