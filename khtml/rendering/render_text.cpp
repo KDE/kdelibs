@@ -1079,14 +1079,14 @@ void RenderText::calcMinMaxWidth()
         }
         else {
             // Nowrap can never be broken, so don't bother setting the
-            // breakable character boolean.
+            // breakable character boolean. Pre can only be broken if we encounter a newline.
             if (style()->whiteSpace() == NORMAL || isNewline)
                 m_hasBreakableChar = true;
 
             if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
             currMinWidth = 0;
 
-            if (isNewline)
+            if (isNewline) // Only set if isPre was true and we saw a newline.
             {
                 if ( firstLine ) {
                     firstLine = false;
@@ -1336,16 +1336,21 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
                                     short& beginMaxW, short& endMaxW,
                                     short& minW, short& maxW, bool& stripFrontSpaces)
 {
-    int len = str->l;
     bool isPre = style()->whiteSpace() == PRE;
     if (isPre)
         stripFrontSpaces = false;
 
+    int len = str->l;
+    if (len == 0 || (stripFrontSpaces && str->containsOnlyWhitespace())) {
+        maxW = 0;
+        hasBreak = false;
+        return;
+    }
+
     minW = m_minWidth;
     maxW = m_maxWidth;
     beginWS = stripFrontSpaces ? false : m_hasBeginWS;
-    // Handle the case where all space got stripped.
-    endWS = stripFrontSpaces && len > 0 && str->containsOnlyWhitespace() ? false : m_hasEndWS;
+    endWS = m_hasEndWS;
 
     beginMinW = m_beginMinWidth;
     endMinW = m_endMinWidth;
@@ -1353,17 +1358,14 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
     hasBreakableChar = m_hasBreakableChar;
     hasBreak = m_hasBreak;
 
-    if (len == 0)
-        return;
-
-    if (stripFrontSpaces && str->s[0].direction() == QChar::DirWS) {
+    if (stripFrontSpaces && (str->s[0].direction() == QChar::DirWS || (!isPre && str->s[0] == '\n'))) {
         const Font *f = htmlFont( false );
         QChar space[1]; space[0] = ' ';
         int spaceWidth = f->width(space, 1, 0);
         maxW -= spaceWidth;
     }
 
-    stripFrontSpaces = !isPre && endWS;
+    stripFrontSpaces = !isPre && m_hasEndWS;
 
     if (style()->whiteSpace() == NOWRAP)
         minW = maxW;
@@ -1393,13 +1395,15 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
                     beginMaxW = endMaxW;
                 }
                 i += linelen;
-                if (i == len-1)
-                    endMaxW = 0;
             }
             else if (firstLine) {
                 beginMaxW = 0;
                 firstLine = false;
             }
+	    if (i == len-1)
+	        // A <pre> run that ends with a newline, as in, e.g.,
+	        // <pre>Some text\n\n<span>More text</pre>
+	        endMaxW = 0;
         }
     }
 }
