@@ -24,7 +24,8 @@ libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	klocale.cpp libintl.cpp setenv.cpp kiconloader.cpp kdebug.cpp	\
 	kstdaccel.cpp kwm.cpp
 
-libkdecore_la_LDFLAGS = -version-info 0:11 
+libkdecore_la_LDFLAGS = -version-info 0:11 @QT_LDFLAGS@ @X_LDFLAGS@ 
+libkdecore_la_LIBADD = -lqt -lX11 -lXext
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
 	kprocctrl.moc kiconloader.moc kdebugdialog.moc

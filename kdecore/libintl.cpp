@@ -39,6 +39,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include <errno.h>
 
 #include <sys/param.h>

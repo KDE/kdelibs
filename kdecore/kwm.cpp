@@ -11,6 +11,7 @@
 #include <qbitmap.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <kmisc.h>
 
 bool kwm_error;
 
@@ -210,13 +211,14 @@ void KWM::enableSessionManagement(Window w){
       if (p[i] == a)
 	return;
     }
-    Atom pn[n+1];
+    Atom *pn = new Atom[n+1];
     for (i=0; i<n; i++)
       pn[i] = p[i];
     p[i] = a;
     XSetWMProtocols(qt_xdisplay(), w, pn, n+1);
     if (n>0)
       XFree(p);
+    delete[] pn;	
   }
   else
     XSetWMProtocols(qt_xdisplay(), w, &a, 1);
