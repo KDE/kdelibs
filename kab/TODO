@@ -22,6 +22,8 @@ library. If you want the application to be extended, read kdeutils/kab/TODO.
   (email/talk addresses, possibly telephony support?),
 ° [done] IMPORTANT: Possibility to use different files and, most important, 
   common addressbooks for different people.
+° add "Nick name" field (after KDE 2.0)
+° improve speed of database indexing
 --------------------------------------------------------------------------------
                                                      Mirko Sucker, June 2000.
 
