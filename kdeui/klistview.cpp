@@ -611,7 +611,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
       {
         cleanDropVisualizer();
         d->mOldDropVisualizer=tmpRect;
-        viewport()->repaint(viewport()->rect());
+        viewport()->repaint(tmpRect);
       }
     }
   }
@@ -628,8 +628,9 @@ void KListView::cleanDropVisualizer()
 {
   if (d->mOldDropVisualizer.isValid())
   {
-    viewport()->repaint (d->mOldDropVisualizer, true);
+    QRect rect=d->mOldDropVisualizer;
     d->mOldDropVisualizer = QRect();
+    viewport()->repaint(rect, true);
   }
 }
 
