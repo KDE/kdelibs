@@ -319,8 +319,12 @@ bool KAction::setShortcut( const KShortcut& cut )
   if( !d->m_kaccel ) {
     // Only insert action into KAccel if it has a valid shortcut and name,
     if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
-        && m_parentCollection && m_parentCollection->accel() )
-      plugAccel( m_parentCollection->accel() );
+        && m_parentCollection ) {
+      if( m_parentCollection->accel() )
+        plugAccel( m_parentCollection->accel() );
+      else
+        kdWarning(125) << "KAction::setShortcut( " << cut.toStringInternal() << " ): m_parentCollection->accel() = 0" << endl;
+    }
   }
   else
     d->m_kaccel->setShortcut( name(), cut );
@@ -683,14 +687,6 @@ void KAction::setText( const QString& text )
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     updateText( i );
-
-  /*if ( m_parentCollection )
-  {
-    KAccelActions& actions = m_parentCollection->keyMap();
-    KAccelAction* pAction = actions.actionPtr(name());
-    if ( pAction )
-      pAction->m_sDesc = d->plainText();
-  }*/
 }
 
 void KAction::updateText( int i )
