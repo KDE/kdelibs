@@ -129,8 +129,12 @@ The remote object must be specified as an object hierarchy.  That is,
 if the toplevel object is called "fooObject" and has the child
 "barObject", you would reference this object as "fooObject/barObject".
 Functions must be described by a full function signature.  If the
-remote function is called "doIt", it returns a QString, and it takes an
-int, it would be described as "QString doIt(int)".
+remote function is called "doIt", and it takes an int, it would be
+described as "doIt(int)".  Please note that the return type is not
+specified here, as it is not part of the function signature (or at
+least the C++ understanding of a function signature).  You will get
+the return type of a function back as an extra parameter to
+DCOPClient::call().  See the section on call() for more details.
 
 In order to actually get the data to the remote client, it must be
 "serialized" via a QDataStream operating on a QByteArray. This is how
@@ -157,23 +161,25 @@ The actual return value of call() is still whether or not DCOP
 communication was successful.
 
 QByteArray params, reply;
+QCString replyType;
 QDataStream stream(params, IO_WriteOnly);
 params << 5;
-if (!client->call("someAppId", "fooObject/barObject", "QString doIt(int)",
-                  params, reply))
+if (!client->call("someAppId", "fooObject/barObject", "doIt(int)",
+                  params, replyType, reply))
   qDebug("there was some error using DCOP.");
 else {
   QDataStream stream2(reply, IO_ReadOnly);
-  QString result;
-  stream2 >> result;
-  print("the result is: %s",result.latin1());
+  if (replyType == "QString") {
+    QString result;
+    stream2 >> result;
+    print("the result is: %s",result.latin1());
+  } else
+    qDebug("doIt returned an unexpected type of reply!");
 }
 
 
 Receiving Data via DCOP:
 ------------------------
-
-(this section subject to change)
 
 Currently the only real way to receive data from DCOP is to multiply
 inherit from the normal class that you are inheriting (usually some
@@ -191,9 +197,9 @@ the incoming function signature and take action accordingly.  Here is
 an example implementation.
 
 bool BarObject::process(const QCString &fun, const QByteArray &data,
-		       QByteArray &replyData)
+		        QCString &replyType, QByteArray &replyData)
 {
-  if (fun == "QString doIt(int)") {
+  if (fun == "doIt(int)") {
     QDataStream stream(data, IO_ReadOnly);
     int arg;
     QString res;
@@ -201,6 +207,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     res = self->doIt(arg);
     QDataStream stream2(replyData, IO_WriteOnly);
     stream2 << res;
+    replyType = "QString";
     return true;
   } else {
     qDebug("unknown function call to BarObject::process()");
