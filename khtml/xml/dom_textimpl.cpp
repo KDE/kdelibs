@@ -315,6 +315,6 @@ void TextImpl::recalcStyle()
 {
     if (!parentNode())
 	return;
-    m_style = parentNode()->style();
+    m_style = parentNode()->activeStyle();
     if(m_render) m_render->setStyle(m_style);
 }

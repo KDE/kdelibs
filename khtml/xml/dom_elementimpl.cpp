@@ -32,6 +32,8 @@
 #include "rendering/render_object.h"
 #include "misc/htmlhashes.h"
 
+#include "kdebug.h"
+
 using namespace DOM;
 using namespace khtml;
 
@@ -427,6 +429,20 @@ NodeListImpl *ElementImpl::getElementsByNameAttr( const DOMString &name )
     return new NameNodeListImpl( this, name);
 }
 
+khtml::RenderStyle* ElementImpl::activeStyle()
+{
+    if (!m_style) return 0;
+    
+    RenderStyle* dynamicStyle=0;
+    if (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER))
+    {
+        if (mouseInside())
+            return dynamicStyle;
+    }   
+    
+    return m_style;
+}
+
 void ElementImpl::normalize()
 {
     NodeImpl *child = _first;
@@ -514,10 +530,11 @@ void ElementImpl::recalcStyle()
     if(!m_render) return;
     bool faf = m_style->flowAroundFloats();
     delete m_style;
-    m_style = document->styleSelector()->styleForElement(this);
-
+    
+    m_style = document->styleSelector()->styleForElement(this);   
     m_style->setFlowAroundFloats(faf);
-    m_render->setStyle(m_style);
+    
+    m_render->setStyle(activeStyle());
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
@@ -574,9 +591,18 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 
 #ifdef EVENT_DEBUG
     if(inside) kdDebug( 6030 ) << "    --> inside" << endl;
-#endif
-    // dynamic HTML...
-    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
+#endif    
+    
+    if(inside || mouseInside()) 
+    {                
+        // dynamic HTML...
+        mouseEventHandler(button, type, inside);
+    }
+    
+    setMouseInside(inside);
+    
+    if (m_style->getPseudoStyle(RenderStyle::HOVER))
+        applyChanges(true,false);
 
     return inside;
 }

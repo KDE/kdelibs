@@ -148,6 +148,7 @@ public:
 
     virtual void setStyle(khtml::RenderStyle *) {}
     virtual khtml::RenderStyle *style() { return 0; }
+    virtual khtml::RenderStyle *activeStyle() { return 0; }
 
     virtual void setRenderer(khtml::RenderObject *object) { m_render = object; }
     virtual khtml::RenderObject *renderer() { return m_render; }

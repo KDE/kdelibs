@@ -394,6 +394,9 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         } else if ( sel->value == ":first-letter" ) {
             dynamicPseudo=RenderStyle::FIRST_LETTER;
             return true;
+        } else if ( sel->value == ":hover" ) {
+            dynamicPseudo=RenderStyle::HOVER;
+            return true;
         }
         return false; 
     }

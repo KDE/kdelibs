@@ -129,6 +129,7 @@ public:
 
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }
+    virtual khtml::RenderStyle *activeStyle();
     virtual NodeImpl *cloneNode ( bool deep );
     virtual NamedNodeMapImpl *attributes() const;
 
