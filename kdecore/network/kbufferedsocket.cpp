@@ -160,6 +160,13 @@ Q_LONG KBufferedSocket::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& fr
 
 Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
 {
+  if (state() != Connected)
+    {
+      // cannot write now!
+      setError(IO_WriteError, NotConnected);
+      return -1;
+    }
+
   if (d->output)
     {
       if (d->output->isFull())
@@ -303,15 +310,17 @@ void KBufferedSocket::slotReadActivity()
 {
   if (d->input && state() == Connected)
     {
-      QMutexLocker locker(mutex());
+      mutex()->lock();
       Q_LONG len = d->input->receiveFrom(socketDevice());
+
       if (len == -1)
 	{
 	  if (socketDevice()->error() != WouldBlock)
 	    {
 	      // nope, another error!
 	      copyError();
-	      closeNow();
+	      mutex()->unlock();
+	      closeNow();	// emits closed
 	      return;
 	    }
 	}
@@ -319,8 +328,13 @@ void KBufferedSocket::slotReadActivity()
 	{
 	  // remotely closed
 	  resetError();
-	  closeNow();
+	  mutex()->unlock();
+	  closeNow();		// emits closed
+	  return;
 	}
+
+      // no error
+      mutex()->unlock();
     }
 
   if (state() == Connected)
@@ -342,14 +356,16 @@ void KBufferedSocket::slotWriteActivity()
   if (d->output && !d->output->isEmpty() &&
       (state() == Connected || state() == Closing))
     {
-      QMutexLocker locker(mutex());
+      mutex()->lock();
       Q_LONG len = d->output->sendTo(socketDevice());
+
       if (len == -1)
 	{
 	  if (socketDevice()->error() != WouldBlock)
 	    {
 	      // nope, another error!
 	      copyError();
+	      mutex()->unlock();
 	      closeNow();
 	      return;
 	    }
@@ -358,6 +374,7 @@ void KBufferedSocket::slotWriteActivity()
 	{
 	  // remotely closed
 	  resetError();
+	  mutex()->unlock();
 	  closeNow();
 	  return;
 	}
@@ -367,6 +384,7 @@ void KBufferedSocket::slotWriteActivity()
 	// writeNotifier can't return NULL here
 	socketDevice()->writeNotifier()->setEnabled(false);
 
+      mutex()->unlock();
       emit bytesWritten(len);
     }
 
