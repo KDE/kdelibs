@@ -23,7 +23,7 @@
 class KConfig;
 #include <qcolor.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <qstringlist.h>
 #include <qfont.h>
 #include <qmap.h>
 
@@ -65,16 +65,16 @@ public:
     bool underlineLink() { return m_underlineLink; }
 
     // Font settings
-    const QString& stdFontName() const { return m_strStdFontName; }
-    const QString& fixedFontName() const { return m_strFixedFontName; }
-    const QString& serifFontName() const { return m_strSerifFontName; }
-    const QString& sansSerifFontName() const { return m_strSansSerifFontName; }
-    const QString& cursiveFontName() const { return m_strCursiveFontName; }
-    const QString& fantasyFontName() const { return m_strFantasyFontName; }
+    QString stdFontName() const;
+    QString fixedFontName() const;
+    QString serifFontName() const;
+    QString sansSerifFontName() const;
+    QString cursiveFontName() const;
+    QString fantasyFontName() const;
 
     // these two can be set. Mainly for historical reasons (the method in KHTMLPart exists...)
-    void setStdFontName(const QString &n) { m_strStdFontName = n; }
-    void setFixedFontName(const QString &n) { m_strFixedFontName = n; }
+    void setStdFontName(const QString &n);
+    void setFixedFontName(const QString &n);
 
     const QValueList<int> &fontSizes() const { return m_fontSizes; }
     void setFontSizes(const QValueList<int> &newFontSizes );
@@ -113,13 +113,6 @@ private:
     bool m_bChangeCursor;
     bool m_underlineLink;
 
-    QString m_strStdFontName;
-    QString m_strFixedFontName;
-    QString m_strSerifFontName;
-    QString m_strSansSerifFontName;
-    QString m_strCursiveFontName;
-    QString m_strFantasyFontName;
-
     int m_fontSize;
     QValueList<int>     m_fontSizes;
     int m_minFontSize;
@@ -138,6 +131,8 @@ private:
     bool m_bEnableCSS;
     QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
     QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
+    QMap<QFont::CharSet, QStringList> fontsForCharset;
+    QStringList defaultFonts;
 };
 
 #endif
