@@ -108,6 +108,21 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback,
   return 0;
 }
 
+KCModule* KCModuleLoader::loadModule(const QString &module, QWidget *parent,
+      const char *name, const QStringList & args)
+{
+    KService::Ptr serv = KService::serviceByDesktopName(module);
+    if (!serv)
+    {
+        kdError(1208) << i18n("Module %1 not found!").arg(module) << endl;
+        return 0;
+    }
+
+    KCModuleInfo mod(serv->entryPath(), "");
+
+    return loadModule(mod, false, parent, name, args);
+}
+
 void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 {
   // get the library loader instance
