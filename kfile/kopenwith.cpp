@@ -289,7 +289,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
     : QDialog( parent, 0L, true )
 {
-  setCaption(i18n("Choose application for %1").arg(serviceType));
+  setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program to add for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>").arg(serviceType);
@@ -363,7 +363,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
            this, SLOT( slotDbClick() ) );
 
-  terminal = new QCheckBox( i18n("Run in terminal"), this );
+  terminal = new QCheckBox( i18n("&Run in terminal"), this );
   connect(terminal, SIGNAL(toggled(bool)), this, SLOT(slotTerminalToggled(bool)));
 
   topLayout->addWidget(terminal);
