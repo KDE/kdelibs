@@ -500,7 +500,7 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
   int bytes_sent = 0;
   const char* buf = static_cast<const char*>(_buf);
   while ( nbytes > 0 ) {
-    int n = write(buf, nbytes);
+    int n = TCPSlaveBase::write(buf, nbytes);
 
     if ( n <= 0 ) {
       // remote side closed connection ?
@@ -587,7 +587,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
      return read(b, 1); // Read from buffer
   }
   do {
-     ret = read( b, nbytes);
+     ret = TCPSlaveBase::read( b, nbytes);
      if (ret == 0) m_bEOF = true;
   }
   while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
