@@ -30,6 +30,7 @@ KWalletEntry::KWalletEntry() {
 
 
 KWalletEntry::~KWalletEntry() {
+	_value.fill(0);
 }
 
 
@@ -51,7 +52,8 @@ const QByteArray& KWalletEntry::value() const {
 void KWalletEntry::setValue(QByteArray& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
-	val.duplicate(_value);
+	_value.fill(0);
+	_value.duplicate(val);
 }
 
 
