@@ -668,20 +668,18 @@ void
 KPopupFrame::popup(const QPoint &pos)
 {
   // Make sure the whole popup is visible.
-  QWidget* desktop = QApplication::desktop();
-  int sw = desktop->width();
-  int sh = desktop->height();
+  QRect d = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(pos));
   int x = pos.x();
   int y = pos.y();
   int w = width();
   int h = height();
-  if (x+w > sw)
-    x = sw - w;
-  if (y+h > sh)
-    y = sh - h;
-  if (x < 0)
+  if (x+w > d.x()+d.width())
+    x = d.width() - w;
+  if (y+h > d.y()+d.height())
+    y = d.height() - h;
+  if (x < d.x())
     x = 0;
-  if (y < 0)
+  if (y < d.y())
     y = 0;
 
   // Pop the thingy up.
