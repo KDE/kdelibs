@@ -137,11 +137,16 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
+<!ENTITY % db41V10 "IGNORE" -- restriction -->
+<![%db41V10;[
+<!ENTITY % remap.attrib "">
+]]>
+
 <!-- Not used -->
 <!ENTITY % revisionflag.attrib "">
 
 <!ENTITY % othercredit.role.attrib
-        "Role   (Translator|Developer|Reviewer|Graphist|Musician)
+        "Role   (Translator|Developer|Reviewer|Graphist|Musician|Tester)
                 #REQUIRED">
 
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE">
