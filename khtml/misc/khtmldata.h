@@ -52,7 +52,7 @@ public:
     const Settings &operator=( const Settings & );
 
     void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
-    void getFontSizes(int *newFontSizes, int *newFixedFontSizes);
+    void getFontSizes(const int *&fontSizes, const int *&fixedFontSizes) const;
     void resetFontSizes(void);
 
     int     fontSizes[MAXFONTSIZES];

@@ -82,17 +82,18 @@ public:
     m_doc = 0L;
     m_decoder = 0L;
     m_jscript = 0L;
-    m_defaultSettings = m_settings = 0L;
     m_job = 0L;
     m_bComplete = false;
     m_bParsing = false;
     m_manager = 0L;
+    m_settings = new khtml::Settings();
   }
   ~KHTMLPartPrivate()
   {
     //no need to delete m_widget here! kparts does it for us (: (Simon)
     if ( m_extension )
       delete m_extension;
+    delete m_settings;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
@@ -106,7 +107,6 @@ public:
   bool m_bJavaEnabled;
   bool lt_dl_initialized;
 
-  khtml::Settings *m_defaultSettings;
   khtml::Settings *m_settings;
 
   KIO::TransferJob * m_job;
@@ -147,8 +147,6 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_bJavaEnabled = false;
   d->lt_dl_initialized = false;
 
-  d->m_defaultSettings = new khtml::Settings;
-
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As.." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
@@ -171,9 +169,6 @@ KHTMLPart::~KHTMLPart()
   closeURL();
 
   clear();
-
-  if ( d->m_defaultSettings )
-    delete d->m_defaultSettings;
 
   delete d;
 }
@@ -453,9 +448,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   else
     emit setWindowCaption( i18n( "* Unknown *" ) );
 
-  if ( !d->m_settings )
-    d->m_settings = new khtml::Settings( *d->m_defaultSettings );
-
   d->m_doc = new HTMLDocumentImpl( d->m_widget );
   d->m_doc->ref();
   d->m_doc->attach( d->m_widget );
@@ -527,11 +519,8 @@ void KHTMLPart::checkCompleted()
   emit completed();
 }
 
-khtml::Settings *KHTMLPart::settings() const
+const khtml::Settings *KHTMLPart::settings() const
 {
-  if ( !d->m_settings )
-    d->m_settings = new khtml::Settings( *d->m_defaultSettings );
-
   return d->m_settings;
 }
 
@@ -609,9 +598,25 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   QFontInfo fi(f);
   printf("font has charset %d, real %d\n", f.charSet(), fi.charSet());
 
-  d->m_defaultSettings->charset = f.charSet();
+  d->m_settings->charset = f.charSet();
   return true;
 }
+
+bool KHTMLPart::setEncoding( const QString &name, bool override )
+{
+    // ###
+}
+
+void KHTMLPart::setUserStyleSheet(const KURL &url)
+{
+    // ###
+}
+
+void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
+{
+    // ###
+}
+
 
 bool KHTMLPart::gotoAnchor( const QString &name )
 {
@@ -641,27 +646,27 @@ bool KHTMLPart::gotoAnchor( const QString &name )
 
 void KHTMLPart::setFontSizes( const int *newFontSizes, const int *newFixedFontSizes )
 {
-  d->m_defaultSettings->setFontSizes( newFontSizes, newFixedFontSizes );
+  d->m_settings->setFontSizes( newFontSizes, newFixedFontSizes );
 }
 
-void KHTMLPart::fontSizes( int *fontSizes, int *fixedFontSizes )
+void KHTMLPart::fontSizes( const int *&fontSizes, const int *&fixedFontSizes ) const
 {
-  d->m_defaultSettings->getFontSizes( fontSizes, fixedFontSizes );
+  d->m_settings->getFontSizes( fontSizes, fixedFontSizes );
 }
 
 void KHTMLPart::resetFontSizes()
 {
-  d->m_defaultSettings->resetFontSizes();
+  d->m_settings->resetFontSizes();
 }
 
 void KHTMLPart::setStandardFont( const QString &name )
 {
-  d->m_defaultSettings->fontBaseFace = name;
+  d->m_settings->fontBaseFace = name;
 }
 
 void KHTMLPart::setFixedFont( const QString &name )
 {
-  d->m_defaultSettings->fixedFontFace = name;
+  d->m_settings->fixedFontFace = name;
 }
 
 void KHTMLPart::setURLCursor( const QCursor &c )

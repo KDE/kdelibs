@@ -87,7 +87,7 @@ public:
   virtual void write( const QString &str );
   virtual void end();
 
-  khtml::Settings *settings() const;
+  const khtml::Settings *settings() const;
 
   void setBaseURL( const KURL &url );
   KURL baseURL() const;
@@ -142,7 +142,7 @@ public:
    *
    * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
    */
-  void fontSizes(int *fontSizes, int *fixedFontSizes=0);
+  void fontSizes(const int *&fontSizes, const int *&fixedFontSizes) const;
 
   /**
    * Resets the point sizes to be associated with the HTML-sizes used in

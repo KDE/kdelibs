@@ -53,22 +53,15 @@ void Settings::setFontSizes(const int *newFontSizes, const int *newFixedFontSize
 {
     memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
     if (newFixedFontSizes)
-    {
        memcpy( fixedFontSizes, newFixedFontSizes, sizeof(fixedFontSizes) );
-    }
     else
-    {
        memcpy( fixedFontSizes, newFontSizes, sizeof(fixedFontSizes) );
-    }
 }
 
-void Settings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
+void Settings::getFontSizes(const int *&_fontSizes, const int *&_fixedFontSizes) const
 {
-    memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
-    if (oldFixedFontSizes)
-    {
-       memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
-    }
+    _fontSizes = fontSizes;
+    _fixedFontSizes = fixedFontSizes;
 }
 
 void Settings::resetFontSizes(void)
