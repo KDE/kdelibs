@@ -1059,7 +1059,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             }
 	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
 		// getting below floats wasn't enough...
-		kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
+		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 		lBreak.obj = o;
                 if(last != o) {
                     //kdDebug() << " using last " << last << endl;
