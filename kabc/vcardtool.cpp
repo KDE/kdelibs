@@ -318,9 +318,6 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
             type += mAddressTypeMap[ (*it).lower() ];
 
-          if ( !type )
-            type = Address::Home; // default
-
           address.setType( type );
           addr.insertAddress( address );
         }
@@ -376,9 +373,6 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
             type += mAddressTypeMap[ (*it).lower() ];
 
-          if ( !type )
-            type = Address::Home;
-
           bool available = false;
           KABC::Address::List addressList = addr.addresses();
           KABC::Address::List::Iterator it;
@@ -390,7 +384,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
               break;
             }
           }
-          
+
           if ( !available ) { // a standalone LABEL tag
             KABC::Address address( type );
             address.setLabel( (*lineIt).value().asString() );
@@ -467,9 +461,6 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
             type += mPhoneTypeMap[(*it).upper()];
-
-          if ( !type )
-            type = PhoneNumber::Home; // default
 
           phone.setType( type );
 
