@@ -99,6 +99,10 @@ P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif;
 
 .question { font-weight: bolder; }
 
+DIV.mediaobject { /* float: right; */ /* might make it much nicer. although someone has to understand the rules ;-)  You also don't want it to be surrounded by text it doesn't refer to ...  But that may be among others a question of writing style. */
+                  text-align: center; /* a bit of a hack: it should position _images_ */
+                  }
+
 /* An idea that could be nice: a search engine looking for specific
 classes could display them in some conspicuous colour.  All that is
 needed is an on the fly generated style element/style sheet. */
