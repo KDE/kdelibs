@@ -262,13 +262,8 @@ void Ftp::openConnection()
   kdDebug(7102) << "Connected ...." << endl;
 
   m_bLoggedOn = ftpLogin( m_user, m_pass );
-  if ( !m_bLoggedOn ) {
-    kdError(7102) << "Could not login" << endl;
-    error( ERR_COULD_NOT_LOGIN, m_host );
-    return;
-  }
-
-  m_bLoggedOn = true;
+  if ( !m_bLoggedOn )
+    return; // error emitted by ftpLogin
 
   connected();
 }
@@ -345,7 +340,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  */
 bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 {
-    kdDebug(7102) << "ftpLogin " << user << " " << _pass << endl;
+  kdDebug(7102) << "ftpLogin " << user << _pass << endl;
 
   assert( !m_bLoggedOn );
 
@@ -364,19 +359,24 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
     }
 
     if (needPass) {
-      kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
+      //kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
       if ( m_pass.isEmpty() ) {
         QString tmp = m_user + "@" + m_host;
-        if ( !openPassDlg( tmp, m_user, m_pass, m_host ) ) ;
-        // return false;
+        if ( !openPassDlg( tmp, m_user, m_pass, m_host ) )
+        {
+          error( ERR_USER_CANCELED, m_host );
+          return false;
+        }
       }
-      kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
+      //kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
 
       tempbuf = "pass ";
       tempbuf += m_pass;
 
+      kdDebug(7102) << "Sending pass command" << endl;
       if ( !ftpSendCmd( tempbuf, '2' ) ) {
         kdDebug(7102) << "Wrong password" << endl;
+        error( ERR_COULD_NOT_LOGIN, m_host );
         return false;
       }
     }
@@ -406,7 +406,11 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 
   // Get the current working directory
   if ( !ftpSendCmd( "pwd", '2' ) )
+  {
+    kdDebug(7102) << "Couldn't issue pwd command" << endl;
+    error( ERR_COULD_NOT_LOGIN, m_host ); // or anything better ?
     return false;
+  }
 
   kdDebug(7102) << "2> " << rspbuf << endl;
 
@@ -879,7 +883,7 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
   if (!m_bLoggedOn)
      openConnection();
 
-  kdDebug(7102) << "stat : " << path << endl;
+  kdDebug(7102) << "Ftp::stat : path='" << path << "'" << endl;
 
   // We can't stat root, but we know it's a dir.
   if ( path.isEmpty() || path == "/" ) {
