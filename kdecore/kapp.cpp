@@ -945,7 +945,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  const char* shell = "/bin/sh";
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
-         file.prepend("khelpcenter ");
+         file.prepend("khelpcenterclient ");
          execl(shell, shell, "-c", file.ascii(), 0L);
 	  exit( 1 );
     }
