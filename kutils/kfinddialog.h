@@ -157,6 +157,42 @@ public:
      */
     void setHasCursor( bool hasCursor );
 
+     /**
+     * Enable/disable the 'Find backwards' option, depending
+     * on whether the application supports it.
+     *
+     * @param supports true if the application supports backwards find
+     * This is assumed to be the case by default.
+     */
+    void setSupportsBackwardsFind( bool supports );
+
+     /**
+     * Enable/disable the 'Case sensitive' option, depending
+     * on whether the application supports it.
+     *
+     * @param supports true if the application supports case sensitive find
+     * This is assumed to be the case by default.
+     */
+    void setSupportsCaseSensitiveFind( bool supports );
+
+     /**
+     * Enable/disable the 'Whole words only' option, depending
+     * on whether the application supports it.
+     *
+     * @param supports true if the application supports whole words only find
+     * This is assumed to be the case by default.
+     */
+    void setSupportsWholeWordsFind( bool supports );
+
+     /**
+     * Enable/disable the 'Regular expression' option, depending
+     * on whether the application supports it.
+     *
+     * @param supports true if the application supports regular expression find
+     * This is assumed to be the case by default.
+     */
+    void setSupportsRegularExpressionFind( bool supports );
+
     /**
      * Set the options which are checked.
      *
