@@ -762,7 +762,7 @@ public:
    * ignore trailing '/' characters.
    * @since 3.1
    */
-  bool equals( const KURL &u, bool ignore_trailing = false ) const;
+  bool equals( const KURL &u, bool ignore_trailing = false ) const; // TODO KDE4: add bool _ignore_ref = false
 
   /**
    * Checks whether the given URL is parent of this URL.
