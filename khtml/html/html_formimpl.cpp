@@ -1926,7 +1926,7 @@ void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
 
 DOMString HTMLOptionElementImpl::value() const
 {
-    if ( !m_value.isEmpty() )
+    if ( !m_value.isNull() )
         return m_value;
     // Use the text if the value wasn't set.
     return text().string().stripWhiteSpace();
