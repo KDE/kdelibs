@@ -26,32 +26,3 @@ as the requested object. (We currently don't support referer headers)
         POST or GET action.
   Additional note: Simple requests for e.g. images are also GET actions, 
   disabling them would break a lot of javascript scripts.
-
-
-SSL certificates
-================
-Entry By: Waldo Bastian <bastian@kde.org>
-Created: May 13th, 2000
-See also: http://www.cert.org/advisories/CA-2000-05.html
-
-We never check SSL certificates. This makes https just as insecure as http.
-
-
-ECMAScript
-==========
-Entry By: Peter Kelly <pmk@post.com>
-Created: May 26th, 2000
-See also: http://developer.netscape.com/docs/manuals/js/client/jsguide/index.htm
-          (chapter 14)
-
-Before KDE 2.0 is released we *MUST* make sure there are checks in place for
-what DOM properties are accessable/writable for the ECMAScript binding. Otherwise
-malicious page authors may be able to access/set cookies from other sites, create
-auto-submitting forms that upload files, and a whole host of other attacks. The
-URL above has information about what properties netscape gives protection to.
-
-We will need to make sure we do this at the right level, as if it is done too
-close to the ECMAScript binding, there could be loopholes such as using
-getAttributeNode(), etc to fool it into letting a script change the wrong properties.
-
-
