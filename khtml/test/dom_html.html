@@ -1,0 +1,809 @@
+<html>
+<style type="text/css">
+  BODY { background-color: white }
+  H2 { background-color: #F0F0F0; border-bottom: solid #808080 3px }
+  .element_container { background-color: #FFFFF0 }
+</style>
+
+<script language="javacsript" type="text/javascript">
+  function displayAttribute(attr) {
+    window.alert(attr);
+  }
+  function getElement(id) {
+    return document.getElementById(id);
+  }
+
+  function Element(_id,_properties,_methods) {
+    this.id = _id;
+    this.properties = _properties;
+    this.methods = _methods;
+    return this;
+  }
+
+  elements = new Array();
+
+  function refreshElement(elementNo) {
+    debug('elementNo '+elementNo);
+    debug('element id '+elements[elementNo].id);
+    var table = document.getElementById('element'+elementNo+'_properties');
+    var rowParent = table;
+    while (rowParent.firstChild != null && rowParent.firstChild.nodeName != "TR") {
+      rowParent = rowParent.firstChild;
+    }
+    if (rowParent != null) {
+      var trs = rowParent.childNodes;
+      var propNo;
+      for (propNo = 1; propNo < trs.length; propNo++) {
+        trs[propNo].firstChild.nextSibling.firstChild.data =
+          eval('document.getElementById(\''+elements[elementNo].id+'\').'+trs[propNo].firstChild.firstChild.nodeValue);
+      }
+    }
+  }
+
+  function writeElementDetails(id,properties,methods) {
+    elements.push(new Element(id,properties,methods));
+    var i;
+    var valno;
+
+    if (properties.length > 0) {
+      var numVals = 0;
+      for (i = 0; i < properties.length; i++) {
+        if (properties[i].length-1 > numVals)
+          numVals = properties[i].length-1;
+      }
+
+      document.write('<h3>Properties</h3>'+
+                     '<table border=0 id="element'+(elements.length-1)+'_properties">'+
+                     '<tr><td><b>Name</b></td><td><b>Current value</b></td>'+
+                     '<td colspan="'+(numVals+1)+'">Set value to</td>'+
+                     '</tr>');
+      for (i = 0; i < properties.length; i++)  {
+        document.write('<tr><td bgcolor="#F0F0F0">'+properties[i][0]+'</td>'+
+                       '<td bgcolor="#F0F0F0">'+eval('document.getElementById(\''+id+'\').'+properties[i][0])+'</td>'+
+                       '<td bgcolor="#F0F0F0">&nbsp;<a href="javascript:document.getElementById(\''+id+'\').'+properties[i][0]+'=null;refreshElement('+(elements.length-1)+')">null</a>&nbsp;</td>');
+        for (valno = 0; valno < numVals; valno++) {
+          if (valno+1 < properties[i].length)
+            document.write('<td bgcolor="#F0F0F0">&nbsp;<a href="javascript:document.getElementById(\''+id+'\').'+properties[i][0]+'=\''+properties[i][valno+1]+'\';refreshElement('+(elements.length-1)+')">'+properties[i][valno+1]+'</a>&nbsp;</td>');
+          else
+            document.write('<td bgcolor="#F0F0F0"></td>');
+        }
+        document.write('</tr>');
+      }
+      document.write('</table>');
+    }
+    if (methods.length > 0) {
+      document.write('<h3>Methods</h3>'+
+                     '<ul>');
+      for (i = 0; i < methods.length; i++)  {
+        document.write('<li><a href="javascript:document.getElementById(\''+id+'\').'+methods[i]+'">'+methods[i]+'</li>');
+      }
+      document.write('</ul>');
+    }
+  }
+
+</script>
+<body>
+<a href="#HTMLDOMImplementation">HTMLDOMImplementation</a><br>
+<a href="#HTMLCollection">HTMLCollection</a><br>
+<a href="#HTMLDocument">HTMLDocument</a><br>
+<a href="#HTMLElement">HTMLElement</a><p>
+
+
+
+<a href="#HTMLAnchorElement">HTMLAnchorElement</a><br>
+<a href="#HTMLAppletElement">HTMLAppletElement</a><br>
+<a href="#HTMLAreaElement">HTMLAreaElement</a><br>
+<a href="#HTMLBRElement">HTMLBRElement</a><br>
+<a href="#HTMLBaseElement">HTMLBaseElement</a><br>
+<a href="#HTMLBaseFontElement">HTMLBaseFontElement</a><br>
+<a href="#HTMLBodyElement">HTMLBodyElement</a><br>
+<a href="#HTMLButtonElement">HTMLButtonElement</a><br>
+<a href="#HTMLDListElement">HTMLDListElement</a><br>
+<a href="#HTMLDirectoryElement">HTMLDirectoryElement</a><br>
+<a href="#HTMLDivElement">HTMLDivElement</a><br>
+<a href="#HTMLFieldSetElement">HTMLFieldSetElement</a><br>
+<a href="#HTMLFontElement">HTMLFontElement</a><br>
+<a href="#HTMLFormElement">HTMLFormElement</a><br>
+<a href="#HTMLFrameElement">HTMLFrameElement</a><br>
+<a href="#HTMLFrameSetElement">HTMLFrameSetElement</a><br>
+<a href="#HTMLHRElement">HTMLHRElement</a><br>
+<a href="#HTMLHeadElement">HTMLHeadElement</a><br>
+<a href="#HTMLHeadingElement">HTMLHeadingElement</a><br>
+<a href="#HTMLHtmlElement">HTMLHtmlElement</a><br>
+<a href="#HTMLIFrameElement">HTMLIFrameElement</a><br>
+<a href="#HTMLImageElement">HTMLImageElement</a><br>
+<a href="#HTMLInputElement">HTMLInputElement</a><br>
+<a href="#HTMLIsIndexElement">HTMLIsIndexElement</a><br>
+<a href="#HTMLLIElement">HTMLLIElement</a><br>
+<a href="#HTMLLabelElement">HTMLLabelElement</a><br>
+<a href="#HTMLLegendElement">HTMLLegendElement</a><br>
+<a href="#HTMLLinkElement">HTMLLinkElement</a><br>
+<a href="#HTMLMapElement">HTMLMapElement</a><br>
+<a href="#HTMLMenuElement">HTMLMenuElement</a><br>
+<a href="#HTMLMetaElement">HTMLMetaElement</a><br>
+<a href="#HTMLModElement">HTMLModElement</a><br>
+<a href="#HTMLOListElement">HTMLOListElement</a><br>
+<a href="#HTMLObjectElement">HTMLObjectElement</a><br>
+<a href="#HTMLOptGroupElement">HTMLOptGroupElement</a><br>
+<a href="#HTMLOptionElement">HTMLOptionElement</a><br>
+<a href="#HTMLParagraphElement">HTMLParagraphElement</a><br>
+<a href="#HTMLParamElement">HTMLParamElement</a><br>
+<a href="#HTMLPreElement">HTMLPreElement</a><br>
+<a href="#HTMLQuoteElement">HTMLQuoteElement</a><br>
+<a href="#HTMLScriptElement">HTMLScriptElement</a><br>
+<a href="#HTMLSelectElement">HTMLSelectElement</a><br>
+<a href="#HTMLStyleElement">HTMLStyleElement</a><br>
+<a href="#HTMLTableCaptionElement">HTMLTableCaptionElement</a><br>
+<a href="#HTMLTableCellElement">HTMLTableCellElement</a><br>
+<a href="#HTMLTableColElement">HTMLTableColElement</a><br>
+<a href="#HTMLTableElement">HTMLTableElement</a><br>
+<a href="#HTMLTableRowElement">HTMLTableRowElement</a><br>
+<a href="#HTMLTableSectionElement">HTMLTableSectionElement</a><br>
+<a href="#HTMLTextAreaElement">HTMLTextAreaElement</a><br>
+<a href="#HTMLTitleElement">HTMLTitleElement</a><br>
+<a href="#HTMLUListElement">HTMLUListElement</a><br>
+
+
+
+
+<a name="HTMLDOMImplementation"><h2>HTMLDOMImplementation</h2></a>
+	methods
+		createHTMLDocument
+
+<a name="HTMLCollection"><h2>HTMLCollection</h2></a>
+	properties
+		length
+	methods
+		item
+		namedItem
+
+<a name="HTMLDocument"><h2>HTMLDocument</h2></a>
+	properties
+		title
+		referrer
+		domain
+		URL
+		body
+		images
+		applets
+		links
+		forms
+		anchors
+		cookie
+	methods
+		open
+		close()
+		write
+		writeln
+		getElementsByName
+
+<a name="HTMLElement"><h2>HTMLElement</h2></a>
+	properties
+		id
+		title
+		lang
+		dir
+		className
+
+<a name="HTMLAnchorElement"><h2>HTMLAnchorElement</h2></a>
+	properties
+		accessKey
+		charset
+		coords
+		href
+		hreflang
+		name
+		rel
+		rev
+		shape
+		tabIndex
+		target
+		type
+	methods
+		blur()
+		focus()
+
+<a name="HTMLAppletElement"><h2>HTMLAppletElement</h2></a>
+	properties
+		align
+		alt
+		archive
+		code
+		codeBase
+		height
+		hspace
+		name
+		object
+		vspace
+		width
+
+<a name="HTMLAreaElement"><h2>HTMLAreaElement</h2></a>
+	properties
+		accessKey
+		alt
+		coords
+		href
+		noHref
+		shape
+		tabIndex
+		target
+
+<a name="HTMLBRElement"><h2>HTMLBRElement</h2></a>
+	properties
+		clear
+
+<a name="HTMLBaseElement"><h2>HTMLBaseElement</h2></a>
+	properties
+		href
+		target
+
+<a name="HTMLBaseFontElement"><h2>HTMLBaseFontElement</h2></a>
+	properties
+		color
+		face
+		size
+
+<a name="HTMLBodyElement"><h2>HTMLBodyElement</h2></a>
+	properties
+		aLink
+		background
+		bgColor
+		link
+		text
+		vLink
+
+<a name="HTMLButtonElement"><h2>HTMLButtonElement</h2></a>
+	properties
+		form
+		accessKey
+		disabled
+		name
+		tabIndex
+		type
+		value
+
+<a name="HTMLDListElement"><h2>HTMLDListElement</h2></a>
+	properties
+		compact
+
+<a name="HTMLDirectoryElement"><h2>HTMLDirectoryElement</h2></a>
+	properties
+		compact
+
+<a name="HTMLDivElement"><h2>HTMLDivElement</h2></a>
+	properties
+		align
+
+<a name="HTMLFieldSetElement"><h2>HTMLFieldSetElement</h2></a>
+	properties
+		form
+
+<a name="HTMLFontElement"><h2>HTMLFontElement</h2></a>
+<span class="element_container" color="#FF0000">
+<font size="7" id="test_HTMLFontElement">
+  Text inside &lt;FONT&gt;
+</font>
+</span>
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLFontElement',new Array(
+                  new Array('color','#000000','green'),
+                  new Array('face','courier','times','arial'),
+                  new Array('size','2','3','7')
+                  ),
+                  new Array());
+</script>
+
+<a name="HTMLFormElement"><h2>HTMLFormElement</h2></a>
+	properties
+		elements
+		length
+		name
+		acceptCharset
+		action
+		enctype
+		method
+		target
+	methods
+		submit()
+		reset()
+
+<a name="HTMLFrameElement"><h2>HTMLFrameElement</h2></a>
+	properties
+		frameBorder
+		longDesc
+		marginHeight
+		marginWidth
+		name
+		noResize
+		scrolling
+		src
+		contentDocument
+
+<a name="HTMLFrameSetElement"><h2>HTMLFrameSetElement</h2></a>
+	properties
+		cols
+		rows
+
+<a name="HTMLHRElement"><h2>HTMLHRElement</h2></a>
+
+<!--<span class="element_container">   ### hr doesn't display if inside a display: block-->
+<hr id="test_HTMLHRElement">
+<!--</span>-->
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLHRElement',new Array(
+                  new Array('align'),
+                  new Array('noShade','true','false'),
+                  new Array('size','100%','50%','400'),
+                  new Array('width')
+                  ),
+                  new Array());
+</script>
+
+<a name="HTMLHeadElement"><h2>HTMLHeadElement</h2></a>
+	properties
+		profile
+
+<a name="HTMLHeadingElement"><h2>HTMLHeadingElement</h2></a>
+	properties
+		align
+
+<a name="HTMLHtmlElement"><h2>HTMLHtmlElement</h2></a>
+Properties
+<ul>
+  <li>version
+</ul>
+
+<a name="HTMLIFrameElement"><h2>HTMLIFrameElement</h2></a>
+	properties
+		align
+		frameBorder
+		height
+		longDesc
+		marginHeight
+		marginWidth
+		name
+		scrolling
+		src
+		width
+		contentDocument
+                                
+<a name="HTMLImageElement"><h2>HTMLImageElement</h2></a>
+<span class="element_container">
+<img src="image.jpg" id="test_HTMLImageElement">
+</span>
+
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLImageElement',new Array(
+                  new Array('lowSrc'),
+                  new Array('name'),
+                  new Array('align','left','right','center'),
+                  new Array('alt'),
+                  new Array('border','0','1','5'),
+                  new Array('height'),
+                  new Array('hspace'),
+                  new Array('isMap'),
+                  new Array('longDesc'),
+                  new Array('src','image.jpg','kdelogo.gif','missing.gif'),
+                  new Array('useMap'),
+                  new Array('vspace'),
+                  new Array('width','500')
+                  ),
+                  new Array());
+</script>
+
+<a name="HTMLInputElement"><h2>HTMLInputElement</h2></a>
+	properties:
+		defaultValue
+		defaultChecked
+		form
+		accept
+		accessKey
+		align
+		alt
+		checked
+		disabled
+		maxLength
+		name
+		readOnly
+		size
+		src
+		tabIndex
+		type
+		useMap
+		value
+
+	methods
+		blur()
+		focus()
+		select()
+		click()
+
+<a name="HTMLIsIndexElement"><h2>HTMLIsIndexElement</h2></a>
+	properties
+		form
+		prompt
+
+<a name="HTMLLIElement"><h2>HTMLLIElement</h2></a>
+	properties
+		type
+		value
+
+<a name="HTMLLabelElement"><h2>HTMLLabelElement</h2></a>
+	properties
+		form
+		accessKey
+		htmlFor
+
+<a name="HTMLLegendElement"><h2>HTMLLegendElement</h2></a>
+	properties
+		form
+		accessKey
+		align
+
+<a name="HTMLLinkElement"><h2>HTMLLinkElement</h2></a>
+	properties
+		disabled
+		charset
+		href
+		hreflang
+		media
+		rel
+		rev
+		target
+		type
+
+<a name="HTMLMapElement"><h2>HTMLMapElement</h2></a>
+	properties
+		areas
+		name
+
+<a name="HTMLMenuElement"><h2>HTMLMenuElement</h2></a>
+	properties
+		compact
+
+<a name="HTMLMetaElement"><h2>HTMLMetaElement</h2></a>
+	properties
+		content
+		httpEquiv
+		name
+		scheme
+
+<a name="HTMLModElement"><h2>HTMLModElement</h2></a>
+	properties
+		cite
+		dateTime
+
+<a name="HTMLOListElement"><h2>HTMLOListElement</h2></a>
+	properties
+		compact
+		start
+		type
+
+<a name="HTMLObjectElement"><h2>HTMLObjectElement</h2></a>
+	properties
+		form
+		code
+		align
+		archive
+		border
+		codeBase
+		codeType
+		data
+		declare
+		height
+		hspace
+		name
+		standby
+		tabIndex
+		type
+		useMap
+		vspace
+		width
+		contentDocument
+
+<a name="HTMLOptGroupElement"><h2>HTMLOptGroupElement</h2></a>
+	properties
+		disabled
+		label
+
+<a name="HTMLOptionElement"><h2>HTMLOptionElement</h2></a>
+	properties
+		form
+		defaultSelected
+		text
+		index
+		disabled
+		label
+		selected
+		value
+
+<a name="HTMLParagraphElement"><h2>HTMLParagraphElement</h2></a>
+	properties
+		align
+
+
+<a name="HTMLParamElement"><h2>HTMLParamElement</h2></a>
+	properties
+		name
+		type
+		value
+		valueType
+
+<a name="HTMLPreElement"><h2>HTMLPreElement</h2></a>
+	properties
+		width
+
+<a name="HTMLQuoteElement"><h2>HTMLQuoteElement</h2></a>
+	properties
+		cite
+
+<a name="HTMLScriptElement"><h2>HTMLScriptElement</h2></a>
+	properties
+		text
+		htmlFor
+		event
+		charset
+		defer
+		src
+		type
+
+<a name="HTMLSelectElement"><h2>HTMLSelectElement</h2></a>
+	properties
+		type
+		selectedIndex
+		value
+		length
+		form
+		options
+		disabled
+		multiple
+		name
+		size
+		tabIndex
+
+	methods
+		add
+		remove
+		blur()
+		focus()
+
+<a name="HTMLStyleElement"><h2>HTMLStyleElement</h2></a>
+	properties
+		disabled
+		media
+		type
+
+<a name="HTMLTableCaptionElement"><h2>HTMLTableCaptionElement</h2></a>
+	properties
+		align
+
+<a name="HTMLTableCellElement"><h2>HTMLTableCellElement</h2></a>
+
+<span class="element_container">
+  <table width="80%" border="1">
+    <tr>
+      <td>cell 1,1</td>
+      <td>cell 2,1</td>
+      <td>cell 3,1</td>
+    </tr>
+    <tr>
+      <td>cell 1,2</td>
+      <td id="test_HTMLTableCellElement">cell 2,2<br>another line</td>
+      <td>cell 3,2<br>another line<br>another line</td>
+    </tr>
+  </table>
+</span>
+
+(cell of interest is 2,2)
+
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLTableCellElement',new Array(
+                  new Array('cellIndex'),
+                  new Array('abbr','test abbreviation'),
+                  new Array('align','left','center','right','justify','char'),
+                  new Array('axis','text axis,another axis'),
+                  new Array('bgColor','#0000FF','green'),
+                  new Array('ch','e','l'),
+                  new Array('chOff'),
+                  new Array('colSpan','1','2','3'),
+                  new Array('headers'),
+                  new Array('height','50','50%'),
+                  new Array('noWrap','true','false'),
+                  new Array('rowSpan','1','2','3'),
+                  new Array('scope'),
+                  new Array('vAlign','top','middle','bottom','baseline'),
+                  new Array('width','300','90%')
+                  ),
+                  new Array());
+</script>
+
+<a name="HTMLTableColElement"><h2>HTMLTableColElement</h2></a>
+	properties
+		align
+		ch
+		chOff
+		span
+		vAlign
+		width
+
+<a name="HTMLTableElement"><h2>HTMLTableElement</h2></a>
+
+<span class="element_container">
+  <table width="80%" border="1" id="test_HTMLTableElement">
+    <tr>
+      <td>cell 1,1</td>
+      <td>cell 2,1</td>
+      <td>cell 3,1</td>
+    </tr>
+    <tr>
+      <td>cell 1,2</td>
+      <td>cell 2,2</td>
+      <td>cell 3,2</td>
+    </tr>
+  </table>
+</span>
+
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLTableElement',new Array(
+                  new Array('caption'),
+                  new Array('tHead'),
+                  new Array('tFoot'),
+                  new Array('rows'),
+                  new Array('tBodies'),
+                  new Array('align','left','center','right'),
+                  new Array('bgColor','#00FFFF','green'),
+                  new Array('border','8','1'),
+                  new Array('cellPadding','8','1'),
+                  new Array('cellSpacing','8','1'),
+                  new Array('frame'),
+                  new Array('rules'),
+                  new Array('summary'),
+                  new Array('width','80%','300','100%')
+                  ),
+                  new Array(
+                    new Array('createTHead()'),
+                    new Array('deleteTHead()'),
+                    new Array('createTFoot()'),
+                    new Array('deleteTFoot()'),
+                    new Array('createCaption()'),
+                    new Array('deleteCaption()'),
+                    new Array('insertRow(index)'),
+                    new Array('deleteRow(index)')
+                  ));
+
+
+</script>
+
+<a name="HTMLTableRowElement"><h2>HTMLTableRowElement</h2></a>
+
+<span class="element_container">
+  <table width="80%" border="1">
+    <thead>
+      <tr><td colspan="3">table head</td></tr>
+      <tr><td colspan="3">table head</td></tr>
+    </thead>
+    <tfoot>
+      <tr><td colspan="3">table foot</td></tr>
+      <tr><td colspan="3">table foot</td></tr>
+    </tfoot>
+
+
+    <tbody>
+
+    <tr>
+      <td>cell 0,0</td>
+      <td>cell 1,0</td>
+      <td>cell 2,0</td>
+    </tr>
+    <tr>
+      <td>cell 0,1</td>
+      <td>cell 1,1</td>
+      <td>cell 2,1</td>
+    </tr>
+    <tr id="test_HTMLTableRowElement">
+      <td>cell 0,2</td>
+      <td>cell 1,2</td>
+      <td>cell 2,2</td>
+    </tr>
+    <tr>
+      <td>cell 0,3</td>
+      <td>cell 1,3</td>
+      <td>cell 2,3</td>
+    </tr>
+
+    </tbody>
+  </table>
+</span>
+
+(row of interest is 2)
+
+<script language="javascript" type="text/javascript">
+  writeElementDetails('test_HTMLTableRowElement',new Array(
+                  new Array('rowIndex','0','1','2','3','4'),
+                  new Array('sectionRowIndex','0','1','2','3','4'),
+                  new Array('cells'),
+                  new Array('align'),
+                  new Array('bgColor','#0000FF','green'),
+                  new Array('ch'),
+                  new Array('chOff'),
+                  new Array('vAlign')
+                  ),
+                  new Array(
+		    new Array('insertCell(index)'),
+		    new Array('deleteCell(index)')
+                  ));
+</script>
+
+<a name="HTMLTableSectionElement"><h2>HTMLTableSectionElement</h2></a>
+	properties
+		align
+		ch
+		chOff
+		vAlign
+		rows
+	methods
+		insertRow(index)
+		deleteRow(index)
+
+<a name="HTMLTextAreaElement"><h2>HTMLTextAreaElement</h2></a>
+	properties
+		defaultValue
+		form
+		accessKey
+		cols
+		disabled
+		name
+		readOnly
+		rows
+		tabIndex
+		type
+		value
+	methods
+		blur()
+		focus()
+		select()
+
+<a name="HTMLTitleElement"><h2>HTMLTitleElement</h2></a>
+	properties
+		text
+
+
+<a name="HTMLUListElement"><h2>HTMLUListElement</h2></a>
+	properties
+		compact
+		type
+                                                                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+</body>
+</html>
