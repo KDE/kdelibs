@@ -24,6 +24,7 @@
 #include <qapplication.h>
 #include <qevent.h>
 #include <kdebug.h>
+#include <knotifyclient.h>
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
@@ -46,7 +47,10 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
              SLOT( slotExecuted( QListBoxItem * )) );
 
     installEventFilter( this );
+    parent->installEventFilter( this );
+    kdDebug() << "constructor" << endl;
 }
+
 
 KCompletionBox::~KCompletionBox()
 {
@@ -81,48 +85,113 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
 
-    switch( type ) {
-    case QEvent::Show:
-        move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
-        resize( sizeHint() );
-        break;
+    if ( o==m_parent ) {
 
-    case QEvent::Hide:
-        revertFocus();
-        break;
+        if (  e->type() == QEvent::KeyPress ) {
+            QKeyEvent *ev = static_cast<QKeyEvent *>( e );
 
-    case QEvent::KeyPress: {
-        QKeyEvent *ev = static_cast<QKeyEvent *>( e );
-        if ( ev->key() == Key_Escape ) {
-            hide();
-            return true;
+            if ( isVisible() ) {
+
+                switch ( ev->key() ) {
+                case Key_Tab:
+                    if ( ev->state() & ShiftButton )
+                        up();
+                    else
+                        down();
+                    ev->accept();
+                    return true;
+
+                case Key_Down:
+                    down();
+                    ev->accept();
+                    return true;
+
+                case Key_Up:
+                    up();
+                    ev->accept();
+                    return true;
+
+                case Key_Prior:
+                    pageUp();
+                    ev->accept();
+                    return true;
+
+                case Key_Next:
+                    pageDown();
+                    ev->accept();
+                    return true;
+
+                case  Key_Escape:
+                    hide();
+                    ev->accept();
+                    return true;
+
+                default:
+                    break;
+                }
+
+            } else {
+                switch ( ev->key() ) {
+                case Key_Tab:
+                case Key_Down:
+                case Key_Up:
+                case Key_Prior:
+                case Key_Next:
+                    KNotifyClient::event( "Textcompletion: no match" );
+                    ev->accept();
+                    return true;
+
+                default:
+                    break;
+                }
+            }
+
         }
-        else if ( ev->key() == Key_Up && currentItem() == 0 ) {
+
+    } else {
+        switch( type ) {
+        case QEvent::Show:
+            move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+            resize( sizeHint() );
+            break;
+
+        case QEvent::Hide:
             revertFocus();
-            return true;
+            break;
+
+        case QEvent::KeyPress: {
+            QKeyEvent *ev = static_cast<QKeyEvent *>( e );
+            if ( ev->key() == Key_Escape ) {
+                hide();
+                return true;
+            }
+            else if ( ev->key() == Key_Up && currentItem() == 0 ) {
+                revertFocus();
+                return true;
+            }
+
+            break;
         }
 
-        break;
-    }
+        case QEvent::FocusIn: // workaround for "first item not highlighted"
+            if ( currentItem() == 0 )
+                setSelected( currentItem(), true );
+            break;
 
-    case QEvent::FocusIn: // workaround for "first item not highlighted"
-        if ( currentItem() == 0 )
-            setSelected( currentItem(), true );
-        break;
-
-    case QEvent::MouseButtonPress: {
-        QMouseEvent *me = static_cast<QMouseEvent*>(e);
-        QPoint pos = mapFromGlobal( me->globalPos() );
-        if ( me->button()!=0 && !rect().contains( pos ) ) {
-            // outside
-            kdDebug() << "hide" << endl;
-            hide();
-            return FALSE;
+        case QEvent::MouseButtonPress: {
+            QMouseEvent *me = static_cast<QMouseEvent*>(e);
+            QPoint pos = mapFromGlobal( me->globalPos() );
+            if ( me->button()!=0 && !rect().contains( pos ) ) {
+                // outside
+                kdDebug() << "hide" << endl;
+                hide();
+                return FALSE;
+            }
         }
-    }
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
 
     return KListBox::eventFilter( o, e );
@@ -135,8 +204,8 @@ void KCompletionBox::popup()
         hide();
     else {
         ensureCurrentVisible();
-	if ( !isVisible() )
-	    show();
+        if ( !isVisible() )
+            show();
     }
 }
 

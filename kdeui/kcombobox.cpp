@@ -421,62 +421,6 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         if (  ev->type() == QEvent::KeyPress ) {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
 
-            if ( d->completionBox && d->completionBox->isVisible() ) {
-
-                switch ( e->key() ) {
-                case Key_Tab:
-                    if ( e->state() & ShiftButton )
-                        d->completionBox->up();
-                    else
-                        d->completionBox->down();
-                    e->accept();
-                    return true;
-
-                case Key_Down:
-                    d->completionBox->down();
-                    e->accept();
-                    return true;
-
-                case Key_Up:
-                    d->completionBox->up();
-                    e->accept();
-                    return true;
-
-                case Key_Prior:
-                    d->completionBox->pageUp();
-                    e->accept();
-                    return true;
-
-                case Key_Next:
-                    d->completionBox->pageDown();
-                    e->accept();
-                    return true;
-
-                case  Key_Escape:
-                    d->completionBox->hide();
-                    e->accept();
-                    return true;
-
-                default:
-                    break;
-                }
-
-            } else {
-                switch ( e->key() ) {
-                case Key_Tab:
-                case Key_Down:
-                case Key_Up:
-                case Key_Prior:
-                case Key_Next:
-                    KNotifyClient::event( "Textcompletion: no match" );
-                    e->accept();
-                    return true;
-
-                default:
-                    break;
-                }
-            }
-
             if ( e->key() == Key_Return || e->key() == Key_Enter) {
 
                 if ( d->completionBox )
@@ -541,7 +485,7 @@ void KComboBox::makeCompletionBox()
     if ( d->completionBox )
         return;
 
-    d->completionBox = new KCompletionBox( this, "completion box" );
+    d->completionBox = new KCompletionBox( lineEdit(), "completion box" );
     connect( d->completionBox, SIGNAL( activated( const QString& )),
              SLOT( setEditText( const QString& )));
     connect( d->completionBox, SIGNAL( executed( const QString& )),
