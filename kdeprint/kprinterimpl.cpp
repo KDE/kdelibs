@@ -93,7 +93,6 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 			if (ps)
 			{
 				printer->setRealPageSize( ps );
-				printer->setMargins(ps->margins());
 			}
 		}
 

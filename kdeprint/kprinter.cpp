@@ -430,7 +430,6 @@ void KPrinter::preparePrinting()
 	setErrorMessage(QString::null);
 
 	// re-initialize margins and page size (by default, use Qt mechanism)
-	setMargins(QSize(-1,-1));
 	setRealPageSize(NULL);
 
 	// print-system-specific setup, only if not printing to file
