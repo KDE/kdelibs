@@ -532,7 +532,7 @@ void RenderText::calcMinMaxWidth()
         char c;
         do {
             wordlen++;
-        } while( !(isBreakable( str->s, i+wordlen, str->l )) && i+wordlen < len); // && c != '-'
+        } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) ); // && c != '-'
         if(i+wordlen < len) wordlen--;
         if (wordlen)
         {
