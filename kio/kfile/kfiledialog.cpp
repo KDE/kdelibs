@@ -299,7 +299,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     toolbar->insertButton(QString::fromLatin1("bookmark"),
                           (int)HOTLIST_BUTTON, true,
                           i18n("Bookmarks"));
-    toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(), 
+    toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(),
                                                   true);
     connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
              SLOT( enterURL( const QString& )));
@@ -326,6 +326,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     coll->action( "short view" )->plug( toolbar );
     coll->action( "detailed view" )->plug( toolbar );
+    coll->action( "preview")->plug( toolbar );
 
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));

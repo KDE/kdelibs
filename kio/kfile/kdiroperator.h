@@ -212,13 +212,13 @@ class KDirOperator : public QWidget
      * @returns the currently used view.
      * @see #setView
      */
-    KFileView * view() const { return fileView; }
+    KFileView * view() const { return m_fileView; }
 
     /**
      * Returns the widget of the current view. 0L if there is no view/widget.
      * (KFileView itself is not a widget.)
      */
-    QWidget * viewWidget() const { return fileView ? fileView->widget() : 0L; }
+    QWidget * viewWidget() const { return m_fileView ? m_fileView->widget() : 0L; }
 
     /**
      * Sets one of the predefined fileviews
@@ -281,14 +281,14 @@ class KDirOperator : public QWidget
      * then 0L is returned.
      */
     const KFileItemList * selectedItems() const {
-	return ( fileView ? fileView->selectedItems() : 0L );
+	return ( m_fileView ? m_fileView->selectedItems() : 0L );
     }
 
     /**
      * @returns true if @p item is currently selected, or false otherwise.
      */
     inline bool isSelected( const KFileItem *item ) const {
-	return ( fileView ? fileView->isSelected( item ) : false );
+	return ( m_fileView ? m_fileView->isSelected( item ) : false );
     }
 
     /**
@@ -722,11 +722,11 @@ private:
 
     void connectView(KFileView *);
 
-    KFileView *fileView;
+    KFileView *m_fileView;
     KFileItemList pendingMimeTypes;
 
     // the enum KFile::FileView as an int
-    int viewKind;
+    int m_viewKind;
     int defaultView;
 
     KFile::Mode myMode;
@@ -767,8 +767,6 @@ private slots:
     /**
      * @internal
      */
-    void readNextMimeType();
-
     void slotDetailedView();
     void slotSimpleView();
     void slotToggleHidden( bool );
@@ -776,6 +774,7 @@ private slots:
     void slotSingleView();
     void slotSeparateDirs();
     void slotDefaultPreview();
+    void togglePreview();
 
     void slotSortByName();
     void slotSortBySize();
