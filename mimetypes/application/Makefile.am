@@ -2,7 +2,7 @@
 data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
-	x-core.desktop x-font.desktop x-java.desktop \
+	x-core.desktop x-java.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
 	postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
@@ -16,7 +16,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
 	x-tzo.desktop x-lzop.desktop x-mswinurl.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
-	x-truetype-font.desktop msexcel2.desktop \
+	msexcel2.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
 	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
 	pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
