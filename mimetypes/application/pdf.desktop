@@ -23,6 +23,7 @@ Comment[fr]=Document PDF
 Comment[ga]=Cáipéis PDF
 Comment[he]=מסמך PDF
 Comment[hu]=PDF dokumentum
+Comment[is]=PDF-skjal
 Comment[it]=Documento PDF
 Comment[ja]=PDF ドキュメント
 Comment[ko]=PDF 문서
@@ -40,6 +41,7 @@ Comment[ro]=Document PDF
 Comment[ru]=Документ PDF
 Comment[sk]=PDF dokument
 Comment[sl]=Dokument PDF
+Comment[sr]=PDF dokument
 Comment[sv]=PDF-dokument
 Comment[ta]=Pdf ¬Å½õ
 Comment[tr]=PDF Belgesi
@@ -50,3 +52,7 @@ Comment[zh_CN]=PDF 文档
 Comment[zh_TW]=PDF 文件
 Comment[zu]=Uhlu lwamafayela e-PDF
 X-KDE-AutoEmbed=true
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.pdf
+

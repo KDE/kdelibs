@@ -69,3 +69,8 @@ X-KDE-AutoEmbed=true
 [Property::X-KDE-text]
 Type=bool
 Value=true
+
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.ps
+

@@ -13,8 +13,10 @@ Comment[eu]=Windows Exekutagarria
 Comment[fa]=اجرایی ویندوز
 Comment[fi]=Windows-ohjelma
 Comment[fr]=Exécutable Windows
+Comment[ga]=Comhad inrite Windows
 Comment[he]=תוכנית של Windows
 Comment[hu]=Windows programfájl
+Comment[is]=Windows keyrsluforrit
 Comment[it]=Eseguibile Windows
 Comment[ja]=Windows 実行ファイル
 Comment[lt]=Windows vykdoma byla
@@ -29,6 +31,7 @@ Comment[ro]=Fişier executabil Windows
 Comment[ru]=Программа Windows
 Comment[sk]=Program pre Windows
 Comment[sl]=Izvedljiva datoteka za Windows
+Comment[sr]=Windows izvršni fajl
 Comment[sv]=Windows-program
 Comment[ta]=Å¢ý§¼¡ ¦ºÂÄ¢
 Comment[tr]=Windows Programı
@@ -41,3 +44,7 @@ Comment[zu]=Ama-window Aphumelelanga
 Icon=wine_doc
 Type=MimeType
 MimeType=application/x-msdos-program
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.exe
+
