@@ -1032,7 +1032,10 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_TITLE+ID_CLOSE_TAG:
         // This crashes with http://lists.kde.org/?t=95871288200004&w=2&r=1
         // i.e. when a title contains <pre>. (David)
-        // static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+        //static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+        // then let's use khtml's "RTTI" ;-) (Simon)
+        if ( current->id() == ID_TITLE )
+    	  static_cast<HTMLTitleElementImpl *>(current)->setTitle();
 	break;
     default:
 	break;
