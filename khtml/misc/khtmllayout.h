@@ -99,6 +99,7 @@ namespace khtml
 		}
 	    }
 	bool isUndefined() const { return (type == Undefined); }
+	bool isVariable() const { return (type == Variable); }
 	bool isRelative() const { return (type == Relative); }
 	bool isPercent() const { return (type == Percent); }
 	bool isFixed() const { return (type == Fixed); }

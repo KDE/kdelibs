@@ -301,7 +301,7 @@ void RenderObject::repaintObject(RenderObject *o, int x, int y)
 // used for clear property & to layout replaced elements
 bool RenderObject::isSpecial() const
 {
-    return (!isInline() || isReplaced() || isBR());
+    return (!isInline() || isReplaced() || isBR() || isPositioned());
 }
 
 void RenderObject::printTree(int indent) const
@@ -343,18 +343,6 @@ void RenderObject::setStyle(RenderStyle *style)
 
     setMinMaxKnown(false);
     setLayouted(false);
-}
-
-void RenderObject::relativePositionOffset(int &tx, int &ty)
-{
-    if(!m_style->left().isUndefined())
-	tx += m_style->left().width(containingBlockWidth());
-    else if(!m_style->right().isUndefined())
-	tx -= m_style->right().width(containingBlockWidth());
-    if(!m_style->top().isUndefined())
-	ty += m_style->top().width(containingBlockHeight());
-    else if(!m_style->bottom().isUndefined())
-	ty -= m_style->bottom().width(containingBlockHeight());
 }
 
 void RenderObject::setContainsPositioned(bool p)

@@ -160,6 +160,8 @@ void RenderImage::calcMinMaxWidth()
 //    setMinMaxKnown();
 
     // contentWidth
+    
+    
     Length w = m_style->width();
 
     switch(w.type)
@@ -215,6 +217,13 @@ void RenderImage::layout(bool)
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "Image::layout(?) width=" << m_width << ", layouted=" << layouted() << endl;
 #endif
+
+    if (isPositioned())
+    {
+    	calcAbsoluteVertical();
+    	calcAbsoluteHorizontal(); 
+	return;       
+    }
 
     calcMinMaxWidth(); // ### just to be sure here...
 

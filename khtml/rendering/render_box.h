@@ -117,7 +117,11 @@ protected:
 
     virtual int cellTopExtra() { return 0; }
     virtual int cellBottomExtra() { return 0; }
+    
+    void relativePositionOffset(int &tx, int &ty);
 
+    void calcAbsoluteHorizontal();
+    void calcAbsoluteVertical();
     /*
      * the minimum width the element needs, to be able to render
      * it's content without clipping

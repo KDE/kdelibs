@@ -35,6 +35,8 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
 
+    m_positioned=true; // to 0,0 :)
+
     selectionStart = 0;
     selectionEnd = 0;
     selectionStartPos = -1;
@@ -156,7 +158,7 @@ void RenderRoot::close()
 {
     setParsing(false);
     updateSize();
-    repaint();
+    m_view->repaintContents(0,0,1000000,1000000);
 //    printTree();
 }
 

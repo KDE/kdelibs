@@ -418,3 +418,114 @@ void RenderBox::repaintObject(RenderObject *o, int x, int y)
     y += m_y;
     if(m_parent) m_parent->repaintObject(o, x, y);
 }
+
+void RenderBox::relativePositionOffset(int &tx, int &ty)
+{
+    if(!m_style->left().isVariable())
+	tx += m_style->left().width(containingBlockWidth());
+    else if(!m_style->right().isVariable())
+	tx -= m_style->right().width(containingBlockWidth());
+    if(!m_style->top().isVariable())
+	ty += m_style->top().width(containingBlockHeight());
+    else if(!m_style->bottom().isVariable())
+	ty -= m_style->bottom().width(containingBlockHeight());
+}
+
+void RenderBox::calcAbsoluteHorizontal()
+{
+    const int AUTO = -666666;
+    int l,r,w, cw;
+    
+    l=r=w=AUTO;
+    cw = containingBlockWidth()
+    	+containingBlock()->paddingLeft() +containingBlock()->paddingRight();
+    
+    if(!m_style->left().isVariable())
+	l = m_style->left().width(cw);
+    if(!m_style->right().isVariable())
+	r = m_style->right().width(cw);		
+    if(!m_style->width().isVariable())
+	w = m_style->width().width(cw);
+    
+    if (style()->direction()==LTR && l==AUTO)
+    {
+	if (m_next) l = m_next->xPos();
+	else if (m_previous) l = m_previous->xPos()+m_previous->width();
+	else l=0;	    
+    }
+    else if (r==AUTO)
+    {
+    	if (m_previous) r = cw - (m_previous->xPos() + m_previous->width());
+	else if (m_next) r = cw - m_next->xPos();
+	else r=cw;	    
+    }
+    
+    if (w==AUTO)
+    {
+    	if (l==AUTO) l=0;
+	if (r==AUTO) r=0;
+	m_width = cw - ( r+l+marginLeft()+marginRight())
+	    + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
+    }
+    else
+    	m_width = w + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
+	
+    if (l!=AUTO)
+    	m_x = l + marginLeft();
+    else 
+    	m_x = marginLeft();
+	
+//    printf("h: %d, %d, %d\n",l,w,r);
+}
+
+void RenderBox::calcAbsoluteVertical()
+{
+    const int AUTO = -666666;
+    int t,b,h, ch;
+    
+    t=b=h=AUTO;
+   
+    Length hl = containingBlock()->style()->height();
+    if (hl.isFixed())
+    	ch = hl.value + containingBlock()->paddingTop() 
+	     + containingBlock()->paddingBottom();
+    else
+    	ch = containingBlock()->height();
+    
+    if(!m_style->top().isVariable())
+	t = m_style->top().width(ch);
+    if(!m_style->bottom().isVariable())
+	b = m_style->bottom().width(ch);		
+    if(!m_style->height().isVariable())
+	h = m_style->height().width(ch);
+
+    if (t==AUTO && b!=AUTO && h!=AUTO)
+    { 
+    	t = ch - b - 
+	    (h +borderBottom()+paddingTop()+paddingBottom());
+    }
+
+    if (t==AUTO)
+    {
+	if (m_next) t = m_next->yPos();
+	else if (m_previous) t = m_previous->yPos()+m_previous->height();
+	else t=0;	    
+    }
+    
+    if (b==AUTO && h==AUTO)
+    	b=0;
+    
+    if (h==AUTO)
+    	h = ch - ( t+b+marginTop()+marginBottom())
+	    + borderTop()+borderBottom()+paddingTop()+paddingBottom();	
+    else
+    	h += borderTop()+borderBottom()+paddingTop()+paddingBottom();
+    
+    if (m_height<h)
+    	m_height = h;
+    
+//    printf("v: %d, %d, %d\n",t,h,b);
+
+    m_y = t + marginTop();
+    	
+}

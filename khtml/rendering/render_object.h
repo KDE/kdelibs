@@ -268,15 +268,15 @@ public:
     virtual int height() const { return 0; }
 
     // these are just for convinience
-    int marginTop() const { return m_style->marginTop().minWidth(containingBlock()->width()); }
-    int marginBottom() const { return m_style->marginBottom().minWidth(containingBlock()->width()); }
-    int marginLeft() const { return m_style->marginLeft().minWidth(containingBlock()->width()); }
-    int marginRight() const { return m_style->marginRight().minWidth(containingBlock()->width()); }
+    int marginTop() const { return m_style->marginTop().minWidth(containingBlock()->contentWidth()); }
+    int marginBottom() const { return m_style->marginBottom().minWidth(containingBlock()->contentWidth()); }
+    int marginLeft() const { return m_style->marginLeft().minWidth(containingBlock()->contentWidth()); }
+    int marginRight() const { return m_style->marginRight().minWidth(containingBlock()->contentWidth()); }
 
-    int paddingTop() const { return m_style->paddingTop().minWidth(containingBlock()->width()); }
-    int paddingBottom() const { return m_style->paddingBottom().minWidth(containingBlock()->width()); }
-    int paddingLeft() const { return m_style->paddingLeft().minWidth(containingBlock()->width()); }
-    int paddingRight() const { return m_style->paddingRight().minWidth(containingBlock()->width()); }
+    int paddingTop() const { return m_style->paddingTop().minWidth(containingBlock()->contentWidth()); }
+    int paddingBottom() const { return m_style->paddingBottom().minWidth(containingBlock()->contentWidth()); }
+    int paddingLeft() const { return m_style->paddingLeft().minWidth(containingBlock()->contentWidth()); }
+    int paddingRight() const { return m_style->paddingRight().minWidth(containingBlock()->contentWidth()); }
 
     int borderTop() const { return m_style->borderTopWidth(); }
     int borderBottom() const { return m_style->borderBottomWidth(); }
@@ -311,7 +311,7 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
 
     // from BiDiObject
-    virtual bool isHidden() const { return isFloating(); }
+    virtual bool isHidden() const { return isFloating() || isPositioned(); }
     /*
      * Special objects are objects that should be floated
      * but draw themselves (i.e. have content)
@@ -329,9 +329,7 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
-    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
-
-    void relativePositionOffset(int &tx, int &ty);
+    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}    
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

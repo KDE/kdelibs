@@ -129,10 +129,6 @@ struct LengthBox
 {
     LengthBox()
     {
-	left = Length(0, Undefined);
-	right = Length(0, Undefined);
-	top = Length(0, Undefined);
-	bottom = Length(0, Undefined);
     }
 
     Length left;

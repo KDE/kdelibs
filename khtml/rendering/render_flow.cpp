@@ -126,6 +126,12 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
 
+    if(isPositioned())
+    {
+    	calcAbsoluteHorizontal();
+    	calcAbsoluteVertical();    
+    }
+
     if(!isInline())
     {
 	_tx += m_x;
@@ -152,7 +158,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     // add offset for relative positioning
     if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
-
 
     // 1. print background, borders etc
     if(m_printSpecial && !isInline())
@@ -190,14 +195,21 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 void RenderFlow::calcWidth()
 {
-    Length w = m_style->width();
-    if (w.type == Variable)
-    	m_width = containingBlockWidth() - marginLeft() - marginRight();
+    if (isPositioned())
+    {
+    	calcAbsoluteHorizontal();
+    }
     else
     {
-    	m_width = w.width(containingBlockWidth());
-	m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-    }
+	Length w = m_style->width();
+	if (w.type == Variable)
+    	    m_width = containingBlockWidth() - marginLeft() - marginRight();
+	else
+	{
+    	    m_width = w.width(containingBlockWidth());
+	    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+	}
+    }       
 
     if(m_width < m_minWidth) m_width = m_minWidth;
 
@@ -257,17 +269,21 @@ void RenderFlow::layout( bool deep )
     else
 	layoutBlockChildren(deep);
 
-    Length h = style()->height();
-
-    if (h.isFixed())
-    	m_height = MAX (h.value + borderTop() + paddingTop() 
-	    + borderBottom() + paddingBottom() , m_height);
-    else if (h.isPercent())
+    if (isPositioned())
+    	calcAbsoluteVertical();
+    else
     {
-    	Length ch = containingBlock()->style()->height();
-	if (ch.isFixed())
-    	    m_height = MAX (h.width(ch.value) + borderTop() + paddingTop() 
-	    	+ borderBottom() + paddingBottom(), m_height);
+	Length h = style()->height();
+	if (h.isFixed())
+    	    m_height = MAX (h.value + borderTop() + paddingTop() 
+		+ borderBottom() + paddingBottom() , m_height);
+	else if (h.isPercent())
+	{
+    	    Length ch = containingBlock()->style()->height();
+	    if (ch.isFixed())
+    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop() 
+	    	    + borderBottom() + paddingBottom(), m_height);
+	}    
     }
 
     if(floatBottom() > m_height)	
@@ -354,6 +370,14 @@ void RenderFlow::layoutBlockChildren(bool deep)
     while( child != 0 )
     {
 //    	kdDebug( 6040 ) << "loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+
+    	if (child->isPositioned())
+	{
+	    child->layout(true);   
+	    child = child->nextSibling();
+	    continue;
+	}
+
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -986,6 +1010,33 @@ void RenderFlow::addChild(RenderObject *newChild)
     	newChild->setYPos(-100000);
     }
 
+    switch (newChild->style()->position())
+    {
+    	case RELATIVE:
+	case FIXED:	
+    	    setContainsPositioned(true);
+	    break;
+	case ABSOLUTE:
+	{
+	    setContainsPositioned(true);
+	    RenderObject* p=this;
+	    while (!(p->isPositioned() || p->isRelPositioned()))
+	    	p = p->containingBlock();
+	    if (this==p)
+	    {
+	    	RenderObject::addChild(newChild);
+		return;	    
+	    }
+	    else
+	    {
+	    	p->addChild(newChild);
+		return;
+	    }
+	    break;
+	}
+	default: ;
+    }
+
 
     if(m_childrenInline && !newChild->isInline() && !newChild->isFloating())
     {
@@ -1067,15 +1118,6 @@ void RenderFlow::addChild(RenderObject *newChild)
 	}
     }
 
-    switch (newChild->style()->position())
-    {
-    	case RELATIVE:
-	case FIXED:
-	case ABSOLUTE:
-    	    setContainsPositioned(true);
-	default: ;
-    }
-
     setLayouted(false);
     RenderObject::addChild(newChild);
     // ### care about aligned stuff
@@ -1146,7 +1188,11 @@ void RenderFlow::specialHandler(BiDiObject *special)
     }
     else if(o->isReplaced())
 	o->layout(true);
-    if( !o->isFloating() && (!o->isInline() || o->isBR()) )
+    else if(o->isPositioned())
+    	o->layout(true);
+	
+    if( !o->isPositioned() && !o->isFloating() && 
+    	(!o->isInline() || o->isBR()) )
     {
 	//check the clear status
 	EClear clear = o->style()->clear();
