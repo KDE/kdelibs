@@ -224,7 +224,7 @@ void HTMLElementImpl::removeCSSProperty( const DOMString &id )
 DOMString HTMLElementImpl::getCSSProperty( int id )
 {
     if(!m_styleDecls)
-        return 0;
+        return DOMString();
     return m_styleDecls->getPropertyValue( id );
 }
 

@@ -1089,21 +1089,36 @@ void HTMLInputElementImpl::attach()
     HTMLElementImpl::attach();
 
     if (m_render && m_type == IMAGE) {
-        static_cast<RenderImageButton*>
-            (m_render)->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
-
+        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
+        renderImage->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+        renderImage->setAlt(altText());
     }
+}
+
+DOMString HTMLInputElementImpl::altText() const
+{
+    // http://www.w3.org/TR/1998/REC-html40-19980424/appendix/notes.html#altgen
+    // also heavily discussed by Hixie on bugzilla
+    // note this is intentionally different to HTMLImageElementImpl::altText()
+    DOMString alt = getAttribute( ATTR_ALT );
+    // fall back to title attribute
+    if ( alt.isNull() )
+        alt = getAttribute( ATTR_TITLE );
+    if ( alt.isNull() )
+        alt = getAttribute( ATTR_VALUE );
+    if ( alt.isEmpty() )
+        alt = i18n( "Submit" );
+
+    return alt;
 }
 
 void HTMLInputElementImpl::applyChanges(bool top, bool force)
 {
     HTMLGenericFormElementImpl::applyChanges( top, force );
-    // ### perhaps not the most appropriate place for this.... here so it get's called after
-    // a script has executed - see also HTMLImageElementImpl::applyChanges
     if (m_render && m_type == IMAGE) {
-        static_cast<RenderImageButton *>(m_render)
-            ->setImageUrl(m_src,
-                          static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+        RenderImage* renderImage = static_cast<RenderImage*>( m_render );
+        renderImage->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+        renderImage->setAlt(altText());
     }
 }
 
@@ -1482,7 +1497,7 @@ long HTMLSelectElementImpl::length() const
 
 void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before )
 {
-    if(element.isNull() || element.id() != ID_OPTION)
+    if(element.isNull() || element.handle()->id() != ID_OPTION)
         return;
 
     int exceptioncode = 0;
@@ -1512,7 +1527,7 @@ DOMString HTMLSelectElementImpl::value( )
             && static_cast<HTMLOptionElementImpl*>(m_listItems[i])->selected())
             return static_cast<HTMLOptionElementImpl*>(m_listItems[i])->value();
     }
-    return 0;
+    return DOMString();
 }
 
 void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)

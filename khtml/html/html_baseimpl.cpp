@@ -113,7 +113,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_LINK:
     {
         if(!m_styleSheet) {
-            m_styleSheet = new CSSStyleSheetImpl(this,0,true);
+            m_styleSheet = new CSSStyleSheetImpl(this,DOMString(),true);
             m_styleSheet->ref();
         }
         QString aStr;

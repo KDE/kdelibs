@@ -295,6 +295,9 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
 
 protected:
+
+    DOMString altText() const;
+
     DOMString m_value;
     DOMString m_filename;
     DOMString m_src;
