@@ -216,6 +216,8 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _styleType=NOPSEUDO;
     pseudoStyle = 0;
 
+    if (!_default)
+	_default = new RenderStyle(true);
 //    counter++;
     box = _default->box;
     visual = _default->visual;
