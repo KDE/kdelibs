@@ -23,31 +23,18 @@
  * $Id$
  */
 
-#include "dom2_traversal.h"
-#include "dom_node.h"
-#include "dom_doc.h"
-#include "dom_string.h"
-#include "dom_text.h"
-#include "dom_exception.h"
+#include "dom/dom2_traversal.h"
+#include "dom/dom_node.h"
+#include "dom/dom_doc.h"
+#include "dom/dom_string.h"
+#include "dom/dom_text.h"
+#include "dom/dom_exception.h"
 #include "dom_docimpl.h"
 #include "dom2_rangeimpl.h"
 #include "dom2_traversalimpl.h"
 #include <qstring.h>
 #include <stdio.h>               // for printf
 
-/* Functions not yet implemented:
-   deleteContents
-   extractContents
-   cloneContents
-   insertNode
-   surroundContents
-   toHTML
-
-   Functions not working correctly:
-   toString
- */
-
-//using namespace CSS;       // leff
 using namespace DOM;
 
 
@@ -105,6 +92,7 @@ RangeImpl::RangeImpl(const Node sc, const long so, const Node ec, const long eo)
 
 RangeImpl &RangeImpl::operator = (const RangeImpl &other)
 {
+    ownerDocument = other.ownerDocument;
     startContainer = other.startContainer;
     startOffset = other.startOffset;
     endContainer = other.endContainer;
@@ -166,6 +154,7 @@ Node RangeImpl::getCommonAncestorContainer() /*const*/
 
         if(parentStart == parentEnd)  break;
         parentStart = parentStart.parentNode();
+        parentEnd = endContainer;
     }
 
     if(parentStart == parentEnd)
@@ -842,13 +831,61 @@ void RangeImpl::insertNode( const Node &newNode )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    startContainer.insertBefore( newNode, startContainer.childNodes().item( startOffset ) );
+    if( newNode.nodeType() == Node::ATTRIBUTE_NODE ||
+        newNode.nodeType() == Node::ENTITY_NODE ||
+        newNode.nodeType() == Node::NOTATION_NODE ||
+        newNode.nodeType() == Node::DOCUMENT_NODE ||
+        newNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
+        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR);
+
+    if( newNode.ownerDocument() != startContainer.ownerDocument() )
+        throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
+
+    if( startContainer.nodeType() == Node::TEXT_NODE )
+    {
+        Text newText;
+        Node newParent = newNode.parentNode();
+        Text textNode = static_cast<Text>(startContainer);
+        newText = textNode.splitText(startOffset);
+        newParent.insertBefore( newNode, newText );        
+    }
+    else
+        startContainer.insertBefore( newNode, startContainer.childNodes().item( startOffset ) );
 }
 
-void RangeImpl::surroundContents( const Node &/*newParent*/ )
+void RangeImpl::surroundContents( const Node &newParent )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    if( newParent.isNull() )
+        return;
+
+    if( newParent.ownerDocument() != startContainer.ownerDocument() )
+        throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
+    
+    if( newParent.nodeType() == Node::ATTRIBUTE_NODE ||
+        newParent.nodeType() == Node::ENTITY_NODE ||
+        newParent.nodeType() == Node::NOTATION_NODE ||
+        newParent.nodeType() == Node::DOCUMENT_TYPE_NODE ||
+        newParent.nodeType() == Node::DOCUMENT_NODE ||
+        newParent.nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
+        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
+
+    // revisit: if you set a range without optimizing it (trimming) the following exception might be
+    // thrown incorrectly
+    Node realStart = (startContainer.nodeType() == Node::TEXT_NODE)? startContainer.parentNode() : startContainer;
+    Node realEnd = (endContainer.nodeType() == Node::TEXT_NODE)? endContainer.parentNode() : endContainer;
+    if( realStart != realEnd )
+        throw RangeException( RangeException::BAD_BOUNDARYPOINTS_ERR );
+
+    DocumentFragment fragment = extractContents();
+    insertNode( newParent );
+    // BIC: to avoid this const_cast newParent shouldn't be const
+    (const_cast<Node>(newParent)).appendChild( fragment );
+    selectNode( newParent );
+    
+    
 }
 
 Range RangeImpl::cloneRange(  )
@@ -865,7 +902,6 @@ DOMString RangeImpl::toString(  )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
     NodeIteratorImpl iterator( getStartContainer().childNodes().item( getStartOffset() ) );
-//    NodeIterator iterator( getCommonAncestorContainer() );
     DOMString _string;
     Node _node = iterator.nextNode();
 
@@ -994,14 +1030,13 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
         _clone = _tempCurrent.cloneNode(false);
-        _clone.nodeValue().remove(0, startOffset);  // we need to get the SUBSTRING
+        _clone.nodeValue().remove(0, startOffset);
         if(contentExtract)
         {
-            // remove what wasn't in the substring
             startContainer.nodeValue().split(startOffset);
         }
     }
-    else // container node was not a text node
+    else
     {
         _tempCurrent = _tempCurrent.firstChild();
         unsigned int i;
@@ -1011,7 +1046,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
         if(contentExtract)
             _clone = _tempCurrent.cloneNode(true);
         else
-            _clone = _tempCurrent;   // is this enough? Don't we have to delete the node from the original tree??
+            _clone = _tempCurrent; 
     }
 
     Node _tempParent;                       // we use this to traverse upwords trough the tree
@@ -1020,7 +1055,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
 
 
     while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
-    {                                    // we are in luck, all these node must be cloned because they are partially selected
+    {                                    // all these node must be cloned as they are partially selected
         _tempParent = _tempCurrent.parentNode();
 
         if(_tempParent == _cmnRoot)
@@ -1042,7 +1077,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
         Node _nextCurrent;
 
         _tempCurrent = _tempCurrent.nextSibling();
-        _cloneParent.appendChild( _tempCurrent );
+        _cloneParent.appendChild( _clone );
         while( !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.nextSibling();
@@ -1050,7 +1085,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
             {
                 if(contentExtract)
                 {
-                    _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
+                    _cloneParent.appendChild(_tempCurrent);
                 }
                 else
                 {
@@ -1073,14 +1108,13 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
     if( _tempCurrent.nodeType() == Node::TEXT_NODE )
     {
         _clone = _tempCurrent.cloneNode(false);
-        _clone.nodeValue().split(endOffset);  // we need to get the SUBSTRING
+        _clone.nodeValue().split(endOffset); 
         if(contentExtract)
         {
-            // remove what wasn't in the substring
             endContainer.nodeValue().remove(endOffset, endContainer.nodeValue().length() - endOffset );
         }
     }
-    else // container node was not a text node
+    else
     {
         if(endOffset == 0)
             _tempCurrent = endContainer;
@@ -1101,7 +1135,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
 
 
     while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
-    {                                  // we are in luck, all these node must be cloned because they are partially selected
+    {                                  //  all these node must be cloned as they are partially selected
         _tempParent = _tempCurrent.parentNode();
 
         if(_tempParent == _cmnRoot)
@@ -1134,7 +1168,7 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
             {
                 if(contentExtract)
                 {
-                    _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
+                    _cloneParent.appendChild(_tempCurrent);
                 }
                 else
                 {
@@ -1147,7 +1181,8 @@ DocumentFragment RangeImpl::masterTraverse(bool contentExtract)
         _tempCurrent = _tempParent;
         _clone = _cloneParent;
     }
-    // now we should copy all the shit in between!!
+    // To end the balade we grab with us any nodes that are between the two topmost parents under
+    // the commonRoot
 
     Node _clonePrevious = _endFragment.lastChild();
     _tempCurrent = _tempEnd.previousSibling();

@@ -26,6 +26,9 @@
 #include "dom_stringimpl.h"
 #include "dom_exception.h"
 
+#include "dom/dom_string.h"
+#include "dom_docimpl.h"
+
 #include "dom/dom_node.h"
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
@@ -155,6 +158,18 @@ ushort CommentImpl::id() const
     return ID_COMMENT;
 }
 
+NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
+{
+    CommentImpl *newImpl = document->createComment( str );
+
+    newImpl->setParent(0);
+    newImpl->setFirstChild(0);
+    newImpl->setLastChild(0);
+
+    return newImpl;
+}
+
+
 // ---------------------------------------------------------------------------
 
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
@@ -260,3 +275,13 @@ ushort TextImpl::id() const
     return ID_TEXT;
 }
 
+NodeImpl *TextImpl::cloneNode(bool /*deep*/)
+{
+    TextImpl *newImpl = document->createTextNode(str);
+
+    newImpl->setParent(0);
+    newImpl->setFirstChild(0);
+    newImpl->setLastChild(0);
+
+    return newImpl;
+}

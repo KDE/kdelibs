@@ -50,7 +50,7 @@ public:
     Node getEndContainer() const;
     long getEndOffset() const;
     bool getCollapsed() const;
-    Node getCommonAncestorContainer() /*const*/;
+    Node getCommonAncestorContainer();
     void setStart ( const Node &refNode, long offset );
     void setEnd ( const Node &refNode, long offset );
     void setStartBefore ( const Node &refNode );

@@ -76,6 +76,7 @@ public:
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
     virtual ushort id() const;
+    virtual NodeImpl *cloneNode(bool deep);
 };
 
 // ----------------------------------------------------------------------------
@@ -106,6 +107,7 @@ public:
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
 			     int _tx, int _ty, DOMString &,
                              NodeImpl *& innerNode, long &offset);
+    virtual NodeImpl *cloneNode(bool deep);
 
     khtml::RenderStyle *m_style;
 };
