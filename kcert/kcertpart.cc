@@ -712,6 +712,9 @@ if (_p12) {
 		  _ca->x509V3Extensions().certTypeEmailCA(),
 		  _ca->x509V3Extensions().certTypeCodeCA());
   if (!_silentImport)
+	  _signers->regenerate();
+
+  if (!_silentImport)
   KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 }
 }
@@ -794,6 +797,7 @@ for (KX509Item *t = dynamic_cast<KX509Item*>(_parentCA->firstChild());
 }
 _ca = NULL;
 
+_signers->regenerate();
 _silentImport = false;
 _p12 = p12Save;
 _ca = caSave;
