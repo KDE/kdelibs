@@ -50,11 +50,11 @@ template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:
     KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
     /**
-     * sets the object to delete and registers the object to be
-     * deleted to KGlobal. if the given object is 0, the former
-     * registration is unregistered
+     * Sets the object to delete and registers the object to be
+     * deleted to KGlobal. If the given object is 0, the former
+     * registration is unregistered.
      * @param isArray tells the destructor to delete an array instead of an object
-     * @deprecated. See the other setObject variant.
+     * @deprecated See the other setObject variant.
      **/
     type *setObject( type *obj, bool isArray = false) {
         deleteit = obj;
@@ -67,9 +67,9 @@ public:
         return obj;
     }
     /**
-     * sets the object to delete and registers the object to be
-     * deleted to KGlobal. if the given object is 0, the former
-     * registration is unregistered
+     * Sets the object to delete and registers the object to be
+     * deleted to KGlobal. If the given object is 0, the former
+     * registration is unregistered.
      * @param globalRef the static pointer where this object is stored
      * This pointer will be reset to 0 after deletion of the object.
      * @param isArray tells the destructor to delete an array instead of an object
@@ -85,6 +85,11 @@ public:
         globalRef = obj;
 	return obj;
     }
+
+    /**
+     * Destructs the object. This has the same effect as deleting
+     * the KStaticDeleter.
+     */
     virtual void destructObject() {
         if (globalReference)
            *globalReference = 0;
