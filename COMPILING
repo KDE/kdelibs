@@ -76,6 +76,7 @@ make
 Common problems
 ===============
 
+Wrong Qt paths: 
 One of the biggest problems is picking up the correct version of Qt, 
 especially if your system has more version of Qt installed. Be aware 
 that information about library paths gets saved in the "config.cache" 
@@ -88,6 +89,26 @@ removes all files which aren't stored in CVS. You can then start all over
 again with "makefile -f Makefile.cvs". Make sure you don't have any important 
 files lying around in your source tree any more, they will be deleted!
 
+New directories:
+When a new directory gets added to CVS it usually only contains a 
+Makefile.am but not a Makefile. If you try to compile such a directory
+you will get an error like:
+
+  Making all in management
+  make[3]: Entering directory /home/gregturp/KDE/kdelibs/kdeprint/management'
+  make[3]: *** No rule to make target ll'.  Stop.
+  make[3]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint/management'
+  make[2]: *** [all-recursive] Error 1
+  make[2]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint'
+  make[1]: *** [all-recursive] Error 1
+  make[1]: Leaving directory /home/gregturp/KDE/kdelibs'
+  make: *** [all-recursive-am] Error 2
+
+The solution is to redo "make -f Makefile.cvs; ./configure". 
+
+You can create a single Makefile from a Makefile.am file with the
+kdesdk/scripts/create_makefile script. Make sure to run it from the toplevel
+directory. (E.g. /home/gregturp/KDE/kdelibs)
 
 Problems?
 =========
