@@ -11,5 +11,7 @@ common_DATA = artistic-license.html bottom1.png bottom2.png bsd-license.html \
 	logotp3-small.png logotp3.png note.png prev.png \
 	qpl-license.html shadow.png tip.png toc-blank.png toc-minus.png \
 	toc-plus.png up.png warning.png x11-license.html xml.dcl \
-	doctop1a.png doctop1b.png
+	doctop1a.png doctop1b.png 1.png 2.png 3.png 4.png 5.png 6.png \
+	7.png 8.png 9.png 10.png
+
 
