@@ -140,13 +140,6 @@ int KGlobalSettings::contextMenuKey ()
     return cut.keyCodeQt();
 }
 
-bool KGlobalSettings::honorGnome()
-{
-    KConfig *c = KGlobal::config();
-    KConfigGroupSaver cgs( c, "General" );
-    return c->readBoolEntry("honorGnome", false);
-}
-
 QColor KGlobalSettings::toolBarHighlightColor()
 {
     initColors();

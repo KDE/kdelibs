@@ -170,15 +170,6 @@ class KGlobalSettings
      */
     static Completion completionMode();
 
-    /**
-     * This returns whether or not KDE should use certain GNOME
-     * resources.  The resources, in this case, are things like pixmap
-     * directories, applnk paths, etc.
-     *
-     * @return Whether or not KDE should use certain GNOME resources
-     */
-    static bool honorGnome();
-
     struct KMouseSettings
     {
         enum { RightHanded = 0, LeftHanded = 1 };
