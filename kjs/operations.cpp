@@ -45,6 +45,8 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
     if (t1 == BooleanType)
       return (v1.toBoolean().value() == v2.toBoolean().value());
     // TODO: does that make sense ?
+    if (t1 == HostType)
+      return equal(v1.toPrimitive(HostType), v2.toPrimitive(HostType));
     return (v1.imp() == v2.imp());
   }
 
@@ -71,6 +73,11 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
     KJSO p1 = v1.toPrimitive();
     return equal(p1, v2);
   }
+  // not to be found in the spec ...
+  if (t1 == HostType)
+    return equal(v1.toPrimitive(HostType), v2);
+  if (t2 == HostType)
+    return equal(v1, v2.toPrimitive(HostType));
 
   return false;
 }
