@@ -1558,17 +1558,18 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
 
         connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
-
-        /**
-           We call the functions directly instead of using signals.
-           Calling a function via a signal takes approx. 65 times the time
-           compared to calling it directly (at least on my machine). aleXXX
-        */
-        m_reportTimer = new QTimer(this);
-
-        connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
-        m_reportTimer->start(REPORT_TIMEOUT,false);
     }
+
+    /**
+       We call the functions directly instead of using signals.
+       Calling a function via a signal takes approx. 65 times the time
+       compared to calling it directly (at least on my machine). aleXXX
+    */
+    m_reportTimer = new QTimer(this);
+
+    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+    m_reportTimer->start(REPORT_TIMEOUT,false);
+
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false, 2, false );
     //kdDebug(7007) << "CopyJob:stating the dest " << m_dest.prettyURL() << endl;
@@ -1718,40 +1719,40 @@ void CopyJob::slotResultStating( Job *job )
 
 void CopyJob::slotReport()
 {
-    if ( m_progressId == 0 )
-        return;
-
-    Observer * observer = Observer::self();
+    // If showProgressInfo was set, m_progressId is > 0.
+    Observer * observer = m_progressId ? Observer::self() : 0L;
     switch (state) {
         case STATE_COPYING_FILES:
             emit processedFiles( this, m_processedFiles );
-            observer->slotProcessedFiles(this,m_processedFiles);
+            if (observer) observer->slotProcessedFiles(this,m_processedFiles);
             if (m_mode==Move)
             {
-                observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
+                if (observer) observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
                 emit moving( this, m_currentSrcURL, m_currentDestURL);
             }
             else if (m_mode==Link)
             {
-                observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
+                if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
                 emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
             }
             else
             {
-                observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+                if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
                 emit copying( this, m_currentSrcURL, m_currentDestURL );
             };
             break;
 
         case STATE_CREATING_DIRS:
-            observer->slotProcessedDirs( this, m_processedDirs );
-            observer->slotCreatingDir( this,m_currentDestURL);
+            if (observer) {
+                observer->slotProcessedDirs( this, m_processedDirs );
+                observer->slotCreatingDir( this,m_currentDestURL);
+            }
             emit creatingDir( this, m_currentDestURL );
             break;
 
         case STATE_STATING:
         case STATE_LISTING:
-            observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+            if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
             emit totalSize( this, m_totalSize );
             emit totalFiles( this, files.count() );
             emit totalDirs( this, dirs.count() );
