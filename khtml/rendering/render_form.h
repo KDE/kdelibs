@@ -34,7 +34,7 @@ class QWidget;
 class QLineEdit;
 class QListboxItem;
 
-#include <qtextedit.h>
+#include <ktextedit.h>
 #include <klineedit.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
@@ -370,7 +370,7 @@ protected slots:
 
 // -------------------------------------------------------------------------
 
-class TextAreaWidget : public QTextEdit
+class TextAreaWidget : public KTextEdit
 {
 public:
     TextAreaWidget(int wrap, QWidget* parent);

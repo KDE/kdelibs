@@ -994,7 +994,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : QTextEdit(parent)
+    : KTextEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
@@ -1030,7 +1030,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return QTextEdit::event( e );
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
