@@ -16,10 +16,11 @@ class Part;
 class PartActivateEvent : public Event
 {
 public:
-  PartActivateEvent( bool activated, QWidget *widget ) : Event( s_strPartActivateEvent ), m_bActivated( activated ), m_widget( widget ) {}
+  PartActivateEvent( bool activated, Part *part, QWidget *widget ) : Event( s_strPartActivateEvent ), m_bActivated( activated ), m_part( part ), m_widget( widget ) {}
 
   bool activated() const { return m_bActivated; }
 
+  Part *part() const { return m_part; }
   QWidget *widget() const { return m_widget; }
 
   static bool test( const QEvent *event ) { return Event::test( event, s_strPartActivateEvent ); }
@@ -27,16 +28,18 @@ public:
 private:
   static const char *s_strPartActivateEvent;
   bool m_bActivated;
+  Part *m_part;
   QWidget *m_widget;
 };
 
 class PartSelectEvent : public Event
 {
 public:
-  PartSelectEvent( bool selected, QWidget *widget ) : Event( s_strPartSelectEvent ), m_bSelected( selected ), m_widget( widget ) {}
+  PartSelectEvent( bool selected, Part *part, QWidget *widget ) : Event( s_strPartSelectEvent ), m_bSelected( selected ), m_part( part ), m_widget( widget ) {}
 
   bool selected() const { return m_bSelected; }
 
+  Part *part() const { return m_part; }
   QWidget *widget() const { return m_widget; }
 
   static bool test( const QEvent *event ) { return Event::test( event, s_strPartSelectEvent ); }
@@ -44,6 +47,7 @@ public:
 private:
   static const char *s_strPartSelectEvent;
   bool m_bSelected;
+  Part *m_part;
   QWidget *m_widget;
 };
 
@@ -78,6 +82,18 @@ public:
   void setSelectionPolicy( SelectionPolicy policy );
   SelectionPolicy selectionPolicy() const;
 
+  /**
+   * Specify whether the partmanager should handle/allow nested parts or not.
+   * This is a property the shell has to set/specify. Per default we assume that the
+   * shell cannot handle nested parts. However in case of a KOffice shell for example
+   * we allow nested parts.
+   * A Part is nested (a child part) if its parent object inherits KParts::Part.
+   * If a child part is activated and nested parts are not allowed/handled, then the top parent
+   * part in the tree is activated.
+   */
+  void setAllowNestedParts( bool allow );
+  bool allowNestedParts() const;
+
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
   /**
@@ -107,7 +123,7 @@ public:
   virtual QWidget *activeWidget() const;
 
   virtual void setSelectedPart( Part *part, QWidget *widget = 0L );
-  
+
   virtual Part *selectedPart() const;
 
   virtual QWidget *selectedWidget() const;
@@ -145,6 +161,8 @@ protected slots:
      * Removes a part when it is destroyed.
      **/
   void slotObjectDestroyed();
+
+  void slotWidgetDestroyed();
 
 private:
   Part * findPartFromWidget( QWidget * widget, const QPoint &pos );

@@ -255,7 +255,7 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int
     d->m_statusBar = 0;
     setStatusBar( 0 );
   }
-
+  /*
   if ( !isUpdatesEnabled() )
   {
     //workaround / hack for ktmainwindow bug
@@ -265,7 +265,7 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int
   }
   else
     updateRects();
-
+  */
   return stateBuff;
 }
 

@@ -21,6 +21,7 @@ class PartManager;
 class Plugin;
 class PartPrivate;
 class PartActivateEvent;
+class PartSelectEvent;
 class GUIActivateEvent;
 
 /**
@@ -78,19 +79,19 @@ public:
     /**
      * @return The widget defined by this part, set by @ref setWidget().
      */
-    virtual QWidget *widget() { return m_widget; }
+    virtual QWidget *widget();
 
     /**
      * @return The instance (@ref KInstance) for this part.
      */
-    virtual KInstance *instance() { return m_instance; }
+    virtual KInstance *instance();
 
     // Only called by PartManager - should be protected and using friend ?
-    void setManager( PartManager * manager ) { m_manager = manager; }
+    virtual void setManager( PartManager * manager );
     /**
      * @return The part manager handling this part, if any (0L otherwise).
      */
-    PartManager * manager() { return m_manager; }
+    PartManager * manager();
 
     /**
      * @return The parsed XML in a @ref QDomDocument, set by @ref setXMLFile() or @ref setXML()
@@ -100,7 +101,10 @@ public:
     /**
      * @internal
      */
-    virtual Part *hitTest( QWidget *widget, const QPoint & );
+    virtual Part *hitTest( QWidget *widget, const QPoint &globalPos );
+
+    virtual void setSelectable( bool selectable );
+    virtual bool isSelectable() const;
 
 protected:
     /**
@@ -141,6 +145,7 @@ protected:
     virtual bool event( QEvent *event );
 
     virtual void partActivateEvent( PartActivateEvent *event );
+    virtual void partSelectEvent( PartSelectEvent *event );
     virtual void guiActivateEvent( GUIActivateEvent *event );
 
 private slots:

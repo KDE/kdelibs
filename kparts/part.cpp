@@ -32,10 +32,13 @@ class PartPrivate
 public:
   PartPrivate()
   {
+    m_bSelectable = true;
   }
   ~PartPrivate()
   {
   }
+
+  bool m_bSelectable;
 
   QDomDocument m_doc;
 };
@@ -65,8 +68,29 @@ Part::~Part()
 
 void Part::embed( QWidget * parentWidget )
 {
-  m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
+  if ( widget() )
+    widget()->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
 }
+
+QWidget *Part::widget()
+{
+  return m_widget; 
+}
+
+KInstance *Part::instance()
+{
+  return m_instance; 
+} 
+
+void Part::setManager( PartManager *manager )
+{
+  m_manager = manager; 
+}
+
+PartManager *Part::manager()
+{
+  return m_manager; 
+} 
 
 QDomDocument Part::document() const
 {
@@ -154,6 +178,16 @@ QAction *Part::action( const QDomElement &element )
   return action( name.ascii() );
 }
 
+void Part::setSelectable( bool selectable )
+{
+  d->m_bSelectable = selectable;
+}
+
+bool Part::isSelectable() const
+{
+  return d->m_bSelectable;
+}
+
 bool Part::event( QEvent *event )
 {
   if ( QObject::event( event ) )
@@ -162,6 +196,12 @@ bool Part::event( QEvent *event )
   if ( PartActivateEvent::test( event ) )
   {
     partActivateEvent( (PartActivateEvent *)event );
+    return true;
+  }
+
+  if ( PartSelectEvent::test( event ) )
+  {
+    partSelectEvent( (PartSelectEvent *)event );
     return true;
   }
 
@@ -175,6 +215,10 @@ bool Part::event( QEvent *event )
 }
 
 void Part::partActivateEvent( PartActivateEvent * )
+{
+}
+
+void Part::partSelectEvent( PartSelectEvent * )
 {
 }
 
@@ -319,8 +363,8 @@ void ReadWritePart::setReadWrite( bool readwrite )
 
 void ReadWritePart::setModified( bool modified )
 {
-  m_bModified = modified; 
-} 
+  m_bModified = modified;
+}
 
 void ReadWritePart::setModified()
 {
@@ -335,7 +379,7 @@ void ReadWritePart::setModified()
 bool ReadWritePart::closeURL()
 {
   abortLoad(); //just in case
-  if ( m_bModified )
+  if ( m_bModified && m_bReadWrite )
   {
     int res = KMessageBox::warningYesNoCancel( 0L,
             i18n( "The document has been modified\nDo you want to save it ?" ));

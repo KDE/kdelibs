@@ -342,7 +342,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
        * But first we have to check if there's already a existing (child) container of the same type in our
        * tree. However we have to ignore just newly created containers!
        */
-      XMLGUIContainerNode *matchingContainer = findContainer( parentNode, e, containerList );
+      XMLGUIContainerNode *matchingContainer = findContainer( parentNode, e, &containerList );
 
       if ( matchingContainer )
         /*
@@ -386,9 +386,14 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	
 	adjustMergingIndices( parentNode, idx, 1, it );
 	
-	containerList.append( container );
+	XMLGUIContainerNode *containerNode = findContainerNode( parentNode, container );
 	
-        XMLGUIContainerNode *containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, merge, id );
+	if ( !containerNode )
+	{
+  	  containerList.append( container );
+	
+          containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, merge, id );
+	}
 	
         buildRecursive( e, containerNode );
       }
@@ -531,7 +536,7 @@ void XMLGUIFactory::adjustMergingIndices( XMLGUIContainerNode *node, int idx, in
   node->index += val;
 }
 
-XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList )
+XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> *excludeList )
 {
   XMLGUIContainerNode *res = 0L;
   QListIterator<XMLGUIContainerNode> nIt( node->children );
@@ -541,7 +546,7 @@ XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, co
   if ( !name.isEmpty() )
   {
     for (; nIt.current(); ++nIt )
-     if ( nIt.current()->name == name && !excludeList.containsRef( nIt.current()->container ) )
+     if ( nIt.current()->name == name && !excludeList->containsRef( nIt.current()->container ) )
      {
        res = nIt.current();
        break;
@@ -554,11 +559,25 @@ XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, co
 
   if ( !name.isEmpty() )
     for (; nIt.current(); ++nIt )
-      if ( nIt.current()->tagName == name && !excludeList.containsRef( nIt.current()->container ) )
+    {
+      if ( nIt.current()->tagName == name && !excludeList->containsRef( nIt.current()->container ) &&
+	   nIt.current()->servant == m_servant )
       {
         res = nIt.current();
 	break;
       }
+    }
 
   return res;
+}
+
+XMLGUIContainerNode *XMLGUIFactory::findContainerNode( XMLGUIContainerNode *parentNode, QObject *container )
+{
+  QListIterator<XMLGUIContainerNode> it( parentNode->children );
+
+  for (; it.current(); ++it )
+    if ( it.current()->container == container )
+      return it.current();
+
+  return 0L;
 }
