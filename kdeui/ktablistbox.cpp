@@ -184,13 +184,14 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 	} 
 	if (!pix->isNull()) paint->drawPixmap(x, 0, *pix);
 	x += pix->width()+1;
-	beg = end;
+	beg = end+1;
       }
-      else break;
+      else
+          break;
     }
 
     paint->drawText(x+1, fm.ascent() +(fm.leading()), 
-		    (const char*)string.mid(beg+1, string.length()-beg+1)); 
+		    (const char*)string.mid(beg, string.length()-beg));
     break;
   }
 
