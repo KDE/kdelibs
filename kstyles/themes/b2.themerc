@@ -1,5 +1,6 @@
 [Misc]
 Name=B2/KDE
 Comment=B2/KKDE unthemed style
+Comment[da]=B2/KDEstil uden tema
 [KDE]
 widgetStyle=b2style.la
