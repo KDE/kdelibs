@@ -199,7 +199,7 @@ Window *Window::retrieveActive(ExecState *exec)
 Object Window::retrieve(KHTMLPart *p)
 {
   assert(p);
-  KJSProxy *proxy =KJSProxy::proxy( p );
+  KJSProxy *proxy = KJSProxy::proxy( p );
   if (proxy)
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   else
@@ -214,7 +214,7 @@ Location *Window::location() const
 }
 
 // reference our special objects during garbage collection
-void Window::mark(ValueImp *)
+void Window::mark()
 {
   ObjectImp::mark();
   if (screen && !screen->marked())
@@ -223,25 +223,9 @@ void Window::mark(ValueImp *)
     history->mark();
   if (frames && !frames->marked())
     frames->mark();
+  //kdDebug() << "Window::mark " << this << " marking loc=" << loc << endl;
   if (loc && !loc->marked())
     loc->mark();
-
-#if 0
-  // Mark all Window objects from the map. Necessary to keep
-  // existing window properties, such as 'opener'.
-  if (window_map)
-  {
-     WindowMap::Iterator it = window_map->begin();
-     for ( ; it != window_map->end() ; ++it )
-     {
-       if (it.data() != this && !it.data()->refcount)
-       {
-         //kdDebug() << "Window::mark marking window from dict " << it.data() << endl;
-         it.data()->mark();
-       }
-     }
-  }
-#endif
 }
 
 bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/, bool /*recursive*/) const
@@ -1360,7 +1344,15 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
 
 ////////////////////// Location Object ////////////////////////
 
-Location::Location(KHTMLPart *p) : m_part(p) { }
+Location::Location(KHTMLPart *p) : m_part(p)
+{
+  //kdDebug(6070) << "Location::Location " << this << " m_part=" << (void*)m_part << endl;
+}
+
+Location::~Location()
+{
+  //kdDebug(6070) << "Location::~Location " << this << " m_part=" << (void*)m_part << endl;
+}
 
 Value Location::get(ExecState *exec, const UString &p) const
 {
@@ -1461,7 +1453,6 @@ Value Location::toPrimitive(ExecState *exec, Type) const
 
 String Location::toString(ExecState *) const
 {
-
  if (!m_part->url().hasPath())
         return String(m_part->url().prettyURL()+"/");
     else
