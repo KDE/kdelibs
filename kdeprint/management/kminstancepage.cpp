@@ -138,8 +138,8 @@ void KMInstancePage::slotNew()
 			                     i18n("(Default)"),&ok,this);
 	if (ok)
 	{
-		if (name.find(QRegExp("\\s")) != -1)
-			KMessageBox::error(this, i18n("Instance name may not contain any space!"));
+		if (name.find(QRegExp("[/\\s]")) != -1)
+			KMessageBox::error(this, i18n("Instance name may not contain any space or slash!"));
 		else
 		{
 			if (name == i18n("(Default)"))
@@ -183,8 +183,8 @@ void KMInstancePage::slotCopy()
 				                     i18n("(Default)"),&ok,this);
 		if (ok)
 		{
-			if (name.find(QRegExp("\\s")) != -1)
-				KMessageBox::error(this, i18n("Instance name may not contain any space!"));
+			if (name.find(QRegExp("[/\\s]")) != -1)
+				KMessageBox::error(this, i18n("Instance name may not contain any space or slash!"));
 			else
 			{
 				if (src == i18n("(Default)"))
