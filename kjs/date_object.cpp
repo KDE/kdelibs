@@ -539,6 +539,21 @@ static const struct {
     { 0, 0 }
 };
 
+static int KJS::local_timeoffset()
+{
+     static int local_offset = -1;
+
+     if ( local_offset != -1 ) return local_offset;
+
+     time_t local = time(0);
+     struct tm* tm_local = gmtime(&local);
+     local_offset = local-mktime(tm_local);
+     if(tm_local->tm_isdst)
+       local_offset += 3600;
+
+     return local_offset;
+}
+
 time_t KJS::KRFCDate_parseDate(const UString &_date)
 {
      // This parse a date in the form:
@@ -556,6 +571,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      //
      time_t result = 0;
      int offset = 0;
+     bool have_tz = false;
      char *newPosStr;
      const char *dateString = _date.ascii();
      int day = 0;
@@ -731,10 +747,12 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
          int sgn = (offset < 0)? -1:1;
          offset = abs(offset);
          offset = ((offset / 100)*60 + (offset % 100))*sgn;
+         have_tz = true;
        } else {
          for (int i=0; known_zones[i].tzName != 0; i++) {
            if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
              offset = known_zones[i].tzOffset;
+             have_tz = true;
              break;
            }
          }
@@ -769,13 +787,18 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
          }
      }
 
+     if(!have_tz)
+       offset = local_timeoffset();
+     else
+       offset *= 60;
+
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
 
      // avoid negative time values
      if ((offset > 0) && (offset > result))
         offset = 0;
 
-     result -= offset*60;
+     result -= offset;
 
      // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
      // This is so that parse error and valid epoch 0 return values won't
