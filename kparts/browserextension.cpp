@@ -453,7 +453,7 @@ void BrowserExtension::pasteRequest()
 		break;
 	}
     }
-    else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) )
+    else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) && url.length() < 250 )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( QStyleSheet::escape(url) ),
