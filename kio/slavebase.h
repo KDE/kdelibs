@@ -309,7 +309,8 @@ public:
 
     /**
      * Closes the connection (forced)
-     * Currently unused.
+     * Called when the application disconnects the slave to close
+     * any open network connections.
      */
     virtual void closeConnection();
 

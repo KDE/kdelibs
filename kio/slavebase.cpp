@@ -151,6 +151,7 @@ void SlaveBase::dispatchLoop()
                      kdDebug(7019) << "slavewrapper: Communication with app lost. Returning to slave pool." << endl;
                      disconnectSlave();
                      mConnectedToApp = false;
+                     closeConnection();
                      connectSlave(mPoolSocket);
                   }
                   else
@@ -443,7 +444,7 @@ void SlaveBase::setHost(QString const &host, int, QString const &, QString const
 void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, "open" ); }
 void SlaveBase::closeConnection(void)
-{ error(  ERR_UNSUPPORTED_ACTION, "close" ); }
+{ } // No response!
 void SlaveBase::stat(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, "stat" ); }
 void SlaveBase::put(KURL const &, int, bool, bool)
