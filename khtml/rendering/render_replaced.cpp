@@ -190,6 +190,8 @@ void RenderWidget::setQWidget(QWidget *widget)
         if (m_widget) {
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
+            if (m_widget->focusPolicy() > QWidget::StrongFocus)
+                m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
             // widget immediately
             if (layouted()) {
@@ -221,68 +223,71 @@ void RenderWidget::layout( )
 
 void RenderWidget::updateFromElement()
 {
+    if (m_widget) {
+        QColor color = style()->color();
+        QColor backgroundColor = style()->backgroundColor();
 
-    QColor color = style()->color();
-    QColor backgroundColor = style()->backgroundColor();
+        if ( color.isValid() || backgroundColor.isValid() ) {
+            QPalette pal(QApplication::palette(m_widget));
 
-    if ( color.isValid() || backgroundColor.isValid() ) {
-        QPalette pal(QApplication::palette(m_widget));
+            int contrast_ = KGlobalSettings::contrast();
+            int highlightVal = 100 + (2*contrast_+4)*16/10;
+            int lowlightVal = 100 + (2*contrast_+4)*10;
 
-        int contrast_ = KGlobalSettings::contrast();
-        int highlightVal = 100 + (2*contrast_+4)*16/10;
-        int lowlightVal = 100 + (2*contrast_+4)*10;
-
-        if (backgroundColor.isValid()) {
-	    for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Mid, backgroundColor.dark(120) );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Midlight, backgroundColor.light(110) );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Button, backgroundColor );
-		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Base, backgroundColor );
+            if (backgroundColor.isValid()) {
+                for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Mid, backgroundColor.dark(120) );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Midlight, backgroundColor.light(110) );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Button, backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Base, backgroundColor );
 	    }
-        }
-        if ( color.isValid() ) {
-	    struct ColorSet {
-		QPalette::ColorGroup cg;
-		QColorGroup::ColorRole cr;
-	    };
-	    const struct ColorSet toSet [] = {
-		{ QPalette::Active, QColorGroup::Foreground },
-		{ QPalette::Active, QColorGroup::ButtonText },
-		{ QPalette::Active, QColorGroup::Text },
-		{ QPalette::Inactive, QColorGroup::Foreground },
-		{ QPalette::Inactive, QColorGroup::ButtonText },
-		{ QPalette::Inactive, QColorGroup::Text },
-		{ QPalette::Disabled,QColorGroup::ButtonText },
-		{ QPalette::NColorGroups, QColorGroup::NColorRoles },
-	    };
-	    const ColorSet *set = toSet;
-	    while( set->cg != QPalette::NColorGroups ) {
-		pal.setColor( set->cg, set->cr, color );
-		++set;
-	    }
+            }
+            if ( color.isValid() ) {
+                struct ColorSet {
+                    QPalette::ColorGroup cg;
+                    QColorGroup::ColorRole cr;
+                };
+                const struct ColorSet toSet [] = {
+                    { QPalette::Active, QColorGroup::Foreground },
+                    { QPalette::Active, QColorGroup::ButtonText },
+                    { QPalette::Active, QColorGroup::Text },
+                    { QPalette::Inactive, QColorGroup::Foreground },
+                    { QPalette::Inactive, QColorGroup::ButtonText },
+                    { QPalette::Inactive, QColorGroup::Text },
+                    { QPalette::Disabled,QColorGroup::ButtonText },
+                    { QPalette::NColorGroups, QColorGroup::NColorRoles },
+                };
+                const ColorSet *set = toSet;
+                while( set->cg != QPalette::NColorGroups ) {
+                    pal.setColor( set->cg, set->cr, color );
+                    ++set;
+                }
 
-            QColor disfg = color;
-            int h, s, v;
-            disfg.hsv( &h, &s, &v );
-            if (v > 128)
-                // dark bg, light fg - need a darker disabled fg
-                disfg = disfg.dark(lowlightVal);
-            else if (disfg != Qt::black)
-                // light bg, dark fg - need a lighter disabled fg - but only if !black
-                disfg = disfg.light(highlightVal);
-            else
-                // black fg - use darkgrey disabled fg
-                disfg = Qt::darkGray;
-            pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
-        }
+                QColor disfg = color;
+                int h, s, v;
+                disfg.hsv( &h, &s, &v );
+                if (v > 128)
+                    // dark bg, light fg - need a darker disabled fg
+                    disfg = disfg.dark(lowlightVal);
+                else if (disfg != Qt::black)
+                    // light bg, dark fg - need a lighter disabled fg - but only if !black
+                    disfg = disfg.light(highlightVal);
+                else
+                    // black fg - use darkgrey disabled fg
+                    disfg = Qt::darkGray;
+                pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
+            }
 
-        m_widget->setPalette(pal);
+            m_widget->setPalette(pal);
+        }
+        else
+            m_widget->unsetPalette();
     }
-    else
-        m_widget->unsetPalette();
+
+    RenderReplaced::updateFromElement();
 }
 
 void RenderWidget::slotWidgetDestructed()
@@ -443,6 +448,16 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //         element()->dispatchMouseEvent(&e2);
 //         // ### change cursor like in KHTMLView?
 //     }
+    break;
+    case QEvent::Wheel:
+#if 0
+        if (qApp->focusWidget() != m_widget) {
+            qDebug("filtering!!");
+
+            static_cast<QWheelEvent*>(e)->ignore();
+            filtered = true;
+        }
+#endif
     break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
