@@ -57,6 +57,7 @@ k_dcop:
   void setDomainAdvice(QString, QString);
   QString getDomainAdvice(QString);
   void reloadPolicy();
+  void shutdown();
 
 public:
   bool cookiesPending(const QString &url);

@@ -115,7 +115,7 @@ int KCookieServer::newInstance()
 
    if (args->isSet("shutdown"))
    {
-        quit();
+        shutdown();
    }
    if(args->isSet("reload-config"))
    {
@@ -292,6 +292,13 @@ void
 KCookieServer::reloadPolicy()
 {
    mCookieJar->loadConfig( kapp->config(), true );
+}
+
+// DCOP function
+void
+KCookieServer::shutdown()
+{
+   quit();
 }
 
 bool KCookieServer::cookiesPending( const QString &url )
