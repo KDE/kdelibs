@@ -78,11 +78,12 @@ public:
 
     virtual bool isFormElement() const { return true; }
 
-    // form elements never have border/padding
-    virtual int borderTop() const { return 0; }
-    virtual int borderBottom() const { return 0; }
-    virtual int borderLeft() const { return 0; }
-    virtual int borderRight() const { return 0; }
+    virtual int borderTop() const { return canHaveBorder() ? RenderWidget::borderTop() : 0; }
+    virtual int borderBottom() const { return canHaveBorder() ? RenderWidget::borderBottom() : 0; }
+    virtual int borderLeft() const { return canHaveBorder() ? RenderWidget::borderLeft() : 0; }
+    virtual int borderRight() const { return canHaveBorder() ? RenderWidget::borderRight() : 0; }
+
+    // form elements never have padding
     virtual int paddingTop() const { return 0; }
     virtual int paddingBottom() const { return 0; }
     virtual int paddingLeft() const { return 0; }
@@ -114,6 +115,7 @@ public:
     RenderButton(DOM::HTMLGenericFormElementImpl* node);
 
     virtual const char *renderName() const { return "RenderButton"; }
+
     virtual short baselinePosition( bool ) const;
 
     // don't even think about making this method virtual!
@@ -247,6 +249,7 @@ protected:
 
 private:
     virtual bool isEditable() const { return true; }
+    virtual bool canHaveBorder() const { return true; }
 };
 
 // -------------------------------------------------------------------------
@@ -327,6 +330,7 @@ protected:
     virtual void handleFocusOut();
 
     virtual bool isEditable() const { return true; }
+    virtual bool canHaveBorder() const { return true; }
 
     bool m_clicked;
     bool m_haveFocus;
@@ -341,6 +345,9 @@ public:
     RenderLabel(DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderLabel"; }
+
+protected:
+    virtual bool canHaveBorder() const { return true; }
 };
 
 
@@ -474,6 +481,7 @@ protected:
     virtual void handleFocusOut();
 
     virtual bool isEditable() const { return true; }
+    virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
 };
