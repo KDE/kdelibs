@@ -3,7 +3,7 @@
 # The following comma-seperated fields are used:
 #
 #          Control: A generates accessor functions.
-#                   L generates a static function fpr returning a tranlsated label
+#                   L generates a static function for returning a tranlsated label
 #                   F generates a Field id and object for generic field handling
 #                   E generate an equality test in Addressee::operator==().
 #      Field Name : A descriptive name which is shown to the user.
@@ -12,7 +12,6 @@
 #  Field Category : Categories the field belongs to (see Field::FieldCategory).
 #  Output function: Function used to convert type to string for debug output (optional)
 
-ALE,unique identifier,QString,uid
 ALE,name,QString,name
 
 ALFE,formatted name,QString,formattedName,Frequent

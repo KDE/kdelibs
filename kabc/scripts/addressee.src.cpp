@@ -31,6 +31,7 @@ static bool matchBinaryPattern( int value, int pattern, int max );
 
 struct Addressee::AddresseeData : public KShared
 {
+  QString uid;
   --VARIABLES--
 
   PhoneNumber::List phoneNumbers;
@@ -42,14 +43,13 @@ struct Addressee::AddresseeData : public KShared
 
   Resource *resource;
 
-  bool empty;
-  bool changed;
+  bool empty    :1;
+  bool changed  :1;
 };
 
 Addressee::Addressee()
 {
   mData = new AddresseeData;
-  mData->uid = KApplication::randomString( 10 );
   mData->empty = true;
   mData->changed = false;
   mData->resource = 0;
@@ -85,6 +85,7 @@ void Addressee::detach()
 
 bool Addressee::operator==( const Addressee &a ) const
 {
+  if ( uid() != a.uid() ) return false;
   --EQUALSTEST--
   if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
        ( mData->url != a.mData->url ) ) return false;
@@ -106,6 +107,27 @@ bool Addressee::operator!=( const Addressee &a ) const
 bool Addressee::isEmpty() const
 {
   return mData->empty;
+}
+
+void Addressee::setUid( const QString &id )
+{
+  if ( id == mData->uid ) return;
+  detach();
+  mData->empty = false;
+  mData->uid = id;
+}
+
+QString Addressee::uid() const
+{
+  if ( mData->uid.isEmpty() )
+    mData->uid = KApplication::randomString( 10 );
+
+  return mData->uid;
+}
+
+QString Addressee::uidLabel()
+{
+  return i18n("Unique Identifier");
 }
 
 --DEFINITIONS--
@@ -516,6 +538,8 @@ void Addressee::dump() const
 {
   kdDebug(5700) << "Addressee {" << endl;
 
+  kdDebug(5700) << "  Uid: '" << uid() << "'" << endl;
+
   --DEBUG--
 
   kdDebug(5700) << "  Emails {" << endl;
@@ -812,6 +836,8 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
 {
   if (!a.mData) return s;
 
+  s << a.uid(); 
+
   --STREAMOUT--
   s << a.mData->phoneNumbers;
   s << a.mData->addresses;
@@ -825,6 +851,8 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
 QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
 {
   if (!a.mData) return s;
+
+  s >> a.mData->uid;
 
   --STREAMIN--
   s >> a.mData->phoneNumbers;

@@ -94,6 +94,19 @@ class Addressee
      */
     bool isEmpty() const;
 
+    /**
+      Set unique identifier.
+     */
+    void setUid( const QString &uid );
+    /**
+      Return unique identifier.
+     */
+    QString uid() const;
+    /**
+      Return translated label for uid field.
+     */
+    static QString uidLabel();
+
     --DECLARATIONS--
     /**
       Set name fields by parsing the given string and trying to associate the
@@ -356,7 +369,7 @@ class Addressee
     void detach();
 
     struct AddresseeData;
-    KSharedPtr<AddresseeData> mData;
+    mutable KSharedPtr<AddresseeData> mData;
 };
 
 QDataStream &operator<<( QDataStream &, const Addressee & );
