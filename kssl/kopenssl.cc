@@ -70,6 +70,7 @@ static X509_NAME *(*K_X509_get_subject_name) (X509 *) = NULL;
 static X509_NAME *(*K_X509_get_issuer_name) (X509 *) = NULL;
 static X509_LOOKUP *(*K_X509_STORE_add_lookup) (X509_STORE *, X509_LOOKUP_METHOD *) = NULL;
 static X509_LOOKUP_METHOD *(*K_X509_LOOKUP_file)(void) = NULL;
+static void (*K_X509_LOOKUP_free)(X509_LOOKUP *) = NULL;
 static int (*K_X509_LOOKUP_ctrl)(X509_LOOKUP *, int, const char *, long, char **) = NULL;
 static void (*K_X509_STORE_CTX_init)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *) = NULL;
 static void (*K_CRYPTO_free)       (void *) = NULL;
@@ -292,6 +293,7 @@ KConfig *cfg;
       K_X509_get_issuer_name = (X509_NAME * (*) (X509 *)) _cryptoLib->symbol("X509_get_issuer_name");
       K_X509_STORE_add_lookup = (X509_LOOKUP *(*) (X509_STORE *, X509_LOOKUP_METHOD *)) _cryptoLib->symbol("X509_STORE_add_lookup");
       K_X509_LOOKUP_file = (X509_LOOKUP_METHOD *(*)(void)) _cryptoLib->symbol("X509_LOOKUP_file");
+      K_X509_LOOKUP_free = (void (*)(X509_LOOKUP *)) _cryptoLib->symbol("X509_LOOKUP_free");
       K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _cryptoLib->symbol("X509_LOOKUP_ctrl");
       K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _cryptoLib->symbol("X509_STORE_CTX_init");
       K_X509_dup = (X509* (*)(X509*)) _cryptoLib->symbol("X509_dup");
@@ -691,6 +693,11 @@ X509_LOOKUP *KOpenSSLProxy::X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_MET
 X509_LOOKUP_METHOD *KOpenSSLProxy::X509_LOOKUP_file(void) {
    if (K_X509_LOOKUP_file) return (K_X509_LOOKUP_file)();
    return NULL;
+}
+
+
+void KOpenSSLProxy::X509_LOOKUP_free(X509_LOOKUP *x) {
+   if (K_X509_LOOKUP_free) (K_X509_LOOKUP_free)(x);
 }
 
 

@@ -357,6 +357,12 @@ public:
 
 
    /*
+    *   X509_LOOKUP_free - Free an X509_LOOKUP
+    */
+   void X509_LOOKUP_free(X509_LOOKUP *x);
+
+
+   /*
     *   X509_LOOKUP_ctrl - This is not normally called directly (use macros)
     */
    int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl, char **ret);
