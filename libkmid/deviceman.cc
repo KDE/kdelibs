@@ -471,7 +471,11 @@ void DeviceManager::tmrSetTempo(int v)
 #endif
 }
 
-void DeviceManager::tmrStart(long int )
+void DeviceManager::tmrStart(long int 
+#ifdef HAVE_ALSA_SUPPORT
+tpcn /*name the argument only if it is used*/
+#endif
+)
 {
 #ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->tmrStart(tpcn); return; }
