@@ -1,12 +1,17 @@
+2004-12-06  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/bidi.cpp: Layout arabic numbers with a separator correctly.
+
 2004-12-02  Allan Sandfeld Jensen <kde@carewolf.com>
+
         Implement remaining CSS2 list-style-types and a few CSS3
 
-        * render/render_list.cpp: New algorithms for hiragana, katakana,
+        * rendering/render_list.cpp: New algorithms for hiragana, katakana,
             armenian, georgian and decimal-leading-zero.
             Also fix greek and latin list-styles for larger values.
         * css/cssvalues.cpp: Parse box, -khtml-diamond, -khtml-arabic-indic,
             -khtml-persian, -khtml-urdu and -khtml-upper-greek
-        * render/render_style.h: Expand list-style enum
+        * rendering/render_style.h: Expand list-style enum
 
 2004-11-30  Germain Garand  <germain@ebooksfrance.org>
 
