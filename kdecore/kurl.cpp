@@ -233,7 +233,15 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
           array.setRawData(new_segment, new_length);
           result = textCodec->toUnicode( array, new_length );
           array.resetRawData(new_segment, new_length);
-          bKeepEncoded = false;
+          QCString validate = textCodec->fromUnicode(result);
+          if (validate.data() == new_segment)
+          {
+             bKeepEncoded = false;
+          }
+          else
+          {
+             result = QString::fromLocal8Bit(new_segment, new_length);
+          }
       }
       else
           result = QString::fromLocal8Bit(new_segment, new_length);
