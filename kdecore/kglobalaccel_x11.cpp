@@ -78,35 +78,19 @@ bool KGlobalAccelPrivate::emitSignal( Signal )
 	return false;
 }
 
-bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKey& key )
-{
-	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << key.toStringInternal() << " )" << endl;
-	return grabKey( key, true, &action );
-}
+bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key )
+	{ return grabKey( key, true, &action ); }
+bool KGlobalAccelPrivate::connectKey( const KKeyServer::Key& key )
+	{ return grabKey( key, true, 0 ); }
+bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKeyServer::Key& key )
+	{ return grabKey( key, false, &action ); }
+bool KGlobalAccelPrivate::disconnectKey( const KKeyServer::Key& key )
+	{ return grabKey( key, false, 0 ); }
 
-bool KGlobalAccelPrivate::connectKey( const KKey& spec )
+bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAccelAction* pAction )
 {
-	kdDebug(125) << "KGlobalAccel::connectKey( " << spec.toStringInternal() << " )" << endl;
-	return grabKey( spec, true, 0 );
-}
-
-bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKey& key )
-{
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << key.toStringInternal() << " )" << endl;
-	return grabKey( key, false, &action );
-}
-
-bool KGlobalAccelPrivate::disconnectKey( const KKey& spec )
-{
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << spec.toStringInternal() << " )" << endl;
-	return grabKey( spec, false, 0 );
-}
-
-bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab, KAccelAction* pAction )
-{
-	KKeyNative key( spec );
 	if( !key.code() ) {
-		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << spec.toStringInternal() << ", " << bGrab << ", \"" << pAction->name() << "\" ): Tried to grab key with null code." << endl;
+		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << key.key().toStringInternal() << ", " << bGrab << ", \"" << pAction->name() << "\" ): Tried to grab key with null code." << endl;
 		return false;
 	}
 
@@ -122,7 +106,7 @@ bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab, KAccelAction* p
 #ifndef __osf__
 // this crashes under Tru64 so .....
 	kdDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
-		.arg( spec.toStringInternal() ).arg( bGrab )
+		.arg( key.key().toStringInternal() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
 	if( !keyCodeX )

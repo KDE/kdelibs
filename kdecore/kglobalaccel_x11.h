@@ -5,6 +5,7 @@
 #include <qwidget.h>
 
 #include "kaccelbase.h"
+#include "kkeyserver_x11.h"
 #include "kshortcut.h"
 
 class CodeMod
@@ -32,10 +33,10 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	virtual void setEnabled( bool );
 
 	virtual bool emitSignal( Signal );
-	virtual bool connectKey( KAccelAction&, const KKey& );
-	virtual bool connectKey( const KKey& );
-	virtual bool disconnectKey( KAccelAction&, const KKey& );
-	virtual bool disconnectKey( const KKey& );
+	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& );
+	virtual bool connectKey( const KKeyServer::Key& );
+	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& );
+	virtual bool disconnectKey( const KKeyServer::Key& );
 
  signals:
 	void activated();
@@ -48,7 +49,7 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	/**
 	 * @param bGrab Set to true to grab key, false to ungrab key.
 	 */
-	bool grabKey( const KKey&, bool bGrab, KAccelAction* );
+	bool grabKey( const KKeyServer::Key&, bool bGrab, KAccelAction* );
 
 	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.

@@ -26,6 +26,7 @@
 #include <qvaluevector.h>
 
 #include "kaccelaction.h"
+#include "kkeyserver_x11.h"
 
 class QPopupMenu;
 class QWidget;
@@ -131,7 +132,8 @@ class KAccelBase
 
 	KAccelAction* actionPtr( const QString& sAction );
 	const KAccelAction* actionPtr( const QString& sAction ) const;
-	KAccelAction* actionPtr( const KKey& spec );
+	KAccelAction* actionPtr( const KKey& key );
+	KAccelAction* actionPtr( const KKeyServer::Key& key );
 
 	const QString& configGroup() const { return m_sConfigGroup; }
 	void setConfigGroup( const QString& group );
@@ -153,11 +155,7 @@ class KAccelBase
 	bool remove( const QString& sAction );
 	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
-	//bool disconnectItem( const QString& sAction,
-	//                     const QObject* receiver, const char *member );
-
 	bool updateConnections();
-	//bool updateConnectionsIncremental( KAccelAction& action );
 
 	bool setShortcut( const QString& sAction, const KShortcut& cut );
 
@@ -194,7 +192,7 @@ class KAccelBase
 			{ pAction = _pAction; iSeq = _iSeq; iVariation = _iVariation; }
 
 	};
-	typedef QMap<KKey, ActionInfo> KKeyToActionMap;
+	typedef QMap<KKeyServer::Key, ActionInfo> KKeyToActionMap;
 
 	KAccelActions m_rgActions;
 	KKeyToActionMap m_mapKeyToAction;
@@ -211,10 +209,10 @@ class KAccelBase
 	bool removeConnection( KAccelAction& );
 
 	virtual bool emitSignal( Signal ) = 0;
-	virtual bool connectKey( KAccelAction&, const KKey& ) = 0;
-	virtual bool connectKey( const KKey& ) = 0;
-	virtual bool disconnectKey( KAccelAction&, const KKey& ) = 0;
-	virtual bool disconnectKey( const KKey& ) = 0;
+	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
+	virtual bool connectKey( const KKeyServer::Key& ) = 0;
+	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
+	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
 
  private:
         class KAccelBasePrivate *d;
