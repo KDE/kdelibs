@@ -667,6 +667,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_OPTION:
 	    if (id == ID_OPTGROUP)
 		popBlock(ID_OPTION);
+            else 
+            {
+                if(tagPriority[id] != 0)
+		{
+		   pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+		}
+                ignore = true;
+            }
 	    break;
 	    // head elements in the body should be ignored.
 	default:
