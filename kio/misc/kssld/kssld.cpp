@@ -419,9 +419,10 @@ bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
         delete node;
         return false;
       }
+      node->hosts << host;
       certList.remove(node);
       certList.prepend(node);
-      node->hosts << host;
+      cacheSaveToDisk();
       return true;
     }
   }
@@ -440,9 +441,9 @@ bool KSSLD::cacheRemoveHost(KSSLCertificate cert, QString host) {
         delete node;
         return false;
       }
+      node->hosts.remove(host);
       certList.remove(node);
       certList.prepend(node);
-      node->hosts.remove(host);
       return true;
     }
   }
