@@ -3,6 +3,9 @@
 #include <kapp.h>
 #include <stdlib.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kcharsets.h>
+#include <qtextcodec.h>
 
 bool check(QString txt, QString a, QString b)
 {
@@ -20,6 +23,8 @@ bool check(QString txt, QString a, QString b)
   return true;
 }
 
+extern void qt_set_locale_codec( QTextCodec *codec );
+
 int main(int argc, char *argv[])
 {
   KApplication app(argc,argv,"kurltest",false,false);
@@ -29,21 +34,21 @@ int main(int argc, char *argv[])
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
   KURL url1 ( baseURL, "//www1.foo.bar" );
   check( "KURL::url()", url1.url(), "http://www1.foo.bar");
-   
+
   baseURL = "http://www.foo.bar";
   KURL rel_url( baseURL, "/top//test/../test1/file.html" );
   check( "KURL::url()", rel_url.url(), "http://www.foo.bar/top//test1/file.html" );
-   
+
   baseURL = "http://www.foo.bar/top//test2/file2.html";
   check( "KURL::url()", baseURL.url(), "http://www.foo.bar/top//test2/file2.html" );
-  
+
   baseURL = "file:/usr/local/src/kde2/////kdelibs/kio";
   check( "KURL::url()", baseURL.url(), "file:/usr/local/src/kde2/////kdelibs/kio" );
-  
+
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KURL url2( baseURL, "../../////kdebase/konqueror" );
   check( "KURL::url()", url2.url(), "file:/usr/local/src/kde2/////kdebase/konqueror" );
-  
+
   QString u1 = "file:/home/dfaure/my#myref";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my#myref");
@@ -360,12 +365,18 @@ int main(int argc, char *argv[])
 
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
+
+  qt_set_locale_codec( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("locale8bit",uloc.url(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   check("UTF8",uloc.url(0, QFont::Unicode),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
 
+  qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
+  baseURL = "file:/home/coolo";
+  KURL russian = baseURL.directory(false, true) + QString::fromLocal8Bit( "ÆÇÎ7" );
+  check( "russian", russian.url(), "file:/home/%C6%C7%CE7" );
   printf("\nTest OK !\n");
 }
 
