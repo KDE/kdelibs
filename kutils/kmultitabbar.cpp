@@ -196,7 +196,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		(m_style==KMultiTabBar::KDEV3ICON) ){
 		box->setGeometry(0,0,width(),height());
 		int lines=1;
-		int space;
+		uint space;
 		float tmp=0;
 		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
 			space=width();
@@ -205,18 +205,19 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 
 		int cnt=0;
 //CALCULATE LINES
-	        for (uint i=0;i<m_tabs.count();i++) {
+		const uint tabCount=m_tabs.count();
+	        for (uint i=0;i<tabCount;i++) {
 			cnt++;
 			tmp+=m_tabs.at(i)->neededSize();
 			if (tmp>space) {
 				if (cnt>1)i--;
+				else if (i==(tabCount-1)) break;
 				cnt=0;
 				tmp=0;
 				lines++;
 			}
 		}
 //SET SIZE & PLACE
-		const uint tabCount=m_tabs.count();
 		float diff=0;
 		cnt=0;
 
@@ -597,7 +598,7 @@ void KMultiTabBarTab::updateState()
                 else
                         setFixedWidth(m_expandedSize);
 	}
-	QApplication::sendPostedEvents();
+	QApplication::sendPostedEvents(0,QEvent::Paint | QEvent::Move | QEvent::Resize | QEvent::LayoutHint);
 	qApp->processEvents();
 	QApplication::flush();
 }
