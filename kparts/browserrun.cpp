@@ -295,6 +295,10 @@ static QString makeQuestion( const KURL& url, const QString& mimeType, const QSt
 //static
 BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
 {
+    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
+    // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
+    //       FileTypeDetails::updateAskSave()
+
     QString question = makeQuestion( url, mimeType, suggestedFilename );
 
     // Text used for the open button
@@ -305,13 +309,19 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
         KStdGuiItem::saveAs(), openText,
-        QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
+        QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
+
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
+    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 }
 
 //static
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename, int /*flags*/ )
 {
+    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
+    // NOTE: Keep this funcion in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
+    //       FileTypeDetails::updateAskSave()
+
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     // Don't ask for:
     // - html (even new tabs would ask, due to about:blank!)
@@ -321,6 +331,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     // it's more likely that the user might want to save it.
     // - multipart/* ("server push", see kmultipart)
     // - other strange 'internal' mimetypes like print/manager...
+    // KEEP IN SYNC!!!
     if ( mime->is( "text/html" ) ||
          mime->is( "text/xml" ) ||
          mime->is( "inode/directory" ) ||
@@ -335,8 +346,9 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
         KStdGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "fileopen"),
-        QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName
+        QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
+    // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 }
 
 // Default implementation, overridden in KHTMLRun
