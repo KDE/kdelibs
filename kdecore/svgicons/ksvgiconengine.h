@@ -21,6 +21,8 @@
 #ifndef KSVGIconEngine_H
 #define KSVGIconEngine_H
 
+/** \internal DO NOT USE! */
+
 class KSVGIconPainter;
 
 class KSVGIconEngine
@@ -32,6 +34,7 @@ public:
 	bool load(int width, int height, const QString &path);
 
 	KSVGIconPainter *painter();
+	QImage *image();
 
 	double width();
 	double height();

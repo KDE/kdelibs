@@ -672,6 +672,11 @@ KSVGIconPainter *KSVGIconEngine::painter()
 	return d->painter;
 }
 
+QImage *KSVGIconEngine::image()
+{
+	return d->painter->image();
+}
+
 double KSVGIconEngine::width()
 {
 	return d->width;
