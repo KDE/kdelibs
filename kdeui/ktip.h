@@ -1,0 +1,155 @@
+/*****************************************************************
+ 
+Copyright (c) 2000,2001 Matthias Hoelzer-Kluepfel
+ 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+ 
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+ 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 
+******************************************************************/
+
+#ifndef __K_TIP_H__
+#define __K_TIP_H__
+
+
+#include <qstringlist.h>
+
+
+class QCheckBox;
+
+
+#include <kdialog.h>
+
+
+class KTextBrowser;
+
+
+/**
+ * A database for tips-of-the-day.
+ *
+ * This class provides convenient access to a database containing
+ * tips of the day. The database is stored in a XML file and parsed
+ * when a KTipDatabase object is created.
+ *
+ * Once the file is read in, you can access the tips to display
+ * them in the tip of the day dialog.
+ * 
+ * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
+ * 
+ */
+class KTipDatabase
+{
+public:
+
+  /**
+   * The constructor.
+   *
+   * This reads in the tips from a file with the given name. If no name is
+   * given, a file called 'application-name/tips' will be loaded.
+   *
+   * @param tipFile The name of the tips file.
+   */
+  KTipDatabase(QString tipFile=QString::null);
+
+  /**
+   * Returns the current tip.
+   */
+  QString tip();
+
+  /**
+   * The next tip will become the current one.
+   */
+  void nextTip();
+
+  /**
+   * The previous tip will become the current one.
+   */
+  void prevTip();
+
+
+private:
+
+  void loadTips(QString tipFile);
+
+  QStringList tips;
+
+  int current;
+
+};
+
+
+/**
+ * A Tip-of-the-Day dialog.
+ *
+ * This dialog class presents a tip-of-the-day.
+ *
+ * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
+ */
+class KTipDialog : public KDialog
+{
+  Q_OBJECT
+
+public:
+
+  /**
+   * Show a tip.
+   *
+   * This static method is all that is needed to add a tip-of-the-day
+   * dialog to an application. It will pop up the dialog, unless the
+   * user has asked that the dialog does not pop up on startup.
+   *
+   * Note that you probably want an item in the help menu calling
+   * this method with force=true.
+   * 
+   * @param tipFile The name of the tip file.
+   * @param force If true, the dialog is show, even when the users 
+   *              disabled it.
+   */
+  static void showTip(QString tipFile=QString::null, bool force=false);
+
+  /**
+   * Toggle the start behaviour.
+   *
+   * Normally, the user can disable the display of the tip in the dialog.
+   * This is just a way to change this setting from outside.
+   */
+  static void setShowOnStart(bool show);
+
+ 
+protected:
+
+  KTipDialog(KTipDatabase *db, QWidget *parent=0, const char *name=0);
+
+
+private slots:
+
+  void nextTip();
+  void showOnStart(bool);
+
+  
+private:
+
+  KTipDatabase *_database;
+
+  QCheckBox *_tipOnStart;
+  KTextBrowser *_tipText;
+  
+  static KTipDialog *_instance;
+
+};
+
+
+#endif
