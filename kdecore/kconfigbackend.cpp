@@ -240,7 +240,12 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // try local app-specific file first
   
   if (!fileName.isEmpty()) {
-    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
+    QString aLocalFileName;
+    if (fileName[0] == '/') {
+       aLocalFileName = fileName;
+    } else {
+       aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
+    }
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
