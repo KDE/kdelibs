@@ -265,7 +265,12 @@ void RenderRoot::close()
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
-
+    // Check we got valid renderobjects. www.msnbc.com and clicking around, to find the case where this happened.
+    if ( !s || !e )
+    {
+        kdWarning(6040) << "RenderRoot::setSelection() called with start=" << s << " end=" << e << endl;
+        return;
+    }
     //kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     clearSelection();
