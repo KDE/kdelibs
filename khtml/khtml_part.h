@@ -337,7 +337,15 @@ public:
   KJS::Interpreter *jScriptInterpreter();
 
   /**
-   * Enable/disable statusbar messages
+   * Enable/disable statusbar messages.
+   * When this class wants to set the statusbar text, it emits
+   * setStatusBarText(const QString & text)
+   * If you want to catch this for your own statusbar, note that it returns
+   * back a rich text string, starting with "<qt>".  This you need to 
+   * either pass this into your own QLabel or to strip out the tags
+   * before passing it to QStatusBar::message(const QString & message)
+   * 
+   * @see KParts::Part::setStatusBarText( const QString & text )
    */
   void setStatusMessagesEnabled( bool enable );
 
