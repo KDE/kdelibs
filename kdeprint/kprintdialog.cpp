@@ -266,6 +266,7 @@ void KPrintDialog::slotPrinterSelected(int index)
 			ok = p->isValid();
 			enableSpecial(p->isSpecial());
 			enableOutputFile(p->option("kde-special-file") == "1");
+			setOutputFileExtension(p->option("kde-special-extension"));
 		}
 	}
 	m_properties->setEnabled(ok);
@@ -387,5 +388,15 @@ void KPrintDialog::enableSpecial(bool on)
 	KPrintDialogPage	*copypage = (KPrintDialogPage*)child("CopiesPage","KPrintDialogPage");
 	if (copypage && m_printer && m_printer->pageSelection() == KPrinter::SystemSide)
 		copypage->setDisabled(on);
+}
+
+void KPrintDialog::setOutputFileExtension(const QString& ext)
+{
+	if (!ext.isEmpty())
+	{
+		QFileInfo	fi(m_file->text());
+		QString		str = fi.dirPath(true)+"/"+fi.baseName()+"."+ext;
+		m_file->setText(QDir::cleanDirPath(str));
+	}
 }
 #include "kprintdialog.moc"

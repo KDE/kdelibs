@@ -52,6 +52,7 @@ bool KMSpecialManager::savePrinters()
 		conf.writeEntry("Command",it.current()->option("kde-special-command"));
 		conf.writeEntry("File",it.current()->option("kde-special-file"));
 		conf.writeEntry("Icon",it.current()->pixmap());
+		conf.writeEntry("Extension",it.current()->option("kde-special-extension"));
 		n++;
 	}
 	conf.setGroup("General");
@@ -79,6 +80,7 @@ bool KMSpecialManager::loadPrinters()
 		printer->setLocation(conf.readEntry("Comment"));
 		printer->setOption("kde-special-command",conf.readEntry("Command"));
 		printer->setOption("kde-special-file",conf.readEntry("File"));
+		printer->setOption("kde-special-extension",conf.readEntry("Extension"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
 		printer->setType(KMPrinter::Special);
 		printer->setState(KMPrinter::Idle);

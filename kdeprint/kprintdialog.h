@@ -59,6 +59,7 @@ protected:
 	bool checkOutputFile();
 	void enableSpecial(bool on);
 	void enableOutputFile(bool on);
+	void setOutputFileExtension(const QString&);
 
 protected:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;

@@ -23,6 +23,7 @@ Comment=Local file
 Icon=filesave
 Command=
 File=1
+Extension=ps
 
 [Printer 1]
 Name=Print To File (PDF/Acrobat)
@@ -46,6 +47,7 @@ Comment=Local file
 Icon=acroread
 Command=ps2pdf -sPAPERSIZE=%psl %in %out
 File=1
+Extension=pdf
 
 [Printer 2]
 Name=Send To Fax
@@ -69,3 +71,4 @@ Comment=External
 Icon=kfax
 Command=kdeprintfax %in
 File=0
+Extension=

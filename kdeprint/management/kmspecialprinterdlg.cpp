@@ -49,6 +49,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_description = new QLineEdit(this);
 	m_location = new QLineEdit(this);
 	m_command = new QLineEdit(this);
+	m_extension = new QLineEdit(this);
 	QLabel	*m_namelabel = new QLabel(i18n("Name:"), this);
 	QLabel	*m_desclabel = new QLabel(i18n("Description:"), this);
 	QLabel	*m_loclabel = new QLabel(i18n("Location:"), this);
@@ -57,7 +58,9 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_line->setLineWidth(1);
 	m_line->setFixedHeight(10);
 	QLabel	*m_cmdlabel = new QLabel(i18n("Command:"), this);
-	m_usefile = new QCheckBox(i18n("Use output file"), this);
+	m_usefile = new QCheckBox(i18n("Use output file with extension:"), this);
+	connect(m_usefile, SIGNAL(toggled(bool)), m_extension, SLOT(setEnabled(bool)));
+	m_extension->setEnabled(false);
 	m_icon = new KIconButton(this);
 	m_icon->setIcon("fileprint");
 	m_icon->setFixedSize(QSize(48,48));
@@ -68,6 +71,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 					"<ul><li><b>%in</b>: the input file (required).</li>"
 					"<li><b>%out</b>: the output file (required if using an output file).</li>"
 					"<li><b>%psl</b>: the paper size in lower case.</li></ul>"));
+	QWhatsThis::add(m_extension, i18n("<p>The default extension for the output file (<u>ex</u>: ps, pdf, ps.gz).</p>"));
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 10);
@@ -88,7 +92,10 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l2->addWidget(m_cmdlabel);
 	l2->addWidget(m_command,1);
 	l2->addWidget(m_browse);
-	l0->addWidget(m_usefile);
+	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 10);
+	l0->addLayout(l4);
+	l4->addWidget(m_usefile, 0);
+	l4->addWidget(m_extension, 1);
 	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
 	l0->addSpacing(5);
 	l0->addLayout(l3);
@@ -132,6 +139,7 @@ void KMSpecialPrinterDlg::setPrinter(KMPrinter *printer)
 	{
 		m_command->setText(printer->option("kde-special-command"));
 		m_usefile->setChecked(printer->option("kde-special-file") == "1");
+		m_extension->setText(printer->option("kde-special-extension"));
 		m_name->setText(printer->name());
 		m_description->setText(printer->description());
 		m_location->setText(printer->location());
@@ -158,6 +166,7 @@ KMPrinter* KMSpecialPrinterDlg::printer()
 	printer->setLocation(m_location->text());
 	printer->setOption("kde-special-command",m_command->text());
 	printer->setOption("kde-special-file",(m_usefile->isChecked() ? "1" : "0"));
+	printer->setOption("kde-special-extension",m_extension->text());
 	printer->setType(KMPrinter::Special);
 	printer->setState(KMPrinter::Idle);
 	return printer;
