@@ -152,8 +152,10 @@ ac_qt_libraries=$qt_libdir
 
 ac_cxxflags_safe=$CXXFLAGS
 ac_ldflags_safe=$LDFLAGS
+ac_libs_safe=$LIBS
 CXXFLAGS="$CXXFLAGS -I$qt_incdir"
-LDFLAGS="-lqt -L$qt_libdir $X_LDFLAGS -lX11 -lXext"
+LDFLAGS="-L$qt_libdir $X_LDFLAGS"
+LIBS="-lqt -lXext -lX11 $LIBSOCKET"
 
 AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF
@@ -176,6 +178,7 @@ fi
 rm -f conftest*
 CXXFLAGS=$ac_cxxflags_safe
 LDFLAGS=$ac_ldflags_safe
+LIBS=$ac_libs_safe
 
 if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"

@@ -42,10 +42,8 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h)
 
 dnl Checks for libraries.
-AC_PATH_KDE
-
-dnl Checks for libraries. 
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
+AC_PATH_KDE
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 AC_FIND_GIF
 AC_FIND_JPEG
