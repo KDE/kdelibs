@@ -159,7 +159,7 @@ namespace KJS {
   class Value {
   public:
     Value();
-    Value(ValueImp *v);
+    /* explicit */ Value(ValueImp *v);
     Value(const Value &v);
     virtual ~Value();
 

@@ -152,7 +152,7 @@ namespace KJS {
     UString toString(ExecState *exec) const;
     Object toObject(ExecState *exec) const;
 
-    Value getBase() const { return base; }
+    Value getBase() const { return Value(base); }
     UString getPropertyName() const { return prop; }
 
     Type type() const { return ReferenceType; }
@@ -177,7 +177,7 @@ namespace KJS {
     Object toObject(ExecState *exec) const;
 
     ComplType complType() const { return comp; }
-    Value value() const { return val; }
+    Value value() const { return Value(val); }
     UString target() const { return tar; }
 
   private:

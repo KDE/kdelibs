@@ -76,7 +76,7 @@ namespace KJS {
   class Object : public Value {
   public:
     Object();
-    Object(ObjectImp *v);
+    /* explicit */ Object(ObjectImp *v);
     Object(const Object &v);
     virtual ~Object();
 

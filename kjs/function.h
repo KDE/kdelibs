@@ -101,7 +101,7 @@ namespace KJS {
     ActivationImp(ExecState *exec, FunctionImp *f, const List &args);
     ~ActivationImp();
 
-    Object argumentsObject() { return arguments; }
+    Object argumentsObject() { return Object(arguments); }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

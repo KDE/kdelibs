@@ -74,7 +74,7 @@ UndefinedImp *UndefinedImp::staticUndefined = 0;
 
 Value UndefinedImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (ValueImp*)this;
+  return Value((ValueImp*)this);
 }
 
 bool UndefinedImp::toBoolean(ExecState */*exec*/) const
@@ -105,7 +105,7 @@ NullImp *NullImp::staticNull = 0;
 
 Value NullImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (ValueImp*)this;
+  return Value((ValueImp*)this);
 }
 
 bool NullImp::toBoolean(ExecState */*exec*/) const
@@ -137,7 +137,7 @@ BooleanImp* BooleanImp::staticFalse = 0;
 
 Value BooleanImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (ValueImp*)this;
+  return Value((ValueImp*)this);
 }
 
 bool BooleanImp::toBoolean(ExecState */*exec*/) const
@@ -158,7 +158,7 @@ UString BooleanImp::toString(ExecState */*exec*/) const
 Object BooleanImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(const_cast<BooleanImp*>(this));
+  args.append(Boolean(const_cast<BooleanImp*>(this)));
   return Object::dynamicCast(exec->interpreter()->builtinBoolean().construct(exec,args));
 }
 
@@ -171,7 +171,7 @@ StringImp::StringImp(const UString& v)
 
 Value StringImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (ValueImp*)this;
+  return Value((ValueImp*)this);
 }
 
 bool StringImp::toBoolean(ExecState */*exec*/) const
@@ -192,7 +192,7 @@ UString StringImp::toString(ExecState */*exec*/) const
 Object StringImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(const_cast<StringImp*>(this));
+  args.append(String(const_cast<StringImp*>(this)));
   return Object::dynamicCast(exec->interpreter()->builtinString().construct(exec,args));
 }
 
@@ -205,7 +205,7 @@ NumberImp::NumberImp(double v)
 
 Value NumberImp::toPrimitive(ExecState *, Type) const
 {
-  return (ValueImp*)this;
+  return Number((NumberImp*)this);
 }
 
 bool NumberImp::toBoolean(ExecState *) const
@@ -226,7 +226,7 @@ UString NumberImp::toString(ExecState *) const
 Object NumberImp::toObject(ExecState *exec) const
 {
   List args;
-  args.append(const_cast<NumberImp*>(this));
+  args.append(Number(const_cast<NumberImp*>(this)));
   return Object::dynamicCast(exec->interpreter()->builtinNumber().construct(exec,args));
 }
 
@@ -248,7 +248,7 @@ Value ReferenceImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) con
 {
   // invalid for Reference
   assert(false);
-  return 0;
+  return Value();
 }
 
 bool ReferenceImp::toBoolean(ExecState */*exec*/) const
@@ -276,7 +276,7 @@ Object ReferenceImp::toObject(ExecState */*exec*/) const
 {
   // invalid for Reference
   assert(false);
-  return 0;
+  return Object();
 }
 
 // ------------------------------ LabelStack -----------------------------------
@@ -379,7 +379,7 @@ Value CompletionImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) co
 {
   // invalid for Completion
   assert(false);
-  return 0;
+  return Value();
 }
 
 bool CompletionImp::toBoolean(ExecState */*exec*/) const
@@ -407,7 +407,7 @@ Object CompletionImp::toObject(ExecState */*exec*/) const
 {
   // invalid for Completion
   assert(false);
-  return 0;
+  return Object();
 }
 
 // ------------------------------ ListImp --------------------------------------
@@ -420,7 +420,7 @@ Value ListImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
 {
   // invalid for List
   assert(false);
-  return 0;
+  return Value();
 }
 
 bool ListImp::toBoolean(ExecState */*exec*/) const
@@ -448,7 +448,7 @@ Object ListImp::toObject(ExecState */*exec*/) const
 {
   // invalid for List
   assert(false);
-  return 0;
+  return Object();
 }
 
 ListImp::ListImp()
@@ -629,7 +629,7 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode ) {
-    activation = new ActivationImp(exec,func,args);
+    activation = Object(new ActivationImp(exec,func,args));
     variable = activation;
   } else {
     activation = Object();
@@ -648,7 +648,7 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
     case GlobalCode:
       scope = List();
       scope.append(glob);
-      thisVal = static_cast<ObjectImp*>(glob.imp());
+      thisVal = Object(static_cast<ObjectImp*>(glob.imp()));
       break;
     case FunctionCode:
     case AnonymousCode:
@@ -783,48 +783,48 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   // Contructor prototype objects (Object.prototype, Array.prototype etc)
 
   FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(globExec);
-  b_FunctionPrototype = funcProto;
+  b_FunctionPrototype = Object(funcProto);
   ObjectPrototypeImp *objProto = new ObjectPrototypeImp(globExec,funcProto);
-  b_ObjectPrototype = objProto;
-  funcProto->setPrototype(objProto);
+  b_ObjectPrototype = Object(objProto);
+  funcProto->setPrototype(b_ObjectPrototype);
 
   ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto);
-  b_ArrayPrototype = arrayProto;
+  b_ArrayPrototype = Object(arrayProto);
   StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto);
-  b_StringPrototype = stringProto;
+  b_StringPrototype = Object(stringProto);
   BooleanPrototypeImp *booleanProto = new BooleanPrototypeImp(globExec,objProto,funcProto);
-  b_BooleanPrototype = booleanProto;
+  b_BooleanPrototype = Object(booleanProto);
   NumberPrototypeImp *numberProto = new NumberPrototypeImp(globExec,objProto,funcProto);
-  b_NumberPrototype = numberProto;
+  b_NumberPrototype = Object(numberProto);
   DatePrototypeImp *dateProto = new DatePrototypeImp(globExec,objProto);
-  b_DatePrototype = dateProto;
+  b_DatePrototype = Object(dateProto);
   RegExpPrototypeImp *regexpProto = new RegExpPrototypeImp(globExec,objProto,funcProto);
-  b_RegExpPrototype = regexpProto;
+  b_RegExpPrototype = Object(regexpProto);
   ErrorPrototypeImp *errorProto = new ErrorPrototypeImp(globExec,objProto,funcProto);
-  b_ErrorPrototype = errorProto;
+  b_ErrorPrototype = Object(errorProto);
 
   static_cast<ObjectImp*>(global.imp())->setPrototype(objProto);
 
   // Constructors (Object, Array, etc.)
 
   ObjectObjectImp *objectObj = new ObjectObjectImp(globExec,objProto,funcProto);
-  b_Object = objectObj;
+  b_Object = Object(objectObj);
   FunctionObjectImp *funcObj = new FunctionObjectImp(globExec,funcProto);
-  b_Function = funcObj;
+  b_Function = Object(funcObj);
   ArrayObjectImp *arrayObj = new ArrayObjectImp(globExec,funcProto,arrayProto);
-  b_Array = arrayObj;
+  b_Array = Object(arrayObj);
   StringObjectImp *stringObj = new StringObjectImp(globExec,funcProto,stringProto);
-  b_String = stringObj;
+  b_String = Object(stringObj);
   BooleanObjectImp *booleanObj = new BooleanObjectImp(globExec,funcProto,booleanProto);
-  b_Boolean = booleanObj;
+  b_Boolean = Object(booleanObj);
   NumberObjectImp *numberObj = new NumberObjectImp(globExec,funcProto,numberProto);
-  b_Number = numberObj;
+  b_Number = Object(numberObj);
   DateObjectImp *dateObj = new DateObjectImp(globExec,funcProto,dateProto);
-  b_Date = dateObj;
+  b_Date = Object(dateObj);
   RegExpObjectImp *regexpObj = new RegExpObjectImp(globExec,regexpProto,funcProto);
-  b_RegExp = regexpObj;
+  b_RegExp = Object(regexpObj);
   ErrorObjectImp *errorObj = new ErrorObjectImp(globExec,funcProto,errorProto);
-  b_Error = errorObj;
+  b_Error = Object(errorObj);
 
   // Error object prototypes
   b_evalErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,EvalError,
