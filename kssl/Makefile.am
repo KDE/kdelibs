@@ -33,7 +33,8 @@ libkssl_la_SOURCES	= \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(SSL_LDFLAGS) $(all_libraries) -version-info 2:0 -no-undefined
-libkssl_la_LIBADD = $(LIBSSL) $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_QT)
+libkssl_la_LIBADD = $(LIBSSL) $(LIB_KDEUI) 
+libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 
 libkssl_la_METASOURCES = AUTO
 
