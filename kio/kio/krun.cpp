@@ -171,7 +171,7 @@ static QStringList breakup(const QString &exec, bool *need_shell = 0)
                   arg = QString::null;
                   state = PARSE_ANY;
               }
-              else if (( ch == ';' ) || (ch == '|') || (ch == '<'))
+              else if (( ch == ';' ) || (ch == '|') || (ch == '<') || (ch == '>'))
               {
                   if (!arg.isEmpty())
                       result.append(arg);
