@@ -267,6 +267,13 @@ namespace KIO {
          */
         QString queryMetaData(const QString &key);
 
+        /**
+         * Returns the processed size for this job.
+         * @see processedSize
+         * @since 3.2
+         */
+        KIO::filesize_t getProcessedSize();
+
     signals:
         /**
          * Emitted when the job is finished, in any case (completed, canceled,
@@ -413,12 +420,19 @@ namespace KIO {
         void emitResult();
 
         /**
+         * Set the processed size, does not emit processedSize
+         * @since 3.2
+         */   
+        void setProcessedSize(KIO::filesize_t size);
+
+        /**
          * @internal
          * Some extra storage space for jobs that don't have their own
          * private d pointer.
          */
         enum { EF_TransferJobAsync    = (1 << 0), 
-               EF_TransferJobNeedData = (1 << 1) };
+               EF_TransferJobNeedData = (1 << 1),
+               EF_TransferJobDataSent = (1 << 2) };
         int &extraFlags();
 
         QPtrList<Job> subjobs;
@@ -762,6 +776,23 @@ namespace KIO {
          */
         void sendAsyncData(const QByteArray &data);
 
+        /**
+         * When enabled, the job reports the amount of data that has been sent, 
+         * instead of the amount of data that that has been received.
+         * @see slotProcessedSize
+         * @see slotSpeed
+         * @since 3.2 
+         */
+        void setReportDataSent(bool enabled);
+        
+        /**
+         *  Returns whether the job reports the amount of data that has been
+         *  sent (true), or whether the job reports the amount of data that
+         * has been received (false)
+         * @since 3.2
+         */
+        bool reportDataSent();
+        
     signals:
         /**
          * Data from the slave has arrived.
@@ -842,7 +873,7 @@ namespace KIO {
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
-	class TransferJobPrivate* d;
+	class TransferJobPrivate *d;
     };
 
     /**

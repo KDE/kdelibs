@@ -76,14 +76,17 @@ template class QPtrList<KIO::Job>;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ), extraFlags(0) {}
+    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ), m_extraFlags(0),
+                   m_processedSize(0)
+                   {}
 
     bool m_autoErrorHandling;
     QGuardedPtr<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
-    int extraFlags;
+    int m_extraFlags;
+    KIO::filesize_t m_processedSize;
 };
 
 Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
@@ -121,7 +124,17 @@ Job::~Job()
 
 int& Job::extraFlags()
 {
-    return d->extraFlags;
+    return d->m_extraFlags;
+}
+
+void Job::setProcessedSize(KIO::filesize_t size)
+{
+    d->m_processedSize = size;
+}
+
+KIO::filesize_t Job::getProcessedSize()
+{
+    return d->m_processedSize;
 }
 
 void Job::addSubjob(Job *job, bool inheritMetaData)
@@ -437,14 +450,17 @@ void SimpleJob::start(Slave *slave)
     connect( m_slave, SIGNAL( finished() ),
              SLOT( slotFinished() ) );
 
-    connect( m_slave, SIGNAL( totalSize( KIO::filesize_t ) ),
-             SLOT( slotTotalSize( KIO::filesize_t ) ) );
+    if ((extraFlags() & EF_TransferJobDataSent) == 0)
+    {
+        connect( m_slave, SIGNAL( totalSize( KIO::filesize_t ) ),
+                 SLOT( slotTotalSize( KIO::filesize_t ) ) );
 
-    connect( m_slave, SIGNAL( processedSize( KIO::filesize_t ) ),
-             SLOT( slotProcessedSize( KIO::filesize_t ) ) );
+        connect( m_slave, SIGNAL( processedSize( KIO::filesize_t ) ),
+                 SLOT( slotProcessedSize( KIO::filesize_t ) ) );
 
-    connect( m_slave, SIGNAL( speed( unsigned long ) ),
-             SLOT( slotSpeed( unsigned long ) ) );
+        connect( m_slave, SIGNAL( speed( unsigned long ) ),
+                 SLOT( slotSpeed( unsigned long ) ) );
+    }
 
     connect( slave, SIGNAL( needProgressId() ),
              SLOT( slotNeedProgressId() ) );
@@ -566,6 +582,7 @@ void SimpleJob::slotTotalSize( KIO::filesize_t size )
 void SimpleJob::slotProcessedSize( KIO::filesize_t size )
 {
     //kdDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size) << endl;
+    setProcessedSize(size);
     emit processedSize( this, size );
     if ( size > m_totalSize ) {
         slotTotalSize(size); // safety
@@ -866,10 +883,36 @@ void TransferJob::setAsyncDataEnabled(bool enabled)
 void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
 {
     if (extraFlags() & EF_TransferJobNeedData)
+    {
        m_slave->send( MSG_DATA, dataForSlave );
+       if (extraFlags() & EF_TransferJobDataSent)
+       {
+           KIO::filesize_t size = getProcessedSize()+dataForSlave.size();
+           setProcessedSize(size);
+           emit processedSize( this, size );
+           if ( size > m_totalSize ) {
+               slotTotalSize(size); // safety
+           }
+           emitPercent( size, m_totalSize );
+       }
+    }
     
     extraFlags() &= ~EF_TransferJobNeedData;
 }
+
+void TransferJob::setReportDataSent(bool enabled)
+{
+    if (enabled)
+       extraFlags() |= EF_TransferJobDataSent;
+    else
+       extraFlags() &= ~EF_TransferJobDataSent;
+}
+        
+bool TransferJob::reportDataSent()
+{
+    return (extraFlags() & EF_TransferJobDataSent);
+}
+
 
 // Slave requests data
 void TransferJob::slotDataReq()
@@ -1344,6 +1387,7 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 
 void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
 {
+    setProcessedSize(size);
     emit processedSize( this, size );
     if ( size > m_totalSize ) {
         slotTotalSize( this, size ); // safety
@@ -2845,6 +2889,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 {
   //kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned long)data_size << endl;
   m_fileProcessedSize = data_size;
+  setProcessedSize(m_processedSize + m_fileProcessedSize);
 
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
   {
@@ -3327,6 +3372,7 @@ void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
    // is not in Job.
 
    m_fileProcessedSize = data_size;
+   setProcessedSize(m_processedSize + m_fileProcessedSize);
 
    //kdDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
 
