@@ -86,8 +86,11 @@ public:
     */
    KFileTreeBranch* addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
 
-    // ### addBranch( KFileTreeBranch * )?
-    
+   /**
+    *  same as the function above but letting the user create the branch.
+    */
+   KFileTreeBranch* addBranch( KFileTreeBranch * );
+
    /**
     *  removes the branch with the given number from the treeview.
     *  @param branch is a pointer to the branch

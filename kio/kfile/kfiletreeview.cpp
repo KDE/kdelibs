@@ -401,19 +401,22 @@ KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name
    /* Open a new branch */
    KFileTreeBranch *newBranch = new KFileTreeBranch( this, path, name, pix,
                                                      showHidden );
+   return addBranch(newBranch);
+}
+
+KFileTreeBranch *KFileTreeView::addBranch(KFileTreeBranch *newBranch)
+{
    connect( newBranch, SIGNAL(populateFinished( KFileTreeViewItem* )),
-	    this, SLOT( slotPopulateFinished( KFileTreeViewItem* )));
+            this, SLOT( slotPopulateFinished( KFileTreeViewItem* )));
 
    connect( newBranch, SIGNAL( newTreeViewItems( KFileTreeBranch*,
-						 const KFileTreeViewItemList& )),
-	    this, SLOT( slotNewTreeViewItems( KFileTreeBranch*,
-					      const KFileTreeViewItemList& )));
-   
+                               const KFileTreeViewItemList& )),
+            this, SLOT( slotNewTreeViewItems( KFileTreeBranch*,
+                        const KFileTreeViewItemList& )));
 
    m_branches.append( newBranch );
    return( newBranch );
 }
-
 
 KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
 {
