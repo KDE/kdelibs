@@ -934,12 +934,8 @@ void RenderTable::calcColMinMax()
     }
     else if (hasPercent && !hasFixed)
     {
-//      kdDebug( 6040 ) << "2 percentWidest=" << //         percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
-        m_width = percentWidest;
-        m_width += (totalCols+1)*spacing+1;
         int tot = QMIN(99,totalPercent);
-        m_width = QMAX(availableWidth, (minVar + minRel)*100/(100-tot) );
-        m_width = QMIN(m_width, availableWidth);
+        m_width = QMIN((minVar + minRel)*100/(100-tot), availableWidth);
     }
     else if (hasPercent && hasFixed)
     {
@@ -954,9 +950,8 @@ void RenderTable::calcColMinMax()
             ourPercent = maxFixedPercent;
 
 //      kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
-        m_width = (maxFixed + minVar + minRel) * 100 /
-            ourPercent;
-        m_width = QMIN (m_width, availableWidth);
+        int w = (maxFixed + minVar + minRel) * 100 / ourPercent;
+        m_width = QMIN (w, availableWidth);
     }
     else
     {
@@ -1020,7 +1015,7 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
+   /*kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " TABLE m_minWidth=" << m_minWidth <<
                 " TABLE m_maxWidth=" << m_maxWidth << endl;*/
 
