@@ -98,7 +98,7 @@ ObjectProtoFunc::ObjectProtoFunc(int i)
 KJSO *ObjectProtoFunc::execute(Context *)
 {
   Ptr result;
-  KJSO *thisVal = KJScript::context()->thisValue;
+  KJSO *thisVal = KJScript::context()->thisValue();
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
   if (!thisVal->isA(ObjectType)) {

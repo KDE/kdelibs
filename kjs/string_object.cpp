@@ -96,7 +96,7 @@ StringProtoFunc::StringProtoFunc(int i)
 KJSO *StringProtoFunc::execute(Context *context)
 {
   Ptr result;
-  KJSO *thisVal = context->thisValue;
+  KJSO *thisVal = thisValue();
 
   Object *thisObj = static_cast<Object*>(thisVal);
 

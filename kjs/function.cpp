@@ -99,14 +99,14 @@ Context::Context(CodeType type, Context *callingContext,
       if (callingContext) {
 	scopeChain = callingContext->copyOfChain();
 	variable = callingContext->variableObject();
-	thisValue = callingContext->thisValue;
+	thisVal = callingContext->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
       scopeChain = new List();
       scopeChain->append(glob);
       variable = glob;
-      thisValue = glob;
+      thisVal = glob;
       break;
     case FunctionCode:
     case AnonymousCode:
@@ -115,21 +115,21 @@ Context::Context(CodeType type, Context *callingContext,
       scopeChain->append(glob);
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
       if (thisV->isA(ObjectType)) {
-	thisValue = thisV;
+	thisVal = thisV;
       }
       else
-	thisValue = glob;
+	thisVal = glob;
       break;
     case HostCode:
       if (thisV->isA(ObjectType))
-	thisValue = thisV;
+	thisVal = thisV;
       else
-	thisValue = glob;
+	thisVal = glob;
       variable = activation; /* TODO: DontDelete (ECMA 10.2.4) */
       scopeChain = new List();
       scopeChain->append(activation);
       if (func->hasAttribute(ImplicitThis))
-	scopeChain->append(thisValue);
+	scopeChain->append(thisVal);
       if (func->hasAttribute(ImplicitParents)) {
 	/* TODO ??? */
       }
@@ -173,6 +173,11 @@ void Function::processParameters(List *args)
       } else
 	variable->put(param->at(i), zeroRef(newUndefined()));
   }
+}
+
+KJSO *Function::thisValue() const
+{
+  return KJScript::context()->thisValue();
 }
 
 DeclaredFunction::DeclaredFunction(ParamList *p, StatementNode *b)

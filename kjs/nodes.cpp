@@ -97,7 +97,7 @@ KJSO *StringNode::evaluate()
 // ECMA 11.1.1
 KJSO *ThisNode::evaluate()
 {
-  return KJScript::context()->thisValue;
+  return KJScript::context()->thisValue();
 }
 
 // ECMA 11.1.2 & 10.1.4

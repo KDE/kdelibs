@@ -75,10 +75,10 @@ BooleanProtoFunc::BooleanProtoFunc(int i)
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3
-KJSO *BooleanProtoFunc::execute(Context *context)
+KJSO *BooleanProtoFunc::execute(Context *)
 {
   Ptr result;
-  KJSO *thisVal = context->thisValue;
+  KJSO *thisVal = thisValue();
 
   Object *thisObj = static_cast<Object*>(thisVal);
 

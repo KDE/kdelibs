@@ -48,6 +48,7 @@ namespace KJS {
     virtual KJSO* execute(Context *) = 0;
     virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
     virtual CodeType codeType() const = 0;
+    KJSO *thisValue() const;
   protected:
     FunctionAttribute attr;
     ParamList *param;
@@ -101,9 +102,9 @@ namespace KJS {
     KJSO *variableObject() const { return variable; }
     KJSO *arg(int i);
     int numArgs();
-  public:
-    KJSO *thisValue;
+    KJSO *thisValue() const { return thisVal; }
   private:
+    KJSO *thisVal;
     Activation *activation;
     KJSO *variable;
     List *scopeChain;
