@@ -311,6 +311,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
                 }
             o=no;
         }
+	e->repaint();
 
         s->setSelectionState(SelectionStart);
         e->setSelectionState(s == e ? SelectionBoth : SelectionEnd);
