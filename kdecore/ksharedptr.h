@@ -49,7 +49,7 @@ public:
     * but it will initialize the reference count on this object to 0
     */
    KShared( const KShared & ) : count(0) { }
-   
+
    /**
     * Overloaded assignment operator
     */
@@ -124,6 +124,9 @@ public:
   bool operator!= ( const T* p ) const { return ( ptr != p ); }
   bool operator!() const { return ( ptr == 0 ); }
   operator T*() const { return ptr; }
+
+  T* data() { return ptr; }
+  const T* data() const { return ptr; }
 
   const T& operator*() const { return *ptr; }
   T& operator*() { return *ptr; }
