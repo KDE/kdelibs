@@ -89,3 +89,5 @@ void PrintDialog::initializeGeometry()
 #include "PrintDialogData.moc"
 // #############################################################################
 
+#undef Inherited
+

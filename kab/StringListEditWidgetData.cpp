@@ -105,3 +105,4 @@ void StringListEditWidgetData::itemChanged(const char*)
 void StringListEditWidgetData::newItem()
 {
 }
+#undef Inherited

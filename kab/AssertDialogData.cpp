@@ -91,3 +91,6 @@ AssertDialogData::~AssertDialogData()
 void AssertDialogData::setAction(int)
 {
 }
+
+#undef Inherited
+

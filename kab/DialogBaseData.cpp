@@ -75,3 +75,6 @@ DialogBaseData::~DialogBaseData()
 void DialogBaseData::applyPressed()
 {
 }
+
+#undef Inherited
+

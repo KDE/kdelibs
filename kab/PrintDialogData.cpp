@@ -108,3 +108,4 @@ PrintDialogData::PrintDialogData
 PrintDialogData::~PrintDialogData()
 {
 }
+#undef Inherited

@@ -77,3 +77,6 @@ StringListSelectOneDialogData::StringListSelectOneDialogData
 StringListSelectOneDialogData::~StringListSelectOneDialogData()
 {
 }
+
+#undef Inherited
+
