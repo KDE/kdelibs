@@ -114,7 +114,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     stop( lister, _url );
 
     // clear _url for lister
-    forgetDirs( lister, _url );
+    forgetDirs( lister, _url, true );
 
     if ( lister->d->url == _url )
       lister->d->rootFileItem = 0;
@@ -415,33 +415,23 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
-    forgetDirInternal( lister, *it );
+    forgetDirs( lister, *it, false );
   }
 
   lister->d->lstDirs.clear();
   emit lister->clear();
 }
 
-void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
+void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool notify )
 {
   kdDebug(7004) << k_funcinfo << lister << " url: " << url << endl;
 
-  forgetDirInternal( lister, url );
-
-  lister->d->lstDirs.remove( url.url() );
-  emit lister->clear( url );
-}
-
-void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
-{
-  kdDebug(7004) << k_funcinfo << "lister=" << lister << " url=" << url << endl;
   QString urlStr = url.url(-1);
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
   Q_ASSERT( holders );
   holders->removeRef( lister );
 
   DirItem *item = itemsInUse[urlStr];
-
   Q_ASSERT( item );
 
   if ( holders->isEmpty() )
@@ -465,6 +455,12 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
           lister->d->complete = true;
           emit lister->canceled();
         }
+      }
+      
+      if ( notify )
+      {
+        lister->d->lstDirs.remove( url.url() );
+        emit lister->clear( url );
       }
 
       if ( item->complete )
@@ -1321,8 +1317,17 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
             kdl->d->rootFileItem = 0;
           }
           else
-            forgetDirs( kdl, deletedUrl );
+          {
+            bool treeview = kdl->d->lstDirs.count() > 1;
+            forgetDirs( kdl, deletedUrl, treeview );
+            if ( !treeview )
+            {
+              kdl->d->lstDirs.clear();
+              emit kdl->clear();
+            }
+          }
         }
+
         delete kdls;
       }
 

@@ -130,7 +130,7 @@ public:
   void setAutoUpdate( KDirLister *lister, bool enable );
 
   void forgetDirs( KDirLister *lister );
-  void forgetDirs( KDirLister *lister, const KURL &_url );
+  void forgetDirs( KDirLister *lister, const KURL &_url, bool notify );
 
   void updateDirectory( const KURL &_dir );
 
@@ -189,7 +189,6 @@ private:
   // and removed from the cache including all the childs.
   void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList * );
   void processPendingUpdates();
-  void forgetDirInternal( KDirLister *lister, const KURL &_url );
   // common for slotRedirection and FileRenamed
   void renameDir( const KURL &oldUrl, const KURL &url );
   // common for deleteUnmarkedItems and FilesRemoved
