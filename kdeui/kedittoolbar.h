@@ -143,11 +143,11 @@ public:
   //KDE 4.0: merge the two constructors
   /* Constructor for apps that do not use components, which has an extra argument
    * specifying the toolbar to be shown.
+   * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param collection The collection of actions to work on.
    * @param xmlfile The application's local resource file.
    * @param global If @p true, then the global resource file will also
    *               be parsed.
-   * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param parent The parent of the dialog.
    * @param name An internal name.
    * @since 3.2
@@ -184,8 +184,8 @@ public:
   /* Constructor for KParts based apps, which has an extra argument
    * specifying the toolbar to be shown.
    *
-   * @param factory Your application's factory object
    * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
    * @param name An internal name.
    * @since 3.2
@@ -288,11 +288,11 @@ public:
    //KDE 4.0: merge the two constructors
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
    *
+   * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param collection The collection of actions to work on
    * @param xmlfile The application's local resource file
    * @param global If true, then the global resource file will also
    *               be parsed
-   * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param parent This widget's parent
    * @since 3.2
    */
@@ -328,8 +328,8 @@ public:
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
    *
    *
-   * @param factory Your application's factory object
    * @param defaultToolbar The toolbar with this name will appear for editing.
+   * @param factory Your application's factory object
    * @param parent This widget's parent
    * @since 3.2
    */
