@@ -139,6 +139,14 @@ public:
     QString& getName() { return _name; }
     void setName(QString name) { _name = name; }
 
+    inline QString getCert() const { return _cert; }
+    inline bool getSite() const { return _site; }
+    inline bool getEmail() const { return _email; }
+    inline bool getCode() const { return _code; }
+    inline void setSite(bool x) { _site = x; }
+    inline void setEmail(bool x) { _email = x; }
+    inline void setCode(bool x) { _code = x; }
+
 protected:
     virtual void stateChange( bool );
 

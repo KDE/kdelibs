@@ -138,7 +138,9 @@ YourCertItem::YourCertItem( QListView *view, QString pkcs, QString pass, QString
 {
     m_module = module;
 KSSLX509Map cert(name);
-    setText(0, cert.getValue("CN"));
+    QString tmp = cert.getValue("CN");
+    tmp.replace(QRegExp("\n.*"), "");
+    setText(0, tmp);
     setText(1, cert.getValue("Email"));
     _pkcs = pkcs;
     _name = name;
@@ -163,7 +165,10 @@ CAItem::CAItem( QListView *view, QString name, QString cert, bool site, bool ema
 {
     m_module = module;
 KSSLX509Map mcert(name);
-    setText(0, mcert.getValue("CN"));
+    setText(0, mcert.getValue("O"));
+    QString tmp = mcert.getValue("CN");
+    tmp.replace(QRegExp("\n.*"), "");
+    setText(1, tmp);
     _name = name;
     _cert = cert;
     _site = site;
@@ -204,6 +209,7 @@ QString whatstr;
   otherCertDelList.setAutoDelete(true);
   yourCertDelList.setAutoDelete(true);
   authDelList.setAutoDelete(true);
+  caDelList.setAutoDelete(true);
 
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 6 tabs.
@@ -672,6 +678,7 @@ QString whatstr;
                  " knows about.  You can easily manage them from here.");
   QWhatsThis::add(caList, whatstr);
   grid->addMultiCellWidget(caList, 0, 7, 0, 6);
+  caList->addColumn(i18n("Organization"));
   caList->addColumn(i18n("Common Name"));
   connect(caList, SIGNAL(selectionChanged()), SLOT(slotCAItemChanged()));
 
@@ -802,6 +809,7 @@ void KCryptoConfig::load()
   otherCertDelList.clear();
   yourCertDelList.clear();
   authDelList.clear();
+  caDelList.clear();
   config->setGroup("TLS");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
 
@@ -1055,6 +1063,24 @@ void KCryptoConfig::save()
      pcerts->writeEntry("PKCS12Base64", x->getPKCS());
      pcerts->writeEntry("Password", x->getPass());
   }
+
+
+  // CA certificates code
+  for (CAItem *x = caDelList.first(); x != 0; x = caDelList.next()) {
+     cacfg->deleteGroup(x->configName());
+     caDelList.remove(x);
+  }
+  // Go through the non-deleted ones and save them
+  for (CAItem *x = static_cast<CAItem *>(caList->firstChild()); x;
+               x = static_cast<CAItem *>(x->nextSibling())) {
+     cacfg->setGroup(x->configName());
+     cacfg->writeEntry("x509", x->getCert());
+     cacfg->writeEntry("site", x->getSite());
+     cacfg->writeEntry("email", x->getEmail());
+     cacfg->writeEntry("code", x->getCode());
+  }
+
+  // FIXME: regenerate the CA list here
 
   config->setGroup("Auth");
   QString whichAuth = config->readEntry("AuthMethod", "none");
@@ -1718,7 +1744,10 @@ void KCryptoConfig::slotCAImport() {
 void KCryptoConfig::slotCARemove() {
 CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
-   
+    caList->takeItem(x);
+    caDelList.append(x);
+    configChanged();
+    slotCAItemChanged();
  }
 }
 
@@ -1730,11 +1759,21 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     caSite->setEnabled(true);
     caEmail->setEnabled(true);
     caCode->setEnabled(true);
+    caSite->setChecked(x->getSite());
+    caEmail->setChecked(x->getEmail());
+    caCode->setChecked(x->getCode());
+    caSubject->setValues(x ? x->getName() : QString(""));
+    cacfg->setGroup(x->getName());
+    KSSLCertificate *cert = KSSLCertificate::fromString(cacfg->readEntry("x509", "").local8Bit());
+    caIssuer->setValues(cert->getIssuer());
+    delete cert;
  } else {
     caSSLRemove->setEnabled(false);
     caSite->setEnabled(false);
     caEmail->setEnabled(false);
     caCode->setEnabled(false);
+    caSubject->setValues(QString(""));
+    caIssuer->setValues(QString(""));
  }
 }
 
@@ -1742,7 +1781,9 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
 void KCryptoConfig::slotCAChecked() {
 CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
-   
+   x->setSite(caSite->isChecked());
+   x->setEmail(caEmail->isChecked());
+   x->setCode(caCode->isChecked());
    configChanged();
  }
 }
