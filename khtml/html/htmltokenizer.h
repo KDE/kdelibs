@@ -281,8 +281,8 @@ protected:
     // Are we in a <select> ... </select> block
     bool select;
 
-    // Are we in a <listing> ... </listing> block
-    bool listing;
+    // Are we in a <xmp> ... </xmp> block
+    bool xmp;
 
     // Are we in plain textmode ?
     bool plaintext;
