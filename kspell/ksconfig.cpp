@@ -477,7 +477,7 @@ void KSpellConfig::getAvailDictsAspell () {
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
-  QDir thedir (dir.filePath(),"*.multi");
+  QDir thedir (dir.filePath(),"*");
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
   kdDebug(750) << "entryList().count()="
