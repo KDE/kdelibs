@@ -294,11 +294,11 @@ public:
     long cellIndex() const { return 0; }
     void setCellIndex( long ) { }
 
-    long colSpan() const { return cSpan; }
-    void setColSpan( long c ) { cSpan = c; }
+    unsigned short colSpan() const { return cSpan; }
+    void setColSpan( unsigned short c ) { cSpan = c; }
 
-    long rowSpan() const { return rSpan; }
-    void setRowSpan( long r ) { rSpan = r; }
+    unsigned short rowSpan() const { return rSpan; }
+    void setRowSpan( unsigned short r ) { rSpan = r; }
 
     bool noWrap() const { return nWrap; }
     void setNoWrap(bool nw) { nWrap = nw; }
