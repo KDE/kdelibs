@@ -22,6 +22,7 @@
 
 #include <qdict.h>
 #include <kdialogbase.h>
+#include <kaccel.h> // for KKeyEntryMap
 
 class QButtonGroup;
 class QCheckBox;
