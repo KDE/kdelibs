@@ -103,6 +103,8 @@ public:
   XMLGUIContainerNode *m_rootNode;
   QString m_servantName;
   QString m_defaultMergingName;
+
+  int m_genId;
 };
 
 };
@@ -213,6 +215,7 @@ void XMLGUIFactory::addServant( XMLGUIServant *servant )
 
   d->m_rootNode->index = -1;
   d->m_servantName = docElement.attribute( "name" );
+  d->m_genId = 0;
 
   buildRecursive( docElement, d->m_rootNode );
 
@@ -241,7 +244,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
   static QString tagAction = QString::fromLatin1( "Action" );
   static QString tagMerge = QString::fromLatin1( "Merge" );
   static QString attrName = QString::fromLatin1( "name" );
- 
+
   /*
    * This list contains references to all the containers we created on the current level.
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
@@ -328,6 +331,9 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
     }
     else
     {
+      if ( e.tagName() == "Separator" && e.attribute( attrName ).isEmpty() )
+        e.setAttribute( attrName, generateName() );
+    
       /*
        * No Action or Merge tag? That most likely means that we want to create a new container.
        * But first we have to check if there's already a existing (child) container of the same type in our
@@ -507,6 +513,11 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 
   return false;
 }
+
+QString XMLGUIFactory::generateName()
+{
+  return QString( d->m_servantName ).append( QString::number( d->m_genId++ ) ); 
+} 
 
 XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList )
 {
