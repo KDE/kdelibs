@@ -33,8 +33,6 @@ noinst_HEADERS= xview.h eps.h tiffr.h krl.h g3r.h ico.h
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(all_includes)
 
-EXTRA_DIST = netpbm.cpp netpbm.h
-
 servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio ppm.kimgio \
 	       xbm.kimgio jpeg.kimgio xv.kimgio krl.kimgio eps.kimgio \

@@ -12,9 +12,6 @@
 #endif
 
 #include<qimage.h>
-#include<qfile.h>
-#include<qglobal.h>
-#include<qcolor.h>
 #include<assert.h>
 
 #define BUF_SIZE 1024

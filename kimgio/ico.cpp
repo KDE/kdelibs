@@ -13,10 +13,6 @@
 
 #include <qimage.h>
 #include <qbitmap.h>
-#include <qfile.h>
-#include <qdatastream.h>
-#include <qglobal.h>
-#include <qcolor.h>
 #include <qapplication.h>
 #include <qpaintdevicemetrics.h>
 
