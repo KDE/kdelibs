@@ -89,13 +89,12 @@ dnl AC_CHECK_GNU_EXTENSIONS
 dnl Checks for library functions.
 AC_CHECK_SETENV
 AC_CHECK_UNSETENV
-AC_CHECK_SETUID
 AC_CHECK_RANDOM
 AC_CHECK_MKSTEMP
 AC_CHECK_MKSTEMPS
 AC_CHECK_FUNCS(socket vsnprintf seteuid setegid strfmon stpcpy gettimeofday)
 
-AH_VERBATIM([
+AH_BOTTOM([
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
    extended by "unsigned" */
 #undef INT32_BASETYPE
