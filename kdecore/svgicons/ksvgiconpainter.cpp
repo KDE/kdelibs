@@ -1162,18 +1162,28 @@ struct KSVGIconPainter::Private
 	int drawHeight;
 };
 
-KSVGIconPainter::KSVGIconPainter(int width, int height, int dwidth, int dheight) : d(new Private())
+KSVGIconPainter::KSVGIconPainter(int width, int height) : d(new Private())
 {
 	d->helper = new KSVGIconPainterHelper(width, height, this);
 
-	d->drawWidth = dwidth;
-	d->drawHeight = dheight;
+	d->drawWidth = width;
+	d->drawHeight = height;
 }
 
 KSVGIconPainter::~KSVGIconPainter()
 {
 	delete d->helper;
 	delete d;
+}
+
+void KSVGIconPainter::setDrawWidth(int dwidth)
+{
+	d->drawWidth = dwidth;
+}
+
+void KSVGIconPainter::setDrawHeight(int dheight)
+{
+	d->drawHeight = dheight;
 }
 
 void KSVGIconPainter::finish()

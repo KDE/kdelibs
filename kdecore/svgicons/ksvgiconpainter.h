@@ -33,18 +33,21 @@ class QPointArray;
 class KSVGIconPainter
 {
 public:
-	KSVGIconPainter(int width, int height, int dwidth, int dheight);
+	KSVGIconPainter(int width, int height);
 	~KSVGIconPainter();
 
+	void setDrawWidth(int dwidth);
+	void setDrawHeight(int dheight);
+
 	QImage *image();
-	
+
 	QWMatrix *worldMatrix();
 
 	void finish();
-	
+
 	void setUseFill(bool fill);
 	void setUseStroke(bool stroke);
-	
+
 	void setStrokeWidth(double width);
 	void setStrokeMiterLimit(const QString &miter);
 	void setCapStyle(const QString &cap);
@@ -57,7 +60,7 @@ public:
 	void setStrokeOpacity(const QString &strokeOpacity);
 	void setStrokeDashOffset(const QString &dashOffset);
 	void setStrokeDashArray(const QString &dashes);
-	
+
 	void setWorldMatrix(QWMatrix *worldMatrix);
 	void setClippingRect(int x, int y, int w, int h);
 
@@ -72,16 +75,16 @@ public:
 	QColor parseColor(const QString &param);
 	Q_UINT32 toArtColor(const QColor &color);
 	Q_UINT32 parseOpacity(const QString &data);
-	
+
 	double toPixel(const QString &s, bool hmode);
 	double dpi();
-	
+
 	ArtGradientLinear *linearGradient(const QString &id);
 	void addLinearGradient(const QString &id, ArtGradientLinear *gradient);
 
 	QDomElement linearGradientElement(ArtGradientLinear *linear);
 	void addLinearGradientElement(ArtGradientLinear *gradient, QDomElement element);
-	
+
 	ArtGradientRadial *radialGradient(const QString &id);
 	void addRadialGradient(const QString &id, ArtGradientRadial *gradient);
 

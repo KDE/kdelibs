@@ -569,6 +569,9 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	// Detect width and height
 	QDomElement rootElement = rootNode.toElement();
 
+	// Create icon painter
+	d->painter = new KSVGIconPainter(width, height);
+
 	d->width = width; // this sets default for no width -> 100% case
 	if(rootElement.hasAttribute("width"))
 		d->width = d->helper->toPixel(rootElement.attribute("width"), true);
@@ -578,7 +581,8 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		d->height = d->helper->toPixel(rootElement.attribute("height"), false);
 
 	// Create icon painter
-	d->painter = new KSVGIconPainter(width, height, static_cast<int>(d->width), static_cast<int>(d->height));
+	d->painter->setDrawWidth(static_cast<int>(d->width));
+	d->painter->setDrawHeight(static_cast<int>(d->height));
 
 	// Set viewport clipping rect
 	d->painter->setClippingRect(0, 0, width, height);
