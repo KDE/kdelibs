@@ -212,7 +212,7 @@ void HTMLTokenizer::write( const char *str )
 	else if ( *src == '&' )
 	{
 	    if ( pre )
-		pre_pos ++;	    
+		pre_pos++;	    
 	    space = false;
 
 	    // Is the string long enough?
@@ -270,7 +270,7 @@ void HTMLTokenizer::write( const char *str )
 
 	    if ( dest > buffer )
 	    {
-		*dest++ = 0;
+		*dest = 0;
 		tokenList.append( buffer );
 		dest = buffer;
 	    }
@@ -293,11 +293,6 @@ void HTMLTokenizer::write( const char *str )
 		script = true;
 //		blocking.append( new BlockingToken( BlockingToken::Script,
 //				tokenList.at() ) );
-		while ( *src && *src != '>' )
-		    src++;
-
-		if ( *src == '>' )
-		    src++;
 
 		scriptCode = new char[ 1024 ];
 		scriptCodeSize = 0;
@@ -319,7 +314,7 @@ void HTMLTokenizer::write( const char *str )
 				tokenList.at() ) );
 	    }
 	    else if ( !blocking.isEmpty() && 
-		    strncasecmp( src, blocking.getLast()->token(),
+		    strncasecmp( buffer+1, blocking.getLast()->token(),
 			strlen( blocking.getLast()->token() ) ) == 0 )
 	    {
 		blocking.removeLast();
@@ -328,7 +323,7 @@ void HTMLTokenizer::write( const char *str )
 	    space = false;
 
 	    *dest++ = '>';
-	    *dest++ = 0;
+	    *dest = 0;
 	    tokenList.append( buffer );
 	    dest = buffer;
 	    tag = false;
@@ -337,18 +332,18 @@ void HTMLTokenizer::write( const char *str )
 	else if ( !tag && pre && ( *src == ' ' || *src == '\t' ||
 		*src == '\n' || *src == 13 ) )
 	{
-	    // For every line break in <pre> insert a the tag '\n'.
+	    // For every line break in <pre> insert the tag '\n'.
 	    if ( *src == '\n' )
 	    {
 		if ( dest > buffer )
 		{
-		    *dest++ = 0;
+		    *dest = 0;
 		    tokenList.append( buffer );
 		    dest = buffer;
 		}
 		*dest++ = TAG_ESCAPE;
 		*dest++ = '\n';
-		*dest++ = 0;
+		*dest = 0;
 		tokenList.append( buffer );
 		dest = buffer;
 		pre_pos = 0; 
@@ -361,7 +356,7 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    else if ( *src == ' ' )
 	    {
-		pre_pos ++;
+		pre_pos++;
 		*dest++ = ' ';
 		space = true;
 	    }
@@ -369,29 +364,18 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 )
 	{
-	    if ( !tag && script )
+	    if ( !space )
 	    {
-		// Dont manipulate any character inside of the <script> tag
-		*dest++ = *src++;
-	    }
-	    else
-	    {
-		if ( !space )
+		*dest++ = ' ';
+		if ( !tag )
 		{
-		    *dest++ = ' ';
-		    if ( !tag )
-		    {
-			// MRJ - taking this line out reduces mem usage by
-			// about 1/3 and makes almost no difference to output
-			// *dest++ = 0;
-			*dest++ = 0;
-			tokenList.append( buffer );
-			dest = buffer;
-		    }
+		    *dest = 0;
+		    tokenList.append( buffer );
+		    dest = buffer;
 		}
-		src++;
 		space = true;
 	    }
+	    src++;
 	}
 	else
 	{
@@ -459,37 +443,41 @@ HTMLTokenizer::~HTMLTokenizer()
 
 //-----------------------------------------------------------------------------
 
-StringTokenizer::StringTokenizer( const QString &_str, const char *_separators )
+StringTokenizer::StringTokenizer()
 {
-    QString str = _str.simplifyWhiteSpace();
-    int c;
+    buffer = 0;
+    pos    = 0;
+    end    = 0;
+    bufLen = 0;
+}
 
-    const char *separators = _separators;
-    const char *src = str.data();
-
-    for ( c = 0; *src != '\0'; c++, src++ )
+void StringTokenizer::tokenize( const char *str, const char *_separators )
+{
+    if ( *str == '\0' )
     {
-	const char *s = separators;
-	while( *s != 0 )
-	{
-	    if ( *src == *s )
-		c++;
-	    s++;
-	}
+	pos = 0;
+	return;
     }
-    
-    buffer = new char[ c + 1 ];
 
-    src = str.data();
-	end = buffer;
+    int strLength = strlen( str ) + 1;
+
+    if ( bufLen < strLength )
+    {
+	delete [] buffer;
+	buffer = new char[ strLength ];
+	bufLen = strLength;
+    }
+
+    const char *src = str;
+    end = buffer;
     bool quoted = false;
     
     for ( ; *src != '\0'; src++ )
     {
-	char *x = strchr( separators, *src );
+	char *x = strchr( _separators, *src );
 	if ( *src == '\"' )
 	    quoted = !quoted;
-	else if ( x != 0L && !quoted )
+	else if ( x && !quoted )
 	    *end++ = 0;
 	else
 	    *end++ = *src;
@@ -497,32 +485,28 @@ StringTokenizer::StringTokenizer( const QString &_str, const char *_separators )
 
     *end = 0;
 
-    pos = buffer;
+    if ( end - buffer <= 1 )
+	pos = 0;	// no tokens
+    else
+	pos = buffer;
 }
 
 const char* StringTokenizer::nextToken()
 {
-    if ( pos == NULL )
-	return 0L;
+    if ( pos == 0 )
+	return 0;
 
     char *ret = pos;
     pos += strlen( ret ) + 1;
     if ( pos >= end )
-	pos = NULL;
+	pos = 0;
 
     return ret;
 }
 
-bool StringTokenizer::hasMoreTokens()
-{
-    if ( pos == NULL )
-	return false;
-    return true;
-}
-
 StringTokenizer::~StringTokenizer()
 {
-    if ( buffer != 0L )
+    if ( buffer != 0 )
 	delete [] buffer;
 }
 

@@ -215,14 +215,14 @@ HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter)
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 {
-    text = " ";
+    text = "";
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent() + 1;
-    width = _painter->fontMetrics().width( (const char*)text );
+    width = 0;
     setSeparator( true );
     selStart = 0;
-    selEnd = strlen( text );
+    selEnd = 0;
 }
 
 bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
@@ -308,7 +308,7 @@ int HTMLText::getCharIndex( QPainter *_painter, int _xpos )
 
     _painter->setFont( *font );
 
-    do
+    while ( index < len )
     {
 	charWidth = _painter->fontMetrics().width( text[ index ] );
 	if ( xp + charWidth/2 >= _xpos )
@@ -316,7 +316,6 @@ int HTMLText::getCharIndex( QPainter *_painter, int _xpos )
 	xp += charWidth;
 	index++;
     }
-    while ( index < len );
 
     return index;
 }
@@ -390,24 +389,7 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
     }
     else
     {
-
-#if QT_VERSION < 130  // remove when Qt-1.3 is released
-	if ( _painter->device()->devType() == PDT_PRINTER )
-	{
-	    QString escText = "";
-	    const char *p = text;
-
-	    while ( *p != '\0' )
-	    {
-		if ( *p == '(' || *p == ')' || *p == '\\' )
-			escText += '\\';
-		escText += *p++;
-	    }
-	    _painter->drawText( x + _tx, y + _ty, escText );
-	}
-	else
-#endif
-	    _painter->drawText( x + _tx, y + _ty, text );
+	_painter->drawText( x + _tx, y + _ty, text );
     }
 }
 
@@ -931,7 +913,8 @@ void HTMLMap::fileLoaded( const char *_filename )
 	    if ( buffer[0] == '#' )
 		continue;
 
-	    StringTokenizer st( buffer, " " );
+	    StringTokenizer st;
+	    st.tokenize( buffer, " " );
 
 	    // get shape
 	    const char *p = st.nextToken();

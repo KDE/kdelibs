@@ -18,7 +18,8 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent, const char *_src )
     cFrames = 0;
     
     QString s = _src + 9;
-    StringTokenizer st( s, " >" );
+    StringTokenizer st;
+    st.tokenize( s, " >" );
     while ( st.hasMoreTokens() )
     {
 	const char* token = st.nextToken();
@@ -191,7 +192,8 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     int i = 0;
     
     QString s = _str;
-    StringTokenizer st( s, "," );
+    StringTokenizer st;
+    st.tokenize( s, "," );
     while ( st.hasMoreTokens() )
     {
 	if ( i == 1024 )

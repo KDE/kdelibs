@@ -1690,7 +1690,7 @@ void HTMLClueH::setMaxWidth( int _w )
     // now call setMaxWidth for variable objects
     for ( obj = head; obj != 0; obj = obj->next() )
 	if ( obj->getPercent() > 0 )
-	    obj->setMaxWidth( _w );
+	    obj->setMaxWidth( _w - indent );
 }
 
 void HTMLClueH::calcSize( HTMLClue *parent )
@@ -1703,7 +1703,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     HTMLObject *obj;
     int lmargin = parent->getLeftMargin( getYPos() );
 
-    width = lmargin;
+    width = lmargin + indent;
     descent = 0;
     ascent = 0;
 
@@ -1747,7 +1747,7 @@ int HTMLClueH::calcMinWidth()
     for ( obj = head; obj != 0; obj = obj->next() )
 	minWidth += obj->calcMinWidth();
     
-    return minWidth;
+    return minWidth + indent;
 }
  
 int HTMLClueH::calcPreferredWidth()
@@ -1758,7 +1758,7 @@ int HTMLClueH::calcPreferredWidth()
     for ( obj = head; obj != 0; obj = obj->next() )
 	prefWidth += obj->calcPreferredWidth();
 	
-    return prefWidth;
+    return prefWidth + indent;
 }
     
 //-----------------------------------------------------------------------------

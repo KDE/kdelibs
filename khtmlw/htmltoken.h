@@ -22,22 +22,6 @@ class HTMLTokenizer;
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
-//-----------------------------------------------------------------------------
-
-class StringTokenizer
-{
-public:
-    StringTokenizer( const QString &, const char * );
-    ~StringTokenizer();
-
-    const char* nextToken();
-    bool hasMoreTokens();
-
-protected:
-    char *pos;
-    char *end;
-    char *buffer;
-};
 
 //-----------------------------------------------------------------------------
 
@@ -139,6 +123,25 @@ protected:
     
     // These are tokens for which we are awaiting ending tokens
     QList<BlockingToken> blocking;
+};
+
+//-----------------------------------------------------------------------------
+
+class StringTokenizer
+{
+public:
+    StringTokenizer();
+    ~StringTokenizer();
+
+    void tokenize( const char *, const char * );
+    const char* nextToken();
+    bool hasMoreTokens() { return ( pos != 0 ); }
+
+protected:
+    char *pos;
+    char *end;
+    char *buffer;
+    int  bufLen;
 };
 
 #endif // HTMLTOKEN

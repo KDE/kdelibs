@@ -1,7 +1,16 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 5 October 1997 - Martin Jones.
+Last Change: 12 October 1997 - Martin Jones.
+
+Version 0.11.0 - Martin
+-----------------------
+
+Fixes for <blockquote>.
+Fixes for <pre>.
+More care with placement of vspaces.
+Optimisations.
+
 
 Version 0.10.1 - Martin
 -----------------------

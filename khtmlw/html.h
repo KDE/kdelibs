@@ -8,7 +8,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1000		// 00.10.00
+#define KHTMLW_VERSION  1100		// 00.11.00
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -638,7 +638,7 @@ public slots:
     void slotFileLoaded( const char *_url, const char *_filename );
     
 protected slots:
-    void slotTimeout();
+//    void slotTimeout();
 
     /*
      * INTERNAL
@@ -711,6 +711,8 @@ protected:
     virtual void resizeEvent( QResizeEvent * );
 
     virtual void keyPressEvent( QKeyEvent * );
+
+    virtual void timerEvent( QTimerEvent * );
 
     // we don't want global palette changes affecting us
     virtual void setPalette( const QPalette & ) {}
@@ -875,6 +877,15 @@ protected:
     HTMLTokenizer *ht;
 
     /*
+     * This is used generally for processing the contents of < ... >
+     * We keep a class global instance of this object to reduce the
+     * number of new/deletes performed.  If your function may be
+     * called recursively, or somehow from a function using this
+     * tokenizer, you should construct your own.
+     */
+    StringTokenizer *stringTok;
+
+    /*
      * Selects a new font adding _relative_font_size to fontBase
      * to get the new size.
      */
@@ -1021,7 +1032,7 @@ protected:
     /*
      * Timer to parse html in background
      */
-    QTimer timer;
+    int timerId;
 
     /*
      * begin() has been called, but not end()

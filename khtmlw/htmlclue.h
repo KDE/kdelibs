@@ -187,7 +187,7 @@ public:
     virtual void setIndent( int i )
 	    {	indent = i; }
 
-private:
+protected:
     short indent;
 };
 
@@ -233,7 +233,7 @@ class HTMLClueH : public HTMLClue
 {
 public:
     HTMLClueH( int _x, int _y, int _max_width, int _percent = 100 )
-	    : HTMLClue( _x, _y, _max_width, _percent ) { }
+	    : HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
     virtual ~HTMLClueH() { }
 	
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
@@ -242,6 +242,12 @@ public:
     virtual void calcSize( HTMLClue *parent = NULL );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
+
+    virtual void setIndent( int i )
+	    {	indent = i; }
+
+private:
+    short indent;
 };
 
 
