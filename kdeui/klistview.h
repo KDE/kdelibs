@@ -65,15 +65,15 @@ public:
    *   @li up/down: move one item up/down
    *   @li insert: toggle selection of current and move to the next
    *   @li space: toggle selection of the current
-   *   @li SHIFT+CTRL+up: move to the previous item and toggle selection of this one
-   *   @li SHIFT+CTRL+down: toggle selection of the current item and move to the next
-   *   @li SHIFT+CTRL+end: toggle selection from (including) the current
+   *   @li CTRL+up: move to the previous item and toggle selection of this one
+   *   @li CTRL+down: toggle selection of the current item and move to the next
+   *   @li CTRL+end: toggle selection from (including) the current
    *   item to (including) the last item
-   *   @li SHIFT+CTRL+home: toggle selection from (including) the current
+   *   @li CTRL+home: toggle selection from (including) the current
    *   item to the (including) the first item
-   *   @li SHIFT+CTRL+PgDn: toggle selection from (including) the current
+   *   @li CTRL+PgDn: toggle selection from (including) the current
    *   item to (excluding) the item one page down
-   *   @li SHIFT+CTRL+PgUp: toggle selection from (excluding) the current
+   *   @li CTRL+PgUp: toggle selection from (excluding) the current
    *   item to (including) the item one page up
    *
    *    The combinations work the same with SHIFT instead of CTRL, except
