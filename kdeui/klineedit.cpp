@@ -3,7 +3,7 @@
    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
    Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-   Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
+   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -135,22 +135,9 @@ void KLineEdit::makeCompletion( const QString& text )
     setCompletedText( match, marked );
 }
 
-void KLineEdit::connectSignals( bool handle ) const
+// BC: Remove on the next BCI day !!
+void KLineEdit::connectSignals( bool ) const
 {
-    if( handle && !handleSignals() )
-    {
-        connect( this, SIGNAL( completion( const QString& ) ),
-                 this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
-                 this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-    }
-    else if( !handle && handleSignals() )
-    {
-        disconnect( this, SIGNAL( completion( const QString& ) ),
-                    this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
-                    this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-    }
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
@@ -159,20 +146,22 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     if( echoMode() == QLineEdit::Normal &&
         completionMode() != KGlobalSettings::CompletionNone )
     {
-        bool fireSignals = emitSignals();
         KGlobalSettings::Completion mode = completionMode();
         if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
-            if( !keycode.isNull() && keycode.unicode()->isPrint() && fireSignals )
+            if( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 if( !hasMarkedText() && txt.length() )
                 {
-                    kdDebug() << "Key Pressed: " << keycode.latin1() << endl;
-                    kdDebug() << "Current text: " << txt.latin1() << endl;
-                    emit completion( txt );
+                    kdDebug() << "Key Pressed: " << keycode << endl;
+                    kdDebug() << "Current text: " << txt << endl;
+                    if( emitSignals() )
+                        emit completion( txt );
+                    if( handleSignals() )
+                        makeCompletion( txt );
                 }
                 return;
             }
@@ -180,32 +169,42 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         // Handles completion.
         KeyBindingMap keys = getKeyBindings();
         int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
-        if( KStdAccel::isEqual( e, key ) && fireSignals )
+        if( KStdAccel::isEqual( e, key ) )
         {
             // Emit completion if the completion mode is NOT
             // CompletionAuto and if the mode is CompletionShell,
             // the cursor is at the end of the string.
-            int len = displayText().length();
+            QString txt = text();
+            int len = txt.length();
             if( (mode == KGlobalSettings::CompletionMan ||
                 (mode == KGlobalSettings::CompletionShell &&
                 cursorPosition() == len && len != 0 ) ) )
             {
-                emit completion( displayText() );
+                if( emitSignals() )
+                    emit completion( txt );
+                if( handleSignals() )
+                    makeCompletion( txt );
                 return;
             }
         }
         // Handles previous match
     	key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
-        if( KStdAccel::isEqual( e, key ) && fireSignals )
+        if( KStdAccel::isEqual( e, key ) )
         {
-            emit textRotation( KCompletionBase::PrevCompletionMatch );
+            if( emitSignals() )
+                emit textRotation( KCompletionBase::PrevCompletionMatch );
+            if( handleSignals() )
+                rotateText( KCompletionBase::PrevCompletionMatch );
             return;
         }
         // Handles next match
 	    key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
-        if( KStdAccel::isEqual( e, key ) && fireSignals)
+        if( KStdAccel::isEqual( e, key ) )
         {
-            emit textRotation( KCompletionBase::NextCompletionMatch );
+            if( emitSignals() )
+                emit textRotation( KCompletionBase::NextCompletionMatch );
+            if( handleSignals() )
+                rotateText( KCompletionBase::NextCompletionMatch );
             return;
         }
     }

@@ -298,14 +298,7 @@ protected:
     */
     virtual void init();
 
-    /**
-    * Implementation of @ref KCompletionBase::connectSignals().
-    *
-    * This function simply connects the signals to appropriate
-    * slots when they are handled internally.
-    *
-    * @param handle if true, handle completion & roation internally.
-    */
+    /** BC: Remove on the next BCI day !! */
     virtual void connectSignals( bool handle ) const;
 
     /**

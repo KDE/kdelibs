@@ -194,28 +194,16 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 
 void KComboBox::itemSelected( QListBoxItem* item )
 {
+    kdDebug() << QString::fromLatin1( "KComobBox: Item Selected" ) << endl;
     if( item != 0 && m_pEdit )
     {
        m_pEdit->setSelection( 0, currentText().length() );
     }
 }
 
-void KComboBox::connectSignals( bool handle ) const
+// BC: Remove on the next BCI day !!
+void KComboBox::connectSignals( bool ) const
 {
-    if( handle && !handleSignals() )
-    {
-        connect( this, SIGNAL( completion( const QString& ) ),
-                 this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
-                 this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-    }
-    else if( !handle && handleSignals() )
-    {
-        disconnect( this, SIGNAL( completion( const QString& ) ),
-                    this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
-                    this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-    }
 }
 
 void KComboBox::keyPressEvent ( QKeyEvent * e )
@@ -226,53 +214,62 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
-            if( !keycode.isNull() && keycode.unicode()->isPrint() && emitSignals() )
+            if( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
                 QComboBox::keyPressEvent ( e );
                 QString txt = currentText();
                 if( !m_pEdit->hasMarkedText() && txt.length() )
                 {
-                    kdDebug() << "Key Pressed: " << keycode.latin1() << endl;
-                    kdDebug() << "Current text: " << txt.latin1() << endl;
-                    emit completion( txt );
+                    kdDebug() << "Key Pressed: " << keycode << endl;
+                    kdDebug() << "Current text: " << txt << endl;
+                    if( emitSignals() )
+                        emit completion( txt ); // emit when requested...
+                    if( handleSignals() )
+                        makeCompletion( txt );  // handle when requested...
                 }
                 return;
             }
         }
         if( mode != KGlobalSettings::CompletionNone )
         {
-
-	   bool fireSignals = emitSignals();
-	   KeyBindingMap keys = getKeyBindings();
-	   int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
-	   if( KStdAccel::isEqual( e, key ) && fireSignals )
-           {
-	      // Emit completion if the completion mode is completionShell or
-	      // CompletionMan, there is a completion object present, the
-	      // current text is not the same as the previous and the cursor
-	      // is at the end of the string.
-	      if( mode == KGlobalSettings::CompletionMan ||
-		 (mode == KGlobalSettings::CompletionShell &&
-		  m_pEdit->cursorPosition() == (int) currentText().length() ) )
-	      {
-		 emit completion( currentText() );
-		 return;
-	      }
-
+            KeyBindingMap keys = getKeyBindings();
+            int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
+            if( KStdAccel::isEqual( e, key ) )
+            {
+                // Emit completion if the completion mode is completionShell or
+                // CompletionMan, there is a completion object present, the
+                // current text is not the same as the previous and the cursor
+                // is at the end of the string.
+                QString txt = currentText();
+                if( mode == KGlobalSettings::CompletionMan ||
+                    (mode == KGlobalSettings::CompletionShell &&
+                    m_pEdit->cursorPosition() == (int) txt.length() ) )
+                {
+                    if( emitSignals() )
+                        emit completion( txt ); // emit when requested...
+                    if( handleSignals() )
+                        makeCompletion( txt );  // handle when requested...		
+                    return;
+                }
             }
-
             // Handles previousMatch.
             key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
-            if( KStdAccel::isEqual( e, key ) && fireSignals )
+            if( KStdAccel::isEqual( e, key ) )
             {
-                emit textRotation( KCompletionBase::PrevCompletionMatch );
+                if( emitSignals() )
+                    emit textRotation( KCompletionBase::PrevCompletionMatch );
+                if( handleSignals() )
+                    rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
             // Handles nextMatch.
             key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
-            if( KStdAccel::isEqual( e, key ) && fireSignals )
+            if( KStdAccel::isEqual( e, key ) )
             {
-                emit textRotation( KCompletionBase::NextCompletionMatch );
+                if( emitSignals() )
+                    emit textRotation( KCompletionBase::NextCompletionMatch );
+                if( handleSignals() )
+                    rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
         }
@@ -283,6 +280,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
         {
             emit completion ( keycode );
+            if( handleSignals() )
+                makeCompletion( keycode );
             return;
         }
     }

@@ -469,20 +469,17 @@ private:
 
 
 /**
- * An abstract base class for adding completion feature
+ * An abstract base class for adding a completion feature
  * into widgets.
  *
- * This is a convienence class that tries to provide
- * the common functions needed to add support for
- * completion into widgets.  Refer to @ref KLineEdit()
- * or @ref KComboBox() to see how to such support can be
- * added using this base class.
+ * This is a convienence class that provides the basic functions
+ * needed to add text completion support into widgets.  All that
+ * is required is an implementation for the pure virtual function
+ * @ref setCompletionText.  Refer to @ref KLineEdit or @ref KComboBox
+ * to see how easily such support can be added using this as a base
+ * class.
  *
- * NOTE: Do not forget to provide an implementation for
- * the protected pure virtual method @ref connectSignals()
- * if you do not want the class to be abstract.
- *
- * @short An abstract class for using KCompletion in widgets
+ * @short A basic abstract class for adding text completion support in widgets.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KCompletionBase
@@ -557,20 +554,21 @@ public:
     * @param compObj a @ref KCompletion() or a derived child object.
     * @param hsig if true, handles signals internally.
     */
-    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
+    virtual void setCompletionObject( KCompletion* /*compObj*/, bool hsig = true );
 
     /**
-    * Enables this object to handle completion signals
-    * internally.
+    * Enables this object to handle completion and rotation
+    * events internally.
     *
-    * This function simply assigns the boolean value that
-    * indicates whether it should handle signals or not.
-    * All child objects must provide an implementation for
-    * @ref connectSignals() which this method calls first.
+    * This function simply assigns a boolean value that
+    * indicates whether it should handle rotation and
+    * completion events or not.  Note that this does not
+    * stop the object from emitting signals when these
+    * events occur.
     *
-    * @param complete if true, handle completion & roation internally.
+    * @param handle if true, handle completion & rotation internally.
     */
-    virtual void setHandleSignals( bool handle );
+    virtual void setHandleSignals( bool /*handle*/ );
 
     /**
     * Returns true if the completion object is deleted
@@ -597,21 +595,24 @@ public:
     }
 
     /**
-    * Sets the widget's ability to emit completion signals.
+    * Sets the widget's ability to emit text completion and
+    * rotation signals.
     *
     * Invoking this function with @p enable set to @p false will
     * cause the completion & rotation signals not to be emitted.
-    * This means that internal handling of these signals will be
-    * disabled as well.  However, unlike setting the completion
-    * object to @p NULL using @ref setCompletionObject, disabling
-    * the emition of the signals through this method does not
-    * affect the current completion object.
+    * However, unlike setting the completion object to @p NULL
+    * using @ref setCompletionObject, disabling the emition of
+    * the signals through this method does not affect the current
+    * completion object.
     *
     * There is no need to invoke this function by default.  When a
-    * completion object is created through completionObject() or
-    * setCompletionObject(), these signals are automatically actiavted.
+    * completion object is created through @ref completionObject or
+    * @ref setCompletionObject, these signals are set to emit
+    * automatically.  Also note that disabling this signals will not
+    * necessarily interfere with the objects ability to handle these
+    * events internally.  See @ref setHandleSignals.
     *
-    * @param enable if false disables the emittion of completion & rotation signals.
+    * @param enable if false, disables the emittion of completion & rotation signals.
     */
     void setEnableSignals( bool enable ) { m_bEmitSignals = enable; }
 
@@ -736,12 +737,7 @@ public:
 protected:
 
     /**
-    * A pure virtual function.
-    *
-    * This function must provide an implementation for
-    * how signals are connected when they are handled
-    * internally.  Since this is implementation dependent
-    * it is left upto each inheriting object to decide.
+    *  BC:  Remove this on the next and last BCI day!!!
     */
     virtual void connectSignals( bool handle ) const = 0;
 
@@ -749,12 +745,12 @@ protected:
      * Returns an instance of the completion object.
      *
      * This method is only different from @ref completionObject()
-     * in that it does not create a new KCompletion object if
-     * the internal pointer is null.  Use this method to get the
-     * pointer to a completion object when inheriting from this
-     * widget so that you will not inadvertantly create it!!
+     * in that it does not create a new KCompletion object evenif
+     * the internal pointer is @p NULL. Use this method to get the
+     * pointer to a completion object when inheriting so that you
+     * won't inadvertantly create it!!
      *	
-     * @returns an instance of the completion object.
+     * @returns the completion object or NULL if one does not exist.
      */
      KCompletion* compObj() { return m_pCompObj; }
 
@@ -769,6 +765,11 @@ protected:
      KeyBindingMap getKeyBindings() const { return m_keyMap; }	
 
 private:
+
+    // This method simply sets the autodelete boolen for
+    // the completion object, the emit signals and handle
+    // signals internally flags to the provided values.
+    void setup( bool, bool, bool );
 
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.

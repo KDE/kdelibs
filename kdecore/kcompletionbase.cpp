@@ -29,29 +29,19 @@ KCompletionBase::KCompletionBase()
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobalSettings::completionMode();
 
-    // By default do not emit signals.  Should be
-    // enabled through member functions...
-    m_bEmitSignals = false;
-
-    // Initialize the auto delete flag to false.  This
-    // will be changed accordingly when the completion
-    // object is created through either completionObject
-    // or setCompletionObject member functions.
-    m_bAutoDelCompObj = false;
-
-    // By default do not handle rotation & completion
-    // signals.  Will be enabled as needed when completion
-    // objects are created or through member funtions.
-    m_bHandleSignals = false;
-
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
     useGlobalKeyBindings();
+
+    // By default we initialize everything to false.
+    // All the variables would be setup properly when
+    // the appropriate member functions are called.
+    setup( false, false, false );
 }
 
 KCompletionBase::~KCompletionBase()
 {
-    if( m_bAutoDelCompObj && m_pCompObj)
+    if( m_bAutoDelCompObj && m_pCompObj )
     {
         delete m_pCompObj;
     }
@@ -61,10 +51,10 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
 {
     if ( !m_pCompObj )
     {
-        setCompletionObject( new KCompletion(), hsig );
-        // Set automatic deletion of completion object
-        // to true since it was internally created...
-        m_bAutoDelCompObj = true;
+        m_pCompObj = new KCompletion();
+        // We emit rotation and completion
+        // signals by default.
+        setup( true, hsig, true );
     }
     return m_pCompObj;
 }
@@ -72,14 +62,14 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
     m_pCompObj = compObj;
-    m_bAutoDelCompObj = false;
-    setHandleSignals( hsig );
-    m_bEmitSignals = ( !m_pCompObj.isNull() ); // emit signals if comp object exists
+    // We emit rotation and completion signals
+    // if completion object is not NULL.
+    setup( false, hsig, !m_pCompObj.isNull() );
 }
 
+// BC: Inline this function and possibly rename it to setHandleEvents??? (DA)
 void KCompletionBase::setHandleSignals( bool handle )
 {
-    connectSignals( handle );
     m_bHandleSignals = handle;
 }
 
@@ -116,4 +106,11 @@ void KCompletionBase::useGlobalKeyBindings()
 	m_keyMap.insert( TextCompletion, 0 );
 	m_keyMap.insert( PrevCompletionMatch, 0 );
 	m_keyMap.insert( NextCompletionMatch, 0 );
+}
+
+void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
+{
+    m_bAutoDelCompObj = autodel;
+    m_bHandleSignals = hsig;
+    m_bEmitSignals = esig;
 }
