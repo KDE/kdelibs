@@ -177,7 +177,7 @@ public:
 // ----- inline functions:
 bool KeyValueMap::insert
 (const string& key, const char* value,
- bool force=false)
+ bool force)
 { 
   string temp(value); 
   return insert(key, temp, force); 

@@ -87,7 +87,7 @@ DatePickerDialog::~DatePickerDialog()
   // ############################################################################
 }
 
-DateLabel::DateLabel(QWidget* parent=0, const char* name=0, 
+DateLabel::DateLabel(QWidget* parent, const char* name, 
 		     const QDate& dateToSet)
   : QLabel(parent, name),
     date(dateToSet),

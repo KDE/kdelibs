@@ -33,7 +33,7 @@ public:
 protected:
   /** If tile is true, the card is displayed with a tile background,
     * if it is false, the background color is used. The background
-    * color defaults to <???>.
+    * color defaults to something.
     */
   bool tile;
   string filename; // of the background image

@@ -1,0 +1,11 @@
+1998-12-08  Alex Zepeda  <garbanzo@hooked.net>
+
+	* businesscard.h (class BusinessCard): Hopefully remove
+	trigraph.
+
+	* datepickerdialog.cc (DateLabel): Removed default value
+	in the implementation.
+
+	* keyvaluemap.h: Removed a default value for a function
+	which should be in a .cpp file. Oy.
+
