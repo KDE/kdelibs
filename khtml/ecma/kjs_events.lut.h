@@ -151,14 +151,15 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry DOMKeyEventTableEntries[] = {
-   { "virtKey", DOMKeyEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[2] },
-   { "key", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[3] },
+   { "keyVal", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[2] },
+   { "virtKeyVal", DOMKeyEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[4] },
+   { "keyCode", DOMKeyEvent::Key, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[3] },
    { "outputString", DOMKeyEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
-   { "inputGenerated", DOMKeyEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[4] },
+   { "inputGenerated", DOMKeyEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMKeyEventTableEntries[5] },
    { "numPad", DOMKeyEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMKeyEventTable = { 2, 5, DOMKeyEventTableEntries, 2 };
+const struct HashTable DOMKeyEventTable = { 2, 6, DOMKeyEventTableEntries, 2 };
 
 }; // namespace
 

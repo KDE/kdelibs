@@ -559,8 +559,10 @@ const ClassInfo DOMKeyEvent::info = { "KeyEvent", &DOMUIEvent::info, &DOMKeyEven
 
 /*
 @begin DOMKeyEventTable 2
-  key   	 DOMKeyEvent::Key	     DontDelete|ReadOnly
-  virtKey	 DOMKeyEvent::VirtKey        DontDelete|ReadOnly
+  keyVal   	 DOMKeyEvent::Key	     DontDelete|ReadOnly
+# IE's name for it
+  keyCode   	 DOMKeyEvent::Key	     DontDelete|ReadOnly
+  virtKeyVal	 DOMKeyEvent::VirtKey        DontDelete|ReadOnly
   outputString	 DOMKeyEvent::OutputString   DontDelete|ReadOnly
   inputGenerated DOMKeyEvent::InputGenerated DontDelete|ReadOnly
   numPad         DOMKeyEvent::NumPad         DontDelete|ReadOnly
