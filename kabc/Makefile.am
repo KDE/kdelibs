@@ -39,9 +39,9 @@ kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
-splitformat_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-splitformat_LDADD = libkabc.la
-splitformat_SOURCES = splitformat.cpp
+#splitformat_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+#splitformat_LDADD = libkabc.la
+#splitformat_SOURCES = splitformat.cpp
 
 check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
   testaddressee kabcargl
