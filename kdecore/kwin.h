@@ -94,7 +94,13 @@ public:
 	WId win;
       /// The window's state.
  	long unsigned int state;
+      /**
+       * Checks whether the window is iconified (minimized).
+       * @return true if iconified
+       */
+	bool isIconified() const;
       /// The mapping state.
+      // Use isIconified() if possible !
 	NET::MappingState mappingState;
       /// The strut.
 	NETStrut strut;
@@ -110,11 +116,6 @@ public:
 	bool onAllDesktops;
       /// The process id of the window's owner
 	pid_t pid;
-      /**
-       * Checks whether the window is iconified (minimized).
-       * @return true if iconified
-       */
-	bool isIconified() const;
       /// Position and size of the window contents.
 	QRect geometry;
       /// Position and size of the window's frame.
