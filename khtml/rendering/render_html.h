@@ -42,7 +42,6 @@ namespace khtml {
 	virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
 	virtual void repaint();
 	virtual void layout();
-        virtual int lowestPosition() const;
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);

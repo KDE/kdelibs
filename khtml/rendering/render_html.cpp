@@ -105,23 +105,18 @@ void RenderHtml::repaint()
 	cb->repaint();
 }
 
-int RenderHtml::lowestPosition() const
-{
-    // don't let our own height extend our own height (as we're increasing our heigh below
-    // in layout()). This only happens because lowestPosition() returns m_height+margins, while
-    // we compare with m_height only. we could fix that there, but its not worth the effort
-    // as we need m_height+marginbottom (== "totalheight") anyway.
-    return 0;
-}
-
 void RenderHtml::layout()
 {
     RenderFlow::layout();
 
     //kdDebug(0) << renderName() << " height = " << m_height << endl;
     int lp = lowestPosition();
-    if( m_height < lp )
-	m_height = lp;
+    // margins of Html element can only be fixed, right?
+    int margins  = m_style->marginTop().isFixed() ? m_style->marginTop().value : 0;
+        margins += m_style->marginBottom().isFixed() ? m_style->marginBottom().value : 0;
+
+    if( m_height + margins < lp )
+	m_height = lp - margins;
 
     //kdDebug(0) << "docHeight = " << m_height << endl;
 }
