@@ -347,12 +347,6 @@ int ElementImpl::getAttributeCount() const
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
 {
-/*    if (name=="id")
-    {
-        setAttribute(ATTR_ID,value);
-        return;        
-    }*/
-    
     // ### check for invalid characters in value -> throw exception
     int exceptioncode; // ### propogate
     if(!namedAttrMap) {
@@ -524,7 +518,7 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
 {
     return 0;
 }
-#include <assert.h>
+
 void ElementImpl::attach()
 {
     if (!m_render)
@@ -539,14 +533,11 @@ void ElementImpl::attach()
             {
                 _parent->renderer()->addChild(m_render, nextRenderer());
             }
-            //kdDebug() << nodeName().string() << ": changed()=" <<changed() << endl;
-            //assert(!changed());
         }
 #endif
 #endif
-
     }
-    
+
     NodeBaseImpl::attach();
 }
 
@@ -867,9 +858,6 @@ bool XMLElementImpl::isXMLElementNode() const
 {
     return true;
 }
-
-
-
 
 // -------------------------------------------------------------------------
 

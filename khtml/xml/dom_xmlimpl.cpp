@@ -265,7 +265,7 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc, DOMString
         m_data->ref();
     m_sheet = 0;
     m_cachedSheet = 0;
-    m_localHref = 0;    
+    m_localHref = 0;
 }
 
 ProcessingInstructionImpl::~ProcessingInstructionImpl()
@@ -330,8 +330,6 @@ NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exception
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
-#include <kdebug.h>
-
 void ProcessingInstructionImpl::checkStyleSheet()
 {
     if (m_target && DOMString(m_target) == "xml-stylesheet") {
@@ -346,9 +344,9 @@ void ProcessingInstructionImpl::checkStyleSheet()
             return;
         if (attrs.value("type") != "text/css")
             return;
-       
+
         DOMString href = attrs.value("href");
-        
+
         if (href.length()>1)
         {
             if (href[0]=='#')
@@ -359,7 +357,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 if (m_localHref)
                     m_localHref->ref();
             }
-            else 
+            else
             {
                 // ### some validation on the URL?
 	        // ### make sure doc->baseURL() is not empty?
@@ -371,7 +369,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
             }
 
         }
-    }   
+    }
 }
 
 StyleSheetImpl *ProcessingInstructionImpl::sheet() const
