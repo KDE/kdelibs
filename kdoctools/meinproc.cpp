@@ -117,10 +117,23 @@ int main(int argc, char **argv) {
         catalogs += locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
 
         setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
-        int ret = system( QString::fromLatin1( "xmllint --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
-        chdir( pwd_buffer );
-        if ( ret ) {
-            exit( 1 );
+        QString exe;
+#if defined( XMLLINT )
+        exe = XMLLINT;
+#endif
+        if ( ::access( QFile::encodeName( exe ), X_OK ) ) {
+            exe = KStandardDirs::findExe( "xmllint" );
+            if (exe.isEmpty())
+                exe = locate( "exe", "xmllint" );
+        }
+        if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
+            int ret = system( QString( exe + " --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
+            chdir( pwd_buffer );
+            if ( ret ) {
+                exit( 1 );
+            }
+        } else {
+            kdWarning() << "couldn't find xmllint" << endl;
         }
     }
 

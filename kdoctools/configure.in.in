@@ -2,14 +2,14 @@
 # don't use it yet
 HELP_SUBDIR=kdoctools
 
-KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [
+KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
   AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.3.9. (we also keep a version of it in kdesupport for convience)])
   HELP_SUBDIR=
 ])
 
 if test -n "$XML_CONFIG"; then
   vers=`$XML_CONFIG --version 2>/dev/null | sed -e 's/libxml //' | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-  if test -z "$vers" || test "$vers" -ge 2003009
+  if test -n "$vers" && test "$vers" -ge 2003009
   then
      LIBXML_LIBS="`$XML_CONFIG --libs`"
      LIBXML_RPATH=
@@ -22,6 +22,9 @@ if test -n "$XML_CONFIG"; then
      done
      LIBXML_RPATH=`echo $LIBXML_RPATH | sed -e "s/-L/-R/"`
      LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
+
+     KDE_FIND_PATH(xmllint, XMLLINT, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [XMLLINT=""])
+     AC_DEFINE_UNQUOTED(XMLLINT, "$XMLLINT", [Defines the executable of xmllint])
   else
      AC_MSG_WARN([You need at least libxml 2.3.9])
      HELP_SUBDIR=
