@@ -1,6 +1,5 @@
 ## MCOP Core Infrastructure
 
-- change notifications for enums
 - offer sampleprecise timing
 - resource management (i.e. locate resources like "samples" or "structures"
   in a similar uniform way KDE does with KStandardDirs)
