@@ -87,7 +87,7 @@ void MdConnectInit(void)
 }
 
 
-#ifdef 0
+#ifdef FALSE
 /******************************************************************************
  *
  * Function:	MdConnectFindSlot()
@@ -326,7 +326,7 @@ void MdDisconnect(MediaCon *mcon)
   hdr = FindChunkData(helpptr,"IHDR");
   unlink(hdr->ipcfname);
 
-  // Detach when last client goes doen
+  /* Detach when last client goes doen */
   shmctl(mcon->talkid, IPC_RMID, &InfoBuf);
 
   if ( helpptr != NULL)
