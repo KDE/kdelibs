@@ -625,14 +625,14 @@ unsigned char Lexer::convertHex(unsigned short c) const
 
 unsigned char Lexer::convertHex(unsigned short c1, unsigned short c2) const
 {
-  return (convertHex(c1) << 4 + convertHex(c2));
+  return ((convertHex(c1) << 4) + convertHex(c2));
 }
 
 UChar Lexer::convertUnicode(unsigned short c1, unsigned short c2,
                                      unsigned short c3, unsigned short c4) const
 {
-  return UChar(convertHex(c1) << 4 + convertHex(c2),
-                     convertHex(c3) << 4 + convertHex(c4));
+  return UChar((convertHex(c1) << 4) + convertHex(c2),
+	       (convertHex(c3) << 4) + convertHex(c4));
 }
 
 void Lexer::record8(unsigned short c)
