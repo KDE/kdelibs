@@ -330,6 +330,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     {
        if ( ::rename( _dest.data(), _dest_orig.data() ) )
        {
+           kdWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
            error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
            return;
        }

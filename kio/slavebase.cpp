@@ -428,15 +428,15 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 {
     QDataStream stream( data, IO_ReadOnly );
 
-    QString str1, str2;
     KURL url;
     int i;
 
     switch( command ) {
     case CMD_HOST: {
         QString passwd;
-	stream >> str1 >> i >> str2 >> passwd;
-	setHost( str1, i, str2, passwd );
+        QString host, user;
+	stream >> host >> i >> user >> passwd;
+	setHost( host, i, user, passwd );
     }
     break;
     case CMD_CONNECT:
@@ -467,7 +467,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 	bool overwrite = ( iOverwrite != 0 );
 	bool resume = ( iResume != 0 );
 	
-	put( str1, permissions, overwrite, resume);
+	put( url, permissions, overwrite, resume);
     }
     break;
     case CMD_STAT:

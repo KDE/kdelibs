@@ -433,7 +433,7 @@ void TransferJob::slotRedirection( const KURL &url)
 
     if (m_redirectionList.contains(url))
     {
-       kdDebug(7007) << "TransferJob::slotRedirection: CYCLCIC REDIRECTION!" << endl;
+       kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
        m_errorText = m_url.url();
     }
@@ -735,7 +735,7 @@ void FileCopyJob::startDataPump()
     m_getJob = get( m_src, false, false /* no GUI */ );
     kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
     m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false /* no GUI */);
-    kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << endl;
+    kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << " m_dest=" << m_dest.url() << endl;
     m_putJob->suspend();
     addSubjob( m_getJob );
     connectSubjob( m_getJob ); // Progress info depends on get
