@@ -109,9 +109,9 @@ public:
 
     bool m_enableContext;
     //bool hasRealPos;
-    QMainWindow::ToolBarDock realPos;
-    int realIndex, realOffset;
-    bool realNl;
+    //QMainWindow::ToolBarDock realPos;
+    //int realIndex, realOffset;
+    //bool realNl;
     QMainWindow::ToolBarDock oldPos;
 
     KXMLGUIClient *m_xmlguiClient;
@@ -1088,14 +1088,10 @@ QString KToolBar::settingsGroup() const
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";
-#if defined(Q_CC_GNU)
-#warning FIXME: remove this const cast in next qt version
-#endif
-    KToolBar *that = const_cast<KToolBar *>( this );
-    if ( that->mainWindow() )
+    if ( mainWindow() )
     {
         configGroup.prepend(" ");
-        configGroup.prepend( that->mainWindow()->name() );
+        configGroup.prepend( mainWindow()->name() );
     }
     return configGroup;
 }
@@ -1438,11 +1434,14 @@ void KToolBar::showEvent( QShowEvent *e )
 {
     QToolBar::showEvent( e );
     rebuildLayout();
+    // Let's try without
+#if 0
 #ifdef __GNUC__
 #warning workaround for a QToolbar bug in Qt 2.2.3
 #endif
     QResizeEvent re(size(), size());
     QToolBar::resizeEvent(&re);
+#endif
 }
 
 void KToolBar::setStretchableWidget( QWidget *w )
