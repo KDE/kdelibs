@@ -124,7 +124,7 @@
 <!ENTITY Emacs	"<application>Emacs</application>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
-<!ENTITY gcc	"<application>gcc</application>">
+<!ENTITY gcc	"<command>gcc</command>">
 <!ENTITY GIF	"<acronym>GIF</acronym>">
 <!ENTITY GMT	"<acronym>GMT</acronym>">
 <!ENTITY GNU	"<acronym>GNU</acronym>">
