@@ -157,8 +157,7 @@ void KAnimWidget::updateIcons()
   QStringList::Iterator it = d->icons.begin();
   for( ; it != d->icons.end(); ++it)
   {
-    kdDebug() << "loading icon " << *it << " with size " << d->size << endl;
-    d->pixmaps.append( BarIcon( *it, d->size ) );
+    d->pixmaps.append( MainBarIcon( *it, d->size ) );
   }
 
   d->iter   = d->pixmaps.begin();
