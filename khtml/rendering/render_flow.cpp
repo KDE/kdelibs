@@ -562,7 +562,7 @@ void RenderFlow::newLine()
 {
     positionNewFloats();
     // set y position
-    int newY = 0;
+    unsigned int newY = 0;
     switch(m_clearStatus)
     {
     case CLEFT:
