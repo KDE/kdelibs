@@ -2800,6 +2800,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         if ( m_bAutoSkip )
         {
             skip( (*it).uSource );
+            m_fileProcessedSize = (*it).size;
             files.remove( it ); // Move on to next file
         }
         else
@@ -2826,6 +2827,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 {
                     // Very special case, see a few lines below
                     // We are deleting the source of a symlink we successfully moved... ignore error
+                    m_fileProcessedSize = (*it).size;
                     files.remove( it );
                 } else {
                     // Go directly to the conflict resolution, there is nothing to stat
@@ -2988,6 +2990,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         case R_SKIP:
             // Move on to next file
             skip( (*it).uSource );
+            m_processedSize += (*it).size;
             files.remove( it );
             m_processedFiles++;
             break;
