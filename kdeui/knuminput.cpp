@@ -107,8 +107,10 @@ void KNumInput::setLabel(const QString & label, int a)
         m_alignment = 0;
     }
     else {
-        m_label = new QLabel(label, this, "KNumInput::QLabel");
-        m_label->setAlignment((a & (~(AlignTop|AlignBottom|AlignVCenter))) | AlignVCenter);
+        if (m_label) m_label->setText(label);
+        else m_label = new QLabel(label, this, "KNumInput::QLabel");
+        m_label->setAlignment((a & (~(AlignTop|AlignBottom|AlignVCenter)))
+                              | AlignVCenter);
         // if no vertical alignment set, use Top alignment
         if(!(a & (AlignTop|AlignBottom|AlignVCenter)))
            a |= AlignTop;
