@@ -45,7 +45,7 @@ HTMLAreaElement::HTMLAreaElement(HTMLAreaElementImpl *impl) : HTMLElement(impl)
 
 HTMLAreaElement &HTMLAreaElement::operator = (const Node &other)
 {
-    if(other.id() != ID_AREA)
+    if(other.elementId() != ID_AREA)
     {
 	impl = 0;
 	return *this;
@@ -176,7 +176,7 @@ HTMLImageElement::HTMLImageElement(HTMLImageElementImpl *impl) : HTMLElement(imp
 
 HTMLImageElement &HTMLImageElement::operator = (const Node &other)
 {
-    if(other.id() != ID_IMG)
+    if(other.elementId() != ID_IMG)
     {
 	impl = 0;
 	return *this;
@@ -360,7 +360,7 @@ HTMLMapElement::HTMLMapElement(HTMLMapElementImpl *impl) : HTMLElement(impl)
 
 HTMLMapElement &HTMLMapElement::operator = (const Node &other)
 {
-    if(other.id() != ID_MAP)
+    if(other.elementId() != ID_MAP)
     {
 	impl = 0;
 	return *this;

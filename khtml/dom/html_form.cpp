@@ -44,7 +44,7 @@ HTMLButtonElement::HTMLButtonElement(HTMLButtonElementImpl *impl) : HTMLElement(
 
 HTMLButtonElement &HTMLButtonElement::operator = (const Node &other)
 {
-    if(other.id() != ID_BUTTON)
+    if(other.elementId() != ID_BUTTON)
     {
 	impl = 0;
 	return *this;
@@ -158,7 +158,7 @@ HTMLFieldSetElement::HTMLFieldSetElement(HTMLFieldSetElementImpl *impl) : HTMLEl
 
 HTMLFieldSetElement &HTMLFieldSetElement::operator = (const Node &other)
 {
-    if(other.id() != ID_FIELDSET)
+    if(other.elementId() != ID_FIELDSET)
     {
 	impl = 0;
 	return *this;
@@ -199,7 +199,7 @@ HTMLFormElement::HTMLFormElement(HTMLFormElementImpl *impl) : HTMLElement(impl)
 
 HTMLFormElement &HTMLFormElement::operator = (const Node &other)
 {
-    if(other.id() != ID_FORM)
+    if(other.elementId() != ID_FORM)
     {
 	impl = 0;
 	return *this;
@@ -324,7 +324,7 @@ HTMLInputElement::HTMLInputElement(HTMLInputElementImpl *impl) : HTMLElement(imp
 
 HTMLInputElement &HTMLInputElement::operator = (const Node &other)
 {
-    if(other.id() != ID_INPUT)
+    if(other.elementId() != ID_INPUT)
     {
 	impl = 0;
 	return *this;
@@ -594,7 +594,7 @@ HTMLLabelElement::HTMLLabelElement(HTMLLabelElementImpl *impl) : HTMLElement(imp
 
 HTMLLabelElement &HTMLLabelElement::operator = (const Node &other)
 {
-    if(other.id() != ID_LABEL)
+    if(other.elementId() != ID_LABEL)
     {
 	impl = 0;
 	return *this;
@@ -657,7 +657,7 @@ HTMLLegendElement::HTMLLegendElement(HTMLLegendElementImpl *impl) : HTMLElement(
 
 HTMLLegendElement &HTMLLegendElement::operator = (const Node &other)
 {
-    if(other.id() != ID_LEGEND)
+    if(other.elementId() != ID_LEGEND)
     {
 	impl = 0;
 	return *this;
@@ -720,7 +720,7 @@ HTMLOptGroupElement::HTMLOptGroupElement(HTMLOptGroupElementImpl *impl) : HTMLEl
 
 HTMLOptGroupElement &HTMLOptGroupElement::operator = (const Node &other)
 {
-    if(other.id() != ID_OPTGROUP)
+    if(other.elementId() != ID_OPTGROUP)
     {
 	impl = 0;
 	return *this;
@@ -783,7 +783,7 @@ HTMLSelectElement::HTMLSelectElement(HTMLSelectElementImpl *impl) : HTMLElement(
 
 HTMLSelectElement &HTMLSelectElement::operator = (const Node &other)
 {
-    if(other.id() != ID_SELECT)
+    if(other.elementId() != ID_SELECT)
     {
 	impl = 0;
 	return *this;
@@ -962,7 +962,7 @@ HTMLTextAreaElement::HTMLTextAreaElement(HTMLTextAreaElementImpl *impl) : HTMLEl
 
 HTMLTextAreaElement &HTMLTextAreaElement::operator = (const Node &other)
 {
-    if(other.id() != ID_TEXTAREA)
+    if(other.elementId() != ID_TEXTAREA)
     {
 	impl = 0;
 	return *this;
@@ -1144,7 +1144,7 @@ HTMLOptionElement::HTMLOptionElement(HTMLOptionElementImpl *impl) : HTMLElement(
 
 HTMLOptionElement &HTMLOptionElement::operator = (const Node &other)
 {
-    if(other.id() != ID_OPTION)
+    if(other.elementId() != ID_OPTION)
     {
 	impl = 0;
 	return *this;

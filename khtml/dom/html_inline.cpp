@@ -43,7 +43,7 @@ HTMLAnchorElement::HTMLAnchorElement(HTMLAnchorElementImpl *impl) : HTMLElement(
 
 HTMLAnchorElement &HTMLAnchorElement::operator = (const Node &other)
 {
-    if(other.id() != ID_A)
+    if(other.elementId() != ID_A)
     {
 	impl = 0;
 	return *this;
@@ -224,7 +224,7 @@ HTMLBRElement::HTMLBRElement(HTMLBRElementImpl *impl) : HTMLElement(impl)
 
 HTMLBRElement &HTMLBRElement::operator = (const Node &other)
 {
-    if(other.id() != ID_BR)
+    if(other.elementId() != ID_BR)
     {
 	impl = 0;
 	return *this;
@@ -270,7 +270,7 @@ HTMLFontElement::HTMLFontElement(HTMLFontElementImpl *impl) : HTMLElement(impl)
 
 HTMLFontElement &HTMLFontElement::operator = (const Node &other)
 {
-    if(other.id() != ID_FONT)
+    if(other.elementId() != ID_FONT)
     {
 	impl = 0;
 	return *this;
@@ -338,7 +338,7 @@ HTMLIFrameElement::HTMLIFrameElement(HTMLIFrameElementImpl *impl) : HTMLElement(
 
 HTMLIFrameElement &HTMLIFrameElement::operator = (const Node &other)
 {
-    if(other.id() != ID_IFRAME)
+    if(other.elementId() != ID_IFRAME)
     {
 	impl = 0;
 	return *this;
@@ -483,8 +483,8 @@ HTMLModElement::HTMLModElement(HTMLModElementImpl *impl) : HTMLElement(impl)
 
 HTMLModElement &HTMLModElement::operator = (const Node &other)
 {
-    if( other.id() != ID_INS &&
-	other.id() != ID_DEL )
+    if( other.elementId() != ID_INS &&
+	other.elementId() != ID_DEL )
     {
 	impl = 0;
 	return *this;
@@ -541,7 +541,7 @@ HTMLQuoteElement::HTMLQuoteElement(HTMLQuoteElementImpl *impl) : HTMLElement(imp
 
 HTMLQuoteElement &HTMLQuoteElement::operator = (const Node &other)
 {
-    if(other.id() != ID_Q)
+    if(other.elementId() != ID_Q)
     {
 	impl = 0;
 	return *this;

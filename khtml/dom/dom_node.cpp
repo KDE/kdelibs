@@ -249,7 +249,7 @@ Node Node::cloneNode( bool deep )
     return 0;
 }
 
-unsigned short Node::id() const
+unsigned short Node::elementId() const
 {
     if(!impl) return 0;
     return impl->id();

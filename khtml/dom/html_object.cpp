@@ -47,7 +47,7 @@ HTMLAppletElement::HTMLAppletElement(HTMLAppletElementImpl *impl)
 
 HTMLAppletElement &HTMLAppletElement::operator = (const Node &other)
 {
-    if(other.id() != ID_APPLET)
+    if(other.elementId() != ID_APPLET)
     {
 	impl = 0;
 	return *this;
@@ -203,7 +203,7 @@ HTMLObjectElement::HTMLObjectElement(HTMLObjectElementImpl *impl) : HTMLElement(
 
 HTMLObjectElement &HTMLObjectElement::operator = (const Node &other)
 {
-    if(other.id() != ID_OBJECT)
+    if(other.elementId() != ID_OBJECT)
     {
 	impl = 0;
 	return *this;
@@ -439,7 +439,7 @@ HTMLParamElement::HTMLParamElement(HTMLParamElementImpl *impl) : HTMLElement(imp
 
 HTMLParamElement &HTMLParamElement::operator = (const Node &other)
 {
-    if(other.id() != ID_PARAM)
+    if(other.elementId() != ID_PARAM)
     {
 	impl = 0;
 	return *this;
