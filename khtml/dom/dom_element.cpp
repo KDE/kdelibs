@@ -182,10 +182,8 @@ Attr Element::removeAttributeNode( const Attr &oldAttr )
 
     int exceptioncode = 0;
 
-    AttrImpl* oldAttrImpl = static_cast<AttrImpl *>(oldAttr.handle());
-    NodeImpl::Id id = oldAttrImpl->attrImpl()->id();
-    Attr r(oldAttrImpl->cloneNode(false));
-    static_cast<ElementImpl*>(impl)->attributes(true)->removeNamedItem(id, exceptioncode);
+    NodeImpl::Id id = static_cast<AttrImpl *>(oldAttr.handle())->attrImpl()->id();
+    Attr r = static_cast<ElementImpl*>(impl)->attributes(true)->removeNamedItem(id, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return r;

@@ -611,7 +611,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
 
     // INUSE_ATTRIBUTE_ERR: Raised if arg is an Attr that is already an attribute of another Element object.
     // The DOM user must explicitly clone Attr nodes to re-use them in other elements.
-    if (attr->ownerElement()) {
+    if (attr->ownerElement() && attr->ownerElement() != element) {
         exceptioncode = DOMException::INUSE_ATTRIBUTE_ERR;
         return 0;
     }
@@ -632,7 +632,9 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     return r;
 }
 
-void NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
+// The DOM2 spec doesn't say that removeAttribute[NS] throws NOT_FOUND_ERR
+// if the attribute is not found - David
+Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
 {
     // ### should this really be raised when the attribute to remove isn't there at all?
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
@@ -641,7 +643,13 @@ void NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
         return Node();
     }
 
+    AttributeImpl* a = getAttributeItem(id);
+    if (!a) return Node();
+
+    if (!a->attrImpl())  a->allocateImpl(element);
+    Node r(a->attrImpl());
     removeAttribute(id);
+    return r;
 }
 
 AttrImpl *NamedAttrMapImpl::item ( unsigned long index ) const
@@ -780,11 +788,11 @@ void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
 
     // Notify the element that the attribute has been removed
     // dispatch appropriate mutation events
-    if (attr->_value) {
-        attr->_value->deref();
+    if (element && attr->_value) {
+        DOMStringImpl* value = attr->_value;
         attr->_value = 0;
-        if (element)
-            element->parseAttribute(attr);
+        element->parseAttribute(attr);
+        attr->_value = value;
     }
     if (element) {
         element->dispatchAttrRemovalEvent(attr);
