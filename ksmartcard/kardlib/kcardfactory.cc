@@ -215,10 +215,7 @@ int KCardFactory::loadModules() {
 		QStringList _subSubType = service->property("X-KDE-Smartcard-SubSubType").toStringList(); 
 
 
-		if (_type == QString::null) 
-			continue; 
- 
-		if (_subType == QString::null) 
+		if (_type.isNull() || _subType.isNull()) 
 			continue; 
  
 		// subSubType can be NULL for instances where a manufacturer 
