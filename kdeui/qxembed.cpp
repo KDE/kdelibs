@@ -671,7 +671,21 @@ QXEmbed::~QXEmbed()
             // L1021: Hide the window and safely reparent it into the root,
             //        otherwise it would be destroyed by X11 together 
             //        with this QXEmbed's window.
-            XUnmapWindow( qt_xdisplay(), window );
+#if 0
+// TODO: The proper XEmbed way would be to unmap the window, and the embedded
+// app would detect the embedding has ended, and do whatever it finds appropriate.
+// However, QXEmbed currently doesn't provide support for this detection,
+// so for the time being, it's better to leave the window mapped as toplevel window.
+// This will be ever more complicated with the systray windows, as the simple API
+// for them (KWin::setSystemTrayWindowFor()) doesn't make it possible to detect
+// themselves they have been released from systray, but KWin requires them
+// to be visible to allow next Kicker instance to swallow them.
+// See also below the L1022 comment.
+//            XUnmapWindow( qt_xdisplay(), window );
+#else
+            if( autoDelete())
+                XUnmapWindow( qt_xdisplay(), window );
+#endif
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
             if( !d->xplain )
                 XRemoveFromSaveSet( qt_xdisplay(), window );
@@ -1268,16 +1282,6 @@ bool QXEmbed::autoDelete() const
 bool QXEmbed::customWhatsThis() const
 {
     return true;
-}
-
-// Used by system tray when embedding tray window using the KDE tray mechanism.
-// Those windows use XEMBED protocol, but when Kicker releases them, they should
-// be mapped after reparented back to root, otherwise KWin won't detect them.
-// Due to the simple API (KWin::setSystemTrayWindowFor()) it's not possible to make them
-// detect themselves that they're not embedded anymore and handle the situation themselves.
-void QXEmbed::setMapAfterRelease( bool set )
-{
-    d->mapAfterRelease = set;
 }
 
 // L2800: When using the XPLAIN protocol, this function maintains

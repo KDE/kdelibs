@@ -181,11 +181,6 @@ public:
      */
     bool autoDelete() const;
 
-    /**
-     * @internal
-     */
-    void setMapAfterRelease( bool set );
-    
     /* Reimp */
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
