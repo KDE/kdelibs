@@ -665,6 +665,34 @@ public:
    */
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs ); // ### KDE 3.0: make private
 
+  /**
+   * Called by KJS.
+   * Sets the StatusBarText assigned
+   * via window.status
+   */
+  void setJSStatusBarText( const QString &text );
+
+  /**
+   * Called by KJS.
+   * Sets the DefaultStatusBarText assigned
+   * via window.defaultStatus
+   */
+  void setJSDefaultStatusBarText( const QString &text );
+
+  /**
+   * Called by KJS.
+   * Returns the StatusBarText assigned
+   * via window.status
+   */
+  QString jsStatusBarText() const;
+ 
+  /**
+   * Called by KJS.
+   * Returns the DefaultStatusBarText assigned
+   * via window.defaultStatus
+   */
+  QString jsDefaultStatusBarText() const;
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

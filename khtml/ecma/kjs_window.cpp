@@ -195,8 +195,10 @@ KJSO Window::get(const UString &p) const
 
   if (p == "crypto")
     return Undefined(); // ###
-  else if (p == "defaultStatus")
-    return String("");  // ###
+  else if (p == "defaultStatus" || p == "defaultstatus")
+    return String(UString(part->jsDefaultStatusBarText()));
+  else if (p == "status")
+    return String(UString(part->jsStatusBarText()));
   else if (p == "document")
     return getDOMNode(part->document());
   else if (p == "Node")
@@ -306,7 +308,10 @@ void Window::put(const UString &p, const KJSO &v)
 {
   if (p == "status") {
     String s = v.toString();
-    WindowFunc::setStatusBarText(part, s.value().qstring());
+    part->setJSStatusBarText(s.value().qstring());
+  } else if (p == "defaultStatus" || p == "defaultstatus") {
+    String s = v.toString();
+    part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
     QString str = v.toString().value().qstring();
     part->scheduleRedirection(0, str);
@@ -521,11 +526,6 @@ Completion WindowFunc::tryExecute(const List &args)
   }
   return Completion(Normal, result);
 
-}
-
-void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
-{
-  emit p->setStatusBarText(s);
 }
 
 void WindowFunc::initJScript(KHTMLPart *p)
