@@ -23,6 +23,7 @@
 
 #include "kjs_window.h"
 #include "kjs_events.h"
+#include "kjs_debugwin.h"
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
@@ -100,12 +101,13 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   //kdDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
 
 #ifdef KJS_DEBUGGER
-  // ###    KJSDebugWin::instance()->attach(m_script);
   if (inlineCode)
     filename = "(unknown file)";
-  if (KJSDebugWin::instance())
+  if (KJSDebugWin::instance()) {
+    KJSDebugWin::instance()->attach(m_script);
     KJSDebugWin::instance()->setNextSourceInfo(filename,baseLine);
-  //    KJSDebugWin::instance()->setMode(KJS::Debugger::Step);
+  //    KJSDebugWin::instance()->setMode(KJSDebugWin::Step);
+  }
 #else
   Q_UNUSED(baseLine);
 #endif
@@ -141,11 +143,11 @@ void KJSProxyImpl::clear() {
   // (we used to delete and re-create it, previously)
   if (m_script) {
 #ifdef KJS_DEBUGGER
-    KJSDebugWin *debugWin = KJSDebugWin::instance();
-    if (debugWin && debugWin->currentScript() == m_script) {
-        debugWin->setMode(KJSDebugWin::Stop);
+    //KJSDebugWin *debugWin = KJSDebugWin::instance();
+    //if (debugWin && debugWin->currentScript() == m_script) {
+    //    debugWin->setMode(KJSDebugWin::Stop);
 //        debugWin->leaveSession();
-    }
+    //}
 #endif
     Window *win = Window::retrieveWindow(m_part);
     if (win)
@@ -193,8 +195,8 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
 {
 #ifdef KJS_DEBUGGER
   m_debugEnabled = enabled;
-  if (m_script)
-      m_script->setDebuggingEnabled(enabled);
+  //if (m_script)
+  //    m_script->setDebuggingEnabled(enabled);
   // NOTE: this is consistent across all KJSProxyImpl instances, as we only
   // ever have 1 debug window
   if (!enabled && KJSDebugWin::instance()) {
@@ -268,7 +270,7 @@ void KJSProxyImpl::initScript()
   m_script = new KJS::ScriptInterpreter(globalObject, m_part);
 
 #ifdef KJS_DEBUGGER
-  m_script->setDebuggingEnabled(m_debugEnabled);
+  //m_script->setDebuggingEnabled(m_debugEnabled);
 #endif
   //m_script->enableDebug();
   globalObject.put(m_script->globalExec(),
