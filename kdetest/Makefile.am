@@ -42,7 +42,7 @@ BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
 		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
 		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc \
-		kcharsetstest.moc kledtest.h kcontainertest.moc klocaletest.moc
+		kcharsetstest.moc kledtest.moc kcontainertest.moc klocaletest.moc
 
 ktabctltest.cpp: ktabctltest.moc
 kiconloadertestmain.cpp: kiconloadertestmain.moc
