@@ -40,6 +40,16 @@
 		</Include>
 	</Menu>
 	<Menu>
+		<Name>Science</Name>
+		<Directory>kde-science.directory</Directory>
+		<Include>
+			<And>
+				<Category>Science</Category>
+				<Not><Category>Education</Category></Not>
+			</And>
+		</Include>
+	</Menu>
+	<Menu>
 		<Name>Editors</Name>
 		<Directory>kde-editors.directory</Directory>
 		<Include>
