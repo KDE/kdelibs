@@ -492,7 +492,7 @@ public:
 
     /**
      * This function sets a timeout of @p timeout seconds and calls
-     * special(data) when the timeout occurs as if it was called by the 
+     * special(data) when the timeout occurs as if it was called by the
      * application.
      *
      * A timeout can only occur when the slave is waiting for a command
@@ -558,10 +558,7 @@ public:
     void disconnectSlave();
 
     /**
-     * Checks whether the password daemon kdesud is
-     * running or if it can be started if it is not.
-     *
-     * @return true if password daemon is/can be started successfully.
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
      */
     bool pingCacheDaemon() const;
 
@@ -601,7 +598,7 @@ public:
      * }
      * </pre>
      *
-     * NOTE: A call to this function can fail and return @p false, 
+     * NOTE: A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
      *
      * @param info  See @ref AuthInfo.
@@ -611,6 +608,10 @@ public:
      */
     bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg );
 
+    /**
+     * Same as above function except it does not need error message.
+     * BIC: Combine this function with the above for KDE4.
+     */
     bool openPassDlg( KIO::AuthInfo& info );
 
     /**
@@ -647,7 +648,7 @@ public:
      * stores password information automatically, you only need to call
      * this function if you want to store authentication information that
      * is different from the information returned by openPassDlg.
-     */    
+     */
     bool cacheAuthentication( const AuthInfo& info );
 
     /**
@@ -674,29 +675,14 @@ public:
     void delCachedAuthentication( const QString& key );
 
     /**
-     * Setup support for multiple auth-info caching
-     * to a single server.
-     *
-     * Calling this function with the argument set to @p true
-     * will allow a user to work on multiple resources located
-     * under different accounts but on the same server without
-     * being re-prompted for authorization each time. Simply put
-     * if you have a "foo" and a "bar" account on a given machine
-     * at "foobar.com" and you log into this machine using both of
-     * the accounts, then the authorization information you supplied
-     * for both accounts will be cached. This is also true if you
-     * have N number of accounts and you logged into all of them.
-     * Otherwise, the default behavior is for the latest login will
-     * simply overwrite the previous one.
-     *
-     * @param enable if true allow multiple auth-info caching.
+     * @obsolete as of 3.1. See @ref openPassDlg instead.
      */
-    void setMultipleAuthCaching( bool enable );
+    void setMultipleAuthCaching( bool ) {};
 
     /**
-     * @return true if multiple auth-info caching is enabled.
+     * @obsolete as of 3.1. See @ref openPassDlg instead.
      */
-    bool multipleAuthCaching() const;
+    bool multipleAuthCaching() const { return false; }
 
     /**
      * Used by the slave to check if it can connect

@@ -107,7 +107,6 @@ public:
     QString slaveid;
     bool resume:1;
     bool needSendCanResume:1;
-    bool multipleAuthCaching:1;
     bool onHold:1;
     bool wasKilled:1;
     MetaData configData;
@@ -176,7 +175,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
         signal(SIGXFSZ, &sigsegv_handler);
 #endif
     }
-        
+
     struct sigaction act;
     act.sa_handler = sigpipe_handler;
     sigemptyset( &act.sa_mask );
@@ -203,7 +202,6 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
-    d->multipleAuthCaching = false;
     d->config = new SlaveBaseConfig(this);
     d->onHold = false;
     d->wasKilled=false;
@@ -214,7 +212,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->sentListEntries=0;
     d->timeout = 0;
     connectSlave(mAppSocket);
-    
+
     d->dcopClient = 0;
 }
 
@@ -688,7 +686,7 @@ void SlaveBase::sigpipe_handler (int)
     // 1) Communication error with application.
     // 2) Communication error with network.
     slaveWriteError = true;
-    
+
     // Don't add anything else here, especially no debug output
 }
 
@@ -766,8 +764,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
-    kdDebug(7019) << "SlaveBase::OpenPassDlg window-id= " << windowId << endl;
+    kdDebug(7019) << "SlaveBase::openPassDlg window-id= " << windowId << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
@@ -801,6 +798,10 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
        return false;
 
     info = authResult;
+
+    kdDebug(7019) << "SlaveBase::openPassDlg: username=" << info.username << endl;
+    kdDebug(7019) << "SlaveBase::openPassDlg: password=[hidden]" << endl;
+
     return true;
 }
 
@@ -886,7 +887,7 @@ void SlaveBase::setTimeoutSpecialCommand(int timeout, const QByteArray &data)
       d->timeout = 1; // Immediate timeout
    else
       d->timeout = 0; // Canceled
-      
+
    d->timeoutData = data;
 }
 
@@ -1086,7 +1087,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl; 
+    kdDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
@@ -1140,16 +1141,6 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     d->dcopClient->send( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );
 
     return true;
-}
-
-void SlaveBase::setMultipleAuthCaching( bool enable )
-{
-    d->multipleAuthCaching = enable;
-}
-
-bool SlaveBase::multipleAuthCaching() const
-{
-    return d->multipleAuthCaching;
 }
 
 int SlaveBase::connectTimeout()
