@@ -27,11 +27,11 @@ KURLLabel::KURLLabel(QWidget *parent, const char *name, WFlags f)
 	  m_tipText(QString::null),
 	  m_float(false),
 	  m_tips(false),
-	  m_glow(true),
+	  m_glow(false),
 	  m_underline(true),
 	  m_inRegion(false),
 	  m_haveCursor(true),
-	  m_transparent(false)
+	  m_transparent(true)
 {
 	/* set the defaults */
 	m_hc.setNamedColor(QString::fromLatin1("blue"));
@@ -41,6 +41,8 @@ KURLLabel::KURLLabel(QWidget *parent, const char *name, WFlags f)
 
 	setUseCursor(true);
 	setMouseTracking(true);
+
+	setBackgroundMode(NoBackground);
 
 	m_resetPalette();
 }
@@ -167,14 +169,7 @@ void KURLLabel::setText(const QString& text)
 	 * this allows the user to invoke these functions
 	 * in either order.
 	 */
-#if 0
-    // This seems to be causing an infinite loop...
-	QFont tmp_font = font();
-	if ( !tmp_font.underline() ) {
-	    tmp_font.setUnderline(m_underline);
-	    setFont(tmp_font);
-	}
-#endif
+	setUnderline(m_underline);
 	
 	/* set the palette to normal (at first)*/
 	setPalette(m_nsp);
