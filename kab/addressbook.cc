@@ -1986,11 +1986,8 @@ Section* AddressBook::categoriesSection()
     }
   save();
   if(data->get(KAB_CATEGORY_KEY, section))
-    {
       return section;
-    } else {
-      return 0; // might not happen
-    }
+  return 0; // might not happen
 }
 
 AddressBook::ErrorCode AddressBook::categories(CategoriesMap& cat)
