@@ -599,6 +599,7 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
           continue;
         }
       list.append( value );
+      value.truncate(0);
       value.setLength( len - i );
     }
   if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
