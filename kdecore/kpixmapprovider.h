@@ -40,6 +40,10 @@ public:
     virtual ~KPixmapProvider();
     /**
      * You may subclass this and return a pixmap of size @p size for @p text.
+     * @param text the text that is associated with the pixmap
+     * @param size the size of the icon in pixels, 0 for defaylt size.
+     *             See @ref KIcon::StdSize.
+     * @return the pixmap for the arguments, or null if there is none
      */
     virtual QPixmap pixmapFor( const QString& text, int size = 0 ) = 0;
 protected:

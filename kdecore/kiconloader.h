@@ -111,6 +111,7 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
+     *             See @ref KIcon::StdSizes.
      * @param state The icon state: @p DefaultState, @p ActiveState or
      * @p DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
@@ -132,6 +133,7 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
+     *             See @ref KIcon::StdSizes.
      * @param canReturnNull Can return a null iconset? If false, iconset
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
@@ -150,6 +152,7 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
+     *             See @ref KIcon::StdSizes.
      * @return the icon set. Can be null when not found
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
@@ -160,6 +163,7 @@ public:
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
      * icons whose size is - @p group_or_size.
+     *             See @ref KIcon::Group and @ref KIcon::StdSizes
      * @param canReturnNull Can return a null string? If not, a path to the
      *                      "unknown" icon will be returned.
      * @return the path of an icon, can be null or the "unknown" icon when
@@ -173,6 +177,7 @@ public:
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
      * @param size Override the default size for @p group.
+     *             See @ref KIcon::StdSizes.
      * @return A QMovie object. Can be null if not found.
      */
     QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
@@ -182,6 +187,7 @@ public:
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
      * @param size Override the default size for @p group.
+     *             See @ref KIcon::StdSizes.
      * @return the full path to the movie, ready to be passed to QMovie's constructor.
      * Empty string if not found.
      */
@@ -193,6 +199,7 @@ public:
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
      * @param size Override the default size for @p group.
+     *             See @ref KIcon::StdSizes.
      * @return A QStringList containing the absolute path of all the frames
      * making up the animation.
      */
@@ -201,7 +208,10 @@ public:
     /**
      * Queries all available icons for a specific group, having a specific
      * context.
-     * @param group_or_size The icon group or size. See @ref #iconPath.
+     * @param group_or_size If positive, search icons whose size is
+     * specified by the icon group @p group_or_size. If negative, search
+     * icons whose size is - @p group_or_size.
+     *             See @ref KIcon::Group and @ref KIcon::StdSizes
      * @param context The icon context.
      * @return a list of all icons
      */
@@ -211,7 +221,9 @@ public:
      * Queries all available icons for a specific context.
      * @param group_or_size The icon preferred group or size. If available
      * at this group or size, those icons will be returned, in other case,
-     * icons of undefined size will be returned.
+     * icons of undefined size will be returned. Positive numbers are groups,
+     * negative numbers are negated sizes. See @ref KIcon::Group and 
+     *    @ref KIcon::StdSizes
      * @param context The icon context.
      * @return A QStringList containing the icon names
      * available for that context
@@ -229,7 +241,7 @@ public:
 
     /**
      * Returns the current size of the group.
-     * @param group the group to check
+     * @param group the group to check.
      * @return the current size for an icon group.
      */
     int currentSize(KIcon::Group group) const;
