@@ -1837,26 +1837,37 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		// -------------------------------------------------------------------
 		case CC_ComboBox:
 		{
+			bool toolbarMode = false;
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
-			QPixmap buf;
+			QPixmap * buf;
 			QPainter* p2 = p;
 
 			QRect br = r;
 
 			if (controls == SC_All)
 			{
-				buf.resize(r.width(), r.height() );
-				br.setX(0);
-				br.setY(0);
-				p2 = new QPainter(&buf);
+				//Double-buffer only when we are in the slower full-blend mode
+				if (widget->parent() &&
+						( widget->parent()->inherits("QToolBar")|| !qstrcmp(widget->parent()->name(), kdeToolbarWidget) ) )
+				{
+					buf = new QPixmap( r.width(), r.height() );
+					br.setX(0);
+					br.setY(0);
+					p2 = new QPainter(buf);
+					
+					//Ensure that we have clipping on, and have a sane base.
+					//If need be, Qt will shrink us to the paint region.
+					p->setClipping(TRUE);
+					p->setClipRect(r);
+					toolbarMode = true;
+				}
 			}
 
 
 			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( 0, -2, 0, 0 );
 			if ( controls & SC_ComboBoxFrame )
 			{
-				if (widget->parent() &&
-						( widget->parent()->inherits("QToolBar")|| !qstrcmp(widget->parent()->name(), kdeToolbarWidget) ) )
+				if (toolbarMode)
 				{
 					toolbarBlendWidget = widget;
 				}
@@ -1888,12 +1899,10 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				QPointArray a;
 
 				a.setPoints(QCOORDARRLEN(keramik_combo_arrow), keramik_combo_arrow);
-				p2->save();
 
 				a.translate( ar.x() + ar.width() / 2, ar.y() + ar.height() / 2 );
 				p2->setPen( cg.buttonText() );
 				p2->drawLineSegments( a );
-				p2->restore();
 
 				Keramik::ScaledPainter( keramik_ripple ).draw( p2, rr, cg.button(), Qt::black, disabled, Keramik::TilePainter::PaintFullBlend );
 			}
@@ -1933,9 +1942,9 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 			{
 				p2->end();
 				delete p2;
-				p->drawPixmap(r.x(), r.y(), buf);
+				p->drawPixmap(r.x(), r.y(), *buf);
+				delete buf;
 			}
-
 			break;
 		}
 
