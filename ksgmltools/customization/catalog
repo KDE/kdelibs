@@ -1,7 +1,7 @@
 --
 Recommended catalogue for KDE DocBook
 
-Copyright (C) 1999-2000 Frederik Fouvry
+Copyright (C) 1999-2001 Frederik Fouvry
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Send suggestions, comments, etc. to Frederik Fouvry
-<fouvry@sfs.nphil.uni-tuebingen.de>.
+<fouvry@coli.uni-sb.de>.
 --
 
 OVERRIDE YES
@@ -50,6 +50,10 @@ PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"
 PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
        "entities/kde-prologue.entities"
 PUBLIC "-//KDE//ENTITIES Documentation V2.0//EN"
+       "entities/kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
+       "entities/kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V2.0//EN"
        "entities/kde-prologue.entities"
 
 		  -- DocBook Modular Style Sheets --
