@@ -1,57 +1,7 @@
-/* Define if the C++ compiler supports BOOL */
-#undef HAVE_BOOL
 
 #undef VERSION
 
 #undef PACKAGE
-
-/* defines if having libz */
-#undef HAVE_LIBZ
-
-/* defines if having libgif (always 1) */
-#undef HAVE_LIBGIF
-
-/* defines if having libjpeg (always 1) */
-#undef HAVE_LIBJPEG
-
-/* defines if having libtiff */
-#undef HAVE_LIBTIFF
-
-/* defines if having libpng */
-#undef HAVE_LIBPNG
-
-/* defines which to take for ksize_t */
-#undef ksize_t
-
-/* define if you have setenv */
-#undef HAVE_FUNC_SETENV
-
-/* Define to 1 if NLS is requested.  */
-#undef ENABLE_NLS
-
-/* Define as 1 if you have the stpcpy function.  */
-#undef HAVE_STPCPY
-
-/* Define if your locale.h file contains LC_MESSAGES.  */
-#undef HAVE_LC_MESSAGES    
-
-/* Define if you need the GNU extensions to compile */
-#undef _GNU_SOURCE
-
-/* Define if you have getdomainname */
-#undef HAVE_GETDOMAINNAME
-
-/* Define if you have gethostname */
-#undef HAVE_GETHOSTNAME
-
-/* Define if you have usleep */
-#undef HAVE_USLEEP
-
-/* Define if you have random */
-#undef HAVE_RANDOM
-
-/* Define if you have S_ISSOCK */
-#undef HAVE_S_ISSOCK
 
 /* This is the prefix of the below paths. This may change in the future */
 #undef KDEDIR
@@ -95,11 +45,7 @@
 /* Where KDE config files should be installed */
 #undef KDE_CONFIGDIR
 
-/* Define if you have an SGI like STL implementation */
-#undef HAVE_SGI_STL
-
-/* Define if you have an HP like STL implementation */
-#undef HAVE_HP_STL
+#undef HAVE_BOOL
 
 #ifndef HAVE_BOOL
 #define HAVE_BOOL
@@ -113,6 +59,8 @@ const bool true = 1;
 #endif
 #endif
 
+#undef HAVE_GETDOMAINNAME
+
 /* this is needed for Solaris and others */
 #ifndef HAVE_GETDOMAINNAME
 #define HAVE_GETDOMAINNAME
@@ -121,6 +69,8 @@ extern "C"
 #endif
 int getdomainname (char *Name, int Namelen);
 #endif  
+
+#undef HAVE_GETHOSTNAME
 
 #ifndef HAVE_GETHOSTNAME
 #define HAVE_GETHOSTNAME
@@ -149,6 +99,8 @@ int gethostname (char *Name, int Namelen);
 #define HAVE_BOOLEAN
 #endif
 
+#undef HAVE_RANDOM
+
 /* random() returns a value between 0 and RANDOM_MAX.
  * RANDOM_MAX is needed to generate good random numbers. (Nicolas)
  */
@@ -161,17 +113,11 @@ void srandom(unsigned int seed);
 #define RANDOM_MAX RAND_MAX // normal random()
 #endif
 
+#undef HAVE_S_ISSOCK
+
 #ifndef HAVE_S_ISSOCK
 #define HAVE_S_ISSOCK
 #define S_ISSOCK(mode) (1==0)
 #endif
 
-/* Define if you have the libdl library or equivalent.  */
-#undef HAVE_LIBDL
-
-/* Define if you have the GNU dld library.  */
-#undef HAVE_DLD
-
-/* Define if you have the shl_load function.  */
-#undef HAVE_SHL_LOAD
 

@@ -1,10 +1,10 @@
 Index: configure.in
 ===================================================================
-RCS file: /gd/gnu/anoncvsroot/libtool/libltdl/configure.in,v
+RCS file: /var/cvs/libtool/libltdl/configure.in,v
 retrieving revision 1.47
 diff -u -u -r1.47 configure.in
 --- configure.in	1999/05/20 17:54:09	1.47
-+++ configure.in	1999/05/30 15:18:05
++++ configure.in	1999/05/30 16:40:17
 @@ -1,35 +1,12 @@
 -dnl Process this file with autoconf to create configure.
  
@@ -45,7 +45,32 @@ diff -u -u -r1.47 configure.in
  dnl Read the libtool configuration
  rm -f conftest
  ./libtool --config > conftest
-@@ -364,8 +341,7 @@
+@@ -88,11 +65,19 @@
+ fi
+ 
+ LIBADD_DL=
+-AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
+-[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
+-AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
+-[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
+-AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
++ac_have_libdl=no
++ac_have_shl_load=no
++AC_CHECK_LIB(dl, dlopen, [ac_have_libdl=yes; LIBADD_DL="-ldl"],
++[AC_CHECK_FUNC(dlopen, [ac_have_libdl=yes])])
++if test "$ac_have_libdl" = yes; then
++  AC_DEFINE(HAVE_LIBDL, 1, [Define if you have the libdl library or equivalent.])
++fi
++AC_CHECK_FUNC(shl_load, [ac_have_shl_load=yes],
++[AC_CHECK_LIB(dld, shl_load, [ac_have_shl_load=yes; LIBADD_DL="$LIBADD_DL -ldld"])])
++if test "$ac_have_shl_load" = yes; then
++  AC_DEFINE(HAVE_SHL_LOAD, 1, [Define if you have the shl_load function.])
++fi
++AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1, [Define if you have the GNU dld library.])dnl
+ test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
+ AC_SUBST(LIBADD_DL)
+ 
+@@ -364,8 +349,7 @@
      [Define if dlsym() requires a leading underscode in symbol names. ])
  fi
  

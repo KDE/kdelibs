@@ -65,11 +65,19 @@ if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
 fi
 
 LIBADD_DL=
-AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
-[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
-AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
-[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
-AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
+ac_have_libdl=no
+ac_have_shl_load=no
+AC_CHECK_LIB(dl, dlopen, [ac_have_libdl=yes; LIBADD_DL="-ldl"],
+[AC_CHECK_FUNC(dlopen, [ac_have_libdl=yes])])
+if test "$ac_have_libdl" = yes; then
+  AC_DEFINE(HAVE_LIBDL, 1, [Define if you have the libdl library or equivalent.])
+fi
+AC_CHECK_FUNC(shl_load, [ac_have_shl_load=yes],
+[AC_CHECK_LIB(dld, shl_load, [ac_have_shl_load=yes; LIBADD_DL="$LIBADD_DL -ldld"])])
+if test "$ac_have_shl_load" = yes; then
+  AC_DEFINE(HAVE_SHL_LOAD, 1, [Define if you have the shl_load function.])
+fi
+AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1, [Define if you have the GNU dld library.])dnl
 test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
 AC_SUBST(LIBADD_DL)
 
