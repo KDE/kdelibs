@@ -423,7 +423,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   else
   {
     m_strPath = _txt.left( pos );
-    m_strQuery_encoded = _txt + pos + 1;
+    m_strQuery_encoded = _txt.right(_txt.length() - pos);
   }
 
   decode( m_strPath );
