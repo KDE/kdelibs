@@ -437,13 +437,11 @@ SUP {
 */
 /* ### hack... should get removed once we support the two lines above */
 SUB { 
-	position: relative; 
-	top: 0.5em; 
+	vertical-align: sub;
 	font-size: smaller; 
 }
 SUP { 
-	position: relative; 
-	top: -0.5em; 
+	vertical-align: super;	
 	font-size: smaller;
 }
 

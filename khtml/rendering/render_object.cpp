@@ -720,14 +720,14 @@ short RenderObject::verticalPositionHint() const
     int vpos = parent()->verticalPositionHint();
     // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
     // algorithm.
-    if ( va == BASELINE || vpos & 0x4000 ) 
+    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom ) 
 	return vpos;
     QFont f = parent()->style()->font();
     
     if ( va == SUB )
-	vpos += f.pixelSize()/5;
+	vpos += f.pixelSize()/5 + 1;
     else if ( va == SUPER )
-	vpos -= f.pixelSize()/5;
+	vpos -= f.pixelSize()/3 + 1;
     else if ( va == TEXT_TOP )
 	vpos += -parent()->baselinePosition() + baselinePosition();
     else if ( MIDDLE ) {
