@@ -87,6 +87,11 @@ class KXMLGUIFactory : public QObject
    * Creates the GUI described by the QDomDocument of the client,
    * using the client's actions, and merges it with the previously
    * created GUI.
+   * This also means that the order in which clients are added to the factory
+   * is relevant; assuming that your application supports plugins, you should
+   * first add your application to the factory and then the plugin, so that the
+   * plugin's UI is merged into the UI of your application, and not the other
+   * way round.
    */
   void addClient( KXMLGUIClient *client );
 
