@@ -518,7 +518,7 @@ void Range::selectNodeContents( const Node &refNode )
 
 short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 {
-    if( &commonAncestorContainer.ownerDocument != &sourceRange.commonAncestorContainer.ownerDocument )
+    if( commonAncestorContainer.ownerDocument() != sourceRange.commonAncestorContainer.ownerDocument() )
         throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
     
     if( isDetached() )
