@@ -124,14 +124,14 @@ KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
 {
   if (size == 0)
     {
-      kdWarning() << "KSocketAddress::newAddress called with size = 0!";
+      kdWarning() << "KSocketAddress::newAddress called with size = 0!\n";
       return NULL;
     }
 
   // make sure we have the right stuff
   if (size < MIN_SOCKADDR_LEN)
     {
-      kdWarning() << "KSocketAddress::newAddress called with invalid size";
+      kdWarning() << "KSocketAddress::newAddress called with invalid size\n";
       return NULL;
     }
 
@@ -139,13 +139,13 @@ KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
     {
     case AF_INET:
       if (size >= sizeof(sockaddr_in))
-	return new KInetSocketAddress((sockaddr_in*)sa);
+	return new KInetSocketAddress((sockaddr_in*)sa, size);
       return NULL;
 	
 #ifdef AF_INET6
     case AF_INET6:
       if (size >= sizeof(sockaddr_in6))
-	return new KInetSocketAddress((sockaddr_in6*)sa);
+	return new KInetSocketAddress((sockaddr_in6*)sa, size);
       return NULL;
 #endif
 
@@ -241,16 +241,16 @@ KInetSocketAddress::KInetSocketAddress() :
 { 
 }
 
-KInetSocketAddress::KInetSocketAddress(const sockaddr_in* sin) :
+KInetSocketAddress::KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len) :
   d(new Private)
 { 
-  setAddress(sin); 
+  setAddress(sin, len); 
 }
 
-KInetSocketAddress::KInetSocketAddress(const sockaddr_in6* sin6) :
+KInetSocketAddress::KInetSocketAddress(const sockaddr_in6* sin6, ksocklen_t len) :
   d(new Private)
 {
-  setAddress(sin6); 
+  setAddress(sin6, len); 
 }
 
 KInetSocketAddress::KInetSocketAddress(const in_addr& addr, unsigned short port) :
@@ -278,29 +278,42 @@ KInetSocketAddress::~KInetSocketAddress()
   //  KSocketAddress::~KSocketAddress();
 }
 
-bool KInetSocketAddress::setAddress(const sockaddr_in* sin)
+bool KInetSocketAddress::setAddress(const sockaddr_in* sin, ksocklen_t len)
 {
   // This is supposed to be a AF_INET socket
-  if (sin->sin_family != AF_INET)
+  if (len < sizeof(sockaddr_in) || sin->sin_family != AF_INET)
     {
-      kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in*) called with invalid sockaddr_in";
+      kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in*) called with invalid sockaddr_in\n";
       return false;
     }
 
   return setHost(sin->sin_addr) && setPort(ntohs(sin->sin_port));
 }
 
-bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6)
+bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6, ksocklen_t len)
 {
 #ifdef AF_INET6
   // should be family AF_INET6
-  if (sin6->sin6_family != AF_INET6)
+  if (len < (offsetof(sockaddr_in6, sin6_addr) + sizeof(sin6->sin6_addr)) ||
+      sin6->sin6_family != AF_INET6)
     {
-      kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in6*) called with invalid sockaddr_in6";
+      kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in6*) called with invalid sockaddr_in6\n";
       return 0;
     }
 
-  return setHost(sin6->sin6_addr) && setPort(ntohs(sin6->sin6_port));
+  memset(&d->sin6, 0, sizeof(d->sin6));
+  if (len > sizeof(d->sin6))
+    len = sizeof(d->sin6);
+  memcpy(&d->sin6, sin6, len);
+
+  /* Now make a sanity check */
+  d->sockfamily = d->sin6.sin6_family = AF_INET6;
+# ifdef HAVE_SOCKADDR_SA_LEN
+  d->sin6.sin6_len = sizeof(d->sin6);
+# endif
+
+  fromV6();
+  return true;
 #else
   return false;
 #endif
@@ -350,7 +363,7 @@ bool KInetSocketAddress::setHost(const QString& addr, int family)
 #endif
       )
     {
-      kdWarning() << "KInetSocketAddress::setHost(QString, int) called with unknown family address";
+      kdWarning() << "KInetSocketAddress::setHost(QString, int) called with unknown family address\n";
       return false;
     }
 
@@ -409,7 +422,7 @@ bool KInetSocketAddress::setFamily(int _family)
 #endif
       )
     {
-      kdWarning() << "KInetSocketAddress::setFamily(int) called with unknown family";
+      kdWarning() << "KInetSocketAddress::setFamily(int) called with unknown family\n";
       return false;
     }
 
@@ -464,7 +477,7 @@ const sockaddr_in* KInetSocketAddress::addressV4() const
     }
 #endif
 
-  kdWarning() << "KInetSocketAddress::addressV4() called on uninitialized socket";
+  kdWarning() << "KInetSocketAddress::addressV4() called on uninitialized socket\n";
   return NULL;
 }
 
@@ -503,7 +516,7 @@ QString KInetSocketAddress::pretty() const
 #endif
       )
     {
-      kdWarning() << "KInetSocketAddress::pretty() called on uninitialized class";
+      kdWarning() << "KInetSocketAddress::pretty() called on uninitialized class\n";
       return i18n("<empty>");
     }
 
@@ -528,7 +541,7 @@ QString KInetSocketAddress::prettyHost() const
 #endif
   else
     {
-      kdWarning() << "KInetSocketAddress::prettyHost() called on uninitialized class";
+      kdWarning() << "KInetSocketAddress::prettyHost() called on uninitialized class\n";
       return i18n("<empty>");
     }
 
@@ -664,7 +677,7 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
 {
   if (_sun->sun_family != AF_UNIX)
     {
-      kdWarning() << "KUnixSocketAddress::setAddress called with invalid socket";
+      kdWarning() << "KUnixSocketAddress::setAddress called with invalid socket\n";
       return false;
     }
 

@@ -192,13 +192,13 @@ public:
    * Creates an IPv4 socket from raw sockaddr_in
    * @param sin		a sockaddr_in structure to copy from
    */
-  KInetSocketAddress(const sockaddr_in* sin);
+  KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len);
 
   /**
    * Creates an IPv6 socket from raw sockaddr_in6
    * @param sin6       	a sockaddr_in6 structure to copy from
    */
-  KInetSocketAddress(const sockaddr_in6* sin6);
+  KInetSocketAddress(const sockaddr_in6* sin6, ksocklen_t len);
 
   /**
    * Creates a socket from information
@@ -230,13 +230,13 @@ public:
    * Sets this socket to given raw socket
    * @param sin		the raw socket
    */
-  bool setAddress(const sockaddr_in* sin);
+  bool setAddress(const sockaddr_in* sin, ksocklen_t len);
 
   /**
    * Sets this socket to given raw socket
    * @param sin6		the raw socket
    */
-  bool setAddress(const sockaddr_in6* sin6);
+  bool setAddress(const sockaddr_in6* sin6, ksocklen_t len);
 
   /**
    * Sets this socket to raw address and port
