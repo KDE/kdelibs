@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,23 +35,23 @@
 
 class KSSLPeerInfoPrivate {
 public:
-  KSSLPeerInfoPrivate() {}
-  ~KSSLPeerInfoPrivate() { }
-  QString peerHost;
+	KSSLPeerInfoPrivate() {}
+	~KSSLPeerInfoPrivate() { }
+	QString peerHost;
 };
 
 
 
 KSSLPeerInfo::KSSLPeerInfo() {
-  d = new KSSLPeerInfoPrivate;
+	d = new KSSLPeerInfoPrivate;
 }
 
 KSSLPeerInfo::~KSSLPeerInfo() {
-  delete d;
+	delete d;
 }
 
 KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
-  return m_cert;
+	return m_cert;
 }
 
 void KSSLPeerInfo::setPeerHost(QString realHost) {
@@ -147,7 +147,7 @@ return false;
 
 
 void KSSLPeerInfo::reset() {
-   d->peerHost = QString::null;
+	d->peerHost = QString::null;
 }
 
 

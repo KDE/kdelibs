@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,28 +30,72 @@ class KSSL;
 class KSSLPeerInfoPrivate;
 class KInetSocketAddress;
 
+/**
+ * KDE SSL Peer Data
+ *
+ * This class contains data about hte peer of an SSL connection.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL
+ * @short KDE SSL Peer Data
+ */
 class KSSLPeerInfo {
 friend class KSSL;
 public:
-  ~KSSLPeerInfo();
+	/**
+	 *  Destroy this instance
+	 */
+	~KSSLPeerInfo();
 
-  KSSLCertificate& getPeerCertificate();
-  bool certMatchesAddress();
-  bool cnMatchesAddress(QString cn);
+	/**
+	 *  Get a reference to the peer's certificate
+	 *
+	 *  @return a reference to the peer's certificate
+	 *  @see KSSLCertificate
+	 */
+	KSSLCertificate& getPeerCertificate();
 
-  void setPeerHost(QString host = QString::null);
+	/**
+	 *  Determine if the peer's certificate matches the address set with
+	 *  @ref setPeerHost().  Note that this is a match in the "https"
+	 *  sense, taking into account, for instance,  wildcards.
+	 * 
+	 *  @return true if it matches
+	 *  @see #setPeerHost
+	 */
+	bool certMatchesAddress();
 
-  void reset();
+	/**
+	 *  Determine if the given "common name" matches the address set with
+	 *  @ref setPeerHost().  Note that this is a match in the "https"
+	 *  sense, taking into account, for instance,  wildcards.
+	 * 
+	 *  @return true if it matches
+	 *  @see #setPeerHost
+	 */
+	bool cnMatchesAddress(QString cn);
 
+	/**
+	 *  Set the host that we are connected to.  This is generally set by
+	 *  KSSL, and should be exactly what the user -thinks- he is connected
+	 *  to.  (for instance, the host name in the url)
+	 *
+	 *  @param host the hostname
+	 */
+	void setPeerHost(QString host = QString::null);
+
+	/**
+	 *  Clear out the host name.
+	 */
+	void reset();
 
 protected:
-  KSSLPeerInfo();
+	KSSLPeerInfo();
 
-  KSSLCertificate m_cert;
+	KSSLCertificate m_cert;
 
 private:
-  KSSLPeerInfoPrivate *d;
-
+	KSSLPeerInfoPrivate *d;
 };
 
 

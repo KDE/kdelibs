@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,38 +30,92 @@ class QRadioButton;
 class QListView;
 class QPushButton;
 
+/**
+ * KDE X.509 Certificate Dialog
+ *
+ * This class is used to create and display a dialog which contains the user's
+ * X.509 certificates and allows the user to present it during SSL sessions.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL
+ * @short KDE X.509 Certificate Dialog
+ */
 class KSSLCertDlg : public KDialog {
-
-  Q_OBJECT
-
+	Q_OBJECT
 public:
-  KSSLCertDlg(QWidget *parent = 0, const char *name = 0, bool modal = false);
-  virtual ~KSSLCertDlg();
+	/**
+	 *  Construct a KSSL certificate dialog
+	 *
+	 *  @param parent the parent widget
+	 *  @param name the internal name of this instance
+	 *  @param modal create a modal dialog if set to true
+	 */
+	KSSLCertDlg(QWidget *parent=0L, const char *name=0L, bool modal=false);
 
-  void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
+	/**
+	 *  Destroy this object and close the dialog
+	 */
+	virtual ~KSSLCertDlg();
 
-  QString getChoice();
+	/**
+	 *  Setup the dialog. Call this before you display the dialog.
+	 *
+	 *  @param certs the list of possible certificates
+	 *  @param saveChecked save the checked item for the future
+	 *  @param sendChecked send the checked item to the remote host
+	 *  @deprecated
+	 */
+	void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
 
-  bool wantsToSend();
+	/**
+	 *  Setup the dialog. Call this before you display the dialog.
+	 *
+	 *  @param certs the list of possible certificates
+	 *  @param saveChecked save the checked item for the future
+	 *  @param sendChecked send the checked item to the remote host
+	 */
+	void setupDialog(const QStringList& certs, bool saveChecked = false, bool sendChecked = true);
 
-  bool saveChoice();
+	/**
+	 *  Obtain the name of the certificate the user wants to send
+	 *
+	 *  @return the name of the certificate
+	 */
+	QString getChoice();
 
-  void setHost(const QString& host);
+	/**
+	 *  Determine if the user wants to send a certificate.
+	 *
+	 *  @return true if the user wants to send a certificate
+	 */
+	bool wantsToSend();
+
+	/**
+	 *  Determine if the user wants to save the choice for the future.
+	 *
+	 *  @return true if the user wants to save the choice.
+	 */
+	bool saveChoice();
+
+	/**
+	 *  Set the hostname that we are connecting to.
+	 *
+	 *  @param host the hostname
+	 */
+	void setHost(const QString& host);
 
 private slots:
-  void slotSend();
-  void slotDont();
-
+	void slotSend();
+	void slotDont();
 
 private:
-  class KSSLCertDlgPrivate;
-  KSSLCertDlgPrivate *d;
-  QCheckBox *_save;
-  QRadioButton *_send, *_dont;
-  QListView *_certs;
-  QPushButton *_ok;
-  QString _host;
-
+	class KSSLCertDlgPrivate;
+	KSSLCertDlgPrivate *d;
+	QCheckBox *_save;
+	QRadioButton *_send, *_dont;
+	QListView *_certs;
+	QPushButton *_ok;
+	QString _host;
 };
 
 

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -81,15 +81,18 @@ KSSLCertDlg::~KSSLCertDlg() {
 
 
 void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
+	setupDialog(certs, saveChecked, sendChecked);
+}
+
+void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool sendChecked) {
   _save->setChecked(saveChecked);
   _send->setChecked(sendChecked);
   _dont->setChecked(!sendChecked);
   _certs->setEnabled(saveChecked);
 
-  for (QStringList::Iterator i = certs.begin();
-                             i != certs.end();
-                             ++i) {
-    if ((*i).isEmpty()) continue;
+  for (QStringList::ConstIterator i = certs.begin(); i != certs.end(); ++i) {
+    if ((*i).isEmpty())
+      continue;
 
     new QListViewItem(_certs, *i);
   }

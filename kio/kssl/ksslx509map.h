@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,22 +24,61 @@
 #include <qmap.h>
 #include <qstring.h>
 
-
+/**
+ * X.509 Map Parsing Class
+ *
+ * This class is used to parse and store a map as used in X.509 certificates.
+ * It is of the form /name=value/name=value/name=value
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL, KSSLCertificate
+ * @short X.509 Map Parser
+ */
 class KSSLX509Map {
 public:
-  KSSLX509Map(const QString& name);
-  ~KSSLX509Map();
+	/**
+	 *  Construct an X.509 Map
+	 *
+	 *  @param name the map to parse
+	 */
+	KSSLX509Map(const QString& name);
 
-  void setValue(const QString& key, const QString& value);
-  QString getValue(const QString& key) const;
-  void reset(const QString& name = "");
+	/**
+	 *  Destroy this map
+	 */
+	~KSSLX509Map();
+
+	/**
+	 *  Set a value in the map
+	 *
+	 *  @param key the key
+	 *  @param value the value
+	 */
+	void setValue(const QString& key, const QString& value);
+
+	/**
+	 *  Get the value of an entry in the map
+	 *
+	 *  @param key the key
+	 *
+	 *  @return the value
+	 */
+	QString getValue(const QString& key) const;
+
+	/**
+	 *  Reset (clear) the internal storage.
+	 *
+	 *  @param name if this is not empty, it will be parsed and used as
+	 *         the new map internally
+	 */
+	void reset(const QString& name = "");
   
 private:
-  class KSSLX509MapPrivate;
-  KSSLX509MapPrivate *d;
-  QMap<QString, QString> m_pairs;
+	class KSSLX509MapPrivate;
+	KSSLX509MapPrivate *d;
+	QMap<QString, QString> m_pairs;
 
-  void parse(const QString& name);
+	void parse(const QString& name);
 };
 
 #endif
