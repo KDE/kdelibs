@@ -2126,8 +2126,9 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
           block = true;
 
          // if this is a form without a target, or a special target, don't block
-          if( form.target().isEmpty() || form.target() == "_top" ||
-              form.target() == "_self" || form.target() == "_parent")
+          QString trg = form.target().lower().string();
+          if( trg.isEmpty() || trg == "_top" || trg == "_self" ||
+              trg == "_parent")
             block = false;
 
           // if there is a frame with the target name, don't block
