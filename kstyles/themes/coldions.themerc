@@ -2,6 +2,7 @@
 Name=Cold Ions
 Name[ca]=Ions freds
 Name[cs]=Studené ionty
+Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
 Name[eo]=Malvarmaj ionoj
 Name[et]=Külmad ioonid
@@ -25,6 +26,7 @@ Name[tr]=Soðuk Ýyonlar
 Comment=Cold Ions unthemed style
 Comment[ca]=Estil sense tema "Ions freds".
 Comment[cs]=Styl studené ionty (netémovaný)
+Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
 Comment[eo]=Stilo "Malvarmaj ionoj" neetosa
 Comment[es]=Estilo sin temas Cold Ions

@@ -1,5 +1,6 @@
 [Misc]
 Name=Pillbox
+Name[da]=Pilleboks
 Name[de]=Pillenschachtel
 Name[eo]=Pilolujo
 Name[fi]=Pillerirasia
@@ -16,6 +17,7 @@ Name[tr]=Hap Kutusu
 Comment=Pillbox unthemed style.
 Comment[ca]=Estil sense tema Pillbox.
 Comment[cs]=Pillbox styl (netémovaný)
+Comment[da]=Pilleboksstil uden tema
 Comment[de]=Pillenschachtel (kein komplettes Design)
 Comment[eo]=Pilolujo-stilo neetosa
 Comment[es]=Estilo sin temas Pillbox

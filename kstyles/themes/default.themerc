@@ -1,6 +1,7 @@
 [Misc]
 Name=KDE default
 Name[cs]=Implicitní pro KDE
+Name[da]=KDE Standard
 Name[de]=KDE-Standard
 Name[eo]=KDE-origina
 Name[es]=Por defecto del KDE
@@ -25,6 +26,7 @@ Name[ta]=KDE ெகாடாநிைல
 Name[tr]=KDE öntanýmlý
 Comment=Default KDE style
 Comment[cs]=Implicitní styl pro KDE
+Comment[da]=Indbygget CDE stil
 Comment[de]=KDE-Standardstil
 Comment[eo]=Origina KDE-stilo
 Comment[es]=Estilo por defecto del KDE
