@@ -39,11 +39,6 @@ class KRandomSequence
 public: 
   /**
    * Creates a pseudo-random sequence based on the seed lngSeed.
-   * 
-   * @param lngSeed Seed to initialize the sequence with.
-   *
-   * If lngSeed is 0, the sequence is initialized with a value from
-   * kapp->random().
    *
    * A Pseudo-random sequence is different for each seed but can be 
    * reproduced by starting the sequence with the same seed.
@@ -51,6 +46,9 @@ public:
    * If you need a single value which needs to be unpredictable, 
    * you need to use kapp->random() instead.
    * 
+   * @param lngSeed Seed to initialize the sequence with.
+   * If lngSeed is 0, the sequence is initialized with a value from
+   * @ref KApplication::random().
    */
   KRandomSequence( long lngSeed = 0 );
 
@@ -70,19 +68,22 @@ public:
   KRandomSequence &operator=(const KRandomSequence &a);
 
   /**
-   * Restart the sequence based on lngSeed
+   * Restart the sequence based on lngSeed.
+   * @param lngSeed Seed to initialize the sequence with.
+   * If lngSeed is 0, the sequence is initialized with a value from
+   * @ref KApplication::random().
    */
   void setSeed( long lngSeed = 1 );
 
   /**
-   * Get the next number from the pseudo-random sequence
+   * Get the next number from the pseudo-random sequence.
    *
    * @return a psuedo-random double value between [0,1[
    */
   double getDouble(); 
   
   /**
-   * Get the next number from the pseudo-random sequence
+   * Get the next number from the pseudo-random sequence.
    *
    * @return a pseudo-random integer value between [0, max[
    * with 0 <= max < 1.000.000
@@ -90,16 +91,16 @@ public:
   unsigned long getLong(unsigned long max); 
 
   /**
-   * Get a boolean from the pseudo-random sequence
+   * Get a boolean from the pseudo-random sequence.
    *
    * @return a boolean which is either true or false
    */
   bool getBool(); 
 
   /**
-   * Put a list in random order
+   * Put a list in random order.
    *
-   * @return modifies the order of @p list
+   * @param list the list whose order will be modified
    */
   void randomize(QGList *list);
 
@@ -122,6 +123,7 @@ public:
    * certain move over and over again until the computer reacts 
    * with a favourable response or to predict the response for a 
    * certain move based on the response to another move.
+   * @param i the sequence identified
    */
   void modulate(int i);
 	
