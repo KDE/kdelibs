@@ -485,7 +485,8 @@ bool KAccelActions::remove( const QString& sAction )
 
 bool KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConfig )
 {
-	return KAccelShortcutList(*this, false).readSettings( sConfigGroup, pConfig );
+	KAccelShortcutList accelList(*this, false);
+	return accelList.readSettings( sConfigGroup, pConfig );
 }
 
 /*
