@@ -119,7 +119,12 @@ int RenderBox::contentHeight() const
 
 void RenderBox::setPos( int xPos, int yPos )
 {
+    if (xPos == m_x && yPos == m_y)
+        return; // Optimize for the case where we don't move at all.
+
     m_x = xPos; m_y = yPos;
+    if (m_layer)
+        m_layer->updateLayerPosition();
 }
 
 short RenderBox::width() const
@@ -413,7 +418,7 @@ void RenderBox::repaint()
 {
     //kdDebug( 6040 ) << "repaint!" << endl;
     int ow = style() ? style()->outlineWidth() : 0;
-    repaintRectangle(-ow, -ow, m_width+ow*2, m_height+ow*2);
+    repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2);
 }
 
 void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
