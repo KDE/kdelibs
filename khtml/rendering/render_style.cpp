@@ -51,6 +51,7 @@ RenderStyle::setBitDefaults()
     _bg_attachment = SCROLL;
 
     _visuallyOrdered = false;
+    _direction = LTR;
     
     _htmlHacks=false;
     _flowAroundFloats=false;
@@ -122,8 +123,8 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _visuallyOrdered = other._visuallyOrdered;
 
     _display = other._display;
-    
-    _htmlHacks = other._htmlHacks;    
+
+    _htmlHacks = other._htmlHacks;
     _flowAroundFloats = other._flowAroundFloats;
 }
 

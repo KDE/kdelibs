@@ -97,7 +97,11 @@ RenderFlow::RenderFlow(RenderStyle* style)
     if(m_style->whiteSpace() == PRE)
 	setIgnoreLeadingSpaces(false);
     setVisualOrdering(m_style->visuallyOrdered());
-
+    if(m_style->direction() == LTR)
+	setBasicDirection(QChar::DirL);
+    else
+	setBasicDirection(QChar::DirR);
+    
     m_isAnonymous = false;
 
 }
@@ -316,7 +320,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     RenderObject *child = firstChild();
     int prevMargin = 0;
-    if(isTableCell()) 
+    if(isTableCell())
 	prevMargin = -firstChild()->marginTop();
 	
     while( child != 0 )
@@ -348,7 +352,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     if(!isTableCell()) m_height += prevMargin;
     m_height += toAdd;
-    
+
     setLayouted(_layouted);
 
     // printf("layouted = %d\n", layouted_);

@@ -646,7 +646,27 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	return;
     }
     case CSS_PROP_DIRECTION:
-	break;
+    {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    style->setDirection(e->parentNode()->style()->direction());
+	    break;
+	}
+	if(!primitiveValue) break;
+	EDirection d = LTR;
+	switch(primitiveValue->getIdent())
+	{
+	case CSS_VAL_LTR:
+	    d = LTR; break;
+	case CSS_VAL_RTL:
+	    d = RTL; break;
+	default:
+	    return;
+	}
+	style->setDirection(d);
+	return;
+    }
     case CSS_PROP_DISPLAY:
     {
 	if(value->valueType() == CSSValue::CSS_INHERIT)

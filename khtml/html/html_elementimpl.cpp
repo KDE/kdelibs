@@ -37,6 +37,7 @@
 #include "rendering/render_object.h"
 #include "css/css_valueimpl.h"
 #include "css_stylesheetimpl.h"
+#include "css/cssproperties.h"
 
 #include <stdio.h>
 
@@ -211,9 +212,10 @@ void HTMLElementImpl::parseAttribute(Attribute *attr)
 	break;
 // i18n attributes
     case ATTR_LANG:
-	// language info
 	break;
     case ATTR_DIR:
+	addCSSProperty(CSS_PROP_DIRECTION, attr->value(), false );
+	break;
 	// BiDi info
 	break;
 // standard events
