@@ -237,6 +237,15 @@ h1, h2, h3, h4, h5, h6 { color: rgb(82,80,82);
 	  padding: 5px; 
 	} 
 
+
+/* This one is set in inches because the admonitions are set in inches
+   and they're more difficult to change.  We can live with it in here, 
+   for the meantime, it gives consistent margins */
+
+.example { margin-left; 0.5in; 
+	   margin-right: 0.5in;
+	}
+
 DIV.mediaobject { /* float: right; */ 
                                   /* might make it much nicer. although someone has to
                                   understand the rules ;-)  You also don't want it to be
