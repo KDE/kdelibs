@@ -372,7 +372,7 @@ QPopupMenu *LineEditWidget::createPopupMenu()
 
     if (m_input->autoComplete()) {
         popup->insertSeparator();
-        int id = popup->insertItem( SmallIcon("history_clear"), i18n("Clear &History"), ClearHistory );
+        int id = popup->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), ClearHistory );
         popup->setItemEnabled( id, (compObj() && !compObj()->isEmpty()) );
     }
 
