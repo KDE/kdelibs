@@ -179,7 +179,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagToolBar )
   {
-    bool honor = (element.attribute( d->attrName ).latin1() == "mainToolBar") ? true : false;
+    bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
     KToolBar *bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
 
