@@ -168,7 +168,7 @@ KLocale::KLocale( QString catalogue )
 #endif
     chset="us-ascii";
     if (catalogue.isNull())
-        catalogue = kapp->appName();
+        catalogue = kapp->name();
     
     catalogues = new QStrList(true);
     
@@ -710,6 +710,6 @@ void KLocale::initInstance() {
 
   KApplication *app = KApplication::getKApplication();
   if (app)
-    KGlobal::_locale = new KLocale(app->appName());
+    KGlobal::_locale = new KLocale(app->name());
  
 }

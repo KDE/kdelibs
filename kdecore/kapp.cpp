@@ -94,13 +94,6 @@ static int kde_xio_errhandler( Display * )
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
 {
-  QString aArgv0 = argv[0];
-  int nSlashPos = aArgv0.findRev( '/' );
-  if( nSlashPos != -1 )
-	aAppName = aArgv0.remove( 0, nSlashPos+1 );
-  else
-	aAppName = aArgv0;
-
   init();
 
   parseCommandLine( argc, argv );
@@ -111,7 +104,7 @@ KApplication::KApplication( int& argc, char** argv ) :
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
   QApplication( argc, argv )
 {
-  aAppName = rAppName;
+    QApplication::setName(rAppName);
 
   init();
 
@@ -170,7 +163,7 @@ void KApplication::init()
   }
 
   // try to read a global application file
-  QString aGlobalAppConfigName = kde_configdir() + "/" + aAppName + "rc";
+  QString aGlobalAppConfigName = kde_configdir() + "/" + name() + "rc";
 
   // try to open read-only
   bool bSuccess = !::access(aGlobalAppConfigName.ascii(), R_OK);
@@ -181,7 +174,7 @@ void KApplication::init()
   // now for the local app config file
   QString aConfigName = KApplication::localkdedir();
   aConfigName += "/share/config/";
-  aConfigName += aAppName;
+  aConfigName += name();
   aConfigName += "rc";
 
   QFile aConfigFile( aConfigName );
@@ -271,7 +264,7 @@ KConfig* KApplication::getSessionConfig() {
   // create a instance specific config object
   QString aConfigName = KApplication::localkdedir();
   aConfigName += "/share/config/";
-  aConfigName += aAppName;
+  aConfigName += name();
   aConfigName += "rc";
 
   QString aSessionConfigName;
@@ -294,7 +287,7 @@ KConfig* KApplication::getSessionConfig() {
     chown(aConfigFile.name().ascii(), getuid(), getgid());
     aConfigFile.close();
     pSessionConfig = new KConfig(QString::null, aSessionConfigName);
-    aSessionName = aAppName.copy();
+    aSessionName = name();
     aSessionName += "rc.";
     aSessionName += num;
   }
@@ -327,7 +320,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 
   pMenu->insertSeparator();
 
-  id = pMenu->insertItem( i18n( "&About" ) + " " + aAppName + "...");
+  id = pMenu->insertItem( i18n( "&About" ) + " " + name() + "...");
   if( !aboutAppText.isNull() )
 	{
 	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
@@ -349,7 +342,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 
 void KApplication::appHelpActivated()
 {
-  invokeHTMLHelp( aAppName + "/" + "index.html", "" );
+  invokeHTMLHelp( QString(name()) + "/" + "index.html", "" );
 }
 
 
@@ -552,7 +545,7 @@ QPixmap KApplication::getIcon() const
 {
   if( aIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
+      that->aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( QString(name()) + ".xpm");
   }
   return aIconPixmap; 
 }
@@ -561,7 +554,7 @@ QPixmap KApplication::getMiniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( aAppName + ".xpm" );
+      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( QString(name()) + ".xpm" );
   }
   return aMiniIconPixmap; 
 }
@@ -627,8 +620,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			  else {
 			
 			    if (pSessionConfig && !aSessionName.isEmpty()){
-			      QString aCommand = aAppName.copy();
-			      if (aAppName != argv()[0]){
+			      QString aCommand = name();
+			      if (aCommand != argv()[0]){
 					if (argv()[0][0]=='/')
 					  aCommand = argv()[0];
 					else {
@@ -636,7 +629,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 					  aCommand=(getcwd(s, 1024));
 					  aCommand+="/";
 					  delete [] s;
-					  aCommand+=aAppName;
+					  aCommand+=name();
 					}
 			      }
 			      aCommand+=" -restore ";
@@ -925,7 +918,7 @@ QString KApplication::getCaption() const
   if( !aCaption.isNull() )
 	return aCaption;
   else
-	return aAppName;
+	return name();
 }
 
 
@@ -1107,7 +1100,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
   if ( fork() == 0 )	
     {		
 	  if( filename.isEmpty() )
-	    filename = aAppName + "/index.html";
+	    filename = QString(name()) + "/index.html";
 
          // first try the locale setting
          QString file = locate("html", KGlobal::locale()->language() + '/' + filename);

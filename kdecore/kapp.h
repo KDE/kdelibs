@@ -110,9 +110,6 @@ public:
 	*/
   static KApplication* getKApplication() { return KApp; }
 
-  /** Return the logical application name as set in the constructor.  */
-  QString appName() const { return aAppName; }
-
   /**
 	* Retrieve the application config object.
 	*
@@ -352,6 +349,7 @@ public:
    */
   bool getKDEFonts(QStringList &fontlist);
 
+  QString appName () const { return name(); }
 
   /**
 	* Return a text for the window caption.
@@ -495,7 +493,6 @@ private:
   KConfig* pSessionConfig; //instance specific application config object
   QString aSessionName; // logical name of the instance specific config file
   QWidget* pTopWidget;
-  QString aAppName; // logical application name
   QString aCaption; // the name for the window title
   QString aWmCommand; // for userdefined session management
   ConfigState eConfigState;
@@ -640,6 +637,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.82  1999/06/11 19:58:53  knoll
+// committing the new kcharsets class.
+//
+// see KDE2PORTING for details
+//
 // Revision 1.81  1999/06/11 11:35:44  kulow
 // making aboutKDE protected. We should get rid of private for functions! ;)
 //
