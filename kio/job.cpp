@@ -128,7 +128,14 @@ SimpleJob::SimpleJob(const KURL& url, int command,
 		     const QByteArray &packedArgs)
   : Job(), m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command)
 {
-    Scheduler::doJob(this);
+    if (m_url.isMalformed())
+    {
+        m_error = ERR_MALFORMED_URL;
+        m_errorText = m_url.url();
+	emit result(this);
+        delete this; // Suicide is painless
+    } else
+        Scheduler::doJob(this);
 }
 
 void SimpleJob::kill()
