@@ -309,7 +309,7 @@ signals:
      */
     void 	toggle_overwrite_signal();
 
-protected slots:
+public slots:
       /**
        * @internal
        **/
