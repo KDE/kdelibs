@@ -1,17 +1,17 @@
-// This file has been automatically genrated by "generate_keys.sh" 
-// Distributed under the GNU Library General Public License 
-#ifndef KCKEY_H 
-#define KCKEY_H 
+// This file has been automatically genrated by "generate_keys.sh"
+// Distributed under the GNU Library General Public License
+#ifndef KCKEY_H
+#define KCKEY_H
 
-typedef struct { 
-	const char *name; 
-	int code; 
-} KKeys; 
+typedef struct {
+	const char *name;
+	int code;
+} KKeys;
 
-#define MAX_KEY_LENGTH           15   // should be calculated (gawk ?) 
-#define MAX_KEY_MODIFIER_LENGTH   21  // "SHIFT + CRTL + ALT + " :  
-#define MAX_FCTN_LENGTH           50  // arbitrary limit 
-#define NB_KEYS                 234 
+//#define MAX_KEY_LENGTH           15   // should be calculated (gawk ?)
+//#define MAX_KEY_MODIFIER_LENGTH   21  // "SHIFT + CRTL + ALT + " :
+//#define MAX_FCTN_LENGTH           50  // arbitrary limit
+#define NB_KEYS                 234
 extern const KKeys KKEYS[NB_KEYS]; 
 
 #endif
