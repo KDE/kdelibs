@@ -42,6 +42,7 @@
 #include <kcombobox.h>
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
+#include "ksslsigners.h"
 
 
 class KSSLInfoDlg::KSSLInfoDlgPrivate {
@@ -266,11 +267,17 @@ QPalette cspl;
    d->_validUntil->setText(x->getNotAfter());
 
    cspl = d->_csl->palette();
-   if (x->validate() != KSSLCertificate::Ok)
+   KSSLCertificate::KSSLValidation ksv = x->validate();
+   if (ksv == KSSLCertificate::SelfSigned)
+      if (KSSLSigners().useForSSL(*x))
+         ksv = KSSLCertificate::Ok;
+
+   if (ksv != KSSLCertificate::Ok)
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
    else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
    d->_csl->setPalette(cspl);
-   d->_csl->setText(KSSLCertificate::verifyText(x->validate()));
+
+   d->_csl->setText(KSSLCertificate::verifyText(ksv));
 
    d->_subject->setValues(x->getSubject());
    d->_issuer->setValues(x->getIssuer());
@@ -306,6 +313,7 @@ KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f)
 :            QScrollView(parent, name, f)
 {
     _frame = NULL;
+    setBackgroundMode(PaletteBackground);
 }
 
 
