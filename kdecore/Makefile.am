@@ -48,9 +48,6 @@ libkdecore_METASOURCES = USE_AUTOMOC
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 
-charsetsdir = $(kde_confdir)/charsets
-charsets_DATA = charsets.config
-
 kdebugdir = $(kde_confdir)
 kdebug_DATA = kdebug.areas
 
@@ -66,3 +63,9 @@ ckey.h : convert_key.c
 	cat ackey ckey > ckey.h
 	rm -f ackey ckey
 
+install-data-local: charsets.config 
+       $(mkinstalldirs) $(kde_confdir)
+       $(INSTALL_DATA) charsets.config $(kde_confdir)/charsets   
+
+uninstall-local:
+	-rm -f $(kde_confdir)/charsets
