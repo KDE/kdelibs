@@ -144,6 +144,7 @@ const unsigned short tagPriority[] = {
     9, // ID_NOFRAMES
     3, // ID_NOLAYER
     3, // ID_NOSCRIPT
+    1, // ID_NOLAYER
     7, // ID_OBJECT
     4, // ID_OL
     1, // ID_OPTGROUP
