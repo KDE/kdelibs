@@ -164,6 +164,10 @@ Literal:
   | '/'       /* a RegExp ? */     { Lexer *l = Lexer::curr();
                                      if (!l->scanRegExp()) YYABORT;
                                      $$ = new RegExpNode(l->pattern,l->flags);}
+  | DIVEQUAL /* a RegExp starting with /= ! */
+                                   { Lexer *l = Lexer::curr();
+                                     if (!l->scanRegExp()) YYABORT;
+                                     $$ = new RegExpNode(UString('=')+l->pattern,l->flags);}
 ;
 
 PrimaryExpr:
