@@ -114,6 +114,9 @@ class AddresseeDialog : public KDialogBase {
 
     QDict<QListViewItem> mItemDict;
     QDict<QListViewItem> mSelectedDict;
+
+    class AddresseeDialogPrivate;
+    AddresseeDialogPrivate *d;
 };
 
 }
