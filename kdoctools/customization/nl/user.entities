@@ -37,14 +37,23 @@
 <!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
 
 <!-- Algemene afkortingen -->
-<!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
-<!ENTITY enz     "<abbrev>enz.</abbrev>">
+<!ENTITY Alt     "<keycap>Alt</keycap>">
 <!ENTITY bijv    "<abbrev>bijv.</abbrev>">
+<!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
+<!ENTITY enz     "<abbrev>enz.</abbrev>">
+<!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
+<!ENTITY kicon	'<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'s K-pictogram</title></objectinfo>
+ <imageobject><imagedata fileref="icon-file-to-be-filled-in" format="PNG"/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon>'><!-- if image is localised, then entityref should be used instead
+                 of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
-<!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
-<!ENTITY Alt     "<keycap>Alt</keycap>">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
