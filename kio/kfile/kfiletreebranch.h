@@ -189,6 +189,7 @@ signals:
    void directoryChildCount( KFileTreeViewItem* item, int count );
 
 private slots:
+   void slotRefreshItems( const KFileItemList& );
    void addItems( const KFileItemList& );
    void slCompleted( const KURL& );
    void slotCanceled( const KURL& );

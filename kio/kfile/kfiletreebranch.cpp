@@ -63,6 +63,9 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 
     setShowingDotFiles( showHidden );
 
+    connect( this, SIGNAL( refreshItems(const KFileItemList&)),
+             this, SLOT  ( slotRefreshItems( const KFileItemList& )));
+
     connect( this, SIGNAL( newItems(const KFileItemList&)),
              this, SLOT  ( addItems( const KFileItemList& )));
 
@@ -127,6 +130,24 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
     return( parent );
 }
 
+
+void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
+{
+    KFileItemListIterator it( list );
+    kdDebug(250) << "Refreshing " << list.count() << " items !" << endl;
+    KFileItem *currItem;
+    KFileTreeViewItem *item = 0;
+
+    while ( (currItem = it.current()) != 0 )
+    {
+        item = findTVIByURL(currItem->url());
+        if (item) {
+            item->setPixmap(0, item->fileItem()->pixmap( KIcon::SizeSmall ));
+            item->setText( 0, item->fileItem()->text());
+        }
+        ++it;
+    }
+}
 
 void KFileTreeBranch::addItems( const KFileItemList& list )
 {
@@ -317,7 +338,7 @@ void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
     // with a 0L parent.
     if ( !parent )
         return;
-    
+
     while ( parent->firstChild() )
         delete parent->firstChild();
 }
