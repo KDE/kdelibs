@@ -112,9 +112,12 @@ public:
       : KBookmarkExporterBase(mgr, fileName) 
     { ; }
     virtual ~KNSBookmarkExporterImpl() {}
-    virtual void write(bool utf8, KBookmarkGroup);
+    virtual void write(KBookmarkGroup);
+    void setUtf8(bool);
 protected:
     virtual const QString folderAsString(KBookmarkGroup);
+private:
+    bool m_utf8;
 };
 
 #endif

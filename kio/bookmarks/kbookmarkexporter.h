@@ -31,7 +31,7 @@ public:
         : m_fileName(fileName), m_pManager(mgr) 
     { ; }
     virtual ~KBookmarkExporterBase() {}
-    virtual void write(bool utf8 /* true for mozilla */, KBookmarkGroup) = 0;
+    virtual void write(KBookmarkGroup) = 0;
 protected:
     virtual const QString folderAsString(KBookmarkGroup) = 0;
     QString m_fileName;
