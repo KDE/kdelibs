@@ -144,6 +144,47 @@ functionality.
   <li>A base class KArchive has been written, to support other archive formats in the future</li>
   <li>KTarEntry is now KArchiveEntry, KTarDirectory is now KArchiveDirectory, and KTarFile is now KArchiveFile.</li>
   <li>The classes ProgressBase, StatusbarProgress and DefaultProgress have been moved to the KIO namespace.</li>
+  <li>The signal KDirLister::started(const QString &amp;url) has changed to KDirLister::started(const KURL &amp;url).<li>
+  <li>KServiceTypeProfile::preferredService( const QString & serviceType, bool needApp ) has been removed, use
+      KServiceTypeProfile::preferredService( ..., "Application") if needApp was true, or
+      KServiceTypeProfile::preferredService( ..., Qstring::null) if needApp was false.
+  <li>The following functions in KProtocolManager have been replaced:
+      <ul>
+<li>ftpProxy(), use proxyFor("ftp") instead.
+<li>httpProxy(), use proxyFor("http") instead.
+<li>slaveProtocol(const QString&amp;), use slaveProtocol(const KURL &amp;url, QString &amp;proxy) instead.
+<li>defaultReadTimeout(), use DEFAULT_READ_TIMEOUT instead. (See ioslave_defaults.h)
+<li>defaultProxyConnectTimeout(), use DEFAULT_PROXY_CONNECT_TIMEOUT instead. (See ioslave_defaults.h)
+<li>defaultResponseTimeout(), use DEFAULT_RESPONSE_TIMEOUT instead. (See ioslave_defaults.h)
+<li>minimumTimeoutThreshold(), use MIN_TIMEOUT_VALUE instead. (See ioslave_defaults.h)
+      </ul>
+  <li>The following functions in KProtocolManager have been removed:
+      <ul>
+<li>setUserAgentList( const QStringList& )
+<li>userAgentList();
+<li>setReadTimeout()
+<li>setConnectTimeout( int )
+<li>setProxyConnectTimeout( int )
+<li>setResponseTimeout( int )
+<li>setMarkPartial( bool )
+<li>setMinimumKeepSize( int )
+<li>setAutoResume( bool )
+<li>setPersistentConnections( bool )
+<li>setMaxCacheAge( int )
+<li>setUseCache( bool )
+<li>setMaxCacheSize( int )
+<li>setCacheControl( KIO::CacheControl )
+<li>setUseProxy( bool )
+<li>setUseReverseProxy( bool )
+<li>setProxyType( ProxyType )
+<li>setProxyAuthMode( ProxyAuthMode )
+<li>setFtpProxy( const QString&amp; )
+<li>setHttpProxy( const QString&amp; )
+<li>setProxyFor( const QString&amp;, const QString&amp; )
+<li>setNoProxyFor( const QString&amp; )
+<li>setProxyConfigScript( const QString&amp;  )
+      </ul>
+  </li>
 </ul>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
