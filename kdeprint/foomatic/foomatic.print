@@ -1,5 +1,6 @@
 [KDE Print Entry]
 PrintSystem=foomatic
 Comment=Foomatic (CUPS, LPRng, PDQ)
+Comment[xxx]=xx
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0
