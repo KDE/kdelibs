@@ -1511,7 +1511,7 @@ void KHTMLPart::checkCompleted()
 	  }
 	  if (focusNode)
 	  {
-	      QRect focusRect = focusNode->getRect();
+	      //QRect focusRect = focusNode->getRect();
 	      //d->m_view->ensureVisible(focusRect.x(), focusRect.y());
 	      d->m_doc->setFocusNode(focusNode);
 	  }
