@@ -18,12 +18,15 @@
 */
 
 #ifndef _KDEBUG_H
-#define _KDEBUG_H
+#define _KDEBUG_H "$Id"
 
 /**
   * kdebug provides and advanced mechanism for displaying debugging
   * information to the user.  kdebug works like printf does but takes two
-  * extra arguments.
+  * extra arguments.  If your program is compiled with NDEBUG defined,
+  * kdebug is rendered useless and your debugging statements hidden from
+  * the end-user's view.
+  *
   *
   * The first argument required by kdebug is an "level".  A kdebug level
   * determines how important the message being displayed is.  There are
