@@ -1,0 +1,203 @@
+
+# general messages, that are often used
+msgid "Error"
+msgstr "B˛òd"
+
+msgid "Malformed URL"
+msgstr "Adresat formularza"
+
+msgid "Yes"
+msgstr "Tak"
+
+msgid "No"
+msgstr "Nie"
+
+msgid "Warning"
+msgstr "Ostrze¿enie"
+
+msgid "Open a file"
+msgstr "Otwrz plik"
+
+msgid "Save a file"
+msgstr "Zapisz plik"
+
+msgid "Contents"
+msgstr "TreµÜ"
+
+msgid "About"
+msgstr "Informacje"
+
+msgid "Open"
+msgstr "Otwrz"
+
+msgid "Save"
+msgstr "Zachowaj"
+
+msgid "Save As"
+msgstr "Zachowaj jako"
+
+msgid "Close"
+msgstr "Zamknij"
+
+msgid "Quit"
+msgstr "Zako±cz"
+
+msgid "Untitled"
+msgstr "Nienazwany"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "Apply"
+msgstr "Zastosuj"
+
+msgid "File"
+msgstr "Plik"
+
+msgid "Help"
+msgstr "Pomoc"
+
+msgid "Edit"
+msgstr "Edycja"
+
+# libkdeui messages
+
+#: kcolordlg.cpp:239
+msgid "Select Color"
+msgstr "Wybierz kolor"
+
+#: kcolordlg.cpp:244
+msgid "System Colors"
+msgstr "Kolory podstawowe"
+
+#: kcolordlg.cpp:269
+msgid "Custom Colors"
+msgstr "Kolory u¿ytkownika"
+
+#: kcolordlg.cpp:345
+msgid "Add to Custom Colors"
+msgstr "Dodaj do kolorw u¿ytkownika"
+
+#: kcolordlg.cpp:649 kcolordlg.cpp:699
+msgid "Custom..."
+msgstr "Definiuj kolory u¿ytkownika"
+
+#: kfontdialog.cpp:95
+msgid "Select Font"
+msgstr "Wybierz czcionkä"
+
+#: kfontdialog.cpp:99
+msgid "Requested Font"
+msgstr "Øòdana czcionka"
+
+#: kfontdialog.cpp:104
+msgid "Actual Font"
+msgstr "Aktualna czcionka"
+
+#: kfontdialog.cpp:108 kfontdialog.cpp:112
+msgid "Family:"
+msgstr "Rodzina:"
+
+#: kfontdialog.cpp:119 kfontdialog.cpp:124
+msgid "Size:"
+msgstr "Rozmiar:"
+
+#: kfontdialog.cpp:133 kfontdialog.cpp:138
+msgid "Weight:"
+msgstr "Waga:"
+
+#: kfontdialog.cpp:147 kfontdialog.cpp:155
+msgid "Style:"
+msgstr "Styl:"
+
+#: kfontdialog.cpp:190
+msgid "Size"
+msgstr "Rozmiar"
+
+#: kfontdialog.cpp:229
+msgid "Weight"
+msgstr "Waga"
+
+#: kfontdialog.cpp:230 kfontdialog.cpp:327
+msgid "normal"
+msgstr "normal"
+
+#: kfontdialog.cpp:231 kfontdialog.cpp:329
+msgid "bold"
+msgstr "bold"
+
+#: kfontdialog.cpp:240
+msgid "Style"
+msgstr "Styl"
+
+#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
+msgid "roman"
+msgstr "roman"
+
+#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
+msgid "italic"
+msgstr "italic"
+
+#: kfontdialog.cpp:270
+msgid "Dolor Ipse"
+msgstr "Dolor Ipse"
+
+#: kfontdialog.cpp:362
+msgid "Bold"
+msgstr "Pogrubiona"
+
+#: kfontdialog.cpp:364
+msgid "Normal"
+msgstr "Normalna"
+
+#: kiconloader.cpp:176
+msgid "Select Icon"
+msgstr "Wybierz ikonä"
+
+#: kiconloader.cpp:182
+msgid "Filter:"
+msgstr "Filtr:"
+
+#: kiconloader.cpp:337
+#, c-format
+msgid "ERROR: couldn't find icon: %s"
+msgstr "B˙ÌD: nie mogä znale¿Ü ikony: %s"
+
+#: kmenubar.cpp:106 ktoolbar.cpp:273
+msgid "Top"
+msgstr "Gra"
+
+#: kmenubar.cpp:107 ktoolbar.cpp:275
+msgid "Bottom"
+msgstr "D˛"
+
+#: kmenubar.cpp:108 ktoolbar.cpp:276
+msgid "Floating"
+msgstr "Ruchomy"
+
+#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
+msgid "Float"
+msgstr "Uruchom"
+
+#: kmenubar.cpp:213 ktoolbar.cpp:1198
+msgid "UnFloat"
+msgstr "Unieruchom"
+
+#: ktoolbar.cpp:87 ktoolbar.cpp:145
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: ikona jest pusta, prawdopodobnie brak pliku"
+
+#: ktoolbar.cpp:272
+msgid "Left"
+msgstr "Lewo"
+
+#: ktoolbar.cpp:274
+msgid "Right"
+msgstr "Prawo"
+
