@@ -312,7 +312,44 @@ static int tokenize( QStringList& tokens, const QString& str,
 
 QString KStandardDirs::kde_data_relative()
 {
-    return "share/apps/";
+    return kde_default("data");
+}
+
+QString KStandardDirs::kde_default(const QString& type) {
+    if (type == "data")
+	return "share/apps/";
+    if (type == "html")
+	return "share/doc/HTML/";
+    if (type == "icon")
+	return "share/icons/";
+    if (type == "mini")
+	return "share/icons/mini/";
+    if (type == "config")
+	return "share/config/";
+    if (type == "toolbar")
+	return "share/toolbar/";
+    if (type == "apps")
+	return "share/applnk/";
+    if (type == "sound")
+	return "share/sounds/";
+    if (type == "locale")
+	return "share/locale/";
+    if (type == "services")
+	return "share/services/";
+    if (type == "servicetypes")
+	return "share/servicetypes/";
+    if (type == "mime")
+	return "share/mimelnk/";
+    if (type == "cgi")
+	return "cgi-bin/";
+    if (type == "wallpaper")
+	return "share/wallpapers/";
+    if (type == "exe")
+	return "bin/";
+    if (type == "lib")
+	return "lib/";
+    fatal("unknown resource type %s", type.ascii());
+    return QString::null;
 }
 
 QString KStandardDirs::getSaveLocation(const QString& type,
@@ -397,22 +434,17 @@ void KStandardDirs::addKDEDefaults()
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
 
-    addResourceType("html", "share/doc/HTML/");
-    addResourceType("icon", "share/icons/");
-    addResourceType("mini", "share/icons/mini/");
-    addResourceType("apps", "share/applnk/");
-    addResourceType("sound", "share/sounds/");
-    addResourceType("data", kde_data_relative());
-    addResourceType("locale", "share/locale/");
-    addResourceType("services", "share/services/");
-    addResourceType("servicetypes", "share/servicetypes/");
-    addResourceType("mime", "share/mimelnk/");
-    addResourceType("cgi", "cgi-bin/");
-    addResourceType("config", "share/config/");
-    addResourceType("toolbar", "share/toolbar/");
-    addResourceType("wallpaper", "share/wallpapers/");
-    addResourceType("exe", "bin/");
-    addResourceType("lib", "lib/");
+    const char* types[] = {"html", "icon", "mini", "apps", "sound",
+			   "data", "locale", "services", "mime",
+			   "servicetypes", "cgi", "config", "exe",
+			   "toolbar", "wallpaper", "lib", 0};
+
+    uint index = 0;
+    while (types[index] != 0) {
+	addResourceType(types[index], kde_default(types[index]));
+	index++;
+    }
+    
 }
 
 QString KStandardDirs::localkdedir() const
@@ -422,19 +454,18 @@ QString KStandardDirs::localkdedir() const
 
 QString locate( const QString& type,
 		const QString& filename ) {
-  return KGlobal::dirs()->findResource(type, filename);
+    return KGlobal::dirs()->findResource(type, filename);
 }
 
 QString locateLocal( const QString& type,
-	             QString filename ) {
-  QString dir, file;
-  int slash = filename.findRev('/')+1;
-  if (!slash)
-  { 
-     return KGlobal::dirs()->getSaveLocation(type)+filename;
-  }
-  dir = filename.left(slash);
-  file = filename.mid(slash);
-  return KGlobal::dirs()->getSaveLocation(type, dir)+file;
+	             QString filename ) 
+{
+    QString dir, file;
+    int slash = filename.findRev('/')+1;
+    if (!slash)
+	return KGlobal::dirs()->getSaveLocation(type)+filename;
+    dir = filename.left(slash);
+    file = filename.mid(slash);
+    return KGlobal::dirs()->getSaveLocation(type, dir)+file;
 }
 

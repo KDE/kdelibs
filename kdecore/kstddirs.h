@@ -247,6 +247,8 @@ public:
 
 	static QString kde_data_relative();
 
+	static QString kde_default(const QString& type);
+
  private:
 
 	QString localkdedir() const;
