@@ -17,14 +17,29 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <stdlib.h>
+
 #include <qfile.h>
 #include <qtextstream.h>
 
+#include <kprocess.h>
+
 #include "vcardtool.h"
 
-int main()
+int main( int argc, char **argv )
 {
-  QFile file( "test.vcf" );
+  if ( argc != 3 ) {
+    qDebug("Usage: testread <inputfile> <outputfile>");
+    return 1;
+  }
+
+  QString inputFile( argv[ 1 ] );
+  QString outputFile( argv[ 2 ] );
+  QString referenceFile( inputFile + ".ref" );
+
+  qDebug( "Reading from '%s', writing to '%s'.", argv[1], argv[2] );
+
+  QFile file( inputFile );
   if ( !file.open( IO_ReadOnly ) ) {
     qDebug( "Unable to open file '%s' for reading!", file.name().latin1() );
     return 1;
@@ -42,7 +57,7 @@ int main()
   text = tool.createVCards( list ); // uses version 3.0
 //  text = tool.createVCards( list, VCard::v2_1 ); // uses version 2.1
 
-  file.setName( "testout.vcf" );
+  file.setName( outputFile );
   if ( !file.open( IO_WriteOnly ) ) {
     qDebug( "Unable to open file '%s' for writing!", file.name().latin1() );
     return 1;
@@ -51,6 +66,10 @@ int main()
   s.setDevice( &file );
   s << text;
   file.close();
+
+  QString command = "diff " + referenceFile + " " + outputFile;
+
+  system( command.local8Bit() );
 
   return 0;
 }
