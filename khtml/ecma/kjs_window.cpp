@@ -130,7 +130,7 @@ KJSO Screen::get(const UString &p) const
 }
 
 Window::Window(KHTMLPart *p)
-  : part(p), winq(0L), openedByJS(false)
+  : part(p), openedByJS(false), winq(0L)
 {
 }
 
@@ -863,23 +863,23 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "href") {
        KJS::Window* w =  newWindow(getInstance());
        url = (w && w->part ? w->part : part)->completeURL(str);
-  }
-  else if (p == "hash") url.setRef(str);
-  else if (p == "host") {
-    // danimo: KURL doesn't have a way to
-    // set hostname _and_ port at once, right?
-    QString host = str.left(str.find(":"));
-    QString port = str.mid(str.find(":")+1);
-    url.setHost(host);
-    url.setPort(port.toUInt());
-  } else if (p == "hostname") url.setHost(str);
-  else if (p == "pathname") url.setPath(str);
-  else if (p == "port") url.setPort(str.toUInt());
-  else if (p == "protocol")  url.setProtocol(str);
-  else if (p == "search"){ /* TODO */}
-  else {
-    HostImp::put(p, v);
-    return;
+  } else {
+    url = part->url();
+    if (p == "hash") url.setRef(str);
+    else if (p == "host") {
+      QString host = str.left(str.find(":"));
+      QString port = str.mid(str.find(":")+1);
+      url.setHost(host);
+      url.setPort(port.toUInt());
+    } else if (p == "hostname") url.setHost(str);
+    else if (p == "pathname") url.setPath(str);
+    else if (p == "port") url.setPort(str.toUInt());
+    else if (p == "protocol")  url.setProtocol(str);
+    else if (p == "search") url.setQuery(str);
+    else {
+      HostImp::put(p, v);
+      return;
+    }
   }
   part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
 }
