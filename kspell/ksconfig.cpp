@@ -348,6 +348,12 @@ KSpellConfig::interpret (QString &fname, QString &lname,
       lname="br";
       hname=i18n("Brazilian Portuguese");
     }
+
+  else if (fname=="portugues")
+    {
+      lname="pt";
+      hname=i18n("Portuguese");
+    }
   
   else
     {
