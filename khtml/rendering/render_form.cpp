@@ -1023,6 +1023,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         setVScrollBarMode( Auto );
     }
     else {
+        setWordWrap(QMultiLineEdit::NoWrap);
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
