@@ -1492,13 +1492,11 @@ void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         p->setPen(g.light());
 
         p->drawLine(x+1, y+2, x+1, y2-2);
-        p->drawLine(x+3, y+2, x+3, y2-2);
-        p->drawLine(x+5, y+2, x+5, y2-2);
-
-        p->setPen(g.mid());
-        p->drawLine(x+2, y+2, x+2, y2-2);
         p->drawLine(x+4, y+2, x+4, y2-2);
-        p->drawLine(x+6, y+2, x+6, y2-2);
+
+        p->setPen(g.dark());
+        p->drawLine(x+2, y+2, x+2, y2-2);
+        p->drawLine(x+5, y+2, x+5, y2-2);
 
     }
     else{
@@ -1507,14 +1505,13 @@ void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         p->setPen(g.light());
 
         p->drawLine(x+2, y+1, x2-2, y+1);
-        p->drawLine(x+2, y+3, x2-2, y+3);
-        p->drawLine(x+2, y+5, x2-2, y+5);
-
-        p->setPen(g.mid());
-        p->drawLine(x+2, y+2, x2-2, y+2);
         p->drawLine(x+2, y+4, x2-2, y+4);
-        p->drawLine(x+2, y+6, x2-2, y+6);
+
+        p->setPen(g.dark());
+        p->drawLine(x+2, y+2, x2-2, y+2);
+        p->drawLine(x+2, y+5, x2-2, y+5);
     }
+        
         
 }
 
