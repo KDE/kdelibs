@@ -726,7 +726,10 @@ QDate KLocale::readDate(const QString &intstr, bool shortfmt) const
 	uint strpos = 0;
 	uint fmtpos = 0;
 
-	while (fmt.length() > fmtpos && str.length() > strpos) {
+
+        while (fmt.length() > fmtpos || str.length() > strpos) {
+          if ( !(fmt.length() > fmtpos && str.length() > strpos) ) goto error;
+
 		QChar c = fmt.at(fmtpos++);
 
 		if (c != '%') {
@@ -813,7 +816,6 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
   if (!seconds)
     fmt.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
 
-  kdDebug() << "fmt: " << fmt << endl;
   int hour = -1, minute = -1, second = seconds ? -1 : 0; // don't require seconds
   bool _12h = false;
   bool pm = false;
