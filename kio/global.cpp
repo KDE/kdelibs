@@ -321,7 +321,9 @@ QString Job::errorString()
 #include <stdio.h>
 #include <qfile.h>
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -379,7 +381,7 @@ QString Job::errorString()
 #define STRUCT_SETMNTENT int
 #define GETMNTENT(file, var) ((var=getfsent()) != NULL)
 #define MOUNTPOINT(var) var->fs_file
-#define MOUNTTYPE(var) var->fs_vftype
+#define MOUNTTYPE(var) var->fs_vfstype
 #define FSNAME(var) var->fs_spec
 #else /* no setmntent and no setfsent */
 #define SETMNTENT fopen
