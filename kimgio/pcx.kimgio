@@ -2,6 +2,7 @@
 Type=PCX
 Header=^\012
 Name=PCX Image
+Name[be]=Малюнак PCX
 Name[eu]=PCX Irudia
 Name[ga]=Íomhá PCX
 Name[pt_BR]=Imagem PCX
