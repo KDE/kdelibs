@@ -68,24 +68,49 @@ class KAboutDialog;
  *
  * The standard "about application" dialog box is quite simple. If you
  * need a dialog box with more functionality you must design that one
- * yourself. When you want to display the dialog you can connect it to
- * the help menu. Here are the steps you must follow:
+ * yourself. When you want to display the dialog you can choose one of
+ * two methods. Common for both is that you must make a help menu object 
+ * with no text argument If the text is missing the default dialog box 
+ * will not be displayed:
  *
- * 1. Make a help menu object with no text argument. If the text is missing
- *    the default dialog box will not be displayed:
- *    mHelpMenu = new KHelpMenu( this );
+ * Example 1 Using @ref showAboutApplication signal (preferred)
+ * <pre>
  *
- * 2. Make a slot method that launches your dialog:
- *    void slotShowAboutDialog( void )
+ * void MyClass::myFunc( void )
+ * {
+ *   ..
+ *   KHelpMenu *helpMenu = new KHelpMenu( this );
+ *   connect( helpMenu, SIGNAL(showAboutApplication()), 
+ *          this, SLOT(myDialogSlot()));
+ *   ..
+ * }
  *
- * 3. Connect the slot to the help menu:
- *    QPopupMenu *help = mHelpMenu->menu();
- *    help->connectItem( 2, this, SLOT(slotShowAboutDialog()) );
+ * void MyClass::myDialogSlot( void )
+ * {
+ *   <activate your custom dialog>
+ * }
+ * </pre>
  *
+ *
+ * Example 2 Old style - connecting directly to the menu entry.
+ * <pre>
+ *
+ * void MyClass::myFunc( void )
+ * {
+ *   KHelpMenu *helpMenu = new KHelpMenu( this );
+ *   QPopupMenu *help = mHelpMenu->menu();
+ *   help->connectItem( KHelpMenu::menuAboutApp, this, SLOT(myDialogSlot()) );
+ * }
+ *
+ * void MyClass::myDialogSlot( void )
+ * {
+ *   <activate your custom dialog>
+ * }
+ * </pre>
  *
  * @short Standard KDE help menu with dialog boxes.
  * @author Espen Sand (espen@kde.org)
- * @version $Id:
+ * @version $Id$
  */
 
 class KHelpMenu : public QObject
@@ -93,6 +118,14 @@ class KHelpMenu : public QObject
   Q_OBJECT
 
   public:
+    enum MenuId
+    {
+      menuHelpContents = 0,
+      menuWhatsThis = 1,
+      menuAboutApp = 2,
+      menuAboutKDE = 3
+    };
+
     /**
      * Constructor.
      *
@@ -100,9 +133,14 @@ class KHelpMenu : public QObject
      *        and will be centered with respect to the parent.
      * @param aboutAppText User definable string that is used in the
      *        application specific dialog box. Note: The help menu will
-     *        not open this dialog box if you don't define a string.
+     *        not open this dialog box if you don't define a string. See
+     *        @ref showAboutApplication for more information.
+     * @param showWhatsThis Decides whether a "Whats this" entry will be
+     *        added to the dialog.
+     * 
      */
-    KHelpMenu( QWidget *parent=0, const QString &aboutAppText=QString::null );
+    KHelpMenu( QWidget *parent=0, const QString &aboutAppText=QString::null,
+	       bool showWhatsThis=true );
 
     /**
      * Destructor
@@ -135,9 +173,10 @@ class KHelpMenu : public QObject
 
     /**
      * Opens an application specific dialog box. The dialog box will display
-     * the string that was defined in the constructor.
+     * the string that was defined in the constructor. If that string was 
+     * empty the @ref showAboutApplication is emitted instead.
      */
-    void aboutApp( void );
+    void aboutApplication( void );
 
     /**
      * Opens the standard "About KDE" dialog box.
@@ -152,6 +191,15 @@ class KHelpMenu : public QObject
      */
     void menuDestroyed( void );
 
+  signals:
+    /**
+     * This signal is emitted from the @ref aboutApplication if no 
+     * "about application" string has been defined. The standard 
+     * application specific dialog box that is normally activated in 
+     * @ref aboutApp will not be displayed when this signal is emitted.
+     */
+    void showAboutApplication( void );
+
   private:
     QPopupMenu   *mMenu;
     QMessageBox  *mAboutApp;
@@ -159,6 +207,8 @@ class KHelpMenu : public QObject
 
     QString      mAboutAppText;
     QWidget      *mParent;
+
+    bool         mShowWhatsThis;
 };
 
 

@@ -33,11 +33,13 @@
 #include <kstddirs.h>
 
 
-KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText )
+KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
+		      bool showWhatsThis )
   : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0)
 {
   mParent = parent;
   mAboutAppText = aboutAppText;
+  mShowWhatsThis = showWhatsThis;
 }
 
 
@@ -53,32 +55,37 @@ QPopupMenu* KHelpMenu::menu( void )
 {
   if( mMenu == 0 )
   {
+    //
+    // 1999-12-02 Espen Sand: 
+    // I use hardcoded menu id's here. Reason is to stay backward 
+    // compatible.
+    //
+
     mMenu = new QPopupMenu();
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    int id = mMenu->insertItem( i18n( "&Contents" ) );
-    mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
-    mMenu->setAccel( Key_F1, id );
-    mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
-    mMenu->setAccel( Key_F1, id );
+    mMenu->insertItem( i18n( "&Contents" ), menuHelpContents );
+    mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
+    mMenu->setAccel( Key_F1, menuHelpContents );
 
-    QToolButton* wtb = QWhatsThis::whatsThisButton(0);
-    id = mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ) );
-    mMenu->connectItem( id, this, SLOT( contextHelpActivated() ) );
-    delete wtb;
-    mMenu->setAccel( SHIFT + Key_F1, id );
+    if( mShowWhatsThis == true )
+    {
+      QToolButton* wtb = QWhatsThis::whatsThisButton(0);
+      mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
+      mMenu->connectItem( menuWhatsThis, this, SLOT(contextHelpActivated()) );
+      delete wtb;
+      mMenu->setAccel( SHIFT + Key_F1, menuWhatsThis );
+    }
 
     mMenu->insertSeparator();
 
-    id = mMenu->insertItem( kapp->miniIcon(), i18n( "&About" ) + " " + kapp->name() + "..." );
-    if( mAboutAppText.isNull() == false )
-    {
-      mMenu->connectItem( id, this, SLOT( aboutApp() ) );
-    }
+    mMenu->insertItem( kapp->miniIcon(), 
+      i18n( "&About" ) + " " + kapp->name() + "...", menuAboutApp );
+    mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
-    id = mMenu->insertItem( i18n( "About &KDE..." ), 3 );
-    mMenu->connectItem( id, this, SLOT( aboutKDE() ) );
+    mMenu->insertItem( i18n( "About &KDE..." ), menuAboutKDE );
+    mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
   }
 
   return( mMenu );
@@ -92,27 +99,37 @@ void KHelpMenu::appHelpActivated( void )
 }
 
 
-void KHelpMenu::aboutApp( void )
+void KHelpMenu::aboutApplication( void )
 {
-  //
-  // 1999-16-11-Espen Sand: I will improve (*) this later + some other stuff
-  // after the freeze have been removed. (mid December)
-  // (*) Make the dialog destroy itself on close as propsed by M Ettrich.
-  //
-  if( mAboutApp == 0 )
+  if( mAboutAppText.isNull() == true )
   {
-    QString caption = i18n("About %1").arg(kapp->caption());
-    mAboutApp = new QMessageBox( caption, mAboutAppText,
-      QMessageBox::Information,
-      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-      0, 0, mParent, "about", false, WStyle_DialogBorder|WDestructiveClose );
-
-    mAboutApp->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    mAboutApp->setIconPixmap(kapp->icon());
+    emit showAboutApplication();
   }
+  else
+  {
+    //
+    // 1999-11-16 Espen Sand: I will improve (*) this later + some other stuff
+    // after the freeze have been removed. (mid December)
+    // (*) Make the dialog destroy itself on close as propsed by M Ettrich.
+    // 1999-12-02-Espen Sand: I have commented out WDestructiveClose because
+    // it it not activated when the "OK" button is clicked.
+    //
+    if( mAboutApp == 0 )
+    {
+      QString caption = i18n("About %1").arg(kapp->caption());
+      mAboutApp = new QMessageBox( caption, mAboutAppText,
+        QMessageBox::Information,
+        QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
+        0, 0, mParent, "about", false, WStyle_DialogBorder
+				   /*|WDestructiveClose*/ );
 
-  mAboutApp->show();
-  mAboutApp = 0; // mAboutApp will destruct itself (destructive close!)
+      mAboutApp->setButtonText(QMessageBox::Ok, i18n("&OK"));
+      mAboutApp->setIconPixmap(kapp->icon());
+    }
+
+    mAboutApp->show();
+    //mAboutApp = 0; // mAboutApp will destruct itself (destructive close!)
+  }
 }
 
 
@@ -181,7 +198,7 @@ void KHelpMenu::menuDestroyed( void )
 
 void KHelpMenu::contextHelpActivated( void )
 {
-    QWhatsThis::enterWhatsThisMode();
+  QWhatsThis::enterWhatsThisMode();
 }
 
 
