@@ -9,7 +9,7 @@ Standards-Version: 3.5.4
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
+Replaces: kdelibs2g, kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1), kscreensaver (<< 4:2.2-cvs20010528-1)
 Depends: ${shlibs:Depends}
 Recommends: libarts, libkmid, kdelibs3-cups
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
