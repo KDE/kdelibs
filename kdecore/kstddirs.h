@@ -311,7 +311,7 @@ public:
 	 * @returns static default for the specified resource.  You
 	 *          should probably be using locate or locateLocal
 	 *          instead.
-	 * @ see #locate, #locateLocal
+	 * @see #locate, #locateLocal
 	 */
 	static QString kde_default(const QString& type);
 
