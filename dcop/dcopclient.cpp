@@ -187,9 +187,9 @@ DCOPClient::DCOPClient()
 
 DCOPClient::~DCOPClient()
 {
-  if (IceConnectionStatus(d->iceConn) == IceConnectAccepted) {
-    detach();
-  }
+  if (d->iceConn)
+    if (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
+      detach();
 
   delete d->notifier;
   delete d;
@@ -308,6 +308,8 @@ bool DCOPClient::detach()
     status = IceCloseConnection(d->iceConn);
     if (status != IceClosedNow)
       return false;
+    else
+      d->iceConn = 0L;
   }
   delete d->notifier;
   d->notifier = 0L;
