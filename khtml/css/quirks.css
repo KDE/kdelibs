@@ -30,6 +30,10 @@ LAYER {
     position: absolute;
 }
 
+DIV > LAYER {
+    position: static;
+}
+
 ILAYER > LAYER {
     position: relative;
 }
