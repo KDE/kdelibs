@@ -300,6 +300,7 @@ void RenderFrameSet::positionFrames()
           child->setWidth( m_gridLayout[1][c] );
           child->setHeight( m_gridLayout[0][r] );
           child->setLayouted(false);
+	  child->layout();
       }
 
       xPos += m_gridLayout[1][c] + element()->border();
