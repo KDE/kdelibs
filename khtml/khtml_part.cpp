@@ -266,7 +266,8 @@ public:
           m_ssl_cipher_bits,
           m_ssl_cert_state,
           m_ssl_good_from,
-          m_ssl_good_until;
+          m_ssl_good_until,
+          m_ssl_serial_num;
 
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
@@ -1225,6 +1226,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
     d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
+    d->m_ssl_serial_num = d->m_job->queryMetaData("ssl_peer_cert_serial");
 
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
@@ -1560,12 +1562,12 @@ void KHTMLPart::slotProgressUpdate()
   emit d->m_extension->loadingProgress( percent );
 }
 
-void KHTMLPart::slotJobSpeed( KIO::Job* job, unsigned long speed )
+void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
 {
   emit d->m_extension->speedProgress( speed );
 }
 
-void KHTMLPart::slotJobPercent( KIO::Job* job, unsigned long percent )
+void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
 {
   d->m_jobPercent = percent;
 
@@ -2491,7 +2493,7 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_used_bits.toInt(),
                d->m_ssl_cipher_bits.toInt(),
                (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
-               d->m_ssl_good_from, d->m_ssl_good_until);
+               d->m_ssl_good_from, d->m_ssl_good_until, d->m_ssl_serial_num);
   }
   kid->exec();
 }
@@ -3248,7 +3250,8 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_bits
          << d->m_ssl_cert_state
          << d->m_ssl_good_from
-         << d->m_ssl_good_until;
+         << d->m_ssl_good_until
+         << d->m_ssl_serial_num;
 
   // Save frame data
   stream << (Q_UINT32)d->m_frames.count();
@@ -3330,7 +3333,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_cipher_bits
          >> d->m_ssl_cert_state
          >> d->m_ssl_good_from
-         >> d->m_ssl_good_until;
+         >> d->m_ssl_good_until
+         >> d->m_ssl_serial_num;
 
   d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
 
