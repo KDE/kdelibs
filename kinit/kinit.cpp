@@ -130,6 +130,7 @@ struct {
   bool debug_wait;
   int lt_dlopen_flag;
   QCString errorMsg;
+  bool launcher_ok;
 } d;
 
 extern "C" {
@@ -885,10 +886,27 @@ static void WaitPid( pid_t waitForPid)
 
 static void launcher_died()
 {
-   /* This is bad. */
-   fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
-   ::exit(255);
-   return;
+   if (!d.launcher_ok)
+   {
+      /* This is bad. */
+      fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
+      ::exit(255);
+      return;
+   }
+
+   // KLauncher died... restart
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: KLauncher died unexpectedly.\n");
+#endif
+   d.launcher_pid = 0;
+   close(d.launcher[0]);
+   d.launcher[0] = -1;
+
+   pid_t pid = launch( 1, "klauncher", 0 );
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: Relaunching KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
+   WaitPid(pid);
 }
 
 static void handle_launcher_request(int sock = -1)
@@ -923,6 +941,8 @@ static void handle_launcher_request(int sock = -1)
            return;
        }
    }
+   
+   d.launcher_ok = true;
 
    if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
@@ -1140,7 +1160,12 @@ static void handle_requests(pid_t waitForPid)
 #endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
-           if (d.launcher_pid)
+              
+           if (exit_pid == d.launcher_pid)
+           {
+             launcher_died();
+           }
+           else if (d.launcher_pid)
            {
            // TODO send process died message
               klauncher_header request_header;
@@ -1443,6 +1468,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    d.debug_wait = false;
+   d.launcher_ok = false;
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
