@@ -106,7 +106,7 @@ static inline int getValueID(const char *tagStr, int len)
 
 %{
 
-static inline int cssyyerror(const char *x ) 
+static inline int cssyyerror(const char *x )
 {
 #ifdef CSS_DEBUG
     qDebug( "%s", x );
@@ -146,6 +146,8 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token <string> STRING
 
 %right <string> IDENT
+
+%token <string> NTH
 
 %nonassoc <string> HASH
 %nonassoc ':'
@@ -189,6 +191,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %token <string> URI
 %token <string> FUNCTION
+%token <string> NOTFUNCTION
 
 %token <string> UNICODERANGE
 
@@ -483,8 +486,8 @@ font_face:
 ;
 
 combinator:
-  '+' maybe_space { $$ = CSSSelector::Sibling; }
-  | '~' maybe_space { $$ = CSSSelector::Cousin; }
+    '+' maybe_space { $$ = CSSSelector::DirectAdjacent; }
+  | '~' maybe_space { $$ = CSSSelector::IndirectAdjacent; }
   | '>' maybe_space { $$ = CSSSelector::Child; }
   | /* empty */ { $$ = CSSSelector::Descendant; }
   ;
@@ -763,7 +766,36 @@ pseudo:
 	$$->match = CSSSelector::Pseudo;
         $$->value = domString($3);
     }
-    | ':' FUNCTION maybe_space simple_selector ')' {
+    // used by :nth-*
+    | ':' FUNCTION NTH ')' {
+        $$ = new CSSSelector();
+        $$->match = CSSSelector::Pseudo;
+        $$->string_arg = domString($3);
+        $$->value = domString($2);
+    }
+    // used by :nth-*
+    | ':' FUNCTION NUMBER ')' {
+        $$ = new CSSSelector();
+        $$->match = CSSSelector::Pseudo;
+        $$->string_arg = QString::number($3);
+        $$->value = domString($2);
+    }
+    // used by :nth-* and :lang
+    | ':' FUNCTION IDENT ')' {
+        $$ = new CSSSelector();
+        $$->match = CSSSelector::Pseudo;
+        $$->string_arg = domString($3);
+        $$->value = domString($2);
+    }
+    // used by :contains
+    | ':' FUNCTION STRING ')' {
+        $$ = new CSSSelector();
+        $$->match = CSSSelector::Pseudo;
+        $$->string_arg = domString($3);
+        $$->value = domString($2);
+    }
+    // used only by :not
+    | ':' NOTFUNCTION maybe_space simple_selector ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::Pseudo;
         $$->simpleSelector = $4;

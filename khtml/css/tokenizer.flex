@@ -19,6 +19,7 @@ url             ([!#$%&*-~]|{nonascii}|{escape})*
 w               [ \t\r\n\f]*
 nl              \n|\r\n|\r|\f
 range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|{h})))))
+nth             (-?[0-9]*n\+[0-9]+)|(-?[0-9]*n)
 
 %%
 
@@ -37,6 +38,8 @@ range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|
 {string}                {yyTok = STRING; return yyTok;}
 
 {ident}                 {yyTok = IDENT; return yyTok;}
+
+{nth}                   {yyTok = NTH; return yyTok;}
 
 "#"{name}               {yyTok = HASH; return yyTok;}
 
@@ -72,6 +75,7 @@ range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|
 {num}%                  {yyTok = PERCENTAGE; return yyTok;}
 {num}                   {yyTok = NUMBER; return yyTok;}
 
+"not("                  {yyTok = NOTFUNCTION; return yyTok;}
 "url("{w}{string}{w}")" {yyTok = URI; return yyTok;}
 "url("{w}{url}{w}")"    {yyTok = URI; return yyTok;}
 {ident}"("              {yyTok = FUNCTION; return yyTok;}

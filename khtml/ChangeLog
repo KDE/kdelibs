@@ -1,12 +1,24 @@
+2004-11-23  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement the structual pseudo-selectors of CSS3.
+
+        * css/tokenizer.flex: Add nth and NOTFUNCTION tokens.
+        The later because the not-function is unique in its parsing.
+        * css/tokenizer.cpp: Manually merge output from flex :(
+        * css/parser.y: Update parsing of pseudo-functions.
+        Also enables correct parsing of :lang and :contains.
+        * css/css_base.{h,cpp}: Add new pseudoselectors
+        * css/cssstyleselector.cpp: Implement new selectors
+
 2004-11-22  Germain Garand  <germain@ebooksfrance.org>
 
-        * rendering/bidi.cpp (layoutInlineChildren): for elements with some kind of 
-        scrolling overflow and a variable height, include the scrollbar height in 
+        * rendering/bidi.cpp (layoutInlineChildren): for elements with some kind of
+        scrolling overflow and a variable height, include the scrollbar height in
         calculations to avoid masking content (#89136).
 
         * rendering/render_block.cpp (layoutBlock/layoutBlockChildren): ditto.
 
-        * rendering/render_box.cpp (contentWidth/contentHeight): subtract scrollbars 
+        * rendering/render_box.cpp (contentWidth/contentHeight): subtract scrollbars
         height/width when applicable.
 
 2004-11-22  Allan Sandfeld Jensen <kde@carewolf.com>

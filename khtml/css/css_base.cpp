@@ -5,7 +5,8 @@
  *               1999 Waldo Bastian (bastian@kde.org)
  *               2001 Andreas Schlapbach (schlpbch@iam.unibe.ch)
  *               2001-2003 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ *               2002 Apple Computer, Inc.
+ *               2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -176,6 +177,10 @@ void CSSSelector::extractPseudoType() const
                 if (value == "before")
                     _pseudoType = PseudoBefore;
                 break;
+            case 'c':
+                if (value == "contains")
+                    _pseudoType = PseudoContains;
+                break;
             case 'e':
                 if (value == "empty")
                     _pseudoType = PseudoEmpty;
@@ -187,6 +192,8 @@ void CSSSelector::extractPseudoType() const
                     _pseudoType = PseudoFirstLetter;
                 else if (value == "first-line")
                     _pseudoType = PseudoFirstLine;
+                else if (value == "first-of-type")
+                    _pseudoType = PseudoFirstOfType;
                 else if (value == "focus")
                     _pseudoType = PseudoFocus;
                 break;
@@ -201,14 +208,26 @@ void CSSSelector::extractPseudoType() const
                     _pseudoType = PseudoLang;
                 else if (value == "last-child")
                     _pseudoType = PseudoLastChild;
+                else if (value == "last-of-type")
+                    _pseudoType = PseudoLastOfType;
                 break;
             case 'n':
                 if (value == "not(")
                     _pseudoType = PseudoNot;
+                else if (value == "nth-child(")
+                    _pseudoType = PseudoNthChild;
+                else if (value == "nth-last-child(")
+                    _pseudoType = PseudoNthLastChild;
+                else if (value == "nth-of-type(")
+                    _pseudoType = PseudoNthOfType;
+                else if (value == "nth-last-of-type(")
+                    _pseudoType = PseudoNthLastOfType;
                 break;
             case 'o':
                 if (value == "only-child")
                     _pseudoType = PseudoOnlyChild;
+                else if (value == "only-of-type")
+                    _pseudoType = PseudoOnlyOfType;
                 break;
             case 'r':
                 if (value == "root")
@@ -333,9 +352,9 @@ DOMString CSSSelector::selectorText() const
     }
     if ( cs->tagHistory ) {
         DOMString tagHistoryText = cs->tagHistory->selectorText();
-        if ( cs->relation == Sibling )
+        if ( cs->relation == DirectAdjacent )
             str = tagHistoryText + " + " + str;
-        else if ( cs->relation == Cousin )
+        else if ( cs->relation == IndirectAdjacent )
             str = tagHistoryText + " ~ " + str;
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;

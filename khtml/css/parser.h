@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 1.875a.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,39 +39,41 @@
      CONTAINS = 265,
      STRING = 266,
      IDENT = 267,
-     HASH = 268,
-     IMPORT_SYM = 269,
-     PAGE_SYM = 270,
-     MEDIA_SYM = 271,
-     FONT_FACE_SYM = 272,
-     CHARSET_SYM = 273,
-     NAMESPACE_SYM = 274,
-     KHTML_RULE_SYM = 275,
-     KHTML_DECLS_SYM = 276,
-     KHTML_VALUE_SYM = 277,
-     IMPORTANT_SYM = 278,
-     QEMS = 279,
-     EMS = 280,
-     EXS = 281,
-     PXS = 282,
-     CMS = 283,
-     MMS = 284,
-     INS = 285,
-     PTS = 286,
-     PCS = 287,
-     DEGS = 288,
-     RADS = 289,
-     GRADS = 290,
-     MSECS = 291,
-     SECS = 292,
-     HERZ = 293,
-     KHERZ = 294,
-     DIMEN = 295,
-     PERCENTAGE = 296,
-     NUMBER = 297,
-     URI = 298,
-     FUNCTION = 299,
-     UNICODERANGE = 300
+     NTH = 268,
+     HASH = 269,
+     IMPORT_SYM = 270,
+     PAGE_SYM = 271,
+     MEDIA_SYM = 272,
+     FONT_FACE_SYM = 273,
+     CHARSET_SYM = 274,
+     NAMESPACE_SYM = 275,
+     KHTML_RULE_SYM = 276,
+     KHTML_DECLS_SYM = 277,
+     KHTML_VALUE_SYM = 278,
+     IMPORTANT_SYM = 279,
+     QEMS = 280,
+     EMS = 281,
+     EXS = 282,
+     PXS = 283,
+     CMS = 284,
+     MMS = 285,
+     INS = 286,
+     PTS = 287,
+     PCS = 288,
+     DEGS = 289,
+     RADS = 290,
+     GRADS = 291,
+     MSECS = 292,
+     SECS = 293,
+     HERZ = 294,
+     KHERZ = 295,
+     DIMEN = 296,
+     PERCENTAGE = 297,
+     NUMBER = 298,
+     URI = 299,
+     FUNCTION = 300,
+     NOTFUNCTION = 301,
+     UNICODERANGE = 302
    };
 #endif
 #define UNIMPORTANT_TOK 258
@@ -84,39 +86,41 @@
 #define CONTAINS 265
 #define STRING 266
 #define IDENT 267
-#define HASH 268
-#define IMPORT_SYM 269
-#define PAGE_SYM 270
-#define MEDIA_SYM 271
-#define FONT_FACE_SYM 272
-#define CHARSET_SYM 273
-#define NAMESPACE_SYM 274
-#define KHTML_RULE_SYM 275
-#define KHTML_DECLS_SYM 276
-#define KHTML_VALUE_SYM 277
-#define IMPORTANT_SYM 278
-#define QEMS 279
-#define EMS 280
-#define EXS 281
-#define PXS 282
-#define CMS 283
-#define MMS 284
-#define INS 285
-#define PTS 286
-#define PCS 287
-#define DEGS 288
-#define RADS 289
-#define GRADS 290
-#define MSECS 291
-#define SECS 292
-#define HERZ 293
-#define KHERZ 294
-#define DIMEN 295
-#define PERCENTAGE 296
-#define NUMBER 297
-#define URI 298
-#define FUNCTION 299
-#define UNICODERANGE 300
+#define NTH 268
+#define HASH 269
+#define IMPORT_SYM 270
+#define PAGE_SYM 271
+#define MEDIA_SYM 272
+#define FONT_FACE_SYM 273
+#define CHARSET_SYM 274
+#define NAMESPACE_SYM 275
+#define KHTML_RULE_SYM 276
+#define KHTML_DECLS_SYM 277
+#define KHTML_VALUE_SYM 278
+#define IMPORTANT_SYM 279
+#define QEMS 280
+#define EMS 281
+#define EXS 282
+#define PXS 283
+#define CMS 284
+#define MMS 285
+#define INS 286
+#define PTS 287
+#define PCS 288
+#define DEGS 289
+#define RADS 290
+#define GRADS 291
+#define MSECS 292
+#define SECS 293
+#define HERZ 294
+#define KHERZ 295
+#define DIMEN 296
+#define PERCENTAGE 297
+#define NUMBER 298
+#define URI 299
+#define FUNCTION 300
+#define NOTFUNCTION 301
+#define UNICODERANGE 302
 
 
 
@@ -144,7 +148,7 @@ typedef union YYSTYPE {
     Value value;
     ValueList *valueList;
 } YYSTYPE;
-/* Line 1248 of yacc.c.  */
+/* Line 1240 of yacc.c.  */
 
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -3,7 +3,8 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *               1999 Waldo Bastian (bastian@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ *               2002 Apple Computer, Inc.
+ *               2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -97,8 +98,8 @@ namespace DOM {
 	{
 	    Descendant = 0,
 	    Child,
-	    Sibling,
-            Cousin,
+	    DirectAdjacent,
+            IndirectAdjacent,
             SubSelector
 	};
 
@@ -109,8 +110,15 @@ namespace DOM {
 	    PseudoEmpty,
 	    PseudoFirstChild,
             PseudoLastChild,
+            PseudoNthChild,
+            PseudoNthLastChild,
             PseudoOnlyChild,
-	    PseudoFirstLine,
+            PseudoFirstOfType,
+            PseudoLastOfType,
+            PseudoNthOfType,
+            PseudoNthLastOfType,
+            PseudoOnlyOfType,
+            PseudoFirstLine,
 	    PseudoFirstLetter,
 	    PseudoLink,
 	    PseudoVisited,
@@ -122,6 +130,7 @@ namespace DOM {
 	    PseudoAfter,
             PseudoLang,
             PseudoNot,
+            PseudoContains,
             PseudoRoot,
             PseudoSelection
 	};
@@ -132,9 +141,10 @@ namespace DOM {
             return _pseudoType;
         }
 
-	mutable DOM::DOMString value;
+        mutable DOM::DOMString value;
 	CSSSelector *tagHistory;
-        CSSSelector* simpleSelector; // Used for :not.
+        CSSSelector* simpleSelector; // Used by :not
+        DOM::DOMString string_arg; // Used by :contains, :lang and :nth-*
         DOM::NodeImpl::Id attr;
         DOM::NodeImpl::Id tag;
 

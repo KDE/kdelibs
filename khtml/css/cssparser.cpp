@@ -1883,9 +1883,11 @@ int DOM::CSSParser::lex( void *_yylval )
     case URI:
     case STRING:
     case IDENT:
+    case NTH:
     case HASH:
     case DIMEN:
     case UNICODERANGE:
+    case NOTFUNCTION:
     case FUNCTION:
         yylval->string.string = t;
         yylval->string.length = length;

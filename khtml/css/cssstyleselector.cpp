@@ -759,6 +759,54 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
     pseudoState = contains ? PseudoVisited : PseudoLink;
 }
 
+// a helper function for parsing nth-arguments
+static inline bool matchNth(int count, const QString& nth)
+{
+    if (nth.isEmpty()) return false;
+    int a = 0;
+    int b = 0;
+    if (nth == "odd") {
+        a = 2;
+        b = 1;
+    }
+    else if (nth == "even") {
+        a = 2;
+        b = 0;
+    }
+    else {
+        int n = nth.find('n');
+        if (n != -1) {
+            if (nth[0] == '-')
+                if (n==1)
+                    a = -1;
+                else
+                    a = nth.mid(1,n-1).toInt();
+            else
+                a = nth.left(n).toInt();
+
+            int p = nth.find('+');
+            if (p != -1)
+                b = nth.mid(p+1).toInt();
+        }
+        else {
+            b = nth.toInt();
+        }
+    }
+    if (a == 0)
+        return count == b;
+    else if (a > 0)
+        if (count < b)
+            return false;
+        else
+            return (count - b) % a == 0;
+    else if (a < 0) {
+        if (count > b)
+            return false;
+        else
+            return (b - count) % (-a) == 0;
+    }
+}
+
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 {
     dynamicPseudo = RenderStyle::NOPSEUDO;
@@ -815,7 +863,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
             if(!checkOneSelector(sel, elem)) return;
             break;
         }
-        case CSSSelector::Sibling:
+        case CSSSelector::DirectAdjacent:
         {
             subject = false;
             n = n->previousSibling();
@@ -826,7 +874,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
             if(!checkOneSelector(sel, elem)) return;
             break;
         }
-        case CSSSelector::Cousin:
+        case CSSSelector::IndirectAdjacent:
         {
             subject = false;
             ElementImpl *elem = 0;
@@ -1069,9 +1117,116 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                         n = n->nextSibling();
                     if ( !n )
                         return true;
+                }
+            }
+            break;
+        }
+        case CSSSelector::PseudoNthChild: {
+	    // nth-child matches every (a*n+b)th element!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                int count = 1;
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n ) {
+                    if (n->isElementNode()) count++;
+                    n = n->previousSibling();
+                }
+//                kdDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
+                if (matchNth(count,sel->string_arg.string()))
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoNthLastChild: {
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                int count = 1;
+                DOM::NodeImpl* n = e->nextSibling();
+                while ( n ) {
+                    if (n->isElementNode()) count++;
+                    n = n->nextSibling();
+                }
+                kdDebug(6080) << "NthLastChild " << count << "=" << sel->string_arg << endl;
+                if (matchNth(count,sel->string_arg.string()))
+                    return true;
+            }
+            break;
+        }
+	case CSSSelector::PseudoFirstOfType: {
+	    // first-of-type matches the first element of its type!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                const DOMString& type = e->tagName();
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n ) {
+                    if (n->isElementNode())
+                        if (static_cast<ElementImpl*>(n)->tagName() == type) break;
+                    n = n->previousSibling();
+                }
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoLastOfType: {
+            // last-child matches the last child that is an element!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                const DOMString& type = e->tagName();
+                DOM::NodeImpl* n = e->nextSibling();
+                while ( n ) {
+                    if (n->isElementNode())
+                        if (static_cast<ElementImpl*>(n)->tagName() == type) break;
+                    n = n->nextSibling();
+                }
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoOnlyOfType: {
+            // If both first-of-type and last-of-type apply, then only-of-type applies.
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                const DOMString& type = e->tagName();
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n && !(n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type))
+                    n = n->previousSibling();
+                if ( !n ) {
+                    n = e->nextSibling();
+                    while ( n && !(n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type))
+                        n = n->nextSibling();
+                    if ( !n )
+                        return true;
 	        }
             }
 	    break;
+        }
+        case CSSSelector::PseudoNthOfType: {
+	    // nth-of-type matches every (a*n+b)th element of this type!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                int count = 1;
+                const DOMString& type = e->tagName();
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n ) {
+                    if (n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type) count++;
+                    n = n->previousSibling();
+                }
+//                kdDebug(6080) << "NthOfType " << count << "=" << sel->string_arg << endl;
+                if (matchNth(count,sel->string_arg.string()))
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoNthLastOfType: {
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                int count = 1;
+                const DOMString& type = e->tagName();
+                DOM::NodeImpl* n = e->nextSibling();
+                while ( n ) {
+                    if (n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type) count++;
+                    n = n->nextSibling();
+                }
+                kdDebug(6080) << "NthLastOfType " << count << "=" << sel->string_arg << endl;
+                if (matchNth(count,sel->string_arg.string()))
+                    return true;
+            }
+            break;
         }
 	case CSSSelector::PseudoFirstLine:
 	    if ( subject ) {
@@ -1168,6 +1323,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
+        case CSSSelector::PseudoContains:
         case CSSSelector::PseudoLang:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
