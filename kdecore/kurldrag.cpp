@@ -71,10 +71,18 @@ KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QStrin
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
     QStrList lst;
-    bool ret = QUriDrag::decode( e, lst );
+    QUriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
-      uris.append(stringToUrl(*it));
-    return ret;
+    {
+      KURL url = stringToUrl( *it );
+      if ( !url.isValid() )
+      {
+        uris.clear();
+        break;
+      }
+      uris.append( url );
+    }
+    return !uris.isEmpty();
 }
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QString>& metaData )
@@ -107,8 +115,16 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QStr
 bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
 {
     for(QStringList::ConstIterator it=e.begin(); it!=e.end(); it++)
-      uris.append(KURL(*it, 106)); // 106 is mib enum for utf8 codec
-    return true;
+    {
+      KURL url = KURL( *it, 106 ); // 106 is mib enum for utf8 codec
+      if ( !url.isValid() )
+      {
+        uris.clear();
+        break;
+      }
+      uris.append( url );
+    }
+    return !uris.isEmpty();
 }
 #endif
 
