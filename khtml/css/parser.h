@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made from parser.y, by GNU bison 1.75.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -22,6 +22,9 @@
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
+
+#ifndef BISON_PARSER_TAB_H
+# define BISON_PARSER_TAB_H
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -121,9 +124,9 @@
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-
-typedef union YYSTYPE {
+#ifndef YYSTYPE
+#line 85 "parser.y"
+typedef union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
     QPtrList<CSSSelector> *selectorList;
@@ -138,19 +141,19 @@ typedef union YYSTYPE {
     unsigned int element;
     unsigned int ns;
     CSSSelector::Relation relation;
+    CSSSelector::Match match;
     bool b;
     char tok;
     Value value;
     ValueList *valueList;
-} YYSTYPE;
-/* Line 1248 of yacc.c.  */
-
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+} yystype;
+/* Line 1281 of /usr/share/bison/yacc.c.  */
+#line 152 "parser.tab.h"
+# define YYSTYPE yystype
 #endif
 
 
 
 
+#endif /* not BISON_PARSER_TAB_H */
 
