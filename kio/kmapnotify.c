@@ -166,9 +166,9 @@ KDE_SetInitialDesktop(Display *d, Window w) {
 
   Atom a;
 
-  // FIXME - what name to use for the atom?
-  //         read by kdebase/kwin/client.cpp Client::manage
-  a = XInternAtom(d, "KWIN_INITIAL_DESKTOP", False); // _NET_INITIAL_DESKTOP?
+  /* FIXME - what name to use for the atom?
+     read by kdebase/kwin/client.cpp Client::manage */
+  a = XInternAtom(d, "KWIN_INITIAL_DESKTOP", False); /* _NET_INITIAL_DESKTOP? */
 
   XChangeProperty(d, w, a, a, 32, PropModeReplace, (unsigned char *)
     &KDE_initialDesktop, 1);
