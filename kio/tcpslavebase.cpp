@@ -482,7 +482,8 @@ KSSLCertificateHome::KSSLAuthAction aa;
 				   ++it) {
 		KSSLPKCS12 *pkcs = 
 			KSSLCertificateHome::getCertificateByName(*it);
-		if (!pkcs || !pkcs->getCertificate() ||
+		if (pkcs)
+		if (!pkcs->getCertificate() ||
 		    !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient()) {
 			certs.remove(*it);
 		}
@@ -532,7 +533,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
   // We're almost committed.  If we can read the cert, we'll send it now.
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
-  if (!pkcs) {           // We need the password
+  if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
      do {
         QString pass;
         QByteArray authdata, authval;
