@@ -109,10 +109,10 @@ struct TestCase {
 		return tests->size();										\
 	}
 
-#define TESTMAIN(name)												\
+#define TESTMAINFUNC(name,func)										\
 	name *name::instance = 0;										\
 	list<TestClass *> *name::tests = 0;								\
-	int main()														\
+	int func()														\
 	{																\
 		name tb;													\
 		fprintf(stderr,"%-20s: %5d test methods - ",				\
@@ -120,3 +120,5 @@ struct TestCase {
 		tb.testAll();												\
 		return 0;													\
 	}
+
+#define TESTMAIN(name) TESTMAINFUNC(name,main)
