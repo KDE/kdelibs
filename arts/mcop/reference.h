@@ -81,7 +81,6 @@ class ScheduleNode;
 // To inforce this, the constructors are protected
 class SmartWrapper {
 protected:
-	
 	// Pool of common variables for a bunch a wrappers
 	class Pool {
 		Object_base* (*creator)();
@@ -115,6 +114,10 @@ protected:
 		_pool->Inc();
 	}
 public:
+	inline ~SmartWrapper() {
+		_pool->Dec();
+	}
+
 	// null, error?
 	inline bool isNull() const {
 		_pool->checkcreate();

@@ -1020,6 +1020,40 @@ vector<string> allParentsUnique(InterfaceDef& iface)
 	return result;
 }
 
+InterfaceDef mergeAllParents(InterfaceDef& iface)
+{
+	InterfaceDef result = iface;
+
+	vector<string> parents = allParentsUnique(iface);
+	vector<string>::iterator pi;
+	
+	for(pi = parents.begin(); pi != parents.end(); pi++)
+	{
+		string parent = *pi;
+
+		list<InterfaceDef *>::iterator i;
+		for(i=interfaces.begin();i != interfaces.end(); i++)
+		{
+			InterfaceDef *d = *i;
+			if(d->name == parent)
+			{
+				/* merge attributes */
+				vector<AttributeDef *>::iterator ai;
+
+				for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+					result.attributes.push_back(new AttributeDef(**ai));
+
+				/* merge methods */
+				vector<MethodDef *>::iterator mi;
+
+				for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+					result.methods.push_back(new MethodDef(**mi));
+			}
+		}
+	}
+	return result;
+}
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -1255,58 +1289,67 @@ void doInterfacesHeader(FILE *header)
 			fprintf(header,"#include \"flowsystem.h\"\n");
 		}
 		fprintf(header,"\n");
-		
+	
+		/*
 		inherits = buildInheritanceList(*d,"");
 		bool hasParent = (inherits != "");
 
 		if (hasParent) inherits = ": " + inherits;
 		else inherits = ": virtual public SmartWrapper";
+		*/
+		inherits = ": public SmartWrapper";
+		bool hasParent = false;
 
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
-		fprintf(header,"protected:\n");
-		fprintf(header,"\tbool cacheOK;\n\n");
 		fprintf(header,"private:\n");
 		fprintf(header,"\tstatic Object_base* _Creator();\n");
-		fprintf(header,"\t%s_base *cache;\n",d->name.c_str());
+		fprintf(header,"\t%s_base *_cache;\n",d->name.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
-		fprintf(header,"\t\t_pool->checkcreate();\n");
-		fprintf(header,"\t\tcache="
+		fprintf(header,"\t\tif(!_cache) {\n");
+		fprintf(header,"\t\t\t_pool->checkcreate();\n");
+		fprintf(header,"\t\t\tif(_pool->base) {\n");
+		fprintf(header,"\t\t\t\t_cache="
 							"(%s_base *)_pool->base->_cast(%s_base::_IID);\n",
 							d->name.c_str(),d->name.c_str());
-		fprintf(header,"\t\tassert(cache);\n");
-		fprintf(header,"\t\tcacheOK=true;\n");
-		fprintf(header,"\t\treturn cache;\n");
+		fprintf(header,"\t\t\t\tassert(_cache);\n");
+		fprintf(header,"\t\t\t}\n");
+		fprintf(header,"\t\t}\n");
+		fprintf(header,"\t\treturn _cache;\n");
 		fprintf(header,"\t}\n");
 
 		fprintf(header,"\npublic:\n");
 
 		// empty constructor: specify creator for create-on-demand
-		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), cacheOK(false) {}\n",d->name.c_str());
+		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), _cache(0) {}\n",d->name.c_str());
 		
 		// constructors from reference and for subclass
 		fprintf(header,"\tinline %s(const SubClass& s) :\n"
-			"\t\tSmartWrapper(%s_base::_create(s.string())), cacheOK(false) {}\n",
+			"\t\tSmartWrapper(%s_base::_create(s.string())), _cache(0) {}\n",
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tinline %s(const Reference &r) :\n"
 			"\t\tSmartWrapper("
 			"r.isString()?(%s_base::_fromString(r.string())):"
-			"(%s_base::_fromReference(r.reference(),true))), cacheOK(false) {}\n",
+			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
 			d->name.c_str(),d->name.c_str(), d->name.c_str());
 
 		// copy constructors
-		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b), cacheOK(false) {}\n",
+		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b), _cache(0) {}\n",
 			d->name.c_str(),d->name.c_str());
-		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), cacheOK(false) {}\n",
+		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), _cache(target._cache) {}\n",
 			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\tinline %s(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}\n",
+			d->name.c_str());
+
 		// copy operator. copy from _base* extraneous (uses implicit const object)
 		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
 			d->name.c_str(),d->name.c_str());
 		// test for equality
 		fprintf(header,"\t\tif (_pool == target._pool) return *this;\n");
 		// Invalidate all parent caches
-		vector<std::string> parents = allParents(*d); // can repeat values
+		vector<std::string> parents = allParentsUnique(*d); // can repeat values
 		vector<std::string> done; // don't repeat values
 		// Loop through all the values
+		/*
 		for (vector<std::string>::iterator si = parents.begin(); si != parents.end(); si++)
 		{
 				// repeated value? (virtual public like merging...)
@@ -1318,33 +1361,40 @@ void doInterfacesHeader(FILE *header)
 				fprintf(header,"\t\t%s::cacheOK=false;\n",(*si).c_str());
 				done.push_back(*si);
 		}
-		fprintf(header,"\t\tcacheOK=false;\n");
+		*/
 		fprintf(header,"\t\t_pool->Dec();\n");
 		fprintf(header,"\t\t_pool = target._pool;\n");
+		fprintf(header,"\t\t_cache = target._cache;\n");
 		fprintf(header,"\t\t_pool->Inc();\n");
 		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
 
-		if(parents.empty()) /* no parents -> need to free pool self */
+		for (vector<std::string>::iterator si = parents.begin();
+												si != parents.end(); si++)
 		{
-			fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
-			fprintf(header,"\t\tif(_pool) {\n");
-			fprintf(header,"\t\t\t_pool->Dec();\n");
-			fprintf(header,"\t\t\t_pool = 0;\n");
-			fprintf(header,"\t\t}\n");
-			fprintf(header,"\t}\n");
+			string &s = *si;
+			fprintf(header,"\tinline operator %s() { return %s(_pool); }\n",
+									s.c_str(), s.c_str());
 		}
+		//if(parents.empty()) /* no parents -> need to free pool self */
+		//{
+		//	fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
+		//	fprintf(header,"\t\t_pool->Dec();\n");
+		//	fprintf(header,"\t}\n");
+		//}
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
-		fprintf(header,"\tinline operator %s_base*() {return (cacheOK)?cache:_method_call();}\n",d->name.c_str());
+		fprintf(header,"\tinline operator %s_base*() {return _method_call();}\n",d->name.c_str());
 		fprintf(header,"\n");
 
+		InterfaceDef allMerged = mergeAllParents(*d);
+		d = &allMerged;
 
 		// start, stop
 		if (haveStreams(d)) {
-			fprintf(header,"\tinline void start() {return (cacheOK)?cache->_node()->start():_method_call()->_node()->start();}\n");
-			fprintf(header,"\tinline void stop() {return (cacheOK)?cache->_node()->stop():_method_call()->_node()->stop();}\n");
+			fprintf(header,"\tinline void start() {return _method_call()->_node()->start();}\n");
+			fprintf(header,"\tinline void stop() {return _method_call()->_node()->stop();}\n");
 			fprintf(header,"\n");
 		}
 
@@ -1359,13 +1409,13 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					fprintf(header,"\tinline %s %s() {return (cacheOK)?cache->%s():_method_call()->%s();}\n",
-						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline %s %s() {return _method_call()->%s();}\n",
+						rc.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
-					fprintf(header,"\tinline void %s(%s) {(cacheOK)?cache->%s(newValue):_method_call()->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), ad->name.c_str(), ad->name.c_str());
+					fprintf(header,"\tinline void %s(%s) {_method_call()->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), ad->name.c_str());
 				}
 			}
 		}
@@ -1382,16 +1432,16 @@ void doInterfacesHeader(FILE *header)
 			if (md->name == "constructor") {
 				fprintf(header,"\tinline %s(%s) : "
 					"SmartWrapper(%s_base::_create()) {\n"
-					"\t\tcache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
-					"\t\tassert(cache);\n"
-					"\t\tcacheOK=true;\n"
-					"\t\tcache->constructor(%s);\n\t}\n",
+					"\t\t_cache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
+					"\t\tassert(_cache);\n"
+					"\t\t_cache->constructor(%s);\n\t}\n",
 					d->name.c_str(), params.c_str(), d->name.c_str(),
 					d->name.c_str(), d->name.c_str(), callparams.c_str());
+			} else if(md->name == "start") {
+				cout << "start collision - omitted" << endl;
 			} else {
-				fprintf(header,"\tinline %s %s(%s) {return (cacheOK)?cache->%s(%s):_method_call()->%s(%s);}\n",
+				fprintf(header,"\tinline %s %s(%s) {return _method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
-					md->name.c_str(), callparams.c_str(),
 					md->name.c_str(), callparams.c_str());
 			}
 		}

@@ -330,49 +330,44 @@ public:
 
 #include "reference.h"
 
-class InterfaceRepo : virtual public SmartWrapper {
-protected:
-	bool cacheOK;
-
+class InterfaceRepo : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	InterfaceRepo_base *cache;
+	InterfaceRepo_base *_cache;
 	inline InterfaceRepo_base *_method_call() {
-		_pool->checkcreate();
-		cache=(InterfaceRepo_base *)_pool->base->_cast(InterfaceRepo_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(InterfaceRepo_base *)_pool->base->_cast(InterfaceRepo_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline InterfaceRepo() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline InterfaceRepo() : SmartWrapper(_Creator), _cache(0) {}
 	inline InterfaceRepo(const SubClass& s) :
-		SmartWrapper(InterfaceRepo_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(InterfaceRepo_base::_create(s.string())), _cache(0) {}
 	inline InterfaceRepo(const Reference &r) :
-		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), _cache(0) {}
+	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline InterfaceRepo(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
 		if (_pool == target._pool) return *this;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline ~InterfaceRepo() {
-		if(_pool) {
-			_pool->Dec();
-			_pool = 0;
-		}
-	}
-	inline operator InterfaceRepo_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator InterfaceRepo_base*() {return _method_call();}
 
-	inline long insertModule(const ModuleDef& newModule) {return (cacheOK)?cache->insertModule(newModule):_method_call()->insertModule(newModule);}
-	inline void removeModule(long moduleID) {return (cacheOK)?cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) {return (cacheOK)?cache->queryInterface(name):_method_call()->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) {return (cacheOK)?cache->queryType(name):_method_call()->queryType(name);}
+	inline long insertModule(const ModuleDef& newModule) {return _method_call()->insertModule(newModule);}
+	inline void removeModule(long moduleID) {return _method_call()->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) {return _method_call()->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) {return _method_call()->queryType(name);}
 };
 
 class FlowSystemSender_base : virtual public Object {
@@ -421,46 +416,41 @@ public:
 
 #include "reference.h"
 
-class FlowSystemSender : virtual public SmartWrapper {
-protected:
-	bool cacheOK;
-
+class FlowSystemSender : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	FlowSystemSender_base *cache;
+	FlowSystemSender_base *_cache;
 	inline FlowSystemSender_base *_method_call() {
-		_pool->checkcreate();
-		cache=(FlowSystemSender_base *)_pool->base->_cast(FlowSystemSender_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(FlowSystemSender_base *)_pool->base->_cast(FlowSystemSender_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline FlowSystemSender() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline FlowSystemSender() : SmartWrapper(_Creator), _cache(0) {}
 	inline FlowSystemSender(const SubClass& s) :
-		SmartWrapper(FlowSystemSender_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(FlowSystemSender_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemSender(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), _cache(0) {}
+	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline FlowSystemSender(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
 		if (_pool == target._pool) return *this;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline ~FlowSystemSender() {
-		if(_pool) {
-			_pool->Dec();
-			_pool = 0;
-		}
-	}
-	inline operator FlowSystemSender_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator FlowSystemSender_base*() {return _method_call();}
 
-	inline void processed() {return (cacheOK)?cache->processed():_method_call()->processed();}
+	inline void processed() {return _method_call()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Object {
@@ -509,46 +499,41 @@ public:
 
 #include "reference.h"
 
-class FlowSystemReceiver : virtual public SmartWrapper {
-protected:
-	bool cacheOK;
-
+class FlowSystemReceiver : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	FlowSystemReceiver_base *cache;
+	FlowSystemReceiver_base *_cache;
 	inline FlowSystemReceiver_base *_method_call() {
-		_pool->checkcreate();
-		cache=(FlowSystemReceiver_base *)_pool->base->_cast(FlowSystemReceiver_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(FlowSystemReceiver_base *)_pool->base->_cast(FlowSystemReceiver_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline FlowSystemReceiver() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline FlowSystemReceiver() : SmartWrapper(_Creator), _cache(0) {}
 	inline FlowSystemReceiver(const SubClass& s) :
-		SmartWrapper(FlowSystemReceiver_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
 	inline FlowSystemReceiver(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), _cache(0) {}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline FlowSystemReceiver(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
 		if (_pool == target._pool) return *this;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline ~FlowSystemReceiver() {
-		if(_pool) {
-			_pool->Dec();
-			_pool = 0;
-		}
-	}
-	inline operator FlowSystemReceiver_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator FlowSystemReceiver_base*() {return _method_call();}
 
-	inline long receiveHandlerID() {return (cacheOK)?cache->receiveHandlerID():_method_call()->receiveHandlerID();}
+	inline long receiveHandlerID() {return _method_call()->receiveHandlerID();}
 };
 
 class FlowSystem_base : virtual public Object {
@@ -607,51 +592,46 @@ public:
 
 #include "reference.h"
 
-class FlowSystem : virtual public SmartWrapper {
-protected:
-	bool cacheOK;
-
+class FlowSystem : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	FlowSystem_base *cache;
+	FlowSystem_base *_cache;
 	inline FlowSystem_base *_method_call() {
-		_pool->checkcreate();
-		cache=(FlowSystem_base *)_pool->base->_cast(FlowSystem_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(FlowSystem_base *)_pool->base->_cast(FlowSystem_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline FlowSystem() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline FlowSystem() : SmartWrapper(_Creator), _cache(0) {}
 	inline FlowSystem(const SubClass& s) :
-		SmartWrapper(FlowSystem_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(FlowSystem_base::_create(s.string())), _cache(0) {}
 	inline FlowSystem(const Reference &r) :
-		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), _cache(0) {}
+	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline FlowSystem(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystem& operator=(const FlowSystem& target) {
 		if (_pool == target._pool) return *this;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline ~FlowSystem() {
-		if(_pool) {
-			_pool->Dec();
-			_pool = 0;
-		}
-	}
-	inline operator FlowSystem_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator FlowSystem_base*() {return _method_call();}
 
-	inline void startObject(Object_base * node) {return (cacheOK)?cache->startObject(node):_method_call()->startObject(node);}
-	inline void stopObject(Object_base * node) {return (cacheOK)?cache->stopObject(node):_method_call()->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return (cacheOK)?cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return (cacheOK)?cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return (cacheOK)?cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return (cacheOK)?cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object_base * node) {return _method_call()->startObject(node);}
+	inline void stopObject(Object_base * node) {return _method_call()->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _method_call()->queryFlags(node, port);}
+	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return _method_call()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -704,48 +684,43 @@ public:
 
 #include "reference.h"
 
-class GlobalComm : virtual public SmartWrapper {
-protected:
-	bool cacheOK;
-
+class GlobalComm : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	GlobalComm_base *cache;
+	GlobalComm_base *_cache;
 	inline GlobalComm_base *_method_call() {
-		_pool->checkcreate();
-		cache=(GlobalComm_base *)_pool->base->_cast(GlobalComm_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(GlobalComm_base *)_pool->base->_cast(GlobalComm_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline GlobalComm() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline GlobalComm() : SmartWrapper(_Creator), _cache(0) {}
 	inline GlobalComm(const SubClass& s) :
-		SmartWrapper(GlobalComm_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(GlobalComm_base::_create(s.string())), _cache(0) {}
 	inline GlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
+	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline GlobalComm(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline GlobalComm& operator=(const GlobalComm& target) {
 		if (_pool == target._pool) return *this;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline ~GlobalComm() {
-		if(_pool) {
-			_pool->Dec();
-			_pool = 0;
-		}
-	}
-	inline operator GlobalComm_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator GlobalComm_base*() {return _method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) {return (cacheOK)?cache->put(variable, value):_method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return (cacheOK)?cache->get(variable):_method_call()->get(variable);}
-	inline void erase(const std::string& variable) {return (cacheOK)?cache->erase(variable):_method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) {return _method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return _method_call()->get(variable);}
+	inline void erase(const std::string& variable) {return _method_call()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
@@ -792,40 +767,44 @@ public:
 
 #include "reference.h"
 
-class TmpGlobalComm : virtual public GlobalComm {
-protected:
-	bool cacheOK;
-
+class TmpGlobalComm : public SmartWrapper {
 private:
 	static Object_base* _Creator();
-	TmpGlobalComm_base *cache;
+	TmpGlobalComm_base *_cache;
 	inline TmpGlobalComm_base *_method_call() {
-		_pool->checkcreate();
-		cache=(TmpGlobalComm_base *)_pool->base->_cast(TmpGlobalComm_base::_IID);
-		assert(cache);
-		cacheOK=true;
-		return cache;
+		if(!_cache) {
+			_pool->checkcreate();
+			if(_pool->base) {
+				_cache=(TmpGlobalComm_base *)_pool->base->_cast(TmpGlobalComm_base::_IID);
+				assert(_cache);
+			}
+		}
+		return _cache;
 	}
 
 public:
-	inline TmpGlobalComm() : SmartWrapper(_Creator), cacheOK(false) {}
+	inline TmpGlobalComm() : SmartWrapper(_Creator), _cache(0) {}
 	inline TmpGlobalComm(const SubClass& s) :
-		SmartWrapper(TmpGlobalComm_base::_create(s.string())), cacheOK(false) {}
+		SmartWrapper(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
 	inline TmpGlobalComm(const Reference &r) :
-		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), cacheOK(false) {}
-	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), cacheOK(false) {}
-	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), cacheOK(false) {}
+		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
+	inline TmpGlobalComm(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
 		if (_pool == target._pool) return *this;
-		GlobalComm::cacheOK=false;
-		cacheOK=false;
 		_pool->Dec();
 		_pool = target._pool;
+		_cache = target._cache;
 		_pool->Inc();
 		return *this;
 	}
-	inline operator TmpGlobalComm_base*() {return (cacheOK)?cache:_method_call();}
+	inline operator GlobalComm() { return GlobalComm(_pool); }
+	inline operator TmpGlobalComm_base*() {return _method_call();}
 
+	inline bool put(const std::string& variable, const std::string& value) {return _method_call()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return _method_call()->get(variable);}
+	inline void erase(const std::string& variable) {return _method_call()->erase(variable);}
 };
 
 #endif /* CORE_H */

@@ -80,7 +80,7 @@ void test0()
 	assert(active_d_objects == 0);
 	C c = d;
 	assert(active_d_objects == 0);
-	string abcd = A(d).a()+d.b()+c.c()+d.d();
+	string abcd = A(d.operator A()).a()+d.b()+c.c()+d.d();
 	check("generic inheritance test",abcd == "abcd");
 
 	/*
@@ -92,13 +92,13 @@ void test0()
 	// Test isNull() and error()
 	bool notnull = d.isNull();
 	bool noterror1 = d.error();
-	d = 0;
+	d = (D_base *)0;
 	bool null = d.isNull();
 	bool cnotnull = c.isNull();
 	bool noterror2 = d.error();
 	check("nullity and error conditions",!notnull && !noterror1 && null && !cnotnull && !noterror2);
 	
-	c = 0;
+	c = (C_base *)0;
 	assert(active_d_objects == 0);
 	
 }
@@ -147,6 +147,16 @@ D_base *afunc_old(D_base *arg)
 	return arg->_copy();
 }
 
+void bfunc(D arg)
+{
+	arg.value(42);
+}
+
+void bfunc_old(D_base *arg)
+{
+	arg->value(42);
+}
+
 void test2()
 {
 	// test cache invalidation
@@ -186,12 +196,49 @@ void test3()
 	benchmark(BENCH_BEGIN);
 
 	D d_newstyle, d_newreturn;
+	// since we don't want to benchmark lazy creation performance, we assume
+	// that the object already exists before calling our function
+	d_newstyle.value(0);
 	for(i=0;i<CALLS;i++) d_newreturn = afunc(d_newstyle);
 	assert(d_newreturn.value() == 42);
 
 	float newspeed = (float)CALLS/benchmark(BENCH_END);
 
 	check("speed for params & returncodes",oldspeed < newspeed * 2.0);
+	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
+	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
+}
+
+/*
+  this test checks the speed difference for paramters and arguments with and
+  without SmartWrappers
+*/
+void test4()
+{
+	int i;
+
+	/* "old" calls */
+	benchmark(BENCH_BEGIN);
+
+	D_var d_oldstyle = D_base::_create();
+	for(i=0;i<CALLS;i++) bfunc_old(d_oldstyle);
+	assert(d_oldstyle->value() == 42);
+
+	float oldspeed = (float)CALLS/benchmark(BENCH_END);
+
+	/* "new" calls */
+	benchmark(BENCH_BEGIN);
+
+	D d_newstyle;
+	// since we don't want to benchmark lazy creation performance, we assume
+	// that the object already exists before calling our function
+	d_newstyle.value(0);
+	for(i=0;i<CALLS;i++) bfunc(d_newstyle);
+	assert(d_newstyle.value() == 42);
+
+	float newspeed = (float)CALLS/benchmark(BENCH_END);
+
+	check("speed for params",oldspeed < newspeed * 2.0);
 	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
 	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
@@ -208,6 +255,8 @@ int main()
 	test1();
 	assert(active_d_objects == 0);
 	test3();
+	assert(active_d_objects == 0);
+	test4();
 	assert(active_d_objects == 0);
 
 	return 0;
