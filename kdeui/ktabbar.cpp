@@ -30,7 +30,7 @@
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
-      mHoverCloseButton( 0 ), mHoverCloseButtonTab( 0 ),
+      mHoverCloseButtonTab( 0 ), mHoverCloseButton( 0 ), 
       mHoverCloseButtonEnabled( false ), mTabReorderingEnabled( false )
 {
     setAcceptDrops( true );
