@@ -21,9 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -955,7 +953,7 @@ static void handle_launcher_request(int sock = -1)
            return;
        }
    }
-   
+
    if (request_header.cmd == LAUNCHER_OK)
    {
       d.launcher_ok = true;
@@ -1033,7 +1031,7 @@ static void handle_launcher_request(int sock = -1)
          startup_id_str = arg_n;
          arg_n += strlen( startup_id_str ) + 1;
      }
-     
+
      if ((request_header.arg_length > (arg_n - request_data)) &&
          (request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW ))
      {
@@ -1176,7 +1174,7 @@ static void handle_requests(pid_t waitForPid)
 #endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
-              
+
            if (d.launcher_pid)
            {
            // TODO send process died message
@@ -1445,7 +1443,7 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
    }
-   
+
    pipe(d.initpipe);
 
    // Fork here and let parent process exit.
