@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.52  1999/05/04 04:28:08  ssk
+// Updated KToolBar description.
+//
 // Revision 1.51  1999/04/22 15:59:44  shausman
 // - support QStringList for combos
 //
@@ -351,9 +354,10 @@ public:
 		   int size = 70, int index =-1);
 
   /**
-   * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
-   * default inserting policy is AtBottom, i.e. typed items are placed at the bottom
-   * of the list. Can be autosized
+   * Inserts KComboBox with list. Can be writable, but cannot contain
+   * pixmaps. By default inserting policy is AtBottom, i.e. typed items
+   * are placed at the bottom of the list. Can be autosized.
+   *
    * KCombo is almost the same thing as QComboBox.
    * @see #setFullWidth
    * @see #setItemAutoSized
@@ -368,9 +372,9 @@ public:
                    KCombo::Policy policy = KCombo::AtBottom);
 		   
   /**
-   * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
-   * default inserting policy is AtBottom, i.e. typed items are placed at the bottom
-   * of the list. Can be autosized
+   * Inserts KComboBox with list. Can be writable, but cannot contain
+   * pixmaps. By default inserting policy is AtBottom, i.e. typed items
+   * are placed at the bottom of the list. Can be autosized.
    * KCombo is almost the same thing as QComboBox.
    * @see #setFullWidth
    * @see #setItemAutoSized
