@@ -40,6 +40,7 @@
 #include <qtimer.h>
 
 #include <kurl.h>
+#include <kallocator.h>
 #include "khtmlstring.h"
 
 //
@@ -72,19 +73,12 @@ public:
   int ty;
 };
 
-class HTMLAllocator
+class HTMLAllocator : public KZoneAllocator
 {
 public:
-    HTMLAllocator(long _blockSize);
-    ~HTMLAllocator();
-    void* allocate(size_t _size);
+    HTMLAllocator(long _blockSize = 128*1024) 
+    	: KZoneAllocator( _blockSize ) { };
     HTMLString newString( const QString &str );
-                
-protected:    
-    long blockSize;
-    QList<char> memoryBlocks;
-    char *currentBlock;
-    long blockOffset;
 };
 
 

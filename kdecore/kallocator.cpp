@@ -44,6 +44,12 @@ KZoneAllocator::~KZoneAllocator()
 void *
 KZoneAllocator::allocate(size_t _size)
 {
+   // Use the size of (void *) as alignment
+   const size_t alignment = sizeof(void *);
+printf("Before align: %ld ", _size);
+   _size = (_size + alignment - 1) & ~(alignment - 1);   
+printf("after align: %ld (%ld) ", _size, _size & 0xf);
+
    if ((long) _size + blockOffset > blockSize)
    {
       currentBlock = new char[blockSize];
@@ -53,6 +59,7 @@ KZoneAllocator::allocate(size_t _size)
    } 
    void *result = (void *)(currentBlock+blockOffset);
    blockOffset += _size;
+printf("result: %p (%ld)\n", result, ((long) result) & 0xf);
    return result;
 }
 

@@ -45,48 +45,17 @@
 void debugM( const char *msg , ...);
 
 
-HTMLAllocator::HTMLAllocator(long _blockSize)
-: blockSize(_blockSize), blockOffset(0)
-{
-    currentBlock = new char[_blockSize];
-    memoryBlocks.append(currentBlock);
-}
-
-HTMLAllocator::~HTMLAllocator()
-{
-    while (!memoryBlocks.isEmpty())
-    {
-        char *oldBuffer = (char *) memoryBlocks.take(0);
-        delete [] oldBuffer;
-    }
-}
-
-void *
-HTMLAllocator::allocate(size_t _size)
-{
-   if ((long) _size + blockOffset > blockSize)
-   {
-      currentBlock = new char[blockSize];
-      memoryBlocks.append(currentBlock);
-      blockOffset = 0;
-printf("Allocating block #%d\n", memoryBlocks.count());
-   } 
-   void *result = (void *)(currentBlock+blockOffset);
-   blockOffset += _size;
-   return result;
-}
-
 HTMLString 
 HTMLAllocator::newString( const QString &str)
 {
     int len = str.length();
     const QChar *sourceString = str.unicode();
-    QChar *resultString = (QChar *) allocate( 4*((len + 3) / 4));
+    QChar *resultString = (QChar *) allocate( sizeof(QChar)*len );
 
     int l = len;
     while (l--)
     {
-        *resultString++ = *sourceString++;
+        resultString[l] = sourceString[l];
     }
 
     return HTMLString(resultString, len);
