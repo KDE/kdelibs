@@ -13,3 +13,6 @@
 
 /* defines which to take for ksize_t */
 #undef ksize_t
+
+/* define if you have setenv */
+#undef HAVE_FUNC_SETENV
