@@ -167,7 +167,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 bool KAutoConfig::saveSettings() {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "This should NEVER happen.  Function KAutoConfig::saveSettings() called before retrieveSettings. Please Fix." << endl;
+      kdDebug() << "KAutoConfig::saveSettings() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
     return false;
   }
 #endif
@@ -220,7 +220,7 @@ bool KAutoConfig::saveSettings() {
 bool KAutoConfig::hasChanged() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "This should NEVER happen.  Function KAutoConfig::hasChanged() called before retrieveSettings. Please Fix." << endl;
+      kdDebug() << "KAutoConfig::hasChanged() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
     return false;
   }
 #endif
@@ -253,7 +253,7 @@ bool KAutoConfig::hasChanged() const {
 bool KAutoConfig::isDefault() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "This should NEVER happen.  Function KAutoConfig::isDefault() called before retrieveSettings. Please Fix." << endl;
+      kdDebug() << "KAutoConfig::isDefault() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
     return false;
   }
 #endif
@@ -284,7 +284,7 @@ bool KAutoConfig::isDefault() const {
 void KAutoConfig::resetSettings(){
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "This should NEVER happen.  Function KAutoConfig::resetSettings() called before retrieveSettings. Please Fix." << endl;
+      kdDebug() << "KAutoConfig::resetSettings() called before KAutoConfig::retrieveSettings().  This should NEVER happen.  Please Fix." << endl;
     return;
   }
 #endif
