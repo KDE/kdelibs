@@ -44,6 +44,8 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Continue : return cont();
   case Open     : return open();
   case Quit     : return quit();
+  case AdminMode: return adminMode();
+  case Reset    : return reset();
   default       : return KGuiItem();
   };
 }
@@ -69,6 +71,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Continue : return QString::fromLatin1("continue");
   case Open     : return QString::fromLatin1("open");
   case Quit     : return QString::fromLatin1("quit");
+  case AdminMode: return QString::fromLatin1("adminMode");
   default       : return QString::null;
   };
 }
@@ -125,6 +128,14 @@ KGuiItem KStdGuiItem::apply()
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
                          "Use this to try different settings." ) );
+}
+
+KGuiItem KStdGuiItem::adminMode()
+{
+  return KGuiItem( i18n( "Administrator &Mode..." ), "", i18n( "Enter Administrator Mode" ),
+                   i18n( "When clicking <b>Administrator Mode</b> you will be prompted "
+                         "for the administrator(root) password in order to do changes "
+                         "which requires root privileges." ) );
 }
 
 KGuiItem KStdGuiItem::clear()
@@ -196,6 +207,12 @@ KGuiItem KStdGuiItem::quit()
 {
   return KGuiItem( i18n( "&Quit" ), "exit", 
                    i18n( "Quit application" ) );
+}
+
+KGuiItem KStdGuiItem::reset()
+{
+  return KGuiItem( i18n( "&Reset" ), "undo",
+                  i18n( "Reset configuration" ) );
 }
 
 // vim: set ts=2 sts=2 sw=2 et:

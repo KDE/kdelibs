@@ -48,7 +48,7 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit
+        Continue, Open, Quit, AdminMode, Reset
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -66,10 +66,19 @@ public:
     static KGuiItem defaults();
     static KGuiItem close();
     static KGuiItem print();
+    static KGuiItem reset();
     /**
-     * It should be "continue", but that's a C/C++ keyword :-o
+     * Returns a KGuiItem suiting for cases where code or functionality 
+     * runs under root privileges. Used in conjunction with KConfig Modules.
+     */
+    static KGuiItem adminMode();
+
+    /**
+     * Returns a "continue" item. The short name is due to "continue" being a
+     * reserved word in the C++ language.
      */
     static KGuiItem cont();
+
     static KGuiItem open();
 
     /**
