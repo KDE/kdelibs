@@ -116,8 +116,21 @@ public:
 	    edit->setCompletionObject( comp );
     }
 	
-    QString text() {
-	return combo ? combo->currentText() : edit->text();
+    /**
+     * replaces ~user or $FOO, if necessary
+     */
+    QString url() {
+        QString txt = combo ? combo->currentText() : edit->text();
+        KURLCompletion *comp;
+        if ( combo )
+            comp = dynamic_cast<KURLCompletion*>(combo->completionObject());
+        else
+            comp = dynamic_cast<KURLCompletion*>(edit->completionObject());
+
+        if ( comp )
+            return comp->replacedPath( txt );
+        else
+            return txt;
     }
 
     KLineEdit *edit;
@@ -219,16 +232,16 @@ void KURLRequester::setURL( const QString& url )
 
 QString KURLRequester::url() const
 {
-    return d->text();
+    return d->url();
 };
 
 
 void KURLRequester::slotOpenDialog()
 {
     emit openFileDialog( this );
-    
+
     KFileDialog *dlg = fileDialog();
-    if ( !d->text().isEmpty() ) {
+    if ( !d->url().isEmpty() ) {
         KURL u( url() );
         // If we won't be able to list it (e.g. http), then don't try :)
         if ( KProtocolInfo::supportsListing( u.protocol() ) )
@@ -288,4 +301,3 @@ void KURLRequester::slotUpdateURL()
 }
 
 #include "kurlrequester.moc"
-

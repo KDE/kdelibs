@@ -89,7 +89,8 @@ public:
 
     /**
      * @returns the current url in the lineedit. May be malformed, if the user
-     * entered something weird.
+     * entered something weird. ~user or environment variables are substituted
+     * for local files.
      */
     QString url() const;
 
