@@ -1521,6 +1521,9 @@ signals:
   void actionStatusText( const QString &text );
   void clearStatusText();
 
+protected:
+   virtual void childEvent( QChildEvent * ) {} // ### KDE 3.0: removeme
+
 private slots:
    void slotMenuItemHighlighted( int id );
    void slotToolBarButtonHighlighted( int id, bool highlight );
