@@ -206,11 +206,11 @@ HTMLHeadingElement::HTMLHeadingElement(HTMLHeadingElementImpl *impl) : HTMLEleme
 
 HTMLHeadingElement &HTMLHeadingElement::operator = (const Node &other)
 {
-    if(other.elementId() != ID_H1 ||
-       other.elementId() != ID_H2 ||
-       other.elementId() != ID_H3 ||
-       other.elementId() != ID_H4 ||
-       other.elementId() != ID_H5 ||
+    if(other.elementId() != ID_H1 &&
+       other.elementId() != ID_H2 &&
+       other.elementId() != ID_H3 &&
+       other.elementId() != ID_H4 &&
+       other.elementId() != ID_H5 &&
        other.elementId() != ID_H6 )
     {
 	if ( impl ) impl->deref();
