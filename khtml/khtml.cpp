@@ -723,8 +723,8 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     // painter->translate( x_offset, -y_offset );    
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
-    
-    clue->print( painter, _pe->rect().x() - x_offset,
+
+    clue->print( painter, _pe->rect().x() + x_offset - leftBorder,
 	    _pe->rect().y() + y_offset - topBorder,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
     
