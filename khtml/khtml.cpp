@@ -503,7 +503,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
   connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
   connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
-  // connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
+   connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
   if ( _post_data )
   {
@@ -617,23 +617,23 @@ void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, boo
 }
 
 
-void KHTMLWidget::slotError( int /*_id*/, int _err, const QString &_text )
+void KHTMLWidget::slotError( int /*_id*/, int _err, const char *_text )
 {
   if ( _err == KIO::ERR_WARNING )
     return; //let's ignore warnings for now
 
-  kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", _err, _text.data());
+  kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", _err, _text);
 
   slotStop();
 
   emit error( _err, _text );
 
   // !!!!!! HACK !!!!!!!!!!
-  kioErrorDialog( _err, _text.data() );
+  kioErrorDialog( _err, _text );
 
   kdebug(0,1202,"+++++++++++ RETURN from error ++++++++++");
 
-  // emit canceled();
+  emit canceled();
 }
 
 //
@@ -687,7 +687,7 @@ void KHTMLWidget::servePendingURLRequests()
       checkCompleted();
       return;
   }
-  
+
   printf("starting URLRequestJob\n");
   QDictIterator<HTMLURLRequest> it( m_lstPendingURLRequests );
   HTMLURLRequest *req = it.current();
@@ -887,7 +887,7 @@ QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 	KURL u( orig, _url );
 	return u.url();
     }	
-    orig.setPath(_url);
+    orig.setEncodedPathAndQuery(_url);
     return orig.url();
 }
 

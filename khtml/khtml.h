@@ -656,7 +656,7 @@ protected slots:
     void slotData( int _id, const char* data, int _len );
     void data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof );
     void slotFinished( int _id );
-    void slotError( int _id, int _err, const QString &_text );
+    void slotError( int _id, int _err, const char *_text );
 
     // gets called for redirection triggered by the http header
     void slotRedirection( int _id, const char *_url );
@@ -765,7 +765,7 @@ protected:
 
     // checks if loading is done and emits the completed() signal if true
     void checkCompleted();
-    
+
     // ------------------------------------- member variables ------------------------------------
 
     KHTMLWidget* _parent;
