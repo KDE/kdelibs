@@ -38,27 +38,28 @@ public:
     virtual ~DCOPStub();
 
     /**
-       Returns the application id.
+       Return the application id.
      */
     QCString app() const;
     /**
-       Returns the object  id.
+       Return the object  id.
      */
     QCString obj() const;
 
     enum Status{ CallSucceeded, CallFailed };
     /**
-      Returns the status of the last call, either 'CallSucceeded' or 'CallFailed'
-
-      See @ref ok();
+     * Return the status of the last call, either @tt CallSucceeded or
+     * @tt CallFailed
+     *
+     *See @ref ok(); 
      */
     Status status() const;
     
     
     /**
-       Returns whether no error occured
-       
-       See @ref status();
+     *Return whether no error occured
+     * 
+     * See @ref status();
      */
     bool ok()  const;
 

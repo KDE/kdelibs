@@ -39,7 +39,7 @@ class DCOPRef
 {
 public:
     /**
-     * Creates a null reference.
+     * Create a null reference.
      */
     DCOPRef();
     
@@ -48,16 +48,16 @@ public:
      */
     DCOPRef( const DCOPRef& ref );
     /**
-     * Creates a reference to a certain object in a
+     * Create a reference to a certain object in a
      * certain application.
      *
-     * @param app is the name of an application as registered
-     *            be the dcopserver.
+     * @param app The name of an application as registered
+     *            by the dcopserver.
      */
     DCOPRef( const QCString& app, const QCString& obj );
 
     /**
-     * Tests wether it is a null reference.
+     * Test wether it is a null reference.
      */
     bool isNull() const;
 

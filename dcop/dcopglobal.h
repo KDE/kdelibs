@@ -38,6 +38,8 @@
 #define DCOPFind 8
 
 /**
+ * @libdoc
+ *
  * DCOP Protocol description
  * ================
  *
