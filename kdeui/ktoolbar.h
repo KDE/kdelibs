@@ -30,6 +30,7 @@ class QSize;
 class QPixmap;
 class QPopupMenu;
 class QStringList;
+class QDomDocument;
 
 class KLineEdit;
 class KToolBar;
@@ -875,14 +876,9 @@ public:
    * allows this to happen.
    *
    * @param xmlfile The XML-GUI resource file to write to
+   * @param xml     The DOM document for the XML-GUI building
    */
-  void setXMLFile(const QString& xmlfile);
-
-  /**
-   * @return The name of the XML-GUI resource file this toolbar is
-   *         using or QString::null if it's not using one
-   */
-  QString xmlFile() const;
+  void setXML(const QString& xmlfile, const QDomDocument& xml);
 
 signals:
     /**

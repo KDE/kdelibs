@@ -94,6 +94,7 @@ public:
     m_enableContext  = true;
 
     m_xmlFile        = QString::null;
+    m_stateChanged   = false;
   }
   ~KToolBarPrivate()
   {
@@ -119,7 +120,9 @@ public:
   int m_approxItemSize;
   bool m_enableContext;
 
-  QString m_xmlFile;
+  QString      m_xmlFile;
+  QDomDocument m_xml;
+  bool         m_stateChanged;
 };
 
 // this should be adjustable (in faar future... )
@@ -1015,13 +1018,16 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
     if (!moving)
   return;
 
+  // if we made it here, then our state has changed
+  d->m_stateChanged = true;
+
   /* The toolbar handles are hightlighted when the mouse moves over
      * the handle. */
   if ((d->m_isHorizontal && (mev->x() < 0 || mev->x() > 9)) ||
     (!d->m_isHorizontal && (mev->y() < 0 || mev->y() > 9)))
   {
     /* Mouse is outside of the handle. If it's still hightlighed we have
-     * to de-d->m_highlight it. */
+     * to de-highlight it. */
     if (mouseEntered)
     {
       mouseEntered = false;
@@ -2563,6 +2569,10 @@ void KToolBar::ContextCallback( int )
           kdWarning() << "No such menu item " << i << " in toolbar context menu" << endl;
     }
 
+  // if the user selected anything, then the state has changed
+  if (i > 0)
+    d->m_stateChanged = true;
+
   mouseEntered=false;
   repaint(false);
 }
@@ -2579,6 +2589,10 @@ bool KToolBar::highlight() const
 
 void KToolBar::saveState()
 {
+  // only bother if our state really did change
+  if (!d->m_stateChanged)
+    return;
+
   // get all of the stuff to save
   QString position;
   switch (d->m_position)
@@ -2625,13 +2639,70 @@ void KToolBar::saveState()
   // first, try to save to the xml file
   if ( d->m_xmlFile != QString::null )
   {
-  #if 0  // commented out until it works
-    QString xml(KXMLGUIFactory::readConfigFile(d->m_xmlFile)); 
-    QDomDocument doc;
-    doc.setContent( xml );
+    QDomElement elem = d->m_xml.documentElement().toElement();
 
-    KXMLGUIFactory::saveConfigFile(doc, d->m_xmlFile);
-  #endif
+    // go down one level to get to the right tags
+    elem = elem.firstChild().toElement();
+
+    // get a name we can use for this toolbar
+    QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
+
+    // now try to find our toolbar
+    bool modified = false;
+    QDomElement current;
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+    {
+      current = elem;
+
+      if ( current.tagName() != "ToolBar" )
+        continue;
+
+      QString curname(current.attribute( "name" ));
+
+      if ( curname == barname )
+      {
+        current.setAttribute( "noMerge", "1" );
+        current.setAttribute( "position", position );
+        current.setAttribute( "iconText", icontext );
+        modified = true;
+
+        break;
+      }
+    }
+
+    // if we didn't make changes, then just return
+    if ( !modified )
+      return;
+
+    // now we load in the (non-merged) local file
+    QString local_xml(KXMLGUIFactory::readConfigFile(d->m_xmlFile, true));
+    QDomDocument local;
+    local.setContent(local_xml);
+
+    // make sure we don't append if this toolbar already exists locally
+    bool just_append = true;
+    elem = local.documentElement().toElement();
+    elem = elem.firstChild().toElement();
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+    {
+      if ( elem.tagName() != "ToolBar" )
+        continue;
+
+      QString curname(elem.attribute( "name" ));
+
+      if ( curname == barname )
+      {
+        just_append = false;
+        local.documentElement().replaceChild( current, elem );
+        break;
+      }
+    }
+
+    if (just_append)
+      local.documentElement().appendChild( current );
+
+    KXMLGUIFactory::saveConfigFile(local, d->m_xmlFile);
+
     return;
   }
 
@@ -2651,13 +2722,10 @@ void KToolBar::saveState()
   config->sync();
 }
 
-void KToolBar::setXMLFile(const QString& xmlfile)
+void KToolBar::setXML(const QString& xmlfile, const QDomDocument& xml)
 {
   d->m_xmlFile = xmlfile;
+  d->m_xml     = xml;
 }
 
-QString KToolBar::xmlFile() const
-{
-  return d->m_xmlFile;
-}
 #include "ktoolbar.moc"
