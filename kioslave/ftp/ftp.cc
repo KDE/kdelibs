@@ -1159,6 +1159,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
   
   // Never reached
   assert( 0 );
+  return true;
 }
 
 

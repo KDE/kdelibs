@@ -128,9 +128,9 @@ void setup_alarm(unsigned int timeout)
   signal(SIGALRM, sigalrm_handler);
 }
 
+#ifdef DO_MD5
 char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
 {
-#ifdef DO_MD5
   string domain, realm, algorithm, nonce, opaque, qop;
   const char *p=auth_str;
   int i;
@@ -225,6 +225,8 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
 
   return strdup(t1.data());
 #else
+char *create_digest_auth (const char *, const char *, const char *, const char *)
+{
   //error(ERR_COULD_NOT_AUTHENTICATE, "digest");
   return strdup("\r\n");
 #endif
@@ -550,7 +552,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   if (_post_data ) {
     command += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-    bzero(c_buffer, 64);
+    memset(c_buffer, 0, 64);
     sprintf(c_buffer, "%i\r\n", _post_data_size);
     command += c_buffer;
   }
@@ -668,7 +670,7 @@ repeat2:
 	m_sContentMD5 = strdup(trimLead(f_buffer+12));
       }
     }
-    bzero(f_buffer, 1024);
+    memset(f_buffer, 0, 1024);
   }
   if (unauthorized) {
     http_close();
@@ -987,7 +989,7 @@ void HTTPProtocol::decodeChunked()
     if (m_iLeftInChunk == -1) {
       QString s_length;
       while ((chunk_id[0] != '\r' && chunk_id[0] != '\n')) {
-	bzero(chunk_id, 2);
+	memset(chunk_id, 0, 2);
 	memcpy(chunk_id, big_buffer.data()+offset, 1); offset++;
 	if (offset >= big_buffer.size()) {
 	  m_iLeftInChunk=0; m_bLastChunk=true;
@@ -1019,7 +1021,7 @@ void HTTPProtocol::decodeChunked()
       offset+=m_iLeftInChunk+2;
       m_iLeftInChunk = -1;
       m_bLastChunk = false;
-      bzero(chunk_id,2);
+      memset(chunk_id, 0, 2);
     }
   }
   // Is this necesary?

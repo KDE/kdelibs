@@ -42,10 +42,10 @@ char* base64_encode_string( const char *_buf, unsigned int len )
   int i;
   char basis_64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  bzero(buf, sizeof(buf));
+  memset(buf, 0, sizeof(buf));
   memcpy(buf, _buf, strlen(_buf));
   ext=(char *)malloc(25 * sizeof(char));
-  bzero(ext, (25*sizeof(char)));
+  memset(ext, 0, (25*sizeof(char)));
   p=ext;
   for (i = 0; i < sizeof(buf); i += 3) {
     *p++ = basis_64[buf[i] >> 2];
