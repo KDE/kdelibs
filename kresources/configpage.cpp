@@ -75,7 +75,7 @@ ConfigViewItem::ConfigViewItem( QListView *parent, Resource* resource, QString )
 ResourcesConfigPage::ResourcesConfigPage( const QString& resourceFamily, QWidget *parent, const char *name )
   : QWidget( parent, name ), mFamily( resourceFamily )
 {
-  kdDebug() << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
+  kdDebug(5650) << "ResourcesConfigPage::ResourcesConfigPage()" << endl;
   setCaption( i18n( "Resource Configuration" ) );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
@@ -123,12 +123,12 @@ ResourcesConfigPage::~ResourcesConfigPage()
 
 void ResourcesConfigPage::load()
 {
-  kdDebug() << "ResourcesConfigPage::load()" << endl;
+  kdDebug(5650) << "ResourcesConfigPage::load()" << endl;
 
   delete mManager;
   mManager = new ResourceManager<Resource>( mFamily );
   if ( !mManager )
-    kdDebug() << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
+    kdDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
 
   mListView->clear();
 
@@ -327,7 +327,7 @@ void ResourcesConfigPage::slotSelectionChanged()
 
 void ResourcesConfigPage::resourceAdded( Resource* resource )
 {
-  kdDebug() << "ResourcesConfigPage::resourceAdded( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ResourcesConfigPage::resourceAdded( " << resource->resourceName() << " )" << endl;
   ConfigViewItem *item = new ConfigViewItem( mListView, resource );
 
   // FIXME: this sucks. This should be in the config file,
@@ -341,12 +341,12 @@ void ResourcesConfigPage::resourceAdded( Resource* resource )
 
 void ResourcesConfigPage::resourceModified( Resource* resource )
 {
-  kdDebug() << "ResourcesConfigPage::resourceModified( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ResourcesConfigPage::resourceModified( " << resource->resourceName() << " )" << endl;
 }
 
 void ResourcesConfigPage::resourceDeleted( Resource* resource )
 {
-  kdDebug() << "ResourcesConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
+  kdDebug(5650) << "ResourcesConfigPage::resourceDeleted( " << resource->resourceName() << " )" << endl;
 }
 
 #include "resourcesconfigpage.moc"

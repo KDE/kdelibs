@@ -37,7 +37,7 @@ static KStaticDeleter< QDict<ResourceFactory> > staticDeleter;
 
 ResourceFactory *ResourceFactory::self( const QString& resourceFamily )
 {
-  kdDebug(5700) << "ResourceFactory::self()" << endl;
+  kdDebug(5650) << "ResourceFactory::self()" << endl;
 
   ResourceFactory *factory = 0;
   if ( !mSelves )
@@ -59,7 +59,7 @@ ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
 
   QStringList list = KGlobal::dirs()->findAllResources( "data", 
       "kresources/" + mResourceFamily + "/*.desktop", true, true );
-  // kdDebug() << "Resource list: " << list.toString() << endl;
+  // kdDebug(5650) << "Resource list: " << list.toString() << endl;
   for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
     KSimpleConfig config( *it, true );
 
@@ -70,7 +70,7 @@ ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
 
     config.setGroup( "Plugin" );
     QString type = config.readEntry( "Type" );
-    kdDebug(5700) << "Found plugin of type " << type << endl;
+    kdDebug(5650) << "Found plugin of type " << type << endl;
     info->library = config.readEntry( "X-KDE-Library" );
 	
     config.setGroup( "Misc" );
@@ -88,7 +88,7 @@ ResourceFactory::~ResourceFactory()
 
 QStringList ResourceFactory::resourceTypeNames() const
 {
-  kdDebug(5700) << "ResourceFactory::resourceTypeNames()" << endl;
+  kdDebug(5650) << "ResourceFactory::resourceTypeNames()" << endl;
   QStringList retval;
 	
   QDictIterator<ResourceInfo> it( mResourceList );
@@ -114,10 +114,10 @@ ResourceConfigWidget *ResourceFactory::configWidget( const QString& type, QWidge
   void *widget_func = library->symbol( "config_widget" );
 
   if ( widget_func ) {
-    kdDebug() << "Creating config widget for type " << type << endl;
+    kdDebug(5650) << "Creating config widget for type " << type << endl;
     widget = ((ResourceConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
   } else {
-    kdDebug( 5700 ) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
+    kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
     return 0;
   }
 
@@ -134,7 +134,7 @@ ResourceInfo *ResourceFactory::info( const QString &type )
 
 Resource *ResourceFactory::resource( const QString& type, const KConfig *config )
 {
-  kdDebug() << "ResourceFactory::resource( " << type << ", config)" << endl;
+  kdDebug(5650) << "ResourceFactory::resource( " << type << ", config)" << endl;
   Resource *resource = 0;
 
   if ( type.isEmpty() )
@@ -142,7 +142,7 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
 
   ResourceInfo *info = mResourceList.find( type );
   if ( !info ) {
-    kdDebug() << "ResourceFactory::resource(): No info for type '" << type
+    kdDebug(5650) << "ResourceFactory::resource(): No info for type '" << type
               << "'" << endl;
     return 0;
   }
@@ -156,17 +156,17 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
   void *resource_func = library->symbol( "resource" );
 
   if ( resource_func ) {
-    kdDebug(5700) << "Creating resource of type " << type << endl;
+    kdDebug(5650) << "Creating resource of type " << type << endl;
     resource = ((Resource* (*)(const KConfig *))resource_func)( config );
     resource->setType( type );
 //    resource->setNameLabel( mResourceList[ type ]->nameLabel );
 //    resource->setDescriptionLabel( mResourceList[ type ]->descriptionLabel );
   } else {
-    kdDebug( 5700 ) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
+    kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
     return 0;
   }
 
-  kdDebug() << "Created resource of type " << type << endl;
+  kdDebug(5650) << "Created resource of type " << type << endl;
   return resource;
 }
 
@@ -177,14 +177,14 @@ KLibrary *ResourceFactory::openLibrary( const QString& libName )
   QString path = KLibLoader::findLibrary( QFile::encodeName( libName ) );
 
   if ( path.isEmpty() ) {
-    kdDebug( 5700 ) << "No resource plugin library was found!" << endl;
+    kdDebug(5650) << "No resource plugin library was found!" << endl;
     return 0;
   }
 
   library = KLibLoader::self()->library( QFile::encodeName( path ) );
 
   if ( !library ) {
-    kdDebug( 5700 ) << "Could not load library '" << libName << "'" << endl;
+    kdDebug(5650) << "Could not load library '" << libName << "'" << endl;
     return 0;
   }
 

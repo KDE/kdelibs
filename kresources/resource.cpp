@@ -60,7 +60,7 @@ bool Resource::open()
   bool result = true;
   QMutexLocker guard( &mMutex );
   if ( ! mOpenCount ) {
-    kdDebug() << "Opening resource " << resourceName() << endl;
+    kdDebug(5650) << "Opening resource " << resourceName() << endl;
     result = doOpen();
   }
   mOpenCount++;
@@ -72,15 +72,15 @@ void Resource::close()
   QMutexLocker guard( &mMutex );
   if ( ! mOpenCount )
   {
-    kdDebug() << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
+    kdDebug(5650) << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
     return;
   }
   mOpenCount--;
   if ( ! mOpenCount ) {
-    kdDebug() << "Closing resource " << resourceName() << endl;
+    kdDebug(5650) << "Closing resource " << resourceName() << endl;
     doClose();
   } else {
-    kdDebug() << "Not yet closing resource " << resourceName() << ", open count = " << mOpenCount << endl;
+    kdDebug(5650) << "Not yet closing resource " << resourceName() << ", open count = " << mOpenCount << endl;
   }
 }
 
@@ -137,10 +137,10 @@ QString Resource::decryptStr( const QString &str )
 
 void Resource::dump() const
 {
-  kdDebug() << "Resource:" << endl;
-  kdDebug() << "  Name: " << mName << endl;
-  kdDebug() << "  Identifier: " << mIdentifier << endl;
-  kdDebug() << "  Type: " << mType << endl;
-  kdDebug() << "  OpenCount: " << mOpenCount << endl;
-  kdDebug() << "  ReadOnly: " << ( mReadOnly ? "yes" : "no" ) << endl;
+  kdDebug(5650) << "Resource:" << endl;
+  kdDebug(5650) << "  Name: " << mName << endl;
+  kdDebug(5650) << "  Identifier: " << mIdentifier << endl;
+  kdDebug(5650) << "  Type: " << mType << endl;
+  kdDebug(5650) << "  OpenCount: " << mOpenCount << endl;
+  kdDebug(5650) << "  ReadOnly: " << ( mReadOnly ? "yes" : "no" ) << endl;
 }
