@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 
    seq.setSeed(kapp->random());
 
-   QList<QString> list;
+   QPtrList<QString> list;
    list.append(new QString("A"));
    list.append(new QString("B"));
    list.append(new QString("C"));

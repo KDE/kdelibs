@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   KApplication app(argc,argv,"kiconloadertest"/*,false,false*/);
 
   KIconLoader * mpLoader = KGlobal::iconLoader();
-  int mContext = KIcon::Application;
+  KIcon::Context mContext = KIcon::Application;
   QTime dt;
   dt.start();
   int count = 0;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
           ++it, ++i )
       {
           //kdDebug() << ( i==9 ? "..." : (*it) ) << endl;
-          mpLoader->loadIcon( (*it), mGroup );
+          mpLoader->loadIcon( (*it), (KIcon::Group)mGroup );
 	  ++count;
       }
   }
