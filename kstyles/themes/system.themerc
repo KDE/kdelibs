@@ -2,17 +2,16 @@
 [PushButton]
 Background=219,219,219
 Gradient=Diagonal
-BevelContrast=20
-GradientHigh=233,233,233
-GradientLow=171,171,171
+GradientLow=233,233,233
+GradientHigh=171,171,171
 XShift=1
 YShift=1
 
 [PushButtonDown]
 Background=171,171,191
-Gradient=Diagonal
-GradientHigh=171,171,191
-GradientLow=233,233,253
+Gradient=ReverseBevel
+GradientLow=171,171,191
+GradientHigh=233,233,253
 
 [HScrollGroove]
 Pixmap=darkgraytexture.png
