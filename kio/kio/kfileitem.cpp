@@ -255,7 +255,12 @@ void KFileItem::refreshMimeType()
 void KFileItem::setURL( const KURL &url )
 {
   m_url = url;
-  m_strName = url.fileName();
+  setName( url.fileName() );
+}
+
+void KFileItem::setName( const QString& name )
+{
+  m_strName = name;
   m_strText = KIO::decodeFileName( m_strName );
 }
 
@@ -451,7 +456,7 @@ int KFileItem::overlays() const
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
-  if (d && (!d->iconName.isEmpty())) 
+  if (d && (!d->iconName.isEmpty()))
      return DesktopIcon(d->iconName,_size,_state);
 
   if ( !m_pMimeType )
@@ -806,3 +811,23 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 void KFileItem::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+QDataStream & operator<< ( QDataStream & s, const KFileItem & a )
+{
+    // We don't need to save/restore anything that refresh() invalidates,
+    // since that means we can re-determine those by ourselves.
+    s << a.m_url;
+    s << a.m_strName;
+    s << a.m_strText;
+    return s;
+}
+
+QDataStream & operator>> ( QDataStream & s, KFileItem & a )
+{
+    s >> a.m_url;
+    s >> a.m_strName;
+    s >> a.m_strText;
+    a.m_bIsLocalURL = a.m_url.isLocalFile();
+    a.m_bMimeTypeKnown = false;
+    a.refresh();
+    return s;
+}

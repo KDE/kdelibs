@@ -118,6 +118,14 @@ public:
   void setURL( const KURL &url );
 
   /**
+   * Sets the item's name (i.e. the filename).
+   * This is automatically done by setURL, to set the name from the URL's fileName().
+   * This method is provided for some special cases like relative paths as names (KFindPart)
+   * @param name the item's name
+   */
+  void setName( const QString &name );
+
+  /**
    * Returns the permissions of the file (stat.st_mode containing only permissions).
    * @return the permissions of the file
    */
@@ -522,6 +530,8 @@ protected:
 private:
   class KFileItemPrivate;
   KFileItemPrivate * d;
+  friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+  friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 };
 
 /**
@@ -533,5 +543,9 @@ typedef QPtrList<KFileItem> KFileItemList;
  * Iterator for KFileItemList
  */
 typedef QPtrListIterator<KFileItem> KFileItemListIterator;
+
+QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+
 
 #endif
