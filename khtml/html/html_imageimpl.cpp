@@ -213,9 +213,14 @@ void HTMLImageElementImpl::applyChanges(bool top, bool force)
     // ### perhaps not the most appropriate place for this.... here so it get's called after
     // a script has executed
     if (m_render)
+	{
         static_cast<RenderImage *>(m_render)
             ->setImageUrl(m_imageURL,
                           static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+	    static_cast<RenderImage *>(m_render)
+            ->setAlt(alt);
+
+	}
     setChanged(false);
 }
 
