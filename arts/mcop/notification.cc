@@ -83,7 +83,7 @@ void NotificationManager::removeClient(NotificationClient *client)
 
 void Notification::setDestroy(NotificationDestroyFunction destroy)
 {
-	internal = destroy;
+	internal = (void*)destroy;
 }
 
 NotificationManager *NotificationManager::instance = 0;
