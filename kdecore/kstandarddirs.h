@@ -205,6 +205,23 @@ public:
 	QString findResource( const char *type,
 			      const QString& filename ) const;
 
+	/**
+	 * Checks whether a resource is restricted as part of the KIOSK
+	 * framework. When a resource is restricted it means that user-
+	 * specific files in the resource are ignored.
+	 *
+	 * E.g. by restricting the "wallpaper" resource, only system-wide
+	 * installed wallpapers will be found by this class. Wallpapers
+	 * installed under the $KDEHOME directory will be ignored.
+	 *
+	 * @param type The type of the resource to check
+	 * @param relPath A relative path in the resource.
+	 *
+	 * @return True if the resource is restricted.
+	 */
+	bool isRestrictedResource( const char *type,
+			      const QString& relPath=QString::null ) const;
+
         /**
          * Returns a number that identifies this version of the resource.
          * When a change is made to the resource this number will change.
@@ -511,9 +528,11 @@ public:
 
 	bool addedCustoms;
 
+        class KStandardDirsPrivate;
 	KStandardDirsPrivate *d;
 
 	void checkConfig() const;
+	void applyDataRestrictions(const QString &) const;
 };
 
 /**

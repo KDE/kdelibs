@@ -115,6 +115,9 @@ Two new methods will be added to KApplication:
 - bool authorizeKAction(QString action); // For KActions exclusively
 - bool authorizeURLAction(QString, referringURL, destinationURL) // Not yet implemented
 
+KDE3 Action Restrictions
+========================
+
 .desktop files can have an additional field "X-KDE-AuthorizeAction". If this
 field is present the .desktop file is only considered if the action(s) 
 mentioned in this field get(s) authorized. If multiple actions are listed
@@ -124,7 +127,7 @@ To restrict access to function the kdeglobals file should contain the
 group "[KDE Action Restrictions]", each action can then restricted by 
 adding "<action>=false". E.g. to disable the action "shell_access" one 
 would add:
-[KDE Action Restrictions]
+[KDE Action Restrictions][$i]
 shell_access=false
 
 Actions that refer to menu and toolbar actions are prefixed with action/' the
@@ -274,6 +277,51 @@ automatic ksycoca update you need to force an update manually.
 To force an update of the ksycoca database touch the file 
 .../share/services/update_ksycoca. This will force a user's sycoca database
 to be rebuild the next time the user logs in.
+
+KDE3 Resource Restrictions
+==========================
+Most KDE applications make use of additional resource files that are typically
+located in directories under $KDEDIR/share. By default KDE allows users to
+override any of these resources by placing files in the same location 
+under $KDEHOME/share. For example, Konsole stores profiles under 
+$KDEDIR/share/apps/konsole and users can add additional profiles by 
+installing files in $KDEHOME/share/apps/konsole.
+
+KDE3 Resource Restrictions makes it possible to restrict the lookup of files
+to directories outside of $KDEHOME only.
+
+The following resources are defined:
+
+data - share/apps
+html - share/doc/HTML
+icon - share/icon
+config - share/config
+pixmap - share/pixmaps
+apps - share/applnk
+sound - share/sounds
+locale - share/locale
+services - share/services
+servicetypes - share/servicetypes
+mime - share/mimelnk
+wallpaper - share/wallpapers
+templates - share/templates
+exe - bin
+lib - lib
+
+For the purpose of resource restrictions there are two special resources:
+all - covers all resources
+data_<appname> - covers the sub section for <appname> in the data resource.
+
+To restrict resources the kdeglobals file should contain the
+group "[KDE Resource Restrictions]", each resource can then be restricted by
+adding "<resource>=false". E.g. to restrict the "wallpaper" resource to 
+$KDEDIR/share/wallpapers one would add:
+[KDE Resource Restrictions][$i]
+wallpaper=false
+
+And to prevent a user from adding additional konsole profiles, one would add:
+[KDE Resource Restrictions][$i]
+data_konsole=false
 
 
 Expansion of environment variables in KDE config files.

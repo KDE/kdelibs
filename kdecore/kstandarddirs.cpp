@@ -37,6 +37,7 @@
 #include <pwd.h>
 
 #include <qregexp.h>
+#include <qasciidict.h>
 #include <qdict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -52,6 +53,19 @@
 
 template class QDict<QStringList>;
 
+class KStandardDirs::KStandardDirsPrivate 
+{
+public:
+   KStandardDirsPrivate()
+    : restrictionsActive(false), 
+      dataRestrictionActive(false) 
+   { }
+
+   bool restrictionsActive;
+   bool dataRestrictionActive;
+   QAsciiDict<bool> restrictions;
+};
+
 static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
@@ -60,7 +74,7 @@ static const char* const types[] = {"html", "icon", "apps", "sound",
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs( ) : addedCustoms(false)
+KStandardDirs::KStandardDirs( ) : addedCustoms(false), d(0)
 {
     dircache.setAutoDelete(true);
     relatives.setAutoDelete(true);
@@ -72,6 +86,40 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
 KStandardDirs::~KStandardDirs()
 {
 }
+
+bool KStandardDirs::isRestrictedResource(const char *type, const QString& relPath) const
+{
+   if (!d || !d->restrictionsActive)
+      return false;
+      
+   if (d->restrictions[type])
+      return true;
+      
+   if (strcmp(type, "data")==0)
+   {
+      applyDataRestrictions(relPath);
+      if (d->dataRestrictionActive)
+      {
+         d->dataRestrictionActive = false;
+         return true;
+      }
+   }
+   return false;
+}
+
+void KStandardDirs::applyDataRestrictions(const QString &relPath) const
+{
+   QString key;
+   int i = relPath.find('/');
+   if (i != -1)
+      key = "data_"+relPath.left(i);
+   else
+      key = "data_"+relPath;
+   
+   if (d && d->restrictions[key.latin1()])
+      d->dataRestrictionActive = true;
+}
+
 
 QStringList KStandardDirs::allTypes() const
 {
@@ -188,7 +236,8 @@ Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
         // absolute dirs are absolute dirs, right? :-/
 	return updateHash(filename, hash);
     }
-
+    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+       applyDataRestrictions(filename);
     QStringList candidates = resourceDirs(type);
     QString fullPath;
 
@@ -210,6 +259,8 @@ QStringList KStandardDirs::findDirs( const char *type,
 
     checkConfig();
 
+    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+       applyDataRestrictions(reldir);
     QStringList candidates = resourceDirs(type);
     QDir testdir;
 
@@ -233,6 +284,8 @@ QString KStandardDirs::findResourceDir( const char *type,
     }
 #endif
 
+    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+       applyDataRestrictions(filename);
     QStringList candidates = resourceDirs(type);
     QString fullPath;
 
@@ -437,6 +490,8 @@ KStandardDirs::findAllResources( const char *type,
 
     checkConfig();
 
+    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+       applyDataRestrictions(filter);
     QStringList candidates = resourceDirs(type);
     if (filterFile.isEmpty())
 	filterFile = "*";
@@ -555,6 +610,18 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
         candidates = new QStringList();
         QStringList *dirs;
 
+        bool restrictionActive = false;
+        if (d && d->restrictionsActive)
+        {
+           if (d->dataRestrictionActive)
+              restrictionActive = true;
+           else if (d->restrictions["all"])
+              restrictionActive = true;
+           else if (d->restrictions[type])
+              restrictionActive = true;
+           d->dataRestrictionActive = false; // Reset
+        }
+
         dirs = relatives.find(type);
         if (dirs)
         {
@@ -567,6 +634,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                      it != dirs->end(); ++it) {
                     QString path = realPath(*pit + *it);
                     testdir.setPath(path);
+                    if (local && restrictionActive)
+                       continue;
                     if ((local || testdir.exists()) && !candidates->contains(path))
                         candidates->append(path);
                 }
@@ -1021,6 +1090,24 @@ bool KStandardDirs::addCustomized(KConfig *config)
 		addResourceDir(resType.latin1(), *sIt);
 	    }
 	}
+    }
+
+    // Process KIOSK restrictions.
+    config->setGroup("KDE Resource Restrictions");
+    entries = config->entryMap("KDE Resource Restrictions");
+    for (it2 = entries.begin(); it2 != entries.end(); it2++)
+    {
+	QString key = it2.key();
+        if (!config->readBoolEntry(key, true))
+        {
+           if (!d)
+           {
+               d = new KStandardDirsPrivate;
+               d->restrictionsActive = true;
+           }
+           d->restrictions.insert(key.latin1(), &d->restrictionsActive); // Anything will do
+           dircache.remove(key.latin1());
+        }
     }
 
     // save it for future calls - that will return
