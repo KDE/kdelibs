@@ -256,6 +256,8 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     int k;
     if ( s1 <= _max && !joker )
     {
+        if (!s1)
+            s1 = 1;
 	for ( k = 0; k < i; k++ )
 	{
 	    size[k] = ( value[k] * _max ) / s1;
