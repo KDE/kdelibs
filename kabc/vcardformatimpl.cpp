@@ -477,6 +477,9 @@ void VCardFormatImpl::readNValue( ContentLine *cl, Addressee &a )
 
 void VCardFormatImpl::addTelephoneValue( VCard *v, const PhoneNumber &p )
 {
+  if ( p.number().isEmpty() )
+    return;
+
   ContentLine cl;
   cl.setName(EntityTypeToParamName(EntityTelephone));
   cl.setValue(new TelValue( p.number().utf8() ));
