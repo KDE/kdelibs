@@ -71,20 +71,7 @@ AC_REQUIRE([AC_CHECK_BOOL])
 
 if test "$1" = "default"; then
 
-kde_htmldir="\$(prefix)/share/doc/HTML"
-kde_appsdir="\$(prefix)/share/applnk"
-kde_icondir="\$(prefix)/share/icons"
-kde_minidir="\$(prefix)/share/icons/mini"
-kde_datadir="\$(prefix)/share/apps"
-kde_locale="\$(prefix)/share/locale"
-kde_cgidir="\$(exec_prefix)/cgi-bin"
-kde_confdir="\$(prefix)/share/config"
-kde_mimedir="\$(prefix)/share/mimelnk"
-kde_toolbardir="\$(prefix)/share/toolbar"
-kde_wallpaperdir="\$(prefix)/share/wallpapers"
-kde_bindir="\$(exec_prefix)/bin"
-kde_partsdir="\$(exec_prefix)/parts"
-AC_MSG_RESULT(defaults)	
+  AC_MSG_RESULT(defaults)	
 
 else 
 
@@ -129,6 +116,7 @@ fi
 
 rm -fr conftest*
 AC_LANG_CPLUSPLUS
+
 if test "$kde_have_all_paths" = "yes"; then
 kde_cv_all_paths="kde_have_all_paths=\"yes\" \
 	kde_htmldir=\"$kde_htmldir\" \
@@ -142,11 +130,10 @@ kde_cv_all_paths="kde_have_all_paths=\"yes\" \
 	kde_mimedir=\"$kde_mimedir\" \
 	kde_toolbardir=\"$kde_toolbardir\" \
 	kde_wallpaperdir=\"$kde_wallpaperdir\" \
-	kde_bindir=$\"kde_bindir\" \
+	kde_bindir=\"$kde_bindir\" \
 	kde_partsdir=\"$kde_partsdir\""
 fi
 
-fi
 ])
 
 eval "$kde_cv_all_paths"
@@ -154,6 +141,60 @@ eval "$kde_cv_all_paths"
 # this all is just magic, since on error the paths are not cached!
 if test "$kde_have_all_paths" = "yes"; then
  AC_MSG_RESULT(done)
+fi
+
+fi
+
+if test -z "$kde_htmldir"; then
+  kde_htmldir="\$(prefix)/share/doc/HTML"
+fi
+
+if test -z "$kde_appsdir"; then
+  kde_appsdir="\$(prefix)/share/applnk"
+fi
+
+if test -z "$kde_icondir"; then
+  kde_icondir="\$(prefix)/share/icons"
+fi
+
+if test -z "$kde_minidir"; then
+  kde_minidir="\$(prefix)/share/icons/mini"
+fi
+
+if test -z "$kde_datadir"; then
+  kde_datadir="\$(prefix)/share/apps"
+fi
+
+if test -z "$kde_locale"; then
+  kde_locale="\$(prefix)/share/locale"
+fi
+
+if test -z "$kde_cgidir"; then
+  kde_cgidir="\$(exec_prefix)/cgi-bin"
+fi
+
+if test -z "$kde_confdir"; then
+  kde_confdir="\$(prefix)/share/config"
+fi
+
+if test -z "$kde_mimedir"; then
+  kde_mimedir="\$(prefix)/share/mimelnk"
+fi
+
+if test -z "$kde_toolbardir"; then
+  kde_toolbardir="\$(prefix)/share/toolbar"
+fi
+
+if test -z "$kde_wallpaperdir"; then
+  kde_wallpaperdir="\$(prefix)/share/wallpapers"
+fi
+
+if test -z "$kde_bindir"; then
+  kde_bindir="\$(exec_prefix)/bin"
+fi
+
+if test -z "$kde_partsdir"; then
+  kde_partsdir="\$(exec_prefix)/parts"
 fi
 
 ])
