@@ -36,6 +36,7 @@ static const KStdActionInfo g_rgActionInfo[] =
 	{ Cut,           KStdAccel::Cut, "edit_cut", I18N_NOOP("Cu&t"), 0, "editcut" },
 	{ Copy,          KStdAccel::Copy, "edit_copy", I18N_NOOP("&Copy"), 0, "editcopy" },
 	{ Paste,         KStdAccel::Paste, "edit_paste", I18N_NOOP("&Paste"), 0, "editpaste" },
+	{ PasteText,     KStdAccel::Paste, "edit_paste", I18N_NOOP("&Paste"), 0, "editpaste" },
 	{ Clear,         KStdAccel::AccelNone, "edit_clear", I18N_NOOP("C&lear"), 0, "editclear" },
 	{ SelectAll,     KStdAccel::SelectAll, "edit_select_all", I18N_NOOP("Select &All"), 0, 0 },
 	{ Deselect,      KStdAccel::Deselect, "edit_deselect", I18N_NOOP("Dese&lect"), 0, 0 },

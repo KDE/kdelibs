@@ -152,7 +152,8 @@ namespace KStdAction
 		// Another settings menu item
 		ConfigureNotifications,
 		FullScreen, ///< @since 3.2
-		Clear ///< @since 3.2
+		Clear, ///< @since 3.2
+        PasteText ///< @since 3.2
 	};
 
 	/**
@@ -287,6 +288,15 @@ namespace KStdAction
 	* position.
 	*/
 	KAction *paste(const QObject *recvr, const char *slot,
+		KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Paste the contents of clipboard at the current mouse or cursor
+	* position. Provide a button on the toolbar with the clipboard history
+    * menu if Klipper is running.
+    * @since 3.2
+	*/
+	KAction *pasteText(const QObject *recvr, const char *slot,
 		KActionCollection* parent, const char *name = 0 );
 
 	/**

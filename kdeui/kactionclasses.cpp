@@ -27,11 +27,14 @@
 
 #include <assert.h>
 
+#include <qclipboard.h>
 #include <qfontdatabase.h>
 #include <qobjectlist.h>
 #include <qwhatsthis.h>
 #include <qtimer.h>
 
+#include <dcopclient.h>
+#include <dcopref.h>
 #include <kaccel.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -2049,6 +2052,101 @@ int KActionSeparator::plug( QWidget *widget, int index )
   return -1;
 }
 
+KPasteTextAction::KPasteTextAction( const QString& text,
+                            const QString& icon,
+                            const KShortcut& cut,
+                            const QObject* receiver,
+                            const char* slot, QObject* parent,
+                            const char* name)
+  : KAction( text, icon, cut, receiver, slot, parent, name )
+{  
+  m_popup = new KPopupMenu;
+  connect(m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
+  connect(m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));  
+  m_popup->setCheckable(true);
+}            
+
+KPasteTextAction::~KPasteTextAction()
+{
+  delete m_popup;
+}    
+
+int KPasteTextAction::plug( QWidget *widget, int index )
+{
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
+  // This is very related to KActionMenu::plug.
+  // In fact this class could be an interesting base class for KActionMenu
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int id_ = KAction::getToolButtonID();
+
+    KInstance * instance;
+    if ( m_parentCollection )
+        instance = m_parentCollection->instance();
+    else
+        instance = KGlobal::instance();
+
+    bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
+                       SLOT( slotActivated() ), isEnabled(), plainText(),
+                       index, instance );
+
+    addContainer( bar, id_ );
+
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    bar->setDelayedPopup( id_, m_popup, true );
+
+    if ( !whatsThis().isEmpty() )
+        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+
+    return containerCount() - 1;
+  }
+
+  return KAction::plug( widget, index );
+}
+     
+void KPasteTextAction::menuAboutToShow()
+{
+    m_popup->clear();
+    QStringList list;
+    DCOPClient *client = kapp->dcopClient();
+    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
+      DCOPRef klipper("klipper","klipper");
+      DCOPReply reply = klipper.call("getClipboardHistoryMenu");
+      if (reply.isValid())
+        list = reply;          
+    }
+    QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
+    if (list.isEmpty())
+        list << clipboardText;
+    bool found = false;        
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) 
+    {
+      int id = m_popup->insertItem(*it);
+      if (!found && *it == clipboardText)
+      {
+        m_popup->setItemChecked(id, true);
+        found = true;
+      }
+    }
+}
+
+void KPasteTextAction::menuItemActivated( int id)
+{
+    DCOPClient *client = kapp->dcopClient();
+    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
+      DCOPRef klipper("klipper","klipper");
+      DCOPReply reply = klipper.call("setClipboardContents", m_popup->text(id));
+      if (reply.isValid())
+        kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;    
+    }
+    QTimer::singleShot(20, this, SLOT(slotActivated())); 
+}
+
+
 void KToggleAction::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
@@ -2086,6 +2184,9 @@ void KWidgetAction::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
 void KActionSeparator::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KPasteTextAction::virtual_hook( int id, void* data )
 { KAction::virtual_hook( id, data ); }
 
 /* vim: et sw=2 ts=2

@@ -1250,4 +1250,53 @@ private:
     KActionSeparatorPrivate *d;
 };
 
+/**
+ * An action for pasting text from the clipboard.
+ * It's useful for text handling applications as
+ * when plugged into a toolbar it provides a menu
+ * with the clipboard history if klipper is running.
+ * If clipper is not running, the menu has only one
+ * item: the current clipboard content.
+ *
+ * @since 3.2
+ */
+class KPasteTextAction: public KAction
+{
+    Q_OBJECT
+public:
+    /**
+     * Create a KPasteTextAction, with a text, an icon, an accelerator,
+     * a slot connected to the action, parent and name.
+     *
+     * If you do not want or have a keyboard accelerator, set the
+     * @p cut param to 0.
+     *
+     * @param text The text that will be displayed.
+     * @param icon The icon to display.
+     * @param cut The corresponding keyboard accelerator (shortcut).
+     * @param receiver The SLOT's owner.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KPasteTextAction( const QString& text, const QString& icon, const KShortcut& cut,
+                  const QObject* receiver, const char* slot,
+                  QObject* parent = 0, const char* name = 0 );
+    
+    virtual ~KPasteTextAction();
+    virtual int plug( QWidget *widget, int index = -1 );
+    
+protected slots:
+    void menuAboutToShow();
+    void menuItemActivated( int id);
+
+protected:
+    virtual void virtual_hook( int id, void* data );
+
+private:
+    KPopupMenu *m_popup;
+    class KPasteTextActionPrivate;
+    KPasteTextActionPrivate *d;
+};
+
 #endif
