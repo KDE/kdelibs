@@ -312,6 +312,14 @@ QStringList KCharsets::availableCharsetNames(QString family)
     return chList;
 }
 
+
+QStringList KCharsets::availableEncodingNames()
+{
+#warning Lars, implement this
+  return availableCharsetNames();
+}
+
+
 QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
     QFontInfo fi(_f);

@@ -103,6 +103,11 @@ public:
      */
     QStringList availableCharsetNames(QString family = QString::null);
 
+	/**
+	 * Lists all available encodings as names.
+	 */
+	QStringList availableEncodingNames();
+
     /**
      * @returns a QFont, which can print the character given, and is closest
      * to the font given. if no mathing font could be found, the returned font
