@@ -77,15 +77,15 @@ KShred::fill0s()
 
 
 bool
-KShred::fillbyte(uint byte)
+KShred::fillbyte(unsigned int byte)
 {
   if (file == 0L)
     return false;
-  char buff[4096];
-  memset(buff, byte, 4096);
+  unsigned char buff[4096];
+  memset((void *) buff, byte, 4096);
 
-  uint n;
-  for (uint todo = fileSize; todo > 0; todo -= n)
+  unsigned int n;
+  for (unsigned int todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > 4096 ? 4096 : todo);
     if (!writeData(buff, n))
@@ -97,13 +97,13 @@ KShred::fillbyte(uint byte)
 
 
 bool
-KShred::fillpattern(char *data, uint size)
+KShred::fillpattern(unsigned char *data, unsigned int size)
 {
   if (file == 0L)
     return false;
 
-  uint n;
-  for (uint todo = fileSize; todo > 0; todo -= n)
+  unsigned int n;
+  for (unsigned int todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > size ? size : todo);
     if (!writeData(data, n))
@@ -122,9 +122,9 @@ KShred::fillrandom()
 
   srandom((unsigned int) time(0L));
   long int buff[4096 / sizeof(long int)];
-  uint n;
+  unsigned int n;
 
-  for (uint todo = fileSize; todo > 0; todo -= n)
+  for (unsigned int todo = fileSize; todo > 0; todo -= n)
   {
     n = (todo > 4096 ? 4096 : todo);
     // assumes that 4096 is a multipe of sizeof(long int)
@@ -132,7 +132,7 @@ KShred::fillrandom()
     for (int i = 0; i < limit; i++)
       buff[i] = random();
 
-    if (!writeData((char *) buff, n))
+    if (!writeData((unsigned char *) buff, n))
       return false;
   }
   file->flush();
@@ -154,60 +154,97 @@ KShred::shred(QString fileName)
 
 
 bool
-KShred::writeData(char *data, uint size)
+KShred::writeData(unsigned char *data, unsigned int size)
 {
-  static uint bytesWritten  = 0;
-  static uint lastSignalled = 0;
-  static uint tbpc          = 0;
-  static uint fspc          = 0;
+  static unsigned int bytesWritten  = 0;
+  static unsigned int lastSignalled = 0;
+  static unsigned int tbpc          = 0;
+  static unsigned int fspc          = 0;
+  unsigned int ret                  = 0;
 
   // write 'data' of size 'size' to the file
-  int ret = file->writeBlock(data, size);
+  while ((ret < size) && (file->putch((int) data[ret]) >= 0))
+    ret++;
+
   if ((totalBytes > 0) && (ret > 0))
   {
     if (tbpc == 0)
     {
-      tbpc = ((uint) (totalBytes / 100)) == 0 ? 1 : totalBytes / 100;
-      fspc = ((uint) (fileSize / 100)) == 0 ? 1 : fileSize / 100;
+      tbpc = ((unsigned int) (totalBytes / 100)) == 0 ? 1 : totalBytes / 100;
+      fspc = ((unsigned int) (fileSize / 100)) == 0 ? 1 : fileSize / 100;
     }
     bytesWritten += ret;
-    uint pc = (uint) (bytesWritten / tbpc);
+    unsigned int pc = (uint) (bytesWritten / tbpc);
     if (pc > lastSignalled)
     {
-      emit processedSize((uint) (fspc * pc));
+      emit processedSize((unsigned int) (fspc * pc));
       lastSignalled = pc;
     }
   }
-  return ret >= 0;
+  return ret == size;
 }
 
 
 // shred the file, then close and remove it
+//
+// UPDATED: this function now uses 35 passes based on the the article
+// Peter Gutmann, "Secure Deletion of Data from Magnetic and Solid-State
+// Memory", first published in the Sixth USENIX Security Symposium
+// Proceedings, San Jose, CA, July 22-25, 1996 (available online at
+// http://rootprompt.org/article.php3?article=473)
+
 bool
 KShred::shred()
 {
+  unsigned char p[6][3] = {{'\222', '\111', '\044'}, {'\111', '\044', '\222'},
+                   {'\044', '\222', '\111'}, {'\155', '\266', '\333'},
+                   {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
+ 
   kdDebug() << "KShred::shred" << endl;
 
   emit processedSize(0);
 
-  // five times writing the entire file size
-  totalBytes = fileSize * 5;
+  // thirty-five times writing the entire file size
+  totalBytes = fileSize * 35;
+  int iteration = 0;
 
-  if (!fill0s())
+  for (int ctr = 0; ctr < 4; ctr++)
+    if (!fillrandom())
+      return false;
+    else
+      kdDebug() << "KShred::shred " << ++iteration << endl;
+
+  if (!fillbyte((unsigned int) 0x55))     // '0x55' is 01010101
     return false;
-  kdDebug() << "KShred::shred 1" << endl;
-  if (!fill1s())
+  kdDebug() << "KShred::shred " << ++iteration << endl;
+
+  if (!fillbyte((unsigned int) 0xAA))     // '0xAA' is 10101010
     return false;
-  kdDebug() << "KShred::shred 2" << endl;
-  if (!fillrandom())
-    return false;
-  kdDebug() << "KShred::shred 3" << endl;
-  if (!fillbyte((uint) 0x55))     // '0x55' is 01010101
-    return false;
-  kdDebug() << "KShred::shred 4" << endl;
-  if (!fillbyte((uint) 0xAA))     // '0xAA' is 10101010
-    return false;
-  kdDebug() << "KShred::shred 5" << endl;
+  kdDebug() << "KShred::shred " << ++iteration << endl;
+
+  for (unsigned int ctr = 0; ctr < 3; ctr++)
+    if (!fillpattern(p[ctr], 3))  // '0x92', '0x49', '0x24'
+      return false;
+    else
+      kdDebug() << "KShred::shred " << ++iteration << endl;
+
+  for (unsigned int ctr = 0; ctr <= 255 ; ctr += 17)
+    if (!fillbyte(ctr))    // sequence of '0x00', '0x11', ..., '0xFF'
+      return false;
+    else
+      kdDebug() << "KShred::shred " << ++iteration << endl;
+  for (unsigned int ctr = 0; ctr < 6; ctr++)
+    if (!fillpattern(p[ctr], 3))  // '0x92', '0x49', '0x24'
+      return false;
+    else
+      kdDebug() << "KShred::shred " << ++iteration << endl;
+
+  for (int ctr = 0; ctr < 4; ctr++)
+    if (!fillrandom())
+      return false;
+    else
+      kdDebug() << "KShred::shred " << ++iteration << endl;
+
   if (!file->remove())
     return false;
   file = 0L;

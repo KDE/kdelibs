@@ -79,7 +79,7 @@ class KShred : public QObject {
 	 * @param byte the value to write over every byte of the file
 	 * @return true on success, false on error (invalid filename or write error)
 	 */
-        bool fillbyte(uint byte);
+        bool fillbyte(unsigned int byte);
 
 	/**
 	 * Writes random bites over the entire file and flushes the file buffers.
@@ -93,7 +93,7 @@ class KShred : public QObject {
 	 * @param size the length of the 'pattern' byte array
 	 * @return true on success, false on error (invalid filename or write error)
 	 */
-        bool fillpattern(char *pattern, uint size);
+        bool fillpattern(unsigned char *pattern, unsigned int size);
 
 	/**
 	 * Shreds a file by writing a series of values over it (uses @ref 
@@ -121,7 +121,7 @@ class KShred : public QObject {
 	/**
 	 * @internal write the data to the file
 	 */
-        bool writeData(char *data, uint size);
+        bool writeData(unsigned char *data, unsigned int size);
 
 	/**
 	 * @internal structure for the file information
@@ -136,7 +136,7 @@ class KShred : public QObject {
 	/**
 	 * @internal for keeping track of progress
 	 */
-        uint totalBytes;
+        unsigned int totalBytes;
 };
 
 #endif
