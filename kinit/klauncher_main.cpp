@@ -30,6 +30,7 @@
 #include <qcstring.h>
 #include <klocale.h>
 
+#include "klauncher_cmds.h"
 
 extern "C" { int start_launcher(int); }
 
@@ -88,6 +89,6 @@ start_launcher(int socket)
 
 int main(/*int argc, char **argv*/)
 {
-   start_launcher(3);
+   start_launcher(LAUNCHER_FD);
    return 0;
 }

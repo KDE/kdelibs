@@ -349,7 +349,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
-      * It has a communication socket on fd 3
+      * It has a communication socket on LAUNCHER_FD
       */
      if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
      {
@@ -412,13 +412,13 @@ static pid_t launch(int argc, const char *_name, const char *args,
      close_fds();
      if (launcher)
      {
-        if (d.fd[1] == 3)
+        if (d.fd[1] == LAUNCHER_FD)
         {
-          d.fd[1] = dup(d.fd[1]); // Evacuate from fd 3
+          d.fd[1] = dup(d.fd[1]); // Evacuate from LAUNCHER_FD
         }
-        if (d.launcher[1] != 3)
+        if (d.launcher[1] != LAUNCHER_FD)
         {
-          dup2( d.launcher[1], 3); // Make sure the socket has fd 3
+          dup2( d.launcher[1], LAUNCHER_FD); // Make sure the socket has fd LAUNCHER_FD
           close( d.launcher[1] );
         }
         close( d.launcher[0] );
