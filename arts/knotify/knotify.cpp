@@ -176,17 +176,16 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get config file
         KConfig *eventsFile;
-        if (isGlobal(event))
-            eventsFile =  d->globalEvents;
-        else {
-            if ( d->events.contains( fromApp ) ) {
-                eventsFile = d->events[fromApp];
-            } else {
-                eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
-                d->events.insert( fromApp, eventsFile );
-            }
-        }
+	if ( d->events.contains( fromApp ) ) {
+	    eventsFile = d->events[fromApp];
+	} else {
+	    eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
+	    d->events.insert( fromApp, eventsFile );
+	}
 
+	if ( !eventsFile->hasGroup( event ) && isGlobal(event) )
+	    eventsFile = d->globalEvents;
+	
         eventsFile->setGroup( event );
 
         // get event presentation
@@ -236,8 +235,8 @@ bool KNotify::notifyBySound( const QString &sound )
     if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
         d->soundServer = connectSoundServer();
 
-    kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
-    
+    // kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
+
     if (!external && !d->soundServer.isNull() && !d->soundServer.error()) {
         // play sound finally
         d->soundServer.play( QFile::encodeName(soundFile).data() );
