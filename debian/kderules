@@ -4,6 +4,9 @@ use Shell qw(mv cp mkdir rm) ;
 use File::Find;
 use Cwd;
 
+$origPwd = `pwd`;
+chomp $origPwd;
+
 if (@ARGV && $ARGV[0] eq 'update') {
   @packages = `ls -1d debian/*/DEBIAN`;
   foreach $dir (@packages) {
@@ -59,22 +62,33 @@ if (@ARGV && $ARGV[0] eq 'update') {
   exit;
 }
 
-open(CHANGELOG,"debian/changelog") 
+if (@ARGV && $ARGV[0]) {  
+  $package = $ARGV[0];
+} else {
+  open(CHANGELOG,"debian/changelog") 
 	or die "can't read debian/changelog : $!\n";
-$_ = <CHANGELOG>;
-close(CHANGELOG);
-/^(.*) \((.*)\) /;
-$package = $1;
+  $_ = <CHANGELOG>;
+  close(CHANGELOG);
+  /^(.*) \((.*)\) /;
+  $package = $1;
+}
 
 # Find documentation and install it
 sub docwanted {
-	if ($File::Find::dir =~ /debian/) { return 0 ; }
+        local $dir = $File::Find::dir;
+        $dir =~ s/^$origPwd//;
+	if ($dir =~ /debian/) { return 0 ; }
 	/debian/ or /INSTALL/ and return 0 ;
 	/COPYING/ and return ;
 	if ( (! /CVS/ )
 	and ( /^[A-Z]*$/ or /README/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
 	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/ ) )
-	{	push @docs, "$File::Find::dir/$_" ;
+	{	
+		if ($dir) {
+		  $_ = "$dir/$_";
+		  $_ =~ s/^\///;
+		}
+		push @docs, "$_" ;
 	}
 }
 
@@ -97,6 +111,7 @@ if (! -d "debian/tmp/usr/X11R6/include/X11/pixmaps") {
 }
 
 if (@docs) {
+       chdir($origPwd);
        cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
 }
 
