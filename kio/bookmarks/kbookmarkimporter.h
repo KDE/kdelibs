@@ -29,4 +29,50 @@
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter_kde1.h"
 
+/**
+ * A class for importing NS bookmarks
+ * KEditBookmarks uses it to insert bookmarks into its DOM tree,
+ * and KActionMenu uses it to create actions directly.
+ */
+class KBookmarkImporterBase : public QObject
+{
+    Q_OBJECT
+public:
+    KBookmarkImporterBase() {}
+    virtual ~KBookmarkImporterBase() {}
+
+    void setFilename(const QString &filename) { m_fileName = filename; }
+
+    virtual void parse() = 0;
+    virtual const QString findDefaultLocation(bool forSaving = false) const;
+
+signals:
+    /**
+     * Notify about a new bookmark
+     * Use "html" for the icon
+     */
+    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+
+    /**
+     * Notify about a new folder
+     * Use "bookmark_folder" for the icon
+     */
+    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+
+    /**
+     * Notify about a new separator
+     */
+    void newSeparator();
+
+    /**
+     * Tell the outside world that we're going down
+     * one menu
+     */
+    void endFolder();
+
+protected:
+    QString m_fileName;
+
+};
+
 #endif
