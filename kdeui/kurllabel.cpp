@@ -43,13 +43,11 @@ public:
 
   QString Tip;
   QCursor* Cursor;
-  bool UseTips;
-  bool UseCursor;
-
-  bool Glow;
-  bool Float;
-  
-  bool RealUnderline;
+  bool UseTips:1;
+  bool UseCursor:1;
+  bool Glow:1;
+  bool Float:1;
+  bool RealUnderline:1;
   QPixmap RealPixmap;
 
   QTimer* Timer;
@@ -79,10 +77,16 @@ KURLLabel::~KURLLabel ()
   delete d;
 }
 
+// BCI: remove in KDE 3.0
 void KURLLabel::mousePressEvent (QMouseEvent* e)
 {
   QLabel::mousePressEvent (e);
-  
+}
+
+void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
+{
+  QLabel::mouseReleaseEvent (e);
+ 
   setLinkColor (d->HighlightedLinkColor);
   d->Timer->start (300);
 
