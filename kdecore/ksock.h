@@ -92,9 +92,10 @@
 #define KSOCK_H
 
 #ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-#include <netinet/in.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
 #include <netinet/in.h> 
