@@ -38,6 +38,11 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
   connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig, SLOT(saveSettings()));
   connect(kdialogbase, SIGNAL(defaultClicked()), kautoconfig, SLOT(resetSettings()));
 
+  connect(kdialogbase, SIGNAL(okClicked()), this, SIGNAL(okClicked()));
+  connect(kdialogbase, SIGNAL(applyClicked()), this, SIGNAL(applyClicked()));
+  connect(kdialogbase, SIGNAL(defaultClicked()), this, SIGNAL(defaultClicked()));
+
+
   kdialogbase->enableButton(KDialogBase::Apply, false);
 }
 
@@ -50,7 +55,8 @@ void KAutoConfigDialog::addPage(QWidget *page,
 		                  const QString &itemName,
 				  const QString &groupName,
 		                  const QString &pixmapName,
-				  const QString &header){
+				  const QString &header,
+				  bool manage){
   if(d->shown){
     kdDebug() << "KAutoConfigDialog::addPage, can not a page after the dialog has been shown.";
     return;
@@ -88,7 +94,8 @@ void KAutoConfigDialog::addPage(QWidget *page,
     default:
       kdDebug() << "KAutoConfigDialog::addWidget" << " unknown type.";
   }
-  kautoconfig->addWidget(page, groupName);
+  if(manage)
+    kautoconfig->addWidget(page, groupName);
 }
 
 KAutoConfigDialog* KAutoConfigDialog::exists(const char* name){

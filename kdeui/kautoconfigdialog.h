@@ -57,6 +57,19 @@ signals:
    */
   void settingsChanged(const char *dialogName);
 
+  /**
+   * Helper function.
+   */ 
+  void okClicked();
+  /**
+   * Helper function.
+   */ 
+  void applyClicked();
+  /**
+   * Helper function.
+   */ 
+  void defaultClicked();
+  
 public:
   /**
    * @param parent - The parent object of this object.  Even though the class
@@ -99,11 +112,13 @@ public:
    * @param pixmap - Name of the pixmap that should be used if needed.
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
+   * @param manage - Whether KAutoConfig should manage the page or not.
    */ 
   void addPage( QWidget *page, const QString &itemName,
 				  const QString &groupName,
 		                  const QString &pixmapName,
-				  const QString &header=QString::null ); 
+				  const QString &header=QString::null,
+				  bool manage=true); 
  
   /**
    * See if a dialog with the name 'name' already exists.
