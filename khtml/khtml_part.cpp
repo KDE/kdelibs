@@ -1058,9 +1058,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
       d->m_bHTTPRefresh = true;
     }
 
-    // Support for http last-modified
-    d->m_lastModified = d->m_job->queryMetaData("modified");
-    //kdDebug() << "KHTMLPart::slotData metadata modified: " << d->m_lastModified << endl;
+    if ( !m_url.isLocalFile() ) {
+        // Support for http last-modified
+        d->m_lastModified = d->m_job->queryMetaData("modified");
+    } else
+        d->m_lastModified = QString::null; // done on-demand by lastModified()
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -2221,7 +2223,7 @@ void KHTMLPart::slotViewPageInfo()
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
   dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
-  dlg->_lastModified->setText(d->m_lastModified);
+  dlg->_lastModified->setText(lastModified());
 
   /* populate the list view now */
   QStringList headers = QStringList::split("\n", d->m_httpHeaders);
@@ -2606,10 +2608,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                this, SLOT( slotChildCompleted(bool) ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
                this, SIGNAL( setStatusBarText( const QString & ) ) );
-      connect( this, SIGNAL( completed() ),
-               part, SLOT( slotParentCompleted() ) );
-      connect( this, SIGNAL( completed(bool) ),
-               part, SLOT( slotParentCompleted() ) );
+      if ( part->inherits( "KHTMLPart" ) )
+      {
+          connect( this, SIGNAL( completed() ),
+                   part, SLOT( slotParentCompleted() ) );
+          connect( this, SIGNAL( completed(bool) ),
+                   part, SLOT( slotParentCompleted() ) );
+      }
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
@@ -3581,6 +3586,14 @@ QString KHTMLPart::referrer() const
 
 QString KHTMLPart::lastModified() const
 {
+  if ( d->m_lastModified.isEmpty() && m_url.isLocalFile() ) {
+    // Local file: set last-modified from the file's mtime.
+    // Done on demand to save time when this isn't needed - but can lead
+    // to slightly wrong results if updating the file on disk w/o reloading.
+    QDateTime lastModif = QFileInfo( m_url.path() ).lastModified();
+    d->m_lastModified = lastModif.toString( Qt::LocalDate );
+  }
+  //kdDebug() << "KHTMLPart::lastModified: " << d->m_lastModified << endl;
   return d->m_lastModified;
 }
 
