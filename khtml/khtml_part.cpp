@@ -2700,6 +2700,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       //kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
       return child->m_part->openURL( url );
   }
+  else
+      return true;
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
