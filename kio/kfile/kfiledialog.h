@@ -256,7 +256,7 @@ public:
      * Sets the filter to be used to @p filter.
      *
      * You can set more
-     * filters for the user to select seperated by '\n'. Every
+     * filters for the user to select separated by '\n'. Every
      * filter entry is defined through namefilter|text to diplay.
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
