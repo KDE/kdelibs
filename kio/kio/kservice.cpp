@@ -116,8 +116,18 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Name");
   if ( m_strName.isEmpty() )
   {
-    m_bValid = false;
-    return;
+    if (config->readEntry( "Exec" ).isEmpty())
+    {
+      m_bValid = false;
+      return;
+    }
+    // Try to make up a name.
+    m_strName = entryPath();
+    int i = m_strName.findRev('/');
+    m_strName = m_strName.mid(i+1);
+    i = m_strName.findRev('.');
+    if (i != -1)
+       m_strName = m_strName.left(i);
   }
 
   m_strType = config->readEntry( "Type" );
