@@ -162,7 +162,7 @@ QString KCompletion::nextMatch()
 {
     QString completion;
     myLastMatch = myCurrentMatch;
-    
+
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.first();
@@ -173,7 +173,7 @@ QString KCompletion::nextMatch()
     }
 
     myLastMatch = myMatches[ myRotationIndex++ ];
-    
+
     if ( myRotationIndex == myMatches.count() -1 )
 	doBeep(); // indicate last matching item -> rotating
 
@@ -193,7 +193,7 @@ QString KCompletion::previousMatch()
 {
     QString completion;
     myLastMatch = myCurrentMatch;
-    
+
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.last();

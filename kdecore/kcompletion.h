@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -57,25 +57,26 @@ class QPopupMenu;
  *     the first (depending on sorting order) item. Iterating thru them is
  *     possible via @ref nextMatch() and @ref previousMatch().
  *
- * @li manual completion works the same way as auto-completion, the subtle
- *     difference is, that it isn't invoked automatically while the user
+ * @li manual completion works the same way as auto-completion, the
+ *     subtle difference is, that it isn't invoked automatically while the user
  *     is typing, but only when the user presses a special key. The difference
  *     of manual and auto-completion is therefore only visible in UI classes,
  *     KCompletion needs to know about whether to deliver partial matches
  *     (shell completion) or whole matches (auto/manual completion), therefore
- *     @ref KGlobalSettings::CompletionMan and @ref KGlobalSettings::CompletionAuto have the
- *     exact same effect in KCompletion.
+ *     @ref KGlobalSettings::CompletionMan and
+ *     @ref KGlobalSettings::CompletionAuto have the exact same effect in
+ *     KCompletion.
  *
  * @li shell completion works like how shells complete filenames.
- *     When multiple matches are available, the longest possible of all matches
- *     is returned (i.e. only a partial item).
+ *     When multiple matches are available, the longest possible string of all
+ *     matches is returned (i.e. only a partial item).
  *     Iterating thru all matching items (complete, not partial) is possible
  *     via @ref nextMatch() and @ref previousMatch().
  *
  * You don't have to worry much about that though, KCompletion handles
  * that for you, according to the setting @ref setCompletionMode().
  * The default setting is globally configured by the user and read
- * from @ref KGlobalSettings::completionMode.
+ * from @ref KGlobalSettings::completionMode().
  *
  * A short example:
  * <pre>
@@ -86,7 +87,7 @@ class QPopupMenu;
  * completion.addItem( "carpdjih@sp.zrz.tu-berlin.de" );
  * completion.addItem( "carp@cs.tu-berlin.de" );
  *
- * debug( completion.makeCompletion( "ca" ).local8Bit() );
+ * debug( completion.makeCompletion( "ca" ).latin1() );
  * </pre>
  * In shell-completion-mode, this will be "carp"; in auto-completion-
  * mode it will return "carp@cs.tu-berlin.de", as that is alphabetically
@@ -136,15 +137,16 @@ public:
      * Attempts to find an item in the list of available completions,
      * that begins with string. Will either return the first (if more than one
      * match) matching item or QString::null, if no match was found. In the
-     * latter case, a beep will be issued, depending on @ref isBeepEnabled().
-     * If a match was found, it will also be emitted via the signal @ref match().
+     * latter case, a beep will be issued, depending on @ref isSoundsEnabled().
+     * If a match was found, it will also be emitted via the signal
+     * @ref match().
      *
-     * If this is called twice or more often with the same string while no items
-     * were added or removed in the meantime, all available completions will be
-     * emitted via the signal @ref matches().
+     * If this is called twice or more often with the same string while no
+     * items were added or removed in the meantime, all available completions
+     * will be emitted via the signal @ref matches().
      * This happens only in shell-completion-mode.
      *
-     * @returns 	the matching item, or QString::null if there is no matching
+     * @returns the matching item, or QString::null if there is no matching
      * item.
      * @see #slotMakeCompletion
      */
@@ -154,7 +156,7 @@ public:
      * @returns the next item from the matching-items-list
      * When reaching the beginning, the list is rotated, so it will return
      * the last match. When there is no match, QString::null is returned and
-     * a beep will be issued, depending on @ref isBeepEnabled().
+     * a beep will be issued, depending on @ref isSoundsEnabled().
      * @see #slotPreviousMatch
      */
     QString previousMatch();
@@ -163,7 +165,7 @@ public:
      * @returns the previous item from the matching-items-list
      * When reaching the last item, the list is rotated, so it will return
      * the first match. When there is no match, QString::null is returned and
-     * a beep will be issued, depending on @ref isBeepEnabled().
+     * a beep will be issued, depending on @ref isSoundsEnabled().
      * @see #slotNextMatch
      */
     QString nextMatch();
@@ -186,11 +188,11 @@ public:
 
 
     /**
-     * Sets the completion mode to Auto/Manual (@ref KCompletion documentation),
-     * Shell or None.
+     * Sets the completion mode to Auto/Manual (see @ref KCompletion 
+     * documentation), Shell or None.
      * If you don't set the mode explicitly, the global default value
-     * KGlobalSettings::completionMode() is used. @ref KGlobalSettings::CompletionNone disables
-     * completion.
+     * KGlobalSettings::completionMode() is used.
+     * @ref KGlobalSettings::CompletionNone disables completion.
      * @see #completionMode
      * @see #KGlobalSettings::completionMode
      */
@@ -198,8 +200,8 @@ public:
 
     /**
      * @returns the current completion mode.
-     * May be different from @ref KGlobalSettings::completionMode(), if you explicitly
-     * called @ref setCompletionMode().
+     * May be different from @ref KGlobalSettings::completionMode(), if you
+     * explicitly called @ref setCompletionMode().
      * @see #setCompletionMode
      */
     KGlobalSettings::Completion completionMode() const { return myCompletionMode; }
@@ -232,8 +234,8 @@ public:
     //  bool ignoreCase() const { return myIgnoreCase; }
 
     /**
-     * @returns true if the completion-items are alphabetically sorted and false
-     * if the order of insertion is used.
+     * @returns true if the completion-items are alphabetically sorted and
+     * false if the order of insertion is used.
      * @see #setSorted
      */
     bool isSorted() const { return mySorting; }
