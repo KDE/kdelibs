@@ -39,6 +39,7 @@
 
 #include "netwm_p.h"
 
+#include <qapplication.h> // for QT_COPY_PATCH_0008
 
 // UTF-8 string
 static Atom UTF8_STRING = 0;
@@ -254,7 +255,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_USER_TIME",
 	    "_NET_WM_HANDLED_ICONS",
             "_KDE_STARTUP_ID",
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
  // SELI HACK
 #endif
 //            "_NET_STARTUP_ID",
@@ -1421,7 +1422,7 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
 }
 
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
 extern Time qt_x_last_input_time;
 void NETRootInfo::setActiveWindow(Window window) {
     setActiveWindow( window, FromUnknown, qt_x_last_input_time );
@@ -3001,7 +3002,7 @@ void NETWinInfo::setStartupId(const char* id) {
     if(p->startup_id) delete[] p->startup_id;
     p->startup_id = nstrdup(id);
     XChangeProperty(p->display, p->window, net_startup_id, XA_STRING, 8,
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
 // SELI HACK
 #endif
         PropModeReplace, reinterpret_cast< unsigned char* >( p->startup_id ),
@@ -3685,7 +3686,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         p->startup_id = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_startup_id, 0l,
 			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
 // SELI FOCUS HACK
 #endif
 			       &format_ret, &nitems_ret, &unused, &data_ret)

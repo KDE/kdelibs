@@ -54,7 +54,7 @@
 
 static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
 extern Time qt_x_last_input_time;
 #else
 extern Time qt_x_time;
@@ -197,7 +197,7 @@ void KWin::activateWindow( WId win, long time )
 {
     NETRootInfo info( qt_xdisplay(), 0 );
     if( time == 0 )
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
         time = qt_x_last_input_time;
 #else
         time = qt_x_time;
@@ -208,7 +208,7 @@ void KWin::activateWindow( WId win, long time )
 void KWin::setActiveWindow( WId win, long time )
 {
     NETRootInfo info( qt_xdisplay(), 0 );
-#ifdef KWIN_FOCUS
+#ifdef QT_COPY_PATCH_0008
         time = qt_x_last_input_time;
 #else
         time = qt_x_time;
