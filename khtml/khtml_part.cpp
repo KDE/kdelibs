@@ -1416,8 +1416,7 @@ void KHTMLPart::showError( KIO::Job* job )
     d->m_bJScriptForce = false;
     d->m_bJScriptOverride = true;*/
 
-    if ( KGlobal::locale()->defaultLanguage() == "en" ||
-         KGlobal::locale()->defaultLanguage().left(2) == "en_" ) {
+    if ( 0 ) {
       htmlError( job->error(), job->errorString(), d->m_workingURL );
     } else {
       begin();
@@ -1486,8 +1485,8 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   doc += i18n( "URL: %1" ).arg( url );
   doc += QString::fromLatin1( "</li><li>" );
   if ( protocol != QString::null ) {
-    doc += i18n( "Protocol: %1 - <a href=\"help://kioslave/%1\">click here</a>"
-                 " for documentation." ).arg( protocol ).arg( protocol );
+    // uncomment for 3.1... i18n change
+    // doc += i18n( "Protocol: %1" ).arg( protocol ).arg( protocol );
     doc += QString::fromLatin1( "</li><li>" );
   }
   doc += i18n( "Date and Time: %1" ).arg( datetime );
