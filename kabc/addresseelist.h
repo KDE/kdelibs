@@ -1,6 +1,7 @@
 /*
     This file is part of libkabc.
     Copyright (c) 2002 Jost Schenck <jost@schenck.de>
+                  2003 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -198,6 +199,8 @@ class AddresseeList : public QValueList<Addressee>
     Field* sortingField() const { return mActiveSortingField; }
 
   private:
+    void quickSortByField( int, int );
+
     bool mReverseSorting;
     SortingCriterion mActiveSortingCriterion;
     Field* mActiveSortingField;
@@ -206,4 +209,3 @@ class AddresseeList : public QValueList<Addressee>
 };
 
 #endif
-// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://

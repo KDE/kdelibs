@@ -1,6 +1,7 @@
 /*
     This file is part of libkabc.
     Copyright (c) 2002 Jost Schenck <jost@schenck.de>
+                  2003 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -216,36 +217,47 @@ void AddresseeList::sortByTrait()
 
 void AddresseeList::sortByField( Field *field )
 {
-  if ( field ) {
+  if ( field )
     mActiveSortingField = field;
-  }
+
   if ( !mActiveSortingField ) {
     kdWarning(5700) << "sortByField called with no active sort field" << endl;
     return;
   }
-  iterator i1 = begin();
-  iterator endIt = end();
-  --endIt;
-  if ( i1 == endIt ) // don't need sorting
+
+  if ( count() == 0 )
     return;
 
-  iterator i2 = endIt;
-  while( i1 != endIt ) {
-    iterator j1 = begin();
-    iterator j2 = j1;
-    ++j2;
-    while( j1 != i2 ) {
-      if ( !mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j2 ).upper(), mActiveSortingField->value( *j1 ).upper() ) < 0 )
-           || mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j1 ).upper(), mActiveSortingField->value( *j2 ).upper() ) < 0 ) ) {
-        qSwap( *j1, *j2 );
-      }
-      ++j1;
-      ++j2;
-    }
-    ++i1;
-    --i2;
-  }
+  quickSortByField( 0, count() - 1 );
 }
 
+void AddresseeList::quickSortByField( int left, int right )
+{
+  int i = left;
+  int j = right;
+  int mid = ( left + right ) / 2;
 
-// vim:tw=78 cin et sw=2 comments=sr\:/*,mb\:\ ,ex\:*/,\://
+  iterator x = at( mid );
+
+  do {
+    if ( !mReverseSorting ) {
+      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( i ) ).upper(), mActiveSortingField->value( *x ).upper() ) < 0 )
+        i++;
+      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( j ) ).upper(), mActiveSortingField->value( *x ).upper() ) > 0 )
+        j--;
+    } else {
+      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( i ) ).upper(), mActiveSortingField->value( *x ).upper() ) > 0 )
+        i++;
+      while ( QString::localeAwareCompare( mActiveSortingField->value( *at( j ) ).upper(), mActiveSortingField->value( *x ).upper() ) < 0 )
+        j--;
+    }
+    if ( i <= j ) {
+      qSwap( *at( i ), *at( j ) );
+      i++;
+      j--;
+    }
+  } while ( i <= j );
+
+  if ( left < j ) quickSortByField( left, j );
+  if ( right > i ) quickSortByField( i, right );
+}
