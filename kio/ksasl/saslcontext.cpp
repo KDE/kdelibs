@@ -91,7 +91,8 @@ void KSASLContext::loadModules ()
 		KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());
 		if (!factory) continue;
 		KSASLAuthModule *module = reinterpret_cast<KSASLAuthModule*>(factory->create(0, (*it)->desktopEntryName().latin1(), "KSASLModule"));
-		if ( module )
+		if ( module ) {
 			m_lstModules.append( module );
+		}
 	}
 }
