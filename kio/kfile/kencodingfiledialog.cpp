@@ -46,6 +46,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   setOperationMode( type );
     
   KToolBar *tb = toolBar();
+  tb->insertSeparator();
   int index = tb->insertCombo(QStringList(), -1 /*id*/, false /*writable*/, 0 /*signal*/, 0 /*receiver*/, 0 /*slot*/ );
   d->encoding = tb->getCombo( tb->idAt( index ) );
   if ( !d->encoding )
