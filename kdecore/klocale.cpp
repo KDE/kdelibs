@@ -67,15 +67,15 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
   d = new KLocalePrivate;
   d->config = config;
 
+  initCatalogue(catalogue);
+  initEncoding(0);
+  initFileNameEncoding(0);
+
   KConfig *cfg = d->config;
   this_klocale = this;
   if (!cfg) cfg = KGlobal::instance()->config();
   this_klocale = 0;
   Q_ASSERT( cfg );
-
-  initEncoding(cfg);
-  initCatalogue(catalogue);
-  initFileNameEncoding(cfg);
 
   if (m_language.isEmpty())
      initLanguage(cfg, config == 0);
@@ -1648,7 +1648,7 @@ bool KLocale::useDefaultLanguage() const
   return language() == defaultLanguage();
 }
 
-void KLocale::initEncoding(KConfig *config)
+void KLocale::initEncoding(KConfig *)
 {
   const int mibDefault = 4; // ISO 8859-1
 
@@ -1664,7 +1664,7 @@ void KLocale::initEncoding(KConfig *config)
   Q_ASSERT( d->codecForEncoding );
 }
 
-void KLocale::initFileNameEncoding(KConfig *config)
+void KLocale::initFileNameEncoding(KConfig *)
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
