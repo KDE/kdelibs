@@ -70,53 +70,44 @@ namespace KJS {
     virtual List eventHandlerScope(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    DOM::HTMLElement toElement() const { return static_cast<DOM::HTMLElement>(node); }
   };
 
 
   class HTMLElementFunction : public DOMFunction {
   public:
-    HTMLElementFunction(DOM::HTMLElement e, int i)
-        : DOMFunction(), element(e), id(i) { };
+    HTMLElementFunction(ExecState *exec, int i, int len);
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
     enum { Submit, Reset, Add, Remove, Blur, Focus, Select, Click,
            CreateTHead, DeleteTHead, CreateTFoot, DeleteTFoot,
            CreateCaption, DeleteCaption, InsertRow, DeleteRow,
            InsertCell, DeleteCell };
   private:
-    DOM::HTMLElement element;
     int id;
   };
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
+    HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
+    enum { Item, NamedItem, Tags };
+    DOM::HTMLCollection toCollection() const { return collection; }
   protected:
     DOM::HTMLCollection collection;
   };
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    HTMLSelectCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
-      : HTMLCollection(c), element(e) { }
+    HTMLSelectCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+      : HTMLCollection(exec, c), element(e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
   private:
     DOM::Element dummyElement();
     DOM::HTMLSelectElement element;
-  };
-
-  class HTMLCollectionFunc : public DOMFunction {
-  public:
-    HTMLCollectionFunc(DOM::HTMLCollection c, int i)
-        : DOMFunction(), coll(c), id(i) { };
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { Item, NamedItem, Tags };
-  private:
-    DOM::HTMLCollection coll;
-    int id;
   };
 
   ////////////////////// Option Object ////////////////////////
@@ -132,16 +123,6 @@ namespace KJS {
 
   ////////////////////// Image Object ////////////////////////
 
-#if 0
-  class ImageObject : public DOMFunction {
-  public:
-    ImageObject(const Global &global);
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-  private:
-    UString src;
-  };
-#endif
-
   class ImageConstructorImp : public ObjectImp {
   public:
     ImageConstructorImp(ExecState *exec, const DOM::Document &d);
@@ -156,16 +137,20 @@ namespace KJS {
     Image(const DOM::Document &d) : doc(d), img(0) { }
     ~Image();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { Src, Complete };
   private:
     UString src;
     DOM::Document doc;
     khtml::CachedImage* img;
   };
 
-  Value getHTMLCollection(DOM::HTMLCollection c);
-  Value getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e);
+  Value getHTMLCollection(ExecState *exec, DOM::HTMLCollection c);
+  Value getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e);
 
 
 }; // namespace

@@ -114,9 +114,9 @@ namespace KJS {
     if (!entry) // not found, forward to parent
       return thisObj->ParentImp::tryGet(exec, propertyName);
 
-    //fprintf(stderr, "lookupOrCreate: found value=%d attr=%d\n", entry->value, entry->attr);
+    //fprintf(stderr, "DOMObjectLookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry);
     return thisObj->getValue(exec, entry->value);
   }
 
@@ -124,17 +124,17 @@ namespace KJS {
    * Simplified version of DOMObjectLookupGet in case there are only functions.
    * Using this instead of DOMObjectLookupGet prevents 'this' from implementing a dummy getValue.
    */
-  template <class FuncImp, class ThisImp, class ParentImp>
+  template <class FuncImp, class ParentImp>
   inline Value DOMObjectLookupGetFunction(ExecState *exec, const UString &propertyName,
-                         const HashTable* table, const ThisImp* thisObj)
+                         const HashTable* table, const ObjectImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::tryGet(exec, propertyName);
+      return static_cast<const ParentImp *>(thisObj)->ParentImp::tryGet(exec, propertyName);
 
     if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry);
 
     fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
     return Undefined();
@@ -214,6 +214,7 @@ namespace KJS {
    * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
    */
 #define DEFINE_PROTOTYPE(ClassName,ClassProto) \
+  namespace KJS { \
   class ClassProto : public ObjectImp { \
     friend Object cacheGlobalObject<ClassProto>(ExecState *exec, const UString &propertyName); \
   public: \
@@ -231,29 +232,30 @@ namespace KJS {
     Value get(ExecState *exec, const UString &propertyName) const; \
     bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const; \
   }; \
-  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 };
+  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
+  };
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
-    Value ClassProto::get(ExecState *exec, const UString &propertyName) const \
+    Value KJS::ClassProto::get(ExecState *exec, const UString &propertyName) const \
     { \
       /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
-      return lookupGetFunction<ClassFunc,ClassProto,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+      return lookupGetFunction<ClassFunc,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
     } \
-    bool ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
     { /*stupid but we need this to have a common macro for the declaration*/ \
       return ObjectImp::hasProperty(exec, propertyName, recursive ); \
     }
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
-    Value ClassProto::get(ExecState *exec, const UString &propertyName) const \
+    Value KJS::ClassProto::get(ExecState *exec, const UString &propertyName) const \
     { \
       /*fprintf( stderr, "%sProto::get(%s) [in macro]\n", info.className, propertyName.ascii());*/ \
-      Value val = lookupGetFunction<ClassFunc,ClassProto,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+      Value val = lookupGetFunction<ClassFunc,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
       if ( val.type() != UndefinedType ) return val; \
       /* Not found -> forward request to "parent" prototype */ \
       return ParentProto::self(exec).get( exec, propertyName ); \
     } \
-    bool ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
     { \
       if ( ObjectImp::hasProperty(exec, propertyName, recursive ) ) \
         return true; \
@@ -261,6 +263,7 @@ namespace KJS {
     }
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \
+  namespace KJS { \
   class ClassFunc : public DOMFunction { \
   public: \
     ClassFunc(ExecState *exec, int i, int len) \
@@ -272,6 +275,7 @@ namespace KJS {
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \
   private: \
     int id; \
+  }; \
   };
 
 }; // namespace

@@ -476,6 +476,7 @@ DOMNodeList::~DOMNodeList()
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
+// ## this breaks "for (..in..)" though.
 bool DOMNodeList::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
   if (p == "length" || p == "item")
@@ -492,11 +493,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
   else if (p == "item") {
     // No need for a complete hashtable for a single func, but we still want
     // to use the caching feature of lookupOrCreateFunction.
-    HashEntry entry;
-    entry.value = DOMNodeListFunc::Item;
-    entry.params = 1;
-    entry.attr = DontDelete|Function;
-    result = lookupOrCreateFunction<DOMNodeListFunc, DOMNodeList>(exec, p, this, &entry);
+    result = lookupOrCreateFunction<DOMNodeListFunc>(exec, p, this, DOMNodeListFunc::Item, 1, DontDelete|Function);
     //result = new DOMNodeListFunc(exec, DOMNodeListFunc::Item, 1);
   }
   else {
@@ -1008,6 +1005,7 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'length'
+// ## this breaks "for (..in..)" though.
 bool DOMNamedNodeMap::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
   if (p == "length")

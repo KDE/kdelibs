@@ -17,20 +17,20 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "linkColor", HTMLDocument::LinkColor, DontDelete|ReadOnly, 0, 0 },
    { "domain", HTMLDocument::Domain, DontDelete|ReadOnly, 0, 0 },
    { "height", HTMLDocument::Height, DontDelete|ReadOnly, 0, 0 },
-   { "cookie", HTMLDocument::Cookie, DontDelete|ReadOnly, 0, 0 },
+   { "cookie", HTMLDocument::Cookie, DontDelete, 0, 0 },
    { "alinkColor", HTMLDocument::AlinkColor, DontDelete|ReadOnly, 0, 0 },
    { "getElementsByName", HTMLDocument::GetElementsByName, DontDelete|ReadOnly|Function, 1, 0 },
    { "applets", HTMLDocument::Applets, DontDelete|ReadOnly|Function, 0, &HTMLDocumentTableEntries[35] },
    { "links", HTMLDocument::Links, DontDelete|ReadOnly|Function, 0, 0 },
-   { "title", HTMLDocument::Title, DontDelete|ReadOnly, 0, 0 },
-   { "location", HTMLDocument::Location, DontDelete|ReadOnly, 0, 0 },
+   { "title", HTMLDocument::Title, DontDelete, 0, 0 },
+   { "location", HTMLDocument::Location, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "referrer", HTMLDocument::Referrer, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[31] },
    { 0, 0, 0, 0, 0 },
    { "URL", HTMLDocument::URL, DontDelete|ReadOnly, 0, 0 },
-   { "body", HTMLDocument::Body, DontDelete|ReadOnly, 0, 0 },
+   { "body", HTMLDocument::Body, DontDelete, 0, 0 },
    { "write", HTMLDocument::Write, DontDelete|ReadOnly|Function, 1, &HTMLDocumentTableEntries[34] },
    { "writeln", HTMLDocument::WriteLn, DontDelete|ReadOnly|Function, 1, 0 },
    { "getElementById", HTMLDocument::GetElementById, DontDelete|ReadOnly|Function, 1, &HTMLDocumentTableEntries[32] },
@@ -42,5 +42,30 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
 };
 
 const struct HashTable HTMLDocumentTable = { 2, 36, HTMLDocumentTableEntries, 31 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry HTMLCollectionProtoTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "namedItem", HTMLCollection::NamedItem, DontDelete|Function, 1, 0 },
+   { "item", HTMLCollection::Item, DontDelete|Function, 1, &HTMLCollectionProtoTableEntries[3] },
+   { "tags", HTMLCollection::Tags, DontDelete|Function, 1, 0 }
+};
+
+const struct HashTable HTMLCollectionProtoTable = { 2, 4, HTMLCollectionProtoTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry ImageTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "src", Image::Src, DontDelete, 0, 0 },
+   { "complete", Image::Complete, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable ImageTable = { 2, 3, ImageTableEntries, 3 };
 
 }; // namespace

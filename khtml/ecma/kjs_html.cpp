@@ -82,7 +82,7 @@ Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
     return Undefined();
   }
 
-  Object tmp(new KJS::HTMLCollection(coll));
+  Object tmp(new KJS::HTMLCollection(exec, coll));
 
   return tmp.get(exec, p);
 }
@@ -420,7 +420,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       DOM::HTMLFormElement form = element;
       DOM::Node n = form.elements().namedItem(p.string());
       if(!n.isNull())  return getDOMNode(exec,n);
-      else if (p == "elements")        return getHTMLCollection(form.elements());
+      else if (p == "elements")        return getHTMLCollection(exec,form.elements());
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
       else if (p == "acceptCharset")   return getString(form.acceptCharset());
@@ -429,8 +429,8 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "method")          return getString(form.method());
       else if (p == "target")          return getString(form.target());
       // methods
-      else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
-      else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
+      else if (p == "submit")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Submit,0,DontDelete|Function);
+      else if (p == "reset")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Reset,0,DontDelete|Function);
       else
         return DOMElement::tryGet(exec, p);
     }
@@ -442,17 +442,17 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "value")           return getString(select.value());
       else if (p == "length")          return Number(select.length());
       else if (p == "form")            return getDOMNode(exec,select.form()); // type HTMLFormElement
-      else if (p == "options")         return getSelectHTMLCollection(select.options(), select); // type HTMLCollection
+      else if (p == "options")         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
       else if (p == "name")            return getString(select.name());
       else if (p == "size")            return Number(select.size());
       else if (p == "tabIndex")        return Number(select.tabIndex());
       // methods
-      else if (p == "add")             return new HTMLElementFunction(element,HTMLElementFunction::Add);
-      else if (p == "remove")          return new HTMLElementFunction(element,HTMLElementFunction::Remove);
-      else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
-      else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
+      else if (p == "add")             return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Add,2,DontDelete|Function);
+      else if (p == "remove")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Remove,1,DontDelete|Function);
+      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
+      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
       else {
 	bool ok;
 	uint u = p.toULong(&ok);
@@ -510,10 +510,10 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "useMap")          return getString(input.useMap());
       else if (p == "value")           return getString(input.value());
       // methods
-      else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
-      else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
-      else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
-      else if (p == "click")           return new HTMLElementFunction(element,HTMLElementFunction::Click);
+      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
+      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
+      else if (p == "select")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Select,0,DontDelete|Function);
+      else if (p == "click")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Click,0,DontDelete|Function);
       else {
         // ### SLOOOOOOOW
         bool ok;
@@ -542,9 +542,9 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "type")            return getString(textarea.type());
       else if (p == "value")           return getString(textarea.value());
       // methods
-      else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
-      else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
-      else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
+      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
+      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
+      else if (p == "select")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Select,0,DontDelete|Function);
     }
     break;
     case ID_BUTTON: {
@@ -703,8 +703,8 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "text")            return getString(anchor.innerHTML());
       else if (p == "type")            return getString(anchor.type());
       // methods
-      else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
-      else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
+      else if (p == "blur")            return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Blur,0,DontDelete|Function);
+      else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
     }
     break;
     case ID_IMG: {
@@ -773,7 +773,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_MAP: {
       DOM::HTMLMapElement map = element;
-      if      (p == "areas")           return getHTMLCollection(map.areas()); // type HTMLCollection
+      if      (p == "areas")           return getHTMLCollection(exec, map.areas()); // type HTMLCollection
       else if (p == "name")            return getString(map.name());
     }
     break;
@@ -820,8 +820,8 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       if      (p == "caption")         return getDOMNode(exec,table.caption()); // type HTMLTableCaptionElement
       else if (p == "tHead")           return getDOMNode(exec,table.tHead()); // type HTMLTableSectionElement
       else if (p == "tFoot")           return getDOMNode(exec,table.tFoot()); // type HTMLTableSectionElement
-      else if (p == "rows")            return getHTMLCollection(table.rows()); // type HTMLCollection
-      else if (p == "tBodies")         return getHTMLCollection(table.tBodies()); // type HTMLCollection
+      else if (p == "rows")            return getHTMLCollection(exec,table.rows()); // type HTMLCollection
+      else if (p == "tBodies")         return getHTMLCollection(exec,table.tBodies()); // type HTMLCollection
       else if (p == "align")           return getString(table.align());
       else if (p == "bgColor")         return getString(table.bgColor());
       else if (p == "border")          return getString(table.border());
@@ -832,14 +832,14 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "summary")         return getString(table.summary());
       else if (p == "width")           return getString(table.width());
       // methods
-      else if (p == "createTHead")     return new HTMLElementFunction(element,HTMLElementFunction::CreateTHead);
-      else if (p == "deleteTHead")     return new HTMLElementFunction(element,HTMLElementFunction::DeleteTHead);
-      else if (p == "createTFoot")     return new HTMLElementFunction(element,HTMLElementFunction::CreateTFoot);
-      else if (p == "deleteTFoot")     return new HTMLElementFunction(element,HTMLElementFunction::DeleteTFoot);
-      else if (p == "createCaption")   return new HTMLElementFunction(element,HTMLElementFunction::CreateCaption);
-      else if (p == "deleteCaption")   return new HTMLElementFunction(element,HTMLElementFunction::DeleteCaption);
-      else if (p == "insertRow")       return new HTMLElementFunction(element,HTMLElementFunction::InsertRow);
-      else if (p == "deleteRow")       return new HTMLElementFunction(element,HTMLElementFunction::DeleteRow);
+      else if (p == "createTHead")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateTHead,0,DontDelete|Function);
+      else if (p == "deleteTHead")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteTHead,0,DontDelete|Function);
+      else if (p == "createTFoot")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateTFoot,0,DontDelete|Function);
+      else if (p == "deleteTFoot")     return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteTFoot,0,DontDelete|Function);
+      else if (p == "createCaption")   return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::CreateCaption,0,DontDelete|Function);
+      else if (p == "deleteCaption")   return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteCaption,0,DontDelete|Function);
+      else if (p == "insertRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertRow,1,DontDelete|Function);
+      else if (p == "deleteRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteRow,1,DontDelete|Function);
     }
     break;
     case ID_CAPTION: {
@@ -865,25 +865,25 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "ch")              return getString(tableSection.ch());
       else if (p == "chOff")           return getString(tableSection.chOff());
       else if (p == "vAlign")          return getString(tableSection.vAlign());
-      else if (p == "rows")            return getHTMLCollection(tableSection.rows()); // type HTMLCollection
+      else if (p == "rows")            return getHTMLCollection(exec,tableSection.rows()); // type HTMLCollection
       // methods
-      else if (p == "insertRow")       return new HTMLElementFunction(element,HTMLElementFunction::InsertRow);
-      else if (p == "deleteRow")       return new HTMLElementFunction(element,HTMLElementFunction::DeleteRow);
+      else if (p == "insertRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertRow,1,DontDelete|Function);
+      else if (p == "deleteRow")       return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteRow,1,DontDelete|Function);
     }
     break;
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if      (p == "rowIndex")        return Number(tableRow.rowIndex());
       else if (p == "sectionRowIndex") return Number(tableRow.sectionRowIndex());
-      else if (p == "cells")           return getHTMLCollection(tableRow.cells()); // type HTMLCollection
+      else if (p == "cells")           return getHTMLCollection(exec,tableRow.cells()); // type HTMLCollection
       else if (p == "align")           return getString(tableRow.align());
       else if (p == "bgColor")         return getString(tableRow.bgColor());
       else if (p == "ch")              return getString(tableRow.ch());
       else if (p == "chOff")           return getString(tableRow.chOff());
       else if (p == "vAlign")          return getString(tableRow.vAlign());
       // methods
-      else if (p == "insertCell")       return new HTMLElementFunction(element,HTMLElementFunction::InsertCell);
-      else if (p == "deleteCell")       return new HTMLElementFunction(element,HTMLElementFunction::DeleteCell);
+      else if (p == "insertCell")      return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::InsertCell,1,DontDelete|Function);
+      else if (p == "deleteCell")      return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::DeleteCell,1,DontDelete|Function);
     }
     break;
     case ID_TH:
@@ -1014,8 +1014,16 @@ List KJS::HTMLElement::eventHandlerScope(ExecState *exec) const
   return scope;
 }
 
-Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &args)
+HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
+  : DOMFunction(), id(i)
 {
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
   Value result;
 
   switch (element.elementId()) {
@@ -1250,7 +1258,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       if (p == "selectedIndex")        { select.setSelectedIndex(v.toNumber(exec).intValue()); return; }
       else if (p == "value")           { select.setValue(str); return; }
       else if (p == "length")          { // read-only according to the NS spec, but webpages need it writeable
-                                         Object coll = Object::dynamicCast( getSelectHTMLCollection(select.options(), select) );
+                                         Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
                                          if ( !coll.isNull() )
                                            coll.put(exec,p,v);
                                          return;
@@ -1705,25 +1713,41 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
 }
 
 // -------------------------------------------------------------------------
+/* Source for HMTLCollectionProtoTable. Use "make hashtables" to regenerate.
+@begin HTMLCollectionProtoTable 3
+  item		HTMLCollection::Item		DontDelete|Function 1
+  namedItem	HTMLCollection::NamedItem	DontDelete|Function 1
+  tags		HTMLCollection::Tags		DontDelete|Function 1
+@end
+*/
+DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
+IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
+IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
+
+//const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
+
+HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) { }
 
 HTMLCollection::~HTMLCollection()
 {
   htmlCollections.remove(collection.handle());
 }
 
-Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &p) const
+// We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
+// ## this breaks "for (..in..)" though.
+bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
-  Value result;
+  if (p == "selectedIndex" || p == "length")
+    return true;
+  return DOMObject::hasProperty(exec,p,recursive);
+}
 
-  if (p == "length")
-    result = Number(collection.length());
-  else if (p == "item")
-    result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::Item);
-  else if (p == "namedItem")
-    result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::NamedItem);
-  else if ( p == "tags" )
-    result = new HTMLCollectionFunc( collection,  HTMLCollectionFunc::Tags );
-  else if (p == "selectedIndex" &&
+Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) const
+{
+  if (propertyName == "length")
+    return Number(collection.length());
+  else if (propertyName == "selectedIndex" &&
 	   collection.item(0).elementId() == ID_OPTION) {
     // NON-STANDARD options.selectedIndex
     DOM::Node node = collection.item(0).parentNode();
@@ -1734,46 +1758,46 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &p) const
       }
       node = node.parentNode();
     }
-    result = Undefined();
+    return Undefined();
   } else {
+    // Look in the prototype (for functions) before assuming it's an item's name
+    Object proto = Object::dynamicCast(prototype());
+    if (!proto.isNull() && proto.hasProperty(exec,propertyName))
+      return proto.get(exec,propertyName);
+
     DOM::Node node;
     DOM::HTMLElement element;
 
     // name or index ?
     bool ok;
-    unsigned int u = p.toULong(&ok);
+    unsigned int u = propertyName.toULong(&ok);
     if (ok)
       node = collection.item(u);
     else
-      node = collection.namedItem(p.string());
+      node = collection.namedItem(propertyName.string());
 
     element = node;
-    result = getDOMNode(exec,element);
+    return getDOMNode(exec,element);
   }
-
-  return result;
 }
 
-Value KJS::HTMLCollectionFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
+  DOM::HTMLCollection coll = static_cast<HTMLCollection *>(thisObj.imp())->toCollection();
 
   switch (id) {
-  case Item:
-    result = getDOMNode(exec,coll.item(args[0].toUInt32(exec)));
-    break;
-  case Tags:
+  case KJS::HTMLCollection::Item:
+    return getDOMNode(exec,coll.item(args[0].toUInt32(exec)));
+  case KJS::HTMLCollection::Tags:
   {
     DOM::HTMLElement e = coll.base();
-    result = getDOMNodeList(exec, e.getElementsByTagName( args[0].toString(exec).value().string() ) );
-    break;
+    return getDOMNodeList(exec, e.getElementsByTagName( args[0].toString(exec).value().string() ) );
   }
-  case NamedItem:
-    result = getDOMNode(exec,coll.namedItem(args[0].toString(exec).value().string()));
-    break;
+  case KJS::HTMLCollection::NamedItem:
+    return getDOMNode(exec,coll.namedItem(args[0].toString(exec).value().string()));
+  default:
+    return Undefined();
   }
-
-  return result;
 }
 
 Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const UString &p) const
@@ -1891,22 +1915,6 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
 
 ////////////////////// Image Object ////////////////////////
 
-#if 0
-ImageObject::ImageObject(const Global& global)
-{
-  Constructor ctor(new ImageConstructor(global));
-  setConstructor(ctor);
-  setPrototype(global.objectPrototype());
-
-  put("length", Number(2), DontEnum);
-}
-
-Value ImageObject::tryCall(ExecState *exec, Object &thisObj, const List &args)
-{
-  return ...;
-}
-#endif
-
 ImageConstructorImp::ImageConstructorImp(ExecState *, const DOM::Document &d)
     : ObjectImp(), doc(d)
 {
@@ -1927,22 +1935,36 @@ Object ImageConstructorImp::construct(ExecState *, const List &)
   return result;
 }
 
-Value Image::tryGet(ExecState *exec, const UString &p) const
+const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
+
+/* Source for ImageTable. Use "make hashtables" to regenerate.
+@begin ImageTable 3
+  src		Image::Src		DontDelete
+  complete	Image::Complete		DontDelete|ReadOnly
+@end
+*/
+
+Value Image::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  Value result;
+  return DOMObjectLookupGetValue<Image,DOMObject>(exec, propertyName, &ImageTable, this);
+}
 
-  if (p == "src")
-    result = String(src);
-  else if (p == "complete")
-    result = Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
-  else
-    result = DOMObject::tryGet(exec, p);
-
-  return result;
+Value Image::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case Src:
+    return String(src);
+  case Complete:
+    return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
+  default:
+    kdWarning() << "Image::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 void Image::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
+  // Not worth using the hashtable
   if (propertyName == "src") {
     String str = value.toString(exec);
     src = str.value();
@@ -1959,7 +1981,7 @@ Image::~Image()
   if ( img ) img->deref(this);
 }
 
-Value KJS::getHTMLCollection(DOM::HTMLCollection c)
+Value KJS::getHTMLCollection(ExecState *exec,DOM::HTMLCollection c)
 {
   HTMLCollection *ret;
   if (c.isNull())
@@ -1967,13 +1989,13 @@ Value KJS::getHTMLCollection(DOM::HTMLCollection c)
   else if ((ret = htmlCollections[c.handle()]))
     return ret;
   else {
-    ret = new HTMLCollection(c);
+    ret = new HTMLCollection(exec,c);
     htmlCollections.insert(c.handle(),ret);
     return ret;
   }
 }
 
-Value KJS::getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+Value KJS::getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
 {
   HTMLCollection *ret;
   if (c.isNull())
@@ -1981,7 +2003,7 @@ Value KJS::getSelectHTMLCollection(DOM::HTMLCollection c, DOM::HTMLSelectElement
   else if ((ret = htmlCollections[c.handle()]))
     return ret;
   else {
-    ret = new HTMLSelectCollection(c, e);
+    ret = new HTMLSelectCollection(exec, c, e);
     htmlCollections.insert(c.handle(),ret);
     return ret;
   }
