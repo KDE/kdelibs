@@ -21,35 +21,27 @@ class KGuiItem;
 #ifndef __kstdguiitem_h
 #define __kstdguiitem_h
 
+#include <qstring.h>
+
 class KStdGuiItem
 {
  public:
   enum StdItem {
     Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-    Apply,NULL1,
-    NULL2, NULL3, NULL4, NULL5, NULL6, NULL7, NULL8, NULL9,
-    NULL10, NULL11, NULL12, NULL13, NULL14, NULL15, NULL16,
-    NULL17, NULL18, NULL19, NULL20
+    Apply
   };
-
-  KStdGuiItem();
-  ~KStdGuiItem();
-  static KGuiItem guiitem( StdItem ui_enum);
-
-  static const char* stdItem( StdItem ui_enum );
-  static KGuiItem ok( );
-  static KGuiItem cancel( );
+  static KGuiItem guiItem ( StdItem ui_enum );
+  static QString  stdItem ( StdItem ui_enum );
+  static KGuiItem ok();
+  static KGuiItem cancel();
   static KGuiItem yes();
   static KGuiItem no();
   static KGuiItem discard();
   static KGuiItem save();
-  static KGuiItem dontsave();
-  static KGuiItem saveas();
+  static KGuiItem dontSave();
+  static KGuiItem saveAs();
   static KGuiItem apply();
 
- private:
-  class KStdGuiItemPrivate;
-  KStdGuiItem *d;
 };
-#endif
 
+#endif

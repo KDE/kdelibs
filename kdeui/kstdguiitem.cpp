@@ -18,102 +18,93 @@
 
 #include "kstdguiitem.h"
 
-#include <kaction.h>
 #include <kiconloader.h>
 #include <kguiitem.h>
 #include <klocale.h>
 
 #include <qiconset.h>
 
-KStdGuiItem::KStdGuiItem()
+KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
 {
+  switch (ui_enum ) {
+  case Ok       : return ok();
+  case Cancel   : return cancel();
+  case Yes      : return yes();
+  case No       : return no();
+  case Discard  : return discard();
+  case Save     : return save();
+  case DontSave : return dontSave();
+  case SaveAs   : return saveAs();
+  case Apply    : return apply();
+  default       : return KGuiItem(); 
+  };
 }
 
-KStdGuiItem::~KStdGuiItem()
+QString KStdGuiItem::stdItem( StdItem ui_enum ) 
 {
-}
-KGuiItem KStdGuiItem::guiitem( StdItem ui_enum )
-{
-  KGuiItem item;
-  switch(ui_enum ) 
-  {
-  case Ok:
-    item = ok();
-    break;
-  case Cancel:
-    item = cancel();
-    break;
-  case Yes:
-    item = yes();
-    break;
-  case No:
-    item = no();
-    break;
-  case Discard:
-    item = discard();
-    break;
-  case Save:
-    item = save();
-    break;
-  case DontSave:
-    item = dontsave();
-    break;
-  case SaveAs:
-    item = saveas();
-    break;
-  case Apply:
-    item = apply();
-  default:
-    item=KGuiItem();
-  }
-  return item;
+  switch (ui_enum ) {
+  case Ok       : return QString::fromLatin1("ok");
+  case Cancel   : return QString::fromLatin1("cancel");
+  case Yes      : return QString::fromLatin1("yes");
+  case No       : return QString::fromLatin1("no");
+  case Discard  : return QString::fromLatin1("discard");
+  case Save     : return QString::fromLatin1("save");
+  case DontSave : return QString::fromLatin1("dontSave");
+  case SaveAs   : return QString::fromLatin1("saveAs");
+  case Apply    : return QString::fromLatin1("apply");
+  default       : return QString::null; 
+  };
 }
 
-const char* KStdGuiItem::stdItem(StdItem ui_enum )
+KGuiItem KStdGuiItem::ok()
 {
-  const char *ret;
-  switch (ui_enum)
-  {
-  case Ok:
-    ret = "ok";
-    break;
-  default:
-    ret = "";
-    break;
-  }
-  return ret;
+  return KGuiItem(i18n("&OK"), QIconSet(), "ok", i18n("Acceot settings"),
+          i18n(""  "If you press the <b>OK<b> button, all changes\n"
+                    "you made will be used to proceed ") );
 }
 
-KGuiItem KStdGuiItem::ok() {
-  return KGuiItem(i18n("&OK"), QIconSet(), "ok",i18n("Accept settings"), i18n( "" "If you press the <b>OK</b> button, all changes\n you made will be used to proceed" )    );
+KGuiItem KStdGuiItem::cancel()
+{
+  return KGuiItem(i18n("&Cancel"), QIconSet(), "cancel", i18n("Cancel operation") );
 }
 
-KGuiItem KStdGuiItem::cancel(){
-  return KGuiItem(i18n("&Cancel"), QIconSet(), "cancel" );
-}
-KGuiItem KStdGuiItem::yes(){
+KGuiItem KStdGuiItem::yes()
+{
   return KGuiItem(i18n("&Yes"), QIconSet(), "yes" );
 }
-KGuiItem KStdGuiItem::no(){
-  return KGuiItem(i18n("&No"), QIconSet(), "no" );
+
+KGuiItem KStdGuiItem::no()
+{
+  return KGuiItem(i18n("&No"), QIconSet(), "no"  );
 }
-KGuiItem KStdGuiItem::discard(){
-  return KGuiItem(i18n("&Discard") );
+
+KGuiItem KStdGuiItem::discard()
+{
+  return KGuiItem(i18n("&Discard"), QIconSet(), "discard", i18n("Discard changes"),
+          i18n("Pressing this button will discard all recent changes") );
 }
-KGuiItem KStdGuiItem::save(){
-  return KGuiItem(i18n("&Save") );
+
+KGuiItem KStdGuiItem::save()
+{
+  return KGuiItem(i18n("&Save"), QIconSet(), "save", i18n("Save data") );
 }
-KGuiItem KStdGuiItem::dontsave(){
-  return KGuiItem(i18n("&Don't save") );
+
+KGuiItem KStdGuiItem::dontSave()
+{
+  return KGuiItem(i18n("&Don't save"), QIconSet(), "dontSave", i18n("Don't save data") );
 }
-KGuiItem KStdGuiItem::saveas(){
-  return KGuiItem(i18n("&Save As") );
+
+KGuiItem KStdGuiItem::saveAs()
+{
+  return KGuiItem(i18n("Save &As..."), QIconSet(), "saveAs" );
 }
-KGuiItem KStdGuiItem::apply(){
+
+KGuiItem KStdGuiItem::apply()
+{
   return KGuiItem(i18n("&Apply"), QIconSet(), "apply", i18n("Apply settings"),
-  i18n( ""
-    "When clicking <b>Apply</b>, the settings will be\n"
-    "handed over to the program, but the dialog\n"
-    "will not be closed. "
-    "Use this to try different settings. ") );
+          i18n(""
+               "When clicking <b>Apply<b>, the settings will be\n"
+               "handed over to the program, but the dialog\n"
+               "will no be closed. "
+               "Use this to try different settings. " ) );
 }
