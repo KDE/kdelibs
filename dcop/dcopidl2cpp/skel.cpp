@@ -152,7 +152,9 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "::functions()" << endl;
 	    str << "{" << endl;
 	    if (!DCOPParent.isEmpty()) {
-		str << "    return " << DCOPParent << "::functions() + " << endl;
+		str << "    return " << DCOPParent << "::functions() " << endl;
+		if (!funcNames.isEmpty())
+			str << " + " << endl;
 	    } else {
 		str << "    return " << endl;
 	    }
