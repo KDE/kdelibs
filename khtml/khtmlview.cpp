@@ -1495,7 +1495,7 @@ void KHTMLView::print(bool quick)
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(false);
-        printer->setCreator("KDE 3.0 HTML Library");
+        printer->setCreator(QString("KDE %1.%2.%3 HTML Library").arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE));
         printer->setDocName(docname);
 
         QPainter *p = new QPainter;
