@@ -392,7 +392,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
         default:
             return KThemeBase::pixelMetric ( metric, widget );
     }
-};
+}
 
 
 

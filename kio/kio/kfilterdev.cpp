@@ -70,7 +70,7 @@ QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
 
    base->setDevice(file);
    return new KFilterDev(base);
-};
+}
 #endif
 
 //static

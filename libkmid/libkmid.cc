@@ -199,65 +199,65 @@ const char *KMidSimpleAPI::kMidCopyright(void)
 int kMidInit(void)
 {
   return KMidSimpleAPI::kMidInit();
-};
+}
 
 int kMidLoad(const char *filename)
 {
   return KMidSimpleAPI::kMidLoad(filename);
-};
+}
 
 int kMidPlay(void)
 {
   return KMidSimpleAPI::kMidPlay();
-};
+}
 
 int kMidStop(void)
 {
   return KMidSimpleAPI::kMidStop();
-};
+}
 
 void kMidDestruct(void)
 {
   KMidSimpleAPI::kMidDestruct();
-};
+}
 
 int kMidIsPlaying(void)
 {
   return KMidSimpleAPI::kMidIsPlaying();
-};
+}
 
 int kMidDevices(void)
 {
   return KMidSimpleAPI::kMidDevices();
-};
+}
 
 const char *kMidName(int i)
 {
   return KMidSimpleAPI::kMidName(i);
-};
+}
 
 const char *kMidType(int i)
 {
   return KMidSimpleAPI::kMidType(i);
-};
+}
 
 void kMidSetDevice(int i)
 {
   KMidSimpleAPI::kMidSetDevice(i);
-};
+}
 
 void kMidSetMidiMapper(const char *mapfilename)
 {
   KMidSimpleAPI::kMidSetMidiMapper(mapfilename);
-};
+}
 
 const char *kMidVersion(void)
 {
   return KMidSimpleAPI::kMidVersion();
-};
+}
 
 const char *kMidCopyright(void)
 {
   return KMidSimpleAPI::kMidCopyright();
-};
+}
 

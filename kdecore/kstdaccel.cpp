@@ -363,4 +363,4 @@ bool isEqual(const QKeyEvent* ev, int keyQt)
 }
 #endif // !KDE_NO_COMPAT
 
-};
+}

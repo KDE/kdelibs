@@ -89,6 +89,6 @@ private:
   MainWindowPrivate *d;
 };
 
-};
+}
 
 #endif

@@ -50,7 +50,7 @@ extern "C" {
     {
        return new KCookieServer(name);
     }
-};
+}
 
 
 // Cookie field indexes
