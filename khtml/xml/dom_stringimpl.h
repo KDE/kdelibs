@@ -58,8 +58,13 @@ public:
 
     khtml::Length toLength() const;
 
-    int toInt() const {
-        return QConstString(s,l).string().toInt();
+    // ignores trailing garbage, unlike QString
+    int toInt(bool* ok=0) const {
+        int len = l;
+        while(len > 0 && !s[len-1].isDigit())
+            len--;
+
+        return QConstString(s,len).string().toInt(ok);
     };
 
     QList<khtml::Length> *toLengthList() const;
