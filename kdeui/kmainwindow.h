@@ -126,6 +126,8 @@ public:
      * parent or not. DestructiveClose indicates that a main window is
      * automatically destroyed when its window is closed. Pass 0 if
      * you do not want this behavior.
+     * 
+     * @see http://doc.trolltech.com/3.2/qt.html#WidgetFlags-enum
      *
      * KMainWindows must be created on the heap with 'new', like:
      * \code 
@@ -134,15 +136,24 @@ public:
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
-    enum CreationFlags { NoDCOPObject = 1 };
-
     /**
-     * Overloaded constructor which allows to passing some flags.
+     * Flags that can be passed in an argument to the constructor to
+     * change the behavior.
+     *
      * NoDCOPObject tells KMainWindow not to create a KMainWindowInterface.
      * This can be useful in particular for inherited classes, which
      * might want to create more specific dcop interfaces. It's a good
      * idea to use KMainWindowInterface as the base class for such interfaces
      * though (to provide the standard mainwindow functionality via DCOP).
+     */
+    enum CreationFlags
+    {
+        NoDCOPObject = 1
+    };
+
+    /**
+     * Overloaded constructor which allows passing some KMainWindow::CreationFlags.
+     *
      * @since 3.2
      */
     KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
@@ -207,7 +218,7 @@ public:
     KPopupMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
-     * <b>Session Management</b>\n
+     * <b>Session Management</b>
      *
      * Try to restore the toplevel widget as defined by the number (1..X).
      *
