@@ -45,6 +45,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
   edit = new KLineEdit( plainPage(), 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
+  label->setBuddy(edit);  // please "scheck" style
   //  connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   connect( edit, SIGNAL(textChanged(const QString&)),
 	   SLOT(slotTextChanged(const QString&)) );
