@@ -64,6 +64,12 @@ public:
      */
     virtual ~Plugin();
 
+    /** Reimplemented for internal reasons */
+    virtual QString xmlFile() const;
+
+    /** Reimplemented for internal reasons */
+    virtual QString localXMLFile() const;
+
     /**
      * Load the plugin libraries from the directories appropriate
      * to @p instance and make the Plugin objects children of @p parent .

@@ -23,6 +23,8 @@
 #include <kparts/part.h>
 #include <kparts/componentfactory.h>
 
+#include <assert.h>
+
 #include <qfile.h>
 #include <qobjectlist.h>
 #include <qfileinfo.h>
@@ -36,32 +38,50 @@
 
 using namespace KParts;
 
-namespace KParts
-{
 class Plugin::PluginPrivate
 {
 public:
-  PluginPrivate()
-  {
-  }
-  ~PluginPrivate()
-  {
-  }
-};
+    PluginPrivate() : m_parentInstance( 0 ) {}
+
+    const KInstance *m_parentInstance;
 };
 
 Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
   kdDebug() << className() << endl;
-//  d = new PluginPrivate();
+  d = new PluginPrivate();
 }
 
 Plugin::~Plugin()
 {
     if ( factory() )
         factory()->removeClient( this );
-//  delete d;
+    delete d;
+}
+
+QString Plugin::xmlFile() const
+{
+    QString path = KXMLGUIClient::xmlFile();
+
+    if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
+        return path;
+
+    QString absPath = locate( "data", QString::fromLatin1( d->m_parentInstance->instanceName() ) + '/' + path );
+    assert( !absPath.isEmpty() );
+    return absPath;
+}
+
+QString Plugin::localXMLFile() const
+{
+    QString path = KXMLGUIClient::xmlFile();
+
+    if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
+        return path;
+
+    QString absPath = locateLocal( "data", QString::fromLatin1( d->m_parentInstance->instanceName() ) + '/' + path );
+    assert( !absPath.isEmpty() );
+    return absPath;
 }
 
 //static
@@ -131,8 +151,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
      if ( plugin )
      {
-       if ( instance )
-         plugin->setInstance( (KInstance*)instance ); 
+       plugin->d->m_parentInstance = instance;
        plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
        plugin->setDOMDocument( (*pIt).m_document );
      }
