@@ -684,6 +684,7 @@ bool KURLCompletion::isAutoCompletion()
 {
 	return completionMode() == KGlobalSettings::CompletionAuto
 	       || completionMode() == KGlobalSettings::CompletionPopup
+	       || completionMode() == KGlobalSettings::CompletionMan
 	       || completionMode() == KGlobalSettings::CompletionPopupAuto;
 }
 //////////////////////////////////////////////////
