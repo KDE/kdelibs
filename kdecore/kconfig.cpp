@@ -256,5 +256,11 @@ bool KConfig::internalHasGroup(const QCString &group) const
   return false;
 }
 
+void KConfig::setFileWriteMode(int mode)
+{
+  backEnd->setFileWriteMode(mode);
+}
+
+
 
 #include "kconfig.moc"

@@ -121,6 +121,11 @@ public:
 
   void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
 
+  /**
+   * Set the file mode for newly created files.
+   */
+  void setFileWriteMode(int mode);
+
 #ifdef KDE_NO_COMPAT
 private:
 #endif
@@ -141,6 +146,7 @@ protected:
   QString mLocalFileName;
   QString mGlobalFileName;
   KConfigBase::ConfigState mConfigState;
+  int mFileMode;
 
   KConfigBackEndPrivate *d;
 };

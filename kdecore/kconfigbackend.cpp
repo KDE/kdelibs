@@ -26,6 +26,11 @@
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
+#include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#include <fcntl.h>
 
 #undef Unsorted
 #include <qdir.h>
@@ -178,9 +183,14 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
 			       const char * _resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess)
+  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess), mFileMode(-1)
 {
    changeFileName(_fileName, _resType, _useKDEGlobals);
+}
+
+void KConfigBackEnd::setFileWriteMode(int mode)
+{
+  mFileMode = mode;
 }
 
 bool KConfigINIBackEnd::parseConfigFiles()
@@ -676,12 +686,72 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
 
-  KSaveFile rConfigFile( filename, 0600 );
+  // Check if file exists:
+  int fileMode = -1;
+  bool createNew = true;
 
-  if (rConfigFile.status() != 0)
-     return bEntriesLeft;
+  struct stat buf;
+  if (lstat(QFile::encodeName(filename), &buf) == 0)
+  {
+     if (S_ISLNK(buf.st_mode))
+     {
+        // File is a symlink:
+        if (stat(QFile::encodeName(filename), &buf) == 0)
+        {
+           // Don't create new file but write to existing file instead.
+           createNew = false;
+        }
+     }
+     else if (buf.st_uid == getuid())
+     {
+        // Preserve file mode if file exists and is owned by user.
+        fileMode = buf.st_mode & 0777;
+     }
+     else
+     {
+        // File is not owned by user:
+        // Don't create new file but write to existing file instead.
+        createNew = false;
+     }
+  }
 
-  FILE *pStream = rConfigFile.fstream();
+  KSaveFile *pConfigFile = 0;
+  FILE *pStream = 0;
+
+  if (createNew)
+  {
+     pConfigFile = new KSaveFile( filename, 0600 );
+
+     if (pConfigFile->status() != 0)
+     {
+        delete pConfigFile;
+        return bEntriesLeft;
+     }
+
+     if (!bGlobal && (fileMode == -1))
+        fileMode = mFileMode;
+
+     if (fileMode != -1)
+     {   
+        fchmod(pConfigFile->handle(), fileMode);
+     }
+
+     pStream = pConfigFile->fstream();
+  }
+  else
+  {
+     // Open existing file. 
+     // We use open() to ensure that we call without O_CREAT.
+     int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC);
+     if (fd < 0)
+        return bEntriesLeft;
+     pStream = fdopen( fd, "w");
+     if (!pStream)
+     {
+        close(fd);
+        return bEntriesLeft;
+     }
+  }
 
   bool firstEntry = true;
 
@@ -691,7 +761,17 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   // Write all other groups
   writeEntries(pStream, aTempMap, false, firstEntry, localeString);
 
-  rConfigFile.close();
+  if (pConfigFile)
+  {
+     pConfigFile->close();
+     delete pConfigFile;
+  }
+  else
+  {
+     fclose(pStream);
+  }
 
   return bEntriesLeft;
 }
+
+

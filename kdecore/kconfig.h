@@ -106,6 +106,13 @@ public:
    */
   virtual void reparseConfiguration();
 
+  /**
+   * Set the file mode for newly created files.
+   *
+   * @see man:chmod(2) for a description of @p mode
+   */
+  void setFileWriteMode(int mode);
+
 protected:
 
   /**
