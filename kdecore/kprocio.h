@@ -50,11 +50,27 @@ class QTextCodec;
 class KProcIO : public KProcess
 {
   Q_OBJECT
+
 public:
+  /**
+   * Constructor
+   */
   KProcIO ( QTextCodec *codec = 0 );
   
+  /**
+   * Destructor
+   */
   ~KProcIO();
   
+  /**
+   * Sets the communication mode to be passed to @ref KProcess::start()
+   * by @ref start(). The default communication mode is @ref KProcess::All.
+   * You probably want to use this function in conjunction with
+   * @ref KProcess::setUsePty().
+   * @param comm the communication mode
+   */
+  void setComm (Communication comm);
+
   /**
    *  Starts the process. It will fail in the following cases:
    *  @li The process is already running.
@@ -74,7 +90,7 @@ public:
   /**
    * Writes text to stdin of the process.
    * @param line Text to write.
-   * @param appendnewline if true, a newline '\n' is appended.
+   * @param appendnewline if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    **/
   bool writeStdin(const QString &line, bool appendnewline=TRUE);
@@ -82,7 +98,7 @@ public:
   /**
    * Writes text to stdin of the process.
    * @param line Text to write.
-   * @param appendnewline if true, a newline '\n' is appended.
+   * @param appendnewline if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    **/
   bool writeStdin(const QCString &line, bool appendnewline);
@@ -100,7 +116,7 @@ public:
    * This function just calls @ref writeStdin().
    * 
    * @param line Text to write.
-   * @param AppendNewLine if true, a newline '\n' is appended.
+   * @param AppendNewLine if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    * @deprecated
    **/
@@ -108,12 +124,12 @@ public:
     { return writeStdin(line, AppendNewLine); }
 
   /**
-   * closes stdin after all data has been send.
+   * Closes stdin after all data has been send.
    */ 
   void closeWhenDone();
 
   /**
-   * Reads a line of text (up to and including '\n').
+   * Reads a line of text (up to and including '\\n').
    *
    * Use readln() in response to a readReady() signal.
    * You may use it multiple times if more than one line of data is
@@ -129,8 +145,8 @@ public:
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
    * @param partial when provided the line is returned 
-   * even if it does not contain a '\n'. *partial will be set to
-   * false if the line contains a '\n' and false otherwise.
+   * even if it does not contain a '\\n'. *partial will be set to
+   * false if the line contains a '\\n' and false otherwise.
    * @return the number of characters read, or -1 if no data is available.
    **/
   int readln (QString &line, bool autoAck=true, bool *partial=0);
@@ -140,8 +156,8 @@ public:
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
    * @param partial when provided the line is returned 
-   * even if it does not contain a '\n'. *partial will be set to
-   * false if the line contains a '\n' and false otherwise.
+   * even if it does not contain a '\\n'. *partial will be set to
+   * false if the line contains a '\\n' and false otherwise.
    * @return the number of characters read, or -1 if no data is available.
    * @deprecated
    **/

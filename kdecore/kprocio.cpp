@@ -29,8 +29,14 @@
 #include <kdebug.h>
 #include <qtextcodec.h>
 
+class KProcIOPrivate {
+public:
+  KProcIOPrivate() : comm(KProcess::All) {}
+  KProcess::Communication comm;
+};
+
 KProcIO::KProcIO ( QTextCodec *_codec)
-  : codec(_codec)
+  : codec(_codec), d(new KProcIOPrivate)
 {
   rbi=0;
   readsignalon=writeready=TRUE;
@@ -48,6 +54,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
 
 KProcIO::~KProcIO()
 {
+  delete d;
 }
 
 void
@@ -73,6 +80,11 @@ KProcIO::resetAll ()
 
 }
 
+void KProcIO::setComm (Communication comm)
+{
+  d->comm = comm;
+}
+
 bool KProcIO::start (RunMode runmode, bool includeStderr)
 {
   connect (this, SIGNAL (receivedStdout (KProcess *, char *, int)),
@@ -87,7 +99,7 @@ bool KProcIO::start (RunMode runmode, bool includeStderr)
   connect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
            
-  return KProcess::start (runmode, KProcess::All);
+  return KProcess::start (runmode, d->comm);
 }
 
 bool KProcIO::writeStdin (const QString &line, bool appendnewline)
