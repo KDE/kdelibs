@@ -381,7 +381,7 @@ void AutoTableLayout::recalcColumn( int effCol )
 		    switch( w.type ) {
 		    case Fixed:
 			// ignore width=0
-			if ( w.value > 0 && l.width.type != Percent ) {
+			if ( w.value > 0 && (int)l.width.type != Percent ) {
 			    if ( l.width.type == Fixed ) {
 				// the 2nd part of the condition is Nav/IE Quirk, see below
 				if ((l.width.value > w.value) ||
@@ -472,7 +472,7 @@ void AutoTableLayout::fullRecalc()
 #ifdef DEBUG_LAYOUT
 		qDebug("    col element %d: Length=%d(%d), span=%d",  cCol, w.value, w.type, span);
 #endif
-		if ( w.type != Variable && span == 1 ) {
+		if ( (int)w.type != Variable && span == 1 ) {
 		    if ( cCol >= nEffCols ) {
 			    table->appendColumn( 1 );
 			    nEffCols++;
