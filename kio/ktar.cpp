@@ -200,7 +200,7 @@ bool KTarBase::open( int mode )
           //kdDebug() << "KTarBase::open file " << nm << " size=" << size << endl;
 
           e = new KTarFile( this, nm, access, time, user, group, symlink,
-                            position(), size, QByteArray() );
+                            position(), size );
 
           // Skip contents + align bytes
           int skip = size + (rest ? 0x200 - rest : 0);
@@ -325,18 +325,18 @@ const KTarDirectory* KTarBase::directory() const
 }
 
 
-void KTarBase::writeDir( const QString& name, const QString& user, const QString& group )
+bool KTarBase::writeDir( const QString& name, const QString& user, const QString& group )
 {
   if ( !isOpened() )
   {
     qWarning( "KTarBase::writeDir: You must open the tar file before writing to it\n");
-    return;
+    return false;
   }
 
   if ( m_mode != IO_WriteOnly )
   {
     qWarning( "KTarBase::writeDir: You must open the tar file for writing\n");
-    return;
+    return false;
   }
 
   // In some tar files we can find dir/./ => call cleanDirPath
@@ -371,20 +371,21 @@ void KTarBase::writeDir( const QString& name, const QString& user, const QString
   write( buffer, 0x200 );
 
   m_dirList.append( dirName ); // contains trailing slash
+  return true; // TODO if wanted, better error control
 }
 
-void KTarBase::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
+bool KTarBase::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
 {
   if ( !isOpened() )
   {
     qWarning( "KTarBase::writeFile: You must open the tar file before writing to it\n");
-    return;
+    return false;
   }
 
   if ( m_mode != IO_WriteOnly )
   {
     qWarning( "KTarBase::writeFile: You must open the tar file for writing\n");
-    return;
+    return false;
   }
 
   // In some tar files we can find dir/./file => call cleanDirPath
@@ -432,19 +433,34 @@ void KTarBase::writeFile( const QString& name, const QString& user, const QStrin
   fillBuffer( buffer, "100644", size, 0x30, user.local8Bit(), group.local8Bit() );
 
   // Write header
-  write( buffer, 0x200 );
+  return write( buffer, 0x200 ) == 0x200;
+}
+
+bool KTarBase::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
+{
+  if ( !prepareWriting( name, user, group, size ) )
+      return false;
 
   // Write data
-  write( data, size );
+  if ( write( data, size ) != (int)size )
+      return false;
 
+  return doneWriting( size );
+}
+
+bool KTarBase::doneWriting( uint size )
+{
   // Write alignment
   int rest = size % 0x200;
   if ( rest )
   {
+    char buffer[ 0x201 ];
     for( uint i = 0; i < 0x200; ++i )
       buffer[i] = 0;
-    write( buffer, 0x200 - rest );
+    Q_LONG nwritten = write( buffer, 0x200 - rest );
+    return nwritten == (Q_LONG)size;
   }
+  return true;
 }
 
 /*** Some help from the tar sources
@@ -598,14 +614,14 @@ void KTarGz::setOrigFileName( const QCString & fileName )
   static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
 }
 
-int KTarGz::read( char * buffer, int len )
+Q_LONG KTarGz::read( char * buffer, Q_ULONG len )
 {
   return device()->readBlock( buffer, len );
 }
 
-void KTarGz::write( const char * buffer, int len )
+Q_LONG KTarGz::write( const char * buffer, Q_ULONG len )
 {
-  device()->writeBlock( buffer, len );
+  return device()->writeBlock( buffer, len );
 }
 
 int KTarGz::position()
@@ -665,8 +681,8 @@ QDateTime KTarEntry::datetime() const
 KTarFile::KTarFile( KTarBase* t, const QString& name, int access, int date,
                     const QString& user, const QString& group,
                     const QString & symlink,
-                    int pos, int size, const QByteArray& data )
-  : KTarEntry( t, name, access, date, user, group, symlink ), m_data( data )
+                    int pos, int size )
+  : KTarEntry( t, name, access, date, user, group, symlink )
 {
   m_pos = pos;
   m_size = size;
@@ -684,11 +700,9 @@ int KTarFile::size() const
 
 QByteArray KTarFile::data() const
 {
-  // We don't want to put the data in m_data, it wouldn't get freed until
+  // We don't want to cache the data, it wouldn't get freed until
   // the deletion of the KTarGz. But this also means, data() should be called
   // with care (only once per file).
-
-  // return m_data;
 
   tar()->device()->at( m_pos );
 
@@ -774,38 +788,4 @@ const KTarEntry* KTarDirectory::entry( QString name ) const
 void KTarDirectory::addEntry( KTarEntry* entry )
 {
   m_entries.insert( entry->name(), entry );
-}
-
-////////////////////////////////////////////////////////////////////////
-/////////////////////////// KTarData ///////////////////////////////////
-//////////////////// Obsolete, remove in KDE 3.0 ///////////////////////
-////////////////////////////////////////////////////////////////////////
-
-KTarData::KTarData( QDataStream * str )
-{
-  m_str = str;
-}
-
-KTarData::~KTarData()
-{
-}
-
-bool KTarData::open( int mode )
-{
-  return KTarBase::open( mode );
-}
-
-int KTarData::read( char * buffer, int len )
-{
-  return m_str->device()->readBlock( buffer, len );
-}
-
-void KTarData::write( const char * buffer, int len )
-{
-  m_str->device()->writeBlock( buffer, len );
-}
-
-int KTarData::position()
-{
-  return m_str->device()->at();
 }

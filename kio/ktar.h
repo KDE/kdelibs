@@ -70,14 +70,14 @@ public:
    * If a tar file is opened for writing then you can add new directories
    * using this function. KTar won't write one directory twice.
    */
-  void writeDir( const QString& name, const QString& user, const QString& group );
+  bool writeDir( const QString& name, const QString& user, const QString& group );
   /**
    * If a tar file is opened for writing then you can add a new file
    * using this function. If the file name is for example "mydir/test1" then
    * the directory "mydir" is automatically appended first if that did not
    * happen yet.
    */
-  void writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+  bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
 
   /**
    * Here's another way of writing a file into a tar archive:
@@ -90,7 +90,7 @@ public:
   /**
    * Call @ref doneWriting after writing the data, @see prepareWriting
    */
-  void doneWriting( uint size );
+  bool doneWriting( uint size );
 
   /**
    * If a tar file is opened for reading, then the contents
@@ -106,12 +106,12 @@ protected:
    * Read @p len data into @p buffer - reimplemented
    * @return length read
    */
-  virtual int read( char * buffer, int len ) = 0;
+  virtual Q_LONG read( char * buffer, Q_ULONG len ) = 0;
 
   /**
    * Write @p len data from @p buffer - reimplemented
    */
-  virtual void write( const char * buffer, int len ) = 0;
+  virtual Q_LONG write( const char * buffer, Q_ULONG len ) = 0;
 
   /**
    * @return the current position - reimplemented
@@ -206,12 +206,12 @@ private:
    * Read @p len data into @p buffer
    * @return length read
    */
-  virtual int read( char * buffer, int len );
+  virtual Q_LONG read( char * buffer, Q_ULONG len );
 
   /**
    * Write @p len data from @p buffer
    */
-  virtual void write( const char * buffer, int len );
+  virtual Q_LONG write( const char * buffer, Q_ULONG len );
 
   /**
    * @return the current position
@@ -302,7 +302,7 @@ class KTarFile : public KTarEntry
 public:
   KTarFile( KTarBase* tar, const QString& name, int access, int date,
             const QString& user, const QString& group, const QString &symlink,
-            int pos, int size, const QByteArray& /* remove me */);
+            int pos, int size );
 
   virtual ~KTarFile() { }
 
@@ -333,7 +333,6 @@ public:
 private:
   int m_pos;
   int m_size;
-  QByteArray m_data; //remove-me
 };
 
 /**
@@ -377,55 +376,5 @@ public:
 private:
   QDict<KTarEntry> m_entries;
 };
-
-
-/**
- * @deprecated
- * This class operates on a QDataStream, which is assumed to
- * be a normal tar archive (not gzipped).
- *
- * Obsolete. Do not use, backwards compatibility only.
- * To be removed in KDE 3.0
- */
-class KTarData : public KTarBase
-{
-public:
-  /**
-   * Constructor, probably
-   */
-  KTarData( QDataStream * str );
-
-  virtual ~KTarData();
-
-  /**
-   * Opens the tar data for reading or writing.
-   * @param mode may be IO_ReadOnly or IO_WriteOnly
-   */
-  virtual bool open( int mode );
-
-  /**
-   * For symmetry
-   */
-  virtual void close() {}
-
-private:
-  /**
-   * Read @p len data into @p buffer
-   * @return length read
-   */
-  virtual int read( char * buffer, int len );
-
-  /**
-   * Write @p len data from @p buffer
-   */
-  virtual void write( const char * buffer, int len );
-
-  /**
-   * @return the current position
-   */
-  virtual int position();
-  QDataStream * m_str;
-};
-
 
 #endif
