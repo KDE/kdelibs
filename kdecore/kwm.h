@@ -466,7 +466,7 @@ public:
   static QRect geometryRestore(Window w);
 
   /**
-   *  Returns the icon geometry of a window. This is either the defined icon 
+   *  Returns the icon geometry of a window. This is either the defined icon
    * geometry from a setIconGeometry() call, or the center of the window in case
    * there was no geometry or an empty geometry defined.
     */
@@ -484,6 +484,19 @@ public:
    * Shall the window be maximized?
    */
   static bool isDoMaximize(Window w);
+
+
+  enum {horizontal = 1, vertical = 2, fullscreen = 3};
+  /**
+   * The maximize mode, either horizontal, vertical or fullscreen
+   */
+  static int maximizeMode(Window w);
+
+  /**
+   * The doMaximize mode, either horizontal, vertical or fullscreen
+   */
+  static int doMaximizeMode(Window w);
+
   /**
    * Is the window sticky?
    */
@@ -538,18 +551,33 @@ public:
    * Move a window to another geometric position
    */
   static void move(Window w, const QPoint &pos);
+    
   /**
    * Maximize/Unmaximize a window according to value.  If the window
    *  is not mapped yet, this function only sets the _state_ of the
    *  maximize button, it does _not_ change the geometry. See
    * doMaximize below.
-
+   *
+   * The mode can either be horizontal or vertical or ( the default) fullscreen
    */
+  static void setMaximize(Window w, bool value, int mode );
+    /**
+     * for binary compatibility, the above with default argument mode = horitzonal|vertical
+     */
   static void setMaximize(Window w, bool value);
   /**
      Maximize a window (changing the geometry to fill the entire screen).
    */
+  static void doMaximize(Window w, bool value, int mode);
+    /**
+     * for binary compatibility, the above with default argument mode = horitzonal|vertical
+     */
   static void doMaximize(Window w, bool value);
+  /**
+   * Set the maximize mode, either normalMaximize, horizontalMaximize
+   * or verticalMaximize
+   */
+  static void setMaximizeMode(Window w, int value);
   /**
    * Iconify/UnIconify a window according to value
    */

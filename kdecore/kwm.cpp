@@ -176,7 +176,7 @@ QString KWM::getProperties(Window w){
   data[n++]=rect.width();
   data[n++]=rect.height();
   data[n++]=isIconified(w)?1:0;
-  data[n++]=isMaximized(w)?1:0;
+  data[n++]=isMaximized(w)?maximizeMode(w):0;
   data[n++]=isSticky(w)?1:0;
   data[n++]=getDecoration(w);
 
@@ -222,7 +222,7 @@ QRect KWM::setProperties(Window w, const QString &props){
   d4 = data[n++];
   setGeometryRestore(w, QRect(d1,d2,d3,d4));
   setIconify(w, (data[n++] != 0) );
-  setMaximize(w, (data[n++] != 0) );
+  setMaximize(w, (data[n] != 0), data[n] );n++;
   setSticky(w, (data[n++] != 0) );
   setDecoration(w, data[n++] );
   return result;
@@ -881,6 +881,29 @@ bool KWM::isDoMaximize(Window w){
   }
   return result != 0;
 }
+
+int KWM::maximizeMode(Window w){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
+  long result = 0;
+  if (!getSimpleProperty(w, a, result) || result == 0){
+      result = fullscreen;
+  }
+  return result;
+}
+
+int KWM::doMaximizeMode(Window w){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
+  long result = 0;
+  if (!getSimpleProperty(w, a, result) || result == 0){
+      result = fullscreen;
+  }
+  return result;
+}
+
 bool KWM::isSticky(Window w){
   static Atom a = 0;
   if (!a)
@@ -969,6 +992,26 @@ void KWM::doMaximize(Window w, bool value) {
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
   setSimpleProperty(w, a, value?1:0);
+}
+void KWM::setMaximize(Window w, bool value, int mode){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
+  setSimpleProperty(w, a, value?mode:0);
+}
+void KWM::doMaximize(Window w, bool value, int mode) {
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
+  setSimpleProperty(w, a, value?mode:0);
+}
+void setMaximizeMode(Window w, int value)
+{
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_MODE", False);
+  setSimpleProperty(w, a, value?1:0);
+
 }
 void KWM::setIconify(Window w, bool value){
   static Atom a = 0;
