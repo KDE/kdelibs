@@ -304,8 +304,12 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
  */
 void showHelp( int exitCode = 0 )
 {
-    cout_ << "Usage: dcop [options] [application [object [function [arg1] [arg2] ... ] ] ]" << endl
-	 << "" << endl
+#ifdef DCOPQUIT
+   cout_ << "Usage: dcopquit [options] [application]" << endl
+#else
+   cout_ << "Usage: dcop [options] [application [object [function [arg1] [arg2] ... ] ] ]" << endl
+#endif
+         << "" << endl
 	 << "Console DCOP client" << endl
 	 << "" << endl
 	 << "Generic options:" << endl
@@ -789,8 +793,34 @@ int main( int argc, char** argv )
     argc -= numOptions;
 
     QCStringList args;
+    
+#ifdef DCOPQUIT
+    if (argc > 1)
+    {
+       QCString prog = argv[ numOptions + 1 ];
+       
+       if (!prog.isEmpty())
+       {
+          args.append( prog );
+       
+          // Pass as-is if it ends with a wildcard
+          if (prog[prog.length()-1] != '*')
+          {
+             // Strip a trailing -<PID> part.
+             int i = prog.findRev('-');
+             if ((i >= 0) && prog.mid(i+1).toLong())
+             {
+                prog = prog.left(i);      
+             }
+             args.append( "qt/"+prog ); 
+             args.append( "quit()" );
+          }
+       }
+    }
+#else
     for( int i = numOptions; i < argc + numOptions - 1; i++ )
-	args.append( argv[ i + 1 ] );
+       args.append( argv[ i + 1 ] );
+#endif
 
     if( readStdin && args.count() < 3 )
     {
