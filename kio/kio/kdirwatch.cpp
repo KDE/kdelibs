@@ -450,12 +450,12 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 bool KDirWatchPrivate::useDNotify(Entry* e)
 {
   e->dn_fd = 0;
+  e->dirty = false;
   if (!supports_dnotify) return false;
 
   e->m_mode = DNotifyMode;
 
   if (e->isDir) {
-    e->dirty = false;
     if (e->m_status == Normal) {
       int fd = KDE_open(QFile::encodeName(e->path).data(), O_RDONLY);
       // Migrate fd to somewhere above 128. Some libraries have
