@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -190,7 +190,7 @@ KResolverEntry& KResolverEntry::operator= (const KResolverEntry& that)
 /////////////////////////////////////////////
 // class KResolverResults
 
-class KNetwork::KResolverResultsPrivate: public QShared
+class KNetwork::KResolverResultsPrivate
 {
 public:
   QString node, service;
@@ -199,19 +199,6 @@ public:
   KResolverResultsPrivate() :
     errorcode(0), syserror(0)
   { }
-
-  // duplicate the data if necessary, while decreasing the reference count
-  // on the original data
-  inline void dup(KResolverResultsPrivate*& d)
-  {
-    if (!(d->count > 1))
-      {
-	d->deref();
-	KResolverResultsPrivate *e = new KResolverResultsPrivate(*d);
-	e->count = 1;
-	d = e;			// set the pointer
-      }
-  }
 };
 
 // default constructor
@@ -222,30 +209,26 @@ KResolverResults::KResolverResults()
 
 // copy constructor
 KResolverResults::KResolverResults(const KResolverResults& other)
-  : QValueList<KResolverEntry>(other), d(other.d)
+  : QValueList<KResolverEntry>(other), d(new KResolverResultsPrivate)
 {
-  d->ref();
+  *d = *other.d;
 }
 
 // destructor
 KResolverResults::~KResolverResults()
 {
-  if (d->deref())
-    delete d;
+  delete d;
 }
 
 // assignment operator
 KResolverResults&
 KResolverResults::operator= (const KResolverResults& other)
 {
-  other.d->ref();
-
-  // release our data
-  if (d->deref())
-    delete d;
+  if (this == &other)
+    return *this;
 
   // copy over the other data
-  d = other.d;
+  *d = *other.d;
 
   // now let QValueList do the rest of the work
   QValueList<KResolverEntry>::operator =(other);
@@ -268,8 +251,6 @@ int KResolverResults::systemError() const
 // sets the error codes
 void KResolverResults::setError(int errorcode, int systemerror)
 {
-  d->dup(d);
-
   d->errorcode = errorcode;
   d->syserror = systemerror;
 }
@@ -290,8 +271,6 @@ QString KResolverResults::serviceName() const
 void KResolverResults::setAddress(const QString& node,
 				  const QString& service)
 {
-  d->dup(d);
-
   d->node = node;
   d->service = service;
 }
