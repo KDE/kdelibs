@@ -44,6 +44,7 @@ k_dcop:
     virtual DCOPRef getPage( int num );
     int getPageOfObj( int obj );
     void setCell( const int& point = 3 );
+    QValueList<DCOPRef> getWindows();
 
 private:
     Test3 *doc();
