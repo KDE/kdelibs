@@ -460,9 +460,9 @@ public:
      * Note that you should enable this feature before calling createGUI()
      * ( or similar ).
      * 
-     * If an application maintians the action on its own (i.e. never calls
+     * If an application maintains the action on its own (i.e. never calls
      * this function) a connection needs to be made to let KMainWindow 
-     * know when that status (hiden/shown) of the statusbar has changed.
+     * know when that status (hidden/shown) of the statusbar has changed.
      * For example:
      * connect(action, SIGNAL(activated()),
      *         kmainwindow, SLOT(setSettingsDirty()));
