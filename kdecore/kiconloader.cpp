@@ -44,7 +44,7 @@ void KIconLoader::initPath()
 	appname = library->instanceName();
     }
 
-    if (appname.isNull()) { // may still be the case 
+    if (!appname.isNull()) { // may still be the case 
 
 	KStandardDirs* dirs = library->dirs();
 	
