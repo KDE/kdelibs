@@ -183,7 +183,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::encodedurl = &encodedurl;
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
-   // the higher the offset or important number, the later the rules get applied.
+    // the higher the offset or important number, the later the rules get applied.
 
     pseudoState = PseudoUnknown;
 
@@ -726,9 +726,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 return;
             case CSS_PROP_BORDER_LEFT_STYLE:
                 style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
-		case CSS_PROP_OUTLINE_STYLE:
-		                    style->setOutlineStyle(e->parentNode()->style()->outlineStyle());
-
+                return;
+            case CSS_PROP_OUTLINE_STYLE:
+                style->setOutlineStyle(e->parentNode()->style()->outlineStyle());
                 return;
             }
         }
@@ -769,8 +769,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             style->setBorderBottomStyle(s); return;
         case CSS_PROP_BORDER_LEFT_STYLE:
             style->setBorderLeftStyle(s); return;
-	    case CSS_PROP_OUTLINE_STYLE:
-		style->setOutlineStyle(s); return;
+        case CSS_PROP_OUTLINE_STYLE:
+            style->setOutlineStyle(s); return;
         default:
             return;
         }
@@ -1362,8 +1362,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_PROP_TEXT_DECORATION_COLOR:
             style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
-	    style->setOutlineColor(col); break;
-	    default:
+            style->setOutlineColor(col); break;
+        default:
             return;
         }
         return;
