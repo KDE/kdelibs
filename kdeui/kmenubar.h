@@ -86,9 +86,10 @@ protected:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+private slots:
+    void updateKMenubarSize();
 private:
     void setTopLevelMenuInternal(bool top_level = true);
-    void updateKMenubarSize();
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
 };

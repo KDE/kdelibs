@@ -70,6 +70,9 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
         connect( kapp, SIGNAL(toolbarAppearanceChanged(int)),
             this, SLOT(slotReadConfig()));
 
+#ifdef XRANDR_SUPPORT
+    connect( qApp->desktop(), SIGNAL( resized( int )), SLOT( updateKMenubarSize()));
+#endif
     slotReadConfig();
 }
 
