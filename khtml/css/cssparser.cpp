@@ -2260,7 +2260,6 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
 		    found = parseValue(curP, nextP, properties[propIndex]);
 
 		if (found) {
-                    kdDebug(6080) << "setting " << propIndex << " to true" << endl;
 		    fnd[propIndex] = foundAnything = true;
 #ifdef CSS_DEBUG
 		    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << ": "

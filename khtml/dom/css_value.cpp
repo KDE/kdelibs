@@ -172,12 +172,6 @@ void CSSValue::setCssText( const DOMString &/*value*/ )
     ((CSSValueImpl *)impl)->cssText();
 }
 
-unsigned short CSSValue::valueType() const
-{
-    if(!impl) return 0;
-    return ((CSSValueImpl *)impl)->valueType();
-}
-
 unsigned short CSSValue::cssValueType() const
 {
     if(!impl) return 0;

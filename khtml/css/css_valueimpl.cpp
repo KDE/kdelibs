@@ -335,7 +335,7 @@ CSSValueListImpl::~CSSValueListImpl()
     }
 }
 
-unsigned short CSSValueListImpl::valueType() const
+unsigned short CSSValueListImpl::cssValueType() const
 {
     return CSSValue::CSS_VALUE_LIST;
 }
@@ -501,7 +501,7 @@ RGBColor *CSSPrimitiveValueImpl::getRGBColorValue(  )
     return m_value.rgbcolor;
 }
 
-unsigned short CSSPrimitiveValueImpl::valueType() const
+unsigned short CSSPrimitiveValueImpl::cssValueType() const
 {
     return CSSValue::CSS_PRIMITIVE_VALUE;
 }

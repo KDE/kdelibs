@@ -97,8 +97,7 @@ public:
 
     virtual ~CSSValueImpl();
 
-    virtual unsigned short valueType() const = 0;
-    virtual unsigned short cssValueType() { return valueType(); }
+    virtual unsigned short cssValueType() const = 0;
 
     virtual DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
@@ -112,7 +111,7 @@ public:
     CSSInheritedValueImpl() : CSSValueImpl() {}
     virtual ~CSSInheritedValueImpl() {}
 
-    virtual unsigned short valueType() const { return CSSValue::CSS_INHERIT; }
+    virtual unsigned short cssValueType() const { return CSSValue::CSS_INHERIT; }
     virtual DOM::DOMString cssText() const;
 };
 
@@ -129,7 +128,7 @@ public:
 
     virtual bool isValueList() { return true; }
 
-    virtual unsigned short valueType() const;
+    virtual unsigned short cssValueType() const;
 
     void append(CSSValueImpl *val);
     virtual DOM::DOMString cssText() const;
@@ -171,7 +170,7 @@ public:
     RGBColor *getRGBColorValue (  );
 
     virtual bool isPrimitiveValue() { return true; }
-    virtual unsigned short valueType() const;
+    virtual unsigned short cssValueType() const;
 
     int getIdent();
 

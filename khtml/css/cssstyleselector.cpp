@@ -947,7 +947,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 // ident only properties
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setBackgroundAttachment(e->parentNode()->style()->backgroundAttachment());
@@ -973,7 +973,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
     case CSS_PROP_BACKGROUND_REPEAT:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setBackgroundRepeat(e->parentNode()->style()->backgroundRepeat());
             return;
@@ -998,7 +998,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	}
     }
     case CSS_PROP_BORDER_COLLAPSE:
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setBorderCollapse(e->parentNode()->style()->borderCollapse());
@@ -1023,7 +1023,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_LEFT_STYLE:
     case CSS_PROP_OUTLINE_STYLE:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             switch(prop->m_id)
@@ -1067,7 +1067,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
     case CSS_PROP_CAPTION_SIDE:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setCaptionSide(e->parentNode()->style()->captionSide());
@@ -1093,7 +1093,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
     case CSS_PROP_CLEAR:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setClear(e->parentNode()->style()->clear());
@@ -1117,7 +1117,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
     case CSS_PROP_DIRECTION:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setDirection(e->parentNode()->style()->direction());
@@ -1129,7 +1129,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
     case CSS_PROP_DISPLAY:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setDisplay(e->parentNode()->style()->display());
@@ -1158,7 +1158,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         break;
     case CSS_PROP_FLOAT:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setFloating(e->parentNode()->style()->floating());
@@ -1192,7 +1192,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_STYLE:
     {
         QFont f = style->font();
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             f.setItalic(e->parentNode()->style()->font().italic());
@@ -1221,7 +1221,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_FONT_VARIANT:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setFontVariant(e->parentNode()->style()->fontVariant());
@@ -1242,7 +1242,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_WEIGHT:
     {
         QFont f = style->font();
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             f.setWeight(e->parentNode()->style()->font().weight());
@@ -1280,7 +1280,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_LIST_STYLE_POSITION:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setListStylePosition(e->parentNode()->style()->listStylePosition());
@@ -1294,7 +1294,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_LIST_STYLE_TYPE:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setListStyleType(e->parentNode()->style()->listStyleType());
@@ -1317,7 +1317,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_OVERFLOW:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setOverflow(e->parentNode()->style()->overflow());
@@ -1352,7 +1352,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_POSITION:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setPosition(e->parentNode()->style()->position());
@@ -1391,7 +1391,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         break;
     case CSS_PROP_TEXT_TRANSFORM:
         {
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setTextTransform(e->parentNode()->style()->textTransform());
             return;
@@ -1413,7 +1413,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     case CSS_PROP_VISIBILITY:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setVisiblity(e->parentNode()->style()->visiblity());
             return;
@@ -1434,7 +1434,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         break;
     }
     case CSS_PROP_WHITE_SPACE:
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setWhiteSpace(e->parentNode()->style()->whiteSpace());
             return;
@@ -1504,7 +1504,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         // CSS2BorderSpacing
     case CSS_PROP_CURSOR:
         // CSS2Cursor
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setCursor(e->parentNode()->style()->cursor());
             return;
@@ -1545,7 +1545,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     {
         QColor col;
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             switch(prop->m_id)
             {
@@ -1632,7 +1632,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // uri || inherit
     case CSS_PROP_BACKGROUND_IMAGE:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setBackgroundImage(e->parentNode()->style()->backgroundImage());
@@ -1649,7 +1649,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 //         break;
     case CSS_PROP_LIST_STYLE_IMAGE:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setListStyleImage(e->parentNode()->style()->listStyleImage());
@@ -1669,7 +1669,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_LEFT_WIDTH:
     case CSS_PROP_OUTLINE_WIDTH:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             switch(prop->m_id)
             {
@@ -1736,7 +1736,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_LETTER_SPACING:
     case CSS_PROP_WORD_SPACING:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             switch(prop->m_id)
@@ -1811,7 +1811,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_TEXT_INDENT:
         // +inherit
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT) {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             switch(prop->m_id)
                 {
@@ -1910,7 +1910,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!prop->m_id == CSS_PROP_MAX_HEIGHT && primitiveValue &&
            primitiveValue->getIdent() == CSS_VAL_AUTO)
             apply = true;
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             switch(prop->m_id)
@@ -1957,7 +1957,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         break;
 
     case CSS_PROP_VERTICAL_ALIGN:
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setVerticalAlign(e->parentNode()->style()->verticalAlign());
@@ -2026,7 +2026,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             oldSize = (int)(standardSizes[3]*toPix);
         }
 
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             size = oldSize;
         }
@@ -2107,7 +2107,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         break;
     case CSS_PROP_Z_INDEX:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setZIndex(e->parentNode()->style()->zIndex());
@@ -2123,7 +2123,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setLineHeight(e->parentNode()->style()->lineHeight());
@@ -2156,7 +2156,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // string
     case CSS_PROP_TEXT_ALIGN:
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setTextAlign(e->parentNode()->style()->textAlign());
@@ -2176,7 +2176,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	Length right;
 	Length bottom;
 	Length left;
-	if ( value->valueType() == CSSValue::CSS_INHERIT ) {
+	if ( value->cssValueType() == CSSValue::CSS_INHERIT ) {
 	    RenderStyle *inherited = e->parentNode()->style();
 	    top = inherited->clipTop();
 	    right = inherited->clipRight();
@@ -2329,7 +2329,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         // list of ident
         // ### no list at the moment
     {
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setTextDecoration(e->parentNode()->style()->textDecoration());
@@ -2377,7 +2377,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         break;
     case CSS_PROP__KONQ_FLOW_MODE:
-        if(value->valueType() == CSSValue::CSS_INHERIT)
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
             style->setFlowAroundFloats(e->parentNode()->style()->flowAroundFloats());
@@ -2396,7 +2396,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
 // shorthand properties
     case CSS_PROP_BACKGROUND:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setBackgroundColor(e->parentNode()->style()->backgroundColor());
         style->setBackgroundImage(e->parentNode()->style()->backgroundImage());
         style->setBackgroundRepeat(e->parentNode()->style()->backgroundRepeat());
@@ -2416,7 +2416,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER:
     case CSS_PROP_BORDER_STYLE:
     case CSS_PROP_BORDER_WIDTH:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
 
         if(prop->m_id == CSS_PROP_BORDER || prop->m_id == CSS_PROP_BORDER_COLOR)
         {
@@ -2441,38 +2441,38 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         return;
     case CSS_PROP_BORDER_TOP:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setBorderTopColor(e->parentNode()->style()->borderTopColor());
         style->setBorderTopStyle(e->parentNode()->style()->borderTopStyle());
         style->setBorderTopWidth(e->parentNode()->style()->borderTopWidth());
         return;
     case CSS_PROP_BORDER_RIGHT:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setBorderRightColor(e->parentNode()->style()->borderRightColor());
         style->setBorderRightStyle(e->parentNode()->style()->borderRightStyle());
         style->setBorderRightWidth(e->parentNode()->style()->borderRightWidth());
         return;
     case CSS_PROP_BORDER_BOTTOM:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setBorderBottomColor(e->parentNode()->style()->borderBottomColor());
         style->setBorderBottomStyle(e->parentNode()->style()->borderBottomStyle());
         style->setBorderBottomWidth(e->parentNode()->style()->borderBottomWidth());
         return;
     case CSS_PROP_BORDER_LEFT:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setBorderLeftColor(e->parentNode()->style()->borderLeftColor());
         style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
         style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth());
         return;
     case CSS_PROP_MARGIN:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setMarginTop(e->parentNode()->style()->marginTop());
         style->setMarginBottom(e->parentNode()->style()->marginBottom());
         style->setMarginLeft(e->parentNode()->style()->marginLeft());
         style->setMarginRight(e->parentNode()->style()->marginRight());
         return;
     case CSS_PROP_PADDING:
-        if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;
         style->setPaddingTop(e->parentNode()->style()->paddingTop());
         style->setPaddingBottom(e->parentNode()->style()->paddingBottom());
         style->setPaddingLeft(e->parentNode()->style()->paddingLeft());
