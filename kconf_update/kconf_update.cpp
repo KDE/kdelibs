@@ -58,6 +58,7 @@ public:
    void gotKey(const QString &_key);
    void gotRemoveKey(const QString &_key);
    void gotAllKeys();
+   void gotAllGroups();
    void gotOptions(const QString &_options);
    void gotScript(const QString &_script);
    void resetOptions();
@@ -115,7 +116,6 @@ KonfUpdate::KonfUpdate()
        ++it)
    {
       QString file = *it;
-qWarning("File = %s", file.latin1());
       updateFile(file);
    }
 }
@@ -153,6 +153,7 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
  * # Comment
  * Id=id
  * File=oldfile[,newfile]
+ * AllGroups
  * Group=oldgroup[,newgroup]
  * RemoveGroup=oldgroup
  * Options=[copy,][overwrite,]
@@ -221,6 +222,11 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotAllKeys();
          resetOptions();
       }
+      else if (line == "AllGroups")
+      {
+         gotAllGroups();
+         resetOptions();
+      }
       else
          qWarning("%s:%d parse error '%s'", filename.latin1(), lineCount, line.latin1());
    }
@@ -257,7 +263,6 @@ void KonfUpdate::gotId(const QString &_id)
       if (ids.contains(_id))
       {
          skip = true;
-qWarning("Skipping '%s'", _id.latin1());
          return;
       }
       skip = false;
@@ -278,6 +283,17 @@ void KonfUpdate::gotFile(const QString &_file)
       oldConfig2->sync();
       delete oldConfig2;
       oldConfig2 = 0;
+      
+      QString file = locateLocal("config", oldFile);
+      struct stat s_buf;
+      if (stat(QFile::encodeName(file), &s_buf) == 0)
+      {
+         if (s_buf.st_size == 0)
+         {
+            // Delete empty file.
+            unlink(QFile::encodeName(file));
+         }   
+      }
 
       oldFile = QString::null;
    }
@@ -449,6 +465,24 @@ void KonfUpdate::gotAllKeys()
        it != list.end(); ++it)
    {
       gotKey(it.key());
+   }
+}
+
+void KonfUpdate::gotAllGroups()
+{
+   if (!oldConfig1)
+   {
+      qWarning("AllGroups without file specification.");
+      return;
+   }
+
+   QStringList allGroups = oldConfig1->groupList();
+   for(QStringList::ConstIterator it = allGroups.begin();
+       it != allGroups.end(); ++it)
+   {
+     oldGroup = *it;
+     newGroup = oldGroup;
+     gotAllKeys();
    }
 }
 

@@ -123,6 +123,11 @@ AllKeys
 Specifies that all configuration information in the selected group should
 be moved (All keys).
 
+AllGroups
+
+Specifies that all configuration information from all keys in ALL 
+groups should be moved.
+
 
 RemoveKey=<oldkey>
 
