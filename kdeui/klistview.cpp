@@ -20,6 +20,7 @@
 #include <qdragobject.h>
 #include <qtimer.h>
 #include <qheader.h>
+#include <qcursor.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -37,6 +38,18 @@
 class KListView::KListViewPrivate
 {
 public:
+  bool bUseSingle;
+  bool bChangeCursorOverItem;
+
+  QListViewItem* pCurrentItem;
+  bool cursorInExecuteArea;
+
+  QTimer* pAutoSelect;
+  int autoSelectDelay;
+
+  QCursor oldCursor;
+
+
   QRect *invalidateRect;
   QPoint *pressPos;
   QPoint *startDragPos;
@@ -126,7 +139,7 @@ KListView::KListView( QWidget *parent, const char *name )
 
 	setAcceptDrops(true);
     setDragAutoScroll(true);
-    oldCursor = viewport()->cursor();
+    d->oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QListViewItem * ) ),
@@ -136,10 +149,10 @@ KListView::KListView( QWidget *parent, const char *name )
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
     kapp->addKipcEventMask( KIPC::SettingsChanged );
 
-    m_pCurrentItem = 0L;
+    d->pCurrentItem = 0L;
 
-    m_pAutoSelect = new QTimer( this );
-    connect( m_pAutoSelect, SIGNAL( timeout() ),
+    d->pAutoSelect = new QTimer( this );
+    connect( d->pAutoSelect, SIGNAL( timeout() ),
     	     this, SLOT( slotAutoSelect() ) );
 }
 
@@ -177,26 +190,26 @@ bool KListView::isExecuteArea( const QPoint& point )
 
 void KListView::slotOnItem( QListViewItem *item )
 {
-  if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
-    m_pAutoSelect->start( m_autoSelectDelay, true );
-    m_pCurrentItem = item;
+  if ( item && (d->autoSelectDelay > -1) && d->bUseSingle ) {
+    d->pAutoSelect->start( d->autoSelectDelay, true );
+    d->pCurrentItem = item;
   }
 }
 
 void KListView::slotOnViewport()
 {
-  if ( m_bChangeCursorOverItem )
-    viewport()->setCursor( oldCursor );
+  if ( d->bChangeCursorOverItem )
+    viewport()->setCursor( d->oldCursor );
 
-  m_pAutoSelect->stop();
-  m_pCurrentItem = 0L;
+  d->pAutoSelect->stop();
+  d->pCurrentItem = 0L;
 }
 
 void KListView::slotSettingsChanged(int category)
 {
     if (category != KApplication::SETTINGS_MOUSE)
         return;
-    m_bUseSingle = KGlobalSettings::singleClick();
+    d->bUseSingle = KGlobalSettings::singleClick();
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, QListViewItem *,
 						  const QPoint &, int ) ),
@@ -207,7 +220,7 @@ void KListView::slotSettingsChanged(int category)
 // 		  this, SLOT( slotExecute( QListViewItem *,
 // 					   const QPoint &, int ) ) );
 
-    if( m_bUseSingle )
+    if( d->bUseSingle )
     {
       connect( this, SIGNAL( mouseButtonClicked( int, QListViewItem *,
 						 const QPoint &, int ) ),
@@ -222,11 +235,11 @@ void KListView::slotSettingsChanged(int category)
 // 					const QPoint &, int ) ) );
     }
 
-    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+    d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
-    if( !m_bUseSingle || !m_bChangeCursorOverItem )
-	viewport()->setCursor( oldCursor );
+    if( !d->bUseSingle || !d->bChangeCursorOverItem )
+	viewport()->setCursor( d->oldCursor );
 }
 
 void KListView::slotAutoSelect()
@@ -243,9 +256,9 @@ void KListView::slotAutoSelect()
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
 
   QListViewItem* previousItem = currentItem();
-  setCurrentItem( m_pCurrentItem );
+  setCurrentItem( d->pCurrentItem );
 
-  if( m_pCurrentItem ) {
+  if( d->pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
       bool block = signalsBlocked();
@@ -255,15 +268,15 @@ void KListView::slotAutoSelect()
       if( !(keybstate & ControlMask) )
 	clearSelection();
 
-      bool select = !m_pCurrentItem->isSelected();
+      bool select = !d->pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
       viewport()->setUpdatesEnabled( false );
 
-      bool down = previousItem->itemPos() < m_pCurrentItem->itemPos();
-      QListViewItemIterator lit( down ? previousItem : m_pCurrentItem );
+      bool down = previousItem->itemPos() < d->pCurrentItem->itemPos();
+      QListViewItemIterator lit( down ? previousItem : d->pCurrentItem );
       for ( ; lit.current(); ++lit ) {
-	if ( down && lit.current() == m_pCurrentItem ) {
-	  m_pCurrentItem->setSelected( select );
+	if ( down && lit.current() == d->pCurrentItem ) {
+	  d->pCurrentItem->setSelected( select );
 	  break;
 	}
 	if ( !down && lit.current() == previousItem ) {
@@ -280,20 +293,20 @@ void KListView::slotAutoSelect()
       emit selectionChanged();
 
       if( selectionMode() == QListView::Single )
-	emit selectionChanged( m_pCurrentItem );
+	emit selectionChanged( d->pCurrentItem );
     }
     else if( (keybstate & ControlMask) )
-      setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
+      setSelected( d->pCurrentItem, !d->pCurrentItem->isSelected() );
     else {
       bool block = signalsBlocked();
       blockSignals( true );
 
-      if( !m_pCurrentItem->isSelected() )
+      if( !d->pCurrentItem->isSelected() )
 	clearSelection();
 
       blockSignals( block );
 
-      setSelected( m_pCurrentItem, true );
+      setSelected( d->pCurrentItem, true );
     }
   }
   else
@@ -311,10 +324,10 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		   &root_x, &root_y, &win_x, &win_y, &keybstate );
 
-    m_pAutoSelect->stop();
+    d->pAutoSelect->stop();
 
     //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-    if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+    if( !( d->bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
       emit executed( item );
       emit executed( item, pos, c );
     }
@@ -323,14 +336,14 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 
 void KListView::focusOutEvent( QFocusEvent *fe )
 {
-  m_pAutoSelect->stop();
+  d->pAutoSelect->stop();
 
   QListView::focusOutEvent( fe );
 }
 
 void KListView::leaveEvent( QEvent *e )
 {
-  m_pAutoSelect->stop();
+  d->pAutoSelect->stop();
 
   QListView::leaveEvent( e );
 }
@@ -376,17 +389,17 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
   QListViewItem *item = itemAt( vp );
 
   //do we process cursor changes at all?
-  if ( item && m_bChangeCursorOverItem && m_bUseSingle ) {
+  if ( item && d->bChangeCursorOverItem && d->bUseSingle ) {
     //Cursor moved on a new item or in/out the execute area
-    if( (item != m_pCurrentItem) ||
-	(isExecuteArea(vp) != m_cursorInExecuteArea) ) {
+    if( (item != d->pCurrentItem) ||
+	(isExecuteArea(vp) != d->cursorInExecuteArea) ) {
 
-      m_cursorInExecuteArea = isExecuteArea(vp);
+      d->cursorInExecuteArea = isExecuteArea(vp);
 
-      if( m_cursorInExecuteArea ) //cursor moved in execute area
+      if( d->cursorInExecuteArea ) //cursor moved in execute area
 	viewport()->setCursor( KCursor().handCursor() );
       else //cursor moved out of execute area
-	viewport()->setCursor( oldCursor );
+	viewport()->setCursor( d->oldCursor );
     }
   }
 
@@ -422,7 +435,7 @@ void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
   if( item ) {
     emit doubleClicked( item, e->globalPos(), col );
 
-    if( (e->button() == LeftButton) && !m_bUseSingle )
+    if( (e->button() == LeftButton) && !d->bUseSingle )
       emitExecute( item, e->globalPos(), col );
   }
 }
@@ -636,24 +649,52 @@ QList<QListViewItem> KListView::selectedItems() const
 	return list;
 }
 
+/*
+class QListViewItem
+{
+    int ownHeight;
+    int maybeTotalHeight;
+    int nChildren;
+
+    uint lsc: 14;
+    uint lso: 1;
+    uint open : 1;
+    uint selected : 1;
+    uint selectable: 1;
+    uint configured: 1;
+    uint expandable: 1;
+    uint is_root: 1;
+
+    QListViewItem * parentItem;
+    QListViewItem * siblingItem;
+    QListViewItem * childItem;
+
+    void * columns;
+};
+*/
+
 void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*parent*/, QListViewItem */*after*/)
 {
-/*
-    if ( parentItem && olderSibling &&
-	 olderSibling->parentItem == parentItem && olderSibling != this ) {
-	if ( parentItem->childItem == this ) {
-	    parentItem->childItem = siblingItem;
-	} else {
-	    QListViewItem * i = parentItem->childItem;
-	    while( i && i->siblingItem != this )
-		i = i->siblingItem;
-	    if ( i )
-		i->siblingItem = siblingItem;
+/*	if ( item->parentItem && item->olderSibling && olderSibling->parentItem == parentItem && olderSibling != this )
+	{
+		if (item->parentItem->childItem == this )
+		{
+			parentItem->childItem = siblingItem;
+		}
+		else
+		{
+			QListViewItem * i = parentItem->childItem;
+			while( i && i->siblingItem != this )
+				i = i->siblingItem;
+			if ( i )
+			i->siblingItem = siblingItem;
+		}
+		siblingItem = olderSibling->siblingItem;
+		olderSibling->siblingItem = this;
 	}
-	siblingItem = olderSibling->siblingItem;
-	olderSibling->siblingItem = this;
-    }
 */
+
+
 }
 
 void KListView::dragEnterEvent(QDragEnterEvent *event)

@@ -19,8 +19,6 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#include <qcursor.h>
-
 #ifdef CHEAT
 #define private protected
 #include <qlistview.h>
@@ -198,16 +196,6 @@ protected:
   virtual QRect drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after);	
 
   virtual void startDrag();
-
-  QCursor oldCursor;
-  bool m_bUseSingle;
-  bool m_bChangeCursorOverItem;
-
-  QListViewItem* m_pCurrentItem;
-  bool m_cursorInExecuteArea;
-
-  QTimer* m_pAutoSelect;
-  int m_autoSelectDelay;
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
