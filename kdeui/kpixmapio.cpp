@@ -52,7 +52,7 @@ struct KPixmapIOData
 typedef unsigned char uchar;
 typedef unsigned int uint;
 
-int lowest_bit(uint val)
+static int lowest_bit(uint val)
 {
     int i;
     uint test = 1;
