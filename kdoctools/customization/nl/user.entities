@@ -26,6 +26,7 @@
 <!ENTITY Fabrice.Mous       '<othercredit role="translator"><firstname>Fabrice</firstname><surname>Mous</surname><affiliation><address><email>fabricemous@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Sicco.Ens          '<othercredit role="translator"><firstname>Sicco</firstname><surname>Ens</surname><affiliation><address><email>sicco.ens@vlinderstichting.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Marc.Heyvaert      '<othercredit role="translator"><firstname>Marc</firstname><surname>Heyvaert</surname><affiliation><address><email>marc_heyvaert@yahoo.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Claire.Lotion      '<othercredit role="translator"><firstname>Claire</firstname><surname>Lotion</surname><affiliation><address><email>cmlotion@wanadoo.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -50,6 +51,7 @@
 <!ENTITY vertaling.fabrice "<para>Dit document is vertaald in het Nederlands door &Fabrice.Mous;.</para>">
 <!ENTITY vertaling.sicco   "<para>Dit document is vertaald in het Nederlands door &Sicco.Ens;.</para>">
 <!ENTITY vertaling.marc    "<para>Dit document is vertaald in het Nederlands door &Marc.Heyvaert;.</para>">
+<!ENTITY vertaling.claire  "<para>Dit document is vertaald in het Nederlands door &Claire.Lotion;.</para>">
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
 <!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
@@ -76,6 +78,7 @@
 <!ENTITY nagelezen.fabrice "<para>De vertaling werd nagelezen door &Fabrice.Mous;.</para>">
 <!ENTITY nagelezen.sicco   "<para>De vertaling werd nagelezen door &Sicco.Ens;.</para>">
 <!ENTITY nagelezen.marc    "<para>De vertaling werd nagelezen door &Marc.Heyvaert;.</para>">
+<!ENTITY nagelezen.claire  "<para>De vertaling werd nagelezen door &Claire.Lotion;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
