@@ -25,6 +25,10 @@ namespace KDB
 
         void addRecord( Record *record );
 
+        void clear();
+
+        void paintCell(QPainter *p, int row, int col, const QRect &cr, bool selected);
+
     private:
         bool         m_editable;
         RecordsetPtr m_data;

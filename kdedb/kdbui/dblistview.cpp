@@ -50,7 +50,7 @@ DBListViewItem::DBListViewItem(QListViewItem * parent, Object *obj)
 void
 DBListViewItem::init()
 {
-    kdDebug(20001) << m_obj->className() << endl;
+    //    kdDebug(20001) << m_obj->className() << endl;
     setOpen(true);
     if (m_obj->inherits("KDB::Plugin")) {
         setPixmap(0,BarIcon("plugin"));
@@ -81,7 +81,7 @@ DBListView::DBListView(QWidget *parent, const char * name, bool displayTree, int
     setRootIsDecorated(true);
 
     if ( m_mode == Auto ) {
-            // load all plugins
+        // load all plugins
         for ( PluginIterator itp = DBENGINE->beginPlugins(); itp.current(); ++itp ) {
 
             DBListViewItem *ip = 0L;
@@ -90,7 +90,7 @@ DBListView::DBListView(QWidget *parent, const char * name, bool displayTree, int
                 ip = new DBListViewItem(this, itp.current());
             
         }
-            // foreach plugin, load all connections
+        // foreach plugin, load all connections
         for (ConnectionIterator itc = DBENGINE->beginConnections(); itc.current(); ++itc) {
             addConnection(itc.current());
         }
@@ -196,3 +196,4 @@ DBListView::slotItemSelected(QListViewItem *i)
         emit nonDatabaseSelected();
     }
 }
+
