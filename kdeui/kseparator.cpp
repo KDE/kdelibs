@@ -48,6 +48,7 @@ void KSeparator::setOrientation(int orientation)
 {
    switch(orientation)
    {
+      case Vertical:
       case VLine:
          setFrameStyle( QFrame::VLine | QFrame::Sunken );
          setMinimumSize(2, 0);
@@ -56,6 +57,7 @@ void KSeparator::setOrientation(int orientation)
       default:
          kdWarning() << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine" << endl;
          
+      case Horizontal:
       case HLine:
          setFrameStyle( QFrame::HLine | QFrame::Sunken );
          setMinimumSize(0, 2);

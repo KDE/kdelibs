@@ -39,7 +39,7 @@ class KSeparator : public QFrame
    * Constructor.
    *
    * @param orientation Set the orientation of the separator.
-   * Possible values are HLine and VLine.
+   * Possible values are HLine or Horizontal and VLine or Vertical.
    **/
   KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
 	     WFlags f=0);
