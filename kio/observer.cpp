@@ -83,7 +83,7 @@ void Observer::killJob( int progressId )
 {
     KIO::Job * job = m_dctJobs[ progressId ];
     assert(job);
-    job->kill();
+    job->kill( false /* not quietly */ );
 }
 
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
