@@ -258,7 +258,7 @@ int main( int argc, char **argv )
         version, description, KAboutData::License_GPL,
         "(c) 1998-2000,2003 The KFM/Konqueror Developers");
     aboutData.addAuthor("David Faure",0, "faure@kde.org");
-    aboutData.addAuthor("Stephen Kulow",0, "coolo@kde.org");
+    aboutData.addAuthor("Stephan Kulow",0, "coolo@kde.org");
     aboutData.addAuthor("Bernhard Rosenkraenzer",0, "bero@arklinux.org");
     aboutData.addAuthor("Waldo Bastian",0, "bastian@kde.org");
     aboutData.addAuthor("Oswald Buddenhagen",0, "ossi@kde.org");
