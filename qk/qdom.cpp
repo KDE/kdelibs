@@ -473,7 +473,7 @@ QDOM_NodePrivate::QDOM_NodePrivate( QDOM_NodePrivate* n, bool deep )
 
   m_name = n->m_name;
   m_value = n->m_value;
-  
+
   if ( !deep )
     return;
 
@@ -845,7 +845,7 @@ QDOM_NodePrivate* QDOM_NodePrivate::removeChild( QDOM_NodePrivate* oldChild )
   // its parent is QDomDocument but it is not part of the documents child list.
   if ( oldChild->m_nextSibling == 0 && oldChild->m_previousSibling == 0 && m_firstChild != oldChild )
       return 0;
-  
+
   if ( oldChild->nextSibling() )
     oldChild->nextSibling()->m_previousSibling = oldChild->previousSibling();
   if ( oldChild->previousSibling() )
@@ -909,7 +909,7 @@ QDOM_DocumentPrivate* QDOM_NodePrivate::ownerDocument()
     QDOM_NodePrivate* p = this;
     while( p && p->isDocumentType() )
 	p = p->m_parentNode;
-    
+
     return (QDOM_DocumentPrivate*)p;
 }
 
@@ -1515,7 +1515,7 @@ void QDOM_NamedNodeMapPrivate::clearMap()
 	    if ( it.current()->deref() )
 		delete it.current();
     }
-    
+
     m_map.clear();
 }
 
@@ -2735,7 +2735,7 @@ QDOM_AttrPrivate* QDOM_ElementPrivate::attributeNode( const QString& name )
 QDOM_AttrPrivate* QDOM_ElementPrivate::setAttributeNode( QDOM_AttrPrivate* newAttr )
 {
     QDOM_NodePrivate* n = m_attr->namedItem( newAttr->nodeName() );
-  
+
     // Referencing is done by the maps
     m_attr->setNamedItem( newAttr );
 
@@ -3925,6 +3925,8 @@ public:
   bool setContent( const QString& text );
   QDomMimeSourceFactory* mimeSourceFactory();
   void setMimeSourceFactory( QDomMimeSourceFactory* );
+    
+  void setName(const QString &name) { type->m_name=name; }
 
   // Attributes
   QDOM_DocumentTypePrivate* doctype() { return type; };
@@ -4167,6 +4169,7 @@ QDomNodeList* QDOM_DocumentPrivate::elementsByTagName( const QString& tagname )
 
 QDomDocument::QDomDocument()
 {
+    impl = new QDOM_DocumentPrivate();
 }
 
 QDomDocument::QDomDocument( const QString& name )
@@ -4214,6 +4217,13 @@ bool QDomDocument::setContent( const QString& text )
   return IMPL->setContent( text );
 }
 
+void QDomDocument::setName( const QString &name )
+{
+  if( !impl )
+    impl = new QDOM_DocumentPrivate;
+  IMPL->setName( name );
+}
+      
 QDomDocumentType QDomDocument::doctype() const
 {
   if ( !impl )
