@@ -690,7 +690,7 @@ KJSO Location::toPrimitive(Type) const
 
 String Location::toString() const
 {
-  return String(part->url().prettyURL());
+  return String(part->url().prettyURL()+"/");
 }
 
 LocationFunc::LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
