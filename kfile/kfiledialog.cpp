@@ -53,7 +53,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     : QDialog(parent, name, modal), boxLayout(0)
 {
     QAccel *a = new QAccel( this );
-    a->connectItem(a->insertItem(Key_S + CTRL), this,
+    a->connectItem(a->insertItem(Key_T + CTRL), this,
 		   SLOT(completion()));
 
     // I hard code this for now
@@ -436,11 +436,27 @@ void KFileBaseDialog::locationChanged(const char *_txt)
 
 void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 {
+    // copy the argument in a temporary string
     QString text = _txt;
+    // it's unlikely to happen, that at the beginning are spaces, but
+    // for the end, it happens quite often, I guess.
     text = text.stripWhiteSpace();
+    // if the argument is no URL (the check is quite fragil) and it's
+    // no absolut path, we add the current directory to get a correct
+    // url
     if (text.find(':') < 0 && text[0] != '/')
 	text.insert(0, dir->url());
     
+    // in case we have a selection defined and someone patched the file-
+    // name, we check, if the end of the new name is changed.
+    if (!selection.isNull()) {
+	int position = text.findRev('/');
+	ASSERT(position >= 0); // we already inserted the current dir in case
+	QString filename = text.mid(position + 1, text.length());
+	if (filename != selection)
+	    selection = 0;
+    }
+
     KURL u = text.data(); // I have to take care of entered URLs
     bool filenameEntered = false;
     
@@ -1010,7 +1026,7 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
 void KFileBaseDialog::fileActivated(KFileInfo *item)
 {
     debugC("fileAct");
-	
+    
     if (acceptUrls)
 	filename_ = dir->url();
     else
@@ -1029,6 +1045,9 @@ void KFileBaseDialog::fileActivated(KFileInfo *item)
 
 void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 {
+    // remove the predefined selection
+    selection = 0;
+
     const char *highlighted = item->fileName();
     
     if (acceptUrls)
@@ -1038,7 +1057,7 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
     
     if (filename_.right(1)[0] != '/')
 	filename_ += "/";
-
+    
     QString tmp = highlighted;
     KURL::encodeURL(tmp);
     filename_ += tmp;

@@ -1,3 +1,10 @@
+1998-05-20  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: changed the accelerator for completion 
+	to CTRL-T
+
+	* kfiledialog.cpp: fixed the setSelection() feature
+
 1998-05-19  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.h: added setSelection
