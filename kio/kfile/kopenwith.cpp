@@ -421,7 +421,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   if ( edit->comboBox() ) {
     KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
     edit->comboBox()->setCompletionObject( comp );
-    edit->comboBox()-setAutoDeleteCompletionObject( true );
+    edit->comboBox()->setAutoDeleteCompletionObject( true );
   }
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
