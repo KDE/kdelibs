@@ -161,10 +161,12 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     }
 
     // limit to myMaximum items
-    int overload = urls.count() - myMaximum + defaultList.count();
-    while ( overload > 0 ) {
+    /* Note: overload is an (old) C++ keyword, some compilers (KCC) choke
+       on that, so call it Overload (capital 'O').  (matz) */
+    int Overload = urls.count() - myMaximum + defaultList.count();
+    while ( Overload > 0 ) {
         urls.remove((remove == RemoveBottom) ? urls.fromLast() : urls.begin());
-        overload--;
+        Overload--;
     }
 
     it = urls.begin();
@@ -284,8 +286,8 @@ void KURLComboBox::setMaxItems( int max )
         setDefaults();
 
         QPtrListIterator<KURLComboItem> it( itemList );
-        int overload = itemList.count() - myMaximum + defaultList.count();
-        for ( int i = 0; i <= overload; i++ )
+        int Overload = itemList.count() - myMaximum + defaultList.count();
+        for ( int i = 0; i <= Overload; i++ )
             ++it;
 
         for( ; it.current(); ++it )
