@@ -2387,6 +2387,8 @@ void KApplication::initUrlActionRestrictions()
   ("redirect", "tar", QString::null, QString::null, "file", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", "zip", QString::null, QString::null, "file", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "devices", QString::null, QString::null, QString::null, QString::null, QString::null, true));
 }
 
 bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
