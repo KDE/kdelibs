@@ -2,7 +2,7 @@
 Type=MimeType
 MimeType=application/vnd.ms-excel
 Icon=document
-Patterns=
+Patterns=*.xls;*.XLS;*.xlc;*.XLC;*.xll;*.XLL;*.xlm;*.XLM;*.xlw;*.XLW;
 Comment=Microsoft Excel spreadsheet
 Comment[ca]=Fulla de càlcul Microsoft Excel
 Comment[cs]=Tabulka programu Microsoft Excel
