@@ -61,10 +61,13 @@ void Decoder::setEncoding(const char *_encoding, bool force)
     haveEncoding = force;
 
     QTextCodec *old = m_codec;
+#ifdef DECODE_DEBUG
     kdDebug() << "old encoding is:" << m_codec->name() << endl;
-    
+#endif
     enc = enc.lower();
+#ifdef DECODE_DEBUG
     kdDebug() << "requesting:" << enc << endl;
+#endif
     if(enc.isNull() || enc.isEmpty())
         return;
     if(enc == "visual") // hebrew visually ordered
@@ -76,11 +79,11 @@ void Decoder::setEncoding(const char *_encoding, bool force)
         m_codec = QTextCodec::codecForName("iso8859-8-i");
         visualRTL = true;
     }
-
     if( !b ) // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
 	m_codec = old;
-	
+#ifdef DECODE_DEBUG
     kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
+#endif
 }
 
 const char *Decoder::encoding() const
@@ -101,8 +104,8 @@ QString Decoder::decode(const char *data, int len)
         uchar * uchars = (uchar *) data;
         if( uchars[0] == 0xfe && uchars[1] == 0xff ||
             uchars[0] == 0xff && uchars[1] == 0xfe ) {
-            enc = "utf16";
-            m_codec = QTextCodec::codecForName(enc);
+            enc = "ISO-10646-UCS-2";
+            m_codec = QTextCodec::codecForMib(1000);
         } else {
 
             // ### hack for a bug in QTextCodec. It cut's the input stream
@@ -210,6 +213,11 @@ QString Decoder::decode(const char *data, int len)
     {
         if(enc.isEmpty()) enc = "iso8859-1";
         m_codec = QTextCodec::codecForName(enc);
+        // be sure not to crash
+        if(!m_codec) {
+            m_codec = QTextCodec::codecForMib(4);
+            enc = "iso8859-1";
+        }
     }
     QString out;
 
