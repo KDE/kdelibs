@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1997/12/27 22:57:28  kulow
+// I was a little bit nerved by the QFile warnings caused by the KApplication
+// constructor, so I investigated a little bit ;) Fixed now
 //
 // Revision 1.13  1997/12/18 20:51:28  kalle
 // Some patches by Alex and me
@@ -60,7 +63,7 @@
 KConfigBase::KConfigBase()
 {
   pData = new KConfigBaseData();
-				      bool bGlobal = false )
+
   // setup a group entry for the default group
   KEntryDict* pDefGroup = new KEntryDict( 37, false );
   pDefGroup->setAutoDelete( true );
