@@ -19,6 +19,8 @@
     Boston, MA 02111-1307, USA.
 
     */
+#ifndef _MCOPIDL_NAMESPACE_H__
+#define _MCOPIDL_NAMESPACE_H__
 
 #include <stdio.h>
 #include <string>
@@ -85,3 +87,6 @@ public:
 	 */
 	static string namespaceOf(string symbol);
 };
+
+#endif
+
