@@ -35,6 +35,7 @@
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 #include <kurldrag.h>
+#include <kurlrequester.h>
 
 #include "kurlbar.h"
 
@@ -343,7 +344,7 @@ void KURLBar::setCurrentItem( const KURL& url )
         }
         item = item->next();
     }
-    
+
     if ( !hasURL ) {
         m_listBox->clearSelection();
         m_activeItem = 0L;
@@ -471,8 +472,9 @@ void KURLBar::slotDropped( QDropEvent *e )
 void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 {
     static const int IconSize   = 10;
-    static const int EditItem   = 20;
-    static const int RemoveItem = 30;
+    static const int AddItem   = 20;
+    static const int EditItem   = 30;
+    static const int RemoveItem = 40;
 
     // also emit activated(), as the item will be painted as "current" anyway
     if ( item )
@@ -480,12 +482,15 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
-    popup->insertItem( smallIcons ? i18n("&Large Icons") : i18n("&Small Icons"),
+    popup->insertItem( smallIcons ? 
+                       i18n("&Large Icons") : i18n("&Small Icons"), 
                        IconSize );
     popup->insertSeparator();
-    popup->insertItem( i18n("&Edit Item"), EditItem );
+    popup->insertItem( i18n("&Add entry"), AddItem );
+    popup->insertItem( i18n("&Edit entry"), EditItem );
     popup->insertSeparator();
-    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove Item"), RemoveItem );
+    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove entry"), 
+                       RemoveItem );
 
     popup->setItemEnabled( EditItem, item != 0L );
     popup->setItemEnabled( RemoveItem, item != 0L );
@@ -495,6 +500,9 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
         case IconSize:
             setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmall );
             m_listBox->triggerUpdate( true );
+            break;
+        case AddItem:
+            addItem();
             break;
         case EditItem:
             editItem( static_cast<KURLBarItem *>( item ) );
@@ -507,21 +515,41 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     }
 }
 
-void KURLBar::editItem( KURLBarItem *item )
+bool KURLBar::addItem()
 {
+    KURL url;
+    url.setPath( QDir::homeDirPath() );
+    KURLBarItem *item = new KURLBarItem( this, url,
+                                         i18n("Enter a description") );
+    if ( editItem( item ) ) {
+        m_listBox->insertItem( item );
+        return true;
+    }
+    
+    delete item;
+    return false;
+}
+
+bool KURLBar::editItem( KURLBarItem *item )
+{
+    KURL url            = item->url();
     QString description = item->description();
     QString icon        = item->icon();
     bool appLocal       = item->applicationLocal();
 
     if ( KURLBarDropDialog::getInformation( m_useGlobal,
-                                            item->url(), description,
+                                            url, description,
                                             icon, appLocal, this ))
     {
+        item->setURL( url );
         item->setDescription( description );
         item->setIcon( icon );
         item->setApplicationLocal( appLocal );
         m_listBox->triggerUpdate( true );
+        return true;
     }
+    
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -585,7 +613,7 @@ void KURLBarListBox::setOrientation( Qt::Orientation orient )
 ///////////////////////////////////////////////////////////////////
 
 
-bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
+bool KURLBarDropDialog::getInformation( bool allowGlobal, KURL& url,
                                         QString& description, QString& icon,
                                         bool& appLocal, QWidget *parent )
 {
@@ -594,6 +622,7 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
                                                        appLocal, parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
+        url         = dialog->url();
         description = dialog->description();
         icon        = dialog->icon();
         appLocal    = dialog->applicationLocal();
@@ -609,13 +638,18 @@ KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
                                       QString icon, bool appLocal,
                                       QWidget *parent, const char *name )
     : KDialogBase( parent, "drop dialog", true,
-                   i18n("Quick Access entry Settings"), Ok | Cancel, Ok, true)
+                   i18n("Edit Quick Access entry"), Ok | Cancel, Ok, true)
 {
     QVBox *box = new QVBox( this );
-    QString text = i18n("<qt>Please set an icon and a description for:<br>%1</b></qt>");
-    QLabel *label = new QLabel( text.arg( url.prettyURL() ), box );
+    QString text = i18n("<qt><b>Please set url, icon and a description.</b></br></qt>");
+    QLabel *label = new QLabel( text, box );
+    label->setAlignment( 0 ); // disable word-break
 
     QGrid *grid = new QGrid( 2, box );
+    label = new QLabel( i18n("URL:"), grid );
+    m_urlEdit = new KURLRequester( url.prettyURL(), grid );
+    m_urlEdit->setMode( KFile::Directory );
+
     grid->setSpacing( spacingHint() );
     label = new QLabel( i18n("Choose an &icon:"), grid );
 
@@ -649,6 +683,18 @@ KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
 
 KURLBarDropDialog::~KURLBarDropDialog()
 {
+}
+
+KURL KURLBarDropDialog::url() const
+{
+    QString text = m_urlEdit->url();
+    KURL u;
+    if ( text.at(0) == '/' )
+        u.setPath( text );
+    else
+        u = text;
+
+    return u;
 }
 
 QString KURLBarDropDialog::description() const

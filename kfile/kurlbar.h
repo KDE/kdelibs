@@ -122,7 +122,8 @@ signals:
     void activated( const KURL& url );
 
 protected:
-    virtual void editItem( KURLBarItem * );
+    virtual bool addItem();
+    virtual bool editItem( KURLBarItem * );
     virtual void resizeEvent( QResizeEvent * );
     bool isVertical() const { return orientation() == Vertical; }
 
@@ -191,30 +192,33 @@ private:
 class QCheckBox;
 class KIconButton;
 class KLineEdit;
+class KURLRequester;
 
 class KURLBarDropDialog : public KDialogBase
 {
     Q_OBJECT
 
 public:
-    static bool getInformation( bool allowGlobal, const KURL& url,
+    static bool getInformation( bool allowGlobal, KURL& url,
                                 QString& description, QString& icon,
                                 bool& appLocal, QWidget *parent = 0 );
 
     KURLBarDropDialog( bool allowGlobal, const KURL& url,
-                       const QString& description, QString icon, 
+                       const QString& description, QString icon,
                        bool appLocal = true,
                        QWidget *parent = 0, const char *name = 0 );
     ~KURLBarDropDialog();
 
+    KURL url() const;
     QString description() const;
     QString icon() const;
     bool applicationLocal() const;
 
 protected:
-    KLineEdit * m_edit;
-    KIconButton * m_iconButton;
-    QCheckBox * m_appLocal;
+    KURLRequester * m_urlEdit;
+    KLineEdit     * m_edit;
+    KIconButton   * m_iconButton;
+    QCheckBox     * m_appLocal;
 
 private:
     class KURLBarDropDialogPrivate;
