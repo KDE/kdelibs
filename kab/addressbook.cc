@@ -255,7 +255,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	      QMessageBox::information
 		(this, i18n("kab: File error"),
 		 i18n("Cannot open backup file for "
-		      "writing ((permission denied)."));
+		      "writing (permission denied)."));
 	    }
 	  // ----- reset the filename:
 	  if(!data->setFileName(temp, true, true))
