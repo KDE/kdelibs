@@ -61,6 +61,9 @@ Cambridge, MA 02139, USA.  */
 #endif     
 
 #include <stdlib.h>
+#ifdef __ALPHA
+#define __USE_GNU
+#endif
 #include <string.h>
 
 #if defined(HAVE_ARGZ_H)

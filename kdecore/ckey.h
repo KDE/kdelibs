@@ -7,7 +7,9 @@ typedef struct {
 
 #define MAX_KEY_LENGTH 15
 #define MAX_KEY_MODIFIER_LENGTH 15
-#define NB_KEYS 229
+#define NB_KEYS 232
+
+// Please, everybody who inserts new keys _must_ update NB_KEYS!!!!
 
 KKey KKeys[NB_KEYS] = {
 	{ "Escape", 0x1000 },
@@ -244,3 +246,4 @@ KKey KKeys[NB_KEYS] = {
 	{ "unknown", 0xffff }
 };
 
+// Did you insert a new key?  Update NB_KEYS!!!!!!!
