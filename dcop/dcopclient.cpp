@@ -141,7 +141,7 @@ public:
     int replyId;
     Q_INT32 transactionId;
     QCString calledApp;
-    QObject *replyObject;
+    QGuardedPtr<QObject> replyObject;
     QCString replySlot;
 };
 
