@@ -792,16 +792,19 @@ bool HTTPProtocol::http_open()
   case HTTP_PUT:
       header = "PUT ";
       moreData = true;
+      m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
       moreData = true;
+      m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_HEAD:
       header = "HEAD ";
       break;
   case HTTP_DELETE:
       header = "DELETE ";
+      m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   }
 
