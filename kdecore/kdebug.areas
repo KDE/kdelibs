@@ -135,10 +135,14 @@
 7024        kio (UIServer)
 7025        kpac
 7026        kio (KShred)
+7027        kio (TCPSlaveBase)
 7028        kio (Observer)
 7029        kssl
+7030        kio (KEMailSettings)
+7031        KImageIO
+7032        kio (KURLCompletion)
 
-# 71xx        are for kioslaves
+# 71xx      are for kioslaves
 7101        kio_file
 7102        kio_ftp
 7103        kio_http
@@ -191,7 +195,7 @@
 12000        KPoker
 12001        KPoker (Server)
 
-#Kate/Kant/KWrite 
+# Kate/Kant/KWrite 
 13000   Kate
 13010   Kate (XML/Syntax)
 13020   Kate (Document)
