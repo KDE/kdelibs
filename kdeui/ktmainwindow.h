@@ -377,13 +377,14 @@ protected slots:
     void menubarKilled();
 
 
-private:
+public:
 
   /** 
    * List of members of KTMainWindow class
    */
   static QList<KTMainWindow>* memberList;
-
+  
+private:
     /**
      * List of toolbars.
      */
