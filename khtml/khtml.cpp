@@ -128,6 +128,7 @@ KHTMLWidget::~KHTMLWidget()
   if(cache) delete cache;
   if(defaultSettings) delete defaultSettings;
   if(paintBuffer) delete paintBuffer;
+  paintBuffer = 0;
 }
 
 void KHTMLWidget::init()
