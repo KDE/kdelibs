@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <errno.h>
 
 #include <qfile.h>
@@ -284,7 +285,8 @@ KLauncher::requestStart(KLaunchRequest *request)
    requestData.resize( length );
    
    char *p = requestData.data();
-   *((long *)p)++ = request->arg_list.count()+1;
+   *(reinterpret_cast<long *>(p)) = request->arg_list.count()+1;
+   p += sizeof(long);
    strcpy(p, request->name.data());
    p += strlen(p) + 1;
    for(QValueList<QCString>::Iterator it = request->arg_list.begin();
