@@ -42,6 +42,6 @@ parser: $(srcdir)/grammar.y
 
 
 ## test program
-bin_PROGRAMS 	= testkjs
+check_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
 testkjs_LDADD = $(libkjs_la_LIBADD)
