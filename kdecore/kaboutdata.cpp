@@ -29,7 +29,7 @@
 QString
 KAboutPerson::name() const
 {
-   return QString::fromLatin1(mName);
+   return QString::fromUtf8(mName);
 }
 
 QString
@@ -44,15 +44,46 @@ KAboutPerson::task() const
 QString
 KAboutPerson::emailAddress() const
 {
-   return QString::fromLatin1(mEmailAddress);
+   return QString::fromUtf8(mEmailAddress);
 }
 
 
 QString
 KAboutPerson::webAddress() const
 {
-   return QString::fromLatin1(mWebAddress);
+   return QString::fromUtf8(mWebAddress);
 }
+
+
+KAboutTranslator::KAboutTranslator(const QString name
+                , const QString emailAddress)
+{
+    mName=name;
+    mEmail=emailAddress;
+}
+
+QString KAboutTranslator::KAboutTranslator::name() const
+{
+    return mName;
+}
+
+QString KAboutTranslator::KAboutTranslator::emailAddress() const
+{
+    return mEmail;
+}
+
+class KAboutDataPrivate
+{
+public:
+    KAboutDataPrivate()
+        : translatorName("_: NAME OF TRANSLATORS\nYour names")
+        , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails") 
+        {};
+    const char *translatorName;
+    const char *translatorEmail;
+};
+
+
 
 KAboutData::KAboutData( const char *appName,
                         const char *programName,
@@ -73,6 +104,8 @@ KAboutData::KAboutData( const char *appName,
   mHomepageAddress( homePageAddress ),
   mBugEmailAddress( bugsEmailAddress )
 {
+   d = new KAboutDataPrivate;
+   
    if( appName ) {
      const char *p = strrchr(appName, '/');
      if( p )
@@ -81,6 +114,11 @@ KAboutData::KAboutData( const char *appName,
 	 mAppName = appName;
    } else
      mAppName = 0;
+}
+
+KAboutData::~KAboutData()
+{
+    delete d;
 }
 
 void
@@ -95,6 +133,13 @@ KAboutData::addCredit( const char *name, const char *task,
 		    const char *emailAddress, const char *webAddress )
 {
   mCreditList.append(KAboutPerson(name,task,emailAddress,webAddress));
+}
+
+void 
+KAboutData::setTranslator( const char *name, const char *emailAddress)
+{
+  d->translatorName=name;
+  d->translatorEmail=emailAddress;
 }
 
 void
@@ -164,6 +209,65 @@ const QValueList<KAboutPerson>
 KAboutData::credits() const
 {
    return mCreditList;
+}
+
+const QValueList<KAboutTranslator> 
+KAboutData::translators() const
+{    
+    QValueList<KAboutTranslator> personList;
+        
+    if(d->translatorName == 0)
+        return personList;
+
+    QStringList nameList;
+    QStringList emailList;
+
+    QString names = i18n(d->translatorName);
+    if(names != QString::fromUtf8(d->translatorName))
+    {
+        nameList = QStringList::split(',',names);
+    }
+
+    
+    if(d->translatorEmail)
+    {
+        QString emails = i18n(d->translatorEmail);
+        
+        if(emails != QString::fromUtf8(d->translatorEmail))
+        {
+            emailList = QStringList::split(',',emails,true);
+        }
+    }
+    
+    
+    QStringList::Iterator nit;
+    QStringList::Iterator eit=emailList.begin();
+
+    for(nit = nameList.begin(); nit != nameList.end(); ++nit)
+    {
+        QString email;
+        if(eit != emailList.end())
+        {
+            email=*eit;
+            ++eit;
+        }
+
+        QString name=*nit;
+        
+        personList.append(KAboutTranslator( name, email));
+    }
+        
+    return personList;
+}
+
+QString
+KAboutData::aboutTranslationTeam()
+{
+    return i18n("replace this with information about your translation team",
+            "<p>KDE is translated in many languages thanks to the work "
+            "of the translation teams all over the world.</p>"
+            "<p>For more information on KDE internationalization "
+            "visit http://i18n.kde.org</p>");
 }
 
 QString

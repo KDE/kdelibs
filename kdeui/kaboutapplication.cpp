@@ -112,6 +112,25 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     }
   }
 
+  const QValueList<KAboutTranslator> translatorList = aboutData->translators();
+
+  if(translatorList.count() > 0)
+  {
+      KAboutContainer *translatorPage =
+          addScrolledContainerPage( i18n("T&ranslation") );
+
+      QValueList<KAboutTranslator>::ConstIterator it;
+      for(it = translatorList.begin(); it != translatorList.end(); ++it)
+      {
+          translatorPage->addPerson((*it).name(), (*it).emailAddress(),
+                  0,0);
+      }
+
+      QLabel *label = new QLabel(KAboutData::aboutTranslationTeam()
+              ,translatorPage);
+      translatorPage->addWidget(label);
+  }
+
   if (!aboutData->license().isEmpty() )
   {
     addLicensePage( i18n("&License agreement"), aboutData->license() );

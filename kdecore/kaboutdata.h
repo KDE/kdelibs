@@ -94,6 +94,47 @@ private:
 };
 
 /**
+ * This structure is used to store information about a translator.
+ * It can store the translator's name and an email address.
+ * This class is intended for use in the @ref KAboutProgram class, 
+ * but it can be used elsewhere as well.
+ * Normally you should at least define the translator's name.
+ * 
+ * It's not possible to use @ref KAboutPerson for this, because
+ * KAboutPerson stores internaly only const char* pointers, but the
+ * translator information is generated dynamically from the translation
+ * of a dummy string.
+*/
+class KAboutTranslator
+{
+public:
+    /**
+     * Convenience constructor
+     *
+     * @param name The name of the person.
+     *
+     * @param emailAddress The email address of the person.
+     */
+    KAboutTranslator(QString name=QString::null
+            , QString emailAddress=QString::null);
+
+    /** 
+     * The translator's name
+     */
+    QString name() const;
+
+    /**
+     * The translator's email
+     */
+    QString emailAddress() const;
+    
+private:
+    QString mName;
+    QString mEmail;
+};
+
+
+/**
  * This class is used to store information about a program. It can store
  * such values a version number, program name, homepage, email address
  * for bug reporting, multiple authors and contributors
@@ -171,6 +212,8 @@ class KAboutData
 		const char *bugsEmailAddress = "submit@bugs.kde.org"
 		);
 
+     ~KAboutData();
+
     /**
      * Defines an author. You can call this function as many times you
      * need. Each entry is appended to a list. The person in the first entry
@@ -216,6 +259,28 @@ class KAboutData
 		    const char *emailAddress=0,
 		    const char *webAddress=0 );
 
+    /**
+     * Sets the name of the translator of the gui. Since this depends
+     * on the language, just use a dummy text marked for translation.
+     * 
+     * For example:
+     * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\nYour names")
+     * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\nYour emails"));
+     *
+     * The translator can then translate this dummy text with his name
+     * or with a list of names separated with ",".
+     * If there is no translation or the application is used with the
+     * default language, this function call is ignored.
+     *
+     * Note: If you are using the default KDE automake environment,
+     * there is no need to use this function, because the two
+     * default strings above are added to the applications po file
+     * automatically.
+     *
+     * @see KAboutTranslator
+     */
+    void setTranslator(const char* name, const char* emailAddress);
+    
     /**
      * Defines a licence text.
      *
@@ -279,6 +344,17 @@ class KAboutData
     const QValueList<KAboutPerson> credits() const;
 
     /**
+     * @return translators information (list of persons)
+     */
+    const QValueList<KAboutTranslator> translators() const;
+
+    /** 
+     * @return a message about the translation team 
+     */
+    static QString aboutTranslationTeam();
+
+
+    /**
      * @return the free form text (translated). 
      */
     QString otherText() const;
@@ -297,6 +373,7 @@ class KAboutData
      */
     QString copyrightStatement() const { return( QString::fromLatin1(mCopyrightStatement )); }
 
+
   private:
     const char *mAppName;
     const char *mProgramName;
@@ -313,7 +390,6 @@ class KAboutData
 
     KAboutDataPrivate *d;
 };
-
 
 #endif
 
