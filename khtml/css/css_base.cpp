@@ -4,10 +4,8 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *               1999 Waldo Bastian (bastian@kde.org)
  *               2001 Andreas Schlapbach (schlpbch@iam.unibe.ch)
- *               2001 Dirk Mueller (mueller@kde.org)
+ *               2001-2003 Dirk Mueller (mueller@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
- *
- * $Id$
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +28,10 @@
 #include "kdebug.h"
 
 #include "css_base.h"
+
+#ifdef CSS_DEBUG
+#include "cssproperties.h"
+#endif
 
 #include "css_stylesheetimpl.h"
 #include "xml/dom_docimpl.h"
