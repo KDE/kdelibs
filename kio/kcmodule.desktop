@@ -6,7 +6,9 @@ Name=KDE Control Module
 Name[ar]=وحدة تحكم كيدي
 Name[be]=Модуль кіраваньня KDED
 Name[bs]=KDE kontrolni modul
+Name[ca]=Mòdul de control del KDE
 Name[cs]=Ovládací modul KDE
+Name[cy]=Modiwl Rheolaeth KDE
 Name[da]=KDE-kontrolmodul
 Name[de]=KDE-Kontrollmodul
 Name[el]=Άρθρωμα ελέγχου του KDE
@@ -16,11 +18,14 @@ Name[eu]=KDE Kontrol Moduloa
 Name[fa]=بخش کنترل KDE
 Name[fi]=KDE Ohjauskeskus
 Name[fr]=Module de contrôle KDE
+Name[ga]=Modúl Rialaithe KDE
 Name[he]=מודול תצורה של KDE
 Name[hu]=KDE beállítómodul
+Name[is]=KDE Stjórneining
 Name[it]=Modulo di controllo KDE
 Name[ja]=KDE コントロールモジュール
 Name[lt]=KDE valdymo modulis
+Name[mn]=KDED-Хяналтын Модул
 Name[nb]=KDE styringsmodul
 Name[nl]=KDE Configuratiemodule
 Name[nn]=KDE-kontrollmodul
@@ -32,13 +37,16 @@ Name[ro]=Modul de control KDE
 Name[ru]=Модуль управления KDE
 Name[sk]=Ovládací modul KDE
 Name[sl]=Nadzorni modul KDE
+Name[sr]=KDE Контролни модул
 Name[ss]=Sahluko sekulawula se KDE 
 Name[sv]=KDE-inställningsmodul
 Name[ta]=K §Á¨ºî ÝÆø ¸ðÎôÀ¡ðÎì ÜÚ
 Name[tr]=KDE Kontrol Modülü
 Name[uk]=Модуль центра керування KDE
 Name[ven]=Phanele ndangula ya phirinthara
+Name[wa]=Module di contrôle KDE
 Name[xh]=Ulawulo Lwesicatshulwa we KDE
+Name[xx]=xxKDE Control Modulexx
 Name[zh_CN]=KDE 控制模块
 Name[zh_TW]=KDE 控制模組
 Name[zu]=Ingxenye ye-KDE Control
@@ -48,4 +56,7 @@ Type=QString
 
 [PropertyDef::X-KDE-RootOnly]
 Type=bool
+
+[PropertyDef::X-KDE-KCDParents]
+Type=QStringList
 
