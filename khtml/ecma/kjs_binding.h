@@ -32,7 +32,7 @@ namespace KJS {
    */
   class NodeObject : public HostImp {
   public:
-    virtual DOM::Node toNode() const = 0L;
+    virtual DOM::Node toNode() const = 0;
   };
 
   /**
