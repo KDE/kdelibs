@@ -40,6 +40,10 @@ case "$1" in
           mv /usr/share/servicetypes /etc/kde2/servicetypes
         fi
       fi
+      ln -sf /etc/kde2/applnk /usr/share/applnk
+      ln -sf /etc/kde2/mimelnk /usr/share/mimelnk
+      ln -sf /etc/kde2/services /usr/share/services
+      ln -sf /etc/kde2/servicetypes /usr/share/servicetypes
     ;;
 
     abort-upgrade)
