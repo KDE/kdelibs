@@ -565,6 +565,10 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
 //kdDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height() << " m_lines.count=" << m_lines.count() << endl;
 
+    NodeImpl *lastNode = 0;
+    int lastOffset = 0;
+    FindSelectionResult lastResult = SelectionPointAfter;
+
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         InlineTextBox* s = m_lines[si];
@@ -590,11 +594,18 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 	    node = element();
 	    return SelectionPointInside;
         } else if ( result == SelectionPointAfterInLine ) {
-	    offset = s->m_start + s->m_len;
-	    node = element();
-	    return result;	// propagate to RenderFlow::checkSelectionPoint
+	    lastOffset = s->m_start + s->m_len;
+	    lastNode = element();
+	    lastResult = result;
+	    // no return here
 	}
 
+    }
+
+    if (lastNode) {
+        offset = lastOffset;
+	node = lastNode;
+	return lastResult;
     }
 
     // set offset to max
