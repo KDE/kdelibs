@@ -1236,6 +1236,10 @@ void KFilePropsPlugin::applyChanges()
       qt_leave_modal(&dummy);
       return;
     }
+    properties->updateUrl(properties->kurl());
+    // Update also relative path (for apps and mimetypes)
+    if ( !m_sRelativePath.isEmpty() )
+      determineRelativePath( properties->kurl().path() );
   }
 
   // No job, keep going
