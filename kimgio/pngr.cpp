@@ -15,6 +15,7 @@
 #ifdef HAVE_LIBPNG
 
 #include<stdio.h>
+#include<stdlib.h>
 #include<qimage.h>
 #include<qfile.h>
 
@@ -119,11 +120,18 @@ void kimgio_png_read( QImageIO *io )
 		}
 	}
 
-	unsigned *pixels = (unsigned *) image.bits();
-	for( unsigned row = 0; row < png_info->height; row++ ) {
-		for( int i = 0; i < image.width(); i++ ) {
-			*pixels = *pixels >> 8;
-			pixels++;
+	if ( png_info->color_type == PNG_COLOR_TYPE_RGB_ALPHA ) {
+		debug( "Colortype %d is rgb/alpha",
+			png_info->color_type );
+		image.setAlphaBuffer(true);
+	}
+	else {
+		unsigned *pixels = (unsigned *) image.bits();
+		for( unsigned row = 0; row < png_info->height; row++ ) {
+			for( int i = 0; i < image.width(); i++ ) {
+				*pixels = *pixels >> 8;
+				pixels++;
+			}
 		}
 	}
 
@@ -147,13 +155,27 @@ void kimgio_png_write( QImageIO *iio )
 	png_infop info_ptr;
         int colortype = 0;
 
-	const QImage& image = iio->image().convertDepth(8);
+	const QImage& image = iio->image();
 	int w = image.width(), h = image.height();
 
-	if(image.hasAlphaBuffer())
+	int numcolors = image.numColors();
+	int depth = image.depth() == 1 ? 1 : 8;
+
+	//debug("Size:\t%d X %d\n\tColors:\t%d\n\tDepth:\t%d",
+	//	w, h, numcolors, image.depth());
+
+	if(numcolors > 0) {
+		//debug("PALETTE");
+		colortype = PNG_COLOR_TYPE_PALETTE;
+	}
+	else if(image.hasAlphaBuffer()) {
+		//debug("RGB_ALPHA");
 		colortype = PNG_COLOR_TYPE_RGB_ALPHA;
-	else
+	}
+	else {
+		//debug("RGB");
 		colortype = PNG_COLOR_TYPE_RGB;
+	}
 
 	// open the file
 	fp = fdopen(((QFile*)f)->handle(), "wb");
@@ -185,8 +207,6 @@ void kimgio_png_write( QImageIO *iio )
 		return;
 	}
 
-	info_ptr->channels = 3;
-
 	/* set up the output control if you are using standard C streams */
 	png_init_io(png_ptr, fp);
 
@@ -198,36 +218,34 @@ void kimgio_png_write( QImageIO *iio )
 	* PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
 	* currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
 	*/
-	png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_PALETTE,
+	png_set_IHDR(png_ptr, info_ptr, w, h, depth, colortype,
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
 	/* set the palette if there is one.  REQUIRED for indexed-color images */
-	int numcolors = image.numColors();
 
-	info_ptr->palette = (png_colorp)png_malloc(png_ptr, numcolors * sizeof (png_color));
-	for(int i = 0; i < numcolors; i++) {
-		info_ptr->palette[i].red = qRed(image.color(i));
-		info_ptr->palette[i].blue = qBlue(image.color(i));
-		info_ptr->palette[i].green = qGreen(image.color(i));
-	}
-	if(numcolors > 0)
+	if(numcolors > 0) {
+		info_ptr->palette = (png_colorp)png_malloc(png_ptr, numcolors * sizeof (png_color));
+		for(int i = 0; i < numcolors; i++) {
+			info_ptr->palette[i].red = qRed(image.color(i));
+			info_ptr->palette[i].blue = qBlue(image.color(i));
+			info_ptr->palette[i].green = qGreen(image.color(i));
+		}
 		png_set_PLTE(png_ptr, info_ptr, info_ptr->palette, numcolors);
+	}
 
 	//optional significant bit chunk
-/*
-	info_ptr->sig_bit.red = 8;
-	info_ptr->sig_bit.green = 8;
-	info_ptr->sig_bit.blue = 8;
-*/
-	//if we are dealing with a grayscale image then
-	//sig_bit.gray = true_bit_depth;
-	//otherwise, if we are dealing with a color image then
-	//sig_bit.red = true_red_bit_depth;
-	//sig_bit.green = true_green_bit_depth;
-	//sig_bit.blue = true_blue_bit_depth;
-	//if the image has an alpha channel then
-	//sig_bit.alpha = true_alpha_bit_depth;
-	//png_set_sBIT(png_ptr, info_ptr, *info_ptr->sig_bit);
+
+	if(image.isGrayscale()) {
+		info_ptr->sig_bit.gray = 8;
+	}
+	else {
+		info_ptr->sig_bit.red = 8;
+		info_ptr->sig_bit.green = 8;
+		info_ptr->sig_bit.blue = 8;
+	}
+
+	if(image.hasAlphaBuffer())
+		info_ptr->sig_bit.alpha = 8;
 
   
 	// Optional gamma chunk is strongly suggested if you have any guess
@@ -254,18 +272,19 @@ void kimgio_png_write( QImageIO *iio )
 	// PNG_TEXT_COMPRESSION_zTXt_WR, so it doesn't get written out again
 	// at the end.
 
+	// pack pixels into bytes
 	png_set_packing( png_ptr );
 	png_set_strip_16( png_ptr );
-
-	// pack pixels into bytes
-	//png_set_packing(png_ptr);
 
 	// swap location of alpha bytes from ARGB to RGBA 
 	//png_set_swap_alpha(png_ptr);
 
 	// Get rid of filler (OR ALPHA) bytes, pack XRGB/RGBX/ARGB/RGBA into
 	// RGB (4 channels -> 3 channels). The second parameter is not used.
-	//png_set_filler(png_ptr, 0, PNG_FILLER_BEFORE);
+	if ( depth == 8 && !image.hasAlphaBuffer() )
+		png_set_filler(png_ptr, 0,
+	    QImage::systemByteOrder() == QImage::BigEndian ?
+		PNG_FILLER_BEFORE : PNG_FILLER_AFTER);
 
 	// flip BGR pixels to RGB
 	//png_set_bgr(png_ptr);
@@ -275,12 +294,6 @@ void kimgio_png_write( QImageIO *iio )
 
 	// swap bits of 1, 2, 4 bit packed pixel formats
 	//png_set_packswap(png_ptr);
-
-	// turn on interlace handling if you are not using png_write_image()
-	//if (interlacing)
-	//	number_passes = png_set_interlace_handling(png_ptr);
-	//else
-	//	number_passes = 1;
 
 	// The easiest way to write the image (you may have a different memory
 	// layout, however, so choose what fits your needs best).  You need to
@@ -308,7 +321,8 @@ void kimgio_png_write( QImageIO *iio )
 	png_write_end(png_ptr, info_ptr);
 
 	// if you malloced the palette, free it here
-	free(info_ptr->palette);
+	if(numcolors > 0)
+		free(info_ptr->palette);
 
 	// if you allocated any text comments, free them here
 
@@ -321,9 +335,6 @@ void kimgio_png_write( QImageIO *iio )
 	iio->setStatus( 0 );
 
 	return;
-
-	//fprintf( stderr, "Warning: PNG writing not yet implemented.\n" );
-	//return;
 }
 
 #endif /* HAVE_LIBPNG */
