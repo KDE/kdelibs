@@ -58,7 +58,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
      cfg = _relpath+".directory";
 
   d->directoryEntryPath = cfg;
-     
+
   KConfig config( cfg, true, false, "apps" );
 
   config.setDesktopGroup();
@@ -248,7 +248,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
         KSycocaEntry *p = (*it);
         // Choose the right list
         KSortableValueList<SPtr,QCString> & list = p->isType(KST_KServiceGroup) ? glist : slist;
-        QString name = p->isType(KST_KServiceGroup) ? 
+        QString name = p->isType(KST_KServiceGroup) ?
                                    static_cast<KServiceGroup *>(p)->caption() :
                                    p->name();
         QCString key( name.length() * 4 + 1 );
@@ -318,6 +318,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
 
     for (QStringList::ConstIterator it(d->sortOrder.begin()); it != d->sortOrder.end(); ++it)
     {
+        QString stripedString = (*it).stripWhiteSpace();
         //kdDebug() << "order has : " << *it << endl;
         for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
             {
@@ -326,7 +327,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
                 if ( entry[entry.length()-1] == '/' )
                    entry.truncate(entry.length()-1);
                 //kdDebug() << "Comparing to : " << entry.mid(entry.findRev('/')+1) << endl;
-                if (*it == entry.mid(entry.findRev('/')+1))
+                if ( stripedString == entry.mid(entry.findRev('/')+1))
                     {
                         //kdDebug() << "Appending to sorted : " << *it << endl;
                         sorted.append(*sit);
