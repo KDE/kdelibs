@@ -338,16 +338,24 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                     cx = _tx + xp;
                 else {
                     cx = _tx;
-                    sx = -xp;
-                    cw += xp;
+                    if (pixw == 0)
+                        sx = 0;
+                    else {
+                        sx = -xp;
+                        cw += xp;
+                    }
                 }
+                cx += bleft;
             } else {
-                cw = w-vpab;
+                cw = w;
                 cx = _tx;
-                sx =  pixw ? pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
+                if (pixw == 0)
+                    sx = 0;
+                else {
+                    sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
+                    sx -= bleft % pixw;
+                }
             }
-
-            cx += bleft;
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
@@ -356,16 +364,26 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                     cy = _ty + yp;
                 else {
                     cy = _ty;
-                    sy = -yp;
-                    ch += yp;
+                    if (pixh == 0) {
+                        sy = 0;
+                    } else {
+                        sy = -yp;
+                        ch += yp;
+                    }
                 }
+
+                cy += borderTop();
             } else {
-                ch = h-hpab;
+                ch = h;
                 cy = _ty;
-                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
+                if (pixh == 0) {
+                    sy = 0;
+                } else {
+                    sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
+                    sy -= borderTop() % pixh;
+                }
             }
 
-            cy += borderTop();
 	    if (layer())
 		layer()->scrollOffset(sx, sy);
         }
