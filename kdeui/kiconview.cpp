@@ -22,6 +22,9 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     m_pAutoSelect = new QTimer( this );
     connect( m_pAutoSelect, SIGNAL( timeout() ),
     	     this, SLOT( slotAutoSelect() ) );
+
+    connect( this, SIGNAL( selectionChanged() ),
+	     this, SLOT( selch() ) );
 }
 
 void KIconView::slotSettingsChanged()
@@ -82,37 +85,42 @@ void KIconView::slotAutoSelect()
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
 
+  QIconViewItem* previousItem = currentItem();
+  setCurrentItem( m_pCurrentItem );
+
   if( m_pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
-      //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )
-	clearSelection();
-
       //Temporary implementaion of the selection until QIconView supports it
-      bool select = !m_pCurrentItem->isSelected();
       bool block = signalsBlocked();
       blockSignals( true );
-      viewport()->setUpdatesEnabled( FALSE );
+
+      //No Ctrl? Then clear before!
+      if( !(keybstate & ControlMask) )  
+	clearSelection(); 
+
+      bool select = !m_pCurrentItem->isSelected();
+      bool update = viewport()->isUpdatesEnabled();
+      viewport()->setUpdatesEnabled( false );
 
       //Calculate the smallest rectangle that contains the current Item
       //and the one that got the autoselect event
       QRect r;
       QRect redraw;
-      if ( currentItem() )
-	r = QRect( QMIN( currentItem()->x(), m_pCurrentItem->x() ),
-		   QMIN( currentItem()->y(), m_pCurrentItem->y() ),
+      if ( previousItem )
+	r = QRect( QMIN( previousItem->x(), m_pCurrentItem->x() ),
+		   QMIN( previousItem->y(), m_pCurrentItem->y() ),
 		   0, 0 );
       else
 	r = QRect( 0, 0, 0, 0 );
-      if ( currentItem()->x() < m_pCurrentItem->x() )
-	r.setWidth( m_pCurrentItem->x() - currentItem()->x() + m_pCurrentItem->width() );
+      if ( previousItem->x() < m_pCurrentItem->x() )
+	r.setWidth( m_pCurrentItem->x() - previousItem->x() + m_pCurrentItem->width() );
       else
-	r.setWidth( currentItem()->x() - m_pCurrentItem->x() + currentItem()->width() );
-      if ( currentItem()->y() < m_pCurrentItem->y() )
-	r.setHeight( m_pCurrentItem->y() - currentItem()->y() + m_pCurrentItem->height() );
+	r.setWidth( previousItem->x() - m_pCurrentItem->x() + previousItem->width() );
+      if ( previousItem->y() < m_pCurrentItem->y() )
+	r.setHeight( m_pCurrentItem->y() - previousItem->y() + m_pCurrentItem->height() );
       else
-	r.setHeight( currentItem()->y() - m_pCurrentItem->y() + currentItem()->height() );
+	r.setHeight( previousItem->y() - m_pCurrentItem->y() + previousItem->height() );
       r = r.normalize();
 
       //Check for each item whether it is within the rectangle.
@@ -125,9 +133,14 @@ void KIconView::slotAutoSelect()
       }
 
       blockSignals( block );
-      viewport()->setUpdatesEnabled( true );
+      viewport()->setUpdatesEnabled( update );
       repaintContents( redraw, false );
+
       emit selectionChanged();
+
+      if( selectionMode() == QIconView::Single )
+	emit selectionChanged( m_pCurrentItem );
+
       //setSelected( m_pCurrentItem, true, (keybstate & ControlMask), (keybstate & ShiftMask) );
     }
     else if( (keybstate & ControlMask) )
@@ -137,13 +150,27 @@ void KIconView::slotAutoSelect()
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
-
-  setCurrentItem( m_pCurrentItem );
 }
 
 void KIconView::slotExecute( QIconViewItem *item )
 {
+  Window root;
+  Window child;
+  int root_x, root_y, win_x, win_y;
+  uint keybstate;
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+
   m_pAutoSelect->stop();
 
-  emit executed( item );
+  //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
+  if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) )
+    emit executed( item );
+}
+
+void KIconView::focusOutEvent( QFocusEvent *fe )
+{
+  m_pAutoSelect->stop();
+
+  QIconView::focusOutEvent( fe );
 }
