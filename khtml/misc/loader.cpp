@@ -277,7 +277,7 @@ ImageSource::ImageSource(QByteArray buf)
 */
 int ImageSource::readyToSend()
 {
-    if(eof)
+    if(eof && pos == buffer.size())
         return -1;
 
     return  buffer.size() - pos;
@@ -317,7 +317,6 @@ void ImageSource::enableRewind(bool on)
 void ImageSource::rewind()
 {
     pos = 0;
-    eof = false;
     if (!rew) {
         QDataSource::rewind();
     } else
@@ -460,7 +459,6 @@ fixBackground(QPixmap &bgPixmap, const QSize& pixmap_size)
 #endif
    return true;
 }
-
 
 const QPixmap &CachedImage::tiled_pixmap() const
 {
@@ -633,10 +631,13 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
             p = new QPixmap();
             p->loadFromData( _buffer.buffer() );
             // set size of image.
-            if( p && !p->isNull() ) {
+            if( p ) {
                 m_size = p->width() * p->height() * p->depth() / 8;
 
-                do_notify(*p, p->rect());
+                if(p->isNull())
+                    do_notify(*p, QRect(0, 0, 16, 16)); // ### load "broken image" icon
+                else
+                    do_notify(*p, p->rect());
             }
         }
 
@@ -650,6 +651,8 @@ void CachedImage::error( int /*err*/, const char */*text*/ )
 #ifdef CACHE_DEBUG
     kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
+    if(imgSource)
+        imgSource->setEOF(true);
 }
 
 
