@@ -1152,6 +1152,9 @@ DOMDocumentType::DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt)
 
 Value DOMDocumentType::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMDocumentType::tryGet " << propertyName.qstring() << endl;
+#endif
   return DOMObjectLookupGetValue<DOMDocumentType, DOMNode>(exec, propertyName, &DOMDocumentTypeTable, this);
 }
 
