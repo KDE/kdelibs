@@ -1689,42 +1689,39 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	return parseBackground(curP, endP, important, propList);
     }
     case CSS_PROP_BORDER:		// [ 'border-width' || 'border-style' || <color> ] | inherit
+    {
+        const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE, 
+			            CSS_PROP_BORDER_COLOR }; 
+        return parseShortHand(curP, endP, properties, 3, important, propList);
+    }
     case CSS_PROP_BORDER_TOP:		// [ 'border-top-width' || 'border-style' || <color> ] | inherit
+    {
+        const int properties[3] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE, 
+			            CSS_PROP_BORDER_TOP_COLOR}; 
+        return parseShortHand(curP, endP, properties, 3, important, propList);
+    }
     case CSS_PROP_BORDER_RIGHT:		// [ 'border-right-width' || 'border-style' || <color> ] | inherit
+    {
+        const int properties[3] = { CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE, 
+		                    CSS_PROP_BORDER_RIGHT_COLOR };
+        return parseShortHand(curP, endP, properties, 3, important, propList);
+    }
     case CSS_PROP_BORDER_BOTTOM:	// [ 'border-bottom-width' || 'border-style' || <color> ] | inherit
+    {
+    	const int properties[3] = { CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE, 
+		                    CSS_PROP_BORDER_BOTTOM_COLOR }; 
+        return parseShortHand(curP, endP, properties, 3, important, propList);
+    }
     case CSS_PROP_BORDER_LEFT:		// [ 'border-left-width' || 'border-style' || <color> ] | inherit
+    {
+        const int properties[3] = { CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE, 
+		                    CSS_PROP_BORDER_LEFT_COLOR }; 
+        return parseShortHand(curP, endP, properties, 3, important, propList);
+    }
     case CSS_PROP_OUTLINE:		// [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
     {
-#ifdef CSS_DEBUG
-        kdDebug(6080) << "parsing border property" << endl;
-#endif
-        const int *properties;
-        const int properties_border[3] = {
-            CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE, CSS_PROP_BORDER_COLOR };
-        const int properties_border_top[3] = {
-            CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_TOP_COLOR };
-        const int properties_border_bottom[3] = {
-            CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_BOTTOM_COLOR };
-        const int properties_border_left[3] = {
-            CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE, CSS_PROP_BORDER_LEFT_COLOR };
-        const int properties_border_right[3] = {
-            CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE, CSS_PROP_BORDER_RIGHT_COLOR };
-        const int properties_outline[3] =
-        { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, CSS_PROP_OUTLINE_WIDTH };
-        if(propId == CSS_PROP_BORDER)
-            properties = properties_border;
-        else if(propId == CSS_PROP_BORDER_TOP)
-            properties = properties_border_top;
-        else if(propId == CSS_PROP_BORDER_BOTTOM)
-            properties = properties_border_bottom;
-        else if(propId == CSS_PROP_BORDER_LEFT)
-            properties = properties_border_left;
-        else if(propId == CSS_PROP_BORDER_RIGHT)
-            properties = properties_border_right;
-        else if(propId == CSS_PROP_OUTLINE)
-            properties = properties_outline;
-        else return false;
-
+        const int properties[3] = { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, 
+		                    CSS_PROP_OUTLINE_WIDTH };
         return parseShortHand(curP, endP, properties, 3, important, propList);
     }
     case CSS_PROP_BORDER_COLOR:		// <color>{1,4} | transparent | inherit
@@ -1736,52 +1733,32 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             parsedValue = new CSSPrimitiveValueImpl(CSS_VAL_TRANSPARENT);
             break;
         }
-        const int properties[4] = {
-            CSS_PROP_BORDER_TOP_COLOR,
-            CSS_PROP_BORDER_RIGHT_COLOR,
-            CSS_PROP_BORDER_BOTTOM_COLOR,
-            CSS_PROP_BORDER_LEFT_COLOR
-            };
+        const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
+            			    CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
         return parse4Values(curP, endP, properties, important, propList);
     }
     case CSS_PROP_BORDER_WIDTH:		// <border-width>{1,4} | inherit
     {
-        const int properties[4] = {
-            CSS_PROP_BORDER_TOP_WIDTH,
-            CSS_PROP_BORDER_RIGHT_WIDTH,
-            CSS_PROP_BORDER_BOTTOM_WIDTH,
-            CSS_PROP_BORDER_LEFT_WIDTH
-            };
+        const int properties[4] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_RIGHT_WIDTH,
+            			    CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_LEFT_WIDTH };
         return parse4Values(curP, endP, properties, important, propList);
     }
     case CSS_PROP_BORDER_STYLE:		// <border-style>{1,4} | inherit
     {
-        const int properties[4] = {
-            CSS_PROP_BORDER_TOP_STYLE,
-            CSS_PROP_BORDER_RIGHT_STYLE,
-            CSS_PROP_BORDER_BOTTOM_STYLE,
-            CSS_PROP_BORDER_LEFT_STYLE
-            };
+        const int properties[4] = { CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_RIGHT_STYLE,
+                                    CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_LEFT_STYLE };
         return parse4Values(curP, endP, properties, important, propList);
     }
     case CSS_PROP_MARGIN:		// <margin-width>{1,4} | inherit
     {
-        const int properties[4] = {
-            CSS_PROP_MARGIN_TOP,
-            CSS_PROP_MARGIN_RIGHT,
-            CSS_PROP_MARGIN_BOTTOM,
-            CSS_PROP_MARGIN_LEFT
-            };
+        const int properties[4] = { CSS_PROP_MARGIN_TOP, CSS_PROP_MARGIN_RIGHT,
+            			    CSS_PROP_MARGIN_BOTTOM, CSS_PROP_MARGIN_LEFT };
         return parse4Values(curP, endP, properties, important, propList);
     }
     case CSS_PROP_PADDING:		// <padding-width>{1,4} | inherit
     {
-        const int properties[4] = {
-            CSS_PROP_PADDING_TOP,
-            CSS_PROP_PADDING_RIGHT,
-            CSS_PROP_PADDING_BOTTOM,
-            CSS_PROP_PADDING_LEFT
-            };
+        const int properties[4] = { CSS_PROP_PADDING_TOP, CSS_PROP_PADDING_RIGHT,
+            			    CSS_PROP_PADDING_BOTTOM, CSS_PROP_PADDING_LEFT };
         return parse4Values(curP, endP, properties, important, propList);
     }
     case CSS_PROP_FONT:			// [ [ 'font-style' || 'font-variant' || 'font-weight' ]?
@@ -1793,11 +1770,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_LIST_STYLE:
     {
-        const int properties[3] = {
-            CSS_PROP_LIST_STYLE_TYPE,
-	    CSS_PROP_LIST_STYLE_POSITION,
-	    CSS_PROP_LIST_STYLE_IMAGE
-	    };
+        const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
+				    CSS_PROP_LIST_STYLE_IMAGE };
         return  parseShortHand(curP, endP, properties, 3, important, propList);
     }
 
