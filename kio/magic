@@ -212,8 +212,9 @@
 >>18	string		application/x-kpresenter\004\006	application/x-kpresenter
 >>18	string		application/x-kspread\004\006	application/x-kspread
 >>18	string		application/x-kword\004\006	application/x-kword
->>18	string		application/x-krayon\004\006	application/x-krayon
+>>18	string		application/x-krita\004\006	application/x-krita
 >>18	string		application/x-kivio\004\006	application/x-kivio
+>>18	string		application/x-karbon\004\006	application/x-karbon
 
 # BZIP2
 0	string          BZh             application/x-bzip2
