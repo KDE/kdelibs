@@ -1005,7 +1005,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
             key = s.left(pos).stripWhiteSpace().lower();
             val = s.mid(pos + 1).stripWhiteSpace().lower();
 
-            int scnum = QApplication::desktop()->screenNumber(widget->parentWidget());
+            int scnum = QApplication::desktop()->screenNumber(widget->topLevelWidget());
 
 	    QRect screen = QApplication::desktop()->screenGeometry(scnum);
             if (key == "left" || key == "screenx") {
