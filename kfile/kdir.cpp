@@ -331,6 +331,8 @@ bool KDir::match(const QString& filter, const QString& name)
 
 bool KDir::filterEntry(KFileInfo *i)
 {
+    if (!strcmp(i->fileName(), "."))
+	return false;
     if (!strcmp(i->fileName(), ".."))
 	return !root;
 
@@ -400,7 +402,7 @@ void KDir::slotListEntry(int, const KUDSEntry& entry) // SLOT
 	myFilteredNames.append(fi->fileName());
 	
 	emit dirEntry(fi);
-    }
+    } // why not "else delete i" ?? (David)
 }
 
 void KDir::setBlocking(bool _block)
