@@ -317,8 +317,8 @@ public:
     virtual QAction* action( const char* name, const char* classname = 0, QObject* component = 0 );
 
     virtual QStringList groups() const;
-    virtual QValueList<QAction*> actions( const QString& group );
-    virtual QValueList<QAction*> actions();
+    virtual QValueList<QAction*> actions( const QString& group ) const;
+    virtual QValueList<QAction*> actions() const;
 
     QActionCollection operator+ (const QActionCollection& ) const;
     QActionCollection& operator= (const QActionCollection& );

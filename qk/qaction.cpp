@@ -1013,7 +1013,7 @@ QStringList QActionCollection::groups() const
     return lst;
 }
 
-QValueList<QAction*> QActionCollection::actions( const QString& group )
+QValueList<QAction*> QActionCollection::actions( const QString& group ) const
 {
     QValueList<QAction*> lst;
 
@@ -1027,7 +1027,7 @@ QValueList<QAction*> QActionCollection::actions( const QString& group )
     return lst;
 }
 
-QValueList<QAction*> QActionCollection::actions()
+QValueList<QAction*> QActionCollection::actions() const
 {
     QValueList<QAction*> lst;
 
@@ -1728,7 +1728,7 @@ QPopupMenu* QSelectAction::popupMenu()
 	for( ; it != m_list.end(); ++it ) {
 	    // Changed: BL
 	  if (!((*it).isEmpty())) {
-	    m_menu->insertItem( *it, this, 
+	    m_menu->insertItem( *it, this,
 	       SLOT( slotActivated( int ) ), 0, id++ );
 	  } else {
 	    m_menu->insertSeparator();
