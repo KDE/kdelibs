@@ -433,11 +433,11 @@ Completion WindowFunc::tryExecute(const List &args)
   int i;
 
   if (!window->part)
-    return Completion(Normal, Undefined());
+    return Completion(Normal);
 
   KHTMLPart *part = window->part;
   if (!part)
-    return Completion(Normal, Undefined());
+    return Completion(Normal);
 
   KHTMLView *widget = part->view();
   KJSO v = args[0];
@@ -652,7 +652,7 @@ Completion WindowFunc::tryExecute(const List &args)
     result = Undefined();
     break;
   }
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 
 }
 
@@ -843,7 +843,7 @@ Completion LocationFunc::tryExecute(const List &args)
       break;
     }
   }
-  return Completion(Normal, Undefined());
+  return Completion(Normal);
 }
 
 ////////////////////// History Object ////////////////////////
@@ -887,7 +887,7 @@ Completion HistoryFunc::tryExecute(const List &)
     break;
   }
 
-  return Completion(Normal, Undefined());
+  return Completion(Normal);
 }
 
 #include "kjs_window.moc"
