@@ -14,3 +14,8 @@ libgsl_la_SOURCES = gslcommon.c gsldatacache.c gslengine.c gslfilter.c \
   gsldatahandle.c
 libgsl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la
 libgsl_la_LDFLAGS = -no-undefined
+
+check_PROGRAMS = gslglibhashtest
+
+gslglibhashtest_SOURCES = gslglibhashtest.cc
+gslglibhashtest_LDFLAGS = -lgsl
