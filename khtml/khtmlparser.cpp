@@ -254,6 +254,7 @@ void KHTMLParser::reset()
     block = 0;
 
     inBody = false;
+    _inline = false;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -268,6 +269,15 @@ void KHTMLParser::parseToken(Token *t)
 	processCloseTag(t);
 	return;
     }
+
+    // ignore spaces, if we're not inside a paragraph or other inline code
+    if(t->id == ID_TEXT && !_inline)
+    {
+	if(t->text.length() == 1 && t->text[0] == QChar(' '))
+	return;
+    }
+
+
     NodeImpl *n = getElement(t);
 
     // just to be sure, and to catch currently unimplemented stuff
@@ -295,7 +305,7 @@ void KHTMLParser::parseToken(Token *t)
     catch(DOMException)
     {
 	// we couldn't insert the node...
-	printf("insertNode failed!\n");
+	printf("insertNode failed current=%d, new=%d!\n", current->id(), n->id());
 	delete n;
     }
 }
@@ -327,6 +337,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    current = newNode;
 	    if(!block && current->blocking())
 		block = current;
+	    if(current->isInline()) _inline = true;
 	}
 	else
 	    n->calcMinMaxWidth();
@@ -435,7 +446,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	// if we couldn't handle the error, just rethrow the exception...
 	if(ignore)
 	{
-	    printf("Exception handler failed in HTMLPArser::insertNode()\n");
+	    //printf("Exception handler failed in HTMLPArser::insertNode()\n");
 	    throw exception;
 	}
 	
@@ -534,11 +545,13 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_DD:
 	n = new HTMLGenericBlockElementImpl(document, t->id);
 	popBlock(ID_DT);
+	popBlock(ID_DD);
 	break;
     case ID_DT:
 	// ###
 	n = new HTMLInlineElementImpl(document, t->id);
 	popBlock(ID_DD);
+	popBlock(ID_DT);
 	break;
     case ID_UL:
     {
@@ -842,6 +855,7 @@ void KHTMLParser::popOneBlock()
 	currentStyle = Elem->style;
     }
     blockStack = Elem->next;
+    if(!current->isInline()) _inline = false;
     current = Elem->node;
 
     delete Elem;

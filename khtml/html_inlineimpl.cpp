@@ -83,11 +83,13 @@ void HTMLAnchorElementImpl::setStyle(CSSStyle *style)
 	style->font.color = settings->vLinkColor;
     else
 #endif
+    if( href )
+    {
 	style->font.color = pSettings->linkColor;
-    if ( pSettings->underlineLinks )
-	style->font.decoration = CSSStyleFont::decUnderline;
-
-        _style = new CSSStyle(*style);
+	if ( pSettings->underlineLinks )
+	    style->font.decoration = CSSStyleFont::decUnderline;
+    }
+    _style = new CSSStyle(*style);
 
 }
 
@@ -130,7 +132,7 @@ void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-// I don't like this way of implementing the method, but I didn't find any 
+// I don't like this way of implementing the method, but I didn't find any
 // other way. Lars
 void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 {
@@ -180,7 +182,7 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	    {
 		xPos += current->getXPos();
 		yPos += current->getYPos();
-	    }      
+	    }
 	}
 	else
 	{

@@ -121,9 +121,11 @@ void HTMLBodyElementImpl::layout(bool deep)
 
 void HTMLBodyElementImpl::attach(KHTMLWidget *)
 {
-    printf("Body: Requesting URL=%s\n", bgURL.string().ascii() );
     if(bgURL.length())
+    {
+	printf("Body: Requesting URL=%s\n", bgURL.string().ascii() );
 	bgURL = document->requestImage(this, bgURL);
+    }	
 }
 
 void HTMLBodyElementImpl::detach()

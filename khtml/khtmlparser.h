@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -85,12 +85,12 @@ protected:
      */
     NodeImpl *block;
 
-    HTMLStackElem *blockStack; 
+    HTMLStackElem *blockStack;
 
-    void pushBlock( int _id, int _level, 
-		    blockFunc _exitFunc = 0, 
+    void pushBlock( int _id, int _level,
+		    blockFunc _exitFunc = 0,
 		    int _miscData1 = 0);
-    					  
+    					
     void popBlock( int _id );
     void popOneBlock();
     void popInlineBlocks();
@@ -107,12 +107,12 @@ protected:
     /*
      * Current style sheet
      */
-    CSSStyleSheet *styleSheet; 
+    CSSStyleSheet *styleSheet;
 
     /*
      * Current style
      */
-    CSSStyle *currentStyle; 
+    CSSStyle *currentStyle;
 
     /*
      * default font sizes etc...
@@ -127,6 +127,7 @@ protected:
     int listLevel;
 
     bool inBody;
+    bool _inline;
 };
 
 #endif // HTMLPARSER_H

@@ -205,7 +205,7 @@ bool NodeWParentImpl::deleteMe()
 
 void NodeWParentImpl::setPreviousSibling(NodeImpl *n)
 {
-    if(!_parent) 
+    if(!_parent)
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     _previous = n;
@@ -213,33 +213,33 @@ void NodeWParentImpl::setPreviousSibling(NodeImpl *n)
 
 void NodeWParentImpl::setNextSibling(NodeImpl *n)
 {
-    if(!_parent) 
+    if(!_parent)
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     _next = n;
 }
 
-void NodeWParentImpl::checkReadOnly() 
+void NodeWParentImpl::checkReadOnly()
 {
 }
 
 //-------------------------------------------------------------------------
 
-NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc) 
+NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     _first = _last = 0;
 }
 
 NodeBaseImpl::~NodeBaseImpl()
 {
-    printf("NodeBaseImpl destructor\n");
+    //printf("NodeBaseImpl destructor\n");
     // we have to tell all children, that the parent has died...
     NodeImpl *n;
     NodeImpl *next;
 
     for( n = _first; n != 0; n = next )
     {
-	n->setParent(0); 
+	n->setParent(0);
 	next = n->nextSibling();
 	if(n->deleteMe()) delete n;
     }
@@ -390,7 +390,7 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 // check for same source document:
 void NodeBaseImpl::checkSameDocument( NodeImpl *newChild )
 {
-  if(newChild->ownerDocument() != document) 
+  if(newChild->ownerDocument() != document)
     throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
 }
 
@@ -425,7 +425,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 
     newChild->setParsing();
 
-    // just add it... 
+    // just add it...
     newChild->setParent(this);
 
     if(_last)
@@ -446,7 +446,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 void NodeBaseImpl::attach(KHTMLWidget *w)
 {
     NodeImpl *child = _first;
-    while(child != 0) 
+    while(child != 0)
     {
 	child->attach(w);
 	child = child->nextSibling();
@@ -456,7 +456,7 @@ void NodeBaseImpl::attach(KHTMLWidget *w)
 void NodeBaseImpl::detach()
 {
     NodeImpl *child = _first;
-    while(child != 0) 
+    while(child != 0)
     {
 	child->detach();
 	child = child->nextSibling();

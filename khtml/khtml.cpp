@@ -269,7 +269,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     if ( !_url.isEmpty() )
     {
-    
+
 	KURL::List lst = KURL::split( m_strURL );
 	QString baseurl;
 	if ( !lst.isEmpty() )
@@ -830,7 +830,7 @@ void KHTMLWidget::end()
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 {
     printf("resizeEvent\n");
-//    viewport()->setUpdatesEnabled(false); 
+//    viewport()->setUpdatesEnabled(false);
     QScrollView::resizeEvent(event);
     layout();
 //    viewport()->setUpdatesEnabled(true);
@@ -838,7 +838,7 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
     //repaint without erasing the background
     //viewport()->repaint(false);
     viewport()->repaint(true);
- 
+
     //emit resized( event->size() );
 }
 
@@ -1186,7 +1186,7 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	return;
 
      if ( m_strSelectedURL.data()[0] == '#' )
-    	gotoAnchor( m_strSelectedURL.data() + 1 );
+    	gotoAnchor( m_strSelectedURL.data() );
      else
     if ( _mouse->button() != RightButton )
     {
