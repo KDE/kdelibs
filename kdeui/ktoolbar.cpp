@@ -760,6 +760,8 @@ void KToolBar::removeItem (int id)
     id2widget.remove( id );
     widget2id.remove( w );
     widgets.removeRef( w );
+    inserted.removeRef( w );
+    delete w;
 }
 
 
