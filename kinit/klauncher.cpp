@@ -370,7 +370,6 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    else if (fun == "terminateKDE()")
    {
       ::signal( SIGHUP, SIG_IGN);
-      ::signal( SIGPIPE, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
       kdDebug() << "KLauncher::process ---> terminateKDE" << endl;
       klauncher_header request_header;
@@ -472,7 +471,6 @@ KLauncher::slotKDEInitData(int)
    {
       kdDebug() << "Exiting on read_socket errno: " << errno << endl;
       ::signal( SIGHUP, SIG_IGN);
-      ::signal( SIGPIPE, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
       destruct(255); // Exit!
    }

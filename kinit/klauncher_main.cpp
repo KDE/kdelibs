@@ -37,7 +37,6 @@ static void sig_handler(int sig_num)
 {
    // No recursion
    signal( SIGHUP, SIG_IGN);
-   signal( SIGPIPE, SIG_IGN);
    signal( SIGTERM, SIG_IGN);
 fprintf(stderr, "KLauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
@@ -80,7 +79,7 @@ start_launcher(int socket)
 
    KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);
-   signal( SIGPIPE, sig_handler);
+   signal( SIGPIPE, SIG_IGN);
    signal( SIGTERM, sig_handler);
 
    launcher->exec();
