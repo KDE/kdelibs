@@ -815,7 +815,7 @@ int UIServer::messageBox( int type, const QString &text, const QString &caption,
             return KMessageBox::warningContinueCancel( 0L, // parent ?
                                               text, caption, buttonYes );
         case KIO::SlaveBase::WarningYesNoCancel:
-            return KMessageBox::warningYesNo( 0L, // parent ?
+            return KMessageBox::warningYesNoCancel( 0L, // parent ?
                                               text, caption, buttonYes, buttonNo );
         case KIO::SlaveBase::Information:
             KMessageBox::information( 0L, // parent ?
