@@ -51,6 +51,16 @@ misc HTML documentation, and regression tests.  The ten libraries are:
 * kab
     The address book library.  See the README for more information.
 
+* khtml
+    The next generation HTML rendering widget designed for KFM-III (a.k.a.
+    Konquerer).  This supports HTML 4, CSS, and a variety of other web
+    related standards.
+
+* kio
+    Classes that fetch and decode URLs are contained here.  Previously
+    this functionality was contained in kfmlib, but among other
+    improvments and redesigns, kio does not require KFM to operate.
+
 Licensing
 ---------
 
