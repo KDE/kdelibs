@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.78  1998/09/01 20:22:23  kulow
+// would do :)
+//
+// Revision 1.79  1998/09/15 05:56:45  antlarr
 // Revision 1.77  1998/08/30 21:04:33  radej
 // sven: Minor improvement for docking in KTM
 //
@@ -1906,6 +1910,21 @@ void KToolBar::enableFloating (bool arrrrrrgh)
     context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
 }
 
+void KToolBar::setIconText(int icontext)
+{
+    bool doUpdate=false;
+    
+    if (icontext != icon_text)
+    {
+        icon_text=icontext;
+        doUpdate=true;
+    }
+    
+    if (doUpdate)
+        emit modechange(); // tell buttons what happened
+    if (isVisible ())
+        emit moved (position);
+}
 
 bool KToolBar::enable(BarStatus stat)
 {

@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.39  1998/09/01 20:22:24  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.38  1998/08/09 14:01:19  radej
 // sven: reintroduced makeDisabledPixmap code, and dumped QIconSet. Fixed a bug
 //       with paletteChange too.
@@ -645,6 +649,13 @@ public:
    * toolbar static use @ref enableMoving
    */
   void enableFloating (bool arrrrrrgh);
+
+  /**
+   * Sets the kind of painting for buttons between : 0 (only icons),
+   * 1 (icon and text) and 2 (only text).
+   */
+
+  void setIconText(int it);
 
   /**
    * Redraw toolbar and resize it if resize is true.
