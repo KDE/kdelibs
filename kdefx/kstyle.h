@@ -38,7 +38,7 @@
 
 class KPixmap;
 
-class KStylePrivate;
+struct KStylePrivate;
 /** 
  * Simplifies and extends the QStyle API to make style coding easier.
  *  
