@@ -573,3 +573,14 @@ void KURL::cleanPath()
     if ( len > 0 && path_part.data()[ len - 1 ] != '/' && slash )
 	path_part += "/";
 }
+
+bool KURL::isLocalFile() 
+{
+    if (protocol_part != "file")
+	return false;
+
+    if (hasSubProtocol())
+	return false;
+
+    return host_part.isEmpty();
+}

@@ -308,7 +308,18 @@ public:
      * @return true if the URLs are equal, false otherwise.
      */
     bool operator==( const KURL &_url) const ;
-          
+
+
+    /**
+      * Checks, if the URL refers to a usual file, that
+      * can be openend with usual methods.
+      *
+      * Note: It doesn't check, if the file exist
+      *
+      * @return true, if the URL is a file, that can be opened
+      **/
+    bool isLocalFile();
+
 protected:
     void cleanPath();
     
