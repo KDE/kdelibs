@@ -52,7 +52,9 @@ public:
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
    *        @p bUseKDEGlobals).
-   * @param bReadOnly Set the config object's read-only status.
+   * @param bReadOnly Set the config object's read-only status. Note that the
+   *        object will automatically become read-only if either the user does not have
+   *        write permission to @p fileName or if no file was specified.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    * @param resType the place to look in (config, data, etc) See @ref KStandardDirs.
    */
