@@ -349,6 +349,15 @@ void SlaveBase::errorPage()
     m_pConnection->send( INF_ERROR_PAGE );
 }
 
+static bool isSubCommand(int cmd)
+{
+   return ( (cmd == CMD_REPARSECONFIGURATION) ||
+            (cmd == CMD_META_DATA) ||
+            (cmd == CMD_CONFIG) ||
+            (cmd == CMD_SUBURL) ||
+            (cmd == CMD_SLAVE_STATUS) );
+}
+
 void SlaveBase::mimeType( const QString &_type)
 {
   int cmd;
@@ -369,9 +378,7 @@ void SlaveBase::mimeType( const QString &_type)
            kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            ::exit(255);
        }
-       if ( (cmd == CMD_REPARSECONFIGURATION) ||
-            (cmd == CMD_META_DATA) ||
-            (cmd == CMD_SUBURL) )
+       if ( isSubCommand(cmd) )
        {
           dispatch( cmd, data );
           continue; // Disguised goto
@@ -660,10 +667,14 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
             if ( pCmd ) *pCmd = cmd;
             return result;
         }
-        if ( cmd == CMD_SLAVE_STATUS || cmd == CMD_REPARSECONFIGURATION || cmd == CMD_META_DATA )
+        if ( isSubCommand(cmd) )
+        {
             dispatch( cmd, data );
+        }
         else
+        {
             kdWarning() << "Got cmd " << cmd << " while waiting for an answer!" << endl;
+        }
     }
 }
 
