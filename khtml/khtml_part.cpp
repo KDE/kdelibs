@@ -1779,7 +1779,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 
     while(1)
     {
-        if( (d->m_findNode->nodeType() == Node::TEXT_NODE) || (d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
+        if( (d->m_findNode->nodeType() == Node::TEXT_NODE || d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
@@ -1847,7 +1847,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 
     while(1)
     {
-        if( (d->m_findNode->nodeType() == Node::TEXT_NODE) || (d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
+        if( (d->m_findNode->nodeType() == Node::TEXT_NODE || d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
