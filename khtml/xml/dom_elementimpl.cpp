@@ -529,6 +529,10 @@ NodeImpl *XMLElementImpl::cloneNode ( bool deep )
     if(namedAttrMap)
         *(static_cast<NamedAttrMapImpl*>(clone->attributes())) = *namedAttrMap;
 
+    // clone individual style rules
+    if (m_styleDecls)
+        *(clone->styleRules()) = *m_styleDecls;
+
     if (deep)
         cloneChildNodes(clone);
 
