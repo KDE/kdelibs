@@ -692,6 +692,50 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
   return *candidates;
 }
 
+QStringList KStandardDirs::systemPaths( const QString& pstr )
+{
+    QStringList tokens;
+    QString p = pstr;
+
+    if( p.isNull() ) 
+    {
+	p = getenv( "PATH" );
+    }
+
+    tokenize( tokens, p, ":\b" );
+
+    QStringList exePaths;
+
+    // split path using : or \b as delimiters
+    for( unsigned i = 0; i < tokens.count(); i++ )
+    {
+	p = tokens[ i ];
+
+        if ( p[ 0 ] == '~' )
+        {
+            int len = p.find( '/' );
+            if ( len == -1 )
+                len = p.length();
+            if ( len == 1 )
+            {
+                p.replace( 0, 1, QDir::homeDirPath() );
+            }
+            else
+            {
+                QString user = p.mid( 1, len - 1 );
+                struct passwd *dir = getpwnam( user.local8Bit().data() );
+                if ( dir && strlen( dir->pw_dir ) )
+                    p.replace( 0, len, QString::fromLocal8Bit( dir->pw_dir ) );
+            }
+        }
+
+	exePaths << p;
+    }
+
+    return exePaths;
+}
+
+
 QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
@@ -715,36 +759,10 @@ QString KStandardDirs::findExe( const QString& appname,
          return p;
     }
 
-    QStringList tokens;
-    p = pstr;
-
-    if( p.isNull() ) {
-	p = getenv( "PATH" );
-    }
-
-    tokenize( tokens, p, ":\b" );
-
-    // split path using : or \b as delimiters
-    for( unsigned i = 0; i < tokens.count(); i++ ) {
-	p = tokens[ i ];
-
-        if ( p[ 0 ] == '~' )
-        {
-            int len = p.find( '/' );
-            if ( len == -1 )
-                len = p.length();
-            if ( len == 1 )
-                p.replace( 0, 1, QDir::homeDirPath() );
-            else
-            {
-                QString user = p.mid( 1, len - 1 );
-                struct passwd *dir = getpwnam( user.local8Bit().data() );
-                if ( dir && strlen( dir->pw_dir ) )
-                    p.replace( 0, len, QString::fromLocal8Bit( dir->pw_dir ) );
-            }
-        }
-
-	p += "/";
+    QStringList exePaths = systemPaths( pstr );
+    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
+    {
+	p = (*it) + "/";
 	p += appname;
 
 	// Check for executable in this tokenized path
@@ -765,20 +783,14 @@ QString KStandardDirs::findExe( const QString& appname,
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 			const QString& pstr, bool ignore )
 {
-    QString p = pstr;
     QFileInfo info;
-    QStringList tokens;
-
-    if( p.isNull() ) {
-	p = getenv( "PATH" );
-    }
-
+    QString p;
     list.clear();
-    tokenize( tokens, p, ":\b" );
 
-    for ( unsigned i = 0; i < tokens.count(); i++ ) {
-	p = tokens[ i ];
-	p += "/";
+    QStringList exePaths = systemPaths( pstr );
+    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
+    {
+	p = (*it) + "/";
 	p += appname;
 
 	info.setFile( p );
@@ -787,7 +799,6 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 	    && info.isFile() ) {
 	    list.append( p );
 	}
-
     }
 
     return list.count();

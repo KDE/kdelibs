@@ -353,6 +353,17 @@ public:
 				       bool unique,
 				       QStringList &relPaths) const;
 
+	/** 
+	 * Returns a QStringList list of pathnames in the system path.
+	 *
+	 * @param pathstr The path which will be searched. If this is
+	 * 		null (default), the $PATH environment variable will
+	 *		be searched.
+	 *
+	 * @return a QStringList list of pathnames in the system path.
+	 */
+	static QStringList systemPaths( const QString& pstr=QString::null );
+
 	/**
 	 * Finds the executable in the system path.
 	 *
