@@ -103,6 +103,7 @@ public:
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
+    enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };
 
     /**
      * Constructs a KPanelExtension just like any other widget.
@@ -184,6 +185,10 @@ public:
      * @internal
      **/
     void setAlignment( Alignment a );
+    /**
+     * @internal
+     **/
+    void setSize( Size size, int customSize );
 
 signals:
     /**
@@ -246,6 +251,26 @@ protected:
      * @return the extensions orientation. (horizontal or vertical)
      **/
     Orientation orientation();
+
+    /**
+     * @return the extensions size 
+     * 0 = Tiny, 
+     * 1 = Small, 
+     * 2 = Normal, 
+     * 3 = Large
+     * 4 = Custom
+     **/
+    Size sizeSetting() const;
+
+    /**
+     * @return the custome pixel setting)
+     **/
+    int customSize() const;
+
+    /**
+     * @return the appropriate size in pixels for the panel
+     */
+    int sizeInPixels() const;
 
     /**
      * This extension has changed its position.
