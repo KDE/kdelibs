@@ -1234,7 +1234,7 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
                                           myActionCollection, "show hidden" );
-    showHiddenAction->setCheckedState( i18n("Hide Hidden Files") );
+//    showHiddenAction->setCheckedState( i18n("Hide Hidden Files") );
     separateDirsAction = new KToggleAction( i18n("Separate Folders"), KShortcut(),
                                             this,
                                             SLOT(slotSeparateDirs()),
