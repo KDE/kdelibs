@@ -3037,6 +3037,8 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
     return;
 
   DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
+  if ( option.ownerDocument() != element.ownerDocument() )
+    option = static_cast<DOM::HTMLOptionElement>(element.ownerDocument().importNode(option, true));
   long diff = long(u) - element.length();
   DOM::HTMLElement before;
   // out of array bounds ? first insert empty dummies
