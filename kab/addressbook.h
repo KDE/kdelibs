@@ -6,7 +6,7 @@
  * copyright:  (C) Mirko Sucker, 1998, 1999
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko@kde.org>
- * requires:   recent C++-compiler, at least Qt 2.0, STL
+ * requires:   recent C++-compiler, at least Qt 2.0
  * $Revision$
  */
   
