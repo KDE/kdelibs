@@ -78,6 +78,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 KComboBox::~KComboBox()
 {
     delete d;
+    d = 0;
 }
 
 void KComboBox::init()
@@ -90,9 +91,6 @@ void KComboBox::init()
     // Enable context menu by default if widget
     // is editable.
     setContextMenuEnabled( true );
-
-    // for wheelscrolling
-    // installEventFilter( this );
 }
 
 

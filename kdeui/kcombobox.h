@@ -278,13 +278,12 @@ public:
 
     /**
      * By default, KComboBox recognizes Key_Return and Key_Enter
-     * and emits
-     * the returnPressed() signals, but it also lets the event pass,
-     * for example causing a dialog's default-button to be called.
+     * and emits the returnPressed() signals, but it also lets the 
+     * event pass, for example causing a dialog's default-button to
+     * be called.
      *
      * Call this method with @p trap equal to true to make KComboBox
-     * stop these
-     * events. The signals will still be emitted of course.
+     * stop these events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
      *
