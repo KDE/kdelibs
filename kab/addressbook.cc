@@ -200,7 +200,7 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
 	 ||
 	 !fields->insert
 	 (map<const char*, const QString, less<const char*> >::value_type
-	  (Fields[counter++], i18n("State"))).second)
+	  (Fields[counter++], i18n("As in addresses", "State"))).second)
 	{
 	  kdDebug() << "AddressBook::Entry::Address::nameOfField (while "
 		    << " creating field-name map): TYPO, correct this." 

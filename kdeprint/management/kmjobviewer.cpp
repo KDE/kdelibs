@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -115,7 +115,7 @@ void KMJobViewer::init()
 		m_view->addColumn(i18n("Printer"));
 		m_view->addColumn(i18n("Name"));
 		m_view->addColumn(i18n("Owner"));
-		m_view->addColumn(i18n("State"));
+		m_view->addColumn(i18n("Status", "State"));
 		m_view->addColumn(i18n("Size (kB)"));
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);

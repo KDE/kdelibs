@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -51,7 +51,7 @@ KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
 	m_desclabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), this);
 	m_typelabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-	QLabel	*m_statelabel = new QLabel(i18n("State:"), this);
+	QLabel	*m_statelabel = new QLabel(i18n("Status", State:"), this);
 	m_statelabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 	QLabel	*m_urilabel = new QLabel(i18n("URI:"), this);
 	m_urilabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);

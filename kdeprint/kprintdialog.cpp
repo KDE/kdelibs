@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -61,7 +61,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_printers = new QComboBox(m_pbox);
 	m_printers->setMinimumHeight(25);
 	QLabel	*m_printerlabel = new QLabel(i18n("Name:"), m_pbox);
-	QLabel	*m_statelabel = new QLabel(i18n("State:"), m_pbox);
+	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), m_pbox);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), m_pbox);
 	QLabel	*m_locationlabel = new QLabel(i18n("Location:"), m_pbox);
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
