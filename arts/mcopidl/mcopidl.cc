@@ -1292,6 +1292,23 @@ struct ForwardCode {
 	string baseclass;
 };
 
+void checkSymbolDefinition(const string& name, const string& type,
+							const InterfaceDef& where, map<string,string>& defs)
+{
+	string xwhere = where.name + "::" + name + " ("+type+")";
+	string& mapentry = defs[name];
+
+	if(mapentry == "")
+	{
+		mapentry = xwhere;
+	}
+	else
+	{
+		cerr << idl_filename << ": warning: " << xwhere
+				<< " collides with " << mapentry << endl;
+	}
+}
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef>::iterator ii;
@@ -1665,6 +1682,8 @@ void doInterfacesHeader(FILE *header)
 		all.push_back(d.name);
 		// InterfaceDef allMerged = mergeAllParents(d);
 
+		map<string, string> definitionMap;
+
 		for(i=all.begin();i != all.end();i++)
 		{
 			InterfaceDef id = findInterface(*i);
@@ -1679,6 +1698,8 @@ void doInterfacesHeader(FILE *header)
 				fc.constructor = false;
 				fc.mname = ad.name;
 				fc.baseclass = baseclass;
+
+				checkSymbolDefinition(ad.name, "attribute", id, definitionMap);
 
 				if(ad.flags & attributeAttribute)
 				{
@@ -1715,6 +1736,8 @@ void doInterfacesHeader(FILE *header)
 				fc.callparams = createCallParamList(md);
 				fc.constructor = (md.name == "constructor");
 				fc.baseclass = baseclass;
+
+				checkSymbolDefinition(md.name, "method", id, definitionMap);
 
 				// map constructor methods to the real things
 				if (md.name == "constructor") {
