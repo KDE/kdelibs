@@ -483,9 +483,9 @@ public:
      * QStringList list;
      *
      * // load the history and completion list after creating the history combo
-     * list = config->readEntry( "Completion list" );
+     * list = config->readListEntry( "Completion list" );
      * combo->completionObject()->setItems( list );
-     * list = config->readEntry( "History list" );
+     * list = config->readListEntry( "History list" );
      * combo->setHistoryItems( list );
      *
      * [...]
