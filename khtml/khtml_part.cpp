@@ -237,7 +237,7 @@ KHTMLPart::~KHTMLPart()
 bool KHTMLPart::openURL( const KURL &url )
 {
   static QString http_protocol = QString::fromLatin1( "http" );
-  
+
   KParts::URLArgs args = d->m_extension->urlArgs();
 
   if ( d->m_frames.count() == 0 && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
@@ -927,15 +927,27 @@ void KHTMLPart::overURL( const QString &url )
 
 }
 
-void KHTMLPart::urlSelected( const QString &url, int button, const QString &_target )
+void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
 {
+  KURL u( url );
+  
+   QString target = _target;
+  if ( target.isEmpty() )
+    target = d->m_baseTarget;
+
+  KURL cURL = completeURL( url, target );
+  
+  if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
+  {
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As .." ), cURL );
+    return;
+  }
+ 
   if ( !d->m_bComplete )
     closeURL();
 
   if ( url.isEmpty() )
     return;
-
-  KURL u( url );
 
   // Security
   if ( ::strcmp( u.protocol().latin1(), "cgi" ) == 0 &&
@@ -948,26 +960,21 @@ void KHTMLPart::urlSelected( const QString &url, int button, const QString &_tar
     return;
   }
 
-  QString target = _target;
-  if ( target.isEmpty() )
-    target = d->m_baseTarget;
-
-  u = completeURL( url, target );
 
   KParts::URLArgs args;
   args.frameName = target;
 
   if ( !target.isEmpty() )
   {
-    khtml::ChildFrame *frame = recursiveFrameRequest( u, args, false, false );
+    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, false );
     if ( frame )
     {
-      requestObject( frame, u, args );
+      requestObject( frame, cURL, args );
       return;
     }
   }
 
-  emit d->m_extension->openURLRequest( u, args );
+  emit d->m_extension->openURLRequest( cURL, args );
 }
 
 void KHTMLPart::slotViewDocumentSource()
@@ -1217,7 +1224,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
   KParts::ReadOnlyPart *res = 0L;
 
-  char *className = "KParts::ReadOnlyPart";
+  const char *className = "KParts::ReadOnlyPart";
   if ( service->serviceTypes().contains( "Browser/View" ) )
     className = "Browser/View";
 
@@ -1677,17 +1684,17 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
   if ( d->m_url.filename( false ).isEmpty() )
     d->m_url.setFileName( "index.html" );
 
-  saveURL( i18n( "&Save Link As" ), d->m_url );
+  saveURL( d->m_khtml->widget(), i18n( "&Save Link As" ), d->m_url );
 }
 
 void KHTMLPopupGUIClient::slotSaveImageAs()
 {
-  saveURL( i18n( "Save Image As" ), d->m_imageURL );
+  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL );
 }
 
-void KHTMLPopupGUIClient::saveURL( const QString &caption, const KURL &url )
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url )
 {
-  KFileDialog *dlg = new KFileDialog( QString::null, QString::null, d->m_khtml->widget(), "filedia", true );
+  KFileDialog *dlg = new KFileDialog( QString::null, QString::null, parent, "filedia", true );
 
   dlg->setCaption( caption );
 

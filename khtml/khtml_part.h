@@ -139,7 +139,7 @@ public:
   DOM::HTMLDocument htmlDocument() const;
 
   /**
-   * Retrieve a pointer to the @ref KParts::BrowserExtension 
+   * Retrieve a pointer to the @ref KParts::BrowserExtension
    */
   KHTMLPartBrowserExtension *browserExtension() const;
 
@@ -390,7 +390,7 @@ public:
    * Convenience method to show the document's view. Equivalent to widget()->show() or view()->show() .
    */
   void show();
-  
+
   /**
    * Convenience method to hide the document's view. Equivalent to widget()->hide() or view()->hide() .
    */
@@ -402,7 +402,7 @@ public:
   KParts::PartManager *partManager();
 
   /**
-   * Save the KHTMLPart's complete state (including child frame objects) to the provided QDataStream. 
+   * Save the KHTMLPart's complete state (including child frame objects) to the provided QDataStream.
    * You can use this method to provide history functionality.
    *
    * This is called from the @ref saveState method of the @ref browserExtension .
@@ -432,7 +432,7 @@ signals:
    * This signal is emitted if the cursor is moved over an URL.
    */
   void onURL( const QString &url );
- 
+
   /**
    * This signal is emitted when the user clicks the right mouse button on the document.
    */
@@ -451,7 +451,7 @@ protected:
   /**
    * @internal
    */
-  virtual void urlSelected( const QString &url, int button = 0, const QString &_target = QString::null );
+  virtual void urlSelected( const QString &url, int button = 0, int state = 0, const QString &_target = QString::null );
 
   /**
    * @internal
@@ -486,7 +486,7 @@ protected:
   /**
    * @internal
    */
-  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, 
+  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
 					    const QString &mimetype, QStringList &serviceTypes );
 
   /**
@@ -626,11 +626,12 @@ public:
   KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
   virtual ~KHTMLPopupGUIClient();
 
+  static void saveURL( QWidget *parent, const QString &caption, const KURL &url );
+
 private slots:
   void slotSaveLinkAs();
   void slotSaveImageAs();
 private:
-  void saveURL( const QString &caption, const KURL &url );
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate *d;
 };
