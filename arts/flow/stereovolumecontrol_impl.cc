@@ -42,7 +42,13 @@ public:
 	}
 
 	/*attribute float scaleFactor;*/
-	void scaleFactor(float newFactor) { _scaleFactor = newFactor; }
+	void scaleFactor(float newFactor) {
+		if(_scaleFactor != newFactor)
+		{
+			_scaleFactor = newFactor;
+			scaleFactor_changed(newFactor);
+		}
+	}
 	float scaleFactor() { return _scaleFactor; }
 
 	/*
