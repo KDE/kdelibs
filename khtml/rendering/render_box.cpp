@@ -725,13 +725,7 @@ void RenderBox::calcWidth()
         Length ml = style()->marginLeft();
         Length mr = style()->marginRight();
 
-        int cw;
-	RenderBlock *cb = containingBlock();
- 	if ( style()->flowAroundFloats() || style()->hidesOverflow() )
- 	    cw = cb->lineWidth( m_y );
- 	else
-	    cw = cb->contentWidth();
-
+	int cw = containingBlockWidth();
         if (cw<0) cw = 0;
 
         m_marginLeft = 0;
@@ -786,7 +780,7 @@ void RenderBox::calcWidth()
 
         if (cw && cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
         {
-            if (cb->style()->direction()==LTR)
+            if (containingBlock()->style()->direction()==LTR)
                 m_marginRight = cw - m_width - m_marginLeft;
             else
                 m_marginLeft = cw - m_width - m_marginRight;

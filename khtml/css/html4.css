@@ -371,6 +371,7 @@ FIELDSET {
         padding: 0.75em 0.625em;
 	margin: 1.0em auto;
         border: 2px groove ThreeDFace;
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 BUTTON {

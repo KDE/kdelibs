@@ -223,7 +223,7 @@ void RenderTable::calcWidth()
 
     // restrict width to what we really have in case we flow around floats
     // EXCEPT percent tables, which are still calculated as above
-    if ( style()->flowAroundFloats() && widthType!=Percent ) {
+    if ( flowAroundFloats() && widthType!=Percent ) {
         availableWidth = cb->lineWidth( m_y );
         m_width = KMIN( short( availableWidth ), m_width );
     }

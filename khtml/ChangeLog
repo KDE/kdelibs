@@ -1,3 +1,29 @@
+2004-11-21  Germain Garand  <germain@ebooksfrance.org>
+
+        float and flowAroundFloat fixes.
+
+        * css/html4.css: make fieldset -khtml-around-floats (#92979)
+
+        * rendering/render_block.cpp (layoutBlockChildren): cleanup float/flowAroundFloats
+        logic. Merges: add better RTL layouting of fAFs. 
+        (lineWidth): guard against negative values
+        (clearFloats): don't copy floats if element defines a new block
+        formatting context (#93511)
+        (markAllDescendantsWithFloatsForLayout): add missing argument to
+         recursive call
+        (getClearDelta): merge
+        (InlineMinMaxIterator::next): exclude positioned elements
+        (calcInlineMinMaxWidth): merge float clearing adjustments
+        (calcBlockMinMaxWidth): ditto
+
+        * rendering/render_box.cpp (calcWidth): use containingBlockWidth
+
+        * rendering/render_object.cpp (isHR): new. Evil but useful for quirkmode (cf. usesLineWidth).
+        (flowAroundFloats): add replaced and overflowClip elements
+        (usesLineWidth): adapt to above.
+
+        * rendering/render_table.cpp (calcWidth): style()->flowAroundFloats => flowAroundFloats()
+
 2004-11-19  Stephan Kulow  <coolo@kde.org>
 
         * rendering/render_form.cpp (updateFromElement): restore scrolling position in case of a change
