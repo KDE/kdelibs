@@ -35,7 +35,8 @@
 * @li cgi - CGIs to run from kdehelp
 * @li config - configuration files
 * @li apps - applications menu (.desktop files)
-* @li data - where applications store data (add application subdir)
+* @li data - where applications store data
+* @li appdata - application specific data dir (if instantiated from KGlobal)
 * @li html - HTML documentation 
 * @li icon - icons
 * @li mini - miniature icons
@@ -216,7 +217,7 @@ public:
 	 * You normally wouldn't call this function, it's called for you from
 	 * KGlobal.
 	 */
-	void addKDEDefaults();
+	void addKDEDefaults( const QString& appName = QString::null );
 
 
 	/**

@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <iostream.h>
 
 #include <qdict.h>
 #include <qdir.h>
@@ -107,7 +108,7 @@ QStringList KStandardDirs::findDirs( const QString& type,
          it != candidates.end(); it++) {
         testdir.setPath(*it + reldir);
         if (testdir.exists())
-            list.append(testdir.absPath());
+            list.append(testdir.absPath() + '/');
     }
     return list;
 }
@@ -285,7 +286,7 @@ QString KStandardDirs::kde_data_relative()
     return "share/apps/";
 }
 
-void KStandardDirs::addKDEDefaults() {
+void KStandardDirs::addKDEDefaults(const QString &appName) {
 
     QString kdedir = getenv("KDEDIR");
     if (kdedir.isEmpty())
@@ -300,6 +301,8 @@ void KStandardDirs::addKDEDefaults() {
     addResourceType("apps", "share/applnk/");
     addResourceType("sound", "share/sounds/");
     addResourceType("data", kde_data_relative());
+    if(!appName.isNull())
+        addResourceType("appdata", kde_data_relative() + appName + "/");
     addResourceType("locale", "share/locale/");
     addResourceType("services", "share/services/");
     addResourceType("servicetypes", "share/servicetypes/");

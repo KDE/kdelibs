@@ -29,7 +29,10 @@ KStandardDirs *KGlobal::dirs()
 {
 	if( _dirs == 0 ) {
 		_dirs = new KStandardDirs( );
-		_dirs->addKDEDefaults();
+		if( kapp )
+			_dirs->addKDEDefaults( kapp->name() );
+		else
+			_dirs->addKDEDefaults();
 	}
 
 	return _dirs;
