@@ -6,7 +6,7 @@
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
-              (C) 2000 Dirk Mueller (mueller@kde.org)
+              (C) 2001 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -234,10 +234,11 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
-    // We are inside a <script>, <style>, <textarea> or comment. Look for the end tag
+    // We are inside a <script>, <style>, <textarea> . Look for the end tag
     // which is either </script>, </style> , </textarea> or -->
     // otherwise print out every received character
     if (charEntity) {
+        checkScriptBuffer();
         QChar *scriptCodeDest = scriptCode+scriptCodeSize;
         parseEntity(src,scriptCodeDest);
         scriptCodeSize = scriptCodeDest-scriptCode;
@@ -264,7 +265,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
-            if (comment) currToken->id = ID_COMMENT; /// ###
             if (script)
             {
                 if (!scriptSrc.isEmpty()) {
@@ -280,12 +280,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     // Parse scriptCode containing <script> info
                     doScriptExec = true;
                 }
+                processToken();
             }
             else if (style)
             {
-		//kdDebug( 6036 ) << "---START STYLE---" << endl;
-		//kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
-		//kdDebug( 6036 ) << "---END STYLE---" << endl;
+#ifdef TOKEN_DEBUG
+		kdDebug( 6036 ) << "---START STYLE---" << endl;
+		kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
+		kdDebug( 6036 ) << "---END STYLE---" << endl;
+#endif
                 // just add it. The style element will get a DOM::TextImpl passed, which it will
                 // convert into a StyleSheet.
                 addListing(DOMStringIt(scriptCode, scriptCodeSize));
@@ -296,13 +299,10 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 // Add scriptcode to the buffer
                 addListing(DOMStringIt(scriptCode, scriptCodeSize));
             }
-            processToken();
             if(script)
                 currToken->id = ID_SCRIPT + ID_CLOSE_TAG;
             else if(style)
                 currToken->id = ID_STYLE + ID_CLOSE_TAG;
-            else if (comment)
-                currToken->id = ID_COMMENT + ID_CLOSE_TAG;
 	    else if (textarea)
 		currToken->id = ID_TEXTAREA + ID_CLOSE_TAG;
             else
@@ -322,12 +322,12 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
                 executingScript = false;
             }
-            script = style = listing = comment = textarea = false;
+            script = style = listing = textarea = false;
             scriptCodeSize = 0;
 
             addScriptOutput();
 
-            return; // Finished parsing script/style/comment/listing
+            return; // Finished parsing script/style/listing
         }
         // Find out wether we see an end tag without looking at
         // any other then the current character, since further characters
@@ -336,18 +336,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         {
             const QChar& cmp = src[0];
             // broken HTML: "--->"
-            if (comment && searchCount == 2 && cmp.latin1() == '-' && searchBuffer[0].latin1() != '<')
-            {
-                scriptCode[ scriptCodeSize++ ] = cmp;
-                ++src;
-            }
-            // broken HTML: "--!>"
-            else if (comment && searchCount == 2 && cmp.latin1() == '!' && searchBuffer[0].latin1() != '<')
-            {
-                ++src;
-            }
             // be tolerant: skip spaces before the ">", i.e "</script >"
-            else if (!comment && cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            if (cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
                 ++src;
             }
@@ -376,7 +366,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 searchCount = 0;
             }
         }
-        // Is this perhaps the start of the </script> or </style> tag, or --> (end of comment)?
+        // Is this perhaps the start of the </script> or </style> tag?
         else if ( ch == '<' || ch == '-' )
         {
             searchCount = 1;
@@ -434,6 +424,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
         if (ch == '>' && searchFor[ searchCount ] == '>')
         {
             ++src;
+#ifdef COMMENTS_IN_DOM
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
             currToken->id = ID_COMMENT;
@@ -441,6 +432,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
             processToken();
             currToken->id = ID_COMMENT + ID_CLOSE_TAG;
             processToken();
+#endif
             script = style = listing = comment = textarea = false;
             scriptCodeSize = 0;
             return; // Finished parsing comment
@@ -918,9 +910,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                               (*(dest-1) == ' ' || *(dest-1) == '\t' || *(dest-1) == '\n' || *(dest-1) == '\r'))
                             dest--; // remove trailing whitespaces
                         a.setValue(buffer+1, dest-buffer-1);
-#ifdef TOKEN_DEBUG
-                        kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
-#endif
                         currToken->attrs.add(a);
                     }
 
@@ -955,9 +944,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     a.id = *buffer;
                     if(!a.id) a.setName( attrName );
                     a.setValue(buffer+1, dest-buffer-1);
-#ifdef TOKEN_DEBUG
-                    kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
-#endif
                     currToken->attrs.add(a);
 
                     dest = buffer;
@@ -1447,7 +1433,7 @@ void HTMLTokenizer::finish()
         QString food;
         food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
         QT_DELETE_QCHAR_VEC(scriptCode);
-        scriptCode = 0;
+        scriptCode = scriptCodeMaxSize = 0;
         script = style = listing = comment = textarea = false;
         scriptCodeSize = 0;
         write(food);
@@ -1507,7 +1493,7 @@ void HTMLTokenizer::processToken()
         {
             name = currToken->attrs.name(i).string();
             text = currToken->attrs.value(i).string();
-            kdDebug( 6036 ) << "    " << currToken->attrs.id(i) << " " << name << "=" << text << endl;
+            kdDebug( 6036 ) << "    " << currToken->attrs.id(i) << " " << name << "=\"" << text << "\"" << endl;
             i++;
         }
     }
