@@ -915,7 +915,13 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 {
   Q_ASSERT( job );
   KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();
-  kdDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << url.prettyURL() << endl;
+  
+  // strip trailing slashes
+  oldUrl.adjustPath(-1);
+  KURL newUrl = url;
+  newUrl.adjustPath(-1);  
+  
+  kdDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
 
   // I don't think there can be dirItems that are childs of oldUrl.
   // Am I wrong here? And even if so, we don't need to delete them, right?
@@ -933,29 +939,29 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
     if ( kdl->d->url.cmp( oldUrl, true ) )
     {
       kdl->d->rootFileItem = 0;
-      kdl->d->url = url;
+      kdl->d->url = newUrl;
     }
 
-    *kdl->d->lstDirs.find( oldUrl ) = url;
+    *kdl->d->lstDirs.find( oldUrl ) = newUrl;
 
     if ( kdl->d->lstDirs.count() == 1 )
     {
       emit kdl->clear();
-      emit kdl->redirection( url );
-      emit kdl->redirection( oldUrl, url );
+      emit kdl->redirection( newUrl );
+      emit kdl->redirection( oldUrl, newUrl );
     }
     else
     {
       emit kdl->clear( oldUrl );
-      emit kdl->redirection( oldUrl, url );
+      emit kdl->redirection( oldUrl, newUrl );
     }
   }
 
   delete dir->rootItem;
   dir->rootItem = 0;
   dir->lstItems->clear();
-  itemsInUse.insert( url.url(-1), dir );
-  urlsCurrentlyListed.insert( url.url(-1), listers );
+  itemsInUse.insert( newUrl.url(), dir );
+  urlsCurrentlyListed.insert( newUrl.url(), listers );
 }
 
 void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
