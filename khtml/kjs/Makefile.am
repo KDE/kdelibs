@@ -29,7 +29,7 @@ libkjs_la_METASOURCES = kjs.moc
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
 libkjs_la_LIBADD = $(LIB_KDECORE)
 
-grammar.cpp: $(srcdir)/grammar.y
+parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
 	$(YACC) -d grammar.y && mv grammar.tab.c grammar.cpp; \
 	if test -f grammar.tab.h; then \
