@@ -21,6 +21,7 @@
 #include <kparts/event.h>
 #include <kparts/partmanager.h>
 #include <kparts/part.h>
+#include <kglobal.h>
 #include <kdebug.h>
 
 #include <qapplication.h>
@@ -170,12 +171,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
         setActivePart( part, w );
       }
 
-      // I suppose we don't return here in case of child parts, right ?
-      // But it means we'll emit the event for each intermediate parent ? (David)
-      // Perhaps we should store the new part and emit at the end ?
-
-      // I think we should return here (Simon)
-      return false; // Ok, let's return. We'll test child parts later on. (David)
+      return false;
     }
 
     w = w->parentWidget();
@@ -298,6 +294,8 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
       QApplication::sendEvent( d->m_activeWidget, &ev );
     }
   }
+  // Set the new active instance in KGlobal
+  KGlobal::_activeInstance = d->m_activePart ? d->m_activePart->instance() : 0L;
 
   emit activePartChanged( d->m_activePart );
 }
