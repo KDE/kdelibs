@@ -294,8 +294,7 @@ void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
 
     QValueList<int>::ConstIterator it = newFontSizes.begin();
     QValueList<int>::ConstIterator end = newFontSizes.end();
-    int i = 0;
-    for (; it != end; it++ )
+    for (int i = 0; it != end; it++ )
       m_fontSizes[ i++ ] = *it;
 }
 
