@@ -546,6 +546,10 @@ protected:
      * For inherited classes
      */
     bool settingsDirty() const;
+    /**
+     * For inherited classes
+     */
+    QString settingsGroup() const;
 
 protected slots:
 
