@@ -52,17 +52,12 @@
 #include <kcmdlineargs.h>
 #include <kcrash.h>
 
-//#define ANNOYING_POPUP
-
-#ifdef Q_WS_WIN
+#ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build 
+                        // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
 # include <qlabel.h>
-# define ANNOYING_POPUP
+# include <kmessagebox.h>
   bool silent;
   bool showprogress;
-#endif
-
-#ifdef ANNOYING_POPUP
-#include <kmessagebox.h>
 #endif
 
 #include <stdlib.h>
@@ -705,7 +700,7 @@ static KCmdLineOptions options[] = {
    { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
 #ifdef KBUILDSYCOCA_GUI
    { "silent", I18N_NOOP("Silent - work without windows and stderr"), 0 },
-   { "showprogress", I18N_NOOP("Show progress information (event if 'silent' mode is on)"), 0 },
+   { "showprogress", I18N_NOOP("Show progress information (even if 'silent' mode is on)"), 0 },
 #endif
    KCmdLineLastOption
 };
@@ -929,12 +924,8 @@ extern "C" int kdemain(int argc, char **argv)
 #ifdef KBUILDSYCOCA_GUI
    if (!silent) {
      progress.close();
-     KMessageBox::information(0, i18n("Configuration reloaded successfully."), capt);
+     KMessageBox::information(0, i18n("Configuration information reloaded successfully."), capt);
    }
-#else
-# ifdef ANNOYING_POPUP
-   KMessageBox::information(0, i18n("System configuration cache (ksycoca) successfully updated."));
-# endif
 #endif
    return 0;
 }
