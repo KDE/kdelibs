@@ -43,7 +43,7 @@ noinst_HEADERS = \
 		kledtest.h kcontainertest.h \
 		krulertest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h
+		kdualcolortest.h khashtest.h knuminputtest.h
 
 METASOURCES = AUTO
 
