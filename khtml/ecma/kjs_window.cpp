@@ -886,7 +886,6 @@ Completion WindowFunc::tryExecute(const List &args)
 {
   KJSO result;
   QString str, str2;
-  int i;
 
   if (!window->m_part)
     return Completion(Normal);
@@ -908,9 +907,8 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   case Confirm:
     part->xmlDocImpl()->updateRendering();
-    i = KMessageBox::warningYesNo(widget, str, "JavaScript",
-                                  i18n("OK"), i18n("Cancel"));
-    result = Boolean((i == KMessageBox::Yes));
+    result = Boolean((KMessageBox::warningYesNo(widget, str, "JavaScript",
+                                  i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
     break;
   case Prompt:
     part->xmlDocImpl()->updateRendering();
@@ -1094,6 +1092,7 @@ Completion WindowFunc::tryExecute(const List &args)
     }
     else if (args.size() >= 2 && v.derivedFrom(FunctionType)) {
       KJSO func = args[0];
+      int i = args[1].toInt32();
       List *funcArgs = args.copy();
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
@@ -1111,6 +1110,7 @@ Completion WindowFunc::tryExecute(const List &args)
     }
     else if (args.size() >= 2 && v.derivedFrom(FunctionType)) {
       KJSO func = args[0];
+      int i = args[1].toInt32();
       List *funcArgs = args.copy();
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
@@ -1226,10 +1226,10 @@ void WindowQObject::parentDestroyed()
   killTimers();
   QMapIterator<int,ScheduledAction*> it;
   for (it = scheduledActions.begin(); it != scheduledActions.end(); ++it) {
-    ScheduledAction *action = *it;
+    //ScheduledAction *action = *it;
     scheduledActions.remove(it);
     //    ### delete action;
-  } 
+  }
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
@@ -1252,7 +1252,7 @@ void WindowQObject::clearTimeout(int timerId, bool delAction)
   if (delAction) {
     QMapIterator<int,ScheduledAction*> it = scheduledActions.find(timerId);
     if (it != scheduledActions.end()) {
-      ScheduledAction *action = *it;
+      //ScheduledAction *action = *it;
       scheduledActions.remove(it);
       //      delete action;
     }
