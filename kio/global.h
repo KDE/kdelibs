@@ -137,7 +137,8 @@ namespace KIO
     ERR_CANNOT_RENAME_PARTIAL = 57,
     ERR_NEED_PASSWD = 58,
     ERR_CANNOT_SYMLINK = 59,
-    ERR_NO_CONTENT = 60 // Action succeeded but no content will follow.
+    ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
+    ERR_DISK_FULL = 61
   };
 
   /**
