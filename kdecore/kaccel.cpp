@@ -597,16 +597,19 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 		if( keyModQt ) {
 			// Should possibly remove SHIFT
 			// i.e., in en_US: 'Exclam' instead of 'Shift+1'
-			// ***: Once i know how, i need to check for Mode_switch too.
 			if( keyModQt & Qt::SHIFT ) {
-				QString s0 = XKeysymToString( XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 0 ) ),
-					s1 = XKeysymToString( XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 1 ) );
+				int	index = keySymXIndex( keySymX );
+				int	indexUnshifted = (index / 2) * 2; // 0 & 1 => 0, 2 & 3 => 2
+				uint	keySymX0 = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, indexUnshifted ),
+					keySymX1 = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, indexUnshifted+1 );
+				QString	s0 = XKeysymToString( keySymX0 ),
+					s1 = XKeysymToString( keySymX1 );
 
 				// If shifted value is not the same as unshifted,
 				//  then we shouldn't print Shift.
 				if( s0.lower() != s1.lower() ) {
 					keyModQt &= ~Qt::SHIFT;
-					keySymX = XStringToKeysym( s1.ascii() );
+					keySymX = keySymX1;
 				}
 			}
 
@@ -756,7 +759,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		// If 'Shift' has been explicitly give, i.e. 'Shift+1',
 		if( keyModX & ShiftMask ) {
 			int index = keySymXIndex( keySymX );
-			// But symbol given is unshifted,
+			// But symbol given is unshifted, i.e. '1'
 			if( index == 0 || index == 2 ) {
 				keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index+1 );
 				keyCombQt = keySymXToKeyQt( keySymX, keyModX );
