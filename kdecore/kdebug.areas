@@ -37,13 +37,16 @@
 294        kdeui (KEdit)
 295        kdeui (KMenuBar)
 296        kdeui (KPopupMenu)
-297        kdeui (KPreferences)
 298        kdeui (KDatePicker)
 399        kimgio
 400        artskde
 500        kdeprint
-700        kutils (KCD)
-701        kutils (KCDDispatcher)
+700        kutils (KSettings::Dialog)
+701        kutils (KSettings::Dispatcher)
+702        kutils (KPluginSelector)
+703        kutils (KPluginInfo)
+704        kutils (KSettings::ComponentsDialog)
+710        kutils (KCMultiDialog)
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
