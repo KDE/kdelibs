@@ -66,7 +66,6 @@ public:
       strcpy(tgtname, cname);
       strcat(tgtname, "  ");
       strcat(tgtname, pname);
-      printf("%d %d %d %s\n",device, tgtclient, tgtport, tgtname);
       ev=new snd_seq_event_t;
       if (ev==NULL) { printf("aaaaaaaargh !\n"); };
     }
@@ -118,6 +117,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
   convertrate=10;
 #endif
   volumepercentage=100;
+  printf("%d %d %d %s\n",device, di->tgtclient, di->tgtport, di->tgtname);
 
   map=new MidiMapper(NULL);
 
@@ -196,7 +196,7 @@ void AlsaOut::initDev (void)
 }
 
 #ifdef HAVE_LIBASOUND
-void AlsaOutPrivate::eventInit(snd_seq_event_t *ev)
+void AlsaOut::AlsaOutPrivate::eventInit(snd_seq_event_t *ev)
 {
   snd_seq_ev_clear(ev);
   snd_seq_real_time_t tmp;
@@ -210,7 +210,7 @@ void AlsaOutPrivate::eventInit(snd_seq_event_t *ev)
 
 }
 
-void AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
+void AlsaOut::AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
 {
     int err = snd_seq_event_output(handle, ev);
 /*        if (err < 0)
@@ -235,7 +235,7 @@ void AlsaOutPrivate::eventSend(snd_seq_event_t *ev)
 */
 }
 
-void AlsaOutPrivate::timerEventSend(int type)
+void AlsaOut::AlsaOutPrivate::timerEventSend(int type)
 {
   snd_seq_event_t ev;
 
