@@ -1,5 +1,4 @@
 /*
-
     $Id$
 
     This file is part of the KDE libraries
@@ -20,47 +19,6 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-
-    $Log$
-    Revision 1.12  1999/11/21 20:58:27  ettrich
-    small internal fix for kicker
-
-    Revision 1.11  1999/11/16 01:57:52  ettrich
-    KWinModule shouldn't filter out ALL client messages
-
-    Revision 1.10  1999/11/14 06:08:20  ettrich
-    track icon changes as well
-
-    Revision 1.9  1999/11/12 04:25:52  ettrich
-    less badwindow errors
-
-    Revision 1.8  1999/11/11 01:22:08  ettrich
-    support for docking windows
-
-    Revision 1.7  1999/11/07 03:50:54  ettrich
-    small fix (don't destroy the XSelect mask)
-
-    Revision 1.6  1999/11/07 02:16:51  ettrich
-    avoid using 50% CPU....
-
-    Revision 1.5  1999/11/07 01:40:16  ettrich
-    some updates, new kwin access to window manager functionality
-
-    Revision 1.4  1999/10/09 09:48:42  kalle
-    more get killing
-    You need to cvs update your libc (joke!)
-
-    Revision 1.3  1999/08/26 02:44:34  tibirna
-    CT: kill a segfault which affected any kwm module app when a window lowering was operated
-
-    Revision 1.2  1999/08/18 22:40:29  ettrich
-    shortcut to get the current desktop faster
-
-    Revision 1.1  1999/08/16 20:31:07  ettrich
-    Easier access to the window manager with KWinModule.
-    This makes the former KWMModuleApplication obsolete.
-
-
 */
 
 #include "kwinmodule.h"

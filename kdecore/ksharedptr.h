@@ -18,41 +18,79 @@
 #ifndef KSharedPTR_H
 #define KSharedPTR_H
 
-#include <qshared.h>
-
 /**
- * Reference counting for shared objects.
+ * Reference counting for shared objects.  If you derive your object
+ * from this class, then you may use it in conjunction with
+ * @ref KSharedPtr to control the lifetime of your object.
+ *
+ * Specifically, all classes that derive from KShared have an internal
+ * counter keeping track of how many other objects have a reference to
+ * their object.  If used with @ref KSharedPtr, then your object will
+ * not be deleted until all references to the object have been
+ * released.
+ *
+ * You should probably not ever use any of the methods in this class
+ * directly -- let the @ref KSharedPtr take care of that.  Just derive
+ * your class from KShared and forget about it.
+ *
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
  */
 class KShared {
 public:
+   /**
+    * Standard constructor.  This will initialize the reference count
+    * on this object to 0
+    */
    KShared() : count(0) { }
+
+   /**
+    * Copy constructor.  This will @bf not actually copy the objects
+    * but it will initialize the reference count on this object to 0
+    */
    KShared( const KShared & ) : count(0) { }
+   
+   /**
+    * Overloaded assignment operator
+    */
    KShared &operator=(const KShared & ) { return *this; }
+
+   /**
+    * Increases the reference count by one
+    */
    void _KShared_ref() { count++; }
+
+   /**
+    * Releases a reference (decreases the reference count by one).  If
+    * the count goes to 0, this object will delete itself
+    */
    void _KShared_unref() { if (!--count) delete this; }
+
+   /**
+    * Return the current number of references held
+    *
+    * @return Number of references
+    */
    int _KShared_count() { return count; }
+
 protected:
    virtual ~KShared() { }
    int count;
 };
 
 /**
- * Can be used to control the lifetime of an object
- * that has derived @ref KShared. As long a someone holds
- * a KSharedPtr on some KShared object it won't become
- * deleted but is deleted once its reference count is 0.
- * This struct emulates C++ pointers perfectly. So just use
- * it like a simple C++ pointer.
+ * Can be used to control the lifetime of an object that has derived
+ * @ref KShared. As long a someone holds a KSharedPtr on some KShared
+ * object it won't become deleted but is deleted once its reference
+ * count is 0.  This struct emulates C++ pointers perfectly. So just
+ * use it like a simple C++ pointer.
  *
- * KShared and KSharedPtr are preferred over QShared /
- * QSharedPtr since they are more safe.
+ * KShared and KSharedPtr are preferred over QShared / QSharedPtr
+ * since they are more safe.
+ *
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
  */
-
-
 template< class T >
 struct KSharedPtr
 {
