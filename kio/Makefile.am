@@ -22,7 +22,7 @@ lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
-libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
+libkio_la_SOURCES = userpaths.cc kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_filter.cc kio_dlg.cc kio_skip_dlg.cc kio_interface.cc \
 	kio_pass_dlg.cc kautomount.cc \
 	kio_simpleprogress_dlg.cc kio_littleprogress_dlg.cc kio_listprogress_dlg.cc \
@@ -30,7 +30,7 @@ libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kservices.cc kmimetypes.cc kio_cache.cc kio_netaccess.cc \
 	kpixmapcache.cc kuserprofile.cc kio_error.cc kregfactories.cc \
 	kio_job.cc kregistry.cc kio_paste.cc kio_openwith.cc \
-	userpaths.cc kservicetype.cc
+	kservicetype.cc
 
 libkio_la_METASOURCES = kautomount.moc kdirwatch.moc kio_cache.moc \
 	kio_job.moc kio_openwith.moc kio_pass_dlg.moc \
