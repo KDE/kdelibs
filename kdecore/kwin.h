@@ -148,10 +148,22 @@ public:
     static void stopAvoiding(WId win);
 
     /**
-     * Tell kwin that it needs to update the client area - that is, the
-     * area which isn't taken by windows that cling to the screen edges.
+     * Force a re-check of the area available to clients.
      */
     static void updateClientArea();
+
+    /**
+     * @return area available to clients. This is adjusted from the
+     * desktop size to allow for edge-anchored windows.
+     */
+    static QRect clientArea();
+    
+    /**
+     * @return area available to edge-anchored windows. This is adjusted
+     * from the desktop size to allow for other edge-anchored windows which
+     * have priority.
+     */
+    static QRect edgeClientArea();
 };
 
 #endif

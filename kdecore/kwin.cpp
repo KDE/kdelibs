@@ -22,6 +22,10 @@
 
 #include "kwin.h"
 #include "kapp.h"
+#include <dcopclient.h>   //   
+#include <qcstring.h>     //  > for DCOP
+#include <qdatastream.h>  //
+#include <qrect.h>        // for clientArea() and edgeClientArea()
 #include <qwmatrix.h>
 #include <qbitmap.h>
 #include <qwhatsthis.h>
@@ -341,7 +345,7 @@ void KWin::invokeContextHelp()
 
 void KWin::avoid(WId win, AnchorEdge edge)
 {
-  qDebug("KWin::avoid()");
+//  qDebug("KWin::avoid()");
 
   Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
 
@@ -357,7 +361,7 @@ void KWin::avoid(WId win, AnchorEdge edge)
     default:      anchorEdge = "0"; break;
   }
   
-  qDebug("KWin::avoid - anchor edge == '%s'", anchorEdge);
+//  qDebug("KWin::avoid - anchor edge == '%s'", anchorEdge);
 
   Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
 
@@ -369,8 +373,9 @@ void KWin::avoid(WId win, AnchorEdge edge)
 
 void KWin::stopAvoiding(WId win)
 {
-  qDebug("KWin::stopAvoiding()");
+//  qDebug("KWin::stopAvoiding()");
 
+  // This should go into createAtoms()
   Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
 
   XTextProperty avoidProp;
@@ -385,8 +390,101 @@ void KWin::stopAvoiding(WId win)
     qDebug("KWin::avoid(): Couldn't set text property");
 }
 
+QRect KWin::clientArea()
+{
+  QRect retval;
+
+  DCOPClient * c = kapp->dcopClient();
+  if (!c->isAttached()) {
+    if (!c->attach()) {
+      qDebug("KWin::clientArea(): Could not attach to DCOP");
+    }
+  }
+
+  QCString replyType;
+  QByteArray replyData, dummy;
+
+  if (
+    !c->call(
+      "kwin",
+      "KWinInterface",
+      "clientArea()",
+      dummy,
+      replyType,
+      replyData)
+  )
+  {
+    qDebug("KWin::clientArea(): Could not communicate with kwin using DCOP");
+  }
+
+  else {
+
+    QDataStream reply(replyData, IO_ReadOnly);
+
+    if (replyType == "QRect")
+      reply >> retval;
+    else
+      qDebug("KWin::clientArea(): Unexpected return type from DCOP call");
+  }
+
+  return retval;
+}
+    
+QRect KWin::edgeClientArea()
+{
+  QRect retval;
+
+  DCOPClient * c = kapp->dcopClient();
+  if (!c->isAttached()) {
+    if (!c->attach()) {
+      qDebug("KWin::clientArea(): Could not attach to DCOP");
+    }
+  }
+
+  QCString replyType;
+  QByteArray replyData, dummy;
+
+  if (
+    !c->call(
+      "kwin",
+      "KWinInterface",
+      "edgeClientArea()",
+      dummy,
+      replyType,
+      replyData
+    )
+  )
+  {
+    qDebug(
+      "KWin::edgeClientArea(): Could not communicate with kwin using DCOP"
+    );
+  }
+
+  else {
+
+    QDataStream reply(replyData, IO_ReadOnly);
+
+    if (replyType == "QRect")
+      reply >> retval;
+
+    else {
+      qDebug("KWin::edgeClientArea(): Unexpected return type from DCOP call");
+      retval = QApplication::desktop()->geometry();
+    }
+  }
+
+  return retval;
+}
+
 void KWin::updateClientArea()
 {
-  // Send signal to kwin to tell it to update the client area.
+  DCOPClient * client = kapp->dcopClient();
+
+  if (!client->isAttached())
+    client->attach();
+
+  if (!client->send("kwin-*", "KWinInterface", "updateClientArea()", "")) {
+    qDebug("KWin::updateClientArea(): Could not send DCOP signal to kwin");
+  }
 }
 
