@@ -674,16 +674,7 @@ void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 	}            
 	else if ( clue && _re->oldSize().width() != _re->size().width() )
 	{
-	    clue->reset();
-	    clue->setMaxWidth( _re->size().width() - leftBorder - rightBorder );
-	    clue->calcSize();
-	    clue->setPos( 0, clue->getAscent() );
-	}
-
-	if ( formList.count() > 0 )
-	{
-	    clue->calcAbsolutePos( 0, 0 );
-	    positionFormElements();
+	    calcSize();
 	}
 
 	emit resized( _re->size() );
@@ -925,10 +916,7 @@ void KHTMLWidget::print()
 	}
 
 	clue->recalcBaseSize( painter );
-	clue->reset();
-	clue->setMaxWidth( width() - leftBorder - rightBorder );
-	clue->calcSize();
-	clue->setPos( 0, clue->getAscent() );
+	calcSize();
 
 	if ( newPainter )
 	{
@@ -1338,6 +1326,9 @@ void KHTMLWidget::calcSize()
     clue->setMaxWidth( width() - leftBorder - rightBorder );
     clue->calcSize();
     clue->setPos( 0, clue->getAscent() );
+
+    if ( formList.count() > 0 )
+	clue->calcAbsolutePos( 0, 0 );
 }
 
 bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
