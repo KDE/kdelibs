@@ -37,6 +37,11 @@ KPanelApplet::KPanelApplet( QWidget* parent, const char* name  )
   , _pos (Bottom)
 {
   QXEmbed::initialize();
+  QPalette pal(palette());
+  if(pal.active().mid() != pal.inactive().mid()){
+      pal.setInactive(pal.active());
+      setPalette(pal);
+  }          
 }
 
 void KPanelApplet::init( int& /*argc*/, char ** /*argv*/ ) 
