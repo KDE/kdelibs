@@ -28,6 +28,7 @@
 
 #include "kdialogbase.h"
 #include "kcookiejar.h"                                                
+#include "qlayout.h"
 
 class KHttpCookie;
 class QRadioButton;
@@ -45,10 +46,15 @@ public:
     KCookieAdvice advice(KCookieJar *cookiejar); 
     
 protected:
-    KHttpCookie      *cookie;
+    KHttpCookie *cookie;
     QRadioButton *rb1;
     QRadioButton *rb2;
     QRadioButton *rb3;
+    QGridLayout *layout;
+
+private slots:
+    void slotCancel();
+
 };
 
 #endif

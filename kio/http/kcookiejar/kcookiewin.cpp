@@ -31,12 +31,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klocale.h>
 #include <kapp.h>
 #include <kwin.h>
+#include <kglobal.h>
 
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>
 #include <qvbuttongroup.h>
+#include <qgroupbox.h>
+#include <qdatetime.h>
 
 #include <qmessagebox.h>
 
@@ -45,11 +48,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //#include <X11/Xlib.h> // for XSetTransientForHint() 
         
 KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookiejar) :
-    KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
-		 KDialogBase::Yes, KDialogBase::No, 
-		 parent, 
-		 "cookiealert", true, true,
-                 i18n("&Accept"), i18n("&Reject")),
+    KDialogBase( i18n("Cookie Alert"), 
+		KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
+		KDialogBase::Yes, KDialogBase::No, 
+		parent, 
+		"cookiealert", true, true,
+                 i18n("&Accept"), i18n("&Reject"), i18n("&View >>")),
     cookie(_cookie)
 {
     KWin::setState( winId(), NET::StaysOnTop );
@@ -64,7 +68,7 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
 
     QWidget *contents = new QWidget(this);
 
-    QGridLayout *layout = new QGridLayout(contents, 5, 3, 
+    layout = new QGridLayout(contents, 5, 5,
 	KDialog::marginHint(), 
         KDialog::spacingHint());
 
@@ -74,6 +78,7 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
     layout->setRowStretch(1, 1);
 
     layout->addColSpacing(2, KDialog::spacingHint());
+    layout->addColSpacing(3, KDialog::spacingHint());
     layout->addRowSpacing(3, KDialog::spacingHint());
 
     QLabel *icon = new QLabel( contents );
@@ -116,8 +121,36 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
 
     setMainWidget(contents);
     enableButtonSeparator(false);
- 
+
 // new QLabel( i18n("Do you want to accept or reject this cookie?"), this, "_msg" );
+}
+
+void KCookieWin::slotCancel()
+{
+	QGroupBox *viewgroup = new QGroupBox(1, Qt::Horizontal, i18n("Cookie details"), mainWidget());
+	QWidget *viewbox = new QWidget(viewgroup);
+
+	QVBoxLayout *viewlayout = new QVBoxLayout(viewbox, KDialog::marginHint(),
+				   KDialog::spacingHint());
+
+	viewlayout->addWidget( new QLabel(i18n("Target Path: %1").arg(cookie->path()),
+    	viewbox));
+	// cookies can be large, truncate to avoid problems
+	QString cookieval = cookie->value();
+	cookieval.truncate(100);
+	viewlayout->addWidget( new QLabel(i18n("Value: %1").arg(cookieval), viewbox));
+	QDateTime cookiedate;
+	cookiedate.setTime_t(cookie->expireDate());
+	viewlayout->addWidget( new QLabel(i18n("Expires On: %1").arg(
+		(cookie->expireDate()) ? KGlobal::locale()->formatDateTime(cookiedate) : "End of Session"),
+    	viewbox));
+	viewlayout->addWidget( new QLabel(i18n("Protocol Version: %1").arg(cookie->protocolVersion()), viewbox));
+	viewlayout->addWidget( new QLabel(i18n("Is Secure: %1").arg(cookie->isSecure() ? "True" : "False"),
+    	viewbox));
+
+	viewgroup->show();
+	layout->addMultiCellWidget(viewgroup, 0, 4, 4, 4);
+	enableButtonCancel(false);
 }
 
 KCookieWin::~KCookieWin()
