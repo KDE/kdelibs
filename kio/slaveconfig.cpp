@@ -178,6 +178,8 @@ MetaData SlaveConfig::configData(const QString &protocol, const QString &host)
    MetaData config = d->global;
    SlaveConfigProtocol *scp = d->findProtocolConfig(protocol);
    config += scp->global;
+   if (host.isEmpty())
+      return config;
    MetaData *hostConfig = scp->host.find(host);
    if (!hostConfig)
    {
