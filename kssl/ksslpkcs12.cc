@@ -148,7 +148,7 @@ X509 *x = NULL;
         _cert = new KSSLCertificate;
         _cert->setCert(x);
         if (_caStack) {
-           _cert->setChain(sk_X509_dup((STACK_OF(X509)*)_caStack));
+           _cert->setChain(_caStack);
         }
         return true;
      }
