@@ -77,16 +77,14 @@ KPrinter::KPrinter()
 	// temporary PS file
 	QString	fname = locateLocal("tmp","kdeprint_");
 	fname.append(KApplication::randomString(8));
-	m_tmpbuffer = m_psbuffer = fname;
+	m_tmpbuffer = fname;
 
 	// initialize QPrinter wrapper
 	m_wrapper = new KPrinterWrapper(this);
-	m_wrapper->setOutputToFile(true);
-	m_wrapper->setOutputFileName(m_psbuffer);
 
 	// other initialization
 	m_impl = KMFactory::self()->printerImplementation();
-	m_outputtofile = false;
+	m_ready = false;
 
 	// reload options from implementation (static object)
 	loadSettings();
@@ -107,8 +105,6 @@ KPrinter::~KPrinter()
 void KPrinter::loadSettings()
 {
 	if (m_impl) m_options = m_impl->loadOptions();
-	setOutputFileName(option("kde-outputfilename"));
-	setOutputToFile((option("kde-outputtofile") == "1"));
 
 	// load latest used printer from config file
 	KConfig	*conf = KGlobal::config();
@@ -118,8 +114,6 @@ void KPrinter::loadSettings()
 
 void KPrinter::saveSettings()
 {
-	m_options["kde-outputfilename"] = outputFileName();
-	m_options["kde-outputtofile"] = (outputToFile() ? "1" : "0");
 	if (m_impl) m_impl->saveOptions(m_options);
 
 	// save latest used printer to config file
@@ -134,8 +128,6 @@ bool KPrinter::setup(QWidget *parent)
 	{
 		if (KPrintDialog::printerSetup(this, parent))
 		{
-			preparePrinting();
-dumpOptions(m_options);
 			return true;
 		}
 		return false;
@@ -182,41 +174,58 @@ KPrinter::ApplicationType KPrinter::applicationType()
 bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
+	if (c == QPaintDevice::PdcBegin)
+		preparePrinting();
 	value = m_wrapper->cmd(c,painter,p);
-	if (c == QPaintDevice::PdcEnd && !m_outputtofile)
+	if (c == QPaintDevice::PdcEnd)
 	{
-		if (option("kde-preview") != "1" || KPrintPreview::preview(m_psbuffer))
-			value = value && printFiles(QStringList(m_psbuffer));
+		if (!outputToFile())
+		{
+			if (option("kde-preview") != "1" || KPrintPreview::preview(m_wrapper->outputFileName()))
+				value = value && printFiles(QStringList(m_wrapper->outputFileName()));
+		}
+		// reset "ready" state
+		finishPrinting();
 	}
 	return value;
 }
 
 void KPrinter::translateQtOptions()
 {
-	m_wrapper->setCreator(option("kde-creator"));
-	m_wrapper->setDocName(option("kde-docname"));
-	m_wrapper->setFullPage((option("kde-fullpage") == "1"));
-	m_wrapper->setColorMode((option("kde-colormode") == "GrayScale" ? QPrinter::GrayScale : QPrinter::Color));
-	m_wrapper->setOrientation((option("kde-orientation") == "Landscape" ? QPrinter::Landscape : QPrinter::Portrait));
-	m_wrapper->setPageSize((option("kde-pagesize").isEmpty() ? QPrinter::A4 : (QPrinter::PageSize)(option("kde-pagesize").toInt())));
+	m_wrapper->setCreator(creator());
+	m_wrapper->setDocName(docName());
+	m_wrapper->setFullPage(fullPage());
+	m_wrapper->setColorMode((QPrinter::ColorMode)colorMode());
+	m_wrapper->setOrientation((QPrinter::Orientation)orientation());
+	m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
+	m_wrapper->setOutputToFile(true);
+	m_wrapper->setOutputFileName((outputToFile() ? outputFileName() : m_tmpbuffer));
 }
 
 bool KPrinter::printFiles(const QStringList& l)
 {
+	// check if printing has been prepared (it may be not prepared if the KPrinter object is not
+	// use as a QPaintDevice object)
+	preparePrinting();
+
 	QString	cmd = QString("kjobviewer -d %1").arg(printerName());
+	bool	status(true);
 	KRun::runCommand(cmd);
-	if (m_impl->printFiles(this, l))
-		return true;
-	else
+	if (!m_impl->printFiles(this, l))
 	{
 		if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(errorMessage())))
 			kdDebug() << "could not send notify event" << endl;
-		return false;
+		status = false;
 	}
+	finishPrinting();
+	return status;
 }
 
 void KPrinter::preparePrinting()
 {
+	// check if already prepared (-> do nothing)
+	if (m_ready) return;
+
 	// re-initialize error
 	setErrorMessage(QString::null);
 
@@ -230,29 +239,19 @@ void KPrinter::preparePrinting()
 
 	// standard Qt settings
 	translateQtOptions();
+
+	m_ready = true;
+dumpOptions(m_options);
+}
+
+void KPrinter::finishPrinting()
+{
+	m_ready = false;
 }
 
 //**************************************************************************************
 // QPrinter interface
 //**************************************************************************************
-
-void KPrinter::setOutputToFile(bool on)
-{
-	m_outputtofile = on;
-	if (!m_outputtofile)
-	{
-		// reset PS buffer to something "temporary"
-		m_psbuffer = m_tmpbuffer;
-		m_wrapper->setOutputFileName(m_psbuffer);
-	}
-}
-
-void KPrinter::setOutputFileName(const QString& f)
-{
-	m_psbuffer = f;
-	setOutputToFile( !f.isEmpty() );
-	m_wrapper->setOutputFileName(m_psbuffer);
-}
 
 int KPrinter::numCopies() const
 {
@@ -319,6 +318,11 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
   // from "opts" if specified
 	QMap<QString,QString>	tmpset = m_options;
 	m_options = opts;
+	// remove some problematic options that may not be overwritten (ugly hack).
+	// Default values will be used instead, except if the dialog has set new ones.
+	tmpset.remove("kde-pagesize");
+	tmpset.remove("kde-orientation");
+	tmpset.remove("kde-colormode");
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
 		if (it.key().left(4) == "kde-" && !(m_options.contains(it.key())))
 			m_options[it.key()] = it.data();
@@ -547,10 +551,16 @@ bool KPrinter::newPage()
 { return m_wrapper->newPage(); }
 
 QString KPrinter::outputFileName() const
-{ return m_psbuffer; }
+{ return option("kde-outputfilename"); }
+
+void KPrinter::setOutputFileName(const QString& f)
+{ setOption("kde-outputfilename",f); setOutputToFile(!f.isEmpty()); }
 
 bool KPrinter::outputToFile() const
-{ return m_outputtofile; }
+{ return (option("kde-outputtofile") == "1"); }
+
+void KPrinter::setOutputToFile(bool on)
+{ setOption("kde-outputtofile",(on ? "1" : "0")); }
 
 bool KPrinter::abort()
 { return m_wrapper->abort(); }

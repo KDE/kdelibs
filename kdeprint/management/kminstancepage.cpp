@@ -233,7 +233,6 @@ void KMInstancePage::slotTest()
 			pr.setPrinterName(mpr->printerName());
 			pr.setSearchName(mpr->name());
 			pr.setOptions(mpr->defaultOptions());
-			pr.preparePrinting();
 			if (!pr.printFiles(testpage))
 				KMessageBox::error(this,i18n("<nobr>Unable to send test page to <b>%1</b>.</nobr>").arg(pr.printerName()));
 			else

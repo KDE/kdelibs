@@ -156,7 +156,6 @@ public:
 
 	KPrinterImpl* implementation() const;
 	bool printFiles(const QStringList&);
-	void preparePrinting();
 
 	static void addDialogPage(KPrintDialogPage*);
 	static void setPageSelection(PageSelectionType);
@@ -183,18 +182,20 @@ protected:
 	void translateQtOptions();
 	void loadSettings();
 	void saveSettings();
+	void preparePrinting();
+	void finishPrinting();
 
 protected:
 	KPrinterImpl		*m_impl;
 	KPrinterWrapper		*m_wrapper;
 	QMap<QString,QString>	m_options;
-	QString			m_psbuffer, m_tmpbuffer;
-	bool			m_outputtofile;
+	QString			m_tmpbuffer;
 	QString			m_printername;
 	QString			m_searchname;
 	QSize			m_margins;
 	QSize			m_pagesize;
 	QString			m_errormsg;
+	bool			m_ready;
 };
 
 //**************************************************************************************
