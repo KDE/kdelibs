@@ -82,10 +82,10 @@ KZoneAllocator::~KZoneAllocator()
 
 void KZoneAllocator::insertHash(MemBlock *b)
 {
-  unsigned int adr = ((unsigned int)b->begin) & (~(blockSize - 1));
-  unsigned int end = ((unsigned int)b->begin) + blockSize;
+  unsigned long adr = ((unsigned long)b->begin) & (~(blockSize - 1));
+  unsigned long end = ((unsigned long)b->begin) + blockSize;
   while (adr < end) {
-    unsigned int key = adr >> log2;
+    unsigned long key = adr >> log2;
     key = key & (hashSize - 1);
     if (!hashList[key])
       hashList[key] = new QValueList<MemBlock *>;
@@ -140,10 +140,10 @@ void KZoneAllocator::delBlock(MemBlock *b)
   /* Update also the hashlists if we aren't going to reconstruct them
      soon.  */
   if (hashList && !hashDirty) {
-    unsigned int adr = ((unsigned int)b->begin) & (~(blockSize - 1));
-    unsigned int end = ((unsigned int)b->begin) + blockSize;
+    unsigned long adr = ((unsigned long)b->begin) & (~(blockSize - 1));
+    unsigned long end = ((unsigned long)b->begin) + blockSize;
     while (adr < end) {
-      unsigned int key = adr >> log2;
+      unsigned long key = adr >> log2;
       key = key & (hashSize - 1);
       if (hashList[key]) {
 	QValueList<MemBlock *> *list = hashList[key];
@@ -199,7 +199,7 @@ KZoneAllocator::deallocate(void *ptr)
   if (hashDirty)
     initHash();
 
-  unsigned int key = (((unsigned int)ptr) >> log2) & (hashSize - 1);
+  unsigned long key = (((unsigned long)ptr) >> log2) & (hashSize - 1);
   QValueList<MemBlock *> *list = hashList[key];
   if (!list) {
     /* Can happen with certain usage pattern of intermixed free_since()

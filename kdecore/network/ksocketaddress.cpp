@@ -226,7 +226,7 @@ struct our_sockaddr_in6
 // useful definitions
 #define MIN_SOCKADDR_LEN	sizeof(Q_UINT16)
 #define SOCKADDR_IN_LEN		sizeof(sockaddr_in)
-#define MIN_SOCKADDR_IN6_LEN	((unsigned) &(((our_sockaddr_in6*)0)->sin6_scope_id))
+#define MIN_SOCKADDR_IN6_LEN	((unsigned long) &(((our_sockaddr_in6*)0)->sin6_scope_id))
 #define SOCKADDR_IN6_LEN	sizeof(our_sockaddr_in6)
 #define MIN_SOCKADDR_UN_LEN	(sizeof(Q_UINT16) + sizeof(char))
 
