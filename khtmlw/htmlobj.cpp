@@ -828,6 +828,15 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
     }
 #endif
 
+    if ( !movie && pixmap )
+    {
+	if ( predefinedWidth )
+	    rect.setWidth( pixmap->width() );
+
+	if ( predefinedHeight )
+	    rect.setHeight( pixmap->height() );
+    }
+
     if ( pixptr == 0 || pixptr->isNull() )
     {
 	if ( !predefinedWidth || !predefinedHeight )
