@@ -300,9 +300,9 @@ protected:
     /**
      * Sets the mode of the connection to blocking or non-blocking.
      *
-     * Be sure to call this function before calling @ref ConnectToHost.
+     * Be sure to call this function before calling @ref connectToHost.
      * Otherwise, this setting will not have any effect until the next
-     * @p ConnectToHost.
+     * @p connectToHost.
      *
      * @param b true to make the connection a blocking one, false otherwise.
      */
