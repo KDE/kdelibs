@@ -25,7 +25,8 @@
 #include "object.h"
 #include "nodes.h"
 #include "math_object.h"
-#include "html_object.h"
+#include "html_document.h"
+#include "khtml.h"
 
 namespace KJS {
   const double NaN = 0.0/0.;
@@ -258,7 +259,7 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
   put("Infinity", zeroRef(new KJSNumber(Inf)));
 
   put("Math", zeroRef(new KJSMath()), DontEnum);
-  put("document", new HTMLDocument(htmlw), DontEnum, true);
+  put("document", new HTMLDocument(htmlw->htmlDocument()), DontEnum, true);
 
   // TODO: add function properties
   //  put("eval", new KJSInternalFunction(&eval));

@@ -53,7 +53,8 @@ public:
     ~HTMLDocumentImpl();
     DOMString referrer() const;
     DOMString domain() const;
-    DOMString URL() const;
+    DOMString URL() const { return url; }
+    void setURL(DOMString _url) { url = _url; }
     HTMLElementImpl *body();
 
     virtual bool isInline() { return false; }
@@ -66,6 +67,9 @@ public:
     ElementImpl *getElementById ( const DOMString &elementId );
     NodeList getElementsByName ( const DOMString &elementName );
 
+    // internal
+    NodeImpl *findElement( int id );
+    
     // for KHTML
     virtual DOMString requestImage(HTMLImageRequester *, DOMString );
 
@@ -101,7 +105,8 @@ protected:
     KHTMLCache *cache;
 
     HTMLElementImpl *bodyElement;
-
+    DOMString url;
+    
     int width;
     int height;
 };

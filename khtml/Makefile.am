@@ -32,7 +32,7 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = java kjs
+SUBDIRS = java
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = dtd.cpp\

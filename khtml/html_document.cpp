@@ -27,9 +27,10 @@
 
 #include "dom_node.h"
 #include "dom_element.h"
-#include "html_element.h"
 #include "dom_string.h"
+#include "dom_textimpl.h"
 #include "html_misc.h"
+#include "html_element.h"
 #include "html_documentimpl.h"
 #include "html_elementimpl.h"
 #include "html_miscimpl.h"
@@ -71,16 +72,20 @@ HTMLDocument::~HTMLDocument()
 
 DOMString HTMLDocument::title() const
 {
-    // ###
     if(!impl) return 0;
-    return "unknown";
-    //return ((ElementImpl *)impl)->getAttribute("title");
+
+    NodeImpl *e = static_cast<HTMLDocumentImpl *>(impl)->findElement(ID_TITLE);
+    if(!e) return 0;
+
+    NodeImpl *t = e->firstChild();
+    if(!t) return 0;
+    
+    return static_cast<TextImpl *>(t)->data();
 }
 
 void HTMLDocument::setTitle( const DOMString &/*value*/ )
 {
     // ###
-    //if(impl) ((ElementImpl *)impl)->setAttribute("title", value);
 }
 
 DOMString HTMLDocument::referrer() const

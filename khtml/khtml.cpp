@@ -334,6 +334,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     document = new HTMLDocumentImpl(this, cache);
     document->ref();
+    document->setURL(m_strURL);
     document->open();
     // clear widget
     resizeContents(0, 0);
@@ -396,7 +397,7 @@ void KHTMLWidget::slotReloadFrames()
 
 void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* /*_post_data*/ )
 {
-    
+
     printf("openURL this=%p\n", this);
   // Check URL
   if ( KURL::split( _url ).isEmpty() )
@@ -434,7 +435,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
       NodeImpl *body = document->body();
       if(body && body->id() == ID_FRAMESET) frameset = true;
   }
-  
+
   if ( !m_bReload && !frameset && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
   {
     KURL u( m_strWorkingURL );
@@ -675,7 +676,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   }
 
   // ### the started signals are just a hack to get history right...
-  
+
   if ( !target.isNull() && !target.isEmpty() && _button == LeftButton )
   {
       printf("searching target frame\n");
@@ -1550,9 +1551,9 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     stream >> u;
     stream >> x >> y;
     stream >> info; // do we have additional info?
-    
+
     printf("restoring url=%s\n", u.ascii());
-    
+
     if(info == INFO_NONE)
     {
 	printf("------------------ restoring page ----------------------------\n");

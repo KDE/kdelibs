@@ -95,18 +95,15 @@ HTMLDocumentImpl::~HTMLDocumentImpl()
 
 DOMString HTMLDocumentImpl::referrer() const
 {
-    // ###
+    // ### should we fix that? I vote against for privacy reasons
+    return DOMString();
 }
 
 DOMString HTMLDocumentImpl::domain() const
 {
-    // ###
-}
-
-DOMString HTMLDocumentImpl::URL() const
-{
-    // ### FIXME
-    return 0;
+    // ### do they want the host or the domain????
+    KURL u(url.string());
+    return u.host();
 }
 
 HTMLElementImpl *HTMLDocumentImpl::body()
@@ -198,6 +195,41 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 NodeList HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
 {
     // ###
+}
+
+// internal. finds the first element with tagid id
+NodeImpl *HTMLDocumentImpl::findElement( int id )
+{
+    QStack<NodeImpl> nodeStack;
+    NodeImpl *current = _first;
+
+    while(1)
+    {
+	if(!current)
+	{
+	    if(nodeStack.isEmpty()) break;
+	    current = nodeStack.pop();
+	    current = current->nextSibling();
+	}
+	else
+	{
+	    if(current->id() == id)
+		return current;
+	
+	    NodeImpl *child = current->firstChild();
+	    if(child)
+	    {	
+		nodeStack.push(current);
+		current = child;
+	    }
+	    else
+	    {
+		current = current->nextSibling();
+	    }
+	}
+    }
+
+    return 0;
 }
 
 
