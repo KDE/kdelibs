@@ -160,7 +160,7 @@ public:
     m_bFirstData = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
-    m_automaticDetectionLanguage = khtml::Decoder::SemiautomaticDetection;
+    m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
 
     // inherit settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -178,7 +178,7 @@ public:
             m_ssl_in_use = part->d->m_ssl_in_use;
             m_onlyLocalReferences = part->d->m_onlyLocalReferences;
             m_zoomFactor = part->d->m_zoomFactor;
-            m_automaticDetectionLanguage = part->d->m_automaticDetectionLanguage;
+            m_autoDetectLanguage = part->d->m_autoDetectLanguage;
         }
     }
 
@@ -415,7 +415,7 @@ public:
   bool m_openedByJS;
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 
-  khtml::Decoder::AutomaticDetectinonLanguage m_automaticDetectionLanguage;
+  khtml::Decoder::AutoDetectLanguage m_autoDetectLanguage;
   KPopupMenu *m_automaticDetection;
   KSelectAction *m_manualDetection;
 };

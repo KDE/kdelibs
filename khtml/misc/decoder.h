@@ -49,7 +49,7 @@ public:
     QString flush() const;
 
 
-    enum AutomaticDetectinonLanguage {
+    enum AutoDetectLanguage {
         SemiautomaticDetection,
         Arabic,
         Baltic,
@@ -67,8 +67,8 @@ public:
         WesternEuropean
     };
 
-    void setAutomaticDetectionLanguage( AutomaticDetectinonLanguage _language ) { m_automaticDetectionLanguage = _language; }
-    AutomaticDetectinonLanguage automaticDetectionLanguage() { return m_automaticDetectionLanguage; }
+    void setAutoDetectLanguage( AutoDetectLanguage _language ) { m_autoDetectLanguage = _language; }
+    AutoDetectLanguage autoDetectLanguage() { return m_autoDetectLanguage; }
 
 
 
@@ -76,7 +76,7 @@ private:
     QCString automaticDetectionForArabic( const unsigned char* str, int size );
     QCString automaticDetectionForBaltic( const unsigned char* str, int size );
     QCString automaticDetectionForCentralEuropean( const unsigned char* str, int size );
-    QCString automaticDetectionForCyrillic( const unsigned char* str, int size, AutomaticDetectinonLanguage _language );
+    QCString automaticDetectionForCyrillic( const unsigned char* str, int size, AutoDetectLanguage _language );
     QCString automaticDetectionForGreek( const unsigned char* str, int size );
     QCString automaticDetectionForHebrew( const unsigned char* str, int size );
     QCString automaticDetectionForTurkish( const unsigned char* str, int size );
@@ -96,7 +96,7 @@ private:
     bool visualRTL;
     bool haveEncoding;
 
-    AutomaticDetectinonLanguage m_automaticDetectionLanguage;
+    AutoDetectLanguage m_autoDetectLanguage;
 };
 
 }

@@ -281,7 +281,7 @@ Decoder::Decoder()
     beginning = true;
     visualRTL = false;
     haveEncoding = false;
-    m_automaticDetectionLanguage = SemiautomaticDetection;
+    m_autoDetectLanguage = SemiautomaticDetection;
 }
 Decoder::~Decoder()
 {
@@ -473,7 +473,7 @@ QString Decoder::decode(const char *data, int len)
 	kdDebug( 6005 ) << "Decoder: use auto-detect (" << strlen(data) << ")" << endl;
 #endif
 
-        switch ( m_automaticDetectionLanguage) {
+        switch ( m_autoDetectLanguage) {
         case Decoder::Arabic:
             enc = automaticDetectionForArabic( (const unsigned char*) data, len );
             break;
@@ -485,7 +485,7 @@ QString Decoder::decode(const char *data, int len)
             break;
         case Decoder::Russian:
         case Decoder::Ukrainian:
-            enc = automaticDetectionForCyrillic( (const unsigned char*) data, len, m_automaticDetectionLanguage );
+            enc = automaticDetectionForCyrillic( (const unsigned char*) data, len, m_autoDetectLanguage );
             break;
         case Decoder::Greek:
             enc = automaticDetectionForGreek( (const unsigned char*) data, len );
@@ -637,7 +637,7 @@ QCString Decoder::automaticDetectionForCentralEuropean(const unsigned char* ptr,
     return charset.data();
 }
 
-QCString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutomaticDetectinonLanguage _language )
+QCString Decoder::automaticDetectionForCyrillic( const unsigned char* ptr, int size, AutoDetectLanguage _language )
 {
     QCString charset = QCString();
     for ( int i = 0; i < size; ++i ) {

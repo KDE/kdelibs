@@ -288,7 +288,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     int _id = config->readNumEntry( "AutomaticDetectionLanguage", language );
     d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
-    d->m_automaticDetectionLanguage = static_cast< khtml::Decoder::AutomaticDetectinonLanguage >( _id );
+
+    d->m_autoDetectLanguage = static_cast< khtml::Decoder::AutoDetectLanguage >( _id );
   }
 
 
@@ -381,7 +382,7 @@ KHTMLPart::~KHTMLPart()
 
   KConfig *config = KGlobal::config();
   config->setGroup( "HTML Settings" );
-  config->writeEntry( "AutomaticDetectionLanguage", d->m_automaticDetectionLanguage );
+  config->writeEntry( "AutomaticDetectionLanguage", d->m_autoDetectLanguage );
 
   delete d->m_automaticDetection;
   delete d->m_manualDetection;
@@ -3194,7 +3195,7 @@ void KHTMLPart::slotSaveFrame()
 
 void KHTMLPart::slotSetEncoding()
 {
-  d->m_automaticDetection->setItemChecked( int( d->m_automaticDetectionLanguage ), false );
+  d->m_automaticDetection->setItemChecked( int( d->m_autoDetectLanguage ), false );
   d->m_paSetEncoding->popupMenu()->setItemChecked( 0, false );
   d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), true );
 
@@ -5465,52 +5466,52 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
 
   switch ( _id ) {
     case 0 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::SemiautomaticDetection;
+      d->m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
       break;
     case 1 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Arabic;
+      d->m_autoDetectLanguage = khtml::Decoder::Arabic;
       break;
     case 2 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Baltic;
+      d->m_autoDetectLanguage = khtml::Decoder::Baltic;
       break;
     case 3 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::CentralEuropean;
+      d->m_autoDetectLanguage = khtml::Decoder::CentralEuropean;
       break;
     case 4 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Chinese;
+      d->m_autoDetectLanguage = khtml::Decoder::Chinese;
       break;
     case 5 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Greek;
+      d->m_autoDetectLanguage = khtml::Decoder::Greek;
       break;
     case 6 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Hebrew;
+      d->m_autoDetectLanguage = khtml::Decoder::Hebrew;
       break;
     case 7 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Japanese;
+      d->m_autoDetectLanguage = khtml::Decoder::Japanese;
       break;
     case 8 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Korean;
+      d->m_autoDetectLanguage = khtml::Decoder::Korean;
       break;
     case 9 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Russian;
+      d->m_autoDetectLanguage = khtml::Decoder::Russian;
       break;
     case 10 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Thai;
+      d->m_autoDetectLanguage = khtml::Decoder::Thai;
       break;
     case 11 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Turkish;
+      d->m_autoDetectLanguage = khtml::Decoder::Turkish;
       break;
     case 12 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Ukrainian;
+      d->m_autoDetectLanguage = khtml::Decoder::Ukrainian;
       break;
     case 13 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::Unicode;
+      d->m_autoDetectLanguage = khtml::Decoder::Unicode;
       break;
     case 14 :
-      d->m_automaticDetectionLanguage = khtml::Decoder::WesternEuropean;
+      d->m_autoDetectLanguage = khtml::Decoder::WesternEuropean;
       break;
     default :
-      d->m_automaticDetectionLanguage = khtml::Decoder::SemiautomaticDetection;
+      d->m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
       break;
   }
 
@@ -5536,7 +5537,7 @@ khtml::Decoder *KHTMLPart::createDecoder()
   else
     dec->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
 
-  dec->setAutomaticDetectionLanguage( d->m_automaticDetectionLanguage );
+  dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
   return dec;
 }
 
