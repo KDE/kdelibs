@@ -204,12 +204,17 @@ class KKeyChooser : public QWidget
  private:
         bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser );
         static bool promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType action, QWidget* parent );
-        static void removeStandardShortcut( const QString& name, KKeyChooser* chooser );
-        static void removeGlobalShortcut( const QString& name, KKeyChooser* chooser );
+        // Remove the key sequences contained in cut from the standard shortcut @p name
+        // which currently has @p origCut as shortcut.
+        static void removeStandardShortcut( const QString& name, KKeyChooser* chooser, const KShortcut &origCut, const KShortcut &cut );
+        // Remove the key sequences contained in cut from the global shortcut @p name
+        // which currently has @p origCut as shortcut.
+        static void removeGlobalShortcut( const QString& name, KKeyChooser* chooser, const KShortcut &origCut, const KShortcut &cut );
         static void readGlobalKeys( QMap< QString, KShortcut >& map );
         static bool checkGlobalShortcutsConflict( const KShortcut& cut, bool bWarnUser, QWidget* parent,
             const QMap< QString, KShortcut >& map, const QString& ignoreAction );
-        bool resetShortcut( const QString& name );
+        // Remove the key sequences contained in cut from this item
+        bool removeShortcut( const QString& name, const KShortcut &cut );
         
  private slots:
         void captureCurrentItem();
