@@ -125,7 +125,7 @@ public:
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
-    int checkClear(RenderObject *child);
+    bool checkClear(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
     virtual bool hasFloats() const { return m_floatingObjects!=0; }
