@@ -17,18 +17,19 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #ifndef _KSSLINFODLG_H
 #define _KSSLINFODLG_H
 
-#include <qwidget.h>
 #include <kdialog.h>
+
 #include "ksslx509map.h"
-#include <qlabel.h>
 #include "ksslcertificate.h"
+#include "kssl.h"
 
 class QScrollView;
+class QWidget;
 
 class KSSLInfoDlg : public KDialog {
 
@@ -45,12 +46,14 @@ public:
              KSSLCertificate::KSSLValidation certState,
              const QString& goodFrom, const QString& goodUntil);
 
+  void setup( KSSL & ssl, const QString & ip, const QString & url );
+
 private:
   QScrollView *buildCertInfo(const QString &certName);
 
 private:
-    class KSSLInfoDlgPrivate;
-    KSSLInfoDlgPrivate *d;
+  class KSSLInfoDlgPrivate;
+  KSSLInfoDlgPrivate *d;
 
 private slots:
   void launchConfig();

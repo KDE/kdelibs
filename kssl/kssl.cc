@@ -92,7 +92,7 @@ bool KSSL::initialize() {
     d->m_meth = SSLv3_client_method();
   else
     d->m_meth = SSLv2_client_method();
- 
+
   OpenSSL_add_ssl_algorithms();
   OpenSSL_add_all_algorithms();
   d->m_ctx=SSL_CTX_new(d->m_meth);
@@ -102,7 +102,7 @@ bool KSSL::initialize() {
 
   // set cipher list
   QString clist = m_cfg->getCipherList();
-  if (!clist.isEmpty()) 
+  if (!clist.isEmpty())
     SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.ascii()));
 
   m_bInit = true;
@@ -142,36 +142,36 @@ bool KSSL::setVerificationLogic() {
   kdDebug() << "KSSL verification logic" << endl;
 #ifdef HAVE_SSL
 // FIXME - check return code
-SSL_set_verify_result(d->m_ssl, X509_V_OK);
-SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
+  SSL_set_verify_result(d->m_ssl, X509_V_OK);
+  SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
 
-QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
- 
-if (qsl.isEmpty()) {
-  kdDebug() << "KSSL verification logic -- path lookup FAILED!" << endl;
-  return false;
-}
+  QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
 
-QString _j = *(qsl.begin())+"caroot/";
+  if (qsl.isEmpty()) {
+    kdDebug() << "KSSL verification logic -- path lookup FAILED!" << endl;
+    return false;
+  }
+
+  QString _j = *(qsl.begin())+"caroot/";
   kdDebug() << "KSSL verification logic -- path is " << _j << endl;
 
-if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, _j.ascii())) {
+  if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, _j.ascii())) {
 // FIXME: recover here
-  kdDebug() << "KSSL verification logic -- FAILED!" << endl;
-  return false;
-}
+    kdDebug() << "KSSL verification logic -- FAILED!" << endl;
+    return false;
+  }
 
-return true;
+  return true;
 #endif
 #endif
-return true;
+  return true;
 }
 
 
 int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
   kdDebug() << "KSSL connect" << endl;
-int rc;
+  int rc;
   if (!m_bInit) return -1;
   d->m_ssl = SSL_new(d->m_ctx);
   if (!d->m_ssl) return -1;
@@ -203,7 +203,7 @@ int KSSL::read(void *buf, int len) {
   if (!m_bInit) return -1;
   return SSL_read(d->m_ssl, (char *)buf, len);
 #else
-return -1;
+  return -1;
 #endif
 }
 
@@ -213,7 +213,7 @@ int KSSL::write(const void *buf, int len) {
   if (!m_bInit) return -1;
   return SSL_write(d->m_ssl, (const char *)buf, len);
 #else
-return -1;
+  return -1;
 #endif
 }
 
@@ -248,8 +248,8 @@ bool KSSL::doesSSLWork() {
 
 void KSSL::setConnectionInfo() {
 #ifdef HAVE_SSL
-SSL_CIPHER *sc;
-char buf[1024];
+  SSL_CIPHER *sc;
+  char buf[1024];
 
   buf[0] = 0;  // for safety.
   sc = SSL_get_current_cipher(d->m_ssl);
@@ -264,7 +264,7 @@ char buf[1024];
   // set the cipher name
   m_ci.m_cipherName = SSL_CIPHER_get_name(sc);
   // set the cipher description
-  m_ci.m_cipherDescription = SSL_CIPHER_description(sc, buf, 1023);  
+  m_ci.m_cipherDescription = SSL_CIPHER_description(sc, buf, 1023);
 
 #endif
 }
@@ -275,7 +275,7 @@ void KSSL::setPeerInfo() {
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
 
-m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
+  m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
 #endif
 }
 

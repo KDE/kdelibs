@@ -93,6 +93,24 @@ KShellProcess p;
   p.start(KProcess::DontCare);
 }
 
+void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
+{
+    setup(
+        ssl.peerInfo().getPeerCertificate().getSubject(),
+        ssl.peerInfo().getPeerCertificate().getIssuer(),
+        ip,
+        url,
+        ssl.connectionInfo().getCipher(),
+        ssl.connectionInfo().getCipherDescription(),
+        ssl.connectionInfo().getCipherVersion(),
+        ssl.connectionInfo().getCipherUsedBits(),
+        ssl.connectionInfo().getCipherBits(),
+        ssl.peerInfo().getPeerCertificate().validate(),
+        ssl.peerInfo().getPeerCertificate().getNotBefore(),
+        ssl.peerInfo().getPeerCertificate().getNotAfter()
+        );
+}
+
 void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
                         const QString& ip, const QString& url,
                         const QString& cipher, const QString& cipherdesc,

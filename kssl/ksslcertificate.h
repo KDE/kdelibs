@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #ifndef _KSSLCERTIFICATE_H
 #define _KSSLCERTIFICATE_H
@@ -39,7 +39,7 @@
 
 class KSSL;
 class KSSLCertificatePrivate;
- 
+
 typedef struct x509_st X509;
 
 class KSSLCertificate {
@@ -67,7 +67,7 @@ public:
   bool isValid();
   KSSLValidation validate();
   KSSLValidation revalidate();
-  
+
 
 private:
   KSSLCertificatePrivate *d;

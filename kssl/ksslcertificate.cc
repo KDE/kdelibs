@@ -130,10 +130,10 @@ bool KSSLCertificate::isValid() {
 KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
 #ifdef HAVE_SSL
-X509_STORE *certStore;
-X509_LOOKUP *certLookup;
-X509_STORE_CTX *certStoreCTX;
-int rc;
+  X509_STORE *certStore;
+  X509_LOOKUP *certLookup;
+  X509_STORE_CTX *certStoreCTX;
+  int rc;
 
   if (!d->m_cert) return Unknown;
 
@@ -219,13 +219,13 @@ int rc;
   return (d->m_stateCache);
 
 #endif
-return NoSSL;
+  return NoSSL;
 }
 
 
 KSSLCertificate::KSSLValidation KSSLCertificate::revalidate() {
-d->m_stateCached = false;
-return validate();
+  d->m_stateCached = false;
+  return validate();
 }
 
 
