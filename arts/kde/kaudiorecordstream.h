@@ -92,7 +92,8 @@ class KAudioRecordStream : public QObject
 
 	public slots:
 		/**
-		 * detaches the stream from the soundserver
+		 * Detaches the stream from the soundserver but doesn't remove the Synth_AMAN_RECORD
+		 * so that the entry in the Audiomanager remains.
 		 */
 		void stop();
 
