@@ -304,6 +304,7 @@ void KeramikStyle::updateProgressPos()
 KeramikStyle::~KeramikStyle()
 {
 	Keramik::PixmapLoader::release();
+	Keramik::GradientPainter::releaseCache();
 	KeramikDbCleanup();
 }
 
@@ -2115,7 +2116,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				}
 				else if (onExtender)
 				{
-					// Thos assumes floating toolbars can't have extenders,
+					// This assumes floating toolbars can't have extenders,
 					//(so if we're on an extender, we're not floating)
 					QWidget*  parent  = static_cast<QWidget*> (widget->parent());
 					QToolBar* toolbar = static_cast<QToolBar*>(parent->parent());
@@ -2123,13 +2124,12 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					bool  horiz = toolbar->orientation() == Qt::Horizontal;
 
 					//Calculate offset. We do this by translating our coordinates,
-					//which are relative to the parent, to be relative to the toolbar,
-					//and shift by the usual 1-pixel border.
+					//which are relative to the parent, to be relative to the toolbar.
 					int xoff = 0, yoff = 0;
 					if (horiz)
-						yoff = parent->mapToParent(widget->pos()).y() + 1;
+						yoff = parent->mapToParent(widget->pos()).y();
 					else
-						xoff = parent->mapToParent(widget->pos()).x() + 1;
+						xoff = parent->mapToParent(widget->pos()).x();
 
 					Keramik::GradientPainter::renderGradient( p, r, cg.button(),
 							horiz, false, /*Not a menubar*/
@@ -2658,8 +2658,21 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		QRect wr = widget->rect (), tr = toolbar->rect();
 		QPainter p( widget );
 
-		Keramik::GradientPainter::renderGradient( &p, QRect(0 , 0, wr.width(), wr.height()),
-			widget->colorGroup().button(), tr.width() > tr.height() );
+		if ( toolbar->orientation() == Qt::Horizontal )
+		{
+			Keramik::GradientPainter::renderGradient( &p, wr, widget->colorGroup().button(),
+													  true /*horizontal*/, false /*not a menu*/,
+													  0, widget->y(), wr.width(), tr.height());
+		}
+		else
+		{
+			Keramik::GradientPainter::renderGradient( &p, wr, widget->colorGroup().button(),
+													  false /*vertical*/, false /*not a menu*/,
+													  widget->x(), 0, tr.width(), wr.height());
+		}
+
+		
+		//Draw terminator line, too
 		p.setPen( toolbar->colorGroup().mid() );
 		if ( toolbar->orientation() == Qt::Horizontal )
 			p.drawLine( wr.width()-1, 0, wr.width()-1, wr.height()-1 );
