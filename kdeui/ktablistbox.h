@@ -25,7 +25,7 @@ typedef QDict<QPixmap> KTabListBoxDict;
 #define KTabListBoxTableInherited QTableView
 class KTabListBoxTable: public QTableView
 {
-  Q_OBJECT;
+  Q_OBJECT
   friend KTabListBox;
 public:
   KTabListBoxTable(KTabListBox *owner=0);
@@ -56,7 +56,7 @@ protected:
 #define KTabListBoxInherited KDNDWidget
 class KTabListBox : public KDNDWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
   friend KTabListBoxTable;
   friend KTabListBoxColumn;
 
@@ -304,7 +304,7 @@ typedef KTabListBoxItem* KTabListBoxItemPtr;
 //--------------------------------------------------
 class KTabListBoxColumn: public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   KTabListBoxColumn (KTabListBox* parent, int w=0);
