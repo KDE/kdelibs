@@ -54,6 +54,7 @@
 #include <kdatastream.h>
 #include <klibloader.h>
 #include <kmimesourcefactory.h>
+#include <ktempfile.h>
 #include <kstdaccel.h>
 
 #include <kstyle.h>
@@ -1404,17 +1405,30 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      else
      if ((*it).find("%b") >= 0)
        (*it).replace(QRegExp("%b"), bcc);
-     else 
+     else
      if ((*it).find("%B") >= 0)
        (*it).replace(QRegExp("%B"), body);
 
+   KTempFile * tempFile = 0L;
+   // Special case for passing message body to kmail
+   if ( cmd == "kmail" && !body.isEmpty() )
+   {
+       tempFile = new KTempFile;
+       // We can't delete the temp file, because kmail is launched async....
+       //tempFile->setAutoDelete(true);
+       (*tempFile->textStream()) << body;
+       kdDebug() << "body=" << body << endl;
+       cmdTokens.append("--msg");
+       cmdTokens.append(tempFile->name());
+       tempFile->close();
+   }
    QString error;
 
    if (kdeinitExec(cmd, cmdTokens, &error))
    {
       qWarning("Could not launch mail client:\n%s\n", error.local8Bit().data());
-      return;
    }
+   delete tempFile;
 }
 
 
