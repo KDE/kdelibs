@@ -1055,6 +1055,8 @@ getstr(register char *s, register char *p, int plen, int *slen)
       out:
 	*p = '\0';
 	*slen = p - origp;
+	//for ( char* foo = origp; foo < p ; ++foo )
+	//	kdDebug(7018) << "  " << *foo << endl;
 	return s;
 }
 
@@ -1086,10 +1088,8 @@ mconvert(union VALUETYPE *p, struct magic *m)
 		case BYTE:
 			return 1;
 		case STRING:
-			/* Null terminate and eat the return */
+			/* Null terminate */
 			p->s[sizeof(p->s) - 1] = '\0';
-			if ((rt = strchr(p->s, '\n')) != NULL)
-				*rt = '\0';
 			return 1;
 #ifndef WORDS_BIGENDIAN
 		case SHORT:
@@ -1228,11 +1228,11 @@ mcheck(union VALUETYPE *p, struct magic *m)
 			return 0;	/* NOTREACHED */
 	}
 #if 0
-	debug("Before signextend %08x", v);
+	qDebug("Before signextend %08x", v);
 #endif
 	v = signextend(m, v) & m->mask;
 #if 0
-	debug("After signextend %08x", v);
+	qDebug("After signextend %08x", v);
 #endif
 
 	switch (m->reln) {
