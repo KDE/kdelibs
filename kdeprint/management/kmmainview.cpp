@@ -56,6 +56,7 @@
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kapplication.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
@@ -236,6 +237,9 @@ void KMMainView::initActions()
 	tact->setChecked(KMManager::self()->isFilterEnabled());
 	connect(tact, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 
+	new KAction( i18n( "%1 &Handbook" ).arg( "KDEPrint" ), "contents", 0, this, SLOT( slotHelp() ), m_actions, "invoke_help" );
+	new KAction( i18n( "%1 &Web Site" ).arg( "KDEPrint" ), "network", 0, this, SLOT( slotHelp() ), m_actions, "invoke_web" );
+
 	KActionMenu	*mact = new KActionMenu(i18n("Pri&nter Tools"), "package_utilities", m_actions, "printer_tool");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
@@ -321,6 +325,11 @@ void KMMainView::initActions()
 	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
 	m_menubar->getButton( 4 )->setPopup( menu, true );
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
+	menu = new QPopupMenu( this );
+	m_actions->action( "invoke_help" )->plug( menu );
+	m_actions->action( "invoke_web" )->plug( menu );
+	m_menubar->insertButton( "help", 5, true, i18n( "Documentation" ) );
+	m_menubar->getButton( 5 )->setPopup( menu, true );
 
 	loadPluginActions();
 	slotPrinterSelected(QString::null);
@@ -857,6 +866,21 @@ void KMMainView::slotInit()
 	m_printerview->setPrinterList( 0 );
 	createMessageWindow( i18n( "Initializing manager..." ) );
 	m_manager->checkUpdatePossible();
+}
+
+void KMMainView::slotHelp()
+{
+	QString s = sender()->name();
+	if ( s == "invoke_help" )
+		kapp->invokeHelp( QString::null, "kdeprint" );
+	else if ( s == "invoke_web" )
+	{
+		QStringList args;
+		args << "exec" << "http://printing.kde.org";
+		kapp->kdeinitExec( "kfmclient", args );
+	}
+	else
+		kdDebug( 500 ) << "Unknown help invokator: " << s << endl;
 }
 
 #include "kmmainview.moc"
