@@ -52,7 +52,7 @@ QObject* KPluginFactory::create( QObject* parent, const char* name, const char*,
 
 extern "C"
 {
-  void* init_libspellcheck()
+  void* init_libspellcheckplugin()
   {
     return new KPluginFactory;
   }

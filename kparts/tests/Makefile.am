@@ -12,11 +12,11 @@ ghostviewtest_LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KFILE)
 
 # These are not really libraries, but modules dynamically opened.
 # So they should be installed in kde_module_dir, which is usually $prefix/lib/kde2
-kde_module_LTLIBRARIES = libspellcheck.la libnotepadpart.la
+kde_module_LTLIBRARIES = libspellcheckplugin.la libnotepadpart.la
 
-libspellcheck_la_SOURCES = plugin_spellcheck.cpp
-libspellcheck_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
-libspellcheck_la_LDFLAGS = -avoid-version -module -no-undefined
+libspellcheckplugin_la_SOURCES = plugin_spellcheck.cpp
+libspellcheckplugin_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
+libspellcheckplugin_la_LDFLAGS = -avoid-version -module -no-undefined
 
 libnotepadpart_la_SOURCES = notepad.cpp notepad_factory.cpp
 libnotepadpart_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
