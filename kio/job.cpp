@@ -804,7 +804,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move )
 {
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest );
-    kDebugInfo(7007,"KIO::stat the dest %s", m_dest.url().ascii() );
+    kDebugInfo(7007,"CopyJob:stating the dest %s", m_dest.url().ascii() );
     addSubjob(job);
 }
 
@@ -852,7 +852,11 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( info.linkDest.isEmpty() && destinationState == DEST_IS_DIR )
                 info.uDest.addPath( relName );
             if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) )
+            {
                 dirs.append( info ); // Directories
+                if (m_move)
+                    dirsToRemove.append( info.uSource );
+            }
             else
                 files.append( info ); // Files and any symlinks
         }
@@ -870,8 +874,8 @@ void CopyJob::startNextJob()
         Job * job = KIO::stat( *it );
         kDebugInfo(7007,"KIO::stat on %s", (*it).url().ascii() );
         state = STATE_STATING;
-	addSubjob(job);
-        m_srcList.remove(it);
+        addSubjob(job);
+        // keep src url in the list, just in case we need it later
     } else
     {
         emit result(this);
@@ -881,6 +885,7 @@ void CopyJob::startNextJob()
 
 void CopyJob::slotResultStating( Job *job )
 {
+    kdDebug(7007) << "CopyJob::slotResultStating" << endl;
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
     {
@@ -915,7 +920,6 @@ void CopyJob::slotResultStating( Job *job )
         return;
     }
     // We were stating the current source URL
-    m_bCurrentSrcIsDir = bDir; // used by slotEntries
     m_currentDest = m_dest;
     // Create a dummy list with it, for slotEntries
     UDSEntryList lst;
@@ -932,6 +936,8 @@ void CopyJob::slotResultStating( Job *job )
     // slotEntries will append the filename to the destination.
     // 5 - src is a file, destination is a file, m_dest is the exact destination name
     // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
+    // Tell slotEntries not to alter the src url
+    m_bCurrentSrcIsDir = false;
     slotEntries(job, lst);
 
     KURL srcurl = ((SimpleJob*)job)->url();
@@ -943,6 +949,7 @@ void CopyJob::slotResultStating( Job *job )
     {
         kDebugInfo(7007," Source is a directory ");
 
+        m_bCurrentSrcIsDir = true; // used by slotEntries
         if ( destinationState == DEST_IS_DIR ) // (case 1)
             // Use <desturl>/<directory_copied> as destination, from now on
             m_currentDest.addPath( srcurl.filename() );
@@ -1287,6 +1294,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 
 void CopyJob::copyNextFile()
 {
+    kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
     // Take the first file in the list
     QValueList<CopyInfo>::Iterator it = files.begin();
     bool bCopyFile = false; // get into the loop
@@ -1358,13 +1366,53 @@ void CopyJob::copyNextFile()
     }
     else
     {
-        // When we're done : move on to next src url
+        if ( m_move ) // moving ? We need to delete dirs
+        {
+            kdDebug(7007) << "copyNextFile finished, deleting dirs" << endl;
+            state = STATE_DELETING_DIRS;
+            deleteNextDir();
+        } else {
+            // When we're done : move on to next src url
+            kdDebug(7007) << "copyNextFile finished, moving to next url" << endl;
+            m_srcList.remove(m_srcList.begin());
+            startNextJob();
+        }
+    }
+}
+
+void CopyJob::deleteNextDir()
+{
+    if ( !dirsToRemove.isEmpty() ) // some dirs to delete ?
+    {
+        // Take first dir to delete out of list - last ones first !
+        KURL::List::Iterator it = dirsToRemove.fromLast();
+        SimpleJob *job = KIO::rmdir( *it );
+        dirsToRemove.remove(it);
+        addSubjob( job );
+    }
+    else // We have finished deleting
+    {
+        m_srcList.remove(m_srcList.begin()); // done with this url
         startNextJob();
     }
 }
 
+void CopyJob::slotResultDeletingDirs( Job * job )
+{
+    if (job->error())
+    {
+        // Couldn't remove directory. Well, perhaps it's not empty
+        // because the user pressed Skip for a given file in it.
+        // Let's not display "Could not remove dir ..." for each of those dir !
+    }
+    subjobs.remove( job );
+    assert ( subjobs.isEmpty() );
+    deleteNextDir();
+}
+
 void CopyJob::slotResult( Job *job )
 {
+    kdDebug() << "CopyJob::slotResult() state=" << state << endl;
     // In each case, what we have to do is :
     // 1 - check for errors and treat them
     // 2 - subjobs.remove(job);
@@ -1400,6 +1448,9 @@ void CopyJob::slotResult( Job *job )
             break;
         case STATE_CONFLICT_COPYING_FILES:
             slotResultConflictCopyingFiles( job );
+            break;
+        case STATE_DELETING_DIRS:
+            slotResultDeletingDirs( job );
             break;
         default:
             assert( 0 );

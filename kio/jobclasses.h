@@ -396,6 +396,8 @@ namespace KIO {
         void slotResultCopyingFiles( KIO::Job * job );
         void slotResultConflictCopyingFiles( KIO::Job * job );
         void copyNextFile();
+        void slotResultDeletingDirs( KIO::Job * job );
+        void deleteNextDir();
 
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -405,10 +407,11 @@ namespace KIO {
         bool m_move;
         enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
         enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
-               STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES } state;
+               STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES, STATE_DELETING_DIRS } state;
         long int m_totalSize;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
+        KURL::List dirsToRemove;
         KURL::List m_srcList;
         bool m_bCurrentSrcIsDir;
         KURL m_dest;
