@@ -140,7 +140,8 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
   if (first) {
     InterpreterImp *scr = first;
     do {
-      static_cast<ScriptInterpreter *>(scr->interpreter())->deleteDOMObject( objectHandle );
+      if ( scr->interpreter()->rtti() == 1 )
+        static_cast<ScriptInterpreter *>(scr->interpreter())->deleteDOMObject( objectHandle );
       scr = scr->nextInterpreter();
     } while (scr != first);
   }

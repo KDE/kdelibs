@@ -102,6 +102,8 @@ namespace KJS {
     virtual void mark();
     KHTMLPart* part() const { return m_part; }
 
+    virtual int rtti() { return 1; }
+
     /** Set the event that is triggering the execution of a script, if any */
     void setCurrentEvent( DOM::Event *evt ) { m_evt = evt; }
     void setInlineCode( bool inlineCode ) { m_inlineCode = inlineCode; }
