@@ -286,7 +286,7 @@ void Window::mark()
     history->mark();
   if (frames && !frames->marked())
     frames->mark();
-  //kdDebug() << "Window::mark " << this << " marking loc=" << loc << endl;
+  //kdDebug(6070) << "Window::mark " << this << " marking loc=" << loc << endl;
   if (loc && !loc->marked())
     loc->mark();
 }
@@ -321,7 +321,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   // Look for overrides first
   ValueImp * val = ObjectImp::getDirect(p);
   if (val) {
-    kdDebug() << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
+    //kdDebug(6070) << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
     if (isSafeScript(exec))
       return Value(val);
   }
@@ -329,7 +329,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
   if (entry)
   {
-    kdDebug() << "token: " << entry->value << endl;
+    //kdDebug(6070) << "token: " << entry->value << endl;
     switch( entry->value ) {
     case Crypto:
       return Undefined(); // ###
@@ -588,7 +588,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     }
   }
 
-  kdDebug() << "Window::get property not found: " << p.qstring() << endl;
+  kdWarning() << "Window::get property not found: " << p.qstring() << endl;
   return Undefined();
 }
 
@@ -813,7 +813,7 @@ void Window::clear()
 void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
-  //kdDebug() << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+  //kdDebug(6070) << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
