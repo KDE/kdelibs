@@ -423,7 +423,7 @@ public final class KJASURLStreamHandlerFactory
     implements URLStreamHandlerFactory
 {
     public URLStreamHandler createURLStreamHandler(String protocol) {
-        Main.debug ("createURLStreamHandler " + protocol);
+        //outputs to early: Main.debug ("createURLStreamHandler " + protocol);
         if (protocol.equals("http"))
             return new KJASHttpURLStreamHandler();
         else if (protocol.equals("ftp"))

@@ -254,7 +254,7 @@ public final class KJASAppletStub
     void startApplet()
     {
         if( app != null && state == INITIALIZED) {
-            active = true;                    
+            active = true;
             if (appletThread == null) {
                 appletThread = new Thread("KJAS-Applet-" + appletID + "-" + appletName) {
                     public void run() {

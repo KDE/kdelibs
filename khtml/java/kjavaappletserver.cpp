@@ -572,6 +572,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 }
 
 void KJavaAppletServer::endWaitForReturnData() {
+    kdDebug(6100) << "KJavaAppletServer::endWaitForReturnData" << endl;
     killTimers();
     QMap<int, JSStackNode*>::iterator it = d->jsstack.begin();
     for (; it != d->jsstack.end(); ++it)
@@ -584,14 +585,14 @@ void KJavaAppletServer::timerEvent(QTimerEvent *) {
 }
 
 void KJavaAppletServer::waitForReturnData(JSStackNode * frame) {
-    kdDebug(6100) << ">KJavaAppletServer::waitForReturnData context:" << endl;
+    kdDebug(6100) << ">KJavaAppletServer::waitForReturnData" << endl;
     killTimers();
     startTimer(15000);
     while (!frame->exit)
         kapp->eventLoop()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMore);
     if (d->jsstack.size() <= 1)
         killTimers();
-    kdDebug(6100) << "<KJavaAppletServer::waitForReturnData frame stack:" << d->jsstack.size() << endl;
+    kdDebug(6100) << "<KJavaAppletServer::waitForReturnData stacksize:" << d->jsstack.size() << endl;
 }
 
 bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {

@@ -88,6 +88,11 @@ public:
         { return m_browserextension; }
     KParts::LiveConnectExtension * liveConnectExtension () const
         { return m_liveconnect; }
+
+    bool eventFilter (QObject *o, QEvent *e);
+
+    bool appletAlive () const;
+    void setJSSession (bool b) { m_jssession = b; }
 public slots:
     virtual bool openURL (const KURL & url);
     virtual bool closeURL ();
@@ -102,6 +107,8 @@ private:
     KJavaAppletViewerBrowserExtension * m_browserextension;
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     QString baseurl;
+    bool m_closed;
+    bool m_jssession;
 };
 
 class KJavaAppletViewerFactory : public KParts::Factory {

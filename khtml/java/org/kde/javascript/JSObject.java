@@ -35,7 +35,10 @@ public class JSObject extends netscape.javascript.JSObject {
 
     private Object evaluate(String _script, boolean global) throws netscape.javascript.JSException {
         Main.info("evaluate (\"" + _script + "\")");
-        
+        if (!applet.isActive()) {
+            Main.debug("evaluate on not active applet");
+            return null;
+        }
         // the following line only works from java 1.4 on
         //String script = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
         
