@@ -711,6 +711,9 @@ protected:
 	inherited_flags.f._user_input = UI_NONE;
         inherited_flags.f.unused = 0;
 
+	noninherited_flags._niflags = 0L; // for safety: without this, the equality method sometimes
+	                                  // makes use of uninitialised bits according to valgrind
+	
         noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
 	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
 	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
