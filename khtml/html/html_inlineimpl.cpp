@@ -236,7 +236,7 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLBRElementImpl::attach(KHTMLView *)
 {
-    kdDebug(300) << "HTMLBRElementImpl::attach" << endl;
+    //kdDebug(300) << "HTMLBRElementImpl::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();
     if(r)
@@ -374,7 +374,7 @@ void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
       break;
     case ATTR_HEIGHT:
       addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
-      break;  
+      break;
     // ### MORE ATTRIBUTES
     default:
       HTMLElementImpl::parseAttribute( attr );
@@ -384,17 +384,17 @@ void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
 void HTMLIFrameElementImpl::attach(KHTMLView *w)
 {
   m_style = document->styleSelector()->styleForElement( this );
-  
+
   khtml::RenderObject *r = _parent->renderer();
-  
+
   if ( !r )
     return;
-  
+
   khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( m_style, w );
   m_render = renderFrame;
   m_render->ref();
   r->addChild( m_render );
-  
+
   // we need a unique name for every frame in the frameset. Hope that's unique enough.
   if(name.isEmpty())
   {

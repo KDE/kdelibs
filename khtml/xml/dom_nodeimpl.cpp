@@ -465,7 +465,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 
     // ### set style in case it's attached
     applyChanges();
-    
+
     return newChild;
 }
 
@@ -496,7 +496,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
 
     // ### set style in case it's attached
     applyChanges();
-    
+
     return oldChild;
 }
 
@@ -519,7 +519,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     oldChild->setParent(0);
 
     applyChanges();
-    
+
     return oldChild;
 }
 
@@ -613,11 +613,11 @@ void NodeBaseImpl::checkIsChild( NodeImpl *oldChild )
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 {
     // do not add applyChanges here! This function is only used during parsing
-    
+
     // short check for consistency with DTD
     if(!checkChild(id(), newChild->id()))
     {
-        kdDebug(300) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
+        //kdDebug(300) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 

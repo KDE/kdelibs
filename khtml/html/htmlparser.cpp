@@ -232,7 +232,7 @@ public:
 KHTMLParser::KHTMLParser( KHTMLView *_parent,
 			  HTMLDocumentImpl *doc)
 {
-    kdDebug(300) << "parser constructor" << endl;
+    //kdDebug(300) << "parser constructor" << endl;
 
     HTMLWidget    = _parent;
     document      = doc;
@@ -292,7 +292,7 @@ void KHTMLParser::parseToken(Token *t)
 
     if(inBody && !headLoaded && !document->headLoaded())
     {
-	kdDebug(300) << "enqueunig " << t->id << endl;
+	//kdDebug(300) << "enqueunig " << t->id << endl;
 	tokenQueue.enqueue(t);
 	return;
     }
@@ -485,7 +485,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    if(node->id() == ID_TABLE)
 	    {
 		NodeImpl *parent = node->parentNode();
-		kdDebug(300) << "trying to add form to " << parent->id() << endl;
+		//kdDebug(300) << "trying to add form to " << parent->id() << endl;
 		try
 		{
 		    parent->insertBefore(n, node);

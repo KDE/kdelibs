@@ -194,9 +194,9 @@ void HTMLTableElementImpl::deleteRow( long /*index*/ )
 
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 {
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     kdDebug(300) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
-//#endif
+#endif
 
     switch(child->id())
     {

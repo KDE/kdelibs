@@ -63,7 +63,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
-  kdDebug( 300 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
+    //kdDebug( 300 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
 }
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
@@ -100,7 +100,7 @@ void CachedCSSStyleSheet::checkNotify()
 {
     if(loading) return;
 
-    kdDebug(300) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
+    //kdDebug(300) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -266,7 +266,7 @@ CachedImage::~CachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
-    kdDebug( 300 ) << "CachedImage::~CachedImage() " << url().string() << endl;
+    //kdDebug( 300 ) << "CachedImage::~CachedImage() " << url().string() << endl;
 }
 
 void CachedImage::ref( CachedObjectClient *c )
@@ -284,7 +284,7 @@ void CachedImage::deref( CachedObjectClient *c )
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
 	m->pause();
-    
+
     if ( m_clients.count() == 0 && m_free )
       delete this;
 }
@@ -296,7 +296,7 @@ const QPixmap &CachedImage::pixmap() const
 
 void CachedImage::notify( CachedObjectClient *c )
 {
-    kdDebug(300) << "Cache::notify()" << endl;
+    //kdDebug(300) << "Cache::notify()" << endl;
 
     if ( m )
     {
@@ -368,7 +368,7 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-    kdDebug(300) << "in CachedImage::data()" << endl;
+    //kdDebug(300) << "in CachedImage::data()" << endl;
     if ( !typeChecked )
     {
 	clear();
@@ -434,7 +434,7 @@ Loader::~Loader()
 {
   m_requestsPending.setAutoDelete( true );
   m_requestsLoading.setAutoDelete( true );
-  
+
   m_requestsPending.clear();
   m_requestsLoading.clear();
 }
@@ -457,7 +457,7 @@ void Loader::servePendingRequests()
   // get the first pending request
   Request *req = m_requestsPending.take(0);
 
-  kdDebug(300) << "starting Loader url=" << req->object->url().string() << endl;
+  //kdDebug(300) << "starting Loader url=" << req->object->url().string() << endl;
 
   KIO::Job* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
 
@@ -480,7 +480,7 @@ void Loader::slotFinished( KIO::Job* job )
     Request *r = m_requestsLoading.take( job );
     if(!r) return;
     r->object->data(r->m_buffer, true);
-    kdDebug(300) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+    //kdDebug(300) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 
     servePendingRequests();
   }
@@ -502,62 +502,62 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 int Loader::numRequests( const DOMString &baseURL )
 {
   int res = 0;
-  
+
   QListIterator<Request> pIt( m_requestsPending );
   for (; pIt.current(); ++pIt )
     if ( pIt.current()->m_baseURL == baseURL )
       res++;
-  
+
   QPtrDictIterator<Request> lIt( m_requestsLoading );
   for (; lIt.current(); ++lIt )
     if ( lIt.current()->m_baseURL == baseURL )
       res++;
-  
+
   return res;
-} 
+}
 
 void Loader::cancelRequests( const DOMString &baseURL )
 {
-  kdDebug( 300 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
-  
-  kdDebug( 300 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
-  
+    //kdDebug( 300 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
+
+    //kdDebug( 300 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
+
   QListIterator<Request> pIt( m_requestsPending );
   while ( pIt.current() )
   {
     if ( pIt.current()->m_baseURL == baseURL )
     {
-      kdDebug( 300 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
-      
+	//kdDebug( 300 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+
       Cache::removeCacheEntry( pIt.current()->object );
-      
+
       m_requestsPending.remove( pIt );
     }
     else
       ++pIt;
   }
-  
-  kdDebug( 300 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
-  
+
+  //kdDebug( 300 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
+
   QPtrDictIterator<Request> lIt( m_requestsLoading );
   while ( lIt.current() )
   {
     if ( lIt.current()->m_baseURL == baseURL )
     {
-      kdDebug( 300 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
-      
+	//kdDebug( 300 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
+
       KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
-      
+
       Cache::removeCacheEntry( lIt.current()->object );
-      
+
       m_requestsLoading.remove( lIt.currentKey() );
-      
+
       job->kill();
     }
     else
       ++lIt;
   }
-} 
+}
 
 // ----------------------------------------------------------------------------
 
@@ -574,7 +574,7 @@ unsigned long Cache::s_ulRefCnt = 0;
 
 void Cache::ref()
 {
-  s_ulRefCnt++; 
+  s_ulRefCnt++;
   init();
 }
 
@@ -605,19 +605,19 @@ void Cache::init()
 
 void Cache::clear()
 {
-    kdDebug( 300 ) << "Cache::clear()" << endl; 
+    //kdDebug( 300 ) << "Cache::clear()" << endl;
     if(cache) delete cache;
     cache = 0;
     if(lru) delete lru;
     lru = 0;
-    
+
     if ( nullPixmap )
       delete nullPixmap;
     nullPixmap = 0;
-    
+
     if ( m_loader )
       delete m_loader;
-    
+
     m_loader = 0;
 }
 
@@ -801,7 +801,7 @@ KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )
 void Cache::removeCacheEntry( CachedObject *object )
 {
   QString key = object->url().string();
-  
+
   // this indicates the deref() method of CachedObject to delete itself when the reference counter
   // drops down to zero
   object->setFree( true );
@@ -813,18 +813,18 @@ void Cache::removeCacheEntry( CachedObject *object )
     kdDebug( 300 ) << "cache object for " << key << " is still referenced. Killing it softly..." << endl;
     cache->setAutoDelete( false );
   }
-  
+
   if ( cache->remove( key ) )
     kdDebug( 300 ) << "removed cache entry for " << key << " from cache dict" << endl;
-  
+
   cache->setAutoDelete( true );
-    
+
   LRUList::Iterator it = lru->find( key );
   if ( it != lru->end() )
   {
     lru->remove( it );
     kdDebug( 300 ) << "removed cache entry for " << key << " from lru" << endl;
   }
-} 
+}
 
 #include "loader.moc"
