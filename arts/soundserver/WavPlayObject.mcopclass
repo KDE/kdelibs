@@ -4,4 +4,4 @@ URL="http://www.arts-project.org"
 Extension=wav
 Language=C++
 Library=libartswavplayobject.la
-MimeType=audio/x-wav
+MimeType=audio/wav,audio/x-wav
