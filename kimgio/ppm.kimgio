@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Picture
+Name[bs]=Portable Pixmap slika
 Name[ca]=Imatge portable Pixmap
 Name[da]=Portable Pixmap-billede
 Name[es]=Imagen portable Pixmap
