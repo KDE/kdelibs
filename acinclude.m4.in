@@ -1,7 +1,22 @@
-## KDE/acinclude.m4 (Macros for autoconf)
+
+##    This file is part of the KDE libraries/packages
+##    Copyright (C) 1997 Janos Farkas (chexum@shadow.banki.hu)
+##              (C) 1997 Stephan Kulow (coolo@kde.org)
+
+##   This program is free software; you can redistribute it and/or modify
+##   it under the terms of the GNU General Public License as published by
+##   the Free Software Foundation; either version 2 of the License, or
+##   (at your option) any later version.
 ##
-## (C) 1997 Janos Farkas
-## (C) 1997 Stephan Kulow
+##   This program is distributed in the hope that it will be useful,
+##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##   GNU General Public License for more details.
+##
+##   You should have received a copy of the GNU General Public License
+##   along with this program; if not, write to the Free Software
+##   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+##
 
 ## ------------------------------------------------------------------------
 ## Find a file (or one of more files in a list of dirs)
@@ -404,6 +419,8 @@ if test "$GCC" = "yes"; then
 CXXFLAGS="$CXXFLAGS -pedantic-errors"
 fi
 AC_MSG_CHECKING(for getdomainname)
+AC_CACHE_VAL(ac_cv_func_getdomainname,
+[
 AC_TRY_COMPILE([
 #include <stdlib.h>
 #include <unistd.h>
@@ -414,6 +431,7 @@ getdomainname(buffer, 200);
 ],
 ac_cv_func_getdomainname=yes,
 ac_cv_func_getdomainname=no)
+])
 AC_MSG_RESULT($ac_cv_func_getdomainname)
 if eval "test \"`echo `$ac_cv_func_getdomainname\" = yes"; then
   AC_DEFINE(HAVE_GETDOMAINNAME)
@@ -430,6 +448,8 @@ CXXFLAGS="$CXXFLAGS -pedantic-errors"
 fi
 
 AC_MSG_CHECKING(for gethostname)
+AC_CACHE_VAL(ac_cv_func_gethostname,
+[
 AC_TRY_COMPILE([
 #include <stdlib.h>
 #include <unistd.h>
@@ -440,6 +460,7 @@ gethostname(buffer, 200);
 ],
 ac_cv_func_gethostname=yes,
 ac_cv_func_gethostname=no)
+])
 AC_MSG_RESULT($ac_cv_func_gethostname)
 if eval "test \"`echo `$ac_cv_func_gethostname\" = yes"; then
   AC_DEFINE(HAVE_GETHOSTNAME)
@@ -452,6 +473,8 @@ AC_DEFUN(AC_CHECK_USLEEP,
 AC_LANG_CPLUSPLUS
 
 AC_MSG_CHECKING(for usleep)
+AC_CACHE_VAL(ac_cv_func_usleep,
+[
 ac_libs_safe=$LIBS 
 LIBS="$LIBS $LIBUCB"
 AC_TRY_LINK([
@@ -463,6 +486,7 @@ usleep(200);
 ],
 ac_cv_func_usleep=yes,
 ac_cv_func_usleep=no)
+])
 AC_MSG_RESULT($ac_cv_func_usleep)
 if eval "test \"`echo `$ac_cv_func_usleep\" = yes"; then
   AC_DEFINE(HAVE_USLEEP)
@@ -577,6 +601,8 @@ AC_DEFUN(AC_CHECK_BOOL,
 AC_DEFUN(AC_CHECK_GNU_EXTENSIONS,
 [
 AC_MSG_CHECKING(if you need GNU extensions)
+AC_CACHE_VAL(ac_cv_gnu_extensions,
+[
 cat > conftest.c << EOF
 #include <features.h>
 
@@ -588,10 +614,15 @@ EOF
 if (eval "$ac_cpp conftest.c") 2>&5 |
   egrep "yes" >/dev/null 2>&1; then
   rm -rf conftest*
-  AC_DEFINE_UNQUOTED(_GNU_SOURCE)
-  AC_MSG_RESULT(yes)
+  ac_cv_gnu_extensions=yes
 else
-  AC_MSG_RESULT(no)
+  ac_cv_gnu_extensions=no
+fi
+])
+
+AC_MSG_RESULT($ac_cv_gnu_extensions)
+if test "$ac_cv_gnu_extensions" = "yes"; then
+  AC_DEFINE_UNQUOTED(_GNU_SOURCE)
 fi
 ])
 
@@ -1248,5 +1279,40 @@ if test "$dynamic_loading" = "yes"; then
   $1
 else
   $2
+fi
+])
+
+AC_DEFUN(KDE_ADD_INCLUDES,
+[
+if test -z "$1"; then 
+  test_include="Pix.h"
+else
+  test_include="$1"
+fi
+
+AC_MSG_CHECKING([for libg++ ($test_include)])
+
+AC_CACHE_VAL(kde_cv_libgpp_includes,
+[
+kde_cv_libgpp_includes=no
+
+   for ac_dir in               \
+                               \
+     /usr/include/g++          \
+     /usr/include              \
+     /usr/unsupported/include  \
+     /opt/include              \
+     $extra_include            \
+     ; \
+   do
+     if test -r "$ac_dir/$test_include"; then
+       kde_cv_libgpp_includes=$ac_dir
+       break
+     fi
+   done
+])
+AC_MSG_RESULT($kde_cv_libgpp_includes)
+if test "$kde_cv_libgpp_includes" != "no"; then
+  all_includes="-I$kde_cv_libgpp_includes $all_includes"
 fi
 ])
