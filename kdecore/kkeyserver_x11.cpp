@@ -334,11 +334,11 @@ QString Sym::toString( bool bUserSpace ) const
 		if( m_sym == g_rgSymNames[i].sym )
 			return bUserSpace ? i18n(g_rgSymNames[i].psName) : g_rgSymNames[i].psName;
 	}
-
+	
 	// Get X-name
 	QString s = XKeysymToString( m_sym );
 	capitalizeKeyname( s );
-	return bUserSpace ? i18n(s.latin1()) : s;
+	return bUserSpace ? i18n("QAccel", s.latin1()) : s;
 }
 
 QString Sym::toStringInternal() const { return toString( false ); }
