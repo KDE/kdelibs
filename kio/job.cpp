@@ -1240,7 +1240,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         // Offer overwrite only if the existing thing is a file
         RenameDlg_Mode mode = (RenameDlg_Mode)
             ( m_conflictError == ERR_FILE_ALREADY_EXIST ? M_OVERWRITE : 0 );
-        if ( files.count() > 1 )
+        if ( files.count() > 0 ) // Not last one
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
@@ -1249,7 +1249,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     }
     else
     {
-        SkipDlg_Result skipResult = open_SkipDlg( files.count() > 1,
+        SkipDlg_Result skipResult = open_SkipDlg( files.count() > 0,
                                                   job->errorString() );
 
         // Convert the return code from SkipDlg into a RenameDlg code
