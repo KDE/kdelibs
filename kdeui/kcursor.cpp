@@ -65,66 +65,66 @@ QCursor KCursor::handCursor()
  */
 QCursor KCursor::arrowCursor()
 {
-    return Qt::arrowCursor;
+    return ::arrowCursor;
 }
 
 
 QCursor KCursor::upArrowCursor()
 {
-	return Qt::upArrowCursor;
+	return ::upArrowCursor;
 }
 
 
 QCursor KCursor::crossCursor()
 {
-	return Qt::crossCursor;
+	return ::crossCursor;
 }
 
 
 QCursor KCursor::waitCursor()
 {
-	return Qt::waitCursor;
+	return ::waitCursor;
 }
 
 
 QCursor KCursor::ibeamCursor()
 {
-	return Qt::ibeamCursor;
+	return ::ibeamCursor;
 }
 
 
 QCursor KCursor::sizeVerCursor()
 {
-	return Qt::sizeVerCursor;
+	return ::sizeVerCursor;
 }
 
 
 QCursor KCursor::sizeHorCursor()
 {
-	return Qt::sizeHorCursor;
+	return ::sizeHorCursor;
 }
 
 
 QCursor KCursor::sizeBDiagCursor()
 {
-	return Qt::sizeBDiagCursor;
+	return ::sizeBDiagCursor;
 }
 
 
 QCursor KCursor::sizeFDiagCursor()
 {
-	return Qt::sizeFDiagCursor;
+	return ::sizeFDiagCursor;
 }
 
 
 QCursor KCursor::sizeAllCursor()
 {
-	return Qt::sizeAllCursor;
+	return ::sizeAllCursor;
 }
 
 
 QCursor KCursor::blankCursor()
 {
-	return Qt::blankCursor;
+	return ::blankCursor;
 }
 
