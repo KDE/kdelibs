@@ -563,7 +563,7 @@ public slots:
      * If the last inserted item is the same as @p item, it will not be
      * inserted again.
      *
-     * If @ref duplicatesEnabled() is true, any equal existing item will be
+     * If @ref duplicatesEnabled() is false, any equal existing item will be
      * removed before @p item is added.
      *
      * Note: By using this method and not the Q and KComboBox insertItem()
