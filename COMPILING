@@ -8,9 +8,9 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-2.1.1)
+qt-copy (This is qt-2.2.0-beta0)
 kde-qt-addon (stuff which TrollTech forgot to add to Qt :-)
-kdesupport (stuff from others which we use)
+kdesupport (mimelib and odbc are the only things really needed from here)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
@@ -25,23 +25,31 @@ Preparations
 ============
 
 Before you start you must decide two things:
+
 1) Where do you want to have Qt installed? Qt is a bit lame in that it 
 basically installs itselfs in its own source-tree, but symlinks are your 
-friend. E.g you could link /usr/lib/qt-2.1.1 to where you keep your Qt 
-source. Qt libs then end up in /usr/lib/qt-2.1.1/lib.
+friend. E.g you could link /usr/local/lib/qt2 to where you keep your Qt 
+source. Qt libs then end up in /usr/local/lib/qt2/lib.
 
-Make sure to do
-export QTDIR=/usr/lib/qt-2.1.1
+2) Where do you want to have KDE installed. A good candidate is /usr/local/kde
 
-2) Where do you want to have KDE installed. A good candidate is /opt/kde2.0.
+Make sure you do (if using sh, ksh, or bash):
+export KDEDIR=/usr/local/kde
 
-Make sure you do
-export KDEDIR=/opt/kde2.0
+With csh or tcsh the following is more appropiate:
+
+setenv KDEDIR /usr/local/kde
 
 Now you want to make sure that Qt and KDE libraries are picked up correctly.
-For that you need to do
+
+On systems that respond to environment variables something similar to the 
+following is appropiate:
 
 export LD_LIBRARY_PATH=$KDEDIR/lib:$QTDIR/lib
+
+On systems whose diety of choice is ldconfig, try:
+ldconfig -m $KDEDIR/lib
+ldconfig -m $QTDIR/lib
 
 You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
@@ -53,14 +61,17 @@ Compiling
 =========
 
 The magic sequence to compile & install a package is:
-makefile -f Makefile.cvs
+gmake -f Makefile.cvs
 ./configure --enable-debug
-make
-make install
+gmake
+gmake install
+
+(On Linux, GNU make is the default make, and gmake can be replaced with
+make).
 
 For Qt the magic sequence is:
 
-makefile -f Makefile.cvs
+make -f Makefile.cvs
 ./configure -debug -shared -gif -sm -system-zlib -system-libpng -system-jpeg
 
 Common problems
