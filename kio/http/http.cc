@@ -238,7 +238,7 @@ int HTTPProtocol::openStream() {
         int result = messageBox( WarningYesNo,
                                i18n("This site presented an SSL certificate"
                                     " for an address which is not the same as"
-                                    " the sites address.\nIt could mean that the"
+                                    " the site's address.\nIt could mean that the"
                                     " certificate has been compromised.  Are"
                                     " you sure you wish to continue?"),
                                i18n("Bad Address"));
