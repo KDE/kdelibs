@@ -116,6 +116,8 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 {
     if(bodyElement) return bodyElement;
     if(!_first) return 0;
+    if(!htmlElement)
+	html();
     if(!htmlElement) return 0;
     NodeImpl *test = htmlElement->firstChild();
     while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
