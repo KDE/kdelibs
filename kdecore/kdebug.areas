@@ -114,6 +114,8 @@
 2200	    kdf
 2300        kwallet
 
+# 2500-2999 Reserved for private use
+
 # kdeadmin
 3000        ksysv
 3100    ksysv (model)
