@@ -159,16 +159,13 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "ChangeCursor" ) )
       m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
+  if ( reset || config->hasKey("UnderlineLinks") )
+      m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+
   if ( reset || config->hasKey( "HoverLinks" ) )
   {
-    m_hoverLink = config->readBoolEntry( "HoverLinks", false );
-    m_underlineLink = false;
-  }
-
-  if ( m_hoverLink == false )
-  {
-      if ( config->hasKey( "UnderlineLinks" ) )
-          m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+    if ( ( m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
+        m_underlineLink = false;
   }
 
   // Colors
