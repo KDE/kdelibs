@@ -26,10 +26,18 @@ class KIconEffectPrivate;
 
 /**
  * Applies effects to icons.
+ *
+ * This class applies effects to icons depending on their state and
+ * group. For example, it can be used to make all disabled icons
+ * in a toolbar grey.
+ * @see KIcon
  */
 class KIconEffect
 {
 public:
+  /**
+   * Create a new KIconEffect.
+   */
     KIconEffect();
     ~KIconEffect();
 
@@ -52,14 +60,23 @@ public:
     void init();
 
     /** 
+     * Tests whether an effect has been configured for the given icon group.
+     * @param group the group to check, see @ref KIcon::Group
+     * @param state the state to check, see @ref KIcon::States
      * @returns true if an effect is configured for the given @p group
      * in @p state, otherwise false.
+     * @see KIcon::Group
+     * @ref KIcon::States
      */
     bool hasEffect(int group, int state) const;
     
     /**
-     * Returns a fingerprint for the effect selected by 
-     * [@p group, @p state]. This is useful for caching.
+     * Returns a fingerprint for the effect by encoding
+     * the given @p group and @p state into a QString. This 
+     * is useful for caching.
+     * @param group the group, see @ref KIcon::Group
+     * @param state the state, see @ref KIcon::States
+     * @return the fingerprint of the given @p group+@p state
      */ 
      QString fingerprint(int group, int state) const;
 
@@ -67,8 +84,8 @@ public:
      * Applies an effect to an image. The effect to apply depends on the
      * @p group and @p state parameters, and is configured by the user.
      * @param src The image.
-     * @param group The group for the icon.
-     * @param state The icon's state.
+     * @param group The group for the icon, see @ref KIcon::Group
+     * @param state The icon's state, see @ref KIcon::States
      * @return An image with the effect applied.
      */
     QImage apply(QImage src, int group, int state) const;
@@ -86,16 +103,28 @@ public:
 
     /**
      * Applies an effect to a pixmap.
+     * @param src The pixmap.
+     * @param group The group for the icon, see @ref KIcon::Group
+     * @param state The icon's state, see @ref KIcon::States
+     * @return A pixmap with the effect applied.
      */
     QPixmap apply(QPixmap src, int group, int state) const;
 
     /**
      * Applies an effect to a pixmap.
+     * @param src The pixmap.
+     * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
+     * @param value Strength of the effect. 0 <= @p value <= 1.
+     * @param color Color parameter for effects that need one.
+     * @param trans Add Transparency if trans = true.                             
+     * @return A pixmap with the effect applied.
      */
     QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
 
     /**
      * Returns an image twice as large, consisting of 2x2 pixels.
+     * @param src the image.
+     * @return the scaled image.
      */
     QImage doublePixels(QImage src) const;
 
