@@ -47,7 +47,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h \
 		kdualcolorbtn.h ktoolbarbutton.h \
-		ktoolbarradiogroup.h ktextbrowser.h kaction.h
+		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -69,7 +69,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
-		ktextbrowser.cpp kaction.cpp
+		ktextbrowser.cpp kaction.cpp khelpmenu.cpp
 
 libkdeui_la_METASOURCES = AUTO
 
