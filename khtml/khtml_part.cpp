@@ -1407,7 +1407,7 @@ void KHTMLPart::showError( KIO::Job* job )
   else
   {
     // make sure we're not executing any embedded JS
-    /**
+    /*
      * rodda: this was causing an assertion:
      * KJS::Window::retrieveWindow at kjs_window.cpp:256
      *
@@ -1421,7 +1421,7 @@ void KHTMLPart::showError( KIO::Job* job )
      * the 1 should be "if user has chosen verbose/detailed error messages"
      */
     if ( 1 ) {
-      htmlError( job->error(), job->errorString() );
+      htmlError( job->error(), job->errorString(), d->m_workingURL );
     } else {
       begin();
       QString url = d->m_workingURL.prettyURL();
@@ -1450,13 +1450,11 @@ void KHTMLPart::showError( KIO::Job* job )
   }
 }
 
-void KHTMLPart::htmlError( int errorCode, const QString& text )
+// This is a protected method, placed here because of it's relevance to showError
+void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& url )
 {
   begin();
-
-  write( KIO::buildHTMLErrorString( errorCode, text,
-                                    &(d->m_workingURL) ) );
-
+  write( KIO::buildHTMLErrorString( errorCode, text, &url ) );
   end();
 }
 

@@ -210,13 +210,6 @@ public:
   virtual void showError(KIO::Job* job);
 
   /**
-   * presents a detailed error message to the user.
-   * @p errorCode kio error code, eg KIO::ERR_SERVER_TIMEOUT.
-   * @p text kio additional information text.
-   */
-  void htmlError(int errorCode, const QString& text);
-
-  /**
    * Returns a reference to the DOM HTML document (for non-HTML documents, returns null)
    */
   DOM::HTMLDocument htmlDocument() const;
@@ -750,6 +743,14 @@ protected:
    * you know what you're doing.
    */
   KURL completeURL( const QString &url );
+
+  /**
+   * presents a detailed error message to the user.
+   * @p errorCode kio error code, eg KIO::ERR_SERVER_TIMEOUT.
+   * @p text kio additional information text.
+   * @p url the url that triggered the error.
+   */
+  void htmlError(int errorCode, const QString& text, const KURL& url);
 
   virtual void customEvent( QCustomEvent *event );
 
