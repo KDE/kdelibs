@@ -1174,8 +1174,10 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     default:
       break;
     }
+    bool hadExcep = exec->hadException();
     UString vString = v.toString(exec);
-    exec->clearException();
+    if ( !hadExcep )
+      exec->clearException();
     if ( vString.size() > 50 )
       vString = vString.substr( 0, 50 ) + "...";
     // Can't use two UString::ascii() in the same fprintf call
