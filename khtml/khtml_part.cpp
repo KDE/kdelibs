@@ -218,6 +218,8 @@ public:
   unsigned long m_totalImageCount;
 
   QString m_userHeaders;
+
+  QString m_lastFindWord;
 };
 
 namespace khtml {
@@ -2454,10 +2456,15 @@ void KHTMLPart::slotFind()
   if ( d->m_frames.count() > 0 )
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
 
+  assert( part->inherits( "KHTMLPart" ) );
+  
   KHTMLFind *findDlg = new KHTMLFind( part, d->m_view, "khtmlfind" );
+  findDlg->setText( part->d->m_lastFindWord );
 
   findDlg->exec();
 
+  part->d->m_lastFindWord = findDlg->getText();
+  
   delete findDlg;
 }
 
