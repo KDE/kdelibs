@@ -162,8 +162,11 @@ QString KStandardDirs::findResourceDir( const QString& type,
     return QString::null;
 }
 
-static void lookupDirectory(const QString& path, const QRegExp &regexp, 
-			    QStringList& list, bool recursive)
+static void lookupDirectory(const QString& path, const QString &relPart,
+			    const QRegExp &regexp, 
+			    QStringList& list, 
+			    QStringList& relList, 
+			    bool recursive, bool uniq)
 {
   DIR *dp = opendir( QFile::encodeName(path));
   if (!dp)
@@ -183,6 +186,7 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
       if (!recursive && regexp.match(fn))
 	continue; // No match
 
+      QString rfn = relPart + fn;
       fn = path + fn;
       if ( stat( fn.ascii(), &buff ) != 0 ) {
 	QString tmp = QString("Error statting %1:").arg( fn );
@@ -191,22 +195,31 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
       }
       if ( recursive ) {
 	if ( S_ISDIR( buff.st_mode ))
-	  lookupDirectory(fn + '/', regexp, list, recursive);
+	  lookupDirectory(fn + '/', rfn + '/', regexp, list, relList, recursive, uniq);
 	if (regexp.match(fn))
 	  continue; // No match
       }
       if ( S_ISREG( buff.st_mode))
-	list.append( fn );	
+      {
+        if (!uniq || !relList.contains(rfn))
+        {
+	    list.append( fn );
+	    relList.append( rfn );
+        }
+      }	
     }
   closedir( dp );
 }
 
 static void lookupPrefix(const QString& prefix, const QString& relpath,
+                         const QString& relPart,
 			 const QRegExp &regexp, 
-			 QStringList& list, bool recursive)
+			 QStringList& list, 
+			 QStringList& relList, 
+			 bool recursive, bool uniq)
 {
     if (relpath.isNull())
-	return lookupDirectory(prefix, regexp, list, recursive);
+	return lookupDirectory(prefix, relPart, regexp, list, relList, recursive, uniq);
     
     QString path;
     QString rest;
@@ -217,7 +230,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
        if (slash < 0)
 	   rest = relpath.left(relpath.length() - 1);
        else {
-	   path = relpath.left(slash);
+	   path = relpath.left(slash + 1);
 	   rest = relpath.mid(slash + 1);
        }
     }
@@ -240,9 +253,9 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 	if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
 	    continue;
 
-	if (pathExp.match(fn) == -1)
+	if (!pathExp.match(fn))
 	    continue; // No match
-	
+	QString rfn = relPart+fn;
 	fn = prefix + fn;
 	if ( stat( fn.ascii(), &buff ) != 0 ) {
 	    QString tmp = QString("Error statting %1:").arg( fn );
@@ -250,21 +263,27 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 	    continue; // Couldn't stat (Why not?)
 	}
 	if ( S_ISDIR( buff.st_mode ))
-	    lookupPrefix(fn + '/', rest, regexp, list, recursive);
+	    lookupPrefix(fn + '/', rfn + '/', rest, regexp, list, relList, recursive, uniq);
     }
     
     closedir( dp );
 }
 
-QStringList KStandardDirs::findAllResources( const QString& type, 
-					     const QString& filter, 
-					     bool recursive,
-					     bool uniq) const
+QStringList
+KStandardDirs::findAllResources( const QString& type, 
+			         const QString& filter, 
+				 bool recursive,
+			         bool uniq,
+                                 QStringList &relList) const
 {    
-    if (filter.at(0) == '/') // absolute paths we return
-	return filter;
-    
     QStringList list;
+    if (filter.at(0) == '/') // absolute paths we return
+    {
+        list.append( filter);
+        relList.append( "" );
+	return list;
+    }
+
     QString filterPath;
     QString filterFile;
     
@@ -286,27 +305,18 @@ QStringList KStandardDirs::findAllResources( const QString& type,
     
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) 
-      lookupPrefix(*it, filterPath, regExp, list, recursive);
-
-    if (uniq) {
-	QStringList suffixes;
-	for(QStringList::Iterator l_it = list.begin(); l_it != list.end(); l_it++) {
-	    QString list_item = *l_it;
-            for(QStringList::ConstIterator p_it = prefixes.begin(); p_it != prefixes.end();
-		p_it++) {
-		QString prefix_item = *p_it;
-		int tmp = list_item.find(prefix_item);
-		if (tmp != -1) {
-		    QString suffix = list_item.right(list_item.length() - prefix_item.length());
-		    if (suffixes.find(suffix) != suffixes.end())
-			l_it = list.remove(l_it);
-		    else
-			suffixes.append(suffix);
-		}
-	    }
-        }
-    }
+      lookupPrefix(*it, "", filterPath, regExp, list, relList, recursive, uniq);
     return list;
+}
+
+QStringList
+KStandardDirs::findAllResources( const QString& type, 
+			         const QString& filter, 
+				 bool recursive,
+			         bool uniq) const
+{
+   QStringList relList;
+   return findAllResources(type, filter, recursive, uniq, relList);
 }
 
 QStringList KStandardDirs::getResourceDirs(const QString& type) const

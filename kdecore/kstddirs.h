@@ -25,6 +25,7 @@
 
 #include <qstring.h>
 #include <qdict.h>
+#include <qlist.h>
 #include <qstringlist.h>
 
 class KConfig;
@@ -200,9 +201,15 @@ public:
 	 *         or an empty list if the resource type is unknown.
 	 */
 	QStringList findAllResources( const QString& type, 
-				      const QString& filter = QString::null,
-				      bool recursive = false,
-				      bool uniq = false) const;
+				       const QString& filter = QString::null,
+				       bool recursive = false,
+				       bool uniq = false) const;
+
+	QStringList findAllResources( const QString& type, 
+				       const QString& filter,
+				       bool recursive,
+				       bool uniq,
+				       QStringList &relPaths) const;
 
 	/** 
 	 * Finds the executable in the system path. A valid executable must
