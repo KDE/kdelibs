@@ -1458,9 +1458,11 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( flags & Style_Selected )
 			{
 				QRect tabRect = r;
-				//If not the last tab, readjust the painting to be one pixel wider
+				//If not the right-most tab, readjust the painting to be one pixel wider
 				//to avoid a doubled line
-				if (tabBar->indexOf( opt.tab()->identifier() ) != (tabBar->count() - 1))
+				int rightMost = QApplication::reverseLayout() ? 0 : tabBar->count() - 1;
+
+				if (tabBar->indexOf( opt.tab()->identifier() ) != rightMost)
 					tabRect.setWidth( tabRect.width() + 1);
 				Keramik::ActiveTabPainter( bottom ).draw( p, tabRect, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
 			}

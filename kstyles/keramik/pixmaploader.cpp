@@ -527,24 +527,54 @@ InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
 	m_rows = 2;
 	if (m_bottom)
 	{
-		rowMde[0] = rowMde[2] = rowMde[3] = Scaled;
+		rowMde[0] = Scaled;
 		rowMde[1] = Fixed;
 	}
 	else
 	{
-		rowMde[0] = rowMde[2] = rowMde[3] = Fixed;
+		rowMde[0] = Fixed;
 		rowMde[1] = Scaled;
 	}
 
+	/**
+	 Most fully, inactive tabs look like this:
+	 L  C  R
+	 / --- \
+	 | === |
 
-	Mode check = QApplication::reverseLayout() ? First : Last;
-	m_columns = (m_mode == check ? 3 : 2);
+	 Where L,C, and R denote the tile positions. Of course, we don't want to draw all of the rounding for all the tabs.
+
+	 We want the left-most tab to look like this:
+
+	 L C
+	 / --
+	 | ==
+
+	 "Middle" tabs look like this:
+
+	 L C
+	 | --
+	 | ==
+
+	 And the right most tab looks like this:
+
+	 L C  R
+	 | -- \
+	 | == |
+
+	So we have to vary the number of columns, and for everything but left-most tab, the L tab gets the special separator
+	tile.
+    */
+
+	Mode rightMost = QApplication::reverseLayout() ? First : Last;
+	m_columns = (m_mode == rightMost ? 3 : 2);
 }
 
 int InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
-	Mode check = QApplication::reverseLayout() ? Last : First;
-	if ( column == 0 && m_mode != check ) return KeramikTileSeparator;
+	Mode leftMost = QApplication::reverseLayout() ? Last : First;
+	if ( column == 0 && m_mode != leftMost )
+		return KeramikTileSeparator;
 	if ( m_bottom )
 		return RectTilePainter::tileName( column, row + 1 );
 	return RectTilePainter::tileName( column, row );
