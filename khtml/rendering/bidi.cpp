@@ -6,7 +6,7 @@
  * This file is Licensed under QPL version 1.
  */
 // setting BIDI_DEBUG to 1 gives some information, 2 gives a _lot_
-//#define BIDI_DEBUG 1
+//#define BIDI_DEBUG 2
 
 #include "bidi.h"
 
@@ -447,6 +447,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	    int aWidth = o->width(pos, o->length() - pos);
 	    assert(o->length() >= pos);
 	    w = new BiDiWord(o, pos, o->length() - pos, level, aWidth);
+	    //printf("adding Word1: %p, from=%d to=%d\n", w, pos, o->length()-1);
 	    width -= aWidth;
 	    line.append(w);
 	}
@@ -461,6 +462,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	if(pos2 >= pos)
 	{
 	    w = new BiDiWord(o, pos, pos2 - pos, level, width);
+	    //printf("adding Word2: %p, from=%d to=%d\n", w, pos, pos2-1);
 	    line.append(w);
 	}
     }
@@ -490,6 +492,8 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 	    for(; breakIt.current(); ++breakIt)
 	    {
 		BiDiIterator b = *breakIt.current();
+		if(b > r->to) continue;
+		
 		// we have line breaks, and have to add them one by one until the
 		// line is full
 		int w = width(this, pos, b, true);
@@ -507,6 +511,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		}
 		else if(b.type == BiDiIterator::NewLine)
 		{	
+		    //printf("breakLine 1\n");
 		    addWord(this, d->line, pos, b, w, r->level, true);
 		    layoutLine(levelLow, levelHigh, false);
 		    d->line.clear();
@@ -516,6 +521,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		    pos = b;
 		    continue;
 		}
+		//printf("breakLine 2\n");
 		addWord(this, d->line, pos, b, w, r->level, true);
 		availableWidth -= w;
 		pos = b;
@@ -534,6 +540,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 	    levelHigh = r->level;
 	    availableWidth = lineWidth(d->y);
 	}
+	//printf("breakLine 3\n");
 	addWord(this, d->line, pos, r->to, w, r->level);
 	availableWidth -= w;
     }
@@ -622,7 +629,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 	    if(start != end)
 	    {
-		printf("reversing from %d to %d\n", start, end);
+		//printf("reversing from %d to %d\n", start, end);
 		for(int j = 0; j < (end-start+1)/2; j++)
 		{
 		    BiDiWord *first = d->line.take(start+j);
@@ -736,8 +743,8 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
     for ( ; (w = it.current()); ++it )
     {
 #ifdef BIDI_DEBUG
-	printf("    %p: positioning slave %p (%d/%d) from=%d len=%d width=%d\n",
-	       w, w->object, xPos, w->yOffset, w->from, w->len, w->width);
+	printf("    %p: positioning slave %p (%d/%d) from=%d to=%d width=%d\n",
+	       w, w->object, xPos, w->yOffset, w->from, w->from + w->len, w->width);
 #endif
 	int add = 0;
 	if(spaces)
@@ -762,7 +769,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 void BiDiParagraph::appendRun()
 {
-    if(d->sor == d->eor) return;
+    //if(d->sor == d->eor) return;
 
     unsigned char level = d->currentEmbedding->level;
     // add level of run (cases I1 & I2)

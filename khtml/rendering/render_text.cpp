@@ -273,7 +273,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   TextSlave *s = m_first;
   int off = s->len;
   int y = s->y;
-  
+
   while(offset > off)
   {
       s=s->next();
@@ -539,8 +539,8 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	    ch[i] = s[len-1-i];
 	    if(ch[i].mirrored() && !m_style->visuallyOrdered())
 		ch[i] = ch[i].mirroredChar();
-	    if(ch[len-i].mirrored() && !m_style->visuallyOrdered())
-		ch[len-i] = ch[len-i].mirroredChar();
+	    if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
+		ch[len-1-i] = ch[len-1-i].mirroredChar();
 	}
     }
     else
