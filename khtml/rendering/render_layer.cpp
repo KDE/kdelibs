@@ -234,8 +234,12 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
 
     child->setParent(this);
 
-    // Dirty the z-order list in which we are contained.
-    child->stackingContext()->dirtyZOrderLists();
+    // Dirty the z-order list in which we are contained.  The stackingContext() can be null in the
+    // case where we're building up generated content layers.  This is ok, since the lists will start
+    // off dirty in that case anyway.
+    RenderLayer* stackingContext = child->stackingContext();
+    if (stackingContext)
+        stackingContext->dirtyZOrderLists();
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
