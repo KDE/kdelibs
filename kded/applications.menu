@@ -43,12 +43,17 @@
 		<Name>Science</Name>
 		<Directory>kde-science.directory</Directory>
 		<Include>
-			<And>
-				<Category>Math</Category>
-				<Not><Category>Education</Category></Not>
-			</And>
-			<And>
-				<Category>Science</Category>
+			<And><!-- Include /any/ Science app which is not an Education app -->
+				<Or>
+					<Category>Astronomy</Category>
+					<Category>Biology</Category>
+					<Category>Chemistry</Category>
+					<Category>Geology</Category>
+					<Category>MedicalSoftware</Category>
+					<Category>Physics</Category>
+					<Category>Math</Category>
+					<Category>Science</Category>
+				</Or>
 				<Not><Category>Education</Category></Not>
 			</And>
 		</Include>
