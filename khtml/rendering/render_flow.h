@@ -92,6 +92,9 @@ public:
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
 
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*&, int & offset );
+
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
 protected:

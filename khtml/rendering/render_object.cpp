@@ -837,45 +837,23 @@ void RenderObject::detach()
 
 FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset )
 {
-    int lastOffset=0;
-    int off = offset;
-    DOM::NodeImpl* nod = node;
-    DOM::NodeImpl* lastNode = 0;
-    for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
-        khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off);
-        //kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
-        switch(pos) {
-        case SelectionPointBeforeInLine:
-        case SelectionPointAfterInLine:
-        case SelectionPointInside:
-//            kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset << endl;
-            node = nod;
-            offset = off;
-            return SelectionPointInside;
-        case SelectionPointBefore:
-            //x,y is before this element -> stop here
-            if ( lastNode ) {
-                node = lastNode;
-                offset = lastOffset;
-//                kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before this child "
-//                              << node << "-> returning SelectionPointInside, offset=" << offset << endl;
+    NodeInfo info(true, false);
+    if ( nodeAtPoint( info, _x, _y, _tx, _ty ) && info.innerNode() )
+    {
+        RenderObject* r = info.innerNode()->renderer();
+        if ( r ) {
+            if ( r == this ) {
+                node = info.innerNode();
+                offset = 0; // we have no text...
                 return SelectionPointInside;
-            } else {
-                node = nod;
-                offset = off;
-//                kdDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset << endl;
-                return SelectionPointBefore;
             }
-            break;
-        case SelectionPointAfter:
-//            kdDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << endl;
-            lastNode = nod;
-            lastOffset = off;
+            else
+                return r->checkSelectionPoint( _x, _y, _tx, _ty, node, offset );
         }
     }
-    //kdDebug(6030) << "fallback - SelectionPointAfter" << endl;
-    node = lastNode;
-    offset = lastOffset;
+    //kdDebug(6030) << "nodeAtPoint Failed. Fallback - hmm, SelectionPointAfter" << endl;
+    node = 0;
+    offset = 0;
     return SelectionPointAfter;
 }
 
