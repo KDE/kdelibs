@@ -26,23 +26,20 @@ static unsigned char uparrow_bits[] = {
   0x10, 0x00, 0x38, 0x00, 0x38, 0x00, 0x7c, 0x00, 0x7c, 0x00, 0xfe, 0x00,
   0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 
+static unsigned char arrow_dark_bits[] = {
+ 0x30,0x3c,0x08,0x84,0xc4,0x87,0x02,0x80,0x01,0x00,0x02,0x80,0x04,0x80,0x08,
+ 0x80,0x10,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x40,0xf0,0x29,0x40 };
 
-const char * return_xpm[] = {
-"15 9 4 1",
-" 	c None",
-".	c #000000",
-"+	c #FFFFFF",
-"@	c #515551",
-"    ..    ....+",
-"   . @    .   +",
-"  .  @.....   +",
-" .            +",
-".             +",
-" .            +",
-"  .  ++++++++++",
-"   . +         ",
-"    .+         "};
+static unsigned char arrow_mid_bits[] = {
+ 0x00,0x00,0x20,0x80,0x20,0x80,0x00,0x80,0x00,0x00,0x00,0x80,0x00,0x80,0x00,
+ 0x80,0x00,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x31,0x00,0x00,0x00,0x68,0x80,
+ 0xb2,0x40,0x00,0x00,0x00,0x00 };
 
+static unsigned char arrow_light_bits[] = {
+ 0x00,0x40,0x00,0xc0,0x00,0xc0,0x00,0xc0,0x00,0x40,0x00,0x40,0xe0,0xff,0x20,
+ 0x80,0x20,0x00,0x00,0x00,0x50,0x00,0x00,0x00,0x29,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x40,0xf0,0x29,0x40 };
 
 KStepStyle::KStepStyle()
     :KStyle()
@@ -114,8 +111,16 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     int x1, y1, x2, y2;
     btn->rect().coords(&x1, &y1, &x2, &y2);
     bool act = btn->isOn() || btn->isDown();
-    QPixmap px(return_xpm);
+    static QBitmap arrowLightBmp(15, 9, arrow_light_bits, true);
+    static QBitmap arrowDarkBmp(15, 9, arrow_dark_bits, true);
+    static QBitmap arrowMidBmp(15, 9, arrow_mid_bits, true);
 
+    if(!arrowLightBmp.mask()){
+        arrowLightBmp.setMask(arrowLightBmp);
+        arrowDarkBmp.setMask(arrowDarkBmp);
+        arrowMidBmp.setMask(arrowMidBmp);
+    }
+    
     if (btn->isDefault()) {
 
       // If this is a default button, we have a 4 pixel border which is
@@ -125,8 +130,12 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
       // much space is left after adding the pixmap at the right edge.
       // - rikkus
 
-        p->drawPixmap(btn->width() - 24, btn->height() / 2 - 4, px);
-     
+        // Changed to kColorBitmaps (mosfet
+        kColorBitmaps(p, btn->colorGroup(), btn->width() - 24,
+                      btn->height() / 2 - 4, &arrowLightBmp, &arrowMidBmp,
+                      NULL, &arrowDarkBmp, NULL, NULL);
+
+        
         drawItem(p,
           (x1+act?1:0) + 6, y1+act?1:0,
           btn->width() - 26, btn->height(),
