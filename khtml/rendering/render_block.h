@@ -108,7 +108,7 @@ public:
     InlineFlowBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed);
-    void computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed );
+    void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     // end bidi.cpp functions
 
     virtual void paint(QPainter *, int x, int y, int w, int h,

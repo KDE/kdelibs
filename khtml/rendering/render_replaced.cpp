@@ -102,9 +102,9 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
+void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
 {
-    setPos( box->xPos() + marginLeft(), box->yPos() + marginTop() );
+    setPos( box->xPos(), box->yPos() );
 }
 
 // -----------------------------------------------------------------------------

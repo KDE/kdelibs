@@ -76,7 +76,7 @@ public:
     virtual void setWidth( int width );
     virtual void setHeight( int height );
 
-    virtual void position(InlineBox* box, int from, int len, bool reverse, int);
+    virtual void position(InlineBox* box, int from, int len, bool reverse);
 
     virtual int lowestPosition() const;
     virtual short rightmostPosition() const;

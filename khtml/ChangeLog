@@ -1,3 +1,32 @@
+2004-02-11  Germain Garand  <germain@ebooksfrance.org>
+
+        Activate merged alternate code path for inline boxes 
+        construction/painting. Whitespace count consistency.
+
+        * rendering/bidi.cpp: merge computeHorizontalPositionsForLine
+        to get properly constructed InlineFlowBoxes.
+        (Bidinext): merge skipInline bool to avoid leak.
+        (RenderBlock::bidiReorderLine): handle whitespace count through
+        category separator_Space
+        (RenderBlock::findNextLineBreak): account for empty InlineFlow
+
+        * rendering/font.cpp (drawText, width): whitespace handling
+
+        * rendering/render_box.cpp (position): partial merge
+
+        * rendering/render_line.cpp (placeBoxesVertically):
+        - line-height on block level means minimum line-height for children.
+        - Don't enlarge boxes to fit font, only shrink (CSS2:10.8.1)
+        - Add font's half-leading to top and bottom to avoid nodeAtPoint gaps.
+          Use fm.height(): WebCore's QFontMetrics includes the baseline in descent
+
+        * rendering/render_object.cpp (offsetLeft/offsetTop): adjust
+        (hasStaticX/hasStaticY): merged non-virtual methods
+
+        * rendering/render_replaced.cpp (position): do not add margin anymore
+
+        * rendering/render_text.cpp: whitespace handling. No more p/b/m.
+
 2004-02-10  Dirk Mueller  <mueller@kde.org>
 
 	* implement support for pageX/pageY. fix layerX/layerY, which was horrible broken

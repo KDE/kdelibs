@@ -357,10 +357,6 @@ int RenderObject::offsetLeft() const
     if ( offsetPar && offsetPar->isBody() )
         x += offsetPar->xPos();
 
-    // hacky
-    if ( isInline() && firstChild() && firstChild()->isText() )
-        x += static_cast<RenderText*>(firstChild() )->minXPos();
-
     return x;
 }
 
@@ -385,10 +381,6 @@ int RenderObject::offsetTop() const
 
     if ( offsetPar && offsetPar->isBody() )
         y += offsetPar->yPos();
-
-    // hacky
-    if ( isInline() && firstChild() && firstChild()->isText() )
-        y += static_cast<RenderText*>(firstChild() )->yPos();
 
     return y;
 }
@@ -428,6 +420,18 @@ short RenderObject::scrollWidth() const
 int RenderObject::scrollHeight() const
 {
     return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight();
+}
+
+bool RenderObject::hasStaticX() const
+{
+    return (style()->left().isVariable() && style()->right().isVariable()) ||
+            style()->left().isStatic() ||
+            style()->right().isStatic();
+}
+
+bool RenderObject::hasStaticY() const
+{
+    return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
 }
 
 void RenderObject::setLayouted(bool b)

@@ -121,7 +121,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	int numSpaces = 0;
 	if ( toAdd ) {
 	    for( int i = 0; i < len; i++ )
-		if ( str[i+pos].isSpace() )
+		if ( str[i+pos].category() == QChar::Separator_Space )
 		    numSpaces++;
 	}
 
@@ -199,7 +199,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 	    QChar ch = str[pos+i];
 	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
-	    bool is_space = (ch.isSpace());
+	    bool is_space = (ch.category() == QChar::Separator_Space);
 	    int chw = 0;
 	    if ( letterSpacing )
 		chw += letterSpacing;
@@ -249,7 +249,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	for( int i = from; i < to; i++ ) {
 	    QChar ch = str[pos+i];
 	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
-	    bool is_space = ch.isSpace();
+	    bool is_space = ch.category() == QChar::Separator_Space;
 	    if ( is_space ) {
 	        if (mode == WordWise) {
 		    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, i);
@@ -322,7 +322,7 @@ int Font::width( QChar *chs, int, int pos, int len ) const
     if ( wordSpacing )
 	// add amount
 	for( int i = 0; i < len; i++ ) {
-	    if( chs[i+pos].isSpace() )
+	    if( chs[i+pos].category() == QChar::Separator_Space )
 		w += wordSpacing;
 	}
 
@@ -347,7 +347,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
     if ( letterSpacing )
 	w += letterSpacing;
 
-    if ( wordSpacing && (chs+pos)->isSpace() )
+    if ( wordSpacing && (chs+pos)->category() == QChar::Separator_Space )
 		w += wordSpacing;
     return w;
 }

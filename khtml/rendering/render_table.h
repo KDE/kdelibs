@@ -107,7 +107,7 @@ public:
 
     virtual void setCellWidths( );
 
-    virtual void position(InlineBox *, int, int, bool, int) {}
+    virtual void position(InlineBox *, int, int, bool) {}
 
     virtual void calcWidth();
 
@@ -213,7 +213,7 @@ public:
     virtual bool isTableSection() const { return true; }
 
     virtual short lineHeight(bool) const { return 0; }
-    virtual void position(InlineBox*, int, int, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool) {}
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
@@ -294,7 +294,7 @@ public:
     virtual RenderObject* removeChildNode(RenderObject* child);
 
     virtual short lineHeight( bool ) const { return 0; }
-    virtual void position(InlineBox*, int, int, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool) {}
 
     virtual void layout();
 
@@ -410,7 +410,7 @@ public:
     virtual bool isTableCol() const { return true; }
 
     virtual short lineHeight( bool ) const { return 0; }
-    virtual void position(InlineBox*, int, int, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool) {}
     virtual void layout() {}
 
     virtual void updateFromElement();

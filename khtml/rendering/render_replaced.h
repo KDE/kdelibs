@@ -58,7 +58,7 @@ public:
     void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
     void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
 
-    virtual void position(InlineBox*, int, int, bool, int);
+    virtual void position(InlineBox*, int, int, bool);
 
     // Return before, after (offset set to max), or inside the replaced element,
     // at @p offset

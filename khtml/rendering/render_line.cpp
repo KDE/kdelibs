@@ -229,8 +229,7 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
         if (curr->object()->isText()) {
             InlineTextBox* text = static_cast<InlineTextBox*>(curr);
             text->setXPos(x);
-#warning FIXME
-            //x += text->width();
+            x += curr->width();
         }
         else {
             if (curr->object()->isPositioned()) {
@@ -310,6 +309,8 @@ void InlineFlowBox::adjustMaxAscentAndDescent(int& maxAscent, int& maxDescent,
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         // The computed lineheight needs to be extended for the
         // positioned elements
+        // see khtmltests/rendering/html_align.html
+
         if (curr->object()->isPositioned())
             continue; // Positioned placeholders don't affect calculations.
         if (curr->yPos() == PositionTop || curr->yPos() == PositionBottom) {
@@ -340,8 +341,7 @@ void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositi
         bool isTableCell = object()->isTableCell();
         if (isTableCell) {
             RenderTableCell* tableCell = static_cast<RenderTableCell*>(object());
-#warning FIXME
-            //setBaseline(tableCell->RenderBlock::baselinePosition(m_firstLine));
+            setBaseline(tableCell->RenderBlock::baselinePosition(m_firstLine));
         }
         else
             setBaseline(object()->baselinePosition(m_firstLine));
@@ -387,8 +387,13 @@ void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositi
 void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bool strictMode,
                                          int& topPosition, int& bottomPosition)
 {
-    if (isRootInlineBox())
+    if (isRootInlineBox()) {
         setYPos(y + maxAscent - baseline());// Place our root box.
+        // CSS2: 10.8.1 - line-height on the block level element specifies the *minimum*
+        // height of the generated line box
+        if (hasTextChildren() && maxHeight < object()->lineHeight(m_firstLine))
+            maxHeight = object()->lineHeight(m_firstLine);
+    }
 
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isPositioned())
@@ -401,6 +406,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                                                                     topPosition, bottomPosition);
 
         bool childAffectsTopBottomPos = true;
+
         if (curr->yPos() == PositionTop)
             curr->setYPos(y);
         else if (curr->yPos() == PositionBottom)
@@ -410,27 +416,34 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                 childAffectsTopBottomPos = false;
             curr->setYPos(curr->yPos() + y + maxAscent - curr->baseline());
         }
-
         int newY = curr->yPos();
         int newHeight = curr->height();
         int newBaseline = curr->baseline();
         if (curr->isInlineTextBox() || curr->isInlineFlowBox()) {
             const QFontMetrics &fm = curr->object()->fontMetrics( m_firstLine );
+#ifdef APPLE_CHANGES
             newBaseline = fm.ascent();
             newY += curr->baseline() - newBaseline;
             newHeight = newBaseline+fm.descent();
+#else
+            int ascent = fm.ascent()+fm.leading()/2;
+            // Only shrink. Enlarging would break specified line-height (cf.CSS2: 10.8.1)
+            if (ascent < curr->baseline()) {
+                newBaseline = ascent;
+                newY += curr->baseline() - newBaseline;
+                newHeight = fm.lineSpacing();
+            }
+#endif
             if (curr->isInlineFlowBox()) {
                 newHeight += curr->object()->borderTop() + curr->object()->paddingTop() +
                             curr->object()->borderBottom() + curr->object()->paddingBottom();
                 newY -= curr->object()->borderTop() + curr->object()->paddingTop();
                 newBaseline += curr->object()->borderTop() + curr->object()->paddingTop();
             }
-        }
-        else {
+        } else {
             newY += curr->object()->marginTop();
             newHeight = curr->height() - (curr->object()->marginTop() + curr->object()->marginBottom());
         }
-
         curr->setYPos(newY);
         curr->setHeight(newHeight);
         curr->setBaseline(newBaseline);
@@ -445,9 +458,18 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
 
     if (isRootInlineBox()) {
         const QFontMetrics &fm = object()->fontMetrics( m_firstLine );
+#ifdef APPLE_CHANGES
         setHeight(fm.ascent()+fm.descent());
         setYPos(yPos() + baseline() - fm.ascent());
         setBaseline(fm.ascent());
+#else
+        int ascent = fm.ascent()+fm.leading()/2;
+        if (ascent < baseline()) {
+            setHeight(fm.lineSpacing());
+            setYPos(yPos() + baseline() - ascent);
+            setBaseline(ascent);
+        }
+#endif
         if (hasTextChildren() || strictMode) {
             if (yPos() < topPosition)
                 topPosition = yPos();
@@ -482,14 +504,13 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
 void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
                                              int _w, int _h, int _tx, int _ty, int xOffsetOnLine)
 {
+
     // Move x/y to our coordinates.
     _tx += m_x;
     _ty += m_y;
 
     int w = width();
     int h = height();
-
-    if (w <= 0) return;
 
     int my = kMax(_ty,_y);
     int mh;

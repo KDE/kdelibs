@@ -146,6 +146,11 @@ public:
     virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
     virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
 
+    // Whether or not a positioned element requires normal flow x/y to be computed
+    // to determine its position.
+    bool hasStaticX() const;
+    bool hasStaticY() const;
+
     // Linear tree traversal
     RenderObject *objectBelow() const;
     RenderObject *objectAbove() const;
@@ -523,7 +528,7 @@ public:
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
 
     // positioning of inline children (bidi)
-    virtual void position(InlineBox*, int, int, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool) {}
 //    virtual void position(int, int, int, int, int, bool, bool, int) {}
 
     enum SelectionState {

@@ -48,7 +48,7 @@ public:
     InlineTextBox(RenderObject *obj)
     	:InlineBox(obj),
     	// ### necessary as some codepaths (<br>) do *not* initialize these (LS)
-    	m_start(0), m_len(0)
+    	m_start(0), m_len(0), m_reversed(false), m_toAdd(0)
     {
     }
 
@@ -66,11 +66,12 @@ private:
     void* operator new(size_t sz) throw();
 
 public:
-
+    void setSpaceAdd(int add) { m_width -= m_toAdd; m_toAdd = add; m_width += m_toAdd; }
+    int spaceAdd() { return m_toAdd; }
+        
     virtual bool isInlineTextBox() const { return true; }
 
-    void paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int decoration, bool begin, bool end);
-    void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, int curr, int count);
+    void paintDecoration(QPainter *pt, const Font *f, int _tx, int _ty, int decoration);
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
@@ -183,7 +184,7 @@ public:
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }
     unsigned int stringLength() const { return str->l; } // non virtual implementation of length()
-    virtual void position(InlineBox* box, int from, int len, bool reverse, int spaceAdd);
+    virtual void position(InlineBox* box, int from, int len, bool reverse);
 
     virtual unsigned int width(unsigned int from, unsigned int len, const Font *f) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
