@@ -1544,8 +1544,22 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 //     case CSS_PROP_SPEAK_HEADER:
 //     case CSS_PROP_SPEAK_NUMERAL:
 //     case CSS_PROP_SPEAK_PUNCTUATION:
-    case CSS_PROP_TABLE_LAYOUT:
+    case CSS_PROP_TABLE_LAYOUT: {
+	if ( !primitiveValue->getIdent() )
+	    return;
+
+	ETableLayout l = TAUTO;
+	switch( primitiveValue->getIdent() ) {
+	case CSS_VAL_FIXED:
+	    l = TFIXED;
+	    // fall through
+	case CSS_VAL_AUTO:
+	    style->setTableLayout( l );
+	default:
+	    break;
+	}
 	break;
+    }
     case CSS_PROP_UNICODE_BIDI: {
 	EUnicodeBidi b = UBNormal;
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
