@@ -53,6 +53,8 @@ public:
 	long bufferPackets() { return m_packetBuffer; }
 	void bufferPackets(long i) { m_packetBuffer = i; }
 
+	long packetSize() { return m_packetSize; }
+	
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
@@ -66,9 +68,9 @@ private:
 	bool m_firstBuffer;
 
 	unsigned int m_packetBuffer;
-
+	const unsigned int m_packetSize;
+	
 	static const unsigned int PACKET_COUNT;
-	static const unsigned int PACKET_SIZE;
 };
 
 };

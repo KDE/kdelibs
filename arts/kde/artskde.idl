@@ -16,6 +16,8 @@ interface KIOInputStream : InputStream {
 	boolean openURL(string url);
 	
 	attribute long bufferPackets;
+
+	long packetSize();
 };
 
 /*
