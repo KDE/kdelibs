@@ -201,7 +201,7 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int index)
     QString item;
     item.sprintf("%s\t%s\t%u\t%s\t%s\t%s\t%s",
                  type,
-                 i->fileName().data(),
+                 i->fileName(),
                  i->size(),
                  i->access(),
                  i->date(),

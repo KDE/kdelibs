@@ -35,7 +35,7 @@
 **
 */
 
-uint KDir::maxReturns = 50;
+uint KDir::maxReturns = 100;
 
 KDir::KDir()
     : QObject(0, "KDir")
@@ -260,7 +260,7 @@ void KDir::getEntries() {
 		break;
 	    i = new KFileInfo(path, dp->d_name);
 	    CHECK_PTR(i);
-	    if (i->fileName().isEmpty()) {
+	    if (!i->fileName()) {
 		delete i;
 		continue;
 	    }

@@ -290,7 +290,6 @@ protected:
     
     bool useSingle() const { return useSingleClick; }
     bool isDir( uint index) const { return sortedArray[index]->isDir(); }
-    int firstFile() const { return firstfile; }
 
     const KFileInfo *at( uint index ) const { return sortedArray[index]; }
 
@@ -303,7 +302,6 @@ protected:
     int compareItems(const KFileInfo *fi1, const KFileInfo *fi2);
 
 private:
-    int firstfile;
     bool useSingleClick;
 
     bool reversed;

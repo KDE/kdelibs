@@ -23,6 +23,7 @@
 #include <qsignal.h>
 #include <kapp.h>
 #include "debug.h"
+#include <stdlib.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -35,7 +36,7 @@ QPixmap *KFileInfoContents::locked_file = 0;
 
 KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 {
-    sorted_max = 1;
+    sorted_max = 10000;
     sortedArray = new KFileInfo*[sorted_max];
     sorted_length = 0;
     itemsList  = new KFileInfoList;
@@ -51,7 +52,7 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
     sSelectFile    = new QSignal(0, "selectFile");
 
     nameList = new QStrIList();
-    firstfile = 0;
+
     // don't use IconLoader to always get the same icon,
     // it looks very strange, if the icons differ from application
     // to application.
@@ -102,8 +103,9 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
     // we add it nonetheless, we could need it.
     // TODO: think about it
     // NOTE: usd in completion - could use sortedList?? dg
-    nameList->inSort(i->fileName());
-    
+    //nameList->inSort(i->fileName());
+    nameList->append(i->fileName());
+
     return addItemInternal(i);
 }
 
@@ -131,17 +133,14 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
         keepDirsFirst = false;
 
     setAutoUpdate(false);
-    sorted_length = 0;
-    firstfile = 0;
     clearView();
 
-    KFileInfoListIterator lFileInfoIterator(*itemsList);
-    // get all entries and add them sorted into the list using the iterator
-    for ( KFileInfo *lCurrentFileInfo = lFileInfoIterator.toFirst(); 
-	  lCurrentFileInfo; 
-	  lCurrentFileInfo = ++lFileInfoIterator ) 
-	addItemInternal(lCurrentFileInfo);
-    
+    debug("qsort %ld", time(0));
+    qsort(sortedArray, sorted_length, sizeof(KFileInfo*), (int (*)(const void *, const void *))&compareItems);
+    debug("qsort %ld", time(0));
+    for (uint i = 0; i < sorted_length; i++)
+      insertItem(sortedArray[i], -1);
+    debug("qsort %ld", time(0));
     setAutoUpdate(true);
     repaint(true);
 }
@@ -155,7 +154,6 @@ void KFileInfoContents::clear()
     itemsList->clear();
     nameList->clear();
     clearView();
-    firstfile = 0;
     filesNumber = 0;
     dirsNumber = 0;
 }
@@ -217,68 +215,6 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     return (bigger ? 1 : -1);
 }
 
-
-/*
-bool KFileInfoContents::addItemInternal(const KFileInfo *i)
-{
-    int pos = -1;
-
-    if ( mySorting != QDir::Unsorted) 
-    {
-	bool found = false;
-	bool isDir = i->isDir();
-	
-        if (reversed)
-	    isDir = !isDir;
-        
-	if ( keepDirsFirst ) {
-            pos = isDir ? 0 : firstfile;
-        } else {
-            pos = 0;
-        }
-	
-	if ( pos >= sorted_length )
-	    found = true;
-            
-	while (!found) {
-	    
-	    bool bigger = compareItems(i, sortedArray[pos]) > 0;
-
-	    if (bigger)
-		pos++;
-	    else
-		found = true;
-
-	    if (pos >= sorted_length) {
-	        if (keepDirsFirst) {
-                    if (!isDir)
-	                pos = sorted_length;
-	            else
-	                pos = firstfile;
-                } else {
-                    pos = sorted_length;
-                }
-		found = true;
-	    }
-	    
-            if ( keepDirsFirst && isDir && (pos >= firstfile))
-	    	found = true;
-	}
-	
-        if (keepDirsFirst && isDir) 
-	    firstfile++;
-    }
-    
-    if (pos < 0) {
-        insertSortedItem(i, sorted_length);
-	// sorted_length has new value
-	pos = sorted_length;
-    }  else
-        insertSortedItem(i, pos);
-
-    return insertItem(i, pos);
-} */
-
 bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 {
   int pos = -1;
@@ -286,6 +222,7 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 
   if ( sorted_length > 1 && mySorting != QDir::Unsorted) 
     {
+      // insertation using log(n)
       bool found = false;
       int left = 0;
       int right = sorted_length - 1;
@@ -299,6 +236,8 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	  left = pos;
 
 	if (left >= right-1) {
+	  // if pos is the left side (rounded), it may be, that we haven't
+	  // compared to the right side and gave up too early
 	  if (pos == left && compareItems(i, sortedArray[right]) > 0)
 	    pos = right+1;
 	  else 
@@ -341,7 +280,7 @@ void KFileInfoContents::select( KFileInfo *entry)
 {
     if ( entry->isDir() ) {
 	lastSDir = entry;
-	debugC("selectDir %s",entry->fileName().data());
+	debugC("selectDir %s",entry->fileName());
 	sActivateDir->activate();
     } else {
 	lastSFile = entry;
@@ -476,7 +415,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 
 void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
 {
-  // debug("insert %s %d", item->fileName().data(), pos);
+  //  debug("insert %s %d", item->fileName().data(), pos);
   if (sorted_length == sorted_max) {
     sorted_max *= 2;
     KFileInfo **newArray = new KFileInfo*[sorted_max];
@@ -497,17 +436,15 @@ void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
     return;
   }
 
-  /*
-  memcpy(sortedArray + (pos + 1) * sizeof(KFileInfo*), 
-	 sortedArray + pos * sizeof(KFileInfo*),
+  memmove(sortedArray + pos+1,
+	 sortedArray + pos,
 	 (sorted_max - 1 - pos) * sizeof(KFileInfo*));
-  */
-  
+  /*
   for ( int i = sorted_length - 1; i >= static_cast<int>(pos); i--) {
     // debug("move %d", i);
     sortedArray[i+1] = sortedArray[i];
   }
+  */
   sortedArray[pos] = const_cast<KFileInfo*>(item);
   sorted_length++;
-  
 }

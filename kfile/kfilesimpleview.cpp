@@ -42,7 +42,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     setTableFlags(Tbl_autoHScrollBar |
 		  Tbl_smoothHScrolling);
     setBackgroundMode( PaletteBase );
- 
+    touched = false;
 }
 
 KFileSimpleView::~KFileSimpleView()
@@ -231,7 +231,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
     int curCol = index / rowsVisible;
 
     for (int j = curCol; j < numCols(); j++)
-	cellWidths[ j ] = -1; // reset values
+      cellWidths[ j ] = -1; // reset values
     
     return colIsVisible(curCol) || curCol < leftCell() ;
 }

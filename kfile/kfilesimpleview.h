@@ -62,6 +62,8 @@ protected:
     int curCol, curRow;
     int *cellWidths;
     QList<QPixmap> pixmaps;
+    // this flag is used for speed up, when autoUpdate is false
+    bool touched;
 
 };
 
