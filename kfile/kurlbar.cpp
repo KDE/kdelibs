@@ -39,6 +39,34 @@
 
 #include "kurlbar.h"
 
+/**
+ * Handles tooltips in the KURLBar
+ * @internal
+ */
+class KURLBarToolTip : public QToolTip
+{
+public:
+    KURLBarToolTip( QListBox *view ) : QToolTip( view ), m_view( view ) {}
+
+protected:
+    virtual void maybeTip( const QPoint& point ) {
+        QListBoxItem *item = m_view->itemAt( point );
+        if ( item ) {
+            QString text = static_cast<KURLBarItem*>( item )->toolTip();
+            if ( !text.isEmpty() )
+                tip( m_view->itemRect( item ), text );
+        }
+    }
+
+private:
+    QListBox *m_view;
+};
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
                           const QString& icon, int group,
@@ -351,6 +379,20 @@ void KURLBar::setCurrentItem( const KURL& url )
     }
 }
 
+KURLBarItem * KURLBar::currentItem() const
+{
+    QListBoxItem *item = m_listBox->item( m_listBox->currentItem() );
+    if ( item )
+        return static_cast<KURLBarItem *>( item );
+    return 0L;
+}
+
+KURL KURLBar::currentURL() const
+{
+    KURLBarItem *item = currentItem();
+    return item ? item->url() : KURL();
+}
+
 void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
     KConfigGroupSaver cs( appConfig, itemGroup );
@@ -387,11 +429,10 @@ void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
                 config->readNumEntry( QString("IconGroup_") + number ) );
 }
 
-void KURLBar::writeConfig( KConfig *appConfig, const QString& itemGroup )
+void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
 {
-    KConfigGroupSaver cs1( appConfig, itemGroup );
-
-    appConfig->writeEntry( "Speedbar IconSize", m_iconSize );
+    KConfigGroupSaver cs1( config, itemGroup );
+    config->writeEntry( "Speedbar IconSize", m_iconSize );
 
     int i = 0;
     int numLocal = 0;
@@ -399,40 +440,38 @@ void KURLBar::writeConfig( KConfig *appConfig, const QString& itemGroup )
 
     while ( item ) {
         if ( item->applicationLocal() ) {
-            writeItem( item, numLocal, appConfig );
+            writeItem( item, numLocal, config, false );
             numLocal++;
         }
 
         i++;
         item = static_cast<KURLBarItem*>( item->next() );
     }
-    appConfig->writeEntry("Number of Entries", numLocal);
+    config->writeEntry("Number of Entries", numLocal);
 
 
     // write the global entries to kdeglobals, if any
     bool haveGlobalEntries = (i > numLocal);
     if ( m_useGlobal && haveGlobalEntries ) {
-        KConfig *globalConfig = new KConfig("kdeglobals", false, false);
-        globalConfig->setGroup( itemGroup + " (Global)" );
+        config->setGroup( itemGroup + " (Global)" );
 
         int numGlobals = 0;
         item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
         while ( item ) {
             if ( !item->applicationLocal() ) {
-                writeItem( item, numGlobals, globalConfig );
+                writeItem( item, numGlobals, config, true );
                 numGlobals++;
             }
 
             item = static_cast<KURLBarItem*>( item->next() );
         }
-        globalConfig->writeEntry("Number of Entries", numGlobals);
-
-        delete globalConfig;
+        config->writeEntry("Number of Entries", numGlobals, true, true);
     }
 }
 
-void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config )
+void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
+                         bool global )
 {
     QString Description = "Description_";
     QString URL = "URL_";
@@ -440,10 +479,10 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config )
     QString IconGroup = "IconGroup_";
 
     QString number = QString::number( i );
-    config->writeEntry( URL         + number, item->url().prettyURL() );
-    config->writeEntry( Description + number, item->description());
-    config->writeEntry( Icon        + number, item->icon() );
-    config->writeEntry( IconGroup   + number, item->iconGroup() );
+    config->writeEntry( URL + number, item->url().prettyURL(), true, global );
+    config->writeEntry( Description + number, item->description(),true,global);
+    config->writeEntry( Icon + number, item->icon(), true, global );
+    config->writeEntry( IconGroup + number, item->iconGroup(), true, global );
 }
 
 
@@ -460,7 +499,7 @@ void KURLBar::slotDropped( QDropEvent *e )
         KURL::List::Iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
             url = *it;
-            if ( KURLBarDropDialog::getInformation( m_useGlobal,
+            if ( KURLBarItemDialog::getInformation( m_useGlobal,
                                                     url, description, icon,
                                                     appLocal, this ) ) {
                 item = insertItem( url, description, appLocal, icon );
@@ -472,7 +511,7 @@ void KURLBar::slotDropped( QDropEvent *e )
 void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 {
     static const int IconSize   = 10;
-    static const int AddItem   = 20;
+    static const int AddItem    = 20;
     static const int EditItem   = 30;
     static const int RemoveItem = 40;
 
@@ -482,14 +521,14 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
-    popup->insertItem( smallIcons ? 
-                       i18n("&Large Icons") : i18n("&Small Icons"), 
+    popup->insertItem( smallIcons ?
+                       i18n("&Large Icons") : i18n("&Small Icons"),
                        IconSize );
     popup->insertSeparator();
-    popup->insertItem( i18n("&Add entry"), AddItem );
-    popup->insertItem( i18n("&Edit entry"), EditItem );
+    popup->insertItem( i18n("&Add entry..."), AddItem );
+    popup->insertItem( i18n("&Edit entry..."), EditItem );
     popup->insertSeparator();
-    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove entry"), 
+    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove entry"),
                        RemoveItem );
 
     popup->setItemEnabled( EditItem, item != 0L );
@@ -502,7 +541,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             m_listBox->triggerUpdate( true );
             break;
         case AddItem:
-            addItem();
+            addNewItem();
             break;
         case EditItem:
             editItem( static_cast<KURLBarItem *>( item ) );
@@ -515,7 +554,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     }
 }
 
-bool KURLBar::addItem()
+bool KURLBar::addNewItem()
 {
     KURL url;
     url.setPath( QDir::homeDirPath() );
@@ -525,7 +564,7 @@ bool KURLBar::addItem()
         m_listBox->insertItem( item );
         return true;
     }
-    
+
     delete item;
     return false;
 }
@@ -537,7 +576,7 @@ bool KURLBar::editItem( KURLBarItem *item )
     QString icon        = item->icon();
     bool appLocal       = item->applicationLocal();
 
-    if ( KURLBarDropDialog::getInformation( m_useGlobal,
+    if ( KURLBarItemDialog::getInformation( m_useGlobal,
                                             url, description,
                                             icon, appLocal, this ))
     {
@@ -548,7 +587,7 @@ bool KURLBar::editItem( KURLBarItem *item )
         m_listBox->triggerUpdate( true );
         return true;
     }
-    
+
     return false;
 }
 
@@ -557,15 +596,16 @@ bool KURLBar::editItem( KURLBarItem *item )
 
 
 KURLBarListBox::KURLBarListBox( QWidget *parent, const char *name )
-    : KListBox( parent, name ),
-      m_toolTip( this )
+    : KListBox( parent, name )
 {
+    m_toolTip = new KURLBarToolTip( this );
     setAcceptDrops( true );
     viewport()->setAcceptDrops( true );
 }
 
 KURLBarListBox::~KURLBarListBox()
 {
+    delete m_toolTip;
 }
 
 QDragObject * KURLBarListBox::dragObject()
@@ -613,11 +653,11 @@ void KURLBarListBox::setOrientation( Qt::Orientation orient )
 ///////////////////////////////////////////////////////////////////
 
 
-bool KURLBarDropDialog::getInformation( bool allowGlobal, KURL& url,
+bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
                                         QString& description, QString& icon,
                                         bool& appLocal, QWidget *parent )
 {
-    KURLBarDropDialog *dialog = new KURLBarDropDialog( allowGlobal, url,
+    KURLBarItemDialog *dialog = new KURLBarItemDialog( allowGlobal, url,
                                                        description, icon,
                                                        appLocal, parent );
     if ( dialog->exec() == QDialog::Accepted ) {
@@ -633,7 +673,7 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, KURL& url,
     return false;
 }
 
-KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
+KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
                                       QWidget *parent, const char *name )
@@ -681,11 +721,11 @@ KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
     setMainWidget( box );
 }
 
-KURLBarDropDialog::~KURLBarDropDialog()
+KURLBarItemDialog::~KURLBarItemDialog()
 {
 }
 
-KURL KURLBarDropDialog::url() const
+KURL KURLBarItemDialog::url() const
 {
     QString text = m_urlEdit->url();
     KURL u;
@@ -697,37 +737,22 @@ KURL KURLBarDropDialog::url() const
     return u;
 }
 
-QString KURLBarDropDialog::description() const
+QString KURLBarItemDialog::description() const
 {
     return m_edit->text();
 }
 
-QString KURLBarDropDialog::icon() const
+QString KURLBarItemDialog::icon() const
 {
     return m_iconButton->icon();
 }
 
-bool KURLBarDropDialog::applicationLocal() const
+bool KURLBarItemDialog::applicationLocal() const
 {
     if ( !m_appLocal )
         return true;
 
     return m_appLocal->isChecked();
-}
-
-
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-
-
-void KURLBarToolTip::maybeTip( const QPoint &point )
-{
-    QListBoxItem *item = m_view->itemAt( point );
-    if ( item ) {
-	QString text = static_cast<KURLBarItem*>( item )->toolTip();
-	if ( !text.isEmpty() )
-	    tip( m_view->itemRect( item ), text );
-    }
 }
 
 

@@ -397,26 +397,20 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
 
-    // Get the config object
-    KSimpleConfig *kc = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
-                                          false);
-    QString oldGroup = kc->group();
-    kc->setGroup( ConfigGroup );
-    d->showStatusLine = kc->readBoolEntry(ConfigShowStatusLine,
-                                          DefaultShowStatusLine);
+    d->showStatusLine = config->readBoolEntry(ConfigShowStatusLine,
+                                              DefaultShowStatusLine);
 
     initGUI(); // activate GM
 
-    readRecentFiles( KGlobal::config() );
+    readRecentFiles( config );
 
     adjustSize();
 
     // we set the completionLock to avoid entering pathComboChanged() when
     // inserting the list of URLs into the combo.
     d->completionLock = true;
-    readConfig( kc, ConfigGroup );
+    readConfig( config, ConfigGroup );
     d->completionLock = false;
-    delete kc;
 
     setSelection(d->url.url()); // ### move that into show() as well?
 }
@@ -425,14 +419,18 @@ KFileDialog::~KFileDialog()
 {
     hide();
 
+    KConfig *config = KGlobal::config();
+    
     if ( d->initializeSpeedbar ) {
-        KSimpleConfig c( "kdeglobals" );
-        c.setGroup( ConfigGroup );
-        c.writeEntry( "Set speedbar defaults", false );
+        QString oldGroup = config->group();
+        config->setGroup( ConfigGroup );
+        // write to kdeglobals
+        config->writeEntry( "Set speedbar defaults", false, true, true );
+        config->setGroup( oldGroup );
     }
 
-    d->urlBar->writeConfig( KGlobal::config(), "KFileDialog Speedbar" );
-    KGlobal::config()->sync();
+    d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
+    config->sync();
 
     delete bookmarks;
     delete d->boxLayout; // we can't delete a widget being managed by a layout,
@@ -1110,17 +1108,14 @@ void KFileDialog::toolbarCallback(int i) // SLOT
     if (i == CONFIGURE_BUTTON) {
         KFileDialogConfigureDlg conf(this, "filedlgconf");
         if (conf.exec() == QDialog::Accepted) {
-
-            KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
-                                                 false);
-            c->setGroup( ConfigGroup );
-
             delete d->boxLayout; // this removes all child layouts too
             d->boxLayout = 0;
 
-            d->showStatusLine =
-                c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
-            delete c;
+            KConfig *config = KGlobal::config();
+            KConfigGroupSaver cs( config, ConfigGroup );
+
+            d->showStatusLine = config->readBoolEntry("ShowStatusLine",
+                                DefaultShowStatusLine);
             initGUI(); // add them back to the layout managment
         }
     }

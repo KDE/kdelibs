@@ -32,7 +32,8 @@ include_HEADERS = kfiledialog.h kfilebookmark.h  \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
 	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h \
-	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h kdirselectdialog.h
+	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
+	kdirselectdialog.h kurlbar.h
 
 noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h 
 
