@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qstring.h>
+#include <qstringlist.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -62,11 +63,23 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 
     str << "#include <dcopstub.h>" << endl;
 
+    QStringList includeslist;
     QDomElement e = de.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "INCLUDE" ) {
-	    str << "#include <" << e.firstChild().toText().data() << ">" << endl;
-	} else if ( e.tagName() == "CLASS" ) {
+            // dcopidl lists the includes in reversed order because of the used yacc/bison gramatic
+            // so let's reverse it back, as the order may be important
+	    includeslist.prepend( e.firstChild().toText().data());
+            continue;
+	}
+        if( !includeslist.empty()) {
+            for( QStringList::ConstIterator it = includeslist.begin();
+                 it != includeslist.end();
+                 ++it )
+    	        str << "#include <" << ( *it ) << ">" << endl;
+            includeslist.clear();
+        }
+        if ( e.tagName() == "CLASS" ) {
 	    str << endl;
 	
 	    QDomElement n = e.firstChild().toElement();
