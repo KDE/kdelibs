@@ -52,7 +52,7 @@ class KPixmapSplitter
 {
 public:
     /**
-     * Constructor, does nothing but initialise some default-values.
+     * Constructor, does nothing but initialize some default-values.
      */
     KPixmapSplitter();
     ~KPixmapSplitter();

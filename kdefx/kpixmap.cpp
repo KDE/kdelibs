@@ -277,7 +277,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	// Here we skimp a little on the possible conversion modes
 	// Don't offer ordered or threshold dither of RGB channels or
 	// diffuse or ordered dither of alpha channel. It hardly seems
-	// worth the effort for this specialised mode.
+	// worth the effort for this specialized mode.
 	
 	// If image uses icon palette don't dither it.
 	if( img.numColors() > 0 && img.numColors() <=40 ) {

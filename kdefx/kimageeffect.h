@@ -312,13 +312,13 @@ public:
      * @since 3.2
      */
     enum Disposition { NoImage = 0, //!< Don't overlay
-		       Centered,    //!< Centre top image on botton image
+		       Centered,    //!< Center top image on botton image
 		       Tiled,       //!< Tile top image on bottom image
-		       CenterTiled, //!< Centre and tile top image on bottom image
-		       CenteredMaxpect, //!< Centre and scale aspect
+		       CenterTiled, //!< Center and tile top image on bottom image
+		       CenteredMaxpect, //!< Center and scale aspect
 		       TiledMaxpect, //!< Tile and scale aspect
 		       Scaled,      //!< Scale
-		       CenteredAutoFit //!< Centre and scale or scale aspect
+		       CenteredAutoFit //!< Center and scale or scale aspect
     };
 
     /**
