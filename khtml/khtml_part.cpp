@@ -1197,8 +1197,9 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
   {
       //kdDebug( 6050 ) << "begin!" << endl;
 
+    d->m_job->suspend();
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-
+    d->m_job->resume();
 
     d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
     d->m_workingURL = KURL();
