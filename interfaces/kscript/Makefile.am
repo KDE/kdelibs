@@ -13,5 +13,5 @@ kscriptincludedir = $(includedir)/kscript
 
 METASOURCES = AUTO
 
-servicetypedir = $(kde_servicetypesdir)
-servicetype_DATA = scriptinterface.desktop
+#servicetypedir = $(kde_servicetypesdir)
+#servicetype_DATA = scriptinterface.desktop
