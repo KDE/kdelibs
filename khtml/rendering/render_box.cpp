@@ -75,6 +75,17 @@ void RenderBox::setStyle(RenderStyle *_style)
     if (isRoot())
         setShouldPaintBackgroundOrBorder(true);
 
+    switch(_style->display())
+    {
+    case INLINE:
+    case INLINE_BLOCK:
+    case INLINE_TABLE:
+        setInline(true);
+        break;
+    default:
+        setInline(false);
+    }
+        
     switch(_style->position())
     {
     case ABSOLUTE:
