@@ -204,7 +204,7 @@ class CSSRuleList;
  * content type is "text/css".
  *
  */
-class CSSStyleSheet : public StyleSheet
+class KHTML_EXPORT CSSStyleSheet : public StyleSheet
 {
 public:
     CSSStyleSheet();
