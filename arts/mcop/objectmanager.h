@@ -62,6 +62,9 @@ public:
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);
+
+	void provideCapability(const std::string& capability);
+	void removeCapability(const std::string& capability);
 };
 
 };

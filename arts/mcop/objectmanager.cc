@@ -37,6 +37,7 @@ using namespace Arts;
 class Arts::ObjectManagerPrivate {
 public:
 	list<ExtensionLoader *> extensions;
+	map<string, long> capabilities;
 };
 
 Object_skel *ObjectManager::create(string name)
@@ -53,52 +54,64 @@ Object_skel *ObjectManager::create(string name)
 
 	/* second try: look if there is a suitable extension we could load */
 
-	// TODO: modularize language loading here
-	//    => use trader instead of handmade access to the .mcopclass file
+	TraderQuery query;
+	query.supports("InterfaceName", name);
+	vector<TraderOffer> *offers = query.query();
 
-	string mcopclassName;
-	string::iterator nameit = name.begin();
-	while(nameit != name.end())
+	vector<TraderOffer>::iterator oi;
+	for(oi = offers->begin(); oi != offers->end(); oi++)
 	{
-		if(*nameit == ':')	// map the :: of namespaces to subdirectories
+		/*
+		 * check whether we provide everything that this
+		 * implementation requires to run
+		 */
+		bool requirementsOk = true;
+		vector<string> *requires = oi->getProperty("Requires");
+
+		vector<string>::iterator ri;
+		for(ri = requires->begin(); ri != requires->end(); ri++)
 		{
-			nameit++;
-			if(nameit != name.end() && *nameit == ':')
+			if(d->capabilities[*ri] <= 0)
+				requirementsOk = false;
+		}
+
+		/*
+		 * this currently assumes Language = C++
+		 */
+		vector<string> *libs = oi->getProperty("Library");
+
+		if(requirementsOk && libs->size() == 1)
+		{
+			string library = libs->front();
+
+			ExtensionLoader *e = new ExtensionLoader(library);
+			if(e->success())
 			{
-				nameit++;
-				mcopclassName += '/';
+				d->extensions.push_back(e);
+				for(i = factories.begin();i != factories.end(); i++)
+				{
+					Factory *f = *i;
+					if(f->interfaceName() == name)
+					{
+						delete libs;
+						delete offers;
+						return f->createInstance();
+					}
+				}
+			}
+			else
+			{
+				arts_warning("MCOP ObjectManager:"
+					" Could not load extension %s.", library.c_str());
+				delete e;
 			}
 		}
-		else				// copy all other stuff
-		{
-			mcopclassName += *nameit++;
-		}
-	}
-	mcopclassName += ".mcopclass";
-
-	MCOPConfig config(string(EXTENSION_DIR) + "/" + mcopclassName);
-	string library = config.readEntry("Library");
-	if(library != "")
-	{
-		ExtensionLoader *e = new ExtensionLoader(library);
-		if(e->success())
-		{
-			d->extensions.push_back(e);
-			for(i = factories.begin();i != factories.end(); i++)
-			{
-				Factory *f = *i;
-//				cerr << "Found interfaceName: " << f->interfaceName() << endl;
-				if(f->interfaceName() == name) return f->createInstance();
-			}
-		}
-		else {
-			arts_warning("MCOP ObjectManager: Could not load extension %s.",
-							library.c_str());
-			delete e;
-		}
+		delete libs;
 	}
 	arts_warning("MCOP ObjectManager: can't find implementation for %s.",
 							name.c_str());
+
+	delete offers;
 	return 0;
 }
 
@@ -182,4 +195,14 @@ void ObjectManager::removeGlobalReferences()
 
 	for(i=referenceNames.begin(); i != referenceNames.end();i++)
 		Dispatcher::the()->globalComm().erase(*i);
+}
+
+void ObjectManager::provideCapability(const string& name)
+{
+	d->capabilities[name]++;
+}
+
+void ObjectManager::removeCapability(const string& name)
+{
+	d->capabilities[name]--;
 }

@@ -30,7 +30,8 @@ private:
 protected:
 	TraderHelper();
 	~TraderHelper();
-	void addDirectory(const string& directory, const string& iface = "");
+	void addDirectory(const string& directory, const string& iface = "",
+						map< pair<int,int>, bool > *dirsDone = 0);
 
 public:
 	vector<TraderOffer> *doQuery(const vector<TraderRestriction>& query);
@@ -150,6 +151,10 @@ TraderOffer_impl::TraderOffer_impl(const string& interfaceName,
 		if(state != sBad)
 			property[key] = values;
 	}
+
+	vector<string>& iname = property["InterfaceName"];
+	if(iname.empty())
+		iname.push_back(interfaceName);
 }
 
 bool TraderOffer_impl::match(const vector<TraderRestriction>& restrictions)
@@ -206,9 +211,21 @@ TraderHelper::~TraderHelper()
 	allOffers.clear();
 }
 
-void TraderHelper::addDirectory(const string& directory, const string& iface)
+void TraderHelper::addDirectory(const string& directory, const string& iface,
+								map< pair<int,int>, bool > *dirsDone)
 {
 	arts_debug("addDirectory(%s,%s)", directory.c_str(), iface.c_str());
+
+	if(!dirsDone)
+	{
+		/* map to prevent doing directories again due to symlinks */
+		dirsDone = new map< pair<int,int>, bool >;
+
+		struct stat st;
+		stat(directory.c_str(), &st);
+		(*dirsDone)[make_pair(st.st_dev, st.st_ino)] = true;
+	}
+
 	DIR *dir = opendir(directory.c_str());
 	if(!dir) return;
 
@@ -227,8 +244,12 @@ void TraderHelper::addDirectory(const string& directory, const string& iface)
 		// recurse into subdirectories
 		if(S_ISDIR(st.st_mode))
 		{
-			if(strcmp(de->d_name,".") && strcmp(de->d_name,".."))
-				addDirectory(currentEntry,currentIface);
+			bool& done = (*dirsDone)[make_pair(st.st_dev, st.st_ino)];
+			if(strcmp(de->d_name,".") && strcmp(de->d_name,"..") && !done)
+			{
+				done = true;
+				addDirectory(currentEntry,currentIface,dirsDone);
+			}
 		}
 		else if(S_ISREG(st.st_mode))
 		{
