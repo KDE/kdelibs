@@ -3111,5 +3111,5 @@ void HTTPProtocol::reparseConfiguration()
     (*c) = QString::fromLatin1("en");
   m_strLanguages = languageList.join( " " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(",*,utf-8");
+  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
 }
