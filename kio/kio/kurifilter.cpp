@@ -164,7 +164,9 @@ QString KURIFilterData::iconName()
                 if (service)
                     m_strIconName = service->icon();
                 // Try to find an icon with the same name as the binary (useful for non-kde apps)
-                else if ( KGlobal::iconLoader()->loadIcon( exeName, KIcon::NoGroup, 16, KIcon::DefaultState, &m_strIconName, true ).isNull() )
+                else if ( !KGlobal::iconLoader()->loadIcon( exeName, KIcon::NoGroup, 16, KIcon::DefaultState, 0, true ).isNull() )
+                    m_strIconName = exeName;
+                else
                     // not found, use default
                     m_strIconName = QString::fromLatin1("exec");
                 break;
