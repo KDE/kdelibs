@@ -1075,11 +1075,14 @@ void KHTMLPart::overURL( const QString &url )
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
 {
   KURL u( url );
-
+  bool hasTarget = false;
+  
    QString target = _target;
   if ( target.isEmpty() )
     target = d->m_baseTarget;
-
+  else
+      hasTarget = true;
+  
   KURL cURL = completeURL( url, target );
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
@@ -1087,9 +1090,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As .." ), cURL );
     return;
   }
-
-  if ( !d->m_bComplete )
-    closeURL();
 
   if ( url.isEmpty() )
     return;
@@ -1109,16 +1109,21 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   KParts::URLArgs args;
   args.frameName = target;
 
-  if ( !target.isEmpty() )
+  if ( hasTarget )
   {
     // unknown frame names should open in a new window.
     khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
     if ( frame )
     {
       requestObject( frame, cURL, args );
-      return;
+    } else {
+	emit d->m_extension->createNewWindow( cURL, args );
     }
+    return;
   }
+
+  if ( !d->m_bComplete )
+    closeURL();
 
   emit d->m_extension->openURLRequest( cURL, args );
 }
