@@ -4,6 +4,8 @@
 #include <qtimer.h>
 #include <kwinmodule.h>
 #include <kwin.h>
+#include <netwm.h>
+
 
 #include <unistd.h>
 
@@ -210,9 +212,15 @@ void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
 
-   embed(window);
+   printf("Swallow window %d\n",w );
 
-   XWithdrawWindow(qt_xdisplay(), w, qt_xscreen());
+   XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());   
+   QApplication::flushX();
+
+   while (!wstate_withdrawn(window))
+     ;
+
+   embed(window);
 
    XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), window );
