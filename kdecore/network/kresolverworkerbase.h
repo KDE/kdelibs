@@ -59,12 +59,54 @@ namespace KNetwork {
  */
 class KResolverWorkerBase
 {
+  /**
+   * Helper class for locking the resolver subsystem. 
+   * Similar to QMutexLocker.
+   * 
+   * @author Luís Pedro Coelho
+   */
+  class ResolverLocker
+  {
+  public:
+    /** 
+     * Constructor. Acquires a lock.
+     */
+    ResolverLocker(KResolverWorkerBase* parent)
+      : parent( parent ) 
+    {
+      parent->acquireResolver();
+    }
+
+    /** 
+     * Destructor. Releases the lock.
+     */
+    ~ResolverLocker() 
+    {
+      parent->releaseResolver();
+    }
+
+    /**
+     * Releases the lock and then reacquires it.
+     * It may be necessary to call this if the resolving function
+     * decides to retry.
+     */
+    void openClose() 
+    {
+      parent->releaseResolver();
+      parent->acquireResolver();
+    }
+
+  private:
+    /// @internal
+    KResolverWorkerBase* parent;
+  };
 private:
   // this will be like our d pointer
   KNetwork::Internal::KResolverThread *th;
   const KNetwork::Internal::InputData *input;
   friend class KNetwork::Internal::KResolverThread;
   friend class KNetwork::Internal::KResolverManager;
+  friend class KResolverWorkerBase::ResolverLocker;
 
   int m_finished : 1;
   int m_reserved : 31;		// reserved
@@ -229,47 +271,6 @@ protected:
    */
   void releaseResolver();
 
-  /**
-   * Helper class for locking the resolver subsystem. 
-   * Similar to QMutexLocker.
-   * 
-   * @author Luís Pedro Coelho
-   */
-  class ResolverLocker
-  {
-  public:
-    /** 
-     * Constructor. Acquires a lock.
-     */
-    ResolverLocker(KResolverWorkerBase* parent)
-      : parent( parent ) 
-    {
-      parent->acquireResolver();
-    }
-
-    /** 
-     * Destructor. Releases the lock.
-     */
-    ~ResolverLocker() 
-    {
-      parent->releaseResolver();
-    }
-
-    /**
-     * Releases the lock and then reacquires it.
-     * It may be necessary to call this if the resolving function
-     * decides to retry.
-     */
-    void openClose() 
-    {
-      parent->releaseResolver();
-      parent->acquireResolver();
-    }
-
-  private:
-    /// @internal
-    KResolverWorkerBase* parent;
-  };
 };
 
 /** @internal
