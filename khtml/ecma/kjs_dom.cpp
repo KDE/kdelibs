@@ -135,7 +135,7 @@ bool DOMNode::toBoolean(ExecState *) const
   onselect	DOMNode::OnSelect		DontDelete
   onsubmit	DOMNode::OnSubmit		DontDelete
   onunload	DOMNode::OnUnload		DontDelete
-#
+# IE extensions
   offsetLeft	DOMNode::OffsetLeft		DontDelete|ReadOnly
   offsetTop	DOMNode::OffsetTop		DontDelete|ReadOnly
   offsetWidth	DOMNode::OffsetWidth		DontDelete|ReadOnly

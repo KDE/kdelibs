@@ -499,6 +499,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
   document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
+# IE extension
+  children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
 @end
 @begin HTMLHtmlElementTable 1
   version	KJS::HTMLElement::HtmlVersion	DontDelete
@@ -1644,6 +1646,8 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     return getString(element.innerText());
   case ElementDocument:
     return getDOMNode(exec,element.ownerDocument());
+  case ElementChildren:
+    return getHTMLCollection(exec,element.children());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kdWarning() << "HTMLElement::getValue unhandled token " << token << endl;

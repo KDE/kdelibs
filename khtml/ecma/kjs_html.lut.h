@@ -57,11 +57,12 @@ const struct HashEntry HTMLElementTableEntries[] = {
    { "dir", KJS::HTMLElement::ElementDir, DontDelete, 0, &HTMLElementTableEntries[9] },
    { "lang", KJS::HTMLElement::ElementLang, DontDelete, 0, 0 },
    { "className", KJS::HTMLElement::ElementClassName, DontDelete, 0, &HTMLElementTableEntries[11] },
-   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, 0 },
-   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, 0 }
+   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[12] },
+   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, 0 },
+   { "children", KJS::HTMLElement::ElementChildren, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLElementTable = { 2, 12, HTMLElementTableEntries, 8 };
+const struct HashTable HTMLElementTable = { 2, 13, HTMLElementTableEntries, 8 };
 
 }; // namespace
 

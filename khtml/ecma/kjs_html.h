@@ -144,7 +144,7 @@ namespace KJS {
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
-           ElementClassName, ElementInnerText, ElementDocument };
+           ElementClassName, ElementInnerText, ElementDocument, ElementChildren };
 
     DOM::HTMLElement toElement() const { return static_cast<DOM::HTMLElement>(node); }
   };
