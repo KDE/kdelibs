@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2002/03/04 00:51:51  lunakl
+ * Keep BC changes (the patch is almost 100KiB of boring stuff
+ * ... anybody willing to review? ;) ).
+ *
  * Revision 1.15  2000/11/29 11:52:59  mlaurent
  * Fix draw marker when kruler is horizontal
  *
@@ -66,9 +70,11 @@
 #define INIT_VALUE 0
 #define INIT_MIN_VALUE 0
 #define INIT_MAX_VALUE 100
+#define INIT_TINY_MARK_DISTANCE 1
 #define INIT_LITTLE_MARK_DISTANCE 5
 #define INIT_MIDDLE_MARK_DISTANCE (INIT_LITTLE_MARK_DISTANCE * 2)
 #define INIT_BIG_MARK_DISTANCE (INIT_LITTLE_MARK_DISTANCE * 10)
+#define INIT_SHOW_TINY_MARK false
 #define INIT_SHOW_LITTLE_MARK true
 #define INIT_SHOW_MEDIUM_MARK true
 #define INIT_SHOW_BIG_MARK true
@@ -172,10 +178,12 @@ void KRuler::init()
 {
   setFrameStyle(WinPanel | Raised);
 
+  tmDist = INIT_TINY_MARK_DISTANCE;
   lmDist = INIT_LITTLE_MARK_DISTANCE;
   mmDist = INIT_MIDDLE_MARK_DISTANCE;
   bmDist = INIT_BIG_MARK_DISTANCE;
   offset_= INIT_OFFSET;
+  showtm = INIT_SHOW_TINY_MARK;
   showlm = INIT_SHOW_LITTLE_MARK;
   showmm = INIT_SHOW_MEDIUM_MARK;
   showbm = INIT_SHOW_BIG_MARK;
@@ -252,7 +260,6 @@ KRuler::setMediumMarkDistance(int dist)
 {
   if (dist != mmDist) {
     mmDist = dist;
-    valuemm = valuelm * mmDist;
     update(contentsRect());
   }
 }
@@ -262,7 +269,6 @@ KRuler::setBigMarkDistance(int dist)
 {
   if (dist != bmDist) {
     bmDist = dist;
-    valuebm = valuelm * bmDist;
     update(contentsRect());
   }
 }
@@ -360,42 +366,21 @@ KRuler::showPointer() const
 }
 
 void
-KRuler::setValuePerLittleMark(int value)
+KRuler::setValuePerLittleMark(int)
 {
-  if ((value != valuelm) && (!showValuelm)) {
-    showValuelm = TRUE;
-    valuelm = value;
-    showValuemm = TRUE;
-    valuemm = value * mmDist;
-    showValuebm = TRUE;
-    valuebm = value * bmDist;
-    update(contentsRect());
-  }
+  update(contentsRect());
 }
 
 void
-KRuler::setValuePerMediumMark(int value)
+KRuler::setValuePerMediumMark(int)
 {
-  if ((value != valuemm) && (!showValuemm)) {
-    showValuelm = FALSE;
-    showValuemm = TRUE;
-    valuemm = value;
-    showValuebm = TRUE;
-    valuebm = value * (bmDist/mmDist);
-    update(contentsRect());
-  }
+   update(contentsRect());
 }
 
 void
-KRuler::setValuePerBigMark(int value)
+KRuler::setValuePerBigMark(int)
 {
-  if ((value != valuebm) && (!showValuebm)) {
-    showValuelm = FALSE;
-    showValuemm = FALSE;
-    showValuebm = TRUE;
-    valuebm = value;
-    update(contentsRect());
-  }
+ update(contentsRect());
 }
 
 void
@@ -716,7 +701,8 @@ KRuler::drawContents(QPainter *p)
 
   // draw the tiny marks
   if (showtm) {
-    for ( f=offsetmin; f<offsetmax; f+=ppm ) {
+    fend = ppm*tmDist;
+    for ( f=offsetmin; f<offsetmax; f+=fend ) {
       if (dir == Horizontal) {
         p->drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
       }

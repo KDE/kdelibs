@@ -272,31 +272,22 @@ public:
   void setShowPointer(bool);
   bool showPointer() const;
 
+  //#### KDE4: The next 3 need to go.
   /**
-   * Sets the value that is shown per little mark.
-   *
-   * For metric systems this is 1 per mark.
-   * Note: If you set the value for little marks the values for 
-   * medium and big marks are updated according to the
-   * the values set in the setXXMarkDistance(int) methods.
+   * @deprecated
+   * This method has no effect other than an update. Do not use.
    **/
   void setValuePerLittleMark(int);
 
   /**
-   * Sets the value that is shown per medium mark.
-   *
-   * For metric systems this is 5.
-   * Display of little marks is automatically disabled and
-   * big marks are updated according to 
-   * the values set in the @ref setBigMarkDistance() method.
+   * @deprecated
+   * This method has no effect other than an update. Do not use.
    **/
   void setValuePerMediumMark(int);
 
   /**
-   * Sets the value that is shown per big mark.
-   *
-   * For metric systems this is 1
-   * Display of little and medium marks marks is disabled.
+   * @deprecated
+   * This method has no effect other than an update. Do not use.
    */
   void setValuePerBigMark(int);
 
@@ -473,12 +464,16 @@ private:
   bool showmm;
   bool showbm;
   bool showem;
+  
+  // #### KDE4 : All value* and show* below should be removed, unused
+  
   int valuelm; /* value per little, medium, big mark */
   int valuemm;
   int valuebm;
   bool showValuelm;
   bool showValuemm;
   bool showValuebm;
+  
   double ppm; /* pixel per mark */
 
   QString endlabel;
