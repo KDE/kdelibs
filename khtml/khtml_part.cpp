@@ -171,7 +171,7 @@ public:
     m_bJavaOverride = false;
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
-    m_loadExternalFiles = true;
+    m_onlyLocalReferences = false;
 
     m_metaRefreshEnabled = true;
     m_bHTTPRefresh = false;
@@ -193,7 +193,7 @@ public:
             m_bPluginsOverride = part->d->m_bPluginsOverride;
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
-            m_loadExternalFiles = part->d->m_loadExternalFiles;
+            m_onlyLocalReferences = part->d->m_onlyLocalReferences;
         }
     }
 
