@@ -27,8 +27,9 @@
 
 #include "kcatalogue.h"
 
-char *find_msg(struct loaded_l10nfile *domain_file,
+char *k_nl_find_msg(struct loaded_l10nfile *domain_file,
 	       const char *msgid);
+void k_nl_unload_domain (struct loaded_domain *domain);
 
 #ifndef KDE_USE_FINAL // with --enable-final, we're getting this from libintl.cpp
 struct loaded_l10nfile
@@ -111,18 +112,15 @@ QString KCatalogue::fileName() const
 
 const char * KCatalogue::translate(const char * msgid) const
 {
-  return ::find_msg( &d->domain, msgid );
+  return ::k_nl_find_msg( &d->domain, msgid );
 }
 
 void KCatalogue::doUnload()
 {
-  // #### HPB: Memory leak...
-  //           We have to dig into the gettext source, because gettext
-  //           uses mmap and malloc.
-  // allocated by gettext using malloc!!!
-  //  if ( d->domain.data )
-  //  free( const_cast<void *>(d->domain.data) );
-  //d->domain.data = 0;
+  // use gettext's unloader
+  if ( d->domain.data )
+    ::k_nl_unload_domain( (struct loaded_domain *)d->domain.data );
+  d->domain.data = 0;
 
   // free name
   delete [] const_cast<char *>(d->domain.filename);
