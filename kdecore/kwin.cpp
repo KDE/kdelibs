@@ -54,6 +54,7 @@ static Atom net_current_desktop;
 static Atom net_active_window;
 static Atom net_wm_context_help;
 static Atom net_kde_docking_window_for;
+static Atom kwm_dock_window;
 
 extern Atom qt_wm_state;
 
@@ -63,6 +64,7 @@ static void createAtoms() {
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
+	kwm_dock_window = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
 
 	const int max = 20;
 	Atom* atoms[max];
@@ -232,16 +234,34 @@ bool KWin::isDockWindow( WId dockWin, WId *forWin )
     bool result = FALSE;
     if ( forWin )
 	*forWin = 0;
-    if ( XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
-			     FALSE, XA_WINDOW, &type, &format,
-			     &length, &after, &data ) == Success ) {
+
+    bool netDocking =  XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
+					   FALSE, XA_WINDOW, &type, &format,
+					   &length, &after, &data ) == Success;
+     
+    if ( netDocking ) {
 	if ( data ) {
 	    result = TRUE;
-	    if ( forWin )
-		*forWin = ( (WId*)data)[0];
+	    if ( forWin && netDocking )
+	       *forWin = ( (WId*)data)[0];  
 	    XFree( data );
 	}
     }
+
+    // check for KDE1 docking
+    if ( !result )
+    {
+       bool kwmDocking =  XGetWindowProperty( qt_xdisplay(), dockWin, kwm_dock_window, 0, 1,
+					      FALSE, XA_WINDOW, &type, &format,
+					      &length, &after, &data ) == Success;
+       if ( kwmDocking ) {
+	  if ( data ) {
+	     result = TRUE;
+	     XFree( data );
+	  }
+       }
+    }
+
     return result;
 }
 
