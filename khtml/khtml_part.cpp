@@ -133,6 +133,7 @@ public:
 
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
+  KHTMLPartBrowserHostExtension *m_hostExtension;
   DOM::HTMLDocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
@@ -217,6 +218,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 	   this, SLOT( slotSelectionChanged() ) );
 
   d->m_extension = new KHTMLPartBrowserExtension( this );
+  d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
 
   d->m_paLoadImages = 0;
 
@@ -1433,14 +1435,14 @@ void KHTMLPart::slotChildCompleted()
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
-  
+
   static QString _top = QString::fromLatin1( "_top" );
   static QString _self = QString::fromLatin1( "_self" );
   static QString _parent = QString::fromLatin1( "_parent" );
   static QString _blank = QString::fromLatin1( "_blank" );
 
   QString frameName = args.frameName.lower();
-  
+
   if ( !frameName.isEmpty() )
   {
     if ( frameName == _top )
@@ -1466,7 +1468,10 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
 
       if ( !_frame )
+      {
+        emit d->m_extension->openURLRequest( url, args );
         return;
+      }
 
       child = _frame;
     }
@@ -1775,6 +1780,42 @@ void KHTMLPart::reparseConfiguration()
   d->m_bJavaEnabled = settings->enableJava();
 }
 
+QStringList KHTMLPart::frameNames() const
+{
+  QStringList res;
+  
+  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
+  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  for (; it != end; ++it )
+    res += it.key();
+  
+  return res;
+}
+
+const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
+{
+  QList<KParts::ReadOnlyPart> res; 
+  
+  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
+  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  for (; it != end; ++it )
+     res.append( it.data().m_part );
+  
+  return res;
+}
+
+bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
+{
+  QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( urlArgs.frameName );
+  
+  if ( it == d->m_frames.end() )
+    return false;
+   
+  requestObject( &it.data(), url, urlArgs );
+  
+  return true;
+} 
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {
@@ -1925,5 +1966,29 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
   delete dlg;
 }
 
+KHTMLPartBrowserHostExtension::KHTMLPartBrowserHostExtension( KHTMLPart *part )
+: KParts::BrowserHostExtension( part )
+{
+  m_part = part; 
+}
+
+KHTMLPartBrowserHostExtension::~KHTMLPartBrowserHostExtension()
+{
+} 
+
+QStringList KHTMLPartBrowserHostExtension::frameNames() const
+{
+  return m_part->frameNames(); 
+}
+
+const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
+{
+  return m_part->frames();
+}
+
+bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
+{
+  return m_part->openURLInFrame( url, urlArgs ); 
+} 
 
 #include "khtml_part.moc"

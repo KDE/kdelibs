@@ -439,6 +439,12 @@ public:
    */
   KHTMLPart *parentPart();
 
+  QStringList frameNames() const;
+
+  const QList<KParts::ReadOnlyPart> frames() const;
+
+  bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+
 signals:
   /**
    * This signal is emitted if the cursor is moved over an URL.
@@ -644,6 +650,21 @@ public slots:
   void copy();
   void reparseConfiguration();
 
+private:
+  KHTMLPart *m_part;
+};
+
+class KHTMLPartBrowserHostExtension : public KParts::BrowserHostExtension
+{
+public:
+  KHTMLPartBrowserHostExtension( KHTMLPart *part );
+  virtual ~KHTMLPartBrowserHostExtension();
+
+  virtual QStringList frameNames() const;
+
+  virtual const QList<KParts::ReadOnlyPart> frames() const;
+
+  virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 private:
   KHTMLPart *m_part;
 };
