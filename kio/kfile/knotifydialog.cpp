@@ -926,9 +926,9 @@ void Application::save()
     while ( (e = it.current()) ) {
         config->setGroup( e->configGroup );
         config->writeEntry( "presentation", e->presentation );
-        config->writeEntry( "soundfile", e->soundfile );
-        config->writeEntry( "logfile", e->logfile );
-        config->writeEntry( "commandline", e->commandline );
+        config->writePathEntry( "soundfile", e->soundfile );
+        config->writePathEntry( "logfile", e->logfile );
+        config->writePathEntry( "commandline", e->commandline );
 
         ++it;
     }
@@ -972,9 +972,9 @@ void Application::reloadEvents( bool revertToDefaults )
                 // default to passive popups over plain messageboxes
                 int default_rep = kc->readNumEntry("default_presentation",
                                                    0 | KNotifyClient::PassivePopup);
-                QString default_logfile = kc->readEntry("default_logfile");
-                QString default_soundfile = kc->readEntry("default_sound");
-                QString default_commandline = kc->readEntry("default_commandline");
+                QString default_logfile = kc->readPathEntry("default_logfile");
+                QString default_soundfile = kc->readPathEntry("default_sound");
+                QString default_commandline = kc->readPathEntry("default_commandline");
                 config->setGroup(*it);
                 e->dontShow = config->readNumEntry("nopresentation", 0 );
 
@@ -990,11 +990,11 @@ void Application::reloadEvents( bool revertToDefaults )
                 {
                     e->presentation = config->readNumEntry("presentation",
                                                            default_rep);
-                    e->logfile = config->readEntry("logfile",
+                    e->logfile = config->readPathEntry("logfile",
                                                    default_logfile);
-                    e->soundfile = config->readEntry("soundfile",
+                    e->soundfile = config->readPathEntry("soundfile",
                                                      default_soundfile);
-                    e->commandline = config->readEntry("commandline",
+                    e->commandline = config->readPathEntry("commandline",
                                                        default_commandline);
                 }
 

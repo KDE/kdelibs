@@ -129,7 +129,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
     KSimpleConfig conf(ddesktop);
     conf.setDesktopGroup();
     conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
-    conf.writeEntry( QString::fromLatin1("URL"), openStr );
+    conf.writePathEntry( QString::fromLatin1("URL"), openStr );
     // If you change the line below, change the test in the above loop
     conf.writeEntry( QString::fromLatin1("X-KDE-LastOpenedWith"), desktopEntryName );
     conf.writeEntry( QString::fromLatin1("Name"), url.fileName() );

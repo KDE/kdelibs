@@ -73,6 +73,10 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Network"), false,
                                    "network_local" );
+        u = "mobile:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            insertItem( u, i18n("Mobile Devices"), false,
+                                   "mobile_phone" );
     }
 }
 

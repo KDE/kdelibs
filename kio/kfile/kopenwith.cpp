@@ -450,7 +450,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   // check to see if we use konsole if not disable the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+  QString preferredTerminal = confGroup.readPathEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
 
   if (bReadOnly || preferredTerminal != "konsole")
      nocloseonexit->hide();
@@ -627,7 +627,7 @@ void KOpenWithDlg::slotOK()
   if (terminal->isChecked())
   {
     KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-    preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+    preferredTerminal = confGroup.readPathEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
     m_command = preferredTerminal;
     // only add --noclose when we are sure it is konsole we're using
     if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
@@ -675,7 +675,7 @@ void KOpenWithDlg::slotOK()
   desktop->setDesktopGroup();
   desktop->writeEntry("Type", QString::fromLatin1("Application"));
   desktop->writeEntry("Name", initialServiceName);
-  desktop->writeEntry("Exec", fullExec);
+  desktop->writePathEntry("Exec", fullExec);
   if (terminal->isChecked())
   {
     desktop->writeEntry("Terminal", true);

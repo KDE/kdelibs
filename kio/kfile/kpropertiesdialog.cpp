@@ -2299,8 +2299,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDollarExpansion( false );
   config.setDesktopGroup();
-  execStr = config.readEntry( QString::fromLatin1("Exec") );
-  swallowExecStr = config.readEntry( QString::fromLatin1("SwallowExec") );
+  execStr = config.readPathEntry( QString::fromLatin1("Exec") );
+  swallowExecStr = config.readPathEntry( QString::fromLatin1("SwallowExec") );
   swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
   termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
   termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
@@ -2430,8 +2430,8 @@ void KExecPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  config.writeEntry( QString::fromLatin1("Exec"), execEdit->text() );
-  config.writeEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
+  config.writePathEntry( QString::fromLatin1("Exec"), execEdit->text() );
+  config.writePathEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
   config.writeEntry( QString::fromLatin1("Terminal"), terminalCheck->isChecked() );
   QString temp = terminalEdit->text();
@@ -2499,7 +2499,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  URLStr = config.readEntry( QString::fromLatin1("URL") );
+  URLStr = config.readPathEntry( QString::fromLatin1("URL") );
 
   if ( !URLStr.isNull() )
     URLEdit->setURL( URLStr );
@@ -2549,7 +2549,7 @@ void KURLPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link"));
-  config.writeEntry( QString::fromLatin1("URL"), URLEdit->url() );
+  config.writePathEntry( QString::fromLatin1("URL"), URLEdit->url() );
   // Users can't create a Link .desktop file with a Name field,
   // but distributions can. Update the Name field in that case.
   if ( config.hasKey("Name") )
