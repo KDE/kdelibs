@@ -111,9 +111,11 @@ void KBuildSycoca::processGnomeVfs()
           }
       }
    }
+   fclose( f );
 }
 
-void KBuildSycoca::build(KSycocaEntryListList *allEntries,
+// returns false if the database is up to date
+bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
                          QDict<Q_UINT32> *ctimeDict)
 {
   typedef QDict<KSycocaEntry> myEntryDict;
@@ -163,6 +165,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
   }
 
   KCTimeInfo *ctimeInfo = new KCTimeInfo();
+  bool uptodate = true;
   // For all resources
   for( QStringList::ConstIterator it1 = allResources.begin();
        it1 != allResources.end();
@@ -229,6 +232,10 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
                    {
                       // Re-use old entry
                       entry = entryDict->find(*it3);
+                      // remove from ctimeDict; if ctimeDict is not empty
+                      // after all files have been processed, it means
+                      // some files were removed since last time
+                      ctimeDict->remove( *it3 );
                    }
                    else if (oldTimestamp)
                    {
@@ -254,9 +261,13 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
         if ((factory == g_bsf) && (strcmp(resource, "apps") == 0))
            processGnomeVfs();
      }
-     if (changed)
+     if (changed || !allEntries)
+     {
+        uptodate = false;
         g_changeList->append(resource);
+     }
   }
+  return !uptodate || !ctimeDict->isEmpty();
 }
 
 void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
@@ -284,15 +295,23 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   (void) new KBuildImageIOFactory();
   (void) new KBuildProtocolInfoFactory();
 
-  build(allEntries, ctimeDict); // Parse dirs
-  save(); // Save database
-
-  m_str = 0L;
-  if (!database.close())
+  if( build(allEntries, ctimeDict)) // Parse dirs
   {
-     kdError(7021) << "Error writing database to " << database.name() << endl;
-     return;
+    save(); // Save database
+    m_str = 0L;
+    if (!database.close())
+    {
+      kdError(7021) << "Error writing database to " << database.name() << endl;
+      return;
+    }
   }
+  else
+  {
+    m_str = 0L;
+    database.abort();
+    kdDebug(7021) << "Database is up to date" << endl;
+  }
+   
 }
 
 void KBuildSycoca::save()
