@@ -140,7 +140,7 @@ EOM
   exit 0
   ;;
 
-  --disable-shared) enable_shared=no ;;
+  --disable-shared) enable_shared=no ; can_build_shared=no;;
 
   --disable-static) enable_static=no ;;
 
