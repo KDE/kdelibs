@@ -1163,7 +1163,20 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( true );
+  retrieveHeader( false );
+
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put error = " << m_bError << endl;
+  if (m_bError)
+    return;
+
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put responseCode = " << m_responseCode << endl;
+
+  httpClose(false); // Always close connection.
+
+  if ( (m_responseCode >= 200) && (m_responseCode < 300) )
+    finished();
+  else
+    httpError();
 }
 
 void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
@@ -1551,6 +1564,68 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     error( ERR_SLAVE_DEFINED, errorString );
 
   return errorString;
+}
+
+void HTTPProtocol::httpError()
+{
+  QString action, errorString;
+  KIO::Error kError;
+
+  switch ( m_request.method ) {
+    case HTTP_PUT:
+      action = i18n( "upload %1" ).arg(m_request.url.prettyURL());
+      break;
+    default:
+      // this should not happen, this function is for http errors only
+      Q_ASSERT(0);
+  }
+
+  // default error message if the following code fails
+  kError = ERR_INTERNAL;
+  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
+                      .arg( m_responseCode ).arg( action );
+
+  switch ( m_responseCode )
+  {
+    case 403:
+    case 405:
+    case 500: // hack: Apache mod_dav returns this instead of 403 (!)
+      // 403 Forbidden
+      // 405 Method Not Allowed
+      kError = ERR_ACCESS_DENIED;
+      errorString = i18n("Access was denied while attempting to %1.").arg( action );
+      break;
+    case 409:
+      // 409 Conflict
+      kError = ERR_ACCESS_DENIED;
+      errorString = i18n("A resource cannot be created at the destination "
+                  "until one or more intermediate collections (directories) "
+                  "have been created.");
+      break;
+    case 423:
+      // 423 Locked
+      kError = ERR_ACCESS_DENIED;
+      errorString = i18n("Unable to %1 because the resource is locked.").arg( action );
+      break;
+    case 502:
+      // 502 Bad Gateway
+      kError = ERR_WRITE_ACCESS_DENIED;
+      errorString = i18n("Unable to %1 because the destination server refuses "
+                         "to accept the file or directory.").arg( action );
+      break;
+    case 507:
+      // 507 Insufficient Storage
+      kError = ERR_DISK_FULL;
+      errorString = i18n("The destination resource does not have sufficient space "
+                         "to record the state of the resource after the execution "
+                         "of this method.");
+      break;
+  }
+
+  // if ( kError != ERR_SLAVE_DEFINED )
+  //errorString += " (" + url + ")";
+
+  error( ERR_SLAVE_DEFINED, errorString );
 }
 
 void HTTPProtocol::multiGet(const QByteArray &data)

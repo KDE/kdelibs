@@ -243,6 +243,8 @@ public:
   bool checkRequestURL( const KURL& );
   void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
+  void httpError(); // Generate error message based on response code
+
 protected slots:
   void slotData(const QByteArray &);
   void error( int _errid, const QString &_text );
