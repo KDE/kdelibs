@@ -33,7 +33,7 @@
 
 #include "kcatalogue.h"
 #include "kglobal.h"
-#include "kstddirs.h"
+#include "kstandarddirs.h"
 #include "ksimpleconfig.h"
 #include "kinstance.h"
 #include "kconfig.h"
