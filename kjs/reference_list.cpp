@@ -38,8 +38,8 @@ namespace KJS {
   class ReferenceListHeadNode : ReferenceListNode {
     friend class ReferenceList;
     friend class ReferenceListIterator;
-    
-    ReferenceListHeadNode(const Reference &ref) : ReferenceListNode(ref), refcount(1) {}
+
+    ReferenceListHeadNode(const Reference &ref) : ReferenceListNode(ref), refcount(1), length(0) {}
     int refcount;
     int length;
   };
@@ -50,7 +50,7 @@ using namespace KJS;
 
 // ReferenceList
 
-ReferenceList::ReferenceList() : 
+ReferenceList::ReferenceList() :
   head(NULL),
   tail(NULL)
 {
@@ -105,7 +105,7 @@ ReferenceList::~ReferenceList()
 {
   if (head != NULL && --(head->refcount) == 0) {
     ReferenceListNode *next;
-    
+
     for (ReferenceListNode *p = head; p != NULL; p = next) {
       next = p->next;
       if (p == head) {
@@ -116,7 +116,7 @@ ReferenceList::~ReferenceList()
     }
   }
 }
-    
+
 ReferenceListIterator ReferenceList::begin() const
 {
   return ReferenceListIterator(head);
@@ -136,13 +136,13 @@ ReferenceListIterator::ReferenceListIterator(ReferenceListNode *n) :
 {
 }
 
-bool ReferenceListIterator::operator!=(const ReferenceListIterator &it) const 
-{ 
+bool ReferenceListIterator::operator!=(const ReferenceListIterator &it) const
+{
   return node != it.node;
 }
 
-const Reference *ReferenceListIterator::operator->() const 
-{ 
+const Reference *ReferenceListIterator::operator->() const
+{
   return &node->reference;
 }
 
