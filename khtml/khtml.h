@@ -416,6 +416,13 @@ public:
      */
     DOM::HTMLDocument htmlDocument() const { return document; }
 
+    /**
+     * Return the job id of the KIOJob responsible for loading the current
+     * document (or 0 if none)
+     * @see m_jobId
+     */
+    int jobId() const { return m_jobId; }
+
 public slots:
     virtual void slotStop();
     virtual void slotReload();
