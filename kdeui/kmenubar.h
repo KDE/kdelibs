@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.16  1999/03/01 23:34:52  kulow
+//CVS_SILENT ported to Qt 2.0
+//
 //Revision 1.15.2.1  1999/02/21 20:55:48  kulow
 //more porting to Qt 2.0. It compiles and links. Jucheisassa :)
 //
@@ -214,6 +217,7 @@ private:
    QFrame *handle;
    QPoint pointerOffset;
    QPoint parentOffset;
+   int oldMenuFrameStyle;
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;

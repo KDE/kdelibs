@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.106  1999/04/22 15:59:42  shausman
+// - support QStringList for combos
+//
 // Revision 1.105  1999/03/06 18:03:36  ettrich
 // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 // It has its own menu entry and reacts on simple LMP clicks.
@@ -236,7 +239,8 @@
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
 
-    CONTEXT_FLOAT = 4
+
+// Use enums instead of defines. We are C++ and NOT C !
 enum {
     CONTEXT_LEFT = 0,
     CONTEXT_RIGHT = 1,
@@ -832,6 +836,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   title = 0;
   item_size = _item_size;
   fixed_size =  (item_size > 0);
+  if (!fixed_size)
   item_size = 26;
   init();
   Parent = parent;        // our father
@@ -861,6 +866,9 @@ void KToolBar::ContextCallback( int )
     case CONTEXT_FLOAT:
       if (position == Floating)
 	setBarPos (lastPosition);
+      else
+	{
+	  setBarPos( Floating );
 	  move(QCursor::pos());
 	  show();
 	}
@@ -875,6 +883,7 @@ void KToolBar::ContextCallback( int )
 }
 
 void KToolBar::init()
+{
   context = new QPopupMenu( 0, "context" );
   context->insertItem( i18n("Left"), CONTEXT_LEFT );
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
@@ -1199,106 +1208,159 @@ void KToolBar::updateRects( bool res )
    doing resize from here so that resizeEvent () sees the semaphore
    localResize. After examining qt source, I saw that QWidget::resize() calls
    QApplication::sendEvent() which, as far as I understand, notifies
-void KToolBar::mousePressEvent ( QMouseEvent *m )
+   this->resizeEvent() immediatelly, without waiting. Even worse - it seems
    that it really works. "Worse?", I hear you asking. Yes, even worse indeed
    it is, because I lost my mind trying to get rid of excess resizes, and now
-  if ((horizontal && m->x()<9) || (!horizontal && m->y()<9))
-  {
-    pointerOffset = m->pos();
-    if (moving)
-      if (m->button() == RightButton)
-	{
-	  context->popup( mapToGlobal( m->pos() ), 0 );
-	  ContextCallback(0);
-        }
-      else if (m->button() == MidButton && position != Floating)
-        setFlat (position != Flat);
-      else if (position != Flat)
-        mouseEntered = true;
-        //QRect rr(KWM::geometry(Parent->winId(), false));
-        QRect rr(Parent->geometry());
-        ox = rr.x();
-        oy = rr.y();
-        ow = rr.width();
-        oh = rr.height();
-        if (Parent->inherits("KTMainWindow"))
-        {
-          ox += ((KTopLevelWidget *) Parent)->view_left;
-          oy += ((KTopLevelWidget *) Parent)->view_top;
-          ow = ((KTopLevelWidget *) Parent)->view_right -
-            ((KTopLevelWidget *) Parent)->view_left;
-          oh = ((KTopLevelWidget *) Parent)->view_bottom -
-            ((KTopLevelWidget *) Parent)->view_top;;
-        }
-    {
-        int  fat = 25; //ness
-    {
-        mgr = new KToolBoxManager(this, transparent);
+   they vanished mysteriously all by itself (all except two)
+   */
+}
+
+void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
-        //Firt of all discover _your_ position
-
-        if (position == Top )
-          mgr->addHotSpot(geometry(), true);             // I'm on top
-        else
-          mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
-
-        if (position == Bottom)
-          mgr->addHotSpot(geometry(), true);           // I'm on bottom
-        else
-          mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
-
-        if (position == Left)
-          mgr->addHotSpot(geometry(), true);           // I'm on left
-        else
-          mgr->addHotSpot(ox, oy, fat, oh); // left
-
-        if (position == Right)
-          mgr->addHotSpot(geometry(), true);           // I'm on right
-        else
-          mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
-        /*
-        mgr->addHotSpot(ox, oy, ow, fat);           // top
-        mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
-        mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
-        mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
-        */
-        movePos = position;
-        connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
-        if (transparent)
-          mgr->doMove(true, false, true);
-        else
-        {
-          /*
-          QList<KToolBarItem> ons;
-          for (KToolBarItem *b = items.first(); b; b=items.next())
-          {
-            if (b->isEnabled())
-              ons.append(b);
-            b->setEnabled(false);
-          }
-          */
-          mgr->doMove(true, false, false);
-          /*
-          for (KToolBarItem *b = ons.first(); b; b=ons.next())
-            b->setEnabled(true);
-          */
-    
-        if (transparent)
-        {
-          setBarPos (movePos);
-
-          if (movePos == Floating)
-            move (mgr->x(), mgr->y());
-          if (!isVisible())
-            show();
-        }
-        mouseEntered = false;
-        delete mgr;
-        mgr=0;
-        repaint (false);
-        //debug ("KToolBar: moving done");
+  int ox, oy, ow, oh;
+  // Handle highlighting - sven 050198
+  if (horizontal)
+    if (mev->x() < 9)
+    {
+      if (!mouseEntered)
+      {
+        mouseEntered = true;
+        repaint();
       }
-  }
+    }
+    else
+    {
+      if (mouseEntered)
+      {
+        mouseEntered = false;
+        repaint();
+      }
+    }
+
+  else
+    if (mev->y() < 9)
+    {
+      if (!mouseEntered)
+      {
+        mouseEntered = true;
+        repaint();
+      }
+    }
+    else
+    {
+      if (mouseEntered)
+      {
+        mouseEntered = false;
+        repaint();
+      }
+    }
+
+  if ( !buttonDownOnHandle )
+      return;
+  buttonDownOnHandle = FALSE;
+  
+  if (position != Flat)
+      {
+	  //QRect rr(KWM::geometry(Parent->winId(), false));
+	  QRect rr(Parent->geometry());
+	  ox = rr.x();
+	  oy = rr.y();
+	  ow = rr.width();
+	  oh = rr.height();
+	  if (Parent->inherits("KTMainWindow"))
+	      {
+		  ox += ((KTopLevelWidget *) Parent)->view_left;
+		  oy += ((KTopLevelWidget *) Parent)->view_top;
+		  ow = ((KTopLevelWidget *) Parent)->view_right -
+		       ((KTopLevelWidget *) Parent)->view_left;
+		  oh = ((KTopLevelWidget *) Parent)->view_bottom -
+		       ((KTopLevelWidget *) Parent)->view_top;;
+	      }
+
+	  int  fat = 25; //ness
+
+	  mgr = new KToolBoxManager(this, transparent);
+
+	  //Firt of all discover _your_ position
+
+	  if (position == Top )
+	      mgr->addHotSpot(geometry(), true);             // I'm on top
+	  else
+	      mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+
+	  if (position == Bottom)
+	      mgr->addHotSpot(geometry(), true);           // I'm on bottom
+	  else
+	      mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+
+	  if (position == Left)
+	      mgr->addHotSpot(geometry(), true);           // I'm on left
+	  else
+	      mgr->addHotSpot(ox, oy, fat, oh); // left
+
+	  if (position == Right)
+	      mgr->addHotSpot(geometry(), true);           // I'm on right
+	  else
+	      mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
+	  /*
+	    mgr->addHotSpot(ox, oy, ow, fat);           // top
+	    mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
+	    mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
+	    mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
+	  */
+	  movePos = position;
+	  connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+	  if (transparent)
+	      mgr->doMove(true, false, true);
+	  else
+	      {
+		  /*
+		    QList<KToolBarItem> ons;
+		    for (KToolBarItem *b = items.first(); b; b=items.next())
+		    {
+		    if (b->isEnabled())
+		    ons.append(b);
+		    b->setEnabled(false);
+		    }
+		  */
+		  mgr->doMove(true, false, false);
+		  /*
+		    for (KToolBarItem *b = ons.first(); b; b=ons.next())
+		    b->setEnabled(true);
+		  */
+	      }
+	  if (transparent)
+	      {
+		  setBarPos (movePos);
+
+		  if (movePos == Floating)
+		      move (mgr->x(), mgr->y());
+		  if (!isVisible())
+		      show();
+	      }
+	  mouseEntered = false;
+	  delete mgr;
+	  mgr=0;
+	  repaint (false);
+	  //debug ("KToolBar: moving done");
+      }
+}
+
+void KToolBar::mouseReleaseEvent ( QMouseEvent *)
+{
+    buttonDownOnHandle = FALSE;
+    if (mgr)
+	mgr->stop();
+    if ( position != Floating)
+	setFlat (position != Flat);
+}
+
+void KToolBar::mousePressEvent ( QMouseEvent *m )
+{
+    buttonDownOnHandle |=   ((horizontal && m->x()<9) || (!horizontal && m->y()<9));
+    
+  if (moving)
+      if (m->button() == RightButton)
 	{
 	    context->popup( mapToGlobal( m->pos() ), 0 );
 	    buttonDownOnHandle = FALSE;
@@ -2195,6 +2257,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (!title.isNull()){
+	  setCaption(title);
 	} else {
 	  QString s = Parent->caption();
 	  s.append(" [tools]");
@@ -2214,6 +2277,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         setMinimumSize (item_size, item_size);
         return;
       }
+     else if (position == Floating) // was floating
       {
         position = bpos;
         hide();
@@ -2303,68 +2367,21 @@ Mouse move and drag routines
 
 
 void KToolBar::leaveEvent (QEvent *)
-void KToolBar::mouseMoveEvent(QMouseEvent* mev)
-{
-  if (mgr)
-    return;
-
-  // Handle highlighting - sven 050198
-  if (horizontal)
-    if (mev->x() < 9)
-    {
-      if (!mouseEntered)
-      {
-        mouseEntered = true;
-        repaint();
-      }
-    }
-    else
-    {
-      if (mouseEntered)
-      {
-        mouseEntered = false;
-        repaint();
-      }
-    }
-
-  else
-    if (mev->y() < 9)
-    {
-      if (!mouseEntered)
-      {
-        mouseEntered = true;
-        repaint();
-      }
-    }
-    else
-    {
-      if (mouseEntered)
-      {
-        mouseEntered = false;
-        repaint();
-      }
-    }
-}
-
-void KToolBar::mouseReleaseEvent ( QMouseEvent * )
-{
-  if (mgr)
-      mgr->stop();
-}
 {
   if (mgr)
     return;
   mouseEntered = false;
   repaint();
 }
-  if (flag && (position == Floating && position == Flat))
 
-  if (!flag && (position != Flat))
+
+void KToolBar::setFlat (bool flag)
 {
 
 #define also
 
   if (position == Floating )
+    return;
   if ( flag == (position == Flat))
     also return;
 
@@ -2377,6 +2394,7 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent * )
     position = Flat;
     horizontal = false;
     resize(30, 10);
+    for (KToolBarItem *b = items.first(); b; b=items.next()) // Nasty hack:
       b->move(100,100);       // move items out of sight
     enableFloating(false);
     emit moved(Flat); // KTM will block this->updateRects

@@ -3,7 +3,7 @@
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
-              
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.49  1999/03/01 23:35:26  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.48  1999/02/10 19:51:23  koss
 // *** empty log message ***
 //
@@ -113,7 +116,7 @@ public:
   KToolBarItem (Item *_item, itemType _type, int _id,
                 bool _myItem=true);
   ~KToolBarItem ();
-    
+
   void resize (int w, int h) { item->resize(w, h); };
   void move(int x, int y) { item->move(x, y); };
   void show () { item->show(); };
@@ -130,9 +133,9 @@ public:
   int x() { return item->x(); };
   int y() { return item->y(); };
   int winId () { return item->winId(); };
-  
+
   Item *getItem() { return item; };
-  
+
 private:
   int id;
   bool right;
@@ -158,7 +161,7 @@ class KToolBarButton : public QButton
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    ~KToolBarButton() {};
    void setEnabled(bool enable);
-   
+
    virtual void setPixmap( const QPixmap & );
    virtual void setText ( const QString& text);
    void on(bool flag);
@@ -170,10 +173,10 @@ class KToolBarButton : public QButton
    void setPopup (QPopupMenu *p);
    void setDelayedPopup (QPopupMenu *p);
    void setRadio(bool f);
-   
+
  public slots:
    void modeChange();
-   
+
  protected:
    void paletteChange(const QPalette &);
    void leaveEvent(QEvent *e);
@@ -183,7 +186,7 @@ class KToolBarButton : public QButton
    void showMenu();
    //void setIconSet (const QPixmap &);
    void makeDisabledPixmap();
-   
+
  private:
    bool toolBarButton;
    bool sep;
@@ -201,7 +204,7 @@ class KToolBarButton : public QButton
    bool delayPopup;
    QTimer *delayTimer;
    bool radio;
-   
+
  protected slots:
      void ButtonClicked();
      void ButtonPressed();
@@ -255,7 +258,7 @@ class KToolBarButton : public QButton
 
   friend class KToolBarButton;
   friend class KRadioGroup;
-  
+
 public:
   enum BarStatus{Toggle, Show, Hide};
   enum BarPosition{Top, Left, Bottom, Right, Floating, Flat};
@@ -300,7 +303,7 @@ public:
   int insertButton(const QPixmap& pixmap, int ID, const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
-                   const QString& tooltiptext = QString::null, 
+                   const QString& tooltiptext = QString::null,
 		   int index=-1 );
 
   /**
@@ -313,7 +316,7 @@ public:
    */
   int insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
                    bool enabled, const QString&_text, int index=-1);
-  
+
   /**
    * Inserts a KLined. You have to specify signals and slots to
    * which KLined will be connected. KLined has all slots QLineEdit
@@ -330,7 +333,7 @@ public:
                    const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
-                   const QString& toolTipText = QString::null, 
+                   const QString& toolTipText = QString::null,
 		   int size = 70, int index =-1);
 
   /**
@@ -441,8 +444,8 @@ public:
    * I don't know how much is 'some'.
    */
   void setAutoRepeat (int id, bool flag=true);
-  
-   
+
+
   /**
    * Makes button a toggle button if flag is true
    */
@@ -471,7 +474,7 @@ public:
    * @see #setToggle
    */
   bool isButtonOn (int id);
-  
+
   /**
    * Sets text in Lined.
    * Cursor is set at end of text.
@@ -534,7 +537,7 @@ public:
    * use pointer to QComboBox too.
    */
   KCombo * getCombo(int id);
-  
+
   /**
    * This returns pointer to KToolBarLined. Example:
    * <pre>
@@ -543,7 +546,7 @@ public:
    * That way you can get access to other public methods
    * that @ref KLined provides. @ref KLined is the same thing
    * as @ref QLineEdit plus completion signals.
-   */  
+   */
   KLined * getLined (int id);
 
   /**
@@ -554,7 +557,7 @@ public:
    * That way you can get access to other public methods
    * that @ref KToolBarButton provides. Using of this method is not
    * recomended.
-   */  
+   */
   KToolBarButton * getButton (int id);
 
   /**
@@ -589,7 +592,7 @@ public:
    * @see #updateRects
    */
   QWidget *getWidget (int id);
-  
+
   /**
    * Sets item autosized. This works only if toolbar is set to full width.
    * ONLY ONE item can be autosized, and it has to be
@@ -618,7 +621,7 @@ public:
    * shows item.
    */
   void showItem (int id);
-  
+
   /**
    * Sets toolbar to full parent width (or to value set by setMaxWidth).
    * You have to call this function if you want to have right aligned items or
@@ -735,7 +738,7 @@ public:
   QSize sizeHint();
 
   void setFlat (bool flag);
-    
+
 signals:
     /**
      * Emits when button id is clicked.
@@ -754,7 +757,7 @@ signals:
      * but those with delayed popup do.
      */
     void doubleClicked (int id);
-    
+
     /**
      * Emits when button id is pressed.
      */
@@ -774,7 +777,7 @@ signals:
      * be emited.
      */
     void toggled(int);
-    
+
     /**
      * This signal is emmited when item id gets highlighted/unhighlighted
      * (i.e when mouse enters/exits). Note that this signal is emited from
@@ -805,9 +808,9 @@ signals:
      * internal, aimed to buttons.
      */
     void modechange ();
-  
+
 private:
-    
+
   QList<KToolBarItem> items;
 
   QString title;
@@ -821,10 +824,10 @@ private:
   int oldX;
   int oldY;
   int oldWFlags;
-  
+
   int max_width;
   int max_height;
-  
+
   BarPosition lastPosition; // Where was I last time I was?
   BarPosition movePos;      // Where was I moved to?
   bool mouseEntered;  // Did the mouse touch the cheese?
@@ -834,7 +837,8 @@ private:
   bool haveAutoSized; // Do I have a problem?
 
   KToolBoxManager *mgr;
-  
+  bool buttonDownOnHandle;
+
 protected:
   QPopupMenu *context;
 
@@ -843,12 +847,14 @@ protected:
   void paintEvent(QPaintEvent*);
   void closeEvent (QCloseEvent *);
   void mousePressEvent ( QMouseEvent *);
+  void mouseMoveEvent ( QMouseEvent *);
+  void mouseReleaseEvent ( QMouseEvent *);
   void init();
   void layoutVertical ();
   void layoutHorizontal ();
   void leaveEvent (QEvent *e);
-  
-  
+
+
 private slots:
   void ButtonClicked(int);
   void ButtonDblClicked( int id );
@@ -856,14 +862,11 @@ private slots:
   void ButtonReleased(int);
   void ButtonToggled(int);
   void ButtonHighlighted(int,bool);
-   
+
   void ContextCallback(int);
   void slotReadConfig ();
   void slotHotSpot (int i);
-  
-protected:
-  void mouseMoveEvent(QMouseEvent*);
-  void mouseReleaseEvent ( QMouseEvent *);
+
 
 private:
    QPoint pointerOffset;

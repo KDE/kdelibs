@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 1998 Sven Radej (radej@kde.org)
-              
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.7  1998/11/06 15:45:44  radej
+ // sven: added helper for addHotSpot
+ //
  // Revision 1.6  1998/09/01 20:22:26  kulow
  // I renamed all old qt header files to the new versions. I think, this looks
  // nicer (and gives the change in configure a sense :)
@@ -95,7 +98,7 @@
 class KToolBoxManager : public QObject
 {
   Q_OBJECT
-    
+
 public:
   /**
    * Constructor. widget is the widget to be managed. It can be any custom
@@ -170,7 +173,7 @@ public:
    * in @ref #doMove .
    */
   void doYResize(bool dynamic = false, bool dontresize=false);
-  
+
   /**
    * Adds region x, y, w, h to the lists of hot spots, and returns
    * index of that hot spot. When resizer enters that hot spot, signal
@@ -229,7 +232,7 @@ public:
    * Returns global y coordinate of a mouse.
    */
   int mouseY() {return ry;};
-  
+
   /**
    * Returns global x coordinate of resizer.
    */
@@ -250,7 +253,7 @@ public:
    */
   int height() {return h;};
 
-  
+
 public slots:
 
   /**
@@ -275,7 +278,7 @@ protected:
    * Internal - mode.
    */
   enum Mode {Nothing=0, Moving=1, Resizing=2};
-  
+
 
 protected slots:
   /**
@@ -287,7 +290,7 @@ protected slots:
    * Internal, QTimer driven sizer.
    */
   void doResizeInternal();
-  
+
 private:
   int xp, yp, w, h;
   int ox, oy, ow, oh;
@@ -301,19 +304,19 @@ private:
   bool deepSpace;
   bool hotspot_static;
   Mode mode;
-  
+
   QWidget *widget;
   QTimer *timer;
 
   QList<QRect> hotspots;
   QRect *last_hsp;
-  
+
   int rx, ry, sx, sy;
   int offX, offY;
 
-  bool xOnly; // flags for only horizontal or... 
+  bool xOnly; // flags for only horizontal or...
   bool yOnly; //...only vertical resize
-  
+
   /* X-stuff */
 
   Window root;
@@ -321,9 +324,9 @@ private:
   int scr;
   XEvent ev;
   unsigned int active_button;
-  
+
 signals:
-    
+
     /**
      * This signal is emitted when resizer changes position. Note:
      * x and y are global screen coordinates

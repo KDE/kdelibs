@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 1998 Sven Radej <radej@kde.org>
-              
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.15  1999/01/18 10:57:12  kulow
+ // .moc files are back in kdelibs. Built fine here using automake 1.3
+ //
  // Revision 1.14  1999/01/15 09:31:31  kulow
  // it's official - kdelibs builds with srcdir != builddir. For this I
  // automocifized it, the generated rules are easier to maintain than
@@ -90,7 +93,7 @@ KToolBoxManager::KToolBoxManager (QWidget *_widget, bool _transparent) : QObject
   widget = _widget;
   geometryChanged = false;
   mode = Nothing;
-  
+
   transparent = _transparent;
   scr = qt_xscreen();
   root = qt_xrootwin();
@@ -103,7 +106,7 @@ KToolBoxManager::KToolBoxManager (QWidget *_widget, bool _transparent) : QObject
   rootgc = XCreateGC(qt_xdisplay(), qt_xrootwin(), mask, &gv);
 
   hotspots.setAutoDelete(true);
-  
+
   //driver for mover and resizer
   timer = new QTimer(this);
 
@@ -146,7 +149,7 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
 
   Window wroot, wchild;
   int trash;
-  
+
   //debug("Doing move...");
 
   working=true;
@@ -154,13 +157,13 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   dynamic = _dynamic;
   dontmoveres=dontmove;
   hotspot_static = hot_static;
-  
+
   QRect rr = KWM::geometry(widget->winId(), true);
   QPoint p(rr.topLeft());
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
-  
+
   xp = p.x();
   yp = p.y();
   w = rr.width();
@@ -173,20 +176,21 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
 
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &sx, &sy, &trash, &trash, &active_button);
-  
+
   rx = sx;
   ry = sy;
-  
+
   xp=sx-offX;
   yp=sy-offY;
 
   QApplication::setOverrideCursor(QCursor(sizeAllCursor));
-  
+
   connect (timer, SIGNAL(timeout()), this, SLOT (doMoveInternal()));
   if (transparent)
     drawRectangle(xp, yp, w, h);
 
   timer->start(0);
+  
   qApp->enter_loop();
 }
 
@@ -200,15 +204,15 @@ void KToolBoxManager::doMoveInternal()
 
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &rx, &ry, &trash, &trash, &buttons );
-  
+
   if (buttons != active_button)
   {
     /*bool b = */ XCheckMaskEvent(qt_xdisplay(), ButtonReleaseMask, &ev);
     // if (b) debug ("KTBmgr: Got and removed mouseRelease");
-    stop();  
+    stop();
     return;
   }
-  
+
   if (rx == sx && ry == sy)
     return;
   /*
@@ -314,20 +318,20 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
 
   Window wroot, wchild;
   int trash;
-  
+
   //debug("Doing resize...");
 
   working=true;
   dynamic = _dynamic;
   dontmoveres=dontresize;
   mode = Resizing;
-  
+
   QRect rr = KWM::geometry(widget->winId(), true);
   QPoint p(rr.topLeft());
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
-  
+
   xp = p.x();
   yp = p.y();
   w = rr.width();
@@ -340,17 +344,17 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
 
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &sx, &sy, &trash, &trash, &active_button);
-  
+
   rx = sx;
   ry = sy;
 
   QApplication::setOverrideCursor(QCursor(sizeFDiagCursor));
-  
+
   connect (timer, SIGNAL(timeout()), this, SLOT (doResizeInternal()));
 
   if (transparent)
     drawRectangle(xp, yp, w, h);
-  
+
   timer->start(0);
   qApp->enter_loop();
 }
@@ -363,7 +367,7 @@ void KToolBoxManager::doResizeInternal ()
 
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
                  &rx, &ry, &trash, &trash, &buttons );
-  
+
   if (buttons != active_button)
   {
     /*bool b = */ XCheckMaskEvent(qt_xdisplay(), ButtonReleaseMask, &ev);
@@ -379,7 +383,7 @@ void KToolBoxManager::doResizeInternal ()
     rx=sx;
 
   if (rx == sx && ry == sy) return;
-  
+
   w += rx-sx;
   h += ry-sy;
 
@@ -407,7 +411,7 @@ void KToolBoxManager::stop ()
 {
   if (!working)
     return;
-  
+
   timer->stop();
   disconnect (timer, SIGNAL(timeout()));
 
@@ -446,7 +450,7 @@ void KToolBoxManager::stop ()
       else if (mode == Resizing)
         widget->resize(w, h);
   }
-  
+
   working = false;
   mode=Nothing;
 
@@ -498,7 +502,7 @@ void KToolBoxManager::drawRectangle(int _x, int _y, int _w, int _h)
   if (_h > 2)
     _h -= 2;
   XDrawRectangle(qt_xdisplay(), root, rootgc, _x+2, _y+2, _w, _h);
-  
+
   noLast = false;
 }
 
@@ -506,7 +510,7 @@ void KToolBoxManager::deleteLastRectangle()
 {
   if (noLast)
     return;
-  
+
   XDrawRectangle(qt_xdisplay(), root, rootgc, ox, oy, ow, oh);
   if (ow > 2)
     ow -= 2;

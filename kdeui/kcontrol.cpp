@@ -121,7 +121,7 @@ KControlApplication::KControlApplication(int &argc, char **argv, const QString &
     }
 
   dialog->setCaption( swallowCaption );
-  
+
   // parse the command line parameters, if any
   if (argc > start)
     {
