@@ -121,7 +121,9 @@ DOMString HTMLButtonElement::type() const
 DOMString HTMLButtonElement::value() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
+    DOMString s = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
+    if (s.isNull()) return DOMString("");
+    return s;
 }
 
 void HTMLButtonElement::setValue( const DOMString &value )
@@ -315,7 +317,10 @@ HTMLInputElement::~HTMLInputElement()
 DOMString HTMLInputElement::defaultValue() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    DOMString s = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
+    if (s.isNull()) return DOMString("");
+    return s;
+
 }
 
 void HTMLInputElement::setDefaultValue( const DOMString &value )
