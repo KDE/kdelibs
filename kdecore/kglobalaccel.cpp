@@ -516,11 +516,11 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     }
 
     if ( !QWidget::keyboardGrabber() ) {
-	qDebug("KGlobalAccel:: received action %s", sConfigKey.latin1() );
+	kdDebug(125) << "received action " << sConfigKey << endl;
 	if ( !d->rawModeList || !d->rawModeList->contains( sConfigKey ) ) {
 	    XUngrabKeyboard(qt_xdisplay(), event_->xkey.time );
 	} else {
-	    qDebug("in raw mode !" );
+	    kdDebug(125) << "in raw mode !" << endl;
 	}
 	if ( !entry.receiver || !entry.bEnabled ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
