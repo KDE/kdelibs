@@ -41,4 +41,31 @@ class KDialogBaseButton : public QPushButton
     int mKey;
 };
 
+/**
+ * Used internally by @ref KDialogBase.
+ * @internal
+ */
+class KDialogBaseTile : public QObject
+{
+  Q_OBJECT
+
+  public:
+    KDialogBaseTile( QObject *parent=0, const char *name=0 );
+    ~KDialogBaseTile();
+
+    void set( const QPixmap *pix );
+    const QPixmap *get() const;
+  
+  public slots:
+    void cleanup();
+
+  signals:
+    void pixmapChanged();
+
+  private:
+    QPixmap *mPixmap;
+    class KDialogBaseTilePrivate;
+    KDialogBaseTilePrivate *d;
+};
+
 #endif

@@ -42,29 +42,7 @@ class KDialogBaseButton;
  * Used internally by @ref KDialogBase.
  * @internal
  */
-class KDialogBaseTile : public QObject
-{
-  Q_OBJECT
-
-  public:
-    KDialogBaseTile( QObject *parent=0, const char *name=0 );
-    ~KDialogBaseTile();
-
-    void set( const QPixmap *pix );
-    const QPixmap *get() const;
-  
-  public slots:
-    void cleanup();
-
-  signals:
-    void pixmapChanged();
-
-  private:
-    QPixmap *mPixmap;
-    class KDialogBaseTilePrivate;
-    KDialogBaseTilePrivate *d;
-};
-
+class KDialogBaseTile;
 
 /**
  * Provides basic functionality needed by nearly all dialogs.
@@ -269,32 +247,6 @@ class KDialogBase : public KDialog
       Plain     = KJanusWidget::Plain,
       Swallow   = KJanusWidget::Swallow,
       IconList  = KJanusWidget::IconList
-    };
-
-  private:
-    /**
-     * @internal
-     */
-    struct SButton
-    {
-      SButton()
-      {
-	box = 0;
-	mask = 0;
-	style = 0;
-      }
-      
-      QPushButton *append( int key, const QString &text );
-
-      void resize( bool sameWidth, int margin, int spacing, int orientation );
-
-      QPushButton *button( int key );
-
-      QWidget *box;
-      int mask;
-      int style;
-      QPtrList<KDialogBaseButton> list;
-      
     };
 
   public:
@@ -1452,7 +1404,6 @@ class KDialogBase : public KDialog
     KJanusWidget *mJanus;
     KSeparator   *mActionSep;
 
-    SButton mButton;
     bool mIsActivated;
 
     QString mAnchor;
