@@ -231,6 +231,7 @@ shell_access
         - defines whether a shell suitable for entering random commands 
           may be started. This also determines whether the "Run Command"
           option (Alt-F2) accepts shell-commands or not.
+          See also run_desktop_files.
 custom_config 
         - defines whether the --config command line option should be honored.
           The --config command line option can be used to circumvent 
@@ -244,6 +245,24 @@ run_command
 movable_toolbars
         - define whether toolbars may be moved around by the user.
           See also action/options_show_toolbar.
+run_desktop_files
+        - defines whether users may execute desktop files that are not
+          part of the default desktop, KDE menu or registered services.
+          The default desktop includes the files under 
+          $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
+          $HOME/Desktop. The KDE menu includes all files under
+          $KDEDIR/share/applnk. Registered services includes all files 
+          under $KDEDIR/share/services.
+
+          You probably also want to activate the following resource
+          restictions:
+          "appdata_kdesktop" - To restrict the default desktop.
+          "applnk" - To restrict the KDE menu.
+          "services" - To restrict registered services.
+          Otherwise users can still execute .desktop files by placing them
+          in e.g. $KDEHOME/share/kdesktop/Desktop
+          
+
 
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent

@@ -30,6 +30,7 @@
 #include "kurl.h"
 #include "kconfigbackend.h"
 #include "kapplication.h"
+#include "kstandarddirs.h"
 
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
@@ -62,6 +63,27 @@ bool KDesktopFile::isDesktopFile(const QString& path)
     return true;
   else
     return false;
+}
+
+bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
+{
+  if (!kapp || kapp->authorize("run_desktop_files"))
+     return true;
+
+  if (path.isEmpty())
+     return false; // Empty paths are not ok.
+  
+  if (path[0] != '/')
+     return true; // Relative paths are ok.
+     
+  KStandardDirs *dirs = KGlobal::dirs();
+  if (dirs->relativeLocation("applnk", path)[0] != '/')
+     return true;
+  if (dirs->relativeLocation("services", path)[0] != '/')
+     return true;
+  if (dirs->relativeLocation("appdata", path).startsWith("kdesktop/Desktop"))
+     return true;
+  return false;
 }
 
 QString KDesktopFile::readType() const

@@ -71,6 +71,14 @@ public:
   static bool isDesktopFile(const QString& path);
 
   /**
+   * Checks whether the user is authorized to run this desktop file.
+   * By default users are authorized to run all desktop files but
+   * the KIOSK framework can be used to activate certain restrictions.
+   * See README.kiosk for more information.
+   */
+  static bool isAuthorizedDesktopFile(const QString& path);
+
+  /**
    * Returns the value of the "Type=" entry.
    */
   QString readType() const;
