@@ -28,7 +28,7 @@ using namespace khtml;
 #include "kdebug.h"
 
 #define BIDI_DEBUG 0
-#define DEBUG_LINEBREAKS
+//#define DEBUG_LINEBREAKS
 
 // ---------------------------------------------------------------------
 
@@ -183,20 +183,20 @@ inline bool operator < ( const BidiIterator &it1, const BidiIterator &it2 )
 void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
 			   BidiContext *context, QChar::Direction dir)
 {
-    kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
+    //kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
 
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj != eor.obj ) {
 	if(!obj->isHidden()) {
-	    kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
+	    //kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
 	    runs.append( new BidiRun(start, obj->length(), obj, context, dir) );
 	}
 	start = 0;
 	obj = next(obj);
     }
     if( obj && !obj->isHidden()) {
-	kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
+	//kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
 	runs.append( new BidiRun(start, eor.pos + 1, obj, context, dir) );
     }
 }
@@ -225,7 +225,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
 	QChar::Direction dirCurrent;
 	if(current.atEnd()) {
-	    kdDebug(6041) << "atEnd" << endl;
+	    //kdDebug(6041) << "atEnd" << endl;
 	    BidiContext *c = context;
 	    while ( c->parent )
 		c = c->parent;

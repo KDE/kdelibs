@@ -747,7 +747,7 @@ RenderFlow::clearFloats()
 
     RenderObject *prev = m_previous;
 
-    while (prev && prev->isTable())
+    while (prev && !prev->isFlow())
 	    prev = prev->previousSibling();
 
     int offset = 0;

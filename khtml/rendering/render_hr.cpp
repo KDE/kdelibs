@@ -32,6 +32,7 @@
 #include <kdebug.h>
 
 #include "rendering/render_style.h"
+#include "rendering/render_flow.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -62,6 +63,13 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     int l = m_width;
     int xp = _tx;
 
+    RenderObject *prev = m_previous;
+    while(prev && !prev->isFlow())
+	prev = prev->previousSibling();
+    if(prev)
+	xp += static_cast<RenderFlow *>(prev)->leftMargin( prev->height() );
+
+    
     int yp = _ty ;
 
     int lw = size/2;
@@ -92,7 +100,7 @@ void RenderHR::calcMinMaxWidth()
 {
     // contentWidth
     Length w = m_style->width();
-    
+
     calcWidth();
 
     switch(w.type)
@@ -109,7 +117,16 @@ void RenderHR::calcMinMaxWidth()
 
 short RenderHR::intrinsicWidth() const
 {
-    return containingBlockWidth();
+    RenderObject *prev = m_previous;
+    while(prev && !prev->isFlow())
+	prev = prev->previousSibling();
+    int w;
+    if(prev)
+	w = static_cast<RenderFlow *>(prev)->lineWidth( prev->height() );
+    else
+	w =containingBlockWidth();
+    //kdDebug(0) << "renderHR::intrinsicWidth = " << w << endl;
+    return w;
 }
 
 int RenderHR::intrinsicHeight() const

@@ -90,7 +90,11 @@ public:
     virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition();
-
+ 
+    inline int rightMargin(int y) const;
+    // overrides BiDiParagraph
+    virtual short leftMargin(int y) const;
+ 
 protected:
 
     virtual void newLine();
@@ -98,9 +102,6 @@ protected:
     void layoutBlockChildren(bool deep);
     void layoutInlineChildren();
 
-    inline int rightMargin(int y) const;
-    // overrides BiDiParagraph
-    virtual short leftMargin(int y) const;
     inline int floatBottom();
     inline int leftBottom();
     inline int rightBottom();
