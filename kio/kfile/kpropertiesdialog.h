@@ -439,6 +439,7 @@ private slots:
   void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
 			  kBUsed, const unsigned long& kBAvail, const QString& mp );
   void nameFileChanged(const QString &text );
+  void slotIconChanged();
 
 private:
   void determineRelativePath( const QString & path );

@@ -590,6 +590,7 @@ public:
   QTimer *dirSizeUpdateTimer;
   QFrame *m_frame;
   bool bMultiple;
+  bool bIconChanged;
   QLabel *m_freeSpaceLabel;
   QString mimeType;
 };
@@ -599,6 +600,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 {
   d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
+  d->bIconChanged = false;
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
   // We set this data from the first item, and we'll
@@ -768,7 +770,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconButton->setIcon(iconStr);
     iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(QString) ),
-             this, SIGNAL( changed() ) );
+             this, SLOT( slotIconChanged() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
     iconLabel->setFixedSize(70, 70);
@@ -971,6 +973,11 @@ void KFilePropsPlugin::slotEditFileType()
                     keditfiletype, keditfiletype /*unused*/);
 }
 
+void KFilePropsPlugin::slotIconChanged()
+{
+  d->bIconChanged = true;
+  emit changed();
+}
 
 void KFilePropsPlugin::nameFileChanged(const QString &text )
 {
@@ -1205,8 +1212,8 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 void KFilePropsPlugin::applyIconChanges()
 {
   // handle icon changes - only local files for now
-  // TODO: Use KTempFile and KIO::file_copy with resume = true
-  if (!iconArea->isA("QLabel") && properties->kurl().isLocalFile()) {
+  // TODO: Use KTempFile and KIO::file_copy with overwrite = true
+  if (!iconArea->isA("QLabel") && properties->kurl().isLocalFile() && d->bIconChanged) {
     KIconButton *iconButton = (KIconButton *) iconArea;
     QString path;
 
