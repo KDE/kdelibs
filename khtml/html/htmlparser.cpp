@@ -131,7 +131,7 @@ const unsigned short tagPriority[] = {
     1, // ID_INS
     0, // ID_ISINDEX
     1, // ID_KBD
-    1, // ID_KEYGEN
+    0, // ID_KEYGEN
     5, // ID__KONQBLOCK
     1, // ID_LABEL
     1, // ID_LAYER
@@ -572,8 +572,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_TD:
         case ID_TH:
             // lets try to close the konqblock
-            // ### do we need a flag here so we don't fall
-            // into recursion if there is no konqblock ?
             if ( haveKonqBlock ) {
                 popBlock( ID__KONQBLOCK );
                 haveKonqBlock = false;
@@ -683,6 +681,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             {
                 NodeImpl *node = current;
                 NodeImpl *parent = node->parentNode();
+
                 NodeImpl *parentparent = parent->parentNode();
 
                 if(node->id() == ID_TR &&

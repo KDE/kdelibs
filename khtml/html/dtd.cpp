@@ -136,6 +136,7 @@ static const ushort tag_list_1[] = {
     ID_BDO,
     ID_IFRAME,
     ID_INPUT,
+    ID_KEYGEN,
     ID_SELECT,
     ID_TEXTAREA,
     ID_LABEL,
@@ -491,7 +492,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_TR:
         // TR: _9 +
         return check_array(childID, tag_list_9);
-        return false;
     case ID_FRAMESET:
         // FRAMESET: ( _10 + & NOFRAMES ? )
         return check_array(childID, tag_list_10);
