@@ -57,7 +57,7 @@ static QCString printableToString(const char *str, int l)
      l--;
   }
 
-  QCString result(l);
+  QCString result(l + 1);
   char *r = (char *) result.data();
 
   for(int i = 0; i < l;i++, str++)
@@ -72,10 +72,10 @@ static QCString printableToString(const char *str, int l)
         }
         switch(*str)
         {
-           case 't': 
+           case 't':
               *r++ = '\t';
               break;
-           case 'n': 
+           case 'n':
               *r++ = '\n';
               break;
            case 'r':
@@ -89,8 +89,8 @@ static QCString printableToString(const char *str, int l)
               *r++ = *str;
         }
      }
-     else 
-     { 
+     else
+     {
         *r++ = *str;
      }
   }
@@ -102,24 +102,24 @@ static QCString stringToPrintable(const QCString& str){
   QCString result(str.length()*2); // Maximum 2x as long as source string
   register char *r = (char *) result.data();
   register char *s = (char *) str.data();
-  
+
   while(*s)
   {
     if (*s == '\n')
     {
-      *r++ = '\\'; *r++ = 'n'; 
+      *r++ = '\\'; *r++ = 'n';
     }
     else if (*s == '\t')
     {
-      *r++ = '\\'; *r++ = 't'; 
+      *r++ = '\\'; *r++ = 't';
     }
     else if (*s == '\r')
     {
-      *r++ = '\\'; *r++ = 'r'; 
+      *r++ = '\\'; *r++ = 'r';
     }
     else if (*s == '\\')
     {
-      *r++ = '\\'; *r++ = '\\'; 
+      *r++ = '\\'; *r++ = '\\';
     }
     else
     {
@@ -226,7 +226,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (map)
   {
      s = map;
-     eof = s+rFile.size(); 
+     eof = s+rFile.size();
   }
   else
   {
@@ -251,9 +251,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             fprintf(stderr, "Garbage in group-header: '%-20.20s' file = %s\n", startLine, fileName.latin1());
             continue;
           }
-          aCurrentGroup = QCString(startLine+1, e - startLine); 
+          aCurrentGroup = QCString(startLine+1, e - startLine);
         }
-        else 
+        else
         {
           // group found; get the group name by taking everything in
           // between the brackets
@@ -276,12 +276,12 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
      const char *equal = startLine;
      const char *locale = 0;
-     while ((*equal != '=') && (equal != s)) 
+     while ((*equal != '=') && (equal != s))
      {
         if (*equal == '[') locale = equal;
         equal++;
      }
-     if (*equal != '=') 
+     if (*equal != '=')
         continue; // Missing equal sign, skip.
 
      int keyLength = equal-startLine;
@@ -472,15 +472,15 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       if ( aWriteIt.key().mGroup == "<default>" && !aWriteIt.key().mKey.isEmpty() ) {
 	  if ( (*aWriteIt).bNLS )
           {
-              fprintf(pStream, "%s[%s]=%s\n", 
+              fprintf(pStream, "%s[%s]=%s\n",
                     aWriteIt.key().mKey.data(), localeString.data(),
                     stringToPrintable((*aWriteIt).mValue).data());
           }
 	  else
           {
               // not localized
-              fprintf(pStream, "%s=%s\n", 
-                    aWriteIt.key().mKey.data(), 
+              fprintf(pStream, "%s=%s\n",
+                    aWriteIt.key().mKey.data(),
                     stringToPrintable((*aWriteIt).mValue).data());
           }
       }
@@ -504,15 +504,15 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       // it is data for a group
       if ( (*aWriteIt).bNLS )
       {
-          fprintf(pStream, "%s[%s]=%s\n", 
+          fprintf(pStream, "%s[%s]=%s\n",
                    aWriteIt.key().mKey.data(), localeString.data(),
                    stringToPrintable((*aWriteIt).mValue).data());
       }
       else
       {
           // not localized
-          fprintf(pStream, "%s=%s\n", 
-                    aWriteIt.key().mKey.data(), 
+          fprintf(pStream, "%s=%s\n",
+                    aWriteIt.key().mKey.data(),
                     stringToPrintable((*aWriteIt).mValue).data());
       }
     }
