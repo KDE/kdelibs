@@ -1482,6 +1482,11 @@ protected:
     bool bFramesComplete;
 
     /*
+     * is true if were between <noframes> and </noframes>
+     */
+    bool bInNoframes;
+
+    /*
      * If the owner of this widget is a @ref HTMLView then this is a
      * pointert to the owner, otherwise 0L.
      */

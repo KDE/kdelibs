@@ -1376,6 +1376,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     bIsFrameSet = FALSE;
     // bIsFrame = FALSE;
     bFramesComplete = FALSE;
+    bInNoframes = false;
     framesetStack.clear();
     framesetList.clear();
     frameList.clear();
@@ -2148,6 +2149,17 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
     while ( ht->hasMoreTokens() && parsing )
     {
 	str = ht->nextToken();
+
+	// ignore stuff inbetween <noframes> and </noframes> if
+	// this has a htmlView
+	if(bInNoframes)
+	{
+	    str++;
+	    if(strncmp( str, "</noframes", 10 ) == 0)
+		bInNoframes = false;
+	    else
+		continue;
+	}
 
 	if ( *str == '\0' )
 	    continue;
@@ -3104,6 +3116,7 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 	{
 		QString action = "";
 		QString method = "GET";
+		QString target = "";
 
 		stringTok->tokenize( str + 5, " >" );
 		while ( stringTok->hasMoreTokens() )
@@ -3119,12 +3132,35 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 				if ( strncasecmp( token + 7, "post", 4 ) == 0 )
 					method = "POST";
 			}
+			else if ( strncasecmp( token, "target=", 7 ) == 0 )
+			{
+			    target = token+7;
+			}
 		}
 
 		form = new HTMLForm( action, method );
 		formList.append( form );
-		connect( form, SIGNAL( submitted( const char *, const char *, const char * ) ),
-				SLOT( slotFormSubmitted( const char *, const char *, const char * ) ) );
+
+		// hack to make forms work across frames
+		// we should use a better solution in khtml...
+		if(!htmlView || (target.isEmpty() && baseTarget.isEmpty()))
+		    connect( form, SIGNAL( submitted( const char *, const char *, const char * ) ),
+			     SLOT( slotFormSubmitted( const char *, const char *, const char * ) ) );
+		else
+		{
+		    KHTMLView *v;
+		    KHTMLWidget *w;
+		    if(!target.isEmpty())
+			v = htmlView->findView(target);
+		    else
+			v = htmlView->findView(baseTarget);
+		    if(v)
+		    {
+			w= v->getKHTMLWidget();
+			connect( form, SIGNAL( submitted( const char *, const char *, const char * ) ),
+				 w, SLOT( slotFormSubmitted( const char *, const char *, const char * ) ) );
+		    }
+		}
 	}
 	else if ( strncmp( str, "/form", 5 ) == 0 )
 	{
@@ -3665,8 +3701,12 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	}
 }
 
-void KHTMLWidget::parseN( HTMLClueV *, const char * )
+// <noframes>       </noframes>
+void KHTMLWidget::parseN( HTMLClueV *, const char *str )
 {
+    // only ignore the stuff in noframes, if we have a htmlview
+    if( htmlView && strncmp( str, "noframes", 8 ) == 0)
+	bInNoframes = true;	
 }
 
 // <ol>             </ol>           partial

@@ -421,23 +421,15 @@ void HTMLTable::calcSize( HTMLClue * )
     // recalculate min/max widths
     calcColumnWidths();
 
-    printf("calcColumnWidth: ");
     // If it doesn't fit... MAKE IT FIT!
     for ( c = 0; c < totalCols; c++ )
     {
         if (columnPos[c+1] > max_width-border)
              columnPos[c+1] = max_width-border;
-	printf("%d ",columnPos[c+1]);
     }
-    printf("\n");
 
     // Attempt to get sensible cell widths
     optimiseCellWidth();
-
-    printf("optimiseCellWidth: ");
-    for ( c = 0; c < totalCols; c++ )
-	printf("%d ",columnPos[c+1]);
-    printf("\n");
 
     // set cell widths and then calculate cell sizes
     for ( r = 0; r < totalRows; r++ )
