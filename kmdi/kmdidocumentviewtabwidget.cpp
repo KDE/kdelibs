@@ -4,7 +4,7 @@
 KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char* name):KTabWidget(parent,name) {
 //	QTabBar *bar=tabBar();
 	tabBar()->hide();
-	setHoverCloseButton(true);
+	setHoverCloseButton(false);
 }
 	
 KMdiDocumentViewTabWidget::~KMdiDocumentViewTabWidget() {
