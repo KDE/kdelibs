@@ -334,11 +334,11 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         int not_withdrawn = 0;
         QListIterator<KMainWindow> it(*KMainWindow::memberList);
         for (it.toFirst(); it.current(); ++it){
-            if ( !it.current()->testWState( WState_ForceHide ) )
+            if ( !it.current()->testWState( WState_ForceHide ) && it.current() != this )
                 not_withdrawn++;
         }
 
-        if ( !no_query_exit && not_withdrawn <= 1 ) { // last window close accepted?
+        if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() ) {            // Yes, Quit app?
                 kapp->deref();             // ...and quit aplication.
             }  else {
