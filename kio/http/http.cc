@@ -732,12 +732,21 @@ bool HTTPProtocol::http_open()
     kdDebug(7103) << "Attempting to tunnel through a proxy..." << endl;
     header = QString("CONNECT %1:%2 HTTP/1.1"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
+
+    // Identify who you are to the proxy server!
+    if ( config()->readBoolEntry("SendUserAgent", true) )
+    {
+      QString agent = metaData("UserAgent");
+      if( !agent.isEmpty() )
+        header += "User-Agent: " + agent + "\r\n";
+    }
+
     header += proxyAuthenticationHeader();
   }
   else
   {
     // format the URI
-    if (m_state.do_proxy && !isTunneled)
+    if (m_state.do_proxy && !m_bIsTunneled)
     {
       KURL u;
       u.setUser( m_state.user );
@@ -958,7 +967,7 @@ bool HTTPProtocol::http_open()
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
-    kdDebug(7103) << "Connection broken! (" << m_state.hostname << ")" << endl;
+    kdDebug(7103) << "http_open: Connection broken! (" << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
     {
        // With a Keep-Alive connection this can happen.
@@ -1103,8 +1112,137 @@ bool HTTPProtocol::readHeader()
     char* buf = buffer;
     while( *buf == ' ' ) buf++;
 
+    // We got a header back !
+    if (strncasecmp(buf, "HTTP/", 5) == 0) {
+
+      if (strncmp(buffer+5, "1.0 ",4) == 0)
+      {
+         m_HTTPrev = HTTP_10;
+         m_bKeepAlive = false;
+      }
+      else // Assume everything else to be 1.1 or higher....
+      {
+         m_HTTPrev = HTTP_11;
+
+         // Connections with proxies are closed by default because
+         // some proxies like junkbuster can't handle persistent
+         // connections but don't tell us.
+         // We will still use persistent connections if the proxy
+         // sends us a "Connection: Keep-Alive" header.
+         if (m_state.do_proxy)
+         {
+            m_bKeepAlive = false;
+         }
+         else
+         {
+            if (!m_bIsSSL)
+               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
+         }
+      }
+
+      if ( m_responseCode )
+        m_prevResponseCode = m_responseCode;
+
+      m_responseCode = atoi(buffer+9);
+
+      // server side errors
+      if (m_responseCode >= 500 && m_responseCode <= 599)
+      {
+        if (m_request.method == HTTP_HEAD) {
+           // Ignore error
+        } else {
+           if (m_bErrorPage)
+              errorPage();
+           else
+           {
+              error(ERR_INTERNAL_SERVER, m_request.url.url());
+              return false;
+           }
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      // Unauthorized access
+      else if (m_responseCode == 401 || m_responseCode == 407)
+      {
+        // Double authorization requests, i.e. a proxy auth
+        // request followed immediately by a regular auth request.
+        if ( m_prevResponseCode != m_responseCode &&
+            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
+          saveAuthorization();
+
+        m_bUnauthorized = true;
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      // Any other client errors
+      else if (m_responseCode >= 400 && m_responseCode <= 499)
+      {
+        // Tell that we will only get an error page here.
+        if (m_bErrorPage)
+           errorPage();
+        else
+        {
+           error(ERR_DOES_NOT_EXIST, m_request.url.url());
+           return false;
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if (m_responseCode == 307)
+      {
+        // 307 Temporary Redirect
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if (m_responseCode == 304)
+      {
+        // 304 Not Modified
+        // The value in our cache is still valid.
+        cacheValidated = true;
+      }
+      else if (m_responseCode >= 301 && m_responseCode<= 303)
+      {
+        // 301 Moved permanently
+        // 302 Found (temporary location)
+        // 303 See Other
+        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
+        {
+           // NOTE: This is wrong according to RFC 2616.  However,
+           // because most other existing user agent implementations
+           // treat a 301/302 response as a 303 response and preform
+           // a GET action regardless of what the previous method was,
+           // many servers have simply adapted to this way of doing
+           // things!!  Thus, we are forced to do the same thing or we
+           // won't be able to retrieve these pages correctly!!  This
+           // implementation is therefore only correct for a 303 response
+           // according to RFC 2616 section 10.3.2/3/4/8
+           m_request.method = HTTP_GET; // Force a GET
+        }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+      else if ( m_responseCode == 204 ) // No content
+      {
+        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
+        // Short circuit and do nothing!
+        m_bError = true;
+        return false;
+      }
+      else if ( m_responseCode == 206 )
+      {
+        if ( m_request.offset )
+          m_bCanResume = true;
+      }
+      else if (m_responseCode == 100)
+      {
+        // We got 'Continue' - ignore it
+        cont = true;
+      }
+    }
+
     // are we allowd to resume?  this will tell us
-    if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
+    else if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
@@ -1221,134 +1359,6 @@ bool HTTPProtocol::readHeader()
       kdDebug(7113) << buffer << endl;
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
       setMetaData( "http-refresh", QString::fromLatin1(trimLead(buffer+8)).stripWhiteSpace() );
-    }
-
-    // We got the header
-    else if (strncasecmp(buf, "HTTP/", 5) == 0) {
-      if (strncmp(buffer+5, "1.0 ",4) == 0)
-      {
-         m_HTTPrev = HTTP_10;
-         m_bKeepAlive = false;
-      }
-      else // Assume everything else to be 1.1 or higher....
-      {
-         m_HTTPrev = HTTP_11;
-         //Authentication = AUTH_None;  Do not do this here!! it is reset before each request!!!
-         // Connections with proxies are closed by default because
-         // some proxies like junkbuster can't handle persistent
-         // connections but don't tell us.
-         // We will still use persistent connections if the proxy
-         // sends us a "Connection: Keep-Alive" header.
-         if (m_state.do_proxy)
-         {
-            m_bKeepAlive = false;
-         }
-         else
-         {
-            if (!m_bIsSSL)
-               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
-         }
-      }
-
-      if ( m_responseCode )
-        m_prevResponseCode = m_responseCode;
-
-      m_responseCode = atoi(buffer+9);
-
-      // server side errors
-      if (m_responseCode >= 500 && m_responseCode <= 599)
-      {
-        if (m_request.method == HTTP_HEAD) {
-           // Ignore error
-        } else {
-           if (m_bErrorPage)
-              errorPage();
-           else
-           {
-              error(ERR_INTERNAL_SERVER, m_request.url.url());
-              return false;
-           }
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      // Unauthorized access
-      else if (m_responseCode == 401 || m_responseCode == 407)
-      {
-        // Double authorization requests, i.e. a proxy auth
-        // request followed immediately by a regular auth request.
-        if ( m_prevResponseCode != m_responseCode &&
-            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
-          saveAuthorization();
-
-        m_bUnauthorized = true;
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      // Any other client errors
-      else if (m_responseCode >= 400 && m_responseCode <= 499)
-      {
-        // Tell that we will only get an error page here.
-        if (m_bErrorPage)
-           errorPage();
-        else
-        {
-           error(ERR_DOES_NOT_EXIST, m_request.url.url());
-           return false;
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if (m_responseCode == 307)
-      {
-        // 307 Temporary Redirect
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if (m_responseCode == 304)
-      {
-        // 304 Not Modified
-        // The value in our cache is still valid.
-        cacheValidated = true;
-      }
-      else if (m_responseCode >= 301 && m_responseCode<= 303)
-      {
-        // 301 Moved permanently
-        // 302 Found (temporary location)
-        // 303 See Other
-        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
-        {
-           // NOTE: This is wrong according to RFC 2616.  However,
-           // because most other existing user agent implementations
-           // treat a 301/302 response as a 303 response and preform
-           // a GET action regardless of what the previous method was,
-           // many servers have simply adapted to this way of doing
-           // things!!  Thus, we are forced to do the same thing or we
-           // won't be able to retrieve these pages correctly!!  This
-           // implementation is therefore only correct for a 303 response
-           // according to RFC 2616 section 10.3.2/3/4/8
-           m_request.method = HTTP_GET; // Force a GET
-        }
-        m_bCachedWrite = false; // Don't put in cache
-        mayCache = false;
-      }
-      else if ( m_responseCode == 204 ) // No content
-      {
-        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
-        // Short circuit and do nothing!
-        m_bError = true;
-        return false;
-      }
-      else if ( m_responseCode == 206 )
-      {
-        if ( m_request.offset )
-          m_bCanResume = true;
-      }
-      else if (m_responseCode == 100)
-      {
-        // We got 'Continue' - ignore it
-        cont = true;
-      }
     }
 
     // In fact we should do redirection only if we got redirection code
