@@ -67,7 +67,7 @@ protected:
   QString m_desktopFile;
 private:
   /** KAutoMount deletes itself. Don't delete it manually. */
-  //~KAutoMount() {} // enable this in the next release (when kdebindings can be updated)
+  ~KAutoMount() {}
   class KAutoMountPrivate* d;
 };
 
@@ -104,7 +104,7 @@ private:
   QString m_mountpoint;
 private:
   /** KAutoUnmount deletes itself. Don't delete it manually. */
-  //~KAutoUnmount() {} // enable this in the next release (when kdebindings can be updated)
+  ~KAutoUnmount() {}
   class KAutoUnmountPrivate* d;
 };
 
