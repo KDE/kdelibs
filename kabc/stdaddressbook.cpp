@@ -70,6 +70,7 @@ static void setSignalHandler( void (*handler)(int) )
 }
 
 AddressBook *StdAddressBook::mSelf = 0;
+bool StdAddressBook::mAutomaticSave = true;
 
 QString StdAddressBook::fileName()
 {
@@ -146,6 +147,8 @@ StdAddressBook::StdAddressBook( bool onlyFastResources )
 
 StdAddressBook::~StdAddressBook()
 {
+  if ( mAutomaticSave )
+    save();
 }
 
 void StdAddressBook::init( bool onlyFastResources )
@@ -204,4 +207,14 @@ void StdAddressBook::close()
 {
   delete mSelf;
   mSelf = 0;
+}
+
+void StdAddressBook::setAutomaticSave( bool enable )
+{
+  mAutomaticSave = enable;
+}
+
+bool StdAddressBook::automaticSave()
+{
+  return mAutomaticSave;
 }

@@ -85,9 +85,24 @@ class StdAddressBook : public AddressBook
     static QString directoryName();
     
     /**
-      Close the Addressbook. It does not save it before
+      Set the automatic save property of the address book.
+      If @p enable is TRUE (default) the address book is saved at
+      destruction time otherwise you have to call @ref save() to
+      explicitely save it.
+     */
+    static void setAutomaticSave( bool enable );
+
+    /**
+      Closes the address book. Depending on @ref automaticSave() it will
+      save the address book first.
     */
     static void close();
+
+    /**
+      Returns whether the address book is saved at destruction time.
+      See also @ref setAutomaticSave().
+     */
+    static bool automaticSave();
 
   protected:
     StdAddressBook();
@@ -98,6 +113,7 @@ class StdAddressBook : public AddressBook
 
   private:
     static AddressBook *mSelf;
+    static bool mAutomaticSave;
 };
 
 }
