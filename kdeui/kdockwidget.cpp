@@ -411,7 +411,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
 
-  if( strCaption == 0L)
+  if( strCaption.isNull() )
     setCaption( name );
   else
     setCaption( strCaption);
