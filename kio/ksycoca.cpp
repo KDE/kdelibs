@@ -160,7 +160,9 @@ void KSycoca::closeDatabase()
    {
       QBuffer *buf = (QBuffer *) device;
       buf->buffer().resetRawData(m_sycoca_mmap, m_sycoca_size);
-      munmap((void *) m_sycoca_mmap, m_sycoca_size);
+      // Solaris has munmap(char*, size_t) and everything else should
+      // be happy with a char* for munmap(void*, size_t)
+      munmap((char*) m_sycoca_mmap, m_sycoca_size);
       m_sycoca_mmap = 0;
    }
 #endif
