@@ -670,14 +670,7 @@ void RenderBox::calcHeight()
 
             }
             else
-            {
-                int cbh = containingBlockHeight();
-                // if height of containing block is known/defined
-                if(cbh > 0)
-                    h = Length(h.width(cbh), Fixed);
-                else
-                    h = Length(intrinsicHeight(), Fixed);
-            }
+                h = Length(h.width(containingBlockHeight()), Fixed);
         }
 
         Length tm = style()->marginTop();
