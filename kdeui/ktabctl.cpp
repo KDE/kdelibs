@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  1998/06/16 21:23:36  hoss
+ * Added support for setFont and setShape
+ *
  * Revision 1.11  1997/11/23 22:23:55  leconte
  * Two patches have been applied for the header line painting bug:
  * I removed mine.
@@ -315,7 +318,9 @@ void KTabCtl::showTab(int i)
 
     if((unsigned)i < pages.size()) {
         emit(tabSelected(i));
-	pages[i]->raise();
+	if( pages.size() >= 2 ) { 
+	  pages[i]->raise();
+	}
         pages[i]->setGeometry(getChildRect());
         pages[i]->show();
     }
