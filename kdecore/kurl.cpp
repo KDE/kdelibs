@@ -70,10 +70,16 @@ KURL::KURL()
   reset();
 }
 
-KURL::KURL( const QString &_url )
+KURL::KURL( const QString &url )
 {
   reset();
-  parse( _url );
+  parse( url );
+}
+
+KURL::KURL( const char * url )
+{
+  reset();
+  parse( QString::fromLatin1(url) );
 }
 
 KURL::KURL( const KURL& _u )
@@ -416,6 +422,14 @@ KURL& KURL::operator=( const QString& _url )
 {
   reset();
   parse( _url );
+
+  return *this;
+}
+
+KURL& KURL::operator=( const char * _url )
+{
+  reset();
+  parse( QString::fromLatin1(_url) );
 
   return *this;
 }

@@ -62,18 +62,24 @@ public:
   KURL();
   /**
    * Usual constructor, to construct from a string.
-   * @param _url This is considered to be encoded. You can pass strings like
+   * @param url This is considered to be encoded. You can pass strings like
    *             "/home/weis", and the protocol "file" is assumed.
    *             This is dangerous since even this simple path is assumed to be
    *             encoded. For example "/home/Torben%20Weis" will be decoded to
    *             "/home/Torben Weis". This means: If you have a usual UNIX like
    *             path, you have to use @ref encode() first before you pass it to @ref KURL.
    */
-  KURL( const QString& _url );
+  KURL( const QString& url );
+  /**
+   * Constructor taking a char * @p url, which is an _encoded_ representation
+   * of the URL, exactly like the usual constructor. This is useful when
+   * then URL, in its encoded form, is strictly ascii.
+   */
+  KURL( const char * url );
   /**
    * Copy constructor
    */
-  KURL( const KURL& _u );
+  KURL( const KURL& u );
   /**
    * Convert from a @ref QUrl.
    */
@@ -373,6 +379,7 @@ public:
 
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
+  KURL& operator=( const char * _url );
   KURL& operator=( const QUrl & u );
 
   bool operator==( const KURL& _u ) const;

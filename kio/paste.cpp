@@ -48,7 +48,7 @@ void KIO::pasteClipboard( const KURL& dest_url, bool move )
 
     KURL::List urls;
     for (QStrListIterator it(uris); *it; ++it)
-      urls.append(KURL(QString::fromLatin1(*it))); // *it is encoded already (David)
+      urls.append(KURL(*it)); // *it is encoded already (David)
 
     if ( move )
       (void) KIO::move( urls, dest_url );
