@@ -55,8 +55,10 @@ class KRun::KRunPrivate
 public:
     KRunPrivate() { m_showingError = false; }
     bool m_showingError;
+    QString m_preferredService;
 };
 
+// This is called by foundMimeType, since it knows the mimetype of the URL
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
@@ -289,7 +291,7 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
         case 'k':
           subs = substitution(option, _service, quote);
           break;
-          
+
         case '%':
           subs.append("%");
           break;
@@ -1007,7 +1009,25 @@ void KRun::foundMimeType( const QString& type )
      m_job = 0;
   }
 
-  if (KRun::runURL( m_strURL, type )){
+  Q_ASSERT( !m_bFinished );
+
+  // Suport for preferred service setting, see setPreferredService
+  if ( !d->m_preferredService.isEmpty() ) {
+      kdDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService << endl;
+      KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );
+      if ( serv && serv->hasServiceType( type ) )
+      {
+          KURL::List lst;
+          lst.append( m_strURL );
+          m_bFinished = KRun::run( *serv, lst );
+          /// Note: the line above means that if that service failed, we'll
+          /// go to runURL to maybe find another service, even though a dialog
+          /// box was displayed. That's good if runURL tries another service,
+          /// but it's not good if it tries the same one :}
+      }
+  }
+
+  if (!m_bFinished && KRun::runURL( m_strURL, type )){
     m_bFinished = true;
   }
   else{
@@ -1041,6 +1061,11 @@ void KRun::abort()
 
   // will emit the error and autodelete this
   m_timer.start( 0, true );
+}
+
+void KRun::setPreferredService( const QString& desktopEntryName )
+{
+    d->m_preferredService = desktopEntryName;
 }
 
 /****************/

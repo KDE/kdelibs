@@ -390,7 +390,7 @@ QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
     // if we don't find an icon, maybe we can use the one for the protocol
     if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType()) {
         i = favIconForURL( _url ); // maybe there is a favicon?
-        
+
         if ( i.isEmpty() )
             i = KProtocolInfo::icon( _url.protocol() );
     }
@@ -409,11 +409,11 @@ QString KMimeType::favIconForURL( const KURL& url )
         KConfigGroupSaver cs( config, "HTML Settings" );
         useFavIcons = config->readBoolEntry( "EnableFavicon", true );
     }
-    
-    if ( url.isLocalFile() || !url.protocol().startsWith("http") 
+
+    if ( url.isLocalFile() || !url.protocol().startsWith("http")
          || !useFavIcons )
         return QString::null;
-    
+
     QByteArray data;
     QDataStream str(data, IO_WriteOnly);
     str << url;
@@ -428,7 +428,7 @@ QString KMimeType::favIconForURL( const KURL& url )
         replyStr >> result;
         return result;
     }
-    
+
     return QString::null;
 }
 
@@ -691,7 +691,14 @@ pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
     return 0;
   }
 
-  (void)new KRun( url );
+  KRun* run = new KRun( url );
+
+  // X-KDE-LastOpenedWith holds the service desktop entry name that
+  // was should be preferred for opening this URL if possible.
+  // This is used by the Recent Documents menu for instance.
+  QString lastOpenedWidth = cfg.readEntry( "X-KDE-LastOpenedWith" );
+  if ( !lastOpenedWidth.isEmpty() )
+      run->setPreferredService( lastOpenedWidth );
 
   return -1; // we don't want to return 0, but we don't want to return a pid
 }
