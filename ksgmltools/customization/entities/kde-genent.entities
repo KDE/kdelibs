@@ -74,6 +74,18 @@
          <modespec id="kdems-help" xreflabel="see &percnt;t">help:</modespec>
          <modespec id="kdems-common" xreflabel="see &percnt;t">common/</modespec>'>
 
+<!-- type="href" uses directly the link from the olink document:
+1. Generate olink version of the documents
+   (Only temporary, so no need to include it in a distribution)
+2. Make sure there is a catalogue that lists all documents
+   (fpi.dsl generates the catalogues; then a script can look for them and register
+    them, and ready)
+3. Use type="href" in olink; modespec is only used to generate text
+?? Do we standardise the names of document entities; if yes: we need to add them
+   to a general list (preferably generated automatically).
+-->
+
+
 <!-- KDE index generation
      To use: set addindex to INCLUDE
      Scripts should generate the index in docindex.docbook in the same directory
@@ -88,69 +100,143 @@
      see the text.
  -->
 
-<!ENTITY AIX	'<trademark>AIX</trademark>'>
-<!ENTITY Alt	'<keycap>Alt</keycap>'>
-<!ENTITY ATAPI	'<acronym>ATAPI</acronym>'>
-<!ENTITY Backspace	'<keycap>Backspace</keycap>'>
-<!ENTITY CD	'<acronym>CD</acronym>'>
-<!ENTITY CD-ROM	'<acronym>CD-ROM</acronym>'>
-<!ENTITY Ctrl	'<keycap>Ctrl</keycap>'>
-<!ENTITY DVI	'<acronym>DVI</acronym>'>
-<!ENTITY ELF	'<acronym>ELF</acronym>'>
-<!ENTITY Emacs	'<application>Emacs</application>'>
-<!ENTITY Esc	'<keycap>Esc</keycap>'>
-<!ENTITY FTP	'<acronym>FTP</acronym>'>
-<!ENTITY gcc	'<application>gcc</application>'>
-<!ENTITY GIF	'<acronym>GIF</acronym>'>
-<!ENTITY GMT	'<acronym>GMT</acronym>'>
-<!ENTITY GNU	'<acronym>GNU</acronym>'>
-<!ENTITY GPL	'<acronym>GPL</acronym>'>
-<!ENTITY GUI	'<acronym>GUI</acronym>'>
+<!ENTITY AIX	"<trademark>AIX</trademark>">
+<!ENTITY aktion	"<application>AKtion</application>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY CD	"<acronym>CD</acronym>">
+<!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY drkonqi	"<application>DrKonqi</application>">
+<!ENTITY DVI	"<acronym>DVI</acronym>">
+<!ENTITY ELF	"<acronym>ELF</acronym>">
+<!ENTITY Emacs	"<application>Emacs</application>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY FTP	"<acronym>FTP</acronym>">
+<!ENTITY gcc	"<application>gcc</application>">
+<!ENTITY GIF	"<acronym>GIF</acronym>">
+<!ENTITY GMT	"<acronym>GMT</acronym>">
+<!ENTITY GNU	"<acronym>GNU</acronym>">
+<!ENTITY GPL	"<acronym>GPL</acronym>">
+<!ENTITY GUI	"<acronym>GUI</acronym>">
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
-<!ENTITY HTTP	'<acronym>HTTP</acronym>'>
+<!ENTITY HTTP	"<acronym>HTTP</acronym>">
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
-<!ENTITY Java	'<trademark>Java</trademark>'>
-<!ENTITY kbiff	'<application>KBiff</application>'>
-<!ENTITY kde	'<acronym>KDE</acronym>'>
-<!ENTITY kdm	'<application>kdm</application>'>
-<!ENTITY kedit	'<application>KEdit</application>'>
-<!ENTITY kfm	'<application>KFM</application>'>
-<!ENTITY kicker	'<application>Kicker</application>'>
-<!ENTITY kikbd	'<application>kikbd</application>'>
-<!ENTITY kmail	'<application>Kmail</application>'>
-<!ENTITY kmenuedit	'<application>kmenuedit</application>'>
-<!ENTITY konqueror	'<application>Konqueror</application>'>
-<!ENTITY konsole	'<application>Konsole</application>'>
-<!ENTITY korn	'<application>KOrn</application>'>
-<!ENTITY kpanel	'<application>kpanel</application>'>
-<!ENTITY kppp	'<application>kppp</application>'>
-<!ENTITY ksgmltools	'<application>ksgmltools</application>'>
-<!ENTITY kstart	'<application>kstart</application>'>
-<!ENTITY ktop	'<application>KTop</application>'>
-<!ENTITY kvt	'<application>kvt</application>'>
-<!ENTITY kwin	'<application>KWin</application>'>
-<!ENTITY kwm	'<application>kwm</application>'>
-<!ENTITY kwmpager	'<application>kwmpager</application>'>
-<!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
-<!ENTITY LinuxPPC	'<trademark>LinuxPPC</trademark>'>
-<!ENTITY LZW	'<acronym>LZW</acronym>'>
+<!ENTITY Java	"<trademark>Java</trademark>">
+<!ENTITY kab	"<application>Kab</application>">
+<!ENTITY kab2	"<application>Kab2</application>">
+<!ENTITY kabalone	"<application>KAbalone</application>">
+<!ENTITY kaiman	"<application>Kaiman</application>">
+<!ENTITY kappfinder	"<application>Kappfinder</application>">
+<!ENTITY karm	"<application>KArm</application>">
+<!ENTITY kasteroids	"<application>KAsteroids</application>">
+<!ENTITY katomic	"<application>KAtomic</application>">
+<!ENTITY kbiff	"<application>KBiff</application>">
+<!ENTITY kblackbox	"<application>KBlackbox</application>">
+<!ENTITY kcharselect	"<application>kcharselect</application>">
+<!ENTITY kcontrol	"<application>KControl</application>">
+<!ENTITY kcron	"<application>Kcron</application>">
+<!ENTITY kdat	"<application>Kdat</application>">
+<!ENTITY kde	"<acronym>KDE</acronym>">
+<!ENTITY kdepasswd	"<application>kdepasswd</application>">
+<!ENTITY kdesktop	"<application>KDesktop</application>">
+<!ENTITY kdessh	"<application>kdessh</application>">
+<!ENTITY kdf	"<application>kdf</application>">
+<!ENTITY kdm	"<application>kdm</application>">
+<!ENTITY kdvi	"<application>kdvi</application>">
+<!ENTITY kedit	"<application>KEdit</application>">
+<!ENTITY keystone	"<application>Keystone</application>">
+<!ENTITY kfax	"<application>kfax</application>"> and Kfaxview
+<!ENTITY kfind	"<application>KFind</application>">
+<!ENTITY kfloppy	"<application>Kfloppy</application>">
+<!ENTITY kfm	"<application>KFM</application>">
+<!ENTITY kfract	"<application>KFract</application>">
+<!ENTITY kghostview	"<application>Kghostview</application>">
+<!ENTITY khelpcenter	"<application>KHelpcenter</application>">
+<!ENTITY khexedit	"<application>KHexedit</application>">
+<!ENTITY kicker	"<application>Kicker</application>">
+<!ENTITY kikbd	"<application>kikbd</application>">
+<!ENTITY kit	"<application>Kit</application>">
+<!ENTITY kjots	"<application>KJots</application>">
+<!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
+<!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
+<!ENTITY klipper	"<application>Klipper</application>">
+<!ENTITY kljettool	"<application>KLjettool</application>">
+<!ENTITY klpq	"<application>Klpq</application>">
+<!ENTITY kmahjongg	"<application>KMahjongg</application>">
+<!ENTITY kmail	"<application>Kmail</application>">
+<!ENTITY kmenuedit	"<application>kmenuedit</application>">
+<!ENTITY kmid	"<application>kmid</application>">
+<!ENTITY kmidi	"<application>KMidi</application>">
+<!ENTITY kmines	"<application>KMines</application>">
+<!ENTITY kmix	"<application>KMix</application>">
+<!ENTITY knode	"<application>KNode</application>">
+<!ENTITY knotes	"<application>KNotes</application>">
+<!ENTITY konqueror	"<application>Konqueror</application>">
+<!ENTITY konquest	"<application>Konquest</application>">
+<!ENTITY konsole	"<application>Konsole</application>">
+<!ENTITY korganizer	"<application>Korganizer</application>">
+<!ENTITY korn	"<application>KOrn</application>">
+<!ENTITY kpackage	"<application>KPackage</application>">
+<!ENTITY kpanel	"<application>kpanel</application>">
+<!ENTITY kpat	"<application>KPat</application>">
+<!ENTITY kpilot	"<application>kpilot</application>">
+<!ENTITY kpm	"<application>Kpm</application>">
+<!ENTITY kpoker	"<application>KPoker</application>">
+<!ENTITY kppp	"<application>kppp</application>">
+<!ENTITY kreversi	"<application>KReversi</application>">
+<!ENTITY ksame	"<application>KSame</application>">
+<!ENTITY kscd	"<application>KSCD</application>">
+<!ENTITY kscreensaver	"<application>KScreensaver</application>">
+<!ENTITY ksgmltools	"<application>ksgmltools</application>">
+<!ENTITY kshisen	"<application>KShisen</application>">
+<!ENTITY ksirc	"<application>KSirc</application>">
+<!ENTITY ksirtet	"<application>KSirtet</application>">
+<!ENTITY ksmiletris	"<application>KSmiletris</application>">
+<!ENTITY ksnake	"<application>KSnake</application>">
+<!ENTITY ksnapshot	"<application>KSnapshot</application>">
+<!ENTITY ksokoban	"<application>KSokoban</application>">
+<!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
+<!ENTITY kstart	"<application>kstart</application>">
+<!ENTITY ksysctrl	"<application>KSysctrl</application>">
+<!ENTITY ksysguard	"<application>KSysguard</application>">
+<!ENTITY ksysv	"<application>ksysv</application>">
+<!ENTITY ktalkd	"<application>KTalkd</application>">
+<!ENTITY ktip	"<application>Ktip</application>">
+<!ENTITY ktop	"<application>KTop</application>">
+<!ENTITY ktron	"<application>KTron</application>">
+<!ENTITY ktuberling	"<application>KTuberling</application>">
+<!ENTITY kuser	"<application>Kuser</application>">
+<!ENTITY kview	"<application>kview</application>">
+<!ENTITY kvt	"<application>kvt</application>">
+<!ENTITY kwin	"<application>KWin</application>">
+<!ENTITY kwm	"<application>kwm</application>">
+<!ENTITY kwmpager	"<application>kwmpager</application>">
+<!ENTITY kwrite	"<application>KWrite</application>">
+<!ENTITY kwuftpd	"<application>kwuftpd</application>">
+<!ENTITY Linux	'<trademark class="registered">Linux</trademark>">
+<!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>'>
+<!ENTITY lskat	"<application>Lskat</application>">
+<!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
-<!ENTITY MIME	'<acronym>MIME</acronym>'>
+<!ENTITY MIME	"<acronym>MIME</acronym>">
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
-<!ENTITY MRU	'<acronym>MRU</acronym>'>
-<!ENTITY MTU	'<acronym>MTU</acronym>'>
+<!ENTITY MRU	"<acronym>MRU</acronym>">
+<!ENTITY MTU	"<acronym>MTU</acronym>">
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
-<!ENTITY NeXTSTEP	'<trademark>NeXTSTEP</trademark>'>
+<!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
+<!ENTITY Pixie	"<application>Pixie</application>">
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
-<!ENTITY PPP	'<acronym>PPP</acronym>'>
-<!ENTITY Qt	'<trademark>Qt</trademark>'>
+<!ENTITY PPP	"<acronym>PPP</acronym>">
+<!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
-<!ENTITY SGI	'<trademark>SGI</trademark>'>
-<!ENTITY Solaris	'<trademark>Solaris</trademark>'>
+<!ENTITY SGI	"<trademark>SGI</trademark>">
+<!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
-<!ENTITY URL	'<acronym>URL</acronym>'>
-<!ENTITY windowmaker	'<application>Window Maker</application>'>
+<!ENTITY URL	"<acronym>URL</acronym>">
+<!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
-<!ENTITY X	'<trademark>X Window System</trademark>'>
+<!ENTITY X	"<trademark>X Window System</trademark>">
