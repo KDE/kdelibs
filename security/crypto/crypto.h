@@ -47,7 +47,7 @@ public:
     const QString& cipher() const { return m_cipher; }
     void setBits( int bits ) { m_bits = bits; }
     int bits() const { return m_bits; }
-    
+
     QString configName() const;
 
 protected:
@@ -69,24 +69,29 @@ public:
   void load();
   void save();
   void defaults();
-  
+
   int buttons();
   QString quickHelp() const;
 
 #ifdef HAVE_SSL
   bool loadCiphers();
 #endif
-  
+
 public slots:
   void configChanged();
-      
+
 private:
   QTabWidget *tabs;
-  QWidget *tabSSL, *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
-  QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
-  QCheckBox *mWarnOnEnter, *mWarnOnLeave, *mWarnOnUnencrypted, *mWarnOnMixed;
-  QListBox *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QWidget *tabSSL;
+#if 0
+  QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
+#endif
   QListView *SSLv2Box, *SSLv3Box;
+  QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
+  QCheckBox *mWarnOnEnter, *mWarnOnLeave;
+#if 0
+  QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
+  QListBox *yourSSLBox, *otherSSLBox, *caSSLBox;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove, *macClear;
   QListBox *macBox;
@@ -96,6 +101,7 @@ private:
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
+#endif
   KConfig *config;
 };
 

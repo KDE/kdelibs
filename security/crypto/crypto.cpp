@@ -137,7 +137,7 @@ QString whatstr;
   SSLv2Box->setSelectionMode(QListView::NoSelection);
 
   grid->addWidget( SSLv2Box, 2, 0 );
-  connect( mUseSSLv2, SIGNAL( toggled( bool ) ), 
+  connect( mUseSSLv2, SIGNAL( toggled( bool ) ),
 	   SSLv2Box, SLOT( setEnabled( bool )));
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
@@ -159,7 +159,7 @@ QString whatstr;
   QWhatsThis::add(SSLv3Box, whatstr);
   SSLv3Box->setSelectionMode(QListView::NoSelection);
   grid->addWidget(SSLv3Box, 2, 1);
-  connect( mUseSSLv3, SIGNAL( toggled( bool ) ), 
+  connect( mUseSSLv3, SIGNAL( toggled( bool ) ),
 	   SSLv3Box, SLOT( setEnabled( bool )));
 
   loadCiphers();
@@ -179,6 +179,7 @@ QString whatstr;
                 " based site.");
   QWhatsThis::add(mWarnOnLeave, whatstr);
 
+#if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
   connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mWarnOnUnencrypted, 4, 0);
@@ -372,15 +373,18 @@ QString whatstr;
                                " with OpenSSL."), tabSSLCOpts);
   grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
 #endif
+#endif
 
   ///////////////////////////////////////////////////////////////////////////
   // Add the tabs and startup
   ///////////////////////////////////////////////////////////////////////////
   tabs->addTab(tabSSL, i18n("SSL"));
+#if 0
   tabs->addTab(tabYourSSLCert, i18n("Your SSL Certificates"));
   tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
   tabs->addTab(tabSSLCA, i18n("SSL C.A.s"));
   tabs->addTab(tabSSLCOpts, i18n("Validation Options"));
+#endif
 
   tabs->resize(tabs->sizeHint());
   load();
@@ -412,6 +416,7 @@ void KCryptoConfig::load()
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
+#if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
 
@@ -419,6 +424,7 @@ void KCryptoConfig::load()
   mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
   mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
   mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
+#endif
 
   config->setGroup("SSLv2");
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
@@ -467,6 +473,7 @@ void KCryptoConfig::save()
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
+#if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
 
@@ -474,6 +481,7 @@ void KCryptoConfig::save()
   config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
   config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
+#endif
 
   int ciphercount = 0;
   config->setGroup("SSLv2");
@@ -527,11 +535,13 @@ void KCryptoConfig::defaults()
   mUseSSLv3->setChecked(true);
   mWarnOnEnter->setChecked(false);
   mWarnOnLeave->setChecked(true);
+#if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted->setChecked(false);
   mWarnOnMixed->setChecked(true);
   mWarnSelfSigned->setChecked(true);
   mWarnExpired->setChecked(true);
   mWarnRevoked->setChecked(true);
+#endif
 
 #ifdef HAVE_SSL
     // We don't want to make
@@ -569,9 +579,9 @@ SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
 
-  SSLv2Box->clear(); 
-  SSLv3Box->clear(); 
- 
+  SSLv2Box->clear();
+  SSLv3Box->clear();
+
   meth = SSLv2_client_method();
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
