@@ -553,7 +553,6 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     backAction->setEnabled( !backStack.isEmpty() );
     upAction->setEnabled( !isRoot() );
 
-kdDebug(250) << k_funcinfo << "OPEN THE URL " << newurl.prettyURL() << endl;
     dir->openURL( newurl );
 }
 
@@ -565,7 +564,6 @@ void KDirOperator::updateDir()
 void KDirOperator::rereadDir()
 {
     pathChanged();
-kdDebug(250) << k_funcinfo << "RELOAD THE URL " << currUrl.prettyURL() << endl;
     dir->openURL( currUrl, false, true );
 }
 
@@ -842,9 +840,40 @@ void KDirOperator::connectView(KFileView *view)
 {
     // TODO: do a real timer and restart it after that
     pendingMimeTypes.clear();
+    bool listDir = true;
+
+    if ( dirOnlyMode() )
+         view->setViewMode(KFileView::Directories);
+    else
+        view->setViewMode(KFileView::All);
+
+    if ( myMode & KFile::Files )
+        view->setSelectionMode( KFile::Extended );
+    else
+        view->setSelectionMode( KFile::Single );
 
     if (m_fileView) {
-        QApplication::setOverrideCursor( waitCursor );
+        // transfer the state from old view to new view
+        view->clear();
+        view->addItemList( *m_fileView->items() );
+        listDir = false;
+
+        if ( m_fileView->widget()->hasFocus() )
+            view->widget()->setFocus();
+
+        KFileItem *oldCurrentItem = m_fileView->currentFileItem();
+        if ( oldCurrentItem ) {
+            view->setCurrentItem( oldCurrentItem );
+	    view->ensureItemVisible( oldCurrentItem );
+        }
+        
+        const KFileItemList *oldSelected = m_fileView->selectedItems();
+        if ( !oldSelected->isEmpty() ) {
+            KFileItemListIterator it( *oldSelected );
+            for ( ; it.current(); ++it )
+                view->setSelected( it.current(), true );
+        }
+        
         m_fileView->widget()->hide();
         delete m_fileView;
     }
@@ -867,22 +896,14 @@ void KDirOperator::connectView(KFileView *view)
     if ( reverseAction->isChecked() != m_fileView->isReversed() )
         slotSortReversed();
 
-    if ( dirOnlyMode() )
-         m_fileView->setViewMode(KFileView::Directories);
-    else {
-        m_fileView->setViewMode(KFileView::All);
-    }
-    if ( myMode & KFile::Files )
-        m_fileView->setSelectionMode( KFile::Extended );
-    else
-        m_fileView->setSelectionMode( KFile::Single );
-
     updateViewActions();
-    m_fileView->widget()->show();
     m_fileView->widget()->resize(size());
-
-kdDebug(250) << k_funcinfo << "OPEN THE URL " << currUrl.prettyURL() << endl;
-    dir->openURL( currUrl );
+    m_fileView->widget()->show();
+    
+    if ( listDir ) {
+        QApplication::setOverrideCursor( waitCursor );
+        dir->openURL( currUrl );
+    }
 }
 
 KFile::Mode KDirOperator::mode() const
@@ -952,7 +973,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
     KFileItem *item;
     KFileItemListIterator it( newone );
-    
+
     while ( (item = it.current()) ) {
 	// highlight the dir we come from, if possible
 	if ( d->dirHighlighting && item->isDir() &&
