@@ -940,6 +940,12 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
       (fe->code == FAMEndExist) ||
       (fe->code == FAMAcknowledge)) return;
 
+  // $HOME/.X.err grows with debug output, so don't notify change
+  if ( *(fe->filename) == '.') {
+    if (strncmp(fe->filename, ".X.err", 6) == 0) return;
+    if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
+  }
+
   Entry* e = static_cast<Entry*>(fe->userdata);
 
   kdDebug(7001) << "Processing FAM event ("
@@ -992,9 +998,6 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     // tend to be generated as a result of 'dirty' events. Which
     // leads to a never ending stream of cause & result.
     if (strncmp(fe->filename, ".directory", 10) == 0) return;
-    // $HOME/.X.err grows with debug output, so don't notify change
-    if (strncmp(fe->filename, ".X.err", 6) == 0) return;
-    if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
 
     emitEvent(e, Changed);
 
