@@ -332,7 +332,7 @@ void RenderFlow::layoutBlockChildren()
 	    child = child->nextSibling();
 	    continue;
 	}
-	
+
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
         // if oldHeight+prevMargin < newHeight
         int margin = child->marginTop();
@@ -589,7 +589,6 @@ void RenderFlow::positionNewFloats()
             for (int n = 0 ; n < (isAnonymousBox()?2:1); n++ )
             {
                 obj = obj->containingBlock();
-
                 if (obj && obj->isFlow() )
                 {
                     RenderFlow* par = static_cast<RenderFlow*>(obj);
@@ -619,6 +618,9 @@ void RenderFlow::positionNewFloats()
                         }
                     }
                 }
+
+                if(isAnonymousBox() && obj->style()->flowAroundFloats())
+                    break;
             }
         }
 
