@@ -18,7 +18,7 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#include <qabstractlayout.h>
+#include <qlayout.h>
 #include <qobjectlist.h>
 #include <qguardedptr.h>
 #include <qlineedit.h>
