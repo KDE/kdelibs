@@ -53,6 +53,9 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 
+// Maximum chunk size is 256K
+#define MAX_CHUNK_SIZE (1024*256)
+
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 
@@ -388,13 +391,16 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 char *HTTPProtocol::gets (char *s, int size)
 {
   int len=0;
-  char *buf=s, mybuf[2]={0,0};
+  char *buf=s;
+  char mybuf[2]={0,0};
   while (len < size) {
     read(mybuf, 1);
-    memcpy(buf, mybuf, 1);
-    if (*buf == '\n')
+    if (*mybuf == '\r') // Ignore!
+      continue;
+    if (*mybuf == '\n')
       break;
-    len++; buf++;
+    *buf++ = *mybuf;
+    len++;
   }
   *buf=0;
   return s;
@@ -480,6 +486,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
 #endif
   }
+  // okay, we know now that our URL is at least half-way decent.  
 
   // do we want to use a proxy?
   bool do_proxy = m_bUseProxy;
@@ -536,8 +543,10 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
-
-  // okay, we know now that our URL is at least half-way decent.  
+  m_qContentEncodings.clear();
+  m_qTransferEncodings.clear(); 
+  m_bChunked = false;
+  m_iSize = 0;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -921,7 +930,7 @@ bool HTTPProtocol::readHeader()
     return readHeader();
   // we need to try to login again if we failed earlier
   else if (unauthorized) {
-    http_close();
+    http_closeConnection();
     QString user = m_state.url.user();
     QString pass = m_state.url.pass();
     if (m_strRealm.isEmpty())
@@ -936,8 +945,6 @@ bool HTTPProtocol::readHeader()
     u.setUser(user);
     u.setPass(pass);
 
-    m_qContentEncodings.clear();    // clear encodings of last try
-    m_qTransferEncodings.clear(); 
     if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
       return false;
 
@@ -946,7 +953,11 @@ bool HTTPProtocol::readHeader()
   // We need to do a redirect 
   else if (!locationStr.isEmpty())
   {
-    http_close();
+    // WABA:
+    // We either need to close the connection or read the rest of the contents!
+    // Closing the connection is bad for performance.
+    // We really should read the contents here!
+    http_closeConnection();
     KURL u(m_state.url, locationStr);
     redirection(u.url());
 
@@ -970,7 +981,8 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
   if (encoding.lower() == "identity") {
     return;
   } else if (encoding.lower() == "chunked") {
-    encs->push("chunked");
+    m_bChunked = true;
+//    encs->push("chunked");
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     if ( m_cmd != CMD_COPY )
       m_iSize = 0;
@@ -1715,6 +1727,126 @@ void HTTPProtocol::slotData(void *_p, int _len)
   m_cmd = CMD_NONE;
 }
 
+/**
+ * Read a chunk from the data stream.
+ */
+int HTTPProtocol::readChunked()
+{
+  m_iBytesLeft = 0; // Assume failure
+
+  m_bufReceive.resize(4096);
+
+  if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+  {
+    kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk header");
+    return -1;
+  }
+  // We could have got the CRLF of the previous chunk.
+  // If so, try again.
+  if (m_bufReceive[0] == '\0')
+  { 
+     if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+     {
+        kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk header");
+        return -1;
+     }
+  }
+  kdebug(KDEBUG_INFO, 7103, "Chunk header = \"%s\"", m_bufReceive.data());
+  if (eof())
+  {
+     kdebug(KDEBUG_INFO, 7103, "EOF on Chunk header");
+     return -1;
+  }
+
+  int chunkSize = strtol(m_bufReceive.data(), 0, 16);
+  if ((chunkSize < 0) || (chunkSize > MAX_CHUNK_SIZE))
+     return -1;
+
+  kdebug(KDEBUG_INFO, 7103, "Chunk size = %d bytes", chunkSize);
+
+  if (chunkSize == 0)
+  {
+    // Last chunk.
+    // Skip trailers.
+    do {
+      // Skip trailer of last chunk.
+      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+      {
+        kdebug(KDEBUG_INFO, 7103, "gets() failure on Chunk trailer");
+        return -1;
+      }
+      kdebug(KDEBUG_INFO, 7103, "Chunk trailer = \"%s\"", m_bufReceive.data());
+    }
+    while (strlen(m_bufReceive.data()) != 0);
+    
+    return 0;
+  }
+
+  if (chunkSize > m_bufReceive.size())
+  {
+     if (!m_bufReceive.resize(chunkSize))
+        return -1; // Failure
+  }
+
+  int totalBytesReceived = 0;
+  int bytesToReceive = chunkSize;
+  
+  do
+  {
+     if (eof()) return -1; // Unexpected EOF.
+     
+     int bytesReceived = read( m_bufReceive.data()+totalBytesReceived, bytesToReceive );
+
+     kdebug(KDEBUG_INFO, 7103, "Read from chunk got %d bytes", bytesReceived);
+
+     if (bytesReceived == -1)
+        return -1; // Failure.
+
+     totalBytesReceived += bytesReceived;
+     bytesToReceive -= bytesReceived;
+
+     kdebug(KDEBUG_INFO, 7103, "Chunk has %d bytes, %d bytes to go", 
+	totalBytesReceived, bytesToReceive);
+  }
+  while(bytesToReceive > 0);
+
+  m_iBytesLeft = 1; // More to come.
+  return totalBytesReceived; // This is what we got.
+}
+
+int HTTPProtocol::readLimited()
+{
+  m_bufReceive.resize(4096);
+
+  int bytesReceived;
+  int bytesToReceive;    
+
+  if (m_iBytesLeft > m_bufReceive.size())
+     bytesToReceive = m_bufReceive.size();
+  else
+     bytesToReceive = m_iBytesLeft;
+    
+  bytesReceived = read(m_bufReceive.data(), bytesToReceive);
+
+  if (bytesReceived > 0)
+  {
+     m_iBytesLeft -= bytesReceived;
+  }
+
+  return bytesReceived;
+}
+
+int HTTPProtocol::readUnlimited()
+{
+  if (m_bKeepAlive)
+  {
+     kdebug(KDEBUG_WARN, 7103, "Unbounded datastream on a Keep Alive connection!");
+     m_bKeepAlive = false;
+  }
+  m_bufReceive.resize(4096);
+
+  return read(m_bufReceive.data(), m_bufReceive.size());
+}
 
 /**
  * This function is our "receive" function.  It is responsible for
@@ -1744,27 +1876,29 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
   time_t t_start = time(0L);
   time_t t_last = t_start;
 
-  long nbytes = 0, sz = 0;
-  char buffer[2048];
+  long sz = 0;
 #ifdef DO_MD5
   MD5_CTX context;
   MD5_Init(&context);
 #endif
-  int bytesLeft = m_iSize;
+  if (m_iSize)
+    m_iBytesLeft = m_iSize;
+  else
+    m_iBytesLeft = 1;
+
   // this is the main incoming loop.  gather everything while we can...
   while (!eof()) {
-    // 2048 bytes seems to be a nice number of bytes to receive
-    // at a time
-    int bytesToReceive;
-    if ((m_iSize == 0) || (bytesLeft > 2048))
-       bytesToReceive = 2048;
-    else
-       bytesToReceive = bytesLeft;
-    
-    nbytes = read(buffer, bytesToReceive);
+    int bytesReceived;
+    if (m_bChunked)
+       bytesReceived = readChunked();
+    else if (m_iSize)
+       bytesReceived = readLimited();
+    else {
+       bytesReceived = readUnlimited();
+    }
 
     // make sure that this wasn't an error, first
-    if (nbytes == -1) {
+    if (bytesReceived == -1) {
       // erg.  oh well, log an error and bug out
       error(ERR_CONNECTION_BROKEN, m_state.url.host());
       m_cmd = CMD_NONE;
@@ -1773,43 +1907,38 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 
     // i guess that nbytes == 0 isn't an error.. but we certainly
     // won't work with it!
-    if (nbytes == 0) {
-      continue;
-    }
-
-    // check on the encoding.  can we get away with it as is?
-    if ( !decode ) {
+    if (bytesReceived > 0) {
+      // check on the encoding.  can we get away with it as is?
+      if ( !decode ) {
 #ifdef DO_MD5
-      if (useMD5) {
-	MD5_Update(&context, (const unsigned char*)buffer, nbytes);
-      }
+        if (useMD5) {
+          MD5_Update(&context, (const unsigned char*)m_bufReceive.data(), bytesReceived);
+        }
 #endif
-      // yep, let the world know that we have some data
-      ioJob->data(buffer, nbytes);
-      sz += nbytes;
-      processedSize( sz );
-      time_t t = time( 0L );
-      if ( t - t_last >= 1 ) {
-	speed( sz / ( t - t_start ) );
-	t_last = t;
+        // yep, let the world know that we have some data
+        ioJob->data(m_bufReceive.data(), bytesReceived);
+        sz += bytesReceived;
+        processedSize( sz );
+        time_t t = time( 0L );
+        if ( t - t_last >= 1 ) {
+          speed( sz / ( t - t_start ) );
+          t_last = t;
+        }
+      } else {
+        // nope.  slap this all onto the end of a big buffer
+        // for later use
+        unsigned int old_len = 0;
+        old_len = big_buffer.size();
+        big_buffer.resize(old_len + bytesReceived);
+        memcpy(big_buffer.data() + old_len, m_bufReceive.data(), bytesReceived);
       }
-    } else {
-      // nope.  slap this all onto the end of a big buffer
-      // for later use
-      unsigned int old_len = 0;
-      old_len = big_buffer.size();
-      big_buffer.resize(old_len + nbytes);
-      memcpy(big_buffer.data() + old_len, buffer, nbytes);
     }
 
-    if (m_iSize != 0) // We know the number of bytes to receive.
-    {
-       bytesLeft -= nbytes;
-       if (bytesLeft == 0)
-          break; // Finished.
-    }
-    
+    if (m_iBytesLeft == 0)
+       break;
   }
+
+  m_bufReceive.resize(0);
 
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
@@ -1822,8 +1951,8 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 	break;
       if ( strstr(enc, "gzip") ) {
 	decodeGzip();
-      } else if (strncasecmp(enc, "chunked", 7)==0) {
-	decodeChunked();
+//      } else if (strncasecmp(enc, "chunked", 7)==0) {
+//	decodeChunked();
       }
     }
 
@@ -1846,6 +1975,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
       if ( strstr(enc, "gzip") ) {
 	decodeGzip();
       } else if (strncasecmp(enc, "chunked", 7)==0) {
+        kdebug(KDEBUG_WARN, 7103, "Chunked _CONTENTS_ encoding!\n");
 	decodeChunked();
       }
     }

@@ -85,6 +85,10 @@ public:
 
 protected:
 
+  int readChunked(); // Read a chunk
+  int readLimited(); // Read maximum m_iSize bytes.
+  int readUnlimited(); // Read as much as possible.
+
   void decodeChunked();
   void decodeGzip();
 
@@ -166,11 +170,15 @@ protected:
 
 protected: // Members
   bool m_bEOF;
-  int m_cmd, m_sock, m_iSize;
+  int m_cmd, m_sock;
   FILE* m_fsocket;
   HTTPState m_state;
   enum HTTP_REV m_HTTPrev;
   enum HTTP_PROTO m_proto;
+
+  int m_iSize; // Expected size of message
+  long m_iBytesLeft; // # of bytes left to receive in this message.
+  QByteArray m_bufReceive; // Receive buffer
 
   // Language/Encoding
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
@@ -203,6 +211,9 @@ protected: // Members
 
   // Persistant connections
   bool m_bKeepAlive;
+  
+  // Chunked tranfer encoding
+  bool m_bChunked;
 
   bool m_bCanResume;
 
