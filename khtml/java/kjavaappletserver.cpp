@@ -47,6 +47,7 @@
 #include <qdialog.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qregexp.h>
 
 #include <stdlib.h>
 #include <assert.h>
