@@ -160,6 +160,15 @@
 11000	libkdegames
 11001	libkdegames (KGame)
 
+#Kant/KWrite
+13000   Kant
+13010   Kant (XML)
+13020   Kant (Document)
+13030   Kant (View)
+13040   Kant (Plugins)
+
+
+# KDB
 20000	KDB (core)
 20001	KDB (ui)
 20010	KDB (DBEngine)
