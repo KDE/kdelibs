@@ -85,30 +85,17 @@ Value Object::call(ExecState *exec, Object &thisObj, const List &args)
   return ret;
 }
 
-const List Object::scope() const
-{
-  return static_cast<ObjectImp*>(rep)->scope();
-}
-
-void Object::setScope(const List &s)
-{
-  if ( isValid())
-    static_cast<ObjectImp*>(rep)->setScope(s);
-}
-
 // ------------------------------ ObjectImp ------------------------------------
 
 ObjectImp::ObjectImp(const Object &proto)
-  : _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
+  : _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L)
 {
   //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
-  _scope = ListImp::empty();
 }
 
 ObjectImp::ObjectImp(ObjectImp *proto)
   : _proto(proto), _internalValue(0L)
 {
-  _scope = ListImp::empty();
 }
 
 ObjectImp::ObjectImp()
@@ -116,7 +103,6 @@ ObjectImp::ObjectImp()
   //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
   _proto = NullImp::staticNull;
   _internalValue = 0L;
-  _scope = ListImp::empty();
 }
 
 ObjectImp::~ObjectImp()
@@ -126,8 +112,6 @@ ObjectImp::~ObjectImp()
     _proto->setGcAllowed();
   if (_internalValue)
     _internalValue->setGcAllowed();
-  if (_scope)
-    _scope->setGcAllowed();
 }
 
 void ObjectImp::mark()
@@ -142,8 +126,8 @@ void ObjectImp::mark()
 
   if (_internalValue && !_internalValue->marked())
     _internalValue->mark();
-  if (_scope && !_scope->marked())
-    _scope->mark();
+
+  _scope.mark();
 }
 
 const ClassInfo *ObjectImp::classInfo() const
@@ -421,18 +405,6 @@ Boolean ObjectImp::hasInstance(ExecState */*exec*/, const Value &/*value*/)
 {
   assert(false);
   return Boolean(false);
-}
-
-const List ObjectImp::scope() const
-{
-  return _scope;
-}
-
-void ObjectImp::setScope(const List &s)
-{
-  if (_scope)
-    _scope->setGcAllowed();
-  _scope = static_cast<ListImp*>(s.imp());
 }
 
 ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)

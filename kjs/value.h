@@ -53,7 +53,6 @@ namespace KJS {
   class List;
   class ListImp;
   class Completion;
-  class CompletionImp;
   class ExecState;
 
   /**

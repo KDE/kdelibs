@@ -30,6 +30,7 @@
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
+#include "scope_chain.h"
 
 #ifndef I18N_NOOP
 #define I18N_NOOP(s) s
@@ -149,30 +150,6 @@ namespace KJS {
   //                            Internal type impls
   // ---------------------------------------------------------------------------
 
-  class CompletionImp : public ValueImp {
-  public:
-    Type type() const { return CompletionType; }
-
-    CompletionImp(ComplType c, const Value& v, const Identifier& t);
-    virtual ~CompletionImp();
-    virtual void mark();
-
-    Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    Object toObject(ExecState *exec) const;
-
-    ComplType complType() const { return comp; }
-    Value value() const { return Value(val); }
-    Identifier target() const { return tar; }
-
-  private:
-    ComplType comp;
-    ValueImp * val;
-    Identifier tar;
-  };
-
   /**
    * @internal
    */
@@ -282,16 +259,18 @@ namespace KJS {
                ContextImp *_callingContext = 0L, FunctionImp *func = 0L, const List &_args = List());
     virtual ~ContextImp();
 
-    const List scopeChain() const { return scope; }
+    const ScopeChain &scopeChain() const { return scope; }
     Object variableObject() const { return variable; }
     void setVariableObject(const Object &v) { variable = v; }
     Object thisValue() const { return thisVal; }
     ContextImp *callingContext() { return callingCon; }
     Object activationObject() { return activation; }
 
-    void pushScope(const Object &s);
-    void popScope();
+    void pushScope(const Object &s) { scope.push(s.imp()); }
+    void popScope() { scope.pop(); }
     LabelStack *seenLabels() { return &ls; }
+
+    void mark();
 
     void pushTryCatch() { tryCatch++; };
     void popTryCatch() { tryCatch--; };
@@ -301,7 +280,7 @@ namespace KJS {
 
   private:
 
-    List scope;
+    ScopeChain scope;
     Object activation;
     Object variable;
     Object thisVal;

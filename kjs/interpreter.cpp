@@ -57,7 +57,7 @@ bool Context::isNull() const
   return (rep == 0);
 }
 
-const List Context::scopeChain() const
+const ScopeChain &Context::scopeChain() const
 {
   return rep->scopeChain();
 }

@@ -241,8 +241,8 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   }
   source->deref();
 
-  List scopeChain;
-  scopeChain.append(exec->interpreter()->globalObject());
+  ScopeChain scopeChain;
+  scopeChain.push(exec->interpreter()->globalObject().imp());
   FunctionBodyNode *bodyNode = progNode;
 
   FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null, bodyNode,

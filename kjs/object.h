@@ -33,6 +33,7 @@
 #include "reference_list.h"
 #include "identifier.h"
 #include "property_map.h"
+#include "scope_chain.h"
 
 namespace KJS {
 
@@ -314,8 +315,8 @@ namespace KJS {
      * @param exec The current execution state
      * @return The function's scope
      */
-    const List scope() const;
-    void setScope(const List &s);
+    const ScopeChain &scope() const;
+    void setScope(const ScopeChain &s);
 
     /**
      * Returns a List of References to all the properties of the object. Used
@@ -559,8 +560,8 @@ namespace KJS {
      *
      * @see Object::scope()
      */
-    const List scope() const;
-    void setScope(const List &s);
+    const ScopeChain &scope() const { return _scope; }
+    void setScope(const ScopeChain &s) { _scope = s; }
 
     virtual ReferenceList propList(ExecState *exec, bool recursive = true);
 
@@ -595,7 +596,7 @@ namespace KJS {
     ObjectImpPrivate *_od;
     ValueImp *_proto;
     ValueImp *_internalValue;
-    ListImp *_scope;
+    ScopeChain _scope;
   };
 
   /**
@@ -699,12 +700,11 @@ namespace KJS {
   inline Boolean Object::hasInstance(ExecState *exec, const Value &value)
     { return imp()->hasInstance(exec,value); }
 
-// fixme
-/*   inline const ScopeChain &Object::scope() const */
-/*     { return imp()->scope(); } */
+  inline const ScopeChain &Object::scope() const
+    { return imp()->scope(); }
 
-/*   inline void Object::setScope(const ScopeChain &s) */
-/*     { imp()->setScope(s); } */
+  inline void Object::setScope(const ScopeChain &s)
+    { imp()->setScope(s); }
 
   inline ReferenceList Object::propList(ExecState *exec, bool recursive)
     { return imp()->propList(exec,recursive); }

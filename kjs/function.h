@@ -82,7 +82,7 @@ namespace KJS {
   class DeclaredFunctionImp : public FunctionImp {
   public:
     DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-			FunctionBodyNode *b, const List &sc);
+			FunctionBodyNode *b, const ScopeChain &sc);
     ~DeclaredFunctionImp();
 
     bool implementsConstruct() const;

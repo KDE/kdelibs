@@ -330,22 +330,27 @@ Value ThisNode::evaluate(ExecState *exec) const
 // ----------------------------- ResolveNode ----------------------------------
 
 // ECMA 11.1.2 & 10.1.4
+Value ResolveNode::evaluate(ExecState *exec) const
+{
+  return evaluateReference(exec).getValue(exec);
+}
+
 Reference ResolveNode::evaluateReference(ExecState *exec) const
 {
-  const List chain = exec->context().scopeChain();
-  ListIterator scope = chain.begin();
+  ScopeChain chain = exec->context().imp()->scopeChain();
 
-  while (scope != chain.end()) {
-    ObjectImp *o = static_cast<ObjectImp*>((*scope).imp());
+  while (!chain.isEmpty()) {
+    ObjectImp *o = chain.top();
 
     //cout << "Resolve: looking at '" << ident.ascii() << "'"
     //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
     if (o->hasProperty(exec,ident)) {
       //cout << "Resolve: FOUND '" << ident.ascii() << "'"
       //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
-      return Reference(Object(o), ident);
+      return Reference(o, ident);
     }
-    scope++;
+    
+    chain.pop();
   }
 
   // identifier not found
@@ -353,30 +358,6 @@ Reference ResolveNode::evaluateReference(ExecState *exec) const
   cout << "Resolve::evaluateReference: didn't find '" << ident.ustring().ascii() << "'" << endl;
 #endif
   return Reference(Null(), ident);
-}
-
-Value ResolveNode::evaluate(ExecState *exec) const
-{
-  const List chain = exec->context().scopeChain();
-  ListIterator scope = chain.begin();
-
-  while (scope != chain.end()) {
-    ObjectImp *o = static_cast<ObjectImp*>((*scope).imp());
-
-    if (o->hasProperty(exec,ident)) {
-      return o->get(exec, ident);
-    }
-    scope++;
-  }
-
-  // identifier not found
-#ifdef KJS_VERBOSE
-  cout << "Resolve::evaluate: didn't find '" << ident.ustring().ascii() << "'" << endl;
-#endif
-  UString m = I18N_NOOP("Can't find variable: ") + ident.ustring();
-  Object err = Error::create(exec, ReferenceError, m.ascii());
-  exec->setException(err);
-  return err;
 }
 
 // ----------------------------- GroupNode ------------------------------------
@@ -2891,10 +2872,8 @@ bool FuncDeclNode::deref()
 void FuncDeclNode::processFuncDecl(ExecState *exec)
 {
   ContextImp *ctx = exec->context().imp();
-  const List sc = ctx->scopeChain();
-
   // TODO: let this be an object with [[Class]] property "Function"
-  FunctionImp *fimp = new DeclaredFunctionImp(exec, ident, body, sc);
+  FunctionImp *fimp = new DeclaredFunctionImp(exec, ident, body, exec->context().imp()->scopeChain());
   Object func(fimp); // protect from GC
 
   //  Value proto = exec->interpreter()->builtinObject().construct(exec,List::empty());
@@ -2946,8 +2925,7 @@ bool FuncExprNode::deref()
 // ECMA 13
 Value FuncExprNode::evaluate(ExecState *exec) const
 {
-  const List sc = exec->context().scopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null, body, sc);
+  FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null, body, exec->context().imp()->scopeChain());
   Value ret(fimp);
   List empty;
   Value proto = exec->interpreter()->builtinObject().construct(exec,empty);

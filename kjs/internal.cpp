@@ -305,60 +305,6 @@ void LabelStack::clear()
   }
 }
 
-// ------------------------------ CompletionImp --------------------------------
-
-CompletionImp::CompletionImp(ComplType c, const Value& v, const Identifier& t)
-  : comp(c), val(v.imp()), tar(t)
-{
-}
-
-CompletionImp::~CompletionImp()
-{
-}
-
-void CompletionImp::mark()
-{
-  ValueImp::mark();
-
-  if (val && !val->marked())
-    val->mark();
-}
-
-Value CompletionImp::toPrimitive(ExecState* /*exec*/, Type /*preferredType*/) const
-{
-  // invalid for Completion
-  assert(false);
-  return Value();
-}
-
-bool CompletionImp::toBoolean(ExecState* /*exec*/) const
-{
-  // invalid for Completion
-  assert(false);
-  return false;
-}
-
-double CompletionImp::toNumber(ExecState* /*exec*/) const
-{
-  // invalid for Completion
-  assert(false);
-  return 0;
-}
-
-UString CompletionImp::toString(ExecState* /*exec*/) const
-{
-  // invalid for Completion
-  assert(false);
-  return UString::null;
-}
-
-Object CompletionImp::toObject(ExecState* /*exec*/) const
-{
-  // invalid for Completion
-  assert(false);
-  return Object();
-}
-
 // ------------------------------ ListImp --------------------------------------
 
 #ifdef KJS_DEBUG_MEM
@@ -604,18 +550,18 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _source
   switch(type) {
     case EvalCode:
       if (callingCon) {
-	scope = callingCon->scopeChain().copy();
+	scope = _callingContext->scopeChain();
 #ifndef KJS_PURE_ECMA
 	if (thisV.imp() != glob.imp())
-	  scope.prepend(thisV); // for deprecated Object.prototype.eval()
+	  scope.push(thisV.imp()); // for deprecated Object.prototype.eval()
 #endif
 	variable = callingCon->variableObject();
 	thisVal = callingCon->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
-      scope = List();
-      scope.append(glob);
+      scope.clear();
+      scope.push(glob.imp());
 #ifndef KJS_PURE_ECMA
       if (thisV.isValid())
           thisVal = thisV;
@@ -624,8 +570,8 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _source
           thisVal = glob;
       break;
     case FunctionCode:
-      scope = func->scope().copy();
-      scope.prepend(activation);
+      scope = func->scope();
+      scope.push(activation.imp());
       variable = activation; // TODO: DontDelete ? (ECMA 10.2.3)
       thisVal = thisV;
       break;
@@ -637,14 +583,11 @@ ContextImp::~ContextImp()
 {
 }
 
-void ContextImp::pushScope(const Object &s)
+void ContextImp::mark()
 {
-  scope.prepend(s);
-}
-
-void ContextImp::popScope()
-{
-  scope.removeFirst();
+  for (ContextImp *context = this; context; context = context->callingCon) {
+    context->scope.mark();
+  }
 }
 
 bool ContextImp::inTryCatch() const

@@ -253,12 +253,12 @@ void FunctionImp::popArgs(ExecState *exec)
 const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
 
 DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-					 FunctionBodyNode *b, const List &sc)
+					 FunctionBodyNode *b, const ScopeChain &sc)
   : FunctionImp(exec,n.ustring()), body(b)
 {
   Value protect(this);
   body->ref();
-  setScope(sc.copy());
+  setScope(sc);
   line0 = body->firstLine();
   line1 = body->lastLine();
   sid = body->sourceId();
