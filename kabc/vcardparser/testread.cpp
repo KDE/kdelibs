@@ -68,7 +68,7 @@ int main( int argc, char **argv )
   s << text;
   file.close();
 
-  QString command = "diff " + referenceFile + " " + outputFile;
+  QString command = "diff -pub " + referenceFile + " " + outputFile;
 
   kdDebug() << "CHECKING " << inputFile << endl;
 

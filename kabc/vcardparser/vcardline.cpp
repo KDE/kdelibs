@@ -24,7 +24,12 @@ VCardLine::VCardLine()
 {
 }
 
-VCardLine::VCardLine( const QString &identifier, const QString &value )
+VCardLine::VCardLine( const QString &identifier )
+{
+  mIdentifier = identifier.lower();
+}
+
+VCardLine::VCardLine( const QString &identifier, const QVariant &value )
 {
   mIdentifier = identifier.lower();
   mValue = value;
@@ -44,12 +49,12 @@ QString VCardLine::identifier() const
   return mIdentifier;
 }
 
-void VCardLine::setValue( const QString& value )
+void VCardLine::setValue( const QVariant& value )
 {
   mValue = value;
 }
 
-QString VCardLine::value() const
+QVariant VCardLine::value() const
 {
   return mValue;
 }
@@ -74,5 +79,5 @@ QStringList VCardLine::parameters( const QString& param ) const
 
 QString VCardLine::parameter( const QString& param ) const
 {
-  return mParamMap[ param ][0];
+  return mParamMap[ param ][ 0 ];
 }

@@ -20,6 +20,8 @@
 
 #include <qregexp.h>
 
+#include <kmdcodec.h>
+
 #include "vcardparser.h"
 
 #define FOLD_WIDTH 75
@@ -76,7 +78,19 @@ VCard::List VCardParser::parseVCards( const QString& text )
           }
         }
 
-        vCardLine.setValue( value.replace( "\\n", "\n" ) );
+        params = vCardLine.parameterList();
+        if ( params.contains( "encoding" ) ) { // have to decode the data
+          QByteArray input, output;
+          input.setRawData( vCardLine.value().asByteArray(),
+                            vCardLine.value().asByteArray().count() );
+          if ( vCardLine.parameter( "encoding" ).lower() == "b" )
+            KCodecs::base64Decode( input, output );
+          else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" )
+            KCodecs::quotedPrintableDecode( input, output );
+          vCardLine.setValue( output );
+        } else
+          vCardLine.setValue( value.replace( "\\n", "\n" ) );
+
         currentVCard.addLine( vCardLine );
       }
 
@@ -125,7 +139,7 @@ QString VCardParser::createVCards( const VCard::List& list )
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
-        if ( !(*lineIt).value().isEmpty() ) {
+        if ( !(*lineIt).value().asString().isEmpty() ) {
           QString textLine;
           
           textLine.append( (*lineIt).identifier().upper() );
@@ -143,14 +157,25 @@ QString VCardParser::createVCards( const VCard::List& list )
               }
             }
           }
-          textLine.append( ":" + (*lineIt).value().replace( "\n", "\\n" ) );
+
+          params = (*lineIt).parameterList();
+          if ( params.contains( "encoding" ) ) { // have to encode the data
+            QByteArray input, output;
+            input.setRawData( (*lineIt).value().asByteArray(),
+                              (*lineIt).value().asByteArray().count() );
+            if ( (*lineIt).parameter( "encoding" ).lower() == "b" )
+              KCodecs::base64Decode( input, output );
+            else if ( (*lineIt).parameter( "encoding" ).lower() == "quoted-printable" )
+              KCodecs::quotedPrintableDecode( input, output );
+            textLine.append( ":" + QString( output ) );
+          } else
+            textLine.append( ":" + (*lineIt).value().asString().replace( "\n", "\\n" ) );
 
           if ( textLine.length() > FOLD_WIDTH ) { // we have to fold the line
             for ( uint i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )
               text.append( ( i == 0 ? "" : " " ) + textLine.mid( i * FOLD_WIDTH, FOLD_WIDTH ) + "\r\n" );
-          } else {
+          } else
             text.append( textLine + "\r\n" );
-          }
         }
       }
     }
