@@ -9,115 +9,191 @@
 namespace KParts
 {
 
-/**
- * A template for a KParts::Factory implementation. It implements the pure virtual
- * createPartObject method by instantiating the template argument when requested
- * through the className field. In addition it is a container for a parts @ref KInstance
- * object, by providing a static KInstance *instance() method.
- *
- * The template argument has to inherit from KParts::Part and has to implement two methods:
- *  1) There needs to be a public constructor with the following signature:
- *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name )
- *
- *  2) It needs to provide one static method to create an @ref KAboutData object per
- *     request, holding information about the component's name, its authors, license, etc.
- *     The signature of that static method has to be
- *         KAboutData *createAboutData()
- *
- * The template will take care of memory management of the KInstance and the KAboutData object.
- *
- * For advanced use you can also inherit from the template and re-implement additionally the
- * virtual KInstance *createInstance() method, for example in case you want to extend the 
- * paths of your instance's KStandardDirs object.
- *
- * If a KParts::ReadOnlyPart is requested through this factory and the template argument
- * implements a KParts::ReadWritePart then setReadWrite( false ) will automatically be
- * called in createPartObject.
- */
-template <class T>
-class GenericFactory : public Factory
-{
-public:
-    GenericFactory() 
-    {
-        if ( s_self )
-            kdWarning() << "KParts::GenericFactory instantiated more than once!" << endl;
-        s_self = this;
-    }
-    virtual ~GenericFactory()
-    {
-        delete s_aboutData;
-        delete s_instance;
-        s_aboutData = 0;
-        s_instance = 0;
-        s_self = 0;
-    }
+    // see kdecore/kgenericfactory.h for a discussion about these global function templates.
+    // they are not part of the public API and therefore might change in a source incompatible
+    // manner without notice! (Simon)
+    
+    /** @internal */
+    inline KParts::Part *GenericFactoryFunction( QWidget *, const char *,
+                                                 QObject *, const char *, const char *, KDE::NullType * )
+    { return 0; }
 
-    virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
-	                                    QObject *parent, const char *name,
-					    const char *className,
-					    const QStringList & )
+    /** @internal */
+    template <class T>
+    inline KParts::Part *GenericFactoryFunction( QWidget *parentWidget, const char *widgetName,
+                                                 QObject *parent, const char *name, const char *className,
+                                                 T *)
     {
         QMetaObject *metaObject = T::staticMetaObject();
         while ( metaObject )
         {
             if ( !qstrcmp( className, metaObject->className() ) )
-            {
-                T *part = new T( parentWidget, widgetName, parent, name );
-                if ( !qstrcmp( className, "KParts::ReadOnlyPart" ) )
-                {
-                    KParts::ReadWritePart *rwp = dynamic_cast<KParts::ReadWritePart *>( part );
-                    if ( rwp )
-                        rwp->setReadWrite( false );
-                }
-                return part;    
-            }
+                return new T( parentWidget, widgetName, parent, name );
             metaObject = metaObject->superClass();
         }
         return 0;
     }
 
-    static KInstance *instance();
-    static KAboutData *aboutData();
-
-protected:
-    virtual KInstance *createInstance()
+    /** @internal */
+    template <class T1, class T2>
+    inline KParts::Part *GenericFactoryFunction( QWidget *parentWidget, const char *widgetName,
+                                                 QObject *parent, const char *name, 
+                                                 const char *className, KTypeList<T1, T2> * )
     {
-        return new KInstance( aboutData() );
+        KParts::Part *result = GenericFactoryFunction( parentWidget, widgetName, parent, name, 
+                                                       className, static_cast<T1 *>( 0 ) );
+        if ( !result )
+            result = GenericFactoryFunction( parentWidget, widgetName, parent, name, className, 
+                                             static_cast<T2 *>( 0 ) );
+        return result;
     }
 
-private:
-    static GenericFactory<T> *s_self;
-    static KInstance *s_instance;
-    static KAboutData *s_aboutData;
-};
+    /**
+     * @internal
+     */
+    template <class T>
+    class GenericFactoryBase : public KParts::Factory
+    {
+    public:
+        GenericFactoryBase()
+        {
+            if ( s_self )
+                kdWarning() << "KParts::GenericFactory instantiated more than once!" << endl;
+            s_self = this;
+        }
+        virtual ~GenericFactoryBase()
+        {
+            delete s_aboutData;
+            delete s_instance;
+            s_aboutData = 0;
+            s_instance = 0;
+            s_self = 0;
+        }
 
-template <class T>
-GenericFactory<T> *GenericFactory<T>::s_self = 0;
+        static KInstance *instance();
+        static KAboutData *aboutData();
 
-template <class T>
-KInstance *GenericFactory<T>::s_instance = 0;
+    protected:
+        virtual KInstance *createInstance()
+        {
+            return new KInstance( aboutData() );
+        }
 
-template <class T>
-KAboutData *GenericFactory<T>::s_aboutData = 0;
+    private:
+        static GenericFactoryBase<T> *s_self;
+        static KInstance *s_instance;
+        static KAboutData *s_aboutData;
+    };
 
-template <class T>
-KInstance *GenericFactory<T>::instance()
-{
-    if ( !s_instance && s_self )
-        s_instance = s_self->createInstance();
-    return s_instance;
-}
+    /**
+     * A template for a KParts::Factory implementation. It implements the pure virtual
+     * createPartObject method by instantiating the template argument when requested
+     * through the className field. In addition it is a container for a parts @ref KInstance
+     * object, by providing a static KInstance *instance() method.
+     *
+     * The template argument has to inherit from KParts::Part and has to implement two methods:
+     *  1) There needs to be a public constructor with the following signature:
+     *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name )
+     *
+     *  2) It needs to provide one static method to create an @ref KAboutData object per
+     *     request, holding information about the component's name, its authors, license, etc.
+     *     The signature of that static method has to be
+     *         KAboutData *createAboutData()
+     *
+     * The template will take care of memory management of the KInstance and the KAboutData object.
+     *
+     * For advanced use you can also inherit from the template and re-implement additionally the
+     * virtual KInstance *createInstance() method, for example in case you want to extend the 
+     * paths of your instance's KStandardDirs object.
+     *
+     * If a KParts::ReadOnlyPart is requested through this factory and the template argument
+     * implements a KParts::ReadWritePart then setReadWrite( false ) will automatically be
+     * called in createPartObject.
+     */
+    template <class T>
+    class GenericFactory : public GenericFactoryBase<T>
+    {
+    public:
+        GenericFactory() { }
 
-template <class T>
-KAboutData *GenericFactory<T>::aboutData()
-{
-    if ( !s_aboutData )
-        s_aboutData = T::createAboutData();
-    return s_aboutData;
-}
+        virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
+                                                QObject *parent, const char *name,
+                                                const char *className,
+                                                const QStringList & )
+        {
+            KParts::Part *part = GenericFactoryFunction( parentWidget, widgetName,
+                                                         parent, name, className,
+                                                         static_cast<T *>( 0 ) );
+
+            if ( part && !qstrcmp( className, "KParts::ReadOnlyPart" ) )
+            {
+                KParts::ReadWritePart *rwp = dynamic_cast<KParts::ReadWritePart *>( part );
+                if ( rwp )
+                    rwp->setReadWrite( false );
+            }
+            return part;    
+        }
+    };
+
+    template <class T1, class T2>
+    class GenericFactory< KTypeList<T1, T2> > : public GenericFactoryBase<T1>
+    {
+    public:
+        GenericFactory() { }
+
+        virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
+                                                QObject *parent, const char *name,
+                                                const char *className,
+                                                const QStringList & )
+        {
+            KParts::Part *part = GenericFactoryFunction( parentWidget, widgetName,
+                                                         parent, name, className,
+                                                         static_cast<KTypeList<T1, T2> *>( 0 ) );
+
+            if ( part && !qstrcmp( className, "KParts::ReadOnlyPart" ) )
+            {
+                KParts::ReadWritePart *rwp = dynamic_cast<KParts::ReadWritePart *>( part );
+                if ( rwp )
+                    rwp->setReadWrite( false );
+            }
+            return part;    
+        }
+    };
+
+    /** @internal */
+    template <class T>
+    GenericFactoryBase<T> *GenericFactoryBase<T>::s_self = 0;
+
+    /** @internal */
+    template <class T>
+    KInstance *GenericFactoryBase<T>::s_instance = 0;
+
+    /** @internal */
+    template <class T>
+    KAboutData *GenericFactoryBase<T>::s_aboutData = 0;
+
+    /** @internal */
+    template <class T>
+    KInstance *GenericFactoryBase<T>::instance()
+    {
+        if ( !s_instance && s_self )
+            s_instance = s_self->createInstance();
+        return s_instance;
+    }
+
+    /** @internal */
+    template <class T>
+    KAboutData *GenericFactoryBase<T>::aboutData()
+    {
+        if ( !s_aboutData )
+            s_aboutData = T::createAboutData();
+        return s_aboutData;
+    }
 
 };
 
 #endif
 
+/**
+ * vim: et sw=4
+ */
