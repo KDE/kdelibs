@@ -110,7 +110,10 @@ void kimgio_jpeg_read(QImageIO * iio)
     jpeg_create_decompress(&cinfo);
 
     qimageio_jpeg_src(&cinfo, &s);
-    jpeg_read_header(&cinfo, (boolean) TRUE);
+    if( jpeg_read_header(&cinfo, (boolean) FALSE ) 
+		!= JPEG_HEADER_OK ) {
+	return; // Header error
+    }
 
 
 
