@@ -161,6 +161,11 @@ KService::~KService()
   //debug("KService::~KService()");
 }
 
+QPixmap KService::pixmap( KIconLoader::Size _size, QString * _path ) const
+{
+  return KGlobal::iconLoader()->loadApplicationIcon( m_strIcon, _size, _path );
+}
+
 void KService::load( QDataStream& s )
 {
   Q_INT8 b;

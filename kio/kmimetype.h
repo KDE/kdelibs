@@ -87,7 +87,7 @@ public:
    * @param _size Size requested for the pixmap, see KIconLoader
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L );
+  QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L ) const;
   /**
    * Find the pixmap for a given file of this mimetype
    * Convenience method that uses icon(), but also locates and load the pixmap
@@ -95,7 +95,14 @@ public:
    * @param _size Size requested for the pixmap, see KIconLoader
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L );
+  QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L ) const;
+
+  /**
+   * Convenience method to find the pixmap for a URL
+   * Call this one when you don't know the mimetype.
+   */
+  static QPixmap pixmapForURL( const KURL & _url, mode_t _mode = 0, 
+                               KIconLoader::Size _size = KIconLoader::Small, QString * _path = 0L );
 
   /**
    * The arguments are unused, but provided so that KMimeType derived classes
@@ -160,8 +167,8 @@ public:
    *
    * @param _fast_mode If set to true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
-   *        it is * FAST.  * @return a pointer to the matching
-   *        mimetype. 0L is NEVER returned. 
+   *        it is * FAST. 
+   * @return a pointer to the matching mimetype. 0L is NEVER returned. 
    * VERY IMPORTANT : don't store the result in a KMimeType * !
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,

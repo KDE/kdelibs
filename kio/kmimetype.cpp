@@ -288,16 +288,22 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path )
+QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path ) const
 {
   return KGlobal::iconLoader()->loadApplicationIcon( icon( QString::null, false ), _size, _path );
 }
 
-QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path )
+QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
 {
   return KGlobal::iconLoader()->loadApplicationIcon( icon( _url, _url.isLocalFile() ), _size, _path );
 }
 
+QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
+                                 KIconLoader::Size _size, QString * _path )
+{
+  return KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
+    pixmap( _url, _size, _path );
+}
   
 /*******************************************************
  *

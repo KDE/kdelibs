@@ -28,6 +28,7 @@
 #include <qdatastream.h>
 #include <qvariant.h>
 
+#include <kiconloader.h>
 #include <ksimpleconfig.h>
 
 #include "ksycocaentry.h"
@@ -121,6 +122,10 @@ public:
    * @return the icon associated with the service.
    */
   QString icon() const { return m_strIcon; }
+  /**
+   * @return a pixmap for this service (finds and loads icon())
+   */
+  QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L ) const;
   /**
    * @return any options associated with the terminal the service
    * runs in, if it requires a terminal.  The service must be a
