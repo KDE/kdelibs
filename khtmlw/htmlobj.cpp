@@ -56,6 +56,8 @@ HTMLObject::HTMLObject()
     percent = 0;
     objCount++;
     nextObj = 0;
+    x = 0;
+    y = 0;
 }
 
 HTMLObject* HTMLObject::checkPoint( int _x, int _y )
