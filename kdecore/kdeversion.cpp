@@ -19,24 +19,22 @@
 
 #include "kdeversion.h"
 
-using namespace KDE;
-
-unsigned int versionMajor()
+unsigned int KDE::versionMajor()
 {
     return KDE_VERSION_MAJOR;
 }
 
-unsigned int versionMinor()
+unsigned int KDE::versionMinor()
 {
     return KDE_VERSION_MINOR;
 }
 
-unsigned int versionRelease()
+unsigned int KDE::versionRelease()
 {
     return KDE_VERSION_RELEASE;
 }
 
-const char *versionString()
+const char *KDE::versionString()
 {
     return KDE_VERSION_STRING;
 }
