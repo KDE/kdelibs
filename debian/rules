@@ -113,7 +113,7 @@ binary-arch:  build
 	dh_link
 	dh_compress 
 	dh_fixperms 
-	chmod 2755 debian/tmp/usr/bin/artswrapper
+	chmod 4755 debian/tmp/usr/bin/artswrapper
 	dh_suidregister usr/bin/artswrapper
 	dh_makeshlibs -V
 	dh_installdeb
