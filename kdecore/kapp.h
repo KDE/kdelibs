@@ -23,8 +23,6 @@
 #ifndef _KAPP_H
 #define _KAPP_H
 
-#include <config.h>
-
 // Version macros. Never put this further down.
 #define KDE_VERSION 290
 #define KDE_VERSION_STRING "pre-2.9 CVS >= 20010806"
@@ -847,6 +845,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.231  2001/08/26 10:03:46  bero
+// Allow to build with Qt/Embedded
+//
 // Revision 1.230  2001/08/08 20:34:41  hausmann
 // - there's no point in returning a const QCString (note the lack of a
 //   reference :)
