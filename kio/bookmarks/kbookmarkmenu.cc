@@ -789,6 +789,8 @@ KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, Fields
   {
     m_url = 0;
   }
+  
+  main->setMinimumSize( 300, 0 );
 }
 
 void KBookmarkEditFields::setName(const QString &str)
