@@ -393,8 +393,15 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                                     bool ask, bool showProgress )
 {
+    return del( items, viewWidget(), ask, showProgress );
+}
+
+KIO::DeleteJob * KDirOperator::del( const KFileItemList& items, 
+                                    QWidget *parent,
+                                    bool ask, bool showProgress )
+{
     if ( items.isEmpty() ) {
-        KMessageBox::information( this,
+        KMessageBox::information( parent,
                                   i18n("You didn't select a file to delete."),
                                   i18n("Nothing to delete") );
         return 0L;
@@ -417,14 +424,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     if ( ask ) {
         int ret;
         if ( items.count() == 1 ) {
-            ret = KMessageBox::warningContinueCancel( viewWidget(),
+            ret = KMessageBox::warningContinueCancel( parent,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Delete File"),
                                                       i18n("Delete") );
         }
         else
-            ret = KMessageBox::warningContinueCancelList( viewWidget(),
+            ret = KMessageBox::warningContinueCancelList( parent,
                 i18n("Do you really want to delete these %1 items?")
                 .arg( items.count() ),
                                                     files,
@@ -1518,7 +1525,7 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
 {
     if ( !m_fileView )
         return;
-    
+
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
         m_fileView->updateView( it.current() );
