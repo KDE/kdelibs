@@ -680,6 +680,8 @@ QVariant KActionShortcutList::getOther( Other, uint ) const
 	{ return QVariant(); }
 bool KActionShortcutList::setOther( Other, uint, QVariant )
 	{ return false; }
+const KAction *KActionShortcutList::action( uint i) const
+	{ return m_actions.action(i); }
 
 bool KActionShortcutList::save() const
 {

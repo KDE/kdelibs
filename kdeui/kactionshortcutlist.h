@@ -31,6 +31,8 @@ class KActionShortcutList : public KShortcutList
 
 	virtual bool save() const;
 
+	const KAction *action( uint ) const;
+
  protected:
 	KActionCollection& m_actions;
 

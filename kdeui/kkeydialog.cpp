@@ -219,7 +219,7 @@ bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
 {
     QString str = title;
     if ( title.isEmpty() && pColl->instance()
-         && pColl->instance()->aboutData() )
+        && pColl->instance()->aboutData() )
         str = pColl->instance()->aboutData()->programName();
 
 	KShortcutList* pList = new KActionShortcutList( pColl );
@@ -413,6 +413,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 void KKeyChooser::buildListView( uint iList, const QString &title )
 {
 	KShortcutList* pList = d->rgpLists[iList];
+	KActionShortcutList *pAList = dynamic_cast<KActionShortcutList*>(pList);
 
         if( m_type == Global || m_type == ApplicationGlobal )
 	    d->pList->setSorting( -1 );
@@ -443,14 +444,18 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !sName.isEmpty() && pList->isConfigurable(iAction) )
+		} else if( !sName.isEmpty() && pList->isConfigurable(iAction) ) {
 			pItem = new KKeyChooserItem( pParentItem, pItem, pList, iAction );
+			if(pAList)
+				pItem->setPixmap(0,pAList->action(iAction)->iconSet().pixmap(QIconSet::Small,QIconSet::Normal));
+		}
 	}
 	if( !pProgramItem->firstChild() )
 		delete pProgramItem;
 	if( pGroupItem && !pGroupItem->firstChild() )
 		delete pGroupItem;
 }
+
 
 void KKeyChooser::updateButtons()
 {
