@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.90 Beta >= 20000511"
+#define KDE_VERSION_STRING "1.90 Beta >= 20000517"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 2
@@ -739,6 +739,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.150  2000/05/11 19:24:21  coolo
+// including a date in the version string so we have an idea what it is
+// when bug reports come in
+//
 // Revision 1.149  2000/05/09 22:50:56  mueller
 // typo fix
 //
