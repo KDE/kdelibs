@@ -23,6 +23,7 @@
 #include <qlist.h>
 #include <qdatastream.h>
 #include <qdatetime.h>
+#include <qmap.h>
 
 /**
  * @short A namespace for KIO globals
@@ -205,6 +206,11 @@ typedef QValueList<UDSEntry> UDSEntryList;
 typedef QValueListIterator<UDSEntry> UDSEntryListIterator;
 typedef QValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
 
+class MetaData : public QMap<QString, QString>
+{
+public:
+   MetaData() : QMap<QString, QString>() { };
+};
 }
 
 #endif

@@ -169,6 +169,12 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         infoMessage(msg);
         break;
     }
+    case INF_META_DATA: {
+        MetaData meta_data;
+        stream >> meta_data;
+        metaData(meta_data);
+        break;
+    }
     default:
 	assert( 0 );
     }

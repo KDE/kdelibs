@@ -838,11 +838,19 @@ bool HTTPProtocol::http_open()
   header += getUserAgentString();
   header += "\r\n";
 
+  QString referrer = metaData("referrer");
+  if (!referrer.isEmpty())
+  {
+     // HTTP uses "Referer" although the correct spelling is "referrer"
+     header += "Referer: "+referrer+"\r\n";
+  }
+
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
     kdDebug(7103) << "kio_http : Range = " << c_buffer << endl;
   }
+
 
   if ( m_request.reload ) { /* No caching for reload */
     header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */

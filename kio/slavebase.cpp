@@ -153,19 +153,45 @@ void SlaveBase::disconnectSlave()
     appconn->close();
 }
 
+void SlaveBase::setMetaData(const QString &key, const QString &value)
+{
+   mOutgoingMetaData.replace(key, value); 
+}
+
+QString SlaveBase::metaData(const QString &key)
+{
+   if (!mIncomingMetaData.contains(key))
+      return QString::null;
+   return mIncomingMetaData[key];
+}
+
+void SlaveBase::sendMetaData()
+{
+   KIO_DATA << mOutgoingMetaData;
+
+   m_pConnection->send( INF_META_DATA, data );
+   mOutgoingMetaData.clear(); // Clear
+}
+
 
 void SlaveBase::data( const QByteArray &data )
 {
+    if (!mOutgoingMetaData.isEmpty())
+       sendMetaData();
     m_pConnection->send( MSG_DATA, data );
 }
 
 void SlaveBase::dataReq( )
 {
+    if (!mOutgoingMetaData.isEmpty())
+       sendMetaData();
     m_pConnection->send( MSG_DATA_REQ );
 }
 
 void SlaveBase::error( int _errid, const QString &_text )
 {
+    mIncomingMetaData.clear(); // Clear meta data
+    mOutgoingMetaData.clear();
     KIO_DATA << _errid << _text;
 
     m_pConnection->send( MSG_ERROR, data );
@@ -178,6 +204,9 @@ void SlaveBase::connected()
 
 void SlaveBase::finished()
 {
+    mIncomingMetaData.clear(); // Clear meta data
+    if (!mOutgoingMetaData.isEmpty())
+       sendMetaData();
     m_pConnection->send( MSG_FINISHED );
 }
 
@@ -516,6 +545,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 	break;
     case CMD_SPECIAL:
 	special( data );
+	break;
+    case CMD_META_DATA:
+        stream >> mIncomingMetaData;
 	break;
     case CMD_NONE:
 	fprintf(stderr, "Got unexpected CMD_NONE!\n");

@@ -56,6 +56,7 @@ public:
      */
     Connection *connection() const { return m_pConnection; }
 
+
     ///////////
     // Message Signals to send to the job
     ///////////
@@ -182,6 +183,17 @@ public:
      */
     bool openPassDlg( const QString& /*head*/, QString& /*user*/, QString& /*pass*/, const QString& /*key*/ = QString::null );
 
+    /**
+     * Sets meta-data to be send to the application before the first
+     * data() or finished() signal.
+     */
+    void setMetaData(const QString &key, const QString &value);
+
+    /**
+     * Queries for meta-data send by the application to the slave.
+     */
+    QString metaData(const QString &key);
+     
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement
     ///////////
@@ -386,12 +398,20 @@ protected:
     void cacheAuthentication(const KURL& url, const QString& user,
                              const QString& password, int auth_type);
 
+protected:
     /**
      * Name of the protocol supported by this slave
      */
     QCString mProtocol;
 
     Connection * m_pConnection;
+    
+private:
+    /**
+     * Internal function to transmit meta data to the application.
+     */
+    void sendMetaData();    
+    
 private:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;
@@ -399,6 +419,8 @@ private:
     Connection *appconn;
     QString mPoolSocket;
     QString mAppSocket;
+    MetaData mOutgoingMetaData;
+    MetaData mIncomingMetaData;
     bool mConnectedToApp;
 };
 

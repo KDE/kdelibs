@@ -374,6 +374,28 @@ namespace KIO {
          * Flow control. Resume data processing from the slave.
          */
         void resume();
+        
+        /**
+         * Set meta data to be sent to the slave.
+         */
+        void setMetaData( const KIO::MetaData &);
+        
+        /**
+         * Add key/value pair to the meta data that is sent to the slave
+         */
+        void addMetaData(const QString &key, const QString &value);
+        
+        /**
+         * Get meta data received from the slave.
+         * (Valid when first data is received and/or slave is finished)
+         */
+        MetaData metaData();
+
+        /**
+         * Query meta data received from the slave.
+         * (Valid when first data is received and/or slave is finished)
+         */
+        QString queryMetaData(const QString &key);
 
     signals:
         /**
@@ -410,6 +432,7 @@ namespace KIO {
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
         virtual void slotMimetype( const QString &mimetype );
+        virtual void slotMetaData( const KIO::MetaData &_metaData);
 
     protected:
         bool m_suspended;
@@ -417,6 +440,8 @@ namespace KIO {
         KURL m_redirectionURL;
         KURL::List m_redirectionList;
         QString m_mimetype;
+        MetaData m_outgoingMetaData;
+        MetaData m_incomingMetaData;
     };
 
     // Mimetype Job

@@ -539,6 +539,33 @@ void TransferJob::slotMimetype( const QString& type )
     emit mimetype( this, m_mimetype);
 }
 
+void TransferJob::slotMetaData( const KIO::MetaData &_metaData)
+{
+    m_incomingMetaData = _metaData;
+}
+
+MetaData TransferJob::metaData()
+{
+    return m_incomingMetaData;
+}
+
+QString TransferJob::queryMetaData(const QString &key)
+{
+    if (!m_incomingMetaData.contains(key))
+       return QString::null;
+    return m_incomingMetaData[key];
+}
+
+void TransferJob::setMetaData( const KIO::MetaData &_metaData)
+{
+    m_outgoingMetaData = _metaData;
+}
+
+void TransferJob::addMetaData( const QString &key, const QString &value)
+{
+    m_outgoingMetaData.insert(key, value);
+}
+
 void TransferJob::suspend()
 {
     m_suspended = true;
@@ -569,11 +596,20 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL(mimeType( const QString& ) ),
              SLOT( slotMimetype( const QString& ) ) );
 
+    connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
+             SLOT( slotMetaData( const KIO::MetaData& ) ) );
+
     if (slave->suspended())
     {
        m_mimetype = "unknown";
        // WABA: The slave was put on hold. Resume operation.
        slave->resume();
+    }
+
+    if (!m_outgoingMetaData.isEmpty())
+    {
+       KIO_ARGS << m_outgoingMetaData;
+       slave->connection()->send( CMD_META_DATA, packedArgs );
     }
 
     SimpleJob::start(slave);
