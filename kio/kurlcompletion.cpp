@@ -953,7 +953,7 @@ static void listUsers( QStringList *l )
  */
 static bool qstrBeginEq( const QString &s1, const QString &s2 )
 {
-        if ( s2.isEmpty() && s1.isEmpty() )
+        if ( s1.isEmpty() )
                 return true;
         else
                 return ( s2.left( s1.length() ) == s1 );
