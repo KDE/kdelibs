@@ -812,52 +812,39 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     static const QRegExp parenReg(" \\(.*\\)$");
     static const QRegExp braceReg(" \\[.*\\]$");
 
-#ifdef APPLE_CHANGES
     parsedFontName = string;
     // a language tag is often added in braces at the end. Remove it.
-    parsedFontName.replace(parenReg, "");
+    parsedFontName.replace(parenReg, QString::null);
     // remove [Xft] qualifiers
-    parsedFontName.replace(braceReg, "");
-#else
+    parsedFontName.replace(braceReg, QString::null);
+
+#ifndef APPLE_CHANGES
     const QString &available = KHTMLSettings::availableFamilies();
 
-    QString face = string.lower();
-    // a language tag is often added in braces at the end. Remove it.
-    face = face.replace(parenReg, "");
-    // remove [Xft] qualifiers
-    face = face.replace(braceReg, "");
-    //kdDebug(0) << "searching for face '" << face << "'" << endl;
+    parsedFontName = parsedFontName.lower();
+    // kdDebug(0) << "searching for face '" << parsedFontName << "'" << endl;
 
-    // first look for an exact match so that we don't find "Adobe Courier"
-    // although we are looking for "Courier"
-    int pos = available.find( ',' + face + ',', 0, false );
-
-    if( pos != -1 )
-        ++pos; // point pos to the begin of the family name
-    else {
-        // no exact match => look for a substring match
-        pos = available.find( face, 0, false );
-    }
-
-    if( pos == -1 ) {
-	QString str = face;
-	int p = face.find(' ');
-	// Arial Blk --> Arial
-	// MS Sans Serif --> Sans Serif
-	if ( p != -1 ) {
-	    if(p > 0 && (int)str.length() - p > p + 1)
-		str = str.mid( p+1 );
-	    else
-		str.truncate( p );
-	    pos = available.find( str, 0, false);
-	}
+    int pos = available.find( ',' + parsedFontName + ',', 0, false );
+    if ( pos == -1 ) {
+        // many pages add extra MSs to make sure it's windows only ;(
+        if ( parsedFontName.startsWith( "ms " ) )
+            parsedFontName = parsedFontName.mid( 3 );
+        if ( parsedFontName.endsWith( " ms" ) )
+            parsedFontName.truncate( parsedFontName.length() - 3 );
+        pos = available.find( ",ms " + parsedFontName + ',', 0, false );
+        if ( pos == -1 )
+            pos = available.find( ',' + parsedFontName + " ms,", 0, false );
     }
 
     if ( pos != -1 ) {
-	int pos1 = available.findRev( ',', pos ) + 1;
-	pos = available.find( ',', pos );
-	parsedFontName = available.mid( pos1, pos - pos1 );
-    }
+       ++pos;
+       int p = available.find(',', pos);
+       assert( p != -1 ); // available is supposed to start and end with ,
+       parsedFontName = available.mid( pos, p - pos);
+       // kdDebug(0) << "going for '" << parsedFontName << "'" << endl;
+    } else
+        parsedFontName = QString::null;
+
 #endif // !APPLE_CHANGES
 }
 

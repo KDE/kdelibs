@@ -2,6 +2,9 @@
 
 	* css/cssparser.cpp (parseFontFamily): handle invalid font families like
 	font-family: ms sans serif, utopia
+	* css/css_valueimpl.cpp (FontFamilyValueImpl): merging safari code to handle
+	invalid font families. Replacing buggy font maching by substring search by
+	simply ripping out "MS" and searching for similiar fonts
 
 2003-11-24  David Faure  <faure@kde.org>
 

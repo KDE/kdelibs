@@ -1508,48 +1508,81 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 //     kdDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue << endl;
     CSSValueListImpl *list = new CSSValueListImpl;
     Value *value = valueList->current();
+    QString currFace;
+
     while ( value ) {
 //         kdDebug( 6080 ) << "got value " << value->id << " / "
 //                         << (value->unit == CSSPrimitiveValue::CSS_STRING ||
 //                             value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString::null )
 //                         << endl;
-        int id = value->id;
-        if ( id >= CSS_VAL_SERIF && id <= CSS_VAL_MONOSPACE )
-            list->append( new CSSPrimitiveValueImpl( id ) );
-        else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
-                  value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-            QString face = qString( value->string );
-            // the grammar says we can only have comma separated strings,
-            // but the real life HTML contains stuff like "font-family: ms sans serif, adobe helvetica"
-            // so we look ahead in the list and if the next item is a string too, we concat the strings
-            // before we take it as item
-        caughtinvalid:
-            value = valueList->next();
-            if ( value ) {
-                if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
-                     value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-                    face += " " + qString( value->string );
-                    goto caughtinvalid;
-                } else if ( value->unit == Value::Operator && value->iValue == ',' ) {
-                    value = valueList->next();
-                }
+        Value* nextValue = valueList->next();
+        bool nextValBreaksFont = !nextValue ||
+                                 (nextValue->unit == Value::Operator && nextValue->iValue == ',');
+        bool nextValIsFontName = nextValue &&
+                                 ((nextValue->id >= CSS_VAL_SERIF && nextValue->id <= CSS_VAL_MONOSPACE) ||
+                                  (nextValue->unit == CSSPrimitiveValue::CSS_STRING ||
+                                   nextValue->unit == CSSPrimitiveValue::CSS_IDENT));
+
+        if (value->id >= CSS_VAL_SERIF && value->id <= CSS_VAL_MONOSPACE) {
+            if (!currFace.isNull()) {
+                currFace += ' ';
+                currFace += qString(value->string);
             }
-            list->append( new FontFamilyValueImpl( face ) );
-            if ( value )
-                continue;
-            else
-                break;
+            else if (nextValBreaksFont || !nextValIsFontName) {
+                if ( !currFace.isNull() ) {
+                    list->append( new FontFamilyValueImpl( currFace ) );
+                    currFace = QString::null;
+                }
+                list->append(new CSSPrimitiveValueImpl(value->id));
+            }
+            else {
+                currFace = qString( value->string );
+            }
+        }
+        else if (value->unit == CSSPrimitiveValue::CSS_STRING) {
+            // Strings never share in a family name.
+            currFace = QString::null;
+            list->append(new FontFamilyValueImpl(qString( value->string) ) );
+        }
+        else if (value->unit == CSSPrimitiveValue::CSS_IDENT) {
+            if (!currFace.isNull()) {
+                currFace += ' ';
+                currFace += qString(value->string);
+            }
+            else if (nextValBreaksFont || !nextValIsFontName) {
+                if ( !currFace.isNull() ) {
+                    list->append( new FontFamilyValueImpl( currFace ) );
+                    currFace = QString::null;
+                }
+                list->append(new FontFamilyValueImpl( qString( value->string ) ) );
         }
         else {
-//             kdDebug( 6080 ) << "invalid family part" << endl;
+                currFace = qString( value->string);
+        }
+        }
+	else {
+ 	    //kdDebug( 6080 ) << "invalid family part" << endl;
             break;
         }
-        value = valueList->next();
-        if ( !value || value->unit != Value::Operator || value->iValue != ',' ) {
+
+        if (!nextValue)
             break;
-        }
+
+        if (nextValBreaksFont) {
         value = valueList->next();
+            if ( !currFace.isNull() )
+                list->append( new FontFamilyValueImpl( currFace ) );
+            currFace = QString::null;
+        }
+        else if (nextValIsFontName)
+            value = nextValue;
+        else
+            break;
     }
+
+    if ( !currFace.isNull() )
+        list->append( new FontFamilyValueImpl( currFace ) );
+
     if ( !list->length() ) {
         delete list;
         list = 0;
