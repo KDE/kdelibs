@@ -41,6 +41,7 @@
 #include <qtextstream.h>
 #include <qfile.h>
 #include <kdebug.h>
+#include <kdebugclasses.h>
 
 static void dump_xml(const QDomDocument& doc)
 {
@@ -180,8 +181,8 @@ public:
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
-      m_widget(new KEditToolbarWidget(collection, file, global, this))
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+    m_widget(new KEditToolbarWidget(collection, file, global, this))
 {
     init();
 }
@@ -205,7 +206,8 @@ void KEditToolbar::init()
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonApply(bool)));
     enableButtonApply(false);
-    resize( 580, 440 );
+
+    setMinimumSize(sizeHint());
 }
 
 KEditToolbar::~KEditToolbar()
@@ -287,6 +289,9 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
 
   // now load in our toolbar combo box
   loadToolbarCombo();
+  adjustSize();
+
+  kdDebug() << "kedittoolbarwidget " << sizeHint() << endl;
   setMinimumSize(sizeHint());
 }
 
@@ -412,6 +417,7 @@ void KEditToolbarWidget::setupLayout()
   QLabel *inactive_label = new QLabel(i18n("&Available actions:"), this);
   m_inactiveList = new KListView(this);
   m_inactiveList->setAllColumnsShowFocus(true);
+  m_inactiveList->setMinimumSize(180, 250);
   m_inactiveList->header()->hide();
   m_inactiveList->addColumn("");
   int column2 = m_inactiveList->addColumn("");
@@ -424,11 +430,13 @@ void KEditToolbarWidget::setupLayout()
   QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), this);
   m_activeList = new KListView(this);
   m_activeList->setAllColumnsShowFocus(true);
+  m_activeList->setMinimumWidth(m_inactiveList->minimumWidth());
   m_activeList->header()->hide();
   m_activeList->addColumn("");
   m_activeList->addColumn("");
   m_activeList->setSorting (-1);
   active_label->setBuddy(m_activeList);
+
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
@@ -495,6 +503,8 @@ void KEditToolbarWidget::setupLayout()
   top_layout->addLayout(list_layout,10);
   top_layout->addWidget(d->m_helpArea);
   top_layout->addWidget(new KSeparator(this));
+
+  setMinimumSize(sizeHint());
 }
 
 void KEditToolbarWidget::loadToolbarCombo()
