@@ -82,7 +82,7 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
   } else
     e->dn_dirty = true;
 
-  char c;
+  char c = 0;
   write(dwp_self->mPipe[1], &c, 1);
 }
 #endif
