@@ -1910,7 +1910,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	}
 
 	if ((mask & Max) && (p->state & Max) != (state & Max)) {
-	    if (state & Max == Max) {
+	    if ((state & Max) == Max) {
 		// client wants to be fully maximized
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
