@@ -189,12 +189,12 @@ protected:
     /**
      * Something is dragged over this view.
      */
-    void dragEnterEvent( QDragEnterEvent *e );
+//    void dragEnterEvent( QDragEnterEvent *e );
 
     /**
      * Something is dropped on this view.
      */
-    void dropEvent( QDropEvent* event );
+//    void dropEvent( QDropEvent* event );
 
 private:
     /**

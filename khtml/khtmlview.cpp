@@ -885,6 +885,7 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
   d->linkPressed=false;
 }
 
+/* not BC
 void KHTMLView::dragEnterEvent( QDragEnterEvent *e )
 {
   if ( e->provides( "text/uri-list" ) ) 
@@ -910,3 +911,4 @@ void KHTMLView::dropEvent(QDropEvent* event)
 	part()->slotShowDocument(m_lstDragURLs.first().url(), "_top");
     }
 }
+*/
