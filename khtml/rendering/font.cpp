@@ -115,7 +115,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    for( int i = 0; i < len; i++ )
 		if ( str[i+pos].category() == QChar::Separator_Space )
 		    numSpaces++;
-	}
+	}  
 
 	int totWidth = width( str, slen, pos, len );
 	if ( d == QPainter::RTL ) {
@@ -157,7 +157,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		p->fillRect( eff_x, uy, segmentWidth, h, bg );
 	    p->drawText(eff_x, y, segStr.string(), -1, d);
 	    if (deco)
-	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth, h, deco);
+	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth - 1, h, deco);
 	    return;
 	}
 
@@ -231,10 +231,11 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         if (d == QPainter::RTL) x -= preSegmentWidth;
 	else x += preSegmentWidth;
 
+        int startx = d == QPainter::RTL ? x-segmentWidth : x;
+        
 	// optionally draw background
 	if ( bg.isValid() )
-	    p->fillRect( d == QPainter::RTL ? x-segmentWidth : x,
-	    		uy, segmentWidth, h, bg );
+	    p->fillRect( startx, uy, segmentWidth, h, bg );
 
 	// second pass: do the actual drawing
         lastWordBegin = from;
@@ -269,8 +270,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	}
 
 	if (deco)
-	    drawDecoration(p, d == QPainter::RTL ? x-segmentWidth : x, uy,
-	    		y - uy, segmentWidth, h, deco);
+	    drawDecoration(p, startx, uy, y - uy, segmentWidth - 1, h, deco);
 
 	if ( scFont )
 	    p->setFont( f );
