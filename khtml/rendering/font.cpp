@@ -96,7 +96,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 int Font::width( QChar *chs, int slen, int pos, int len ) const
 {
-    QString qstr = QConstString(chs+pos, len).string();
+    QConstString cstr(chs+pos, len);
+    int w;
+
+    QString qstr = cstr.string();
     // hack for fonts that don't have a welldefined nbsp
     if ( !fontDef.hasNbsp ) {
 	// str.setLength() always does a deep copy, so the replacement code below is safe.
@@ -107,7 +110,7 @@ int Font::width( QChar *chs, int slen, int pos, int len ) const
 		*(uc+i) = ' ';
     }
     // ### might be a little inaccurate
-    int w = fm.width( qstr );
+    w = fm.width( qstr );
 
     if ( letterSpacing )
 	w += len*letterSpacing;
@@ -127,9 +130,10 @@ int Font::width( QChar *chs, int slen, int pos ) const
     int w;
     if ( !fontDef.hasNbsp && (chs+pos)->unicode() == 0xa0 )
 	w = fm.width( QChar( ' ' ) );
-    else
-	w = fm.charWidth( QConstString( chs, slen).string(), pos );
-
+    else {
+	QConstString cstr( chs, slen );
+	w = fm.charWidth( cstr.string(), pos );
+    }
     if ( letterSpacing )
 	w += letterSpacing;
 

@@ -41,7 +41,7 @@ namespace khtml {
 	bool override : 1;
 	QChar::Direction dir : 5;
 	QChar::Direction basicDir : 5;
-	
+
 	BidiContext *parent;
 
 
@@ -103,8 +103,8 @@ namespace khtml {
 
 	RenderFlow *par;
 	RenderObject *obj;
-	unsigned int pos;
-
+	bool isText : 1;
+	unsigned int pos : 30;
     };
 
     struct BidiStatus {

@@ -148,53 +148,65 @@ static RenderObject *first( RenderObject *par )
     return o;
 }
 
-BidiIterator::BidiIterator()
+inline BidiIterator::BidiIterator()
 {
     par = 0;
     obj = 0;
     pos = 0;
 }
 
-BidiIterator::BidiIterator(RenderFlow *_par)
+inline BidiIterator::BidiIterator(RenderFlow *_par)
 {
     par = _par;
     obj = first( par );
     pos = 0;
+    if ( obj )
+	isText = obj->isText();
 }
 
-BidiIterator::BidiIterator(const BidiIterator &it)
+inline BidiIterator::BidiIterator(const BidiIterator &it)
 {
     par = it.par;
     obj = it.obj;
     pos = it.pos;
+    if ( obj )
+	isText = obj->isText();
 }
 
-BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos)
+inline BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos)
 {
     par = _par;
     obj = _obj;
     pos = _pos;
+    if ( obj )
+	isText = obj->isText();
 }
 
-BidiIterator &BidiIterator::operator = (const BidiIterator &it)
+inline BidiIterator &BidiIterator::operator = (const BidiIterator &it)
 {
     obj = it.obj;
     pos = it.pos;
     par = it.par;
+    if ( obj )
+	isText = obj->isText();
     return *this;
 }
 
 inline void BidiIterator::operator ++ ()
 {
     if(!obj) return;
-    if(obj->isText()) {
+    if(isText) {
         pos++;
         if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
+	    if ( obj )
+		isText = obj->isText();
             pos = 0;
         }
     } else {
         obj = Bidinext( par, obj );
+	if ( obj )
+	    isText = obj->isText();
         pos = 0;
     }
 }
@@ -209,14 +221,14 @@ static const QChar nbsp = QChar(0xA0);
 
 inline const QChar &BidiIterator::current() const
 {
-    if( !obj || !obj->isText()) return nbsp; // non breaking space
+    if( !isText ) return nbsp; // non breaking space
     return static_cast<RenderText *>(obj)->text()[pos];
 }
 
 inline QChar::Direction BidiIterator::direction() const
 {
-    if(!obj || !obj->isText() ) return QChar::DirON;
-    
+    if( !isText ) return QChar::DirON;
+
     RenderText *renderTxt = static_cast<RenderText *>( obj );
     if ( pos >= renderTxt->stringLength() )
         return QChar::DirON;
@@ -1099,7 +1111,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 		goto end;
 	    } else {
 		bool allowWrap = false;
-		if (o->parent()->style()->whiteSpace() != NOWRAP) { 
+		if (o->parent()->style()->whiteSpace() != NOWRAP) {
 		    allowWrap = true;
 		} else {
 		    // See if we are the "left edge" of a nowrap area.

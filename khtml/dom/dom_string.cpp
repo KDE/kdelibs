@@ -207,7 +207,7 @@ QString DOMString::string() const
 {
     if(!impl) return QString::null;
 
-    return QConstString(impl->s, impl->l).string();
+    return QString(impl->s, impl->l);
 }
 
 int DOMString::toInt() const

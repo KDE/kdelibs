@@ -600,7 +600,7 @@ static void checkPseudoState( DOM::ElementImpl *e )
 	return;
     }
     QString u = attr.string();
-    if ( !u.contains("://") ) {
+    if ( u.find("://") == -1 ) {
 	if ( u[0] == '/' )
 	    u = encodedurl->host + u;
 	else if ( u[0] == '#' )
@@ -637,42 +637,50 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::List:
         {
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
+	    int l = value.implementation()->l;
+	    int sl = sel->value.implementation()->l;
+            QConstString str( value.implementation()->s, l );
+            QConstString selStr( sel->value.implementation()->s, sl );
+            int pos = str.string().find(selStr.string(), 0, strictParsing);
             if(pos == -1) return false;
-            if(pos && str[pos-1] != ' ') return false;
-            pos += selStr.length();
-            if(pos < (int)str.length() && str[pos] != ' ') return false;
+            if(pos && value.implementation()->s[pos-1] != ' ') return false;
+            pos += selStr.string().length();
+            if(pos < l && value.implementation()->s[pos] != ' ') return false;
             break;
         }
         case CSSSelector::Contain:
         {
             //kdDebug( 6080 ) << "checking for contains match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
+	    int l = value.implementation()->l;
+	    int sl = sel->value.implementation()->l;
+            QConstString str( value.implementation()->s, l );
+            QConstString selStr( sel->value.implementation()->s, sl );
+            int pos = str.string().find(selStr.string(), 0, strictParsing);
             if(pos == -1) return false;
             break;
         }
         case CSSSelector::Begin:
         {
             //kdDebug( 6080 ) << "checking for beginswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, strictParsing);
+	    int l = value.implementation()->l;
+	    int sl = sel->value.implementation()->l;
+            QConstString str( value.implementation()->s, l );
+            QConstString selStr( sel->value.implementation()->s, sl );
+            int pos = str.string().find(selStr.string(), 0, strictParsing);
             if(pos != 0) return false;
             break;
         }
         case CSSSelector::End:
         {
             //kdDebug( 6080 ) << "checking for endswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-	    if (strictParsing && !str.endsWith(selStr)) return false;
+	    int l = value.implementation()->l;
+	    int sl = sel->value.implementation()->l;
+            QConstString str( value.implementation()->s, l );
+            QConstString selStr( sel->value.implementation()->s, sl );
+	    if (strictParsing && !str.string().endsWith(selStr.string())) return false;
 	    if (!strictParsing) {
-	        int pos = str.length() - selStr.length();
-		if (pos < 0 || pos != str.find(selStr, pos, false) )
+	        int pos = l - sl;
+		if (pos < 0 || pos != str.string().find(selStr.string(), pos, false) )
 		    return false;
 	    }
             break;
@@ -680,14 +688,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Hyphen:
         {
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            if(str.length() < selStr.length()) return false;
+	    int l = value.implementation()->l;
+	    int sl = sel->value.implementation()->l;
+            QConstString str( value.implementation()->s, l );
+            QConstString selStr( sel->value.implementation()->s, sl );
+            if(str.string().length() < selStr.string().length()) return false;
             // Check if str begins with selStr:
-            if(str.find(selStr, 0, strictParsing) != 0) return false;
+            if(str.string().find(selStr.string(), 0, strictParsing) != 0) return false;
             // It does. Check for exact match or following '-':
-            if(str.length() != selStr.length()
-                && str[selStr.length()] != '-') return false;
+            if(l != sl
+                && value.implementation()->s[sl] != '-') return false;
             break;
         }
         case CSSSelector::Pseudo:
@@ -699,54 +709,76 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     {
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
-	const QString& value = sel->value.string();
-//	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
-	if(value == "first-child") {
-	    // first-child matches the first child that is an element!
-	    DOM::NodeImpl *n = e->parentNode()->firstChild();
-	    while( n && !n->isElementNode() )
-		n = n->nextSibling();
-	    if( n == e )
+	QConstString cstr( sel->value.implementation()->s, sel->value.implementation()->l );
+	const QString& value = cstr.string();
+	//	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
+	switch( *( value.unicode() ) ) {
+	case 'f':
+	    if(value == "first-child") {
+		// first-child matches the first child that is an element!
+		DOM::NodeImpl *n = e->parentNode()->firstChild();
+		while( n && !n->isElementNode() )
+		    n = n->nextSibling();
+		if( n == e )
+		    return true;
+	    } else if ( value == "first-line" && subject ) {
+		dynamicPseudo=RenderStyle::FIRST_LINE;
 		return true;
-	} else if ( value == "first-line" && subject ) {
-	    dynamicPseudo=RenderStyle::FIRST_LINE;
-	    return true;
-	} else if ( value == "first-letter" && subject ) {
-	    dynamicPseudo=RenderStyle::FIRST_LETTER;
-	    return true;
-	} else if( value == "link") {
-	    if ( pseudoState == PseudoUnknown )
-		checkPseudoState( e );
-	    if ( pseudoState == PseudoLink ) {
+	    } else if ( value == "first-letter" && subject ) {
+		dynamicPseudo=RenderStyle::FIRST_LETTER;
 		return true;
-	    }
-	} else if ( value == "visited" ) {
-	    if ( pseudoState == PseudoUnknown )
-		checkPseudoState( e );
-	    if ( pseudoState == PseudoVisited )
-		return true;
-	} else if ( value == "hover" ) {
-	    selectorDynamicState |= StyleSelector::Hover;
-	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
-	    // to the element.
-	    return true;
-	} else if ( value == "focus" ) {
-	    selectorDynamicState |= StyleSelector::Focus;
-	    return true;
-	} else if ( value == "active" ) {
-	    if ( pseudoState == PseudoUnknown )
-		checkPseudoState( e );
-	    if ( pseudoState != PseudoNone ) {
-		selectorDynamicState |= StyleSelector::Active;
+	    } else if ( value == "focus" ) {
+		selectorDynamicState |= StyleSelector::Focus;
 		return true;
 	    }
-	} else if ( value == "before" ) {
-            dynamicPseudo = RenderStyle::BEFORE;
-            return true;
-        } else if ( value == "after" ) {
-            dynamicPseudo = RenderStyle::AFTER;
-            return true;
-        }
+	    break;
+	case 'l':
+	    if( value == "link") {
+		if ( pseudoState == PseudoUnknown )
+		    checkPseudoState( e );
+		if ( pseudoState == PseudoLink ) {
+		    return true;
+		}
+	    }
+	    break;
+	case 'v':
+	    if ( value == "visited" ) {
+		if ( pseudoState == PseudoUnknown )
+		    checkPseudoState( e );
+		if ( pseudoState == PseudoVisited )
+		    return true;
+	    }
+	    break;
+	case 'h':
+	    if ( value == "hover" ) {
+		selectorDynamicState |= StyleSelector::Hover;
+		// dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
+		// to the element.
+		return true;
+	    } break;
+	case 'a':
+	    if ( value == "active" ) {
+		if ( pseudoState == PseudoUnknown )
+		    checkPseudoState( e );
+		if ( pseudoState != PseudoNone ) {
+		    selectorDynamicState |= StyleSelector::Active;
+		    return true;
+		}
+	    } else if ( value == "after" ) {
+		dynamicPseudo = RenderStyle::AFTER;
+		return true;
+	    }
+
+	    break;
+	case 'b':
+	    if ( value == "before" ) {
+		dynamicPseudo = RenderStyle::BEFORE;
+		return true;
+	    }
+	    break;
+	default:
+	    return false;
+	}
 	return false;
     }
     // ### add the rest of the checks...

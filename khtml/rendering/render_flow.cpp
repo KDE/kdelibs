@@ -1093,8 +1093,7 @@ void RenderFlow::calcMinMaxWidth()
                     margins += (type == Fixed ? cstyle->marginRight().value : child->marginRight());
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
-                if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
-                {
+                if (child->isText() && static_cast<RenderText *>(child)->stringLength() > 0) {
 
                     int ti = cstyle->textIndent().minWidth(cw);
                     childMin+=ti;
@@ -1102,17 +1101,17 @@ void RenderFlow::calcMinMaxWidth()
 
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
-                    if (t->data()[0] == nbsp) //inline starts with nbsp
+                    if (t->text()[0] == nbsp) //inline starts with nbsp
                     {
                         currentMin += childMin;
                         inlineMax += childMax;
                         hasNbsp = true;
                     }
-                    if (hasNbsp && t->data()[t->length()-1]==nbsp )
+                    if (hasNbsp && t->text()[t->stringLength()-1]==nbsp )
                     {                           //inline starts and ends with nbsp
                         noBreak=true;
                     }
-                    else if (t->data()[t->length()-1] == nbsp && t->data()[0] != ' ')
+                    else if (t->text()[t->stringLength()-1] == nbsp && t->text()[0] != ' ')
                     {                           //inline only ends with nbsp
                         if(currentMin < childMin) currentMin = childMin;
                         inlineMax += childMax;
