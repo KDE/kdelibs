@@ -590,25 +590,31 @@ QString KFileItem::getToolTipText()
 
   QStringList keys;
   
+  tip = "<nobr><table cellspacing=0 cellpadding=0><tr>"
+        "<th colspan=2><center><b>";
+
   // if we got no or empty info, show a default tip
   if ( !info || (keys = info->preferredKeys()) .isEmpty() )
   {
     kdDebug() << "Found no meta info" << endl;
-    tip  = "<nobr><b><center>"+ m_url.fileName() + "</center></b>";
-    tip += i18n("Type: ");
+    tip  += m_url.fileName() + "</center></b></th></tr>";
+
+    tip += "<tr><td>" + i18n("Type:") + "</td><td>";
         
-    KMimeType::Ptr mimetype = determineMimeType();
+    QString type = QStyleSheet::escape(determineMimeType()->comment());
     if ( m_bLink )
-      tip += i18n("Link to %1<br>").arg(mimetype->comment());
+      tip += i18n("Link to %1").arg(type) + "</td></tr><tr><td>";
     else
-      tip += mimetype->comment() + "<br>";
+      tip += type + "</td></tr><tr><td>";
 
     if ( !S_ISDIR ( m_fileMode ) )
-      tip += i18n("Size: ") + KIO::convertSize( size() ) + "<br>";
+      tip += i18n("Size:") + "</td><td>" + KIO::convertSize( size() ) +
+                              "</td></tr><tr><td>";
 
-    tip += i18n("Modified: ") + 
-                timeString( KIO::UDS_MODIFICATION_TIME) + "<br>" +
-           i18n("Permissions: ") + parsePermissions(m_permissions) +"</nobr>";
+    tip += i18n("Modified:") + "</td><td>" +
+                timeString( KIO::UDS_MODIFICATION_TIME) + "</td></tr><tr><td>" +
+           i18n("Permissions:") + "</td><td>" + parsePermissions(m_permissions) +
+                "</td></tr></table></nobr>";
   }
   else
   {
@@ -617,14 +623,13 @@ QString KFileItem::getToolTipText()
     
     // if we don't find a title, show the file name instead
     if (! (item = info->item("Title")) && ! (item = info->item("Name")))
-      tip = "<nobr><b><center>"+ QStyleSheet::escape(m_url.fileName()) +
-                "</center></b>";
+      tip += QStyleSheet::escape(m_url.fileName());
     else
-      tip = "<nobr><b><center>" + QStyleSheet::escape(item->value().toString())+
-            "</center></b>";
+      tip += QStyleSheet::escape(item->value().toString());
       
-    // now the rest
+    tip += "</b></center></th></tr>";
     
+    // now the rest
     QStringList::Iterator it = keys.begin();
     for (int count = 0; count<=maxcount && it!=keys.end() ; ++it)
     {
@@ -658,20 +663,20 @@ QString KFileItem::getToolTipText()
             break;
         }
       
-        if ( !s.isEmpty() )
+        if ( (s != QString::null) && !s.isEmpty() )
         {
           count++;
-          tip += QStyleSheet::escape( item->translatedKey() ) + ": " +
+          tip += "<tr><td>" +
+                 QStyleSheet::escape( item->translatedKey() ) + ":</td><td>" +
                  item->prefix() +
                  QStyleSheet::escape( s ) +
-                 item->postfix();
-          
-          if ( (item->key()!=keys.last()) && (count<=maxcount) ) tip += "<br>";
+                 item->postfix() +
+                 "</td></tr>";
         }
 
       }
     }
-    tip += "</nobr>";
+    tip += "</table></nobr>";
   }
   return tip;
 }
