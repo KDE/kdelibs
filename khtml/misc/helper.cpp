@@ -31,7 +31,7 @@ using namespace DOM;
 using namespace khtml;
 
 // ### make it const if possible...
-static struct HTMLColors {
+ struct HTMLColors {
     QMap<QString,QColor> map;
     HTMLColors()
     {
@@ -52,10 +52,15 @@ static struct HTMLColors {
 	map["fuchsia"] = "#ff00ff";
 	map["aqua"] = "#00ffff";
     };
-} htmlColors;
+};
+
+static HTMLColors *htmlColors = 0L;
 
 void khtml::setNamedColor(QColor &color, const QString &name)
 {
+    if( !htmlColors )
+      htmlColors = new HTMLColors;
+
     // also recognize "color=ffffff"
     if (name[0] != QChar('#') && name.length() == 6)
     {
@@ -98,7 +103,7 @@ void khtml::setNamedColor(QColor &color, const QString &name)
     }
     else
     {
-    	const QColor& tc = htmlColors.map[name];
+    	const QColor& tc = htmlColors->map[name];
 	if (tc.isValid())
     	    color = tc;	
 	else
