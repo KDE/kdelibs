@@ -481,9 +481,8 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLFrameSetElementImpl::attach()
 {
-    assert(!m_render);
+    assert(!attached() );
     assert(parentNode());
-    assert(parentNode()->renderer());
 
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
@@ -500,9 +499,11 @@ void HTMLFrameSetElementImpl::attach()
     }
 
     // ignore display: none
-    m_render = new (getDocument()->renderArena()) RenderFrameSet(this);
-    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
+    if ( parentNode()->renderer() ) {
+        m_render = new (getDocument()->renderArena()) RenderFrameSet(this);
+        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+       parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
 
     NodeBaseImpl::attach();
 }
