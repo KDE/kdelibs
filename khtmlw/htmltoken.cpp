@@ -547,11 +547,10 @@ void HTMLTokenizer::write( const char *str )
 	    src++;
 	}
 	else if ( *src == '\"' || *src == '\'')
-	{ // we treat " & ' the same
-	    src++;
-
+	{ // we treat " & ' the same in tags
 	    if ( tag )
 	    {
+		src++;
 		if ( *(dest-1) == '=' )
 		{
 		    tquote = true;
@@ -578,7 +577,7 @@ void HTMLTokenizer::write( const char *str )
 		if ( pre )
 		    pre_pos++;
 
-		*dest++ = '\"';
+		*dest++ = *src++;
 	    }
 	}
 	else if ( *src == '=' )

@@ -47,6 +47,8 @@ public:
 		{	font.setStrikeOut( s ); }
 	void setTextColor( const QColor &col )
 		{	textCol = col; }
+	void setCharset( QFont::CharSet ch )
+		{	font.setCharSet( ch ); }
 
 	const char *family() const
 		{	return font.family(); }
@@ -64,6 +66,8 @@ public:
 		{	return textCol; }
 	int size() const
 		{	return fsize; }
+	const Charset () const
+		{	return font.charSet(); }
 
 	const HTMLFont &operator=( const HTMLFont &f );
 	bool operator==( const HTMLFont &f );
@@ -112,11 +116,14 @@ class HTMLFontManager
 {
 public:
 	HTMLFontManager();
+        void setCharset( const char *chars );
 
 	const HTMLFont *getFont( const HTMLFont &f );
 
 private:
 	QList<HTMLFont> list;
+        QFont::CharSet charset;
+        static const char *charsets[9];
 };
 
 //-----------------------------------------------------------------------------

@@ -2778,6 +2778,7 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 
 // <map             </map>
 // <menu>           </menu>         partial
+// <meta> 			    partial - only charset
 void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 {
 	if (strncmp( str, "menu", 4 ) == 0)
@@ -2811,6 +2812,42 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 				debugM( "Map: %s\n", (const char *)mapurl );
 			}
 		}
+	}
+	else if ( strncmp( str, "meta", 4 ) == 0 )
+	{
+                QString httpequiv;
+                QString name;
+		QString content;
+		debugM("Parsing <META>: %s\n",str);
+		stringTok->tokenize( str + 4, " >" );
+		while ( stringTok->hasMoreTokens() )
+	   	{
+			const char* token = stringTok->nextToken();
+			debugM("token: %s\n",token);
+			if ( strncasecmp( token, "name=", 5 ) == 0)
+				name=token+5;
+			else if ( strncasecmp( token, "http-equiv=", 11 ) == 0)
+				httpequiv=token+11;
+			else if ( strncasecmp( token, "content=", 8 ) == 0)
+				content=token+8;
+                         
+		}
+		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
+                          (const char *)name,(const char *)httpequiv,(const char *)content );
+		if ( strcasecmp(httpequiv,"content-type") == 0)
+		{
+			stringTok->tokenize( content, " >;" );
+			while ( stringTok->hasMoreTokens() )
+	   		{
+				const char* token = stringTok->nextToken();
+				debugM("token: %s\n",token);
+				if ( strncasecmp( token, "charset=", 8 ) == 0){
+					debugM("Setting charset to: %s\n",token+8);
+					pFontManager->setCharset(token+8);
+				}
+			}                         
+		}
+			 
 	}
 }
 

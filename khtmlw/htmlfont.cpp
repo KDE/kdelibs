@@ -19,6 +19,7 @@
 */
 
 #include "htmlfont.h"
+#include <string.h>
 
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
@@ -54,9 +55,33 @@ const HTMLFont *HTMLFontManager::getFont( const HTMLFont &f )
     }
 
     cf = new HTMLFont( f );
+    cf->setCharset(charset);
 
     list.append( cf );
 
     return cf;
 }
 
+const char * HTMLFontManager::charsets[9]={"iso-8859-1",
+                                       "any",
+                           	       "iso-8859-2",
+                                       "iso-8859-3",
+ 				       "iso-8859-4",
+ 				       "iso-8859-5",
+ 				       "iso-8859-6",
+ 				       "iso-8859-7",
+ 				       "iso-8859-8"};
+
+void HTMLFontManager::setCharset( const char * ch){
+
+  charset=QFont::AnyCharSet;
+  for(int c=QFont::ISO_8859_1;c<=QFont::ISO_8859_8;c++)
+    if ( stricmp(ch,charsets[c])==0 ){
+      charset=(QFont::CharSet)c;
+      break;
+    }
+  
+  HTMLFont *cf;
+  for ( cf = list.first(); cf; cf = list.next() )
+    cf->setCharset(charset);
+}

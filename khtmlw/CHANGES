@@ -1,7 +1,14 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 26 November 1997 - Martin Jones.
+Last Change: 01 December 1997 - Martin Jones.
+
+Version 0.12.04
+---------------
+
+Fix '
+Support for other charsets from Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
+
 
 Version 0.12.03
 ---------------
