@@ -27,8 +27,6 @@
 #include <qstring.h>
 #include <kurl.h>
 
-#include "kfmclient_ipc.h"
-
 class KDirEntry
 {
 public:
@@ -148,8 +146,6 @@ protected:
     bool ok;
     bool allowRestart;
     
-    KfmIpc *ipc;
-
     KDirEntry entry;
 
  private:

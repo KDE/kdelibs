@@ -18,10 +18,10 @@
 
 INCLUDES = $(all_includes) 
 
-libkfm_la_METASOURCES = kfm.moc kfmclient_ipc.moc
+libkfm_la_METASOURCES = kfm.moc
 
 lib_LTLIBRARIES = libkfm.la
 libkfm_la_LDFLAGS = -version-info 3:0
 
-libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp kfmipc.cpp
-include_HEADERS = kfm.h kfmclient_ipc.h kfmipc.h
+libkfm_la_SOURCES = kfm.cpp
+include_HEADERS = kfm.h 

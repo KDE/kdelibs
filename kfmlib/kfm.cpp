@@ -43,9 +43,9 @@ QString displayName()
 
 KFM::KFM()
 {
+    warning("KFM class (kfmlib) is deprecated !! It won't do anything.");
     flag = 0;
     ok = FALSE;
-    ipc = 0L;
     allowRestart = FALSE;
     modal_hack_widget = 0;
 
@@ -54,8 +54,6 @@ KFM::KFM()
 
 KFM::~KFM()
 {
-    if ( ipc )
-	delete ipc;
 }              
 
 
@@ -111,252 +109,80 @@ bool KFM::downloadInternal(const QString & src, QString & target){
 
 void KFM::init()
 {
-    QString file = KApplication::localkdedir() + "/share/apps/kfm/pid";
-    file += displayName();
-    
-    // Try to open the pid file
-    FILE *f = fopen( file.data(), "rb" );
-    if ( f == 0L )
-    {
-	// Did we already try to start a new kfm ?
-	if ( flag == 0 && allowRestart )
-	{
-	    // Try to start a new kfm
-	    system( "kfm -d &" );
-	    // dont try twice
-	    flag = 1;
-	    sleep( 10 );
-	    init();
-	    return;
-	}
-	
-	if (!silent) warning("ERROR: KFM is not running");
-	return;
-    }
-    
-    // Read the PID
-    char buffer[ 1024 ];
-    buffer[0] = 0;
-    fgets( buffer, 1023, f );
-    int pid = atoi( buffer );
-    if ( pid <= 0 )
-    {
-	if (!silent) warning("ERROR: Invalid PID");
-	fclose( f );
-	return;
-    }
-
-    // Is the PID ok ?
-    if ( kill( pid, 0 ) != 0 )
-    {
-	// Did we already try to start a new kfm ?
-	if ( flag == 0 && allowRestart )
-	{
-	    flag = 1;
-	    // Try to start a new kfm
-	    system( "kfm -d &" );
-	    sleep( 10 );
-	    fclose( f );
-	    init();
-	    return;
-	}
-
-	if (!silent) warning("ERROR: KFM crashed");
-	fclose( f );
-	return;
-    }
-
-    // Read the socket's name
-    buffer[0] = 0;
-    fscanf(f, "%s", buffer); 
-    fclose( f );
-    char * slot = strdup( buffer );
-    if ( slot == (void *) 0 )
-    {
-	if (!silent) warning("ERROR: Invalid Slot");
-	return;
-    }
-    
-    // Connect to KFM
-    ipc = new KfmIpc( slot );
-    free(slot);
-
-    connect( ipc, SIGNAL( finished() ), this, SLOT( slotFinished() ) );
-    connect( ipc, SIGNAL( error( int, const char* ) ),
-	     this, SLOT( slotError( int, const char* ) ) );
-    connect( ipc, SIGNAL( dirEntry( const char*, const char*, const char*, const char*, const char*, int ) ),
-	     this, SLOT( slotDirEntry( const char*, const char*, const char*, const char*, const char*, int ) ) );
-
-    // Read the password
-    QString fn = KApplication::localkdedir() + "/share/apps/kfm/magic";
-    f = fopen( fn.data(), "rb" );
-    if ( f == 0L )
-    {
-	QString ErrorMessage = i18n("You dont have the file %1\n"
-				    "Could not do Authorization").arg(fn);
-	
-	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
-	return;
-    }
-    char *p = fgets( buffer, 1023, f );
-    fclose( f );
-    if ( p == 0L )
-    {
-	QString ErrorMessage  = i18n("The file %1 is corrupted\n"
-				    "Could not do Authorization").arg(fn);
-	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
-	return;
-    }
-
-    ipc->auth( buffer );
-    
     ok = TRUE;
 }
 
 void KFM::refreshDesktop()
 {
-    if ( !test() )
-	return;
-    
-    ipc->refreshDesktop();
 }
 
 void KFM::sortDesktop()
 {
-    if ( !test() )
-	return;
-    
-    ipc->sortDesktop();
 }
 
 void KFM::configure()
 {
-  if ( !test() )
-    return;
-  ipc->configure();
 }
 
 void KFM::openURL()
 {
-    if ( !test() )
-	return;
-    
-    ipc->openURL( "" );
+  warning("Deprecated KFM::openURL called. Use 'kfmclient openURL' instead.");
 }
 
 void KFM::openURL( const char *_url )
 {
-    if ( !test() )
-	return;
-    
-    ipc->openURL( _url );
+  warning("Deprecated KFM::openURL called. Use 'kfmclient openURL' instead.");
 }
 
 void KFM::list( const char *_url )
 {
-    if ( !test() )
-	return;
-    
-    ipc->list( _url );
 }
 
 void KFM::refreshDirectory( const char *_url )
 {
-    if ( !test() )
-	return;
-    
-    ipc->refreshDirectory( _url );
 }
 
 void KFM::openProperties( const char *_url )
 {
-    if ( !test() )
-	return;
-    
-    ipc->openProperties( _url );
+  warning("Deprecated KFM::openURL called. Use PropertiesDialog (kio_dlgprops.h) instead.");
 }
 
 void KFM::exec( const char *_url, const char *_binding )
 {
-    if ( !test() ) {
-	return;
-    }
-    ipc->exec( _url, _binding );
+  warning("Deprecated KFM::openURL called. Use KRun instead.");
 }
 
 void KFM::copy( const char *_src, const char *_dest )
 {
-    if ( !test() )
-	return;
-    
-    ipc->copy( _src, _dest );
+  warning("Deprecated KFM::copy called. Use KIOJob instead.");
 }
 
 void KFM::move( const char *_src, const char *_dest )
 {
-    if ( !test() )
-	return;
-    
-    ipc->move( _src, _dest );
+  warning("Deprecated KFM::move called. Use KIOJob instead.");
 }
 
 void KFM::copyClient( const char *_src, const char *_dest )
 {
-    if ( !test() )
-	return;
-    
-    ipc->copyClient( _src, _dest );
+  warning("Deprecated KFM::copyClient called. Use KIOJob instead.");
 }
 
 void KFM::moveClient( const char *_src, const char *_dest )
 {
-    if ( !test() )
-	return;
-    
-    ipc->moveClient( _src, _dest );
+  warning("Deprecated KFM::moveClient called. Use KIOJob instead.");
 }
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-    //warning( "KFM call: selectRootIcons");
-    if ( !test() )
-	return;
-    //warning( "KFM doing call");
-    
-    ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
 
 void KFM::slotFinished()
 {
-  if (modal_hack_widget){
-    modal_hack_widget->close(true);
-    modal_hack_widget = 0;
-    qApp->exit_loop();
-  }
-  emit finished();
 }
 
 bool KFM::test()
 {
-    if ( ( ipc == 0L || !ipc->isConnected() ) && allowRestart )
-    {
-	warning( "*********** KFM crashed **************" );
-	if ( ipc )
-	    delete ipc;
-	
-	ipc = 0L;
-	flag = 0;
-	ok = FALSE;
-
-	warning( "KFM recovery" );
-	init();
-	warning( "KFM recovery done" );
-    }
-
-    if ( ipc == 0L )
-	warning( "KFM NOT READY");
-    
-    return ( ipc==0L?false:true );
+  return false;
 }
 
 void KFM::allowKFMRestart( bool _allow )
@@ -366,10 +192,7 @@ void KFM::allowKFMRestart( bool _allow )
 
 bool KFM::isKFMRunning()
 {
-    if ( ipc == 0L ) return FALSE;
-    if ( ipc->isConnected() )
-	return TRUE;
-    return FALSE;
+  return FALSE;
 }
 
 void KFM::slotError( int _kerror, const QString&_text )
@@ -397,6 +220,8 @@ bool KFM::silent = false;
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )
 {
+
+    warning("DlgLocation class (kfmlib) is deprecated !!");
 
     QLabel *label = new QLabel( _text , this );
     label->adjustSize(); // depends on the text length
