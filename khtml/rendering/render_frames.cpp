@@ -800,15 +800,16 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
     KParts::BrowserExtension *ext = part->browserExtension();
     if( embed && !embed->pluginPage.isEmpty() && ext ) {
+        // Prepare the mimetype to show in the question (comment if available, name as fallback)
+        QString mimeName = serviceType;
+        KMimeType::Ptr mime = KMimeType::mimeType(serviceType);
+        if ( mime->name() != KMimeType::defaultMimeType() )
+            mimeName = mime->comment();
+
         // Check if we already asked the user, for this page
-        if ( part->docImpl() && !part->pluginPageQuestionAsked( serviceType ) )
+        if (!mimeName.isEmpty() && part->docImpl() && !part->pluginPageQuestionAsked( serviceType ) )
         {
             part->setPluginPageQuestionAsked( serviceType );
-            // Prepare the mimetype to show in the question (comment if available, name as fallback)
-            QString mimeName = serviceType;
-            KMimeType::Ptr mime = KMimeType::mimeType(serviceType);
-            if ( mime->name() != KMimeType::defaultMimeType() )
-                mimeName = mime->comment();
             // Prepare the URL to show in the question (host only if http, to make it short)
             KURL pluginPageURL( embed->pluginPage );
             QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
