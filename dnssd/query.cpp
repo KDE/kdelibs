@@ -78,7 +78,7 @@ void Query::startQuery()
 	d->m_finished = false;
 	DNSServiceRef ref;
 #ifdef HAVE_DNSSD
-	if (DNSServiceBrowse(&ref,0,0, d->m_type, 
+	if (DNSServiceBrowse(&ref,0,0, d->m_type.utf8(), 
 	    d->m_domain.utf8(),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif

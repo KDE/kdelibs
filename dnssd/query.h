@@ -23,7 +23,6 @@
 
 #include <qobject.h>
 #include <dnssd/remoteservice.h>
-#include <kdemacros.h>
 
 
 namespace DNSSD
@@ -37,7 +36,7 @@ name, either multicast or unicast DNS will be used.
 @short Class that represents service query in one domain.
 @author Jakub Stachowski
  */
-class KDE_EXPORT Query : public QObject
+class KDNSSD_EXPORT Query : public QObject
 {
 	Q_OBJECT
 public:

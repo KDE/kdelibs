@@ -24,7 +24,6 @@
 #include <qobject.h>
 #include <qdict.h>
 #include <dnssd/remoteservice.h>
-#include <kdemacros.h>
 
 // KIPC message ID used by kcm module to signal change in browsing domains list
 
@@ -39,7 +38,7 @@ class DomainBrowserPrivate;
 @short Class used to provide current list of browsing domains.
 @author Jakub Stachowski
 */
-class KDE_EXPORT DomainBrowser : public QObject
+class KDNSSD_EXPORT DomainBrowser : public QObject
 {
 	Q_OBJECT
 public:

@@ -23,7 +23,6 @@
 
 #include <qmap.h>
 #include <ksharedptr.h>
-#include <kdemacros.h>
 
 class QString;
 namespace DNSSD
@@ -36,7 +35,7 @@ services of given type are present in given domain.
 @short Describes any type of service.
 @author Jakub Stachowski
  */
-class KDE_EXPORT ServiceBase : public KShared
+class KDNSSD_EXPORT ServiceBase : public KShared
 {
 public:
 	typedef KSharedPtr<ServiceBase> Ptr;

@@ -82,8 +82,8 @@ void RemoteService::resolveAsync()
 	DNSServiceRef ref;
 	kdDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 #ifdef HAVE_DNSSD
-	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type, 
-		m_domain,resolve_callback,reinterpret_cast<void*>(this))
+	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type.utf8(), 
+		m_domain.utf8(),resolve_callback,reinterpret_cast<void*>(this))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	kdDebug() << "REF is " << ref << ", running: " << d->isRunning() << "\n";

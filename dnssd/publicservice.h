@@ -23,7 +23,6 @@
 
 #include <qobject.h>
 #include <dnssd/servicebase.h>
-#include <kdemacros.h>
 
 namespace DNSSD
 {
@@ -53,7 +52,7 @@ service->publishAsync();
 @author Jakub Stachowski
  */
 
-class KDE_EXPORT PublicService : public QObject, public ServiceBase
+class KDNSSD_EXPORT PublicService : public QObject, public ServiceBase
 {
 	Q_OBJECT
 public:

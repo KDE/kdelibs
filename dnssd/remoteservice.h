@@ -23,7 +23,6 @@
 
 #include <qobject.h>
 #include <dnssd/servicebase.h>
-#include <kdemacros.h>
 
 namespace DNSSD
 {
@@ -38,7 +37,7 @@ service is resolved are name, type.and domain.
 @short class representing service announced on remote machine.
 @author Jakub Stachowski
  */
-class KDE_EXPORT RemoteService : public QObject, public ServiceBase
+class KDNSSD_EXPORT RemoteService : public QObject, public ServiceBase
 {
 	Q_OBJECT
 public:

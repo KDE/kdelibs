@@ -24,7 +24,6 @@
 #include <qobject.h>
 #include <qdict.h>
 #include <dnssd/remoteservice.h>
-#include <kdemacros.h>
 
 
 class QStringList;
