@@ -1216,10 +1216,7 @@ void HTMLTokenizer::addPending()
             qDebug("tab pending, prePos: %d, toadd: %d", prePos, p);
 
             for ( int x = 0; x < p; x++ )
-            {
-                *dest = QChar(' ');
-                dest++;
-            }
+                *dest++ = QChar(' ');
             prePos += p;
             break;
 
