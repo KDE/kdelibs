@@ -31,6 +31,7 @@
 #include "audiosubsys.h"
 #include "synthschedule.h"
 #include "tcpserver.h"
+#include "cpuusage.h"
 
 using namespace std;
 using namespace Arts;
@@ -157,7 +158,9 @@ int main(int argc, char **argv)
 
 	if(cfgPort)			 TCPServer::setPort(cfgPort);
 
-	Dispatcher dispatcher(0,cfgServers);
+	CPUUsage	cpuUsage;
+	Dispatcher	dispatcher(0,cfgServers);
+
 	initSignals();
 
 	/* apply configuration */
