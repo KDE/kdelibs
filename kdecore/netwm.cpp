@@ -3948,7 +3948,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
 		p->startup_id = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
