@@ -782,7 +782,7 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
   // the slave told us that we got redirected
   kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
 
-  emit d->m_extension->setLocationBarURL( url.url() );
+  emit d->m_extension->setLocationBarURL( url.prettyURL() );
 
   d->m_workingURL = url;
 }
