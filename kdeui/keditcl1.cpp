@@ -34,15 +34,24 @@
 #include "keditcl.h"
 #include "keditcl.moc"
 
+class KEdit::KEditPrivate
+{
+public:
+    bool overwriteEnabled;
+};
+
+
 KEdit::KEdit(QWidget *_parent, const char *name)
    : QMultiLineEdit(_parent, name)
 {
+    d = new KEditPrivate;
+    d->overwriteEnabled = false;
+
     parent = _parent;
 
     // fancy optimized refreshing (Matthias and Paul)
     repaintTimer = new QTimer(this);
     connect(repaintTimer, SIGNAL(timeout()), this, SLOT(repaintAll()));
-
 
     // set some defaults
 
@@ -58,9 +67,9 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 }
 
 
-
-KEdit::~KEdit(){
-
+KEdit::~KEdit()
+{
+  delete d;
 }
 
 void
@@ -331,10 +340,13 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	return;
     }
 
-  if (e->key() == Key_Insert){
-    this->setOverwriteMode(!this->isOverwriteMode());
-    emit toggle_overwrite_signal();
-    return;
+  if (d->overwriteEnabled)
+  {
+    if (e->key() == Key_Insert){
+       this->setOverwriteMode(!this->isOverwriteMode());
+       emit toggle_overwrite_signal();
+       return;
+    }
   }
 
   QMultiLineEdit::keyPressEvent(e);
@@ -458,3 +470,9 @@ void  KEdit::dropEvent(QDropEvent* e) {
   else if(QTextDrag::canDecode(e))
     QMultiLineEdit::dropEvent(e);
 }
+
+void KEdit::setOverwriteEnabled(bool b)
+{
+  d->overwriteEnabled = b;
+}
+

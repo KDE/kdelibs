@@ -252,6 +252,14 @@ public:
      */
     void spellcheck_stop();
 
+    /**
+     * Allow the user to toggle between insert mode and overwrite mode with
+     * the "Insert" key. See also @ref toggle_overwrite_signal();
+     * 
+     * The default is false: the user can not toggle.
+     */
+    void setOverwriteEnabled(bool b);
+
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
       * @ref QMultiLineEdit widget.
@@ -268,9 +276,14 @@ signals:
      */
     void 	CursorPositionChanged();
 
-    /** This signal is emitted if the user toggles from overwrite to insert mode.
+    /** 
+     * This signal is emitted if the user toggles from insert to overwrite mode
+     * or vice versa.
      *
      * The user can do so by pressing the "Insert" button on a PC keyboard.
+     *
+     * This feature must be activated by calling @ref setOverwriteEnabled(true) 
+     * first.
      */
     void 	toggle_overwrite_signal();
 
