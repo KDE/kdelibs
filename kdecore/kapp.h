@@ -313,12 +313,6 @@ public:
   static QCString launcher();
 
   /**
-   * Get the full path of the LD_PRELOAD library which sets the
-   * _NET_WM_PID property. (used for app start notification)
-   */
-  static QString libmapnotify();
-
-  /**
    * The way a service gets started depends on the 'X-DCOP-ServiceType'
    * entry in the desktop file of the service:
    *
@@ -786,6 +780,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.185  2000/08/31 19:56:48  waba
+// WABA: Cleaning up the mess: s^KTMainWindow^KMainWindow^
+//
 // Revision 1.184  2000/08/24 12:44:48  porten
 // "friend class" patches from Thomas Kunert <kunert@physik.tu-dresden.de>
 //

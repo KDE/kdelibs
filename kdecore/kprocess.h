@@ -247,7 +247,7 @@ public:
   /**
      @return @p true if the process is (still) considered to be running
   */
-  bool isRunning();
+  bool isRunning() const;
 
   /** Returns the process id of the process.
    *
@@ -256,9 +256,15 @@ public:
    *  child process that was created by this instance of KProcess.
    *
    *  Calling it before any child process has been started by this
-   *  KProcess instance causes getPid() to return 0.
+   *  KProcess instance causes pid() to return 0.
    **/
-  pid_t getPid();
+  pid_t pid() const;
+
+  /**
+   * Use pid().
+   * @deprecated
+   */
+  pid_t getPid() const { return pid(); }
 
   /**
    * Suspend processing of data from stdout of the child process.
@@ -277,7 +283,7 @@ public:
    * Note that you should check @ref KProcess::exitStatus() to determine
    * whether the process completed its task successfull or not. 
    */
-  bool normalExit();
+  bool normalExit() const;
 
   /**
    * Retrieve the exit status of the process.
@@ -288,7 +294,7 @@ public:
    * this function because if the process did not exit normally,
    * it does not have a valid exit status.
   */
-  int  exitStatus();
+  int  exitStatus() const;
 
 
   /**
@@ -348,7 +354,7 @@ public:
    * Lets you see what your arguments are for debugging.
    */
 
-  const QStrList * args() { return &arguments; }
+  QStrList * args() { return &arguments; }
 
   /**
    * Controls whether the started process should drop any
@@ -362,7 +368,7 @@ public:
    * Returns whether the started process will drop any
    * setuid/segid privileges or whether it will keep them
    */
-  bool runPrivileged();
+  bool runPrivileged() const;
 
 signals:
 
@@ -480,7 +486,7 @@ protected:
       member function since it will probably be made private in
       later versions of KProcess.
   */
-  pid_t pid;
+  pid_t pid_;
 
   /** The process' exit status as returned by "waitpid". You should not
       modify the value of this data member from derived classes. You should

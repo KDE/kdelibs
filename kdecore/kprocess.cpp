@@ -76,23 +76,25 @@
 
 
 KProcess::KProcess()
-        : arguments( true ) // Make deep copies
+  : QObject(),
+    arguments(true), // Make deep copies
+    run_mode(NotifyOnExit),
+    runs(false),
+    pid_(0),
+    status(0),
+    innot(0),
+    outnot(0),
+    errnot(0),
+    communication(NoCommunication),
+    input_data(0),
+    input_sent(0),
+    input_total(0),
+    keepPrivs(false)
 {
   if (0 == KProcessController::theKProcessController) {
         KProcessController::theKProcessController= new KProcessController();
         CHECK_PTR(KProcessController::theKProcessController);
   }
-
-  run_mode = NotifyOnExit;
-  runs = false;
-  pid = 0;
-  status = 0;
-  innot = outnot = errnot = 0;
-  communication = NoCommunication;
-  input_data = 0;
-  input_sent = 0;
-  input_total = 0;
-  keepPrivs = false;
 
   KProcessController::theKProcessController->processList->append(this);
 }
@@ -104,7 +106,7 @@ KProcess::setRunPrivileged(bool keepPrivileges)
 }
 
 bool
-KProcess::runPrivileged()
+KProcess::runPrivileged() const
 {
    return keepPrivs;
 }
@@ -185,9 +187,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   // WABA: Note that we use fork() and not vfork() because
   // vfork() has unclear semantics and is not standardized.
-  pid = fork();
+  pid_ = fork();
 
-  if (0 == pid) {
+  if (0 == pid_) {
         if (fd[0])
            close(fd[0]);
         if (!runPrivileged())
@@ -226,7 +228,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
           write(fd[1], &resultByte, 1);
         _exit(-1);
 
-  } else if (-1 == pid) {
+  } else if (-1 == pid_) {
         // forking failed
 
         runs = false;
@@ -251,7 +253,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
                runs = false;
                close(fd[0]);
                free(arglist);
-               pid = 0;
+               pid_ = 0;
                return false;
            }
            if (n == -1)
@@ -290,37 +292,37 @@ bool KProcess::kill(int signo)
 {
   bool rv=false;
 
-  if (0 != pid)
-    rv= (-1 != ::kill(pid, signo));
+  if (0 != pid_)
+    rv= (-1 != ::kill(pid_, signo));
   // probably store errno somewhere...
   return rv;
 }
 
 
 
-bool KProcess::isRunning()
+bool KProcess::isRunning() const
 {
   return runs;
 }
 
 
 
-pid_t KProcess::getPid()
+pid_t KProcess::pid() const
 {
-  return pid;
+  return pid_;
 }
 
 
 
-bool KProcess::normalExit()
+bool KProcess::normalExit() const
 {
   int _status = status;
-  return (pid != 0) && (!runs) && (WIFEXITED((_status)));
+  return (pid_ != 0) && (!runs) && (WIFEXITED((_status)));
 }
 
 
 
-int KProcess::exitStatus()
+int KProcess::exitStatus() const
 {
   int _status = status;
   return WEXITSTATUS((_status));
@@ -727,9 +729,9 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 
   // WABA: Note that we use fork() and not vfork() because
   // vfork() has unclear semantics and is not standardized.
-  pid = fork();
+  pid_ = fork();
 
-  if (0 == pid) {
+  if (0 == pid_) {
         if (!runPrivileged())
         {
            setgid(getgid());
@@ -768,12 +770,12 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         execvp(arglist[0], const_cast<char *const *>(arglist));
         _exit(-1);
 
-  } else if (-1 == pid) {
+  } else if (-1 == pid_) {
         // forking failed
 
         runs = false;
         //      free(arglist);
-        pid = 0;
+        pid_ = 0;
         return false;
 
   } else {

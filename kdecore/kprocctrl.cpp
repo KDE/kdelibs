@@ -145,7 +145,7 @@ void KProcessController::slotDoHousekeeping(int )
   proc = processList->first();
 
   while (0L != proc) {
-	if (proc->pid == pid) {
+	if (proc->pid() == pid) {
           found = true;
 	  // process has exited, so do emit the respective events
 	  if (proc->run_mode == KProcess::Block) {
