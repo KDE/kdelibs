@@ -25,15 +25,17 @@
 #ifndef __KCOLORDLG_H__
 #define __KCOLORDLG_H__
 
-#include <kdialogbase.h>
-#include <qtableview.h>
-#include <qframe.h>
-#include <qrangecontrol.h>
-#include <qpixmap.h>
 #include <qcombobox.h>
+#include <kdialogbase.h>
+#include <qframe.h>
+#include <qpixmap.h>
+#include <qrangecontrol.h>
+#include <qtableview.h>
+
 #include "kselect.h"
 
 class QLineEdit;
+class KListBox;
 class KPalette;
 class KColorCells;
 
@@ -132,12 +134,19 @@ signals:
 
 protected slots:
   void slotColorCellSelected( int );
+  void slotColorTextSelected( const QString &colorText );
+
+protected:
+  void readNamedColor( void );
+
 protected:
   QString i18n_customColors;
   QString i18n_recentColors;
+  QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
   QScrollView *sv;
+  KListBox *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;
   int mCols;

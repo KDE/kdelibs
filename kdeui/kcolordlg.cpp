@@ -31,26 +31,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qimage.h>
-#include <qpainter.h>
 #include <qdrawutil.h>
 #include <qevent.h>
-#include <qpushbutton.h>
+#include <qfile.h> 
+#include <qimage.h>
 #include <qlabel.h>
-#include <qcombobox.h>
-#include <qvalidator.h>
-#include <qlineedit.h>
 #include <qlayout.h>
+#include <qlineedit.h>
+#include <qvalidator.h>
+#include <qpainter.h>
+#include <qpushbutton.h>
 
+#include <dither.h>
+#include <kapp.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <dither.h>
+#include <kiconloader.h>
+#include <klistbox.h>
 #include <klocale.h>
-#include <kapp.h>
-#include <kbuttonbox.h>
+#include <kmessagebox.h>
 #include <kseparator.h>
 #include <kpalette.h>
-#include <kiconloader.h>
 
 #include "kcolordlg.h"
 #include "kcolordrag.h"
@@ -63,6 +64,7 @@ static QColor *standardPalette = 0;
 
 static const char *recentColors = "Recent_Colors";
 static const char *customColors = "Custom_Colors";
+
 
 #define STANDARD_PAL_SIZE 17
 
@@ -439,6 +441,7 @@ void KColorPatch::dropEvent( QDropEvent *event)
      }
 }
 
+
 KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	: QWidget( parent ), mMinWidth(minWidth), mCols(cols)
 {
@@ -446,12 +449,14 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   mPalette = 0;
   i18n_customColors = i18n("* Custom Colors *");
   i18n_recentColors = i18n("* Recent Colors *");
+  i18n_namedColors  = i18n("Named Colors");
 
   QStringList paletteList = KPalette::getPaletteList();
   paletteList.remove(customColors);
   paletteList.remove(recentColors);
   paletteList.prepend(i18n_customColors);
   paletteList.prepend(i18n_recentColors);
+  paletteList.append( i18n_namedColors );
 
   QVBoxLayout *layout = new QVBoxLayout( this );   
 
@@ -468,6 +473,14 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   minSize += QSize(cellSize);
   sv->setFixedSize(minSize);
   layout->addWidget(sv);
+
+  mNamedColorList = new KListBox( this, "namedColorList", 0 );
+  mNamedColorList->setFixedSize(minSize);
+  mNamedColorList->hide();
+  layout->addWidget(mNamedColorList);
+  connect( mNamedColorList, SIGNAL(highlighted( const QString & )),
+	   this, SLOT( slotColorTextSelected( const QString & )) );
+
   setFixedSize( sizeHint());
   connect( combo, SIGNAL(activated(const QString &)), 
 	this, SLOT(setPalette( const QString &)));
@@ -478,6 +491,76 @@ KPaletteTable::palette()
 {
   return combo->currentText();
 }
+
+
+void
+KPaletteTable::readNamedColor( void )
+{
+  if( mNamedColorList->count() != 0 )
+  {
+    return; // Strings already present
+  }
+
+  //
+  // 2000-02-05 Espen Sand.
+  // Add missing filepaths here. Make sure the last entry is 0!
+  //
+  const char *path[] = 
+  {
+    "/usr/X11R6/lib/X11/rgb.txt",
+    0
+  };
+
+  QFile file;
+  for( int i=0; path[i] != 0; i++ )
+  {
+    QFile file( path[i] );
+    if( file.open( IO_ReadOnly ) == false )
+    {
+      continue;
+    }
+    
+    QStringList list;
+    char line[100], name[100];
+
+    while( file.readLine( line, 99 ) != -1 )
+    {
+      //
+      // I hope the format is the same on all systems :)
+      //
+      int val = sscanf( line, "%*d %*d %*d %[^\n]", name );
+      if( val == 1 )
+      {
+	//
+	// Remove duplicates. Every name with a space and every name
+	// that start with "gray".
+	//
+	if( strchr( name, ' ' ) == 0 && strncmp( name, "gray", 4) != 0 )
+	{
+	  list.append( name );
+	}
+      }
+    }
+    list.sort();
+    mNamedColorList->insertStringList( list );  
+    break;
+  }
+
+  if( mNamedColorList->count() == 0 )
+  {
+    QString msg = i18n(""
+      "Unable to read X11 rgb color strings. The following\n"
+      "file location(s) were examined:\n\n");
+    for( int i=0; path[i] != 0; i++ )
+    {
+      msg += path[i];
+      msg += "\n";
+    }
+    KMessageBox::sorry( this, msg );
+  }
+}
+
+
 
 void
 KPaletteTable::setPalette( const QString &_paletteName )
@@ -512,26 +595,43 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
   if (!mPalette || (mPalette->name() != paletteName))
   {
-     delete cells;
-     delete mPalette;
-     mPalette = new KPalette(paletteName);
-     int rows = (mPalette->nrColors()+mCols-1) / mCols;
-     if (rows < 1) rows = 1;
-     cells = new KColorCells( sv->viewport(), rows, mCols);
-     cells->setShading(false);
-     cells->setAcceptDrags(false);
-     QSize cellSize = QSize( mMinWidth, mMinWidth * rows / mCols);
-     cells->setFixedSize( cellSize );
-     for( int i = 0; i < mPalette->nrColors(); i++)
-     {
+    if( paletteName == i18n_namedColors )
+    {
+      sv->hide();
+      mNamedColorList->show();
+      readNamedColor();
+
+      delete cells; cells = 0;
+      delete mPalette; mPalette = 0;
+    }
+    else
+    {
+      mNamedColorList->hide();
+      sv->show();
+
+      delete cells;
+      delete mPalette;
+      mPalette = new KPalette(paletteName);
+      int rows = (mPalette->nrColors()+mCols-1) / mCols;
+      if (rows < 1) rows = 1;
+      cells = new KColorCells( sv->viewport(), rows, mCols);
+      cells->setShading(false);
+      cells->setAcceptDrags(false);
+      QSize cellSize = QSize( mMinWidth, mMinWidth * rows / mCols);
+      cells->setFixedSize( cellSize );
+      for( int i = 0; i < mPalette->nrColors(); i++)
+      {
         cells->setColor( i, mPalette->color(i) );
-     }
-     connect( cells, SIGNAL( colorSelected( int ) ),
-              SLOT( slotColorCellSelected( int ) ) );
-     sv->addChild( cells );
-     cells->show();
-     sv->updateScrollBars();
+      }
+      connect( cells, SIGNAL( colorSelected( int ) ),
+	       SLOT( slotColorCellSelected( int ) ) );
+      sv->addChild( cells );
+      cells->show();
+      sv->updateScrollBars();
+    }
   }
+
+
 }
 
 void 
@@ -541,6 +641,13 @@ KPaletteTable::slotColorCellSelected( int col )
      return;
   emit colorSelected( mPalette->color(col), mPalette->colorName(col) );
 }
+
+void 
+KPaletteTable::slotColorTextSelected( const QString &colorText )
+{
+  emit colorSelected( QColor (colorText), colorText );
+}
+
 
 void 
 KPaletteTable::addToCustomColors( const QColor &color)
