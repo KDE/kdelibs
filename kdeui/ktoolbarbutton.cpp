@@ -576,7 +576,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   }
   else if (d->m_iconText == KToolBar::TextOnly)
   {
-    if (!textLabel())
+    if (!textLabel().isNull())
     {
       int tf = AlignTop|AlignLeft;
       if (!isEnabled())
@@ -609,7 +609,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
-    if (!textLabel())
+    if (!textLabel().isNull())
     {
       int tf = AlignBottom|AlignHCenter;
       dx = (width() - fm.width(textLabel())) / 2;
