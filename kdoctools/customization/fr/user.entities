@@ -20,6 +20,9 @@
 <!ENTITY traducteurDanielCartron      '<othercredit role="translator"> <firstname>Daniel</firstname> <surname>Cartron</surname> <affiliation><address><email>d.cartron@senat.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurDanielCartron       '<othercredit role="reviewer"> <firstname>Daniel</firstname> <surname>Cartron</surname> <affiliation><address><email>d.cartron@senat.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurGillesCaulier      '<othercredit role="translator"> <firstname>Gilles</firstname> <surname>Caulier</surname> <affiliation><address><email>caulier.gilles@free.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurGillesCaulier       '<othercredit role="reviewer"> <firstname>Gilles</firstname> <surname>Caulier</surname> <affiliation><address><email>caulier.gilles@free.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurPatrickChavas      '<othercredit role="translator"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPatrickChavas       '<othercredit role="reviewer"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -107,6 +110,7 @@
 <!ENTITY JeromeBlanc       'Jérôme Blanc <email>01246774@brookes.ac.uk</email>'>
 <!ENTITY YvesBrenner       'Yves Brenner <email>ybrenner@chez.com</email>'>
 <!ENTITY DanielCartron     'Daniel Cartron <email>d.cartron@senat.fr</email>'>
+<!ENTITY GillesCaulier     'Gilles Caulier <email>caulier.gilles@free.fr</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
 <!ENTITY JoelleCornavin    'Joëlle Cornavin <email>jcornavi@club-internet.fr</email>'>
 <!ENTITY BenoitCosandier   'Benoit Cosandier <email>cosandier.benoit@bluewin.ch</email>'>
