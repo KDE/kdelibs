@@ -389,7 +389,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     // The global setting for JavaScript error reporting
     if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )
-      d->m_bEnableJavaScriptErrorReporting = config->readBoolEntry( "ReportJavaScriptErrors", true );
+      d->m_bEnableJavaScriptErrorReporting = config->readBoolEntry( "ReportJavaScriptErrors", false );
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
