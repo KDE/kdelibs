@@ -106,7 +106,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     m_passivePopup = new QCheckBox( m_actionsBox, "m_passivePopup" );
     m_passivePopup->setEnabled( FALSE );
-    m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interupt other work" ) );
+    m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interrupt other work" ) );
     Layout28->addWidget( m_passivePopup );
     QSpacerItem* spacer_3 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout28->addItem( spacer_3 );
