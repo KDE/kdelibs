@@ -723,11 +723,8 @@ bool KZip::closeArchive()
         //memcpy(buffer, head, sizeof(head));
         qmemmove(buffer, head, sizeof(head));
 
-        if ( it.current()->encoding() == 8 )
-        {
-            buffer[ 8 ] = 8, // general purpose bit flag, deflated
-            buffer[ 10 ] = 8; // compression method, deflated
-        }
+        buffer[ 10 ] = char(it.current()->encoding()); // compression method
+        buffer[ 11 ] = char(it.current()->encoding() >> 8);
 
         transformToMsDos( it.current()->datetime(), &buffer[ 12 ] );
 
