@@ -3492,7 +3492,7 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
-  if (!requestObject( &(*it), completeURL( url ), args )) {
+  if (!requestObject( &(*it), completeURL( url ), args ) && !(*it).m_run) {
       (*it).m_bCompleted = true;
       return false;
   }
