@@ -683,6 +683,12 @@ public:
     virtual ~NETWinInfo();
 
     /**
+       Assignment operator.  Ensures that the shared data reference counts are
+       correct.
+    **/
+    const NETWinInfo &operator=(const NETWinInfo &wintinfo);
+
+    /**
        Returns an OR'ed list of protocols passed to the constructor.
        
        @return an OR'ed list of protocols

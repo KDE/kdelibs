@@ -469,11 +469,26 @@ void KWin::appStarted()
     KStartupInfo::appStarted();
 }
 
-
+class KWin::WindowInfoPrivate
+{
+    public:
+	WindowInfoPrivate() : info( NULL ) {}
+	~WindowInfoPrivate() { delete info; }
+	NETWinInfo* info;
+	WId win_;
+	QString name_;
+	QRect geometry_;
+	int ref;
+    private:
+	WindowInfoPrivate( const WindowInfoPrivate& );
+	void operator=( const WindowInfoPrivate& );
+};
 
 // KWin::info() should be updated too if something has to be changed here
 KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
 {
+    d = new WindowInfoPrivate;
+    d->ref = 1;
     if( properties == 0 )
 	properties = NET::WMState |
 		     NET::WMStrut |
@@ -486,55 +501,82 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
 		     NET::XAWMState;
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
-    info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), properties );
-    win_ = win;
-    if ( info->name() ) {
-	name_ = QString::fromUtf8( info->name() );
+    d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), properties );
+    d->win_ = win;
+    if ( d->info->name() ) {
+	d->name_ = QString::fromUtf8( d->info->name() );
     } else {
 	char* c = 0;
 	if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
-	    name_ = QString::fromLocal8Bit( c );
+	    d->name_ = QString::fromLocal8Bit( c );
 	    XFree( c );
 	}
     }
     NETRect frame, geom;
-    info->kdeGeometry( frame, geom );
-    geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    d->info->kdeGeometry( frame, geom );
+    d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
 }
 
+// this one is only to make QValueList<> or similar happy
 KWin::WindowInfo::WindowInfo()
-    : info( NULL )
+    : d( NULL )
 {
 }
 
 KWin::WindowInfo::~WindowInfo()
 {
-    delete info;
+    if( d != NULL ) {
+	if( --d->ref == 0 ) {
+	    delete d;
+	}
+    }
+}
+
+KWin::WindowInfo::WindowInfo( const WindowInfo& wininfo )
+    : d( wininfo.d )
+{
+    if( d != NULL )
+	++d->ref;
+}
+
+KWin::WindowInfo& KWin::WindowInfo::operator=( const WindowInfo& wininfo )
+{
+    if( d != wininfo.d ) {
+	if( d != NULL ) {
+	    if( --d->ref == 0 ) {
+		delete d;
+	    }
+	d = wininfo.d;
+	if( d != NULL )
+	    ++d->ref;
+	}
+    }
+    return *this;
 }
 
 WId KWin::WindowInfo::win() const
 {
-    return win_;
+    return d->win_;
 }
 
 unsigned long KWin::WindowInfo::state() const
 {
-    return info->state();
+    return d->info->state();
 }
 
 NET::MappingState KWin::WindowInfo::mappingState() const
 {
-    return info->mappingState();
+    return d->info->mappingState();
 }
 
 NETStrut KWin::WindowInfo::strut() const
 {
-    return info->strut();
+    return d->info->strut();
 }
 
 NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
 {
-    return info->windowType( supported_types );
+    return d->info->windowType( supported_types );
 }
 
 QString KWin::WindowInfo::visibleNameWithState() const
@@ -559,12 +601,12 @@ QString KWin::Info::visibleNameWithState() const
 
 QString KWin::WindowInfo::visibleName() const
 {
-    return info->visibleName() ? info->visibleName() : name_;
+    return d->info->visibleName() ? d->info->visibleName() : d->name_;
 }
 
 QString KWin::WindowInfo::name() const
 {
-    return name_;
+    return d->name_;
 }
 
 bool KWin::WindowInfo::isOnCurrentDesktop() const
@@ -574,22 +616,22 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 
 bool KWin::WindowInfo::isOnDesktop( int desktop ) const
 {
-    return info->desktop() == desktop || info->desktop() == NET::OnAllDesktops;
+    return d->info->desktop() == desktop || d->info->desktop() == NET::OnAllDesktops;
 }
 
 bool KWin::WindowInfo::onAllDesktops() const
 {
-    return info->desktop() == NET::OnAllDesktops;
+    return d->info->desktop() == NET::OnAllDesktops;
 }
 
 int KWin::WindowInfo::desktop() const
 {
-    return info->desktop();
+    return d->info->desktop();
 }
 
 QRect KWin::WindowInfo::geometry() const
 {
-    return geometry_;
+    return d->geometry_;
 }
 
 // see NETWM spec section 7.6

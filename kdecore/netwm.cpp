@@ -2187,6 +2187,28 @@ NETWinInfo::~NETWinInfo() {
 }
 
 
+// assignment operator
+
+const NETWinInfo &NETWinInfo::operator=(const NETWinInfo &wininfo) {
+
+#ifdef   NETWMDEBUG
+    fprintf(stderr, "NETWinInfo::operator=()\n");
+#endif
+
+    if (p != wininfo.p) {
+	refdec_nwi(p);
+
+	if (! p->ref) delete p;
+    }
+
+    p = wininfo.p;
+    role = wininfo.role;
+    p->ref++;
+
+    return *this;
+}
+
+
 void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
     if (role != Client) return;
 

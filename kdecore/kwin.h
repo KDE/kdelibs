@@ -86,6 +86,7 @@ public:
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
     class WindowInfo;
+    class WindowInfoPrivate;
     /**
      * Returns information about window @p win.
      * @param win the id of the window
@@ -412,12 +413,11 @@ public:
      * Returns the position and size of the window contents.
      */
     QRect geometry() const;
+    
+    WindowInfo( const WindowInfo& );
+    WindowInfo& operator=( const WindowInfo& );
 private:
-    NETWinInfo* info;
-    WId win_;
-    QString name_;
-    QRect geometry_;
-    class WindowInfoPrivate* d;
+    WindowInfoPrivate* d;
 };
 
 #endif
