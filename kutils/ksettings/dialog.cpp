@@ -38,13 +38,15 @@ class KCMISortedList : public QPtrList<KCModuleInfo>
 {
 	public:
 		KCMISortedList() : QPtrList<KCModuleInfo>() {}
-		KCMISortedList( const KCMISortedList &list ) : QPtrList<KCModuleInfo>( list ) {}
+		KCMISortedList( const KCMISortedList &list )
+			: QPtrList<KCModuleInfo>( list ) {}
 		~KCMISortedList() { clear(); }
 		KCMISortedList &operator=( const KCMISortedList &list )
 		{ return ( KCMISortedList& )QPtrList<KCModuleInfo>::operator=( list ); }
 
 	protected:
-		int compareItems( QPtrCollection::Item item1, QPtrCollection::Item item2 )
+		int compareItems( QPtrCollection::Item item1,
+				QPtrCollection::Item item2 )
 		{
 			KCModuleInfo * info1 = static_cast<KCModuleInfo *>( item1 );
 			KCModuleInfo * info2 = static_cast<KCModuleInfo *>( item2 );
@@ -156,7 +158,8 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
-	kdDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName << " )" << endl;
+	kdDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName
+		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
 
 	QValueList<KService::Ptr> ret;
@@ -165,7 +168,8 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 	{
 		kdDebug( 700 ) << "call was successfull" << endl;
 		KServiceGroup::List list = service->entries();
-		for( KServiceGroup::List::ConstIterator it = list.begin(); it != list.end(); ++it )
+		for( KServiceGroup::List::ConstIterator it = list.begin();
+				it != list.end(); ++it )
 		{
 			KSycocaEntry * p = *it;
 			if( p->isType( KST_KService ) )
@@ -174,16 +178,19 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 				ret << static_cast<KService *>( p );
 			}
 			else
-				kdWarning( 700 ) << "KServiceGroup::childGroup returned something else than a KService (kinda)" << endl;
+				kdWarning( 700 ) << "KServiceGroup::childGroup returned"
+					" something else than a KService (kinda)" << endl;
 		}
 	}
 
 	return ret;
 }
 
-QValueList<KService::Ptr> Dialog::parentComponentsServices( const QStringList & kcdparents ) const
+QValueList<KService::Ptr> Dialog::parentComponentsServices(
+		const QStringList & kcdparents ) const
 {
-	QString constraint = kcdparents.join( "' in [X-KDE-ParentComponents]) or ('" );
+	QString constraint = kcdparents.join(
+			"' in [X-KDE-ParentComponents]) or ('" );
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
 	kdDebug( 700 ) << "constraint = " << constraint << endl;
@@ -195,7 +202,8 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	// and if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
 	bool enabled = false;
-	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
+	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
+		<< " KCM should be shown" << endl;
 	// for all parent components
 	QStringList parentComponents = moduleinfo->service()->property(
 			"X-KDE-ParentComponents" ).toStringList();
@@ -212,11 +220,10 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 		}
 		// if it is a plugin we check whether the plugin is enabled
 		KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
-//X 			if( pinfo->config() )
-//X 				pinfo->config()->reparseConfiguration();
 		pinfo->load();
 		enabled = pinfo->isPluginEnabled();
-		kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
+		kdDebug( 700 ) << "parent " << *pcit << " is "
+			<< ( enabled ? "enabled" : "disabled" ) << endl;
 		// if it is enabled we're done for this KCModuleInfo
 		if( enabled )
 			break;
@@ -256,7 +263,8 @@ void Dialog::createDialogFromServices()
 			parseGroupFile( *it );
 
 	// for all services
-	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin(); it != d->services.end(); ++it )
+	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin();
+			it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
@@ -279,7 +287,8 @@ void Dialog::createDialogFromServices()
 		for( KCModuleInfo * info = d->moduleinfos.first(); info;
 				info = d->moduleinfos.next() )
 		{
-			QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy", QVariant::String );
+			QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
+					QVariant::String );
 			if( ! tmp.isValid() )
 				continue;
 			QString id = tmp.toString();
@@ -348,7 +357,8 @@ void Dialog::updateTreeList()
 	// FIXME: very inefficient code
 	kdDebug( 700 ) << k_funcinfo << endl;
 	// for all services
-	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin(); it != d->services.end(); ++it )
+	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin();
+			it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
@@ -359,7 +369,8 @@ void Dialog::updateTreeList()
 					torm = d->moduleinfos.next() )
 				if( *torm == *moduleinfo )
 				{
-					kdDebug( 700 ) << "remove module " << torm->moduleName() << endl;
+					kdDebug( 700 ) << "remove module " << torm->moduleName()
+						<< endl;
 					d->dlg->removeModule( *torm );
 					d->moduleinfos.remove( torm ); //autodeleted
 					break;
