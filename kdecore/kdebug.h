@@ -44,9 +44,9 @@ class kdbgstream {
       area(_area), level(_level),  print(_print) { }
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
       output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
-    kdbgstream(kdbgstream &str) : 
+    kdbgstream(kdbgstream &str) :
       output(str.output), area(str.area), level(str.level), print(str.print) { str.output.truncate(0); }
-    kdbgstream(const kdbgstream &str) : 
+    kdbgstream(const kdbgstream &str) :
       output(str.output), area(str.area), level(str.level), print(str.print) {}
     ~kdbgstream();
     kdbgstream &operator<<(bool i)  {
@@ -123,7 +123,7 @@ class kdbgstream {
 	return (*f)(*this);
     }
     kdbgstream& operator<<(double d) {
-      form("%f", d);
+      QString tmp; tmp.setNum(d); output += tmp;
       return *this;
     }
     kdbgstream &form(const char *format, ...);
@@ -173,6 +173,7 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
 QString kdBacktrace();
+QString kdBacktrace(int levels);
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
 inline QString kndBacktrace() { return QString::null; }

@@ -381,7 +381,7 @@ kdbgstream& kdbgstream::operator << (QWidget* widget)
   return *this;
 }
 
-QString kdBacktrace()
+QString kdBacktrace(int levels)
 {
     QString s;
 #ifdef HAVE_BACKTRACE
@@ -389,6 +389,8 @@ QString kdBacktrace()
     int n = backtrace(trace, 256);
     char** strings = backtrace_symbols (trace, n);
 
+    if ( levels != -1 )
+        n = QMIN( n, levels );
     s = "[\n";
 
     for (int i = 0; i < n; ++i)
@@ -399,6 +401,11 @@ QString kdBacktrace()
     free (strings);
 #endif
     return s;
+}
+
+QString kdBacktrace()
+{
+    return kdBacktrace(-1 /*all*/);
 }
 
 // Needed for --enable-final
