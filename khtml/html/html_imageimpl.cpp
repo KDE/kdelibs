@@ -202,6 +202,7 @@ void HTMLImageElementImpl::recalcStyle()
 	static_cast<RenderImage *>(m_render)
 	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
 	                  static_cast<HTMLDocumentImpl *>(document)->docLoader());
+    HTMLElementImpl::recalcStyle();
 }
 
 bool HTMLImageElementImpl::isServerMap() const

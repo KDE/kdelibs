@@ -461,8 +461,6 @@ void RenderObject::setStyle(RenderStyle *style)
     
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
 	m_visible = false;
-    else 
-	m_visible = true;
     
     setMinMaxKnown(false);
     setLayouted(false);
