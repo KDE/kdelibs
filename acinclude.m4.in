@@ -713,8 +713,7 @@ EOF
       ac_cv_prog_CC=no
     fi
     AC_MSG_RESULT($ac_cv_prog_CC)
-  
-  fi  
+  fi
 
   if test -z "$CXXFLAGS"; then 
     if test "$ac_use_debug_code" = "yes"; then
@@ -763,7 +762,7 @@ AC_DEFUN(AC_CHECK_KSIZE_T,
 [AC_MSG_CHECKING(for the third argument of getsockname)  
 AC_CACHE_VAL(ac_cv_ksize_t_int,
 [AC_TRY_COMPILE([#include <sys/types.h>
-#include <sys/socket.h>],[int a=0; getsockname(0,(struct sockaddr*)NULL, &a);],
+#include <sys/socket.h>],[int a=0; getsockname(0,(struct sockaddr*)0, &a);],
 eval "ac_cv_ksize_t_int=yes",
 eval "ac_cv_ksize_t_int=no")])
 if eval "test \"`echo `$ac_cv_ksize_t_int\" = yes"; then
