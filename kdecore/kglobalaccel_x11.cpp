@@ -98,7 +98,7 @@ bool KGlobalAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAccelAction* pAction )
 {
 	if( !key.code() ) {
-		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << key.key().toStringInternal() << ", " << bGrab << ", \"" << (pAction ? pAction->name() : "(null)") << "\" ): Tried to grab key with null code." << endl;
+		kdWarning(125) << "KGlobalAccelPrivate::grabKey( " << key.key().toStringInternal() << ", " << bGrab << ", \"" << (pAction ? pAction->name().latin1() : "(null)") << "\" ): Tried to grab key with null code." << endl;
 		return false;
 	}
 

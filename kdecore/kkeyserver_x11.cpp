@@ -334,7 +334,7 @@ QString Sym::toString( bool bUserSpace ) const
 	// Look up in special names list
 	for( int i = 0; g_rgSymNames[i].sym != 0; i++ ) {
 		if( m_sym == g_rgSymNames[i].sym )
-			return bUserSpace ? i18n(g_rgSymNames[i].psName) : g_rgSymNames[i].psName;
+			return bUserSpace ? i18n(g_rgSymNames[i].psName) : QString(g_rgSymNames[i].psName);
 	}
 	
 	// Get X-name

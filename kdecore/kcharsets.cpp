@@ -524,7 +524,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         cname = name;
     cname = cname.upper();
 
-    codec = QTextCodec::loadCharmapFile(dir + cname.data());
+    codec = QTextCodec::loadCharmapFile((QString)(dir + cname.data()));
 
     if(codec) {
         d->codecForNameDict.replace(key, codec);
@@ -534,7 +534,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // this also failed, the last resort is now to take some compatibility charmap
 
     cname = cname.lower();
-    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, cname );
+    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)cname );
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);

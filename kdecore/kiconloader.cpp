@@ -541,7 +541,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         }
         else
         {
-            icon = findMatchingIcon(favIconOverlay ? "www" : name, size);
+            icon = findMatchingIcon(favIconOverlay ? QString("www") : name, size);
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
