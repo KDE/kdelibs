@@ -2635,7 +2635,8 @@ int KToggleToolBarAction::plug( QWidget* w, int index )
   if( mw && (m_toolBar = mw->toolBar( m_toolBarName )) ) {
     setChecked( m_toolBar->isVisible() );
     connect( m_toolBar, SIGNAL(visibilityChanged(bool)), this, SLOT(setChecked(bool)) );
-    connect( this, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)) );
+    // Also emit toggled when the toolbar's visibility changes (see comment in header)
+    connect( m_toolBar, SIGNAL(visibilityChanged(bool)), this, SIGNAL(toggled(bool)) );
   } else {
     setEnabled( false );
   }
@@ -2643,15 +2644,16 @@ int KToggleToolBarAction::plug( QWidget* w, int index )
   return KToggleAction::plug( w, index );
 }
 
-void KToggleToolBarAction::slotToggled( bool checked )
+void KToggleToolBarAction::setChecked( bool c )
 {
-  if( !m_toolBar || checked == m_toolBar->isVisible() )
-    return;
-  if( checked ) {
-    m_toolBar->show();
-  } else {
-    m_toolBar->hide();
+  if( m_toolBar && c != m_toolBar->isVisible() ) {
+    if( c ) {
+      m_toolBar->show();
+    } else {
+      m_toolBar->hide();
+    }
   }
+  KToggleAction::setChecked( c );
 }
 
 ////////

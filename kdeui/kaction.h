@@ -1596,6 +1596,11 @@ private:
  * show or hide the toolbar with the given name when
  * activated, and check or uncheck itself if the toolbar
  * is manually shown or hidden.
+ *
+ * If you need to perfom some additional action when the
+ * toolbar is shown or hidden, connect to the toggled(bool)
+ * signal. It will be emitted after the toolbar's
+ * visibility has changed, whenever it changes.
  */
 class KToggleToolBarAction : public KToggleAction
 {
@@ -1612,8 +1617,10 @@ public:
     virtual ~KToggleToolBarAction();
 
     virtual int plug( QWidget*, int index = -1 );
-protected slots:
-    virtual void slotToggled(bool);
+    
+public slots:
+    virtual void setChecked( bool );
+    
 private:
     QCString               m_toolBarName;
     QGuardedPtr<KToolBar>  m_toolBar;
