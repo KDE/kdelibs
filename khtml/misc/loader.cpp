@@ -123,8 +123,6 @@ void CachedObject::setRequest(Request *_request)
     if ( _request && !m_request )
         m_status = Pending;
     m_request = _request;
-    if (canDelete() && m_free)
-        delete this;
 }
 
 void CachedObject::ref(CachedObjectClient *c)
@@ -205,9 +203,6 @@ void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
     Cache::flush();
     CachedObject::deref(c);
-
-    if ( canDelete() && m_free )
-      delete this;
 }
 
 void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
@@ -291,8 +286,6 @@ void CachedScript::deref(CachedObjectClient *c)
 {
     Cache::flush();
     CachedObject::deref(c);
-    if ( canDelete() && m_free )
-      delete this;
 }
 
 void CachedScript::data( QBuffer &buffer, bool eof )
@@ -539,8 +532,6 @@ void CachedImage::deref( CachedObjectClient *c )
     CachedObject::deref(c);
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
-    if ( canDelete() && m_free )
-        delete this;
 }
 
 #define BGMINWIDTH      32
@@ -738,7 +729,6 @@ void CachedImage::movieStatus(int status)
         delete bg;
         bg = 0;
     }
-
 
     if((status == QMovie::EndOfMovie && (!m || m->frameNumber() <= 1)) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
@@ -1261,6 +1251,7 @@ KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 
 QDict<CachedObject> *Cache::cache;
 QPtrList<DocLoader>* Cache::docloader;
+QPtrList<CachedObject> *Cache::freeList;
 Loader *Cache::m_loader;
 
 int Cache::maxSize = DEFCACHESIZE;
@@ -1284,11 +1275,22 @@ void Cache::init()
         nullPixmap = new QPixmap;
 
     if ( !brokenPixmap )
-//        brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::FileSystem, 16, KIcon::DisabledState));
         brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::Desktop, 16, KIcon::DisabledState));
 
     if ( !m_loader )
         m_loader = new Loader();
+
+    if ( !freeList ) {
+        freeList = new QPtrList<CachedObject>;
+        freeList->setAutoDelete(true);
+    }
+}
+
+void Cache::flushFreeList()
+{
+    for ( CachedObject* p = freeList->first(); p; p = freeList->next() )
+        if (p->canDelete())
+            freeList->remove();
 }
 
 void Cache::clear()
@@ -1303,6 +1305,8 @@ void Cache::clear()
 #ifndef NDEBUG
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
+    for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
+        assert(it.current()->canDelete());
 #endif
 
     delete cache; cache = 0;
@@ -1310,6 +1314,7 @@ void Cache::clear()
     delete brokenPixmap; brokenPixmap = 0;
     delete m_loader;   m_loader = 0;
     delete docloader; docloader = 0;
+    delete freeList; freeList = 0;
 }
 
 CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool reload, time_t _expireDate )
@@ -1409,7 +1414,6 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
         CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset);
         cache->insert( kurl.url(), sheet );
         o = sheet;
-        moveToFront(sheet);
     }
 
     o->setExpireDate(_expireDate, true);
@@ -1498,6 +1502,8 @@ void Cache::flush(bool force)
        return;
 
     init();
+
+    flushFreeList();
 
 #ifdef CACHE_DEBUG
     statistics();
@@ -1626,10 +1632,6 @@ void Cache::removeCacheEntry( CachedObject *object )
 {
   QString key = object->url().string();
 
-  // this indicates the deref() method of CachedObject to delete itself when the reference counter
-  // drops down to zero
-  object->setFree( true );
-
   cache->remove( key );
   removeFromLRUList( object );
 
@@ -1637,8 +1639,7 @@ void Cache::removeCacheEntry( CachedObject *object )
   for ( dl=docloader->first(); dl; dl=docloader->next() )
       dl->removeCachedObject( object );
 
-  if ( object->canDelete() )
-     delete object;
+  object->setFree();
 }
 
 #define FAST_LOG2(_log2,_n)   \

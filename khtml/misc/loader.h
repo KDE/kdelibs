@@ -105,7 +105,6 @@ namespace khtml
               m_expireDate(_expireDate), m_size(size)
 	{
 	    m_status = Pending;
-	    m_free = false;
             m_accessCount = 0;
 	    m_cachePolicy = _cachePolicy;
 	    m_request = 0;
@@ -140,12 +139,7 @@ namespace khtml
 	 */
 	virtual void finish();
 
-        /**
-         * Called by the cache if the object has been removed from the cache dict
-         * while still being referenced. This means the object should kill itself
-         * if its reference counter drops down to zero.
-         */
-        void setFree( bool b ) { m_free = b; }
+        void setFree();
 
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
 
@@ -178,7 +172,6 @@ namespace khtml
 	KIO::CacheControl m_cachePolicy;
 	time_t m_expireDate;
 	int m_size;
-        bool m_free : 1;
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
@@ -494,11 +487,15 @@ namespace khtml
 
         static void removeCacheEntry( CachedObject *object );
 
-    protected:
+    private:
+
+        static void flushFreeList();
+
         friend class CachedObject;
 
 	static QDict<CachedObject> *cache;
         static QPtrList<DocLoader>* docloader;
+        static QPtrList<CachedObject> *freeList;
         static void insertInLRUList(CachedObject*);
         static void removeFromLRUList(CachedObject*);
         static bool adjustSize(CachedObject*, int sizeDelta);
@@ -515,6 +512,10 @@ namespace khtml
 
         static unsigned long s_ulRefCnt;
     };
+
+    inline void CachedObject::setFree() {
+        Cache::freeList->append(this);
+    }
 
 } // namespace
 
