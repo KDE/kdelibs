@@ -103,7 +103,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
     QColor c = style->backgroundColor();
     CachedImage *i = style->backgroundImage();
     if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
-         pt->fillRect(_tx, _ty, width, height, c);
+        pt->fillRect(_tx, _ty, width, height, c);
 
     if(i) {
         // ### might need to add some correct offsets
@@ -460,7 +460,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
     int ow = style()->outlineWidth();
-    RenderStyle* pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+    RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
     int d = style()->textDecoration();
     TextSlave f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
@@ -533,11 +533,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		font = &_style->htmlFont();
 	    }
 
-            if((hasSpecialObjects()  &&
-                (parent()->isInline() || pseudoStyle)) &&
-               (!pseudoStyle || s->m_firstLine))
+            if ((pseudoStyle && s->m_firstLine) ||
+                (!pseudoStyle && hasSpecialObjects() && parent()->isInline()))
                 s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
-
 
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
@@ -819,7 +817,6 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #ifdef DEBUG_LAYOUT
     QChar *ch = str->s+from;
     QConstString cstr(ch, len);
-    qDebug("setting slave text to *%s*, len=%d, w=%d" , cstr.string().latin1(), len, width );//" << y << ")" << " height=" << lineHeight(false) << " fontHeight=" << metrics(false).height() << " ascent =" << metrics(false).ascent() << endl;
 #endif
 
     TextSlave *s = new TextSlave(x, y, from, len,
