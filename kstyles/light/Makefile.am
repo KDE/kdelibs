@@ -20,10 +20,10 @@
 
 AM_CPPFLAGS = -DQT_PLUGIN
 
-INCLUDES = $(QT_INCLUDES)
+INCLUDES = $(QT_INCLUDES) $(USER_INCLUDES)
 noinst_HEADERS = lightstyle-v2.h lightstyle-v3.h
 kde_style_LTLIBRARIES = light.la
-light_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) -module
+light_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -module
 light_la_LIBADD =  $(LIB_QT)
 light_la_SOURCES = light.cpp lightstyle-v2.cpp lightstyle-v3.cpp
 light_la_METASOURCES = AUTO

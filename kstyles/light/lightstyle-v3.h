@@ -25,8 +25,7 @@
 
 
 #ifndef QT_H
-#include <qstyle.h>
-#include <qwindowsstyle.h>
+#include <qcommonstyle.h>
 #endif // QT_H
 
 
@@ -37,13 +36,16 @@
 #endif // QT_PLUGIN
 
 
-class Q_EXPORT_STYLE_LIGHT_V3 LightStyleV3 : public QWindowsStyle
+class Q_EXPORT_STYLE_LIGHT_V3 LightStyleV3 : public QCommonStyle
 {
     Q_OBJECT
+    QStyle *basestyle;
 
 public:
     LightStyleV3();
     virtual ~LightStyleV3();
+
+    void polishPopupMenu( QPopupMenu * );
 
     void drawPrimitive(PrimitiveElement, QPainter *, const QRect &, const QColorGroup &,
 		       SFlags = Style_Default,
@@ -76,6 +78,10 @@ public:
     int styleHint(StyleHint, const QWidget * = 0,
 		  const QStyleOption & = QStyleOption::Default,
 		  QStyleHintReturn * = 0 ) const;
+
+    QPixmap stylePixmap( StylePixmap stylepixmap,
+			 const QWidget* widget = 0,
+			 const QStyleOption& = QStyleOption::Default ) const;
 };
 
 

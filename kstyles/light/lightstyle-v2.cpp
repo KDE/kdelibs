@@ -37,6 +37,7 @@
 #include "qimage.h"
 #include "qcombobox.h"
 #include "qslider.h"
+#include "qstylefactory.h"
 
 
 class LightStyleV2Private
@@ -45,13 +46,19 @@ public:
     LightStyleV2Private()
 	: ref(1)
     {
+	basestyle = QStyleFactory::create( "Windows" );
+	if ( ! basestyle )
+	    basestyle = QStyleFactory::create( QStyleFactory::keys().first() );
+	if ( ! basestyle )
+	    qFatal( "LightStyle: couldn't find a basestyle!" );
     }
 
     ~LightStyleV2Private()
     {
+	delete basestyle;
     }
 
-    QPalette oldPalette;
+    QStyle *basestyle;
     int ref;
 };
 
@@ -59,7 +66,7 @@ static LightStyleV2Private *singleton = 0;
 
 
 LightStyleV2::LightStyleV2()
-    : QWindowsStyle()
+    : QCommonStyle()
 {
     if (! singleton)
 	singleton = new LightStyleV2Private;
@@ -73,6 +80,11 @@ LightStyleV2::~LightStyleV2()
 	delete singleton;
 	singleton = 0;
     }
+}
+
+void LightStyleV2::polishPopupMenu( QPopupMenu * )
+{
+    // empty to satisy pure virtual requirements
 }
 
 static void drawLightBevel(QPainter *p, const QRect &r, const QColorGroup &cg,
@@ -347,7 +359,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 		    p->drawLine(r.left() + 6, r.top() + 2, r.right() - 6, r.top() + 2);
 		}
 	    } else
-		QWindowsStyle::drawPrimitive(pe, p, r, cg, flags, data);
+		QCommonStyle::drawPrimitive(pe, p, r, cg, flags, data);
 	    break;
 	}
 
@@ -381,14 +393,19 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 
     case PE_Panel:
     case PE_PanelPopup:
+    case PE_PanelLineEdit:
+    case PE_PanelTabWidget:
+    case PE_WindowFrame:
 	{
 	    int lw = data.isDefault() ?
 		     pixelMetric(PM_DefaultFrameWidth) : data.lineWidth();
 
+	    if ( ! ( flags & Style_Sunken ) )
+		flags |= Style_Raised;
 	    if (lw == 2)
 		drawLightBevel(p, r, cg, flags);
 	    else
-		QWindowsStyle::drawPrimitive(pe, p, r, cg, flags, data);
+		QCommonStyle::drawPrimitive(pe, p, r, cg, flags, data);
 	    break;
 	}
 
@@ -401,7 +418,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 		drawLightBevel(p, r, cg, flags | Style_Raised,
 			       &cg.brush(QColorGroup::Button));
 	    else
-		QWindowsStyle::drawPrimitive(pe, p, r, cg, flags, data);
+		QCommonStyle::drawPrimitive(pe, p, r, cg, flags, data);
 	    break;
 	}
 
@@ -413,7 +430,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	    if (lw == 2)
 		drawLightBevel(p, r, cg, flags, &cg.brush(QColorGroup::Button));
 	    else
-		QWindowsStyle::drawPrimitive(pe, p, r, cg, flags, data);
+		QCommonStyle::drawPrimitive(pe, p, r, cg, flags, data);
 	    break;
 	}
 
@@ -530,7 +547,52 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	break;
 
     default:
-	QWindowsStyle::drawPrimitive(pe, p, r, cg, flags, data);
+	if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft) {
+	    QPointArray a;
+
+	    switch ( pe ) {
+	    case PE_ArrowUp:
+		a.setPoints( 7, -4,1, 2,1, -3,0, 1,0, -2,-1, 0,-1, -1,-2 );
+		break;
+
+	    case PE_ArrowDown:
+		a.setPoints( 7, -4,-2, 2,-2, -3,-1, 1,-1, -2,0, 0,0, -1,1 );
+		break;
+
+	    case PE_ArrowRight:
+		a.setPoints( 7, -2,-3, -2,3, -1,-2, -1,2, 0,-1, 0,1, 1,0 );
+		break;
+
+	    case PE_ArrowLeft:
+		a.setPoints( 7, 0,-3, 0,3, -1,-2, -1,2, -2,-1, -2,1, -3,0 );
+		break;
+
+	    default:
+		break;
+	    }
+
+	    if (a.isNull())
+		return;
+
+	    p->save();
+	    if ( flags & Style_Enabled ) {
+		a.translate( r.x() + r.width() / 2, r.y() + r.height() / 2 );
+		p->setPen( cg.buttonText() );
+		p->drawLineSegments( a, 0, 3 );         // draw arrow
+		p->drawPoint( a[6] );
+	    } else {
+		a.translate( r.x() + r.width() / 2 + 1, r.y() + r.height() / 2 + 1 );
+		p->setPen( cg.light() );
+		p->drawLineSegments( a, 0, 3 );         // draw arrow
+		p->drawPoint( a[6] );
+		a.translate( -1, -1 );
+		p->setPen( cg.mid() );
+		p->drawLineSegments( a, 0, 3 );         // draw arrow
+		p->drawPoint( a[6] );
+	    }
+	    p->restore();
+	} else
+	    QCommonStyle::drawPrimitive(pe, p, r, cg, flags, data);
 	break;
     }
 }
@@ -779,7 +841,7 @@ void LightStyleV2::drawControl( ControlElement control,
 	break;
 
     default:
-	QWindowsStyle::drawControl(control, p, widget, r, cg, flags, data);
+	QCommonStyle::drawControl(control, p, widget, r, cg, flags, data);
 	break;
     }
 }
@@ -796,7 +858,7 @@ void LightStyleV2::drawControlMask( ControlElement control,
 	break;
 
     default:
-	QWindowsStyle::drawControlMask(control, p, widget, r, data);
+	QCommonStyle::drawControlMask(control, p, widget, r, data);
 	break;
     }
 }
@@ -823,7 +885,7 @@ QRect LightStyleV2::subRect(SubRect subrect, const QWidget *widget) const
  	}
 
     default:
-	rect = QWindowsStyle::subRect(subrect, widget);
+	rect = QCommonStyle::subRect(subrect, widget);
     }
 
     return rect;
@@ -1102,9 +1164,15 @@ void LightStyleV2::drawComplexControl( ComplexControl control,
 	    break;
 	}
 
+    case CC_ListView:
+	// use the base style for CC_ListView
+	singleton->basestyle->drawComplexControl(control, p, widget, r, cg, flags,
+						 controls, active, data);
+	break;
+
     default:
-	QWindowsStyle::drawComplexControl(control, p, widget, r, cg, flags,
-					  controls, active, data);
+	QCommonStyle::drawComplexControl(control, p, widget, r, cg, flags,
+					 controls, active, data);
 	break;
     }
 }
@@ -1166,19 +1234,19 @@ QRect LightStyleV2::querySubControlMetrics( ComplexControl control,
 		// between bottom/right button and slider
 		if (scrollbar->orientation() == Qt::Horizontal)
 		    ret.setRect(sliderstart + sliderlen, 0,
-				 maxlen - sliderstart - sliderlen + sbextent, sbextent);
+				maxlen - sliderstart - sliderlen + sbextent, sbextent);
 		else
 		    ret.setRect(0, sliderstart + sliderlen,
-				 sbextent, maxlen - sliderstart - sliderlen + sbextent);
+				sbextent, maxlen - sliderstart - sliderlen + sbextent);
 		break;
 
 	    case SC_ScrollBarGroove:
 		if (scrollbar->orientation() == Qt::Horizontal)
 		    ret.setRect(sbextent, 0, scrollbar->width() - sbextent * 3,
-				 scrollbar->height());
+				scrollbar->height());
 		else
 		    ret.setRect(0, sbextent, scrollbar->width(),
-				 scrollbar->height() - sbextent * 3);
+				scrollbar->height() - sbextent * 3);
 		break;
 
 	    case SC_ScrollBarSlider:
@@ -1196,7 +1264,7 @@ QRect LightStyleV2::querySubControlMetrics( ComplexControl control,
 	}
 
     default:
-	ret = QWindowsStyle::querySubControlMetrics(control, widget, sc, data);
+	ret = QCommonStyle::querySubControlMetrics(control, widget, sc, data);
 	break;
     }
 
@@ -1208,8 +1276,7 @@ QStyle::SubControl LightStyleV2::querySubControl( ComplexControl control,
 						const QPoint &pos,
 						const QStyleOption &data ) const
 {
-    QStyle::SubControl ret =
-	QWindowsStyle::querySubControl(control, widget, pos, data);
+    QStyle::SubControl ret = QCommonStyle::querySubControl(control, widget, pos, data);
 
     // this is an ugly hack, but i really don't care, it's the quickest way to
     // enabled the third button
@@ -1268,8 +1335,13 @@ int LightStyleV2::pixelMetric( PixelMetric metric,
 	ret = 4;
 	break;
 
+    case PM_SliderLength:
+    case PM_SliderControlThickness:
+	ret = singleton->basestyle->pixelMetric( metric, widget );
+	break;
+
     default:
-	ret = QWindowsStyle::pixelMetric(metric, widget);
+	ret = QCommonStyle::pixelMetric(metric, widget);
 	break;
     }
 
@@ -1358,7 +1430,7 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 	}
 
     default:
-	ret = QWindowsStyle::sizeFromContents(contents, widget, contentsSize, data);
+	ret = QCommonStyle::sizeFromContents(contents, widget, contentsSize, data);
 	break;
     }
 
@@ -1373,14 +1445,33 @@ int LightStyleV2::styleHint( StyleHint stylehint,
     int ret;
 
     switch (stylehint) {
+    case SH_EtchDisabledText:
+    case SH_Slider_SnapToValue:
+    case SH_PrintDialog_RightAlignButtons:
+    case SH_FontDialog_SelectAssociatedText:
+    case SH_PopupMenu_AllowActiveAndDisabled:
+    case SH_MenuBar_AltKeyNavigation:
+    case SH_MenuBar_MouseTracking:
+    case SH_PopupMenu_MouseTracking:
+    case SH_ComboBox_ListMouseTracking:
+	ret = 1;
+	break;
+
     case SH_MainWindow_SpaceBelowMenuBar:
 	ret = 0;
 	break;
 
     default:
-	ret = QWindowsStyle::styleHint(stylehint, widget, option, returnData);
+	ret = QCommonStyle::styleHint(stylehint, widget, option, returnData);
 	break;
     }
 
     return ret;
+}
+
+QPixmap LightStyleV2::stylePixmap( StylePixmap stylepixmap,
+				   const QWidget *widget,
+				   const QStyleOption &data ) const
+{
+    return singleton->basestyle->stylePixmap( stylepixmap, widget, data );
 }
