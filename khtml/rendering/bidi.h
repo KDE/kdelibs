@@ -96,10 +96,10 @@ namespace khtml {
 
 	void operator ++ ();
 
-	bool atEnd();
+	bool atEnd() const;
 
-	const QChar &current();
-	QChar::Direction direction();
+	const QChar &current() const;
+	QChar::Direction direction() const;
 
 	RenderFlow *par;
 	RenderObject *obj;

@@ -120,20 +120,20 @@ inline void BidiIterator::operator ++ ()
     }
 }
 
-inline bool BidiIterator::atEnd()
+inline bool BidiIterator::atEnd() const
 {
     if(!obj) return true;
     return false;
 }
 
-const QChar &BidiIterator::current()
+const QChar &BidiIterator::current() const
 {
     static const QChar nbsp = QChar(0xA0);
     if( !obj || !obj->isText()) return nbsp; // non breaking space
     return static_cast<RenderText *>(obj)->text()[pos];
 }
 
-QChar::Direction BidiIterator::direction()
+QChar::Direction BidiIterator::direction() const
 {
     if(!obj || !obj->isText() || obj->length() <= 0) return QChar::DirON;
     RenderText *renderTxt = static_cast<RenderText *>( obj );
@@ -861,18 +861,9 @@ void RenderFlow::layoutInlineChildren()
                 if( start.atEnd() )
                     break;
             }
-            if(!m_pre) {
-                // remove leading spaces
-#ifndef QT_NO_UNICODETABLES
-                while(!start.atEnd() && start.direction() == QChar::DirWS )
-#else
-                while(!start.atEnd() && start.current() == ' ' )
-#endif
-                    ++start;
-            }
-            if( start.atEnd() ) break;
 
             end = findNextLineBreak(start);
+            if( start.atEnd() ) break;
 	    embed = bidiReorderLine(status, start, end, embed);
 
             if( end == start || (end.obj && end.obj->isBR() ) )
@@ -891,10 +882,8 @@ void RenderFlow::layoutInlineChildren()
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
-BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
+BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 {
-    BidiIterator lBreak = start;
-
     int width = lineWidth(m_height);
     int w = 0;
     int tmpW = 0;
@@ -903,10 +892,46 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
 
+
+    // eliminate spaces at beginning of line
+    if(!m_pre) {
+	// remove leading spaces
+	while(!start.atEnd() && 
+#ifndef QT_NO_UNICODETABLES
+	      ( start.direction() == QChar::DirWS || start.obj->isSpecial() )
+#else
+	      ( start.current() == ' ' || start.obj->isSpecial() )
+#endif
+	      ) {
+		if( start.obj->isSpecial() ) {
+		    RenderObject *o = start.obj;
+		    // add to special objects...
+		    if(o->isFloating()) {
+			insertSpecialObject(o);
+			// check if it fits in the current line.
+			// If it does, position it now, otherwise, position
+			// it after moving to next line (in newLine() func)
+			if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
+			    positionNewFloats();
+			    width = lineWidth(m_height);
+			}
+		    } else if(o->isPositioned()) {
+			static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
+		    }
+		}
+		
+		++start;
+	}
+    }
+    if ( start.atEnd() )
+	return start;
+    
+    BidiIterator lBreak = start;
+
     RenderObject *o = start.obj;
     RenderObject *last = o;
     int pos = start.pos;
-
+    
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
         kdDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW << endl;
@@ -925,18 +950,18 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
         }
         if( o->isSpecial() ) {
             // add to special objects...
-	    if(o->isFloating())
+	    if(o->isFloating()) {
 		insertSpecialObject(o);
-	    else if(o->isPositioned())
+		// check if it fits in the current line.
+		// If it does, position it now, otherwise, position
+		// it after moving to next line (in newLine() func)
+		if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
+		    positionNewFloats();
+		    width = lineWidth(m_height);
+		}
+	    } else if(o->isPositioned()) {
 		static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
-
-            // check if it fits in the current line.
-            // If it does, position it now, otherwise, position
-            // it after moving to next line (in newLine() func)
-            if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
-                positionNewFloats();
-                width = lineWidth(m_height);
-            }
+	    }
         } else if ( o->isReplaced() ) {
             tmpW += o->width()+o->marginLeft()+o->marginRight();
         } else if ( o->isText() ) {

@@ -128,7 +128,7 @@ public:
     void appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
                    BidiContext *context, QChar::Direction dir);
     BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
-    BidiIterator findNextLineBreak(const BidiIterator &start);
+    BidiIterator findNextLineBreak(BidiIterator &start);
 
 public:
     RenderObject *first();
