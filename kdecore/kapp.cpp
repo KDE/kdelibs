@@ -834,17 +834,6 @@ QString KApplication::kdedir()
 }
 
 
-/* maybe we could read it out of a config file, but
-   this can be added later */
-QString KApplication::kde_htmldir()
-{
-    warning("kde_htmldir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull()) 
-      dir = kdedir() + KStandardDirs::kde_default("html");
-    return dir;
-}
-
 QString KApplication::kde_appsdir()
 {
     warning("kde_appsdir() is obsolete. Try to use KStandardDirs instead");
@@ -854,34 +843,6 @@ QString KApplication::kde_appsdir()
     return dir;
 }
                                         
-
-QString KApplication::kde_datadir()
-{
-    warning("kde_datadir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull())
-      dir = kdedir() + KStandardDirs::kde_default("data");
-    return dir;
-}
-
-QString KApplication::kde_bindir()
-{
-    warning("kde_bindir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull())
-      dir = kdedir() + KStandardDirs::kde_default("exe");
-    return dir;
-}
-
-QString KApplication::kde_mimedir()
-{
-    warning("kde_mimedir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-     if (dir.isNull()) 
-       dir = kdedir() + KStandardDirs::kde_default("mime");
-    return dir;
-}
-
 QString KApplication::localkdedir()
 {
   warning("localkdedir is obsolete. Try to use KStandardDirs instead");

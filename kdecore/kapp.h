@@ -200,44 +200,12 @@ public:
   KStyle* kstyle() const {return pKStyle;}
   
   /**
-   * Returns the directory where KDE stores its HTML documentation
-   *
-   * The default for this directory is $KDEDIR/share/doc/HTML
-   * @return the name of the directory
-   */
-  static QString kde_htmldir();
-
-  /**
    * Returns the directory where KDE applications store their .desktop file
    *
    * The default for this directory is $KDEDIR/share/applnk
    * @return the name of the directory
    */
   static QString kde_appsdir();
-
-  /** 	
-   * Returns the directory where KDE applications store their specific data
-   *
-   * The default for this directory is $KDEDIR/share/apps
-   * @return the name of the directory
-   */
-  static QString kde_datadir();
-
-  /**
-   * Returns the directory where executable programs are stored
-   *
-   * The default for this directory is $KDEDIR/bin
-   * @return the name of the directory
-   */
-  static QString kde_bindir();
-
- /**
-  * Returns the directory where mimetypes are stored
-  *
-  * The default for this directory is $KDEDIR/share/mimelnk
-  * @return the name of the directory
-  */
-  static QString kde_mimedir();
 
   /**
    * Get the local KDE base dir
@@ -480,6 +448,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.95  1999/07/20 00:47:45  pbrown
+// removed kdnd stuff from kapp.
+//
 // Revision 1.94  1999/06/23 19:13:39  knoll
 // removed xxxFont() methods. Use KGlobal::xxxFont() instead.
 //
