@@ -75,7 +75,7 @@ public:
      BackgroundMode bgMode;
    };
    QDict <DatePaintingMode> customPaintingModes;
-   
+
 };
 
 
@@ -223,7 +223,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 		}
 	        painter->setBrush( oldbrush );
 	        paintRect=false;
-	      }	
+	      }
 	      painter->setPen( mode->fgColor );
 	    } else
 	      painter->setPen(KGlobalSettings::textColor());
@@ -268,53 +268,54 @@ KDateTable::keyPressEvent( QKeyEvent *e )
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
     QDate temp = date;
 
-    if ( e->key() == Qt::Key_Prior ) {
+    switch( e->key() ) {
+    case Key_Prior:
         temp = calendar->addMonths( date, -1 );
         setDate(temp);
         return;
-    }
-    if ( e->key() == Qt::Key_Next ) {
+    case Key_Next:
         temp = calendar->addMonths( date, 1 );
         setDate(temp);
         return;
-    }
-
-    if ( e->key() == Qt::Key_Up ) {
+    case Key_Up:
         if ( calendar->day(date) > 7 ) {
             setDate(date.addDays(-7));
             return;
         }
-    }
-    if ( e->key() == Qt::Key_Down ) {
+        break;
+    case Key_Down:
         if ( calendar->day(date) <= calendar->daysInMonth(date)-7 ) {
             setDate(date.addDays(7));
             return;
         }
-    }
-    if ( e->key() == Qt::Key_Left ) {
+        break;
+    case Key_Left:
         if ( calendar->day(date) > 1 ) {
             setDate(date.addDays(-1));
             return;
         }
-    }
-    if ( e->key() == Qt::Key_Right ) {
+        break;
+    case Key_Right:
         if ( calendar->day(date) < calendar->daysInMonth(date) ) {
             setDate(date.addDays(1));
             return;
         }
-    }
-
-    if ( e->key() == Qt::Key_Minus ) {
+        break;
+    case Key_Minus:
         setDate(date.addDays(-1));
         return;
-    }
-    if ( e->key() == Qt::Key_Plus ) {
+    case Key_Plus:
         setDate(date.addDays(1));
         return;
-    }
-    if ( e->key() == Qt::Key_N ) {
+    case Key_N:
         setDate(QDate::currentDate());
         return;
+    case Key_Return:
+    case Key_Enter:
+        emit tableClicked();
+        return;
+    default:
+        break;
     }
 
     KNotifyClient::beep();
@@ -388,18 +389,18 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
       return;
     }
 
-  // Rows and columns are zero indexed.  The (row - 1) below is to avoid counting 
+  // Rows and columns are zero indexed.  The (row - 1) below is to avoid counting
   // the row with the days of the week in the calculation.  We however want pos
   // to be "1 indexed", hence the "+ 1" at the end of the sum.
 
   pos = (7 * (row - 1)) + col + 1;
 
-  // This gets pretty nasty below.  firstday is a locale independant index for 
+  // This gets pretty nasty below.  firstday is a locale independant index for
   // the first day of the week.  dayoff is the day of the week that the week
   // starts with for the selected locale.  Monday = 1 .. Sunday = 7
   // Strangely, in some cases dayoff is in fact set to 8, hence all of the
   // "dayoff % 7" sections below.
-  
+
   if(pos + dayoff % 7 <= firstday)
     { // this day is in the previous month
       setDate(date.addDays(-1 * (calendar->day(date) + firstday - pos - dayoff % 7)));
@@ -421,8 +422,9 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   updateCell(temp/7+1, temp%7); // Update the previously selected cell
   updateCell(row, col); // Update the selected cell
   // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
-  
-  emit(tableClicked());
+
+  emit tableClicked();
+
   if (  e->button() == Qt::RightButton && d->popupMenuEnabled )
   {
 	KPopupMenu *menu = new KPopupMenu();
@@ -449,7 +451,7 @@ KDateTable::setDate(const QDate& date_)
       changed=true;
     }
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  
+
   calendar->setYMD(temp, calendar->year(date), calendar->month(date), 1);
   //temp.setYMD(date.year(), date.month(), 1);
   kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
@@ -517,12 +519,12 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
 	unsetCustomDatePainting( date );
 	return;
     }
-    
+
     KDateTablePrivate::DatePaintingMode *mode=new KDateTablePrivate::DatePaintingMode;
     mode->bgMode=bgMode;
     mode->fgColor=fgColor;
     mode->bgColor=bgColor;
-		
+
     d->customPaintingModes.replace( date.toString(), mode );
     d->useCustomColors=true;
     update();
@@ -531,7 +533,7 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
 void KDateTable::unsetCustomDatePainting( const QDate &date )
 {
     d->customPaintingModes.remove( date.toString() );
-}	
+}
 
 KDateInternalWeekSelector::KDateInternalWeekSelector
 (QWidget* parent, const char* name)
@@ -585,8 +587,8 @@ KDateInternalWeekSelector::setMaxWeek(int max)
   val->setRange(1, max);
 }
 
-// ### CFM To avoid binary incompatibility.  
-//     In future releases, remove this and replace by  a QDate 
+// ### CFM To avoid binary incompatibility.
+//     In future releases, remove this and replace by  a QDate
 //     private member, needed in KDateInternalMonthPicker::paintCell
 class KDateInternalMonthPicker::KDateInternalMonthPrivate {
 public:
