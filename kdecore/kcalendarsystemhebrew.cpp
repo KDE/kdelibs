@@ -31,7 +31,7 @@ static int jflg = 0; // ### HPB Remove this!?!?
 
 static int dysiz(int y);
 
-class hdate
+class h_date
 {
 public:
   int hd_day;
@@ -44,9 +44,9 @@ public:
 /*
  * compute general date structure from hebrew date
  */
-static class hdate * gdate(int y, int m, int d)
+static class h_date * g_date(int y, int m, int d)
 {
-  static class hdate h;
+  static class h_date h;
   int s;
 
   y -= 3744;
@@ -90,9 +90,9 @@ static class hdate * gdate(int y, int m, int d)
 /*
  * compute date structure from no. of days since 1 Tishrei 3744
  */
-static class hdate * hdate(int y, int m, int d)
+static class h_date * h_date(int y, int m, int d)
 {
-  static class hdate h;
+  static class h_date h;
   int s;
 
   if ((m -= 2) <= 0) {
@@ -212,10 +212,10 @@ KCalendarSystemHebrew::~KCalendarSystemHebrew()
 }
 
 // Ok
-static class hdate * toHebrew(const QDate & date)
+static class h_date * toHebrew(const QDate & date)
 {
-  class hdate *sd;
-  sd = hdate(date.year(), date.month(), date.day());
+  class h_date *sd;
+  sd = h_date(date.year(), date.month(), date.day());
   ++sd->hd_mon;
   ++sd->hd_day;
   return sd;
@@ -224,7 +224,7 @@ static class hdate * toHebrew(const QDate & date)
 // Ok
 int KCalendarSystemHebrew::year(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
+  class h_date *sd = toHebrew(date);
   return sd->hd_year;
 }
 
@@ -362,7 +362,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   // range checks
   // ### Fixme
 
-  class hdate * gd = gdate( y, m, d );
+  class h_date * gd = g_date( y, m, d );
 
   return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
@@ -390,7 +390,7 @@ QString KCalendarSystemHebrew::weekDayName(const QDate& date,
 // Ok
 int KCalendarSystemHebrew::dayOfWeek(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
+  class h_date *sd = toHebrew(date);
   if ( sd->hd_dw == 0 )
     return 7;
   else
@@ -408,7 +408,7 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
 
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
+  class h_date *sd = toHebrew(date);
   return hndays(sd->hd_mon, sd->hd_year);
 }
 
@@ -447,7 +447,7 @@ int KCalendarSystemHebrew::maxValidYear() const
 // Ok
 int KCalendarSystemHebrew::day(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
+  class h_date *sd = toHebrew(date);
 
   return sd->hd_day;
 }
@@ -455,7 +455,7 @@ int KCalendarSystemHebrew::day(const QDate& date) const
 // Ok
 int KCalendarSystemHebrew::month(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
+  class h_date *sd = toHebrew(date);
 
   return sd->hd_mon;
 }
