@@ -366,12 +366,13 @@ private:
  *
  * The default constructor is designed to provide much the same
  * functionality as the most commonly used C-implementation while
- * the other three constructors are meant to further simply the message
- * digest calculations by calculating the result in a single step.
- * In addition to having the ability to obtain the result in either
- * raw (16-bytes) or hexidecimal formats (33-bytes) using @ref rawDigest
- * and @ref hexDigest respectivelly, you can also reuse a single instance
- * to make multiple message digest calculations by simply invoking @reset().
+ * the other three constructors are meant to further simplify the
+ * message digest calculations by calculating the result in one
+ * single step.  Additionally, you have the ability to obtain the
+ * result in either raw (16-bytes) or hexidecimal formats (33-bytes)
+ * using @ref rawDigest and @ref hexDigest respectivelly, you can also
+ * reuse a single instance to make multiple message digest calculations
+ * by simply invoking @reset().
  *
  * @sect Useage:
  *
@@ -407,9 +408,8 @@ private:
  * constructors you must first invoke reset(), before calling any of the
  * update functions.  Otherwise, the call to @ref update will fail.
  *
- * Here is an of KMD5 useage much along the same lines of how
- * one would use the commonly available C-implementations of
- * the MD5 algorithm:
+ * Here is an of KMD5 useage much along the same lines of how one would
+ * use the commonly available C-implementations of the MD5 algorithm:
  *
  * <PRE>
  *  KMD5 context;

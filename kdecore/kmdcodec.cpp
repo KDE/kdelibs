@@ -424,10 +424,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     // there is/are trailing CR and/or LF.
     while ( in_buf[tail-1] == '=' || in_buf[tail-1] == '\n' ||
             in_buf[tail-1] == '\r' )
-    {
-        tail--;
-        if ( in_buf[tail-1] != '=' ) len = tail;
-    }
+        if ( in_buf[--tail] != '=' ) len = tail;
 
     unsigned int outIdx = 0;
     out.resize( (count=len) );
