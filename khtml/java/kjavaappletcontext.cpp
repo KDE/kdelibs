@@ -106,7 +106,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
          && arg.count() > 0 )
     {
         kdDebug(6100) << "status message = " << arg[0] << endl;
-        emit showStatus( arg[0] );
+        emit showStatus( arg[0].stripWhiteSpace() );
     }
     else if ( cmd == QString::fromLatin1( "showurlinframe" )
               && arg.count() > 1 )
