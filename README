@@ -19,20 +19,22 @@ Here is an alphabetical list:
 
 * arts
     ARTS (analog realtime synthesizer) is a environment of small modules
-    that one can plug together to process multimedia data.
+    that one can plug together to process multimedia data. This directory
+    contains KDE wrapper and KDE user interface elements for ARTS.
 
 * dcop
-    The desktop communication program allows even shell scripts to communicate
-    with KDE applications. It's also the base for KParts.
+    The desktop communication program allows even shell scripts to
+    communicate with KDE applications. It's also the base for KParts.
 
 * interfaces
-    kparts interface for text editors
+    kparts interface for text editors, mediaplayer and scripting.
 
 * kab
-    The address book library.
+    OBSOLETE, see kabc: Used to be the address book library, but now only
+    used to conver kab-Addressbooks into kabc format.
 
 * kabc
-    Replacement for kab.
+    The address book library.
 
 * kate
     KPart for 'kate', the KDE advanced text editor.
@@ -105,9 +107,6 @@ Here is an alphabetical list:
     The theme engine lies within. It handles nearly anything relating to
     customizing the appearance of widgets.
 
-* kutils
-    Search/Replace dialog and functionality.
-
 * kwallet
     Client and backend to store values in encrypted files.
 
@@ -134,10 +133,10 @@ Here is an alphabetical list:
 Licensing
 ---------
 The libraries themselves have been covered (since Saturday, June 21st, 1997)
-by the GNU Library General Public License (LGPL). Any other programs (such as
-the examples) are covered by the GNU General Public License (GPL). All the
-gory details for the LGPL reside in COPYING.LIB, and for the GPL reside in 
-COPYING.
+by the GNU Library General Public License (LGPL). Any other programs (such
+as the examples) are covered by the GNU General Public License (GPL). All
+the gory details for the LGPL reside in COPYING.LIB, and for the GPL reside
+in COPYING.
 
 Various parts are also covered under a BSD style license, detailed in
 COPYING.BSD. Currently, code covered under such license is copyrighted by
