@@ -1517,7 +1517,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   // index?
   bool ok;
   unsigned int u = propertyName.toULong(&ok);
-  if (ok) {
+  if (ok && u < m_nodes.count()) {
     DOM::Node node = m_nodes[u];
     return getDOMNode(exec,node);
   }
