@@ -17,7 +17,7 @@
 #include <string.h>
 
 // This function is implemeneted in kfmgui.cc and in kfmlib
-extern void openFileManagerWindow( const char *_url );
+//extern void openFileManagerWindow( const char *_url );
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
@@ -25,12 +25,12 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   
   if ( strcmp( _mimetype, "text/html" ) == 0 )
   {
-    openFileManagerWindow( _url );
+    //    openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory" ) == 0 )
   {
-    openFileManagerWindow( _url );
+    //    openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )
@@ -146,30 +146,30 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
        exec.find( "%D" ) != string::npos )
     b_allow_multiple = true;
 
-  unsigned int pos;
+  int pos;
   
   string name = _name;
   shellQuote( name );
-  while ( ( pos = exec.find( "%c" ) ) != string::npos )
+  while ( ( pos = exec.find( "%c" ) ) != (int)string::npos )
     exec.replace( pos, 2, name );
 
   string icon = _icon;
   shellQuote( icon );
   if ( !icon.empty() )
     icon.insert( 0, "-icon " );
-  while ( ( pos = exec.find( "%i" ) ) != string::npos )
+  while ( ( pos = exec.find( "%i" ) ) != (int)string::npos )
     exec.replace( pos, 2, icon );
 
   string mini_icon = _mini_icon;
   shellQuote( mini_icon );
   if ( !mini_icon.empty() )
     mini_icon.insert( 0, "-miniicon " );
-  while ( ( pos = exec.find( "%m" ) ) != string::npos )
+  while ( ( pos = exec.find( "%m" ) ) != (int)string::npos )
     exec.replace( pos, 2, mini_icon );
 
   if ( !_kdelnk_file )
     _kdelnk_file = "";
-  while ( ( pos = exec.find( "%k" ) ) != string::npos )
+  while ( ( pos = exec.find( "%k" ) ) != (int)string::npos )
     exec.replace( pos, 2, _kdelnk_file );
 
   // The application accepts only local files ?
@@ -179,23 +179,23 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
   }
   
   if ( b_allow_multiple || _urls.isEmpty() )
-  {
-    while ( ( pos = exec.find( "%f" )) != string::npos )
+  {	
+    while ( ( pos = exec.find( "%f" )) != (int)string::npos )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%n" )) != string::npos )
+    while ( ( pos = exec.find( "%n" )) != (int)string::npos )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%d" )) != string::npos )
+    while ( ( pos = exec.find( "%d" )) != (int)string::npos )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%u" )) != string::npos )
+    while ( ( pos = exec.find( "%u" )) != (int)string::npos )
       exec.replace( pos, 2, "" );
 
-    while ( ( pos = exec.find( "%F" )) != string::npos )
+    while ( ( pos = exec.find( "%F" )) != (int)string::npos )
       exec.replace( pos, 2, F );
-    while ( ( pos = exec.find( "%N" )) != string::npos )
+    while ( ( pos = exec.find( "%N" )) != (int)string::npos )
       exec.replace( pos, 2, N );
-    while ( ( pos = exec.find( "%D" )) != string::npos )
+    while ( ( pos = exec.find( "%D" )) != (int)string::npos )
       exec.replace( pos, 2, N );
-    while ( ( pos = exec.find( "%U" )) != string::npos )
+    while ( ( pos = exec.find( "%U" )) != (int)string::npos )
       exec.replace( pos, 2, U );
 
     return run( exec.c_str() );
@@ -216,16 +216,16 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
     string u = it;
     shellQuote( u );
    
-    while ( ( pos = e.find( "%f" )) != string::npos )
+    while ( ( pos = e.find( "%f" )) != (int)string::npos )
       e.replace( pos, 2, f );
-    while ( ( pos = e.find( "%n" )) != string::npos )
+    while ( ( pos = e.find( "%n" )) != (int)string::npos )
       e.replace( pos, 2, n );
-    while ( ( pos = e.find( "%d" )) != string::npos )
+    while ( ( pos = e.find( "%d" )) != (int)string::npos )
       e.replace( pos, 2, d );
-    while ( ( pos = e.find( "%u" )) != string::npos )
+    while ( ( pos = e.find( "%u" )) != (int)string::npos )
       e.replace( pos, 2, u );
 
-    (void)run( e.c_str() );
+    return run( e.c_str() );
   }
   
   return true;
@@ -364,9 +364,9 @@ void KRun::init()
   
   // It may be a directory
   KIOJob* job = new KIOJob();
-  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
-  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+  connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory() ) );
+  connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile() ) );
+  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished() ) );
   connect( job, SIGNAL( sigError( int, int, const char* ) ),
 	   this, SLOT( slotError( int, int, const char* ) ) );
 
@@ -432,12 +432,12 @@ void KRun::slotTimeout()
   }
 }
 
-void KRun::slotIsDirectory( int /*_id*/ )
+void KRun::slotIsDirectory()
 {
   m_bIsDirectory = true;
 }
 
-void KRun::slotIsFile( int /*_id*/ )
+void KRun::slotIsFile()
 {
   // Ok, when the job is finished we want to scan the file.
   // But we wait until the job is finished => we can reuse the
@@ -445,7 +445,7 @@ void KRun::slotIsFile( int /*_id*/ )
   m_bScanFile = true;
 }
 
-void KRun::slotFinished( int /*_id*/ )
+void KRun::slotFinished()
 {
   cerr << "####### FINISHED" << endl;
 
@@ -468,7 +468,7 @@ void KRun::slotFinished( int /*_id*/ )
     m_timer.start( 0, true );
 }
 
-void KRun::slotError( int /*_id*/, int _errid, const char *_errortext )
+void KRun::slotError( int, int _errid, const char *_errortext )
 {
   cerr << "######## ERROR " << _errid << " " << _errortext << endl;
   // HACK
