@@ -210,7 +210,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::processError(int ec) {
 KSSLCertificate::KSSLValidation rc;
 
 rc = KSSLCertificate::Unknown;
-
+#ifdef HAVE_SSL
 switch (ec) {
 case X509_V_OK:       // OK
   rc = KSSLCertificate::Ok;
@@ -285,6 +285,7 @@ break;
 
 d->m_stateCache = rc;
 d->m_stateCached = true;
+#endif
 return rc;
 }
 
