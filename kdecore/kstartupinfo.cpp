@@ -521,21 +521,24 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id 
     {
     long activate = true;
     kapp->setStartupId( startup_id );
-    if( !startup_id.isEmpty() && startup_id != "0" )
+    if( window != NULL )
         {
-        NETRootInfo i( qt_xdisplay(), NET::Supported );
-        if( i.isSupported( NET::WM2StartupId ))
+        if( !startup_id.isEmpty() && startup_id != "0" )
             {
-            KStartupInfo::setWindowStartupId( window->winId(), startup_id );
-            activate = false; // WM will take care of it
+            NETRootInfo i( qt_xdisplay(), NET::Supported );
+            if( i.isSupported( NET::WM2StartupId ))
+                {
+                KStartupInfo::setWindowStartupId( window->winId(), startup_id );
+                activate = false; // WM will take care of it
+                }
             }
+        if( activate )
+        // This is not very nice, but there's no way how to get any
+        // usable timestamp without ASN, so force activating the window.
+        // And even with ASN, it's not possible to get the timestamp here,
+        // so if the WM doesn't have support for ASN, it can't be used either.
+            KWin::forceActiveWindow( window->winId());
         }
-    if( activate )
-    // This is not very nice, but there's no way how to get any
-    // usable timestamp without ASN, so force activating the window.
-    // And even with ASN, it's not possible to get the timestamp here,
-    // so if the WM doesn't have support for ASN, it can't be used either.
-        KWin::forceActiveWindow( window->winId());
     KStartupInfo::handleAutoAppStartedSending();
     }
 
