@@ -254,7 +254,7 @@ void KFindDialog::setPattern (const QString &pattern)
     m_find->lineEdit()->setText( pattern );
     m_find->lineEdit()->selectAll();
     d->pattern = pattern;
-    kdDebug() << "setPattern " << pattern;
+    kdDebug() << "setPattern " << pattern<<endl;
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)
