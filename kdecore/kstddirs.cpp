@@ -700,8 +700,6 @@ void KStandardDirs::addKDEDefaults()
 	addResourceDir("apps", gnomedir + "/share/gnome/apps");
     }
 
-    addResourceDir("apps", "/etc/X11/applnk");
-
     uint index = 0;
     while (types[index] != 0) {
 	addResourceType(types[index], kde_default(types[index]));
