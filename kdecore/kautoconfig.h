@@ -4,6 +4,7 @@
 #include <qobject.h>
 #include <kglobal.h>
 #include <qptrlist.h>
+#include <kglobal.h>
 
 class KConfig;
 class QWidget;
@@ -143,6 +144,14 @@ public slots:
    * @return bool - true if any settings were changed.
    */ 
   bool saveSettings();
+
+  /**
+   * Traverse the specified widgets, to see if anything has changed.
+   * @ref retrieveSettings() must be called before this function to build
+   * the list of known widgets and defaultValues.
+   * @return bool - true if any settings were changed.
+   */
+  bool hasChanged();
 
   /**
    * Traverse the specified widgets, reseting the settings for all known
