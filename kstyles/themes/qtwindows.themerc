@@ -8,7 +8,6 @@ Comment[ca]=Estil incorporat Windows 9x sense temes
 Comment[cs]=Zabudovaný Windows 9x styl (netémovaný)
 Comment[de]=Eingebauter Windows-9x-Stil (kein komplettes Design)
 Comment[eo]=Originala Vindozo 9x-stilo sen temoj
-Comment[fi]=Sisäänrakennettu teemoittamatom Windows 9x tyyli
 Comment[fr]=Style Windows 9x d'origine sans thème
 Comment[hu]=Beépített Windows 9x kinézet
 Comment[it]=Stile Windows 9x interno (senza tema)
@@ -16,7 +15,8 @@ Comment[ja]=Windows9xスタイル
 Comment[no_NY]=Innebygd Windows 9x-stil
 Comment[pt]=Estilo embutido Windows 9x
 Comment[ro]=Stil Windows 9x fără temă, intern
-Comment[sl]=Vgrajen obi�ajni stil Windows 9x
+Comment[sl]=Vgrajen običajni stil Windows 9x
+Comment[sr]=Ugra�eni, bez teme, Windows 9x stil
 Comment[sv]=Inbyggd otemad Windows 9x-stil
 [KDE]
 widgetStyle=Windows 95

@@ -2,22 +2,20 @@
 Name=Pillbox
 Name[de]=Pillenschachtel
 Name[eo]=Pilolujo
-Name[fi]=Pillerirasia
 Name[hu]=Gyógyszeresdoboz
 Name[pt]=Caixa
-Name[sl]=�katlica tablet
+Name[sl]=Škatlica tablet
 Comment=Pillbox unthemed style.
 Comment[ca]=Estil sense tema Pillbox.
 Comment[cs]=Pillbox styl (netémovaný)
 Comment[de]=Pillenschachtel (kein komplettes Design)
 Comment[eo]=Pilolujo-stilo neetosa
-Comment[fi]=Teemoittamaton pillerirasiatyyli
 Comment[he]=Pillbox unthemed style
 Comment[hu]=Gyógyszeresdoboz stílus
 Comment[it]=Stile pillbox (senza tema)
 Comment[no_NY]='Pillbox'-stil utan tema
 Comment[pt]=Estilo caixa
 Comment[ro]=Stil fără temă Pillbox
-Comment[sl]=Netematski slog �katlice tablet.
+Comment[sl]=Netematski slog škatlice tablet.
 [KDE]
 widgetStyle=pillboxstyle.la
